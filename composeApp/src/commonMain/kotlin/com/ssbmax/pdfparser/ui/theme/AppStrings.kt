@@ -34,7 +34,7 @@ object AppStrings {
     const val chartShareTitle = "Earnings Allocation"
     const val chartDsopTitle = "DSOP Fund Growth"
     const val chartTaxTitle = "Tax Deductions vs Projections"
-    
+
     // Explorer
     const val explorerHeader = "Payslip Digital Replica"
     const val explorerSubheader = "Tap any transaction code for detailed explanations"
@@ -52,7 +52,7 @@ object AppStrings {
     const val labelPassword = "Decryption Password"
     const val btnDecrypt = "Decrypt & Parse"
     const val loaderDecrypt = "Decrypting PDF using Secure Enclave..."
-    
+
     // Glossary Tooltip Titles
     const val glossaryTitleBasicPay = "Basic Pay (BPAY)"
     const val glossaryTitleDa = "Dearness Allowance (DA)"

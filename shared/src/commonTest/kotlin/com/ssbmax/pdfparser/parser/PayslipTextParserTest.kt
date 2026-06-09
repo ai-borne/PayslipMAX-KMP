@@ -6,10 +6,10 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class PayslipTextParserTest {
-
     @Test
     fun testParse2024Format() {
-        val mockText = """
+        val mockText =
+            """
             01/2024  kI laoKa ivavarNaI  / STATEMENT OF ACCOUNT FOR 01/2024
             Name: Sunil Suresh Pawar A/C No - 16/110/206718K PAN No: AR*****90G
             Aaya / EARNINGS (`) kTaOtI / DEDUCTIONS (`) laona dona ka ivavarNa / DETAILS OF TRANSACTIONS
@@ -45,41 +45,41 @@ class PayslipTextParserTest {
             12. Ed. Cess Deducted 19061
             13. Surcharge Deducted 0
             Opening Balance 670282 Subscription 400000 Refund 0 Misc Adj 0 Withdrawal 0 Closing Balance 1070282
-        """.trimIndent()
+            """.trimIndent()
 
         val result = PayslipTextParser.parse(mockText, "01 Jan 2024.pdf")
-        
+
         assertTrue(result.isSuccess)
         val payslip = result.getOrNull()!!
         assertNotNull(payslip)
-        
+
         assertEquals(2024, payslip.year)
         assertEquals(1, payslip.monthNum)
         assertEquals("January", payslip.monthName)
         assertEquals("01/2024", payslip.dateStr)
-        
+
         assertEquals("Sunil Suresh Pawar", payslip.officer.name)
         assertEquals("16/110/206718K", payslip.officer.accountNo)
         assertEquals("AR*****90G", payslip.officer.pan)
-        
+
         assertEquals(140500.0, payslip.earnings.basicPay)
         assertEquals(71760.0, payslip.earnings.dearnessAllowance)
         assertEquals(15500.0, payslip.earnings.militaryServicePay)
-        
+
         assertEquals(40000.0, payslip.deductions.dsopSubscription)
         assertEquals(40521.0, payslip.deductions.incomeTax)
         assertEquals(1621.0, payslip.deductions.educationCess)
-        
+
         assertEquals(233016.0, payslip.summary.grossPay)
         assertEquals(93412.0, payslip.summary.totalDeductions)
         assertEquals(139604.0, payslip.summary.netRemittance)
-        
+
         val tax = payslip.taxAndSavings!!
         assertNotNull(tax)
         assertEquals(2780509.0, tax.totalTaxableIncome)
         assertEquals(50000.0, tax.standardDeduction)
         assertEquals(519153.0, tax.totalTaxPayable)
-        
+
         val dsop = tax.dsopFund!!
         assertNotNull(dsop)
         assertEquals(670282.0, dsop.openingBalance)
@@ -88,7 +88,8 @@ class PayslipTextParserTest {
 
     @Test
     fun testParse2022Format() {
-        val mockText = """
+        val mockText =
+            """
             01/2022
              STATEMENT OF ACCOUNT FOR 01/2022
             CDA A/C NO : 16/110/206718K
@@ -105,27 +106,27 @@ class PayslipTextParserTest {
             Fur 326
             Total Credit 203181 Total Debit 203181
             REMITTANCE 156400
-        """.trimIndent()
+            """.trimIndent()
 
         val result = PayslipTextParser.parse(mockText, "01 January 2022.pdf")
-        
+
         assertTrue(result.isSuccess)
         val payslip = result.getOrNull()!!
         assertNotNull(payslip)
-        
+
         assertEquals(2022, payslip.year)
         assertEquals(1, payslip.monthNum)
         assertEquals("01/2022", payslip.dateStr)
-        
+
         assertEquals("SUNIL SURESH PAWAR", payslip.officer.name)
         assertEquals(132400.0, payslip.earnings.basicPay)
         assertEquals(45849.0, payslip.earnings.dearnessAllowance)
         assertEquals(15500.0, payslip.earnings.militaryServicePay)
         assertEquals(9432.0, payslip.earnings.transportAllowance)
-        
+
         assertEquals(7944.0, payslip.deductions.dsopSubscription)
         assertEquals(31199.0, payslip.deductions.incomeTax)
-        
+
         assertEquals(203181.0, payslip.summary.grossPay)
         assertEquals(46781.0, payslip.summary.totalDeductions)
         assertEquals(156400.0, payslip.summary.netRemittance)
@@ -133,7 +134,8 @@ class PayslipTextParserTest {
 
     @Test
     fun testParse2025FormatWithColumnSplitAndDuplicateKeys() {
-        val leftText = """
+        val leftText =
+            """
             BPAY (12A) 144200
             DA 76426
             MSP 15500
@@ -143,30 +145,33 @@ class PayslipTextParserTest {
             ARR-RH12 3450
             ARR-RH12 3450
             A/o Pay & Allce 2000
-        """.trimIndent()
+            """.trimIndent()
 
-        val middleText = """
+        val middleText =
+            """
             DSOP 25000
             AGIF 5000
             ITAX 40521
             EHCESS 1621
             LF 878
             FUR 392
-        """.trimIndent()
+            """.trimIndent()
 
-        val fullText = """
+        val fullText =
+            """
             01/2025  kI laoKa ivavarNaI  / STATEMENT OF ACCOUNT FOR 01/2025
             Name: Sunil Suresh Pawar A/C No - 16/110/206718K PAN No: AR*****90G
             kuula Aaya Gross Pay 256042 kuula kTaOtI Total Deductions 32891
             Net Remittance : Rs.2,23,151
-        """.trimIndent()
+            """.trimIndent()
 
-        val result = PayslipTextParser.parse(
-            leftColumnText = leftText,
-            middleColumnText = middleText,
-            fullText = fullText,
-            filename = "01 January 2025.pdf"
-        )
+        val result =
+            PayslipTextParser.parse(
+                leftColumnText = leftText,
+                middleColumnText = middleText,
+                fullText = fullText,
+                filename = "01 January 2025.pdf",
+            )
 
         assertTrue(result.isSuccess)
         val payslip = result.getOrNull()!!

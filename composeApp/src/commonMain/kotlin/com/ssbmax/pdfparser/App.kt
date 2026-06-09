@@ -15,20 +15,20 @@ import com.ssbmax.pdfparser.ui.screens.DashboardScreen
 import com.ssbmax.pdfparser.ui.screens.ImportScreen
 import com.ssbmax.pdfparser.ui.screens.InsightsScreen
 import com.ssbmax.pdfparser.ui.screens.PayslipReplicaScreen
-import com.ssbmax.pdfparser.ui.theme.PDFParserTheme
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.PDFParserTheme
 
 enum class Screen {
     Dashboard,
     Explorer,
     Insights,
-    Import
+    Import,
 }
 
 @Composable
 fun App(
     viewModel: PayslipViewModel,
-    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit
+    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
 ) {
     var currentScreen by remember { mutableStateOf(Screen.Dashboard) }
 
@@ -37,9 +37,9 @@ fun App(
             bottomBar = {
                 BottomBar(
                     currentScreen = currentScreen,
-                    onNavigate = { currentScreen = it }
+                    onNavigate = { currentScreen = it },
                 )
-            }
+            },
         ) { paddingValues ->
             Box(modifier = Modifier.padding(paddingValues)) {
                 when (currentScreen) {
@@ -53,7 +53,7 @@ fun App(
                                 onPickPdf { bytes, name ->
                                     viewModel.importPayslip(bytes, password, name)
                                 }
-                            }
+                            },
                         )
                     }
                 }
@@ -65,32 +65,32 @@ fun App(
 @Composable
 private fun BottomBar(
     currentScreen: Screen,
-    onNavigate: (Screen) -> Unit
+    onNavigate: (Screen) -> Unit,
 ) {
     NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
         NavigationBarItem(
             selected = currentScreen == Screen.Dashboard,
             onClick = { onNavigate(Screen.Dashboard) },
             label = { Text(AppStrings.navigationHome) },
-            icon = { Icon(Icons.Default.Home, contentDescription = null) }
+            icon = { Icon(Icons.Default.Home, contentDescription = null) },
         )
         NavigationBarItem(
             selected = currentScreen == Screen.Explorer,
             onClick = { onNavigate(Screen.Explorer) },
             label = { Text(AppStrings.navigationExplorer) },
-            icon = { Icon(Icons.Default.List, contentDescription = null) }
+            icon = { Icon(Icons.Default.List, contentDescription = null) },
         )
         NavigationBarItem(
             selected = currentScreen == Screen.Insights,
             onClick = { onNavigate(Screen.Insights) },
             label = { Text(AppStrings.navigationInsights) },
-            icon = { Icon(Icons.Default.Info, contentDescription = null) }
+            icon = { Icon(Icons.Default.Info, contentDescription = null) },
         )
         NavigationBarItem(
             selected = currentScreen == Screen.Import,
             onClick = { onNavigate(Screen.Import) },
             label = { Text(AppStrings.navigationImport) },
-            icon = { Icon(Icons.Default.Share, contentDescription = null) }
+            icon = { Icon(Icons.Default.Share, contentDescription = null) },
         )
     }
 }

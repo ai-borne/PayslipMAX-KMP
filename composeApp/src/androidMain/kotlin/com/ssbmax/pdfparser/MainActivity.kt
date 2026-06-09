@@ -9,20 +9,20 @@ import com.ssbmax.pdfparser.ui.PayslipViewModel
 import org.koin.compose.koinInject
 
 class MainActivity : ComponentActivity() {
-
     private var filePickCallback: ((ByteArray, String) -> Unit)? = null
 
-    private val pickPdfLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            val bytes = readBytes(uri)
-            val filename = getFileName(uri) ?: "payslip.pdf"
-            if (bytes != null) {
-                filePickCallback?.invoke(bytes, filename)
+    private val pickPdfLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.GetContent(),
+        ) { uri: Uri? ->
+            uri?.let {
+                val bytes = readBytes(uri)
+                val filename = getFileName(uri) ?: "payslip.pdf"
+                if (bytes != null) {
+                    filePickCallback?.invoke(bytes, filename)
+                }
             }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                 onPickPdf = { callback ->
                     filePickCallback = callback
                     pickPdfLauncher.launch("application/pdf")
-                }
+                },
             )
         }
     }

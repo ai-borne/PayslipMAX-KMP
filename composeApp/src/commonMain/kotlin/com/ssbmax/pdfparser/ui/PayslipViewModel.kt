@@ -15,14 +15,13 @@ data class PayslipUiState(
     val selectedPayslip: ParsedPayslip? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val importSuccess: Boolean = false
+    val importSuccess: Boolean = false,
 )
 
 class PayslipViewModel(
     private val repository: PayslipRepository,
-    private val backupManager: com.ssbmax.pdfparser.backup.BackupManager
+    private val backupManager: com.ssbmax.pdfparser.backup.BackupManager,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
 
@@ -39,7 +38,7 @@ class PayslipViewModel(
                         state.copy(
                             payslips = list,
                             selectedPayslip = state.selectedPayslip ?: list.lastOrNull(),
-                            isLoading = false
+                            isLoading = false,
                         )
                     }
                 }
@@ -47,7 +46,7 @@ class PayslipViewModel(
                 _uiState.update {
                     it.copy(
                         error = "Failed to load payslips: ${e.message}",
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
             }
@@ -71,16 +70,24 @@ class PayslipViewModel(
             .sortedByDescending { it.monthNum }
     }
 
-    fun selectByYearMonth(year: Int, monthNum: Int) {
-        val match = _uiState.value.payslips.find {
-            it.year == year && it.monthNum == monthNum
-        }
+    fun selectByYearMonth(
+        year: Int,
+        monthNum: Int,
+    ) {
+        val match =
+            _uiState.value.payslips.find {
+                it.year == year && it.monthNum == monthNum
+            }
         if (match != null) {
             _uiState.update { it.copy(selectedPayslip = match) }
         }
     }
 
-    fun importPayslip(pdfBytes: ByteArray, password: String, filename: String) {
+    fun importPayslip(
+        pdfBytes: ByteArray,
+        password: String,
+        filename: String,
+    ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null, importSuccess = false) }
             val result = repository.importPayslip(pdfBytes, password, filename)
@@ -89,14 +96,14 @@ class PayslipViewModel(
                     state.copy(
                         selectedPayslip = result.getOrNull(),
                         isLoading = false,
-                        importSuccess = true
+                        importSuccess = true,
                     )
                 }
             } else {
                 _uiState.update { state ->
                     state.copy(
                         error = result.exceptionOrNull()?.message ?: "Decryption or parsing failed",
-                        isLoading = false
+                        isLoading = false,
                     )
                 }
             }
@@ -109,9 +116,12 @@ class PayslipViewModel(
             _uiState.update { state ->
                 val remaining = state.payslips.filter { it.dateStr != dateStr }
                 state.copy(
-                    selectedPayslip = if (state.selectedPayslip?.dateStr == dateStr) {
-                        remaining.lastOrNull()
-                    } else state.selectedPayslip
+                    selectedPayslip =
+                        if (state.selectedPayslip?.dateStr == dateStr) {
+                            remaining.lastOrNull()
+                        } else {
+                            state.selectedPayslip
+                        },
                 )
             }
         }
@@ -150,7 +160,10 @@ class PayslipViewModel(
         }
     }
 
-    fun backupDatabase(password: String, onComplete: (Result<Unit>) -> Unit) {
+    fun backupDatabase(
+        password: String,
+        onComplete: (Result<Unit>) -> Unit,
+    ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = backupManager.backup(password)
@@ -159,7 +172,10 @@ class PayslipViewModel(
         }
     }
 
-    fun restoreDatabase(password: String, onComplete: (Result<Unit>) -> Unit) {
+    fun restoreDatabase(
+        password: String,
+        onComplete: (Result<Unit>) -> Unit,
+    ) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = backupManager.restore(password)

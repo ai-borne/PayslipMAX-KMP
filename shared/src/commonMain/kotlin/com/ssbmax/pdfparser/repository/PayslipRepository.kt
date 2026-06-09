@@ -5,15 +5,15 @@ import com.ssbmax.pdfparser.database.toDomain
 import com.ssbmax.pdfparser.database.toEntity
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.parser.PdfParser
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.Dispatchers
 
 class PayslipRepository(
     private val payslipDao: PayslipDao,
     private val pdfParser: PdfParser,
-    private val dispatcher: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.Default
+    private val dispatcher: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.Default,
 ) {
     /**
      * Observes all parsed payslips from the local Room database.
@@ -33,18 +33,19 @@ class PayslipRepository(
     suspend fun importPayslip(
         pdfBytes: ByteArray,
         password: String,
-        filename: String
-    ): Result<ParsedPayslip> = withContext(dispatcher) {
-        val parseResult = pdfParser.decryptAndParse(pdfBytes, password)
-        if (parseResult.isFailure) {
-            return@withContext parseResult
+        filename: String,
+    ): Result<ParsedPayslip> =
+        withContext(dispatcher) {
+            val parseResult = pdfParser.decryptAndParse(pdfBytes, password)
+            if (parseResult.isFailure) {
+                return@withContext parseResult
+            }
+            val payslip = parseResult.getOrThrow()
+
+            // Save to offline Room DB
+            payslipDao.insertPayslip(payslip.toEntity())
+            Result.success(payslip)
         }
-        val payslip = parseResult.getOrThrow()
-        
-        // Save to offline Room DB
-        payslipDao.insertPayslip(payslip.toEntity())
-        Result.success(payslip)
-    }
 
     /**
      * Retrieves a payslip by its specific date string (e.g. "08/2024").

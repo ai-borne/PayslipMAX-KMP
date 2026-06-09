@@ -12,10 +12,13 @@ actual object CryptoHelper {
     private const val IV_SIZE = 16 // AES block size
     private const val KEY_SIZE = 32 // AES-256
 
-    actual fun encrypt(data: ByteArray, password: String): Result<ByteArray> {
+    actual fun encrypt(
+        data: ByteArray,
+        password: String,
+    ): Result<ByteArray> {
         return try {
             val keyBytes = sha256(password)
-            
+
             // Generate random 16-byte IV using Apple Secure Enclave random generator
             val iv = ByteArray(IV_SIZE)
             iv.usePinned { pinned ->
@@ -27,35 +30,37 @@ actual object CryptoHelper {
             val bufferSize = dataSize + kCCBlockSizeAES128.toInt()
             val buffer = ByteArray(bufferSize)
 
-            val bytesMoved = memScoped {
-                val numBytesEncrypted = alloc<size_tVar>()
-                val cryptStatus = data.usePinned { dataPinned ->
-                    buffer.usePinned { bufferPinned ->
-                        keyBytes.usePinned { keyPinned ->
-                            iv.usePinned { ivPinned ->
-                                CCCrypt(
-                                    kCCEncrypt,
-                                    kCCAlgorithmAES,
-                                    kCCOptionPKCS7Padding,
-                                    keyPinned.addressOf(0),
-                                    KEY_SIZE.toULong(),
-                                    ivPinned.addressOf(0),
-                                    dataPinned.addressOf(0),
-                                    dataSize.toULong(),
-                                    bufferPinned.addressOf(0),
-                                    bufferSize.toULong(),
-                                    numBytesEncrypted.ptr
-                                )
+            val bytesMoved =
+                memScoped {
+                    val numBytesEncrypted = alloc<size_tVar>()
+                    val cryptStatus =
+                        data.usePinned { dataPinned ->
+                            buffer.usePinned { bufferPinned ->
+                                keyBytes.usePinned { keyPinned ->
+                                    iv.usePinned { ivPinned ->
+                                        CCCrypt(
+                                            kCCEncrypt,
+                                            kCCAlgorithmAES,
+                                            kCCOptionPKCS7Padding,
+                                            keyPinned.addressOf(0),
+                                            KEY_SIZE.toULong(),
+                                            ivPinned.addressOf(0),
+                                            dataPinned.addressOf(0),
+                                            dataSize.toULong(),
+                                            bufferPinned.addressOf(0),
+                                            bufferSize.toULong(),
+                                            numBytesEncrypted.ptr,
+                                        )
+                                    }
+                                }
                             }
                         }
-                    }
-                }
 
-                if (cryptStatus != kCCSuccess) {
-                    return Result.failure(Exception("Encryption failed with status: $cryptStatus"))
+                    if (cryptStatus != kCCSuccess) {
+                        return Result.failure(Exception("Encryption failed with status: $cryptStatus"))
+                    }
+                    numBytesEncrypted.value.toInt()
                 }
-                numBytesEncrypted.value.toInt()
-            }
 
             // Output is IV + CipherText
             val result = ByteArray(IV_SIZE + bytesMoved)
@@ -68,14 +73,17 @@ actual object CryptoHelper {
         }
     }
 
-    actual fun decrypt(encryptedData: ByteArray, password: String): Result<ByteArray> {
+    actual fun decrypt(
+        encryptedData: ByteArray,
+        password: String,
+    ): Result<ByteArray> {
         return try {
             if (encryptedData.size < IV_SIZE) {
                 return Result.failure(IllegalArgumentException("Invalid encrypted data size"))
             }
 
             val keyBytes = sha256(password)
-            
+
             // Extract IV
             val iv = ByteArray(IV_SIZE)
             encryptedData.copyInto(iv, 0, 0, IV_SIZE)
@@ -88,35 +96,37 @@ actual object CryptoHelper {
             val bufferSize = cipherTextSize
             val buffer = ByteArray(bufferSize)
 
-            val bytesMoved = memScoped {
-                val numBytesDecrypted = alloc<size_tVar>()
-                val cryptStatus = cipherText.usePinned { cipherPinned ->
-                    buffer.usePinned { bufferPinned ->
-                        keyBytes.usePinned { keyPinned ->
-                            iv.usePinned { ivPinned ->
-                                CCCrypt(
-                                    kCCDecrypt,
-                                    kCCAlgorithmAES,
-                                    kCCOptionPKCS7Padding,
-                                    keyPinned.addressOf(0),
-                                    KEY_SIZE.toULong(),
-                                    ivPinned.addressOf(0),
-                                    cipherPinned.addressOf(0),
-                                    cipherTextSize.toULong(),
-                                    bufferPinned.addressOf(0),
-                                    bufferSize.toULong(),
-                                    numBytesDecrypted.ptr
-                                )
+            val bytesMoved =
+                memScoped {
+                    val numBytesDecrypted = alloc<size_tVar>()
+                    val cryptStatus =
+                        cipherText.usePinned { cipherPinned ->
+                            buffer.usePinned { bufferPinned ->
+                                keyBytes.usePinned { keyPinned ->
+                                    iv.usePinned { ivPinned ->
+                                        CCCrypt(
+                                            kCCDecrypt,
+                                            kCCAlgorithmAES,
+                                            kCCOptionPKCS7Padding,
+                                            keyPinned.addressOf(0),
+                                            KEY_SIZE.toULong(),
+                                            ivPinned.addressOf(0),
+                                            cipherPinned.addressOf(0),
+                                            cipherTextSize.toULong(),
+                                            bufferPinned.addressOf(0),
+                                            bufferSize.toULong(),
+                                            numBytesDecrypted.ptr,
+                                        )
+                                    }
+                                }
                             }
                         }
-                    }
-                }
 
-                if (cryptStatus != kCCSuccess) {
-                    return Result.failure(Exception("Decryption failed with status: $cryptStatus"))
+                    if (cryptStatus != kCCSuccess) {
+                        return Result.failure(Exception("Decryption failed with status: $cryptStatus"))
+                    }
+                    numBytesDecrypted.value.toInt()
                 }
-                numBytesDecrypted.value.toInt()
-            }
 
             val result = ByteArray(bytesMoved)
             buffer.copyInto(result, 0, 0, bytesMoved)

@@ -16,5 +16,6 @@ interface BackupManager {
 
 expect class PlatformBackupManager() : BackupManager {
     override suspend fun backup(password: String): Result<Unit>
+
     override suspend fun restore(password: String): Result<Unit>
 }
