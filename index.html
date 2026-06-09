@@ -15,21 +15,21 @@
       <div class="brand">
         <div class="brand-icon">⚔️</div>
         <div class="brand-info">
-          <h1>PCDA Payslip Portal</h1>
-          <p>Army Personnel Financial Analytics Dashboard</p>
+          <h1 data-i18n="appTitle">PCDA Payslip Portal</h1>
+          <p data-i18n="appSubtitle">Army Personnel Financial Analytics Dashboard</p>
         </div>
       </div>
       <div class="officer-badge">
         <div class="badge-item">
-          <span class="badge-label">Officer</span>
+          <span class="badge-label" data-i18n="badgeOfficer">Officer</span>
           <span class="badge-value" id="officer-name">Officer Officer Officer</span>
         </div>
         <div class="badge-item">
-          <span class="badge-label">CDA A/C No</span>
+          <span class="badge-label" data-i18n="badgeCda">CDA A/C No</span>
           <span class="badge-value" id="cda-account">16/000/000000X</span>
         </div>
         <div class="badge-item">
-          <span class="badge-label">PAN</span>
+          <span class="badge-label" data-i18n="badgePan">PAN</span>
           <span class="badge-value" id="pan-number">AR*****90G</span>
         </div>
       </div>
@@ -40,8 +40,8 @@
       <!-- Card 1: Last Remittance -->
       <div class="glass-card overview-card card-net">
         <div class="card-title-row">
-          <span>Latest Net Remittance</span>
-          <span>INR (₹)</span>
+          <span data-i18n="cardNetTitle">Latest Net Remittance</span>
+          <span data-i18n="cardNetUnit">INR (₹)</span>
         </div>
         <div class="card-value" id="stat-net-remittance">₹0</div>
         <div class="card-desc" id="stat-net-date">As of Aug 2025</div>
@@ -50,39 +50,39 @@
       <!-- Card 2: Current Basic Pay -->
       <div class="glass-card overview-card">
         <div class="card-title-row">
-          <span>Basic Pay (BPAY)</span>
-          <span>INR (₹)</span>
+          <span data-i18n="cardBpTitle">Basic Pay (BPAY)</span>
+          <span data-i18n="cardBpUnit">INR (₹)</span>
         </div>
         <div class="card-value" id="stat-basic-pay">₹0</div>
-        <div class="card-desc" id="stat-allowances">+ Allowances & Arrears</div>
+        <div class="card-desc" id="stat-allowances" data-i18n="cardBpDesc">+ Allowances & Arrears</div>
       </div>
 
       <!-- Card 3: Total DSOP Savings -->
       <div class="glass-card overview-card card-savings">
         <div class="card-title-row">
-          <span>DSOP Closing Balance</span>
-          <span>INR (₹)</span>
+          <span data-i18n="cardDsopTitle">DSOP Closing Balance</span>
+          <span data-i18n="cardDsopUnit">INR (₹)</span>
         </div>
         <div class="card-value" id="stat-dsop-balance">₹0</div>
-        <div class="card-desc" id="stat-dsop-growth">Provident Fund Balance</div>
+        <div class="card-desc" id="stat-dsop-growth" data-i18n="cardDsopDesc">Provident Fund Balance</div>
       </div>
 
       <!-- Card 4: Effective Tax Rate -->
       <div class="glass-card overview-card card-tax">
         <div class="card-title-row">
-          <span>Effective Tax Rate</span>
-          <span>YTD</span>
+          <span data-i18n="cardTaxTitle">Effective Tax Rate</span>
+          <span data-i18n="cardTaxUnit">YTD</span>
         </div>
         <div class="card-value" id="stat-tax-rate">0.0%</div>
-        <div class="card-desc" id="stat-tax-paid">Income Tax Deductions</div>
+        <div class="card-desc" id="stat-tax-paid" data-i18n="cardTaxDesc">Income Tax Deductions</div>
       </div>
     </section>
 
     <!-- Mock PDF Upload Area -->
-    <section class="glass-card upload-card" onclick="openUploadModal()">
+    <section class="glass-card upload-card">
       <div class="upload-icon">📁</div>
-      <h3>Drop Your Encrypted Payslip PDF Here</h3>
-      <p>Simulate parser engine with password <strong>535d04</strong> to upload new payslips</p>
+      <h3 data-i18n="uploadHeader">Drop Your Encrypted Payslip PDF Here</h3>
+      <p data-i18n="uploadDesc">Simulate parser engine with password <strong>535d04</strong> to upload new payslips</p>
     </section>
 
     <!-- Main Analytics Charts -->
@@ -90,7 +90,7 @@
       <!-- Net Remittance & Gross Pay Over Time -->
       <div class="glass-card chart-card">
         <div class="chart-header">
-          <span class="chart-title">Income Trend (2022 - 2025)</span>
+          <span class="chart-title" data-i18n="chartIncomeTitle">Income Trend (2022 - 2025)</span>
           <div class="chart-filters">
             <button class="filter-btn active" onclick="updateIncomeChart('all')">All</button>
             <button class="filter-btn" onclick="updateIncomeChart('2024')">2024</button>
@@ -105,7 +105,7 @@
       <!-- Earnings vs Deductions Breakdown -->
       <div class="glass-card chart-card">
         <div class="chart-header">
-          <span class="chart-title">Latest Month Share</span>
+          <span class="chart-title" data-i18n="chartShareTitle">Latest Month Share</span>
         </div>
         <div class="chart-container">
           <canvas id="shareBreakdownChart"></canvas>
@@ -118,7 +118,7 @@
       <!-- DSOP Fund Growth -->
       <div class="glass-card chart-card">
         <div class="chart-header">
-          <span class="chart-title">DSOP Fund Accumulation (₹)</span>
+          <span class="chart-title" data-i18n="chartDsopTitle">DSOP Fund Accumulation (₹)</span>
         </div>
         <div class="chart-container">
           <canvas id="dsopGrowthChart"></canvas>
@@ -128,7 +128,7 @@
       <!-- Income Tax Projection & Cess -->
       <div class="glass-card chart-card">
         <div class="chart-header">
-          <span class="chart-title">Income Tax Projections YTD</span>
+          <span class="chart-title" data-i18n="chartTaxTitle">Income Tax Projections YTD</span>
         </div>
         <div class="chart-container">
           <canvas id="taxProjectionsChart"></canvas>
@@ -141,16 +141,12 @@
       <!-- Selector & Visualizer -->
       <div class="glass-card payslip-selector-card">
         <div class="selector-header">
-          <h2>Payslip Digital Replica</h2>
-          <p>Explore detailed transaction components with contextual financial learning</p>
+          <h2 data-i18n="explorerHeader">Payslip Digital Replica</h2>
+          <p data-i18n="explorerSubheader">Explore detailed transaction components with contextual financial learning</p>
         </div>
         <div class="month-year-pickers">
-          <select id="select-year" onchange="onPayslipSelectChange()">
-            <!-- Loaded dynamically -->
-          </select>
-          <select id="select-month" onchange="onPayslipSelectChange()">
-            <!-- Loaded dynamically -->
-          </select>
+          <select id="select-year"></select>
+          <select id="select-month"></select>
         </div>
 
         <div class="payslip-visualizer">
@@ -166,38 +162,34 @@
           <div class="payslip-tables">
             <!-- Credits / Earnings -->
             <div class="table-side">
-              <h3>Aaya / Earnings</h3>
-              <div id="replica-earnings-list">
-                <!-- Loaded dynamically -->
-              </div>
+              <h3 data-i18n="replicaEarningTitle">Aaya / Earnings</h3>
+              <div id="replica-earnings-list"></div>
             </div>
 
             <!-- Debits / Deductions -->
             <div class="table-side">
-              <h3>kTaOtI / Deductions</h3>
-              <div id="replica-deductions-list">
-                <!-- Loaded dynamically -->
-              </div>
+              <h3 data-i18n="replicaDeductionTitle">kTaOtI / Deductions</h3>
+              <div id="replica-deductions-list"></div>
             </div>
           </div>
 
           <!-- Replica Totals -->
           <div class="total-summary-replica">
             <div class="summary-row-replica">
-              <span>Gross Pay (kuula Aaya):</span>
+              <span data-i18n="replicaGrossLabel">Gross Pay (kuula Aaya):</span>
               <span class="data-value" id="replica-gross-pay">₹0</span>
             </div>
             <div class="summary-row-replica">
-              <span>Total Deductions (kuula kTaOtI):</span>
+              <span data-i18n="replicaDeductionsLabel">Total Deductions (kuula kTaOtI):</span>
               <span class="data-value" id="replica-total-deductions">₹0</span>
             </div>
             <div class="summary-row-replica remittance-row">
-              <span>Net Remittance:</span>
+              <span data-i18n="replicaNetLabel">Net Remittance:</span>
               <span class="data-value" id="replica-net-remittance">₹0</span>
             </div>
           </div>
 
-          <div class="payslip-footer-replica">
+          <div class="payslip-footer-replica" data-i18n="replicaFooter">
             Principal Controller of Defence Accounts (Officers), Pune<br>
             Ministry of Defence, Government of India
           </div>
@@ -207,11 +199,9 @@
       <!-- Educative Financial Insights -->
       <div class="insights-panel">
         <div class="insights-header">
-          <h2>Educative Financial Insights</h2>
+          <h2 data-i18n="insightsTitle">Educative Financial Insights</h2>
         </div>
-        <div class="insights-list" id="insights-container">
-          <!-- Loaded dynamically -->
-        </div>
+        <div class="insights-list" id="insights-container"></div>
       </div>
     </section>
   </div>
@@ -220,31 +210,30 @@
   <div class="modal-overlay" id="upload-modal">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title">Mock Parser Engine</span>
-        <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+        <span class="modal-title" data-i18n="modalTitle">Mock Parser Engine</span>
+        <button class="modal-close">&times;</button>
       </div>
       
       <div id="modal-form-content">
         <div class="form-group">
-          <label for="payslip-file">Select Payslip PDF</label>
-          <input type="file" id="payslip-file" accept=".pdf" onchange="handleFileSelect()">
+          <label for="payslip-file" data-i18n="labelSelectPdf">Select Payslip PDF</label>
+          <input type="file" id="payslip-file" accept=".pdf">
         </div>
         <div class="form-group">
-          <label for="pdf-password">PDF Password</label>
-          <input type="password" id="pdf-password" value="535d04" placeholder="Enter payslip password">
+          <label for="pdf-password" data-i18n="labelPassword">PDF Password</label>
+          <input type="password" id="pdf-password" value="535d04">
         </div>
-        <button class="btn-primary" onclick="startParsingAnimation()">Decrypt & Parse Payslip</button>
+        <button class="btn-primary" onclick="startParsingAnimation()" data-i18n="btnDecrypt">Decrypt & Parse Payslip</button>
       </div>
 
       <div class="parser-loading" id="parser-loader">
         <div class="spinner"></div>
-        <div class="loading-text" id="loader-status">Decrypting PDF using password...</div>
+        <div class="loading-text" id="loader-status" data-i18n="loaderDecrypt">Decrypting PDF using password...</div>
       </div>
     </div>
   </div>
 
-  <!-- Data and Application Script JS -->
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  <!-- Application Entry script -->
+  <script type="module" src="app.js"></script>
 </body>
 </html>
