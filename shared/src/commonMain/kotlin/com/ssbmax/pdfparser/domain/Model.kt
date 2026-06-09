@@ -40,7 +40,12 @@ data class Earnings(
     val arrearsRation: Double = 0.0,
     val arrearsSpecialForces: Double = 0.0,
     val arrearsTpta: Double = 0.0,
-    val arrearsTptaDa: Double = 0.0
+    val arrearsTptaDa: Double = 0.0,
+    val arrearsHra: Double = 0.0,
+    val adjPayAndAllce: Double = 0.0,
+    val adjFieldAllowance: Double = 0.0,
+    val medicalAllowance: Double = 0.0,
+    val adjTicketRecovery: Double = 0.0
 )
 
 data class Deductions(
