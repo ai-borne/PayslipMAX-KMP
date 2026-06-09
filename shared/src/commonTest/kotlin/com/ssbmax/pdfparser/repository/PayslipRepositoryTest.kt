@@ -16,7 +16,7 @@ class PayslipRepositoryTest {
     fun setUp() {
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
-        repository = PayslipRepository(fakeDao, fakeParser)
+        repository = PayslipRepository(fakeDao, fakeParser, kotlinx.coroutines.Dispatchers.Unconfined)
     }
 
     @Test

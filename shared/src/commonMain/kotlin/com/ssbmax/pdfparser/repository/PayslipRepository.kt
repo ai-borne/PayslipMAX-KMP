@@ -7,10 +7,13 @@ import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.parser.PdfParser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
 
 class PayslipRepository(
     private val payslipDao: PayslipDao,
-    private val pdfParser: PdfParser
+    private val pdfParser: PdfParser,
+    private val dispatcher: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.Default
 ) {
     /**
      * Observes all parsed payslips from the local Room database.
@@ -31,16 +34,16 @@ class PayslipRepository(
         pdfBytes: ByteArray,
         password: String,
         filename: String
-    ): Result<ParsedPayslip> {
+    ): Result<ParsedPayslip> = withContext(dispatcher) {
         val parseResult = pdfParser.decryptAndParse(pdfBytes, password)
         if (parseResult.isFailure) {
-            return parseResult
+            return@withContext parseResult
         }
         val payslip = parseResult.getOrThrow()
         
         // Save to offline Room DB
         payslipDao.insertPayslip(payslip.toEntity())
-        return Result.success(payslip)
+        Result.success(payslip)
     }
 
     /**
