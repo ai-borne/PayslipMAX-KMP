@@ -8,9 +8,9 @@ export class PayslipView {
     this.vm = viewModel;
     this.cm = chartManager;
     
-    this.selectYear = document.getElementById("select-year");
-    this.selectMonth = document.getElementById("select-month");
-    this.modal = document.getElementById("upload-modal");
+    this.selectYear = document.getElementById('select-year');
+    this.selectMonth = document.getElementById('select-month');
+    this.modal = document.getElementById('upload-modal');
     
     // Subscribe to VM updates
     this.vm.subscribe(() => this.render());
@@ -22,12 +22,12 @@ export class PayslipView {
   }
 
   translateUI() {
-    document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.getAttribute("data-i18n");
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
       if (strings.en[key]) {
-        if (el.tagName === "INPUT" && el.type === "placeholder") {
+        if (el.tagName === 'INPUT' && el.type === 'placeholder') {
           el.placeholder = strings.en[key];
-        } else if (el.tagName === "INPUT" && el.type === "button") {
+        } else if (el.tagName === 'INPUT' && el.type === 'button') {
           el.value = strings.en[key];
         } else {
           el.textContent = strings.en[key];
@@ -37,21 +37,21 @@ export class PayslipView {
   }
 
   initEvents() {
-    this.selectYear.addEventListener("change", (e) => {
+    this.selectYear.addEventListener('change', (e) => {
       this.vm.setYear(e.target.value);
       this.updateMonthSelector();
     });
 
-    this.selectMonth.addEventListener("change", (e) => {
+    this.selectMonth.addEventListener('change', (e) => {
       this.vm.setMonth(e.target.value);
     });
 
     // Upload & Modal
-    document.querySelector(".upload-card").addEventListener("click", () => {
-      this.modal.classList.add("active");
+    document.querySelector('.upload-card').addEventListener('click', () => {
+      this.modal.classList.add('active');
     });
 
-    document.querySelector(".modal-close").addEventListener("click", () => {
+    document.querySelector('.modal-close').addEventListener('click', () => {
       this.closeModal();
     });
 
@@ -61,24 +61,24 @@ export class PayslipView {
   }
 
   closeModal() {
-    this.modal.classList.remove("active");
-    document.getElementById("modal-form-content").style.display = "block";
-    document.getElementById("parser-loader").style.display = "none";
+    this.modal.classList.remove('active');
+    document.getElementById('modal-form-content').style.display = 'block';
+    document.getElementById('parser-loader').style.display = 'none';
   }
 
   handleDecrypt() {
-    const fileInput = document.getElementById("payslip-file");
+    const fileInput = document.getElementById('payslip-file');
     if (fileInput.files.length === 0) {
       alert(strings.en.alertSelectPdf);
       return;
     }
     
-    const password = document.getElementById("pdf-password").value;
-    const loader = document.getElementById("parser-loader");
-    const statusText = document.getElementById("loader-status");
+    const password = document.getElementById('pdf-password').value;
+    const loader = document.getElementById('parser-loader');
+    const statusText = document.getElementById('loader-status');
     
-    document.getElementById("modal-form-content").style.display = "none";
-    loader.style.display = "flex";
+    document.getElementById('modal-form-content').style.display = 'none';
+    loader.style.display = 'flex';
 
     this.vm.parseUploadedPayslip(
       password,
@@ -105,16 +105,16 @@ export class PayslipView {
       btn.textContent.toLowerCase() === filter.toLowerCase() || 
       (filter === 'all' && btn.textContent === 'All')
     );
-    if (activeBtn) activeBtn.classList.add("active");
+    if (activeBtn) activeBtn.classList.add('active');
     
     const ctx = document.getElementById('incomeTrendChart').getContext('2d');
     this.cm.renderIncomeTrend(ctx, this.vm.model.getPayslips(), filter);
   }
 
   updateSelectors() {
-    this.selectYear.innerHTML = "";
+    this.selectYear.innerHTML = '';
     this.vm.model.getYears().forEach(yr => {
-      const opt = document.createElement("option");
+      const opt = document.createElement('option');
       opt.value = yr;
       opt.textContent = yr;
       this.selectYear.appendChild(opt);
@@ -124,9 +124,9 @@ export class PayslipView {
   }
 
   updateMonthSelector() {
-    this.selectMonth.innerHTML = "";
+    this.selectMonth.innerHTML = '';
     this.vm.model.getMonthsForYear(this.vm.selectedYear).forEach(month => {
-      const opt = document.createElement("option");
+      const opt = document.createElement('option');
       opt.value = month;
       opt.textContent = month;
       this.selectMonth.appendChild(opt);
@@ -154,29 +154,29 @@ export class PayslipView {
 
     // 2. Overview Stats
     const stats = this.vm.getOverviewStats();
-    document.getElementById("stat-net-remittance").textContent = stats.netRemittance;
-    document.getElementById("stat-net-date").textContent = stats.netDate;
-    document.getElementById("stat-basic-pay").textContent = stats.basicPay;
-    document.getElementById("stat-dsop-balance").textContent = stats.dsopBalance;
-    document.getElementById("stat-tax-rate").textContent = stats.taxRate;
+    document.getElementById('stat-net-remittance').textContent = stats.netRemittance;
+    document.getElementById('stat-net-date').textContent = stats.netDate;
+    document.getElementById('stat-basic-pay').textContent = stats.basicPay;
+    document.getElementById('stat-dsop-balance').textContent = stats.dsopBalance;
+    document.getElementById('stat-tax-rate').textContent = stats.taxRate;
 
     // 3. Officer Replica Header
     const record = this.vm.activeRecord;
     if (record) {
-      document.getElementById("officer-name").textContent = record.officer.name;
-      document.getElementById("cda-account").textContent = record.officer.account_no;
-      document.getElementById("pan-number").textContent = record.officer.pan;
-      document.getElementById("replica-date").textContent = `FOR ${record.date_str}`;
-      document.getElementById("replica-name").textContent = `Name: ${record.officer.name}`;
-      document.getElementById("replica-cda").textContent = `CDA: ${record.officer.account_no}`;
+      document.getElementById('officer-name').textContent = record.officer.name;
+      document.getElementById('cda-account').textContent = record.officer.account_no;
+      document.getElementById('pan-number').textContent = record.officer.pan;
+      document.getElementById('replica-date').textContent = `FOR ${record.date_str}`;
+      document.getElementById('replica-name').textContent = `Name: ${record.officer.name}`;
+      document.getElementById('replica-cda').textContent = `CDA: ${record.officer.account_no}`;
       
-      this.renderTableList(document.getElementById("replica-earnings-list"), record.earnings, "earnings", record);
-      this.renderTableList(document.getElementById("replica-deductions-list"), record.deductions, "deductions", record);
+      this.renderTableList(document.getElementById('replica-earnings-list'), record.earnings, 'earnings', record);
+      this.renderTableList(document.getElementById('replica-deductions-list'), record.deductions, 'deductions', record);
       
       // Totals
-      document.getElementById("replica-gross-pay").textContent = this.vm.formatCurrency(record.summary.gross_pay);
-      document.getElementById("replica-total-deductions").textContent = this.vm.formatCurrency(record.summary.total_deductions);
-      document.getElementById("replica-net-remittance").textContent = this.vm.formatCurrency(record.summary.net_remittance);
+      document.getElementById('replica-gross-pay').textContent = this.vm.formatCurrency(record.summary.gross_pay);
+      document.getElementById('replica-total-deductions').textContent = this.vm.formatCurrency(record.summary.total_deductions);
+      document.getElementById('replica-net-remittance').textContent = this.vm.formatCurrency(record.summary.net_remittance);
     }
 
     // 4. Insights panel
@@ -190,14 +190,14 @@ export class PayslipView {
   }
 
   renderTableList(container, data, type, record) {
-    container.innerHTML = "";
+    container.innerHTML = '';
     let itemAdded = false;
 
     for (const [key, val] of Object.entries(data || {})) {
       if (val > 0) {
-        const info = glossary[key] || { title: this.vm.formatLabel(key), desc: "Component" };
-        const row = document.createElement("div");
-        row.className = "data-row";
+        const info = glossary[key] || { title: this.vm.formatLabel(key), desc: 'Component' };
+        const row = document.createElement('div');
+        row.className = 'data-row';
         row.innerHTML = `
           <span class="data-name">${info.title}</span>
           <span class="data-value">${this.vm.formatCurrency(val)}</span>
@@ -215,12 +215,12 @@ export class PayslipView {
     const ledger = record.ledger_balances || {};
     for (const [key, val] of Object.entries(ledger)) {
       if (val > 0) {
-        const isDebit = key.includes("debit") || (key.includes("credit_balance") && key.includes("closing"));
-        if ((type === "deductions" && isDebit) || (type === "earnings" && !isDebit)) {
-          const info = glossary[key] || { title: this.vm.formatLabel(key), desc: "Ledger status" };
-          const row = document.createElement("div");
-          row.className = "data-row";
-          row.style.borderTop = "1px solid rgba(255, 255, 255, 0.05)";
+        const isDebit = key.includes('debit') || (key.includes('credit_balance') && key.includes('closing'));
+        if ((type === 'deductions' && isDebit) || (type === 'earnings' && !isDebit)) {
+          const info = glossary[key] || { title: this.vm.formatLabel(key), desc: 'Ledger status' };
+          const row = document.createElement('div');
+          row.className = 'data-row';
+          row.style.borderTop = '1px solid rgba(255, 255, 255, 0.05)';
           row.innerHTML = `
             <span class="data-name" style="color:var(--color-warning)">${info.title}</span>
             <span class="data-value">${this.vm.formatCurrency(val)}</span>
@@ -236,18 +236,18 @@ export class PayslipView {
     }
 
     if (!itemAdded) {
-      container.innerHTML = `<div class="data-row" style="color:var(--text-muted)">No ${type === "earnings" ? "credits" : "deductions"} processed</div>`;
+      container.innerHTML = `<div class="data-row" style="color:var(--text-muted)">No ${type === 'earnings' ? 'credits' : 'deductions'} processed</div>`;
     }
   }
 
   renderInsights() {
-    const container = document.getElementById("insights-container");
-    container.innerHTML = "";
+    const container = document.getElementById('insights-container');
+    container.innerHTML = '';
     
     const insights = this.vm.getInsights();
     insights.forEach(ins => {
-      const div = document.createElement("div");
-      div.className = "insight-item";
+      const div = document.createElement('div');
+      div.className = 'insight-item';
       div.innerHTML = `
         <div class="insight-icon ${ins.type}">${ins.icon}</div>
         <div class="insight-content">

@@ -42,7 +42,7 @@ header {
   font-weight: 600;
   letter-spacing: -0.02em;
   background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
-  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -60,13 +60,14 @@ header {
   border: 1px solid var(--border-light);
   padding: 0.75rem 1.5rem;
   border-radius: 14px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 30px rgb(0 0 0 / 0.2);
 }
 
 .badge-item {
   display: flex;
   flex-direction: column;
 }
+
 .badge-label {
   font-size: 0.7rem;
   text-transform: uppercase;
@@ -74,6 +75,7 @@ header {
   letter-spacing: 0.05em;
   font-weight: 600;
 }
+
 .badge-value {
   font-size: 0.9rem;
   font-weight: 500;
@@ -109,24 +111,27 @@ header {
 }
 
 /* Responsive Grid Adjustments */
-@media(max-width: 1024px) {
+@media(width <= 1024px) {
   .charts-grid, .savings-tax-grid, .explorer-section {
     grid-template-columns: 1fr;
   }
+
   .overview-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media(max-width: 600px) {
+@media(width <= 600px) {
   .overview-grid {
     grid-template-columns: 1fr;
   }
+
   header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
+
   .officer-badge {
     width: 100%;
     justify-content: space-between;

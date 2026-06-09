@@ -93,13 +93,13 @@
   justify-content: space-between;
   padding: 0.5rem 0;
   font-size: 0.85rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgb(255 255 255 / 0.02);
   cursor: help;
   position: relative;
 }
 
 .data-row:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgb(255 255 255 / 0.02);
 }
 
 .data-name {

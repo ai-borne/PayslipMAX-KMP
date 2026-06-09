@@ -7,9 +7,9 @@ const mockPayslips = [
   {
     year: 2022,
     month_num: 1,
-    month_name: "January",
-    date_str: "01/2022",
-    officer: { name: "TEST OFFICER", account_no: "12345", pan: "PAN123" },
+    month_name: 'January',
+    date_str: '01/2022',
+    officer: { name: 'TEST OFFICER', account_no: '12345', pan: 'PAN123' },
     earnings: { basic_pay: 100000.0, military_service_pay: 15500.0 },
     deductions: { dsop_subscription: 10000.0, income_tax: 20000.0 },
     ledger_balances: {},
@@ -45,8 +45,8 @@ describe('PayslipModel & PayslipViewModel Tests', () => {
     const vm = new PayslipViewModel(model);
     
     expect(vm.selectedYear).toBe(2022);
-    expect(vm.selectedMonth).toBe("January");
-    expect(vm.activeRecord.officer.name).toBe("TEST OFFICER");
+    expect(vm.selectedMonth).toBe('January');
+    expect(vm.activeRecord.officer.name).toBe('TEST OFFICER');
   });
 
   it('should calculate overview stats correctly', () => {
@@ -66,15 +66,15 @@ describe('PayslipModel & PayslipViewModel Tests', () => {
     const insights = vm.getInsights();
     
     // Check savings rate insight (10000 / 115500 = 8.66% -> 8.7%)
-    const savingsInsight = insights.find(i => i.title.includes("Savings Rate"));
+    const savingsInsight = insights.find(i => i.title.includes('Savings Rate'));
     expect(savingsInsight).toBeDefined();
-    expect(savingsInsight.title).toBe("Excellent Savings Rate (8.7%)");
-    expect(savingsInsight.type).toBe("success");
+    expect(savingsInsight.title).toBe('Excellent Savings Rate (8.7%)');
+    expect(savingsInsight.type).toBe('success');
 
     // Check tax burden insight (20000 / 115500 = 17.31% -> 17.3%)
-    const taxInsight = insights.find(i => i.title.includes("Tax Burden"));
+    const taxInsight = insights.find(i => i.title.includes('Tax Burden'));
     expect(taxInsight).toBeDefined();
-    expect(taxInsight.title).toBe("Income Tax Burden (17.3%)");
-    expect(taxInsight.type).toBe("accent");
+    expect(taxInsight.title).toBe('Income Tax Burden (17.3%)');
+    expect(taxInsight.type).toBe('accent');
   });
 });
