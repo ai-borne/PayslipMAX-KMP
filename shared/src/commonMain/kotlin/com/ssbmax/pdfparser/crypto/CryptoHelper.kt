@@ -8,7 +8,10 @@ expect object CryptoHelper {
      * @param password The user password/passphrase.
      * @return A Result containing the encrypted byte array.
      */
-    fun encrypt(data: ByteArray, password: String): Result<ByteArray>
+    fun encrypt(
+        data: ByteArray,
+        password: String,
+    ): Result<ByteArray>
 
     /**
      * Decrypts AES-256 encrypted bytes.
@@ -16,5 +19,8 @@ expect object CryptoHelper {
      * @param password The user password/passphrase.
      * @return A Result containing the decrypted byte array.
      */
-    fun decrypt(encryptedData: ByteArray, password: String): Result<ByteArray>
+    fun decrypt(
+        encryptedData: ByteArray,
+        password: String,
+    ): Result<ByteArray>
 }

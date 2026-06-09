@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.components.AllocationPieChart
@@ -23,7 +22,7 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 @Composable
 fun DashboardScreen(
     viewModel: PayslipViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val payslips = uiState.payslips
@@ -35,11 +34,12 @@ fun DashboardScreen(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
-            .padding(AppDimensions.PaddingMedium)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState())
+                .padding(AppDimensions.PaddingMedium),
     ) {
         selected?.let { payslip ->
             OfficerInfoBar(payslip = payslip)
@@ -48,7 +48,7 @@ fun DashboardScreen(
 
         YearMonthPickerRow(
             viewModel = viewModel,
-            selected = selected
+            selected = selected,
         )
 
         selected?.let {
@@ -64,29 +64,27 @@ fun DashboardScreen(
     }
 }
 
-
-
 @Composable
 private fun EmptyStateScreen() {
     Box(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp)
+            modifier = Modifier.padding(32.dp),
         ) {
             Text(
                 text = "No Payslips Imported",
                 style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Import your PDF payslips or seed simulated data from the import screen to view financial analytics.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
         }
     }
@@ -106,13 +104,13 @@ private fun StatsGridSection(payslip: ParsedPayslip) {
                 title = AppStrings.cardNetTitle,
                 value = "₹${formatAmount(net)}",
                 subtitle = AppStrings.cardNetUnit,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             StatCard(
                 title = AppStrings.cardBpTitle,
                 value = "₹${formatAmount(basic)}",
                 subtitle = AppStrings.cardBpDesc,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -120,13 +118,13 @@ private fun StatsGridSection(payslip: ParsedPayslip) {
                 title = AppStrings.cardDsopTitle,
                 value = "₹${formatAmount(dsop)}",
                 subtitle = AppStrings.cardDsopDesc,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             StatCard(
                 title = AppStrings.cardTaxTitle,
                 value = "${taxRate.toString().take(4)}%",
                 subtitle = AppStrings.cardTaxDesc,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
         }
     }
@@ -137,17 +135,22 @@ private fun StatCard(
     title: String,
     value: String,
     subtitle: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
             Text(text = title, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
             Spacer(modifier = Modifier.height(2.dp))
             Text(text = subtitle, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
         }
@@ -159,14 +162,14 @@ private fun TrendChartCard(payslips: List<ParsedPayslip>) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
             Text(
                 text = AppStrings.chartIncomeTitle,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(16.dp))
             val recent = payslips.takeLast(6)
@@ -175,7 +178,7 @@ private fun TrendChartCard(payslips: List<ParsedPayslip>) {
                 lineData1 = recent.map { it.summary.grossPay },
                 lineData2 = recent.map { it.summary.netRemittance },
                 label1 = "Gross Pay",
-                label2 = "Net Remittance"
+                label2 = "Net Remittance",
             )
         }
     }
@@ -195,14 +198,14 @@ private fun AllocationChartCard(payslip: ParsedPayslip) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
             Text(
                 text = AppStrings.chartShareTitle,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(16.dp))
             AllocationPieChart(values = values, colors = colors)
@@ -213,7 +216,11 @@ private fun AllocationChartCard(payslip: ParsedPayslip) {
 }
 
 @Composable
-private fun AllocationLegend(values: List<Float>, gross: Double, colors: List<Color>) {
+private fun AllocationLegend(
+    values: List<Float>,
+    gross: Double,
+    colors: List<Color>,
+) {
     val items = listOf("Net Take-Home", "Provident Fund (DSOP)", "Taxes & Cess", "Other Deductions")
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         items.forEachIndexed { i, label ->
@@ -222,11 +229,11 @@ private fun AllocationLegend(values: List<Float>, gross: Double, colors: List<Co
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier.size(10.dp).background(colors[i], RoundedCornerShape(2.dp))
+                        modifier = Modifier.size(10.dp).background(colors[i], RoundedCornerShape(2.dp)),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -235,7 +242,7 @@ private fun AllocationLegend(values: List<Float>, gross: Double, colors: List<Co
                     text = "₹${formatAmount(value.toDouble())} (${pct.toString().take(4)}%)",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }
@@ -264,5 +271,5 @@ private fun formatAmount(amount: Double): String {
             i -= 1
         }
     }
-    return "${builder.toString()},$lastThree"
+    return "$builder,$lastThree"
 }

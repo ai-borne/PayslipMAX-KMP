@@ -5,15 +5,13 @@ import com.ssbmax.pdfparser.crypto.CryptoHelper
 import com.ssbmax.pdfparser.database.PayslipDatabase
 import org.koin.mp.KoinPlatformTools
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 
 actual class PlatformBackupManager actual constructor() : BackupManager {
-
     actual override suspend fun backup(password: String): Result<Unit> {
         return try {
             val context = getContext() ?: return Result.failure(Exception("Android Context not available"))
-            
+
             val dbFile = context.getDatabasePath("payslips.db")
             if (!dbFile.exists()) {
                 return Result.failure(Exception("Database file does not exist"))
@@ -32,7 +30,7 @@ actual class PlatformBackupManager actual constructor() : BackupManager {
             // Save to external files dir (which is secure and synced via Google Auto Backup)
             val backupFile = getBackupFile(context)
             backupFile.parentFile?.mkdirs()
-            
+
             FileOutputStream(backupFile).use { it.write(encryptedBytes) }
             Result.success(Unit)
         } catch (e: Exception) {
@@ -43,7 +41,7 @@ actual class PlatformBackupManager actual constructor() : BackupManager {
     actual override suspend fun restore(password: String): Result<Unit> {
         return try {
             val context = getContext() ?: return Result.failure(Exception("Android Context not available"))
-            
+
             val backupFile = getBackupFile(context)
             if (!backupFile.exists()) {
                 return Result.failure(Exception("Backup file does not exist at: ${backupFile.absolutePath}"))
@@ -70,7 +68,7 @@ actual class PlatformBackupManager actual constructor() : BackupManager {
             // Overwrite database file
             val dbFile = context.getDatabasePath("payslips.db")
             dbFile.parentFile?.mkdirs()
-            
+
             FileOutputStream(dbFile).use { it.write(decryptedBytes) }
             Result.success(Unit)
         } catch (e: Exception) {

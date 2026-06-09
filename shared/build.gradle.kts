@@ -13,12 +13,12 @@ kotlin {
             }
         }
     }
-    
+
     // iOS targets
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "shared"
@@ -33,17 +33,17 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.koin.core)
         }
-        
+
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
         }
-        
+
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.pdfbox.android)
         }
-        
+
         iosMain.dependencies {
             // iOS native frameworks like PDFKit are imported automatically via platform libraries
         }
@@ -73,4 +73,3 @@ dependencies {
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
 }
-

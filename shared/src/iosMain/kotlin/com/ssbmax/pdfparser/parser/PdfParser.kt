@@ -4,30 +4,33 @@ package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.useContents
-import kotlinx.cinterop.CValue
+import kotlinx.cinterop.usePinned
+import platform.CoreGraphics.CGRect
+import platform.CoreGraphics.CGRectMake
 import platform.Foundation.NSData
 import platform.Foundation.create
 import platform.PDFKit.PDFDocument
 import platform.PDFKit.PDFPage
 import platform.PDFKit.PDFSelection
 import platform.PDFKit.kPDFDisplayBoxCropBox
-import platform.CoreGraphics.CGRect
-import platform.CoreGraphics.CGRectMake
 
 actual class PlatformPdfParser actual constructor() : PdfParser {
-
-    actual override fun decryptAndParse(pdfBytes: ByteArray, password: String): Result<ParsedPayslip> {
+    actual override fun decryptAndParse(
+        pdfBytes: ByteArray,
+        password: String,
+    ): Result<ParsedPayslip> {
         return try {
-            val nsData = pdfBytes.usePinned { pinned ->
-                NSData.create(
-                    bytes = pinned.addressOf(0),
-                    length = pdfBytes.size.toULong()
-                )
-            }
+            val nsData =
+                pdfBytes.usePinned { pinned ->
+                    NSData.create(
+                        bytes = pinned.addressOf(0),
+                        length = pdfBytes.size.toULong(),
+                    )
+                }
 
             val pdfDoc = PDFDocument(data = nsData)
             if (pdfDoc.isEncrypted) {
@@ -56,7 +59,10 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             var xDsop = 150.0
             var yTotalCredit = pageHeight - 700.0
 
-            fun findCoordinates(searchTerm: String, onSelection: (CValue<CGRect>) -> Unit) {
+            fun findCoordinates(
+                searchTerm: String,
+                onSelection: (CValue<CGRect>) -> Unit,
+            ) {
                 val selections = pdfDoc.findString(searchTerm, withOptions = 1UL) // 1UL is NSCaseInsensitiveSearch
                 if (selections != null) {
                     for (selObj in selections) {
@@ -116,21 +122,23 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             val yMax = yBpay + 25.0
             val colHeight = yMax - yMin
 
-            val leftRect = CGRectMake(
-                x = 0.0,
-                y = yMin,
-                width = xDsop - 2.0,
-                height = colHeight
-            )
+            val leftRect =
+                CGRectMake(
+                    x = 0.0,
+                    y = yMin,
+                    width = xDsop - 2.0,
+                    height = colHeight,
+                )
             val leftSelection = tablePage.selectionForRect(leftRect)
             val leftText = leftSelection?.string ?: ""
 
-            val middleRect = CGRectMake(
-                x = xDsop - 2.0,
-                y = yMin,
-                width = 310.0 - (xDsop - 2.0),
-                height = colHeight
-            )
+            val middleRect =
+                CGRectMake(
+                    x = xDsop - 2.0,
+                    y = yMin,
+                    width = 310.0 - (xDsop - 2.0),
+                    height = colHeight,
+                )
             val middleSelection = tablePage.selectionForRect(middleRect)
             val middleText = middleSelection?.string ?: ""
 
@@ -160,7 +168,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                 fullText = flatText,
                 taxPageText = taxText,
                 dsopPageText = dsopText,
-                filename = "payslip.pdf"
+                filename = "payslip.pdf",
             )
         } catch (e: Throwable) {
             Result.failure(e)

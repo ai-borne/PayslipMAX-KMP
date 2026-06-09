@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -18,32 +17,33 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 internal fun OfficerInfoBar(payslip: ParsedPayslip) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-        ),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius)
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+            ),
+        shape = RoundedCornerShape(AppDimensions.CornerRadius),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
             Text(
                 text = payslip.officer.name,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
                     text = "${AppStrings.cdaInfoLabel}: ${payslip.officer.accountNo}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = "${AppStrings.panInfoLabel}: ${payslip.officer.pan}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -54,7 +54,7 @@ internal fun OfficerInfoBar(payslip: ParsedPayslip) {
 @Composable
 internal fun YearMonthPickerRow(
     viewModel: PayslipViewModel,
-    selected: ParsedPayslip?
+    selected: ParsedPayslip?,
 ) {
     val years = viewModel.getAvailableYears()
     var selectedYear by remember(selected) {
@@ -69,12 +69,12 @@ internal fun YearMonthPickerRow(
         Text(
             text = AppStrings.analyzingStatement,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             YearDropdown(
                 years = years,
@@ -88,7 +88,7 @@ internal fun YearMonthPickerRow(
                         viewModel.selectByYearMonth(year, latestMonth.monthNum)
                     }
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             MonthDropdown(
                 months = monthsForYear,
@@ -97,7 +97,7 @@ internal fun YearMonthPickerRow(
                     selectedMonthNum = monthNum
                     viewModel.selectByYearMonth(selectedYear, monthNum)
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
         }
     }
@@ -109,13 +109,13 @@ private fun YearDropdown(
     years: List<Int>,
     selectedYear: Int,
     onYearSelected: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        modifier = modifier
+        modifier = modifier,
     ) {
         OutlinedTextField(
             value = selectedYear.toString(),
@@ -124,11 +124,11 @@ private fun YearDropdown(
             label = { Text(AppStrings.selectYearLabel) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier.menuAnchor().fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
         )
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
         ) {
             years.forEach { year ->
                 DropdownMenuItem(
@@ -136,7 +136,7 @@ private fun YearDropdown(
                     onClick = {
                         onYearSelected(year)
                         expanded = false
-                    }
+                    },
                 )
             }
         }
@@ -149,14 +149,14 @@ private fun MonthDropdown(
     months: List<ParsedPayslip>,
     selectedMonthNum: Int,
     onMonthSelected: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val displayName = months.find { it.monthNum == selectedMonthNum }?.monthName ?: ""
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        modifier = modifier
+        modifier = modifier,
     ) {
         OutlinedTextField(
             value = displayName,
@@ -165,11 +165,11 @@ private fun MonthDropdown(
             label = { Text(AppStrings.selectMonthLabel) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier.menuAnchor().fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
         )
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
         ) {
             months.forEach { payslip ->
                 DropdownMenuItem(
@@ -177,7 +177,7 @@ private fun MonthDropdown(
                     onClick = {
                         onMonthSelected(payslip.monthNum)
                         expanded = false
-                    }
+                    },
                 )
             }
         }

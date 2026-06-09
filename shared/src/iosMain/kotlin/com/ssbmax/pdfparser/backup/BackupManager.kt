@@ -13,7 +13,6 @@ import platform.Foundation.*
 import platform.posix.memcpy
 
 actual class PlatformBackupManager actual constructor() : BackupManager {
-
     private val fileManager = NSFileManager.defaultManager
 
     actual override suspend fun backup(password: String): Result<Unit> {
@@ -37,7 +36,7 @@ actual class PlatformBackupManager actual constructor() : BackupManager {
             // Save to iCloud container (or fallback to local backup)
             val backupPath = backupFilePath()
             val backupData = encryptedBytes.toNSData()
-            
+
             val success = backupData.writeToFile(path = backupPath, atomically = true)
             if (success) {
                 Result.success(Unit)
@@ -79,7 +78,7 @@ actual class PlatformBackupManager actual constructor() : BackupManager {
             val dbPath = dbFilePath()
             val decryptedData = decryptedBytes.toNSData()
             val success = decryptedData.writeToFile(path = dbPath, atomically = true)
-            
+
             if (success) {
                 Result.success(Unit)
             } else {
@@ -97,26 +96,28 @@ actual class PlatformBackupManager actual constructor() : BackupManager {
     private fun backupFilePath(): String {
         // Attempt to find the user's iCloud Ubiquity container
         val iCloudUrl = fileManager.URLForUbiquityContainerIdentifier(null)
-        val backupDir = if (iCloudUrl != null) {
-            val path = iCloudUrl.path + "/Documents"
-            // Ensure Documents directory exists inside iCloud container
-            fileManager.createDirectoryAtPath(path, withIntermediateDirectories = true, attributes = null, error = null)
-            path
-        } else {
-            // Fallback to local Document Directory
-            documentDirectory()
-        }
+        val backupDir =
+            if (iCloudUrl != null) {
+                val path = iCloudUrl.path + "/Documents"
+                // Ensure Documents directory exists inside iCloud container
+                fileManager.createDirectoryAtPath(path, withIntermediateDirectories = true, attributes = null, error = null)
+                path
+            } else {
+                // Fallback to local Document Directory
+                documentDirectory()
+            }
         return "$backupDir/backup.pcda"
     }
 
     private fun documentDirectory(): String {
-        val documentDirectory = fileManager.URLForDirectory(
-            directory = NSDocumentDirectory,
-            inDomain = NSUserDomainMask,
-            appropriateForURL = null,
-            create = false,
-            error = null
-        )
+        val documentDirectory =
+            fileManager.URLForDirectory(
+                directory = NSDocumentDirectory,
+                inDomain = NSUserDomainMask,
+                appropriateForURL = null,
+                create = false,
+                error = null,
+            )
         return documentDirectory?.path ?: ""
     }
 

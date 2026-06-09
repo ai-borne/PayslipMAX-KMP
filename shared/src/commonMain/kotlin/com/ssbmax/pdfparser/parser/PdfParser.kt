@@ -9,9 +9,15 @@ interface PdfParser {
      * @param password The decryption password (e.g. "535d04").
      * @return A Result containing the ParsedPayslip or an exception on failure.
      */
-    fun decryptAndParse(pdfBytes: ByteArray, password: String): Result<ParsedPayslip>
+    fun decryptAndParse(
+        pdfBytes: ByteArray,
+        password: String,
+    ): Result<ParsedPayslip>
 }
 
 expect class PlatformPdfParser() : PdfParser {
-    override fun decryptAndParse(pdfBytes: ByteArray, password: String): Result<ParsedPayslip>
+    override fun decryptAndParse(
+        pdfBytes: ByteArray,
+        password: String,
+    ): Result<ParsedPayslip>
 }

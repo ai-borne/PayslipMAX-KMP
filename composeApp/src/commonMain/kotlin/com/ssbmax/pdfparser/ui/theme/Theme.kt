@@ -29,29 +29,31 @@ private val LightColorSurface = Color(0xFFFFFFFF)
 private val LightColorOnSurface = Color(0xFF111827)
 private val LightColorOnSurfaceVariant = Color(0xFF4B5563)
 
-private val DarkColorScheme = darkColorScheme(
-    primary = DarkColorPrimary,
-    primaryContainer = DarkColorPrimaryContainer,
-    secondary = DarkColorSecondary,
-    tertiary = DarkColorTertiary,
-    background = DarkColorBackground,
-    surface = DarkColorSurface,
-    onBackground = DarkColorOnSurface,
-    onSurface = DarkColorOnSurface,
-    onSurfaceVariant = DarkColorOnSurfaceVariant
-)
+private val DarkColorScheme =
+    darkColorScheme(
+        primary = DarkColorPrimary,
+        primaryContainer = DarkColorPrimaryContainer,
+        secondary = DarkColorSecondary,
+        tertiary = DarkColorTertiary,
+        background = DarkColorBackground,
+        surface = DarkColorSurface,
+        onBackground = DarkColorOnSurface,
+        onSurface = DarkColorOnSurface,
+        onSurfaceVariant = DarkColorOnSurfaceVariant,
+    )
 
-private val LightColorScheme = lightColorScheme(
-    primary = LightColorPrimary,
-    primaryContainer = LightColorPrimaryContainer,
-    secondary = LightColorSecondary,
-    tertiary = LightColorTertiary,
-    background = LightColorBackground,
-    surface = LightColorSurface,
-    onBackground = LightColorOnSurface,
-    onSurface = LightColorOnSurface,
-    onSurfaceVariant = LightColorOnSurfaceVariant
-)
+private val LightColorScheme =
+    lightColorScheme(
+        primary = LightColorPrimary,
+        primaryContainer = LightColorPrimaryContainer,
+        secondary = LightColorSecondary,
+        tertiary = LightColorTertiary,
+        background = LightColorBackground,
+        surface = LightColorSurface,
+        onBackground = LightColorOnSurface,
+        onSurface = LightColorOnSurface,
+        onSurfaceVariant = LightColorOnSurfaceVariant,
+    )
 
 // Dimension Constants (Fulfills no-hardcoded-dimensions rule)
 object AppDimensions {
@@ -63,57 +65,64 @@ object AppDimensions {
 }
 
 // Typography Tokens
-val AppTypography = Typography(
-    headlineLarge = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Bold,
-        fontSize = 28.sp,
-        lineHeight = 36.sp,
-        letterSpacing = (-0.5).sp
-    ),
-    headlineMedium = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 20.sp,
-        lineHeight = 28.sp
-    ),
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp,
-        lineHeight = 24.sp
-    ),
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp
-    ),
-    bodyMedium = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 20.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+val AppTypography =
+    Typography(
+        headlineLarge =
+            TextStyle(
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.Bold,
+                fontSize = 28.sp,
+                lineHeight = 36.sp,
+                letterSpacing = (-0.5).sp,
+            ),
+        headlineMedium =
+            TextStyle(
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 20.sp,
+                lineHeight = 28.sp,
+            ),
+        titleLarge =
+            TextStyle(
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp,
+                lineHeight = 24.sp,
+            ),
+        bodyLarge =
+            TextStyle(
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                lineHeight = 24.sp,
+            ),
+        bodyMedium =
+            TextStyle(
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
+            ),
+        labelSmall =
+            TextStyle(
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.Medium,
+                fontSize = 11.sp,
+                lineHeight = 16.sp,
+                letterSpacing = 0.5.sp,
+            ),
     )
-)
 
 @Composable
 fun PDFParserTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
-    
+
     MaterialTheme(
         colorScheme = colorScheme,
         typography = AppTypography,
-        content = content
+        content = content,
     )
 }

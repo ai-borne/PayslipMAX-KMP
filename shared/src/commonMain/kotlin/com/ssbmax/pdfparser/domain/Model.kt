@@ -11,13 +11,13 @@ data class ParsedPayslip(
     val deductions: Deductions,
     val ledgerBalances: LedgerBalances,
     val summary: PayslipSummary,
-    val taxAndSavings: TaxAndSavings?
+    val taxAndSavings: TaxAndSavings?,
 )
 
 data class Officer(
     val name: String,
     val accountNo: String,
-    val pan: String
+    val pan: String,
 )
 
 data class Earnings(
@@ -45,7 +45,7 @@ data class Earnings(
     val adjPayAndAllce: Double = 0.0,
     val adjFieldAllowance: Double = 0.0,
     val medicalAllowance: Double = 0.0,
-    val adjTicketRecovery: Double = 0.0
+    val adjTicketRecovery: Double = 0.0,
 )
 
 data class Deductions(
@@ -61,20 +61,20 @@ data class Deductions(
     val ticketRecovery: Double = 0.0,
     val recFieldAllowance: Double = 0.0,
     val recSpecialForces: Double = 0.0,
-    val recoveryOfDebits: Double = 0.0
+    val recoveryOfDebits: Double = 0.0,
 )
 
 data class LedgerBalances(
     val openingCreditBalance: Double = 0.0,
     val openingDebitBalance: Double = 0.0,
     val closingCreditBalance: Double = 0.0,
-    val closingDebitBalance: Double = 0.0
+    val closingDebitBalance: Double = 0.0,
 )
 
 data class PayslipSummary(
     val grossPay: Double,
     val totalDeductions: Double,
-    val netRemittance: Double
+    val netRemittance: Double,
 )
 
 data class TaxAndSavings(
@@ -85,7 +85,7 @@ data class TaxAndSavings(
     val totalTaxPayable: Double = 0.0,
     val taxDeductedYtd: Double = 0.0,
     val cessDeductedYtd: Double = 0.0,
-    val dsopFund: DsopFund? = null
+    val dsopFund: DsopFund? = null,
 )
 
 data class DsopFund(
@@ -94,5 +94,5 @@ data class DsopFund(
     val refundYtd: Double = 0.0,
     val miscAdjYtd: Double = 0.0,
     val withdrawalYtd: Double = 0.0,
-    val closingBalance: Double = 0.0
+    val closingBalance: Double = 0.0,
 )
