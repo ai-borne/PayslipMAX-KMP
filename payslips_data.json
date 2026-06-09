@@ -1,0 +1,1808 @@
+[
+  {
+    "file": "01 January 2022.pdf",
+    "year": 2022,
+    "month": "January",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 45849.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 5000.0
+    },
+    "summary": {
+      "gross_pay": 61349.0,
+      "total_deductions": 5000.0,
+      "net_remittance": 56349.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 405599.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 422361.0,
+        "subscription": 77100.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 499461.0
+      }
+    }
+  },
+  {
+    "file": "02 February 2022.pdf",
+    "year": 2022,
+    "month": "February",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {},
+    "deductions": {},
+    "summary": {
+      "gross_pay": 0.0,
+      "total_deductions": 0.0,
+      "net_remittance": 0.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 405599.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 422361.0,
+        "subscription": 85044.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 507405.0
+      }
+    }
+  },
+  {
+    "file": "03 March 2022.pdf",
+    "year": 2022,
+    "month": "March",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {},
+    "deductions": {},
+    "summary": {
+      "gross_pay": 0.0,
+      "total_deductions": 0.0,
+      "net_remittance": 0.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 0.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 422361.0,
+        "subscription": 85044.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 507405.0
+      }
+    }
+  },
+  {
+    "file": "04 April 2022.pdf",
+    "year": 2022,
+    "month": "April",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 50286.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 65786.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 55786.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 132950.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 0.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 540908.0
+      }
+    }
+  },
+  {
+    "file": "05 May 2022.pdf",
+    "year": 2022,
+    "month": "May",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 50286.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 65786.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 55786.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 172470.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 7944.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 548852.0
+      }
+    }
+  },
+  {
+    "file": "06 June 2022.pdf",
+    "year": 2022,
+    "month": "June",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 50286.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 65786.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 55786.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 224170.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 15888.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 556796.0
+      }
+    }
+  },
+  {
+    "file": "07 July 2022.pdf",
+    "year": 2022,
+    "month": "July",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 50286.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 65786.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 55786.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 265140.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 23832.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 564740.0
+      }
+    }
+  },
+  {
+    "file": "08 August 2022.pdf",
+    "year": 2022,
+    "month": "August",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 50286.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 65786.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 55786.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 306110.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 31776.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 572684.0
+      }
+    }
+  },
+  {
+    "file": "09 Sep 2022.pdf",
+    "year": 2022,
+    "month": "Sep",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 50286.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 65786.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 55786.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 347080.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 39720.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 580628.0
+      }
+    }
+  },
+  {
+    "file": "10 Oct 2022.pdf",
+    "year": 2022,
+    "month": "Oct",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 56202.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 71702.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 61702.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 395320.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 47664.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 588572.0
+      }
+    }
+  },
+  {
+    "file": "11 Nov 2022.pdf",
+    "year": 2022,
+    "month": "Nov",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 56202.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 71702.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 61702.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 438110.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 55608.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 596516.0
+      }
+    }
+  },
+  {
+    "file": "12 Dec 2022.pdf",
+    "year": 2022,
+    "month": "Dec",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 56202.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 71702.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 61702.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 480890.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 63552.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 604460.0
+      }
+    }
+  },
+  {
+    "file": "01 Jan 2023.pdf",
+    "year": 2023,
+    "month": "Jan",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 57722.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 73222.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 63222.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 525330.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 71496.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 612404.0
+      }
+    }
+  },
+  {
+    "file": "02 Feb 2023.pdf",
+    "year": 2023,
+    "month": "Feb",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 57722.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 73222.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 63222.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 614774.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 79680.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 620588.0
+      }
+    }
+  },
+  {
+    "file": "03 Mar 2023.pdf",
+    "year": 2023,
+    "month": "Mar",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 57722.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 73222.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 63222.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 45630.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 540908.0,
+        "subscription": 87864.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 628772.0
+      }
+    }
+  },
+  {
+    "file": "04 Apr 2023.pdf",
+    "year": 2023,
+    "month": "Apr",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 63798.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 79298.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 69298.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 94510.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 40000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 710282.0
+      }
+    }
+  },
+  {
+    "file": "05 May 2023.pdf",
+    "year": 2023,
+    "month": "May",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 63798.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 79298.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 69298.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 143490.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 80000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 750282.0
+      }
+    }
+  },
+  {
+    "file": "06 Jun 2023.pdf",
+    "year": 2023,
+    "month": "Jun",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 63798.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 79298.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 69298.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 183310.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 120000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 790282.0
+      }
+    }
+  },
+  {
+    "file": "07 Jul 2023.pdf",
+    "year": 2023,
+    "month": "Jul",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 63798.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 79298.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 69298.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 223880.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 160000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 830282.0
+      }
+    }
+  },
+  {
+    "file": "08 Aug 2023 Print.pdf",
+    "year": 2023,
+    "month": "Aug",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 63798.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 79298.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 69298.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 264440.0,
+      "cess_deducted": 0.0
+    }
+  },
+  {
+    "file": "08 Aug 2023.pdf",
+    "year": 2023,
+    "month": "Aug",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 63798.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 79298.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 69298.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 6.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 264440.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 200000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 870282.0
+      }
+    }
+  },
+  {
+    "file": "09 Sep 2023.pdf",
+    "year": 2023,
+    "month": "Sep",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 63798.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 79298.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 69298.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 5.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 305000.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 240000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 910282.0
+      }
+    }
+  },
+  {
+    "file": "10 Oct 2023.pdf",
+    "year": 2023,
+    "month": "Oct",
+    "officer": {
+      "name": "",
+      "ac_no": "",
+      "pan": ""
+    },
+    "earnings": {
+      "DA": 69874.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "AGIF": 10000.0
+    },
+    "summary": {
+      "gross_pay": 85374.0,
+      "total_deductions": 10000.0,
+      "net_remittance": 75374.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 5.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 353030.0,
+      "cess_deducted": 0.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 280000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 950282.0
+      }
+    }
+  },
+  {
+    "file": "11 Nov 2023.pdf",
+    "year": 2023,
+    "month": "Nov",
+    "officer": {
+      "name": "SUNIL SURESH PAWAR A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 136400.0,
+      "DA": 69874.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 42540.0,
+      "EHCESS": 1750.0
+    },
+    "summary": {
+      "gross_pay": 228941.0,
+      "total_deductions": 97689.0,
+      "net_remittance": 131252.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 2112851.0,
+      "total_taxable_income": 2793941.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 523182.0,
+      "tax_deducted": 395570.0,
+      "cess_deducted": 15690.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 320000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 990282.0
+      }
+    }
+  },
+  {
+    "file": "12 Dec 2023.pdf",
+    "year": 2023,
+    "month": "Dec",
+    "officer": {
+      "name": "SUNIL SURESH PAWAR A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 136400.0,
+      "DA": 69874.0,
+      "MSP": 15500.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 42540.0,
+      "EHCESS": 1750.0
+    },
+    "summary": {
+      "gross_pay": 227030.0,
+      "total_deductions": 95560.0,
+      "net_remittance": 131470.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 2339881.0,
+      "total_taxable_income": 2793941.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 523182.0,
+      "tax_deducted": 438110.0,
+      "cess_deducted": 17440.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 360000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 1030282.0
+      }
+    }
+  },
+  {
+    "file": "01 Jan 2024.pdf",
+    "year": 2024,
+    "month": "Jan",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 140500.0,
+      "DA": 71760.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1656.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 40521.0,
+      "EHCESS": 1621.0
+    },
+    "summary": {
+      "gross_pay": 233016.0,
+      "total_deductions": 93412.0,
+      "net_remittance": 139604.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 2547493.0,
+      "total_taxable_income": 2780509.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 519153.0,
+      "tax_deducted": 478631.0,
+      "cess_deducted": 19061.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 400000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 1070282.0
+      }
+    }
+  },
+  {
+    "file": "02 Feb 2024.pdf",
+    "year": 2024,
+    "month": "Feb",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 140500.0,
+      "DA": 71760.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1656.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 70642.0,
+      "EHCESS": 2910.0
+    },
+    "summary": {
+      "gross_pay": 415706.0,
+      "total_deductions": 232932.0,
+      "net_remittance": 182774.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 2880913.0,
+      "total_taxable_income": 2880913.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 549273.0,
+      "tax_deducted": 549273.0,
+      "cess_deducted": 21971.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 440000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 1110282.0
+      }
+    }
+  },
+  {
+    "file": "03 Mar 2024.pdf",
+    "year": 2024,
+    "month": "Mar",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 140500.0,
+      "DA": 12480.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 288.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 48555.0,
+      "EHCESS": 1942.0
+    },
+    "summary": {
+      "gross_pay": 358833.0,
+      "total_deductions": 102469.0,
+      "net_remittance": 256364.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 358833.0,
+      "total_taxable_income": 2992233.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 582669.0,
+      "tax_deducted": 48555.0,
+      "cess_deducted": 1942.0,
+      "dsop": {
+        "opening_balance": 670282.0,
+        "subscription": 480000.0,
+        "refund": 0.0,
+        "misc_adj": 66050.0,
+        "withdrawal": 0.0,
+        "closing_balance": 1216332.0
+      }
+    }
+  },
+  {
+    "file": "04 Apr 2024.pdf",
+    "year": 2024,
+    "month": "Apr",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 140500.0,
+      "DA": 78000.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1800.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 48575.0,
+      "EHCESS": 1943.0
+    },
+    "summary": {
+      "gross_pay": 240256.0,
+      "total_deductions": 101931.0,
+      "net_remittance": 138325.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 598946.0,
+      "total_taxable_income": 2992946.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 582885.0,
+      "tax_deducted": 97130.0,
+      "cess_deducted": 3885.0,
+      "dsop": {
+        "opening_balance": 1216332.0,
+        "subscription": 40000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 1256332.0
+      }
+    }
+  },
+  {
+    "file": "05 May 2024.pdf",
+    "year": 2024,
+    "month": "May",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 140500.0,
+      "DA": 78000.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1800.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 48575.0,
+      "EHCESS": 1943.0
+    },
+    "summary": {
+      "gross_pay": 239400.0,
+      "total_deductions": 101788.0,
+      "net_remittance": 137612.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 838346.0,
+      "total_taxable_income": 2992946.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 582885.0,
+      "tax_deducted": 145705.0,
+      "cess_deducted": 5828.0,
+      "dsop": {
+        "opening_balance": 1216332.0,
+        "subscription": 80000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 1296332.0
+      }
+    }
+  },
+  {
+    "file": "06 June 2024.pdf",
+    "year": 2024,
+    "month": "June",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 140500.0,
+      "DA": 78000.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1800.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 49475.0,
+      "EHCESS": 1979.0
+    },
+    "summary": {
+      "gross_pay": 266400.0,
+      "total_deductions": 102724.0,
+      "net_remittance": 163676.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 1104746.0,
+      "total_taxable_income": 3019946.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 590985.0,
+      "tax_deducted": 195180.0,
+      "cess_deducted": 7807.0,
+      "dsop": {
+        "opening_balance": 1216332.0,
+        "subscription": 120000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 1336332.0
+      }
+    }
+  },
+  {
+    "file": "07 Jul 2024.pdf",
+    "year": 2024,
+    "month": "Jul",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 140500.0,
+      "DA": 78000.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1800.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 50573.0,
+      "EHCESS": 2023.0
+    },
+    "summary": {
+      "gross_pay": 268682.0,
+      "total_deductions": 104983.0,
+      "net_remittance": 163699.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 1373428.0,
+      "total_taxable_income": 3049228.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 599769.0,
+      "tax_deducted": 245753.0,
+      "cess_deducted": 9830.0,
+      "dsop": {
+        "opening_balance": 1216332.0,
+        "subscription": 160000.0,
+        "refund": 0.0,
+        "misc_adj": 0.0,
+        "withdrawal": 0.0,
+        "closing_balance": 1376332.0
+      }
+    }
+  },
+  {
+    "file": "08 Aug 2024.pdf",
+    "year": 2024,
+    "month": "Aug",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {},
+    "deductions": {},
+    "summary": {
+      "gross_pay": 0.0,
+      "total_deductions": 0.0,
+      "net_remittance": 0.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 0.0,
+      "net_taxable_income": 0.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 0.0,
+      "cess_deducted": 0.0
+    }
+  },
+  {
+    "file": "09 Sep 2024.pdf",
+    "year": 2024,
+    "month": "Sep",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 140500.0,
+      "DA": 78000.0,
+      "MSP": 15500.0,
+      "TPTA": 232.0,
+      "TPTADA": 116.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 46492.0,
+      "EHCESS": 1860.0
+    },
+    "summary": {
+      "gross_pay": 337772.0,
+      "total_deductions": 259772.0,
+      "net_remittance": 78000.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 1846698.0,
+      "total_taxable_income": 3016698.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 590010.0,
+      "tax_deducted": 357550.0,
+      "cess_deducted": 14302.0
+    }
+  },
+  {
+    "file": "10 Oct 2024.pdf",
+    "year": 2024,
+    "month": "Oct",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 140500.0,
+      "DA": 14040.0,
+      "MSP": 15500.0,
+      "TPTA": 1440.0,
+      "TPTADA": 972.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 57560.0,
+      "EHCESS": 2302.0
+    },
+    "summary": {
+      "gross_pay": 296768.0,
+      "total_deductions": 214686.0,
+      "net_remittance": 82082.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 2139914.0,
+      "total_taxable_income": 3201166.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 645351.0,
+      "tax_deducted": 415110.0,
+      "cess_deducted": 16604.0
+    }
+  },
+  {
+    "file": "11 Nov 2024.pdf",
+    "year": 2024,
+    "month": "Nov",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 140500.0,
+      "DA": 82680.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1908.0
+    },
+    "deductions": {
+      "FUR": 392.0,
+      "LF": 878.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 55685.0,
+      "EHCESS": 2227.0
+    },
+    "summary": {
+      "gross_pay": 265313.0,
+      "total_deductions": 109182.0,
+      "net_remittance": 156131.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 2405227.0,
+      "total_taxable_income": 3201166.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 637851.0,
+      "tax_deducted": 470795.0,
+      "cess_deducted": 18831.0
+    }
+  },
+  {
+    "file": "12 Dec 2024.pdf",
+    "year": 2024,
+    "month": "Dec",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 140500.0,
+      "DA": 82680.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1908.0
+    },
+    "deductions": {
+      "FUR": 3825.0,
+      "LF": 9044.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 55100.0,
+      "EHCESS": 2204.0
+    },
+    "summary": {
+      "gross_pay": 296140.0,
+      "total_deductions": 121060.0,
+      "net_remittance": 175080.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 2698023.0,
+      "total_taxable_income": 3228649.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 636095.0,
+      "tax_deducted": 525895.0,
+      "cess_deducted": 21035.0
+    }
+  },
+  {
+    "file": "01 Jan 2025.pdf",
+    "year": 2025,
+    "month": "Jan",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 144700.0,
+      "DA": 84906.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1908.0
+    },
+    "deductions": {
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 57027.0,
+      "EHCESS": 2281.0
+    },
+    "summary": {
+      "gross_pay": 271739.0,
+      "total_deductions": 109308.0,
+      "net_remittance": 162431.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 2969762.0,
+      "total_taxable_income": 3241501.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 639950.0,
+      "tax_deducted": 582922.0,
+      "cess_deducted": 23316.0
+    }
+  },
+  {
+    "file": "02 Feb 2025.pdf",
+    "year": 2025,
+    "month": "Feb",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "BPAY": 144700.0,
+      "DA": 84906.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1908.0
+    },
+    "deductions": {
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 57028.0,
+      "EHCESS": 2282.0
+    },
+    "summary": {
+      "gross_pay": 271739.0,
+      "total_deductions": 109310.0,
+      "net_remittance": 162429.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 3241501.0,
+      "total_taxable_income": 3241501.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 639950.0,
+      "tax_deducted": 639950.0,
+      "cess_deducted": 25598.0
+    }
+  },
+  {
+    "file": "03 Mar 2025.pdf",
+    "year": 2025,
+    "month": "Mar",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "DA": 84906.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1908.0
+    },
+    "deductions": {
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "ITAX": 44646.0,
+      "EHCESS": 1786.0
+    },
+    "summary": {
+      "gross_pay": 271739.0,
+      "total_deductions": 96432.0,
+      "net_remittance": 175307.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 0.0,
+      "net_taxable_income": 0.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 0.0,
+      "cess_deducted": 0.0
+    }
+  },
+  {
+    "file": "04 Apr 2025.pdf",
+    "year": 2025,
+    "month": "Apr",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "DA": 9612.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 216.0
+    },
+    "deductions": {
+      "DSOP": 40000.0,
+      "AGIF": 15000.0,
+      "ITAX": 46818.0,
+      "EHCESS": 1873.0
+    },
+    "summary": {
+      "gross_pay": 318593.0,
+      "total_deductions": 103691.0,
+      "net_remittance": 214902.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 0.0,
+      "net_taxable_income": 0.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 0.0,
+      "cess_deducted": 0.0
+    }
+  },
+  {
+    "file": "05 May 2025.pdf",
+    "year": 2025,
+    "month": "May",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "DA": 88110.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1980.0
+    },
+    "deductions": {
+      "DSOP": 40000.0,
+      "AGIF": 12500.0,
+      "ITAX": 46641.0,
+      "EHCESS": 1866.0
+    },
+    "summary": {
+      "gross_pay": 276665.0,
+      "total_deductions": 108525.0,
+      "net_remittance": 168140.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 0.0,
+      "net_taxable_income": 0.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 0.0,
+      "cess_deducted": 0.0
+    }
+  },
+  {
+    "file": "06 Jun 2025.pdf",
+    "year": 2025,
+    "month": "Jun",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "DA": 88110.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1980.0
+    },
+    "deductions": {
+      "DSOP": 40000.0,
+      "AGIF": 12500.0,
+      "ITAX": 46687.0,
+      "EHCESS": 1867.0
+    },
+    "summary": {
+      "gross_pay": 276365.0,
+      "total_deductions": 101054.0,
+      "net_remittance": 175311.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 0.0,
+      "net_taxable_income": 0.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 0.0,
+      "cess_deducted": 0.0
+    }
+  },
+  {
+    "file": "07 Jul 2025.pdf",
+    "year": 2025,
+    "month": "Jul",
+    "officer": {
+      "name": "Sunil Suresh Pawar A",
+      "ac_no": "16/110/206718K",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "DA": 88110.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1980.0
+    },
+    "deductions": {
+      "DSOP": 40000.0,
+      "AGIF": 12500.0,
+      "ITAX": 47624.0,
+      "EHCESS": 1905.0
+    },
+    "summary": {
+      "gross_pay": 301470.0,
+      "total_deductions": 103835.0,
+      "net_remittance": 197635.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 0.0,
+      "net_taxable_income": 0.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 0.0,
+      "cess_deducted": 0.0
+    }
+  },
+  {
+    "file": "08 Aug 2025 print.pdf",
+    "year": 2025,
+    "month": "Aug",
+    "officer": {
+      "name": "Sunil Suresh Pawar\nlaoKa saM",
+      "ac_no": "",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "DA": 88110.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1980.0
+    },
+    "deductions": {
+      "DSOP": 40000.0,
+      "AGIF": 12500.0,
+      "ITAX": 47624.0,
+      "EHCESS": 1905.0
+    },
+    "summary": {
+      "gross_pay": 275015.0,
+      "total_deductions": 102029.0,
+      "net_remittance": 172986.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 0.0,
+      "net_taxable_income": 0.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 0.0,
+      "cess_deducted": 0.0
+    }
+  },
+  {
+    "file": "08 Aug 2025.pdf",
+    "year": 2025,
+    "month": "Aug",
+    "officer": {
+      "name": "Sunil Suresh Pawar\nlaoKa saM",
+      "ac_no": "",
+      "pan": "AR*****90G"
+    },
+    "earnings": {
+      "DA": 88110.0,
+      "MSP": 15500.0,
+      "TPTA": 3600.0,
+      "TPTADA": 1980.0
+    },
+    "deductions": {
+      "DSOP": 40000.0,
+      "AGIF": 12500.0,
+      "ITAX": 47624.0,
+      "EHCESS": 1905.0
+    },
+    "summary": {
+      "gross_pay": 275015.0,
+      "total_deductions": 102029.0,
+      "net_remittance": 172986.0
+    },
+    "tax_and_savings": {
+      "gross_salary": 0.0,
+      "total_taxable_income": 0.0,
+      "standard_deduction": 0.0,
+      "net_taxable_income": 0.0,
+      "total_tax_payable": 0.0,
+      "tax_deducted": 0.0,
+      "cess_deducted": 0.0
+    }
+  }
+]
