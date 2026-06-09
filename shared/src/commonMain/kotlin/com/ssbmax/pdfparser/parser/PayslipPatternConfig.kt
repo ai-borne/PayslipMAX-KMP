@@ -1,0 +1,100 @@
+package com.ssbmax.pdfparser.parser
+
+object PayslipPatternConfig {
+
+    val monthMap = mapOf(
+        "january" to 1, "jan" to 1,
+        "february" to 2, "feb" to 2,
+        "march" to 3, "mar" to 3,
+        "april" to 4, "apr" to 4,
+        "may" to 5,
+        "june" to 6, "jun" to 6,
+        "july" to 7, "jul" to 7,
+        "august" to 8, "aug" to 8,
+        "september" to 9, "sep" to 9,
+        "october" to 10, "oct" to 10,
+        "november" to 11, "nov" to 11,
+        "december" to 12, "dec" to 12
+    )
+
+    val creditKeysMapping = mapOf(
+        "Basic Pay" to "basicPay",
+        "BPAY" to "basicPay",
+        "DA" to "dearnessAllowance",
+        "MSP" to "militaryServicePay",
+        "Tpt Allc" to "transportAllowance",
+        "TPTA" to "transportAllowance",
+        "TRAN1" to "transportAllowance",
+        "TRAN-1" to "transportAllowance",
+        "TPTADA" to "transportAllowanceDa",
+        "Tpt DA" to "transportAllowanceDa",
+        "DRESALW" to "dressAllowance",
+        "A/o DressAllowance" to "dressAllowance",
+        "RSHNA" to "rationMoney",
+        "RMONEYAllce-RA" to "rationMoney",
+        "RA" to "rationMoney",
+        "RH12" to "rationMoney",
+        "SpCmd Pay" to "specialForcesPay",
+        "SPCDO" to "specialForcesPay",
+        "SC" to "specialForcesPay",
+        "FD" to "fieldAllowance",
+        "CEA" to "childrenEducationAllowance",
+        "C E A(NT)" to "childrenEducationAllowance",
+        "C E A (T)" to "childrenEducationAllowance",
+        "C E A" to "childrenEducationAllowance",
+        "ARR-CEA" to "arrearsCea",
+        "ARR-DA" to "arrearsDa",
+        "ARR-RSHNA" to "arrearsRation",
+        "ARR-RH11" to "arrearsRation",
+        "ARR-RH12" to "arrearsRation",
+        "ARR-SPCDO" to "arrearsSpecialForces",
+        "ARR-TPTA" to "arrearsTpta",
+        "ARR-TPTADA" to "arrearsTptaDa",
+        "ARR-HH32" to "arrearsHra",
+        "A/o BPAY-" to "adjBasicPay",
+        "A/o DA-" to "adjDa",
+        "A/o MSP-" to "adjMsp",
+        "A/o TRAN-1" to "adjTpta",
+        "A/o TRAN-2" to "adjTpta",
+        "A/o Pay & Allce" to "adjPayAndAllce",
+        "A/o FIELD-R1" to "adjFieldAllowance",
+        "ETKT-ref" to "ticketRecovery",
+        "MEDICAL" to "medicalAllowance",
+        "Op Cr Bal" to "openingCreditBalance",
+        "Cl. Dr. Bal." to "closingDebitBalance",
+        "Clos Bal(-)" to "closingDebitBalance"
+    )
+
+    val debitKeysMapping = mapOf(
+        "DSOPF Subn" to "dsopSubscription",
+        "DSOP" to "dsopSubscription",
+        "AGIF" to "agif",
+        "Incm Tax" to "incomeTax",
+        "ITAX" to "incomeTax",
+        "Educ Cess" to "educationCess",
+        "EHCESS" to "educationCess",
+        "L Fee" to "licenseFee",
+        "LF" to "licenseFee",
+        "Fur" to "furnitureRent",
+        "FUR" to "furnitureRent",
+        "Water" to "waterCharges",
+        "WATER" to "waterCharges",
+        "Elec" to "electricityCharges",
+        "Barrack Damage" to "barrackDamage",
+        "Dr Barrack Damage" to "barrackDamage",
+        "ETKT" to "ticketRecovery",
+        "R/o Etkt" to "ticketRecovery",
+        "Rec CIA-FD" to "recFieldAllowance",
+        "Rec PARA-SC" to "recSpecialForces",
+        "Op Dr Bal" to "openingDebitBalance",
+        "Cl. Cr. Bal." to "closingCreditBalance",
+        "Clos Bal(+)" to "closingCreditBalance",
+        "OP Bal(-)" to "openingDebitBalance",
+        "R/o Of /Drs" to "recoveryOfDebits"
+    )
+
+    val monthNames = listOf(
+        "", "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    )
+}
