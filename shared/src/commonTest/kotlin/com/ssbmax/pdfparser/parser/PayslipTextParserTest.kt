@@ -1,0 +1,133 @@
+package com.ssbmax.pdfparser.parser
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+
+class PayslipTextParserTest {
+
+    @Test
+    fun testParse2024Format() {
+        val mockText = """
+            01/2024  kI laoKa ivavarNaI  / STATEMENT OF ACCOUNT FOR 01/2024
+            Name: Officer Officer Officer A/C No - 16/000/000000X PAN No: AR*****90G
+            Aaya / EARNINGS (`) kTaOtI / DEDUCTIONS (`) laona dona ka ivavarNa / DETAILS OF TRANSACTIONS
+            ivavarNa Description raiSa Amount ivavarNa Description raiSa Amount
+            BPAY 140500
+            DA 71760
+            MSP 15500
+            TPTA 3600
+            TPTADA 1656
+            FUR 392
+            LF 878
+            DSOP 40000
+            AGIF 10000
+            ITAX 40521
+            EHCESS 1621
+            1.  Recovery of LF  from 01/01/2024 to 31/01/2024. (Bill No RL/04/8713/.  ) 878
+            2.  Recovery of FUR  from 01/01/2024 to 31/01/2024. (Bill No RL/04/8713/.  ) 392
+            kuula Aaya Gross Pay 233016 kuula kTaOtI Total Deductions 93412
+            Net Remittance : Rs.1,39,604 (One Lakh Thirty Nine Thousand Six Hundred Four  only)
+            
+            Assessment Year 2024-2025. Period 01/04/2023 to 31/03/2024
+            1. Gross Salary upto 31/01/2024 2547493
+            2. HRA Amount 0
+            3. Gross Salary upto 31/01/2024 excluding HRA 2547493
+            4. Estimated future Salary upto  31/03/2024 233016
+            5. Income from Other Source/House Property 0
+            6. Total Taxable Income 2780509
+            7. Deduction 0
+            8. Standard Deduction 50000
+            9. Net Taxable Income 2730510
+            10. Total Tax Payable 519153
+            11. Income Tax Deducted 478631
+            12. Ed. Cess Deducted 19061
+            13. Surcharge Deducted 0
+            Opening Balance 670282 Subscription 400000 Refund 0 Misc Adj 0 Withdrawal 0 Closing Balance 1070282
+        """.trimIndent()
+
+        val result = PayslipTextParser.parse(mockText, "01 Jan 2024.pdf")
+        
+        assertTrue(result.isSuccess)
+        val payslip = result.getOrNull()!!
+        assertNotNull(payslip)
+        
+        assertEquals(2024, payslip.year)
+        assertEquals(1, payslip.monthNum)
+        assertEquals("January", payslip.monthName)
+        assertEquals("01/2024", payslip.dateStr)
+        
+        assertEquals("Officer Officer Officer", payslip.officer.name)
+        assertEquals("16/000/000000X", payslip.officer.accountNo)
+        assertEquals("AR*****90G", payslip.officer.pan)
+        
+        assertEquals(140500.0, payslip.earnings.basicPay)
+        assertEquals(71760.0, payslip.earnings.dearnessAllowance)
+        assertEquals(15500.0, payslip.earnings.militaryServicePay)
+        
+        assertEquals(40000.0, payslip.deductions.dsopSubscription)
+        assertEquals(40521.0, payslip.deductions.incomeTax)
+        assertEquals(1621.0, payslip.deductions.educationCess)
+        
+        assertEquals(233016.0, payslip.summary.grossPay)
+        assertEquals(93412.0, payslip.summary.totalDeductions)
+        assertEquals(139604.0, payslip.summary.netRemittance)
+        
+        val tax = payslip.taxAndSavings!!
+        assertNotNull(tax)
+        assertEquals(2780509.0, tax.totalTaxableIncome)
+        assertEquals(50000.0, tax.standardDeduction)
+        assertEquals(519153.0, tax.totalTaxPayable)
+        
+        val dsop = tax.dsopFund!!
+        assertNotNull(dsop)
+        assertEquals(670282.0, dsop.openingBalance)
+        assertEquals(1070282.0, dsop.closingBalance)
+    }
+
+    @Test
+    fun testParse2022Format() {
+        val mockText = """
+            01/2022
+             STATEMENT OF ACCOUNT FOR 01/2022
+            CDA A/C NO : 16/000/000000X
+            NAME  : OFFICER OFFICER OFFICER
+            Basic Pay 132400
+            DA 45849
+            MSP 15500
+            Tpt Allc 9432
+            DSOPF Subn 7944
+            AGIF 5000
+            Incm Tax 31199
+            Educ Cess 1564
+            L Fee 748
+            Fur 326
+            Total Credit 203181 Total Debit 203181
+            REMITTANCE 156400
+        """.trimIndent()
+
+        val result = PayslipTextParser.parse(mockText, "01 January 2022.pdf")
+        
+        assertTrue(result.isSuccess)
+        val payslip = result.getOrNull()!!
+        assertNotNull(payslip)
+        
+        assertEquals(2022, payslip.year)
+        assertEquals(1, payslip.monthNum)
+        assertEquals("01/2022", payslip.dateStr)
+        
+        assertEquals("OFFICER OFFICER OFFICER", payslip.officer.name)
+        assertEquals(132400.0, payslip.earnings.basicPay)
+        assertEquals(45849.0, payslip.earnings.dearnessAllowance)
+        assertEquals(15500.0, payslip.earnings.militaryServicePay)
+        assertEquals(9432.0, payslip.earnings.transportAllowance)
+        
+        assertEquals(7944.0, payslip.deductions.dsopSubscription)
+        assertEquals(31199.0, payslip.deductions.incomeTax)
+        
+        assertEquals(203181.0, payslip.summary.grossPay)
+        assertEquals(46781.0, payslip.summary.totalDeductions)
+        assertEquals(156400.0, payslip.summary.netRemittance)
+    }
+}

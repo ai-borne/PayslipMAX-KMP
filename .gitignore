@@ -1,5 +1,32 @@
-node_modules/
-.venv/
+# Gradle files
+.gradle/
+build/
+**/build/
+
+# Kotlin / Kotlin Native
+.kotlin/
+kotlin-daemon-embeddable-*.jar
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Local configuration
+local.properties
 .DS_Store
+
+# Android Studio / Android builds
+.cxx/
+capture/
+*.apk
+*.aar
+*.ap_
+
+# Node / JS / Python environment
+node_modules/
 dist/
 coverage/
+.venv/
