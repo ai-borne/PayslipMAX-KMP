@@ -1,0 +1,41 @@
+# PDFParser - Gold Standard Project Rules
+# These rules MUST be strictly followed by all AI-based IDEs, agents, and developers working on this codebase.
+
+## 🚨 CRITICAL QUALITY FRAMEWORK RULES
+
+### 1. TDD-Driven Development
+- Write unit tests first or alongside code changes.
+- Decouple business and representation logic (Model, ViewModel) from the DOM to ensure they are fully testable.
+- Run `npm run test` before committing to verify that all code functions and validation tests pass successfully.
+
+### 2. Strict File Size Limits
+- **All code files (JavaScript, CSS, HTML) MUST be under 300 lines of code.**
+- If any file grows beyond 300 lines, you MUST split it into smaller, modular sub-files immediately.
+- This is enforced by the automated regression test in `tests/fileSize.test.js`. If a file exceeds 300 lines, the CI test suite will fail.
+
+### 3. Zero Tech Debt Driven Development
+- Refactor as you go. Never leave obsolete code, placeholders, or commented-out blocks.
+- Clean up temporary files, old script files (e.g. `data.js`), and unused assets.
+- Eliminate visual bugs, layout inconsistencies, and performance bottlenecks.
+
+### 4. Phase-Wise Development Plans
+- All major features, modifications, and refactorings must take place in documented, phase-wise implementation plans.
+- Always obtain user alignment or plan approval before starting implementation.
+
+### 5. Architectural Integrity (MVVM, SOLID, DRY, SSOT)
+- **MVVM Architecture**:
+  - **Model**: Manages pure data state and queries. Completely independent of VM and View.
+  - **ViewModel**: Coordinates presentation state, format conversions, and action calculations. Decoupled from the DOM.
+  - **View**: Binds DOM event listeners and handles rendering updates when the ViewModel state changes.
+- **SOLID Principles**: Keep classes focused, extensible, and isolated (Single Responsibility, Open/Closed, Dependency Inversion).
+- **DRY & SSOT**: Consolidate shared config options, formulas, and utility logic. Maintain a Single Source of Truth for raw data values and configurations.
+
+### 6. No Hardcoded Strings
+- Do not write raw user-facing text inside HTML templates or script views.
+- Store all UI copy, headers, badges, tooltips, alert messages, and dialog labels in `strings.js`.
+- Populate DOM templates dynamically using `data-i18n` attributes mapped to the string resource keys.
+
+### 7. Universal Visual Theming
+- Ensure complete visual adherence to system-wide dark, light, and system-default themes.
+- Define layout color, spacing, and typography tokens inside `theme.css`.
+- Support light and dark variants cleanly via CSS variables dynamically adapted using `@media (prefers-color-scheme)`.

@@ -1,0 +1,146 @@
+/* Payslip Replica Stylesheet */
+
+.payslip-selector-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.selector-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.selector-header p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.month-year-pickers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.payslip-visualizer {
+  background: var(--bg-surface-opaque);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.payslip-visualizer::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, var(--color-primary-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.payslip-header-replica {
+  text-align: center;
+  border-bottom: 1px dashed var(--border-light);
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.replica-title-en {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.replica-title-hi {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.replica-meta {
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.payslip-tables {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.table-side h3 {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  cursor: help;
+  position: relative;
+}
+
+.data-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.data-name {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.data-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.total-summary-replica {
+  border-top: 1px dashed var(--border-light);
+  padding-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.summary-row-replica {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.summary-row-replica.remittance-row {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-success);
+  border-top: 1px solid var(--border-light);
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.remittance-row .data-value {
+  font-size: 1.25rem;
+}
+
+.payslip-footer-replica {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: center;
+}
