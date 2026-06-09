@@ -1,13 +1,10 @@
 package com.ssbmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -44,75 +41,30 @@ fun DashboardScreen(
             .verticalScroll(rememberScrollState())
             .padding(AppDimensions.PaddingMedium)
     ) {
-        PayslipSelectorRow(
-            payslips = payslips,
-            selected = selected,
-            onSelect = { viewModel.selectPayslip(it) }
+        selected?.let { payslip ->
+            OfficerInfoBar(payslip = payslip)
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        YearMonthPickerRow(
+            viewModel = viewModel,
+            selected = selected
         )
-        
+
         selected?.let {
             Spacer(modifier = Modifier.height(16.dp))
             StatsGridSection(payslip = it)
-            
+
             Spacer(modifier = Modifier.height(16.dp))
             TrendChartCard(payslips = payslips)
-            
+
             Spacer(modifier = Modifier.height(16.dp))
             AllocationChartCard(payslip = it)
         }
     }
 }
 
-// Helper to make it match the compiler method: selectPayslip
-@Composable
-private fun PayslipSelectorRow(
-    payslips: List<ParsedPayslip>,
-    selected: ParsedPayslip?,
-    onSelect: (ParsedPayslip) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Card(
-            modifier = Modifier.fillMaxWidth().clickable { expanded = true },
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-        ) {
-            Row(
-                modifier = Modifier.padding(AppDimensions.PaddingMedium),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = "Analyzing Payslip Statement",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = selected?.let { "${it.monthName} ${it.year}" } ?: "Select Month",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = null)
-            }
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            payslips.forEach { item ->
-                DropdownMenuItem(
-                    text = { Text("${item.monthName} ${item.year}") },
-                    onClick = {
-                        onSelect(item)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
+
 
 @Composable
 private fun EmptyStateScreen() {

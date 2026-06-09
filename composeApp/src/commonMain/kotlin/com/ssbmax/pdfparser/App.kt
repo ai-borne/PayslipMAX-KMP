@@ -89,7 +89,7 @@ private fun BottomBar(
         NavigationBarItem(
             selected = currentScreen == Screen.Import,
             onClick = { onNavigate(Screen.Import) },
-            label = { Text("Import") },
+            label = { Text(AppStrings.navigationImport) },
             icon = { Icon(Icons.Default.Share, contentDescription = null) }
         )
     }

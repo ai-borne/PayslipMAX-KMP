@@ -58,6 +58,28 @@ class PayslipViewModel(
         _uiState.update { it.copy(selectedPayslip = payslip) }
     }
 
+    fun getAvailableYears(): List<Int> {
+        return _uiState.value.payslips
+            .map { it.year }
+            .distinct()
+            .sortedDescending()
+    }
+
+    fun getMonthsForYear(year: Int): List<ParsedPayslip> {
+        return _uiState.value.payslips
+            .filter { it.year == year }
+            .sortedByDescending { it.monthNum }
+    }
+
+    fun selectByYearMonth(year: Int, monthNum: Int) {
+        val match = _uiState.value.payslips.find {
+            it.year == year && it.monthNum == monthNum
+        }
+        if (match != null) {
+            _uiState.update { it.copy(selectedPayslip = match) }
+        }
+    }
+
     fun importPayslip(pdfBytes: ByteArray, password: String, filename: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null, importSuccess = false) }

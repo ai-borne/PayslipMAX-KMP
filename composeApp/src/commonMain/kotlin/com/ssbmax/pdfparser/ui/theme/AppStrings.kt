@@ -7,6 +7,7 @@ object AppStrings {
     const val navigationHome = "Dashboard"
     const val navigationExplorer = "Explorer"
     const val navigationInsights = "Insights"
+    const val navigationImport = "Import"
 
     // Metadata Badges
     const val badgeOfficer = "Officer"
@@ -73,4 +74,14 @@ object AppStrings {
     const val glossaryTitleElec = "Electricity Charges"
     const val glossaryTitleBarrack = "Barrack Damage Recovery"
     const val glossaryTitleTicket = "Air Ticket Recovery (ETKT)"
+
+    // Dashboard - Officer Info Bar
+    const val officerInfoLabel = "Officer"
+    const val cdaInfoLabel = "CDA A/C"
+    const val panInfoLabel = "PAN"
+
+    // Dashboard - Year/Month Picker
+    const val selectYearLabel = "Year"
+    const val selectMonthLabel = "Month"
+    const val analyzingStatement = "Analyzing Payslip Statement"
 }

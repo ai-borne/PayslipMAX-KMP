@@ -187,6 +187,61 @@ class PayslipViewModelTest {
         assertTrue(callbackResult!!.isSuccess)
     }
 
+    @Test
+    fun testGetAvailableYears() = runTest {
+        val mock1 = createMockPayslip("08/2023")
+        val mock2 = createMockPayslip("09/2024")
+        val mock3 = createMockPayslip("10/2024")
+        fakeDao.insertPayslip(mock1.toEntity())
+        fakeDao.insertPayslip(mock2.toEntity())
+        fakeDao.insertPayslip(mock3.toEntity())
+
+        val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+        val years = testViewModel.getAvailableYears()
+
+        assertEquals(2, years.size)
+        assertEquals(2024, years[0])
+        assertEquals(2023, years[1])
+    }
+
+    @Test
+    fun testGetMonthsForYear() = runTest {
+        val mock1 = createMockPayslip("08/2023")
+        val mock2 = createMockPayslip("09/2024")
+        val mock3 = createMockPayslip("10/2024")
+        fakeDao.insertPayslip(mock1.toEntity())
+        fakeDao.insertPayslip(mock2.toEntity())
+        fakeDao.insertPayslip(mock3.toEntity())
+
+        val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+        val months2024 = testViewModel.getMonthsForYear(2024)
+
+        assertEquals(2, months2024.size)
+        assertEquals(10, months2024[0].monthNum)
+        assertEquals(9, months2024[1].monthNum)
+
+        val months2023 = testViewModel.getMonthsForYear(2023)
+        assertEquals(1, months2023.size)
+        assertEquals(8, months2023[0].monthNum)
+    }
+
+    @Test
+    fun testSelectByYearMonth() = runTest {
+        val mock1 = createMockPayslip("08/2023")
+        val mock2 = createMockPayslip("09/2024")
+        fakeDao.insertPayslip(mock1.toEntity())
+        fakeDao.insertPayslip(mock2.toEntity())
+
+        val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+        assertEquals(mock2, testViewModel.uiState.value.selectedPayslip)
+
+        testViewModel.selectByYearMonth(2023, 8)
+        assertEquals(mock1, testViewModel.uiState.value.selectedPayslip)
+
+        testViewModel.selectByYearMonth(2025, 1)
+        assertEquals(mock1, testViewModel.uiState.value.selectedPayslip)
+    }
+
     private fun createMockPayslip(dateStr: String): ParsedPayslip {
         val split = dateStr.split("/")
         val month = split[0].toInt()
