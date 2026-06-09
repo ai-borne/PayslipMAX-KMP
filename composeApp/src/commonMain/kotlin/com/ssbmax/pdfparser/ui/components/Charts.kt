@@ -29,11 +29,11 @@ fun TrendLineChart(
     lineData2: List<Double>,
     label1: String,
     label2: String,
-    color1: Color = Color(0xFF3B82F6), // Blue
-    color2: Color = Color(0xFF10B981), // Emerald
+    color1: Color = Color(0xFF3B82F6),
+    color2: Color = Color(0xFF10B981),
     gridColor: Color = Color(0xFF1E293B),
     textColor: Color = Color(0xFF94A3B8),
-    modifier: Modifier = Modifier.fillMaxWidth().height(200.dp)
+    modifier: Modifier = Modifier.fillMaxWidth().height(200.dp),
 ) {
     val textMeasurer = rememberTextMeasurer()
     val textStyle = TextStyle(color = textColor, fontSize = 9.sp)
@@ -41,71 +41,76 @@ fun TrendLineChart(
     Canvas(modifier = modifier) {
         val width = size.width
         val height = size.height
-        
+
         val paddingLeft = 110f
         val paddingRight = 30f
         val paddingTop = 30f
         val paddingBottom = 60f
-        
+
         val chartWidth = width - paddingLeft - paddingRight
         val chartHeight = height - paddingTop - paddingBottom
-        
+
         if (labels.isEmpty() || lineData1.isEmpty()) {
             drawText(
                 textMeasurer = textMeasurer,
                 text = "No data available",
                 topLeft = Offset(width / 2f - 60f, height / 2f - 10f),
-                style = textStyle.copy(fontSize = 12.sp)
+                style = textStyle.copy(fontSize = 12.sp),
             )
             return@Canvas
         }
-        
-        val maxVal = maxOf(
-            lineData1.maxOrNull() ?: 1.0,
-            lineData2.maxOrNull() ?: 1.0
-        ).coerceAtLeast(1.0)
-        
+
+        val maxVal =
+            maxOf(
+                lineData1.maxOrNull() ?: 1.0,
+                lineData2.maxOrNull() ?: 1.0,
+            ).coerceAtLeast(1.0)
+
         val gridCount = 4
-        
+
         for (i in 0..gridCount) {
             val y = paddingTop + (chartHeight / gridCount) * i
             drawLine(
                 color = gridColor,
                 start = Offset(paddingLeft, y),
                 end = Offset(width - paddingRight, y),
-                strokeWidth = 1f
+                strokeWidth = 1f,
             )
-            
+
             val gridVal = maxVal * (gridCount - i) / gridCount
             val gridValStr = "₹${(gridVal / 1000).toInt()}k"
             drawText(
                 textMeasurer = textMeasurer,
                 text = gridValStr,
                 topLeft = Offset(10f, y - 12f),
-                style = textStyle
+                style = textStyle,
             )
         }
-        
+
         val steps = labels.size
-        val xPoints = FloatArray(steps) { i ->
-            if (steps > 1) {
-                paddingLeft + (chartWidth / (steps - 1)) * i
-            } else {
-                paddingLeft + chartWidth / 2f
+        val xPoints =
+            FloatArray(steps) { i ->
+                if (steps > 1) {
+                    paddingLeft + (chartWidth / (steps - 1)) * i
+                } else {
+                    paddingLeft + chartWidth / 2f
+                }
             }
-        }
-        
-        fun drawDataset(data: List<Double>, lineColor: Color) {
+
+        fun drawDataset(
+            data: List<Double>,
+            lineColor: Color,
+        ) {
             val path = Path()
             val fillPath = Path()
-            
+
             var started = false
-            
+
             for (i in data.indices) {
                 val valY = data[i]
                 val x = xPoints[i]
                 val y = paddingTop + chartHeight - (chartHeight * (valY / maxVal)).toFloat()
-                
+
                 if (!started) {
                     path.moveTo(x, y)
                     fillPath.moveTo(x, paddingTop + chartHeight)
@@ -115,34 +120,35 @@ fun TrendLineChart(
                     path.lineTo(x, y)
                     fillPath.lineTo(x, y)
                 }
-                
+
                 drawCircle(color = lineColor, radius = 4f, center = Offset(x, y))
-                
+
                 if (i == data.lastIndex) {
                     fillPath.lineTo(x, paddingTop + chartHeight)
                     fillPath.close()
                 }
             }
-            
+
             drawPath(
                 path = fillPath,
-                brush = Brush.verticalGradient(
-                    colors = listOf(lineColor.copy(alpha = 0.25f), Color.Transparent),
-                    startY = paddingTop,
-                    endY = paddingTop + chartHeight
-                )
+                brush =
+                    Brush.verticalGradient(
+                        colors = listOf(lineColor.copy(alpha = 0.25f), Color.Transparent),
+                        startY = paddingTop,
+                        endY = paddingTop + chartHeight,
+                    ),
             )
-            
+
             drawPath(
                 path = path,
                 color = lineColor,
-                style = Stroke(width = 4f, cap = StrokeCap.Round)
+                style = Stroke(width = 4f, cap = StrokeCap.Round),
             )
         }
-        
+
         if (lineData1.isNotEmpty()) drawDataset(lineData1, color1)
         if (lineData2.isNotEmpty()) drawDataset(lineData2, color2)
-        
+
         labels.forEachIndexed { i, label ->
             val x = xPoints[i]
             val textLayoutResult = textMeasurer.measure(label, textStyle)
@@ -150,7 +156,7 @@ fun TrendLineChart(
                 textMeasurer = textMeasurer,
                 text = label,
                 topLeft = Offset(x - textLayoutResult.size.width / 2f, paddingTop + chartHeight + 10f),
-                style = textStyle
+                style = textStyle,
             )
         }
     }
@@ -163,7 +169,7 @@ fun TrendLineChart(
 fun AllocationPieChart(
     values: List<Float>,
     colors: List<Color>,
-    modifier: Modifier = Modifier.fillMaxWidth().height(180.dp)
+    modifier: Modifier = Modifier.fillMaxWidth().height(180.dp),
 ) {
     Canvas(modifier = modifier) {
         val width = size.width
@@ -172,14 +178,14 @@ fun AllocationPieChart(
         val diameter = sizeMin * 0.8f
         val x = (width - diameter) / 2f
         val y = (height - diameter) / 2f
-        
+
         val sum = values.sum().coerceAtLeast(1f)
         var startAngle = -90f
-        
+
         values.forEachIndexed { index, value ->
             val sweepAngle = (value / sum) * 360f
             val color = colors.getOrElse(index) { Color.Gray }
-            
+
             drawArc(
                 color = color,
                 startAngle = startAngle,
@@ -187,7 +193,7 @@ fun AllocationPieChart(
                 useCenter = false,
                 topLeft = Offset(x, y),
                 size = Size(diameter, diameter),
-                style = Stroke(width = diameter * 0.16f, cap = StrokeCap.Butt)
+                style = Stroke(width = diameter * 0.16f, cap = StrokeCap.Butt),
             )
             startAngle += sweepAngle
         }

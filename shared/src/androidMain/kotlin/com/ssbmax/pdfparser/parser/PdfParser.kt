@@ -6,13 +6,16 @@ import com.tom_roush.pdfbox.text.PDFTextStripper
 import java.io.ByteArrayInputStream
 
 actual class PlatformPdfParser actual constructor() : PdfParser {
-
-    actual override fun decryptAndParse(pdfBytes: ByteArray, password: String): Result<ParsedPayslip> {
+    actual override fun decryptAndParse(
+        pdfBytes: ByteArray,
+        password: String,
+    ): Result<ParsedPayslip> {
         return try {
             try {
-                val application = Class.forName("android.app.ActivityThread")
-                    .getMethod("currentApplication")
-                    .invoke(null) as? android.content.Context
+                val application =
+                    Class.forName("android.app.ActivityThread")
+                        .getMethod("currentApplication")
+                        .invoke(null) as? android.content.Context
 
                 if (application != null) {
                     com.tom_roush.pdfbox.android.PDFBoxResourceLoader.init(application)
@@ -54,8 +57,12 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     var xSplit = layoutScanner.dsopX
 
                     println("[PdfParserDebug] Found table on page: $tablePageIdx")
-                    println("[PdfParserDebug] layoutScanner - bpayY: ${layoutScanner.bpayY}, totalCreditY: ${layoutScanner.totalCreditY}, dsopX: ${layoutScanner.dsopX}")
-                    println("[PdfParserDebug] Page dimensions - width: $pageWidth, height: $pageHeight, originX: $originX, originY: $originY")
+                    println(
+                        "[PdfParserDebug] layoutScanner - bpayY: ${layoutScanner.bpayY}, totalCreditY: ${layoutScanner.totalCreditY}, dsopX: ${layoutScanner.dsopX}",
+                    )
+                    println(
+                        "[PdfParserDebug] Page dimensions - width: $pageWidth, height: $pageHeight, originX: $originX, originY: $originY",
+                    )
                     println("[PdfParserDebug] Calculated coordinates - yStart: $yStart, yEnd: $yEnd, xSplit: $xSplit")
 
                     if (yStart < 0f) yStart = 0f
@@ -72,12 +79,13 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     println("[PdfParserDebug] Final safe coordinates - yStart: $yStart, yEnd: $yEnd, xSplit: $xSplit")
 
                     // Crop Left Column (Credits)
-                    val leftRect = com.tom_roush.pdfbox.pdmodel.common.PDRectangle(
-                        originX,
-                        originY + (pageHeight - yEnd),
-                        xSplit - 2f,
-                        yEnd - yStart
-                    )
+                    val leftRect =
+                        com.tom_roush.pdfbox.pdmodel.common.PDRectangle(
+                            originX,
+                            originY + (pageHeight - yEnd),
+                            xSplit - 2f,
+                            yEnd - yStart,
+                        )
                     page.cropBox = leftRect
                     val leftStripper = PDFTextStripper()
                     leftStripper.startPage = tablePageIdx + 1
@@ -87,12 +95,13 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     println("[PdfParserDebug] Finished left column text extraction. Length: ${leftText.length}")
 
                     // Crop Middle Column (Debits)
-                    val middleRect = com.tom_roush.pdfbox.pdmodel.common.PDRectangle(
-                        originX + xSplit - 2f,
-                        originY + (pageHeight - yEnd),
-                        kotlin.math.max(10f, 310f - (xSplit - 2f)),
-                        yEnd - yStart
-                    )
+                    val middleRect =
+                        com.tom_roush.pdfbox.pdmodel.common.PDRectangle(
+                            originX + xSplit - 2f,
+                            originY + (pageHeight - yEnd),
+                            kotlin.math.max(10f, 310f - (xSplit - 2f)),
+                            yEnd - yStart,
+                        )
                     page.cropBox = middleRect
                     val middleStripper = PDFTextStripper()
                     middleStripper.startPage = tablePageIdx + 1
@@ -101,7 +110,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     val middleText = middleStripper.getText(document) ?: ""
                     println("[PdfParserDebug] Finished middle column text extraction. Length: ${middleText.length}")
 
-                     // Restore original crop box
+                    // Restore original crop box
                     page.cropBox = originalCropBox
                     println("[PdfParserDebug] Original crop box restored. Number of pages: ${document.numberOfPages}")
 
@@ -129,14 +138,15 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     }
 
                     println("[PdfParserDebug] Starting PayslipTextParser.parse...")
-                    val parseResult = PayslipTextParser.parse(
-                        leftColumnText = leftText,
-                        middleColumnText = middleText,
-                        fullText = fullText,
-                        taxPageText = taxText,
-                        dsopPageText = dsopText,
-                        filename = "payslip.pdf"
-                    )
+                    val parseResult =
+                        PayslipTextParser.parse(
+                            leftColumnText = leftText,
+                            middleColumnText = middleText,
+                            fullText = fullText,
+                            taxPageText = taxText,
+                            dsopPageText = dsopText,
+                            filename = "payslip.pdf",
+                        )
                     println("[PdfParserDebug] Finished PayslipTextParser.parse. Success: ${parseResult.isSuccess}")
                     parseResult
                 }

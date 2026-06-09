@@ -4,7 +4,6 @@ package com.ssbmax.pdfparser.database
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.RoomDatabaseConstructor
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
@@ -13,17 +12,18 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<PayslipDatabase> {
     val dbFilePath = documentDirectory() + "/payslips.db"
     return Room.databaseBuilder<PayslipDatabase>(
         name = dbFilePath,
-        factory = { PayslipDatabaseConstructor.initialize() }
+        factory = { PayslipDatabaseConstructor.initialize() },
     )
 }
 
 private fun documentDirectory(): String {
-    val documentDirectory = NSFileManager.defaultManager.URLForDirectory(
-        directory = NSDocumentDirectory,
-        inDomain = NSUserDomainMask,
-        appropriateForURL = null,
-        create = false,
-        error = null
-    )
+    val documentDirectory =
+        NSFileManager.defaultManager.URLForDirectory(
+            directory = NSDocumentDirectory,
+            inDomain = NSUserDomainMask,
+            appropriateForURL = null,
+            create = false,
+            error = null,
+        )
     return documentDirectory?.path ?: ""
 }

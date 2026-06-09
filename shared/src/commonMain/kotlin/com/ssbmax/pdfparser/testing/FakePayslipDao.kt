@@ -20,7 +20,7 @@ class FakePayslipDao : PayslipDao {
     override fun getAllPayslips(): Flow<List<PayslipEntity>> {
         return database.map {
             it.values.toList().sortedWith(
-                compareBy<PayslipEntity> { it.year }.thenBy { it.monthNum }
+                compareBy<PayslipEntity> { it.year }.thenBy { it.monthNum },
             )
         }
     }

@@ -1,12 +1,11 @@
 package com.ssbmax.pdfparser.parser
 
-import java.io.File
 import org.junit.Test
-import kotlin.test.assertTrue
+import java.io.File
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class PlatformPdfParserTest {
-
     private fun isAndroidRuntime(): Boolean {
         return try {
             Class.forName("android.app.ActivityThread")
@@ -77,7 +76,8 @@ class PlatformPdfParserTest {
                         reasons.add("grossPay is 0.0")
                     }
 
-                    val sumEarnings = payslip.earnings.basicPay +
+                    val sumEarnings =
+                        payslip.earnings.basicPay +
                             payslip.earnings.dearnessAllowance +
                             payslip.earnings.militaryServicePay +
                             payslip.earnings.transportAllowance +
