@@ -8,12 +8,13 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.useContents
+import kotlinx.cinterop.CValue
 import platform.Foundation.NSData
 import platform.Foundation.create
 import platform.PDFKit.PDFDocument
 import platform.PDFKit.PDFPage
 import platform.PDFKit.PDFSelection
-import platform.PDFKit.PDFDisplayBoxCropBox
+import platform.PDFKit.kPDFDisplayBoxCropBox
 import platform.CoreGraphics.CGRect
 import platform.CoreGraphics.CGRectMake
 
@@ -48,14 +49,14 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             }
 
             val tablePage = pdfDoc.pageAtIndex(tablePageIdx.toULong()) ?: return Result.failure(Exception("Table page not found"))
-            val pageBounds = tablePage.boundsForBox(PDFDisplayBoxCropBox)
+            val pageBounds = tablePage.boundsForBox(kPDFDisplayBoxCropBox)
             val pageHeight = pageBounds.useContents { size.height }
 
             var yBpay = pageHeight - 250.0
             var xDsop = 150.0
             var yTotalCredit = pageHeight - 700.0
 
-            fun findCoordinates(searchTerm: String, onSelection: (CGRect) -> Unit) {
+            fun findCoordinates(searchTerm: String, onSelection: (CValue<CGRect>) -> Unit) {
                 val selections = pdfDoc.findString(searchTerm, withOptions = 1UL) // 1UL is NSCaseInsensitiveSearch
                 if (selections != null) {
                     for (selObj in selections) {
