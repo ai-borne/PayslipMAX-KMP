@@ -7,12 +7,19 @@ on:
     branches: [ main, master ]
 
 jobs:
-  test:
+  security-and-quality:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for gitleaks scan
+
+      - name: Run Gitleaks Secret Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -21,7 +28,19 @@ jobs:
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci || npm install
+        run: npm ci
 
-      - name: Run Tests
+      - name: Run Dependency Vulnerability Audit
+        run: npm audit --audit-level=high
+
+      - name: Run ESLint (JS style)
+        run: npm run lint
+
+      - name: Run Stylelint (CSS style)
+        run: npm run lint:css
+
+      - name: Verify Production Build (Vite compiles)
+        run: npm run build
+
+      - name: Run Unit & Line-Count Tests
         run: npm run test

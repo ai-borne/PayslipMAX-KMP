@@ -1,27 +1,24 @@
 /* Modern Premium Universal Design System - Theme Tokens */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import 'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap';
 
 :root {
   /* Default: Dark Theme */
   --bg-primary: #080C14;
-  --bg-surface: rgba(13, 20, 35, 0.65);
+  --bg-surface: rgb(13 20 35 / 0.65);
   --bg-surface-opaque: #0D1423;
-  --border-glow: rgba(59, 130, 246, 0.15);
-  --border-light: rgba(255, 255, 255, 0.07);
-  
+  --border-glow: rgb(59 130 246 / 0.15);
+  --border-light: rgb(255 255 255 / 0.07);
   --color-primary: #3b82f6;
-  --color-primary-glow: rgba(59, 130, 246, 0.3);
+  --color-primary-glow: rgb(59 130 246 / 0.3);
   --color-success: #10b981;
-  --color-success-glow: rgba(16, 185, 129, 0.2);
+  --color-success-glow: rgb(16 185 129 / 0.2);
   --color-warning: #f59e0b;
   --color-error: #ef4444;
   --color-accent: #8b5cf6;
-  --color-accent-glow: rgba(139, 92, 246, 0.2);
-  
+  --color-accent-glow: rgb(139 92 246 / 0.2);
   --text-primary: #f3f4f6;
   --text-secondary: #9ca3af;
   --text-muted: #6b7280;
-  
   --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
   --font-body: 'Plus Jakarta Sans', sans-serif;
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -31,20 +28,18 @@
 @media (prefers-color-scheme: light) {
   :root {
     --bg-primary: #f3f6fa;
-    --bg-surface: rgba(255, 255, 255, 0.75);
-    --bg-surface-opaque: #ffffff;
-    --border-glow: rgba(59, 130, 246, 0.1);
-    --border-light: rgba(0, 0, 0, 0.06);
-    
+    --bg-surface: rgb(255 255 255 / 0.75);
+    --bg-surface-opaque: #fff;
+    --border-glow: rgb(59 130 246 / 0.1);
+    --border-light: rgb(0 0 0 / 0.06);
     --color-primary: #2563eb;
-    --color-primary-glow: rgba(37, 99, 235, 0.15);
+    --color-primary-glow: rgb(37 99 235 / 0.15);
     --color-success: #059669;
-    --color-success-glow: rgba(5, 150, 105, 0.1);
+    --color-success-glow: rgb(5 150 105 / 0.1);
     --color-warning: #d97706;
     --color-error: #dc2626;
     --color-accent: #7c3aed;
-    --color-accent-glow: rgba(124, 58, 237, 0.1);
-    
+    --color-accent-glow: rgb(124 58 237 / 0.1);
     --text-primary: #1f2937;
     --text-secondary: #4b5563;
     --text-muted: #9ca3af;
@@ -72,13 +67,16 @@ body {
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--bg-primary);
 }
+
 ::-webkit-scrollbar-thumb {
-  background: rgba(128, 128, 128, 0.2);
+  background: rgb(128 128 128 / 0.2);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 128, 128, 0.4);
+  background: rgb(128 128 128 / 0.4);
 }

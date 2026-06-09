@@ -1,6 +1,5 @@
 // ViewModel Layer - Translates model data for UI consumption
 
-import { glossary } from './glossary.js';
 import { strings } from './strings.js';
 
 export class PayslipViewModel {
@@ -86,9 +85,9 @@ export class PayslipViewModel {
 
   formatLabel(key) {
     return key
-      .split("_")
+      .split('_')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+      .join(' ');
   }
 
   // Derived Properties for Summary Stats
@@ -129,15 +128,15 @@ export class PayslipViewModel {
       insights.push({
         title: `Excellent Savings Rate (${dsopRate.toFixed(1)}%)`,
         desc: `You saved ${this.formatCurrency(dsop)} in your DSOP Fund this month, which is ${dsopRate.toFixed(1)}% of your gross earnings. DSOP is compounding tax-free interest, making it a powerful wealth builder.`,
-        icon: "📈",
-        type: "success"
+        icon: '📈',
+        type: 'success'
       });
     } else if (basicPay > 0) {
       insights.push({
-        title: "Action Needed: Zero DSOP Contribution",
-        desc: "No DSOP subscription was deducted this month. Army rules mandate a minimum contribution of 6% of your Basic Pay to your provident fund for retirement security.",
-        icon: "⚠️",
-        type: "warning"
+        title: 'Action Needed: Zero DSOP Contribution',
+        desc: 'No DSOP subscription was deducted this month. Army rules mandate a minimum contribution of 6% of your Basic Pay to your provident fund for retirement security.',
+        icon: '⚠️',
+        type: 'warning'
       });
     }
 
@@ -148,8 +147,8 @@ export class PayslipViewModel {
       insights.push({
         title: `Income Tax Burden (${taxRate.toFixed(1)}%)`,
         desc: `A total of ${this.formatCurrency(tax)} was deducted for Income Tax (including Cess) this month, consuming ${taxRate.toFixed(1)}% of your gross pay.`,
-        icon: "🏛️",
-        type: "accent"
+        icon: '🏛️',
+        type: 'accent'
       });
     }
 
@@ -159,10 +158,10 @@ export class PayslipViewModel {
     if (lf > 0) {
       const totalAcc = lf + fur;
       insights.push({
-        title: "Government Housing Value",
+        title: 'Government Housing Value',
         desc: `You were charged a License Fee of ${this.formatCurrency(lf)} and Furniture Rent of ${this.formatCurrency(fur)} (Total: ${this.formatCurrency(totalAcc)}). Compared to open-market rentals, this represents an immense cost subsidy of approximately ₹20,000+ per month.`,
-        icon: "🏠",
-        type: "success"
+        icon: '🏠',
+        type: 'success'
       });
     }
 
@@ -170,22 +169,22 @@ export class PayslipViewModel {
     const spcf = record.earnings.special_forces_pay || 0;
     if (spcf > 0) {
       insights.push({
-        title: "Special Forces Operational Pay Active",
+        title: 'Special Forces Operational Pay Active',
         desc: `Your payslip shows ${this.formatCurrency(spcf)} credited as Special Forces/Command Pay. This is an elite hazard allowance paid for specialized service conditions.`,
-        icon: "🦅",
-        type: "success"
+        icon: '🦅',
+        type: 'success'
       });
     }
 
     // 5. Arrears
-    const arrearsList = Object.keys(record.earnings).filter(k => k.startsWith("arrears_") || k.startsWith("adj_"));
+    const arrearsList = Object.keys(record.earnings).filter(k => k.startsWith('arrears_') || k.startsWith('adj_'));
     if (arrearsList.length > 0) {
       const totalArr = arrearsList.reduce((sum, k) => sum + record.earnings[k], 0);
       insights.push({
         title: `Arrears & Adjustments Credited: ${this.formatCurrency(totalArr)}`,
-        desc: `Your account received arrears credits this month (e.g. ${arrearsList.map(a => this.formatLabel(a)).join(", ")}). Consider routing these lump-sums directly into savings rather than discretionary spending.`,
-        icon: "💰",
-        type: "success"
+        desc: `Your account received arrears credits this month (e.g. ${arrearsList.map(a => this.formatLabel(a)).join(', ')}). Consider routing these lump-sums directly into savings rather than discretionary spending.`,
+        icon: '💰',
+        type: 'success'
       });
     }
 
@@ -194,9 +193,9 @@ export class PayslipViewModel {
     if (msp > 0) {
       insights.push({
         title: `Military Service Pay (${this.formatCurrency(msp)})`,
-        desc: `MSP is a compensation model paid only to military officers. Unlike civil services, it compensates for the constant hazard, relocation, and physical challenges of your military career.`,
-        icon: "🎖️",
-        type: "accent"
+        desc: 'MSP is a compensation model paid only to military officers. Unlike civil services, it compensates for the constant hazard, relocation, and physical challenges of your military career.',
+        icon: '🎖️',
+        type: 'accent'
       });
     }
 
@@ -233,13 +232,13 @@ export class PayslipViewModel {
         // Let's find latest record to copy its metadata
         const base = this.model.getPayslips().find(d => d.year == 2025 && d.month_num == 8);
         if (base) {
-          const addedRecord = this.model.addMockPayslip(2025, 8, "August", base);
+          const addedRecord = this.model.addMockPayslip(2025, 8, 'August', base);
           this.selectedYear = 2025;
-          this.selectedMonth = "August";
+          this.selectedMonth = 'August';
           this.refreshActiveRecord();
           onComplete(addedRecord);
         } else {
-          onError("Parser base record not found.");
+          onError('Parser base record not found.');
         }
       }
     };
