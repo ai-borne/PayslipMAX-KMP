@@ -26,7 +26,7 @@ class PayslipViewModelTest {
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
         fakeBackupManager = FakeBackupManager()
-        repository = PayslipRepository(fakeDao, fakeParser)
+        repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
         viewModel = PayslipViewModel(repository, fakeBackupManager)
     }
 
