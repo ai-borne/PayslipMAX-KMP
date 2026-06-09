@@ -45,12 +45,31 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     val page = document.getPage(tablePageIdx)
                     val originalCropBox = page.cropBox
                     val pageHeight = originalCropBox.height
+                    val pageWidth = originalCropBox.width
                     val originX = originalCropBox.lowerLeftX
                     val originY = originalCropBox.lowerLeftY
 
-                    val yStart = kotlin.math.min(180f, layoutScanner.bpayY - 5f)
-                    val yEnd = layoutScanner.totalCreditY - 2f
-                    val xSplit = layoutScanner.dsopX
+                    var yStart = kotlin.math.min(180f, layoutScanner.bpayY - 5f)
+                    var yEnd = layoutScanner.totalCreditY - 2f
+                    var xSplit = layoutScanner.dsopX
+
+                    println("[PdfParserDebug] Found table on page: $tablePageIdx")
+                    println("[PdfParserDebug] layoutScanner - bpayY: ${layoutScanner.bpayY}, totalCreditY: ${layoutScanner.totalCreditY}, dsopX: ${layoutScanner.dsopX}")
+                    println("[PdfParserDebug] Page dimensions - width: $pageWidth, height: $pageHeight, originX: $originX, originY: $originY")
+                    println("[PdfParserDebug] Calculated coordinates - yStart: $yStart, yEnd: $yEnd, xSplit: $xSplit")
+
+                    if (yStart < 0f) yStart = 0f
+                    if (yEnd <= yStart) {
+                        println("[PdfParserWarning] Invalid Y bounds detected (yEnd: $yEnd <= yStart: $yStart). Applying safe fallbacks.")
+                        yStart = 180f
+                        yEnd = kotlin.math.max(700f, pageHeight - 20f)
+                    }
+                    if (xSplit <= 10f || xSplit >= pageWidth) {
+                        println("[PdfParserWarning] Invalid xSplit ($xSplit). Falling back to 150f.")
+                        xSplit = 150f
+                    }
+
+                    println("[PdfParserDebug] Final safe coordinates - yStart: $yStart, yEnd: $yEnd, xSplit: $xSplit")
 
                     // Crop Left Column (Credits)
                     val leftRect = com.tom_roush.pdfbox.pdmodel.common.PDRectangle(
@@ -63,23 +82,28 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     val leftStripper = PDFTextStripper()
                     leftStripper.startPage = tablePageIdx + 1
                     leftStripper.endPage = tablePageIdx + 1
+                    println("[PdfParserDebug] Starting left column text extraction...")
                     val leftText = leftStripper.getText(document) ?: ""
+                    println("[PdfParserDebug] Finished left column text extraction. Length: ${leftText.length}")
 
                     // Crop Middle Column (Debits)
                     val middleRect = com.tom_roush.pdfbox.pdmodel.common.PDRectangle(
                         originX + xSplit - 2f,
                         originY + (pageHeight - yEnd),
-                        310f - (xSplit - 2f),
+                        kotlin.math.max(10f, 310f - (xSplit - 2f)),
                         yEnd - yStart
                     )
                     page.cropBox = middleRect
                     val middleStripper = PDFTextStripper()
                     middleStripper.startPage = tablePageIdx + 1
                     middleStripper.endPage = tablePageIdx + 1
+                    println("[PdfParserDebug] Starting middle column text extraction...")
                     val middleText = middleStripper.getText(document) ?: ""
+                    println("[PdfParserDebug] Finished middle column text extraction. Length: ${middleText.length}")
 
-                    // Restore original crop box
+                     // Restore original crop box
                     page.cropBox = originalCropBox
+                    println("[PdfParserDebug] Original crop box restored. Number of pages: ${document.numberOfPages}")
 
                     // Extract Page 3 and Page 4/3 text
                     var taxText = ""
@@ -87,7 +111,9 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                         val taxStripper = PDFTextStripper()
                         taxStripper.startPage = 3
                         taxStripper.endPage = 3
+                        println("[PdfParserDebug] Starting Page 3 text extraction...")
                         taxText = taxStripper.getText(document) ?: ""
+                        println("[PdfParserDebug] Finished Page 3 text extraction. Length: ${taxText.length}")
                     }
 
                     var dsopText = ""
@@ -95,12 +121,15 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                         val dsopStripper = PDFTextStripper()
                         dsopStripper.startPage = 4
                         dsopStripper.endPage = 4
+                        println("[PdfParserDebug] Starting Page 4 text extraction...")
                         dsopText = dsopStripper.getText(document) ?: ""
+                        println("[PdfParserDebug] Finished Page 4 text extraction. Length: ${dsopText.length}")
                     } else if (document.numberOfPages >= 3) {
                         dsopText = taxText
                     }
 
-                    PayslipTextParser.parse(
+                    println("[PdfParserDebug] Starting PayslipTextParser.parse...")
+                    val parseResult = PayslipTextParser.parse(
                         leftColumnText = leftText,
                         middleColumnText = middleText,
                         fullText = fullText,
@@ -108,9 +137,11 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                         dsopPageText = dsopText,
                         filename = "payslip.pdf"
                     )
+                    println("[PdfParserDebug] Finished PayslipTextParser.parse. Success: ${parseResult.isSuccess}")
+                    parseResult
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Result.failure(e)
         }
     }

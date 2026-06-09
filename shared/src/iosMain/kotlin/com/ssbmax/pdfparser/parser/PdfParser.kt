@@ -161,7 +161,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                 dsopPageText = dsopText,
                 filename = "payslip.pdf"
             )
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Result.failure(e)
         }
     }
