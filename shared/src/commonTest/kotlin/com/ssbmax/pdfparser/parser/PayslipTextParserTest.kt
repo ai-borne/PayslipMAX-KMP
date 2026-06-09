@@ -130,4 +130,74 @@ class PayslipTextParserTest {
         assertEquals(46781.0, payslip.summary.totalDeductions)
         assertEquals(156400.0, payslip.summary.netRemittance)
     }
+
+    @Test
+    fun testParse2025FormatWithColumnSplitAndDuplicateKeys() {
+        val leftText = """
+            BPAY 144200
+            DA 76426
+            MSP 15500
+            TPTA 7200
+            TPTADA 3816
+            RH12 3450
+            ARR-RH12 3450
+            ARR-RH12 3450
+            A/o Pay & Allce 2000
+        """.trimIndent()
+
+        val middleText = """
+            DSOP 25000
+            AGIF 5000
+            ITAX 40521
+            EHCESS 1621
+            LF 878
+            FUR 392
+        """.trimIndent()
+
+        val fullText = """
+            01/2025  kI laoKa ivavarNaI  / STATEMENT OF ACCOUNT FOR 01/2025
+            Name: Sunil Suresh Pawar A/C No - 16/110/206718K PAN No: AR*****90G
+            kuula Aaya Gross Pay 256042 kuula kTaOtI Total Deductions 32891
+            Net Remittance : Rs.2,23,151
+        """.trimIndent()
+
+        val result = PayslipTextParser.parse(
+            leftColumnText = leftText,
+            middleColumnText = middleText,
+            fullText = fullText,
+            filename = "01 January 2025.pdf"
+        )
+
+        assertTrue(result.isSuccess)
+        val payslip = result.getOrNull()!!
+        assertNotNull(payslip)
+
+        assertEquals(2025, payslip.year)
+        assertEquals(1, payslip.monthNum)
+        assertEquals("01/2025", payslip.dateStr)
+
+        assertEquals("Sunil Suresh Pawar", payslip.officer.name)
+        assertEquals("16/110/206718K", payslip.officer.accountNo)
+        assertEquals("AR*****90G", payslip.officer.pan)
+
+        assertEquals(144200.0, payslip.earnings.basicPay)
+        assertEquals(76426.0, payslip.earnings.dearnessAllowance)
+        assertEquals(15500.0, payslip.earnings.militaryServicePay)
+        assertEquals(7200.0, payslip.earnings.transportAllowance)
+        assertEquals(3816.0, payslip.earnings.transportAllowanceDa)
+        assertEquals(3450.0, payslip.earnings.rationMoney)
+        assertEquals(6900.0, payslip.earnings.arrearsRation)
+        assertEquals(2000.0, payslip.earnings.adjPayAndAllce)
+
+        assertEquals(25000.0, payslip.deductions.dsopSubscription)
+        assertEquals(5000.0, payslip.deductions.agif)
+        assertEquals(40521.0, payslip.deductions.incomeTax)
+        assertEquals(1621.0, payslip.deductions.educationCess)
+        assertEquals(878.0, payslip.deductions.licenseFee)
+        assertEquals(392.0, payslip.deductions.furnitureRent)
+
+        assertEquals(256042.0, payslip.summary.grossPay)
+        assertEquals(32891.0, payslip.summary.totalDeductions)
+        assertEquals(223151.0, payslip.summary.netRemittance)
+    }
 }
