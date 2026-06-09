@@ -134,7 +134,7 @@ class PayslipTextParserTest {
     @Test
     fun testParse2025FormatWithColumnSplitAndDuplicateKeys() {
         val leftText = """
-            BPAY 144200
+            BPAY (12A) 144200
             DA 76426
             MSP 15500
             TPTA 7200
