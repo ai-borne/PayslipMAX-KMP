@@ -10,6 +10,38 @@ internal fun cleanCommasAndWhitespace(text: String): String {
     return cleaned.replace(Regex("\\s+"), " ")
 }
 
+/**
+ * Splits the full payslip page text into a credit (earnings) section and a debit (deductions) section.
+ *
+ * In some older payslip formats the PDF crop box approach fails and both columns return the same
+ * full text. This function finds the position of the first confirmed debit-only anchor — i.e., the
+ * first occurrence of DSOPF/AGIF/ITAX/Incm Tax (items that can ONLY appear in the debit column) —
+ * and splits there.
+ *
+ * - Text BEFORE the anchor = credit/earnings section (may contain debit labels like "L Fee" that
+ *   are actually credit reversals of those deductions).
+ * - Text FROM the anchor onwards = debit/deductions section.
+ *
+ * Returns Triple(creditSectionText, debitSectionText, anchorFound).
+ * If no anchor was found, anchorFound=false and creditSection=fullText, debitSection="".
+ */
+internal fun splitCreditDebitSections(cleanedText: String): Triple<String, String, Boolean> {
+    // These anchor labels can ONLY appear in the debit column; use the earliest one found.
+    val debitOnlyAnchors = listOf("DSOPF Subn", "DSOPF", "AGIF", "Incm Tax", "ITAX")
+    var splitIdx = cleanedText.length
+    var found = false
+    for (anchor in debitOnlyAnchors) {
+        val idx = cleanedText.indexOf(anchor, ignoreCase = true)
+        if (idx in 1 until splitIdx) {
+            splitIdx = idx
+            found = true
+        }
+    }
+    val creditSection = cleanedText.substring(0, splitIdx)
+    val debitSection = if (found) cleanedText.substring(splitIdx) else ""
+    return Triple(creditSection, debitSection, found)
+}
+
 internal fun extractFromColumn(
     colText: String,
     creditMapping: Map<String, String>,

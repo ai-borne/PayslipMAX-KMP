@@ -8,6 +8,7 @@ class LayoutScanner : PDFTextStripper() {
     var bpayY: Float = 250f
     var dsopX: Float = 150f
     var totalCreditY: Float = 700f
+    var detailsX: Float = 0f
 
     init {
         sortByPosition = true
@@ -40,6 +41,25 @@ class LayoutScanner : PDFTextStripper() {
                 val charX = textPositions[idx].xDirAdj
                 if (dsopX == 150f || charX < dsopX) {
                     dsopX = charX
+                }
+            }
+        }
+
+        // Locate DETAILS OF TRANSACTIONS / DETAILS OF DO2s / DETAILS OF / laona dona / loona dona
+        if (lowerText.contains("details of transactions") || lowerText.contains("details of do2s") ||
+            lowerText.contains("details of") || lowerText.contains("laona dona") || lowerText.contains("loona dona")
+        ) {
+            val idx =
+                lowerText.indexOf("details of transactions").takeIf { it >= 0 }
+                    ?: lowerText.indexOf("details of do2s").takeIf { it >= 0 }
+                    ?: lowerText.indexOf("details of").takeIf { it >= 0 }
+                    ?: lowerText.indexOf("laona dona").takeIf { it >= 0 }
+                    ?: lowerText.indexOf("loona dona").takeIf { it >= 0 }
+                    ?: 0
+            if (idx < textPositions.size) {
+                val charX = textPositions[idx].xDirAdj
+                if (detailsX == 0f || charX < detailsX) {
+                    detailsX = charX
                 }
             }
         }

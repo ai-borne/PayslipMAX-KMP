@@ -41,20 +41,40 @@ object PayslipTextParser {
                 extractFromColumn(cleanedMiddleText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
 
             val hasBpayInFull = cleanedFullText.lowercase().contains("basic pay") || cleanedFullText.lowercase().contains("bpay")
-            val hasBpayInSplit = leftExtracted.any { (k, _) -> PayslipPatternConfig.creditKeysMapping[k] == "basicPay" }
 
             var finalLeftExtracted = leftExtracted
             var finalMiddleExtracted = middleExtracted
             var isSplit = leftColumnText != middleColumnText
 
-            if (hasBpayInFull && !hasBpayInSplit) {
-                finalLeftExtracted = extractFromColumn(cleanedFullText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
-                finalMiddleExtracted = extractFromColumn(cleanedFullText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
-                isSplit = false
+            if (!isSplit && hasBpayInFull) {
+                // Column crop did not work — full text is repeated in both columns.
+                // The non-sorted leftText/middleText lists credits first then debits (correct order).
+                // Split at the first debit-only anchor (DSOPF/AGIF) to get credit and debit sections.
+                val (creditSectionText, debitSectionText, anchorFound) = splitCreditDebitSections(cleanedLeftText)
+                if (anchorFound) {
+                    finalLeftExtracted = extractFromColumn(creditSectionText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
+                    finalMiddleExtracted = extractFromColumn(debitSectionText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
+                    // Treat as split so debit-keys in credit section go to adjPayAndAllce
+                    isSplit = true
+                } else {
+                    // No debit anchor found (e.g. zero-pay month with no DSOPF) — fall back to
+                    // full-text extraction without split semantics.
+                    finalLeftExtracted = extractFromColumn(cleanedFullText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
+                    finalMiddleExtracted = extractFromColumn(cleanedFullText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
+                    // isSplit remains false
+                }
             }
 
             val earningsMap = mutableMapOf<String, Double>()
             val deductionsMap = mutableMapOf<String, Double>()
+
+            // Debit keys that represent ledger balance entries — they must never go to adjPayAndAllce.
+            // They are handled separately by the earningsMap/deductionsMap.remove() calls below.
+            val ledgerDebitKeys = setOf("openingDebitBalance", "closingCreditBalance")
+            // Credit reversals: debit-labelled items that can appear as credits in a payslip
+            // (e.g. refunded license fee, furniture rent credit). These are the ONLY debit keys
+            // that should be routed to adjPayAndAllce when found in the credit section.
+            val creditReversalDebitKeys = setOf("licenseFee", "furnitureRent", "waterCharges", "electricityCharges", "barrackDamage", "ticketRecovery")
 
             for ((key, value) in finalLeftExtracted) {
                 if (key in PayslipPatternConfig.creditKeysMapping.keys) {
@@ -62,17 +82,15 @@ object PayslipTextParser {
                     earningsMap[stdKey] = (earningsMap[stdKey] ?: 0.0) + value
                 } else if (isSplit && key in PayslipPatternConfig.debitKeysMapping.keys) {
                     val baseStdKey = PayslipPatternConfig.debitKeysMapping[key]!!
-                    val stdKey = "adj" + baseStdKey.replaceFirstChar { it.uppercaseChar() }
-                    val targetKey =
-                        when (stdKey) {
-                            "adjBasicPay" -> "adjBasicPay"
-                            "adjDa" -> "adjDa"
-                            "adjMsp" -> "adjMsp"
-                            "adjTpta" -> "adjTpta"
-                            "adjFieldAllowance" -> "adjFieldAllowance"
-                            else -> "adjPayAndAllce"
-                        }
-                    earningsMap[targetKey] = (earningsMap[targetKey] ?: 0.0) + value
+                    if (baseStdKey in ledgerDebitKeys) {
+                        // Route ledger entries to deductionsMap so they can be removed correctly later
+                        deductionsMap[baseStdKey] = (deductionsMap[baseStdKey] ?: 0.0) + value
+                    } else if (baseStdKey in creditReversalDebitKeys) {
+                        // This is a credit reversal of a deduction — add to earnings adjustments
+                        earningsMap["adjPayAndAllce"] = (earningsMap["adjPayAndAllce"] ?: 0.0) + value
+                    }
+                    // Other debit keys in credit section (e.g. dsopSubscription, agif, incomeTax)
+                    // are ignored — they should not appear in credit section; if they do, skip them.
                 }
             }
 
@@ -92,6 +110,7 @@ object PayslipTextParser {
                     deductionsMap[targetKey] = (deductionsMap[targetKey] ?: 0.0) + value
                 }
             }
+
 
             val openingCr = earningsMap.remove("openingCreditBalance") ?: 0.0
             val closingDr = earningsMap.remove("closingDebitBalance") ?: 0.0
