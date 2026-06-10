@@ -195,7 +195,7 @@ private fun LedgerRowItem(
             color = MaterialTheme.colorScheme.primary,
         )
     }
-    Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
+    HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
 }
 
 @Composable
@@ -209,7 +209,7 @@ private fun LedgerTableFooter(payslip: ParsedPayslip) {
             Text(text = "Total Deductions (Debits)", style = MaterialTheme.typography.bodyMedium)
             Text(text = "₹${formatVal(payslip.summary.totalDeductions)}", fontWeight = FontWeight.Bold)
         }
-        Divider(modifier = Modifier.padding(vertical = 6.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
                 text = "Net Take-Home Remittance",

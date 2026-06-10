@@ -22,6 +22,14 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "composeApp"
             isStatic = true
+            binaryOption("bundleId", "com.payslipmax.pdfparser")
+        }
+        iosTarget.compilations.all {
+            compileTaskProvider.configure {
+                compilerOptions {
+                    freeCompilerArgs.add("-Xexpect-actual-classes")
+                }
+            }
         }
     }
 
