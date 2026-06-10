@@ -40,12 +40,23 @@ object PayslipTextParser {
             val middleExtracted =
                 extractFromColumn(cleanedMiddleText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
 
+            val hasBpayInFull = cleanedFullText.lowercase().contains("basic pay") || cleanedFullText.lowercase().contains("bpay")
+            val hasBpayInSplit = leftExtracted.any { (k, _) -> PayslipPatternConfig.creditKeysMapping[k] == "basicPay" }
+
+            var finalLeftExtracted = leftExtracted
+            var finalMiddleExtracted = middleExtracted
+            var isSplit = leftColumnText != middleColumnText
+
+            if (hasBpayInFull && !hasBpayInSplit) {
+                finalLeftExtracted = extractFromColumn(cleanedFullText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
+                finalMiddleExtracted = extractFromColumn(cleanedFullText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
+                isSplit = false
+            }
+
             val earningsMap = mutableMapOf<String, Double>()
             val deductionsMap = mutableMapOf<String, Double>()
 
-            val isSplit = leftColumnText != middleColumnText
-
-            for ((key, value) in leftExtracted) {
+            for ((key, value) in finalLeftExtracted) {
                 if (key in PayslipPatternConfig.creditKeysMapping.keys) {
                     val stdKey = PayslipPatternConfig.creditKeysMapping[key]!!
                     earningsMap[stdKey] = (earningsMap[stdKey] ?: 0.0) + value
@@ -65,7 +76,7 @@ object PayslipTextParser {
                 }
             }
 
-            for ((key, value) in middleExtracted) {
+            for ((key, value) in finalMiddleExtracted) {
                 if (key in PayslipPatternConfig.debitKeysMapping.keys) {
                     val stdKey = PayslipPatternConfig.debitKeysMapping[key]!!
                     deductionsMap[stdKey] = (deductionsMap[stdKey] ?: 0.0) + value

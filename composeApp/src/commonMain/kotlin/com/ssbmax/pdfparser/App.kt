@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -78,7 +78,7 @@ private fun BottomBar(
             selected = currentScreen == Screen.Explorer,
             onClick = { onNavigate(Screen.Explorer) },
             label = { Text(AppStrings.navigationExplorer) },
-            icon = { Icon(Icons.Default.List, contentDescription = null) },
+            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
         )
         NavigationBarItem(
             selected = currentScreen == Screen.Insights,

@@ -59,7 +59,7 @@ object PayslipPatternConfig {
             "A/o TRAN-2" to "adjTpta",
             "A/o Pay & Allce" to "adjPayAndAllce",
             "A/o FIELD-R1" to "adjFieldAllowance",
-            "ETKT-ref" to "ticketRecovery",
+            "ETKT-ref" to "adjTicketRecovery",
             "MEDICAL" to "medicalAllowance",
             "Op Cr Bal" to "openingCreditBalance",
             "Cl. Dr. Bal." to "closingDebitBalance",
