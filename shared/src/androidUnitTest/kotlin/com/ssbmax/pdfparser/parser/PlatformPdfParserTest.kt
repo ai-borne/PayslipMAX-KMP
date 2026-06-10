@@ -17,7 +17,6 @@ class PlatformPdfParserTest {
 
     @Test
     fun verifyAll46RealPayslips() {
-
         val baseDir = File("/Users/sunil/Desktop/Pay Slip Elements")
         if (!baseDir.exists()) {
             println("Pay Slip Elements directory not found, skipping integration test.")

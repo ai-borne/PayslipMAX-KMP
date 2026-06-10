@@ -95,11 +95,12 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     println("[PdfParserDebug] Finished left column text extraction. Length: ${leftText.length}")
 
                     // Crop Middle Column (Debits)
+                    val xRightBound = if (layoutScanner.detailsX > xSplit - 2f) layoutScanner.detailsX else pageWidth
                     val middleRect =
                         com.tom_roush.pdfbox.pdmodel.common.PDRectangle(
                             originX + xSplit - 2f,
                             originY + (pageHeight - yEnd),
-                            kotlin.math.max(10f, 310f - (xSplit - 2f)),
+                            kotlin.math.max(10f, xRightBound - (xSplit - 2f)),
                             yEnd - yStart,
                         )
                     page.cropBox = middleRect
