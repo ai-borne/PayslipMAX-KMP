@@ -101,6 +101,7 @@ def clean_commas_and_whitespace(text):
 def extract_from_column(col_text, credit_mapping, debit_mapping):
     extracted = {}
     working_col = clean_commas_and_whitespace(col_text)
+    working_col = re.sub(r"[^a-zA-Z0-9\s()/.&-]", " ", working_col)
     keys = list(set(list(credit_mapping.keys()) + list(debit_mapping.keys())))
     keys.sort(key=len, reverse=True)
     
@@ -389,21 +390,32 @@ def parse_pdf(file_path, filename):
     sum_deductions = sum(deductions_std.values())
     
     real_gross = gross_pay if gross_pay > 0 else sum_earnings
-    real_deductions = total_deductions if total_deductions > 0 and total_deductions != real_gross else sum_deductions
+    real_deductions = total_deductions if total_deductions > 0 and total_deductions != real_gross and total_deductions != net_remittance else sum_deductions
     
     final_net = net_remittance if net_remittance > 0 else (real_gross - real_deductions)
     
-    # Tax details from page 3/4
+    # Tax and DSOP details scanned dynamically
     tax_text = ""
-    if page_count >= 3:
-        tax_text = clean_commas_and_whitespace(reader.pages[2].extract_text() or "")
-    elif page_count >= 2:
-        tax_text = clean_commas_and_whitespace(reader.pages[1].extract_text() or "")
-        
     dsop_text = ""
-    if page_count >= 4:
-        dsop_text = clean_commas_and_whitespace(reader.pages[3].extract_text() or "")
-    else:
+    for i in range(page_count):
+        p_text = reader.pages[i].extract_text() or ""
+        p_text_lower = p_text.lower()
+        if not tax_text and (
+            "standard deduction" in p_text_lower or
+            "taxable income" in p_text_lower or
+            "tax payable" in p_text_lower or
+            "income tax deducted" in p_text_lower
+        ):
+            tax_text = clean_commas_and_whitespace(p_text)
+        if not dsop_text and (
+            "dsop fund" in p_text_lower or
+            ("opening balance" in p_text_lower and
+             "closing balance" in p_text_lower and
+             "subscription" in p_text_lower)
+        ):
+            dsop_text = clean_commas_and_whitespace(p_text)
+            
+    if not dsop_text:
         dsop_text = tax_text
         
     tax_and_savings_raw = {
@@ -482,7 +494,7 @@ def parse_pdf(file_path, filename):
             
         # DSOP Fund details
         if dsop_text:
-            dsop_match = re.search(r"Opening Balance\s+(\d+)\s+Subscription\s+(\d+)\s+Refund\s+(\d+)\s+Misc Adj\s+(\d+)\s+Withdrawal\s+(\d+)\s+Closing Balance\s+(\d+)", dsop_text, re.IGNORECASE)
+            dsop_match = re.search(r"Opening Balance\s*(\d+)\s*Subscription\s*(\d+)\s*Refund\s*(\d+)\s*Misc\s*Adj\s*(\d+)\s*Withdrawal\s*(\d+)\s*Closing Balance\s*(\d+)", dsop_text, re.IGNORECASE)
             if dsop_match:
                 op_bal = float(dsop_match.group(1))
                 subn = float(dsop_match.group(2))

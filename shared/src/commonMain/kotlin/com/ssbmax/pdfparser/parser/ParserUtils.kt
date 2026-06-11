@@ -80,7 +80,7 @@ internal fun extractFromColumn(
     debitMapping: Map<String, String>,
 ): Map<String, Double> {
     val extracted = mutableMapOf<String, Double>()
-    var workingCol = cleanCommasAndWhitespace(colText)
+    var workingCol = cleanCommasAndWhitespace(colText).replace(Regex("[^a-zA-Z0-9\\s()/.&-]"), " ")
     val keys = (creditMapping.keys + debitMapping.keys).distinct().sortedByDescending { it.length }
 
     for (key in keys) {
@@ -138,10 +138,10 @@ internal fun parseOfficer(cleanedFullText: String, monthNum: Int, year: Int): Of
         }
     }
 
-    var accountNo = acRegex.find(cleanedFullText)?.groupValues?.get(1)?.trim() ?: ""
+    val fallbackAcRegex = Regex("([0-9]{2,}/[0-9]{2,}/[0-9]{5,}[A-Z]?)", RegexOption.IGNORE_CASE)
+    var accountNo = fallbackAcRegex.find(cleanedFullText)?.groupValues?.get(1)?.trim() ?: ""
     if (accountNo.isEmpty()) {
-        val fallbackAcRegex = Regex("([0-9]{2,}/[0-9]{3,}/[0-9]{6,}[A-Z]?)", RegexOption.IGNORE_CASE)
-        accountNo = fallbackAcRegex.find(cleanedFullText)?.groupValues?.get(1)?.trim() ?: ""
+        accountNo = acRegex.find(cleanedFullText)?.groupValues?.get(1)?.trim() ?: ""
     }
     if (accountNo.isEmpty()) {
         accountNo = "16/000/000000X"
@@ -210,8 +210,8 @@ internal fun parseTaxAndSavings(
     if (taxText.isEmpty()) return null
 
     val grossSalMatch =
-        Regex("Gross Salary (?:upto \\d+/\\d+/\\d+)?\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-            ?: Regex("Pay & Allce upto\\s+\\d+/\\d+/\\d+\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
+        Regex("Gross Salary (?:upto \\d+/\\d+/\\d+)?.*?(?<!/)\\b(\\d{4,})\\b", RegexOption.IGNORE_CASE).find(taxText)
+            ?: Regex("Pay & Allce upto\\s+\\d+/\\d+/\\d+.*?(?<!/)\\b(\\d{4,})\\b", RegexOption.IGNORE_CASE).find(taxText)
     val taxableIncMatch =
         Regex("Total Taxable Income\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
             ?: Regex("Total taxable pay\\s+\\(Sl\\.No\\.\\s*\\d+\\+\\d+\\+\\d+\\+\\d+\\)\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
@@ -233,7 +233,7 @@ internal fun parseTaxAndSavings(
         if (dsopText.isNotEmpty()) {
             val dsopMatch =
                 Regex(
-                    "Opening Balance\\s+(\\d+)\\s+Subscription\\s+(\\d+)\\s+Refund\\s+(\\d+)\\s+Misc Adj\\s+(\\d+)\\s+Withdrawal\\s+(\\d+)\\s+Closing Balance\\s+(\\d+)",
+                    "Opening Balance\\s*(\\d+)\\s*Subscription\\s*(\\d+)\\s*Refund\\s*(\\d+)\\s*Misc\\s*Adj\\s*(\\d+)\\s*Withdrawal\\s*(\\d+)\\s*Closing Balance\\s*(\\d+)",
                     RegexOption.IGNORE_CASE,
                 ).find(dsopText)
             if (dsopMatch != null) {

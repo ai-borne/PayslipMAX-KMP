@@ -38,10 +38,10 @@ object AppStrings {
     // Explorer
     const val explorerHeader = "Payslip Digital Replica"
     const val explorerSubheader = "Tap any transaction code for detailed explanations"
-    const val replicaEarningTitle = "Aaya / Credits"
-    const val replicaDeductionTitle = "kTaOtI / Debits"
-    const val replicaGrossLabel = "Gross Pay (kuula Aaya)"
-    const val replicaDeductionsLabel = "Total Deductions (kuula kTaOtI)"
+    const val replicaEarningTitle = "Earnings / Credits (आय)"
+    const val replicaDeductionTitle = "Deductions / Debits (कटौती)"
+    const val replicaGrossLabel = "Gross Pay (कुल आय)"
+    const val replicaDeductionsLabel = "Total Deductions (कुल कटौती)"
     const val replicaNetLabel = "Net Remittance"
     const val replicaFooter = "Principal Controller of Defence Accounts (Officers), Pune\nMinistry of Defence, Government of India"
 
