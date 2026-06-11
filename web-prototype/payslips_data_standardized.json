@@ -233,12 +233,12 @@
       "tax_deducted_ytd": 0.0,
       "cess_deducted_ytd": 0.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 422361.0,
+        "subscription_ytd": 85044.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 507405.0
       }
     }
   },
@@ -314,12 +314,12 @@
       "tax_deducted_ytd": 132950.0,
       "cess_deducted_ytd": 1920.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
+        "opening_balance": 540908.0,
         "subscription_ytd": 0.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 540908.0
       }
     }
   },
@@ -476,12 +476,12 @@
       "tax_deducted_ytd": 224170.0,
       "cess_deducted_ytd": 5870.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 540908.0,
+        "subscription_ytd": 15888.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 556796.0
       }
     }
   },
@@ -557,12 +557,12 @@
       "tax_deducted_ytd": 265140.0,
       "cess_deducted_ytd": 7900.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 540908.0,
+        "subscription_ytd": 23832.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 564740.0
       }
     }
   },
@@ -800,12 +800,12 @@
       "tax_deducted_ytd": 395320.0,
       "cess_deducted_ytd": 14100.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 540908.0,
+        "subscription_ytd": 47664.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 588572.0
       }
     }
   },
@@ -962,12 +962,12 @@
       "tax_deducted_ytd": 480890.0,
       "cess_deducted_ytd": 18380.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 540908.0,
+        "subscription_ytd": 63552.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 604460.0
       }
     }
   },
@@ -1124,12 +1124,12 @@
       "tax_deducted_ytd": 614774.0,
       "cess_deducted_ytd": 24591.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 540908.0,
+        "subscription_ytd": 79680.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 620588.0
       }
     }
   },
@@ -1205,12 +1205,12 @@
       "tax_deducted_ytd": 45630.0,
       "cess_deducted_ytd": 1830.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 540908.0,
+        "subscription_ytd": 87864.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 628772.0
       }
     }
   },
@@ -1286,12 +1286,12 @@
       "tax_deducted_ytd": 94510.0,
       "cess_deducted_ytd": 3790.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 40000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 710282.0
       }
     }
   },
@@ -1367,12 +1367,12 @@
       "tax_deducted_ytd": 143490.0,
       "cess_deducted_ytd": 5750.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 80000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 750282.0
       }
     }
   },
@@ -1448,12 +1448,12 @@
       "tax_deducted_ytd": 183310.0,
       "cess_deducted_ytd": 7340.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 120000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 790282.0
       }
     }
   },
@@ -1529,12 +1529,12 @@
       "tax_deducted_ytd": 223880.0,
       "cess_deducted_ytd": 8960.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 160000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 830282.0
       }
     }
   },
@@ -1585,7 +1585,7 @@
       "water_charges": 0.0,
       "electricity_charges": 0.0,
       "barrack_damage": 0.0,
-      "ticket_recovery": 0.0,
+      "ticket_recovery": 4308.0,
       "rec_field_allowance": 0.0,
       "rec_special_forces": 0.0,
       "recovery_of_debits": 0.0
@@ -1598,7 +1598,7 @@
     },
     "summary": {
       "gross_pay": 220810.0,
-      "total_deductions": 93450.0,
+      "total_deductions": 97758.0,
       "net_remittance": 123052.0
     },
     "tax_and_savings": {
@@ -1610,12 +1610,12 @@
       "tax_deducted_ytd": 264440.0,
       "cess_deducted_ytd": 10580.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 200000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 870282.0
       }
     }
   },
@@ -1691,12 +1691,12 @@
       "tax_deducted_ytd": 264440.0,
       "cess_deducted_ytd": 10580.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 200000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 870282.0
       }
     }
   },
@@ -1853,12 +1853,12 @@
       "tax_deducted_ytd": 353030.0,
       "cess_deducted_ytd": 13940.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 280000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 950282.0
       }
     }
   },
@@ -1934,12 +1934,12 @@
       "tax_deducted_ytd": 395570.0,
       "cess_deducted_ytd": 15690.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 320000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 990282.0
       }
     }
   },
@@ -2015,12 +2015,12 @@
       "tax_deducted_ytd": 438110.0,
       "cess_deducted_ytd": 17440.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 360000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1030282.0
       }
     }
   },
@@ -2096,12 +2096,12 @@
       "tax_deducted_ytd": 478631.0,
       "cess_deducted_ytd": 19061.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 400000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1070282.0
       }
     }
   },
@@ -2177,12 +2177,12 @@
       "tax_deducted_ytd": 549273.0,
       "cess_deducted_ytd": 21971.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 440000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1110282.0
       }
     }
   },
@@ -2258,12 +2258,12 @@
       "tax_deducted_ytd": 48555.0,
       "cess_deducted_ytd": 1942.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 670282.0,
+        "subscription_ytd": 480000.0,
         "refund_ytd": 0.0,
-        "misc_adj_ytd": 0.0,
+        "misc_adj_ytd": 66050.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1216332.0
       }
     }
   },
@@ -2339,12 +2339,12 @@
       "tax_deducted_ytd": 97130.0,
       "cess_deducted_ytd": 3885.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription_ytd": 40000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1256332.0
       }
     }
   },
@@ -2420,12 +2420,12 @@
       "tax_deducted_ytd": 145705.0,
       "cess_deducted_ytd": 5828.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription_ytd": 80000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1296332.0
       }
     }
   },
@@ -2501,12 +2501,12 @@
       "tax_deducted_ytd": 195180.0,
       "cess_deducted_ytd": 7807.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription_ytd": 120000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1336332.0
       }
     }
   },
@@ -2582,12 +2582,12 @@
       "tax_deducted_ytd": 245753.0,
       "cess_deducted_ytd": 9830.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription_ytd": 160000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1376332.0
       }
     }
   },
@@ -2655,20 +2655,20 @@
       "net_remittance": 272911.0
     },
     "tax_and_savings": {
-      "gross_salary_ytd": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted_ytd": 0.0,
-      "cess_deducted_ytd": 0.0,
+      "gross_salary_ytd": 1769078.0,
+      "total_taxable_income": 3392978.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 702894.0,
+      "tax_deducted_ytd": 311058.0,
+      "cess_deducted_ytd": 12442.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription_ytd": 200000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1416332.0
       }
     }
   },
@@ -3222,20 +3222,20 @@
       "net_remittance": 175307.0
     },
     "tax_and_savings": {
-      "gross_salary_ytd": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted_ytd": 0.0,
-      "cess_deducted_ytd": 0.0,
+      "gross_salary_ytd": 271739.0,
+      "total_taxable_income": 3260868.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 535761.0,
+      "tax_deducted_ytd": 44646.0,
+      "cess_deducted_ytd": 1786.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription_ytd": 480000.0,
         "refund_ytd": 0.0,
-        "misc_adj_ytd": 0.0,
+        "misc_adj_ytd": 104819.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1801151.0
       }
     }
   },
@@ -3303,20 +3303,20 @@
       "net_remittance": 214902.0
     },
     "tax_and_savings": {
-      "gross_salary_ytd": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted_ytd": 0.0,
-      "cess_deducted_ytd": 0.0,
+      "gross_salary_ytd": 590332.0,
+      "total_taxable_income": 3340482.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 559644.0,
+      "tax_deducted_ytd": 91464.0,
+      "cess_deducted_ytd": 3659.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription_ytd": 40000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1841151.0
       }
     }
   },
@@ -3384,20 +3384,20 @@
       "net_remittance": 168140.0
     },
     "tax_and_savings": {
-      "gross_salary_ytd": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted_ytd": 0.0,
-      "cess_deducted_ytd": 0.0,
+      "gross_salary_ytd": 859479.0,
+      "total_taxable_income": 3334614.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 557883.0,
+      "tax_deducted_ytd": 138105.0,
+      "cess_deducted_ytd": 5525.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription_ytd": 80000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1881151.0
       }
     }
   },
@@ -3465,20 +3465,20 @@
       "net_remittance": 175311.0
     },
     "tax_and_savings": {
-      "gross_salary_ytd": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted_ytd": 0.0,
-      "cess_deducted_ytd": 0.0,
+      "gross_salary_ytd": 1135844.0,
+      "total_taxable_income": 3335964.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 558288.0,
+      "tax_deducted_ytd": 184792.0,
+      "cess_deducted_ytd": 7392.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription_ytd": 120000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1921151.0
       }
     }
   },
@@ -3546,20 +3546,20 @@
       "net_remittance": 197635.0
     },
     "tax_and_savings": {
-      "gross_salary_ytd": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted_ytd": 0.0,
-      "cess_deducted_ytd": 0.0,
+      "gross_salary_ytd": 1435859.0,
+      "total_taxable_income": 3360964.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 565788.0,
+      "tax_deducted_ytd": 232416.0,
+      "cess_deducted_ytd": 9297.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription_ytd": 160000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1961151.0
       }
     }
   },
@@ -3627,20 +3627,20 @@
       "net_remittance": 172986.0
     },
     "tax_and_savings": {
-      "gross_salary_ytd": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted_ytd": 0.0,
-      "cess_deducted_ytd": 0.0,
+      "gross_salary_ytd": 1710874.0,
+      "total_taxable_income": 3360964.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 565788.0,
+      "tax_deducted_ytd": 280040.0,
+      "cess_deducted_ytd": 11202.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription_ytd": 200000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 2001151.0
       }
     }
   },
@@ -3708,20 +3708,20 @@
       "net_remittance": 172986.0
     },
     "tax_and_savings": {
-      "gross_salary_ytd": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted_ytd": 0.0,
-      "cess_deducted_ytd": 0.0,
+      "gross_salary_ytd": 1710874.0,
+      "total_taxable_income": 3360964.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 565788.0,
+      "tax_deducted_ytd": 280040.0,
+      "cess_deducted_ytd": 11202.0,
       "dsop_fund": {
-        "opening_balance": 0.0,
-        "subscription_ytd": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription_ytd": 200000.0,
         "refund_ytd": 0.0,
         "misc_adj_ytd": 0.0,
         "withdrawal_ytd": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 2001151.0
       }
     }
   }

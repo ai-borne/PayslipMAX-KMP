@@ -115,26 +115,36 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
 
                     println("[PdfParserDebug] Spatial extraction completed. Number of pages: ${document.numberOfPages}")
 
-                    // Extract Page 3 and Page 4/3 text
                     var taxText = ""
-                    if (document.numberOfPages >= 3) {
-                        val taxStripper = PDFTextStripper()
-                        taxStripper.startPage = 3
-                        taxStripper.endPage = 3
-                        println("[PdfParserDebug] Starting Page 3 text extraction...")
-                        taxText = taxStripper.getText(document) ?: ""
-                        println("[PdfParserDebug] Finished Page 3 text extraction. Length: ${taxText.length}")
-                    }
-
                     var dsopText = ""
-                    if (document.numberOfPages >= 4) {
-                        val dsopStripper = PDFTextStripper()
-                        dsopStripper.startPage = 4
-                        dsopStripper.endPage = 4
-                        println("[PdfParserDebug] Starting Page 4 text extraction...")
-                        dsopText = dsopStripper.getText(document) ?: ""
-                        println("[PdfParserDebug] Finished Page 4 text extraction. Length: ${dsopText.length}")
-                    } else if (document.numberOfPages >= 3) {
+                    for (i in 0 until document.numberOfPages) {
+                        val pageStripper = PDFTextStripper()
+                        pageStripper.startPage = i + 1
+                        pageStripper.endPage = i + 1
+                        val pageText = pageStripper.getText(document) ?: ""
+                        val pageTextLower = pageText.lowercase()
+                        
+                        if (taxText.isEmpty() && (
+                            pageTextLower.contains("standard deduction") ||
+                            pageTextLower.contains("taxable income") ||
+                            pageTextLower.contains("tax payable") ||
+                            pageTextLower.contains("income tax deducted")
+                        )) {
+                            println("[PdfParserDebug] Dynamically found Tax details on page: ${i + 1}")
+                            taxText = pageText
+                        }
+                        
+                        if (dsopText.isEmpty() && (
+                            pageTextLower.contains("dsop fund") ||
+                            (pageTextLower.contains("opening balance") && 
+                             pageTextLower.contains("closing balance") && 
+                             pageTextLower.contains("subscription"))
+                        )) {
+                            println("[PdfParserDebug] Dynamically found DSOP details on page: ${i + 1}")
+                            dsopText = pageText
+                        }
+                    }
+                    if (dsopText.isEmpty()) {
                         dsopText = taxText
                     }
 

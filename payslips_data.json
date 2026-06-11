@@ -20,7 +20,7 @@
       "Incm Tax": 31199.0,
       "L Fee": 748.0,
       "AGIF": 5000.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 203181.0,
@@ -58,7 +58,7 @@
     "deductions": {
       "R/o Of /Drs": 6600.0,
       "L Fee": 748.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 7674.0,
@@ -102,10 +102,10 @@
       "DA": 1.0
     },
     "deductions": {
-      "WATER": 840.0,
+      "Water": 840.0,
       "L Fee": 748.0,
       "Elec": 13095.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 94333.0,
@@ -121,12 +121,12 @@
       "tax_deducted": 0.0,
       "cess_deducted": 0.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 422361.0,
+        "subscription": 85044.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 507405.0
       }
     }
   },
@@ -141,8 +141,8 @@
     },
     "earnings": {
       "A/o TRAN-2": 316.0,
-      "A/o BPAY-": 203329.0,
       "Basic Pay": 132400.0,
+      "A/o BPAY-": 203329.0,
       "A/o MSP-": 23804.0,
       "A/o DA-": 83722.0,
       "BPAY": 14.0,
@@ -155,7 +155,7 @@
       "Incm Tax": 132950.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 581007.0,
@@ -171,12 +171,12 @@
       "tax_deducted": 132950.0,
       "cess_deducted": 1920.0,
       "dsop": {
-        "opening_balance": 0.0,
+        "opening_balance": 540908.0,
         "subscription": 0.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 540908.0
       }
     }
   },
@@ -200,7 +200,7 @@
       "Incm Tax": 39520.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 225305.0,
@@ -249,7 +249,7 @@
       "Incm Tax": 51700.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 239969.0,
@@ -265,12 +265,12 @@
       "tax_deducted": 224170.0,
       "cess_deducted": 5870.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 540908.0,
+        "subscription": 15888.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 556796.0
       }
     }
   },
@@ -296,7 +296,7 @@
       "Incm Tax": 40970.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 223010.0,
@@ -312,12 +312,12 @@
       "tax_deducted": 265140.0,
       "cess_deducted": 7900.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 540908.0,
+        "subscription": 23832.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 564740.0
       }
     }
   },
@@ -340,11 +340,11 @@
       "DSOPF Subn": 7944.0,
       "Educ Cess": 2030.0,
       "Incm Tax": 40970.0,
-      "WATER": 840.0,
+      "Water": 840.0,
       "L Fee": 748.0,
-      "AGIF": 10000.0,
       "Elec": 13095.0,
-      "Fur": 326.0
+      "AGIF": 10000.0,
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 203010.0,
@@ -390,7 +390,7 @@
       "Incm Tax": 40970.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 203010.0,
@@ -436,10 +436,10 @@
       "DSOPF Subn": 7944.0,
       "Educ Cess": 2140.0,
       "Incm Tax": 48240.0,
-      "WATER": 731.0,
+      "Water": 731.0,
       "L Fee": 2186.0,
       "AGIF": 10000.0,
-      "Fur": 847.0
+      "FUR": 847.0
     },
     "summary": {
       "gross_pay": 228081.0,
@@ -455,12 +455,12 @@
       "tax_deducted": 395320.0,
       "cess_deducted": 14100.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 540908.0,
+        "subscription": 47664.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 588572.0
       }
     }
   },
@@ -485,7 +485,7 @@
       "Incm Tax": 42790.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 209070.0,
@@ -531,7 +531,7 @@
       "Incm Tax": 42780.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 209070.0,
@@ -547,12 +547,12 @@
       "tax_deducted": 480890.0,
       "cess_deducted": 18380.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 540908.0,
+        "subscription": 63552.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 604460.0
       }
     }
   },
@@ -575,10 +575,10 @@
       "DSOPF Subn": 8184.0,
       "Educ Cess": 2210.0,
       "Incm Tax": 44440.0,
-      "WATER": 157.0,
+      "Water": 157.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 214590.0,
@@ -627,7 +627,7 @@
       "Incm Tax": 89444.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "Fur": 326.0
+      "FUR": 326.0
     },
     "summary": {
       "gross_pay": 364590.0,
@@ -643,12 +643,12 @@
       "tax_deducted": 614774.0,
       "cess_deducted": 24591.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 540908.0,
+        "subscription": 79680.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 620588.0
       }
     }
   },
@@ -674,10 +674,10 @@
       "DSOPF Subn": 40000.0,
       "Educ Cess": 1830.0,
       "Incm Tax": 45630.0,
-      "WATER": 1235.0,
+      "Water": 1235.0,
       "L Fee": 7801.0,
       "AGIF": 10000.0,
-      "Fur": 3475.0
+      "FUR": 3475.0
     },
     "summary": {
       "gross_pay": 239862.0,
@@ -693,12 +693,12 @@
       "tax_deducted": 45630.0,
       "cess_deducted": 1830.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 540908.0,
+        "subscription": 87864.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 628772.0
       }
     }
   },
@@ -722,17 +722,17 @@
       "A/o DA-": 18228.0,
       "TRAN-1": 79.0,
       "MSP": 15500.0,
-      "FD": 36.0,
-      "DA": 63856.0
+      "DA": 63856.0,
+      "FD": 36.0
     },
     "deductions": {
-      "Rec CIA-FD": 30179.0,
       "DSOPF Subn": 40000.0,
+      "Rec CIA-FD": 30179.0,
       "Educ Cess": 1960.0,
       "Incm Tax": 48880.0,
       "L Fee": 1626.0,
       "AGIF": 10000.0,
-      "Fur": 718.0
+      "FUR": 718.0
     },
     "summary": {
       "gross_pay": 319438.0,
@@ -748,12 +748,12 @@
       "tax_deducted": 94510.0,
       "cess_deducted": 3790.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 40000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 710282.0
       }
     }
   },
@@ -782,7 +782,7 @@
       "R/o Etkt": 6143.0,
       "L Fee": 1626.0,
       "AGIF": 10000.0,
-      "Fur": 718.0
+      "FUR": 718.0
     },
     "summary": {
       "gross_pay": 255169.0,
@@ -798,12 +798,12 @@
       "tax_deducted": 143490.0,
       "cess_deducted": 5750.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 80000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 750282.0
       }
     }
   },
@@ -831,7 +831,7 @@
       "Incm Tax": 39820.0,
       "L Fee": 1626.0,
       "AGIF": 10000.0,
-      "Fur": 718.0
+      "FUR": 718.0
     },
     "summary": {
       "gross_pay": 220968.0,
@@ -847,12 +847,12 @@
       "tax_deducted": 183310.0,
       "cess_deducted": 7340.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 120000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 790282.0
       }
     }
   },
@@ -878,10 +878,10 @@
       "Educ Cess": 1620.0,
       "Incm Tax": 40570.0,
       "R/o Etkt": 2872.0,
-      "WATER": 731.0,
+      "Water": 731.0,
       "L Fee": 1626.0,
       "AGIF": 10000.0,
-      "Fur": 718.0
+      "FUR": 718.0
     },
     "summary": {
       "gross_pay": 242457.0,
@@ -897,12 +897,12 @@
       "tax_deducted": 223880.0,
       "cess_deducted": 8960.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 160000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 830282.0
       }
     }
   },
@@ -925,13 +925,14 @@
       "DSOPF Subn": 40000.0,
       "Educ Cess": 1620.0,
       "Incm Tax": 40560.0,
+      "R/o Etkt": 4308.0,
       "L Fee": 878.0,
       "AGIF": 10000.0,
-      "Fur": 392.0
+      "FUR": 392.0
     },
     "summary": {
       "gross_pay": 220810.0,
-      "total_deductions": 93450.0,
+      "total_deductions": 97758.0,
       "net_remittance": 123052.0
     },
     "tax_and_savings": {
@@ -943,12 +944,12 @@
       "tax_deducted": 264440.0,
       "cess_deducted": 10580.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 200000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 870282.0
       }
     }
   },
@@ -974,7 +975,7 @@
       "R/o Etkt": 4308.0,
       "L Fee": 878.0,
       "AGIF": 10000.0,
-      "Fur": 392.0
+      "FUR": 392.0
     },
     "summary": {
       "gross_pay": 220810.0,
@@ -990,12 +991,12 @@
       "tax_deducted": 264440.0,
       "cess_deducted": 10580.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 200000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 870282.0
       }
     }
   },
@@ -1020,7 +1021,7 @@
       "Incm Tax": 40560.0,
       "L Fee": 878.0,
       "AGIF": 10000.0,
-      "Fur": 392.0
+      "FUR": 392.0
     },
     "summary": {
       "gross_pay": 220810.0,
@@ -1071,7 +1072,7 @@
       "R/o Etkt": 839.0,
       "L Fee": 13045.0,
       "AGIF": 10000.0,
-      "Fur": 5695.0
+      "FUR": 5695.0
     },
     "summary": {
       "gross_pay": 263160.0,
@@ -1087,12 +1088,12 @@
       "tax_deducted": 353030.0,
       "cess_deducted": 13940.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 280000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 950282.0
       }
     }
   },
@@ -1108,18 +1109,18 @@
     "earnings": {
       "ARR-RSHNA": 1427.0,
       "TRAN1": 5256.0,
-      "BPAY": 136400.0,
       "ETKT": 484.0,
+      "BPAY": 136400.0,
       "MSP": 15500.0,
       "DA": 69874.0
     },
     "deductions": {
       "EHCESS": 1750.0,
+      "ETKT": 2129.0,
+      "ITAX": 42540.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 42540.0,
-      "ETKT": 2129.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1136,12 +1137,12 @@
       "tax_deducted": 395570.0,
       "cess_deducted": 15690.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 320000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 990282.0
       }
     }
   },
@@ -1162,10 +1163,10 @@
     },
     "deductions": {
       "EHCESS": 1750.0,
+      "ITAX": 42540.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 42540.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1182,12 +1183,12 @@
       "tax_deducted": 438110.0,
       "cess_deducted": 17440.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 360000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1030282.0
       }
     }
   },
@@ -1209,10 +1210,10 @@
     },
     "deductions": {
       "EHCESS": 1621.0,
+      "ITAX": 40521.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 40521.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1229,12 +1230,12 @@
       "tax_deducted": 478631.0,
       "cess_deducted": 19061.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 400000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1070282.0
       }
     }
   },
@@ -1250,20 +1251,20 @@
     "earnings": {
       "ARR-SPCDO": 181665.0,
       "TPTADA": 1656.0,
+      "ETKT": 1025.0,
       "TPTA": 3600.0,
       "BPAY": 140500.0,
-      "ETKT": 1025.0,
       "MSP": 15500.0,
       "DA": 71760.0
     },
     "deductions": {
       "EHCESS": 2910.0,
       "SPCDO": 106665.0,
+      "ETKT": 1445.0,
+      "ITAX": 70642.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 70642.0,
-      "ETKT": 1445.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1280,12 +1281,12 @@
       "tax_deducted": 549273.0,
       "cess_deducted": 21971.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 440000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1110282.0
       }
     }
   },
@@ -1310,11 +1311,11 @@
     },
     "deductions": {
       "EHCESS": 1942.0,
+      "ETKT": 702.0,
+      "ITAX": 48555.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 48555.0,
-      "ETKT": 702.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1331,12 +1332,12 @@
       "tax_deducted": 48555.0,
       "cess_deducted": 1942.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 670282.0,
+        "subscription": 480000.0,
         "refund": 0.0,
-        "misc_adj": 0.0,
+        "misc_adj": 66050.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1216332.0
       }
     }
   },
@@ -1360,10 +1361,10 @@
     "deductions": {
       "EHCESS": 1943.0,
       "RSHNA": 143.0,
+      "ITAX": 48575.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 48575.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1380,12 +1381,12 @@
       "tax_deducted": 97130.0,
       "cess_deducted": 3885.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription": 40000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1256332.0
       }
     }
   },
@@ -1407,10 +1408,10 @@
     },
     "deductions": {
       "EHCESS": 1943.0,
+      "ITAX": 48575.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 48575.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1427,12 +1428,12 @@
       "tax_deducted": 145705.0,
       "cess_deducted": 5828.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription": 80000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1296332.0
       }
     }
   },
@@ -1455,10 +1456,10 @@
     },
     "deductions": {
       "EHCESS": 1979.0,
+      "ITAX": 49475.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 49475.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1475,12 +1476,12 @@
       "tax_deducted": 195180.0,
       "cess_deducted": 7807.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription": 120000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1336332.0
       }
     }
   },
@@ -1504,11 +1505,11 @@
     },
     "deductions": {
       "EHCESS": 2023.0,
+      "ETKT": 1117.0,
+      "ITAX": 50573.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 50573.0,
-      "ETKT": 1117.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1525,12 +1526,12 @@
       "tax_deducted": 245753.0,
       "cess_deducted": 9830.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription": 160000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1376332.0
       }
     }
   },
@@ -1554,11 +1555,11 @@
     },
     "deductions": {
       "EHCESS": 2612.0,
-      "WATER": 3552.0,
+      "Water": 3552.0,
+      "ITAX": 65305.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 65305.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1567,20 +1568,20 @@
       "net_remittance": 272911.0
     },
     "tax_and_savings": {
-      "gross_salary": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted": 0.0,
-      "cess_deducted": 0.0,
+      "gross_salary": 1769078.0,
+      "total_taxable_income": 3392978.0,
+      "standard_deduction": 50000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 702894.0,
+      "tax_deducted": 311058.0,
+      "cess_deducted": 12442.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription": 200000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1416332.0
       }
     }
   },
@@ -1602,13 +1603,13 @@
     "deductions": {
       "TPTADA": 116.0,
       "EHCESS": 1860.0,
-      "WATER": 3552.0,
+      "Water": 3552.0,
       "SPCDO": 156250.0,
       "TPTA": 232.0,
+      "ITAX": 46492.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 46492.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1646,11 +1647,11 @@
     "earnings": {
       "ARR-TPTADA": 972.0,
       "ARR-RSHNA": 3001.0,
-      "ARR-RH12": 8450.0,
       "ARR-TPTA": 1440.0,
+      "ARR-RH12": 8450.0,
       "TPTADA": 1908.0,
       "ARR-DA": 14040.0,
-      "WATER": 3552.0,
+      "Water": 3552.0,
       "TPTA": 3600.0,
       "RH12": 21125.0,
       "BPAY": 140500.0,
@@ -1659,10 +1660,10 @@
     },
     "deductions": {
       "EHCESS": 2302.0,
+      "ITAX": 57560.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 57560.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1707,10 +1708,10 @@
     },
     "deductions": {
       "EHCESS": 2227.0,
+      "ITAX": 55685.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 55685.0,
-      "Fur": 392.0,
+      "FUR": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1746,24 +1747,24 @@
       "pan": "AR*****90G"
     },
     "earnings": {
-      "ARR-RH11": 24193.0,
       "ARR-HH32": 3290.0,
+      "ARR-RH11": 24193.0,
       "TPTADA": 1908.0,
       "TPTA": 3600.0,
       "RH12": 21125.0,
       "BPAY": 140500.0,
-      "Fur": 1032.0,
+      "FUR": 1032.0,
       "MSP": 15500.0,
-      "LF": 2312.0,
-      "DA": 82680.0
+      "DA": 82680.0,
+      "LF": 2312.0
     },
     "deductions": {
       "EHCESS": 2204.0,
-      "WATER": 887.0,
+      "Water": 887.0,
+      "ITAX": 55100.0,
       "DSOP": 40000.0,
       "AGIF": 10000.0,
-      "ITAX": 55100.0,
-      "Fur": 3825.0,
+      "FUR": 3825.0,
       "LF": 9044.0
     },
     "summary": {
@@ -1808,9 +1809,9 @@
     },
     "deductions": {
       "EHCESS": 2281.0,
+      "ITAX": 57027.0,
       "DSOP": 40000.0,
-      "AGIF": 10000.0,
-      "ITAX": 57027.0
+      "AGIF": 10000.0
     },
     "summary": {
       "gross_pay": 271739.0,
@@ -1854,9 +1855,9 @@
     },
     "deductions": {
       "EHCESS": 2282.0,
+      "ITAX": 57028.0,
       "DSOP": 40000.0,
-      "AGIF": 10000.0,
-      "ITAX": 57028.0
+      "AGIF": 10000.0
     },
     "summary": {
       "gross_pay": 271739.0,
@@ -1900,9 +1901,9 @@
     },
     "deductions": {
       "EHCESS": 1786.0,
+      "ITAX": 44646.0,
       "DSOP": 40000.0,
-      "AGIF": 10000.0,
-      "ITAX": 44646.0
+      "AGIF": 10000.0
     },
     "summary": {
       "gross_pay": 271739.0,
@@ -1910,20 +1911,20 @@
       "net_remittance": 175307.0
     },
     "tax_and_savings": {
-      "gross_salary": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted": 0.0,
-      "cess_deducted": 0.0,
+      "gross_salary": 271739.0,
+      "total_taxable_income": 3260868.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 535761.0,
+      "tax_deducted": 44646.0,
+      "cess_deducted": 1786.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1216332.0,
+        "subscription": 480000.0,
         "refund": 0.0,
-        "misc_adj": 0.0,
+        "misc_adj": 104819.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1801151.0
       }
     }
   },
@@ -1949,9 +1950,9 @@
     },
     "deductions": {
       "EHCESS": 1873.0,
+      "ITAX": 46818.0,
       "DSOP": 40000.0,
-      "AGIF": 15000.0,
-      "ITAX": 46818.0
+      "AGIF": 15000.0
     },
     "summary": {
       "gross_pay": 318593.0,
@@ -1959,20 +1960,20 @@
       "net_remittance": 214902.0
     },
     "tax_and_savings": {
-      "gross_salary": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted": 0.0,
-      "cess_deducted": 0.0,
+      "gross_salary": 590332.0,
+      "total_taxable_income": 3340482.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 559644.0,
+      "tax_deducted": 91464.0,
+      "cess_deducted": 3659.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription": 40000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1841151.0
       }
     }
   },
@@ -1996,10 +1997,10 @@
     },
     "deductions": {
       "EHCESS": 1866.0,
+      "ITAX": 46641.0,
       "RH12": 7518.0,
       "DSOP": 40000.0,
-      "AGIF": 12500.0,
-      "ITAX": 46641.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 276665.0,
@@ -2007,20 +2008,20 @@
       "net_remittance": 168140.0
     },
     "tax_and_savings": {
-      "gross_salary": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted": 0.0,
-      "cess_deducted": 0.0,
+      "gross_salary": 859479.0,
+      "total_taxable_income": 3334614.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 557883.0,
+      "tax_deducted": 138105.0,
+      "cess_deducted": 5525.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription": 80000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1881151.0
       }
     }
   },
@@ -2044,9 +2045,9 @@
     },
     "deductions": {
       "EHCESS": 1867.0,
+      "ITAX": 46687.0,
       "DSOP": 40000.0,
-      "AGIF": 12500.0,
-      "ITAX": 46687.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 276365.0,
@@ -2054,20 +2055,20 @@
       "net_remittance": 175311.0
     },
     "tax_and_savings": {
-      "gross_salary": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted": 0.0,
-      "cess_deducted": 0.0,
+      "gross_salary": 1135844.0,
+      "total_taxable_income": 3335964.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 558288.0,
+      "tax_deducted": 184792.0,
+      "cess_deducted": 7392.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription": 120000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1921151.0
       }
     }
   },
@@ -2081,8 +2082,8 @@
       "pan": "AR*****90G"
     },
     "earnings": {
-      "DRESALW": 25000.0,
       "MEDICAL": 1455.0,
+      "DRESALW": 25000.0,
       "TPTADA": 1980.0,
       "TPTA": 3600.0,
       "RH12": 21125.0,
@@ -2092,10 +2093,10 @@
     },
     "deductions": {
       "EHCESS": 1905.0,
-      "DSOP": 40000.0,
-      "AGIF": 12500.0,
+      "ETKT": 1806.0,
       "ITAX": 47624.0,
-      "ETKT": 1806.0
+      "DSOP": 40000.0,
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 301470.0,
@@ -2103,20 +2104,20 @@
       "net_remittance": 197635.0
     },
     "tax_and_savings": {
-      "gross_salary": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted": 0.0,
-      "cess_deducted": 0.0,
+      "gross_salary": 1435859.0,
+      "total_taxable_income": 3360964.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 565788.0,
+      "tax_deducted": 232416.0,
+      "cess_deducted": 9297.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription": 160000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 1961151.0
       }
     }
   },
@@ -2139,9 +2140,9 @@
     },
     "deductions": {
       "EHCESS": 1905.0,
+      "ITAX": 47624.0,
       "DSOP": 40000.0,
-      "AGIF": 12500.0,
-      "ITAX": 47624.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 275015.0,
@@ -2149,20 +2150,20 @@
       "net_remittance": 172986.0
     },
     "tax_and_savings": {
-      "gross_salary": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted": 0.0,
-      "cess_deducted": 0.0,
+      "gross_salary": 1710874.0,
+      "total_taxable_income": 3360964.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 565788.0,
+      "tax_deducted": 280040.0,
+      "cess_deducted": 11202.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription": 200000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 2001151.0
       }
     }
   },
@@ -2185,9 +2186,9 @@
     },
     "deductions": {
       "EHCESS": 1905.0,
+      "ITAX": 47624.0,
       "DSOP": 40000.0,
-      "AGIF": 12500.0,
-      "ITAX": 47624.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 275015.0,
@@ -2195,20 +2196,20 @@
       "net_remittance": 172986.0
     },
     "tax_and_savings": {
-      "gross_salary": 0.0,
-      "total_taxable_income": 0.0,
-      "standard_deduction": 0.0,
-      "net_taxable_income": 0.0,
-      "total_tax_payable": 0.0,
-      "tax_deducted": 0.0,
-      "cess_deducted": 0.0,
+      "gross_salary": 1710874.0,
+      "total_taxable_income": 3360964.0,
+      "standard_deduction": 75000.0,
+      "net_taxable_income": 7.0,
+      "total_tax_payable": 565788.0,
+      "tax_deducted": 280040.0,
+      "cess_deducted": 11202.0,
       "dsop": {
-        "opening_balance": 0.0,
-        "subscription": 0.0,
+        "opening_balance": 1801151.0,
+        "subscription": 200000.0,
         "refund": 0.0,
         "misc_adj": 0.0,
         "withdrawal": 0.0,
-        "closing_balance": 0.0
+        "closing_balance": 2001151.0
       }
     }
   }
