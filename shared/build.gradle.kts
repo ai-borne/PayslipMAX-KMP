@@ -51,6 +51,12 @@ kotlin {
             implementation(libs.pdfbox.android)
         }
 
+        val androidUnitTest by getting {
+            dependencies {
+                implementation("org.json:json:20240303")
+            }
+        }
+
         iosMain.dependencies {
             // iOS native frameworks like PDFKit are imported automatically via platform libraries
         }

@@ -9,6 +9,7 @@ class FakePdfParser : PdfParser {
     override fun decryptAndParse(
         pdfBytes: ByteArray,
         password: String,
+        filename: String,
     ): Result<ParsedPayslip> {
         return result
     }
