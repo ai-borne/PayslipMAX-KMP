@@ -150,10 +150,15 @@ object PayslipTextParser {
             val sumDeductions = deductionsMap.values.sum()
 
             var realGross = grossPay
-            if (realGross == 0.0) realGross = sumEarnings
+            if (realGross == 0.0) {
+                realGross = sumEarnings
+            }
 
             var realDeductions = totalDeductions
-            if (realDeductions == 0.0 || realDeductions == realGross) {
+            if (realDeductions == 0.0 ||
+                realDeductions == realGross ||
+                realDeductions == netRemittance
+            ) {
                 realDeductions = sumDeductions
             }
 

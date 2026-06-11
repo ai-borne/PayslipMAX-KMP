@@ -6,3 +6,8 @@ ktlint_standard_function-naming = disabled
 ktlint_standard_filename = disabled
 max_line_length = off
 
+# Skip all auto-generated files (Compose resource generator, KSP, etc.)
+# ktlint respects this property and will not lint files marked as generated
+[{**/build/**,**/generated/**}]
+generated_code = true
+
