@@ -26,6 +26,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
     actual override fun decryptAndParse(
         pdfBytes: ByteArray,
         password: String,
+        filename: String,
     ): Result<ParsedPayslip> {
         return try {
             val nsData =
@@ -229,7 +230,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                 fullText = flatText,
                 taxPageText = taxText,
                 dsopPageText = dsopText,
-                filename = "payslip.pdf",
+                filename = filename,
             )
         } catch (e: Throwable) {
             Result.failure(e)

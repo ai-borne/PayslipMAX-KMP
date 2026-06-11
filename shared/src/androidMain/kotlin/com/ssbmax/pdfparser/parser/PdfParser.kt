@@ -3,12 +3,14 @@ package com.ssbmax.pdfparser.parser
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
+import com.tom_roush.pdfbox.text.TextPosition
 import java.io.ByteArrayInputStream
 
 actual class PlatformPdfParser actual constructor() : PdfParser {
     actual override fun decryptAndParse(
         pdfBytes: ByteArray,
         password: String,
+        filename: String,
     ): Result<ParsedPayslip> {
         return try {
             try {
@@ -43,7 +45,11 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     val layoutScanner = LayoutScanner()
                     layoutScanner.startPage = tablePageIdx + 1
                     layoutScanner.endPage = tablePageIdx + 1
-                    val fullText = layoutScanner.getText(document) ?: ""
+                    layoutScanner.getText(document)
+
+                    // Extract full text of all pages for metadata parsing
+                    val fullStripper = PDFTextStripper()
+                    val fullText = fullStripper.getText(document) ?: ""
 
                     val page = document.getPage(tablePageIdx)
                     val originalCropBox = page.cropBox
@@ -78,42 +84,36 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
 
                     println("[PdfParserDebug] Final safe coordinates - yStart: $yStart, yEnd: $yEnd, xSplit: $xSplit")
 
-                    // Crop Left Column (Credits)
-                    val leftRect =
-                        com.tom_roush.pdfbox.pdmodel.common.PDRectangle(
-                            originX,
-                            originY + (pageHeight - yEnd),
-                            xSplit - 2f,
-                            yEnd - yStart,
-                        )
-                    page.cropBox = leftRect
-                    val leftStripper = PDFTextStripper()
+                    // Extract Left Column (Credits) spatially
+                    val leftStripper = SpatialTextStripper(
+                        xMin = 0f,
+                        xMax = xSplit - 2f,
+                        yMin = yStart,
+                        yMax = yEnd
+                    )
                     leftStripper.startPage = tablePageIdx + 1
                     leftStripper.endPage = tablePageIdx + 1
-                    println("[PdfParserDebug] Starting left column text extraction...")
-                    val leftText = leftStripper.getText(document) ?: ""
-                    println("[PdfParserDebug] Finished left column text extraction. Length: ${leftText.length}")
+                    println("[PdfParserDebug] Starting left column spatial extraction...")
+                    leftStripper.getText(document)
+                    val leftText = leftStripper.getFilteredText()
+                    println("[PdfParserDebug] Finished left column spatial extraction:\n$leftText")
 
-                    // Crop Middle Column (Debits)
+                    // Extract Middle Column (Debits) spatially
                     val xRightBound = if (layoutScanner.detailsX > xSplit - 2f) layoutScanner.detailsX else pageWidth
-                    val middleRect =
-                        com.tom_roush.pdfbox.pdmodel.common.PDRectangle(
-                            originX + xSplit - 2f,
-                            originY + (pageHeight - yEnd),
-                            kotlin.math.max(10f, xRightBound - (xSplit - 2f)),
-                            yEnd - yStart,
-                        )
-                    page.cropBox = middleRect
-                    val middleStripper = PDFTextStripper()
+                    val middleStripper = SpatialTextStripper(
+                        xMin = xSplit - 2f,
+                        xMax = xRightBound,
+                        yMin = yStart,
+                        yMax = yEnd
+                    )
                     middleStripper.startPage = tablePageIdx + 1
                     middleStripper.endPage = tablePageIdx + 1
-                    println("[PdfParserDebug] Starting middle column text extraction...")
-                    val middleText = middleStripper.getText(document) ?: ""
-                    println("[PdfParserDebug] Finished middle column text extraction. Length: ${middleText.length}")
+                    println("[PdfParserDebug] Starting middle column spatial extraction...")
+                    middleStripper.getText(document)
+                    val middleText = middleStripper.getFilteredText()
+                    println("[PdfParserDebug] Finished middle column spatial extraction:\n$middleText")
 
-                    // Restore original crop box
-                    page.cropBox = originalCropBox
-                    println("[PdfParserDebug] Original crop box restored. Number of pages: ${document.numberOfPages}")
+                    println("[PdfParserDebug] Spatial extraction completed. Number of pages: ${document.numberOfPages}")
 
                     // Extract Page 3 and Page 4/3 text
                     var taxText = ""
@@ -146,7 +146,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                             fullText = fullText,
                             taxPageText = taxText,
                             dsopPageText = dsopText,
-                            filename = "payslip.pdf",
+                            filename = filename,
                         )
                     println("[PdfParserDebug] Finished PayslipTextParser.parse. Success: ${parseResult.isSuccess}")
                     parseResult
@@ -155,5 +155,52 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         } catch (e: Throwable) {
             Result.failure(e)
         }
+    }
+}
+
+private class SpatialTextStripper(
+    private val xMin: Float,
+    private val xMax: Float,
+    private val yMin: Float,
+    private val yMax: Float
+) : PDFTextStripper() {
+    private val extractedText = StringBuilder()
+
+    init {
+        sortByPosition = true
+    }
+
+    override fun writeString(
+        text: String?,
+        textPositions: MutableList<TextPosition>?,
+    ) {
+        if (text == null || textPositions == null || textPositions.isEmpty()) return
+        
+        val lineBuilder = StringBuilder()
+        var lastX = 0f
+        var lastW = 0f
+        
+        for (tp in textPositions) {
+            val cx = tp.xDirAdj
+            val cy = tp.yDirAdj
+            
+            if (cx in xMin..xMax && cy in yMin..yMax) {
+                if (lineBuilder.isNotEmpty() && cx - (lastX + lastW) > 3f) {
+                    lineBuilder.append(' ')
+                }
+                lineBuilder.append(tp.unicode)
+                lastX = cx
+                lastW = tp.widthDirAdj
+            }
+        }
+        
+        val trimmed = lineBuilder.toString().trim()
+        if (trimmed.isNotEmpty()) {
+            extractedText.append(trimmed).append("\n")
+        }
+    }
+
+    fun getFilteredText(): String {
+        return extractedText.toString().trim()
     }
 }
