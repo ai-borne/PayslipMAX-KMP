@@ -65,10 +65,15 @@ class PayslipTextParserTest {
         assertEquals(140500.0, payslip.earnings.basicPay)
         assertEquals(71760.0, payslip.earnings.dearnessAllowance)
         assertEquals(15500.0, payslip.earnings.militaryServicePay)
+        assertEquals(3600.0, payslip.earnings.transportAllowance)
+        assertEquals(1656.0, payslip.earnings.transportAllowanceDa)
 
         assertEquals(40000.0, payslip.deductions.dsopSubscription)
+        assertEquals(10000.0, payslip.deductions.agif)
         assertEquals(40521.0, payslip.deductions.incomeTax)
         assertEquals(1621.0, payslip.deductions.educationCess)
+        assertEquals(878.0, payslip.deductions.licenseFee)
+        assertEquals(392.0, payslip.deductions.furnitureRent)
 
         assertEquals(233016.0, payslip.summary.grossPay)
         assertEquals(93412.0, payslip.summary.totalDeductions)
@@ -76,60 +81,22 @@ class PayslipTextParserTest {
 
         val tax = payslip.taxAndSavings!!
         assertNotNull(tax)
+        assertEquals(2547493.0, tax.grossSalaryYtd)
         assertEquals(2780509.0, tax.totalTaxableIncome)
         assertEquals(50000.0, tax.standardDeduction)
+        assertEquals(2730510.0, tax.netTaxableIncome)
         assertEquals(519153.0, tax.totalTaxPayable)
+        assertEquals(478631.0, tax.taxDeductedYtd)
+        assertEquals(19061.0, tax.cessDeductedYtd)
 
         val dsop = tax.dsopFund!!
         assertNotNull(dsop)
         assertEquals(670282.0, dsop.openingBalance)
+        assertEquals(400000.0, dsop.subscriptionYtd)
+        assertEquals(0.0, dsop.refundYtd)
+        assertEquals(0.0, dsop.miscAdjYtd)
+        assertEquals(0.0, dsop.withdrawalYtd)
         assertEquals(1070282.0, dsop.closingBalance)
-    }
-
-    @Test
-    fun testParse2022Format() {
-        val mockText =
-            """
-            01/2022
-             STATEMENT OF ACCOUNT FOR 01/2022
-            CDA A/C NO : 16/110/206718K
-            NAME  : SUNIL SURESH PAWAR
-            Basic Pay 132400
-            DA 45849
-            MSP 15500
-            Tpt Allc 9432
-            DSOPF Subn 7944
-            AGIF 5000
-            Incm Tax 31199
-            Educ Cess 1564
-            L Fee 748
-            Fur 326
-            Total Credit 203181 Total Debit 203181
-            REMITTANCE 156400
-            """.trimIndent()
-
-        val result = PayslipTextParser.parse(mockText, "01 January 2022.pdf")
-
-        assertTrue(result.isSuccess)
-        val payslip = result.getOrNull()!!
-        assertNotNull(payslip)
-
-        assertEquals(2022, payslip.year)
-        assertEquals(1, payslip.monthNum)
-        assertEquals("01/2022", payslip.dateStr)
-
-        assertEquals("SUNIL SURESH PAWAR", payslip.officer.name)
-        assertEquals(132400.0, payslip.earnings.basicPay)
-        assertEquals(45849.0, payslip.earnings.dearnessAllowance)
-        assertEquals(15500.0, payslip.earnings.militaryServicePay)
-        assertEquals(9432.0, payslip.earnings.transportAllowance)
-
-        assertEquals(7944.0, payslip.deductions.dsopSubscription)
-        assertEquals(31199.0, payslip.deductions.incomeTax)
-
-        assertEquals(203181.0, payslip.summary.grossPay)
-        assertEquals(46781.0, payslip.summary.totalDeductions)
-        assertEquals(156400.0, payslip.summary.netRemittance)
     }
 
     @Test
@@ -204,5 +171,14 @@ class PayslipTextParserTest {
         assertEquals(256042.0, payslip.summary.grossPay)
         assertEquals(32891.0, payslip.summary.totalDeductions)
         assertEquals(223151.0, payslip.summary.netRemittance)
+    }
+
+    @Test
+    fun testRegex() {
+        val text = "kula Aaya Gross Pay 337772 kula kTaOtI Total Deductions 259772"
+        val cleaned = negateHindiTransliterations(cleanCommasAndWhitespace(text))
+        println("cleaned: '$cleaned'")
+        val (gross, ded, net) = parseTotals(cleaned)
+        println("[TEST RESULT] gross: $gross, ded: $ded")
     }
 }

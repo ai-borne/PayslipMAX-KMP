@@ -12,6 +12,7 @@ interface PdfParser {
     fun decryptAndParse(
         pdfBytes: ByteArray,
         password: String,
+        filename: String = "payslip.pdf",
     ): Result<ParsedPayslip>
 }
 
@@ -19,5 +20,6 @@ expect class PlatformPdfParser() : PdfParser {
     override fun decryptAndParse(
         pdfBytes: ByteArray,
         password: String,
+        filename: String,
     ): Result<ParsedPayslip>
 }
