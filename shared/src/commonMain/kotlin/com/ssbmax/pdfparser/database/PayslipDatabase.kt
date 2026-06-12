@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 
-@Database(entities = [PayslipEntity::class], version = 1, exportSchema = false)
+@Database(entities = [EncryptedPayslipEntity::class, PayslipPdfEntity::class], version = 3, exportSchema = false)
 @ConstructedBy(PayslipDatabaseConstructor::class)
 abstract class PayslipDatabase : RoomDatabase() {
     abstract fun payslipDao(): PayslipDao

@@ -1,5 +1,8 @@
 package com.ssbmax.pdfparser.domain
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ParsedPayslip(
     val file: String,
     val year: Int,
@@ -14,12 +17,14 @@ data class ParsedPayslip(
     val taxAndSavings: TaxAndSavings?,
 )
 
+@Serializable
 data class Officer(
     val name: String,
     val accountNo: String,
     val pan: String,
 )
 
+@Serializable
 data class Earnings(
     val basicPay: Double = 0.0,
     val dearnessAllowance: Double = 0.0,
@@ -48,6 +53,7 @@ data class Earnings(
     val adjTicketRecovery: Double = 0.0,
 )
 
+@Serializable
 data class Deductions(
     val dsopSubscription: Double = 0.0,
     val agif: Double = 0.0,
@@ -64,6 +70,7 @@ data class Deductions(
     val recoveryOfDebits: Double = 0.0,
 )
 
+@Serializable
 data class LedgerBalances(
     val openingCreditBalance: Double = 0.0,
     val openingDebitBalance: Double = 0.0,
@@ -71,12 +78,14 @@ data class LedgerBalances(
     val closingDebitBalance: Double = 0.0,
 )
 
+@Serializable
 data class PayslipSummary(
     val grossPay: Double,
     val totalDeductions: Double,
     val netRemittance: Double,
 )
 
+@Serializable
 data class TaxAndSavings(
     val grossSalaryYtd: Double = 0.0,
     val totalTaxableIncome: Double = 0.0,
@@ -88,6 +97,7 @@ data class TaxAndSavings(
     val dsopFund: DsopFund? = null,
 )
 
+@Serializable
 data class DsopFund(
     val openingBalance: Double = 0.0,
     val subscriptionYtd: Double = 0.0,

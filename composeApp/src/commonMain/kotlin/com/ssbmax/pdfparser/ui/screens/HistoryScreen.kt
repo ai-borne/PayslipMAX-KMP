@@ -22,6 +22,7 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 @Composable
 fun HistoryScreen(
     viewModel: PayslipViewModel,
+    onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -32,6 +33,13 @@ fun HistoryScreen(
         PayslipReplicaScreen(
             payslip = selectedDetailPayslip!!,
             onBackClick = { selectedDetailPayslip = null },
+            onViewPdfClick = { dateStr ->
+                viewModel.getPayslipPdf(dateStr) { bytes ->
+                    if (bytes != null) {
+                        onOpenPdf(bytes, selectedDetailPayslip!!.file)
+                    }
+                }
+            },
             modifier = modifier,
         )
     } else {

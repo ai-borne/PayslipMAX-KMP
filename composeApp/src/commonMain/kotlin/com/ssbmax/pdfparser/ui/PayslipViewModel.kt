@@ -16,6 +16,11 @@ data class PayslipUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val importSuccess: Boolean = false,
+    val isPremiumEnabled: Boolean = false,
+    val geminiApiKey: String = "",
+    val aiInsights: String? = null,
+    val isAiLoading: Boolean = false,
+    val aiError: String? = null,
 )
 
 class PayslipViewModel(
@@ -185,5 +190,46 @@ class PayslipViewModel(
             _uiState.update { it.copy(isLoading = false) }
             onComplete(result)
         }
+    }
+
+    fun getPayslipPdf(
+        dateStr: String,
+        onResult: (ByteArray?) -> Unit,
+    ) {
+        viewModelScope.launch {
+            val pdfBytes = repository.getPayslipPdf(dateStr)
+            onResult(pdfBytes)
+        }
+    }
+
+    private val geminiService = com.ssbmax.pdfparser.insights.GeminiService()
+
+    fun setPremiumEnabled(enabled: Boolean) {
+        _uiState.update { it.copy(isPremiumEnabled = enabled) }
+    }
+
+    fun setGeminiApiKey(key: String) {
+        _uiState.update { it.copy(geminiApiKey = key) }
+    }
+
+    fun generateAiInsights(payslip: ParsedPayslip) {
+        val apiKey = _uiState.value.geminiApiKey
+        if (apiKey.isBlank()) {
+            _uiState.update { it.copy(aiError = "API Key is missing. Configure it in Settings.") }
+            return
+        }
+        viewModelScope.launch {
+            _uiState.update { it.copy(isAiLoading = true, aiError = null, aiInsights = null) }
+            val result = geminiService.getFinancialInsights(payslip, apiKey)
+            if (result.isSuccess) {
+                _uiState.update { it.copy(aiInsights = result.getOrThrow(), isAiLoading = false) }
+            } else {
+                _uiState.update { it.copy(aiError = result.exceptionOrNull()?.message ?: "Failed to generate AI insights", isAiLoading = false) }
+            }
+        }
+    }
+
+    fun clearAiInsights() {
+        _uiState.update { it.copy(aiInsights = null, aiError = null) }
     }
 }

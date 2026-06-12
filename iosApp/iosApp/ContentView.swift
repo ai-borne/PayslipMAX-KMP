@@ -18,6 +18,22 @@ struct ComposeView: UIViewControllerRepresentable {
                 picker.delegate = delegate
                 topViewController()?.present(picker, animated: true)
             }
+        }, onOpenPdf: { bytes, name in
+            DispatchQueue.main.async {
+                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(name)
+                var data = Data(count: Int(bytes.size))
+                for i in 0..<Int(bytes.size) {
+                    data[i] = UInt8(bitPattern: bytes.get(index: Int32(i)))
+                }
+                do {
+                    try data.write(to: tempURL)
+                    let activityVC = UIActivityViewController(activityItems: [tempURL], applicationActivities: nil)
+                    topViewController()?.present(activityVC, animated: true)
+                } catch {
+                    print("Error opening PDF: \(error)")
+                }
+            }
+            return KotlinUnit()
         })
     }
 

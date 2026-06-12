@@ -15,5 +15,5 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<PayslipDatabase> {
     return Room.databaseBuilder<PayslipDatabase>(
         context = context,
         name = dbFile.absolutePath,
-    )
+    ).fallbackToDestructiveMigration(true)
 }

@@ -29,6 +29,7 @@ enum class Screen {
 fun App(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
+    onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
 ) {
     var currentScreen by remember { mutableStateOf(Screen.Dashboard) }
 
@@ -53,7 +54,7 @@ fun App(
                             },
                         )
                     }
-                    Screen.History -> HistoryScreen(viewModel = viewModel)
+                    Screen.History -> HistoryScreen(viewModel = viewModel, onOpenPdf = onOpenPdf)
                     Screen.Insights -> InsightsScreen(viewModel = viewModel)
                     Screen.Settings -> SettingsScreen(viewModel = viewModel)
                 }

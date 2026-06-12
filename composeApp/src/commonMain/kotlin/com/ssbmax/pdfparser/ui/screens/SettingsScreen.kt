@@ -24,6 +24,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     var password by remember { mutableStateOf("535d04") }
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier =
@@ -37,6 +38,12 @@ fun SettingsScreen(
     ) {
         SettingsHeader()
         PrivacyCard()
+        PremiumSettingsCard(
+            isPremiumEnabled = uiState.isPremiumEnabled,
+            onPremiumToggle = { viewModel.setPremiumEnabled(it) },
+            geminiApiKey = uiState.geminiApiKey,
+            onApiKeyChange = { viewModel.setGeminiApiKey(it) }
+        )
         BackupRestoreSettingsCard(
             password = password,
             onPasswordChange = { password = it },
@@ -47,6 +54,67 @@ fun SettingsScreen(
             onSeedClick = { viewModel.seedMockData() },
             onClearClick = { viewModel.clearAllData() },
         )
+    }
+}
+
+@Composable
+private fun PremiumSettingsCard(
+    isPremiumEnabled: Boolean,
+    onPremiumToggle: (Boolean) -> Unit,
+    geminiApiKey: String,
+    onApiKeyChange: (String) -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AppDimensions.CornerRadius),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    ) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("👑", fontSize = 24.sp, modifier = Modifier.padding(end = 8.dp))
+                    Column {
+                        Text(
+                            text = "AI Financial Genius",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Unlock chartered-accountant advice",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                Switch(
+                    checked = isPremiumEnabled,
+                    onCheckedChange = onPremiumToggle
+                )
+            }
+            
+            if (isPremiumEnabled) {
+                OutlinedTextField(
+                    value = geminiApiKey,
+                    onValueChange = onApiKeyChange,
+                    label = { Text("Gemini API Key") },
+                    placeholder = { Text("Enter AIZA...") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                Text(
+                    text = "Your API Key is kept 100% offline and stored in secure memory.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
     }
 }
 

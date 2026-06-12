@@ -30,10 +30,11 @@ class PayslipRepositoryTest {
         runTest {
             val mockPayslip = createMockPayslip("08/2024")
             fakeParser.result = Result.success(mockPayslip)
+            val pdfBytes = byteArrayOf(1, 2, 3)
 
             val result =
                 repository.importPayslip(
-                    pdfBytes = byteArrayOf(1, 2, 3),
+                    pdfBytes = pdfBytes,
                     password = "test-password",
                     filename = "08-2024.pdf",
                 )
@@ -45,6 +46,11 @@ class PayslipRepositoryTest {
             val allDbPayslips = repository.getAllPayslips().first()
             assertEquals(1, allDbPayslips.size)
             assertEquals("08/2024", allDbPayslips.first().dateStr)
+
+            // Verify PDF was saved
+            val savedPdf = repository.getPayslipPdf("08/2024")
+            assertNotNull(savedPdf)
+            assertTrue(pdfBytes.contentEquals(savedPdf))
         }
 
     @Test
@@ -66,6 +72,10 @@ class PayslipRepositoryTest {
             // Verify nothing was inserted in the DAO
             val allDbPayslips = repository.getAllPayslips().first()
             assertTrue(allDbPayslips.isEmpty())
+
+            // Verify PDF was not saved
+            val savedPdf = repository.getPayslipPdf("08/2024")
+            assertNull(savedPdf)
         }
 
     @Test
@@ -73,7 +83,7 @@ class PayslipRepositoryTest {
         runTest {
             val mockPayslip = createMockPayslip("05/2024")
             fakeParser.result = Result.success(mockPayslip)
-            repository.importPayslip(byteArrayOf(), "pass", "file.pdf")
+            repository.importPayslip(byteArrayOf(4, 5), "pass", "file.pdf")
 
             val found = repository.getPayslipByDate("05/2024")
             assertNotNull(found)
@@ -88,31 +98,37 @@ class PayslipRepositoryTest {
         runTest {
             val mockPayslip = createMockPayslip("05/2024")
             fakeParser.result = Result.success(mockPayslip)
-            repository.importPayslip(byteArrayOf(), "pass", "file.pdf")
+            repository.importPayslip(byteArrayOf(9, 9), "pass", "file.pdf")
 
             // Assert inserted
             assertNotNull(repository.getPayslipByDate("05/2024"))
+            assertNotNull(repository.getPayslipPdf("05/2024"))
 
             // Delete
             repository.deletePayslip("05/2024")
 
             // Assert deleted
             assertNull(repository.getPayslipByDate("05/2024"))
+            assertNull(repository.getPayslipPdf("05/2024"))
         }
 
     @Test
     fun testClearAll() =
         runTest {
             fakeParser.result = Result.success(createMockPayslip("01/2024"))
-            repository.importPayslip(byteArrayOf(), "pass", "file.pdf")
+            repository.importPayslip(byteArrayOf(1, 1), "pass", "file.pdf")
             fakeParser.result = Result.success(createMockPayslip("02/2024"))
-            repository.importPayslip(byteArrayOf(), "pass", "file.pdf")
+            repository.importPayslip(byteArrayOf(2, 2), "pass", "file.pdf")
 
             assertEquals(2, repository.getAllPayslips().first().size)
+            assertNotNull(repository.getPayslipPdf("01/2024"))
+            assertNotNull(repository.getPayslipPdf("02/2024"))
 
             repository.clearAll()
 
             assertTrue(repository.getAllPayslips().first().isEmpty())
+            assertNull(repository.getPayslipPdf("01/2024"))
+            assertNull(repository.getPayslipPdf("02/2024"))
         }
 
     @Test

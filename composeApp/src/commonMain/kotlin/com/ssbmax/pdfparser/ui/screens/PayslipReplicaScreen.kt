@@ -12,6 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
@@ -20,6 +23,7 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 fun PayslipReplicaScreen(
     payslip: ParsedPayslip,
     onBackClick: () -> Unit,
+    onViewPdfClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var activeGlossaryItem by remember { mutableStateOf<Pair<String, String>?>(null) }
@@ -36,6 +40,9 @@ fun PayslipReplicaScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         MetadataSection(payslip = payslip)
+        Spacer(modifier = Modifier.height(16.dp))
+
+        PdfDocumentCard(payslip = payslip, onViewPdfClick = onViewPdfClick)
         Spacer(modifier = Modifier.height(16.dp))
 
         LedgerSection(payslip = payslip) { code, desc ->
@@ -279,4 +286,59 @@ private fun GlossaryDialog(
             }
         },
     )
+}
+
+@Composable
+private fun PdfDocumentCard(
+    payslip: ParsedPayslip,
+    onViewPdfClick: (String) -> Unit,
+) {
+    Card(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onViewPdfClick(payslip.dateStr) },
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+    ) {
+        Row(
+            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(40.dp)
+                        .background(Color(0xFFEF4444), RoundedCornerShape(4.dp)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "PDF",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    fontSize = 12.sp,
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = payslip.file,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = "Tap to open original statement",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+            Icon(
+                imageVector = Icons.Default.Share,
+                contentDescription = "Open",
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
 }

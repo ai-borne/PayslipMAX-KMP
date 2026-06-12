@@ -1,8 +1,9 @@
 package com.ssbmax.pdfparser.repository
 
 import com.ssbmax.pdfparser.database.PayslipDao
+import com.ssbmax.pdfparser.database.PayslipPdfEntity
 import com.ssbmax.pdfparser.database.toDomain
-import com.ssbmax.pdfparser.database.toEntity
+import com.ssbmax.pdfparser.database.toEncryptedEntity
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.parser.PdfParser
 import kotlinx.coroutines.Dispatchers
@@ -43,8 +44,17 @@ class PayslipRepository(
             val payslip = parseResult.getOrThrow()
 
             // Save to offline Room DB
-            payslipDao.insertPayslip(payslip.toEntity())
+            payslipDao.insertPayslip(payslip.toEncryptedEntity())
+            payslipDao.insertPayslipPdf(PayslipPdfEntity(payslip.dateStr, pdfBytes))
             Result.success(payslip)
+        }
+
+    /**
+     * Retrieves the raw PDF bytes for a specific payslip.
+     */
+    suspend fun getPayslipPdf(dateStr: String): ByteArray? =
+        withContext(dispatcher) {
+            payslipDao.getPayslipPdfByDate(dateStr)?.pdfData
         }
 
     /**
@@ -57,9 +67,11 @@ class PayslipRepository(
     /**
      * Deletes a payslip from local storage.
      */
-    suspend fun deletePayslip(dateStr: String) {
-        payslipDao.deletePayslip(dateStr)
-    }
+    suspend fun deletePayslip(dateStr: String) =
+        withContext(dispatcher) {
+            payslipDao.deletePayslip(dateStr)
+            payslipDao.deletePayslipPdf(dateStr)
+        }
 
     /**
      * Clears all local records from database.

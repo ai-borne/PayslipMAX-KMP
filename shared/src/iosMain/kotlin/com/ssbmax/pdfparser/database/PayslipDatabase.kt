@@ -13,7 +13,7 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<PayslipDatabase> {
     return Room.databaseBuilder<PayslipDatabase>(
         name = dbFilePath,
         factory = { PayslipDatabaseConstructor.initialize() },
-    )
+    ).fallbackToDestructiveMigration(true)
 }
 
 private fun documentDirectory(): String {
