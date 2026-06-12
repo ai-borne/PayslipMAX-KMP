@@ -78,7 +78,14 @@ fun TrendLineChart(
             )
 
             val gridVal = maxVal * (gridCount - i) / gridCount
-            val gridValStr = "₹${(gridVal / 1000).toInt()}k"
+            val lakhs = (gridVal / 1000.0).toInt() / 100.0
+            val lakhsStr = lakhs.toString()
+            val finalStr = when {
+                lakhs == 0.0 -> "0"
+                lakhsStr.endsWith(".0") -> lakhsStr.dropLast(2)
+                else -> lakhsStr
+            }
+            val gridValStr = if (finalStr == "0") "₹0" else "₹${finalStr}L"
             drawText(
                 textMeasurer = textMeasurer,
                 text = gridValStr,

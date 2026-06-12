@@ -255,7 +255,7 @@ def parse_pdf(file_path, filename):
     # Officer details
     name_match = re.search(r"(?:Name|naama/Name)\s*:\s*([A-Za-z\s]+)", full_text, re.IGNORECASE)
     officer_name = name_match.group(1).strip() if name_match else "Officer Officer Officer"
-    officer_name = re.split(r"A/C|Email|PAN|Basic|BPAY|CDA", officer_name, flags=re.IGNORECASE)[0].strip()
+    officer_name = re.split(r"A/C|Email|PAN|Basic|BPAY|CDA|laoKa|saM", officer_name, flags=re.IGNORECASE)[0].strip()
     if officer_name.lower().endswith(" a"):
         officer_name = officer_name[:-2].strip()
         

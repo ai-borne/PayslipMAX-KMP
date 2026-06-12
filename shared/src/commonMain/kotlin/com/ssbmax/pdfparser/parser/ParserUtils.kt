@@ -132,7 +132,7 @@ internal fun parseOfficer(cleanedFullText: String, monthNum: Int, year: Int): Of
     }
 
     if (officerName.isNotEmpty()) {
-        officerName = officerName.split(Regex("\\b(?:A/C|Email|PAN|Basic|BPAY|CDA|tada|ta)\\b", RegexOption.IGNORE_CASE))[0].trim()
+        officerName = officerName.split(Regex("\\b(?:A/C|Email|PAN|Basic|BPAY|CDA|tada|ta|laoKa|saM)\\b", RegexOption.IGNORE_CASE))[0].trim()
         if (officerName.endsWith(" A", ignoreCase = true)) {
             officerName = officerName.substring(0, officerName.length - 2).trim()
         }
@@ -163,9 +163,7 @@ internal fun parseOfficer(cleanedFullText: String, monthNum: Int, year: Int): Of
         panNo = "AR*****90G"
     }
 
-    if (officerName.equals("Officer Officer Officer", ignoreCase = true) && accountNo == "16/111/206718K") {
-        officerName = "Officer Officer Officer laoKa saM"
-    } else if (officerName.equals("OFFICER OFFICER OFFICER", ignoreCase = true)) {
+    if (officerName.equals("OFFICER OFFICER OFFICER", ignoreCase = true)) {
         if (year == 2023 && (monthNum == 9 || monthNum == 10)) {
             officerName = "OFFICER OFFICER OFFICER BANKERS"
         }
