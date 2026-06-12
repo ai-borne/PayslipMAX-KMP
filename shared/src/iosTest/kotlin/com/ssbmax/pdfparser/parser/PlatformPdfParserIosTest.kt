@@ -3,18 +3,17 @@
 package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.domain.*
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
+import platform.Foundation.NSData
+import platform.Foundation.NSFileManager
+import platform.Foundation.create
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import platform.Foundation.NSData
-import platform.Foundation.NSFileManager
-import platform.Foundation.create
-import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.usePinned
 
 class PlatformPdfParserIosTest {
-
     private fun NSData.toByteArray(): ByteArray {
         val size = this.length.toInt()
         val bytes = ByteArray(size)
@@ -30,7 +29,7 @@ class PlatformPdfParserIosTest {
     fun verifyAll46RealPayslipsOnIos() {
         val fileManager = NSFileManager.defaultManager
         val basePath = "/Users/sunil/Desktop/Pay Slip Elements"
-        
+
         if (!fileManager.fileExistsAtPath(basePath)) {
             println("Pay Slip Elements directory not found at $basePath, skipping iOS integration test.")
             return
@@ -39,12 +38,13 @@ class PlatformPdfParserIosTest {
         val jsonPath = "/Users/sunil/Downloads/PDFParser/payslips_data_standardized.json"
         val jsonData = NSData.create(contentsOfFile = jsonPath)
         assertNotNull(jsonData, "Standardized JSON file not found at $jsonPath!")
-        
-        val jsonArray = platform.Foundation.NSJSONSerialization.JSONObjectWithData(
-            data = jsonData,
-            options = 0UL,
-            error = null
-        ) as? platform.Foundation.NSArray
+
+        val jsonArray =
+            platform.Foundation.NSJSONSerialization.JSONObjectWithData(
+                data = jsonData,
+                options = 0UL,
+                error = null,
+            ) as? platform.Foundation.NSArray
         assertNotNull(jsonArray, "Failed to parse JSON on iOS!")
 
         val expectedMap = mutableMapOf<String, platform.Foundation.NSDictionary>()
@@ -67,9 +67,10 @@ class PlatformPdfParserIosTest {
             if (!fileManager.fileExistsAtPath(yearPath)) continue
 
             val contents = fileManager.contentsOfDirectoryAtPath(yearPath, null) as? List<*> ?: continue
-            val pdfFiles = contents.mapNotNull { it as? String }
-                .filter { it.endsWith(".pdf", ignoreCase = true) }
-                .sorted()
+            val pdfFiles =
+                contents.mapNotNull { it as? String }
+                    .filter { it.endsWith(".pdf", ignoreCase = true) }
+                    .sorted()
 
             for (fileName in pdfFiles) {
                 totalFiles++
@@ -79,7 +80,7 @@ class PlatformPdfParserIosTest {
                     errors.add("❌ $fileName - Could not read data from $filePath")
                     continue
                 }
-                
+
                 val bytes = data.toByteArray()
                 val result = parser.decryptAndParse(bytes, password, fileName)
 
@@ -117,7 +118,11 @@ class PlatformPdfParserIosTest {
         assertTrue(errors.isEmpty(), "There were failed/mismatched files on iOS:\n${errors.joinToString("\n")}")
     }
 
-    private fun comparePayslips(filename: String, actual: ParsedPayslip, expected: platform.Foundation.NSDictionary) {
+    private fun comparePayslips(
+        filename: String,
+        actual: ParsedPayslip,
+        expected: platform.Foundation.NSDictionary,
+    ) {
         // 1. Officer
         val expOfficer = expected.objectForKey("officer") as? platform.Foundation.NSDictionary
         if (expOfficer != null) {

@@ -11,11 +11,12 @@ internal fun cleanCommasAndWhitespace(text: String): String {
 }
 
 internal fun negateHindiTransliterations(text: String): String {
-    val hindiTransliterations = listOf(
-        "kuula", "kula", "Aaya", "kTaOtI", "laona", "dona", "ivavarNa", "raiSa", "laoKa",
-        "inavala", "p`oiYat", "Qana", "rxaa", "p`Qaana", "inayaM~k", "Af,sar", "puNao",
-        "ka", "kI", "ivavarNaI", "sqaayaI", "Kata", "saM#yaa", "laoKaI", "Aiga`ma", "?Na"
-    )
+    val hindiTransliterations =
+        listOf(
+            "kuula", "kula", "Aaya", "kTaOtI", "laona", "dona", "ivavarNa", "raiSa", "laoKa",
+            "inavala", "p`oiYat", "Qana", "rxaa", "p`Qaana", "inayaM~k", "Af,sar", "puNao",
+            "ka", "kI", "ivavarNaI", "sqaayaI", "Kata", "saM#yaa", "laoKaI", "Aiga`ma", "?Na",
+        )
     var cleaned = text
     for (word in hindiTransliterations) {
         cleaned = cleaned.replace(Regex("(?<![a-zA-Z0-9])${Regex.escape(word)}(?![a-zA-Z0-9])", RegexOption.IGNORE_CASE), " ")
@@ -25,14 +26,15 @@ internal fun negateHindiTransliterations(text: String): String {
 
 internal fun stripNotesAndDescriptions(text: String): String {
     val lines = text.split('\n')
-    val filteredLines = lines.filterNot { line ->
-        val trimmed = line.trim()
-        trimmed.contains(Regex("^\\d+\\s*\\.\\s*(?:Recovery|Credit|Refund|Rent|Bill|LF)\\b", RegexOption.IGNORE_CASE)) ||
-        trimmed.contains(Regex("^Rent Bill", RegexOption.IGNORE_CASE)) ||
-        trimmed.contains(Regex("^Recovery of", RegexOption.IGNORE_CASE)) ||
-        trimmed.contains(Regex("^Credit of", RegexOption.IGNORE_CASE)) ||
-        trimmed.contains(Regex("^Refund of", RegexOption.IGNORE_CASE))
-    }
+    val filteredLines =
+        lines.filterNot { line ->
+            val trimmed = line.trim()
+            trimmed.contains(Regex("^\\d+\\s*\\.\\s*(?:Recovery|Credit|Refund|Rent|Bill|LF)\\b", RegexOption.IGNORE_CASE)) ||
+                trimmed.contains(Regex("^Rent Bill", RegexOption.IGNORE_CASE)) ||
+                trimmed.contains(Regex("^Recovery of", RegexOption.IGNORE_CASE)) ||
+                trimmed.contains(Regex("^Credit of", RegexOption.IGNORE_CASE)) ||
+                trimmed.contains(Regex("^Refund of", RegexOption.IGNORE_CASE))
+        }
     return filteredLines.joinToString("\n")
 }
 
@@ -53,13 +55,14 @@ internal fun stripNotesAndDescriptions(text: String): String {
  */
 internal fun splitCreditDebitSections(cleanedText: String): Triple<String, String, Boolean> {
     // These anchor labels can ONLY appear in the debit column; use the earliest one found.
-    val debitOnlyAnchors = listOf(
-        "DSOPF Subn", "DSOPF", "DSOP", "AGIF", "Incm Tax", "ITAX",
-        "Educ Cess", "EHCESS", "L Fee", "LF", "Fur", "FUR",
-        "Water", "WATER", "Elec", "Barrack Damage", "Dr Barrack Damage",
-        "ETKT", "R/o Etkt", "Rec CIA-FD", "Rec PARA-SC", "Op Dr Bal",
-        "OP Bal(-)", "Cl. Cr. Bal.", "Clos Bal(+)", "R/o Of /Drs"
-    )
+    val debitOnlyAnchors =
+        listOf(
+            "DSOPF Subn", "DSOPF", "DSOP", "AGIF", "Incm Tax", "ITAX",
+            "Educ Cess", "EHCESS", "L Fee", "LF", "Fur", "FUR",
+            "Water", "WATER", "Elec", "Barrack Damage", "Dr Barrack Damage",
+            "ETKT", "R/o Etkt", "Rec CIA-FD", "Rec PARA-SC", "Op Dr Bal",
+            "OP Bal(-)", "Cl. Cr. Bal.", "Clos Bal(+)", "R/o Of /Drs",
+        )
     var splitIdx = cleanedText.length
     var found = false
     for (anchor in debitOnlyAnchors) {
@@ -120,7 +123,11 @@ internal fun parseDate(
     }
 }
 
-internal fun parseOfficer(cleanedFullText: String, monthNum: Int, year: Int): Officer {
+internal fun parseOfficer(
+    cleanedFullText: String,
+    monthNum: Int,
+    year: Int,
+): Officer {
     val nameRegex = Regex("(?:Name|naama/Name)\\s*:\\s*([A-Za-z\\s]+)", RegexOption.IGNORE_CASE)
     val acRegex = Regex("(?:A/C No|CDA A/C NO|laoKa saM#yaa /A/C No)\\s*[:\\-–]?\\s*([^\\s]+)", RegexOption.IGNORE_CASE)
     val panRegex = Regex("(?:PAN No|sqaayaI Kata saM#yaa/PAN No)\\s*:\\s*([^\\s]+)", RegexOption.IGNORE_CASE)

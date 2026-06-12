@@ -64,7 +64,6 @@ fun DashboardScreen(
     }
 }
 
-
 @Composable
 private fun StatsGridSection(payslip: ParsedPayslip) {
     val net = payslip.summary.netRemittance
@@ -163,9 +162,10 @@ private fun TrendChartCard(payslips: List<ParsedPayslip>) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
-                            .size(12.dp, 4.dp)
-                            .background(Color(0xFF3B82F6), RoundedCornerShape(2.dp)),
+                        modifier =
+                            Modifier
+                                .size(12.dp, 4.dp)
+                                .background(Color(0xFF3B82F6), RoundedCornerShape(2.dp)),
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
@@ -176,9 +176,10 @@ private fun TrendChartCard(payslips: List<ParsedPayslip>) {
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
-                            .size(12.dp, 4.dp)
-                            .background(Color(0xFF10B981), RoundedCornerShape(2.dp)),
+                        modifier =
+                            Modifier
+                                .size(12.dp, 4.dp)
+                                .background(Color(0xFF10B981), RoundedCornerShape(2.dp)),
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
@@ -256,4 +257,3 @@ private fun AllocationLegend(
         }
     }
 }
-

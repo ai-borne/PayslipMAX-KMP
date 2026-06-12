@@ -12,9 +12,6 @@ import kotlinx.cinterop.usePinned
 import platform.CoreGraphics.CGRect
 import platform.CoreGraphics.CGRectGetMinX
 import platform.CoreGraphics.CGRectGetMinY
-import platform.CoreGraphics.CGRectGetWidth
-import platform.CoreGraphics.CGRectGetHeight
-import platform.CoreGraphics.CGRectMake
 import platform.Foundation.NSData
 import platform.Foundation.create
 import platform.PDFKit.PDFDocument
@@ -177,21 +174,23 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             println("[PdfParserDebug] Final safe coordinates - yMinVal: $yMinVal, yMaxVal: $yMaxVal, xDsopVal: $xDsopVal, xRightBound: $xRightBound, pageWidth: $pageWidth, pageHeight: $pageHeight")
             println("[PdfParserDebug] --- RAW TABLE PAGE STRING ---\n${tablePage.string}")
 
-            val leftText = extractTextSpatially(
-                page = tablePage,
-                xMin = 0.0,
-                xMax = xDsopVal - 2.0,
-                yMin = yMinVal,
-                yMax = yMaxVal
-            )
+            val leftText =
+                extractTextSpatially(
+                    page = tablePage,
+                    xMin = 0.0,
+                    xMax = xDsopVal - 2.0,
+                    yMin = yMinVal,
+                    yMax = yMaxVal,
+                )
 
-            val middleText = extractTextSpatially(
-                page = tablePage,
-                xMin = xDsopVal - 2.0,
-                xMax = xRightBound,
-                yMin = yMinVal,
-                yMax = yMaxVal
-            )
+            val middleText =
+                extractTextSpatially(
+                    page = tablePage,
+                    xMin = xDsopVal - 2.0,
+                    xMax = xRightBound,
+                    yMin = yMinVal,
+                    yMax = yMaxVal,
+                )
 
             val textBuilder = StringBuilder()
             for (i in 0 until pageCount) {
@@ -207,23 +206,27 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                 val page = pdfDoc.pageAtIndex(i.toULong())
                 val pageText = page?.string ?: ""
                 val pageTextLower = pageText.lowercase()
-                
+
                 if (taxText.isEmpty() && (
-                    pageTextLower.contains("standard deduction") ||
-                    pageTextLower.contains("taxable income") ||
-                    pageTextLower.contains("tax payable") ||
-                    pageTextLower.contains("income tax deducted")
-                )) {
+                        pageTextLower.contains("standard deduction") ||
+                            pageTextLower.contains("taxable income") ||
+                            pageTextLower.contains("tax payable") ||
+                            pageTextLower.contains("income tax deducted")
+                    )
+                ) {
                     println("[PdfParserDebug] Dynamically found Tax details on page: ${i + 1}")
                     taxText = pageText
                 }
-                
+
                 if (dsopText.isEmpty() && (
-                    pageTextLower.contains("dsop fund") ||
-                    (pageTextLower.contains("opening balance") && 
-                     pageTextLower.contains("closing balance") && 
-                     pageTextLower.contains("subscription"))
-                )) {
+                        pageTextLower.contains("dsop fund") ||
+                            (
+                                pageTextLower.contains("opening balance") &&
+                                    pageTextLower.contains("closing balance") &&
+                                    pageTextLower.contains("subscription")
+                            )
+                    )
+                ) {
                     println("[PdfParserDebug] Dynamically found DSOP details on page: ${i + 1}")
                     dsopText = pageText
                 }

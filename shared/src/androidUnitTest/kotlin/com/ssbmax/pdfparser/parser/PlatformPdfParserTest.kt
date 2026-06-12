@@ -1,14 +1,12 @@
 package com.ssbmax.pdfparser.parser
 
+import com.ssbmax.pdfparser.domain.ParsedPayslip
 import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import com.ssbmax.pdfparser.domain.ParsedPayslip
 
 class PlatformPdfParserTest {
-
     @Test
     fun verifyAll46RealPayslips() {
         val baseDir = File("/Users/sunil/Desktop/Pay Slip Elements")
@@ -19,7 +17,7 @@ class PlatformPdfParserTest {
 
         val jsonFile = File("/Users/sunil/Downloads/PDFParser/payslips_data_standardized.json")
         assertTrue(jsonFile.exists(), "Standardized JSON file not found!")
-        
+
         val jsonText = jsonFile.readText()
         val jsonArray = org.json.JSONArray(jsonText)
         val expectedMap = mutableMapOf<String, org.json.JSONObject>()
@@ -28,7 +26,6 @@ class PlatformPdfParserTest {
             expectedMap[obj.getString("file")] = obj
         }
         println("[TEST DEBUG] expectedMap keys size: ${expectedMap.size}, keys: ${expectedMap.keys.take(5)}")
-
 
         val years = listOf("2022", "2023", "2024", "2025")
         val password = "535d04"
@@ -96,7 +93,11 @@ class PlatformPdfParserTest {
         assertTrue(errors.isEmpty(), "There were failed/mismatched files:\n${errors.joinToString("\n")}")
     }
 
-    private fun comparePayslips(filename: String, actual: ParsedPayslip, expected: org.json.JSONObject) {
+    private fun comparePayslips(
+        filename: String,
+        actual: ParsedPayslip,
+        expected: org.json.JSONObject,
+    ) {
         // 1. Officer
         val expOfficer = expected.getJSONObject("officer")
         assertEquals(expOfficer.getString("name"), actual.officer.name, "$filename: Officer Name mismatch")

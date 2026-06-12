@@ -3,10 +3,10 @@
 package com.ssbmax.pdfparser.parser
 
 import kotlinx.cinterop.ExperimentalForeignApi
+import platform.CoreGraphics.CGRectGetHeight
 import platform.CoreGraphics.CGRectGetMinX
 import platform.CoreGraphics.CGRectGetMinY
 import platform.CoreGraphics.CGRectGetWidth
-import platform.CoreGraphics.CGRectGetHeight
 import platform.PDFKit.PDFPage
 
 internal data class PdfChar(
@@ -15,7 +15,7 @@ internal data class PdfChar(
     val y: Double,
     val w: Double,
     val h: Double,
-    val index: Int
+    val index: Int,
 )
 
 internal fun extractTextSpatially(
@@ -23,7 +23,7 @@ internal fun extractTextSpatially(
     xMin: Double,
     xMax: Double,
     yMin: Double,
-    yMax: Double
+    yMax: Double,
 ): String {
     val pageString = page.string ?: return ""
     val chars = ArrayList<PdfChar>()
@@ -57,10 +57,11 @@ internal fun extractTextSpatially(
     val lines = mutableListOf<MutableList<PdfChar>>()
 
     for (c in sortedChars) {
-        val line = lines.find { lineChars ->
-            val avgY = lineChars.map { it.y }.average()
-            kotlin.math.abs(avgY - c.y) < 5.0
-        }
+        val line =
+            lines.find { lineChars ->
+                val avgY = lineChars.map { it.y }.average()
+                kotlin.math.abs(avgY - c.y) < 5.0
+            }
         if (line != null) {
             line.add(c)
         } else {
@@ -69,9 +70,10 @@ internal fun extractTextSpatially(
     }
 
     // Sort lines by Y descending
-    val sortedLines = lines.sortedByDescending { lineChars ->
-        lineChars.map { it.y }.average()
-    }
+    val sortedLines =
+        lines.sortedByDescending { lineChars ->
+            lineChars.map { it.y }.average()
+        }
 
     // Reconstruct words with space thresholding
     val resultText = StringBuilder()
