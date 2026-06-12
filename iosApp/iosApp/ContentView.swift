@@ -60,6 +60,7 @@ struct ComposeView: UIViewControllerRepresentable {
                     
                     objc_setAssociatedObject(previewVC, &AssociatedKeys.dataSource, dataSource, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
                     previewVC.dataSource = dataSource
+                    previewVC.modalPresentationStyle = .overFullScreen
                     topViewController()?.present(previewVC, animated: true)
                 } catch {
                     print("Error opening PDF: \(error)")
