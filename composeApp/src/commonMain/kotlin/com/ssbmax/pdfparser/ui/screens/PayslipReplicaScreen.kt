@@ -3,6 +3,8 @@ package com.ssbmax.pdfparser.ui.screens
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,23 +13,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
-import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @Composable
 fun PayslipReplicaScreen(
-    viewModel: PayslipViewModel,
+    payslip: ParsedPayslip,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val selected = uiState.selectedPayslip
     var activeGlossaryItem by remember { mutableStateOf<Pair<String, String>?>(null) }
-
-    if (selected == null) {
-        NoSelectedPayslipView()
-        return
-    }
 
     Column(
         modifier =
@@ -37,18 +32,18 @@ fun PayslipReplicaScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(AppDimensions.PaddingMedium),
     ) {
-        HeaderSection()
+        ReplicaHeader(onBackClick)
         Spacer(modifier = Modifier.height(16.dp))
 
-        MetadataSection(payslip = selected)
+        MetadataSection(payslip = payslip)
         Spacer(modifier = Modifier.height(16.dp))
 
-        LedgerSection(payslip = selected) { code, desc ->
+        LedgerSection(payslip = payslip) { code, desc ->
             activeGlossaryItem = code to desc
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-        FooterSection(payslip = selected)
+        FooterSection()
 
         activeGlossaryItem?.let { (code, desc) ->
             GlossaryDialog(code = code, desc = desc, onDismiss = { activeGlossaryItem = null })
@@ -57,24 +52,31 @@ fun PayslipReplicaScreen(
 }
 
 @Composable
-private fun HeaderSection() {
-    Text(
-        text = AppStrings.explorerHeader,
-        style = MaterialTheme.typography.headlineMedium,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onBackground,
-    )
-    Text(
-        text = AppStrings.explorerSubheader,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-}
-
-@Composable
-private fun NoSelectedPayslipView() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Please import or select a payslip first.")
+private fun ReplicaHeader(onBackClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(onClick = onBackClick) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Column {
+            Text(
+                text = AppStrings.explorerHeader,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            Text(
+                text = AppStrings.explorerSubheader,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
@@ -120,7 +122,12 @@ private fun LedgerSection(
             Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
                 // Credits Column
                 Column(
-                    modifier = Modifier.weight(1f).border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .border(
+                                BorderStroke(0.5.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+                            ),
                 ) {
                     getCreditsList(payslip).forEach { (code, amount, desc) ->
                         LedgerRowItem(code = code, amount = amount, desc = desc, onClick = onItemClick)
@@ -128,7 +135,12 @@ private fun LedgerSection(
                 }
                 // Debits Column
                 Column(
-                    modifier = Modifier.weight(1f).border(BorderStroke(0.5.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .border(
+                                BorderStroke(0.5.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+                            ),
                 ) {
                     getDebitsList(payslip).forEach { (code, amount, desc) ->
                         LedgerRowItem(code = code, amount = amount, desc = desc, onClick = onItemClick)
@@ -144,7 +156,11 @@ private fun LedgerSection(
 @Composable
 private fun LedgerTableHeader() {
     Row(
-        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).padding(8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
@@ -200,12 +216,21 @@ private fun LedgerRowItem(
 
 @Composable
 private fun LedgerTableFooter(payslip: ParsedPayslip) {
-    Column(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)).padding(12.dp)) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
+                .padding(12.dp),
+    ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(text = "Gross Pay (Credits)", style = MaterialTheme.typography.bodyMedium)
             Text(text = "₹${formatVal(payslip.summary.grossPay)}", fontWeight = FontWeight.Bold)
         }
-        Row(modifier = Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
             Text(text = "Total Deductions (Debits)", style = MaterialTheme.typography.bodyMedium)
             Text(text = "₹${formatVal(payslip.summary.totalDeductions)}", fontWeight = FontWeight.Bold)
         }
@@ -228,7 +253,7 @@ private fun LedgerTableFooter(payslip: ParsedPayslip) {
 }
 
 @Composable
-private fun FooterSection(payslip: ParsedPayslip) {
+private fun FooterSection() {
     Text(
         text = AppStrings.replicaFooter,
         style = MaterialTheme.typography.labelSmall,

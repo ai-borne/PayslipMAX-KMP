@@ -5,9 +5,9 @@ object AppStrings {
     const val appTitle = "PCDA Payslip Portal"
     const val appSubtitle = "Indian Army Personnel Financial Analytics"
     const val navigationHome = "Dashboard"
-    const val navigationExplorer = "Explorer"
+    const val navigationHistory = "History"
     const val navigationInsights = "Insights"
-    const val navigationImport = "Import"
+    const val navigationSettings = "Settings"
 
     // Metadata Badges
     const val badgeOfficer = "Officer"

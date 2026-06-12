@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.ui.PayslipUiState
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.components.AllocationPieChart
 import com.ssbmax.pdfparser.ui.components.TrendLineChart
@@ -22,6 +25,7 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 @Composable
 fun DashboardScreen(
     viewModel: PayslipViewModel,
+    onPickPdfTrigger: (password: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -29,10 +33,94 @@ fun DashboardScreen(
     val selected = uiState.selectedPayslip
 
     if (payslips.isEmpty()) {
-        EmptyStateScreen()
+        EmptyDashboard(uiState, onPickPdfTrigger, viewModel)
         return
     }
 
+    var showUploadDialog by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        PopulatedDashboard(payslips, selected, viewModel, modifier)
+        UploadFab(onClick = { showUploadDialog = true }, modifier = Modifier.align(Alignment.BottomEnd))
+    }
+
+    if (showUploadDialog) {
+        UploadDialog(uiState, onPickPdfTrigger, viewModel, onDismiss = { showUploadDialog = false })
+    }
+}
+
+@Composable
+private fun EmptyDashboard(
+    uiState: PayslipUiState,
+    onPickPdfTrigger: (password: String) -> Unit,
+    viewModel: PayslipViewModel,
+) {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(AppDimensions.PaddingLarge),
+        contentAlignment = Alignment.Center,
+    ) {
+        UploadWidget(
+            isLoading = uiState.isLoading,
+            error = uiState.error,
+            success = uiState.importSuccess,
+            onPickPdfTrigger = onPickPdfTrigger,
+            onClearError = { viewModel.clearError() },
+        )
+    }
+}
+
+@Composable
+private fun UploadFab(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FloatingActionButton(
+        onClick = onClick,
+        modifier = modifier.padding(16.dp),
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+    ) {
+        Icon(Icons.Default.Add, contentDescription = "Import Payslip")
+    }
+}
+
+@Composable
+private fun UploadDialog(
+    uiState: PayslipUiState,
+    onPickPdfTrigger: (password: String) -> Unit,
+    viewModel: PayslipViewModel,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close")
+            }
+        },
+        text = {
+            UploadWidget(
+                isLoading = uiState.isLoading,
+                error = uiState.error,
+                success = uiState.importSuccess,
+                onPickPdfTrigger = onPickPdfTrigger,
+                onClearError = { viewModel.clearError() },
+            )
+        },
+    )
+}
+
+@Composable
+private fun PopulatedDashboard(
+    payslips: List<ParsedPayslip>,
+    selected: ParsedPayslip?,
+    viewModel: PayslipViewModel,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier =
             modifier
@@ -155,40 +243,45 @@ private fun TrendChartCard(payslips: List<ParsedPayslip>) {
                 label2 = "Net Remittance",
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(12.dp, 4.dp)
-                                .background(Color(0xFF3B82F6), RoundedCornerShape(2.dp)),
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Gross Pay",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(12.dp, 4.dp)
-                                .background(Color(0xFF10B981), RoundedCornerShape(2.dp)),
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Net Remittance",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
+            TrendChartLegend()
+        }
+    }
+}
+
+@Composable
+private fun TrendChartLegend() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(12.dp, 4.dp)
+                        .background(Color(0xFF3B82F6), RoundedCornerShape(2.dp)),
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = "Gross Pay",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(12.dp, 4.dp)
+                        .background(Color(0xFF10B981), RoundedCornerShape(2.dp)),
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = "Net Remittance",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
