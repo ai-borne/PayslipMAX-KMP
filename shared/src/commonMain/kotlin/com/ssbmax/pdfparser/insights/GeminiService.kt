@@ -16,50 +16,52 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 data class GeminiRequest(
-    val contents: List<Content>
+    val contents: List<Content>,
 )
 
 @Serializable
 data class Content(
-    val parts: List<Part>
+    val parts: List<Part>,
 )
 
 @Serializable
 data class Part(
-    val text: String
+    val text: String,
 )
 
 @Serializable
 data class GeminiResponse(
-    val candidates: List<Candidate>? = null
+    val candidates: List<Candidate>? = null,
 )
 
 @Serializable
 data class Candidate(
-    val content: ResponseContent? = null
+    val content: ResponseContent? = null,
 )
 
 @Serializable
 data class ResponseContent(
-    val parts: List<Part>? = null
+    val parts: List<Part>? = null,
 )
 
 class GeminiService {
-    private val json = Json {
-        ignoreUnknownKeys = true
-        prettyPrint = true
-        isLenient = true
-    }
-
-    private val client = HttpClient {
-        install(ContentNegotiation) {
-            json(json)
+    private val json =
+        Json {
+            ignoreUnknownKeys = true
+            prettyPrint = true
+            isLenient = true
         }
-    }
+
+    private val client =
+        HttpClient {
+            install(ContentNegotiation) {
+                json(json)
+            }
+        }
 
     suspend fun getFinancialInsights(
         payslip: ParsedPayslip,
-        apiKey: String
+        apiKey: String,
     ): Result<String> {
         if (apiKey.isBlank()) {
             return Result.failure(IllegalArgumentException("Gemini API Key is empty. Please configure it in Settings."))
@@ -71,7 +73,8 @@ class GeminiService {
             val payslipJson = json.encodeToString(ParsedPayslip.serializer(), redactedPayslip)
 
             // 2. Prepare the prompt for Gemini
-            val prompt = """
+            val prompt =
+                """
                 You are a world-class chartered accountant and financial advisor specialized in Indian Defence Services pay structures and tax rules.
                 Analyze the following monthly payslip data and provide 3-4 highly personalized tax saving, investment, and financial planning tips.
                 Ensure all advice:
@@ -83,24 +86,27 @@ class GeminiService {
                 
                 Monthly Payslip Data:
                 $payslipJson
-            """.trimIndent()
+                """.trimIndent()
 
             // 3. Make HTTP request to Gemini API
-            val response: GeminiResponse = client.post {
-                url("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey")
-                contentType(ContentType.Application.Json)
-                setBody(
-                    GeminiRequest(
-                        contents = listOf(
-                            Content(
-                                parts = listOf(
-                                    Part(text = prompt)
-                                )
-                            )
-                        )
+            val response: GeminiResponse =
+                client.post {
+                    url("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=$apiKey")
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        GeminiRequest(
+                            contents =
+                                listOf(
+                                    Content(
+                                        parts =
+                                            listOf(
+                                                Part(text = prompt),
+                                            ),
+                                    ),
+                                ),
+                        ),
                     )
-                )
-            }.body()
+                }.body()
 
             val text = response.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text
             if (text != null) {
@@ -115,12 +121,13 @@ class GeminiService {
 
     private fun ParsedPayslip.redactPii(): ParsedPayslip {
         return this.copy(
-            officer = Officer(
-                name = "[REDACTED]",
-                accountNo = "[REDACTED]",
-                pan = "[REDACTED]"
-            ),
-            file = "[REDACTED].pdf"
+            officer =
+                Officer(
+                    name = "[REDACTED]",
+                    accountNo = "[REDACTED]",
+                    pan = "[REDACTED]",
+                ),
+            file = "[REDACTED].pdf",
         )
     }
 }

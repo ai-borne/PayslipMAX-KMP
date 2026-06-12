@@ -36,26 +36,31 @@ class MainActivity : ComponentActivity() {
                 },
                 onOpenPdf = { bytes, filename ->
                     openPdf(bytes, filename)
-                }
+                },
             )
         }
     }
 
-    private fun openPdf(bytes: ByteArray, filename: String) {
+    private fun openPdf(
+        bytes: ByteArray,
+        filename: String,
+    ) {
         try {
             val cacheFile = java.io.File(cacheDir, filename)
             cacheFile.writeBytes(bytes)
-            val uri = androidx.core.content.FileProvider.getUriForFile(
-                this,
-                "$packageName.fileprovider",
-                cacheFile
-            )
-            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
-                setDataAndType(uri, "application/pdf")
-                flags = android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or 
-                        android.content.Intent.FLAG_ACTIVITY_NO_HISTORY or 
+            val uri =
+                androidx.core.content.FileProvider.getUriForFile(
+                    this,
+                    "$packageName.fileprovider",
+                    cacheFile,
+                )
+            val intent =
+                android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                    setDataAndType(uri, "application/pdf")
+                    flags = android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        android.content.Intent.FLAG_ACTIVITY_NO_HISTORY or
                         android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-            }
+                }
             startActivity(android.content.Intent.createChooser(intent, "Open PDF"))
         } catch (e: Exception) {
             e.printStackTrace()

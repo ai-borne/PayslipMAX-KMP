@@ -2,6 +2,33 @@ import UIKit
 import SwiftUI
 import composeApp
 import UniformTypeIdentifiers
+import QuickLook
+
+class PDFPreviewItem: NSObject, QLPreviewItem {
+    var previewItemURL: URL?
+    var previewItemTitle: String?
+    
+    init(url: URL, title: String) {
+        self.previewItemURL = url
+        self.previewItemTitle = title
+    }
+}
+
+class PDFPreviewDataSource: NSObject, QLPreviewControllerDataSource {
+    let item: QLPreviewItem
+    
+    init(item: QLPreviewItem) {
+        self.item = item
+    }
+    
+    func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+        return 1
+    }
+    
+    func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+        return item
+    }
+}
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
@@ -27,13 +54,17 @@ struct ComposeView: UIViewControllerRepresentable {
                 }
                 do {
                     try data.write(to: tempURL)
-                    let activityVC = UIActivityViewController(activityItems: [tempURL], applicationActivities: nil)
-                    topViewController()?.present(activityVC, animated: true)
+                    let previewVC = QLPreviewController()
+                    let previewItem = PDFPreviewItem(url: tempURL, title: name)
+                    let dataSource = PDFPreviewDataSource(item: previewItem)
+                    
+                    objc_setAssociatedObject(previewVC, &AssociatedKeys.dataSource, dataSource, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                    previewVC.dataSource = dataSource
+                    topViewController()?.present(previewVC, animated: true)
                 } catch {
                     print("Error opening PDF: \(error)")
                 }
             }
-            return KotlinUnit()
         })
     }
 
@@ -42,6 +73,7 @@ struct ComposeView: UIViewControllerRepresentable {
 
 private enum AssociatedKeys {
     static var delegate: UInt8 = 0
+    static var dataSource: UInt8 = 1
 }
 
 private func topViewController() -> UIViewController? {

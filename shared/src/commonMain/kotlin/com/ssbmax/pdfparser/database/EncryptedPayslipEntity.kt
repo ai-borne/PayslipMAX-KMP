@@ -2,8 +2,8 @@ package com.ssbmax.pdfparser.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.crypto.CryptoHelper
+import com.ssbmax.pdfparser.domain.ParsedPayslip
 import kotlinx.serialization.json.Json
 
 @Entity(tableName = "encrypted_payslips")
@@ -12,7 +12,8 @@ data class EncryptedPayslipEntity(
     val year: Int,
     val monthNum: Int,
     val monthName: String,
-    val ciphertext: String // AES-256 encrypted JSON string (encoded in Hex)
+    // AES-256 encrypted JSON string (encoded in Hex)
+    val ciphertext: String,
 )
 
 private val HEX_CHARS = "0123456789abcdef".toCharArray()
@@ -56,7 +57,7 @@ fun ParsedPayslip.toEncryptedEntity(password: String = "PCDAPayslipOfflineSecret
         year = year,
         monthNum = monthNum,
         monthName = monthName,
-        ciphertext = ciphertext
+        ciphertext = ciphertext,
     )
 }
 

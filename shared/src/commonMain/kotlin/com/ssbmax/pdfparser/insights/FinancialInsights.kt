@@ -10,7 +10,10 @@ data class FinancialInsight(
 )
 
 object FinancialInsightsGenerator {
-    fun generate(payslip: ParsedPayslip, previousPayslip: ParsedPayslip? = null): List<FinancialInsight> {
+    fun generate(
+        payslip: ParsedPayslip,
+        previousPayslip: ParsedPayslip? = null,
+    ): List<FinancialInsight> {
         val insights = mutableListOf<FinancialInsight>()
         val gross = payslip.summary.grossPay
 
@@ -142,8 +145,8 @@ object FinancialInsightsGenerator {
                         title = "Utility Charge Spike Detected",
                         description = "Your electricity charges increased from ₹${formatAmount(prevElec)} to ₹${formatAmount(currentElec)} (+${((currentElec - prevElec) / prevElec * 100).toInt()}%). Consider checking for billing anomalies or seasonal surges.",
                         icon = "⚡",
-                        type = "warning"
-                    )
+                        type = "warning",
+                    ),
                 )
             }
         }
@@ -158,8 +161,8 @@ object FinancialInsightsGenerator {
                         title = "Allowance Recovery Alert (SF)",
                         description = "Special Forces Pay (₹${formatAmount(prevSf)}) was credited in your last statement but is absent this month. Please audit with your CDA office if this wasn't an expected posting transfer.",
                         icon = "⚠️",
-                        type = "warning"
-                    )
+                        type = "warning",
+                    ),
                 )
             }
 
@@ -171,8 +174,8 @@ object FinancialInsightsGenerator {
                         title = "Allowance Recovery Alert (Field)",
                         description = "Field Allowance (₹${formatAmount(prevField)}) was active in your last statement but is absent this month. Please audit with your unit clerk if posting status changed.",
                         icon = "⚠️",
-                        type = "warning"
-                    )
+                        type = "warning",
+                    ),
                 )
             }
         }
