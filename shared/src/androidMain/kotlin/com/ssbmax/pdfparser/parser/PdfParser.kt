@@ -85,12 +85,13 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     println("[PdfParserDebug] Final safe coordinates - yStart: $yStart, yEnd: $yEnd, xSplit: $xSplit")
 
                     // Extract Left Column (Credits) spatially
-                    val leftStripper = SpatialTextStripper(
-                        xMin = 0f,
-                        xMax = xSplit - 2f,
-                        yMin = yStart,
-                        yMax = yEnd
-                    )
+                    val leftStripper =
+                        SpatialTextStripper(
+                            xMin = 0f,
+                            xMax = xSplit - 2f,
+                            yMin = yStart,
+                            yMax = yEnd,
+                        )
                     leftStripper.startPage = tablePageIdx + 1
                     leftStripper.endPage = tablePageIdx + 1
                     println("[PdfParserDebug] Starting left column spatial extraction...")
@@ -100,12 +101,13 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
 
                     // Extract Middle Column (Debits) spatially
                     val xRightBound = if (layoutScanner.detailsX > xSplit - 2f) layoutScanner.detailsX else pageWidth
-                    val middleStripper = SpatialTextStripper(
-                        xMin = xSplit - 2f,
-                        xMax = xRightBound,
-                        yMin = yStart,
-                        yMax = yEnd
-                    )
+                    val middleStripper =
+                        SpatialTextStripper(
+                            xMin = xSplit - 2f,
+                            xMax = xRightBound,
+                            yMin = yStart,
+                            yMax = yEnd,
+                        )
                     middleStripper.startPage = tablePageIdx + 1
                     middleStripper.endPage = tablePageIdx + 1
                     println("[PdfParserDebug] Starting middle column spatial extraction...")
@@ -123,23 +125,27 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                         pageStripper.endPage = i + 1
                         val pageText = pageStripper.getText(document) ?: ""
                         val pageTextLower = pageText.lowercase()
-                        
+
                         if (taxText.isEmpty() && (
-                            pageTextLower.contains("standard deduction") ||
-                            pageTextLower.contains("taxable income") ||
-                            pageTextLower.contains("tax payable") ||
-                            pageTextLower.contains("income tax deducted")
-                        )) {
+                                pageTextLower.contains("standard deduction") ||
+                                    pageTextLower.contains("taxable income") ||
+                                    pageTextLower.contains("tax payable") ||
+                                    pageTextLower.contains("income tax deducted")
+                            )
+                        ) {
                             println("[PdfParserDebug] Dynamically found Tax details on page: ${i + 1}")
                             taxText = pageText
                         }
-                        
+
                         if (dsopText.isEmpty() && (
-                            pageTextLower.contains("dsop fund") ||
-                            (pageTextLower.contains("opening balance") && 
-                             pageTextLower.contains("closing balance") && 
-                             pageTextLower.contains("subscription"))
-                        )) {
+                                pageTextLower.contains("dsop fund") ||
+                                    (
+                                        pageTextLower.contains("opening balance") &&
+                                            pageTextLower.contains("closing balance") &&
+                                            pageTextLower.contains("subscription")
+                                    )
+                            )
+                        ) {
                             println("[PdfParserDebug] Dynamically found DSOP details on page: ${i + 1}")
                             dsopText = pageText
                         }
@@ -172,7 +178,7 @@ private class SpatialTextStripper(
     private val xMin: Float,
     private val xMax: Float,
     private val yMin: Float,
-    private val yMax: Float
+    private val yMax: Float,
 ) : PDFTextStripper() {
     private val extractedText = StringBuilder()
 
@@ -185,15 +191,15 @@ private class SpatialTextStripper(
         textPositions: MutableList<TextPosition>?,
     ) {
         if (text == null || textPositions == null || textPositions.isEmpty()) return
-        
+
         val lineBuilder = StringBuilder()
         var lastX = 0f
         var lastW = 0f
-        
+
         for (tp in textPositions) {
             val cx = tp.xDirAdj
             val cy = tp.yDirAdj
-            
+
             if (cx in xMin..xMax && cy in yMin..yMax) {
                 if (lineBuilder.isNotEmpty() && cx - (lastX + lastW) > 3f) {
                     lineBuilder.append(' ')
@@ -203,7 +209,7 @@ private class SpatialTextStripper(
                 lastW = tp.widthDirAdj
             }
         }
-        
+
         val trimmed = lineBuilder.toString().trim()
         if (trimmed.isNotEmpty()) {
             extractedText.append(trimmed).append("\n")
