@@ -105,7 +105,11 @@ export class ChartManager {
             }
           }
         },
-        scales: getScales(value => '₹' + (value/1000) + 'k')
+        scales: getScales(value => {
+          if (value === 0) return '₹0';
+          const lakhs = value / 100000;
+          return '₹' + parseFloat(lakhs.toFixed(2)) + 'L';
+        })
       }
     });
   }

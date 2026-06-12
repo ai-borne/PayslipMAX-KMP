@@ -20,7 +20,7 @@
       "Incm Tax": 31199.0,
       "L Fee": 748.0,
       "AGIF": 5000.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 203181.0,
@@ -58,7 +58,7 @@
     "deductions": {
       "R/o Of /Drs": 6600.0,
       "L Fee": 748.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 7674.0,
@@ -102,10 +102,10 @@
       "DA": 1.0
     },
     "deductions": {
-      "Water": 840.0,
       "L Fee": 748.0,
+      "Water": 840.0,
       "Elec": 13095.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 94333.0,
@@ -141,8 +141,8 @@
     },
     "earnings": {
       "A/o TRAN-2": 316.0,
-      "Basic Pay": 132400.0,
       "A/o BPAY-": 203329.0,
+      "Basic Pay": 132400.0,
       "A/o MSP-": 23804.0,
       "A/o DA-": 83722.0,
       "BPAY": 14.0,
@@ -155,7 +155,7 @@
       "Incm Tax": 132950.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 581007.0,
@@ -200,7 +200,7 @@
       "Incm Tax": 39520.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 225305.0,
@@ -236,8 +236,8 @@
     },
     "earnings": {
       "A/o Pay & Allce": 9959.0,
-      "C E A (T)": 25800.0,
       "C E A(NT)": 1200.0,
+      "C E A (T)": 25800.0,
       "Basic Pay": 132400.0,
       "Tpt Allc": 4824.0,
       "MSP": 15500.0,
@@ -249,7 +249,7 @@
       "Incm Tax": 51700.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 239969.0,
@@ -296,7 +296,7 @@
       "Incm Tax": 40970.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 223010.0,
@@ -340,11 +340,11 @@
       "DSOPF Subn": 7944.0,
       "Educ Cess": 2030.0,
       "Incm Tax": 40970.0,
-      "Water": 840.0,
       "L Fee": 748.0,
+      "Water": 840.0,
       "Elec": 13095.0,
       "AGIF": 10000.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 203010.0,
@@ -390,7 +390,7 @@
       "Incm Tax": 40970.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 203010.0,
@@ -436,10 +436,10 @@
       "DSOPF Subn": 7944.0,
       "Educ Cess": 2140.0,
       "Incm Tax": 48240.0,
-      "Water": 731.0,
       "L Fee": 2186.0,
+      "Water": 731.0,
       "AGIF": 10000.0,
-      "FUR": 847.0
+      "Fur": 847.0
     },
     "summary": {
       "gross_pay": 228081.0,
@@ -485,7 +485,7 @@
       "Incm Tax": 42790.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 209070.0,
@@ -531,7 +531,7 @@
       "Incm Tax": 42780.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 209070.0,
@@ -575,10 +575,10 @@
       "DSOPF Subn": 8184.0,
       "Educ Cess": 2210.0,
       "Incm Tax": 44440.0,
-      "Water": 157.0,
       "L Fee": 748.0,
+      "Water": 157.0,
       "AGIF": 10000.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 214590.0,
@@ -614,12 +614,12 @@
     },
     "earnings": {
       "A/o Pay & Allce": 125000.0,
-      "Basic Pay": 136400.0,
       "SpCmd Pay": 25000.0,
+      "Basic Pay": 136400.0,
       "Tpt Allc": 4968.0,
       "MSP": 15500.0,
-      "DA": 57722.0,
-      "SC": 2.0
+      "SC": 2.0,
+      "DA": 57722.0
     },
     "deductions": {
       "DSOPF Subn": 8184.0,
@@ -627,7 +627,7 @@
       "Incm Tax": 89444.0,
       "L Fee": 748.0,
       "AGIF": 10000.0,
-      "FUR": 326.0
+      "Fur": 326.0
     },
     "summary": {
       "gross_pay": 364590.0,
@@ -664,8 +664,8 @@
     "earnings": {
       "A/o Pay & Allce": 136.0,
       "RMONEYAllce-RA": 164.0,
-      "Basic Pay": 136400.0,
       "SpCmd Pay": 25000.0,
+      "Basic Pay": 136400.0,
       "Tpt Allc": 4968.0,
       "MSP": 15500.0,
       "DA": 57722.0
@@ -674,10 +674,10 @@
       "DSOPF Subn": 40000.0,
       "Educ Cess": 1830.0,
       "Incm Tax": 45630.0,
-      "Water": 1235.0,
       "L Fee": 7801.0,
+      "Water": 1235.0,
       "AGIF": 10000.0,
-      "FUR": 3475.0
+      "Fur": 3475.0
     },
     "summary": {
       "gross_pay": 239862.0,
@@ -714,16 +714,16 @@
     "earnings": {
       "RMONEYAllce-RA": 136.0,
       "A/o FIELD-R1": 43750.0,
-      "A/o TRAN-1": 432.0,
       "A/o TRAN-2": 11082.0,
-      "Basic Pay": 136400.0,
+      "A/o TRAN-1": 432.0,
       "SpCmd Pay": 25000.0,
+      "Basic Pay": 136400.0,
       "Tpt Allc": 5112.0,
       "A/o DA-": 18228.0,
       "TRAN-1": 79.0,
       "MSP": 15500.0,
-      "DA": 63856.0,
-      "FD": 36.0
+      "FD": 36.0,
+      "DA": 63856.0
     },
     "deductions": {
       "DSOPF Subn": 40000.0,
@@ -732,7 +732,7 @@
       "Incm Tax": 48880.0,
       "L Fee": 1626.0,
       "AGIF": 10000.0,
-      "FUR": 718.0
+      "Fur": 718.0
     },
     "summary": {
       "gross_pay": 319438.0,
@@ -768,8 +768,8 @@
     },
     "earnings": {
       "RMONEYAllce-RA": 3412.0,
-      "Basic Pay": 136400.0,
       "SpCmd Pay": 25000.0,
+      "Basic Pay": 136400.0,
       "ETKT-ref": 5948.0,
       "Tpt Allc": 5112.0,
       "MSP": 15500.0,
@@ -778,11 +778,11 @@
     "deductions": {
       "DSOPF Subn": 40000.0,
       "Educ Cess": 1960.0,
-      "Incm Tax": 48980.0,
       "R/o Etkt": 6143.0,
+      "Incm Tax": 48980.0,
       "L Fee": 1626.0,
       "AGIF": 10000.0,
-      "FUR": 718.0
+      "Fur": 718.0
     },
     "summary": {
       "gross_pay": 255169.0,
@@ -821,8 +821,8 @@
       "Basic Pay": 136400.0,
       "Tpt Allc": 5112.0,
       "MSP": 15500.0,
-      "DA": 63798.0,
-      "SC": 28.0
+      "SC": 28.0,
+      "DA": 63798.0
     },
     "deductions": {
       "Rec PARA-SC": 50000.0,
@@ -831,7 +831,7 @@
       "Incm Tax": 39820.0,
       "L Fee": 1626.0,
       "AGIF": 10000.0,
-      "FUR": 718.0
+      "Fur": 718.0
     },
     "summary": {
       "gross_pay": 220968.0,
@@ -876,12 +876,12 @@
     "deductions": {
       "DSOPF Subn": 40000.0,
       "Educ Cess": 1620.0,
-      "Incm Tax": 40570.0,
       "R/o Etkt": 2872.0,
-      "Water": 731.0,
+      "Incm Tax": 40570.0,
       "L Fee": 1626.0,
+      "Water": 731.0,
       "AGIF": 10000.0,
-      "FUR": 718.0
+      "Fur": 718.0
     },
     "summary": {
       "gross_pay": 242457.0,
@@ -924,11 +924,11 @@
     "deductions": {
       "DSOPF Subn": 40000.0,
       "Educ Cess": 1620.0,
-      "Incm Tax": 40560.0,
       "R/o Etkt": 4308.0,
+      "Incm Tax": 40560.0,
       "L Fee": 878.0,
       "AGIF": 10000.0,
-      "FUR": 392.0
+      "Fur": 392.0
     },
     "summary": {
       "gross_pay": 220810.0,
@@ -971,11 +971,11 @@
     "deductions": {
       "DSOPF Subn": 40000.0,
       "Educ Cess": 1620.0,
-      "Incm Tax": 40560.0,
       "R/o Etkt": 4308.0,
+      "Incm Tax": 40560.0,
       "L Fee": 878.0,
       "AGIF": 10000.0,
-      "FUR": 392.0
+      "Fur": 392.0
     },
     "summary": {
       "gross_pay": 220810.0,
@@ -1021,7 +1021,7 @@
       "Incm Tax": 40560.0,
       "L Fee": 878.0,
       "AGIF": 10000.0,
-      "FUR": 392.0
+      "Fur": 392.0
     },
     "summary": {
       "gross_pay": 220810.0,
@@ -1068,11 +1068,11 @@
       "Barrack Damage": 711.0,
       "DSOPF Subn": 40000.0,
       "Educ Cess": 1740.0,
-      "Incm Tax": 48030.0,
       "R/o Etkt": 839.0,
+      "Incm Tax": 48030.0,
       "L Fee": 13045.0,
       "AGIF": 10000.0,
-      "FUR": 5695.0
+      "Fur": 5695.0
     },
     "summary": {
       "gross_pay": 263160.0,
@@ -1109,18 +1109,18 @@
     "earnings": {
       "ARR-RSHNA": 1427.0,
       "TRAN1": 5256.0,
-      "ETKT": 484.0,
       "BPAY": 136400.0,
+      "ETKT": 484.0,
       "MSP": 15500.0,
       "DA": 69874.0
     },
     "deductions": {
       "EHCESS": 1750.0,
-      "ETKT": 2129.0,
-      "ITAX": 42540.0,
       "DSOP": 40000.0,
+      "ITAX": 42540.0,
+      "ETKT": 2129.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1163,10 +1163,10 @@
     },
     "deductions": {
       "EHCESS": 1750.0,
-      "ITAX": 42540.0,
       "DSOP": 40000.0,
+      "ITAX": 42540.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1210,10 +1210,10 @@
     },
     "deductions": {
       "EHCESS": 1621.0,
-      "ITAX": 40521.0,
       "DSOP": 40000.0,
+      "ITAX": 40521.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1251,20 +1251,20 @@
     "earnings": {
       "ARR-SPCDO": 181665.0,
       "TPTADA": 1656.0,
-      "ETKT": 1025.0,
       "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "ETKT": 1025.0,
       "MSP": 15500.0,
       "DA": 71760.0
     },
     "deductions": {
       "EHCESS": 2910.0,
       "SPCDO": 106665.0,
-      "ETKT": 1445.0,
-      "ITAX": 70642.0,
       "DSOP": 40000.0,
+      "ITAX": 70642.0,
+      "ETKT": 1445.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1311,11 +1311,11 @@
     },
     "deductions": {
       "EHCESS": 1942.0,
-      "ETKT": 702.0,
-      "ITAX": 48555.0,
       "DSOP": 40000.0,
+      "ITAX": 48555.0,
+      "ETKT": 702.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1361,10 +1361,10 @@
     "deductions": {
       "EHCESS": 1943.0,
       "RSHNA": 143.0,
-      "ITAX": 48575.0,
       "DSOP": 40000.0,
+      "ITAX": 48575.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1408,10 +1408,10 @@
     },
     "deductions": {
       "EHCESS": 1943.0,
-      "ITAX": 48575.0,
       "DSOP": 40000.0,
+      "ITAX": 48575.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1456,10 +1456,10 @@
     },
     "deductions": {
       "EHCESS": 1979.0,
-      "ITAX": 49475.0,
       "DSOP": 40000.0,
+      "ITAX": 49475.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1505,11 +1505,11 @@
     },
     "deductions": {
       "EHCESS": 2023.0,
-      "ETKT": 1117.0,
-      "ITAX": 50573.0,
       "DSOP": 40000.0,
+      "ITAX": 50573.0,
+      "ETKT": 1117.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1556,10 +1556,10 @@
     "deductions": {
       "EHCESS": 2612.0,
       "Water": 3552.0,
-      "ITAX": 65305.0,
       "DSOP": 40000.0,
+      "ITAX": 65305.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1606,10 +1606,10 @@
       "Water": 3552.0,
       "SPCDO": 156250.0,
       "TPTA": 232.0,
-      "ITAX": 46492.0,
       "DSOP": 40000.0,
+      "ITAX": 46492.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1653,17 +1653,17 @@
       "ARR-DA": 14040.0,
       "Water": 3552.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 140500.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 82680.0
     },
     "deductions": {
       "EHCESS": 2302.0,
-      "ITAX": 57560.0,
       "DSOP": 40000.0,
+      "ITAX": 57560.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1701,17 +1701,17 @@
     "earnings": {
       "TPTADA": 1908.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 140500.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 82680.0
     },
     "deductions": {
       "EHCESS": 2227.0,
-      "ITAX": 55685.0,
       "DSOP": 40000.0,
+      "ITAX": 55685.0,
       "AGIF": 10000.0,
-      "FUR": 392.0,
+      "Fur": 392.0,
       "LF": 878.0
     },
     "summary": {
@@ -1747,24 +1747,24 @@
       "pan": "AR*****90G"
     },
     "earnings": {
-      "ARR-HH32": 3290.0,
       "ARR-RH11": 24193.0,
+      "ARR-HH32": 3290.0,
       "TPTADA": 1908.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 140500.0,
-      "FUR": 1032.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
-      "DA": 82680.0,
-      "LF": 2312.0
+      "Fur": 1032.0,
+      "LF": 2312.0,
+      "DA": 82680.0
     },
     "deductions": {
       "EHCESS": 2204.0,
       "Water": 887.0,
-      "ITAX": 55100.0,
       "DSOP": 40000.0,
+      "ITAX": 55100.0,
       "AGIF": 10000.0,
-      "FUR": 3825.0,
+      "Fur": 3825.0,
       "LF": 9044.0
     },
     "summary": {
@@ -1802,15 +1802,15 @@
     "earnings": {
       "TPTADA": 1908.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 144700.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 84906.0
     },
     "deductions": {
       "EHCESS": 2281.0,
-      "ITAX": 57027.0,
       "DSOP": 40000.0,
+      "ITAX": 57027.0,
       "AGIF": 10000.0
     },
     "summary": {
@@ -1848,15 +1848,15 @@
     "earnings": {
       "TPTADA": 1908.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 144700.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 84906.0
     },
     "deductions": {
       "EHCESS": 2282.0,
-      "ITAX": 57028.0,
       "DSOP": 40000.0,
+      "ITAX": 57028.0,
       "AGIF": 10000.0
     },
     "summary": {
@@ -1894,15 +1894,15 @@
     "earnings": {
       "TPTADA": 1908.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 144700.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 84906.0
     },
     "deductions": {
       "EHCESS": 1786.0,
-      "ITAX": 44646.0,
       "DSOP": 40000.0,
+      "ITAX": 44646.0,
       "AGIF": 10000.0
     },
     "summary": {
@@ -1943,15 +1943,15 @@
       "TPTADA": 1980.0,
       "ARR-DA": 9612.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 144700.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1873.0,
-      "ITAX": 46818.0,
       "DSOP": 40000.0,
+      "ITAX": 46818.0,
       "AGIF": 15000.0
     },
     "summary": {
@@ -1990,17 +1990,17 @@
       "ARR-RSHNA": 1650.0,
       "TPTADA": 1980.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 144700.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1866.0,
-      "ITAX": 46641.0,
-      "RH12": 7518.0,
       "DSOP": 40000.0,
-      "AGIF": 12500.0
+      "ITAX": 46641.0,
+      "AGIF": 12500.0,
+      "RH12": 7518.0
     },
     "summary": {
       "gross_pay": 276665.0,
@@ -2038,15 +2038,15 @@
       "ARR-RSHNA": 1350.0,
       "TPTADA": 1980.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 144700.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1867.0,
-      "ITAX": 46687.0,
       "DSOP": 40000.0,
+      "ITAX": 46687.0,
       "AGIF": 12500.0
     },
     "summary": {
@@ -2086,16 +2086,16 @@
       "DRESALW": 25000.0,
       "TPTADA": 1980.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 144700.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1905.0,
-      "ETKT": 1806.0,
-      "ITAX": 47624.0,
       "DSOP": 40000.0,
+      "ITAX": 47624.0,
+      "ETKT": 1806.0,
       "AGIF": 12500.0
     },
     "summary": {
@@ -2126,22 +2126,22 @@
     "year": 2025,
     "month": "Aug",
     "officer": {
-      "name": "Sunil Suresh Pawar laoKa saM",
+      "name": "Sunil Suresh Pawar",
       "ac_no": "16/111/206718K",
       "pan": "AR*****90G"
     },
     "earnings": {
       "TPTADA": 1980.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 144700.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1905.0,
-      "ITAX": 47624.0,
       "DSOP": 40000.0,
+      "ITAX": 47624.0,
       "AGIF": 12500.0
     },
     "summary": {
@@ -2172,22 +2172,22 @@
     "year": 2025,
     "month": "Aug",
     "officer": {
-      "name": "Sunil Suresh Pawar laoKa saM",
+      "name": "Sunil Suresh Pawar",
       "ac_no": "16/111/206718K",
       "pan": "AR*****90G"
     },
     "earnings": {
       "TPTADA": 1980.0,
       "TPTA": 3600.0,
-      "RH12": 21125.0,
       "BPAY": 144700.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1905.0,
-      "ITAX": 47624.0,
       "DSOP": 40000.0,
+      "ITAX": 47624.0,
       "AGIF": 12500.0
     },
     "summary": {
