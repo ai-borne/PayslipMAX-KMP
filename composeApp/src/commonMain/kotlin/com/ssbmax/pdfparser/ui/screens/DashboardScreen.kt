@@ -64,31 +64,6 @@ fun DashboardScreen(
     }
 }
 
-@Composable
-private fun EmptyStateScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp),
-        ) {
-            Text(
-                text = "No Payslips Imported",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Import your PDF payslips or seed simulated data from the import screen to view financial analytics.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            )
-        }
-    }
-}
 
 @Composable
 private fun StatsGridSection(payslip: ParsedPayslip) {
@@ -282,27 +257,3 @@ private fun AllocationLegend(
     }
 }
 
-private fun formatAmount(amount: Double): String {
-    val longVal = amount.toLong()
-    if (longVal >= 100000) {
-        val lakhs = longVal / 100000.0
-        return "${lakhs.toString().take(4)}L"
-    }
-    val str = longVal.toString()
-    if (str.length <= 3) return str
-    val lastThree = str.substring(str.length - 3)
-    val remaining = str.substring(0, str.length - 3)
-    val builder = StringBuilder()
-    var i = remaining.length
-    while (i > 0) {
-        if (i >= 2) {
-            builder.insert(0, remaining.substring(i - 2, i))
-            if (i - 2 > 0) builder.insert(0, ",")
-            i -= 2
-        } else {
-            builder.insert(0, remaining.substring(0, 1))
-            i -= 1
-        }
-    }
-    return "$builder,$lastThree"
-}
