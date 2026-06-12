@@ -2,9 +2,9 @@ name: Gold Standard CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, 'feature/**' ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, 'feature/**' ]
 
 # Hardened default permissions. 'checks: write' is required to publish test reports.
 permissions:
