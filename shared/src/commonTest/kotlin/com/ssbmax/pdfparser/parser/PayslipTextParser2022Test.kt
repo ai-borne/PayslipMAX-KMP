@@ -6,7 +6,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class PayslipTextParser2022Test {
-
     @Test
     fun testParse2022Format() {
         val mockText =
