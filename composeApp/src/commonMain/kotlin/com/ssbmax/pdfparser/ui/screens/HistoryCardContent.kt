@@ -23,7 +23,7 @@ internal data class TrendInfo(
 
 internal fun calculateTrend(
     current: ParsedPayslip,
-    allPayslips: List<ParsedPayslip>
+    allPayslips: List<ParsedPayslip>,
 ): TrendInfo? {
     val sorted = allPayslips.sortedWith(compareBy<ParsedPayslip> { it.year }.thenBy { it.monthNum })
     val currentIndex = sorted.indexOfFirst { it.dateStr == current.dateStr }
@@ -39,7 +39,7 @@ internal fun calculateTrend(
     return TrendInfo(
         percentageChange = pct,
         isIncrease = diff > 0.0,
-        isZero = diff == 0.0
+        isZero = diff == 0.0,
     )
 }
 
@@ -66,15 +66,16 @@ internal fun formatPercentage(value: Double): String {
 fun HistoryCardContent(
     payslip: ParsedPayslip,
     allPayslips: List<ParsedPayslip>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val trend = remember(payslip, allPayslips) { calculateTrend(payslip, allPayslips) }
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(AppDimensions.PaddingMedium),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(AppDimensions.PaddingMedium),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         HistoryCardHeaderRow(payslip = payslip, trend = trend)
         HistoryCardLabelsRow(payslip = payslip)
@@ -84,11 +85,14 @@ fun HistoryCardContent(
 }
 
 @Composable
-private fun HistoryCardHeaderRow(payslip: ParsedPayslip, trend: TrendInfo?) {
+private fun HistoryCardHeaderRow(
+    payslip: ParsedPayslip,
+    trend: TrendInfo?,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = payslip.monthName,
@@ -98,21 +102,26 @@ private fun HistoryCardHeaderRow(payslip: ParsedPayslip, trend: TrendInfo?) {
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             if (trend != null && !trend.isZero) {
-                val trendColor = if (trend.isIncrease) {
-                    MaterialTheme.colorScheme.secondary
-                } else {
-                    MaterialTheme.colorScheme.error
-                }
+                val trendColor =
+                    if (trend.isIncrease) {
+                        MaterialTheme.colorScheme.secondary
+                    } else {
+                        MaterialTheme.colorScheme.error
+                    }
                 Text(
-                    text = if (trend.isIncrease) "↑ ${formatPercentage(trend.percentageChange)}" 
-                           else "↓ ${formatPercentage(trend.percentageChange)}",
+                    text =
+                        if (trend.isIncrease) {
+                            "↑ ${formatPercentage(trend.percentageChange)}"
+                        } else {
+                            "↓ ${formatPercentage(trend.percentageChange)}"
+                        },
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     color = trendColor,
-                    modifier = Modifier.padding(end = 4.dp)
+                    modifier = Modifier.padding(end = 4.dp),
                 )
             }
             Text(
@@ -130,7 +139,7 @@ private fun HistoryCardLabelsRow(payslip: ParsedPayslip) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "${AppStrings.historyGrossPayLabel}: ₹${formatAmount(payslip.summary.grossPay)}",
@@ -156,42 +165,47 @@ private fun CompositionSparkbar(payslip: ParsedPayslip) {
     val otherPct = (1.0f - netPct - dsopPct - taxPct).coerceIn(0f, 1f)
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(6.dp)
-            .clip(RoundedCornerShape(3.dp))
-            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(6.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
     ) {
         if (netPct > 0f) {
             Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(netPct)
-                    .background(MaterialTheme.colorScheme.secondary)
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .weight(netPct)
+                        .background(MaterialTheme.colorScheme.secondary),
             )
         }
         if (dsopPct > 0f) {
             Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(dsopPct)
-                    .background(MaterialTheme.colorScheme.tertiary)
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .weight(dsopPct)
+                        .background(MaterialTheme.colorScheme.tertiary),
             )
         }
         if (taxPct > 0f) {
             Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(taxPct)
-                    .background(MaterialTheme.colorScheme.error)
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .weight(taxPct)
+                        .background(MaterialTheme.colorScheme.error),
             )
         }
         if (otherPct > 0f) {
             Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(otherPct)
-                    .background(MaterialTheme.colorScheme.outlineVariant)
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .weight(otherPct)
+                        .background(MaterialTheme.colorScheme.outlineVariant),
             )
         }
     }
@@ -203,22 +217,22 @@ private fun HistoryCardFooterRow(payslip: ParsedPayslip) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "${AppStrings.historyDsopLabel}: ₹${formatAmount(payslip.deductions.dsopSubscription)}",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
         )
         Text(
             text = "•",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
         )
         Text(
             text = "${AppStrings.historyTaxLabel}: ₹${formatAmount(tax)}",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
         )
     }
 }

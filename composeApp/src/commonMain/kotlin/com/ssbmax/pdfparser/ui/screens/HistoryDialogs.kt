@@ -29,22 +29,23 @@ fun HistoryDeleteConfirmationDialog(
             Text(
                 text = AppStrings.historyConfirmDeleteTitle,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         },
         text = {
             Text(
                 text = AppStrings.historyConfirmDeleteMessage,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         },
         confirmButton = {
             Button(
                 onClick = onConfirm,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError
-                )
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError,
+                    ),
             ) {
                 Text(AppStrings.historyActionDelete)
             }
@@ -53,7 +54,7 @@ fun HistoryDeleteConfirmationDialog(
             TextButton(onClick = onDismiss) {
                 Text(AppStrings.btnCancel)
             }
-        }
+        },
     )
 }
 
@@ -74,11 +75,12 @@ fun HistoryActionBottomSheet(
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(horizontal = AppDimensions.PaddingMedium)
-                .padding(bottom = AppDimensions.PaddingLarge),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(horizontal = AppDimensions.PaddingMedium)
+                    .padding(bottom = AppDimensions.PaddingLarge),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -87,7 +89,7 @@ fun HistoryActionBottomSheet(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp),
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
             Spacer(modifier = Modifier.height(8.dp))
@@ -98,7 +100,7 @@ fun HistoryActionBottomSheet(
                 onClick = {
                     onViewReplica()
                     onDismissRequest()
-                }
+                },
             )
             BottomSheetActionItem(
                 icon = Icons.Default.PlayArrow,
@@ -106,7 +108,7 @@ fun HistoryActionBottomSheet(
                 onClick = {
                     onViewOriginal()
                     onDismissRequest()
-                }
+                },
             )
             BottomSheetActionItem(
                 icon = Icons.Default.Share,
@@ -114,7 +116,7 @@ fun HistoryActionBottomSheet(
                 onClick = {
                     onShareSummary()
                     onDismissRequest()
-                }
+                },
             )
             BottomSheetActionItem(
                 icon = Icons.Default.Delete,
@@ -122,7 +124,7 @@ fun HistoryActionBottomSheet(
                 isDestructive = true,
                 onClick = {
                     onDelete()
-                }
+                },
             )
         }
     }
@@ -135,31 +137,33 @@ private fun BottomSheetActionItem(
     onClick: () -> Unit,
     isDestructive: Boolean = false,
 ) {
-    val tintColor = if (isDestructive) {
-        MaterialTheme.colorScheme.error
-    } else {
-        MaterialTheme.colorScheme.primary
-    }
+    val tintColor =
+        if (isDestructive) {
+            MaterialTheme.colorScheme.error
+        } else {
+            MaterialTheme.colorScheme.primary
+        }
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(vertical = AppDimensions.PaddingMedium),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { onClick() }
+                .padding(vertical = AppDimensions.PaddingMedium),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+        horizontalArrangement = Arrangement.Start,
     ) {
         Icon(
             imageVector = icon,
             contentDescription = label,
             tint = tintColor,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
             text = label,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
-            color = tintColor
+            color = tintColor,
         )
     }
 }

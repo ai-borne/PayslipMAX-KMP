@@ -1,5 +1,6 @@
 package com.ssbmax.pdfparser.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -25,31 +26,35 @@ fun HistoryCard(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { value ->
-            if (value == SwipeToDismissBoxValue.EndToStart) {
-                onSwipeDelete()
-                false
-            } else {
-                false
-            }
-        }
-    )
+    val dismissState =
+        rememberSwipeToDismissBoxState(
+            confirmValueChange = { value ->
+                if (value == SwipeToDismissBoxValue.EndToStart) {
+                    onSwipeDelete()
+                    false
+                } else {
+                    false
+                }
+            },
+        )
 
     SwipeToDismissBox(
         state = dismissState,
         enableDismissFromStartToEnd = false,
         backgroundContent = { SwipeDismissBackground() },
-        modifier = modifier.clip(CardDefaults.shape)
+        modifier = modifier.clip(CardDefaults.shape),
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .combinedClickable(
-                    onClick = onViewReplica,
-                    onLongClick = onLongPress
-                ),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .combinedClickable(
+                        onClick = onViewReplica,
+                        onLongClick = onLongPress,
+                    ),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         ) {
             content()
         }
@@ -59,17 +64,18 @@ fun HistoryCard(
 @Composable
 private fun SwipeDismissBackground() {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.error)
-            .padding(horizontal = AppDimensions.PaddingMedium),
-        contentAlignment = Alignment.CenterEnd
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.error)
+                .padding(horizontal = AppDimensions.PaddingMedium),
+        contentAlignment = Alignment.CenterEnd,
     ) {
         Icon(
             imageVector = Icons.Default.Delete,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onError,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
         )
     }
 }

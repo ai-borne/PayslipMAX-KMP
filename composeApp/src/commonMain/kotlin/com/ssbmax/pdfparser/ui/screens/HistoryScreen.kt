@@ -66,7 +66,7 @@ fun HistoryScreen(
                 onDelete = {
                     pendingDeletePayslip = payslip
                     activeActionPayslip = null
-                }
+                },
             )
         }
 
@@ -76,7 +76,7 @@ fun HistoryScreen(
                     viewModel.deletePayslip(payslip.dateStr)
                     pendingDeletePayslip = null
                 },
-                onDismiss = { pendingDeletePayslip = null }
+                onDismiss = { pendingDeletePayslip = null },
             )
         }
     }
@@ -91,10 +91,11 @@ private fun HistoryListContainer(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(AppDimensions.PaddingMedium),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(AppDimensions.PaddingMedium),
     ) {
         HistoryHeader()
         Spacer(modifier = Modifier.height(16.dp))
@@ -105,7 +106,7 @@ private fun HistoryListContainer(
                 payslips = payslips,
                 onPayslipClick = onPayslipClick,
                 onLongPress = onLongPress,
-                onSwipeDelete = onSwipeDelete
+                onSwipeDelete = onSwipeDelete,
             )
         }
     }
@@ -148,9 +149,10 @@ private fun HistoryLazyList(
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
 ) {
-    val grouped = remember(payslips) {
-        payslips.groupBy { it.year }.toList().sortedByDescending { it.first }
-    }
+    val grouped =
+        remember(payslips) {
+            payslips.groupBy { it.year }.toList().sortedByDescending { it.first }
+        }
     val latestYear = remember(grouped) { grouped.firstOrNull()?.first }
     var expandedYears by remember {
         mutableStateOf(if (latestYear != null) setOf(latestYear) else emptySet())
@@ -168,12 +170,13 @@ private fun HistoryLazyList(
                     payslips = yearPayslips,
                     isExpanded = isExpanded,
                     onToggleExpand = {
-                        expandedYears = if (isExpanded) {
-                            expandedYears - year
-                        } else {
-                            expandedYears + year
-                        }
-                    }
+                        expandedYears =
+                            if (isExpanded) {
+                                expandedYears - year
+                            } else {
+                                expandedYears + year
+                            }
+                    },
                 )
             }
             if (isExpanded) {
@@ -185,11 +188,11 @@ private fun HistoryLazyList(
                         payslip = payslip,
                         onViewReplica = { onPayslipClick(payslip) },
                         onLongPress = { onLongPress(payslip) },
-                        onSwipeDelete = { onSwipeDelete(payslip) }
+                        onSwipeDelete = { onSwipeDelete(payslip) },
                     ) {
                         HistoryCardContent(
                             payslip = payslip,
-                            allPayslips = payslips
+                            allPayslips = payslips,
                         )
                     }
                 }

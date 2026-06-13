@@ -8,7 +8,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class HistoryCardContentTest {
-
     @Test
     fun testCalculateTrendIncrease() {
         val july = createMockPayslip("07/2024", netRemittance = 100000.0)
@@ -83,7 +82,10 @@ class HistoryCardContentTest {
         assertEquals("0%", formatPercentage(0.0))
     }
 
-    private fun createMockPayslip(dateStr: String, netRemittance: Double) =
+    private fun createMockPayslip(
+        dateStr: String,
+        netRemittance: Double,
+    ) =
         dateStr.split("/").let { split ->
             val month = split[0].toInt()
             val year = split[1].toInt()
@@ -94,7 +96,7 @@ class HistoryCardContentTest {
                 deductions = Deductions(dsopSubscription = 20000.0, incomeTax = 15000.0),
                 ledgerBalances = LedgerBalances(0.0, 0.0, 0.0, 0.0),
                 summary = PayslipSummary(grossPay = 150000.0, totalDeductions = 35000.0, netRemittance = netRemittance),
-                taxAndSavings = null
+                taxAndSavings = null,
             )
         }
 }

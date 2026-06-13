@@ -41,18 +41,21 @@ fun HistoryYearHeader(
     val rotationState by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f)
 
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onToggleExpand() },
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable { onToggleExpand() },
         shape = CardDefaults.elevatedShape,
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        ),
+        colors =
+            CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            ),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(AppDimensions.PaddingMedium),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(AppDimensions.PaddingMedium),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -68,12 +71,12 @@ fun HistoryYearHeader(
             }
             IconButton(
                 onClick = onToggleExpand,
-                modifier = Modifier.rotate(rotationState)
+                modifier = Modifier.rotate(rotationState),
             ) {
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowDown,
                     contentDescription = AppStrings.historyChevronContentDescription,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -84,7 +87,7 @@ fun HistoryYearHeader(
 private fun YearlyStatsRow(stats: YearlyStats) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "${AppStrings.historyNetTakeHomeLabel}: ₹${formatAmount(stats.totalNet)}",
