@@ -30,7 +30,11 @@ internal fun OfficerInfoBar(
         modifier = Modifier.fillMaxWidth(),
         colors =
             CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                } else {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.75f)
+                },
             ),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
     ) {
@@ -41,7 +45,7 @@ internal fun OfficerInfoBar(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -82,10 +86,10 @@ internal fun YearMonthPickerRow(
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
             YearDropdown(
                 years = years,
@@ -203,16 +207,16 @@ internal fun EmptyStateScreen() {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp),
+            modifier = Modifier.padding(AppDimensions.SpacingDouble),
         ) {
             Text(
-                text = "No Payslips Imported",
+                text = AppStrings.dashboardEmptyStateTitle,
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onBackground,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
             Text(
-                text = "Import your PDF payslips or seed simulated data from the import screen to view financial analytics.",
+                text = AppStrings.dashboardEmptyStateDescSandbox,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,

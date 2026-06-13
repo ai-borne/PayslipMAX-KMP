@@ -48,19 +48,19 @@ private fun GeminiAiInsightsLockedCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
     ) {
         Column(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTen),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
             ) {
-                Text("👑", fontSize = 22.sp)
+                Text("👑", fontSize = AppDimensions.TextSizeHuge)
                 Text(
                     text = AppStrings.settingsAiInsightsLockedTitle,
                     style = MaterialTheme.typography.titleMedium,
@@ -73,7 +73,7 @@ private fun GeminiAiInsightsLockedCard(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = AppDimensions.SpacingTiny),
             )
             Button(onClick = onUpgradeClick, modifier = Modifier.fillMaxWidth()) {
                 Text(AppStrings.settingsAiInsightsLockedBtn)
@@ -94,12 +94,19 @@ private fun GeminiAiInsightsActiveCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.08f)),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.08f)
+                } else {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                },
+            ),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
             ActiveHeader(aiInsights = aiInsights, onClearClick = onClearClick)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
             ActiveContent(
                 aiInsights = aiInsights,
                 isAiLoading = isAiLoading,
@@ -121,7 +128,7 @@ private fun ActiveHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("👑", fontSize = 22.sp, modifier = Modifier.padding(end = 8.dp))
+            Text("👑", fontSize = AppDimensions.TextSizeHuge, modifier = Modifier.padding(end = AppDimensions.SpacingSmall))
             Text(
                 text = AppStrings.settingsAiInsightsLockedTitle,
                 style = MaterialTheme.typography.titleMedium,
@@ -130,8 +137,8 @@ private fun ActiveHeader(
             )
         }
         if (aiInsights != null) {
-            IconButton(onClick = onClearClick, modifier = Modifier.size(24.dp)) {
-                Text("🔄", fontSize = 14.sp)
+            IconButton(onClick = onClearClick, modifier = Modifier.size(AppDimensions.IconSizeMedium)) {
+                Text("🔄", fontSize = AppDimensions.TextSizeLarge)
             }
         }
     }
@@ -146,7 +153,7 @@ private fun ActiveContent(
 ) {
     when {
         isAiLoading -> {
-            Box(modifier = Modifier.fillMaxWidth().height(100.dp), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.fillMaxWidth().height(AppDimensions.IconSizeHuge), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
@@ -158,13 +165,13 @@ private fun ActiveContent(
         }
         else -> {
             Text(
-                text = "Generate professional tax saving suggestions, investment recommendations, and error audits using Gemini.",
+                text = AppStrings.geminiAiAnalyzeDesc,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
             Button(onClick = onGenerateClick, modifier = Modifier.fillMaxWidth()) {
-                Text("Analyze Payslip with Gemini AI")
+                Text(AppStrings.geminiAiAnalyzeBtn)
             }
         }
     }

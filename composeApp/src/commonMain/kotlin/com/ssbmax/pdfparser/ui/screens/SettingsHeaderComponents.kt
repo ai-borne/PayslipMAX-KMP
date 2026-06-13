@@ -18,18 +18,23 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 fun OfflineStatusPill(
     modifier: Modifier = Modifier,
 ) {
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
+        shape = RoundedCornerShape(AppDimensions.SpacingMedium),
+        color = if (isDark) {
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        } else {
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.85f)
+        },
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
         modifier = modifier,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = AppDimensions.SpacingSmall, vertical = AppDimensions.SpacingTiny),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
         ) {
-            Text("✔", fontSize = 10.sp, color = MaterialTheme.colorScheme.primary)
+            Text("✔", fontSize = AppDimensions.TextSizeSmall, color = MaterialTheme.colorScheme.primary)
             Text(
                 text = AppStrings.settingsOfflineFirst,
                 style = MaterialTheme.typography.labelSmall,
@@ -44,14 +49,19 @@ fun OfflineStatusPill(
 fun PrivacyCard(
     modifier: Modifier = Modifier,
 ) {
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors =
             CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f),
+                containerColor = if (isDark) {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
+                } else {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                },
             ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
     ) {
         Row(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
@@ -59,8 +69,8 @@ fun PrivacyCard(
         ) {
             Text(
                 text = "🛡️",
-                fontSize = 28.sp,
-                modifier = Modifier.padding(end = 12.dp),
+                fontSize = AppDimensions.TextSizeHuge,
+                modifier = Modifier.padding(end = AppDimensions.SpacingMedium),
             )
             Column {
                 Text(
@@ -69,7 +79,7 @@ fun PrivacyCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(AppDimensions.SpacingTwo))
                 Text(
                     text = AppStrings.settingsOfflineSecureDesc,
                     style = MaterialTheme.typography.bodyMedium,
@@ -94,7 +104,7 @@ fun SettingsCategoryHeader(
             modifier
                 .fillMaxWidth()
                 .padding(horizontal = AppDimensions.PaddingMedium)
-                .padding(top = 12.dp, bottom = 4.dp),
+                .padding(top = AppDimensions.SpacingMedium, bottom = AppDimensions.SpacingTiny),
     )
 }
 
@@ -127,15 +137,15 @@ fun SettingsRow(
             modifier
                 .fillMaxWidth()
                 .then(clickableModifier)
-                .padding(horizontal = AppDimensions.PaddingMedium, vertical = 14.dp),
+                .padding(horizontal = AppDimensions.PaddingMedium, vertical = AppDimensions.SpacingLarge),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f).padding(end = 8.dp),
+            modifier = Modifier.weight(1f).padding(end = AppDimensions.SpacingSmall),
         ) {
-            Text(icon, fontSize = 20.sp, modifier = Modifier.padding(end = 12.dp))
+            Text(icon, fontSize = AppDimensions.TextSizeExtraLarge, modifier = Modifier.padding(end = AppDimensions.SpacingMedium))
             Column {
                 Text(
                     text = title,
@@ -155,7 +165,7 @@ fun SettingsRow(
         if (trailingContent != null) {
             trailingContent()
         } else if (onClick != null) {
-            Text("➔", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("➔", fontSize = AppDimensions.TextSizeLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

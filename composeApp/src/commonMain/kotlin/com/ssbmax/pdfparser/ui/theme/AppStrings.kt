@@ -235,4 +235,14 @@ object AppStrings {
     // PDF Card
     const val pdfIconLabel = "PDF"
     const val pdfTapToOpen = "Tap to open original statement"
+
+    // Dashboard Empty State
+    const val dashboardEmptyStateTitle = "No Payslips Imported"
+    const val dashboardEmptyStateDesc = "Import your monthly payslips to unlock digital replicas, historical tracking, financial insights, and tax audits."
+    const val dashboardEmptyStateLabel = "Tap the + button below to get started"
+    const val dashboardEmptyStateDescSandbox = "Import your PDF payslips or seed simulated data from the import screen to view financial analytics."
+
+    // Gemini AI Section Extra
+    const val geminiAiAnalyzeBtn = "Analyze Payslip with Gemini AI"
+    const val geminiAiAnalyzeDesc = "Generate professional tax saving suggestions, investment recommendations, and error audits using Gemini."
 }
