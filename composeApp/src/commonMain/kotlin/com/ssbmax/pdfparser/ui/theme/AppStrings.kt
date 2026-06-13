@@ -202,6 +202,7 @@ object AppStrings {
     const val historyActionShareSummary = "Share Summary"
     const val historyYearlySummary = "Yearly Summary"
     const val historyNetTakeHomeLabel = "Net Take-Home"
+    const val historyNetTakeHomeShort = "Net take home Rs"
     const val historyGrossPayLabel = "Gross"
     const val historyDsopLabel = "DSOP"
     const val historyTaxLabel = "Tax"

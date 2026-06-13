@@ -62,6 +62,10 @@ internal fun formatPercentage(value: Double): String {
     }
 }
 
+internal fun getDisplayTaxAmount(payslip: ParsedPayslip): Double {
+    return payslip.deductions.incomeTax
+}
+
 @Composable
 fun HistoryCardContent(
     payslip: ParsedPayslip,
@@ -75,10 +79,9 @@ fun HistoryCardContent(
             modifier
                 .fillMaxWidth()
                 .padding(AppDimensions.PaddingMedium),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
         HistoryCardHeaderRow(payslip = payslip, trend = trend)
-        HistoryCardLabelsRow(payslip = payslip)
         CompositionSparkbar(payslip = payslip)
         HistoryCardFooterRow(payslip = payslip)
     }
@@ -94,56 +97,30 @@ private fun HistoryCardHeaderRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = payslip.monthName,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
         ) {
+            Text(
+                text = payslip.monthName,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
             if (trend != null && !trend.isZero) {
                 val trendColor = if (trend.isIncrease) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
                 Text(
-                    text =
-                        if (trend.isIncrease) {
-                            "↑ ${formatPercentage(trend.percentageChange)}"
-                        } else {
-                            "↓ ${formatPercentage(trend.percentageChange)}"
-                        },
-                    style = MaterialTheme.typography.labelSmall,
+                    text = " (${if (trend.isIncrease) "↑" else "↓"} ${formatPercentage(trend.percentageChange)})",
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = trendColor,
-                    modifier = Modifier.padding(end = 4.dp),
                 )
             }
-            Text(
-                text = "₹${formatAmount(payslip.summary.netRemittance)}",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.secondary,
-            )
         }
-    }
-}
-
-@Composable
-private fun HistoryCardLabelsRow(payslip: ParsedPayslip) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
         Text(
-            text = "${AppStrings.historyGrossPayLabel}: ₹${formatAmount(payslip.summary.grossPay)}",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            text = AppStrings.historyNetTakeHomeLabel,
-            style = MaterialTheme.typography.labelSmall,
+            text = "${AppStrings.historyNetTakeHomeShort} ${formatAmount(payslip.summary.netRemittance)}",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
         )
     }
@@ -156,78 +133,56 @@ private fun CompositionSparkbar(payslip: ParsedPayslip) {
 
     val netPct = (payslip.summary.netRemittance / gross).toFloat().coerceIn(0f, 1f)
     val dsopPct = (payslip.deductions.dsopSubscription / gross).toFloat().coerceIn(0f, 1f)
-    val taxPct = ((payslip.deductions.incomeTax + payslip.deductions.educationCess) / gross).toFloat().coerceIn(0f, 1f)
+    val taxPct = (getDisplayTaxAmount(payslip) / gross).toFloat().coerceIn(0f, 1f)
     val otherPct = (1.0f - netPct - dsopPct - taxPct).coerceIn(0f, 1f)
 
     Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(6.dp)
-                .clip(RoundedCornerShape(3.dp))
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(AppDimensions.SpacingSix)
+            .clip(RoundedCornerShape(AppDimensions.SpacingTwo))
+            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
     ) {
-        if (netPct > 0f) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxHeight()
-                        .weight(netPct)
-                        .background(MaterialTheme.colorScheme.secondary),
-            )
-        }
-        if (dsopPct > 0f) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxHeight()
-                        .weight(dsopPct)
-                        .background(MaterialTheme.colorScheme.tertiary),
-            )
-        }
-        if (taxPct > 0f) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxHeight()
-                        .weight(taxPct)
-                        .background(MaterialTheme.colorScheme.error),
-            )
-        }
-        if (otherPct > 0f) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxHeight()
-                        .weight(otherPct)
-                        .background(MaterialTheme.colorScheme.outlineVariant),
-            )
-        }
+        if (netPct > 0f) Box(modifier = Modifier.fillMaxHeight().weight(netPct).background(MaterialTheme.colorScheme.secondary))
+        if (dsopPct > 0f) Box(modifier = Modifier.fillMaxHeight().weight(dsopPct).background(MaterialTheme.colorScheme.tertiary))
+        if (taxPct > 0f) Box(modifier = Modifier.fillMaxHeight().weight(taxPct).background(MaterialTheme.colorScheme.error))
+        if (otherPct > 0f) Box(modifier = Modifier.fillMaxHeight().weight(otherPct).background(MaterialTheme.colorScheme.outlineVariant))
     }
 }
 
 @Composable
 private fun HistoryCardFooterRow(payslip: ParsedPayslip) {
-    val tax = payslip.deductions.incomeTax + payslip.deductions.educationCess
+    val tax = getDisplayTaxAmount(payslip)
+    val greenColor = MaterialTheme.colorScheme.secondary
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "${AppStrings.historyDsopLabel}: ₹${formatAmount(payslip.deductions.dsopSubscription)}",
+            text = "${AppStrings.historyGrossPayLabel}: ₹${formatAmount(payslip.summary.grossPay)}",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+            color = greenColor,
         )
         Text(
             text = "•",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+            color = greenColor,
+        )
+        Text(
+            text = "${AppStrings.historyDsopLabel}: ₹${formatAmount(payslip.deductions.dsopSubscription)}",
+            style = MaterialTheme.typography.labelSmall,
+            color = greenColor,
+        )
+        Text(
+            text = "•",
+            style = MaterialTheme.typography.labelSmall,
+            color = greenColor,
         )
         Text(
             text = "${AppStrings.historyTaxLabel}: ₹${formatAmount(tax)}",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+            color = greenColor,
         )
     }
 }
