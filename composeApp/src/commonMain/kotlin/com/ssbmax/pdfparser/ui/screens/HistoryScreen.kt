@@ -1,12 +1,8 @@
 package com.ssbmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,11 +19,14 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 fun HistoryScreen(
     viewModel: PayslipViewModel,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onSharePayslip: (ParsedPayslip) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val payslips = uiState.payslips
     var selectedDetailPayslip by remember { mutableStateOf<ParsedPayslip?>(null) }
+    var activeActionPayslip by remember { mutableStateOf<ParsedPayslip?>(null) }
+    var pendingDeletePayslip by remember { mutableStateOf<ParsedPayslip?>(null) }
 
     if (selectedDetailPayslip != null) {
         PayslipReplicaScreen(
@@ -46,8 +45,40 @@ fun HistoryScreen(
         HistoryListContainer(
             payslips = payslips,
             onPayslipClick = { selectedDetailPayslip = it },
+            onLongPress = { activeActionPayslip = it },
+            onSwipeDelete = { pendingDeletePayslip = it },
             modifier = modifier,
         )
+
+        activeActionPayslip?.let { payslip ->
+            HistoryActionBottomSheet(
+                payslip = payslip,
+                onDismissRequest = { activeActionPayslip = null },
+                onViewReplica = { selectedDetailPayslip = payslip },
+                onViewOriginal = {
+                    viewModel.getPayslipPdf(payslip.dateStr) { bytes ->
+                        if (bytes != null) {
+                            onOpenPdf(bytes, payslip.file)
+                        }
+                    }
+                },
+                onShareSummary = { onSharePayslip(payslip) },
+                onDelete = {
+                    pendingDeletePayslip = payslip
+                    activeActionPayslip = null
+                }
+            )
+        }
+
+        pendingDeletePayslip?.let { payslip ->
+            HistoryDeleteConfirmationDialog(
+                onConfirm = {
+                    viewModel.deletePayslip(payslip.dateStr)
+                    pendingDeletePayslip = null
+                },
+                onDismiss = { pendingDeletePayslip = null }
+            )
+        }
     }
 }
 
@@ -55,21 +86,27 @@ fun HistoryScreen(
 private fun HistoryListContainer(
     payslips: List<ParsedPayslip>,
     onPayslipClick: (ParsedPayslip) -> Unit,
+    onLongPress: (ParsedPayslip) -> Unit,
+    onSwipeDelete: (ParsedPayslip) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(AppDimensions.PaddingMedium),
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(AppDimensions.PaddingMedium),
     ) {
         HistoryHeader()
         Spacer(modifier = Modifier.height(16.dp))
         if (payslips.isEmpty()) {
             EmptyHistoryView()
         } else {
-            HistoryLazyList(payslips = payslips, onPayslipClick = onPayslipClick)
+            HistoryLazyList(
+                payslips = payslips,
+                onPayslipClick = onPayslipClick,
+                onLongPress = onLongPress,
+                onSwipeDelete = onSwipeDelete
+            )
         }
     }
 }
@@ -108,80 +145,54 @@ private fun EmptyHistoryView() {
 private fun HistoryLazyList(
     payslips: List<ParsedPayslip>,
     onPayslipClick: (ParsedPayslip) -> Unit,
+    onLongPress: (ParsedPayslip) -> Unit,
+    onSwipeDelete: (ParsedPayslip) -> Unit,
 ) {
-    val grouped =
-        remember(payslips) {
-            payslips.groupBy { it.year }.toList().sortedByDescending { it.first }
-        }
-    LazyColumn(
+    val grouped = remember(payslips) {
+        payslips.groupBy { it.year }.toList().sortedByDescending { it.first }
+    }
+    val latestYear = remember(grouped) { grouped.firstOrNull()?.first }
+    var expandedYears by remember {
+        mutableStateOf(if (latestYear != null) setOf(latestYear) else emptySet())
+    }
+
+    androidx.compose.foundation.lazy.LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.fillMaxSize(),
     ) {
         grouped.forEach { (year, yearPayslips) ->
-            item {
-                Text(
-                    text = year.toString(),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(vertical = 4.dp),
+            val isExpanded = expandedYears.contains(year)
+            item(key = year) {
+                HistoryYearHeader(
+                    year = year,
+                    payslips = yearPayslips,
+                    isExpanded = isExpanded,
+                    onToggleExpand = {
+                        expandedYears = if (isExpanded) {
+                            expandedYears - year
+                        } else {
+                            expandedYears + year
+                        }
+                    }
                 )
             }
-            items(
-                items = yearPayslips.sortedByDescending { it.monthNum },
-                key = { it.dateStr },
-            ) { payslip ->
-                HistoryCard(payslip = payslip, onClick = { onPayslipClick(payslip) })
-            }
-        }
-    }
-}
-
-@Composable
-private fun HistoryCard(
-    payslip: ParsedPayslip,
-    onClick: () -> Unit,
-) {
-    Card(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable { onClick() },
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
-    ) {
-        Row(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column {
-                Text(
-                    text = payslip.monthName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = "Gross: ₹${formatAmount(payslip.summary.grossPay)}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    text = "₹${formatAmount(payslip.summary.netRemittance)}",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.secondary,
-                )
-                Text(
-                    text = "Net Take-Home",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
+            if (isExpanded) {
+                items(
+                    items = yearPayslips.sortedByDescending { it.monthNum },
+                    key = { it.dateStr },
+                ) { payslip ->
+                    HistoryCard(
+                        payslip = payslip,
+                        onViewReplica = { onPayslipClick(payslip) },
+                        onLongPress = { onLongPress(payslip) },
+                        onSwipeDelete = { onSwipeDelete(payslip) }
+                    ) {
+                        HistoryCardContent(
+                            payslip = payslip,
+                            allPayslips = payslips
+                        )
+                    }
+                }
             }
         }
     }

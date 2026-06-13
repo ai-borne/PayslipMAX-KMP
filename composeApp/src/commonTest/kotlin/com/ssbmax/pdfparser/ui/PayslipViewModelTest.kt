@@ -140,6 +140,25 @@ class PayslipViewModelTest {
         }
 
     @Test
+    fun testDeleteNonSelectedPayslip() =
+        runTest {
+            val mock1 = createMockPayslip("08/2024")
+            val mock2 = createMockPayslip("09/2024")
+            fakeDao.insertPayslip(mock1.toEncryptedEntity())
+            fakeDao.insertPayslip(mock2.toEncryptedEntity())
+
+            val testViewModel = PayslipViewModel(repository, fakeBackupManager, fakeGeminiService)
+            assertEquals(mock2, testViewModel.uiState.value.selectedPayslip)
+
+            // Delete non-selected mock1
+            testViewModel.deletePayslip("08/2024")
+
+            val state = testViewModel.uiState.value
+            assertEquals(1, state.payslips.size)
+            assertEquals(mock2, state.selectedPayslip) // selected remains mock2
+        }
+
+    @Test
     fun testClearErrorAndResetImportSuccess() {
         val exception = Exception("Error")
         fakeParser.result = Result.failure(exception)

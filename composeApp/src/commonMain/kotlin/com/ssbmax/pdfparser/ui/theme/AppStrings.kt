@@ -192,4 +192,19 @@ object AppStrings {
     const val settingsStatusEnabled = "Enabled"
     const val settingsStatusDisabled = "Disabled"
     const val settingsStatusDefault = "Default"
+
+    // History Redesign Strings
+    const val historyActionDelete = "Delete Statement"
+    const val historyConfirmDeleteTitle = "Delete Payslip?"
+    const val historyConfirmDeleteMessage = "Are you sure you want to delete this payslip? This action is permanent and cannot be undone."
+    const val historyActionViewReplica = "View Digital Replica"
+    const val historyActionViewOriginal = "View Original PDF"
+    const val historyActionShareSummary = "Share Summary"
+    const val historyYearlySummary = "Yearly Summary"
+    const val historyNetTakeHomeLabel = "Net Take-Home"
+    const val historyGrossPayLabel = "Gross"
+    const val historyDsopLabel = "DSOP"
+    const val historyTaxLabel = "Tax"
+    const val historyTrendHike = "DA Hike / Increment"
+    const val historyChevronContentDescription = "Toggle Year Visibility"
 }
