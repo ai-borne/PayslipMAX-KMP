@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.insights.FinancialInsight
 import com.ssbmax.pdfparser.insights.FinancialInsightsGenerator
@@ -78,7 +77,7 @@ private fun InsightsContent(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(AppDimensions.PaddingMedium),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
         item { InsightsHeader() }
         item { WellnessMeterSection(payslip = selected) }

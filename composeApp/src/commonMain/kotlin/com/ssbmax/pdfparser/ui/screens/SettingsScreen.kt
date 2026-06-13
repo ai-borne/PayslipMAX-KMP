@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
@@ -71,7 +70,7 @@ private fun SettingsContent(
                 .verticalScroll(rememberScrollState())
                 .padding(AppDimensions.PaddingMedium),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
         SettingsHeader(onTitleClick = onHeaderClick)
         PrivacyCard()
@@ -212,7 +211,7 @@ private fun SettingsHeader(
             )
             OfflineStatusPill()
         }
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
         Text(
             text = AppStrings.settingsSubtitle,
             style = MaterialTheme.typography.bodyMedium,
