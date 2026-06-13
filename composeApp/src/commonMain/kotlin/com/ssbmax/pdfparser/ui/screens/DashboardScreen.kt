@@ -1,5 +1,6 @@
 package com.ssbmax.pdfparser.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -60,27 +61,27 @@ private fun EmptyDashboardPlaceholder(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = "📄",
-            fontSize = 64.sp,
-            modifier = Modifier.padding(bottom = 16.dp),
+            fontSize = AppDimensions.FontSizeEmoji,
+            modifier = Modifier.padding(bottom = AppDimensions.SpacingLarge),
         )
         Text(
-            text = "No Payslips Imported",
+            text = AppStrings.dashboardEmptyStateTitle,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center,
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
         Text(
-            text = "Import your monthly payslips to unlock digital replicas, historical tracking, financial insights, and tax audits.",
+            text = AppStrings.dashboardEmptyStateDesc,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 24.dp),
+            modifier = Modifier.padding(horizontal = AppDimensions.PaddingLarge),
         )
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingHuge))
         Text(
-            text = "Tap the + button below to get started",
+            text = AppStrings.dashboardEmptyStateLabel,
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.SemiBold,
@@ -95,7 +96,7 @@ private fun UploadFab(
 ) {
     FloatingActionButton(
         onClick = onClick,
-        modifier = modifier.padding(16.dp),
+        modifier = modifier.padding(AppDimensions.PaddingMedium),
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
     ) {
@@ -114,7 +115,7 @@ private fun UploadDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Close")
+                Text(AppStrings.btnClose)
             }
         },
         text = {
@@ -153,7 +154,7 @@ private fun PopulatedDashboard(
                 profileCda = uiState.profileCdaNumber,
                 profilePan = uiState.profilePanNumber,
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
         }
 
         YearMonthPickerRow(
@@ -162,13 +163,13 @@ private fun PopulatedDashboard(
         )
 
         selected?.let {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
             StatsGridSection(payslip = it)
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
             TrendChartCard(payslips = payslips)
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
             AllocationChartCard(payslip = it)
         }
     }
@@ -182,8 +183,8 @@ private fun StatsGridSection(payslip: ParsedPayslip) {
     val tax = payslip.deductions.incomeTax + payslip.deductions.educationCess
     val taxRate = if (payslip.summary.grossPay > 0) (tax / payslip.summary.grossPay) * 100 else 0.0
 
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
             StatCard(
                 title = AppStrings.cardNetTitle,
                 value = "₹${formatAmount(net)}",
@@ -197,7 +198,7 @@ private fun StatsGridSection(payslip: ParsedPayslip) {
                 modifier = Modifier.weight(1f),
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
             StatCard(
                 title = AppStrings.cardDsopTitle,
                 value = "₹${formatAmount(dsop)}",
@@ -225,17 +226,18 @@ private fun StatCard(
         modifier = modifier,
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
             Text(text = title, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
             Text(
                 text = value,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingTwo))
             Text(text = subtitle, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
         }
     }

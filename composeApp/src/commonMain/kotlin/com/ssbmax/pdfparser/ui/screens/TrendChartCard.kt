@@ -1,5 +1,6 @@
 package com.ssbmax.pdfparser.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +23,7 @@ fun TrendChartCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
             Text(
@@ -36,8 +38,8 @@ fun TrendChartCard(
                 labels = recent.map { "${it.monthName.take(3)} '${it.year.toString().takeLast(2)}" },
                 lineData1 = recent.map { it.summary.grossPay },
                 lineData2 = recent.map { it.summary.netRemittance },
-                label1 = "Gross Pay",
-                label2 = "Net Remittance",
+                label1 = AppStrings.legendGrossPay,
+                label2 = AppStrings.legendNetRemittance,
             )
             Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
             TrendChartLegend()
@@ -61,7 +63,7 @@ private fun TrendChartLegend() {
             )
             Spacer(modifier = Modifier.width(AppDimensions.SpacingSix))
             Text(
-                text = "Gross Pay",
+                text = AppStrings.legendGrossPay,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -75,7 +77,7 @@ private fun TrendChartLegend() {
             )
             Spacer(modifier = Modifier.width(AppDimensions.SpacingSix))
             Text(
-                text = "Net Remittance",
+                text = AppStrings.legendNetRemittance,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
