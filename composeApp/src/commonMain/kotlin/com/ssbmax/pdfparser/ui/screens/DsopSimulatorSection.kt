@@ -12,9 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
+import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @Composable
 fun DsopSimulatorSection(
@@ -29,47 +28,24 @@ fun DsopSimulatorSection(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
             Text(
-                text = "DSOP Compound Simulator",
+                text = AppStrings.dsopSimulatorTitle,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = "Monthly Subscription",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = "₹${formatAmount(monthlyContribution.toDouble())}/mo",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = if (exceedsLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary,
-                )
-            }
-
-            Slider(
-                value = monthlyContribution,
+            DsopSliderControls(
+                monthlyContribution = monthlyContribution,
                 onValueChange = { monthlyContribution = it },
-                valueRange = 6000f..100000f,
-                steps = 94,
-                colors =
-                    SliderDefaults.colors(
-                        thumbColor = if (exceedsLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                        activeTrackColor = if (exceedsLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                    ),
+                exceedsLimit = exceedsLimit,
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
 
             if (exceedsLimit) {
                 TaxWarningTooltip()
@@ -77,10 +53,46 @@ fun DsopSimulatorSection(
                 TaxSafeTooltip()
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
             ProjectionRow(monthlyContribution.toDouble())
         }
     }
+}
+
+@Composable
+private fun DsopSliderControls(
+    monthlyContribution: Float,
+    onValueChange: (Float) -> Unit,
+    exceedsLimit: Boolean,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            text = AppStrings.dsopSimulatorMonthlySub,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = "₹${formatAmount(monthlyContribution.toDouble())}/mo",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = if (exceedsLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary,
+        )
+    }
+
+    Slider(
+        value = monthlyContribution,
+        onValueChange = onValueChange,
+        valueRange = 6000f..100000f,
+        steps = 94,
+        colors =
+            SliderDefaults.colors(
+                thumbColor = if (exceedsLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                activeTrackColor = if (exceedsLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+            ),
+    )
 }
 
 @Composable
@@ -88,15 +100,15 @@ private fun TaxWarningTooltip() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.06f)),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.15f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.error.copy(alpha = 0.15f)),
     ) {
         Row(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(AppDimensions.SpacingTen),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("⚠️", fontSize = 18.sp, modifier = Modifier.padding(end = 8.dp))
+            Text("⚠️", fontSize = AppDimensions.TextSizeExtraLarge, modifier = Modifier.padding(end = AppDimensions.SpacingSmall))
             Text(
-                text = "Tax Warning: Annual DSOP contributions above ₹5 Lakhs (₹41,666/mo) attract income tax on interest earned. Stay below ₹41,666/mo to keep gains 100% tax-free.",
+                text = AppStrings.dsopSimulatorTaxWarning,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
             )
@@ -109,15 +121,15 @@ private fun TaxSafeTooltip() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.06f)),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)),
     ) {
         Row(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(AppDimensions.SpacingTen),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("✅", fontSize = 18.sp, modifier = Modifier.padding(end = 8.dp))
+            Text("✅", fontSize = AppDimensions.TextSizeExtraLarge, modifier = Modifier.padding(end = AppDimensions.SpacingSmall))
             Text(
-                text = "Tax optimized: Annual contribution is below ₹5 Lakhs. All DSOP interest remains 100% tax-free under Section 10(11) of the Income Tax Act.",
+                text = AppStrings.dsopSimulatorTaxSafe,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.secondary,
             )
@@ -129,15 +141,15 @@ private fun TaxSafeTooltip() {
 private fun ProjectionRow(monthly: Double) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
         val calculated5 = remember(monthly) { calculateProjectedSavings(monthly, 5) }
         val calculated10 = remember(monthly) { calculateProjectedSavings(monthly, 10) }
         val calculated15 = remember(monthly) { calculateProjectedSavings(monthly, 15) }
 
-        ProjectionCard("5 Years", calculated5, Modifier.weight(1f))
-        ProjectionCard("10 Years", calculated10, Modifier.weight(1f))
-        ProjectionCard("15 Years", calculated15, Modifier.weight(1f))
+        ProjectionCard(AppStrings.dsopSimulator5Years, calculated5, Modifier.weight(1f))
+        ProjectionCard(AppStrings.dsopSimulator10Years, calculated10, Modifier.weight(1f))
+        ProjectionCard(AppStrings.dsopSimulator15Years, calculated15, Modifier.weight(1f))
     }
 }
 
@@ -150,10 +162,10 @@ private fun ProjectionCard(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.03f)),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(AppDimensions.SpacingSmall),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
@@ -161,7 +173,7 @@ private fun ProjectionCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingTwo))
             Text(
                 text = "₹${formatShortAmount(value)}",
                 style = MaterialTheme.typography.titleMedium,

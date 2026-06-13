@@ -9,6 +9,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
+data class BackupStatus(
+    val message: String,
+    val isSuccess: Boolean,
+)
+
 @Composable
 fun UniversalBackupSection(
     password: String,
@@ -47,37 +52,47 @@ fun UniversalBackupSection(
             }
         }
         if (isImporting) {
-            OutlinedTextField(
-                value = importText,
-                onValueChange = { importText = it },
-                label = { Text(AppStrings.settingsBackupPasteLabel) },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 4,
-            )
-            Button(
-                onClick = {
+            ImportControls(
+                importText = importText,
+                onImportTextChange = { importText = it },
+                onImportConfirm = {
                     onImportClick(importText)
                     importText = ""
                     isImporting = false
                 },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = importText.isNotBlank(),
-            ) {
-                Text(AppStrings.settingsBackupDecryptBtn)
-            }
+            )
         }
     }
 }
 
 @Composable
-fun StatusMessage(message: String) {
-    val isSuccess =
-        message.contains("Success") || message.contains("Completed") ||
-            message.contains("Complete") || message.contains("Copied")
+private fun ImportControls(
+    importText: String,
+    onImportTextChange: (String) -> Unit,
+    onImportConfirm: () -> Unit,
+) {
+    OutlinedTextField(
+        value = importText,
+        onValueChange = onImportTextChange,
+        label = { Text(AppStrings.settingsBackupPasteLabel) },
+        modifier = Modifier.fillMaxWidth(),
+        maxLines = 4,
+    )
+    Button(
+        onClick = onImportConfirm,
+        modifier = Modifier.fillMaxWidth(),
+        enabled = importText.isNotBlank(),
+    ) {
+        Text(AppStrings.settingsBackupDecryptBtn)
+    }
+}
+
+@Composable
+fun StatusMessage(status: BackupStatus) {
     Text(
-        text = message,
+        text = status.message,
         style = MaterialTheme.typography.labelSmall,
-        color = if (isSuccess) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
+        color = if (status.isSuccess) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
     )

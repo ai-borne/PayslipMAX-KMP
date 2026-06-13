@@ -105,12 +105,7 @@ private fun HistoryCardHeaderRow(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             if (trend != null && !trend.isZero) {
-                val trendColor =
-                    if (trend.isIncrease) {
-                        MaterialTheme.colorScheme.secondary
-                    } else {
-                        MaterialTheme.colorScheme.error
-                    }
+                val trendColor = if (trend.isIncrease) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
                 Text(
                     text =
                         if (trend.isIncrease) {

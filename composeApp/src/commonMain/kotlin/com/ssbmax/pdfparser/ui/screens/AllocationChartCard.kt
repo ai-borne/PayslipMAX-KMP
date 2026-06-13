@@ -9,9 +9,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.components.AllocationPieChart
+import com.ssbmax.pdfparser.ui.theme.AppColors
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -27,7 +27,13 @@ fun AllocationChartCard(
     val other = (payslip.summary.totalDeductions - dsop - tax).coerceAtLeast(0.0)
 
     val values = listOf(net.toFloat(), dsop.toFloat(), tax.toFloat(), other.toFloat())
-    val colors = listOf(Color(0xFF10B981), Color(0xFF8B5CF6), Color(0xFFEF4444), Color(0xFFF59E0B))
+    val colors =
+        listOf(
+            MaterialTheme.colorScheme.secondary,
+            MaterialTheme.colorScheme.tertiary,
+            MaterialTheme.colorScheme.error,
+            AppColors.Warning,
+        )
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -41,9 +47,9 @@ fun AllocationChartCard(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
             AllocationPieChart(values = values, colors = colors)
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
             AllocationLegend(values = values, gross = gross, colors = colors)
         }
     }
@@ -56,7 +62,7 @@ private fun AllocationLegend(
     colors: List<Color>,
 ) {
     val items = listOf("Net Take-Home", "Provident Fund (DSOP)", "Taxes & Cess", "Other Deductions")
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSix)) {
         items.forEachIndexed { i, label ->
             val value = values[i]
             val pct = (value / gross) * 100.0
@@ -67,9 +73,9 @@ private fun AllocationLegend(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier.size(10.dp).background(colors[i], RoundedCornerShape(2.dp)),
+                        modifier = Modifier.size(AppDimensions.SpacingTen).background(colors[i], RoundedCornerShape(AppDimensions.CornerRadiusSmall)),
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
                     Text(text = label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Text(

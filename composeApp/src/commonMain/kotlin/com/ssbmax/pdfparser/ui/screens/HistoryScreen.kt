@@ -164,38 +164,60 @@ private fun HistoryLazyList(
     ) {
         grouped.forEach { (year, yearPayslips) ->
             val isExpanded = expandedYears.contains(year)
-            item(key = year) {
-                HistoryYearHeader(
-                    year = year,
-                    payslips = yearPayslips,
-                    isExpanded = isExpanded,
-                    onToggleExpand = {
-                        expandedYears =
-                            if (isExpanded) {
-                                expandedYears - year
-                            } else {
-                                expandedYears + year
-                            }
-                    },
+            historyYearGroup(
+                year = year,
+                yearPayslips = yearPayslips,
+                allPayslips = payslips,
+                isExpanded = isExpanded,
+                onToggleExpand = {
+                    expandedYears =
+                        if (isExpanded) {
+                            expandedYears - year
+                        } else {
+                            expandedYears + year
+                        }
+                },
+                onPayslipClick = onPayslipClick,
+                onLongPress = onLongPress,
+                onSwipeDelete = onSwipeDelete,
+            )
+        }
+    }
+}
+
+private fun androidx.compose.foundation.lazy.LazyListScope.historyYearGroup(
+    year: Int,
+    yearPayslips: List<ParsedPayslip>,
+    allPayslips: List<ParsedPayslip>,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit,
+    onPayslipClick: (ParsedPayslip) -> Unit,
+    onLongPress: (ParsedPayslip) -> Unit,
+    onSwipeDelete: (ParsedPayslip) -> Unit,
+) {
+    item(key = year) {
+        HistoryYearHeader(
+            year = year,
+            payslips = yearPayslips,
+            isExpanded = isExpanded,
+            onToggleExpand = onToggleExpand,
+        )
+    }
+    if (isExpanded) {
+        items(
+            items = yearPayslips.sortedByDescending { it.monthNum },
+            key = { it.dateStr },
+        ) { payslip ->
+            HistoryCard(
+                payslip = payslip,
+                onViewReplica = { onPayslipClick(payslip) },
+                onLongPress = { onLongPress(payslip) },
+                onSwipeDelete = { onSwipeDelete(payslip) },
+            ) {
+                HistoryCardContent(
+                    payslip = payslip,
+                    allPayslips = allPayslips,
                 )
-            }
-            if (isExpanded) {
-                items(
-                    items = yearPayslips.sortedByDescending { it.monthNum },
-                    key = { it.dateStr },
-                ) { payslip ->
-                    HistoryCard(
-                        payslip = payslip,
-                        onViewReplica = { onPayslipClick(payslip) },
-                        onLongPress = { onLongPress(payslip) },
-                        onSwipeDelete = { onSwipeDelete(payslip) },
-                    ) {
-                        HistoryCardContent(
-                            payslip = payslip,
-                            allPayslips = payslips,
-                        )
-                    }
-                }
             }
         }
     }

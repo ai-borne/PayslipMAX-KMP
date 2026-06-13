@@ -3,6 +3,7 @@ package com.ssbmax.pdfparser.ui.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -11,12 +12,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ssbmax.pdfparser.ui.theme.AppDimensions
 
 /**
  * Renders a simple, elegant line chart representing values over time.
@@ -29,14 +31,14 @@ fun TrendLineChart(
     lineData2: List<Double>,
     label1: String,
     label2: String,
-    color1: Color = Color(0xFF3B82F6),
-    color2: Color = Color(0xFF10B981),
-    gridColor: Color = Color(0xFF1E293B),
-    textColor: Color = Color(0xFF94A3B8),
-    modifier: Modifier = Modifier.fillMaxWidth().height(200.dp),
+    modifier: Modifier = Modifier.fillMaxWidth().height(AppDimensions.ChartHeightLarge),
+    color1: Color = MaterialTheme.colorScheme.primary,
+    color2: Color = MaterialTheme.colorScheme.secondary,
+    gridColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
 ) {
     val textMeasurer = rememberTextMeasurer()
-    val textStyle = TextStyle(color = textColor, fontSize = 9.sp)
+    val textStyle = TextStyle(color = textColor, fontSize = AppDimensions.TextSizeTiny)
 
     Canvas(modifier = modifier) {
         val width = size.width
@@ -66,34 +68,18 @@ fun TrendLineChart(
                 lineData2.maxOrNull() ?: 1.0,
             ).coerceAtLeast(1.0)
 
-        val gridCount = 4
-
-        for (i in 0..gridCount) {
-            val y = paddingTop + (chartHeight / gridCount) * i
-            drawLine(
-                color = gridColor,
-                start = Offset(paddingLeft, y),
-                end = Offset(width - paddingRight, y),
-                strokeWidth = 1f,
-            )
-
-            val gridVal = maxVal * (gridCount - i) / gridCount
-            val lakhs = (gridVal / 1000.0).toInt() / 100.0
-            val lakhsStr = lakhs.toString()
-            val finalStr =
-                when {
-                    lakhs == 0.0 -> "0"
-                    lakhsStr.endsWith(".0") -> lakhsStr.dropLast(2)
-                    else -> lakhsStr
-                }
-            val gridValStr = if (finalStr == "0") "₹0" else "₹${finalStr}L"
-            drawText(
-                textMeasurer = textMeasurer,
-                text = gridValStr,
-                topLeft = Offset(10f, y - 12f),
-                style = textStyle,
-            )
-        }
+        drawChartGrid(
+            textMeasurer = textMeasurer,
+            textStyle = textStyle,
+            maxVal = maxVal,
+            gridCount = 4,
+            paddingLeft = paddingLeft,
+            paddingRight = paddingRight,
+            paddingTop = paddingTop,
+            chartHeight = chartHeight,
+            width = width,
+            gridColor = gridColor,
+        )
 
         val steps = labels.size
         val xPoints =
@@ -105,68 +91,127 @@ fun TrendLineChart(
                 }
             }
 
-        fun drawDataset(
-            data: List<Double>,
-            lineColor: Color,
-        ) {
-            val path = Path()
-            val fillPath = Path()
+        if (lineData1.isNotEmpty()) {
+            drawDatasetPath(lineData1, color1, xPoints, maxVal, paddingTop, chartHeight)
+        }
+        if (lineData2.isNotEmpty()) {
+            drawDatasetPath(lineData2, color2, xPoints, maxVal, paddingTop, chartHeight)
+        }
 
-            var started = false
+        drawXAxisLabels(labels, xPoints, paddingTop, chartHeight, textMeasurer, textStyle)
+    }
+}
 
-            for (i in data.indices) {
-                val valY = data[i]
-                val x = xPoints[i]
-                val y = paddingTop + chartHeight - (chartHeight * (valY / maxVal)).toFloat()
+private fun DrawScope.drawChartGrid(
+    textMeasurer: androidx.compose.ui.text.TextMeasurer,
+    textStyle: TextStyle,
+    maxVal: Double,
+    gridCount: Int,
+    paddingLeft: Float,
+    paddingRight: Float,
+    paddingTop: Float,
+    chartHeight: Float,
+    width: Float,
+    gridColor: Color,
+) {
+    for (i in 0..gridCount) {
+        val y = paddingTop + (chartHeight / gridCount) * i
+        drawLine(
+            color = gridColor,
+            start = Offset(paddingLeft, y),
+            end = Offset(width - paddingRight, y),
+            strokeWidth = 1f,
+        )
 
-                if (!started) {
-                    path.moveTo(x, y)
-                    fillPath.moveTo(x, paddingTop + chartHeight)
-                    fillPath.lineTo(x, y)
-                    started = true
-                } else {
-                    path.lineTo(x, y)
-                    fillPath.lineTo(x, y)
-                }
-
-                drawCircle(color = lineColor, radius = 4f, center = Offset(x, y))
-
-                if (i == data.lastIndex) {
-                    fillPath.lineTo(x, paddingTop + chartHeight)
-                    fillPath.close()
-                }
+        val gridVal = maxVal * (gridCount - i) / gridCount
+        val lakhs = (gridVal / 1000.0).toInt() / 100.0
+        val lakhsStr = lakhs.toString()
+        val finalStr =
+            when {
+                lakhs == 0.0 -> "0"
+                lakhsStr.endsWith(".0") -> lakhsStr.dropLast(2)
+                else -> lakhsStr
             }
+        val gridValStr = if (finalStr == "0") "₹0" else "₹${finalStr}L"
+        drawText(
+            textMeasurer = textMeasurer,
+            text = gridValStr,
+            topLeft = Offset(10f, y - 12f),
+            style = textStyle,
+        )
+    }
+}
 
-            drawPath(
-                path = fillPath,
-                brush =
-                    Brush.verticalGradient(
-                        colors = listOf(lineColor.copy(alpha = 0.25f), Color.Transparent),
-                        startY = paddingTop,
-                        endY = paddingTop + chartHeight,
-                    ),
-            )
+private fun DrawScope.drawDatasetPath(
+    data: List<Double>,
+    lineColor: Color,
+    xPoints: FloatArray,
+    maxVal: Double,
+    paddingTop: Float,
+    chartHeight: Float,
+) {
+    val path = Path()
+    val fillPath = Path()
 
-            drawPath(
-                path = path,
-                color = lineColor,
-                style = Stroke(width = 4f, cap = StrokeCap.Round),
-            )
+    var started = false
+
+    for (i in data.indices) {
+        val valY = data[i]
+        val x = xPoints[i]
+        val y = paddingTop + chartHeight - (chartHeight * (valY / maxVal)).toFloat()
+
+        if (!started) {
+            path.moveTo(x, y)
+            fillPath.moveTo(x, paddingTop + chartHeight)
+            fillPath.lineTo(x, y)
+            started = true
+        } else {
+            path.lineTo(x, y)
+            fillPath.lineTo(x, y)
         }
 
-        if (lineData1.isNotEmpty()) drawDataset(lineData1, color1)
-        if (lineData2.isNotEmpty()) drawDataset(lineData2, color2)
+        drawCircle(color = lineColor, radius = 4f, center = Offset(x, y))
 
-        labels.forEachIndexed { i, label ->
-            val x = xPoints[i]
-            val textLayoutResult = textMeasurer.measure(label, textStyle)
-            drawText(
-                textMeasurer = textMeasurer,
-                text = label,
-                topLeft = Offset(x - textLayoutResult.size.width / 2f, paddingTop + chartHeight + 10f),
-                style = textStyle,
-            )
+        if (i == data.lastIndex) {
+            fillPath.lineTo(x, paddingTop + chartHeight)
+            fillPath.close()
         }
+    }
+
+    drawPath(
+        path = fillPath,
+        brush =
+            Brush.verticalGradient(
+                colors = listOf(lineColor.copy(alpha = 0.25f), Color.Transparent),
+                startY = paddingTop,
+                endY = paddingTop + chartHeight,
+            ),
+    )
+
+    drawPath(
+        path = path,
+        color = lineColor,
+        style = Stroke(width = 4f, cap = StrokeCap.Round),
+    )
+}
+
+private fun DrawScope.drawXAxisLabels(
+    labels: List<String>,
+    xPoints: FloatArray,
+    paddingTop: Float,
+    chartHeight: Float,
+    textMeasurer: androidx.compose.ui.text.TextMeasurer,
+    textStyle: TextStyle,
+) {
+    labels.forEachIndexed { i, label ->
+        val x = xPoints[i]
+        val textLayoutResult = textMeasurer.measure(label, textStyle)
+        drawText(
+            textMeasurer = textMeasurer,
+            text = label,
+            topLeft = Offset(x - textLayoutResult.size.width / 2f, paddingTop + chartHeight + 10f),
+            style = textStyle,
+        )
     }
 }
 
@@ -177,7 +222,7 @@ fun TrendLineChart(
 fun AllocationPieChart(
     values: List<Float>,
     colors: List<Color>,
-    modifier: Modifier = Modifier.fillMaxWidth().height(180.dp),
+    modifier: Modifier = Modifier.fillMaxWidth().height(AppDimensions.ChartHeightMedium),
 ) {
     Canvas(modifier = modifier) {
         val width = size.width

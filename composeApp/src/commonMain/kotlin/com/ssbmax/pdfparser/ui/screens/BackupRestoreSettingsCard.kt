@@ -104,7 +104,7 @@ private fun BackupRestoreSheetContent(
     onImportBackup: (ByteArray, String, (Result<Unit>) -> Unit) -> Unit,
     onCloseClick: () -> Unit,
 ) {
-    var status by remember { mutableStateOf<String?>(null) }
+    var status by remember { mutableStateOf<BackupStatus?>(null) }
     val clipboardManager = LocalClipboardManager.current
 
     Column(
@@ -120,37 +120,60 @@ private fun BackupRestoreSheetContent(
         BackupRestoreHeader(onCloseClick = onCloseClick)
         BackupRestorePasswordField(password = password, onPasswordChange = onPasswordChange)
         LocalSyncButtonsRow(password, onBackupClick, onRestoreClick) { status = it }
-        UniversalBackupSection(
+        UniversalBackupSectionWrapper(
             password = password,
-            onExportClick = {
-                onExportBackup(password) { result ->
-                    if (result.isSuccess) {
-                        val hex = result.getOrThrow().toHex()
-                        clipboardManager.setText(AnnotatedString(hex))
-                        status = AppStrings.statusCopiedSuccess
-                    } else {
-                        status = "${AppStrings.statusExportFailed}${result.exceptionOrNull()?.message}"
-                    }
-                }
-            },
-            onImportClick = { hexStr ->
-                try {
-                    val bytes = hexStr.trim().hexToByteArray()
-                    onImportBackup(bytes, password) { result ->
-                        status =
-                            if (result.isSuccess) {
-                                AppStrings.statusRestoreComplete
-                            } else {
-                                "${AppStrings.statusRestoreFailed}${result.exceptionOrNull()?.message}"
-                            }
-                    }
-                } catch (e: Exception) {
-                    status = AppStrings.statusInvalidFormat
-                }
-            },
+            clipboardManager = clipboardManager,
+            onExportBackup = onExportBackup,
+            onImportBackup = onImportBackup,
+            onStatusChange = { status = it },
         )
-        status?.let { StatusMessage(message = it) }
+        status?.let { StatusMessage(status = it) }
     }
+}
+
+@Composable
+private fun UniversalBackupSectionWrapper(
+    password: String,
+    clipboardManager: androidx.compose.ui.platform.ClipboardManager,
+    onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
+    onImportBackup: (ByteArray, String, (Result<Unit>) -> Unit) -> Unit,
+    onStatusChange: (BackupStatus) -> Unit,
+) {
+    UniversalBackupSection(
+        password = password,
+        onExportClick = {
+            onExportBackup(password) { result ->
+                if (result.isSuccess) {
+                    val hex = result.getOrThrow().toHex()
+                    clipboardManager.setText(AnnotatedString(hex))
+                    onStatusChange(BackupStatus(AppStrings.statusCopiedSuccess, isSuccess = true))
+                } else {
+                    onStatusChange(
+                        BackupStatus(
+                            "${AppStrings.statusExportFailed}${result.exceptionOrNull()?.message}",
+                            isSuccess = false,
+                        ),
+                    )
+                }
+            }
+        },
+        onImportClick = { hexStr ->
+            try {
+                val bytes = hexStr.trim().hexToByteArray()
+                onImportBackup(bytes, password) { result ->
+                    val statusMsg =
+                        if (result.isSuccess) {
+                            AppStrings.statusRestoreComplete
+                        } else {
+                            "${AppStrings.statusRestoreFailed}${result.exceptionOrNull()?.message}"
+                        }
+                    onStatusChange(BackupStatus(statusMsg, isSuccess = result.isSuccess))
+                }
+            } catch (e: Exception) {
+                onStatusChange(BackupStatus(AppStrings.statusInvalidFormat, isSuccess = false))
+            }
+        },
+    )
 }
 
 @Composable
@@ -202,7 +225,7 @@ private fun LocalSyncButtonsRow(
     password: String,
     onBackupClick: (String, (Result<Unit>) -> Unit) -> Unit,
     onRestoreClick: (String, (Result<Unit>) -> Unit) -> Unit,
-    onStatusChange: (String) -> Unit,
+    onStatusChange: (BackupStatus) -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -211,13 +234,13 @@ private fun LocalSyncButtonsRow(
         Button(
             onClick = {
                 onBackupClick(password) { result ->
-                    onStatusChange(
+                    val statusMsg =
                         if (result.isSuccess) {
                             AppStrings.statusSyncSuccess
                         } else {
                             "${AppStrings.statusSyncFailed}${result.exceptionOrNull()?.message}"
-                        },
-                    )
+                        }
+                    onStatusChange(BackupStatus(statusMsg, isSuccess = result.isSuccess))
                 }
             },
             modifier = Modifier.weight(1f),
@@ -227,13 +250,13 @@ private fun LocalSyncButtonsRow(
         OutlinedButton(
             onClick = {
                 onRestoreClick(password) { result ->
-                    onStatusChange(
+                    val statusMsg =
                         if (result.isSuccess) {
                             AppStrings.statusRestoreSuccess
                         } else {
                             "${AppStrings.statusRestoreFailed}${result.exceptionOrNull()?.message}"
-                        },
-                    )
+                        }
+                    onStatusChange(BackupStatus(statusMsg, isSuccess = result.isSuccess))
                 }
             },
             modifier = Modifier.weight(1f),

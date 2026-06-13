@@ -13,8 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 
@@ -29,29 +27,16 @@ fun PdfDocumentCard(
             modifier
                 .fillMaxWidth()
                 .clickable { onViewPdfClick(payslip.dateStr) },
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(AppDimensions.PaddingSmall),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
     ) {
         Row(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                modifier =
-                    Modifier
-                        .size(40.dp)
-                        .background(Color(0xFFEF4444), RoundedCornerShape(4.dp)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = "PDF",
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    fontSize = 12.sp,
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
+            PdfIconBox()
+            Spacer(modifier = Modifier.width(AppDimensions.SpacingLarge))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = payslip.file,
@@ -71,5 +56,23 @@ fun PdfDocumentCard(
                 tint = MaterialTheme.colorScheme.primary,
             )
         }
+    }
+}
+
+@Composable
+private fun PdfIconBox(modifier: Modifier = Modifier) {
+    Box(
+        modifier =
+            modifier
+                .size(AppDimensions.IconSizeExtraLarge)
+                .background(MaterialTheme.colorScheme.error, RoundedCornerShape(AppDimensions.SpacingTiny)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = "PDF",
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            fontSize = AppDimensions.TextSizeMedium,
+        )
     }
 }

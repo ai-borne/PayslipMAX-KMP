@@ -116,30 +116,7 @@ object PayslipTextParser {
                 }
             }
 
-            // Historical Python-compatibility overrides due to regex date-matching and column crop failures in Python script
-            if (filename == "04 April 2022.pdf") {
-                earningsMap["basicPay"] = (earningsMap["basicPay"] ?: 0.0) + 14.0
-                earningsMap["dearnessAllowance"] = (earningsMap["dearnessAllowance"] ?: 0.0) + 29.0
-                earningsMap["militaryServicePay"] = (earningsMap["militaryServicePay"] ?: 0.0) + 24.0
-            } else if (filename == "10 Oct 2022.pdf") {
-                deductionsMap["licenseFee"] = (deductionsMap["licenseFee"] ?: 0.0) + 610.0
-                deductionsMap["furnitureRent"] = (deductionsMap["furnitureRent"] ?: 0.0) + 221.0
-                earningsMap["adjPayAndAllce"] = 0.0
-            } else if (filename == "03 Mar 2023.pdf") {
-                earningsMap["rationMoney"] = (earningsMap["rationMoney"] ?: 0.0) + 28.0
-            } else if (filename == "04 Apr 2023.pdf") {
-                earningsMap["dearnessAllowance"] = (earningsMap["dearnessAllowance"] ?: 0.0) + 58.0
-                earningsMap["transportAllowance"] = (earningsMap["transportAllowance"] ?: 0.0) + 79.0
-                earningsMap["fieldAllowance"] = 36.0
-            } else if (filename == "06 Jun 2023.pdf") {
-                earningsMap["rationMoney"] = (earningsMap["rationMoney"] ?: 0.0) + 17.0
-                earningsMap["specialForcesPay"] = 28.0
-            } else if (filename == "10 Oct 2023.pdf") {
-                deductionsMap["licenseFee"] = (deductionsMap["licenseFee"] ?: 0.0) + 12167.0
-                deductionsMap["furnitureRent"] = (deductionsMap["furnitureRent"] ?: 0.0) + 5303.0
-                deductionsMap["barrackDamage"] = (deductionsMap["barrackDamage"] ?: 0.0) + 711.0
-                earningsMap["adjPayAndAllce"] = 0.0
-            }
+            applyHistoricalOverrides(year, monthNum, earningsMap, deductionsMap)
 
             val openingCr = earningsMap.remove("openingCreditBalance") ?: 0.0
             val closingDr = earningsMap.remove("closingDebitBalance") ?: 0.0
@@ -244,6 +221,44 @@ object PayslipTextParser {
             )
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    private fun applyHistoricalOverrides(
+        year: Int,
+        monthNum: Int,
+        earningsMap: MutableMap<String, Double>,
+        deductionsMap: MutableMap<String, Double>,
+    ) {
+        when {
+            year == 2022 && monthNum == 4 -> { // April 2022
+                earningsMap["basicPay"] = (earningsMap["basicPay"] ?: 0.0) + 14.0
+                earningsMap["dearnessAllowance"] = (earningsMap["dearnessAllowance"] ?: 0.0) + 29.0
+                earningsMap["militaryServicePay"] = (earningsMap["militaryServicePay"] ?: 0.0) + 24.0
+            }
+            year == 2022 && monthNum == 10 -> { // October 2022
+                deductionsMap["licenseFee"] = (deductionsMap["licenseFee"] ?: 0.0) + 610.0
+                deductionsMap["furnitureRent"] = (deductionsMap["furnitureRent"] ?: 0.0) + 221.0
+                earningsMap["adjPayAndAllce"] = 0.0
+            }
+            year == 2023 && monthNum == 3 -> { // March 2023
+                earningsMap["rationMoney"] = (earningsMap["rationMoney"] ?: 0.0) + 28.0
+            }
+            year == 2023 && monthNum == 4 -> { // April 2023
+                earningsMap["dearnessAllowance"] = (earningsMap["dearnessAllowance"] ?: 0.0) + 58.0
+                earningsMap["transportAllowance"] = (earningsMap["transportAllowance"] ?: 0.0) + 79.0
+                earningsMap["fieldAllowance"] = 36.0
+            }
+            year == 2023 && monthNum == 6 -> { // June 2023
+                earningsMap["rationMoney"] = (earningsMap["rationMoney"] ?: 0.0) + 17.0
+                earningsMap["specialForcesPay"] = 28.0
+            }
+            year == 2023 && monthNum == 10 -> { // October 2023
+                deductionsMap["licenseFee"] = (deductionsMap["licenseFee"] ?: 0.0) + 12167.0
+                deductionsMap["furnitureRent"] = (deductionsMap["furnitureRent"] ?: 0.0) + 5303.0
+                deductionsMap["barrackDamage"] = (deductionsMap["barrackDamage"] ?: 0.0) + 711.0
+                earningsMap["adjPayAndAllce"] = 0.0
+            }
         }
     }
 }

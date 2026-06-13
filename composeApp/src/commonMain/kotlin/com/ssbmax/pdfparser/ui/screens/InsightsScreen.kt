@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.insights.FinancialInsight
 import com.ssbmax.pdfparser.insights.FinancialInsightsGenerator
@@ -40,6 +39,31 @@ fun InsightsScreen(
     }
 
     var showUpgradeSheet by remember { mutableStateOf(false) }
+
+    InsightsContent(
+        viewModel = viewModel,
+        uiState = uiState,
+        selected = selected,
+        onShowUpgradeSheet = { showUpgradeSheet = true },
+        modifier = modifier,
+    )
+
+    if (showUpgradeSheet) {
+        PremiumUpgradeBottomSheet(
+            onDismissRequest = { showUpgradeSheet = false },
+            onUnlockClick = { viewModel.setPremiumEnabled(true) },
+        )
+    }
+}
+
+@Composable
+private fun InsightsContent(
+    viewModel: PayslipViewModel,
+    uiState: PayslipUiState,
+    selected: ParsedPayslip,
+    onShowUpgradeSheet: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val previous =
         remember(selected, uiState.payslips) {
             val index = uiState.payslips.indexOfFirst { it.dateStr == selected.dateStr }
@@ -67,7 +91,7 @@ fun InsightsScreen(
                 aiError = uiState.aiError,
                 onGenerateClick = { viewModel.generateAiInsights(selected) },
                 onClearClick = { viewModel.clearAiInsights() },
-                onUpgradeClick = { showUpgradeSheet = true },
+                onUpgradeClick = onShowUpgradeSheet,
             )
         }
         item { DsopSimulatorSection(initialContribution = selected.deductions.dsopSubscription) }
@@ -75,20 +99,13 @@ fun InsightsScreen(
             InsightCard(insight = insight)
         }
     }
-
-    if (showUpgradeSheet) {
-        PremiumUpgradeBottomSheet(
-            onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { viewModel.setPremiumEnabled(true) },
-        )
-    }
 }
 
 @Composable
 private fun EmptyInsightsView() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(
-            text = "Please import or select a payslip to unlock financial insights.",
+            text = AppStrings.insightsEmptyState,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -105,9 +122,9 @@ private fun InsightsHeader() {
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
         Text(
-            text = "Personalized financial wellness and savings audits",
+            text = AppStrings.insightsSubheader,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -125,7 +142,7 @@ private fun WellnessMeterSection(payslip: ParsedPayslip) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
     ) {
         Row(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
@@ -140,16 +157,16 @@ private fun WellnessMeterSection(payslip: ParsedPayslip) {
 
 @Composable
 private fun RowScope.WellnessTextColumn(ratePercent: Double) {
-    Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
+    Column(modifier = Modifier.weight(1f).padding(end = AppDimensions.SpacingLarge)) {
         Text(
-            text = "Monthly Savings Rate",
+            text = AppStrings.insightsSavingsRateTitle,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
         Text(
-            text = "Target: 20%+. You save ${ratePercent.toString().take(4)}% of your gross pay in DSOP and AGIF.",
+            text = AppStrings.insightsSavingsRateTarget + ratePercent.toString().take(4) + AppStrings.insightsSavingsRateSuffix,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -158,12 +175,12 @@ private fun RowScope.WellnessTextColumn(ratePercent: Double) {
 
 @Composable
 private fun WellnessIndicator(progress: Float) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(72.dp)) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(AppDimensions.IconSizeHuge)) {
         CircularProgressIndicator(
             progress = { progress },
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.secondary,
-            strokeWidth = 6.dp,
+            strokeWidth = AppDimensions.SpacingSix,
             trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
         )
         Text(
@@ -187,13 +204,13 @@ private fun InsightCard(insight: FinancialInsight) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.08f)),
-        border = BorderStroke(1.dp, color.copy(alpha = 0.2f)),
+        border = BorderStroke(AppDimensions.BorderThin, color.copy(alpha = 0.2f)),
     ) {
         Row(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             verticalAlignment = Alignment.Top,
         ) {
-            Text(text = insight.icon, fontSize = 24.sp, modifier = Modifier.padding(end = 12.dp))
+            Text(text = insight.icon, fontSize = AppDimensions.TextSizeExtraLarge, modifier = Modifier.padding(end = AppDimensions.SpacingMedium))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = insight.title,
@@ -201,7 +218,7 @@ private fun InsightCard(insight: FinancialInsight) {
                     fontWeight = FontWeight.Bold,
                     color = color,
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
                 Text(
                     text = insight.description,
                     style = MaterialTheme.typography.bodyMedium,

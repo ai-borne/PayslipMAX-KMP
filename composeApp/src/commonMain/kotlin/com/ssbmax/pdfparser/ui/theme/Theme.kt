@@ -64,12 +64,48 @@ private val LightColorScheme =
     )
 
 // Dimension Constants (Fulfills no-hardcoded-dimensions rule)
+object AppColors {
+    val Warning = Color(0xFFF59E0B)
+}
+
 object AppDimensions {
     val PaddingSmall = 8.dp
     val PaddingMedium = 16.dp
     val PaddingLarge = 24.dp
     val CornerRadius = 16.dp
+    val CornerRadiusSmall = 2.dp
     val CardElevation = 4.dp
+
+    val SpacingTwo = 2.dp
+    val SpacingTiny = 4.dp
+    val SpacingSix = 6.dp
+    val SpacingSmall = 8.dp
+    val SpacingTen = 10.dp
+    val SpacingMedium = 12.dp
+    val SpacingLarge = 16.dp
+    val SpacingExtraLarge = 20.dp
+    val SpacingHuge = 24.dp
+    val SpacingDouble = 32.dp
+
+    val BorderThin = 1.dp
+    val BorderMedium = 2.dp
+
+    val IconSizeSmall = 16.dp
+    val IconSizeMedium = 24.dp
+    val IconSizeLarge = 32.dp
+    val IconSizeExtraLarge = 40.dp
+    val IconSizeDouble = 48.dp
+    val IconSizeHuge = 72.dp
+
+    val ChartHeightMedium = 180.dp
+    val ChartHeightLarge = 200.dp
+
+    val TextSizeTiny = 9.sp
+    val TextSizeSmall = 11.sp
+    val TextSizeMedium = 12.sp
+    val TextSizeLarge = 14.sp
+    val TextSizeExtraLarge = 18.sp
+    val TextSizeHuge = 24.sp
 }
 
 // Typography Tokens

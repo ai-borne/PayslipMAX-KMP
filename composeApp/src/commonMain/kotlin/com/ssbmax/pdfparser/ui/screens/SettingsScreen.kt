@@ -27,6 +27,42 @@ fun SettingsScreen(
     var devClicks by remember { mutableStateOf(0) }
     var devModeEnabled by remember { mutableStateOf(false) }
 
+    SettingsContent(
+        viewModel = viewModel,
+        uiState = uiState,
+        password = password,
+        onPasswordChange = { password = it },
+        onUpgradePrompt = { showUpgradeSheet = true },
+        devModeEnabled = devModeEnabled,
+        onHeaderClick = {
+            devClicks++
+            if (devClicks >= 7) {
+                devModeEnabled = !devModeEnabled
+                devClicks = 0
+            }
+        },
+        modifier = modifier,
+    )
+
+    if (showUpgradeSheet) {
+        PremiumUpgradeBottomSheet(
+            onDismissRequest = { showUpgradeSheet = false },
+            onUnlockClick = { viewModel.setPremiumEnabled(true) },
+        )
+    }
+}
+
+@Composable
+private fun SettingsContent(
+    viewModel: PayslipViewModel,
+    uiState: PayslipUiState,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    onUpgradePrompt: () -> Unit,
+    devModeEnabled: Boolean,
+    onHeaderClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier =
             modifier
@@ -37,35 +73,20 @@ fun SettingsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        SettingsHeader(
-            onTitleClick = {
-                devClicks++
-                if (devClicks >= 7) {
-                    devModeEnabled = !devModeEnabled
-                    devClicks = 0
-                }
-            },
-        )
+        SettingsHeader(onTitleClick = onHeaderClick)
         PrivacyCard()
         ProfileSection(viewModel = viewModel, uiState = uiState)
-        PreferencesSection(viewModel = viewModel, uiState = uiState, onUpgradePrompt = { showUpgradeSheet = true })
+        PreferencesSection(viewModel = viewModel, uiState = uiState, onUpgradePrompt = onUpgradePrompt)
         SecurityBackupSection(
             viewModel = viewModel,
             uiState = uiState,
             password = password,
-            onPasswordChange = { password = it },
-            onUpgradePrompt = { showUpgradeSheet = true },
+            onPasswordChange = onPasswordChange,
+            onUpgradePrompt = onUpgradePrompt,
         )
         DeveloperSandboxSection(devModeEnabled = devModeEnabled, viewModel = viewModel)
         DangerZoneSection(viewModel = viewModel)
         SettingsHelpDocs()
-    }
-
-    if (showUpgradeSheet) {
-        PremiumUpgradeBottomSheet(
-            onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { viewModel.setPremiumEnabled(true) },
-        )
     }
 }
 

@@ -207,4 +207,32 @@ object AppStrings {
     const val historyTaxLabel = "Tax"
     const val historyTrendHike = "DA Hike / Increment"
     const val historyChevronContentDescription = "Toggle Year Visibility"
+
+    // DSOP Simulator Strings
+    const val dsopSimulatorTitle = "DSOP Compound Simulator"
+    const val dsopSimulatorMonthlySub = "Monthly Subscription"
+    const val dsopSimulatorTaxWarning = "Tax Warning: Annual DSOP contributions above ₹5 Lakhs (₹41,666/mo) attract income tax on interest earned. Stay below ₹41,666/mo to keep gains 100% tax-free."
+    const val dsopSimulatorTaxSafe = "Tax optimized: Annual contribution is below ₹5 Lakhs. All DSOP interest remains 100% tax-free under Section 10(11) of the Income Tax Act."
+    const val dsopSimulator5Years = "5 Years"
+    const val dsopSimulator10Years = "10 Years"
+    const val dsopSimulator15Years = "15 Years"
+
+    // Insights Screen Strings
+    const val insightsEmptyState = "Please import or select a payslip to unlock financial insights."
+    const val insightsSubheader = "Personalized financial wellness and savings audits"
+    const val insightsSavingsRateTitle = "Monthly Savings Rate"
+    const val insightsSavingsRateTarget = "Target: 20%+. You save "
+    const val insightsSavingsRateSuffix = "% of your gross pay in DSOP and AGIF."
+
+    // Chart Legends
+    const val legendNetTakeHome = "Net Take-Home"
+    const val legendDsop = "Provident Fund (DSOP)"
+    const val legendTax = "Taxes & Cess"
+    const val legendOtherDeductions = "Other Deductions"
+    const val legendGrossPay = "Gross Pay"
+    const val legendNetRemittance = "Net Remittance"
+
+    // PDF Card
+    const val pdfIconLabel = "PDF"
+    const val pdfTapToOpen = "Tap to open original statement"
 }

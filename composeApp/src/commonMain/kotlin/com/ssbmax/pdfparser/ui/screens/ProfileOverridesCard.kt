@@ -113,32 +113,51 @@ private fun ProfileOverridesSheetContent(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text(AppStrings.settingsProfileName) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-        )
-        OutlinedTextField(
-            value = cda,
-            onValueChange = { cda = it },
-            label = { Text(AppStrings.settingsProfileCda) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-        )
-        OutlinedTextField(
-            value = pan,
-            onValueChange = { pan = it },
-            label = { Text(AppStrings.settingsProfilePan) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
+        ProfileInputFields(
+            name = name,
+            onNameChange = { name = it },
+            cda = cda,
+            onCdaChange = { cda = it },
+            pan = pan,
+            onPanChange = { pan = it },
         )
         ProfileActionsRow(
             onSaveClick = { onSave(name, cda, pan) },
             onCancelClick = onCloseClick,
         )
     }
+}
+
+@Composable
+private fun ProfileInputFields(
+    name: String,
+    onNameChange: (String) -> Unit,
+    cda: String,
+    onCdaChange: (String) -> Unit,
+    pan: String,
+    onPanChange: (String) -> Unit,
+) {
+    OutlinedTextField(
+        value = name,
+        onValueChange = onNameChange,
+        label = { Text(AppStrings.settingsProfileName) },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+    )
+    OutlinedTextField(
+        value = cda,
+        onValueChange = onCdaChange,
+        label = { Text(AppStrings.settingsProfileCda) },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+    )
+    OutlinedTextField(
+        value = pan,
+        onValueChange = onPanChange,
+        label = { Text(AppStrings.settingsProfilePan) },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+    )
 }
 
 @Composable
