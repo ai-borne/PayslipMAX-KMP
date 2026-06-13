@@ -136,6 +136,8 @@ private fun PopulatedDashboard(
     viewModel: PayslipViewModel,
     modifier: Modifier = Modifier,
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Column(
         modifier =
             modifier
@@ -145,7 +147,12 @@ private fun PopulatedDashboard(
                 .padding(AppDimensions.PaddingMedium),
     ) {
         selected?.let { payslip ->
-            OfficerInfoBar(payslip = payslip)
+            OfficerInfoBar(
+                payslip = payslip,
+                profileName = uiState.profileName,
+                profileCda = uiState.profileCdaNumber,
+                profilePan = uiState.profilePanNumber,
+            )
             Spacer(modifier = Modifier.height(12.dp))
         }
 

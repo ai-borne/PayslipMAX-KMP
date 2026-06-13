@@ -2,7 +2,9 @@ package com.ssbmax.pdfparser.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity(tableName = "payslip_pdfs")
 data class PayslipPdfEntity(
     @PrimaryKey

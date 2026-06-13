@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.insights.FinancialInsight
 import com.ssbmax.pdfparser.insights.FinancialInsightsGenerator
-import com.ssbmax.pdfparser.ui.PayslipViewModel
+import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 

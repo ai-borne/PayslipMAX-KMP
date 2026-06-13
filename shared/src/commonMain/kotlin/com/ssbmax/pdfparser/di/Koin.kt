@@ -33,7 +33,11 @@ val sharedModule: Module =
         }
 
         single<com.ssbmax.pdfparser.backup.BackupManager> {
-            com.ssbmax.pdfparser.backup.PlatformBackupManager()
+            com.ssbmax.pdfparser.backup.PlatformBackupManager(get())
+        }
+
+        single {
+            com.ssbmax.pdfparser.insights.GeminiService()
         }
     }
 

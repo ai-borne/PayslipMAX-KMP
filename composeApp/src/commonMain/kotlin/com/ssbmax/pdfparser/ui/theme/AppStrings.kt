@@ -84,4 +84,90 @@ object AppStrings {
     const val selectYearLabel = "Year"
     const val selectMonthLabel = "Month"
     const val analyzingStatement = "Analyzing Payslip Statement"
+
+    // Security Lock Screen
+    const val lockScreenTitle = "Secured Portal"
+    const val lockScreenSubtitle = "Enter your 4-digit PIN to decrypt your dashboard"
+    const val lockScreenError = "Incorrect PIN, please try again"
+
+    // Settings Interface
+    const val settingsThemeLabel = "Interface Theme"
+    const val settingsThemeLight = "Light Mode"
+    const val settingsThemeDark = "Dark Mode"
+    const val settingsThemeSystem = "System Default"
+    const val settingsAppLockLabel = "Security Passcode"
+    const val settingsAppLockDesc = "Protect your financial data with a local PIN"
+    const val settingsProfileHeader = "Custom Profile Overrides"
+    const val settingsProfileDesc = "Override Name, CDA, or PAN if parsed incorrectly"
+    const val settingsProfileName = "Officer Name"
+    const val settingsProfileCda = "CDA Account Number"
+    const val settingsProfilePan = "PAN Number"
+    const val settingsProPlanTitle = "Pro Analytical Insights"
+    const val settingsProPlanDesc = "Unlock personalization & CA-grade tax advice"
+    const val settingsProPlanPrice = "₹99 / Year"
+    const val settingsProPlanActive = "Pro Plan Activated"
+    const val settingsDangerZone = "Danger Zone"
+    const val settingsDeleteAll = "Delete All App Data"
+    const val settingsDeleteConfirm = "Are you sure you want to wipe all local database records? This action is permanent."
+    const val settingsDangerZoneDesc = "Wipe all local database statements, cached PDFs, overrides, and passcode security configuration."
+    const val settingsDeleteConfirmTitle = "Wipe App Data?"
+    const val settingsDeleteConfirmBtn = "Delete Everything"
+    const val btnCancel = "Cancel"
+
+    // Passcode Setup Dialog
+    const val settingsSetPasscodeTitle = "Set 4-Digit Passcode"
+    const val settingsSetPasscodeLabel = "Enter 4-Digit PIN"
+    const val settingsSetPasscodeConfirmBtn = "Enable Lock"
+
+    // Profile Overrides Card
+    const val settingsProfileSaveBtn = "Save Overrides"
+
+    // Backup & Restore Card
+    const val settingsBackupHeader = "Personal Cloud Sync & Backup"
+    const val settingsBackupDesc = "Backup is locally AES-256 encrypted using your password."
+    const val settingsBackupLocalBtn = "Local Backup"
+    const val settingsRestoreLocalBtn = "Local Restore"
+    const val settingsBackupCrossPlatform = "Cross-Platform Portability (iOS ⇄ Android)"
+    const val settingsBackupExportBtn = "Export Archive"
+    const val settingsBackupImportBtn = "Import Archive"
+    const val settingsBackupCancelImportBtn = "Cancel Import"
+    const val settingsBackupPasteLabel = "Paste Encrypted Backup String"
+    const val settingsBackupDecryptBtn = "Decrypt & Restore"
+
+    // Backup Status Messages
+    const val statusSyncSuccess = "Sync Completed!"
+    const val statusSyncFailed = "Sync Failed: "
+    const val statusRestoreSuccess = "Restore Completed!"
+    const val statusRestoreFailed = "Restore Failed: "
+    const val statusCopiedSuccess = "Backup String Copied to Clipboard!"
+    const val statusExportFailed = "Export Failed: "
+    const val statusRestoreComplete = "Restore Complete!"
+    const val statusInvalidFormat = "Invalid backup string format"
+
+    // Main Settings Screen
+    const val settingsSubtitle = "Manage your data, sync backups, and configure sandbox options"
+    const val settingsOfflineFirst = "Offline-First"
+    const val settingsOfflineSecureTitle = "100% Offline & Secure"
+    const val settingsOfflineSecureDesc = "All payslip decryption and parsing happens locally on your device. Your data never leaves your control."
+    const val settingsApiKeyLabel = "Gemini API Key"
+    const val settingsApiKeyPlaceholder = "Enter AIZA..."
+    const val settingsApiKeyFooter = "Your API Key is kept 100% offline and stored in secure memory."
+
+    // Sandbox / Testing
+    const val settingsStagingTitle = "Staging & Testing Sandbox"
+    const val settingsStagingDesc = "Load simulated Army Officer records (2022-2025) to evaluate the analytical tools immediately."
+    const val settingsStagingSeedBtn = "Seed Staging Data"
+    const val settingsStagingClearBtn = "Clear All"
+
+    // Help & Legal Docs
+    const val settingsHelpDocsHeader = "Help & Legal Documentation"
+    const val settingsHelpFaqTitle = "Frequently Asked Questions (FAQ)"
+    const val settingsHelpPrivacyTitle = "Privacy & Data Security Policy"
+    const val settingsHelpAiTitle = "Gemini AI: No PII Policy"
+    const val settingsHelpDisclaimerTitle = "Legal Disclaimer"
+
+    const val settingsHelpFaqContent = "Q: How is my payslip decrypted?\nA: Decryption happens entirely offline on your device using local AES-256 libraries. Your password is never sent online.\n\nQ: Where is my data stored?\nA: Your data is saved in a secure, local Room database on your device."
+    const val settingsHelpPrivacyContent = "We enforce a 100% offline-first architecture. All parsing, decryption, and storage tasks run strictly in your local sandbox. No data leaves your control unless you explicitly run a sync backup."
+    const val settingsHelpAiContent = "To preserve confidentiality, the app strips all Personal Identifying Information (PII) like Name, CDA account number, and PAN number from data sent to the Gemini API. Only numeric financial values are processed to generate insights."
+    const val settingsHelpDisclaimerContent = "This analytical tool is for reference purposes only. It is not an official app of the PCDA, Ministry of Defence, or the Indian Army. It does not replace professional advice from chartered accountants or official audit statements."
 }

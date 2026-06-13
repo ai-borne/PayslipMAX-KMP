@@ -4,20 +4,31 @@ package com.ssbmax.pdfparser.crypto
 
 import kotlinx.cinterop.*
 import platform.CoreCrypto.*
-import platform.Security.SecRandomCopyBytes
-import platform.Security.kSecRandomDefault
+import platform.Security.*
+import platform.Foundation.*
+import platform.CoreFoundation.*
+import platform.posix.memcpy
 import platform.posix.size_tVar
 
 actual object CryptoHelper {
     private const val IV_SIZE = 16 // AES block size
     private const val KEY_SIZE = 32 // AES-256
+    private const val SALT_SIZE = 16
+    private var memoryFallbackKey: String? = null
 
     actual fun encrypt(
         data: ByteArray,
         password: String,
     ): Result<ByteArray> {
         return try {
-            val keyBytes = sha256(password)
+            // Generate random 16-byte salt using Apple Secure Enclave random generator
+            val salt = ByteArray(SALT_SIZE)
+            salt.usePinned { pinned ->
+                SecRandomCopyBytes(kSecRandomDefault, SALT_SIZE.toULong(), pinned.addressOf(0).reinterpret<UByteVar>())
+            }
+
+            // Derive key using PBKDF2
+            val keyBytes = pbkdf2(password, salt)
 
             // Generate random 16-byte IV using Apple Secure Enclave random generator
             val iv = ByteArray(IV_SIZE)
@@ -25,7 +36,13 @@ actual object CryptoHelper {
                 SecRandomCopyBytes(kSecRandomDefault, IV_SIZE.toULong(), pinned.addressOf(0).reinterpret<UByteVar>())
             }
 
-            val dataSize = data.size
+            // Prepend MAGIC header "PCDA"
+            val magic = "PCDA".encodeToByteArray()
+            val prefixedData = ByteArray(magic.size + data.size)
+            magic.copyInto(prefixedData, 0)
+            data.copyInto(prefixedData, magic.size)
+
+            val dataSize = prefixedData.size
             // Output buffer needs block size + padding overhead
             val bufferSize = dataSize + kCCBlockSizeAES128.toInt()
             val buffer = ByteArray(bufferSize)
@@ -34,7 +51,7 @@ actual object CryptoHelper {
                 memScoped {
                     val numBytesEncrypted = alloc<size_tVar>()
                     val cryptStatus =
-                        data.usePinned { dataPinned ->
+                        prefixedData.usePinned { dataPinned ->
                             buffer.usePinned { bufferPinned ->
                                 keyBytes.usePinned { keyPinned ->
                                     iv.usePinned { ivPinned ->
@@ -62,10 +79,11 @@ actual object CryptoHelper {
                     numBytesEncrypted.value.toInt()
                 }
 
-            // Output is IV + CipherText
-            val result = ByteArray(IV_SIZE + bytesMoved)
-            iv.copyInto(result, 0, 0, IV_SIZE)
-            buffer.copyInto(result, IV_SIZE, 0, bytesMoved)
+            // Output is Salt + IV + CipherText
+            val result = ByteArray(SALT_SIZE + IV_SIZE + bytesMoved)
+            salt.copyInto(result, 0, 0, SALT_SIZE)
+            iv.copyInto(result, SALT_SIZE, 0, IV_SIZE)
+            buffer.copyInto(result, SALT_SIZE + IV_SIZE, 0, bytesMoved)
 
             Result.success(result)
         } catch (e: Exception) {
@@ -78,20 +96,26 @@ actual object CryptoHelper {
         password: String,
     ): Result<ByteArray> {
         return try {
-            if (encryptedData.size < IV_SIZE) {
+            val prefixSize = SALT_SIZE + IV_SIZE
+            if (encryptedData.size < prefixSize) {
                 return Result.failure(IllegalArgumentException("Invalid encrypted data size"))
             }
 
-            val keyBytes = sha256(password)
+            // Extract Salt
+            val salt = ByteArray(SALT_SIZE)
+            encryptedData.copyInto(salt, 0, 0, SALT_SIZE)
+
+            // Derive key using PBKDF2
+            val keyBytes = pbkdf2(password, salt)
 
             // Extract IV
             val iv = ByteArray(IV_SIZE)
-            encryptedData.copyInto(iv, 0, 0, IV_SIZE)
+            encryptedData.copyInto(iv, 0, SALT_SIZE, prefixSize)
 
             // Extract CipherText
-            val cipherTextSize = encryptedData.size - IV_SIZE
+            val cipherTextSize = encryptedData.size - prefixSize
             val cipherText = ByteArray(cipherTextSize)
-            encryptedData.copyInto(cipherText, 0, IV_SIZE, IV_SIZE + cipherTextSize)
+            encryptedData.copyInto(cipherText, 0, prefixSize, prefixSize + cipherTextSize)
 
             val bufferSize = cipherTextSize
             val buffer = ByteArray(bufferSize)
@@ -131,13 +155,32 @@ actual object CryptoHelper {
             val result = ByteArray(bytesMoved)
             buffer.copyInto(result, 0, 0, bytesMoved)
 
-            Result.success(result)
+            // Verify MAGIC header "PCDA"
+            val magic = "PCDA".encodeToByteArray()
+            if (result.size < magic.size) {
+                return Result.failure(IllegalArgumentException("Decryption failed: incorrect password or tampered data"))
+            }
+            for (i in magic.indices) {
+                if (result[i] != magic[i]) {
+                    return Result.failure(IllegalArgumentException("Decryption failed: incorrect password or tampered data"))
+                }
+            }
+
+            val finalData = ByteArray(result.size - magic.size)
+            result.copyInto(finalData, 0, magic.size, result.size)
+
+            Result.success(finalData)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    private fun sha256(input: String): ByteArray {
+    actual fun sha256(input: String): String {
+        val digestBytes = sha256Bytes(input)
+        return digestBytes.toHex()
+    }
+
+    private fun sha256Bytes(input: String): ByteArray {
         val bytes = input.encodeToByteArray()
         val digest = ByteArray(CC_SHA256_DIGEST_LENGTH)
         bytes.usePinned { bytesPinned ->
@@ -146,5 +189,92 @@ actual object CryptoHelper {
             }
         }
         return digest
+    }
+
+    actual fun pbkdf2(
+        password: String,
+        salt: ByteArray,
+        iterations: Int,
+    ): ByteArray {
+        val derivedKey = ByteArray(32)
+        memScoped {
+            derivedKey.usePinned { derivedPinned ->
+                salt.usePinned { saltPinned ->
+                    CCKeyDerivationPBKDF(
+                        kCCPBKDF2,
+                        password,
+                        password.length.toULong(),
+                        saltPinned.addressOf(0).reinterpret(),
+                        salt.size.toULong(),
+                        2u, // kCCPRFHmacSHA256
+                        iterations.toUInt(),
+                        derivedPinned.addressOf(0).reinterpret(),
+                        32.toULong(),
+                    )
+                }
+            }
+        }
+        return derivedKey
+    }
+
+    private const val KEYCHAIN_SERVICE = "com.ssbmax.pdfparser"
+    private const val KEYCHAIN_ACCOUNT = "db_secret_key"
+
+    actual fun getDatabaseSecretKey(): String {
+        val query = CFDictionaryCreateMutable(null, 0, null, null)
+        CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword)
+        CFDictionarySetValue(query, kSecAttrService, KEYCHAIN_SERVICE.toCFString())
+        CFDictionarySetValue(query, kSecAttrAccount, KEYCHAIN_ACCOUNT.toCFString())
+        CFDictionarySetValue(query, kSecReturnData, kCFBooleanTrue)
+        CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitOne)
+
+        var result: String? = null
+
+        memScoped {
+            val resultRef = alloc<COpaquePointerVar>()
+            val status = SecItemCopyMatching(query, resultRef.ptr)
+            if (status == errSecSuccess) {
+                val pointer = resultRef.value
+                val data = if (pointer != null) CFBridgingRelease(pointer) as? NSData else null
+                if (data != null) {
+                    val bytes = data.toByteArray()
+                    result = bytes.toHex()
+                }
+            }
+        }
+
+        CFRelease(query)
+
+        result?.let { return it }
+
+        // Headless test runner/simulator fallback
+        if (memoryFallbackKey == null) {
+            val newKey = ByteArray(32)
+            newKey.usePinned { pinned ->
+                SecRandomCopyBytes(kSecRandomDefault, 32.toULong(), pinned.addressOf(0).reinterpret<UByteVar>())
+            }
+
+            val nsData = newKey.toNSData()
+            val addQuery = CFDictionaryCreateMutable(null, 0, null, null)
+            CFDictionarySetValue(addQuery, kSecClass, kSecClassGenericPassword)
+            CFDictionarySetValue(addQuery, kSecAttrService, KEYCHAIN_SERVICE.toCFString())
+            CFDictionarySetValue(addQuery, kSecAttrAccount, KEYCHAIN_ACCOUNT.toCFString())
+            
+            val nsDataRef = CFBridgingRetain(nsData)
+            CFDictionarySetValue(addQuery, kSecValueData, nsDataRef)
+
+            val addStatus = SecItemAdd(addQuery, null)
+
+            CFRelease(addQuery)
+            CFRelease(nsDataRef)
+
+            val hexKey = newKey.toHex()
+            if (addStatus != errSecSuccess) {
+                memoryFallbackKey = hexKey
+            }
+            return hexKey
+        } else {
+            return memoryFallbackKey!!
+        }
     }
 }

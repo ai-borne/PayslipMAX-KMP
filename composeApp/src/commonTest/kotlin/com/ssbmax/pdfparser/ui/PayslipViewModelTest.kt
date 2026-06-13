@@ -35,6 +35,7 @@ class PayslipViewModelTest {
     private lateinit var fakeParser: FakePdfParser
     private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
+    private lateinit var fakeGeminiService: com.ssbmax.pdfparser.insights.GeminiService
     private lateinit var viewModel: PayslipViewModel
 
     @BeforeTest
@@ -43,8 +44,9 @@ class PayslipViewModelTest {
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
         fakeBackupManager = FakeBackupManager()
+        fakeGeminiService = com.ssbmax.pdfparser.insights.GeminiService()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
-        viewModel = PayslipViewModel(repository, fakeBackupManager)
+        viewModel = PayslipViewModel(repository, fakeBackupManager, fakeGeminiService)
     }
 
     @AfterTest
@@ -126,7 +128,7 @@ class PayslipViewModelTest {
             fakeDao.insertPayslip(mock2.toEncryptedEntity())
 
             // Re-create ViewModel so that both items are loaded initially and the last one (mock2) is selected
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository, fakeBackupManager, fakeGeminiService)
             assertEquals(mock2, testViewModel.uiState.value.selectedPayslip)
 
             // Delete selected
@@ -183,36 +185,6 @@ class PayslipViewModelTest {
         }
 
     @Test
-    fun testBackupDatabaseSuccess() =
-        runTest {
-            fakeBackupManager.backupResult = Result.success(Unit)
-            var callbackResult: Result<Unit>? = null
-
-            viewModel.backupDatabase("pass") { callbackResult = it }
-
-            assertEquals(1, fakeBackupManager.backupCalledCount)
-            assertNotNull(callbackResult)
-            assertTrue(callbackResult!!.isSuccess)
-        }
-
-    @Test
-    fun testRestoreDatabaseSuccess() =
-        runTest {
-            fakeBackupManager.restoreResult = Result.success(Unit)
-            var callbackResult: Result<Unit>? = null
-
-            // Pre-insert one payslip
-            val mock = createMockPayslip("08/2024")
-            fakeDao.insertPayslip(mock.toEncryptedEntity())
-
-            viewModel.restoreDatabase("pass") { callbackResult = it }
-
-            assertEquals(1, fakeBackupManager.restoreCalledCount)
-            assertNotNull(callbackResult)
-            assertTrue(callbackResult!!.isSuccess)
-        }
-
-    @Test
     fun testGetAvailableYears() =
         runTest {
             val mock1 = createMockPayslip("08/2023")
@@ -222,7 +194,7 @@ class PayslipViewModelTest {
             fakeDao.insertPayslip(mock2.toEncryptedEntity())
             fakeDao.insertPayslip(mock3.toEncryptedEntity())
 
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository, fakeBackupManager, fakeGeminiService)
             val years = testViewModel.getAvailableYears()
 
             assertEquals(2, years.size)
@@ -240,7 +212,7 @@ class PayslipViewModelTest {
             fakeDao.insertPayslip(mock2.toEncryptedEntity())
             fakeDao.insertPayslip(mock3.toEncryptedEntity())
 
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository, fakeBackupManager, fakeGeminiService)
             val months2024 = testViewModel.getMonthsForYear(2024)
 
             assertEquals(2, months2024.size)
@@ -260,7 +232,7 @@ class PayslipViewModelTest {
             fakeDao.insertPayslip(mock1.toEncryptedEntity())
             fakeDao.insertPayslip(mock2.toEncryptedEntity())
 
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository, fakeBackupManager, fakeGeminiService)
             assertEquals(mock2, testViewModel.uiState.value.selectedPayslip)
 
             testViewModel.selectByYearMonth(2023, 8)

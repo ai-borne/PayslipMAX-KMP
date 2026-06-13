@@ -23,4 +23,23 @@ expect object CryptoHelper {
         encryptedData: ByteArray,
         password: String,
     ): Result<ByteArray>
+
+    /**
+     * Hashes string input using SHA-256 and returns the hex-encoded string.
+     */
+    fun sha256(input: String): String
+
+    /**
+     * Stretches a user-provided password using PBKDF2-HMAC-SHA256.
+     */
+    fun pbkdf2(
+        password: String,
+        salt: ByteArray,
+        iterations: Int = 10000,
+    ): ByteArray
+
+    /**
+     * Retrieves or generates a secure, device-persistent database encryption key.
+     */
+    fun getDatabaseSecretKey(): String
 }

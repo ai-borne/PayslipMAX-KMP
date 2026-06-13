@@ -16,7 +16,16 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun OfficerInfoBar(payslip: ParsedPayslip) {
+internal fun OfficerInfoBar(
+    payslip: ParsedPayslip,
+    profileName: String,
+    profileCda: String,
+    profilePan: String,
+) {
+    val displayName = if (profileName.isNotBlank()) profileName else payslip.officer.name
+    val displayCda = if (profileCda.isNotBlank()) profileCda else payslip.officer.accountNo
+    val displayPan = if (profilePan.isNotBlank()) profilePan else payslip.officer.pan
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors =
@@ -27,7 +36,7 @@ internal fun OfficerInfoBar(payslip: ParsedPayslip) {
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
             Text(
-                text = payslip.officer.name,
+                text = displayName,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -38,12 +47,12 @@ internal fun OfficerInfoBar(payslip: ParsedPayslip) {
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "${AppStrings.cdaInfoLabel}: ${payslip.officer.accountNo}",
+                    text = "${AppStrings.cdaInfoLabel}: $displayCda",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    text = "${AppStrings.panInfoLabel}: ${payslip.officer.pan}",
+                    text = "${AppStrings.panInfoLabel}: $displayPan",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

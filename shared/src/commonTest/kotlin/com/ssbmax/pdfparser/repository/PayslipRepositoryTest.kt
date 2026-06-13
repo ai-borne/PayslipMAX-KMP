@@ -1,5 +1,6 @@
 package com.ssbmax.pdfparser.repository
 
+import com.ssbmax.pdfparser.database.*
 import com.ssbmax.pdfparser.domain.*
 import com.ssbmax.pdfparser.testing.*
 import kotlinx.coroutines.flow.first
@@ -138,6 +139,83 @@ class PayslipRepositoryTest {
             val payslips = repository.getAllPayslips().first()
             // Seeding seeds months of years 2022, 2023, 2024, 2025 (12 months * 4 years = 48 entries)
             assertEquals(48, payslips.size)
+        }
+
+    @Test
+    fun testSettingsPersistence() =
+        runTest {
+            val settings =
+                AppSettingsEntity(
+                    isPremiumEnabled = true,
+                    geminiApiKey = "AIzaSyTestApiKey",
+                    appTheme = "dark",
+                    isLockEnabled = true,
+                    appPinHash = "hashedpin123",
+                    profileName = "Col Sunil Pawar",
+                    profileCdaNumber = "12345A",
+                    profilePanNumber = "ABCDE1234F",
+                )
+
+            assertNull(repository.getSettings())
+
+            repository.saveSettings(settings)
+
+            val saved = repository.getSettings()
+            assertNotNull(saved)
+            assertTrue(saved.isPremiumEnabled)
+            assertEquals("AIzaSyTestApiKey", saved.geminiApiKey)
+            assertEquals("dark", saved.appTheme)
+            assertTrue(saved.isLockEnabled)
+            assertEquals("hashedpin123", saved.appPinHash)
+            assertEquals("Col Sunil Pawar", saved.profileName)
+            assertEquals("12345A", saved.profileCdaNumber)
+            assertEquals("ABCDE1234F", saved.profilePanNumber)
+
+            repository.clearSettings()
+            assertNull(repository.getSettings())
+        }
+
+    @Test
+    fun testUniversalBackupAndRestore() =
+        runTest {
+            // 1. Setup initial state
+            val mockPayslip = createMockPayslip("08/2024")
+            fakeParser.result = Result.success(mockPayslip)
+            repository.importPayslip(byteArrayOf(1, 2, 3), "test-password", "08-2024.pdf")
+
+            val settings =
+                AppSettingsEntity(
+                    isPremiumEnabled = true,
+                    geminiApiKey = "AIzaSyTestApiKey",
+                    appTheme = "light",
+                )
+            repository.saveSettings(settings)
+
+            // 2. Export backup
+            val exportResult = repository.exportUniversalBackup("backup-pwd")
+            assertTrue(exportResult.isSuccess)
+            val backupBytes = exportResult.getOrThrow()
+
+            // 3. Wreak havoc / clear database
+            repository.clearAll()
+            repository.clearSettings()
+            assertTrue(repository.getAllPayslips().first().isEmpty())
+            assertNull(repository.getSettings())
+
+            // 4. Import backup
+            val importResult = repository.importUniversalBackup(backupBytes, "backup-pwd")
+            assertTrue(importResult.isSuccess)
+
+            // 5. Verify restored state
+            val restoredPayslips = repository.getAllPayslips().first()
+            assertEquals(1, restoredPayslips.size)
+            assertEquals("08/2024", restoredPayslips.first().dateStr)
+
+            val restoredSettings = repository.getSettings()
+            assertNotNull(restoredSettings)
+            assertTrue(restoredSettings.isPremiumEnabled)
+            assertEquals("AIzaSyTestApiKey", restoredSettings.geminiApiKey)
+            assertEquals("light", restoredSettings.appTheme)
         }
 
     private fun createMockPayslip(dateStr: String): ParsedPayslip {

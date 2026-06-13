@@ -4,8 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.ssbmax.pdfparser.crypto.CryptoHelper
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
+@Serializable
 @Entity(tableName = "encrypted_payslips")
 data class EncryptedPayslipEntity(
     @PrimaryKey val dateStr: String,

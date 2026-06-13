@@ -1,20 +1,16 @@
 package com.ssbmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.ssbmax.pdfparser.ui.PayslipViewModel
+import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -38,83 +34,42 @@ fun SettingsScreen(
     ) {
         SettingsHeader()
         PrivacyCard()
+        ProfileOverridesCard(
+            viewModel = viewModel,
+            profileName = uiState.profileName,
+            profileCda = uiState.profileCdaNumber,
+            profilePan = uiState.profilePanNumber,
+        )
         PremiumSettingsCard(
             isPremiumEnabled = uiState.isPremiumEnabled,
             onPremiumToggle = { viewModel.setPremiumEnabled(it) },
             geminiApiKey = uiState.geminiApiKey,
             onApiKeyChange = { viewModel.setGeminiApiKey(it) },
         )
+        ThemeSelectionCard(
+            currentTheme = uiState.appTheme,
+            onThemeSelect = { viewModel.setAppTheme(it) },
+        )
+        PasscodeSettingsCard(
+            isLockEnabled = uiState.isLockEnabled,
+            onLockToggle = { enabled, pin -> viewModel.setLockEnabled(enabled, pin) },
+        )
         BackupRestoreSettingsCard(
             password = password,
             onPasswordChange = { password = it },
             onBackupClick = { pw, onComplete -> viewModel.backupDatabase(pw, onComplete) },
             onRestoreClick = { pw, onComplete -> viewModel.restoreDatabase(pw, onComplete) },
+            onExportBackup = { pw, onComplete -> viewModel.exportBackup(pw, onComplete) },
+            onImportBackup = { bytes, pw, onComplete -> viewModel.importBackup(bytes, pw, onComplete) },
         )
         StagingCard(
             onSeedClick = { viewModel.seedMockData() },
             onClearClick = { viewModel.clearAllData() },
         )
-    }
-}
-
-@Composable
-private fun PremiumSettingsCard(
-    isPremiumEnabled: Boolean,
-    onPremiumToggle: (Boolean) -> Unit,
-    geminiApiKey: String,
-    onApiKeyChange: (String) -> Unit,
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("👑", fontSize = 24.sp, modifier = Modifier.padding(end = 8.dp))
-                    Column {
-                        Text(
-                            text = "AI Financial Genius",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            text = "Unlock chartered-accountant advice",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-                Switch(
-                    checked = isPremiumEnabled,
-                    onCheckedChange = onPremiumToggle,
-                )
-            }
-
-            if (isPremiumEnabled) {
-                OutlinedTextField(
-                    value = geminiApiKey,
-                    onValueChange = onApiKeyChange,
-                    label = { Text("Gemini API Key") },
-                    placeholder = { Text("Enter AIZA...") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                )
-                Text(
-                    text = "Your API Key is kept 100% offline and stored in secure memory.",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
+        DangerZoneCard(
+            onDeleteAllClick = { viewModel.clearAllData() },
+        )
+        SettingsHelpDocs()
     }
 }
 
@@ -124,115 +79,24 @@ private fun SettingsHeader() {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
     ) {
-        Text(
-            text = AppStrings.navigationSettings,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "Manage your data, sync backups, and configure sandbox options",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-}
-
-@Composable
-private fun PrivacyCard() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors =
-            CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f),
-            ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
-    ) {
         Row(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "🛡️",
-                fontSize = 28.sp,
-                modifier = Modifier.padding(end = 12.dp),
-            )
-            Column {
-                Text(
-                    text = "100% Offline & Secure",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = "All payslip decryption and parsing happens locally on your device. Your data never leaves your control.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun StagingCard(
-    onSeedClick: () -> Unit,
-    onClearClick: () -> Unit,
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Text(
-                text = "Staging & Testing Sandbox",
-                style = MaterialTheme.typography.titleLarge,
+                text = AppStrings.navigationSettings,
+                style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onBackground,
             )
-            Text(
-                text = "Load simulated Army Officer records (2022-2025) to evaluate the analytical tools immediately.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-            StagingButtonsRow(onSeedClick, onClearClick)
+            OfflineStatusPill()
         }
-    }
-}
-
-@Composable
-private fun StagingButtonsRow(
-    onSeedClick: () -> Unit,
-    onClearClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Button(
-            onClick = onSeedClick,
-            modifier = Modifier.weight(1f),
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                ),
-        ) {
-            Text("Seed Staging Data")
-        }
-        OutlinedButton(
-            onClick = onClearClick,
-            modifier = Modifier.weight(1f),
-        ) {
-            Text("Clear All")
-        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = AppStrings.settingsSubtitle,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }

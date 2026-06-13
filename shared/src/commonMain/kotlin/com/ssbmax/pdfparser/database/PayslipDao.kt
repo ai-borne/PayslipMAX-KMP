@@ -32,6 +32,21 @@ interface PayslipDao {
     @Query("SELECT * FROM payslip_pdfs WHERE dateStr = :dateStr LIMIT 1")
     suspend fun getPayslipPdfByDate(dateStr: String): PayslipPdfEntity?
 
+    @Query("SELECT * FROM payslip_pdfs")
+    suspend fun getAllPdfs(): List<PayslipPdfEntity>
+
     @Query("DELETE FROM payslip_pdfs WHERE dateStr = :dateStr")
     suspend fun deletePayslipPdf(dateStr: String)
+
+    @Query("SELECT * FROM app_settings WHERE id = 0 LIMIT 1")
+    fun getSettingsFlow(): Flow<AppSettingsEntity?>
+
+    @Query("SELECT * FROM app_settings WHERE id = 0 LIMIT 1")
+    suspend fun getSettings(): AppSettingsEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSettings(settings: AppSettingsEntity)
+
+    @Query("DELETE FROM app_settings")
+    suspend fun clearSettings()
 }

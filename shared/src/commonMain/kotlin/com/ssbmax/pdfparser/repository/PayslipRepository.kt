@@ -1,15 +1,15 @@
 package com.ssbmax.pdfparser.repository
 
-import com.ssbmax.pdfparser.database.PayslipDao
-import com.ssbmax.pdfparser.database.PayslipPdfEntity
-import com.ssbmax.pdfparser.database.toDomain
-import com.ssbmax.pdfparser.database.toEncryptedEntity
+import com.ssbmax.pdfparser.crypto.CryptoHelper
+import com.ssbmax.pdfparser.database.*
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.parser.PdfParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 
 class PayslipRepository(
     private val payslipDao: PayslipDao,
@@ -86,4 +86,101 @@ class PayslipRepository(
     suspend fun seedMockData() {
         com.ssbmax.pdfparser.database.MockDataSeeder.seedDatabase(payslipDao)
     }
+
+    /**
+     * Observes the app settings from the database.
+     */
+    fun getSettingsFlow(): Flow<AppSettingsEntity?> {
+        return payslipDao.getSettingsFlow()
+    }
+
+    /**
+     * Retrieves the current app settings.
+     */
+    suspend fun getSettings(): AppSettingsEntity? =
+        withContext(dispatcher) {
+            payslipDao.getSettings()
+        }
+
+    /**
+     * Saves the app settings.
+     */
+    suspend fun saveSettings(settings: AppSettingsEntity) =
+        withContext(dispatcher) {
+            payslipDao.insertSettings(settings)
+        }
+
+    /**
+     * Clears all settings data.
+     */
+    suspend fun clearSettings() =
+        withContext(dispatcher) {
+            payslipDao.clearSettings()
+        }
+
+    /**
+     * Exports all app data (payslips, PDFs, settings) as an encrypted JSON archive.
+     */
+    suspend fun exportUniversalBackup(password: String): Result<ByteArray> =
+        withContext(dispatcher) {
+            try {
+                val payslips = payslipDao.getAllPayslips().first()
+                val pdfs = payslipDao.getAllPdfs()
+                val settings = payslipDao.getSettings()
+
+                val backup =
+                    PortableBackup(
+                        version = 1,
+                        encryptedPayslips = payslips,
+                        pdfs = pdfs,
+                        settings = settings,
+                    )
+
+                val jsonStr = Json.encodeToString(PortableBackup.serializer(), backup)
+                val jsonBytes = jsonStr.encodeToByteArray()
+
+                CryptoHelper.encrypt(jsonBytes, password)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
+    /**
+     * Decrypts and imports a universal backup archive.
+     */
+    suspend fun importUniversalBackup(
+        backupBytes: ByteArray,
+        password: String,
+    ): Result<Unit> =
+        withContext(dispatcher) {
+            try {
+                val decryptResult = CryptoHelper.decrypt(backupBytes, password)
+                if (decryptResult.isFailure) {
+                    return@withContext Result.failure(
+                        decryptResult.exceptionOrNull() ?: Exception("Decryption failed"),
+                    )
+                }
+
+                val jsonBytes = decryptResult.getOrThrow()
+                val jsonStr = jsonBytes.decodeToString()
+
+                val backup = Json.decodeFromString(PortableBackup.serializer(), jsonStr)
+
+                // Restore to Room DB
+                payslipDao.clearAll()
+                payslipDao.clearSettings()
+
+                payslipDao.insertPayslips(backup.encryptedPayslips)
+                backup.pdfs.forEach { pdf ->
+                    payslipDao.insertPayslipPdf(pdf)
+                }
+                backup.settings?.let { settings ->
+                    payslipDao.insertSettings(settings)
+                }
+
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
 }

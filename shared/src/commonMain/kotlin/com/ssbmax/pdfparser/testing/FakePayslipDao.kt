@@ -48,7 +48,29 @@ class FakePayslipDao : PayslipDao {
         return pdfDatabase.value[dateStr]
     }
 
+    override suspend fun getAllPdfs(): List<PayslipPdfEntity> {
+        return pdfDatabase.value.values.toList()
+    }
+
     override suspend fun deletePayslipPdf(dateStr: String) {
         pdfDatabase.value = pdfDatabase.value - dateStr
+    }
+
+    private val settingsDatabase = MutableStateFlow<com.ssbmax.pdfparser.database.AppSettingsEntity?>(null)
+
+    override fun getSettingsFlow(): Flow<com.ssbmax.pdfparser.database.AppSettingsEntity?> {
+        return settingsDatabase
+    }
+
+    override suspend fun getSettings(): com.ssbmax.pdfparser.database.AppSettingsEntity? {
+        return settingsDatabase.value
+    }
+
+    override suspend fun insertSettings(settings: com.ssbmax.pdfparser.database.AppSettingsEntity) {
+        settingsDatabase.value = settings
+    }
+
+    override suspend fun clearSettings() {
+        settingsDatabase.value = null
     }
 }

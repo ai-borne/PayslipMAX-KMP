@@ -3,14 +3,13 @@ package com.ssbmax.pdfparser.backup
 import android.content.Context
 import com.ssbmax.pdfparser.crypto.CryptoHelper
 import com.ssbmax.pdfparser.database.PayslipDatabase
-import org.koin.mp.KoinPlatformTools
 import java.io.File
 import java.io.FileOutputStream
 
-actual class PlatformBackupManager actual constructor() : BackupManager {
+actual class PlatformBackupManager actual constructor(private val database: PayslipDatabase) : BackupManager {
     actual override suspend fun backup(password: String): Result<Unit> {
         return try {
-            val context = getContext() ?: return Result.failure(Exception("Android Context not available"))
+            val context = com.ssbmax.pdfparser.crypto.ContextHolder.context ?: return Result.failure(Exception("Android Context not available"))
 
             val dbFile = context.getDatabasePath("payslips.db")
             if (!dbFile.exists()) {
@@ -40,7 +39,7 @@ actual class PlatformBackupManager actual constructor() : BackupManager {
 
     actual override suspend fun restore(password: String): Result<Unit> {
         return try {
-            val context = getContext() ?: return Result.failure(Exception("Android Context not available"))
+            val context = com.ssbmax.pdfparser.crypto.ContextHolder.context ?: return Result.failure(Exception("Android Context not available"))
 
             val backupFile = getBackupFile(context)
             if (!backupFile.exists()) {
@@ -57,10 +56,8 @@ actual class PlatformBackupManager actual constructor() : BackupManager {
             }
             val decryptedBytes = decryptResult.getOrThrow()
 
-            // Close Room database instance before overwriting the file on disk
             try {
-                val db = KoinPlatformTools.defaultContext().get().get<PayslipDatabase>()
-                db.close()
+                database.close()
             } catch (e: Exception) {
                 // Database might not be initialized, safe to ignore
             }
@@ -73,16 +70,6 @@ actual class PlatformBackupManager actual constructor() : BackupManager {
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
-        }
-    }
-
-    private fun getContext(): Context? {
-        return try {
-            Class.forName("android.app.ActivityThread")
-                .getMethod("currentApplication")
-                .invoke(null) as? Context
-        } catch (e: Exception) {
-            null
         }
     }
 
