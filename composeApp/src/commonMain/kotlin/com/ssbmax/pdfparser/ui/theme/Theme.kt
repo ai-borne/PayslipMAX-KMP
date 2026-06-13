@@ -19,6 +19,8 @@ private val DarkColorBackground = Color(0xFF080C14) // Deep Navy Black
 private val DarkColorSurface = Color(0xFF0D1423) // Glass-Surface Opaque
 private val DarkColorOnSurface = Color(0xFFF3F4F6)
 private val DarkColorOnSurfaceVariant = Color(0xFF9CA3AF)
+private val DarkColorError = Color(0xFFEF4444) // Red-500
+private val DarkColorOutlineVariant = Color(0xFF374151) // Gray-700
 
 private val LightColorPrimary = Color(0xFF2563EB)
 private val LightColorPrimaryContainer = Color(0xFFDBEAFE)
@@ -28,6 +30,8 @@ private val LightColorBackground = Color(0xFFF9FAFB)
 private val LightColorSurface = Color(0xFFFFFFFF)
 private val LightColorOnSurface = Color(0xFF111827)
 private val LightColorOnSurfaceVariant = Color(0xFF4B5563)
+private val LightColorError = Color(0xFFDC2626) // Red-600
+private val LightColorOutlineVariant = Color(0xFFD1D5DB) // Gray-300
 
 private val DarkColorScheme =
     darkColorScheme(
@@ -40,6 +44,8 @@ private val DarkColorScheme =
         onBackground = DarkColorOnSurface,
         onSurface = DarkColorOnSurface,
         onSurfaceVariant = DarkColorOnSurfaceVariant,
+        error = DarkColorError,
+        outlineVariant = DarkColorOutlineVariant,
     )
 
 private val LightColorScheme =
@@ -53,6 +59,8 @@ private val LightColorScheme =
         onBackground = LightColorOnSurface,
         onSurface = LightColorOnSurface,
         onSurfaceVariant = LightColorOnSurfaceVariant,
+        error = LightColorError,
+        outlineVariant = LightColorOutlineVariant,
     )
 
 // Dimension Constants (Fulfills no-hardcoded-dimensions rule)
