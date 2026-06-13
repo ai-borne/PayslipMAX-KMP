@@ -1,7 +1,8 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.ssbmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,62 +27,138 @@ fun BackupRestoreSettingsCard(
     onRestoreClick: (String, (Result<Unit>) -> Unit) -> Unit,
     onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
     onImportBackup: (ByteArray, String, (Result<Unit>) -> Unit) -> Unit,
+    isPremiumEnabled: Boolean,
+    onUpgradePrompt: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    var status by remember { mutableStateOf<String?>(null) }
-    val clipboardManager = LocalClipboardManager.current
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            BackupRestoreHeader()
-            BackupRestorePasswordField(password = password, onPasswordChange = onPasswordChange)
-            LocalSyncButtonsRow(password, onBackupClick, onRestoreClick) { status = it }
-            UniversalBackupSection(
-                password = password,
-                onExportClick = {
-                    onExportBackup(password) { result ->
-                        if (result.isSuccess) {
-                            val hex = result.getOrThrow().toHex()
-                            clipboardManager.setText(AnnotatedString(hex))
-                            status = AppStrings.statusCopiedSuccess
-                        } else {
-                            status = "${AppStrings.statusExportFailed}${result.exceptionOrNull()?.message}"
-                        }
-                    }
-                },
-                onImportClick = { hexStr ->
-                    try {
-                        val bytes = hexStr.trim().hexToByteArray()
-                        onImportBackup(bytes, password) { result ->
-                            status =
-                                if (result.isSuccess) {
-                                    AppStrings.statusRestoreComplete
-                                } else {
-                                    "${AppStrings.statusRestoreFailed}${result.exceptionOrNull()?.message}"
-                                }
-                        }
-                    } catch (e: Exception) {
-                        status = AppStrings.statusInvalidFormat
-                    }
-                },
-            )
-            status?.let { StatusMessage(message = it) }
+    var showSheet by remember { mutableStateOf(false) }
+    val subtitleText =
+        if (isPremiumEnabled) {
+            AppStrings.settingsStatusConfigured
+        } else {
+            AppStrings.settingsStatusProOnly
         }
+
+    SettingsRow(
+        icon = "☁️",
+        title = AppStrings.settingsRowBackupLabel,
+        subtitle = subtitleText,
+        onClick = {
+            if (isPremiumEnabled) {
+                showSheet = true
+            } else {
+                onUpgradePrompt()
+            }
+        },
+        modifier = modifier,
+    )
+
+    if (showSheet) {
+        BackupRestoreBottomSheet(
+            password = password,
+            onPasswordChange = onPasswordChange,
+            onBackupClick = onBackupClick,
+            onRestoreClick = onRestoreClick,
+            onExportBackup = onExportBackup,
+            onImportBackup = onImportBackup,
+            onDismissRequest = { showSheet = false },
+        )
     }
 }
 
 @Composable
-private fun BackupRestoreHeader() {
+private fun BackupRestoreBottomSheet(
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    onBackupClick: (String, (Result<Unit>) -> Unit) -> Unit,
+    onRestoreClick: (String, (Result<Unit>) -> Unit) -> Unit,
+    onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
+    onImportBackup: (ByteArray, String, (Result<Unit>) -> Unit) -> Unit,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
+        BackupRestoreSheetContent(
+            password = password,
+            onPasswordChange = onPasswordChange,
+            onBackupClick = onBackupClick,
+            onRestoreClick = onRestoreClick,
+            onExportBackup = onExportBackup,
+            onImportBackup = onImportBackup,
+            onCloseClick = onDismissRequest,
+        )
+    }
+}
+
+@Composable
+private fun BackupRestoreSheetContent(
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    onBackupClick: (String, (Result<Unit>) -> Unit) -> Unit,
+    onRestoreClick: (String, (Result<Unit>) -> Unit) -> Unit,
+    onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
+    onImportBackup: (ByteArray, String, (Result<Unit>) -> Unit) -> Unit,
+    onCloseClick: () -> Unit,
+) {
+    var status by remember { mutableStateOf<String?>(null) }
+    val clipboardManager = LocalClipboardManager.current
+
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(horizontal = AppDimensions.PaddingMedium)
+                .padding(bottom = AppDimensions.PaddingLarge),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        BackupRestoreHeader(onCloseClick = onCloseClick)
+        BackupRestorePasswordField(password = password, onPasswordChange = onPasswordChange)
+        LocalSyncButtonsRow(password, onBackupClick, onRestoreClick) { status = it }
+        UniversalBackupSection(
+            password = password,
+            onExportClick = {
+                onExportBackup(password) { result ->
+                    if (result.isSuccess) {
+                        val hex = result.getOrThrow().toHex()
+                        clipboardManager.setText(AnnotatedString(hex))
+                        status = AppStrings.statusCopiedSuccess
+                    } else {
+                        status = "${AppStrings.statusExportFailed}${result.exceptionOrNull()?.message}"
+                    }
+                }
+            },
+            onImportClick = { hexStr ->
+                try {
+                    val bytes = hexStr.trim().hexToByteArray()
+                    onImportBackup(bytes, password) { result ->
+                        status =
+                            if (result.isSuccess) {
+                                AppStrings.statusRestoreComplete
+                            } else {
+                                "${AppStrings.statusRestoreFailed}${result.exceptionOrNull()?.message}"
+                            }
+                    }
+                } catch (e: Exception) {
+                    status = AppStrings.statusInvalidFormat
+                }
+            },
+        )
+        status?.let { StatusMessage(message = it) }
+    }
+}
+
+@Composable
+private fun BackupRestoreHeader(onCloseClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
             text = AppStrings.settingsBackupHeader,
@@ -164,86 +241,4 @@ private fun LocalSyncButtonsRow(
             Text(AppStrings.settingsRestoreLocalBtn)
         }
     }
-}
-
-@Composable
-private fun UniversalBackupSection(
-    password: String,
-    onExportClick: () -> Unit,
-    onImportClick: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    var importText by remember { mutableStateOf("") }
-    var isImporting by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-        Text(
-            text = AppStrings.settingsBackupCrossPlatform,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Button(
-                onClick = onExportClick,
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(AppStrings.settingsBackupExportBtn)
-            }
-            OutlinedButton(
-                onClick = { isImporting = !isImporting },
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(
-                    if (isImporting) {
-                        AppStrings.settingsBackupCancelImportBtn
-                    } else {
-                        AppStrings.settingsBackupImportBtn
-                    },
-                )
-            }
-        }
-        if (isImporting) {
-            OutlinedTextField(
-                value = importText,
-                onValueChange = { importText = it },
-                label = { Text(AppStrings.settingsBackupPasteLabel) },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 4,
-            )
-            Button(
-                onClick = {
-                    onImportClick(importText)
-                    importText = ""
-                    isImporting = false
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = importText.isNotBlank(),
-            ) {
-                Text(AppStrings.settingsBackupDecryptBtn)
-            }
-        }
-    }
-}
-
-@Composable
-private fun StatusMessage(message: String) {
-    Text(
-        text = message,
-        style = MaterialTheme.typography.labelSmall,
-        color =
-            if (message.contains("Success") || message.contains("Completed") || message.contains("Complete") || message.contains("Copied")) {
-                MaterialTheme.colorScheme.secondary
-            } else {
-                MaterialTheme.colorScheme.error
-            },
-        textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-    )
 }

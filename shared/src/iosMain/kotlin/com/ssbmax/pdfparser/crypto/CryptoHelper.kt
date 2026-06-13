@@ -4,10 +4,9 @@ package com.ssbmax.pdfparser.crypto
 
 import kotlinx.cinterop.*
 import platform.CoreCrypto.*
-import platform.Security.*
-import platform.Foundation.*
 import platform.CoreFoundation.*
-import platform.posix.memcpy
+import platform.Foundation.*
+import platform.Security.*
 import platform.posix.size_tVar
 
 actual object CryptoHelper {
@@ -206,7 +205,8 @@ actual object CryptoHelper {
                         password.length.toULong(),
                         saltPinned.addressOf(0).reinterpret(),
                         salt.size.toULong(),
-                        2u, // kCCPRFHmacSHA256
+                        // kCCPRFHmacSHA256
+                        2u,
                         iterations.toUInt(),
                         derivedPinned.addressOf(0).reinterpret(),
                         32.toULong(),
@@ -259,7 +259,7 @@ actual object CryptoHelper {
             CFDictionarySetValue(addQuery, kSecClass, kSecClassGenericPassword)
             CFDictionarySetValue(addQuery, kSecAttrService, KEYCHAIN_SERVICE.toCFString())
             CFDictionarySetValue(addQuery, kSecAttrAccount, KEYCHAIN_ACCOUNT.toCFString())
-            
+
             val nsDataRef = CFBridgingRetain(nsData)
             CFDictionarySetValue(addQuery, kSecValueData, nsDataRef)
 

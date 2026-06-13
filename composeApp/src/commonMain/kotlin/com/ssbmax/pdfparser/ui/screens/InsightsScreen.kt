@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,6 +39,7 @@ fun InsightsScreen(
         return
     }
 
+    var showUpgradeSheet by remember { mutableStateOf(false) }
     val previous =
         remember(selected, uiState.payslips) {
             val index = uiState.payslips.indexOfFirst { it.dateStr == selected.dateStr }
@@ -65,12 +67,20 @@ fun InsightsScreen(
                 aiError = uiState.aiError,
                 onGenerateClick = { viewModel.generateAiInsights(selected) },
                 onClearClick = { viewModel.clearAiInsights() },
+                onUpgradeClick = { showUpgradeSheet = true },
             )
         }
         item { DsopSimulatorSection(initialContribution = selected.deductions.dsopSubscription) }
         items(items = insights) { insight ->
             InsightCard(insight = insight)
         }
+    }
+
+    if (showUpgradeSheet) {
+        PremiumUpgradeBottomSheet(
+            onDismissRequest = { showUpgradeSheet = false },
+            onUnlockClick = { viewModel.setPremiumEnabled(true) },
+        )
     }
 }
 

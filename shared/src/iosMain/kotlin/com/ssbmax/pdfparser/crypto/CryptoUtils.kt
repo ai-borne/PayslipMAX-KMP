@@ -3,8 +3,8 @@
 package com.ssbmax.pdfparser.crypto
 
 import kotlinx.cinterop.*
-import platform.Foundation.*
 import platform.CoreFoundation.*
+import platform.Foundation.*
 import platform.posix.memcpy
 
 internal fun String.toCFString(): CFStringRef? {

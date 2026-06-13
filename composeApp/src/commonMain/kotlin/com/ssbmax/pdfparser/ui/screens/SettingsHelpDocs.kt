@@ -3,7 +3,6 @@ package com.ssbmax.pdfparser.ui.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,24 +16,18 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 fun SettingsHelpDocs(
     modifier: Modifier = Modifier,
 ) {
-    Card(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(
-                text = AppStrings.settingsHelpDocsHeader,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        SettingsCategoryHeader(title = AppStrings.settingsDocumentationHeader)
+        SettingsCategoryCard {
             HelpDocItem(title = AppStrings.settingsHelpFaqTitle) { FaqContent() }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             HelpDocItem(title = AppStrings.settingsHelpPrivacyTitle) { PrivacyContent() }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             HelpDocItem(title = AppStrings.settingsHelpAiTitle) { AiPolicyContent() }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             HelpDocItem(title = AppStrings.settingsHelpDisclaimerTitle) { DisclaimerContent() }
         }
     }
@@ -54,14 +47,14 @@ private fun HelpDocItem(
                 Modifier
                     .fillMaxWidth()
                     .clickable { expanded = !expanded }
-                    .padding(vertical = 8.dp),
+                    .padding(horizontal = AppDimensions.PaddingMedium, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
@@ -71,11 +64,15 @@ private fun HelpDocItem(
             )
         }
         AnimatedVisibility(visible = expanded) {
-            Box(modifier = Modifier.padding(bottom = 12.dp, top = 4.dp)) {
+            Box(
+                modifier =
+                    Modifier
+                        .padding(horizontal = AppDimensions.PaddingMedium)
+                        .padding(bottom = AppDimensions.PaddingMedium),
+            ) {
                 content()
             }
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     }
 }
 
@@ -83,7 +80,7 @@ private fun HelpDocItem(
 private fun FaqContent() {
     Text(
         text = AppStrings.settingsHelpFaqContent,
-        style = MaterialTheme.typography.bodySmall,
+        style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
@@ -92,7 +89,7 @@ private fun FaqContent() {
 private fun PrivacyContent() {
     Text(
         text = AppStrings.settingsHelpPrivacyContent,
-        style = MaterialTheme.typography.bodySmall,
+        style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
@@ -101,7 +98,7 @@ private fun PrivacyContent() {
 private fun AiPolicyContent() {
     Text(
         text = AppStrings.settingsHelpAiContent,
-        style = MaterialTheme.typography.bodySmall,
+        style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
@@ -110,7 +107,7 @@ private fun AiPolicyContent() {
 private fun DisclaimerContent() {
     Text(
         text = AppStrings.settingsHelpDisclaimerContent,
-        style = MaterialTheme.typography.bodySmall,
+        style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
