@@ -29,6 +29,7 @@ internal fun ByteArray.toNSData(): NSData {
     }
 }
 
+@Suppress("UNCHECKED_CAST")
 internal fun NSData.toCFData(): CFDataRef? {
     return CFBridgingRetain(this) as? CFDataRef
 }
