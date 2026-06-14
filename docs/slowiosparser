@@ -1,0 +1,69 @@
+### 1. The Root Cause: Per-Character Interop & PDFKit Calls on iOS
+In the iOS implementation, the [extractTextSpatially](file:///Users/sunil/Downloads/PDFParser/shared/src/iosMain/kotlin/com/ssbmax/pdfparser/parser/SpatialTextExtractor.kt#L21-L50) function loops through every single character index of the page:
+
+```kotlin
+for (i in 0 until pageString.length) {
+    val char = pageString[i]
+    if (char.isWhitespace()) continue
+
+    val selection = page.selectionForRange(platform.Foundation.NSMakeRange(i.toULong(), 1UL)) ?: continue
+    val rectVal = selection.boundsForPage(page)
+    ...
+}
+```
+
+For every non-whitespace character in the PDF page (which can easily be 2,000–5,000 characters):
+* **High-Level Layout Calculations:** It calls `selectionForRange` and `boundsForPage` on `PDFPage` and `PDFSelection`. These are high-level PDFKit layout and rendering engine search calls. They are not designed to be invoked thousands of times in a tight loop.
+* **Kotlin/Native Bridge Overhead:** In Kotlin Multiplatform (KMP) for iOS, every call to an Objective-C/Cocoa framework (like PDFKit or Foundation) has to cross the Objective-C runtime boundary. Doing this twice per character (`selectionForRange` + `boundsForPage`) for thousands of characters incurs massive **CPU interop overhead** (type wrapping, memory management checks, pointer conversions).
+
+---
+
+### 2. Why Android is Fast
+The Android implementation in [PlatformPdfParser.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/androidMain/kotlin/com/ssbmax/pdfparser/parser/PdfParser.kt) utilizes Apache PDFBox (`pdfbox-android`):
+
+```kotlin
+private class SpatialTextStripper(...) : PDFTextStripper() {
+    override fun writeString(
+        text: String?,
+        textPositions: MutableList<TextPosition>?,
+    ) {
+        ...
+        for (tp in textPositions) {
+            val cx = tp.xDirAdj
+            val cy = tp.yDirAdj
+            ...
+        }
+    }
+}
+```
+
+* **No Per-Character API Queries:** PDFBox processes the raw PDF binary streams sequentially and provides the pre-computed character coordinates directly as a list of `TextPosition` objects in `writeString`.
+* **Zero Interop Boundary Crossings:** The loop iterates over local JVM objects. There are no JNI boundary crossings or layout search queries happening per character in the processing loop.
+
+---
+
+### 3. How to Optimize the iOS App
+
+If you want to speed up the iOS parsing time, you can implement one of these optimization strategies:
+
+#### Option A: Word-Level Scan (e.g., reduces parsing time to ~1–2 seconds)
+Instead of querying bounds for every single character, extract words (consecutive sequences of non-whitespace characters) first. This reduces the number of layout and interop calls by **5x to 8x** (the average length of a word).
+
+```kotlin
+// Example optimization approach in extractTextSpatially
+val words = findWordRanges(pageString) // Local parsing to group indices of words
+for (range in words) {
+    val selection = page.selectionForRange(range) ?: continue
+    val rectVal = selection.boundsForPage(page)
+    // Map the word's bounding box to the characters inside it
+}
+```
+
+#### Option B: Low-Level CoreGraphics Parsing
+Instead of using `PDFKit`, utilize `CGPDFPage` and configure a `CGPDFScanner` with a `CGPDFOperatorTable` in CoreGraphics. This allows you to register callbacks for text layout operators (like `Tj` or `TJ`) to retrieve characters and coordinates directly from the PDF stream in a single pass at native speeds.
+
+### Summary of Work
+1. Analyzed the workspace project files.
+2. Examined the Android parser implementation in [PlatformPdfParser.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/androidMain/kotlin/com/ssbmax/pdfparser/parser/PdfParser.kt).
+3. Examined the iOS parser implementation in [PdfParser.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/iosMain/kotlin/com/ssbmax/pdfparser/parser/PdfParser.kt) and [SpatialTextExtractor.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/iosMain/kotlin/com/ssbmax/pdfparser/parser/SpatialTextExtractor.kt).
+4. Identified the tight loop calling PDFKit's `selectionForRange` and `boundsForPage` per character as the root cause of the iOS performance bottleneck.
