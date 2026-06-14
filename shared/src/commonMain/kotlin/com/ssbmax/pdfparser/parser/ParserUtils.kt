@@ -54,26 +54,59 @@ internal fun stripNotesAndDescriptions(text: String): String {
  * If no anchor was found, anchorFound=false and creditSection=fullText, debitSection="".
  */
 internal fun splitCreditDebitSections(cleanedText: String): Triple<String, String, Boolean> {
+    // Truncate to page 1 to exclude subsequent pages (tax/dsop details)
+    var tableText = cleanedText
+    val footerIndicators = listOf(
+        "Note: This is a system",
+        "Note: This is system",
+        "Note : This is a system",
+        "Note: This is a system generated document",
+        "Note: This is system generated document"
+    )
+    for (indicator in footerIndicators) {
+        val idx = cleanedText.indexOf(indicator, ignoreCase = true)
+        if (idx >= 0) {
+            tableText = cleanedText.substring(0, idx)
+            break
+        }
+    }
+
+    val endOfTableIndicators = listOf(
+        "Total Credit", "Total Debit", "Total Deductions", "Gross Pay", "Net Remittance", "REMITTANCE"
+    )
+    for (indicator in endOfTableIndicators) {
+        val idx = tableText.indexOf(indicator, ignoreCase = true)
+        if (idx >= 0) {
+            tableText = tableText.substring(0, idx)
+        }
+    }
+
     // These anchor labels can ONLY appear in the debit column; use the earliest one found.
     val debitOnlyAnchors =
         listOf(
             "DSOPF Subn", "DSOPF", "DSOP", "AGIF", "Incm Tax", "ITAX",
-            "Educ Cess", "EHCESS", "L Fee", "LF", "Fur", "FUR",
-            "Water", "WATER", "Elec", "Barrack Damage", "Dr Barrack Damage",
-            "ETKT", "R/o Etkt", "Rec CIA-FD", "Rec PARA-SC", "Op Dr Bal",
+            "Educ Cess", "EHCESS", "Educ. Cess", "Op Dr Bal",
             "OP Bal(-)", "Cl. Cr. Bal.", "Clos Bal(+)", "R/o Of /Drs",
         )
-    var splitIdx = cleanedText.length
+    val caseSensitiveAnchors = listOf("LF", "FUR")
+    var splitIdx = tableText.length
     var found = false
     for (anchor in debitOnlyAnchors) {
-        val idx = cleanedText.indexOf(anchor, ignoreCase = true)
+        val idx = tableText.indexOf(anchor, ignoreCase = true)
         if (idx in 1 until splitIdx) {
             splitIdx = idx
             found = true
         }
     }
-    val creditSection = cleanedText.substring(0, splitIdx)
-    val debitSection = if (found) cleanedText.substring(splitIdx) else ""
+    for (anchor in caseSensitiveAnchors) {
+        val idx = tableText.indexOf(anchor, ignoreCase = false)
+        if (idx in 1 until splitIdx) {
+            splitIdx = idx
+            found = true
+        }
+    }
+    val creditSection = tableText.substring(0, splitIdx)
+    val debitSection = if (found) tableText.substring(splitIdx) else ""
     return Triple(creditSection, debitSection, found)
 }
 
@@ -90,7 +123,7 @@ internal fun extractFromColumn(
         val escapedKey = Regex.escape(key)
         val pattern =
             Regex(
-                "(?<![a-zA-Z0-9])$escapedKey\\s*(?:\\([^)]+\\))?\\s*[:\\-–]?\\s*(?:Rs\\.?\\s*)?(\\d+)(?![a-zA-Z0-9])",
+                "(?<![a-zA-Z0-9])$escapedKey\\s*(?:\\([^)]+\\))?\\s*(?:[:–]|\\-\\s+)?\\s*(?:Rs\\.?\\s*)?(-?\\d+)(?![a-zA-Z0-9])",
                 RegexOption.IGNORE_CASE,
             )
         var match = pattern.find(workingCol)
@@ -108,19 +141,49 @@ internal fun parseDate(
     cleanedFullText: String,
     filename: String,
 ): Pair<Int, Int> {
+    // Match 1: STATEMENT OF ACCOUNT FOR MM/YYYY
     val dateMatch = Regex("STATEMENT OF ACCOUNT FOR (\\d{2})/(\\d{4})", RegexOption.IGNORE_CASE).find(cleanedFullText)
-    return if (dateMatch != null) {
-        Pair(
+    if (dateMatch != null) {
+        return Pair(
             dateMatch.groupValues[1].toIntOrNull() ?: 1,
             dateMatch.groupValues[2].toIntOrNull() ?: 2024,
         )
-    } else {
-        val fileMonthMatch = Regex("\\d+\\s+([a-zA-Z]+)", RegexOption.IGNORE_CASE).find(filename)
-        val fileYearMatch = Regex("(\\d{4})").find(filename)
-        val mNum = fileMonthMatch?.groupValues?.get(1)?.lowercase()?.let { PayslipPatternConfig.monthMap[it] } ?: 1
-        val yVal = fileYearMatch?.groupValues?.get(1)?.toIntOrNull() ?: 2024
-        Pair(mNum, yVal)
     }
+
+    // Match 2: STATEMENT OF ACCOUNT FOR [Month] [YYYY]
+    val stmtMonthMatch = Regex("STATEMENT OF ACCOUNT FOR\\s+([A-Za-z]+)\\s+(\\d{4})", RegexOption.IGNORE_CASE).find(cleanedFullText)
+    if (stmtMonthMatch != null) {
+        val monthStr = stmtMonthMatch.groupValues[1].lowercase()
+        val mNum = PayslipPatternConfig.monthMap[monthStr] ?: 1
+        val yVal = stmtMonthMatch.groupValues[2].toIntOrNull() ?: 2024
+        return Pair(mNum, yVal)
+    }
+
+    // Match 3: standalone MM/YYYY in the text
+    val standaloneMatch = Regex("\\b(0[1-9]|1[0-2])/(\\d{4})\\b").find(cleanedFullText)
+    if (standaloneMatch != null) {
+        return Pair(
+            standaloneMatch.groupValues[1].toIntOrNull() ?: 1,
+            standaloneMatch.groupValues[2].toIntOrNull() ?: 2024,
+        )
+    }
+
+    // Match 4: Filename fallback
+    val fileMonthMatch = Regex("(?:^|\\d+\\s+)([a-zA-Z]+)", RegexOption.IGNORE_CASE).find(filename)
+    val fileYearMatch = Regex("(\\d{4})").find(filename)
+    val mNum = fileMonthMatch?.groupValues?.get(1)?.lowercase()?.let { PayslipPatternConfig.monthMap[it] } ?: 1
+    
+    val yVal = if (fileYearMatch != null) {
+        fileYearMatch.groupValues[1].toIntOrNull() ?: 2024
+    } else {
+        val year2dMatch = Regex("(\\d{2})\\.pdf$", RegexOption.IGNORE_CASE).find(filename)
+        if (year2dMatch != null) {
+            2000 + (year2dMatch.groupValues[1].toIntOrNull() ?: 24)
+        } else {
+            2024
+        }
+    }
+    return Pair(mNum, yVal)
 }
 
 internal fun parseOfficer(
@@ -139,7 +202,9 @@ internal fun parseOfficer(
     }
 
     if (officerName.isNotEmpty()) {
-        officerName = officerName.split(Regex("\\b(?:A/C|Email|PAN|Basic|BPAY|CDA|tada|ta|laoKa|saM)\\b", RegexOption.IGNORE_CASE))[0].trim()
+        println("[DEBUG NAME] officerName before split: '$officerName'")
+        officerName = officerName.split(Regex("\\b(?:A/C|Email|PAN|Basic|BPAY|CDA|tada|ta|laoKa|saM|For|rankpay|ledger|generalquery|contact|bankers)\\b", RegexOption.IGNORE_CASE))[0].trim()
+        println("[DEBUG NAME] officerName after split: '$officerName'")
         if (officerName.endsWith(" A", ignoreCase = true)) {
             officerName = officerName.substring(0, officerName.length - 2).trim()
         }
@@ -170,11 +235,7 @@ internal fun parseOfficer(
         panNo = "AR*****90G"
     }
 
-    if (officerName.equals("SUNIL SURESH PAWAR", ignoreCase = true)) {
-        if (year == 2023 && (monthNum == 9 || monthNum == 10)) {
-            officerName = "SUNIL SURESH PAWAR BANKERS"
-        }
-    }
+
 
     return Officer(name = officerName, accountNo = accountNo, pan = panNo)
 }
@@ -204,66 +265,4 @@ internal fun parseTotals(cleanedFullText: String): Triple<Double, Double, Double
         extractedTotals["Total Deductions"] ?: 0.0,
         extractedTotals["Net Remittance"] ?: 0.0,
     )
-}
-
-internal fun parseTaxAndSavings(
-    taxPageText: String?,
-    dsopPageText: String?,
-    cleanedFullText: String,
-): TaxAndSavings? {
-    val taxText = if (taxPageText.isNullOrEmpty()) cleanedFullText else cleanCommasAndWhitespace(taxPageText)
-    if (taxText.isEmpty()) return null
-
-    val grossSalMatch =
-        Regex("Gross Salary (?:upto \\d+/\\d+/\\d+)?.*?(?<!/)\\b(\\d{4,})\\b", RegexOption.IGNORE_CASE).find(taxText)
-            ?: Regex("Pay & Allce upto\\s+\\d+/\\d+/\\d+.*?(?<!/)\\b(\\d{4,})\\b", RegexOption.IGNORE_CASE).find(taxText)
-    val taxableIncMatch =
-        Regex("Total Taxable Income\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-            ?: Regex("Total taxable pay\\s+\\(Sl\\.No\\.\\s*\\d+\\+\\d+\\+\\d+\\+\\d+\\)\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-    val stdDedMatch = Regex("Standard Deduction\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-    val netTaxableMatch =
-        Regex("Net Taxable Income.*?\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-            ?: Regex("Net Taxable Income\\s+\\(\\(Sl\\.No\\.\\s*\\d+\\s*\\+\\s*Sl\\.No\\.\\s*\\d+\\)\\s*-\\s*\\(Sl\\.No\\.\\s*\\d+\\)\\)\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-    val taxPayableMatch =
-        Regex("Total Tax Payable\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-            ?: Regex("Total Income Tax\\s+\\(Tax on Sl\\.No\\.\\s*\\d+\\)\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-    val taxDeductedMatch = Regex("Income Tax Deducted\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-    val cessDeductedMatch =
-        Regex("Ed\\.\\s*Cess Deducted\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-            ?: Regex("Educ\\.\\s*Cess Deducted\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-
-    if (grossSalMatch != null || taxableIncMatch != null || netTaxableMatch != null) {
-        var dsopFund: DsopFund? = null
-        val dsopText = if (dsopPageText.isNullOrEmpty()) taxText else cleanCommasAndWhitespace(dsopPageText)
-        if (dsopText.isNotEmpty()) {
-            val dsopMatch =
-                Regex(
-                    "Opening Balance\\s*(\\d+)\\s*Subscription\\s*(\\d+)\\s*Refund\\s*(\\d+)\\s*Misc\\s*Adj\\s*(\\d+)\\s*Withdrawal\\s*(\\d+)\\s*Closing Balance\\s*(\\d+)",
-                    RegexOption.IGNORE_CASE,
-                ).find(dsopText)
-            if (dsopMatch != null) {
-                dsopFund =
-                    DsopFund(
-                        openingBalance = dsopMatch.groupValues[1].toDoubleOrNull() ?: 0.0,
-                        subscriptionYtd = dsopMatch.groupValues[2].toDoubleOrNull() ?: 0.0,
-                        refundYtd = dsopMatch.groupValues[3].toDoubleOrNull() ?: 0.0,
-                        miscAdjYtd = dsopMatch.groupValues[4].toDoubleOrNull() ?: 0.0,
-                        withdrawalYtd = dsopMatch.groupValues[5].toDoubleOrNull() ?: 0.0,
-                        closingBalance = dsopMatch.groupValues[6].toDoubleOrNull() ?: 0.0,
-                    )
-            }
-        }
-
-        return TaxAndSavings(
-            grossSalaryYtd = grossSalMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
-            totalTaxableIncome = taxableIncMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
-            standardDeduction = stdDedMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
-            netTaxableIncome = netTaxableMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
-            totalTaxPayable = taxPayableMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
-            taxDeductedYtd = taxDeductedMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
-            cessDeductedYtd = cessDeductedMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
-            dsopFund = dsopFund,
-        )
-    }
-    return null
 }

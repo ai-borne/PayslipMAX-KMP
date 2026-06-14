@@ -157,8 +157,9 @@ class PayslipTextParserTest {
         assertEquals(15500.0, payslip.earnings.militaryServicePay)
         assertEquals(7200.0, payslip.earnings.transportAllowance)
         assertEquals(3816.0, payslip.earnings.transportAllowanceDa)
-        assertEquals(3450.0, payslip.earnings.rationMoney)
-        assertEquals(6900.0, payslip.earnings.arrearsRation)
+        assertEquals(0.0, payslip.earnings.rationMoney)
+        assertEquals(3450.0, payslip.earnings.riskHardshipAllowance)
+        assertEquals(6900.0, payslip.earnings.arrearsRiskHardship)
         assertEquals(2000.0, payslip.earnings.adjPayAndAllce)
 
         assertEquals(25000.0, payslip.deductions.dsopSubscription)

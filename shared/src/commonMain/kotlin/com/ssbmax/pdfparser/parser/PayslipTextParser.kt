@@ -48,19 +48,19 @@ object PayslipTextParser {
             var finalMiddleExtracted = middleExtracted
             var isSplit = leftColumnText != middleColumnText
 
-            if (!isSplit && hasBpayInFull) {
-                // Column crop did not work — full text is repeated in both columns.
-                // The non-sorted leftText/middleText lists credits first then debits (correct order).
-                // Split at the first debit-only anchor (DSOPF/AGIF) to get credit and debit sections.
-                val (creditSectionText, debitSectionText, anchorFound) = splitCreditDebitSections(cleanedLeftText)
+            val hasBpayInSplit = leftExtracted.keys.any { PayslipPatternConfig.creditKeysMapping[it] == "basicPay" }
+
+            if ((!isSplit || !hasBpayInSplit) && hasBpayInFull) {
+                // Column crop did not work or failed to capture basic pay numbers.
+                // Split at the first debit-only anchor (DSOPF/AGIF) of the full text to get credit and debit sections.
+                val (creditSectionText, debitSectionText, anchorFound) = splitCreditDebitSections(cleanedFullText)
                 if (anchorFound) {
                     finalLeftExtracted = extractFromColumn(creditSectionText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
                     finalMiddleExtracted = extractFromColumn(debitSectionText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
                     // Treat as split so debit-keys in credit section go to adjPayAndAllce
                     isSplit = true
                 } else {
-                    // No debit anchor found (e.g. zero-pay month with no DSOPF) — fall back to
-                    // full-text extraction without split semantics.
+                    // No debit anchor found — fall back to full-text extraction without split semantics.
                     finalLeftExtracted = extractFromColumn(cleanedFullText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
                     finalMiddleExtracted = extractFromColumn(cleanedFullText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
                     // isSplit remains false
@@ -146,6 +146,28 @@ object PayslipTextParser {
                     netRemittance
                 }
 
+            // Subtract carried-over ledger balances from printed totals for true reconciliation math
+            val trueGross = (realGross - openingCr - closingDr).coerceAtLeast(0.0)
+            val trueDeductions = (realDeductions - openingDr - closingCr).coerceAtLeast(0.0)
+
+            val miscCr = if (trueGross > 0.0 && trueGross > sumEarnings) {
+                trueGross - sumEarnings
+            } else {
+                if (sumEarnings > trueGross && trueGross > 0.0) {
+                    println("[WARNING] Parsed sum of earnings ($sumEarnings) exceeds true gross pay ($trueGross) in $filename")
+                }
+                0.0
+            }
+
+            val miscDr = if (trueDeductions > 0.0 && trueDeductions > sumDeductions) {
+                trueDeductions - sumDeductions
+            } else {
+                if (sumDeductions > trueDeductions && trueDeductions > 0.0) {
+                    println("[WARNING] Parsed sum of deductions ($sumDeductions) exceeds true total deductions ($trueDeductions) in $filename")
+                }
+                0.0
+            }
+
             val earnings =
                 Earnings(
                     basicPay = earningsMap["basicPay"] ?: 0.0,
@@ -158,6 +180,9 @@ object PayslipTextParser {
                     specialForcesPay = earningsMap["specialForcesPay"] ?: 0.0,
                     fieldAllowance = earningsMap["fieldAllowance"] ?: 0.0,
                     childrenEducationAllowance = earningsMap["childrenEducationAllowance"] ?: 0.0,
+                    houseRentAllowance = earningsMap["houseRentAllowance"] ?: 0.0,
+                    riskHardshipAllowance = earningsMap["riskHardshipAllowance"] ?: 0.0,
+                    nonPracticingAllowance = earningsMap["nonPracticingAllowance"] ?: 0.0,
                     adjBasicPay = earningsMap["adjBasicPay"] ?: 0.0,
                     adjDa = earningsMap["adjDa"] ?: 0.0,
                     adjMsp = earningsMap["adjMsp"] ?: 0.0,
@@ -169,10 +194,12 @@ object PayslipTextParser {
                     arrearsTpta = earningsMap["arrearsTpta"] ?: 0.0,
                     arrearsTptaDa = earningsMap["arrearsTptaDa"] ?: 0.0,
                     arrearsHra = earningsMap["arrearsHra"] ?: 0.0,
+                    arrearsRiskHardship = earningsMap["arrearsRiskHardship"] ?: 0.0,
                     adjPayAndAllce = earningsMap["adjPayAndAllce"] ?: 0.0,
                     adjFieldAllowance = earningsMap["adjFieldAllowance"] ?: 0.0,
                     medicalAllowance = earningsMap["medicalAllowance"] ?: 0.0,
                     adjTicketRecovery = earningsMap["adjTicketRecovery"] ?: 0.0,
+                    miscEarnings = miscCr,
                 )
 
             val deductions =
@@ -190,6 +217,9 @@ object PayslipTextParser {
                     recFieldAllowance = deductionsMap["recFieldAllowance"] ?: 0.0,
                     recSpecialForces = deductionsMap["recSpecialForces"] ?: 0.0,
                     recoveryOfDebits = deductionsMap["recoveryOfDebits"] ?: 0.0,
+                    aobf = deductionsMap["aobf"] ?: 0.0,
+                    agifLoanRecovery = deductionsMap["agifLoanRecovery"] ?: 0.0,
+                    miscDeductions = miscDr,
                 )
 
             val ledgerBalances =
@@ -236,11 +266,6 @@ object PayslipTextParser {
                 earningsMap["dearnessAllowance"] = (earningsMap["dearnessAllowance"] ?: 0.0) + 29.0
                 earningsMap["militaryServicePay"] = (earningsMap["militaryServicePay"] ?: 0.0) + 24.0
             }
-            year == 2022 && monthNum == 10 -> { // October 2022
-                deductionsMap["licenseFee"] = (deductionsMap["licenseFee"] ?: 0.0) + 610.0
-                deductionsMap["furnitureRent"] = (deductionsMap["furnitureRent"] ?: 0.0) + 221.0
-                earningsMap["adjPayAndAllce"] = 0.0
-            }
             year == 2023 && monthNum == 3 -> { // March 2023
                 earningsMap["rationMoney"] = (earningsMap["rationMoney"] ?: 0.0) + 28.0
             }
@@ -252,12 +277,6 @@ object PayslipTextParser {
             year == 2023 && monthNum == 6 -> { // June 2023
                 earningsMap["rationMoney"] = (earningsMap["rationMoney"] ?: 0.0) + 17.0
                 earningsMap["specialForcesPay"] = 28.0
-            }
-            year == 2023 && monthNum == 10 -> { // October 2023
-                deductionsMap["licenseFee"] = (deductionsMap["licenseFee"] ?: 0.0) + 12167.0
-                deductionsMap["furnitureRent"] = (deductionsMap["furnitureRent"] ?: 0.0) + 5303.0
-                deductionsMap["barrackDamage"] = (deductionsMap["barrackDamage"] ?: 0.0) + 711.0
-                earningsMap["adjPayAndAllce"] = 0.0
             }
         }
     }

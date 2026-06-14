@@ -36,6 +36,9 @@ data class Earnings(
     val specialForcesPay: Double = 0.0,
     val fieldAllowance: Double = 0.0,
     val childrenEducationAllowance: Double = 0.0,
+    val houseRentAllowance: Double = 0.0,
+    val riskHardshipAllowance: Double = 0.0,
+    val nonPracticingAllowance: Double = 0.0,
     val adjBasicPay: Double = 0.0,
     val adjDa: Double = 0.0,
     val adjMsp: Double = 0.0,
@@ -47,10 +50,12 @@ data class Earnings(
     val arrearsTpta: Double = 0.0,
     val arrearsTptaDa: Double = 0.0,
     val arrearsHra: Double = 0.0,
+    val arrearsRiskHardship: Double = 0.0,
     val adjPayAndAllce: Double = 0.0,
     val adjFieldAllowance: Double = 0.0,
     val medicalAllowance: Double = 0.0,
     val adjTicketRecovery: Double = 0.0,
+    val miscEarnings: Double = 0.0,
 )
 
 @Serializable
@@ -68,6 +73,9 @@ data class Deductions(
     val recFieldAllowance: Double = 0.0,
     val recSpecialForces: Double = 0.0,
     val recoveryOfDebits: Double = 0.0,
+    val aobf: Double = 0.0,
+    val agifLoanRecovery: Double = 0.0,
+    val miscDeductions: Double = 0.0,
 )
 
 @Serializable
