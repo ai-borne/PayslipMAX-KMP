@@ -87,7 +87,7 @@ class FakePayslipDao : PayslipDao {
     override fun getAllLedgerRecords(): Flow<List<LedgerRecordEntity>> {
         return ledgerDatabase.map {
             it.values.toList().sortedWith(
-                compareBy<LedgerRecordEntity> { it.year }.thenBy { it.monthNum }
+                compareBy<LedgerRecordEntity> { it.year }.thenBy { it.monthNum },
             )
         }
     }

@@ -5,26 +5,27 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class RedactionSanitizerTest {
-
     @Test
     fun testPiiRedaction() {
-        val original = ParsedPayslip(
-            file = "/users/sunil/payslips/2026-SunilPawar-May.pdf",
-            year = 2026,
-            monthNum = 5,
-            monthName = "May",
-            dateStr = "05/2026",
-            officer = Officer(
-                name = "OFFICER OFFICER",
-                accountNo = "1002345098",
-                pan = "ABCDE1234F"
-            ),
-            earnings = Earnings(basicPay = 105300.0),
-            deductions = Deductions(dsopSubscription = 12000.0),
-            ledgerBalances = LedgerBalances(),
-            summary = PayslipSummary(grossPay = 186000.0, totalDeductions = 15000.0, netRemittance = 171000.0),
-            taxAndSavings = null
-        )
+        val original =
+            ParsedPayslip(
+                file = "/users/sunil/payslips/2026-SunilPawar-May.pdf",
+                year = 2026,
+                monthNum = 5,
+                monthName = "May",
+                dateStr = "05/2026",
+                officer =
+                    Officer(
+                        name = "OFFICER OFFICER",
+                        accountNo = "1002345098",
+                        pan = "ABCDE1234F",
+                    ),
+                earnings = Earnings(basicPay = 105300.0),
+                deductions = Deductions(dsopSubscription = 12000.0),
+                ledgerBalances = LedgerBalances(),
+                summary = PayslipSummary(grossPay = 186000.0, totalDeductions = 15000.0, netRemittance = 171000.0),
+                taxAndSavings = null,
+            )
 
         val redacted = RedactionSanitizer.redact(original)
 

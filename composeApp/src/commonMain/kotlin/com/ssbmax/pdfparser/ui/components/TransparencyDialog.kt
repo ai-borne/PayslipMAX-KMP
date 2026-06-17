@@ -23,19 +23,19 @@ fun TransparencyDialog(
     payslip: ParsedPayslip,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     var isVerified by remember { mutableStateOf(false) }
     val redacted = remember(payslip) { RedactionSanitizer.redact(payslip) }
 
     BasicAlertDialog(
         onDismissRequest = onDismiss,
-        modifier = modifier.fillMaxWidth(0.95f)
+        modifier = modifier.fillMaxWidth(0.95f),
     ) {
         Surface(
             shape = CardDefaults.shape,
             color = MaterialTheme.colorScheme.surface,
-            tonalElevation = AppDimensions.DialogElevation
+            tonalElevation = AppDimensions.DialogElevation,
         ) {
             TransparencyDialogContent(
                 raw = payslip,
@@ -43,7 +43,7 @@ fun TransparencyDialog(
                 isVerified = isVerified,
                 onVerificationChange = { isVerified = it },
                 onConfirm = onConfirm,
-                onDismiss = onDismiss
+                onDismiss = onDismiss,
             )
         }
     }
@@ -56,38 +56,40 @@ private fun TransparencyDialogContent(
     isVerified: Boolean,
     onVerificationChange: (Boolean) -> Unit,
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .padding(AppDimensions.PaddingMedium)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)
+        modifier =
+            Modifier
+                .padding(AppDimensions.PaddingMedium)
+                .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         Text(
             text = AppStrings.transparencyTitle,
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
         Text(
             text = AppStrings.transparencyMessage,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         TransparencyComparisonPanels(
             raw = raw,
             sanitized = sanitized,
-            modifier = Modifier
-                .weight(1f, fill = false)
-                .heightIn(max = AppDimensions.DialogMaxHeight)
+            modifier =
+                Modifier
+                    .weight(1f, fill = false)
+                    .heightIn(max = AppDimensions.DialogMaxHeight),
         )
 
         TransparencyActionFooter(
             isVerified = isVerified,
             onVerificationChange = onVerificationChange,
             onConfirm = onConfirm,
-            onDismiss = onDismiss
+            onDismiss = onDismiss,
         )
     }
 }
@@ -96,37 +98,38 @@ private fun TransparencyDialogContent(
 private fun TransparencyComparisonPanels(
     raw: ParsedPayslip,
     sanitized: ParsedPayslip,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .border(
-                AppDimensions.BorderThin,
-                MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
-                CardDefaults.shape
-            )
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f), CardDefaults.shape)
-            .padding(AppDimensions.PaddingSmall)
-            .verticalScroll(scrollState),
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .border(
+                    AppDimensions.BorderThin,
+                    MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                    CardDefaults.shape,
+                )
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f), CardDefaults.shape)
+                .padding(AppDimensions.PaddingSmall)
+                .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
             TransparencyDataColumn(
                 title = AppStrings.transparencyLabelRaw,
                 titleColor = MaterialTheme.colorScheme.error,
                 payslip = raw,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             TransparencyDataColumn(
                 title = AppStrings.transparencyLabelSanitized,
                 titleColor = MaterialTheme.colorScheme.primary,
                 payslip = sanitized,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
         }
     }
@@ -137,22 +140,23 @@ private fun TransparencyDataColumn(
     title: String,
     titleColor: Color,
     payslip: ParsedPayslip,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         Text(
             text = title,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
-            color = titleColor
+            color = titleColor,
         )
         Text(
-            text = "${AppStrings.labelOfficerName}${payslip.officer.name}\n" +
-                   "${AppStrings.labelPanNumber}${payslip.officer.pan}\n" +
-                   "${AppStrings.labelCdaAccount}${payslip.officer.accountNo}\n" +
-                   "${AppStrings.labelFilename}${payslip.file}",
+            text =
+                "${AppStrings.labelOfficerName}${payslip.officer.name}\n" +
+                    "${AppStrings.labelPanNumber}${payslip.officer.pan}\n" +
+                    "${AppStrings.labelCdaAccount}${payslip.officer.accountNo}\n" +
+                    "${AppStrings.labelFilename}${payslip.file}",
             style = MaterialTheme.typography.bodySmall,
-            fontFamily = FontFamily.Monospace
+            fontFamily = FontFamily.Monospace,
         )
     }
 }
@@ -162,32 +166,32 @@ private fun TransparencyActionFooter(
     isVerified: Boolean,
     onVerificationChange: (Boolean) -> Unit,
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Checkbox(
                 checked = isVerified,
-                onCheckedChange = onVerificationChange
+                onCheckedChange = onVerificationChange,
             )
             Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
             Text(
                 text = AppStrings.transparencyDisclaimer,
                 style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
             )
         }
 
         Row(
             horizontalArrangement = Arrangement.End,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             TextButton(onClick = onDismiss) {
                 Text(AppStrings.btnCancel)
@@ -195,7 +199,7 @@ private fun TransparencyActionFooter(
             Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
             Button(
                 onClick = onConfirm,
-                enabled = isVerified
+                enabled = isVerified,
             ) {
                 Text(AppStrings.transparencyActionApprove)
             }

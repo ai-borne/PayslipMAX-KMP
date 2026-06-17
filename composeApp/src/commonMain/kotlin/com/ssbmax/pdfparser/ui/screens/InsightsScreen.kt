@@ -63,7 +63,7 @@ fun InsightsScreen(
                 showTransparencyDialog = false
                 viewModel.generateAiInsights(selected)
             },
-            onDismiss = { showTransparencyDialog = false }
+            onDismiss = { showTransparencyDialog = false },
         )
     }
 }

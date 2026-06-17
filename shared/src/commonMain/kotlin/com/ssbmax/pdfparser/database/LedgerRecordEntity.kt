@@ -7,7 +7,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 @Entity(tableName = "ledger_records")
 data class LedgerRecordEntity(
-    @PrimaryKey val dateStr: String, // format: "MM/YYYY", e.g., "05/2026"
+    // format: "MM/YYYY", e.g., "05/2026"
+    @PrimaryKey val dateStr: String,
     val year: Int,
     val monthNum: Int,
     val basicPay: Double,
@@ -19,5 +20,5 @@ data class LedgerRecordEntity(
     val grossPay: Double,
     val dsopSubscription: Double,
     val incomeTax: Double,
-    val netPay: Double
+    val netPay: Double,
 )
