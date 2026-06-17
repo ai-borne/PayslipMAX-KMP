@@ -30,3 +30,7 @@ node_modules/
 dist/
 coverage/
 .venv/
+
+# Scan output
+scripts/scan_rh_output.txt
+
