@@ -2,9 +2,9 @@ name: Gold Standard CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, 'feature/**' ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, 'feature/**' ]
 
 # Hardened default permissions. 'checks: write' is required to publish test reports.
 permissions:
@@ -84,6 +84,9 @@ jobs:
 
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
+
+      - name: Audit Tech Debt Limits and Regressions
+        run: python3 scripts/check_tech_debt_limits.py
 
       - name: Run Lint, Code Style & Tests (Android + Common)
         run: ./gradlew check -x iosX64Test -x iosSimulatorArm64Test

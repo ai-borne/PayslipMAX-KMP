@@ -39,7 +39,13 @@ internal fun getCreditsList(payslip: ParsedPayslip): List<Triple<String, Double,
         Triple("DRESALW", earnings.dressAllowance, "Annual uniform allowance credited usually in July month."),
         Triple("SPCDO", earnings.specialForcesPay, "Special Forces hazard pay for commando or airborne units."),
         Triple("FD", earnings.fieldAllowance, "Field Area Allowance for deployment in active operational zones."),
-    ).filter { it.second > 0.0 }
+        Triple("HRA", earnings.houseRentAllowance, "House Rent Allowance. Compensation for housing expenses when government quarters are not availed."),
+        Triple("RHA", earnings.riskHardshipAllowance, "Risk & Hardship Allowance. Compensates for postings in difficult or operational areas."),
+        Triple("NPA", earnings.nonPracticingAllowance, "Non-Practicing Allowance. Compensatory allowance for medical officers."),
+        Triple("ARR-RHA", earnings.arrearsRiskHardship, "Arrears of Risk & Hardship Allowance."),
+        Triple("ARR-HRA", earnings.arrearsHra, "Arrears of House Rent Allowance."),
+        Triple("MISC", earnings.miscEarnings, "Miscellaneous unmapped credits or adjustment reconciliation difference."),
+    ).filter { it.second != 0.0 }
 }
 
 internal fun getDebitsList(payslip: ParsedPayslip): List<Triple<String, Double, String>> {
@@ -54,5 +60,8 @@ internal fun getDebitsList(payslip: ParsedPayslip): List<Triple<String, Double, 
         Triple("WATER", deductions.waterCharges, "Water supply charges for occupied quarters."),
         Triple("Elec", deductions.electricityCharges, "Electricity charges consumed in quarters."),
         Triple("Barrack Damage", deductions.barrackDamage, "Recoveries for damages or missing furniture items in quarters."),
-    ).filter { it.second > 0.0 }
+        Triple("AOBF", deductions.aobf, "Army Officers Benevolent Fund. Recurring welfare contribution."),
+        Triple("AGIF Loan", deductions.agifLoanRecovery, "Recovery of AGIF Car/Motorcycle loans."),
+        Triple("MISC", deductions.miscDeductions, "Miscellaneous unmapped deductions or debit reconciliation difference."),
+    ).filter { it.second != 0.0 }
 }

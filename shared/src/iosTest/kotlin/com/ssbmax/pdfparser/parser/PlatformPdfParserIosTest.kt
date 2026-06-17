@@ -1,4 +1,4 @@
-@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class, kotlinx.cinterop.BetaInteropApi::class)
 
 package com.ssbmax.pdfparser.parser
 
@@ -23,6 +23,13 @@ class PlatformPdfParserIosTest {
             }
         }
         return bytes
+    }
+
+    @Test
+    fun testExtractFromColumn() {
+        val colText = "DESCRIPTION AMOUNT A/o BPAY- 61471 A/o DA- 21287 A/o MSP- 7196 A/o TRAN-2 4379"
+        val leftExtracted = extractFromColumn(colText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
+        println("### LEFT EXTRACTED: $leftExtracted")
     }
 
     @Test
@@ -73,6 +80,7 @@ class PlatformPdfParserIosTest {
                     .sorted()
 
             for (fileName in pdfFiles) {
+                if (fileName != "03 March 2022.pdf") continue
                 totalFiles++
                 val filePath = "$yearPath/$fileName"
                 val data = NSData.create(contentsOfFile = filePath)

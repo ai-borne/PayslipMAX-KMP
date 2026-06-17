@@ -19,6 +19,8 @@ private val DarkColorBackground = Color(0xFF080C14) // Deep Navy Black
 private val DarkColorSurface = Color(0xFF0D1423) // Glass-Surface Opaque
 private val DarkColorOnSurface = Color(0xFFF3F4F6)
 private val DarkColorOnSurfaceVariant = Color(0xFF9CA3AF)
+private val DarkColorError = Color(0xFFEF4444) // Red-500
+private val DarkColorOutlineVariant = Color(0xFF374151) // Gray-700
 
 private val LightColorPrimary = Color(0xFF2563EB)
 private val LightColorPrimaryContainer = Color(0xFFDBEAFE)
@@ -28,6 +30,8 @@ private val LightColorBackground = Color(0xFFF9FAFB)
 private val LightColorSurface = Color(0xFFFFFFFF)
 private val LightColorOnSurface = Color(0xFF111827)
 private val LightColorOnSurfaceVariant = Color(0xFF4B5563)
+private val LightColorError = Color(0xFFDC2626) // Red-600
+private val LightColorOutlineVariant = Color(0xFFD1D5DB) // Gray-300
 
 private val DarkColorScheme =
     darkColorScheme(
@@ -40,6 +44,8 @@ private val DarkColorScheme =
         onBackground = DarkColorOnSurface,
         onSurface = DarkColorOnSurface,
         onSurfaceVariant = DarkColorOnSurfaceVariant,
+        error = DarkColorError,
+        outlineVariant = DarkColorOutlineVariant,
     )
 
 private val LightColorScheme =
@@ -53,15 +59,57 @@ private val LightColorScheme =
         onBackground = LightColorOnSurface,
         onSurface = LightColorOnSurface,
         onSurfaceVariant = LightColorOnSurfaceVariant,
+        error = LightColorError,
+        outlineVariant = LightColorOutlineVariant,
     )
 
 // Dimension Constants (Fulfills no-hardcoded-dimensions rule)
+object AppColors {
+    val Warning = Color(0xFFF59E0B)
+}
+
 object AppDimensions {
     val PaddingSmall = 8.dp
     val PaddingMedium = 16.dp
     val PaddingLarge = 24.dp
     val CornerRadius = 16.dp
+    val CornerRadiusSmall = 2.dp
+    val CornerRadiusMedium = 8.dp
     val CardElevation = 4.dp
+
+    val SpacingTwo = 2.dp
+    val SpacingTiny = 4.dp
+    val SpacingSix = 6.dp
+    val SpacingSmall = 8.dp
+    val SpacingTen = 10.dp
+    val SpacingMedium = 12.dp
+    val SpacingLarge = 16.dp
+    val SpacingExtraLarge = 20.dp
+    val SpacingHuge = 24.dp
+    val SpacingDouble = 32.dp
+
+    val BorderHairline = 0.5.dp
+    val BorderThin = 1.dp
+    val BorderMedium = 2.dp
+
+    val IconSizeSmall = 16.dp
+    val IconSizeMedium = 24.dp
+    val IconSizeLarge = 32.dp
+    val IconSizeExtraLarge = 40.dp
+    val IconSizeDouble = 48.dp
+    val IconSizeHuge = 72.dp
+
+    val ChartHeightMedium = 180.dp
+    val ChartHeightLarge = 200.dp
+
+    val TextSizeTiny = 9.sp
+    val TextSizeSmall = 11.sp
+    val TextSizeMedium = 12.sp
+    val TextSizeLarge = 14.sp
+    val TextSizeExtraLarge = 18.sp
+    val TextSizeButton = 16.sp
+    val TextSizeHuge = 24.sp
+    val FontSizeEmoji = 64.sp
 }
 
 // Typography Tokens
