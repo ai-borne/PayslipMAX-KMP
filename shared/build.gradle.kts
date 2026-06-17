@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -39,6 +40,10 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.koin.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
 
         commonTest.dependencies {
@@ -49,6 +54,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.pdfbox.android)
+            implementation(libs.ktor.client.okhttp)
         }
 
         val androidUnitTest by getting {
@@ -59,6 +65,7 @@ kotlin {
 
         iosMain.dependencies {
             // iOS native frameworks like PDFKit are imported automatically via platform libraries
+            implementation(libs.ktor.client.darwin)
         }
     }
 }

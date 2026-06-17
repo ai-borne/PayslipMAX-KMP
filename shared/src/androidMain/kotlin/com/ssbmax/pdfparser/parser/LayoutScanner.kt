@@ -32,15 +32,18 @@ class LayoutScanner : PDFTextStripper() {
 
         // Locate DSOP / AGIF / ITAX X coordinate
         if (lowerText.contains("dsop") || lowerText.contains("agif") || lowerText.contains("itax")) {
-            val idx =
-                lowerText.indexOf("dsop").takeIf { it >= 0 }
-                    ?: lowerText.indexOf("agif").takeIf { it >= 0 }
-                    ?: lowerText.indexOf("itax").takeIf { it >= 0 }
-                    ?: 0
-            if (idx < textPositions.size) {
-                val charX = textPositions[idx].xDirAdj
-                if (dsopX == 150f || charX < dsopX) {
-                    dsopX = charX
+            val y = textPositions.first().yDirAdj
+            if (y in (bpayY - 10f)..(totalCreditY + 10f)) {
+                val idx =
+                    lowerText.indexOf("dsop").takeIf { it >= 0 }
+                        ?: lowerText.indexOf("agif").takeIf { it >= 0 }
+                        ?: lowerText.indexOf("itax").takeIf { it >= 0 }
+                        ?: 0
+                if (idx < textPositions.size) {
+                    val charX = textPositions[idx].xDirAdj
+                    if (dsopX == 150f || charX < dsopX) {
+                        dsopX = charX
+                    }
                 }
             }
         }

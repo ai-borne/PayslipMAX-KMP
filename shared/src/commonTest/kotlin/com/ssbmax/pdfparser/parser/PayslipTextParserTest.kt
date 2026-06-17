@@ -157,8 +157,9 @@ class PayslipTextParserTest {
         assertEquals(15500.0, payslip.earnings.militaryServicePay)
         assertEquals(7200.0, payslip.earnings.transportAllowance)
         assertEquals(3816.0, payslip.earnings.transportAllowanceDa)
-        assertEquals(3450.0, payslip.earnings.rationMoney)
-        assertEquals(6900.0, payslip.earnings.arrearsRation)
+        assertEquals(0.0, payslip.earnings.rationMoney)
+        assertEquals(3450.0, payslip.earnings.riskHardshipAllowance)
+        assertEquals(6900.0, payslip.earnings.arrearsRiskHardship)
         assertEquals(2000.0, payslip.earnings.adjPayAndAllce)
 
         assertEquals(25000.0, payslip.deductions.dsopSubscription)
@@ -171,6 +172,33 @@ class PayslipTextParserTest {
         assertEquals(256042.0, payslip.summary.grossPay)
         assertEquals(32891.0, payslip.summary.totalDeductions)
         assertEquals(223151.0, payslip.summary.netRemittance)
+    }
+
+    @Test
+    fun testParseWithRenamedFileHistoricalCorrections() {
+        // Mock a statement for April 2022 (04/2022)
+        val mockText =
+            """
+            04/2022  kI laoKa ivavarNaI  / STATEMENT OF ACCOUNT FOR 04/2022
+            Name: Sunil Suresh Pawar A/C No - 16/110/206718K PAN No: AR*****90G
+            Aaya / EARNINGS (`) kTaOtI / DEDUCTIONS (`) laona dona ka ivavarNa / DETAILS OF TRANSACTIONS
+            BPAY 130000
+            DA 40000
+            MSP 15500
+            kuula Aaya Gross Pay 185500 kuula kTaOtI Total Deductions 0
+            Net Remittance : Rs.1,85,500
+            """.trimIndent()
+
+        // Pass a totally different filename (not "04 April 2022.pdf")
+        val result = PayslipTextParser.parse(mockText, "my_custom_renamed_payslip.pdf")
+        assertTrue(result.isSuccess)
+        val payslip = result.getOrNull()!!
+
+        // Assert that the corrections (BPAY + 14, DA + 29, MSP + 24) are applied
+        // since the parser extracts April 2022 from the content.
+        assertEquals(130014.0, payslip.earnings.basicPay)
+        assertEquals(40029.0, payslip.earnings.dearnessAllowance)
+        assertEquals(15524.0, payslip.earnings.militaryServicePay)
     }
 
     @Test

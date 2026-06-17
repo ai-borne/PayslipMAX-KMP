@@ -1,5 +1,6 @@
 package com.ssbmax.pdfparser.repository
 
+import com.ssbmax.pdfparser.database.*
 import com.ssbmax.pdfparser.domain.*
 import com.ssbmax.pdfparser.testing.*
 import kotlinx.coroutines.flow.first
@@ -30,10 +31,11 @@ class PayslipRepositoryTest {
         runTest {
             val mockPayslip = createMockPayslip("08/2024")
             fakeParser.result = Result.success(mockPayslip)
+            val pdfBytes = byteArrayOf(1, 2, 3)
 
             val result =
                 repository.importPayslip(
-                    pdfBytes = byteArrayOf(1, 2, 3),
+                    pdfBytes = pdfBytes,
                     password = "test-password",
                     filename = "08-2024.pdf",
                 )
@@ -45,6 +47,11 @@ class PayslipRepositoryTest {
             val allDbPayslips = repository.getAllPayslips().first()
             assertEquals(1, allDbPayslips.size)
             assertEquals("08/2024", allDbPayslips.first().dateStr)
+
+            // Verify PDF was saved
+            val savedPdf = repository.getPayslipPdf("08/2024")
+            assertNotNull(savedPdf)
+            assertTrue(pdfBytes.contentEquals(savedPdf))
         }
 
     @Test
@@ -66,6 +73,10 @@ class PayslipRepositoryTest {
             // Verify nothing was inserted in the DAO
             val allDbPayslips = repository.getAllPayslips().first()
             assertTrue(allDbPayslips.isEmpty())
+
+            // Verify PDF was not saved
+            val savedPdf = repository.getPayslipPdf("08/2024")
+            assertNull(savedPdf)
         }
 
     @Test
@@ -73,7 +84,7 @@ class PayslipRepositoryTest {
         runTest {
             val mockPayslip = createMockPayslip("05/2024")
             fakeParser.result = Result.success(mockPayslip)
-            repository.importPayslip(byteArrayOf(), "pass", "file.pdf")
+            repository.importPayslip(byteArrayOf(4, 5), "pass", "file.pdf")
 
             val found = repository.getPayslipByDate("05/2024")
             assertNotNull(found)
@@ -88,31 +99,37 @@ class PayslipRepositoryTest {
         runTest {
             val mockPayslip = createMockPayslip("05/2024")
             fakeParser.result = Result.success(mockPayslip)
-            repository.importPayslip(byteArrayOf(), "pass", "file.pdf")
+            repository.importPayslip(byteArrayOf(9, 9), "pass", "file.pdf")
 
             // Assert inserted
             assertNotNull(repository.getPayslipByDate("05/2024"))
+            assertNotNull(repository.getPayslipPdf("05/2024"))
 
             // Delete
             repository.deletePayslip("05/2024")
 
             // Assert deleted
             assertNull(repository.getPayslipByDate("05/2024"))
+            assertNull(repository.getPayslipPdf("05/2024"))
         }
 
     @Test
     fun testClearAll() =
         runTest {
             fakeParser.result = Result.success(createMockPayslip("01/2024"))
-            repository.importPayslip(byteArrayOf(), "pass", "file.pdf")
+            repository.importPayslip(byteArrayOf(1, 1), "pass", "file.pdf")
             fakeParser.result = Result.success(createMockPayslip("02/2024"))
-            repository.importPayslip(byteArrayOf(), "pass", "file.pdf")
+            repository.importPayslip(byteArrayOf(2, 2), "pass", "file.pdf")
 
             assertEquals(2, repository.getAllPayslips().first().size)
+            assertNotNull(repository.getPayslipPdf("01/2024"))
+            assertNotNull(repository.getPayslipPdf("02/2024"))
 
             repository.clearAll()
 
             assertTrue(repository.getAllPayslips().first().isEmpty())
+            assertNull(repository.getPayslipPdf("01/2024"))
+            assertNull(repository.getPayslipPdf("02/2024"))
         }
 
     @Test
@@ -122,6 +139,83 @@ class PayslipRepositoryTest {
             val payslips = repository.getAllPayslips().first()
             // Seeding seeds months of years 2022, 2023, 2024, 2025 (12 months * 4 years = 48 entries)
             assertEquals(48, payslips.size)
+        }
+
+    @Test
+    fun testSettingsPersistence() =
+        runTest {
+            val settings =
+                AppSettingsEntity(
+                    isPremiumEnabled = true,
+                    geminiApiKey = "AIzaSyTestApiKey",
+                    appTheme = "dark",
+                    isLockEnabled = true,
+                    appPinHash = "hashedpin123",
+                    profileName = "Col Sunil Pawar",
+                    profileCdaNumber = "12345A",
+                    profilePanNumber = "ABCDE1234F",
+                )
+
+            assertNull(repository.getSettings())
+
+            repository.saveSettings(settings)
+
+            val saved = repository.getSettings()
+            assertNotNull(saved)
+            assertTrue(saved.isPremiumEnabled)
+            assertEquals("AIzaSyTestApiKey", saved.geminiApiKey)
+            assertEquals("dark", saved.appTheme)
+            assertTrue(saved.isLockEnabled)
+            assertEquals("hashedpin123", saved.appPinHash)
+            assertEquals("Col Sunil Pawar", saved.profileName)
+            assertEquals("12345A", saved.profileCdaNumber)
+            assertEquals("ABCDE1234F", saved.profilePanNumber)
+
+            repository.clearSettings()
+            assertNull(repository.getSettings())
+        }
+
+    @Test
+    fun testUniversalBackupAndRestore() =
+        runTest {
+            // 1. Setup initial state
+            val mockPayslip = createMockPayslip("08/2024")
+            fakeParser.result = Result.success(mockPayslip)
+            repository.importPayslip(byteArrayOf(1, 2, 3), "test-password", "08-2024.pdf")
+
+            val settings =
+                AppSettingsEntity(
+                    isPremiumEnabled = true,
+                    geminiApiKey = "AIzaSyTestApiKey",
+                    appTheme = "light",
+                )
+            repository.saveSettings(settings)
+
+            // 2. Export backup
+            val exportResult = repository.exportUniversalBackup("backup-pwd")
+            assertTrue(exportResult.isSuccess)
+            val backupBytes = exportResult.getOrThrow()
+
+            // 3. Wreak havoc / clear database
+            repository.clearAll()
+            repository.clearSettings()
+            assertTrue(repository.getAllPayslips().first().isEmpty())
+            assertNull(repository.getSettings())
+
+            // 4. Import backup
+            val importResult = repository.importUniversalBackup(backupBytes, "backup-pwd")
+            assertTrue(importResult.isSuccess)
+
+            // 5. Verify restored state
+            val restoredPayslips = repository.getAllPayslips().first()
+            assertEquals(1, restoredPayslips.size)
+            assertEquals("08/2024", restoredPayslips.first().dateStr)
+
+            val restoredSettings = repository.getSettings()
+            assertNotNull(restoredSettings)
+            assertTrue(restoredSettings.isPremiumEnabled)
+            assertEquals("AIzaSyTestApiKey", restoredSettings.geminiApiKey)
+            assertEquals("light", restoredSettings.appTheme)
         }
 
     private fun createMockPayslip(dateStr: String): ParsedPayslip {
