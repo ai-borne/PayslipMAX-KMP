@@ -10,7 +10,7 @@ object MockDataSeeder {
                 accountNo = "16/000/000000X",
                 pan = "AR*****90G",
             )
-        val payslips = mutableListOf<PayslipEntity>()
+        val payslips = mutableListOf<EncryptedPayslipEntity>()
         var dsopBalance = 1200000.0 // Starting DSOP balance in Jan 2022
 
         val months =
@@ -159,7 +159,7 @@ object MockDataSeeder {
                         taxAndSavings = tax,
                     )
 
-                payslips.add(parsed.toEntity())
+                payslips.add(parsed.toEncryptedEntity())
             }
         }
 

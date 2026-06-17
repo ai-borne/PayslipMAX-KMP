@@ -8,6 +8,7 @@ import org.koin.core.context.startKoin
 class PayslipApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        com.ssbmax.pdfparser.crypto.ContextHolder.context = this
         startKoin {
             modules(sharedModule, appModule)
         }

@@ -194,7 +194,7 @@ export class PayslipView {
     let itemAdded = false;
 
     for (const [key, val] of Object.entries(data || {})) {
-      if (val > 0) {
+      if (val !== 0) {
         const info = glossary[key] || { title: this.vm.formatLabel(key), desc: 'Component' };
         const row = document.createElement('div');
         row.className = 'data-row';

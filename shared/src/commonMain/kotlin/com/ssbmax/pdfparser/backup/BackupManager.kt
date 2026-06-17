@@ -1,5 +1,7 @@
 package com.ssbmax.pdfparser.backup
 
+import com.ssbmax.pdfparser.database.PayslipDatabase
+
 interface BackupManager {
     /**
      * Reads the local database file, encrypts it using AES-256 with the user password,
@@ -14,7 +16,7 @@ interface BackupManager {
     suspend fun restore(password: String): Result<Unit>
 }
 
-expect class PlatformBackupManager() : BackupManager {
+expect class PlatformBackupManager(database: PayslipDatabase) : BackupManager {
     override suspend fun backup(password: String): Result<Unit>
 
     override suspend fun restore(password: String): Result<Unit>

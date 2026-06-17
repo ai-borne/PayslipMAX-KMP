@@ -10,7 +10,10 @@ data class FinancialInsight(
 )
 
 object FinancialInsightsGenerator {
-    fun generate(payslip: ParsedPayslip): List<FinancialInsight> {
+    fun generate(
+        payslip: ParsedPayslip,
+        previousPayslip: ParsedPayslip? = null,
+    ): List<FinancialInsight> {
         val insights = mutableListOf<FinancialInsight>()
         val gross = payslip.summary.grossPay
 
@@ -130,6 +133,51 @@ object FinancialInsightsGenerator {
                     type = "accent",
                 ),
             )
+        }
+
+        // 7. Utility Spike Analysis
+        if (previousPayslip != null) {
+            val currentElec = payslip.deductions.electricityCharges
+            val prevElec = previousPayslip.deductions.electricityCharges
+            if (prevElec > 0.0 && currentElec > prevElec * 1.2 && (currentElec - prevElec) > 200.0) {
+                insights.add(
+                    FinancialInsight(
+                        title = "Utility Charge Spike Detected",
+                        description = "Your electricity charges increased from ₹${formatAmount(prevElec)} to ₹${formatAmount(currentElec)} (+${((currentElec - prevElec) / prevElec * 100).toInt()}%). Consider checking for billing anomalies or seasonal surges.",
+                        icon = "⚡",
+                        type = "warning",
+                    ),
+                )
+            }
+        }
+
+        // 8. Missing Active Allowance Audit
+        if (previousPayslip != null) {
+            val prevSf = previousPayslip.earnings.specialForcesPay
+            val currSf = payslip.earnings.specialForcesPay
+            if (prevSf > 0.0 && currSf == 0.0) {
+                insights.add(
+                    FinancialInsight(
+                        title = "Allowance Recovery Alert (SF)",
+                        description = "Special Forces Pay (₹${formatAmount(prevSf)}) was credited in your last statement but is absent this month. Please audit with your CDA office if this wasn't an expected posting transfer.",
+                        icon = "⚠️",
+                        type = "warning",
+                    ),
+                )
+            }
+
+            val prevField = previousPayslip.earnings.fieldAllowance
+            val currField = payslip.earnings.fieldAllowance
+            if (prevField > 0.0 && currField == 0.0) {
+                insights.add(
+                    FinancialInsight(
+                        title = "Allowance Recovery Alert (Field)",
+                        description = "Field Allowance (₹${formatAmount(prevField)}) was active in your last statement but is absent this month. Please audit with your unit clerk if posting status changed.",
+                        icon = "⚠️",
+                        type = "warning",
+                    ),
+                )
+            }
         }
 
         return insights

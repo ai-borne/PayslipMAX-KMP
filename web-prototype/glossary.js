@@ -100,5 +100,37 @@ export const glossary = {
   recovery_of_debits: {
     title: 'Recovery of Debits',
     desc: 'Ledger adjustments where past outstanding dues are reconciled and recovered from your current credits.'
+  },
+  house_rent_allowance: {
+    title: 'House Rent Allowance (HRA)',
+    desc: 'Paid to officers who do not reside in government-provided married quarters, compensating for rental accommodation costs.'
+  },
+  risk_hardship_allowance: {
+    title: 'Risk & Hardship Allowance (RHA)',
+    desc: 'Compensates military personnel deployed in hazardous operational zones, high-altitude sectors, or counter-insurgency areas.'
+  },
+  non_practicing_allowance: {
+    title: 'Non-Practicing Allowance (NPA)',
+    desc: 'A compensatory allowance paid to medical officers of the armed forces in lieu of private practice.'
+  },
+  arrears_risk_hardship: {
+    title: 'Arrears of RHA',
+    desc: 'Retroactive payments credited for past deployments in risk-designated areas.'
+  },
+  misc_earnings: {
+    title: 'Miscellaneous Credits (MISC)',
+    desc: 'Unmapped credits or ledger adjustment reconciliation differences computed to balance parsed totals with printed Gross Pay.'
+  },
+  aobf: {
+    title: 'Army Officers Benevolent Fund (AOBF)',
+    desc: 'A monthly contribution deducted for officers welfare and benevolent fund schemes.'
+  },
+  agif_loan_recovery: {
+    title: 'AGIF Loan Recovery',
+    desc: 'Recovery of advances or loans (such as Car or Motorcycle loans) obtained from the Army Group Insurance Fund.'
+  },
+  misc_deductions: {
+    title: 'Miscellaneous Deductions (MISC)',
+    desc: 'Unmapped deductions or ledger debit reconciliation differences computed to balance parsed totals with printed Deductions.'
   }
 };

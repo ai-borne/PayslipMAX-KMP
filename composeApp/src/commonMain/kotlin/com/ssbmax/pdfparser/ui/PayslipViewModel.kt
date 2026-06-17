@@ -2,6 +2,7 @@ package com.ssbmax.pdfparser.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssbmax.pdfparser.crypto.CryptoHelper
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.repository.PayslipRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,20 +17,34 @@ data class PayslipUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val importSuccess: Boolean = false,
+    val isPremiumEnabled: Boolean = false,
+    val geminiApiKey: String = "",
+    val aiInsights: String? = null,
+    val isAiLoading: Boolean = false,
+    val aiError: String? = null,
+    val appTheme: String = "system",
+    val isLockEnabled: Boolean = false,
+    val appPinHash: String = "",
+    val profileName: String = "",
+    val profileCdaNumber: String = "",
+    val profilePanNumber: String = "",
+    val isAppLocked: Boolean = false,
 )
 
 class PayslipViewModel(
-    private val repository: PayslipRepository,
-    private val backupManager: com.ssbmax.pdfparser.backup.BackupManager,
+    internal val repository: PayslipRepository,
+    internal val backupManager: com.ssbmax.pdfparser.backup.BackupManager,
+    internal val geminiService: com.ssbmax.pdfparser.insights.GeminiService,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(PayslipUiState())
+    internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
 
     init {
         observePayslips()
+        observeSettings()
     }
 
-    private fun observePayslips() {
+    internal fun observePayslips() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
@@ -135,53 +150,126 @@ class PayslipViewModel(
         _uiState.update { it.copy(importSuccess = false) }
     }
 
-    fun seedMockData() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            try {
-                repository.clearAll()
-                repository.seedMockData()
-                _uiState.update { it.copy(isLoading = false) }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = "Failed to seed data: ${e.message}") }
-            }
-        }
-    }
-
-    fun clearAllData() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null, selectedPayslip = null) }
-            try {
-                repository.clearAll()
-                _uiState.update { it.copy(isLoading = false, payslips = emptyList()) }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = "Failed to clear data: ${e.message}") }
-            }
-        }
-    }
-
-    fun backupDatabase(
-        password: String,
-        onComplete: (Result<Unit>) -> Unit,
+    fun getPayslipPdf(
+        dateStr: String,
+        onResult: (ByteArray?) -> Unit,
     ) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            val result = backupManager.backup(password)
+            val pdfBytes = repository.getPayslipPdf(dateStr)
+            onResult(pdfBytes)
+        }
+    }
+
+    private fun observeSettings() {
+        var isFirstSettingsLoad = true
+        viewModelScope.launch {
+            repository.getSettingsFlow().collect { settings ->
+                _uiState.update { state ->
+                    val isLocked =
+                        if (isFirstSettingsLoad) {
+                            isFirstSettingsLoad = false
+                            settings?.isLockEnabled ?: false
+                        } else {
+                            state.isAppLocked && (settings?.isLockEnabled ?: false)
+                        }
+                    state.copy(
+                        isPremiumEnabled = settings?.isPremiumEnabled ?: false,
+                        geminiApiKey = settings?.geminiApiKey ?: "",
+                        appTheme = settings?.appTheme ?: "system",
+                        isLockEnabled = settings?.isLockEnabled ?: false,
+                        appPinHash = settings?.appPinHash ?: "",
+                        profileName = settings?.profileName ?: "",
+                        profileCdaNumber = settings?.profileCdaNumber ?: "",
+                        profilePanNumber = settings?.profilePanNumber ?: "",
+                        isAppLocked = isLocked,
+                    )
+                }
+            }
+        }
+    }
+
+    fun setPremiumEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+            repository.saveSettings(current.copy(isPremiumEnabled = enabled))
+        }
+    }
+
+    fun setGeminiApiKey(key: String) {
+        viewModelScope.launch {
+            val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+            repository.saveSettings(current.copy(geminiApiKey = key))
+        }
+    }
+
+    fun setAppTheme(theme: String) {
+        viewModelScope.launch {
+            val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+            repository.saveSettings(current.copy(appTheme = theme))
+        }
+    }
+
+    fun setLockEnabled(
+        enabled: Boolean,
+        pin: String = "",
+    ) {
+        viewModelScope.launch {
+            val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+            val pinHash = if (pin.isNotEmpty()) CryptoHelper.sha256(pin) else current.appPinHash
+            repository.saveSettings(current.copy(isLockEnabled = enabled, appPinHash = pinHash))
+        }
+    }
+
+    fun verifyPin(pin: String): Boolean {
+        val hash = CryptoHelper.sha256(pin)
+        val matches = hash == _uiState.value.appPinHash
+        if (matches) {
+            _uiState.update { it.copy(isAppLocked = false) }
+        }
+        return matches
+    }
+
+    fun lockApp() {
+        if (_uiState.value.isLockEnabled) {
+            _uiState.update { it.copy(isAppLocked = true) }
+        }
+    }
+
+    fun unlockApp() {
+        _uiState.update { it.copy(isAppLocked = false) }
+    }
+
+    fun updateProfileOverrides(
+        name: String,
+        cda: String,
+        pan: String,
+    ) {
+        viewModelScope.launch {
+            val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+            repository.saveSettings(current.copy(profileName = name, profileCdaNumber = cda, profilePanNumber = pan))
+        }
+    }
+
+    fun exportBackup(
+        password: String,
+        onComplete: (Result<ByteArray>) -> Unit,
+    ) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val result = repository.exportUniversalBackup(password)
             _uiState.update { it.copy(isLoading = false) }
             onComplete(result)
         }
     }
 
-    fun restoreDatabase(
+    fun importBackup(
+        backupBytes: ByteArray,
         password: String,
         onComplete: (Result<Unit>) -> Unit,
     ) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            val result = backupManager.restore(password)
-            if (result.isSuccess) {
-                observePayslips()
-            }
+            _uiState.update { it.copy(isLoading = true) }
+            val result = repository.importUniversalBackup(backupBytes, password)
             _uiState.update { it.copy(isLoading = false) }
             onComplete(result)
         }

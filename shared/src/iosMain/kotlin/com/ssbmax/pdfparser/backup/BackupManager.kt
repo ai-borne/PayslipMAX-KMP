@@ -8,11 +8,10 @@ import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
-import org.koin.mp.KoinPlatformTools
 import platform.Foundation.*
 import platform.posix.memcpy
 
-actual class PlatformBackupManager actual constructor() : BackupManager {
+actual class PlatformBackupManager actual constructor(private val database: PayslipDatabase) : BackupManager {
     private val fileManager = NSFileManager.defaultManager
 
     actual override suspend fun backup(password: String): Result<Unit> {
@@ -66,10 +65,8 @@ actual class PlatformBackupManager actual constructor() : BackupManager {
             }
             val decryptedBytes = decryptResult.getOrThrow()
 
-            // Close current Room database instance before overwriting the database file on disk
             try {
-                val db = KoinPlatformTools.defaultContext().get().get<PayslipDatabase>()
-                db.close()
+                database.close()
             } catch (e: Exception) {
                 // Database might not be initialized yet, which is safe to ignore
             }
