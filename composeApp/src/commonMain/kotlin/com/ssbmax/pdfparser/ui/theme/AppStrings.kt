@@ -251,6 +251,18 @@ object AppStrings {
     const val geminiAiAnalyzeBtn = "Analyze Payslip with Gemini AI"
     const val geminiAiAnalyzeDesc = "Generate professional tax saving suggestions, investment recommendations, and error audits using Gemini."
 
+    // Transparency Dialog
+    const val transparencyTitle = "Data Privacy & Transparency Audit"
+    const val transparencyMessage = "Below is the exact data payload prepared for server transmission. All personal identity markers (Name, PAN, Service Number, CDA Account) have been completely redacted locally on your device."
+    const val transparencyLabelRaw = "Raw Local Data"
+    const val transparencyLabelSanitized = "Scrubbed ToSend Data"
+    const val transparencyDisclaimer = "I verify that no private identity markers are leaving my device."
+    const val transparencyActionApprove = "Approve & Analyze"
+    const val labelOfficerName = "Name: "
+    const val labelCdaAccount = "CDA A/C: "
+    const val labelPanNumber = "PAN: "
+    const val labelFilename = "File: "
+
     // Generic Actions
     const val btnClose = "Close"
 }
