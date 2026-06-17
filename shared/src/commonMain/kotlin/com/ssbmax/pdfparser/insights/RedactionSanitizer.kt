@@ -11,11 +11,12 @@ object RedactionSanitizer {
     fun redact(payslip: ParsedPayslip): ParsedPayslip {
         return payslip.copy(
             file = "payslip.pdf",
-            officer = Officer(
-                name = "[OFFICER_NAME_REDACTED]",
-                accountNo = "[ACCOUNT_NO_REDACTED]",
-                pan = "[PAN_REDACTED]"
-            )
+            officer =
+                Officer(
+                    name = "[OFFICER_NAME_REDACTED]",
+                    accountNo = "[ACCOUNT_NO_REDACTED]",
+                    pan = "[PAN_REDACTED]",
+                ),
         )
     }
 

@@ -212,6 +212,10 @@ actual object CryptoHelper {
         }
         return result
     }
+
+    actual fun getCurrentTimeMillis(): Long {
+        return System.currentTimeMillis()
+    }
 }
 
 object ContextHolder {
