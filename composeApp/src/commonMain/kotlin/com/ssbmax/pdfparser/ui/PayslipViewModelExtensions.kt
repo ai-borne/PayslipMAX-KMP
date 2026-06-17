@@ -58,22 +58,71 @@ fun PayslipViewModel.restoreDatabase(
 }
 
 fun PayslipViewModel.generateAiInsights(payslip: ParsedPayslip) {
-    val apiKey = _uiState.value.geminiApiKey
-    if (apiKey.isBlank()) {
-        _uiState.update { it.copy(aiError = "API Key is missing. Configure it in Settings.") }
+    val repo = financialIntelligenceRepository
+    if (repo == null) {
+        val apiKey = _uiState.value.geminiApiKey
+        if (apiKey.isBlank()) {
+            _uiState.update { it.copy(aiError = "API Key is missing. Configure it in Settings.") }
+            return
+        }
+        viewModelScope.launch {
+            _uiState.update { it.copy(isAiLoading = true, aiError = null, aiInsights = null) }
+            val result = geminiService.getFinancialInsights(payslip, apiKey)
+            if (result.isSuccess) {
+                _uiState.update { it.copy(aiInsights = result.getOrThrow(), isAiLoading = false) }
+            } else {
+                _uiState.update { it.copy(aiError = result.exceptionOrNull()?.message ?: "Failed to generate AI insights", isAiLoading = false) }
+            }
+        }
         return
     }
+
     viewModelScope.launch {
         _uiState.update { it.copy(isAiLoading = true, aiError = null, aiInsights = null) }
-        val result = geminiService.getFinancialInsights(payslip, apiKey)
-        if (result.isSuccess) {
-            _uiState.update { it.copy(aiInsights = result.getOrThrow(), isAiLoading = false) }
-        } else {
-            _uiState.update { it.copy(aiError = result.exceptionOrNull()?.message ?: "Failed to generate AI insights", isAiLoading = false) }
+        try {
+            val engineResult = repo.processPayslipAndRunAnalysis(payslip)
+            val result = repo.generateNarrativeInsights(payslip, engineResult)
+            if (result.isSuccess) {
+                _uiState.update { it.copy(aiInsights = result.getOrThrow(), isAiLoading = false) }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        aiError = result.exceptionOrNull()?.message ?: "Failed to generate narrative insights",
+                        isAiLoading = false,
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            _uiState.update { it.copy(aiError = e.message ?: "Failed to generate insights", isAiLoading = false) }
         }
     }
 }
 
 fun PayslipViewModel.clearAiInsights() {
     _uiState.update { it.copy(aiInsights = null, aiError = null) }
+}
+
+fun PayslipViewModel.exportBackup(
+    password: String,
+    onComplete: (Result<ByteArray>) -> Unit,
+) {
+    viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true) }
+        val result = repository.exportUniversalBackup(password)
+        _uiState.update { it.copy(isLoading = false) }
+        onComplete(result)
+    }
+}
+
+fun PayslipViewModel.importBackup(
+    backupBytes: ByteArray,
+    password: String,
+    onComplete: (Result<Unit>) -> Unit,
+) {
+    viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true) }
+        val result = repository.importUniversalBackup(backupBytes, password)
+        _uiState.update { it.copy(isLoading = false) }
+        onComplete(result)
+    }
 }
