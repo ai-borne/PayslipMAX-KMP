@@ -5,11 +5,14 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Anomaly(
-    val type: String,        // "SALARY_LOSS", "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "DEDUCTION_SPIKE", "DSOP_COMPLIANCE"
-    val field: String,       // "netPay", "hra", "tpta", "dsop", etc.
+    // "SALARY_LOSS", "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "DEDUCTION_SPIKE", "DSOP_COMPLIANCE"
+    val type: String,
+    // "netPay", "hra", "tpta", "dsop", etc.
+    val field: String,
     val amount: Double,
-    val month: String,       // "MM/YYYY"
-    val description: String
+    // "MM/YYYY"
+    val month: String,
+    val description: String,
 )
 
 @Serializable
@@ -17,15 +20,14 @@ data class EngineResult(
     val healthScore: Int,
     val anomalies: List<Anomaly>,
     val monthlySavingRate: Double,
-    val taxRatio: Double
+    val taxRatio: Double,
 )
 
 object DeterministicIntelligenceEngine {
-
     fun analyze(
         current: LedgerRecordEntity,
         previous: LedgerRecordEntity? = null,
-        history: List<LedgerRecordEntity> = emptyList()
+        history: List<LedgerRecordEntity> = emptyList(),
     ): EngineResult {
         val anomalies = mutableListOf<Anomaly>()
 
@@ -39,12 +41,13 @@ object DeterministicIntelligenceEngine {
                 val hraDiff = previous.houseRentAllowance - current.houseRentAllowance
                 val taxDiff = current.incomeTax - previous.incomeTax
 
-                val reason = when {
-                    hraDiff > 0.0 -> "primarily due to the absence or reduction of House Rent Allowance (HRA) by ₹${formatValue(hraDiff)}"
-                    basicDiff > 0.0 -> "due to an adjustment or drop in Basic Pay by ₹${formatValue(basicDiff)}"
-                    taxDiff > 0.0 -> "due to a spike in Income Tax deductions by ₹${formatValue(taxDiff)}"
-                    else -> "due to minor fluctuations across multiple pay and deduction elements"
-                }
+                val reason =
+                    when {
+                        hraDiff > 0.0 -> "primarily due to the absence or reduction of House Rent Allowance (HRA) by ₹${formatValue(hraDiff)}"
+                        basicDiff > 0.0 -> "due to an adjustment or drop in Basic Pay by ₹${formatValue(basicDiff)}"
+                        taxDiff > 0.0 -> "due to a spike in Income Tax deductions by ₹${formatValue(taxDiff)}"
+                        else -> "due to minor fluctuations across multiple pay and deduction elements"
+                    }
 
                 anomalies.add(
                     Anomaly(
@@ -52,19 +55,20 @@ object DeterministicIntelligenceEngine {
                         field = "netPay",
                         amount = netLoss,
                         month = current.dateStr,
-                        description = "Your net salary reduced by ₹${formatValue(netLoss)} compared to the previous month, $reason."
-                    )
+                        description = "Your net salary reduced by ₹${formatValue(netLoss)} compared to the previous month, $reason.",
+                    ),
                 )
             }
         }
 
         // 2. Missing Allowance Detection
         if (previous != null) {
-            val checkAllowances = listOf(
-                "houseRentAllowance" to "House Rent Allowance (HRA)",
-                "transportAllowance" to "Transport Allowance (TPTA)",
-                "militaryServicePay" to "Military Service Pay (MSP)"
-            )
+            val checkAllowances =
+                listOf(
+                    "houseRentAllowance" to "House Rent Allowance (HRA)",
+                    "transportAllowance" to "Transport Allowance (TPTA)",
+                    "militaryServicePay" to "Military Service Pay (MSP)",
+                )
             for ((field, name) in checkAllowances) {
                 val prevVal = getFieldValue(previous, field)
                 val currVal = getFieldValue(current, field)
@@ -75,8 +79,8 @@ object DeterministicIntelligenceEngine {
                             field = field,
                             amount = prevVal,
                             month = current.dateStr,
-                            description = "Your active $name of ₹${formatValue(prevVal)} in the previous month is missing in this statement."
-                        )
+                            description = "Your active $name of ₹${formatValue(prevVal)} in the previous month is missing in this statement.",
+                        ),
                     )
                 }
             }
@@ -90,8 +94,8 @@ object DeterministicIntelligenceEngine {
                     field = "transportAllowance",
                     amount = 3600.0,
                     month = current.dateStr,
-                    description = "Basic Pay is ₹${formatValue(current.basicPay)} (Level 10+), but Transport Allowance (TPTA) is missing from your earnings ledger."
-                )
+                    description = "Basic Pay is ₹${formatValue(current.basicPay)} (Level 10+), but Transport Allowance (TPTA) is missing from your earnings ledger.",
+                ),
             )
         }
 
@@ -106,8 +110,8 @@ object DeterministicIntelligenceEngine {
                         field = "incomeTax",
                         amount = currTax - prevTax,
                         month = current.dateStr,
-                        description = "Income Tax deduction spiked by ₹${formatValue(currTax - prevTax)} (+${(((currTax - prevTax) / prevTax) * 100).toInt()}%)."
-                    )
+                        description = "Income Tax deduction spiked by ₹${formatValue(currTax - prevTax)} (+${(((currTax - prevTax) / prevTax) * 100).toInt()}%).",
+                    ),
                 )
             }
         }
@@ -121,8 +125,8 @@ object DeterministicIntelligenceEngine {
                     field = "dsopSubscription",
                     amount = minDsop,
                     month = current.dateStr,
-                    description = "DSOP subscription is zero. A minimum contribution of 6% of your Basic Pay (₹${formatValue(minDsop)}) is mandatory."
-                )
+                    description = "DSOP subscription is zero. A minimum contribution of 6% of your Basic Pay (₹${formatValue(minDsop)}) is mandatory.",
+                ),
             )
         } else if (current.dsopSubscription < minDsop) {
             anomalies.add(
@@ -131,8 +135,8 @@ object DeterministicIntelligenceEngine {
                     field = "dsopSubscription",
                     amount = minDsop - current.dsopSubscription,
                     month = current.dateStr,
-                    description = "DSOP contribution ₹${formatValue(current.dsopSubscription)} is below the mandatory 6% threshold (₹${formatValue(minDsop)})."
-                )
+                    description = "DSOP contribution ₹${formatValue(current.dsopSubscription)} is below the mandatory 6% threshold (₹${formatValue(minDsop)}).",
+                ),
             )
         } else if (history.size >= 18) {
             val last18 = history.takeLast(18)
@@ -146,8 +150,8 @@ object DeterministicIntelligenceEngine {
                         field = "dsopSubscription",
                         amount = 0.0,
                         month = current.dateStr,
-                        description = "DSOP contribution unchanged for 18+ months at ${savingRate.toInt()}%. Suggest increasing contribution for tax-free compounding retirement growth."
-                    )
+                        description = "DSOP contribution unchanged for 18+ months at ${savingRate.toInt()}%. Suggest increasing contribution for tax-free compounding retirement growth.",
+                    ),
                 )
             }
         }
@@ -161,7 +165,7 @@ object DeterministicIntelligenceEngine {
             healthScore = score,
             anomalies = anomalies,
             monthlySavingRate = savingRate,
-            taxRatio = taxRate
+            taxRatio = taxRate,
         )
     }
 
@@ -169,7 +173,7 @@ object DeterministicIntelligenceEngine {
         current: LedgerRecordEntity,
         previous: LedgerRecordEntity?,
         anomalies: List<Anomaly>,
-        savingRate: Double
+        savingRate: Double,
     ): Int {
         var score = 100
 
@@ -202,7 +206,10 @@ object DeterministicIntelligenceEngine {
         return score.coerceIn(0, 100)
     }
 
-    private fun getFieldValue(record: LedgerRecordEntity, fieldName: String): Double {
+    private fun getFieldValue(
+        record: LedgerRecordEntity,
+        fieldName: String,
+    ): Double {
         return when (fieldName) {
             "basicPay" -> record.basicPay
             "dearnessAllowance" -> record.dearnessAllowance

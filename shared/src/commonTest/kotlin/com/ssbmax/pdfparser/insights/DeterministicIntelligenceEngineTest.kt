@@ -6,7 +6,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class DeterministicIntelligenceEngineTest {
-
     private fun createBaseRecord(
         dateStr: String = "04/2026",
         basicPay: Double = 105300.0,
@@ -15,7 +14,7 @@ class DeterministicIntelligenceEngineTest {
         hra: Double = 27000.0,
         tpta: Double = 3600.0,
         dsop: Double = 12000.0,
-        tax: Double = 7200.0
+        tax: Double = 7200.0,
     ): LedgerRecordEntity {
         val gross = basicPay + da + msp + hra + tpta
         val net = gross - dsop - tax
@@ -32,7 +31,7 @@ class DeterministicIntelligenceEngineTest {
             grossPay = gross,
             dsopSubscription = dsop,
             incomeTax = tax,
-            netPay = net
+            netPay = net,
         )
     }
 
@@ -65,7 +64,7 @@ class DeterministicIntelligenceEngineTest {
     @Test
     fun testMissingTptaEntitlement() {
         val current = createBaseRecord("05/2026", basicPay = 56100.0, tpta = 0.0)
-        
+
         val result = DeterministicIntelligenceEngine.analyze(current)
 
         val tptaAnomaly = result.anomalies.find { it.type == "TPTA_ENTITLEMENT" }

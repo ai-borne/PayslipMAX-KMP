@@ -277,4 +277,8 @@ actual object CryptoHelper {
             return memoryFallbackKey!!
         }
     }
+
+    actual fun getCurrentTimeMillis(): Long {
+        return (NSDate().timeIntervalSince1970 * 1000.0).toLong()
+    }
 }
