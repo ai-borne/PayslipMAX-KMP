@@ -6,8 +6,10 @@ import com.ssbmax.pdfparser.crypto.CryptoHelper
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.repository.PayslipRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -35,9 +37,25 @@ class PayslipViewModel(
     internal val repository: PayslipRepository,
     internal val backupManager: com.ssbmax.pdfparser.backup.BackupManager,
     internal val geminiService: com.ssbmax.pdfparser.insights.GeminiService,
+    internal val financialIntelligenceRepository: com.ssbmax.pdfparser.repository.FinancialIntelligenceRepository? = null,
 ) : ViewModel() {
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
+
+    val ledgerRecords: StateFlow<List<com.ssbmax.pdfparser.database.LedgerRecordEntity>> =
+        financialIntelligenceRepository?.getAllLedgerRecords()
+            ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
+            ?: MutableStateFlow(emptyList())
+
+    val financialInsights: StateFlow<List<com.ssbmax.pdfparser.database.FinancialInsightEntity>> =
+        financialIntelligenceRepository?.getAllFinancialInsights()
+            ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
+            ?: MutableStateFlow(emptyList())
+
+    val representationDrafts: StateFlow<List<com.ssbmax.pdfparser.database.RepresentationDraftEntity>> =
+        financialIntelligenceRepository?.getAllRepresentationDrafts()
+            ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
+            ?: MutableStateFlow(emptyList())
 
     init {
         observePayslips()
@@ -107,9 +125,13 @@ class PayslipViewModel(
             _uiState.update { it.copy(isLoading = true, error = null, importSuccess = false) }
             val result = repository.importPayslip(pdfBytes, password, filename)
             if (result.isSuccess) {
+                val parsed = result.getOrNull()
+                if (parsed != null) {
+                    financialIntelligenceRepository?.processPayslipAndRunAnalysis(parsed)
+                }
                 _uiState.update { state ->
                     state.copy(
-                        selectedPayslip = result.getOrNull(),
+                        selectedPayslip = parsed,
                         isLoading = false,
                         importSuccess = true,
                     )
@@ -250,28 +272,9 @@ class PayslipViewModel(
         }
     }
 
-    fun exportBackup(
-        password: String,
-        onComplete: (Result<ByteArray>) -> Unit,
-    ) {
+    fun updateRepresentationDraft(draft: com.ssbmax.pdfparser.database.RepresentationDraftEntity) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val result = repository.exportUniversalBackup(password)
-            _uiState.update { it.copy(isLoading = false) }
-            onComplete(result)
-        }
-    }
-
-    fun importBackup(
-        backupBytes: ByteArray,
-        password: String,
-        onComplete: (Result<Unit>) -> Unit,
-    ) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val result = repository.importUniversalBackup(backupBytes, password)
-            _uiState.update { it.copy(isLoading = false) }
-            onComplete(result)
+            financialIntelligenceRepository?.insertRepresentationDraft(draft)
         }
     }
 }

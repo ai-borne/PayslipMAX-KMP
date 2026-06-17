@@ -57,28 +57,6 @@ object AppStrings {
     const val uploadDismiss = "Dismiss"
     const val uploadSuccess = "Payslip Imported Successfully!"
 
-    // Glossary Tooltip Titles
-    const val glossaryTitleBasicPay = "Basic Pay (BPAY)"
-    const val glossaryTitleDa = "Dearness Allowance (DA)"
-    const val glossaryTitleMsp = "Military Service Pay (MSP)"
-    const val glossaryTitleTpta = "Transport Allowance (TPTA)"
-    const val glossaryTitleTptaDa = "DA on Transport Allowance (TPTADA)"
-    const val glossaryTitleDress = "Dress Allowance (DRESALW)"
-    const val glossaryTitleRation = "Ration Money Allowance (RSHNA)"
-    const val glossaryTitleSf = "Special Forces Pay (SPCDO)"
-    const val glossaryTitleField = "Field Area Allowance (FD)"
-    const val glossaryTitleCea = "Children Education Allowance (CEA)"
-    const val glossaryTitleDsop = "Defence Services Officers Provident Fund (DSOP)"
-    const val glossaryTitleAgif = "Army Group Insurance Fund (AGIF)"
-    const val glossaryTitleTax = "Income Tax Deducted (ITAX)"
-    const val glossaryTitleCess = "Health & Education Cess (EHCESS)"
-    const val glossaryTitleLf = "License Fee (LF)"
-    const val glossaryTitleFur = "Furniture Rent (FUR)"
-    const val glossaryTitleWater = "Water Charges"
-    const val glossaryTitleElec = "Electricity Charges"
-    const val glossaryTitleBarrack = "Barrack Damage Recovery"
-    const val glossaryTitleTicket = "Air Ticket Recovery (ETKT)"
-
     // Dashboard - Officer Info Bar
     const val officerInfoLabel = "Officer"
     const val cdaInfoLabel = "CDA A/C"
@@ -265,4 +243,43 @@ object AppStrings {
 
     // Generic Actions
     const val btnClose = "Close"
+
+    // Premium Features Screens Strings
+    const val representationTitle = "Official Representations"
+    const val representationSubtitle = "Formal correspondence for pay and allowance disputes"
+    const val representationDraftsEmpty = "No salary discrepancies or missing allowances detected. Representation drafts will appear here if the local audit engine flags any issues."
+    const val representationCopyBtn = "Copy to Clipboard"
+    const val representationEditBtn = "Edit Draft"
+    const val representationSaveBtn = "Save Draft"
+
+    const val taxPlanningTitle = "Tax Optimization Planner"
+    const val taxPlanningSubtitle = "Form 16 projections & tax-saving suggestions"
+    const val taxPlanningGrossYtd = "YTD Gross Salary"
+    const val taxPlanningTaxable = "Net Taxable Income"
+    const val taxPlanningITax = "Estimated Tax Liability"
+
+    const val retirementTitle = "Retirement Wealth Projection"
+    const val retirementSubtitle = "DSOP contribution & compound wealth estimates"
+    const val retirementCompounding = "Compounding Growth Projections"
+    const val retirementBalance = "Projected DSOP Balance"
+    const val retirementContributions = "Total Principal Contributions"
+    const val retirementInterest = "Total Interest Earned"
+    const val retirementProjectionDisclaimer = "Note: Compounding projections are estimated using a standard interest rate of 7.1% per annum. Actual rates may vary."
+
+    // Premium Tools & Extra Strings
+    const val premiumToolsTitle = "Premium Financial Tools"
+    const val premiumToolsDraftClaims = "Draft Claims"
+    const val premiumToolsTaxPlanner = "Tax Planner"
+    const val premiumToolsDsopSimulator = "DSOP Simulator"
+
+    const val representationMonthLabel = "Month:"
+    const val representationRecipientPcda = "Recipient: PCDA Pune"
+    const val representationEditDraftTitle = "Edit Draft:"
+
+    const val retirementNoBalance = "Import a payslip with DSOP ledger balance to simulate growth."
+    const val retirementCurrentBalance = "Current DSOP Balance"
+
+    const val taxPlanningSavingsProjections = "Section 80C & 80D Tax Savings Projections"
+    const val taxPlanningNoProjections = "No YTD Tax Projections available for this month."
+    const val taxPlanningCurrentYtdContribution = "Current YTD Contribution: ₹"
 }

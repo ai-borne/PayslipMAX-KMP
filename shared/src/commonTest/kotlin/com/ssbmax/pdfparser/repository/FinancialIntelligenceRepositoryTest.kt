@@ -180,4 +180,34 @@ class FinancialIntelligenceRepositoryTest {
             taxAndSavings = null,
         )
     }
+
+    @Test
+    fun testInsertAndGetAndDeleteRepresentationDraft() =
+        runTest {
+            val repo = createRepositoryWithMockEngine("""{"success":true,"narrative":"Mock Narrative"}""")
+            val draft =
+                RepresentationDraftEntity(
+                    id = "draft123",
+                    disputeMonth = "05/2026",
+                    disputeType = "MISSING_ALLOWANCE",
+                    recipient = "PCDA_O_PUNE",
+                    subject = "Subject",
+                    bodyText = "Body text",
+                    createdAt = 123456789L,
+                )
+
+            // Insert
+            repo.insertRepresentationDraft(draft)
+
+            // Get
+            val retrieved = repo.getRepresentationDraftById("draft123")
+            assertNotNull(retrieved)
+            assertEquals("draft123", retrieved.id)
+            assertEquals("05/2026", retrieved.disputeMonth)
+
+            // Delete
+            repo.deleteRepresentationDraft("draft123")
+            val retrievedAfterDelete = repo.getRepresentationDraftById("draft123")
+            assertNull(retrievedAfterDelete)
+        }
 }
