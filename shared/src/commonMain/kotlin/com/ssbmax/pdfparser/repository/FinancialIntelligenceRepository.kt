@@ -61,6 +61,14 @@ class FinancialIntelligenceRepository(
         }
 
     /**
+     * Inserts or updates a representation draft.
+     */
+    suspend fun insertRepresentationDraft(draft: RepresentationDraftEntity) =
+        withContext(dispatcher) {
+            payslipDao.insertRepresentationDraft(draft)
+        }
+
+    /**
      * Saves a parsed payslip into the ledger, executes the local deterministic checks,
      * updates database records, and automatically triggers representation drafts.
      */

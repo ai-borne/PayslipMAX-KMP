@@ -27,6 +27,7 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 @Composable
 fun InsightsScreen(
     viewModel: PayslipViewModel,
+    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -46,6 +47,7 @@ fun InsightsScreen(
         selected = selected,
         onShowUpgradeSheet = { showUpgradeSheet = true },
         onShowTransparency = { showTransparencyDialog = true },
+        onNavigateTo = onNavigateTo,
         modifier = modifier,
     )
 
@@ -69,21 +71,29 @@ fun InsightsScreen(
 }
 
 @Composable
+private fun rememberInsights(
+    selected: ParsedPayslip,
+    payslips: List<ParsedPayslip>,
+): List<FinancialInsight> {
+    val previous =
+        remember(selected, payslips) {
+            val index = payslips.indexOfFirst { it.dateStr == selected.dateStr }
+            if (index > 0) payslips[index - 1] else null
+        }
+    return remember(selected, previous) { FinancialInsightsGenerator.generate(selected, previous) }
+}
+
+@Composable
 private fun InsightsContent(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,
     selected: ParsedPayslip,
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
+    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val previous =
-        remember(selected, uiState.payslips) {
-            val index = uiState.payslips.indexOfFirst { it.dateStr == selected.dateStr }
-            if (index > 0) uiState.payslips[index - 1] else null
-        }
-
-    val insights = remember(selected, previous) { FinancialInsightsGenerator.generate(selected, previous) }
+    val insights = rememberInsights(selected, uiState.payslips)
 
     LazyColumn(
         modifier =
@@ -107,7 +117,13 @@ private fun InsightsContent(
                 onUpgradeClick = onShowUpgradeSheet,
             )
         }
-        item { DsopSimulatorSection(initialContribution = selected.deductions.dsopSubscription) }
+        item {
+            PremiumToolsSection(
+                isPremiumEnabled = uiState.isPremiumEnabled,
+                onNavigateTo = onNavigateTo,
+                onUpgradeClick = onShowUpgradeSheet,
+            )
+        }
         items(items = insights) { insight ->
             InsightCard(insight = insight)
         }
@@ -145,67 +161,6 @@ private fun InsightsHeader() {
 }
 
 @Composable
-private fun WellnessMeterSection(payslip: ParsedPayslip) {
-    val gross = payslip.summary.grossPay
-    val savings = payslip.deductions.dsopSubscription + payslip.deductions.agif
-    val rate = if (gross > 0) (savings / gross) else 0.0
-    val ratePercent = (rate * 100.0).coerceIn(0.0, 100.0)
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-    ) {
-        Row(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            WellnessTextColumn(ratePercent)
-            WellnessIndicator(ratePercent.toFloat() / 100f)
-        }
-    }
-}
-
-@Composable
-private fun RowScope.WellnessTextColumn(ratePercent: Double) {
-    Column(modifier = Modifier.weight(1f).padding(end = AppDimensions.SpacingLarge)) {
-        Text(
-            text = AppStrings.insightsSavingsRateTitle,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
-        Text(
-            text = AppStrings.insightsSavingsRateTarget + ratePercent.toString().take(4) + AppStrings.insightsSavingsRateSuffix,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-}
-
-@Composable
-private fun WellnessIndicator(progress: Float) {
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(AppDimensions.IconSizeHuge)) {
-        CircularProgressIndicator(
-            progress = { progress },
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.secondary,
-            strokeWidth = AppDimensions.SpacingSix,
-            trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
-        )
-        Text(
-            text = "${(progress * 100).toInt()}%",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-    }
-}
-
-@Composable
 private fun InsightCard(insight: FinancialInsight) {
     val color =
         when (insight.type) {
@@ -238,6 +193,72 @@ private fun InsightCard(insight: FinancialInsight) {
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun PremiumToolsSection(
+    isPremiumEnabled: Boolean,
+    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onUpgradeClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AppDimensions.CornerRadius),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+    ) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
+        ) {
+            Text(
+                text = AppStrings.premiumToolsTitle,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            PremiumButtonsRow(
+                isPremiumEnabled = isPremiumEnabled,
+                onNavigateTo = onNavigateTo,
+                onUpgradeClick = onUpgradeClick,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PremiumButtonsRow(
+    isPremiumEnabled: Boolean,
+    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onUpgradeClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+    ) {
+        val onClick = { target: com.ssbmax.pdfparser.Screen ->
+            if (isPremiumEnabled) onNavigateTo(target) else onUpgradeClick()
+        }
+        OutlinedButton(
+            onClick = { onClick(com.ssbmax.pdfparser.Screen.Representation) },
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(AppStrings.premiumToolsDraftClaims, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+        }
+        OutlinedButton(
+            onClick = { onClick(com.ssbmax.pdfparser.Screen.TaxPlanning) },
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(AppStrings.premiumToolsTaxPlanner, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+        }
+        OutlinedButton(
+            onClick = { onClick(com.ssbmax.pdfparser.Screen.RetirementPlanning) },
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(AppStrings.premiumToolsDsopSimulator, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
         }
     }
 }
