@@ -6,8 +6,15 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 
 @Database(
-    entities = [EncryptedPayslipEntity::class, PayslipPdfEntity::class, AppSettingsEntity::class],
-    version = 4,
+    entities = [
+        EncryptedPayslipEntity::class,
+        PayslipPdfEntity::class,
+        AppSettingsEntity::class,
+        LedgerRecordEntity::class,
+        FinancialInsightEntity::class,
+        RepresentationDraftEntity::class,
+    ],
+    version = 5,
     exportSchema = false,
 )
 @ConstructedBy(PayslipDatabaseConstructor::class)
