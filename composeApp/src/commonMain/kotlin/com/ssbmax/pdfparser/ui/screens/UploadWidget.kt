@@ -3,6 +3,8 @@ package com.ssbmax.pdfparser.ui.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +24,7 @@ fun UploadWidget(
     success: Boolean,
     onPickPdfTrigger: (password: String) -> Unit,
     onClearError: () -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var password by remember { mutableStateOf("535d04") }
@@ -29,14 +32,14 @@ fun UploadWidget(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
     ) {
         Column(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
-            UploadWidgetHeader()
+            UploadWidgetHeader(onDismiss = onDismiss)
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -48,9 +51,9 @@ fun UploadWidget(
             Button(
                 onClick = { onPickPdfTrigger(password) },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
             ) {
-                Text(AppStrings.labelSelectPdf, fontSize = 16.sp)
+                Text(AppStrings.labelSelectPdf, fontSize = AppDimensions.TextSizeButton)
             }
             UploadStatusSection(isLoading, error, success, onClearError)
         }
@@ -58,21 +61,39 @@ fun UploadWidget(
 }
 
 @Composable
-private fun UploadWidgetHeader() {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = AppStrings.uploadHeader,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = AppStrings.uploadDesc,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
+private fun UploadWidgetHeader(onDismiss: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        Column(
+            modifier = Modifier.padding(end = AppDimensions.IconSizeExtraLarge, start = AppDimensions.PaddingSmall),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = AppStrings.uploadHeader,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
+            Text(
+                text = AppStrings.uploadDesc,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
+        }
+        IconButton(
+            onClick = onDismiss,
+            modifier = Modifier.align(Alignment.TopEnd)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Close Dialog",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
@@ -86,9 +107,9 @@ private fun UploadStatusSection(
     if (isLoading) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
         ) {
-            CircularProgressIndicator(modifier = Modifier.size(24.dp))
+            CircularProgressIndicator(modifier = Modifier.size(AppDimensions.IconSizeMedium))
             Text(AppStrings.loaderDecrypt, style = MaterialTheme.typography.labelSmall)
         }
     }
@@ -101,13 +122,13 @@ private fun UploadStatusSection(
                 style = MaterialTheme.typography.bodyMedium,
             )
             TextButton(onClick = onClearError) {
-                Text("Dismiss", style = MaterialTheme.typography.labelSmall)
+                Text(AppStrings.uploadDismiss, style = MaterialTheme.typography.labelSmall)
             }
         }
     }
     if (success) {
         Text(
-            text = "Payslip Imported Successfully!",
+            text = AppStrings.uploadSuccess,
             color = MaterialTheme.colorScheme.secondary,
             style = MaterialTheme.typography.bodyMedium,
         )

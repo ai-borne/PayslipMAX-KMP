@@ -74,6 +74,7 @@ object AppDimensions {
     val PaddingLarge = 24.dp
     val CornerRadius = 16.dp
     val CornerRadiusSmall = 2.dp
+    val CornerRadiusMedium = 8.dp
     val CardElevation = 4.dp
 
     val SpacingTwo = 2.dp
@@ -87,6 +88,7 @@ object AppDimensions {
     val SpacingHuge = 24.dp
     val SpacingDouble = 32.dp
 
+    val BorderHairline = 0.5.dp
     val BorderThin = 1.dp
     val BorderMedium = 2.dp
 
@@ -105,6 +107,7 @@ object AppDimensions {
     val TextSizeMedium = 12.sp
     val TextSizeLarge = 14.sp
     val TextSizeExtraLarge = 18.sp
+    val TextSizeButton = 16.sp
     val TextSizeHuge = 24.sp
     val FontSizeEmoji = 64.sp
 }

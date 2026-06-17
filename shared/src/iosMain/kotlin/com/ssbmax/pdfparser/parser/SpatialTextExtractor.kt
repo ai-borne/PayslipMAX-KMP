@@ -24,32 +24,44 @@ internal fun extractTextSpatially(
     xMax: Double,
     yMin: Double,
     yMax: Double,
+    charStartIndex: Int = 0,
+    charEndIndex: Int = -1
 ): String {
     val pageString = page.string ?: return ""
     val chars = ArrayList<PdfChar>()
 
-    println("[PdfParserDebug] extractTextSpatially: xMin=$xMin, xMax=$xMax, yMin=$yMin, yMax=$yMax, pageStringLength=${pageString.length}")
+    val actualEndIdx = if (charEndIndex < 0 || charEndIndex > pageString.length) pageString.length else charEndIndex
+    val slicedString = pageString.substring(charStartIndex, actualEndIdx)
+    
+    // Extract by WORDS to reduce interop calls to PDFKit
+    val words = Regex("\\S+").findAll(slicedString)
+    for (match in words) {
+        val wordStr = match.value
+        val globalStartIdx = charStartIndex + match.range.first
+        val nsRange = platform.Foundation.NSMakeRange(globalStartIdx.toULong(), wordStr.length.toULong())
+        val selection = page.selectionForRange(nsRange) ?: continue
+        val bounds = selection.boundsForPage(page)
 
-    for (i in 0 until pageString.length) {
-        val char = pageString[i]
-        if (char.isWhitespace()) continue
-
-        val selection = page.selectionForRange(platform.Foundation.NSMakeRange(i.toULong(), 1UL)) ?: continue
-        val rectVal = selection.boundsForPage(page)
-
-        val cx = CGRectGetMinX(rectVal)
-        val cy = CGRectGetMinY(rectVal)
-        val cw = CGRectGetWidth(rectVal)
-        val ch = CGRectGetHeight(rectVal)
+        val cx = CGRectGetMinX(bounds)
+        val cy = CGRectGetMinY(bounds)
+        val cw = CGRectGetWidth(bounds)
+        val ch = CGRectGetHeight(bounds)
 
         if (cw == 0.0 || ch == 0.0) continue
 
+        // Check if the word is roughly within bounds
         if (cx >= xMin && cx <= xMax && cy >= yMin && cy <= yMax) {
-            chars.add(PdfChar(char, cx, cy, cw, ch, i))
+            // We got the word bounds. Distribute the word bounds equally to its characters
+            // This preserves the character-level structure for the sorting logic below
+            val charWidth = cw / wordStr.length
+            for ((charIdx, char) in wordStr.withIndex()) {
+                val charX = cx + (charIdx * charWidth)
+                val globalIdx = globalStartIdx + charIdx
+                chars.add(PdfChar(char, charX, cy, charWidth, ch, globalIdx))
+            }
         }
     }
 
-    println("[PdfParserDebug] Filtered chars count: ${chars.size}")
     if (chars.isEmpty()) return ""
 
     // Group characters into lines based on Y coordinate (descending, top of page is high Y)

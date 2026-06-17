@@ -24,7 +24,7 @@ fun LedgerSection(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
     ) {
         Column {
             LedgerTableHeader()
@@ -36,7 +36,7 @@ fun LedgerSection(
                         Modifier
                             .weight(1f)
                             .border(
-                                BorderStroke(0.5.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+                                BorderStroke(AppDimensions.BorderHairline, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
                             ),
                 ) {
                     getCreditsList(payslip).forEach { (code, amount, desc) ->
@@ -49,7 +49,7 @@ fun LedgerSection(
                         Modifier
                             .weight(1f)
                             .border(
-                                BorderStroke(0.5.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+                                BorderStroke(AppDimensions.BorderHairline, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
                             ),
                 ) {
                     getDebitsList(payslip).forEach { (code, amount, desc) ->
@@ -70,7 +70,7 @@ private fun LedgerTableHeader() {
             Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(8.dp),
+                .padding(AppDimensions.PaddingSmall),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
@@ -104,7 +104,7 @@ private fun LedgerRowItem(
             Modifier
                 .fillMaxWidth()
                 .clickable { onClick(code, desc) }
-                .padding(horizontal = 8.dp, vertical = 6.dp),
+                .padding(horizontal = AppDimensions.PaddingSmall, vertical = AppDimensions.SpacingSix),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -131,23 +131,23 @@ private fun LedgerTableFooter(payslip: ParsedPayslip) {
             Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
-                .padding(12.dp),
+                .padding(AppDimensions.SpacingMedium),
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = "Gross Pay (Credits)", style = MaterialTheme.typography.bodyMedium)
+            Text(text = AppStrings.ledgerGrossPay, style = MaterialTheme.typography.bodyMedium)
             Text(text = "₹${formatVal(payslip.summary.grossPay)}", fontWeight = FontWeight.Bold)
         }
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingTiny),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(text = "Total Deductions (Debits)", style = MaterialTheme.typography.bodyMedium)
+            Text(text = AppStrings.ledgerTotalDeductions, style = MaterialTheme.typography.bodyMedium)
             Text(text = "₹${formatVal(payslip.summary.totalDeductions)}", fontWeight = FontWeight.Bold)
         }
-        HorizontalDivider(modifier = Modifier.padding(vertical = 6.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = AppDimensions.SpacingSix))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
-                text = "Net Take-Home Remittance",
+                text = AppStrings.replicaNetLabel,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,

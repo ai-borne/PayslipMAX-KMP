@@ -38,12 +38,14 @@ object AppStrings {
     // Explorer
     const val explorerHeader = "Payslip Digital Replica"
     const val explorerSubheader = "Tap any transaction code for detailed explanations"
-    const val replicaEarningTitle = "Earnings / Credits (आय)"
-    const val replicaDeductionTitle = "Deductions / Debits (कटौती)"
+    const val replicaEarningTitle = "Earnings"
+    const val replicaDeductionTitle = "Deductions"
     const val replicaGrossLabel = "Gross Pay (कुल आय)"
     const val replicaDeductionsLabel = "Total Deductions (कुल कटौती)"
-    const val replicaNetLabel = "Net Remittance"
+    const val replicaNetLabel = "Net Remittance (Take Home)"
     const val replicaFooter = "Principal Controller of Defence Accounts (Officers), Pune\nMinistry of Defence, Government of India"
+    const val ledgerGrossPay = "Gross Pay (Credits)"
+    const val ledgerTotalDeductions = "Total Deductions (Debits)"
 
     // Upload & Decrypt
     const val uploadHeader = "Import Encrypted Payslip"
@@ -52,6 +54,8 @@ object AppStrings {
     const val labelPassword = "Decryption Password"
     const val btnDecrypt = "Decrypt & Parse"
     const val loaderDecrypt = "Decrypting PDF using Secure Enclave..."
+    const val uploadDismiss = "Dismiss"
+    const val uploadSuccess = "Payslip Imported Successfully!"
 
     // Glossary Tooltip Titles
     const val glossaryTitleBasicPay = "Basic Pay (BPAY)"
@@ -83,7 +87,7 @@ object AppStrings {
     // Dashboard - Year/Month Picker
     const val selectYearLabel = "Year"
     const val selectMonthLabel = "Month"
-    const val analyzingStatement = "Analyzing Payslip Statement"
+    const val analyzingStatement = "Analyze Payslip"
 
     // Security Lock Screen
     const val lockScreenTitle = "Secured Portal"
