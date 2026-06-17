@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
@@ -137,11 +136,12 @@ private fun CompositionSparkbar(payslip: ParsedPayslip) {
     val otherPct = (1.0f - netPct - dsopPct - taxPct).coerceIn(0f, 1f)
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(AppDimensions.SpacingSix)
-            .clip(RoundedCornerShape(AppDimensions.SpacingTwo))
-            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(AppDimensions.SpacingSix)
+                .clip(RoundedCornerShape(AppDimensions.SpacingTwo))
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
     ) {
         if (netPct > 0f) Box(modifier = Modifier.fillMaxHeight().weight(netPct).background(MaterialTheme.colorScheme.secondary))
         if (dsopPct > 0f) Box(modifier = Modifier.fillMaxHeight().weight(dsopPct).background(MaterialTheme.colorScheme.tertiary))

@@ -84,15 +84,16 @@ class HistoryCardContentTest {
 
     @Test
     fun testGetDisplayTaxAmount() {
-        val payslip = ParsedPayslip(
-            file = "file.pdf", year = 2025, monthNum = 8, monthName = "August", dateStr = "08/2025",
-            officer = Officer("Name", "Acc", "PAN"),
-            earnings = Earnings(),
-            deductions = Deductions(incomeTax = 47624.0, educationCess = 1905.0),
-            ledgerBalances = LedgerBalances(),
-            summary = PayslipSummary(grossPay = 275015.0, totalDeductions = 102029.0, netRemittance = 172986.0),
-            taxAndSavings = null,
-        )
+        val payslip =
+            ParsedPayslip(
+                file = "file.pdf", year = 2025, monthNum = 8, monthName = "August", dateStr = "08/2025",
+                officer = Officer("Name", "Acc", "PAN"),
+                earnings = Earnings(),
+                deductions = Deductions(incomeTax = 47624.0, educationCess = 1905.0),
+                ledgerBalances = LedgerBalances(),
+                summary = PayslipSummary(grossPay = 275015.0, totalDeductions = 102029.0, netRemittance = 172986.0),
+                taxAndSavings = null,
+            )
 
         assertEquals(47624.0, getDisplayTaxAmount(payslip))
     }

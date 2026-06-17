@@ -8,7 +8,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
@@ -30,11 +29,12 @@ internal fun OfficerInfoBar(
         modifier = Modifier.fillMaxWidth(),
         colors =
             CardDefaults.cardColors(
-                containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) {
-                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                } else {
-                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.75f)
-                },
+                containerColor =
+                    if (androidx.compose.foundation.isSystemInDarkTheme()) {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                    } else {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.75f)
+                    },
             ),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
     ) {

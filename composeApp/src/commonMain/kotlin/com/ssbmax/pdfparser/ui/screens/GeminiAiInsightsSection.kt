@@ -9,8 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
@@ -96,11 +94,12 @@ private fun GeminiAiInsightsActiveCard(
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors =
             CardDefaults.cardColors(
-                containerColor = if (androidx.compose.foundation.isSystemInDarkTheme()) {
-                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.08f)
-                } else {
-                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-                },
+                containerColor =
+                    if (androidx.compose.foundation.isSystemInDarkTheme()) {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.08f)
+                    } else {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                    },
             ),
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
     ) {

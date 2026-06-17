@@ -25,14 +25,14 @@ internal fun extractTextSpatially(
     yMin: Double,
     yMax: Double,
     charStartIndex: Int = 0,
-    charEndIndex: Int = -1
+    charEndIndex: Int = -1,
 ): String {
     val pageString = page.string ?: return ""
     val chars = ArrayList<PdfChar>()
 
     val actualEndIdx = if (charEndIndex < 0 || charEndIndex > pageString.length) pageString.length else charEndIndex
     val slicedString = pageString.substring(charStartIndex, actualEndIdx)
-    
+
     // Extract by WORDS to reduce interop calls to PDFKit
     val words = Regex("\\S+").findAll(slicedString)
     for (match in words) {

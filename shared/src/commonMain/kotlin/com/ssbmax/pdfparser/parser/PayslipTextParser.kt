@@ -150,23 +150,25 @@ object PayslipTextParser {
             val trueGross = (realGross - openingCr - closingDr).coerceAtLeast(0.0)
             val trueDeductions = (realDeductions - openingDr - closingCr).coerceAtLeast(0.0)
 
-            val miscCr = if (trueGross > 0.0 && trueGross > sumEarnings) {
-                trueGross - sumEarnings
-            } else {
-                if (sumEarnings > trueGross && trueGross > 0.0) {
-                    println("[WARNING] Parsed sum of earnings ($sumEarnings) exceeds true gross pay ($trueGross) in $filename")
+            val miscCr =
+                if (trueGross > 0.0 && trueGross > sumEarnings) {
+                    trueGross - sumEarnings
+                } else {
+                    if (sumEarnings > trueGross && trueGross > 0.0) {
+                        println("[WARNING] Parsed sum of earnings ($sumEarnings) exceeds true gross pay ($trueGross) in $filename")
+                    }
+                    0.0
                 }
-                0.0
-            }
 
-            val miscDr = if (trueDeductions > 0.0 && trueDeductions > sumDeductions) {
-                trueDeductions - sumDeductions
-            } else {
-                if (sumDeductions > trueDeductions && trueDeductions > 0.0) {
-                    println("[WARNING] Parsed sum of deductions ($sumDeductions) exceeds true total deductions ($trueDeductions) in $filename")
+            val miscDr =
+                if (trueDeductions > 0.0 && trueDeductions > sumDeductions) {
+                    trueDeductions - sumDeductions
+                } else {
+                    if (sumDeductions > trueDeductions && trueDeductions > 0.0) {
+                        println("[WARNING] Parsed sum of deductions ($sumDeductions) exceeds true total deductions ($trueDeductions) in $filename")
+                    }
+                    0.0
                 }
-                0.0
-            }
 
             val earnings =
                 Earnings(

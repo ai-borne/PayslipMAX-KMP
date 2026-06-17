@@ -218,7 +218,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     val pageBounds = page.boundsForBox(kPDFDisplayBoxCropBox)
                     val pHeight = pageBounds.useContents { size.height }
                     val pWidth = pageBounds.useContents { size.width }
-                    
+
                     val startIdx = pageTextLower.indexOf("income tax details").takeIf { it >= 0 } ?: 0
                     val endIdx1 = pageTextLower.indexOf("dsop fund").takeIf { it > startIdx } ?: pageText.length
                     val endIdx2 = pageTextLower.indexOf("loans & advances").takeIf { it > startIdx } ?: pageText.length
@@ -241,12 +241,12 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     val pageBounds = page.boundsForBox(kPDFDisplayBoxCropBox)
                     val pHeight = pageBounds.useContents { size.height }
                     val pWidth = pageBounds.useContents { size.width }
-                    
+
                     val startIdx = pageTextLower.indexOf("dsop fund").takeIf { it >= 0 } ?: 0
                     val endIdx1 = pageTextLower.indexOf("loans & advances").takeIf { it > startIdx } ?: pageText.length
                     val endIdx2 = pageTextLower.indexOf("details of arrears").takeIf { it > startIdx } ?: pageText.length
                     val endIdx = minOf(endIdx1, endIdx2)
-                    
+
                     dsopText = extractTextSpatially(page, 0.0, pWidth, 0.0, pHeight, startIdx, endIdx)
                 }
             }

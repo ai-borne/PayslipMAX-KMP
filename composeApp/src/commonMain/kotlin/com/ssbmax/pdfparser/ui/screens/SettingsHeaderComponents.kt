@@ -9,8 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -21,11 +19,12 @@ fun OfflineStatusPill(
     val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     Surface(
         shape = RoundedCornerShape(AppDimensions.SpacingMedium),
-        color = if (isDark) {
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-        } else {
-            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.85f)
-        },
+        color =
+            if (isDark) {
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            } else {
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.85f)
+            },
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
         modifier = modifier,
     ) {
@@ -55,11 +54,12 @@ fun PrivacyCard(
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors =
             CardDefaults.cardColors(
-                containerColor = if (isDark) {
-                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
-                } else {
-                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
-                },
+                containerColor =
+                    if (isDark) {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
+                    } else {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                    },
             ),
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
     ) {

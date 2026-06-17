@@ -56,13 +56,14 @@ internal fun stripNotesAndDescriptions(text: String): String {
 internal fun splitCreditDebitSections(cleanedText: String): Triple<String, String, Boolean> {
     // Truncate to page 1 to exclude subsequent pages (tax/dsop details)
     var tableText = cleanedText
-    val footerIndicators = listOf(
-        "Note: This is a system",
-        "Note: This is system",
-        "Note : This is a system",
-        "Note: This is a system generated document",
-        "Note: This is system generated document"
-    )
+    val footerIndicators =
+        listOf(
+            "Note: This is a system",
+            "Note: This is system",
+            "Note : This is a system",
+            "Note: This is a system generated document",
+            "Note: This is system generated document",
+        )
     for (indicator in footerIndicators) {
         val idx = cleanedText.indexOf(indicator, ignoreCase = true)
         if (idx >= 0) {
@@ -71,9 +72,15 @@ internal fun splitCreditDebitSections(cleanedText: String): Triple<String, Strin
         }
     }
 
-    val endOfTableIndicators = listOf(
-        "Total Credit", "Total Debit", "Total Deductions", "Gross Pay", "Net Remittance", "REMITTANCE"
-    )
+    val endOfTableIndicators =
+        listOf(
+            "Total Credit",
+            "Total Debit",
+            "Total Deductions",
+            "Gross Pay",
+            "Net Remittance",
+            "REMITTANCE",
+        )
     for (indicator in endOfTableIndicators) {
         val idx = tableText.indexOf(indicator, ignoreCase = true)
         if (idx >= 0) {
@@ -172,17 +179,18 @@ internal fun parseDate(
     val fileMonthMatch = Regex("(?:^|\\d+\\s+)([a-zA-Z]+)", RegexOption.IGNORE_CASE).find(filename)
     val fileYearMatch = Regex("(\\d{4})").find(filename)
     val mNum = fileMonthMatch?.groupValues?.get(1)?.lowercase()?.let { PayslipPatternConfig.monthMap[it] } ?: 1
-    
-    val yVal = if (fileYearMatch != null) {
-        fileYearMatch.groupValues[1].toIntOrNull() ?: 2024
-    } else {
-        val year2dMatch = Regex("(\\d{2})\\.pdf$", RegexOption.IGNORE_CASE).find(filename)
-        if (year2dMatch != null) {
-            2000 + (year2dMatch.groupValues[1].toIntOrNull() ?: 24)
+
+    val yVal =
+        if (fileYearMatch != null) {
+            fileYearMatch.groupValues[1].toIntOrNull() ?: 2024
         } else {
-            2024
+            val year2dMatch = Regex("(\\d{2})\\.pdf$", RegexOption.IGNORE_CASE).find(filename)
+            if (year2dMatch != null) {
+                2000 + (year2dMatch.groupValues[1].toIntOrNull() ?: 24)
+            } else {
+                2024
+            }
         }
-    }
     return Pair(mNum, yVal)
 }
 
@@ -234,8 +242,6 @@ internal fun parseOfficer(
     if (panNo.isEmpty()) {
         panNo = "AR*****90G"
     }
-
-
 
     return Officer(name = officerName, accountNo = accountNo, pan = panNo)
 }

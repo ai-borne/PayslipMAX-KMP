@@ -12,8 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -64,11 +62,11 @@ fun UploadWidget(
 private fun UploadWidgetHeader(onDismiss: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.TopCenter
+        contentAlignment = Alignment.TopCenter,
     ) {
         Column(
             modifier = Modifier.padding(end = AppDimensions.IconSizeExtraLarge, start = AppDimensions.PaddingSmall),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = AppStrings.uploadHeader,
@@ -86,12 +84,12 @@ private fun UploadWidgetHeader(onDismiss: () -> Unit) {
         }
         IconButton(
             onClick = onDismiss,
-            modifier = Modifier.align(Alignment.TopEnd)
+            modifier = Modifier.align(Alignment.TopEnd),
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "Close Dialog",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
