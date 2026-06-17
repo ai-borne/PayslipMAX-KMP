@@ -38,12 +38,14 @@ fun InsightsScreen(
     }
 
     var showUpgradeSheet by remember { mutableStateOf(false) }
+    var showTransparencyDialog by remember { mutableStateOf(false) }
 
     InsightsContent(
         viewModel = viewModel,
         uiState = uiState,
         selected = selected,
         onShowUpgradeSheet = { showUpgradeSheet = true },
+        onShowTransparency = { showTransparencyDialog = true },
         modifier = modifier,
     )
 
@@ -51,6 +53,17 @@ fun InsightsScreen(
         PremiumUpgradeBottomSheet(
             onDismissRequest = { showUpgradeSheet = false },
             onUnlockClick = { viewModel.setPremiumEnabled(true) },
+        )
+    }
+
+    if (showTransparencyDialog) {
+        com.ssbmax.pdfparser.ui.components.TransparencyDialog(
+            payslip = selected,
+            onConfirm = {
+                showTransparencyDialog = false
+                viewModel.generateAiInsights(selected)
+            },
+            onDismiss = { showTransparencyDialog = false }
         )
     }
 }
@@ -61,6 +74,7 @@ private fun InsightsContent(
     uiState: PayslipUiState,
     selected: ParsedPayslip,
     onShowUpgradeSheet: () -> Unit,
+    onShowTransparency: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val previous =
@@ -88,7 +102,7 @@ private fun InsightsContent(
                 aiInsights = uiState.aiInsights,
                 isAiLoading = uiState.isAiLoading,
                 aiError = uiState.aiError,
-                onGenerateClick = { viewModel.generateAiInsights(selected) },
+                onGenerateClick = onShowTransparency,
                 onClearClick = { viewModel.clearAiInsights() },
                 onUpgradeClick = onShowUpgradeSheet,
             )
