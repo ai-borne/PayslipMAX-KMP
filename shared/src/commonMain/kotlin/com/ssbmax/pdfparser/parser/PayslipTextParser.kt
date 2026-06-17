@@ -77,7 +77,9 @@ object PayslipTextParser {
 
             println("[DEBUG PARSE KEYS] filename: $filename")
             println("[DEBUG PARSE KEYS] cleanedLeftText: '$cleanedLeftText'")
+            println("[DEBUG PARSE KEYS] cleanedLeftText CHAR CODES: ${cleanedLeftText.map { it.code }.joinToString(",")}")
             println("[DEBUG PARSE KEYS] cleanedMiddleText: '$cleanedMiddleText'")
+            println("[DEBUG PARSE KEYS] cleanedMiddleText CHAR CODES: ${cleanedMiddleText.map { it.code }.joinToString(",")}")
             println("[DEBUG PARSE KEYS] finalLeftExtracted: $finalLeftExtracted")
             println("[DEBUG PARSE KEYS] finalMiddleExtracted: $finalMiddleExtracted")
 

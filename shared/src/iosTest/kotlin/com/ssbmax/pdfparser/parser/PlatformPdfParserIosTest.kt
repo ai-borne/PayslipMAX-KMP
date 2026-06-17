@@ -26,6 +26,13 @@ class PlatformPdfParserIosTest {
     }
 
     @Test
+    fun testExtractFromColumn() {
+        val colText = "DESCRIPTION AMOUNT A/o BPAY- 61471 A/o DA- 21287 A/o MSP- 7196 A/o TRAN-2 4379"
+        val leftExtracted = extractFromColumn(colText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
+        println("### LEFT EXTRACTED: $leftExtracted")
+    }
+
+    @Test
     fun verifyAll46RealPayslipsOnIos() {
         val fileManager = NSFileManager.defaultManager
         val basePath = "/Users/sunil/Desktop/Pay Slip Elements"
@@ -73,6 +80,7 @@ class PlatformPdfParserIosTest {
                     .sorted()
 
             for (fileName in pdfFiles) {
+                if (fileName != "03 March 2022.pdf") continue
                 totalFiles++
                 val filePath = "$yearPath/$fileName"
                 val data = NSData.create(contentsOfFile = filePath)
