@@ -25,6 +25,9 @@ enum class Screen {
     History,
     Insights,
     Settings,
+    Representation,
+    TaxPlanning,
+    RetirementPlanning,
 }
 
 @Composable
@@ -58,24 +61,60 @@ fun App(
                 },
             ) { paddingValues ->
                 Box(modifier = Modifier.padding(paddingValues)) {
-                    when (currentScreen) {
-                        Screen.Dashboard -> {
-                            DashboardScreen(
-                                viewModel = viewModel,
-                                onPickPdfTrigger = { password ->
-                                    onPickPdf { bytes, name ->
-                                        viewModel.importPayslip(bytes, password, name)
-                                    }
-                                },
-                            )
-                        }
-                        Screen.History -> HistoryScreen(viewModel = viewModel, onOpenPdf = onOpenPdf)
-                        Screen.Insights -> InsightsScreen(viewModel = viewModel)
-                        Screen.Settings -> SettingsScreen(viewModel = viewModel)
-                    }
+                    ScreenContent(
+                        currentScreen = currentScreen,
+                        viewModel = viewModel,
+                        onPickPdf = onPickPdf,
+                        onOpenPdf = onOpenPdf,
+                        onNavigate = { currentScreen = it },
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ScreenContent(
+    currentScreen: Screen,
+    viewModel: PayslipViewModel,
+    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
+    onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onNavigate: (Screen) -> Unit,
+) {
+    when (currentScreen) {
+        Screen.Dashboard -> {
+            DashboardScreen(
+                viewModel = viewModel,
+                onPickPdfTrigger = { password ->
+                    onPickPdf { bytes, name ->
+                        viewModel.importPayslip(bytes, password, name)
+                    }
+                },
+            )
+        }
+        Screen.History -> HistoryScreen(viewModel = viewModel, onOpenPdf = onOpenPdf)
+        Screen.Insights ->
+            InsightsScreen(
+                viewModel = viewModel,
+                onNavigateTo = onNavigate,
+            )
+        Screen.Settings -> SettingsScreen(viewModel = viewModel)
+        Screen.Representation ->
+            com.ssbmax.pdfparser.ui.screens.RepresentationScreen(
+                viewModel = viewModel,
+                onBack = { onNavigate(Screen.Insights) },
+            )
+        Screen.TaxPlanning ->
+            com.ssbmax.pdfparser.ui.screens.TaxPlanningScreen(
+                viewModel = viewModel,
+                onBack = { onNavigate(Screen.Insights) },
+            )
+        Screen.RetirementPlanning ->
+            com.ssbmax.pdfparser.ui.screens.RetirementPlanningScreen(
+                viewModel = viewModel,
+                onBack = { onNavigate(Screen.Insights) },
+            )
     }
 }
 
@@ -98,7 +137,11 @@ private fun BottomBar(
             icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
         )
         NavigationBarItem(
-            selected = currentScreen == Screen.Insights,
+            selected =
+                currentScreen == Screen.Insights ||
+                    currentScreen == Screen.Representation ||
+                    currentScreen == Screen.TaxPlanning ||
+                    currentScreen == Screen.RetirementPlanning,
             onClick = { onNavigate(Screen.Insights) },
             label = { Text(AppStrings.navigationInsights) },
             icon = { Icon(Icons.Default.Info, contentDescription = null) },

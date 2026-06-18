@@ -150,6 +150,8 @@ private fun SecurityBackupSection(
             onRestoreClick = { pw, onComplete -> viewModel.restoreDatabase(pw, onComplete) },
             onExportBackup = { pw, onComplete -> viewModel.exportBackup(pw, onComplete) },
             onImportBackup = { bytes, pw, onComplete -> viewModel.importBackup(bytes, pw, onComplete) },
+            onCloudBackupClick = { uid, token, pw, onComplete -> viewModel.backupToCloud(uid, token, pw, onComplete) },
+            onCloudRestoreClick = { uid, token, pw, onComplete -> viewModel.restoreFromCloud(uid, token, pw, onComplete) },
             isPremiumEnabled = uiState.isPremiumEnabled,
             onUpgradePrompt = onUpgradePrompt,
         )

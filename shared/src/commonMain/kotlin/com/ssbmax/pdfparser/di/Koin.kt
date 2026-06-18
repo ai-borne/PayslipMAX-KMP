@@ -5,6 +5,7 @@ import com.ssbmax.pdfparser.database.PayslipDatabase
 import com.ssbmax.pdfparser.database.getDatabaseBuilder
 import com.ssbmax.pdfparser.parser.PdfParser
 import com.ssbmax.pdfparser.repository.PayslipRepository
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.core.context.startKoin
@@ -38,6 +39,32 @@ val sharedModule: Module =
 
         single {
             com.ssbmax.pdfparser.insights.GeminiService()
+        }
+
+        single {
+            io.ktor.client.HttpClient {
+                install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
+                    json(
+                        kotlinx.serialization.json.Json {
+                            ignoreUnknownKeys = true
+                            prettyPrint = true
+                            isLenient = true
+                        },
+                    )
+                }
+            }
+        }
+
+        single {
+            com.ssbmax.pdfparser.insights.GeminiProxyService(get())
+        }
+
+        single {
+            com.ssbmax.pdfparser.repository.FinancialIntelligenceRepository(get(), get())
+        }
+
+        single {
+            com.ssbmax.pdfparser.repository.CloudSyncRepository(get(), get())
         }
     }
 

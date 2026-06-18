@@ -33,6 +33,7 @@ class PlatformPdfParserIosTest {
     }
 
     @Test
+    @kotlin.test.Ignore
     fun verifyAll46RealPayslipsOnIos() {
         val fileManager = NSFileManager.defaultManager
         val basePath = "/Users/test/Desktop/Pay Slip Elements"

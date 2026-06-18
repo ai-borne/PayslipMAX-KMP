@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
@@ -34,10 +35,20 @@ fun DashboardScreen(
     var showUploadDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (payslips.isEmpty()) {
-            EmptyDashboardPlaceholder(modifier)
+        if (uiState.isLoading && payslips.isEmpty()) {
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .testTag("dashboard_loading"),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (payslips.isEmpty()) {
+            EmptyDashboardPlaceholder(modifier.testTag("dashboard_empty"))
         } else {
-            PopulatedDashboard(payslips, selected, viewModel, modifier)
+            PopulatedDashboard(payslips, selected, viewModel, modifier.testTag("dashboard_populated"))
         }
         UploadFab(onClick = { showUploadDialog = true }, modifier = Modifier.align(Alignment.BottomEnd))
     }
