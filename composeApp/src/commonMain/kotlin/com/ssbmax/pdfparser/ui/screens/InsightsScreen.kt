@@ -65,7 +65,7 @@ fun InsightsScreen(
         selected = selected,
         viewModel = viewModel,
         onDismissUpgrade = { showUpgradeSheet = false },
-        onDismissTransparency = { showTransparencyDialog = false }
+        onDismissTransparency = { showTransparencyDialog = false },
     )
 }
 
