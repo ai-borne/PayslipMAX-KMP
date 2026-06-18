@@ -34,7 +34,14 @@ fun DashboardScreen(
     var showUploadDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (payslips.isEmpty()) {
+        if (uiState.isLoading && payslips.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (payslips.isEmpty()) {
             EmptyDashboardPlaceholder(modifier)
         } else {
             PopulatedDashboard(payslips, selected, viewModel, modifier)

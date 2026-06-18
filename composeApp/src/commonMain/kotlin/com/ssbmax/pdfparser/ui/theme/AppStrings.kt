@@ -179,6 +179,8 @@ object AppStrings {
     const val historyActionDelete = "Delete Statement"
     const val historyConfirmDeleteTitle = "Delete Payslip?"
     const val historyConfirmDeleteMessage = "Are you sure you want to delete this payslip? This action is permanent and cannot be undone."
+    const val historyHeaderDescription = "Browse and read your historical military payslip statements"
+    const val historyEmptyState = "No payslips in history. Go to Dashboard to import one."
     const val historyActionViewReplica = "View Digital Replica"
     const val historyActionViewOriginal = "View Original PDF"
     const val historyActionShareSummary = "Share Summary"

@@ -32,6 +32,14 @@ fun InsightsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val selected = uiState.selectedPayslip
+    val isLoading = uiState.isLoading
+
+    if (isLoading && selected == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
 
     if (selected == null) {
         EmptyInsightsView()
@@ -51,9 +59,28 @@ fun InsightsScreen(
         modifier = modifier,
     )
 
+    InsightsOverlayDialogs(
+        showUpgradeSheet = showUpgradeSheet,
+        showTransparencyDialog = showTransparencyDialog,
+        selected = selected,
+        viewModel = viewModel,
+        onDismissUpgrade = { showUpgradeSheet = false },
+        onDismissTransparency = { showTransparencyDialog = false }
+    )
+}
+
+@Composable
+private fun InsightsOverlayDialogs(
+    showUpgradeSheet: Boolean,
+    showTransparencyDialog: Boolean,
+    selected: ParsedPayslip,
+    viewModel: PayslipViewModel,
+    onDismissUpgrade: () -> Unit,
+    onDismissTransparency: () -> Unit,
+) {
     if (showUpgradeSheet) {
         PremiumUpgradeBottomSheet(
-            onDismissRequest = { showUpgradeSheet = false },
+            onDismissRequest = onDismissUpgrade,
             onUnlockClick = { viewModel.setPremiumEnabled(true) },
         )
     }
@@ -62,10 +89,10 @@ fun InsightsScreen(
         com.ssbmax.pdfparser.ui.components.TransparencyDialog(
             payslip = selected,
             onConfirm = {
-                showTransparencyDialog = false
+                onDismissTransparency()
                 viewModel.generateAiInsights(selected)
             },
-            onDismiss = { showTransparencyDialog = false },
+            onDismiss = onDismissTransparency,
         )
     }
 }
