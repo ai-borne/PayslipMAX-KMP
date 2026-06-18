@@ -42,4 +42,9 @@ expect object CryptoHelper {
      * Retrieves or generates a secure, device-persistent database encryption key.
      */
     fun getDatabaseSecretKey(): String
+
+    /**
+     * Retrieves the current system time in milliseconds.
+     */
+    fun getCurrentTimeMillis(): Long
 }
