@@ -9,7 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.database.hexToByteArray
 import com.ssbmax.pdfparser.database.toHex
 import com.ssbmax.pdfparser.ui.theme.AppDimensions

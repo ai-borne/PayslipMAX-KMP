@@ -37,10 +37,11 @@ fun DashboardScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         if (uiState.isLoading && payslips.isEmpty()) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .testTag("dashboard_loading"),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .testTag("dashboard_loading"),
+                contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator()
             }

@@ -49,37 +49,39 @@ class DashboardScreenUiTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun testLoadingState() = runComposeUiTest {
-        setContent {
-            DashboardScreen(
-                viewModel = viewModel,
-                onPickPdfTrigger = {}
-            )
-        }
+    fun testLoadingState() =
+        runComposeUiTest {
+            setContent {
+                DashboardScreen(
+                    viewModel = viewModel,
+                    onPickPdfTrigger = {},
+                )
+            }
 
-        // Verify the progress spinner (dashboard_loading tag) exists
-        onNodeWithTag("dashboard_loading").assertExists()
-        // Verify other states are not shown
-        onNodeWithTag("dashboard_empty").assertDoesNotExist()
-        onNodeWithTag("dashboard_populated").assertDoesNotExist()
-    }
+            // Verify the progress spinner (dashboard_loading tag) exists
+            onNodeWithTag("dashboard_loading").assertExists()
+            // Verify other states are not shown
+            onNodeWithTag("dashboard_empty").assertDoesNotExist()
+            onNodeWithTag("dashboard_populated").assertDoesNotExist()
+        }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun testEmptyState() = runComposeUiTest {
-        // Advance the scheduler to let the viewModel's init/loading coroutines run and finish
-        testDispatcher.scheduler.runCurrent()
-        
-        setContent {
-            DashboardScreen(
-                viewModel = viewModel,
-                onPickPdfTrigger = {}
-            )
-        }
+    fun testEmptyState() =
+        runComposeUiTest {
+            // Advance the scheduler to let the viewModel's init/loading coroutines run and finish
+            testDispatcher.scheduler.runCurrent()
 
-        // Verify the empty state placeholder (dashboard_empty tag) exists
-        onNodeWithTag("dashboard_empty").assertExists()
-        // Verify loading indicator is gone
-        onNodeWithTag("dashboard_loading").assertDoesNotExist()
-    }
+            setContent {
+                DashboardScreen(
+                    viewModel = viewModel,
+                    onPickPdfTrigger = {},
+                )
+            }
+
+            // Verify the empty state placeholder (dashboard_empty tag) exists
+            onNodeWithTag("dashboard_empty").assertExists()
+            // Verify loading indicator is gone
+            onNodeWithTag("dashboard_loading").assertDoesNotExist()
+        }
 }

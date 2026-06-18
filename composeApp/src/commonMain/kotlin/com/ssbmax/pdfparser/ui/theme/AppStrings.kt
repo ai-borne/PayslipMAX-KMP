@@ -231,7 +231,6 @@ object AppStrings {
     const val geminiAiAnalyzeBtn = "Analyze Payslip with Gemini AI"
     const val geminiAiAnalyzeDesc = "Generate professional tax saving suggestions, investment recommendations, and error audits using Gemini."
 
-
     // Generic Actions
     const val btnClose = "Close"
 
