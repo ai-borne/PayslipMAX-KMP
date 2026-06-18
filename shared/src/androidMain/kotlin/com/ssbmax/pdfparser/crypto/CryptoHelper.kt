@@ -3,14 +3,13 @@ package com.ssbmax.pdfparser.crypto
 import android.content.Context
 import java.security.MessageDigest
 import javax.crypto.Cipher
-import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 actual object CryptoHelper {
-    private const val ALGORITHM = "AES/CBC/PKCS5Padding"
+    private const val ALGORITHM = "AES/GCM/NoPadding"
     private const val AES_KEY_SIZE = 32 // 256 bits
-    private const val IV_SIZE = 16 // 128 bits block size
-
+    private const val IV_SIZE = 12 // 96 bits for GCM
+    private const val TAG_SIZE_BITS = 128
     private const val SALT_SIZE = 16
 
     actual fun encrypt(
@@ -26,13 +25,13 @@ actual object CryptoHelper {
             val keyBytes = pbkdf2(password, salt)
             val secretKey = SecretKeySpec(keyBytes, "AES")
 
-            // Generate a random 16-byte IV
+            // Generate a random 12-byte IV
             val iv = ByteArray(IV_SIZE)
             java.security.SecureRandom().nextBytes(iv)
-            val ivSpec = IvParameterSpec(iv)
+            val gcmSpec = javax.crypto.spec.GCMParameterSpec(TAG_SIZE_BITS, iv)
 
             val cipher = Cipher.getInstance(ALGORITHM)
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec)
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec)
 
             // Prepend MAGIC header "PCDA" for integrity check
             val magic = "PCDA".toByteArray(Charsets.UTF_8)
@@ -40,13 +39,13 @@ actual object CryptoHelper {
             System.arraycopy(magic, 0, prefixedData, 0, magic.size)
             System.arraycopy(data, 0, prefixedData, magic.size, data.size)
 
-            val cipherText = cipher.doFinal(prefixedData)
+            val cipherTextWithTag = cipher.doFinal(prefixedData)
 
-            // Output: Salt + IV + CipherText
-            val result = ByteArray(salt.size + iv.size + cipherText.size)
+            // Output: Salt + IV + CipherTextWithTag
+            val result = ByteArray(salt.size + iv.size + cipherTextWithTag.size)
             System.arraycopy(salt, 0, result, 0, salt.size)
             System.arraycopy(iv, 0, result, salt.size, iv.size)
-            System.arraycopy(cipherText, 0, result, salt.size + iv.size, cipherText.size)
+            System.arraycopy(cipherTextWithTag, 0, result, salt.size + iv.size, cipherTextWithTag.size)
 
             Result.success(result)
         } catch (e: Exception) {
@@ -60,7 +59,7 @@ actual object CryptoHelper {
     ): Result<ByteArray> {
         return try {
             val prefixSize = SALT_SIZE + IV_SIZE
-            if (encryptedData.size < prefixSize) {
+            if (encryptedData.size < prefixSize + 16) {
                 return Result.failure(IllegalArgumentException("Invalid encrypted data size"))
             }
 
@@ -75,16 +74,16 @@ actual object CryptoHelper {
             // Extract IV
             val iv = ByteArray(IV_SIZE)
             System.arraycopy(encryptedData, SALT_SIZE, iv, 0, iv.size)
-            val ivSpec = IvParameterSpec(iv)
+            val gcmSpec = javax.crypto.spec.GCMParameterSpec(TAG_SIZE_BITS, iv)
 
-            // Extract CipherText
-            val cipherTextSize = encryptedData.size - prefixSize
-            val cipherText = ByteArray(cipherTextSize)
-            System.arraycopy(encryptedData, prefixSize, cipherText, 0, cipherTextSize)
+            // Extract CipherText + Tag
+            val cipherTextWithTagSize = encryptedData.size - prefixSize
+            val cipherTextWithTag = ByteArray(cipherTextWithTagSize)
+            System.arraycopy(encryptedData, prefixSize, cipherTextWithTag, 0, cipherTextWithTagSize)
 
             val cipher = Cipher.getInstance(ALGORITHM)
-            cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec)
-            val plainText = cipher.doFinal(cipherText)
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmSpec)
+            val plainText = cipher.doFinal(cipherTextWithTag)
 
             // Verify MAGIC header "PCDA"
             val magic = "PCDA".toByteArray(Charsets.UTF_8)

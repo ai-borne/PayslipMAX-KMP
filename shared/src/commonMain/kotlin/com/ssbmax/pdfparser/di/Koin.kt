@@ -62,6 +62,10 @@ val sharedModule: Module =
         single {
             com.ssbmax.pdfparser.repository.FinancialIntelligenceRepository(get(), get())
         }
+
+        single {
+            com.ssbmax.pdfparser.repository.CloudSyncRepository(get(), get())
+        }
     }
 
 /**

@@ -126,3 +126,46 @@ fun PayslipViewModel.importBackup(
         onComplete(result)
     }
 }
+
+fun PayslipViewModel.backupToCloud(
+    userId: String,
+    authToken: String,
+    password: String,
+    onComplete: (Result<Unit>) -> Unit,
+) {
+    viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true, error = null) }
+        val repo = cloudSyncRepository
+        val result =
+            if (repo != null) {
+                repo.uploadBackup(userId, authToken, password)
+            } else {
+                Result.failure(Exception("CloudSyncRepository not initialized"))
+            }
+        _uiState.update { it.copy(isLoading = false) }
+        onComplete(result)
+    }
+}
+
+fun PayslipViewModel.restoreFromCloud(
+    userId: String,
+    authToken: String,
+    password: String,
+    onComplete: (Result<Unit>) -> Unit,
+) {
+    viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true, error = null) }
+        val repo = cloudSyncRepository
+        val result =
+            if (repo != null) {
+                repo.downloadAndRestoreBackup(userId, authToken, password)
+            } else {
+                Result.failure(Exception("CloudSyncRepository not initialized"))
+            }
+        if (result.isSuccess) {
+            observePayslips()
+        }
+        _uiState.update { it.copy(isLoading = false) }
+        onComplete(result)
+    }
+}

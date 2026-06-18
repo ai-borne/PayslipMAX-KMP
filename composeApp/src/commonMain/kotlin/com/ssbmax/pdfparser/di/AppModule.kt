@@ -5,5 +5,5 @@ import org.koin.dsl.module
 
 val appModule =
     module {
-        factory { PayslipViewModel(get(), get(), get(), get()) }
+        factory { PayslipViewModel(get(), get(), get(), get(), get()) }
     }
