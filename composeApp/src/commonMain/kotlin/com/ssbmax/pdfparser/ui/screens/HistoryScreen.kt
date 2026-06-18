@@ -44,6 +44,7 @@ fun HistoryScreen(
     } else {
         HistoryListContainer(
             payslips = payslips,
+            isLoading = uiState.isLoading,
             onPayslipClick = { selectedDetailPayslip = it },
             onLongPress = { activeActionPayslip = it },
             onSwipeDelete = { pendingDeletePayslip = it },
@@ -85,6 +86,7 @@ fun HistoryScreen(
 @Composable
 private fun HistoryListContainer(
     payslips: List<ParsedPayslip>,
+    isLoading: Boolean,
     onPayslipClick: (ParsedPayslip) -> Unit,
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
@@ -98,8 +100,12 @@ private fun HistoryListContainer(
                 .padding(AppDimensions.PaddingMedium),
     ) {
         HistoryHeader()
-        Spacer(modifier = Modifier.height(16.dp))
-        if (payslips.isEmpty()) {
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+        if (isLoading && payslips.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else if (payslips.isEmpty()) {
             EmptyHistoryView()
         } else {
             HistoryLazyList(
@@ -121,9 +127,9 @@ private fun HistoryHeader() {
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
         Text(
-            text = "Browse and read your historical military payslip statements",
+            text = AppStrings.historyHeaderDescription,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -134,7 +140,7 @@ private fun HistoryHeader() {
 private fun EmptyHistoryView() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(
-            text = "No payslips in history. Go to Dashboard to import one.",
+            text = AppStrings.historyEmptyState,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -159,7 +165,7 @@ private fun HistoryLazyList(
     }
 
     androidx.compose.foundation.lazy.LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
         modifier = Modifier.fillMaxSize(),
     ) {
         grouped.forEach { (year, yearPayslips) ->
