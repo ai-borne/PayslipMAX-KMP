@@ -131,9 +131,7 @@ object AppStrings {
     const val settingsOfflineFirst = "Offline-First"
     const val settingsOfflineSecureTitle = "100% Offline & Secure"
     const val settingsOfflineSecureDesc = "All payslip decryption and parsing happens locally on your device. Your data never leaves your control."
-    const val settingsApiKeyLabel = "Gemini API Key"
-    const val settingsApiKeyPlaceholder = "Enter AIZA..."
-    const val settingsApiKeyFooter = "Your API Key is kept 100% offline and stored in secure memory."
+    const val settingsAiPoweredByProxy = "AI insights are powered by Gemini 2.5 Flash, secured server-side. Your API key never touches this device."
 
     // Sandbox / Testing
     const val settingsStagingTitle = "Staging & Testing Sandbox"

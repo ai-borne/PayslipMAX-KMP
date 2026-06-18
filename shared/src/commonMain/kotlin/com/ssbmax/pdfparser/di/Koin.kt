@@ -38,10 +38,6 @@ val sharedModule: Module =
         }
 
         single {
-            com.ssbmax.pdfparser.insights.GeminiService()
-        }
-
-        single {
             io.ktor.client.HttpClient {
                 install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
                     json(

@@ -116,8 +116,6 @@ private fun PreferencesSection(
         PremiumSettingsCard(
             isPremiumEnabled = uiState.isPremiumEnabled,
             onPremiumToggle = { viewModel.setPremiumEnabled(it) },
-            geminiApiKey = uiState.geminiApiKey,
-            onApiKeyChange = { viewModel.setGeminiApiKey(it) },
             onUpgradePrompt = onUpgradePrompt,
         )
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
