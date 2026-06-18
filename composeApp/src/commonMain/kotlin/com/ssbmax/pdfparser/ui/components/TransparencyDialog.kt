@@ -161,16 +161,19 @@ private fun TransparencyDataColumn(
     }
 }
 
-internal fun formatPayslipText(payslip: ParsedPayslip, isSanitized: Boolean): String {
+internal fun formatPayslipText(
+    payslip: ParsedPayslip,
+    isSanitized: Boolean,
+): String {
     val sb = StringBuilder()
-    
+
     // PII / Meta Section
     val nameVal = if (isSanitized) TransparencyStrings.labelAnonymous else payslip.officer.name
     sb.append("${TransparencyStrings.labelPerson}$nameVal\n")
     sb.append("${TransparencyStrings.labelPanNumber}${payslip.officer.pan}\n")
     sb.append("${TransparencyStrings.labelCdaAccount}${payslip.officer.accountNo}\n")
     sb.append("${TransparencyStrings.labelFilename}${payslip.file}\n\n")
-    
+
     // Earnings Section
     val e = payslip.earnings
     if (e.basicPay > 0) sb.append("${TransparencyStrings.labelBasicPay}₹${e.basicPay.toInt()}\n")
@@ -178,7 +181,7 @@ internal fun formatPayslipText(payslip: ParsedPayslip, isSanitized: Boolean): St
     if (e.militaryServicePay > 0) sb.append("${TransparencyStrings.labelMSP}₹${e.militaryServicePay.toInt()}\n")
     if (e.transportAllowance > 0) sb.append("${TransparencyStrings.labelTPTA}₹${e.transportAllowance.toInt()}\n")
     if (e.houseRentAllowance > 0) sb.append("${TransparencyStrings.labelHRA}₹${e.houseRentAllowance.toInt()}\n")
-    
+
     // Other non-zero earnings
     if (e.rationMoney > 0) sb.append("${TransparencyStrings.labelRationMoney}₹${e.rationMoney.toInt()}\n")
     if (e.specialForcesPay > 0) sb.append("${TransparencyStrings.labelSpecialForces}₹${e.specialForcesPay.toInt()}\n")
@@ -188,10 +191,10 @@ internal fun formatPayslipText(payslip: ParsedPayslip, isSanitized: Boolean): St
     if (e.nonPracticingAllowance > 0) sb.append("${TransparencyStrings.labelNPA}₹${e.nonPracticingAllowance.toInt()}\n")
     if (e.medicalAllowance > 0) sb.append("${TransparencyStrings.labelMedicalAllce}₹${e.medicalAllowance.toInt()}\n")
     if (e.miscEarnings > 0) sb.append("${TransparencyStrings.labelMiscEarn}₹${e.miscEarnings.toInt()}\n")
-    
+
     sb.append("---\n")
     sb.append("${TransparencyStrings.labelCredits}₹${payslip.summary.grossPay.toInt()}\n\n")
-    
+
     // Deductions Section
     val d = payslip.deductions
     if (d.dsopSubscription > 0) sb.append("${TransparencyStrings.labelDSOP}₹${d.dsopSubscription.toInt()}\n")
@@ -206,10 +209,10 @@ internal fun formatPayslipText(payslip: ParsedPayslip, isSanitized: Boolean): St
     if (d.aobf > 0) sb.append("${TransparencyStrings.labelAOBF}₹${d.aobf.toInt()}\n")
     if (d.agifLoanRecovery > 0) sb.append("${TransparencyStrings.labelAgifLoanRec}₹${d.agifLoanRecovery.toInt()}\n")
     if (d.miscDeductions > 0) sb.append("${TransparencyStrings.labelMiscDeduct}₹${d.miscDeductions.toInt()}\n")
-    
+
     sb.append("---\n")
     sb.append("${TransparencyStrings.labelDebits}₹${payslip.summary.totalDeductions.toInt()}\n\n")
-    
+
     // Net and Balances Section
     sb.append("${TransparencyStrings.labelNetRemittance}₹${payslip.summary.netRemittance.toInt()}\n")
     val dsopBal = payslip.taxAndSavings?.dsopFund?.closingBalance ?: 0.0
@@ -221,7 +224,7 @@ internal fun formatPayslipText(payslip: ParsedPayslip, isSanitized: Boolean): St
             sb.append("${TransparencyStrings.labelDsopBalance}₹${ledgerClosing.toInt()}\n")
         }
     }
-    
+
     return sb.toString()
 }
 
