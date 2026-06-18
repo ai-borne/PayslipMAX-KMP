@@ -59,7 +59,17 @@ class PayslipViewModelTest {
         val state = viewModel.uiState.value
         assertTrue(state.payslips.isEmpty())
         assertNull(state.selectedPayslip)
-        assertFalse(state.isLoading)
+        assertFalse(state.isLoading) // Ends up false after immediate fake Dao collection
+        assertNull(state.error)
+        assertFalse(state.importSuccess)
+    }
+
+    @Test
+    fun testUiStateDefaultValues() {
+        val state = PayslipUiState()
+        assertTrue(state.payslips.isEmpty())
+        assertNull(state.selectedPayslip)
+        assertTrue(state.isLoading)
         assertNull(state.error)
         assertFalse(state.importSuccess)
     }

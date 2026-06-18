@@ -1,8 +1,6 @@
 package com.ssbmax.pdfparser.testing
 
-import com.ssbmax.pdfparser.database.EncryptedPayslipEntity
-import com.ssbmax.pdfparser.database.PayslipDao
-import com.ssbmax.pdfparser.database.PayslipPdfEntity
+import com.ssbmax.pdfparser.database.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -72,5 +70,85 @@ class FakePayslipDao : PayslipDao {
 
     override suspend fun clearSettings() {
         settingsDatabase.value = null
+    }
+
+    private val ledgerDatabase = MutableStateFlow<Map<String, LedgerRecordEntity>>(emptyMap())
+    private val insightsDatabase = MutableStateFlow<Map<String, FinancialInsightEntity>>(emptyMap())
+    private val draftsDatabase = MutableStateFlow<Map<String, RepresentationDraftEntity>>(emptyMap())
+
+    override suspend fun insertLedgerRecord(record: LedgerRecordEntity) {
+        ledgerDatabase.value = ledgerDatabase.value + (record.dateStr to record)
+    }
+
+    override suspend fun insertLedgerRecords(records: List<LedgerRecordEntity>) {
+        ledgerDatabase.value = ledgerDatabase.value + records.associateBy { it.dateStr }
+    }
+
+    override fun getAllLedgerRecords(): Flow<List<LedgerRecordEntity>> {
+        return ledgerDatabase.map {
+            it.values.toList().sortedWith(
+                compareBy<LedgerRecordEntity> { it.year }.thenBy { it.monthNum },
+            )
+        }
+    }
+
+    override suspend fun getLedgerRecordByDate(dateStr: String): LedgerRecordEntity? {
+        return ledgerDatabase.value[dateStr]
+    }
+
+    override suspend fun deleteLedgerRecord(dateStr: String) {
+        ledgerDatabase.value = ledgerDatabase.value - dateStr
+    }
+
+    override suspend fun clearAllLedgerRecords() {
+        ledgerDatabase.value = emptyMap()
+    }
+
+    override suspend fun insertFinancialInsight(insight: FinancialInsightEntity) {
+        insightsDatabase.value = insightsDatabase.value + (insight.id to insight)
+    }
+
+    override suspend fun insertFinancialInsights(insights: List<FinancialInsightEntity>) {
+        insightsDatabase.value = insightsDatabase.value + insights.associateBy { it.id }
+    }
+
+    override fun getAllFinancialInsights(): Flow<List<FinancialInsightEntity>> {
+        return insightsDatabase.map {
+            it.values.toList().sortedByDescending { it.createdAt }
+        }
+    }
+
+    override suspend fun getFinancialInsightsByMonth(monthStr: String): List<FinancialInsightEntity> {
+        return insightsDatabase.value.values.filter { it.monthStr == monthStr }
+    }
+
+    override suspend fun deleteFinancialInsight(id: String) {
+        insightsDatabase.value = insightsDatabase.value - id
+    }
+
+    override suspend fun clearAllFinancialInsights() {
+        insightsDatabase.value = emptyMap()
+    }
+
+    override suspend fun insertRepresentationDraft(draft: RepresentationDraftEntity) {
+        draftsDatabase.value = draftsDatabase.value + (draft.id to draft)
+    }
+
+    override fun getAllRepresentationDrafts(): Flow<List<RepresentationDraftEntity>> {
+        return draftsDatabase.map {
+            it.values.toList().sortedByDescending { it.createdAt }
+        }
+    }
+
+    override suspend fun getRepresentationDraftById(id: String): RepresentationDraftEntity? {
+        return draftsDatabase.value[id]
+    }
+
+    override suspend fun deleteRepresentationDraft(id: String) {
+        draftsDatabase.value = draftsDatabase.value - id
+    }
+
+    override suspend fun clearAllRepresentationDrafts() {
+        draftsDatabase.value = emptyMap()
     }
 }
