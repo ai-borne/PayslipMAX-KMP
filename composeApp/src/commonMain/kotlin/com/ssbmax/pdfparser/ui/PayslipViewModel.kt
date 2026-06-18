@@ -38,6 +38,7 @@ class PayslipViewModel(
     internal val backupManager: com.ssbmax.pdfparser.backup.BackupManager,
     internal val geminiService: com.ssbmax.pdfparser.insights.GeminiService,
     internal val financialIntelligenceRepository: com.ssbmax.pdfparser.repository.FinancialIntelligenceRepository? = null,
+    internal val cloudSyncRepository: com.ssbmax.pdfparser.repository.CloudSyncRepository? = null,
 ) : ViewModel() {
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
