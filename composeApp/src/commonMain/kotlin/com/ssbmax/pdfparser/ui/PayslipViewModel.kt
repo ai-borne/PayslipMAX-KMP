@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 data class PayslipUiState(
     val payslips: List<ParsedPayslip> = emptyList(),
     val selectedPayslip: ParsedPayslip? = null,
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val error: String? = null,
     val importSuccess: Boolean = false,
     val isPremiumEnabled: Boolean = false,
