@@ -34,3 +34,9 @@ coverage/
 # Scan output
 scripts/scan_rh_output.txt
 
+# Firebase — sensitive config & secrets (never commit these)
+google-services.json
+GoogleService-Info.plist
+functions/.env
+functions/.secret.local
+.firebaserc.local

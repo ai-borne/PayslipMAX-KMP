@@ -31,7 +31,6 @@ class CloudSyncRepositoryTest {
             val settings =
                 AppSettingsEntity(
                     isPremiumEnabled = true,
-                    geminiApiKey = "test-api-key",
                 )
             fakeDao.insertSettings(settings)
 
@@ -109,7 +108,6 @@ class CloudSyncRepositoryTest {
             val settings =
                 AppSettingsEntity(
                     isPremiumEnabled = true,
-                    geminiApiKey = "restored-api-key",
                 )
             fakeDao.insertSettings(settings)
             val backupBytes = payslipRepository.exportUniversalBackup("pwd").getOrThrow()
@@ -154,7 +152,6 @@ class CloudSyncRepositoryTest {
             val restoredSettings = payslipRepository.getSettings()
             assertNotNull(restoredSettings)
             assertTrue(restoredSettings.isPremiumEnabled)
-            assertEquals("restored-api-key", restoredSettings.geminiApiKey)
         }
 
     @Test

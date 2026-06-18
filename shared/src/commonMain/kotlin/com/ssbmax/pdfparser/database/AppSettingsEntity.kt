@@ -9,7 +9,6 @@ import kotlinx.serialization.Serializable
 data class AppSettingsEntity(
     @PrimaryKey val id: Int = 0,
     val isPremiumEnabled: Boolean = false,
-    val geminiApiKey: String = "",
     // "light", "dark", "system"
     val appTheme: String = "system",
     val isLockEnabled: Boolean = false,
