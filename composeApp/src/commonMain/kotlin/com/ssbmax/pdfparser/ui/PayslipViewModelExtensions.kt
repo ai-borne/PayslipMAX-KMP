@@ -60,19 +60,8 @@ fun PayslipViewModel.restoreDatabase(
 fun PayslipViewModel.generateAiInsights(payslip: ParsedPayslip) {
     val repo = financialIntelligenceRepository
     if (repo == null) {
-        val apiKey = _uiState.value.geminiApiKey
-        if (apiKey.isBlank()) {
-            _uiState.update { it.copy(aiError = "API Key is missing. Configure it in Settings.") }
-            return
-        }
-        viewModelScope.launch {
-            _uiState.update { it.copy(isAiLoading = true, aiError = null, aiInsights = null) }
-            val result = geminiService.getFinancialInsights(payslip, apiKey)
-            if (result.isSuccess) {
-                _uiState.update { it.copy(aiInsights = result.getOrThrow(), isAiLoading = false) }
-            } else {
-                _uiState.update { it.copy(aiError = result.exceptionOrNull()?.message ?: "Failed to generate AI insights", isAiLoading = false) }
-            }
+        _uiState.update {
+            it.copy(aiError = "AI insights service is unavailable. Please restart the app.")
         }
         return
     }

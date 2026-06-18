@@ -20,7 +20,6 @@ data class PayslipUiState(
     val error: String? = null,
     val importSuccess: Boolean = false,
     val isPremiumEnabled: Boolean = false,
-    val geminiApiKey: String = "",
     val aiInsights: String? = null,
     val isAiLoading: Boolean = false,
     val aiError: String? = null,
@@ -36,7 +35,6 @@ data class PayslipUiState(
 class PayslipViewModel(
     internal val repository: PayslipRepository,
     internal val backupManager: com.ssbmax.pdfparser.backup.BackupManager,
-    internal val geminiService: com.ssbmax.pdfparser.insights.GeminiService,
     internal val financialIntelligenceRepository: com.ssbmax.pdfparser.repository.FinancialIntelligenceRepository? = null,
     internal val cloudSyncRepository: com.ssbmax.pdfparser.repository.CloudSyncRepository? = null,
 ) : ViewModel() {
@@ -197,7 +195,6 @@ class PayslipViewModel(
                         }
                     state.copy(
                         isPremiumEnabled = settings?.isPremiumEnabled ?: false,
-                        geminiApiKey = settings?.geminiApiKey ?: "",
                         appTheme = settings?.appTheme ?: "system",
                         isLockEnabled = settings?.isLockEnabled ?: false,
                         appPinHash = settings?.appPinHash ?: "",
@@ -215,13 +212,6 @@ class PayslipViewModel(
         viewModelScope.launch {
             val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
             repository.saveSettings(current.copy(isPremiumEnabled = enabled))
-        }
-    }
-
-    fun setGeminiApiKey(key: String) {
-        viewModelScope.launch {
-            val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
-            repository.saveSettings(current.copy(geminiApiKey = key))
         }
     }
 
