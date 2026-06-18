@@ -31,7 +31,7 @@ data class InsightProxyResponse(
 
 class GeminiProxyService(
     private val client: HttpClient,
-    private val proxyUrl: String = "https://us-central1-payslipmax.cloudfunctions.net/generateInsights",
+    private val proxyUrl: String = "https://us-central1-payslip-app-475e1.cloudfunctions.net/generateInsights",
 ) {
     /**
      * Sends the sanitized payslip and deterministic calculations to the secure backend proxy.
