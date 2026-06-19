@@ -17,19 +17,21 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 fun GeminiAiInsightsSection(
     payslip: ParsedPayslip,
     isPremiumEnabled: Boolean,
-    aiInsights: String?,
+    hasInsights: Boolean,
     isAiLoading: Boolean,
     aiError: String?,
     onGenerateClick: () -> Unit,
+    onViewInsightsClick: () -> Unit,
     onClearClick: () -> Unit,
     onUpgradeClick: () -> Unit,
 ) {
     if (isPremiumEnabled) {
         GeminiAiInsightsActiveCard(
-            aiInsights = aiInsights,
+            hasInsights = hasInsights,
             isAiLoading = isAiLoading,
             aiError = aiError,
             onGenerateClick = onGenerateClick,
+            onViewInsightsClick = onViewInsightsClick,
             onClearClick = onClearClick,
         )
     } else {
@@ -82,10 +84,11 @@ private fun GeminiAiInsightsLockedCard(
 
 @Composable
 private fun GeminiAiInsightsActiveCard(
-    aiInsights: String?,
+    hasInsights: Boolean,
     isAiLoading: Boolean,
     aiError: String?,
     onGenerateClick: () -> Unit,
+    onViewInsightsClick: () -> Unit,
     onClearClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -104,13 +107,14 @@ private fun GeminiAiInsightsActiveCard(
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
-            ActiveHeader(aiInsights = aiInsights, onClearClick = onClearClick)
+            ActiveHeader(hasInsights = hasInsights, onClearClick = onClearClick)
             Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
             ActiveContent(
-                aiInsights = aiInsights,
+                hasInsights = hasInsights,
                 isAiLoading = isAiLoading,
                 aiError = aiError,
                 onGenerateClick = onGenerateClick,
+                onViewInsightsClick = onViewInsightsClick,
             )
         }
     }
@@ -118,7 +122,7 @@ private fun GeminiAiInsightsActiveCard(
 
 @Composable
 private fun ActiveHeader(
-    aiInsights: String?,
+    hasInsights: Boolean,
     onClearClick: () -> Unit,
 ) {
     Row(
@@ -142,7 +146,7 @@ private fun ActiveHeader(
                 )
             }
         }
-        if (aiInsights != null) {
+        if (hasInsights) {
             IconButton(onClick = onClearClick, modifier = Modifier.size(AppDimensions.IconSizeMedium)) {
                 Text("🔄", fontSize = AppDimensions.TextSizeLarge)
             }
@@ -152,10 +156,11 @@ private fun ActiveHeader(
 
 @Composable
 private fun ActiveContent(
-    aiInsights: String?,
+    hasInsights: Boolean,
     isAiLoading: Boolean,
     aiError: String?,
     onGenerateClick: () -> Unit,
+    onViewInsightsClick: () -> Unit,
 ) {
     when {
         isAiLoading -> {
@@ -166,8 +171,16 @@ private fun ActiveContent(
         aiError != null -> {
             Text(text = aiError, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
         }
-        aiInsights != null -> {
-            Text(text = aiInsights, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+        hasInsights -> {
+            Text(
+                text = AppStrings.geminiAiReportReadyDesc,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
+            Button(onClick = onViewInsightsClick, modifier = Modifier.fillMaxWidth()) {
+                Text(AppStrings.geminiAiViewReportBtn)
+            }
         }
         else -> {
             Text(

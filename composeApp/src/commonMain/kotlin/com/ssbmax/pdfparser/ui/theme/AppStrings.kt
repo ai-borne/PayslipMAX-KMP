@@ -228,6 +228,9 @@ object AppStrings {
     // Gemini AI Section Extra
     const val geminiAiAnalyzeBtn = "Analyze Payslip with Gemini AI"
     const val geminiAiAnalyzeDesc = "Generate professional tax saving suggestions, investment recommendations, and error audits using Gemini."
+    const val geminiAiViewReportBtn = "View Full Audit Report"
+    const val geminiAiReportReadyTitle = "CA Audit Report Ready"
+    const val geminiAiReportReadyDesc = "A comprehensive tax saving suggestions, investment recommendations, and error audits report is available."
 
     // Generic Actions
     const val btnClose = "Close"
