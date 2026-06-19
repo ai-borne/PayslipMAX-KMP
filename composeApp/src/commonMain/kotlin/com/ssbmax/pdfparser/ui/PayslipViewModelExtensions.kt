@@ -58,33 +58,13 @@ fun PayslipViewModel.restoreDatabase(
 }
 
 fun PayslipViewModel.generateAiInsights(payslip: ParsedPayslip) {
-    val repo = financialIntelligenceRepository
-    if (repo == null) {
+    if (financialIntelligenceRepository == null) {
         _uiState.update {
             it.copy(aiError = "AI insights service is unavailable. Please restart the app.")
         }
         return
     }
-
-    viewModelScope.launch {
-        _uiState.update { it.copy(isAiLoading = true, aiError = null, aiInsights = null) }
-        try {
-            val engineResult = repo.processPayslipAndRunAnalysis(payslip)
-            val result = repo.generateNarrativeInsights(payslip, engineResult)
-            if (result.isSuccess) {
-                _uiState.update { it.copy(aiInsights = result.getOrThrow(), isAiLoading = false) }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        aiError = result.exceptionOrNull()?.message ?: "Failed to generate narrative insights",
-                        isAiLoading = false,
-                    )
-                }
-            }
-        } catch (e: Exception) {
-            _uiState.update { it.copy(aiError = e.message ?: "Failed to generate insights", isAiLoading = false) }
-        }
-    }
+    launchAiGeneration(payslip)
 }
 
 fun PayslipViewModel.clearAiInsights() {

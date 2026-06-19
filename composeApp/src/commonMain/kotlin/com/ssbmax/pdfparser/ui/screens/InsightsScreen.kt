@@ -21,6 +21,8 @@ import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.insights.DeterministicIntelligenceEngine
 import com.ssbmax.pdfparser.insights.EngineResult
+import com.ssbmax.pdfparser.insights.OptimizationResult
+import com.ssbmax.pdfparser.insights.WealthOptimizationEngine
 import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
@@ -122,7 +124,8 @@ data class InsightsState(
     val previousRecord: LedgerRecordEntity?,
     val historySorted: List<LedgerRecordEntity>,
     val engineResult: EngineResult,
-    val scoreDelta: Int?
+    val scoreDelta: Int?,
+    val optimizationResult: OptimizationResult,
 )
 
 @Composable
@@ -167,8 +170,11 @@ private fun rememberInsightsState(
     val scoreDelta = remember(engineResult.healthScore, previousScore) {
         previousScore?.let { engineResult.healthScore - it }
     }
-    return remember(currentRecord, previousRecord, historySorted, engineResult, scoreDelta) {
-        InsightsState(currentRecord, previousRecord, historySorted, engineResult, scoreDelta)
+    val optimizationResult = remember(selected) {
+        WealthOptimizationEngine.analyze(selected)
+    }
+    return remember(currentRecord, previousRecord, historySorted, engineResult, scoreDelta, optimizationResult) {
+        InsightsState(currentRecord, previousRecord, historySorted, engineResult, scoreDelta, optimizationResult)
     }
 }
 
