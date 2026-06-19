@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.ssbmax.pdfparser.ui.PayslipViewModel
+import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -94,13 +94,12 @@ private fun ProfileOverridesSheetContent(
     }
 
     Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(horizontal = AppDimensions.PaddingMedium)
-                .padding(bottom = AppDimensions.PaddingLarge),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = AppDimensions.PaddingMedium)
+            .padding(bottom = AppDimensions.PaddingLarge),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         Text(
             text = AppStrings.settingsProfileHeader,
@@ -167,7 +166,7 @@ private fun ProfileActionsRow(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         OutlinedButton(

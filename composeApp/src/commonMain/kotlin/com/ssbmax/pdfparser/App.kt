@@ -11,7 +11,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.ssbmax.pdfparser.ui.PayslipViewModel
+import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.screens.DashboardScreen
 import com.ssbmax.pdfparser.ui.screens.HistoryScreen
 import com.ssbmax.pdfparser.ui.screens.InsightsScreen

@@ -78,11 +78,12 @@ describe("buildPrompt", () => {
 
   test("prompt contains mandatory report sections", () => {
     const prompt = buildPrompt(VALID_PAYLOAD);
-    expect(prompt).toContain("Crystal Clear Takeaway");
-    expect(prompt).toContain("Month-on-Month Comparison");
-    expect(prompt).toContain("Tax Optimisation & DSOP");
-    expect(prompt).toContain("Audit & Anomaly Analysis");
-    expect(prompt).toContain("Action Plan");
+    expect(prompt).toContain("Salary Changes");
+    expect(prompt).toContain("Missing Allowances");
+    expect(prompt).toContain("New Deductions");
+    expect(prompt).toContain("Risk Alerts");
+    expect(prompt).toContain("Opportunities");
+    expect(prompt).toContain("Action Required");
   });
 
   test("prompt contains historical context when history is provided", () => {

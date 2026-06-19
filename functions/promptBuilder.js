@@ -30,11 +30,13 @@ function buildPrompt(payload) {
 
   const prevMonth = history.length > 0 ? history[history.length - 1] : null;
   const comparisonText = prevMonth
-    ? `Gross ₹${Math.round(prevMonth.grossPay)}, Net ₹${Math.round(prevMonth.netPay)}, Tax ₹${Math.round(prevMonth.incomeTax)} (${prevMonth.year}-${String(prevMonth.monthNum).padStart(2, "0")})`
+    ? `Gross: ₹${Math.round(prevMonth.grossPay)}, Net: ₹${Math.round(prevMonth.netPay)}, Tax: ₹${Math.round(prevMonth.incomeTax)}, DSOP: ₹${Math.round(prevMonth.dsopSubscription || 0)} (${prevMonth.year}-${String(prevMonth.monthNum).padStart(2, "0")})`
     : "No historical data available.";
 
-  return `You are a senior Chartered Accountant specialising in Indian Defence pay regulations (6th/7th Pay Commission). Analyse the payslip data and write a concise financial report in Markdown.
-Strictly format each section using ONLY bullet points (no paragraphs). Keep the output under 400 words so it does not get truncated.
+  return `You are an expert Chartered Accountant auditing Indian Defence Services pay.
+Generate a concise, fact-based salary audit using ONLY bullet points under each ## heading.
+DO NOT use paragraphs, intro/outro text, narrative summaries, motivational talk, or filler text.
+Limit the response to 8-12 bullets total. Every observation must be grounded in the provided numbers.
 
 ## This Month's Pay Summary
 - Gross Pay: ₹${Math.round(earnings.grossPay ?? summary.grossPay)}
@@ -44,17 +46,31 @@ Strictly format each section using ONLY bullet points (no paragraphs). Keep the 
 - Savings Rate: ${monthlySavingRate.toFixed(1)}% (target ≥ 20%), Tax Ratio: ${taxRatio.toFixed(1)}%, Health Score: ${healthScore}/100
 
 ## Previous Month Context
-- Previous month pay details: ${comparisonText}
+- Previous Month Pay Details: ${comparisonText}
 
 ## Flagged Anomalies
 ${anomalySection}
 
-## Your Report Must Include (use ## headings and ONLY bullet points):
-1. **Crystal Clear Takeaway** — 1-2 bullet points stating the single most critical financial action/status.
-2. **Month-on-Month Comparison** — Bullet points with exact rupee delta and % change for Gross, Net, and Tax.
-3. **Tax Optimisation & DSOP** — Actions for 80C/80D/NPS and check if DSOP is below ₹41,666/month limit.
-4. **Audit & Anomaly Analysis** — Explain flagged anomalies and corrective actions under Defence pay rules.
-5. **Action Plan** — 3-5 concrete next steps.`;
+## Format the response exactly like this template (only include headings if there are matching findings):
+
+## Salary Changes
+• [Type of change - e.g., Basic Pay / DA / MSP] [increased/decreased/unchanged] by [exact ₹ delta]
+• [Metric] [increased/decreased] by [exact ₹ delta]
+
+## Missing Allowances
+• [Allowance Name] absent this month (was present in previous month)
+
+## New Deductions
+• [Deduction Name] [increased/decreased] by [exact ₹ delta]
+
+## Risk Alerts
+• [Risk Observation] (e.g. Net salary decreased by X%) -> [Impact/Action]
+
+## Opportunities
+• [Opportunity - e.g. DSOP contribution optimized at ₹X / NPS Section 80CCD(1B) space unutilised] -> [Action]
+
+## Action Required
+• [Required Action - e.g. Verify missing Transport Allowance / Check HRA tax declaration]`;
 }
 
 module.exports = { buildPrompt };
