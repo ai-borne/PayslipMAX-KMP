@@ -28,7 +28,6 @@ class PayslipViewModelSettingsTest {
     private lateinit var fakeParser: FakePdfParser
     private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
-    private lateinit var fakeGeminiService: com.ssbmax.pdfparser.insights.GeminiService
     private lateinit var viewModel: PayslipViewModel
 
     @BeforeTest
@@ -37,9 +36,8 @@ class PayslipViewModelSettingsTest {
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
         fakeBackupManager = FakeBackupManager()
-        fakeGeminiService = com.ssbmax.pdfparser.insights.GeminiService()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
-        viewModel = PayslipViewModel(repository, fakeBackupManager, fakeGeminiService)
+        viewModel = PayslipViewModel(repository, fakeBackupManager)
     }
 
     @AfterTest
@@ -80,14 +78,12 @@ class PayslipViewModelSettingsTest {
     fun testSettingsChanges() =
         runTest {
             viewModel.setPremiumEnabled(true)
-            viewModel.setGeminiApiKey("AIzaSyApiKey")
             viewModel.setAppTheme("dark")
             viewModel.updateProfileOverrides("Test Officer", "CDA123", "PAN123")
             runCurrent()
 
             val state = viewModel.uiState.value
             assertTrue(state.isPremiumEnabled)
-            assertEquals("AIzaSyApiKey", state.geminiApiKey)
             assertEquals("dark", state.appTheme)
             assertEquals("Test Officer", state.profileName)
             assertEquals("CDA123", state.profileCdaNumber)
@@ -104,7 +100,7 @@ class PayslipViewModelSettingsTest {
             assertTrue(state.isLockEnabled)
             assertFalse(state.isAppLocked)
 
-            val coldViewModel = PayslipViewModel(repository, fakeBackupManager, fakeGeminiService)
+            val coldViewModel = PayslipViewModel(repository, fakeBackupManager)
             runCurrent()
             assertTrue(coldViewModel.uiState.value.isLockEnabled)
             assertTrue(coldViewModel.uiState.value.isAppLocked)
