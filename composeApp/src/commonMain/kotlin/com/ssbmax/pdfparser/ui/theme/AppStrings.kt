@@ -206,15 +206,13 @@ object AppStrings {
     const val insightsSavingsRateTitle = "Monthly Savings Rate"
     const val insightsSavingsRateTarget = "Target: 20%+. You save "
     const val insightsSavingsRateSuffix = "% of your gross pay in DSOP and AGIF."
-    
-    // Redesigned Salary Intelligence Center Strings
-    const val salaryHealthScoreLabel = "Salary Health"
+
+    // Insights section labels
     const val executiveSummaryLabel = "Executive Summary"
     const val criticalAlertsLabel = "Critical Alerts"
     const val changesThisMonthLabel = "Changes This Month"
     const val historicalTrendsLabel = "Historical Trends"
     const val aiFindingsLabel = "AI Chartered Accountant Findings"
-    const val historicalAuditsArchiveLabel = "Historical Audits Archive"
     const val noAnomaliesDetected = "No anomalies detected."
 
     // Chart Legends
@@ -279,8 +277,24 @@ object AppStrings {
 
     const val retirementNoBalance = "Import a payslip with DSOP ledger balance to simulate growth."
     const val retirementCurrentBalance = "Current DSOP Balance"
-
     const val taxPlanningSavingsProjections = "Section 80C & 80D Tax Savings Projections"
     const val taxPlanningNoProjections = "No YTD Tax Projections available for this month."
     const val taxPlanningCurrentYtdContribution = "Current YTD Contribution: ₹"
+    // Wellness chip, month selector & score driver labels (Phase 3)
+    const val wellnessChipLabel = "Wellness"
+    const val wellnessDriversTitle = "Score Drivers"
+    const val wellnessSavingsRateLabel = "Savings Rate:"
+    const val wellnessMonthSelectorLabel = "Select Month"
+    const val wellnessNoIssuesBonus = "Clean payslip — no anomalies detected"
+    const val wellnessImproveSavingsRate = "Increase DSOP subscription to improve savings rate"
+    const val wellnessImproveMissingAllowance = "File representation to PCDA(O) for missing allowance"
+    const val wellnessImproveSalaryLoss = "Raise official representation to recover salary loss"
+    const val wellnessImproveDeductionSpike = "Verify IT computation sheet with PAO"
+    const val wellnessImproveTptaEntitlement = "File TPTA claim with supporting documents"
+    const val wellnessDsopNonCompliance = "Increase DSOP subscription to the minimum required"
+    const val wellnessTitleMissingAllowance = "Missing Allowance:"
+    const val wellnessTitleSalaryLoss = "Salary Loss Detected"
+    const val wellnessTitleDeductionSpike = "Deduction Spike:"
+    const val wellnessTitleTpta = "TPTA Entitlement Advisory"
+    const val wellnessTitleDsop = "DSOP Non-Compliance"
 }

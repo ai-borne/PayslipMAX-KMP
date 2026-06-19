@@ -7,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
@@ -40,94 +39,6 @@ fun formatCurrency(amount: Double): String {
         }
     }
     return "₹$builder,$lastThree"
-}
-
-@Composable
-fun SalaryHealthScoreDial(
-    score: Int,
-    delta: Int?,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-    ) {
-        Row(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            HealthScoreDescColumn(score = score, modifier = Modifier.weight(1f).padding(end = AppDimensions.SpacingLarge))
-            HealthScoreProgressIndicator(score = score, delta = delta)
-        }
-    }
-}
-
-@Composable
-private fun HealthScoreDescColumn(
-    score: Int,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = AppStrings.salaryHealthScoreLabel,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
-        Text(
-            text = when {
-                score >= 80 -> "Salary Stability: High | Allowance Continuity: Ok"
-                score >= 50 -> "Salary Stability: Moderate | Check for Missing Allowances"
-                else -> "Critical Discrepancy Detected | Audit Recommended"
-            },
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-}
-
-@Composable
-private fun HealthScoreProgressIndicator(
-    score: Int,
-    delta: Int?,
-    modifier: Modifier = Modifier,
-) {
-    Box(contentAlignment = Alignment.Center, modifier = modifier.size(AppDimensions.IconSizeHuge)) {
-        val color = when {
-            score >= 80 -> MaterialTheme.colorScheme.primary
-            score >= 50 -> MaterialTheme.colorScheme.secondary
-            else -> MaterialTheme.colorScheme.error
-        }
-        CircularProgressIndicator(
-            progress = { score.toFloat() / 100f },
-            modifier = Modifier.fillMaxSize(),
-            color = color,
-            strokeWidth = AppDimensions.SpacingSix,
-            trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
-        )
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "$score",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            if (delta != null && delta != 0) {
-                val deltaSign = if (delta > 0) "+$delta" else "$delta"
-                val deltaColor = if (delta > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                Text(
-                    text = deltaSign,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = deltaColor,
-                )
-            }
-        }
-    }
 }
 
 @Composable
