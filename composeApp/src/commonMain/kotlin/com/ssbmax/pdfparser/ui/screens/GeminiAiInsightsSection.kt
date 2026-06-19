@@ -128,12 +128,19 @@ private fun ActiveHeader(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("👑", fontSize = AppDimensions.TextSizeHuge, modifier = Modifier.padding(end = AppDimensions.SpacingSmall))
-            Text(
-                text = AppStrings.settingsAiInsightsLockedTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
+            Column {
+                Text(
+                    text = AppStrings.settingsAiInsightsLockedTitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = AppStrings.settingsAiPoweredByProxy,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
         if (aiInsights != null) {
             IconButton(onClick = onClearClick, modifier = Modifier.size(AppDimensions.IconSizeMedium)) {
