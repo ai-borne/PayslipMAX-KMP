@@ -113,6 +113,20 @@ describe("generateInsights auth verification and routing", () => {
     );
   });
 
+  test("returns 400 when request body is too large", async () => {
+    mockVerifyIdToken.mockResolvedValue({ uid: "user-123" });
+    // Make body larger than MAX_BODY_BYTES (51200)
+    req.body.largeField = "x".repeat(55000);
+    await generateInsights(req, res);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        error: expect.stringContaining("exceeds maximum size"),
+      })
+    );
+  });
+
   test("calls geminiClient and returns 200 with narrative on success", async () => {
     mockVerifyIdToken.mockResolvedValue({ uid: "user-123" });
     mockCallGemini.mockResolvedValue("Mock AI narrative response.");
