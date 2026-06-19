@@ -68,7 +68,8 @@ exports.generateInsights = onRequest(
     }
 
     // 3. Validate request body
-    const rawBytes = parseInt(req.headers["content-length"] || "0", 10);
+    const bodyString = typeof req.body === "string" ? req.body : JSON.stringify(req.body || {});
+    const rawBytes = Buffer.byteLength(bodyString, "utf8");
     try {
       validateRequest(req.body, rawBytes);
     } catch (validationError) {
