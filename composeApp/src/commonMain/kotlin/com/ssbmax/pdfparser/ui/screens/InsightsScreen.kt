@@ -1,12 +1,14 @@
 package com.ssbmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -15,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.domain.ParsedPayslip
@@ -191,24 +192,58 @@ private fun InsightsContent(
 ) {
     val ledgerRecords by viewModel.ledgerRecords.collectAsState()
     val state = rememberInsightsState(selected, ledgerRecords)
+    var showWellnessDrivers by remember { mutableStateOf(false) }
+    val drivers = remember(state.engineResult) { breakdownWellnessDrivers(state.engineResult) }
+    Column(modifier = modifier.fillMaxSize()) {
+        InsightsTopBar(
+            payslips = uiState.payslips, selected = selected,
+            score = state.engineResult.healthScore, delta = state.scoreDelta,
+            expanded = showWellnessDrivers,
+            onExpandClick = { showWellnessDrivers = !showWellnessDrivers },
+            onSelectPayslip = { viewModel.selectPayslip(it) },
+        )
+        InsightsLazyBody(
+            state = state, uiState = uiState, selected = selected,
+            showWellnessDrivers = showWellnessDrivers, drivers = drivers,
+            viewModel = viewModel, onShowUpgradeSheet = onShowUpgradeSheet,
+            onShowTransparency = onShowTransparency, onViewInsightsClick = onViewInsightsClick,
+            onNavigateTo = onNavigateTo,
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
 
+@Composable
+private fun InsightsLazyBody(
+    state: InsightsState,
+    uiState: PayslipUiState,
+    selected: ParsedPayslip,
+    showWellnessDrivers: Boolean,
+    drivers: List<WellnessDriver>,
+    viewModel: PayslipViewModel,
+    onShowUpgradeSheet: () -> Unit,
+    onShowTransparency: () -> Unit,
+    onViewInsightsClick: () -> Unit,
+    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(AppDimensions.PaddingMedium),
+        modifier = modifier.background(MaterialTheme.colorScheme.background),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
-        item { InsightsHeader() }
-        item { SalaryHealthScoreDial(score = state.engineResult.healthScore, delta = state.scoreDelta) }
+        if (showWellnessDrivers) {
+            item { WellnessDriversSection(score = state.engineResult.healthScore, drivers = drivers) }
+        }
         item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
         item { CriticalAlertsQueue(anomalies = state.engineResult.anomalies) }
         item { MomChangesGrid(current = state.currentRecord, previous = state.previousRecord) }
         item {
             GeminiAiInsightsSection(
                 payslip = selected, isPremiumEnabled = uiState.isPremiumEnabled,
-                hasInsights = uiState.aiInsights != null, isAiLoading = uiState.isAiLoading, aiError = uiState.aiError,
-                onGenerateClick = onShowTransparency, onViewInsightsClick = onViewInsightsClick,
+                hasInsights = uiState.aiInsights != null, isAiLoading = uiState.isAiLoading,
+                aiError = uiState.aiError, onGenerateClick = onShowTransparency,
+                onViewInsightsClick = onViewInsightsClick,
                 onClearClick = { viewModel.clearAiInsights() }, onUpgradeClick = onShowUpgradeSheet,
             )
         }
@@ -216,15 +251,7 @@ private fun InsightsContent(
         item {
             PremiumToolsSection(
                 isPremiumEnabled = uiState.isPremiumEnabled,
-                onNavigateTo = onNavigateTo,
-                onUpgradeClick = onShowUpgradeSheet,
-            )
-        }
-        item {
-            AuditsArchiveGrid(
-                payslips = uiState.payslips,
-                selected = selected,
-                onSelect = { viewModel.selectPayslip(it) }
+                onNavigateTo = onNavigateTo, onUpgradeClick = onShowUpgradeSheet,
             )
         }
     }
@@ -241,23 +268,3 @@ private fun EmptyInsightsView() {
         )
     }
 }
-
-@Composable
-private fun InsightsHeader() {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = AppStrings.navigationInsights,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-        Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
-        Text(
-            text = AppStrings.insightsSubheader,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
-}
-
-
