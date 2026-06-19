@@ -127,6 +127,7 @@ data class InsightsState(
     val engineResult: EngineResult,
     val scoreDelta: Int?,
     val optimizationResult: OptimizationResult,
+    val momChanges: List<MoMChange>,
 )
 
 @Composable
@@ -171,11 +172,10 @@ private fun rememberInsightsState(
     val scoreDelta = remember(engineResult.healthScore, previousScore) {
         previousScore?.let { engineResult.healthScore - it }
     }
-    val optimizationResult = remember(selected) {
-        WealthOptimizationEngine.analyze(selected)
-    }
-    return remember(currentRecord, previousRecord, historySorted, engineResult, scoreDelta, optimizationResult) {
-        InsightsState(currentRecord, previousRecord, historySorted, engineResult, scoreDelta, optimizationResult)
+    val optimizationResult = remember(selected) { WealthOptimizationEngine.analyze(selected) }
+    val momChanges = remember(currentRecord, previousRecord) { calculateMomChanges(currentRecord, previousRecord) }
+    return remember(currentRecord, previousRecord, historySorted, engineResult, scoreDelta, optimizationResult, momChanges) {
+        InsightsState(currentRecord, previousRecord, historySorted, engineResult, scoreDelta, optimizationResult, momChanges)
     }
 }
 
@@ -231,10 +231,10 @@ private fun InsightsLazyBody(
         contentPadding = androidx.compose.foundation.layout.PaddingValues(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
-        if (showWellnessDrivers) {
-            item { WellnessDriversSection(score = state.engineResult.healthScore, drivers = drivers) }
-        }
         item { InsightsHeroItem(state, uiState, onNavigateTo, onShowUpgradeSheet) }
+        if (state.engineResult.anomalies.size > 1) {
+            item { CriticalAlertsQueue(anomalies = state.engineResult.anomalies) }
+        }
         item {
             GeminiAiInsightsSection(
                 isPremiumEnabled = uiState.isPremiumEnabled,
@@ -247,9 +247,13 @@ private fun InsightsLazyBody(
                 onUpgradeClick = onShowUpgradeSheet,
             )
         }
+        if (showWellnessDrivers) {
+            item { WellnessDriversSection(score = state.engineResult.healthScore, drivers = drivers) }
+        }
         item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
-        item { CriticalAlertsQueue(anomalies = state.engineResult.anomalies) }
-        item { MomChangesGrid(current = state.currentRecord, previous = state.previousRecord) }
+        if (state.momChanges.isNotEmpty()) {
+            item { MomChangesGrid(current = state.currentRecord, previous = state.previousRecord) }
+        }
         item { TrendsSparklinesSection(history = state.historySorted) }
         item {
             PremiumToolsSection(
