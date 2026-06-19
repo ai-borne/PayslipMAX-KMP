@@ -48,6 +48,7 @@ fun InsightsScreen(
 
     var showUpgradeSheet by remember { mutableStateOf(false) }
     var showTransparencyDialog by remember { mutableStateOf(false) }
+    var showInsightsSheet by remember { mutableStateOf(false) }
 
     InsightsContent(
         viewModel = viewModel,
@@ -55,6 +56,7 @@ fun InsightsScreen(
         selected = selected,
         onShowUpgradeSheet = { showUpgradeSheet = true },
         onShowTransparency = { showTransparencyDialog = true },
+        onViewInsightsClick = { showInsightsSheet = true },
         onNavigateTo = onNavigateTo,
         modifier = modifier,
     )
@@ -62,10 +64,13 @@ fun InsightsScreen(
     InsightsOverlayDialogs(
         showUpgradeSheet = showUpgradeSheet,
         showTransparencyDialog = showTransparencyDialog,
+        showInsightsSheet = showInsightsSheet,
+        aiInsights = uiState.aiInsights,
         selected = selected,
         viewModel = viewModel,
         onDismissUpgrade = { showUpgradeSheet = false },
         onDismissTransparency = { showTransparencyDialog = false },
+        onDismissInsights = { showInsightsSheet = false },
     )
 }
 
@@ -73,10 +78,13 @@ fun InsightsScreen(
 private fun InsightsOverlayDialogs(
     showUpgradeSheet: Boolean,
     showTransparencyDialog: Boolean,
+    showInsightsSheet: Boolean,
+    aiInsights: String?,
     selected: ParsedPayslip,
     viewModel: PayslipViewModel,
     onDismissUpgrade: () -> Unit,
     onDismissTransparency: () -> Unit,
+    onDismissInsights: () -> Unit,
 ) {
     if (showUpgradeSheet) {
         PremiumUpgradeBottomSheet(
@@ -93,6 +101,17 @@ private fun InsightsOverlayDialogs(
                 viewModel.generateAiInsights(selected)
             },
             onDismiss = onDismissTransparency,
+        )
+    }
+
+    if (showInsightsSheet && aiInsights != null) {
+        AiInsightsBottomSheet(
+            aiInsights = aiInsights,
+            onDismissRequest = onDismissInsights,
+            onRegenerateClick = {
+                onDismissInsights()
+                viewModel.generateAiInsights(selected)
+            }
         )
     }
 }
@@ -117,6 +136,7 @@ private fun InsightsContent(
     selected: ParsedPayslip,
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
+    onViewInsightsClick: () -> Unit,
     onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -136,10 +156,11 @@ private fun InsightsContent(
             GeminiAiInsightsSection(
                 payslip = selected,
                 isPremiumEnabled = uiState.isPremiumEnabled,
-                aiInsights = uiState.aiInsights,
+                hasInsights = uiState.aiInsights != null,
                 isAiLoading = uiState.isAiLoading,
                 aiError = uiState.aiError,
                 onGenerateClick = onShowTransparency,
+                onViewInsightsClick = onViewInsightsClick,
                 onClearClick = { viewModel.clearAiInsights() },
                 onUpgradeClick = onShowUpgradeSheet,
             )
@@ -184,43 +205,6 @@ private fun InsightsHeader() {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-    }
-}
-
-@Composable
-private fun InsightCard(insight: FinancialInsight) {
-    val color =
-        when (insight.type) {
-            "success" -> MaterialTheme.colorScheme.secondary
-            "warning" -> MaterialTheme.colorScheme.error
-            else -> MaterialTheme.colorScheme.tertiary
-        }
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.08f)),
-        border = BorderStroke(AppDimensions.BorderThin, color.copy(alpha = 0.2f)),
-    ) {
-        Row(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalAlignment = Alignment.Top,
-        ) {
-            Text(text = insight.icon, fontSize = AppDimensions.TextSizeExtraLarge, modifier = Modifier.padding(end = AppDimensions.SpacingMedium))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = insight.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = color,
-                )
-                Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
-                Text(
-                    text = insight.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-        }
     }
 }
 
