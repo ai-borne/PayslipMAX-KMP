@@ -2,10 +2,7 @@ package com.ssbmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -17,9 +14,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
-import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -138,88 +133,3 @@ private fun SparklineCard(
     }
 }
 
-@Composable
-fun AuditsArchiveGrid(
-    payslips: List<ParsedPayslip>,
-    selected: ParsedPayslip,
-    onSelect: (ParsedPayslip) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            Text(
-                text = AppStrings.historicalAuditsArchiveLabel,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-            ) {
-                items(items = payslips.sortedWith(compareBy<ParsedPayslip> { it.year }.thenBy { it.monthNum }).reversed()) { payslip ->
-                    ArchiveFolderCard(
-                        monthName = payslip.monthName,
-                        year = payslip.year.toString(),
-                        isSelected = payslip.dateStr == selected.dateStr,
-                        onClick = { onSelect(payslip) },
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ArchiveFolderCard(
-    monthName: String,
-    year: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-) {
-    val containerColor = if (isSelected) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-    }
-    val borderColor = if (isSelected) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
-    }
-    Surface(
-        modifier = Modifier.width(AppDimensions.IconSizeHuge + AppDimensions.SpacingLarge).clickable(onClick = onClick),
-        shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
-        color = containerColor,
-        border = BorderStroke(AppDimensions.BorderThin, borderColor),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingSmall),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = "📁",
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(
-                text = monthName.take(3),
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = year,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
