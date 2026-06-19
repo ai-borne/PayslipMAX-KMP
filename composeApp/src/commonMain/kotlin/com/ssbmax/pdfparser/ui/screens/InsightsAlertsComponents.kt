@@ -19,6 +19,7 @@ fun CriticalAlertsQueue(
     anomalies: List<Anomaly>,
     modifier: Modifier = Modifier,
 ) {
+    if (anomalies.isEmpty()) return
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
@@ -35,17 +36,7 @@ fun CriticalAlertsQueue(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
-            if (anomalies.isEmpty()) {
-                Text(
-                    text = AppStrings.noAnomaliesDetected,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            } else {
-                anomalies.forEach { anomaly ->
-                    CriticalAlertCard(anomaly = anomaly)
-                }
-            }
+            anomalies.forEach { anomaly -> CriticalAlertCard(anomaly = anomaly) }
         }
     }
 }

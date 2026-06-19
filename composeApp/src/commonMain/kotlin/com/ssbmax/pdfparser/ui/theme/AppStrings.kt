@@ -205,7 +205,7 @@ object AppStrings {
     const val criticalAlertsLabel = "Critical Alerts"
     const val changesThisMonthLabel = "Changes This Month"
     const val historicalTrendsLabel = "Historical Trends"
-    const val noAnomaliesDetected = "No anomalies detected."
+
 
     // Chart Legends
     const val legendNetTakeHome = "Net Take-Home"
@@ -269,31 +269,4 @@ object AppStrings {
     const val taxPlanningSavingsProjections = "Section 80C & 80D Tax Savings Projections"
     const val taxPlanningNoProjections = "No YTD Tax Projections available for this month."
     const val taxPlanningCurrentYtdContribution = "Current YTD Contribution: ₹"
-    // Wellness chip, month selector & score driver labels (Phase 3)
-    const val wellnessChipLabel = "Wellness"
-    const val wellnessDriversTitle = "Score Drivers"
-    const val wellnessSavingsRateLabel = "Savings Rate:"
-
-    const val wellnessNoIssuesBonus = "Clean payslip — no anomalies detected"
-    const val wellnessImproveSavingsRate = "Increase DSOP subscription to improve savings rate"
-    const val wellnessImproveMissingAllowance = "File representation to PCDA(O) for missing allowance"
-    const val wellnessImproveSalaryLoss = "Raise official representation to recover salary loss"
-    const val wellnessImproveDeductionSpike = "Verify IT computation sheet with PAO"
-    const val wellnessImproveTptaEntitlement = "File TPTA claim with supporting documents"
-    const val wellnessDsopNonCompliance = "Increase DSOP subscription to the minimum required"
-    const val wellnessTitleMissingAllowance = "Missing Allowance:"
-    const val wellnessTitleSalaryLoss = "Salary Loss Detected"
-    const val wellnessTitleDeductionSpike = "Deduction Spike:"
-    const val wellnessTitleTpta = "TPTA Entitlement Advisory"
-    const val wellnessTitleDsop = "DSOP Non-Compliance"
-
-    // Adaptive Hero card (Phase 4)
-    const val heroRecoverySectionTitle = "Recovery Opportunity"
-    const val heroRecoverySubLabel = "recoverable from PCDA"
-    const val heroRecoveryCtaLabel = "Draft Representation to PCDA(O)"
-    const val heroRecoveryMoreIssuesSuffix = "more issue(s)"
-    const val heroWealthSectionTitle = "Wealth Optimization"
-    const val heroWealthSubLabel = "tax saving available"
-    const val heroWealthCtaLabel = "See how →"
-    const val heroWealthRegimeDisclaimer = "Old regime est. — verify with PAO if on new regime"
 }
