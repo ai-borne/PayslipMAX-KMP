@@ -110,6 +110,7 @@ class AiAutoRunGuardTest {
             ),
             scoreDelta = null,
             optimizationResult = expectedOpt,
+            momChanges = emptyList(),
         )
 
         assertEquals("OLD", state.optimizationResult.regimeAssumed)
