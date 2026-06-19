@@ -22,11 +22,8 @@ const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models
  * @throws {Error} On API failure or malformed response
  */
 async function callGemini(payload, apiKey) {
-  // Dynamic import of node-fetch (ESM-only) inside async fn for CJS compatibility
-  const { default: fetch } = await import("node-fetch");
-
   const prompt = buildPrompt(payload);
-  const url = `${GEMINI_BASE_URL}/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+  const url = `${GEMINI_BASE_URL}/${GEMINI_MODEL}:generateContent`;
 
   const requestBody = {
     contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -43,8 +40,12 @@ async function callGemini(payload, apiKey) {
 
   const response = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": apiKey,
+    },
     body: JSON.stringify(requestBody),
+    signal: AbortSignal.timeout(15000),
   });
 
   if (!response.ok) {

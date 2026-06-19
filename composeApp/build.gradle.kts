@@ -24,6 +24,7 @@ kotlin {
             baseName = "composeApp"
             isStatic = true
             binaryOption("bundleId", "com.payslipmax.pdfparser")
+            export(project(":shared"))
         }
         iosTarget.compilations.all {
             compileTaskProvider.configure {
@@ -36,7 +37,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":shared"))
+            api(project(":shared"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
