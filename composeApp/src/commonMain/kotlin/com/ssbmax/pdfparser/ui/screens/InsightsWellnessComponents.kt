@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.math.abs
 
 // ── Top bar: month selector + wellness chip ──────────────────────────────────
@@ -156,7 +157,7 @@ fun WellnessChip(
             horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
         ) {
             Text(
-                text = AppStrings.wellnessChipLabel,
+                text = InsightsStrings.wellnessChipLabel,
                 style = MaterialTheme.typography.labelSmall,
                 color = color,
             )
@@ -199,7 +200,7 @@ fun WellnessDriversSection(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = AppStrings.wellnessDriversTitle,
+                    text = InsightsStrings.wellnessDriversTitle,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
