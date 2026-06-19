@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "233295963763",
+    "project_id": "payslip-app-475e1",
+    "storage_bucket": "payslip-app-475e1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:233295963763:android:656e41a9468f3d46ebac06",
+        "android_client_info": {
+          "package_name": "com.ssbmax.pdfparser"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr3ojwkMvkYFE29kCjklN35ncI4JfnmEE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
