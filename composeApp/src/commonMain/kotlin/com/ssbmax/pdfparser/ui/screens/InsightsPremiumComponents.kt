@@ -8,17 +8,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import com.ssbmax.pdfparser.Screen
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.InsightsStrings
+
+private data class PremiumToolSpec(
+    val icon: String,
+    val title: String,
+    val valueProp: String,
+    val target: Screen,
+)
 
 @Composable
 fun PremiumToolsSection(
     isPremiumEnabled: Boolean,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
     onUpgradeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val tools = listOf(
+        PremiumToolSpec("📋", AppStrings.premiumToolsDraftClaims, InsightsStrings.premiumToolsDraftClaimsValueProp, Screen.Representation),
+        PremiumToolSpec("📊", AppStrings.premiumToolsTaxPlanner, InsightsStrings.premiumToolsTaxPlannerValueProp, Screen.TaxPlanning),
+        PremiumToolSpec("📈", AppStrings.premiumToolsDsopSimulator, InsightsStrings.premiumToolsDsopValueProp, Screen.RetirementPlanning),
+    )
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
@@ -35,45 +48,62 @@ fun PremiumToolsSection(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
-            PremiumButtonsRow(
-                isPremiumEnabled = isPremiumEnabled,
-                onNavigateTo = onNavigateTo,
-                onUpgradeClick = onUpgradeClick,
-            )
+            tools.forEach { tool ->
+                PremiumToolCard(
+                    spec = tool,
+                    isPremiumEnabled = isPremiumEnabled,
+                    onClick = { if (isPremiumEnabled) onNavigateTo(tool.target) else onUpgradeClick() },
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun PremiumButtonsRow(
+private fun PremiumToolCard(
+    spec: PremiumToolSpec,
     isPremiumEnabled: Boolean,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
-    onUpgradeClick: () -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isPremiumEnabled)
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+            else
+                MaterialTheme.colorScheme.surfaceVariant,
+        ),
     ) {
-        val onClick = { target: com.ssbmax.pdfparser.Screen ->
-            if (isPremiumEnabled) onNavigateTo(target) else onUpgradeClick()
-        }
-        OutlinedButton(
-            onClick = { onClick(com.ssbmax.pdfparser.Screen.Representation) },
-            modifier = Modifier.weight(1f),
+        Row(
+            modifier = Modifier.padding(AppDimensions.PaddingSmall),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
-            Text(AppStrings.premiumToolsDraftClaims, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
-        }
-        OutlinedButton(
-            onClick = { onClick(com.ssbmax.pdfparser.Screen.TaxPlanning) },
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(AppStrings.premiumToolsTaxPlanner, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
-        }
-        OutlinedButton(
-            onClick = { onClick(com.ssbmax.pdfparser.Screen.RetirementPlanning) },
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(AppStrings.premiumToolsDsopSimulator, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+            Text(spec.icon, style = MaterialTheme.typography.titleLarge)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
+            ) {
+                Text(
+                    text = spec.title,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = spec.valueProp,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            OutlinedButton(onClick = onClick) {
+                Text(
+                    text = if (isPremiumEnabled) InsightsStrings.premiumToolsOpenLabel else InsightsStrings.premiumToolsLockedLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
         }
     }
 }

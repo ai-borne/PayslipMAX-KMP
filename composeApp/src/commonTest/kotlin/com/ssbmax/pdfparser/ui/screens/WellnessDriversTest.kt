@@ -2,7 +2,7 @@ package com.ssbmax.pdfparser.ui.screens
 
 import com.ssbmax.pdfparser.insights.Anomaly
 import com.ssbmax.pdfparser.insights.EngineResult
-import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -35,7 +35,7 @@ class WellnessDriversTest {
     @Test
     fun testSalaryLossGivesMinus20() {
         val drivers = breakdownWellnessDrivers(makeEngine(anomalies = listOf(anomaly("SALARY_LOSS"))))
-        val driver = drivers.first { it.title == AppStrings.wellnessTitleSalaryLoss }
+        val driver = drivers.first { it.title == InsightsStrings.wellnessTitleSalaryLoss }
         assertEquals(-20, driver.pointImpact)
         assertNotNull(driver.improvePath)
     }
@@ -43,7 +43,7 @@ class WellnessDriversTest {
     @Test
     fun testMissingAllowanceGivesMinus15() {
         val drivers = breakdownWellnessDrivers(makeEngine(anomalies = listOf(anomaly("MISSING_ALLOWANCE"))))
-        val driver = drivers.first { it.title.startsWith(AppStrings.wellnessTitleMissingAllowance) }
+        val driver = drivers.first { it.title.startsWith(InsightsStrings.wellnessTitleMissingAllowance) }
         assertEquals(-15, driver.pointImpact)
         assertNotNull(driver.improvePath)
     }
@@ -51,7 +51,7 @@ class WellnessDriversTest {
     @Test
     fun testDeductionSpikeGivesMinus10() {
         val drivers = breakdownWellnessDrivers(makeEngine(anomalies = listOf(anomaly("DEDUCTION_SPIKE"))))
-        val driver = drivers.first { it.title.startsWith(AppStrings.wellnessTitleDeductionSpike) }
+        val driver = drivers.first { it.title.startsWith(InsightsStrings.wellnessTitleDeductionSpike) }
         assertEquals(-10, driver.pointImpact)
         assertNotNull(driver.improvePath)
     }
@@ -59,7 +59,7 @@ class WellnessDriversTest {
     @Test
     fun testTptaEntitlementGivesMinus10() {
         val drivers = breakdownWellnessDrivers(makeEngine(anomalies = listOf(anomaly("TPTA_ENTITLEMENT"))))
-        val driver = drivers.first { it.title == AppStrings.wellnessTitleTpta }
+        val driver = drivers.first { it.title == InsightsStrings.wellnessTitleTpta }
         assertEquals(-10, driver.pointImpact)
         assertNotNull(driver.improvePath)
     }
@@ -67,7 +67,7 @@ class WellnessDriversTest {
     @Test
     fun testDsopComplianceCriticalGivesMinus25() {
         val drivers = breakdownWellnessDrivers(makeEngine(anomalies = listOf(anomaly("DSOP_COMPLIANCE", amount = 5000.0))))
-        val driver = drivers.first { it.title == AppStrings.wellnessTitleDsop }
+        val driver = drivers.first { it.title == InsightsStrings.wellnessTitleDsop }
         assertEquals(-25, driver.pointImpact)
         assertNotNull(driver.improvePath)
     }
@@ -75,7 +75,7 @@ class WellnessDriversTest {
     @Test
     fun testDsopComplianceMinorGivesMinus5() {
         val drivers = breakdownWellnessDrivers(makeEngine(anomalies = listOf(anomaly("DSOP_COMPLIANCE", amount = 0.0))))
-        val driver = drivers.first { it.title == AppStrings.wellnessTitleDsop }
+        val driver = drivers.first { it.title == InsightsStrings.wellnessTitleDsop }
         assertEquals(-5, driver.pointImpact)
     }
 
@@ -84,7 +84,7 @@ class WellnessDriversTest {
     @Test
     fun testGreatSavingsRateGivesPlus15() {
         val drivers = breakdownWellnessDrivers(makeEngine(savingRate = 22.0))
-        val driver = drivers.first { it.title.contains(AppStrings.wellnessSavingsRateLabel) }
+        val driver = drivers.first { it.title.contains(InsightsStrings.wellnessSavingsRateLabel) }
         assertEquals(+15, driver.pointImpact)
         assertNull(driver.improvePath)
     }
@@ -92,7 +92,7 @@ class WellnessDriversTest {
     @Test
     fun testGoodSavingsRateGivesPlus5() {
         val drivers = breakdownWellnessDrivers(makeEngine(savingRate = 15.0))
-        val driver = drivers.first { it.title.contains(AppStrings.wellnessSavingsRateLabel) }
+        val driver = drivers.first { it.title.contains(InsightsStrings.wellnessSavingsRateLabel) }
         assertEquals(+5, driver.pointImpact)
         assertNotNull(driver.improvePath)
     }
@@ -100,7 +100,7 @@ class WellnessDriversTest {
     @Test
     fun testLowSavingsRateGivesZero() {
         val drivers = breakdownWellnessDrivers(makeEngine(savingRate = 5.0))
-        val driver = drivers.first { it.title.contains(AppStrings.wellnessSavingsRateLabel) }
+        val driver = drivers.first { it.title.contains(InsightsStrings.wellnessSavingsRateLabel) }
         assertEquals(0, driver.pointImpact)
         assertNotNull(driver.improvePath)
     }
@@ -110,8 +110,8 @@ class WellnessDriversTest {
     @Test
     fun testCleanPayslipBonusAppearsWhenNoAnomaliesAndGoodSavings() {
         val drivers = breakdownWellnessDrivers(makeEngine(savingRate = 12.0))
-        assertTrue(drivers.any { it.title == AppStrings.wellnessNoIssuesBonus })
-        val bonus = drivers.first { it.title == AppStrings.wellnessNoIssuesBonus }
+        assertTrue(drivers.any { it.title == InsightsStrings.wellnessNoIssuesBonus })
+        val bonus = drivers.first { it.title == InsightsStrings.wellnessNoIssuesBonus }
         assertEquals(+10, bonus.pointImpact)
         assertNull(bonus.improvePath)
     }
@@ -119,13 +119,13 @@ class WellnessDriversTest {
     @Test
     fun testCleanPayslipBonusAbsentWhenAnomalyPresent() {
         val drivers = breakdownWellnessDrivers(makeEngine(anomalies = listOf(anomaly("SALARY_LOSS")), savingRate = 12.0))
-        assertTrue(drivers.none { it.title == AppStrings.wellnessNoIssuesBonus })
+        assertTrue(drivers.none { it.title == InsightsStrings.wellnessNoIssuesBonus })
     }
 
     @Test
     fun testCleanPayslipBonusAbsentWhenSavingsRateLow() {
         val drivers = breakdownWellnessDrivers(makeEngine(savingRate = 5.0))
-        assertTrue(drivers.none { it.title == AppStrings.wellnessNoIssuesBonus })
+        assertTrue(drivers.none { it.title == InsightsStrings.wellnessNoIssuesBonus })
     }
 
     // ── Improve path nullability rules ───────────────────────────────────────
@@ -133,7 +133,7 @@ class WellnessDriversTest {
     @Test
     fun testImprovePathNullForGreatSavingsRate() {
         val drivers = breakdownWellnessDrivers(makeEngine(savingRate = 25.0))
-        val driver = drivers.first { it.title.contains(AppStrings.wellnessSavingsRateLabel) }
+        val driver = drivers.first { it.title.contains(InsightsStrings.wellnessSavingsRateLabel) }
         assertNull(driver.improvePath, "No improve path needed for already-great savings rate")
     }
 

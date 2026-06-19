@@ -1,7 +1,7 @@
 package com.ssbmax.pdfparser.ui.screens
 
 import com.ssbmax.pdfparser.insights.EngineResult
-import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 
 data class WellnessDriver(
     val title: String,
@@ -15,22 +15,22 @@ fun breakdownWellnessDrivers(engineResult: EngineResult): List<WellnessDriver> {
     for (anomaly in engineResult.anomalies) {
         when (anomaly.type) {
             "MISSING_ALLOWANCE" -> drivers.add(
-                WellnessDriver("${AppStrings.wellnessTitleMissingAllowance} ${anomaly.field}", -15, AppStrings.wellnessImproveMissingAllowance),
+                WellnessDriver("${InsightsStrings.wellnessTitleMissingAllowance} ${anomaly.field}", -15, InsightsStrings.wellnessImproveMissingAllowance),
             )
             "SALARY_LOSS" -> drivers.add(
-                WellnessDriver(AppStrings.wellnessTitleSalaryLoss, -20, AppStrings.wellnessImproveSalaryLoss),
+                WellnessDriver(InsightsStrings.wellnessTitleSalaryLoss, -20, InsightsStrings.wellnessImproveSalaryLoss),
             )
             "DEDUCTION_SPIKE" -> drivers.add(
-                WellnessDriver("${AppStrings.wellnessTitleDeductionSpike} ${anomaly.field}", -10, AppStrings.wellnessImproveDeductionSpike),
+                WellnessDriver("${InsightsStrings.wellnessTitleDeductionSpike} ${anomaly.field}", -10, InsightsStrings.wellnessImproveDeductionSpike),
             )
             "TPTA_ENTITLEMENT" -> drivers.add(
-                WellnessDriver(AppStrings.wellnessTitleTpta, -10, AppStrings.wellnessImproveTptaEntitlement),
+                WellnessDriver(InsightsStrings.wellnessTitleTpta, -10, InsightsStrings.wellnessImproveTptaEntitlement),
             )
             "DSOP_COMPLIANCE" -> drivers.add(
                 WellnessDriver(
-                    title = AppStrings.wellnessTitleDsop,
+                    title = InsightsStrings.wellnessTitleDsop,
                     pointImpact = if (anomaly.amount > 0.0) -25 else -5,
-                    improvePath = AppStrings.wellnessDsopNonCompliance,
+                    improvePath = InsightsStrings.wellnessDsopNonCompliance,
                 ),
             )
         }
@@ -39,18 +39,18 @@ fun breakdownWellnessDrivers(engineResult: EngineResult): List<WellnessDriver> {
     val savingRate = engineResult.monthlySavingRate
     when {
         savingRate >= 20.0 -> drivers.add(
-            WellnessDriver("${AppStrings.wellnessSavingsRateLabel} ${savingRate.toInt()}%", +15, null),
+            WellnessDriver("${InsightsStrings.wellnessSavingsRateLabel} ${savingRate.toInt()}%", +15, null),
         )
         savingRate >= 10.0 -> drivers.add(
-            WellnessDriver("${AppStrings.wellnessSavingsRateLabel} ${savingRate.toInt()}%", +5, AppStrings.wellnessImproveSavingsRate),
+            WellnessDriver("${InsightsStrings.wellnessSavingsRateLabel} ${savingRate.toInt()}%", +5, InsightsStrings.wellnessImproveSavingsRate),
         )
         else -> drivers.add(
-            WellnessDriver("${AppStrings.wellnessSavingsRateLabel} ${savingRate.toInt()}%", 0, AppStrings.wellnessImproveSavingsRate),
+            WellnessDriver("${InsightsStrings.wellnessSavingsRateLabel} ${savingRate.toInt()}%", 0, InsightsStrings.wellnessImproveSavingsRate),
         )
     }
 
     if (engineResult.anomalies.isEmpty() && savingRate >= 10.0) {
-        drivers.add(WellnessDriver(AppStrings.wellnessNoIssuesBonus, +10, null))
+        drivers.add(WellnessDriver(InsightsStrings.wellnessNoIssuesBonus, +10, null))
     }
 
     return drivers
