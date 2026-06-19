@@ -78,16 +78,15 @@ describe("buildPrompt", () => {
 
   test("prompt contains mandatory report sections", () => {
     const prompt = buildPrompt(VALID_PAYLOAD);
-    expect(prompt).toContain("Executive Summary");
-    expect(prompt).toContain("Tax Optimisation");
-    expect(prompt).toContain("DSOP Advisory");
-    expect(prompt).toContain("Anomaly Analysis");
-    expect(prompt).toContain("Action Items");
+    expect(prompt).toContain("Crystal Clear Takeaway");
+    expect(prompt).toContain("Month-on-Month Comparison");
+    expect(prompt).toContain("Tax Optimisation & DSOP");
+    expect(prompt).toContain("Audit & Anomaly Analysis");
+    expect(prompt).toContain("Action Plan");
   });
 
   test("prompt contains historical context when history is provided", () => {
     const prompt = buildPrompt(VALID_PAYLOAD);
-    expect(prompt).toContain("2024-07");
     expect(prompt).toContain("2024-06");
   });
 
@@ -100,7 +99,7 @@ describe("buildPrompt", () => {
   test("missing history defaults gracefully to no-history message", () => {
     const payload = { ...VALID_PAYLOAD, history: undefined };
     const prompt = buildPrompt(payload);
-    expect(prompt).toContain("No historical data provided");
+    expect(prompt).toContain("No historical data available.");
   });
 
   test("prompt uses Gemini 2.5 Flash CA-grade framing (senior CA instruction)", () => {
@@ -115,7 +114,7 @@ describe("buildPrompt", () => {
     expect(prompt).not.toMatch(/secret/i);
   });
 
-  test("history is capped to last 6 records", () => {
+  test("previous month is selected as the last record in history", () => {
     const longHistory = Array.from({ length: 12 }, (_, i) => ({
       year: 2024,
       monthNum: i + 1,
@@ -125,8 +124,7 @@ describe("buildPrompt", () => {
     }));
     const payload = { ...VALID_PAYLOAD, history: longHistory };
     const prompt = buildPrompt(payload);
-    // Only months 7-12 should appear (last 6)
-    expect(prompt).toContain("2024-07");
+    // Previous month context should select the last item (month 12)
     expect(prompt).toContain("2024-12");
     expect(prompt).not.toContain("2024-01");
   });
