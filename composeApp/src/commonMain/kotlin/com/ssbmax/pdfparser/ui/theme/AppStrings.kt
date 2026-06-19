@@ -206,6 +206,16 @@ object AppStrings {
     const val insightsSavingsRateTitle = "Monthly Savings Rate"
     const val insightsSavingsRateTarget = "Target: 20%+. You save "
     const val insightsSavingsRateSuffix = "% of your gross pay in DSOP and AGIF."
+    
+    // Redesigned Salary Intelligence Center Strings
+    const val salaryHealthScoreLabel = "Salary Health"
+    const val executiveSummaryLabel = "Executive Summary"
+    const val criticalAlertsLabel = "Critical Alerts"
+    const val changesThisMonthLabel = "Changes This Month"
+    const val historicalTrendsLabel = "Historical Trends"
+    const val aiFindingsLabel = "AI Chartered Accountant Findings"
+    const val historicalAuditsArchiveLabel = "Historical Audits Archive"
+    const val noAnomaliesDetected = "No anomalies detected."
 
     // Chart Legends
     const val legendNetTakeHome = "Net Take-Home"
