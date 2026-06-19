@@ -235,6 +235,7 @@ private fun InsightsLazyBody(
         if (showWellnessDrivers) {
             item { WellnessDriversSection(score = state.engineResult.healthScore, drivers = drivers) }
         }
+        item { InsightsHeroItem(state, uiState, onNavigateTo, onShowUpgradeSheet) }
         item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
         item { CriticalAlertsQueue(anomalies = state.engineResult.anomalies) }
         item { MomChangesGrid(current = state.currentRecord, previous = state.previousRecord) }
@@ -255,6 +256,22 @@ private fun InsightsLazyBody(
             )
         }
     }
+}
+
+@Composable
+private fun InsightsHeroItem(
+    state: InsightsState,
+    uiState: PayslipUiState,
+    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onUpgradeClick: () -> Unit,
+) {
+    AdaptiveHeroCard(
+        engineResult = state.engineResult,
+        optimizationResult = state.optimizationResult,
+        isPremiumEnabled = uiState.isPremiumEnabled,
+        onNavigateTo = onNavigateTo,
+        onUpgradeClick = onUpgradeClick,
+    )
 }
 
 @Composable
