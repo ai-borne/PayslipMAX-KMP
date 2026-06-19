@@ -112,7 +112,7 @@ class FinancialIntelligenceRepositoryTest {
             val mockPayslip = createMockPayslip("05/2026")
             val engineResult = EngineResult(healthScore = 90, anomalies = emptyList(), monthlySavingRate = 10.0, taxRatio = 5.0)
 
-            val result = repo.generateNarrativeInsights(mockPayslip, engineResult, "token123")
+            val result = repo.generateNarrativeInsights(mockPayslip, engineResult)
 
             assertTrue(result.isSuccess)
             assertEquals("Detailed financial recommendations based on your payslip data.", result.getOrNull())

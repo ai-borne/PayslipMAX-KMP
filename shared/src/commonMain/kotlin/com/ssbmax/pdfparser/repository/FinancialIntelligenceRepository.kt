@@ -1,5 +1,6 @@
 package com.ssbmax.pdfparser.repository
 
+import com.ssbmax.pdfparser.auth.AuthTokenProvider
 import com.ssbmax.pdfparser.crypto.CryptoHelper
 import com.ssbmax.pdfparser.database.*
 import com.ssbmax.pdfparser.domain.Officer
@@ -13,6 +14,7 @@ import kotlinx.coroutines.withContext
 class FinancialIntelligenceRepository(
     private val payslipDao: PayslipDao,
     private val geminiProxyService: GeminiProxyService,
+    private val authTokenProvider: AuthTokenProvider = AuthTokenProvider(),
     private val dispatcher: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.Default,
 ) {
     /**
@@ -133,13 +135,15 @@ class FinancialIntelligenceRepository(
 
     /**
      * Calls Gemini via proxy for narrative insights and saves the response.
+     * Auth token is fetched internally from [AuthTokenProvider] — callers
+     * do not need to know about Firebase Auth.
      */
     suspend fun generateNarrativeInsights(
         payslip: ParsedPayslip,
         engineResult: EngineResult,
-        authToken: String? = null,
     ): Result<String> =
         withContext(dispatcher) {
+            val authToken = authTokenProvider.getIdToken()
             val history = payslipDao.getAllLedgerRecords().firstOrNull() ?: emptyList()
             val sanitizedPayslip = RedactionSanitizer.redact(payslip)
 
