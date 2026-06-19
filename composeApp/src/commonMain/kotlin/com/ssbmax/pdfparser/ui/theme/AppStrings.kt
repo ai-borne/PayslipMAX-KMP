@@ -154,10 +154,7 @@ object AppStrings {
     const val settingsProPlanBullet4 = "• 100% Offline & Private Processing"
     const val settingsProUpgradeBtn = "Unlock Pro Tier"
     const val settingsDocumentationHeader = "Documentation"
-    const val settingsBackupLockPrompt = "Cloud backup and cross-platform sync are premium features. Upgrade to Pro to unlock."
     const val settingsAiInsightsLockedTitle = "AI Chartered Accountant Audit"
-    const val settingsAiInsightsLockedDesc = "Get personalized tax saving advice and financial literacy tailored to your pay details. Under Rs. 9/month."
-    const val settingsAiInsightsLockedBtn = "Upgrade to Pro"
     const val settingsRowThemeLabel = "Interface Theme"
     const val settingsRowPasscodeLabel = "App Passcode Lock"
     const val settingsRowBackupLabel = "Cloud Sync & Portability"
@@ -198,7 +195,7 @@ object AppStrings {
 
     // Insights Screen Strings
     const val insightsEmptyState = "Please import or select a payslip to unlock financial insights."
-    const val insightsSubheader = "Personalized financial wellness and savings audits"
+
     const val insightsSavingsRateTitle = "Monthly Savings Rate"
     const val insightsSavingsRateTarget = "Target: 20%+. You save "
     const val insightsSavingsRateSuffix = "% of your gross pay in DSOP and AGIF."
@@ -208,7 +205,6 @@ object AppStrings {
     const val criticalAlertsLabel = "Critical Alerts"
     const val changesThisMonthLabel = "Changes This Month"
     const val historicalTrendsLabel = "Historical Trends"
-    const val aiFindingsLabel = "AI Chartered Accountant Findings"
     const val noAnomaliesDetected = "No anomalies detected."
 
     // Chart Legends
@@ -231,9 +227,12 @@ object AppStrings {
     const val geminiAiAnalyzeBtn = "Analyze Payslip with Gemini AI"
     const val geminiAiAnalyzeDesc = "Generate professional tax saving suggestions, investment recommendations, and error audits using Gemini."
     const val geminiAiViewReportBtn = "View Full Audit Report"
-    const val geminiAiReportReadyTitle = "CA Audit Report Ready"
-    const val geminiAiReportReadyDesc = "A comprehensive tax saving suggestions, investment recommendations, and error audits report is available."
-    const val btnClose = "Close"
+    // AI CA Audit card (Phase 5)
+    const val aiAuditAnalyzingDesc = "Analyzing your payslip with Gemini AI…"
+    const val aiAuditSummaryLabel = "Summary"
+    const val aiAuditTeaserBullets = "Detect PCDA errors & recoverable amounts\nPersonalised tax-saving strategy (old regime)\nInvestment guidance from your AI CA"
+    const val aiAuditUnlockBtn = "Unlock AI CA Audit"
+    const val aiAuditPremiumBadge = "Premium"
 
     // Premium Features Screens Strings
     const val representationTitle = "Official Representations"
@@ -274,7 +273,7 @@ object AppStrings {
     const val wellnessChipLabel = "Wellness"
     const val wellnessDriversTitle = "Score Drivers"
     const val wellnessSavingsRateLabel = "Savings Rate:"
-    const val wellnessMonthSelectorLabel = "Select Month"
+
     const val wellnessNoIssuesBonus = "Clean payslip — no anomalies detected"
     const val wellnessImproveSavingsRate = "Increase DSOP subscription to improve savings rate"
     const val wellnessImproveMissingAllowance = "File representation to PCDA(O) for missing allowance"

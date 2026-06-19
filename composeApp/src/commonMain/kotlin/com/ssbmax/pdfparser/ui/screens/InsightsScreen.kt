@@ -203,7 +203,7 @@ private fun InsightsContent(
             onSelectPayslip = { viewModel.selectPayslip(it) },
         )
         InsightsLazyBody(
-            state = state, uiState = uiState, selected = selected,
+            state = state, uiState = uiState,
             showWellnessDrivers = showWellnessDrivers, drivers = drivers,
             viewModel = viewModel, onShowUpgradeSheet = onShowUpgradeSheet,
             onShowTransparency = onShowTransparency, onViewInsightsClick = onViewInsightsClick,
@@ -217,7 +217,6 @@ private fun InsightsContent(
 private fun InsightsLazyBody(
     state: InsightsState,
     uiState: PayslipUiState,
-    selected: ParsedPayslip,
     showWellnessDrivers: Boolean,
     drivers: List<WellnessDriver>,
     viewModel: PayslipViewModel,
@@ -236,18 +235,21 @@ private fun InsightsLazyBody(
             item { WellnessDriversSection(score = state.engineResult.healthScore, drivers = drivers) }
         }
         item { InsightsHeroItem(state, uiState, onNavigateTo, onShowUpgradeSheet) }
+        item {
+            GeminiAiInsightsSection(
+                isPremiumEnabled = uiState.isPremiumEnabled,
+                aiInsights = uiState.aiInsights,
+                isAiLoading = uiState.isAiLoading,
+                aiError = uiState.aiError,
+                onGenerateClick = onShowTransparency,
+                onViewInsightsClick = onViewInsightsClick,
+                onClearClick = { viewModel.clearAiInsights() },
+                onUpgradeClick = onShowUpgradeSheet,
+            )
+        }
         item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
         item { CriticalAlertsQueue(anomalies = state.engineResult.anomalies) }
         item { MomChangesGrid(current = state.currentRecord, previous = state.previousRecord) }
-        item {
-            GeminiAiInsightsSection(
-                payslip = selected, isPremiumEnabled = uiState.isPremiumEnabled,
-                hasInsights = uiState.aiInsights != null, isAiLoading = uiState.isAiLoading,
-                aiError = uiState.aiError, onGenerateClick = onShowTransparency,
-                onViewInsightsClick = onViewInsightsClick,
-                onClearClick = { viewModel.clearAiInsights() }, onUpgradeClick = onShowUpgradeSheet,
-            )
-        }
         item { TrendsSparklinesSection(history = state.historySorted) }
         item {
             PremiumToolsSection(
