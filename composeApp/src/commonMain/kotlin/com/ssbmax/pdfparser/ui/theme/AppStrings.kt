@@ -8,8 +8,6 @@ object AppStrings {
     const val navigationHistory = "History"
     const val navigationInsights = "Insights"
     const val navigationSettings = "Settings"
-
-    // Metadata Badges
     const val badgeOfficer = "Officer"
     const val badgeCda = "CDA A/C No"
     const val badgePan = "PAN"
@@ -100,8 +98,6 @@ object AppStrings {
     const val settingsSetPasscodeTitle = "Set 4-Digit Passcode"
     const val settingsSetPasscodeLabel = "Enter 4-Digit PIN"
     const val settingsSetPasscodeConfirmBtn = "Enable Lock"
-
-    // Profile Overrides Card
     const val settingsProfileSaveBtn = "Save Overrides"
 
     // Backup & Restore Card
@@ -222,8 +218,6 @@ object AppStrings {
     const val legendOtherDeductions = "Other Deductions"
     const val legendGrossPay = "Gross Pay"
     const val legendNetRemittance = "Net Remittance"
-
-    // PDF Card
     const val pdfIconLabel = "PDF"
     const val pdfTapToOpen = "Tap to open original statement"
 
@@ -239,8 +233,6 @@ object AppStrings {
     const val geminiAiViewReportBtn = "View Full Audit Report"
     const val geminiAiReportReadyTitle = "CA Audit Report Ready"
     const val geminiAiReportReadyDesc = "A comprehensive tax saving suggestions, investment recommendations, and error audits report is available."
-
-    // Generic Actions
     const val btnClose = "Close"
 
     // Premium Features Screens Strings
@@ -264,8 +256,6 @@ object AppStrings {
     const val retirementContributions = "Total Principal Contributions"
     const val retirementInterest = "Total Interest Earned"
     const val retirementProjectionDisclaimer = "Note: Compounding projections are estimated using a standard interest rate of 7.1% per annum. Actual rates may vary."
-
-    // Premium Tools & Extra Strings
     const val premiumToolsTitle = "Premium Financial Tools"
     const val premiumToolsDraftClaims = "Draft Claims"
     const val premiumToolsTaxPlanner = "Tax Planner"
@@ -297,4 +287,14 @@ object AppStrings {
     const val wellnessTitleDeductionSpike = "Deduction Spike:"
     const val wellnessTitleTpta = "TPTA Entitlement Advisory"
     const val wellnessTitleDsop = "DSOP Non-Compliance"
+
+    // Adaptive Hero card (Phase 4)
+    const val heroRecoverySectionTitle = "Recovery Opportunity"
+    const val heroRecoverySubLabel = "recoverable from PCDA"
+    const val heroRecoveryCtaLabel = "Draft Representation to PCDA(O)"
+    const val heroRecoveryMoreIssuesSuffix = "more issue(s)"
+    const val heroWealthSectionTitle = "Wealth Optimization"
+    const val heroWealthSubLabel = "tax saving available"
+    const val heroWealthCtaLabel = "See how →"
+    const val heroWealthRegimeDisclaimer = "Old regime est. — verify with PAO if on new regime"
 }
