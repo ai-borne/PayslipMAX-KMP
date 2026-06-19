@@ -269,4 +269,10 @@ object AppStrings {
     const val taxPlanningSavingsProjections = "Section 80C & 80D Tax Savings Projections"
     const val taxPlanningNoProjections = "No YTD Tax Projections available for this month."
     const val taxPlanningCurrentYtdContribution = "Current YTD Contribution: ₹"
+
+    // Executive Summary row labels
+    const val execSummaryNetSalary = "Net Salary"
+    const val execSummaryGrossPay = "Gross Pay"
+    const val execSummaryIncomeTax = "Income Tax"
+    const val execSummaryDsop = "DSOP Subscription"
 }

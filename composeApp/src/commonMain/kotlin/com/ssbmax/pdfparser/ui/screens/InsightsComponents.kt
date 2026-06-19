@@ -54,19 +54,19 @@ fun ExecutiveSummaryCard(
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
     ) {
         Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+            modifier = Modifier.padding(horizontal = AppDimensions.PaddingMedium, vertical = AppDimensions.PaddingSmall),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
         ) {
             Text(
                 text = AppStrings.executiveSummaryLabel,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
-            ExecutiveSummaryRow("Net Salary", current.netPay, previous?.netPay)
-            ExecutiveSummaryRow("Gross Pay", current.grossPay, previous?.grossPay)
-            ExecutiveSummaryRow("Income Tax", current.incomeTax, previous?.incomeTax)
-            ExecutiveSummaryRow("DSOP Subscription", current.dsopSubscription, previous?.dsopSubscription)
+            ExecutiveSummaryRow(AppStrings.execSummaryNetSalary, current.netPay, previous?.netPay)
+            ExecutiveSummaryRow(AppStrings.execSummaryGrossPay, current.grossPay, previous?.grossPay)
+            ExecutiveSummaryRow(AppStrings.execSummaryIncomeTax, current.incomeTax, previous?.incomeTax)
+            ExecutiveSummaryRow(AppStrings.execSummaryDsop, current.dsopSubscription, previous?.dsopSubscription)
         }
     }
 }
