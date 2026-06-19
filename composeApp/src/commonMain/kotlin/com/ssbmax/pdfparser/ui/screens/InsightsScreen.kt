@@ -17,9 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.domain.ParsedPayslip
-import com.ssbmax.pdfparser.insights.FinancialInsight
-import com.ssbmax.pdfparser.insights.FinancialInsightsGenerator
+import com.ssbmax.pdfparser.insights.DeterministicIntelligenceEngine
+import com.ssbmax.pdfparser.insights.EngineResult
 import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
@@ -116,17 +117,59 @@ private fun InsightsOverlayDialogs(
     }
 }
 
+data class InsightsState(
+    val currentRecord: LedgerRecordEntity,
+    val previousRecord: LedgerRecordEntity?,
+    val historySorted: List<LedgerRecordEntity>,
+    val engineResult: EngineResult,
+    val scoreDelta: Int?
+)
+
 @Composable
-private fun rememberInsights(
+private fun rememberInsightsState(
     selected: ParsedPayslip,
-    payslips: List<ParsedPayslip>,
-): List<FinancialInsight> {
-    val previous =
-        remember(selected, payslips) {
-            val index = payslips.indexOfFirst { it.dateStr == selected.dateStr }
-            if (index > 0) payslips[index - 1] else null
+    ledgerRecords: List<LedgerRecordEntity>
+): InsightsState {
+    val currentRecord = remember(ledgerRecords, selected) {
+        ledgerRecords.find { it.dateStr == selected.dateStr } ?: LedgerRecordEntity(
+            dateStr = selected.dateStr, year = selected.year, monthNum = selected.monthNum,
+            basicPay = selected.earnings.basicPay, dearnessAllowance = selected.earnings.dearnessAllowance,
+            militaryServicePay = selected.earnings.militaryServicePay, transportAllowance = selected.earnings.transportAllowance,
+            transportAllowanceDa = selected.earnings.transportAllowanceDa, houseRentAllowance = selected.earnings.houseRentAllowance,
+            grossPay = selected.summary.grossPay, dsopSubscription = selected.deductions.dsopSubscription,
+            incomeTax = selected.deductions.incomeTax, netPay = selected.summary.netRemittance
+        )
+    }
+    val previousRecord = remember(ledgerRecords, currentRecord) {
+        ledgerRecords.find {
+            val isPrevYear = it.year == currentRecord.year && it.monthNum == currentRecord.monthNum - 1
+            val isDecToJan = it.year == currentRecord.year - 1 && it.monthNum == 12 && currentRecord.monthNum == 1
+            isPrevYear || isDecToJan
         }
-    return remember(selected, previous) { FinancialInsightsGenerator.generate(selected, previous) }
+    }
+    val historySorted = remember(ledgerRecords) {
+        ledgerRecords.sortedWith(compareBy<LedgerRecordEntity> { it.year }.thenBy { it.monthNum })
+    }
+    val engineResult = remember(currentRecord, previousRecord, historySorted) {
+        DeterministicIntelligenceEngine.analyze(currentRecord, previousRecord, historySorted)
+    }
+    val previousScore = remember(previousRecord, ledgerRecords) {
+        previousRecord?.let { prev ->
+            val prevPrev = ledgerRecords.find {
+                val isPrevYear = it.year == prev.year && it.monthNum == prev.monthNum - 1
+                val isDecToJan = it.year == prev.year - 1 && it.monthNum == 12 && prev.monthNum == 1
+                isPrevYear || isDecToJan
+            }
+            val prevHistory = ledgerRecords.filter { it.year < prev.year || (it.year == prev.year && it.monthNum <= prev.monthNum) }
+            DeterministicIntelligenceEngine.analyze(prev, prevPrev, prevHistory).healthScore
+        }
+    }
+    val scoreDelta = remember(engineResult.healthScore, previousScore) {
+        previousScore?.let { engineResult.healthScore - it }
+    }
+    return remember(currentRecord, previousRecord, historySorted, engineResult, scoreDelta) {
+        InsightsState(currentRecord, previousRecord, historySorted, engineResult, scoreDelta)
+    }
 }
 
 @Composable
@@ -140,31 +183,30 @@ private fun InsightsContent(
     onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val insights = rememberInsights(selected, uiState.payslips)
+    val ledgerRecords by viewModel.ledgerRecords.collectAsState()
+    val state = rememberInsightsState(selected, ledgerRecords)
 
     LazyColumn(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(AppDimensions.PaddingMedium),
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
         item { InsightsHeader() }
-        item { WellnessMeterSection(payslip = selected) }
+        item { SalaryHealthScoreDial(score = state.engineResult.healthScore, delta = state.scoreDelta) }
+        item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
+        item { CriticalAlertsQueue(anomalies = state.engineResult.anomalies) }
+        item { MomChangesGrid(current = state.currentRecord, previous = state.previousRecord) }
         item {
             GeminiAiInsightsSection(
-                payslip = selected,
-                isPremiumEnabled = uiState.isPremiumEnabled,
-                hasInsights = uiState.aiInsights != null,
-                isAiLoading = uiState.isAiLoading,
-                aiError = uiState.aiError,
-                onGenerateClick = onShowTransparency,
-                onViewInsightsClick = onViewInsightsClick,
-                onClearClick = { viewModel.clearAiInsights() },
-                onUpgradeClick = onShowUpgradeSheet,
+                payslip = selected, isPremiumEnabled = uiState.isPremiumEnabled,
+                hasInsights = uiState.aiInsights != null, isAiLoading = uiState.isAiLoading, aiError = uiState.aiError,
+                onGenerateClick = onShowTransparency, onViewInsightsClick = onViewInsightsClick,
+                onClearClick = { viewModel.clearAiInsights() }, onUpgradeClick = onShowUpgradeSheet,
             )
         }
+        item { TrendsSparklinesSection(history = state.historySorted) }
         item {
             PremiumToolsSection(
                 isPremiumEnabled = uiState.isPremiumEnabled,
@@ -172,8 +214,12 @@ private fun InsightsContent(
                 onUpgradeClick = onShowUpgradeSheet,
             )
         }
-        items(items = insights) { insight ->
-            InsightCard(insight = insight)
+        item {
+            AuditsArchiveGrid(
+                payslips = uiState.payslips,
+                selected = selected,
+                onSelect = { viewModel.selectPayslip(it) }
+            )
         }
     }
 }
@@ -208,68 +254,4 @@ private fun InsightsHeader() {
     }
 }
 
-@Composable
-private fun PremiumToolsSection(
-    isPremiumEnabled: Boolean,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
-    onUpgradeClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-        ) {
-            Text(
-                text = AppStrings.premiumToolsTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            PremiumButtonsRow(
-                isPremiumEnabled = isPremiumEnabled,
-                onNavigateTo = onNavigateTo,
-                onUpgradeClick = onUpgradeClick,
-            )
-        }
-    }
-}
 
-@Composable
-private fun PremiumButtonsRow(
-    isPremiumEnabled: Boolean,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
-    onUpgradeClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-    ) {
-        val onClick = { target: com.ssbmax.pdfparser.Screen ->
-            if (isPremiumEnabled) onNavigateTo(target) else onUpgradeClick()
-        }
-        OutlinedButton(
-            onClick = { onClick(com.ssbmax.pdfparser.Screen.Representation) },
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(AppStrings.premiumToolsDraftClaims, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
-        }
-        OutlinedButton(
-            onClick = { onClick(com.ssbmax.pdfparser.Screen.TaxPlanning) },
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(AppStrings.premiumToolsTaxPlanner, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
-        }
-        OutlinedButton(
-            onClick = { onClick(com.ssbmax.pdfparser.Screen.RetirementPlanning) },
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(AppStrings.premiumToolsDsopSimulator, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
-        }
-    }
-}
