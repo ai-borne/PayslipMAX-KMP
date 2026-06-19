@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 
-class FinancialIntelligenceRepository(
+open class FinancialIntelligenceRepository(
     private val payslipDao: PayslipDao,
     private val geminiProxyService: GeminiProxyService,
     private val authTokenProvider: AuthTokenProvider = AuthTokenProvider(),
@@ -74,7 +74,7 @@ class FinancialIntelligenceRepository(
      * Saves a parsed payslip into the ledger, executes the local deterministic checks,
      * updates database records, and automatically triggers representation drafts.
      */
-    suspend fun processPayslipAndRunAnalysis(
+    open suspend fun processPayslipAndRunAnalysis(
         payslip: ParsedPayslip,
     ): EngineResult =
         withContext(dispatcher) {
@@ -143,7 +143,7 @@ class FinancialIntelligenceRepository(
      * Auth token is fetched internally from [AuthTokenProvider] — callers
      * do not need to know about Firebase Auth.
      */
-    suspend fun generateNarrativeInsights(
+    open suspend fun generateNarrativeInsights(
         payslip: ParsedPayslip,
         engineResult: EngineResult,
     ): Result<String> =
@@ -181,7 +181,7 @@ class FinancialIntelligenceRepository(
     /**
      * Retrieves the cached AI narrative report from local database if it exists.
      */
-    suspend fun getCachedAiInsights(monthStr: String): String? =
+    open suspend fun getCachedAiInsights(monthStr: String): String? =
         withContext(dispatcher) {
             payslipDao.getFinancialInsightsByMonth(monthStr)
                 .firstOrNull { it.category == "NARRATIVE" }

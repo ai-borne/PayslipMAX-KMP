@@ -98,18 +98,44 @@ class PayslipViewModel(
         loadCachedAiInsights(payslip.dateStr)
     }
 
-    private fun loadCachedAiInsights(dateStr: String) {
+    internal fun loadCachedAiInsights(dateStr: String) {
         viewModelScope.launch {
-            val repo = financialIntelligenceRepository
-            if (repo != null) {
-                val cached = repo.getCachedAiInsights(dateStr)
-                _uiState.update { state ->
-                    if (state.selectedPayslip?.dateStr == dateStr) {
-                        state.copy(aiInsights = cached, aiError = null)
-                    } else {
-                        state
+            val repo = financialIntelligenceRepository ?: return@launch
+            val cached = repo.getCachedAiInsights(dateStr)
+            var autoRunPayslip: ParsedPayslip? = null
+            _uiState.update { state ->
+                if (state.selectedPayslip?.dateStr == dateStr) {
+                    if (state.isPremiumEnabled && cached == null && !state.isAiLoading) {
+                        autoRunPayslip = state.selectedPayslip
+                    }
+                    state.copy(aiInsights = cached, aiError = null)
+                } else {
+                    state
+                }
+            }
+            autoRunPayslip?.let { launchAiGeneration(it) }
+        }
+    }
+
+    internal fun launchAiGeneration(payslip: ParsedPayslip) {
+        val repo = financialIntelligenceRepository ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isAiLoading = true, aiError = null, aiInsights = null) }
+            try {
+                val engineResult = repo.processPayslipAndRunAnalysis(payslip)
+                val result = repo.generateNarrativeInsights(payslip, engineResult)
+                if (result.isSuccess) {
+                    _uiState.update { it.copy(aiInsights = result.getOrThrow(), isAiLoading = false) }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            aiError = result.exceptionOrNull()?.message ?: "Failed to generate narrative insights",
+                            isAiLoading = false,
+                        )
                     }
                 }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(aiError = e.message ?: "Failed to generate insights", isAiLoading = false) }
             }
         }
     }
@@ -219,8 +245,10 @@ class PayslipViewModel(
 
     private fun observeSettings() {
         var isFirstSettingsLoad = true
+        var previousPremiumEnabled = false
         viewModelScope.launch {
             repository.getSettingsFlow().collect { settings ->
+                val isPremium = settings?.isPremiumEnabled ?: false
                 _uiState.update { state ->
                     val isLocked =
                         if (isFirstSettingsLoad) {
@@ -230,7 +258,7 @@ class PayslipViewModel(
                             state.isAppLocked && (settings?.isLockEnabled ?: false)
                         }
                     state.copy(
-                        isPremiumEnabled = settings?.isPremiumEnabled ?: false,
+                        isPremiumEnabled = isPremium,
                         appTheme = settings?.appTheme ?: "system",
                         isLockEnabled = settings?.isLockEnabled ?: false,
                         appPinHash = settings?.appPinHash ?: "",
@@ -240,6 +268,12 @@ class PayslipViewModel(
                         isAppLocked = isLocked,
                     )
                 }
+                if (isPremium && !previousPremiumEnabled) {
+                    _uiState.value.selectedPayslip?.let { payslip ->
+                        loadCachedAiInsights(payslip.dateStr)
+                    }
+                }
+                previousPremiumEnabled = isPremium
             }
         }
     }
