@@ -182,6 +182,43 @@ class FinancialIntelligenceRepositoryTest {
     }
 
     @Test
+    fun testGenerateNarrativeInsightsRedactsPiiBeforeSend() = runTest {
+        var capturedPayslip: ParsedPayslip? = null
+        val capturingService = object : GeminiProxyService(
+            HttpClient(MockEngine { respond("", HttpStatusCode.OK, headersOf()) }),
+        ) {
+            override suspend fun getNarrativeInsights(
+                sanitizedPayslip: ParsedPayslip,
+                engineResult: EngineResult,
+                history: List<com.ssbmax.pdfparser.database.LedgerRecordEntity>,
+                authToken: String?,
+            ): Result<String> {
+                capturedPayslip = sanitizedPayslip
+                return Result.success("redaction verified")
+            }
+        }
+        val repo = FinancialIntelligenceRepository(
+            payslipDao = fakeDao,
+            geminiProxyService = capturingService,
+            dispatcher = kotlinx.coroutines.Dispatchers.Unconfined,
+        )
+        val payslipWithPii = createMockPayslip("05/2026").copy(
+            file = "private/john_doe/payslip.pdf",
+            officer = Officer(name = "JohnDoe", accountNo = "9876543210", pan = "PIITEST1234X"),
+        )
+        val engineResult = EngineResult(80, emptyList(), 10.0, 4.0)
+
+        repo.generateNarrativeInsights(payslipWithPii, engineResult)
+
+        val captured = capturedPayslip
+        assertNotNull(captured, "Service must be called with sanitized payslip")
+        assertEquals("payslip.pdf", captured.file, "File path must be redacted")
+        assertEquals("[OFFICER_NAME_REDACTED]", captured.officer.name, "Name must be redacted")
+        assertEquals("[ACCOUNT_NO_REDACTED]", captured.officer.accountNo, "Account must be redacted")
+        assertEquals("[PAN_REDACTED]", captured.officer.pan, "PAN must be redacted")
+    }
+
+    @Test
     fun testInsertAndGetAndDeleteRepresentationDraft() =
         runTest {
             val repo = createRepositoryWithMockEngine("""{"success":true,"narrative":"Mock Narrative"}""")
