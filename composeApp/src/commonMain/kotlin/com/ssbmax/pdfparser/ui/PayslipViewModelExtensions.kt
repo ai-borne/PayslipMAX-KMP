@@ -158,3 +158,64 @@ fun PayslipViewModel.restoreFromCloud(
         onComplete(result)
     }
 }
+
+fun PayslipViewModel.setPremiumEnabled(enabled: Boolean) {
+    viewModelScope.launch {
+        val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+        repository.saveSettings(current.copy(isPremiumEnabled = enabled))
+    }
+}
+
+fun PayslipViewModel.setAppTheme(theme: String) {
+    viewModelScope.launch {
+        val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+        repository.saveSettings(current.copy(appTheme = theme))
+    }
+}
+
+fun PayslipViewModel.setLockEnabled(
+    enabled: Boolean,
+    pin: String = "",
+) {
+    viewModelScope.launch {
+        val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+        val pinHash = if (pin.isNotEmpty()) com.ssbmax.pdfparser.crypto.CryptoHelper.sha256(pin) else current.appPinHash
+        repository.saveSettings(current.copy(isLockEnabled = enabled, appPinHash = pinHash))
+    }
+}
+
+fun PayslipViewModel.verifyPin(pin: String): Boolean {
+    val hash = com.ssbmax.pdfparser.crypto.CryptoHelper.sha256(pin)
+    val matches = hash == _uiState.value.appPinHash
+    if (matches) {
+        _uiState.update { it.copy(isAppLocked = false) }
+    }
+    return matches
+}
+
+fun PayslipViewModel.lockApp() {
+    if (_uiState.value.isLockEnabled) {
+        _uiState.update { it.copy(isAppLocked = true) }
+    }
+}
+
+fun PayslipViewModel.unlockApp() {
+    _uiState.update { it.copy(isAppLocked = false) }
+}
+
+fun PayslipViewModel.updateProfileOverrides(
+    name: String,
+    cda: String,
+    pan: String,
+) {
+    viewModelScope.launch {
+        val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+        repository.saveSettings(current.copy(profileName = name, profileCdaNumber = cda, profilePanNumber = pan))
+    }
+}
+
+fun PayslipViewModel.updateRepresentationDraft(draft: com.ssbmax.pdfparser.database.RepresentationDraftEntity) {
+    viewModelScope.launch {
+        financialIntelligenceRepository?.insertRepresentationDraft(draft)
+    }
+}
