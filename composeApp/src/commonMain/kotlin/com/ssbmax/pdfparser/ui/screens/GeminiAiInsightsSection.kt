@@ -28,11 +28,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 
 /** Returns the first non-header, non-JSON paragraph from AI insights, truncated to [maxLength]. */
 internal fun extractAiSummary(
     insights: String,
-    maxLength: Int = 200,
+    maxLength: Int = InsightsStrings.aiSummaryMaxLength,
 ): String {
     val first =
         insights.lines()
@@ -124,7 +125,7 @@ private fun LockedCardHeader() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
-        Text("👑", fontSize = AppDimensions.TextSizeHuge)
+        Text(AppStrings.proTeaserCrownIcon, fontSize = AppDimensions.TextSizeHuge)
         Text(
             text = AppStrings.settingsAiInsightsLockedTitle,
             style = MaterialTheme.typography.titleMedium,
@@ -205,7 +206,7 @@ private fun ActiveHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("👑", fontSize = AppDimensions.TextSizeHuge, modifier = Modifier.padding(end = AppDimensions.SpacingSmall))
+            Text(AppStrings.proTeaserCrownIcon, fontSize = AppDimensions.TextSizeHuge, modifier = Modifier.padding(end = AppDimensions.SpacingSmall))
             Column {
                 Text(
                     text = AppStrings.settingsAiInsightsLockedTitle,
@@ -222,7 +223,7 @@ private fun ActiveHeader(
         }
         if (hasInsights) {
             IconButton(onClick = onClearClick, modifier = Modifier.size(AppDimensions.IconSizeMedium)) {
-                Text("🔄", fontSize = AppDimensions.TextSizeLarge)
+                Text(AppStrings.aiRegenerateIcon, fontSize = AppDimensions.TextSizeLarge)
             }
         }
     }

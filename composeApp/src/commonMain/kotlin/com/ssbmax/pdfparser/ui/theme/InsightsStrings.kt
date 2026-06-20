@@ -51,4 +51,10 @@ object InsightsStrings {
     // Accessibility content descriptions
     const val wellnessChipExpandDesc = "Expand score drivers"
     const val wellnessChipCollapseDesc = "Collapse score drivers"
+
+    // Improve path prefix (SSOT for the "→" arrow used in driver rows)
+    const val wellnessImprovePathPrefix = "→ "
+
+    // AI summary truncation limit
+    const val aiSummaryMaxLength = 200
 }
