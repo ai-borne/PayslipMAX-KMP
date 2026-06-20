@@ -223,4 +223,3 @@ private fun ProjectionRow(
         )
     }
 }
-

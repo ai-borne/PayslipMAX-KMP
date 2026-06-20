@@ -57,14 +57,18 @@ object WealthOptimizationEngine {
     }
 
     // Old-regime slabs (FY 2024-25); used to estimate savings under old-regime assumption.
-    fun deriveMarginalRate(netTaxableIncome: Double): Double = when {
-        netTaxableIncome <= 250_000.0 -> 0.0
-        netTaxableIncome <= 500_000.0 -> 0.05
-        netTaxableIncome <= 1_000_000.0 -> 0.20
-        else -> 0.30
-    }
+    fun deriveMarginalRate(netTaxableIncome: Double): Double =
+        when {
+            netTaxableIncome <= 250_000.0 -> 0.0
+            netTaxableIncome <= 500_000.0 -> 0.05
+            netTaxableIncome <= 1_000_000.0 -> 0.20
+            else -> 0.30
+        }
 
-    private fun buildOpportunities(annual80CHeadroom: Double, marginalRate: Double): List<Opportunity> =
+    private fun buildOpportunities(
+        annual80CHeadroom: Double,
+        marginalRate: Double,
+    ): List<Opportunity> =
         buildList {
             if (annual80CHeadroom > 0.0) {
                 val monthlyIncrease = (annual80CHeadroom / 12.0).toInt()

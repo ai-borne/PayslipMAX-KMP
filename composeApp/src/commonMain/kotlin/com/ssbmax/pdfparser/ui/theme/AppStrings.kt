@@ -206,7 +206,6 @@ object AppStrings {
     const val changesThisMonthLabel = "Changes This Month"
     const val historicalTrendsLabel = "Historical Trends"
 
-
     // Chart Legends
     const val legendNetTakeHome = "Net Take-Home"
     const val legendDsop = "Provident Fund (DSOP)"
@@ -227,6 +226,7 @@ object AppStrings {
     const val geminiAiAnalyzeBtn = "Analyze Payslip with Gemini AI"
     const val geminiAiAnalyzeDesc = "Generate professional tax saving suggestions, investment recommendations, and error audits using Gemini."
     const val geminiAiViewReportBtn = "View Full Audit Report"
+
     // AI CA Audit card (Phase 5)
     const val aiAuditAnalyzingDesc = "Analyzing your payslip with Gemini AI…"
     const val aiAuditSummaryLabel = "Summary"

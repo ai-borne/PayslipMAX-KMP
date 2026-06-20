@@ -8,7 +8,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
@@ -76,6 +75,21 @@ private fun ProfileOverridesBottomSheet(
 }
 
 @Composable
+private fun ProfileSheetHeader() {
+    Text(
+        text = AppStrings.settingsProfileHeader,
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary,
+    )
+    Text(
+        text = AppStrings.settingsProfileDesc,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+@Composable
 private fun ProfileOverridesSheetContent(
     profileName: String,
     profileCda: String,
@@ -94,24 +108,15 @@ private fun ProfileOverridesSheetContent(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(horizontal = AppDimensions.PaddingMedium)
-            .padding(bottom = AppDimensions.PaddingLarge),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(horizontal = AppDimensions.PaddingMedium)
+                .padding(bottom = AppDimensions.PaddingLarge),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
-        Text(
-            text = AppStrings.settingsProfileHeader,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-        )
-        Text(
-            text = AppStrings.settingsProfileDesc,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        ProfileSheetHeader()
         ProfileInputFields(
             name = name,
             onNameChange = { name = it },

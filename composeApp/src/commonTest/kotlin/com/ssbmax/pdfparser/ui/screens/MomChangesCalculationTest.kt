@@ -7,7 +7,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class MomChangesCalculationTest {
-
     private fun record(
         dateStr: String = "01/2024",
         basicPay: Double = 50_000.0,
@@ -60,10 +59,11 @@ class MomChangesCalculationTest {
 
     @Test
     fun testMultipleChangesAllDetected() {
-        val changes = calculateMomChanges(
-            record(basicPay = 55_000.0, da = 22_000.0),
-            record(basicPay = 50_000.0, da = 20_000.0),
-        )
+        val changes =
+            calculateMomChanges(
+                record(basicPay = 55_000.0, da = 22_000.0),
+                record(basicPay = 50_000.0, da = 20_000.0),
+            )
         assertEquals(2, changes.size)
     }
 

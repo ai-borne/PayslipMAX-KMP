@@ -19,7 +19,10 @@ sealed class HeroBranch {
     ) : HeroBranch()
 }
 
-fun selectHeroBranch(engineResult: EngineResult, optimizationResult: OptimizationResult): HeroBranch {
+fun selectHeroBranch(
+    engineResult: EngineResult,
+    optimizationResult: OptimizationResult,
+): HeroBranch {
     val recoverableAnomalies = engineResult.anomalies.filter { it.type in RECOVERABLE_TYPES }
     return if (recoverableAnomalies.isNotEmpty()) {
         HeroBranch.Recovery(

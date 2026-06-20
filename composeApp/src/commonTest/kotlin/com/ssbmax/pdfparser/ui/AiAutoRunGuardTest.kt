@@ -58,32 +58,34 @@ class AiAutoRunGuardTest {
     // ── Guard: premium OFF → no auto-run ─────────────────────────────────────
 
     @Test
-    fun testAutoRunNotFiredWhenPremiumOff() = runTest {
-        val vm = PayslipViewModel(repository, fakeBackupManager)
-        fakeDao.insertPayslip(createMockPayslip("08/2024").toEncryptedEntity())
-        runCurrent()
+    fun testAutoRunNotFiredWhenPremiumOff() =
+        runTest {
+            val vm = PayslipViewModel(repository, fakeBackupManager)
+            fakeDao.insertPayslip(createMockPayslip("08/2024").toEncryptedEntity())
+            runCurrent()
 
-        assertFalse(vm.uiState.value.isPremiumEnabled)
-        assertFalse(vm.uiState.value.isAiLoading)
-        assertNull(vm.uiState.value.aiInsights)
-    }
+            assertFalse(vm.uiState.value.isPremiumEnabled)
+            assertFalse(vm.uiState.value.isAiLoading)
+            assertNull(vm.uiState.value.aiInsights)
+        }
 
     // ── Guard: no financial repo → no auto-run regardless of premium ──────────
 
     @Test
-    fun testAutoRunNotFiredWhenNoFinancialRepo() = runTest {
-        val vm = PayslipViewModel(repository, fakeBackupManager, financialIntelligenceRepository = null)
-        fakeDao.insertPayslip(createMockPayslip("08/2024").toEncryptedEntity())
-        runCurrent()
+    fun testAutoRunNotFiredWhenNoFinancialRepo() =
+        runTest {
+            val vm = PayslipViewModel(repository, fakeBackupManager, financialIntelligenceRepository = null)
+            fakeDao.insertPayslip(createMockPayslip("08/2024").toEncryptedEntity())
+            runCurrent()
 
-        vm.setPremiumEnabled(true)
-        runCurrent()
+            vm.setPremiumEnabled(true)
+            runCurrent()
 
-        assertTrue(vm.uiState.value.isPremiumEnabled)
-        assertNull(vm.uiState.value.aiInsights)
-        assertFalse(vm.uiState.value.isAiLoading)
-        assertNull(vm.uiState.value.aiError)
-    }
+            assertTrue(vm.uiState.value.isPremiumEnabled)
+            assertNull(vm.uiState.value.aiInsights)
+            assertFalse(vm.uiState.value.isAiLoading)
+            assertNull(vm.uiState.value.aiError)
+        }
 
     // ── InsightsState optimization mapping ───────────────────────────────────
 
@@ -92,26 +94,29 @@ class AiAutoRunGuardTest {
         val payslip = createMockPayslip("08/2024")
         val expectedOpt = WealthOptimizationEngine.analyze(payslip)
 
-        val state = InsightsState(
-            currentRecord = LedgerRecordEntity(
-                dateStr = "08/2024", year = 2024, monthNum = 8,
-                basicPay = 60000.0, dearnessAllowance = 15000.0, militaryServicePay = 15500.0,
-                transportAllowance = 3600.0, transportAllowanceDa = 1000.0,
-                houseRentAllowance = 12000.0, grossPay = 100000.0,
-                dsopSubscription = 5000.0, incomeTax = 4000.0, netPay = 70000.0,
-            ),
-            previousRecord = null,
-            historySorted = emptyList(),
-            engineResult = EngineResult(
-                healthScore = 80,
-                anomalies = emptyList(),
-                monthlySavingRate = 10.0,
-                taxRatio = 4.0,
-            ),
-            scoreDelta = null,
-            optimizationResult = expectedOpt,
-            momChanges = emptyList(),
-        )
+        val state =
+            InsightsState(
+                currentRecord =
+                    LedgerRecordEntity(
+                        dateStr = "08/2024", year = 2024, monthNum = 8,
+                        basicPay = 60000.0, dearnessAllowance = 15000.0, militaryServicePay = 15500.0,
+                        transportAllowance = 3600.0, transportAllowanceDa = 1000.0,
+                        houseRentAllowance = 12000.0, grossPay = 100000.0,
+                        dsopSubscription = 5000.0, incomeTax = 4000.0, netPay = 70000.0,
+                    ),
+                previousRecord = null,
+                historySorted = emptyList(),
+                engineResult =
+                    EngineResult(
+                        healthScore = 80,
+                        anomalies = emptyList(),
+                        monthlySavingRate = 10.0,
+                        taxRatio = 4.0,
+                    ),
+                scoreDelta = null,
+                optimizationResult = expectedOpt,
+                momChanges = emptyList(),
+            )
 
         assertEquals("OLD", state.optimizationResult.regimeAssumed)
         assertEquals(expectedOpt.totalPotentialTaxSaving, state.optimizationResult.totalPotentialTaxSaving)
@@ -145,27 +150,29 @@ class AiAutoRunGuardTest {
             monthName = "Month_$monthStr",
             dateStr = dateStr,
             officer = Officer("Sunil Kumar", "12345678", "ABCDE1234F"),
-            earnings = Earnings(
-                basicPay = 60000.0,
-                dearnessAllowance = 15000.0,
-                militaryServicePay = 15500.0,
-                transportAllowance = 3600.0,
-                transportAllowanceDa = 1000.0,
-                houseRentAllowance = 12000.0,
-            ),
+            earnings =
+                Earnings(
+                    basicPay = 60000.0,
+                    dearnessAllowance = 15000.0,
+                    militaryServicePay = 15500.0,
+                    transportAllowance = 3600.0,
+                    transportAllowanceDa = 1000.0,
+                    houseRentAllowance = 12000.0,
+                ),
             deductions = Deductions(dsopSubscription = 5000.0, agif = 5000.0, incomeTax = 4000.0),
             ledgerBalances = LedgerBalances(0.0, 0.0, 0.0, 0.0),
             summary = PayslipSummary(100000.0, 70000.0, 30000.0),
-            taxAndSavings = TaxAndSavings(
-                grossSalaryYtd = 600000.0,
-                totalTaxableIncome = 550000.0,
-                standardDeduction = 50000.0,
-                netTaxableIncome = 500000.0,
-                totalTaxPayable = 12500.0,
-                taxDeductedYtd = 10000.0,
-                cessDeductedYtd = 500.0,
-                dsopFund = DsopFund(5000.0, 5000.0, 0.0, 0.0, 0.0, 105000.0),
-            ),
+            taxAndSavings =
+                TaxAndSavings(
+                    grossSalaryYtd = 600000.0,
+                    totalTaxableIncome = 550000.0,
+                    standardDeduction = 50000.0,
+                    netTaxableIncome = 500000.0,
+                    totalTaxPayable = 12500.0,
+                    taxDeductedYtd = 10000.0,
+                    cessDeductedYtd = 500.0,
+                    dsopFund = DsopFund(5000.0, 5000.0, 0.0, 0.0, 0.0, 105000.0),
+                ),
         )
     }
 }

@@ -78,12 +78,12 @@ describe("buildPrompt", () => {
 
   test("prompt contains mandatory report sections", () => {
     const prompt = buildPrompt(VALID_PAYLOAD);
-    expect(prompt).toContain("Salary Changes");
-    expect(prompt).toContain("Missing Allowances");
-    expect(prompt).toContain("New Deductions");
-    expect(prompt).toContain("Risk Alerts");
-    expect(prompt).toContain("Opportunities");
-    expect(prompt).toContain("Action Required");
+    expect(prompt).toContain("salaryChanges");
+    expect(prompt).toContain("missingAllowances");
+    expect(prompt).toContain("newDeductions");
+    expect(prompt).toContain("riskAlerts");
+    expect(prompt).toContain("opportunities");
+    expect(prompt).toContain("actionRequired");
   });
 
   test("prompt contains historical context when history is provided", () => {
@@ -94,13 +94,13 @@ describe("buildPrompt", () => {
   test("empty anomalies list produces a valid prompt with no-anomaly message", () => {
     const payload = { ...VALID_PAYLOAD, anomalies: [] };
     const prompt = buildPrompt(payload);
-    expect(prompt).toContain("No anomalies detected this month");
+    expect(prompt).toContain("None");
   });
 
   test("missing history defaults gracefully to no-history message", () => {
     const payload = { ...VALID_PAYLOAD, history: undefined };
     const prompt = buildPrompt(payload);
-    expect(prompt).toContain("No historical data available.");
+    expect(prompt).toContain("None");
   });
 
   test("prompt uses Gemini 2.5 Flash CA-grade framing (senior CA instruction)", () => {

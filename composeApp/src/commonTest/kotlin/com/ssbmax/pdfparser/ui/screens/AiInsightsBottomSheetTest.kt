@@ -7,15 +7,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class AiInsightsBottomSheetTest {
-
     @Test
     fun testParseHeader1() {
         val markdown = "# Title Header"
         val result = parseMarkdown(markdown)
-        
+
         // Assert markdown symbol is removed
         assertEquals("Title Header", result.text)
-        
+
         // Assert bold style and size (24.sp corresponds to TextSizeHuge)
         val styleRange = result.spanStyles.firstOrNull()
         assertTrue(styleRange != null, "Should have a span style applied")
@@ -27,9 +26,9 @@ class AiInsightsBottomSheetTest {
     fun testParseHeader2() {
         val markdown = "## Sub Header"
         val result = parseMarkdown(markdown)
-        
+
         assertEquals("Sub Header", result.text)
-        
+
         val styleRange = result.spanStyles.firstOrNull()
         assertTrue(styleRange != null, "Should have a span style applied")
         assertEquals(FontWeight.Bold, styleRange.item.fontWeight)
@@ -40,10 +39,10 @@ class AiInsightsBottomSheetTest {
     fun testParseBoldInlineText() {
         val markdown = "This is **bold** text."
         val result = parseMarkdown(markdown)
-        
+
         // Markdown tags should be stripped
         assertEquals("This is bold text.", result.text)
-        
+
         // Assert the word "bold" has bold weight applied
         val boldRange = result.spanStyles.firstOrNull { it.item.fontWeight == FontWeight.Bold }
         assertTrue(boldRange != null, "Should have bold styled segment")
@@ -55,12 +54,12 @@ class AiInsightsBottomSheetTest {
     fun testParseListItems() {
         val markdown = "- First item\n* Second **bold** item"
         val result = parseMarkdown(markdown)
-        
+
         val lines = result.text.split("\n")
         assertEquals(2, lines.size)
         assertTrue(lines[0].startsWith("•  First item"))
         assertTrue(lines[1].startsWith("•  Second bold item"))
-        
+
         // Check bold formatting inside list item
         val boldRange = result.spanStyles.firstOrNull { it.item.fontWeight == FontWeight.Bold }
         assertTrue(boldRange != null, "Should have bold styled segment in list item")
@@ -70,7 +69,7 @@ class AiInsightsBottomSheetTest {
     fun testParseMultiLineAndEmpty() {
         val markdown = "# Title\n\nSome standard paragraph text."
         val result = parseMarkdown(markdown)
-        
+
         val lines = result.text.split("\n")
         assertEquals(3, lines.size)
         assertEquals("Title", lines[0])

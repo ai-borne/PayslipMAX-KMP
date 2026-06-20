@@ -30,14 +30,18 @@ import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 /** Returns the first non-header paragraph from AI insights, truncated to [maxLength]. */
-internal fun extractAiSummary(insights: String, maxLength: Int = 200): String {
-    val first = insights.lines()
-        .map { it.trim() }
-        .firstOrNull { it.isNotEmpty() && !it.startsWith("#") && !it.startsWith("---") }
-        ?.removePrefix("- ")
-        ?.removePrefix("* ")
-        ?.trim()
-        ?: return ""
+internal fun extractAiSummary(
+    insights: String,
+    maxLength: Int = 200,
+): String {
+    val first =
+        insights.lines()
+            .map { it.trim() }
+            .firstOrNull { it.isNotEmpty() && !it.startsWith("#") && !it.startsWith("---") }
+            ?.removePrefix("- ")
+            ?.removePrefix("* ")
+            ?.trim()
+            ?: return ""
     return if (first.length > maxLength) "${first.take(maxLength)}…" else first
 }
 
@@ -153,13 +157,15 @@ private fun GeminiAiInsightsActiveCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSystemInDarkTheme()) {
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.08f)
-            } else {
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-            },
-        ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    if (isSystemInDarkTheme()) {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.08f)
+                    } else {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                    },
+            ),
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
@@ -177,7 +183,10 @@ private fun GeminiAiInsightsActiveCard(
 }
 
 @Composable
-private fun ActiveHeader(hasInsights: Boolean, onClearClick: () -> Unit) {
+private fun ActiveHeader(
+    hasInsights: Boolean,
+    onClearClick: () -> Unit,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -226,8 +235,11 @@ private fun ActiveContent(
         }
         aiInsights != null -> AiInsightsSummary(aiInsights = aiInsights, onViewClick = onViewInsightsClick)
         else -> {
-            Text(text = AppStrings.geminiAiAnalyzeDesc, style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = AppStrings.geminiAiAnalyzeDesc,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
             Button(onClick = onGenerateClick, modifier = Modifier.fillMaxWidth()) {
                 Text(AppStrings.geminiAiAnalyzeBtn)
@@ -243,18 +255,31 @@ private fun AiLoadingIndicator() {
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
         CircularProgressIndicator(modifier = Modifier.size(AppDimensions.IconSizeSmall))
-        Text(text = AppStrings.aiAuditAnalyzingDesc, style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text = AppStrings.aiAuditAnalyzingDesc,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
 @Composable
-private fun AiInsightsSummary(aiInsights: String, onViewClick: () -> Unit) {
-    Text(text = AppStrings.aiAuditSummaryLabel, style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+private fun AiInsightsSummary(
+    aiInsights: String,
+    onViewClick: () -> Unit,
+) {
+    Text(
+        text = AppStrings.aiAuditSummaryLabel,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.primary,
+        fontWeight = FontWeight.Bold,
+    )
     Spacer(Modifier.height(AppDimensions.SpacingTiny))
-    Text(text = extractAiSummary(aiInsights), style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(
+        text = extractAiSummary(aiInsights),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
     Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
     Button(onClick = onViewClick, modifier = Modifier.fillMaxWidth()) {
         Text(AppStrings.geminiAiViewReportBtn)

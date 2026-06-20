@@ -45,10 +45,11 @@ fun CriticalAlertsQueue(
 private fun CriticalAlertCard(
     anomaly: Anomaly,
 ) {
-    val borderColor = when (anomaly.type) {
-        "SALARY_LOSS", "DSOP_COMPLIANCE" -> MaterialTheme.colorScheme.error
-        else -> MaterialTheme.colorScheme.secondary
-    }
+    val borderColor =
+        when (anomaly.type) {
+            "SALARY_LOSS", "DSOP_COMPLIANCE" -> MaterialTheme.colorScheme.error
+            else -> MaterialTheme.colorScheme.secondary
+        }
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
@@ -60,10 +61,11 @@ private fun CriticalAlertCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = when (anomaly.type) {
-                    "SALARY_LOSS", "DSOP_COMPLIANCE" -> "🛑"
-                    else -> "⚠️"
-                },
+                text =
+                    when (anomaly.type) {
+                        "SALARY_LOSS", "DSOP_COMPLIANCE" -> "🛑"
+                        else -> "⚠️"
+                    },
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(end = AppDimensions.SpacingSmall),
             )
@@ -76,7 +78,10 @@ private fun CriticalAlertCard(
     }
 }
 
-fun calculateMomChanges(current: LedgerRecordEntity, previous: LedgerRecordEntity?): List<MoMChange> {
+fun calculateMomChanges(
+    current: LedgerRecordEntity,
+    previous: LedgerRecordEntity?,
+): List<MoMChange> {
     val list = mutableListOf<MoMChange>()
     if (previous != null) {
         if (current.basicPay != previous.basicPay) {

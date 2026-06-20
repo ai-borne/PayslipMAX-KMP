@@ -22,7 +22,6 @@ import com.ssbmax.pdfparser.Screen
 import com.ssbmax.pdfparser.insights.EngineResult
 import com.ssbmax.pdfparser.insights.OptimizationResult
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
-import com.ssbmax.pdfparser.ui.theme.AppStrings
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 
 @Composable
@@ -35,18 +34,20 @@ fun AdaptiveHeroCard(
     modifier: Modifier = Modifier,
 ) {
     when (val branch = selectHeroBranch(engineResult, optimizationResult)) {
-        is HeroBranch.Recovery -> RecoveryHeroCard(
-            branch = branch,
-            isPremiumEnabled = isPremiumEnabled,
-            onCtaClick = { if (isPremiumEnabled) onNavigateTo(Screen.Representation) else onUpgradeClick() },
-            modifier = modifier,
-        )
-        is HeroBranch.Wealth -> WealthHeroCard(
-            branch = branch,
-            isPremiumEnabled = isPremiumEnabled,
-            onCtaClick = { if (isPremiumEnabled) onNavigateTo(Screen.TaxPlanning) else onUpgradeClick() },
-            modifier = modifier,
-        )
+        is HeroBranch.Recovery ->
+            RecoveryHeroCard(
+                branch = branch,
+                isPremiumEnabled = isPremiumEnabled,
+                onCtaClick = { if (isPremiumEnabled) onNavigateTo(Screen.Representation) else onUpgradeClick() },
+                modifier = modifier,
+            )
+        is HeroBranch.Wealth ->
+            WealthHeroCard(
+                branch = branch,
+                isPremiumEnabled = isPremiumEnabled,
+                onCtaClick = { if (isPremiumEnabled) onNavigateTo(Screen.TaxPlanning) else onUpgradeClick() },
+                modifier = modifier,
+            )
     }
 }
 
@@ -67,17 +68,28 @@ private fun RecoveryHeroCard(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
-            Text(InsightsStrings.heroRecoverySectionTitle, style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f))
-            Text("⚠ ${formatCurrency(branch.totalRecoverable)} ${InsightsStrings.heroRecoverySubLabel}",
-                style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onErrorContainer)
-            Text(branch.primaryCause, style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f))
+            Text(
+                InsightsStrings.heroRecoverySectionTitle,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f),
+            )
+            Text(
+                "⚠ ${formatCurrency(branch.totalRecoverable)} ${InsightsStrings.heroRecoverySubLabel}",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+            Text(
+                branch.primaryCause,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f),
+            )
             if (branch.anomalies.size > 1) {
-                Text("+ ${branch.anomalies.size - 1} ${InsightsStrings.heroRecoveryMoreIssuesSuffix}",
+                Text(
+                    "+ ${branch.anomalies.size - 1} ${InsightsStrings.heroRecoveryMoreIssuesSuffix}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.6f))
+                    color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.6f),
+                )
             }
             Spacer(Modifier.height(AppDimensions.SpacingSmall))
             RecoveryCtaButton(InsightsStrings.heroRecoveryCtaLabel, isPremiumEnabled, onCtaClick)
@@ -102,17 +114,29 @@ private fun WealthHeroCard(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
-            Text(InsightsStrings.heroWealthSectionTitle, style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))
-            Text("💰 ${formatCurrency(branch.totalPotentialTaxSaving)} ${InsightsStrings.heroWealthSubLabel}",
-                style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text(
+                InsightsStrings.heroWealthSectionTitle,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+            )
+            Text(
+                "💰 ${formatCurrency(branch.totalPotentialTaxSaving)} ${InsightsStrings.heroWealthSubLabel}",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
             if (branch.topOpportunityAction.isNotBlank()) {
-                Text("• ${branch.topOpportunityAction}", style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f))
+                Text(
+                    "• ${branch.topOpportunityAction}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                )
             }
-            Text(InsightsStrings.heroWealthRegimeDisclaimer, style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f))
+            Text(
+                InsightsStrings.heroWealthRegimeDisclaimer,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f),
+            )
             Spacer(Modifier.height(AppDimensions.SpacingSmall))
             WealthCtaButton(InsightsStrings.heroWealthCtaLabel, isPremiumEnabled, onCtaClick)
         }
@@ -120,21 +144,30 @@ private fun WealthHeroCard(
 }
 
 @Composable
-private fun RecoveryCtaButton(label: String, isPremiumEnabled: Boolean, onClick: () -> Unit) {
+private fun RecoveryCtaButton(
+    label: String,
+    isPremiumEnabled: Boolean,
+    onClick: () -> Unit,
+) {
     Button(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.error,
-            contentColor = MaterialTheme.colorScheme.onError,
-        ),
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = MaterialTheme.colorScheme.onError,
+            ),
     ) {
         Text(if (!isPremiumEnabled) "🔒 $label" else label)
     }
 }
 
 @Composable
-private fun WealthCtaButton(label: String, isPremiumEnabled: Boolean, onClick: () -> Unit) {
+private fun WealthCtaButton(
+    label: String,
+    isPremiumEnabled: Boolean,
+    onClick: () -> Unit,
+) {
     OutlinedButton(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),

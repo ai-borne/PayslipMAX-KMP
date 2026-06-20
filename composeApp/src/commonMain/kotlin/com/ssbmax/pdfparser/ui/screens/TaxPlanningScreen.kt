@@ -51,10 +51,11 @@ fun TaxPlanningScreen(
     val optimizationResult = remember(selected) { selected?.let { WealthOptimizationEngine.analyze(it) } }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(AppDimensions.PaddingMedium),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         TaxHeader(onBack = onBack)
@@ -105,10 +106,11 @@ private fun TaxHeader(
     ) {
         Button(
             onClick = onBack,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            ),
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                ),
         ) {
             Text("← Back")
         }

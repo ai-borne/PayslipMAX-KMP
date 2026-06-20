@@ -7,33 +7,35 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class WealthOptimizationEngineTest {
-
     private fun createPayslip(
         dsopMonthly: Double = 8_000.0,
         agifMonthly: Double = 5_000.0,
         grossPay: Double = 180_000.0,
         netTaxableIncome: Double = 800_000.0,
         dsopClosingBalance: Double = 500_000.0,
-    ): ParsedPayslip = ParsedPayslip(
-        file = "test.pdf",
-        year = 2025,
-        monthNum = 4,
-        monthName = "April",
-        dateStr = "04/2025",
-        officer = Officer("Test Officer", "12345", "XXXXX0000X"),
-        earnings = Earnings(basicPay = 105_300.0),
-        deductions = Deductions(dsopSubscription = dsopMonthly, agif = agifMonthly),
-        ledgerBalances = LedgerBalances(),
-        summary = PayslipSummary(
-            grossPay = grossPay,
-            totalDeductions = dsopMonthly + agifMonthly,
-            netRemittance = grossPay - dsopMonthly - agifMonthly,
-        ),
-        taxAndSavings = TaxAndSavings(
-            netTaxableIncome = netTaxableIncome,
-            dsopFund = DsopFund(closingBalance = dsopClosingBalance),
-        ),
-    )
+    ): ParsedPayslip =
+        ParsedPayslip(
+            file = "test.pdf",
+            year = 2025,
+            monthNum = 4,
+            monthName = "April",
+            dateStr = "04/2025",
+            officer = Officer("Test Officer", "12345", "XXXXX0000X"),
+            earnings = Earnings(basicPay = 105_300.0),
+            deductions = Deductions(dsopSubscription = dsopMonthly, agif = agifMonthly),
+            ledgerBalances = LedgerBalances(),
+            summary =
+                PayslipSummary(
+                    grossPay = grossPay,
+                    totalDeductions = dsopMonthly + agifMonthly,
+                    netRemittance = grossPay - dsopMonthly - agifMonthly,
+                ),
+            taxAndSavings =
+                TaxAndSavings(
+                    netTaxableIncome = netTaxableIncome,
+                    dsopFund = DsopFund(closingBalance = dsopClosingBalance),
+                ),
+        )
 
     // ──────────────────────────────────────────────────────────────────────────
     // Marginal rate derivation
