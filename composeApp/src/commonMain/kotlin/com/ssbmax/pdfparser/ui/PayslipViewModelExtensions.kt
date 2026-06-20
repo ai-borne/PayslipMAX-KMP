@@ -146,6 +146,13 @@ fun PayslipViewModel.setPremiumEnabled(enabled: Boolean) {
     }
 }
 
+fun PayslipViewModel.setLocalAiEnabled(enabled: Boolean) {
+    viewModelScope.launch {
+        val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+        repository.saveSettings(current.copy(useLocalAi = enabled))
+    }
+}
+
 fun PayslipViewModel.setAppTheme(theme: String) {
     viewModelScope.launch {
         val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()

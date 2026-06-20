@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PayslipMax AI Insights Premium Preview</title>
+  <link rel="stylesheet" href="ai_insights_preview.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo-container">
+        <div class="logo-icon">M</div>
+        <div>
+          <h1 class="logo-text">PayslipMax</h1>
+          <span style="font-size: 0.7rem; color: var(--text-muted);">Military Wealth Intelligence</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span class="premium-badge">Premium Active</span>
+      </div>
+    </header>
+
+    <!-- Controls & Selection -->
+    <div class="controls-panel">
+      <div>
+        <h2 style="font-size: 1.25rem;">AI CA Audit Engine</h2>
+        <p style="font-size: 0.8rem; color: var(--text-secondary);">Simulating PCDA(O) Audit & Anomaly Detection Pipeline</p>
+      </div>
+      <div class="select-wrapper">
+        <label for="month-select">Statement Date</label>
+        <select id="month-select">
+          <option value="2026-4" selected>April 2026</option>
+          <option value="2026-3">March 2026</option>
+          <option value="2026-2">February 2026</option>
+          <option value="2026-1">January 2026</option>
+          <option value="2025-12">December 2025</option>
+          <option value="2025-11">November 2025</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Overview Metrics -->
+    <div class="metrics-grid" id="metrics-grid">
+      <!-- Injected by JS -->
+    </div>
+
+    <!-- Prioritized AI Insights -->
+    <div class="insights-header">
+      <h3 style="font-size: 1.2rem;">Prioritized Audits</h3>
+      <span id="insights-count" style="font-size: 0.8rem; color: var(--text-secondary);">4 Insights Generated</span>
+    </div>
+    
+    <div class="insights-container" id="insights-container">
+      <!-- Injected by JS -->
+    </div>
+
+    <!-- Historical Accrued Intelligence -->
+    <div class="timeline-section">
+      <h3 style="font-size: 1.2rem;">Historical Intelligence Layer</h3>
+      <p style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 4px;">
+        Compounding data moat: Why a competitor cannot audit this user without six months of chronological ledger records.
+      </p>
+      <div class="timeline" id="timeline-container">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+
+    <!-- Developer Critique Section -->
+    <div class="critique-section">
+      <h3>Brutally Honest AI Insight Critique</h3>
+      <p style="font-size: 0.82rem; color: #fca5a5; margin-bottom: 16px;">
+        Developer-only UX & retention evaluation. Critical review of what works, what is weak, and how to improve before release.
+      </p>
+      <ul class="critique-list">
+        <li class="critique-item"><strong>Valuable (The Arrears Audit)</strong>: Extremely high signal. PCDA arrears calculations are notoriously opaque. Auditing them down to the rupee justifies the entire subscription cost instantly.</li>
+        <li class="critique-item"><strong>Valuable (Housing Rent Risk)</strong>: Generates high emotional impact. Rent recoveries hit officers as sudden, heavy debits (often ₹50,000+). Catching this early is highly actionable.</li>
+        <li class="critique-item"><strong>Weak (Basic Pay Increment)</strong>: It is technically correct, but low user value. The officer already knows they got an increment. It feels a bit like a generic summary. Better to frame it in terms of future retirement impact.</li>
+        <li class="critique-item"><strong>Weak (LTC Ticket Recovery)</strong>: While catching the deduction is good, the prompt could connect it to specific travel booking dates or flag if the amount is mismatched with standard distance charts.</li>
+        <li class="critique-item"><strong>Suggested Additions</strong>:
+          <br>• <strong>Posting Change Alert</strong>: Automatically trigger when TPTA/DA/HRA changes suggest relocation (e.g. from Class A city to Field), prompting the user to submit posting forms.
+          <br>• <strong>DSOP Max Cap Warning</strong>: Alert if annual DSOP contribution exceeds the statutory limit (currently ₹5 Lakhs), preventing sudden tax penalization.
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Interactive Action Modal (Email / Simulator) -->
+  <div class="modal" id="action-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Action Title</h3>
+        <span class="close-btn" id="modal-close">&times;</span>
+      </div>
+      <div id="modal-body">
+        <!-- Injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Load presentation layer as ES module -->
+  <script type="module" src="ai_insights_view.js"></script>
+</body>
+</html>
