@@ -17,14 +17,41 @@ import kotlinx.coroutines.tasks.await
  *
  * The Cloud Function returns HTTP 401 when the token is null or invalid.
  */
+interface FirebaseAuthWrapper {
+    val currentUserExists: Boolean
+    suspend fun signInAnonymously()
+    suspend fun getUserIdToken(forceRefresh: Boolean): String?
+}
+
+class DefaultFirebaseAuthWrapper : FirebaseAuthWrapper {
+    override val currentUserExists: Boolean
+        get() = Firebase.auth.currentUser != null
+
+    override suspend fun signInAnonymously() {
+        Firebase.auth.signInAnonymously().await()
+    }
+
+    override suspend fun getUserIdToken(forceRefresh: Boolean): String? {
+        return Firebase.auth.currentUser
+            ?.getIdToken(forceRefresh)
+            ?.await()
+            ?.token
+    }
+}
+
 actual class AuthTokenProvider actual constructor() {
     actual suspend fun getIdToken(): String? =
         try {
-            Firebase.auth.currentUser
-                ?.getIdToken(/* forceRefresh= */ true)
-                ?.await()
-                ?.token
+            if (!authWrapper.currentUserExists) {
+                authWrapper.signInAnonymously()
+            }
+            authWrapper.getUserIdToken(forceRefresh = true)
         } catch (e: Exception) {
             null
         }
+
+    companion object {
+        var authWrapper: FirebaseAuthWrapper = DefaultFirebaseAuthWrapper()
+    }
 }
+
