@@ -22,29 +22,28 @@
  */
 function buildPrompt(payload) {
   const { payslip, anomalies, monthlySavingRate, taxRatio, healthScore, history = [] } = payload;
-  const { earnings, deductions, summary } = payslip;
+  const { earnings, deductions, summary, taxAndSavings } = payslip;
 
   const anomalySection = anomalies.length > 0
     ? anomalies.map((a) => `[${a.type}] ${a.description}`).join(", ")
     : "None";
 
-  const prevMonth = history.length > 0 ? history[history.length - 1] : null;
-  const comparisonText = prevMonth
-    ? `Gross: ₹${Math.round(prevMonth.grossPay)}, Net: ₹${Math.round(prevMonth.netPay)}, Tax: ₹${Math.round(prevMonth.incomeTax)}, DSOP: ₹${Math.round(prevMonth.dsopSubscription || 0)} (${prevMonth.year}-${String(prevMonth.monthNum).padStart(2, "0")})`
-    : "None";
+  // Summarize up to the last 6 statements in history for compact context
+  const histSummary = history.slice(-6).map((h) =>
+    `${h.year}-${String(h.monthNum).padStart(2, "0")}: Gross: ₹${Math.round(h.grossPay)}, Net: ₹${Math.round(h.netPay)}, DSOP: ₹${Math.round(h.dsopSubscription || 0)}, Tax: ₹${Math.round(h.incomeTax || 0)}`
+  ).join(" | ");
+
+  const ytdInfo = taxAndSavings ? `YTD Gross: ₹${Math.round(taxAndSavings.grossSalaryYtd)}, YTD Tax: ₹${Math.round(taxAndSavings.taxDeductedYtd)}, DSOP Balance: ₹${Math.round(taxAndSavings.dsopFund?.closingBalance || 0)}` : "None";
 
   return `You are an expert Chartered Accountant auditing Indian Defence Services pay.
-Analyze the pay details and return a structured JSON report. Do NOT include any markdown wrapping, code block formatting (such as \`\`\`json), or conversational filler. Return only valid raw JSON.
+Analyze the pay details and return a structured JSON report. Do NOT include markdown wrapping or conversational filler. Return only valid raw JSON.
 
-Current Pay Data:
-- Gross Pay: ₹${Math.round(earnings.grossPay ?? summary.grossPay)}
-- Net Take-Home: ₹${Math.round(summary.netRemittance)}
-- Income Tax: ₹${Math.round(deductions.incomeTax)}
-- DSOP: ₹${Math.round(deductions.dsopSubscription)}
-- Savings Rate: ${monthlySavingRate.toFixed(1)}% (target >= 20%), Tax Ratio: ${taxRatio.toFixed(1)}%, Health Score: ${healthScore}/100
+Current Pay: Gross: ₹${Math.round(earnings.grossPay ?? summary.grossPay)}, Net: ₹${Math.round(summary.netRemittance)}, Tax: ₹${Math.round(deductions.incomeTax)}, DSOP: ₹${Math.round(deductions.dsopSubscription)}
+Savings Rate: ${monthlySavingRate.toFixed(1)}% (target >= 20%), Tax Ratio: ${taxRatio.toFixed(1)}%, Health Score: ${healthScore}/100
 
-Previous Month Pay Context: ${comparisonText}
+YTD & Fund Context: ${ytdInfo}
 Flagged Anomalies: ${anomalySection}
+History of past months: ${histSummary || "None"}
 
 Return JSON matching the following keys:
 {
