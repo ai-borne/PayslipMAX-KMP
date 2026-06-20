@@ -5,6 +5,7 @@ import com.ssbmax.pdfparser.database.PayslipDatabase
 import com.ssbmax.pdfparser.database.getDatabaseBuilder
 import com.ssbmax.pdfparser.parser.PdfParser
 import com.ssbmax.pdfparser.repository.PayslipRepository
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -47,6 +48,11 @@ val sharedModule: Module =
                             isLenient = true
                         },
                     )
+                }
+                install(HttpTimeout) {
+                    requestTimeoutMillis = 60_000
+                    connectTimeoutMillis = 30_000
+                    socketTimeoutMillis = 60_000
                 }
             }
         }
