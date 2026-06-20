@@ -1,6 +1,8 @@
 package com.ssbmax.pdfparser.ui.screens
 
 import androidx.compose.ui.test.*
+import com.ssbmax.pdfparser.database.toEncryptedEntity
+import com.ssbmax.pdfparser.domain.*
 import com.ssbmax.pdfparser.repository.PayslipRepository
 import com.ssbmax.pdfparser.testing.FakePayslipDao
 import com.ssbmax.pdfparser.testing.FakePdfParser
@@ -8,6 +10,7 @@ import com.ssbmax.pdfparser.ui.FakeBackupManager
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -57,5 +60,44 @@ class InsightsScreenUiTest {
                 )
             }
             onNodeWithText("Please import or select a payslip to unlock financial insights.").assertExists()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testMonthDropdownOpensOnTap() =
+        runComposeUiTest {
+            val officer = Officer("Test Officer", "00/000/000000X", "AA****00A")
+            val summary = PayslipSummary(grossPay = 100000.0, totalDeductions = 20000.0, netRemittance = 80000.0)
+            val aprilPayslip = ParsedPayslip(
+                file = "test.pdf", year = 2026, monthNum = 4, monthName = "April",
+                dateStr = "04/2026", officer = officer, earnings = Earnings(basicPay = 100000.0),
+                deductions = Deductions(), ledgerBalances = LedgerBalances(), summary = summary, taxAndSavings = null,
+            )
+            val marchPayslip = ParsedPayslip(
+                file = "test.pdf", year = 2026, monthNum = 3, monthName = "March",
+                dateStr = "03/2026", officer = officer, earnings = Earnings(basicPay = 100000.0),
+                deductions = Deductions(), ledgerBalances = LedgerBalances(), summary = summary, taxAndSavings = null,
+            )
+            runBlocking {
+                fakeDao.insertPayslip(marchPayslip.toEncryptedEntity())
+                fakeDao.insertPayslip(aprilPayslip.toEncryptedEntity())
+            }
+            testDispatcher.scheduler.runCurrent()
+            setContent {
+                InsightsScreen(viewModel = viewModel, onNavigateTo = {})
+            }
+            testDispatcher.scheduler.runCurrent()
+            mainClock.advanceTimeBy(300)
+
+            // April 2026 is the most recent and should be auto-selected
+            onNode(hasText("April 2026") and isSelected()).assertIsDisplayed()
+            // First tap — dropdown must open (FilterChip is the selected node)
+            onNode(hasText("April 2026") and isSelected()).performClick()
+            mainClock.advanceTimeBy(100)
+            onNodeWithText("March 2026").assertIsDisplayed()
+            // Second tap — dropdown must close
+            onNode(hasText("April 2026") and isSelected()).performClick()
+            mainClock.advanceTimeBy(100)
+            onNodeWithText("March 2026").assertDoesNotExist()
         }
 }
