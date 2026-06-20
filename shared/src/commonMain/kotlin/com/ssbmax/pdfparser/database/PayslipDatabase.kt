@@ -17,9 +17,12 @@ import androidx.room.migration.AutoMigrationSpec
         FinancialInsightEntity::class,
         RepresentationDraftEntity::class,
     ],
-    version = 6,
+    version = 7,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 5, to = 6, spec = PayslipDatabase.DeleteGeminiApiKeySpec::class)],
+    autoMigrations = [
+        AutoMigration(from = 5, to = 6, spec = PayslipDatabase.DeleteGeminiApiKeySpec::class),
+        AutoMigration(from = 6, to = 7)
+    ],
 )
 @ConstructedBy(PayslipDatabaseConstructor::class)
 abstract class PayslipDatabase : RoomDatabase() {

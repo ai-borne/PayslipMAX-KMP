@@ -105,9 +105,12 @@ open class FinancialIntelligenceRepository(
                     history = history,
                 )
 
-            // 4. Save deterministic insights to Database
+            // Prioritize anomalies to prevent dashboard clutter
+            val prioritizedAnomalies = InsightPrioritizationEngine.prioritize(engineResult.anomalies)
+
+            // 4. Save prioritized deterministic insights to Database
             val deterministicInsights =
-                engineResult.anomalies.map { anomaly ->
+                prioritizedAnomalies.map { anomaly ->
                     FinancialInsightEntity(
                         id = CryptoHelper.sha256("${anomaly.month}-${anomaly.type}-${anomaly.field}"),
                         monthStr = dateStr,
@@ -138,7 +141,7 @@ open class FinancialIntelligenceRepository(
         }
 
     /**
-     * Calls Gemini via proxy for narrative insights and saves the response.
+     * Calls Gemini via proxy or local Gemma provider based on settings, and saves the response.
      * Auth token is fetched internally from [AuthTokenProvider] — callers
      * do not need to know about Firebase Auth.
      */
@@ -151,13 +154,28 @@ open class FinancialIntelligenceRepository(
             val history = payslipDao.getAllLedgerRecords().firstOrNull() ?: emptyList()
             val sanitizedPayslip = RedactionSanitizer.redact(payslip)
 
-            val result =
-                geminiProxyService.getNarrativeInsights(
-                    sanitizedPayslip = sanitizedPayslip,
-                    engineResult = engineResult,
-                    history = history,
-                    authToken = authToken,
-                )
+            val settings = payslipDao.getSettings() ?: AppSettingsEntity()
+            val useLocalAi = settings.useLocalAi
+
+            val cloudProvider = GeminiCloudProvider(geminiProxyService)
+            val manager = AIProviderManager(
+                cloudProvider = cloudProvider,
+                localProvider = LocalGemmaProvider(),
+                useLocalAi = useLocalAi
+            )
+
+            val payload = PromptPayload(
+                currentMonthRawText = "",
+                sanitizedJsonData = "",
+                historicalSummaryText = "",
+                anomaliesCount = engineResult.anomalies.size,
+                sanitizedPayslip = sanitizedPayslip,
+                engineResult = engineResult,
+                history = history,
+                authToken = authToken
+            )
+
+            val result = manager.generateInsights(payload)
 
             if (result.isSuccess) {
                 val narrative = result.getOrThrow()
@@ -207,10 +225,10 @@ open class FinancialIntelligenceRepository(
 
     private fun mapAnomalyTypeToCategory(type: String): String {
         return when (type) {
-            "SALARY_LOSS" -> "SALARY_LOSS"
-            "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT" -> "ALLOWANCE"
-            "DEDUCTION_SPIKE" -> "TAX"
-            "DSOP_COMPLIANCE" -> "RETIREMENT"
+            "SALARY_LOSS", "DEBIT_RECOVERY" -> "SALARY_LOSS"
+            "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "ARREARS_AUDIT" -> "ALLOWANCE"
+            "DEDUCTION_SPIKE", "RENT_RECOVERY_RISK", "TAX_PROJECTION" -> "TAX"
+            "DSOP_COMPLIANCE", "DSOP_MILESTONE" -> "RETIREMENT"
             else -> "INFO"
         }
     }
@@ -222,14 +240,19 @@ open class FinancialIntelligenceRepository(
             "TPTA_ENTITLEMENT" -> "TPTA Entitlement Advisory"
             "DEDUCTION_SPIKE" -> "Deduction Spike Alert"
             "DSOP_COMPLIANCE" -> "DSOP Subscription Advisory"
+            "RENT_RECOVERY_RISK" -> "Quarters Rent Recovery Risk"
+            "DEBIT_RECOVERY" -> "Unexpected Debit Recovery"
+            "DSOP_MILESTONE" -> "DSOP Milestone Credited"
+            "TAX_PROJECTION" -> "Income Tax Cycle Projection"
+            "ARREARS_AUDIT" -> "Dearness Allowance Arrears Verified"
             else -> "Financial Advisory"
         }
     }
 
     private fun mapAnomalyTypeToSeverity(type: String): String {
         return when (type) {
-            "SALARY_LOSS", "DSOP_COMPLIANCE" -> "CRITICAL"
-            "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "DEDUCTION_SPIKE" -> "WARNING"
+            "SALARY_LOSS", "DSOP_COMPLIANCE", "RENT_RECOVERY_RISK", "DEBIT_RECOVERY" -> "CRITICAL"
+            "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "DEDUCTION_SPIKE", "TAX_PROJECTION" -> "WARNING"
             else -> "INFO"
         }
     }
