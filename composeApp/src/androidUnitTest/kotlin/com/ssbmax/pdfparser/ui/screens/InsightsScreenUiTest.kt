@@ -8,6 +8,8 @@ import com.ssbmax.pdfparser.testing.FakePayslipDao
 import com.ssbmax.pdfparser.testing.FakePdfParser
 import com.ssbmax.pdfparser.ui.FakeBackupManager
 import com.ssbmax.pdfparser.ui.PayslipViewModel
+import com.ssbmax.pdfparser.ui.setPremiumEnabled
+import com.ssbmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -99,5 +101,56 @@ class InsightsScreenUiTest {
             onNode(hasText("April 2026") and isSelected()).performClick()
             mainClock.advanceTimeBy(100)
             onNodeWithText("March 2026").assertDoesNotExist()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun freeUserSeesProTeaserAtBottom_notInlineLockedCards() =
+        runComposeUiTest {
+            val officer = Officer("Test Officer", "00/000/000000X", "AA****00A")
+            val summary = PayslipSummary(grossPay = 100000.0, totalDeductions = 20000.0, netRemittance = 80000.0)
+            val aprilPayslip = ParsedPayslip(
+                file = "test.pdf", year = 2026, monthNum = 4, monthName = "April",
+                dateStr = "04/2026", officer = officer, earnings = Earnings(basicPay = 100000.0),
+                deductions = Deductions(), ledgerBalances = LedgerBalances(), summary = summary, taxAndSavings = null,
+            )
+            runBlocking {
+                fakeDao.insertPayslip(aprilPayslip.toEncryptedEntity())
+            }
+            testDispatcher.scheduler.runCurrent()
+            setContent { InsightsScreen(viewModel = viewModel, onNavigateTo = {}) }
+            testDispatcher.scheduler.runCurrent()
+            mainClock.advanceTimeBy(300)
+
+            // Inline locked card removed for free users — its unique CTA must not exist
+            onNodeWithText(AppStrings.aiAuditUnlockBtn).assertDoesNotExist()
+            // ProFeaturesTeaser is at scroll bottom — swipe to compose it, then assert
+            onRoot().performTouchInput { swipeUp() }
+            mainClock.advanceTimeBy(300)
+            onNodeWithText(AppStrings.settingsProUpgradeBtn).assertExists()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun premiumUserSeesCaReportInlineNotTeaser() =
+        runComposeUiTest {
+            val officer = Officer("Test Officer", "00/000/000000X", "AA****00A")
+            val summary = PayslipSummary(grossPay = 100000.0, totalDeductions = 20000.0, netRemittance = 80000.0)
+            val aprilPayslip = ParsedPayslip(
+                file = "test.pdf", year = 2026, monthNum = 4, monthName = "April",
+                dateStr = "04/2026", officer = officer, earnings = Earnings(basicPay = 100000.0),
+                deductions = Deductions(), ledgerBalances = LedgerBalances(), summary = summary, taxAndSavings = null,
+            )
+            runBlocking {
+                fakeDao.insertPayslip(aprilPayslip.toEncryptedEntity())
+            }
+            viewModel.setPremiumEnabled(true)
+            testDispatcher.scheduler.runCurrent()
+            setContent { InsightsScreen(viewModel = viewModel, onNavigateTo = {}) }
+            testDispatcher.scheduler.runCurrent()
+            mainClock.advanceTimeBy(300)
+
+            // ProFeaturesTeaser must not appear for premium users
+            onNodeWithText(AppStrings.settingsProUpgradeBtn).assertDoesNotExist()
         }
 }
