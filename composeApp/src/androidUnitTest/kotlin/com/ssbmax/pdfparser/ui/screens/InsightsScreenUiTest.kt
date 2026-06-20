@@ -34,6 +34,20 @@ class InsightsScreenUiTest {
     private lateinit var repository: PayslipRepository
     private lateinit var viewModel: PayslipViewModel
 
+    private val testOfficer = Officer("Test Officer", "00/000/000000X", "AA****00A")
+    private val testSummary = PayslipSummary(grossPay = 100000.0, totalDeductions = 20000.0, netRemittance = 80000.0)
+
+    private fun buildPayslip(year: Int, monthNum: Int, monthName: String) = ParsedPayslip(
+        file = "test.pdf", year = year, monthNum = monthNum, monthName = monthName,
+        dateStr = "${monthNum.toString().padStart(2, '0')}/$year",
+        officer = testOfficer,
+        earnings = Earnings(basicPay = 100000.0),
+        deductions = Deductions(),
+        ledgerBalances = LedgerBalances(),
+        summary = testSummary,
+        taxAndSavings = null,
+    )
+
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
@@ -47,7 +61,9 @@ class InsightsScreenUiTest {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
-        org.koin.core.context.stopKoin()
+        try {
+            org.koin.core.context.stopKoin()
+        } catch (_: Exception) {}
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -68,21 +84,9 @@ class InsightsScreenUiTest {
     @Test
     fun testMonthDropdownOpensOnTap() =
         runComposeUiTest {
-            val officer = Officer("Test Officer", "00/000/000000X", "AA****00A")
-            val summary = PayslipSummary(grossPay = 100000.0, totalDeductions = 20000.0, netRemittance = 80000.0)
-            val aprilPayslip = ParsedPayslip(
-                file = "test.pdf", year = 2026, monthNum = 4, monthName = "April",
-                dateStr = "04/2026", officer = officer, earnings = Earnings(basicPay = 100000.0),
-                deductions = Deductions(), ledgerBalances = LedgerBalances(), summary = summary, taxAndSavings = null,
-            )
-            val marchPayslip = ParsedPayslip(
-                file = "test.pdf", year = 2026, monthNum = 3, monthName = "March",
-                dateStr = "03/2026", officer = officer, earnings = Earnings(basicPay = 100000.0),
-                deductions = Deductions(), ledgerBalances = LedgerBalances(), summary = summary, taxAndSavings = null,
-            )
             runBlocking {
-                fakeDao.insertPayslip(marchPayslip.toEncryptedEntity())
-                fakeDao.insertPayslip(aprilPayslip.toEncryptedEntity())
+                fakeDao.insertPayslip(buildPayslip(2026, 3, "March").toEncryptedEntity())
+                fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
             }
             testDispatcher.scheduler.runCurrent()
             setContent {
@@ -107,15 +111,8 @@ class InsightsScreenUiTest {
     @Test
     fun freeUserSeesProTeaserAtBottom_notInlineLockedCards() =
         runComposeUiTest {
-            val officer = Officer("Test Officer", "00/000/000000X", "AA****00A")
-            val summary = PayslipSummary(grossPay = 100000.0, totalDeductions = 20000.0, netRemittance = 80000.0)
-            val aprilPayslip = ParsedPayslip(
-                file = "test.pdf", year = 2026, monthNum = 4, monthName = "April",
-                dateStr = "04/2026", officer = officer, earnings = Earnings(basicPay = 100000.0),
-                deductions = Deductions(), ledgerBalances = LedgerBalances(), summary = summary, taxAndSavings = null,
-            )
             runBlocking {
-                fakeDao.insertPayslip(aprilPayslip.toEncryptedEntity())
+                fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
             }
             testDispatcher.scheduler.runCurrent()
             setContent { InsightsScreen(viewModel = viewModel, onNavigateTo = {}) }
@@ -134,15 +131,8 @@ class InsightsScreenUiTest {
     @Test
     fun premiumUserSeesCaReportInlineNotTeaser() =
         runComposeUiTest {
-            val officer = Officer("Test Officer", "00/000/000000X", "AA****00A")
-            val summary = PayslipSummary(grossPay = 100000.0, totalDeductions = 20000.0, netRemittance = 80000.0)
-            val aprilPayslip = ParsedPayslip(
-                file = "test.pdf", year = 2026, monthNum = 4, monthName = "April",
-                dateStr = "04/2026", officer = officer, earnings = Earnings(basicPay = 100000.0),
-                deductions = Deductions(), ledgerBalances = LedgerBalances(), summary = summary, taxAndSavings = null,
-            )
             runBlocking {
-                fakeDao.insertPayslip(aprilPayslip.toEncryptedEntity())
+                fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
             }
             viewModel.setPremiumEnabled(true)
             testDispatcher.scheduler.runCurrent()
@@ -152,5 +142,7 @@ class InsightsScreenUiTest {
 
             // ProFeaturesTeaser must not appear for premium users
             onNodeWithText(AppStrings.settingsProUpgradeBtn).assertDoesNotExist()
+            // CA report active card must be present (its generate CTA is the positive signal)
+            onNodeWithText(AppStrings.geminiAiAnalyzeBtn).assertIsDisplayed()
         }
 }
