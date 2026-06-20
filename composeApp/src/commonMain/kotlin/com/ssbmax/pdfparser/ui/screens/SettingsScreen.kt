@@ -118,6 +118,20 @@ private fun PreferencesSection(
             onPremiumToggle = { viewModel.setPremiumEnabled(it) },
             onUpgradePrompt = onUpgradePrompt,
         )
+        if (uiState.isPremiumEnabled) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            SettingsRow(
+                icon = "🤖",
+                title = "Use Local Gemma AI Model",
+                subtitle = "Runs 100% offline on-device to protect privacy and battery.",
+                trailingContent = {
+                    Switch(
+                        checked = uiState.useLocalAi,
+                        onCheckedChange = { viewModel.setLocalAiEnabled(it) }
+                    )
+                }
+            )
+        }
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         ThemeSelectionCard(
             currentTheme = uiState.appTheme,

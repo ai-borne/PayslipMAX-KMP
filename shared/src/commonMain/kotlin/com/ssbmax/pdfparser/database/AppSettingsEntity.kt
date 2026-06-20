@@ -2,6 +2,7 @@ package com.ssbmax.pdfparser.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.ColumnInfo
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,4 +18,5 @@ data class AppSettingsEntity(
     val profileName: String = "",
     val profileCdaNumber: String = "",
     val profilePanNumber: String = "",
+    @ColumnInfo(defaultValue = "0") val useLocalAi: Boolean = false,
 )

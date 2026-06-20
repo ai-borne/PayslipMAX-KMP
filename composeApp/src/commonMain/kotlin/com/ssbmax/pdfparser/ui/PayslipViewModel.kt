@@ -30,6 +30,7 @@ data class PayslipUiState(
     val profileCdaNumber: String = "",
     val profilePanNumber: String = "",
     val isAppLocked: Boolean = false,
+    val useLocalAi: Boolean = false,
 )
 
 class PayslipViewModel(
@@ -274,6 +275,7 @@ class PayslipViewModel(
                         profileCdaNumber = settings?.profileCdaNumber ?: "",
                         profilePanNumber = settings?.profilePanNumber ?: "",
                         isAppLocked = isLocked,
+                        useLocalAi = settings?.useLocalAi ?: false,
                     )
                 }
                 if (isPremium && !previousPremiumEnabled) {
