@@ -39,7 +39,6 @@ object InsightsStrings {
     const val premiumToolsTaxPlannerValueProp = "See 80C/NPS headroom & estimated tax savings"
     const val premiumToolsDsopValueProp = "Project your DSOP corpus at retirement"
     const val premiumToolsOpenLabel = "Open"
-    const val premiumToolsLockedLabel = "Unlock"
     const val premiumToolsDraftClaimsIcon = "📋"
     const val premiumToolsTaxPlannerIcon = "📊"
     const val premiumToolsDsopIcon = "📈"

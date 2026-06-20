@@ -175,7 +175,7 @@ private fun InsightsLazyBody(
             item { CriticalAlertsQueue(anomalies = state.engineResult.anomalies) }
         }
         if (uiState.isPremiumEnabled) {
-            premiumContentItems(uiState, showWellnessDrivers, drivers, state, onShowTransparency, onViewInsightsClick, onShowUpgradeSheet) { viewModel.clearAiInsights() }
+            premiumContentItems(uiState, showWellnessDrivers, drivers, state, onShowTransparency, onViewInsightsClick) { viewModel.clearAiInsights() }
         }
         item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
         if (state.momChanges.isNotEmpty()) {
@@ -193,19 +193,16 @@ private fun LazyListScope.premiumContentItems(
     state: InsightsState,
     onShowTransparency: () -> Unit,
     onViewInsightsClick: () -> Unit,
-    onShowUpgradeSheet: () -> Unit,
     onClearAiInsights: () -> Unit,
 ) {
     item {
         GeminiAiInsightsSection(
-            isPremiumEnabled = true,
             aiInsights = uiState.aiInsights,
             isAiLoading = uiState.isAiLoading,
             aiError = uiState.aiError,
             onGenerateClick = onShowTransparency,
             onViewInsightsClick = onViewInsightsClick,
             onClearClick = onClearAiInsights,
-            onUpgradeClick = onShowUpgradeSheet,
         )
     }
     if (showWellnessDrivers) {
@@ -219,13 +216,7 @@ private fun LazyListScope.bottomTierItem(
     onUpgradeClick: () -> Unit,
 ) {
     if (isPremiumEnabled) {
-        item {
-            PremiumToolsSection(
-                isPremiumEnabled = true,
-                onNavigateTo = onNavigateTo,
-                onUpgradeClick = onUpgradeClick,
-            )
-        }
+        item { PremiumToolsSection(onNavigateTo = onNavigateTo) }
     } else {
         item { ProFeaturesTeaser(onUpgradeClick = onUpgradeClick) }
     }
