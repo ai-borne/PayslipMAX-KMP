@@ -30,15 +30,15 @@ function buildPrompt(payload) {
 
   // Summarize up to the last 6 statements in history for compact context
   const histSummary = history.slice(-6).map((h) =>
-    `${h.year}-${String(h.monthNum).padStart(2, "0")}: Gross: ₹${Math.round(h.grossPay)}, Net: ₹${Math.round(h.netPay)}, DSOP: ₹${Math.round(h.dsopSubscription || 0)}, Tax: ₹${Math.round(h.incomeTax || 0)}`
+    `${h.year}-${String(h.monthNum).padStart(2, "0")}: Gross: Rs.${Math.round(h.grossPay)}, Net: Rs.${Math.round(h.netPay)}, DSOP: Rs.${Math.round(h.dsopSubscription || 0)}, Tax: Rs.${Math.round(h.incomeTax || 0)}`
   ).join(" | ");
 
-  const ytdInfo = taxAndSavings ? `YTD Gross: ₹${Math.round(taxAndSavings.grossSalaryYtd)}, YTD Tax: ₹${Math.round(taxAndSavings.taxDeductedYtd)}, DSOP Balance: ₹${Math.round(taxAndSavings.dsopFund?.closingBalance || 0)}` : "None";
+  const ytdInfo = taxAndSavings ? `YTD Gross: Rs.${Math.round(taxAndSavings.grossSalaryYtd)}, YTD Tax: Rs.${Math.round(taxAndSavings.taxDeductedYtd)}, DSOP Balance: Rs.${Math.round(taxAndSavings.dsopFund?.closingBalance || 0)}` : "None";
 
   return `You are an expert Chartered Accountant auditing Indian Defence Services pay.
 Analyze the pay details and return a structured JSON report. Do NOT include markdown wrapping or conversational filler. Return only valid raw JSON.
 
-Current Pay: Gross: ₹${Math.round(earnings.grossPay ?? summary.grossPay)}, Net: ₹${Math.round(summary.netRemittance)}, Tax: ₹${Math.round(deductions.incomeTax)}, DSOP: ₹${Math.round(deductions.dsopSubscription)}
+Current Pay: Gross: Rs.${Math.round(earnings.grossPay ?? summary.grossPay)}, Net: Rs.${Math.round(summary.netRemittance)}, Tax: Rs.${Math.round(deductions.incomeTax)}, DSOP: Rs.${Math.round(deductions.dsopSubscription)}
 Savings Rate: ${monthlySavingRate.toFixed(1)}% (target >= 20%), Tax Ratio: ${taxRatio.toFixed(1)}%, Health Score: ${healthScore}/100
 
 YTD & Fund Context: ${ytdInfo}
@@ -58,7 +58,7 @@ Return JSON matching the following keys:
     {"observation": "Net salary decreased by 5%", "action": "Verify Base Pay and DA adjustments"}
   ],
   "opportunities": [
-    {"opportunity": "NPS Section 80CCD(1B) headroom of ₹50,000 unutilized", "action": "Invest ₹50,000 in NPS to save tax"}
+    {"opportunity": "NPS Section 80CCD(1B) headroom of Rs.50,000 unutilized", "action": "Invest Rs.50,000 in NPS to save tax"}
   ],
   "actionRequired": [
     "Verify missing Transport Allowance with PCDA Pune"
