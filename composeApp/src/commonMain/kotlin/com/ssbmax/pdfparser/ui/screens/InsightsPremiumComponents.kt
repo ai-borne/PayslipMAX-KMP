@@ -61,6 +61,84 @@ fun PremiumToolsSection(
 }
 
 @Composable
+fun ProFeaturesTeaser(
+    onUpgradeClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AppDimensions.CornerRadius),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+    ) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+        ) {
+            ProTeaserHeader()
+            ProFeatureRow(
+                icon = AppStrings.proTeaserAiIcon,
+                title = AppStrings.settingsAiInsightsLockedTitle,
+                detail = InsightsStrings.proTeaserAiDetail,
+            )
+            ProFeatureRow(
+                icon = AppStrings.proTeaserToolsIcon,
+                title = AppStrings.premiumToolsTitle,
+                detail = InsightsStrings.proTeaserToolsDetail,
+            )
+            Button(onClick = onUpgradeClick, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = AppStrings.settingsProUpgradeBtn,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProTeaserHeader() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+    ) {
+        Text(AppStrings.proTeaserCrownIcon, style = MaterialTheme.typography.titleMedium)
+        Column {
+            Text(
+                text = AppStrings.settingsProPlanTitle,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                text = AppStrings.settingsProPlanPrice,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProFeatureRow(icon: String, title: String, detail: String) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(icon, style = MaterialTheme.typography.bodyLarge)
+        Column {
+            Text(title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+            Text(
+                text = detail,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
 private fun PremiumToolCard(
     spec: PremiumToolSpec,
     isPremiumEnabled: Boolean,
