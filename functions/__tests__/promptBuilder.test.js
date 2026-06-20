@@ -91,6 +91,30 @@ describe("buildPrompt", () => {
     expect(prompt).toContain("2024-06");
   });
 
+  test("prompt contains YTD Gross and Tax details when taxAndSavings is provided", () => {
+    const payload = {
+      ...VALID_PAYLOAD,
+      payslip: {
+        ...VALID_PAYLOAD.payslip,
+        taxAndSavings: {
+          grossSalaryYtd: 3600000,
+          taxDeductedYtd: 600000,
+          dsopFund: { closingBalance: 2460000 },
+        },
+      },
+    };
+    const prompt = buildPrompt(payload);
+    expect(prompt).toContain("YTD Gross: ₹3600000");
+    expect(prompt).toContain("YTD Tax: ₹600000");
+    expect(prompt).toContain("DSOP Balance: ₹2460000");
+  });
+
+  test("prompt contains multiple historical months in the history summary", () => {
+    const prompt = buildPrompt(VALID_PAYLOAD);
+    expect(prompt).toContain("2024-07");
+    expect(prompt).toContain("2024-06");
+  });
+
   test("empty anomalies list produces a valid prompt with no-anomaly message", () => {
     const payload = { ...VALID_PAYLOAD, anomalies: [] };
     const prompt = buildPrompt(payload);
