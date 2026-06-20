@@ -118,9 +118,11 @@ fun parseMarkdown(text: String): AnnotatedString {
                 trimmed.startsWith("{") || trimmed.startsWith("}") ||
                 trimmed.startsWith("[") || trimmed.startsWith("]") ||
                 trimmed.startsWith("\"") && trimmed.contains(":") ||
-                trimmed.startsWith("Summary") ||
-                trimmed.isEmpty() -> {
+                trimmed.startsWith("Summary") -> {
                     // Skip these lines entirely
+                }
+                trimmed.isEmpty() -> {
+                    if (index < lines.lastIndex) append("\n")
                 }
                 line.startsWith("# ") -> {
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold, fontSize = AppDimensions.TextSizeHuge)) {

@@ -95,7 +95,7 @@ private fun MonthSelectorDropdown(
     ) {
         FilterChip(
             selected = true,
-            onClick = { dropdownExpanded = !dropdownExpanded },
+            onClick = {},
             label = {
                 Text(
                     text = "${selected.monthName} ${selected.year}",
