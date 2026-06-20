@@ -37,7 +37,14 @@ internal fun extractAiSummary(
     val first =
         insights.lines()
             .map { it.trim() }
-            .firstOrNull { it.isNotEmpty() && !it.startsWith("#") && !it.startsWith("---") }
+            .firstOrNull {
+                it.isNotEmpty() &&
+                !it.startsWith("#") &&
+                !it.startsWith("---") &&
+                !it.startsWith("{") &&
+                !it.startsWith("[") &&
+                !it.startsWith("```")
+            }
             ?.removePrefix("- ")
             ?.removePrefix("* ")
             ?.trim()

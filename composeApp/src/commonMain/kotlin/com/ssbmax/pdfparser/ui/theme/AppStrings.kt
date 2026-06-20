@@ -127,7 +127,7 @@ object AppStrings {
     const val settingsOfflineFirst = "Offline-First"
     const val settingsOfflineSecureTitle = "100% Offline & Secure"
     const val settingsOfflineSecureDesc = "All payslip decryption and parsing happens locally on your device. Your data never leaves your control."
-    const val settingsAiPoweredByProxy = "AI insights powered by Gemini (secure server-side)"
+    const val settingsAiPoweredByProxy = "AI insights powered by Gemini"
 
     // Sandbox / Testing
     const val settingsStagingTitle = "Staging & Testing Sandbox"
@@ -154,7 +154,7 @@ object AppStrings {
     const val settingsProPlanBullet4 = "• 100% Offline & Private Processing"
     const val settingsProUpgradeBtn = "Unlock Pro Tier"
     const val settingsDocumentationHeader = "Documentation"
-    const val settingsAiInsightsLockedTitle = "AI Chartered Accountant Audit"
+    const val settingsAiInsightsLockedTitle = "CA Level AI Report"
     const val settingsRowThemeLabel = "Interface Theme"
     const val settingsRowPasscodeLabel = "App Passcode Lock"
     const val settingsRowBackupLabel = "Cloud Sync & Portability"
@@ -177,7 +177,7 @@ object AppStrings {
     const val historyActionShareSummary = "Share Summary"
     const val historyYearlySummary = "Yearly Summary"
     const val historyNetTakeHomeLabel = "Net Take-Home"
-    const val historyNetTakeHomeShort = "Net take home Rs"
+    const val historyNetTakeHomeShort = "Take Home"
     const val historyGrossPayLabel = "Gross"
     const val historyDsopLabel = "DSOP"
     const val historyTaxLabel = "Tax"
