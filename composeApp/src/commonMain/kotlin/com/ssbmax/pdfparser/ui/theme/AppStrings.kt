@@ -86,6 +86,7 @@ object AppStrings {
     const val proTeaserCrownIcon = "👑"
     const val proTeaserAiIcon = "🤖"
     const val proTeaserToolsIcon = "🛠"
+    const val aiRegenerateIcon = "🔄"
     const val settingsProPlanDesc = "Unlock personalization & CA-grade tax advice"
     const val settingsProPlanPrice = "₹99 / Year"
     const val settingsProPlanActive = "Pro Plan Activated"
