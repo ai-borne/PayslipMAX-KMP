@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
-/** Returns the first non-header paragraph from AI insights, truncated to [maxLength]. */
+/** Returns the first non-header, non-JSON paragraph from AI insights, truncated to [maxLength]. */
 internal fun extractAiSummary(
     insights: String,
     maxLength: Int = 200,
@@ -43,7 +43,12 @@ internal fun extractAiSummary(
                 !it.startsWith("---") &&
                 !it.startsWith("{") &&
                 !it.startsWith("[") &&
-                !it.startsWith("```")
+                !it.startsWith("}") &&
+                !it.startsWith("]") &&
+                !it.startsWith("```") &&
+                !it.startsWith("\"") &&
+                !it.startsWith("Summary") &&
+                !it.contains("\":") // skip JSON key-value lines
             }
             ?.removePrefix("- ")
             ?.removePrefix("* ")
@@ -275,18 +280,15 @@ private fun AiInsightsSummary(
     aiInsights: String,
     onViewClick: () -> Unit,
 ) {
-    Text(
-        text = AppStrings.aiAuditSummaryLabel,
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.Bold,
-    )
-    Spacer(Modifier.height(AppDimensions.SpacingTiny))
-    Text(
-        text = extractAiSummary(aiInsights),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
+    val summary = extractAiSummary(aiInsights)
+    if (summary.isNotEmpty()) {
+        Text(
+            text = summary,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
+    }
     Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
     Button(onClick = onViewClick, modifier = Modifier.fillMaxWidth()) {
         Text(AppStrings.geminiAiViewReportBtn)
