@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
@@ -12,6 +13,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import com.ssbmax.pdfparser.insights.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -28,11 +30,12 @@ fun AiInsightsBottomSheet(
         modifier = modifier.fillMaxHeight(0.85f),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = AppDimensions.PaddingMedium)
-                .padding(bottom = AppDimensions.PaddingLarge),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = AppDimensions.PaddingMedium)
+                    .padding(bottom = AppDimensions.PaddingLarge),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             HeaderRow(onDismissRequest = onDismissRequest, onRegenerateClick = onRegenerateClick)
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -49,7 +52,7 @@ private fun HeaderRow(
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("👑", fontSize = AppDimensions.TextSizeHuge, modifier = Modifier.padding(end = AppDimensions.SpacingSmall))
@@ -57,7 +60,7 @@ private fun HeaderRow(
                 text = AppStrings.settingsAiInsightsLockedTitle,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -77,21 +80,32 @@ private fun ColumnScope.ReportContent(
     aiInsights: String,
 ) {
     val scrollState = rememberScrollState()
-    val annotatedText = parseMarkdown(aiInsights)
-    
+    val parsedReport = remember(aiInsights) { AiInsightReportParser.parse(aiInsights) }
+
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .verticalScroll(scrollState)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(scrollState),
     ) {
-        Text(
-            text = annotatedText,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (parsedReport != null) {
+            ParsedReportContent(parsedReport)
+        } else {
+            LegacyReportContent(aiInsights)
+        }
     }
+}
+
+@Composable
+private fun LegacyReportContent(aiInsights: String) {
+    val annotatedText = parseMarkdown(aiInsights)
+    Text(
+        text = annotatedText,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = Modifier.fillMaxWidth(),
+    )
 }
 
 fun parseMarkdown(text: String): AnnotatedString {

@@ -12,14 +12,16 @@ object RepresentationDraftGenerator {
         officer: Officer,
     ): RepresentationDraftEntity {
         val id = CryptoHelper.sha256("$disputeMonth-$disputeType-${CryptoHelper.getCurrentTimeMillis()}")
-        val componentName = when (disputeType) {
-            "MISSING_ALLOWANCE" -> "HRA / Allowance"
-            "TPTA_ENTITLEMENT" -> "Transport Allowance (TPTA)"
-            "SALARY_LOSS" -> "Net Pay"
-            else -> disputeType
-        }
+        val componentName =
+            when (disputeType) {
+                "MISSING_ALLOWANCE" -> "HRA / Allowance"
+                "TPTA_ENTITLEMENT" -> "Transport Allowance (TPTA)"
+                "SALARY_LOSS" -> "Net Pay"
+                else -> disputeType
+            }
         val subject = "Representation regarding Non-Admissibility of $componentName"
-        val body = """
+        val body =
+            """
             To,
             The Principal Controller of Defence Accounts (Officers)
             Golibar Maidan, Pune - 411001
@@ -49,7 +51,7 @@ object RepresentationDraftGenerator {
             
             [Officer Name]
             [Rank]
-        """.trimIndent()
+            """.trimIndent()
 
         return RepresentationDraftEntity(
             id = id,

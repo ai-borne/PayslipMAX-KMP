@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
-import com.ssbmax.pdfparser.ui.theme.AppStrings
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.math.abs
 
@@ -53,9 +52,10 @@ fun InsightsTopBar(
         shadowElevation = AppDimensions.SpacingTiny,
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = AppDimensions.PaddingMedium, vertical = AppDimensions.SpacingSmall),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = AppDimensions.PaddingMedium, vertical = AppDimensions.SpacingSmall),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -84,9 +84,10 @@ private fun MonthSelectorDropdown(
     modifier: Modifier = Modifier,
 ) {
     var dropdownExpanded by remember { mutableStateOf(false) }
-    val sorted = remember(payslips) {
-        payslips.sortedWith(compareBy<ParsedPayslip> { it.year }.thenBy { it.monthNum }).reversed()
-    }
+    val sorted =
+        remember(payslips) {
+            payslips.sortedWith(compareBy<ParsedPayslip> { it.year }.thenBy { it.monthNum }).reversed()
+        }
     ExposedDropdownMenuBox(
         expanded = dropdownExpanded,
         onExpandedChange = { dropdownExpanded = it },
@@ -125,6 +126,21 @@ private fun MonthSelectorDropdown(
 // ── Wellness chip (compact, tappable) ────────────────────────────────────────
 
 @Composable
+private fun getWellnessColor(score: Int) =
+    when {
+        score >= 80 -> MaterialTheme.colorScheme.primary
+        score >= 50 -> MaterialTheme.colorScheme.secondary
+        else -> MaterialTheme.colorScheme.error
+    }
+
+private fun getDeltaText(delta: Int?) =
+    when {
+        delta == null || delta == 0 -> ""
+        delta > 0 -> " ▲$delta"
+        else -> " ▼${abs(delta)}"
+    }
+
+@Composable
 fun WellnessChip(
     score: Int,
     delta: Int?,
@@ -132,16 +148,8 @@ fun WellnessChip(
     onExpandClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val color = when {
-        score >= 80 -> MaterialTheme.colorScheme.primary
-        score >= 50 -> MaterialTheme.colorScheme.secondary
-        else -> MaterialTheme.colorScheme.error
-    }
-    val deltaText = when {
-        delta == null || delta == 0 -> ""
-        delta > 0 -> " ▲$delta"
-        else -> " ▼${abs(delta)}"
-    }
+    val color = getWellnessColor(score)
+    val deltaText = getDeltaText(delta)
     Surface(
         modifier = modifier.clickable(onClick = onExpandClick),
         shape = RoundedCornerShape(AppDimensions.IconSizeHuge),
@@ -149,10 +157,11 @@ fun WellnessChip(
         border = BorderStroke(AppDimensions.BorderThin, color.copy(alpha = 0.4f)),
     ) {
         Row(
-            modifier = Modifier.padding(
-                horizontal = AppDimensions.PaddingSmall,
-                vertical = AppDimensions.SpacingTiny,
-            ),
+            modifier =
+                Modifier.padding(
+                    horizontal = AppDimensions.PaddingSmall,
+                    vertical = AppDimensions.SpacingTiny,
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
         ) {
@@ -219,16 +228,18 @@ fun WellnessDriversSection(
 
 @Composable
 private fun WellnessDriverRow(driver: WellnessDriver) {
-    val impactColor = when {
-        driver.pointImpact > 0 -> MaterialTheme.colorScheme.primary
-        driver.pointImpact < 0 -> MaterialTheme.colorScheme.error
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
-    }
-    val impactSign = when {
-        driver.pointImpact > 0 -> "+${driver.pointImpact}"
-        driver.pointImpact == 0 -> "±0"
-        else -> "${driver.pointImpact}"
-    }
+    val impactColor =
+        when {
+            driver.pointImpact > 0 -> MaterialTheme.colorScheme.primary
+            driver.pointImpact < 0 -> MaterialTheme.colorScheme.error
+            else -> MaterialTheme.colorScheme.onSurfaceVariant
+        }
+    val impactSign =
+        when {
+            driver.pointImpact > 0 -> "+${driver.pointImpact}"
+            driver.pointImpact == 0 -> "±0"
+            else -> "${driver.pointImpact}"
+        }
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),

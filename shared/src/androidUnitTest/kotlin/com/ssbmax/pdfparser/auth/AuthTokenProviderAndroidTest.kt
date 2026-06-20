@@ -33,7 +33,6 @@ class FakeFirebaseAuthWrapper : FirebaseAuthWrapper {
 }
 
 class AuthTokenProviderAndroidTest {
-
     private lateinit var fakeWrapper: FakeFirebaseAuthWrapper
 
     @Before
@@ -48,50 +47,54 @@ class AuthTokenProviderAndroidTest {
     }
 
     @Test
-    fun testGetIdToken_whenUserAlreadySignedIn_returnsTokenWithoutSigningInAgain() = runTest {
-        fakeWrapper.currentUserExists = true
-        fakeWrapper.tokenToReturn = "existing-token"
+    fun testGetIdToken_whenUserAlreadySignedIn_returnsTokenWithoutSigningInAgain() =
+        runTest {
+            fakeWrapper.currentUserExists = true
+            fakeWrapper.tokenToReturn = "existing-token"
 
-        val provider = AuthTokenProvider()
-        val token = provider.getIdToken()
+            val provider = AuthTokenProvider()
+            val token = provider.getIdToken()
 
-        assertEquals("existing-token", token)
-        assertEquals(0, fakeWrapper.signInCalledCount)
-        assertEquals(true, fakeWrapper.forceRefreshPassed)
-    }
-
-    @Test
-    fun testGetIdToken_whenUserNotSignedIn_signsInAnonymouslyAndReturnsToken() = runTest {
-        fakeWrapper.currentUserExists = false
-        fakeWrapper.tokenToReturn = "new-token"
-
-        val provider = AuthTokenProvider()
-        val token = provider.getIdToken()
-
-        assertEquals("new-token", token)
-        assertEquals(1, fakeWrapper.signInCalledCount)
-        assertEquals(true, fakeWrapper.forceRefreshPassed)
-    }
+            assertEquals("existing-token", token)
+            assertEquals(0, fakeWrapper.signInCalledCount)
+            assertEquals(true, fakeWrapper.forceRefreshPassed)
+        }
 
     @Test
-    fun testGetIdToken_whenSignInThrows_returnsNullGracefully() = runTest {
-        fakeWrapper.currentUserExists = false
-        fakeWrapper.signInShouldThrow = true
+    fun testGetIdToken_whenUserNotSignedIn_signsInAnonymouslyAndReturnsToken() =
+        runTest {
+            fakeWrapper.currentUserExists = false
+            fakeWrapper.tokenToReturn = "new-token"
 
-        val provider = AuthTokenProvider()
-        val token = provider.getIdToken()
+            val provider = AuthTokenProvider()
+            val token = provider.getIdToken()
 
-        assertNull(token)
-    }
+            assertEquals("new-token", token)
+            assertEquals(1, fakeWrapper.signInCalledCount)
+            assertEquals(true, fakeWrapper.forceRefreshPassed)
+        }
 
     @Test
-    fun testGetIdToken_whenTokenFetchThrows_returnsNullGracefully() = runTest {
-        fakeWrapper.currentUserExists = true
-        fakeWrapper.tokenShouldThrow = true
+    fun testGetIdToken_whenSignInThrows_returnsNullGracefully() =
+        runTest {
+            fakeWrapper.currentUserExists = false
+            fakeWrapper.signInShouldThrow = true
 
-        val provider = AuthTokenProvider()
-        val token = provider.getIdToken()
+            val provider = AuthTokenProvider()
+            val token = provider.getIdToken()
 
-        assertNull(token)
-    }
+            assertNull(token)
+        }
+
+    @Test
+    fun testGetIdToken_whenTokenFetchThrows_returnsNullGracefully() =
+        runTest {
+            fakeWrapper.currentUserExists = true
+            fakeWrapper.tokenShouldThrow = true
+
+            val provider = AuthTokenProvider()
+            val token = provider.getIdToken()
+
+            assertNull(token)
+        }
 }

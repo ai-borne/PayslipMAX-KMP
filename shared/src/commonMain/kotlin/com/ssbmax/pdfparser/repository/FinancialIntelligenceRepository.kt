@@ -3,7 +3,6 @@ package com.ssbmax.pdfparser.repository
 import com.ssbmax.pdfparser.auth.AuthTokenProvider
 import com.ssbmax.pdfparser.crypto.CryptoHelper
 import com.ssbmax.pdfparser.database.*
-import com.ssbmax.pdfparser.domain.Officer
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.insights.*
 import kotlinx.coroutines.Dispatchers
