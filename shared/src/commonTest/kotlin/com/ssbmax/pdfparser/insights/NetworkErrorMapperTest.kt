@@ -11,10 +11,8 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class NetworkErrorMapperTest {
-
     @Test
     fun testSocketTimeoutMapping() {
         val exception = SocketTimeoutException("Socket timeout has expired [url=https://test.com, socket_timeout=unknown] ms")
@@ -37,61 +35,73 @@ class NetworkErrorMapperTest {
     }
 
     @Test
-    fun testResponseExceptionUnauthorized() = runTest {
-        val mockEngine = MockEngine { _ ->
-            respond("Unauthorized", status = HttpStatusCode.Unauthorized)
-        }
-        val client = HttpClient(mockEngine) {
-            expectSuccess = true
-        }
-        val exception = try {
-            client.get("https://test.com")
-            throw AssertionError("Should have failed")
-        } catch (e: Exception) {
-            e
-        }
+    fun testResponseExceptionUnauthorized() =
+        runTest {
+            val mockEngine =
+                MockEngine { _ ->
+                    respond("Unauthorized", status = HttpStatusCode.Unauthorized)
+                }
+            val client =
+                HttpClient(mockEngine) {
+                    expectSuccess = true
+                }
+            val exception =
+                try {
+                    client.get("https://test.com")
+                    throw AssertionError("Should have failed")
+                } catch (e: Exception) {
+                    e
+                }
 
-        val message = NetworkErrorMapper.getUserFriendlyMessage(exception)
-        assertEquals("Unauthorized access. Please log in again.", message)
-    }
-
-    @Test
-    fun testResponseExceptionNotFound() = runTest {
-        val mockEngine = MockEngine { _ ->
-            respond("Not Found", status = HttpStatusCode.NotFound)
+            val message = NetworkErrorMapper.getUserFriendlyMessage(exception)
+            assertEquals("Unauthorized access. Please log in again.", message)
         }
-        val client = HttpClient(mockEngine) {
-            expectSuccess = true
-        }
-        val exception = try {
-            client.get("https://test.com")
-            throw AssertionError("Should have failed")
-        } catch (e: Exception) {
-            e
-        }
-
-        val message = NetworkErrorMapper.getUserFriendlyMessage(exception)
-        assertEquals("The requested service was not found.", message)
-    }
 
     @Test
-    fun testResponseExceptionInternalServerError() = runTest {
-        val mockEngine = MockEngine { _ ->
-            respond("Internal Server Error", status = HttpStatusCode.InternalServerError)
-        }
-        val client = HttpClient(mockEngine) {
-            expectSuccess = true
-        }
-        val exception = try {
-            client.get("https://test.com")
-            throw AssertionError("Should have failed")
-        } catch (e: Exception) {
-            e
+    fun testResponseExceptionNotFound() =
+        runTest {
+            val mockEngine =
+                MockEngine { _ ->
+                    respond("Not Found", status = HttpStatusCode.NotFound)
+                }
+            val client =
+                HttpClient(mockEngine) {
+                    expectSuccess = true
+                }
+            val exception =
+                try {
+                    client.get("https://test.com")
+                    throw AssertionError("Should have failed")
+                } catch (e: Exception) {
+                    e
+                }
+
+            val message = NetworkErrorMapper.getUserFriendlyMessage(exception)
+            assertEquals("The requested service was not found.", message)
         }
 
-        val message = NetworkErrorMapper.getUserFriendlyMessage(exception)
-        assertEquals("Our servers are experiencing issues. Please try again later.", message)
-    }
+    @Test
+    fun testResponseExceptionInternalServerError() =
+        runTest {
+            val mockEngine =
+                MockEngine { _ ->
+                    respond("Internal Server Error", status = HttpStatusCode.InternalServerError)
+                }
+            val client =
+                HttpClient(mockEngine) {
+                    expectSuccess = true
+                }
+            val exception =
+                try {
+                    client.get("https://test.com")
+                    throw AssertionError("Should have failed")
+                } catch (e: Exception) {
+                    e
+                }
+
+            val message = NetworkErrorMapper.getUserFriendlyMessage(exception)
+            assertEquals("Our servers are experiencing issues. Please try again later.", message)
+        }
 
     @Test
     fun testUnknownHostExceptionMapping() {

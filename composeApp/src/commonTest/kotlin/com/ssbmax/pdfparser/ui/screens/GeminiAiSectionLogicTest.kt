@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class GeminiAiSectionLogicTest {
-
     @Test
     fun testExtractSummaryFromPlainParagraph() {
         val insights = "Your tax situation is healthy. You have ₹50,000 of 80C headroom remaining."
@@ -16,13 +15,14 @@ class GeminiAiSectionLogicTest {
 
     @Test
     fun testExtractSummarySkipsHeaders() {
-        val insights = """
+        val insights =
+            """
             # AI CA Audit Report
 
             ## Executive Summary
 
             Your payslip for August 2024 shows a net taxable income of ₹5,00,000.
-        """.trimIndent()
+            """.trimIndent()
         assertEquals(
             "Your payslip for August 2024 shows a net taxable income of ₹5,00,000.",
             extractAiSummary(insights),
@@ -31,10 +31,11 @@ class GeminiAiSectionLogicTest {
 
     @Test
     fun testExtractSummarySkipsSeparators() {
-        val insights = """
+        val insights =
+            """
             ---
             Your monthly gross pay is ₹1,00,000.
-        """.trimIndent()
+            """.trimIndent()
         assertEquals("Your monthly gross pay is ₹1,00,000.", extractAiSummary(insights))
     }
 

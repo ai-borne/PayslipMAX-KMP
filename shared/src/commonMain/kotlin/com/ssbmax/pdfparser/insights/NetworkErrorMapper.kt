@@ -6,12 +6,12 @@ import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.ResponseException
 
 object NetworkErrorMapper {
-
     fun getUserFriendlyMessage(throwable: Throwable): String {
         return when (throwable) {
             is SocketTimeoutException,
             is ConnectTimeoutException,
-            is HttpRequestTimeoutException -> {
+            is HttpRequestTimeoutException,
+            -> {
                 "The server is taking too long to respond. Please check your internet connection and try again."
             }
             is ResponseException -> {

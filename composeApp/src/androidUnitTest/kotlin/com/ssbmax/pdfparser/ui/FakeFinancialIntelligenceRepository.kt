@@ -17,11 +17,12 @@ class FakeFinancialIntelligenceRepository(
     var narrativeResult: Result<String> = Result.success("Fake AI narrative"),
     var generateCallCount: Int = 0,
 ) : FinancialIntelligenceRepository(
-    payslipDao = fakeDao,
-    geminiProxyService = GeminiProxyService(
-        HttpClient(MockEngine { respond("", HttpStatusCode.OK, headersOf()) }),
-    ),
-) {
+        payslipDao = fakeDao,
+        geminiProxyService =
+            GeminiProxyService(
+                HttpClient(MockEngine { respond("", HttpStatusCode.OK, headersOf()) }),
+            ),
+    ) {
     override suspend fun getCachedAiInsights(monthStr: String): String? =
         cachedInsightsByMonth[monthStr]
 

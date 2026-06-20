@@ -43,7 +43,7 @@ fun Sparkline(
         drawPath(
             path = path,
             color = lineColor,
-            style = Stroke(width = AppDimensions.BorderMedium.toPx(), cap = StrokeCap.Round)
+            style = Stroke(width = AppDimensions.BorderMedium.toPx(), cap = StrokeCap.Round),
         )
     }
 }
@@ -53,9 +53,10 @@ fun TrendsSparklinesSection(
     history: List<LedgerRecordEntity>,
     modifier: Modifier = Modifier,
 ) {
-    val historySorted = remember(history) {
-        history.sortedWith(compareBy<LedgerRecordEntity> { it.year }.thenBy { it.monthNum }).takeLast(6)
-    }
+    val historySorted =
+        remember(history) {
+            history.sortedWith(compareBy<LedgerRecordEntity> { it.year }.thenBy { it.monthNum }).takeLast(6)
+        }
     if (historySorted.size >= 2) {
         Card(
             modifier = modifier.fillMaxWidth(),
@@ -132,4 +133,3 @@ private fun SparklineCard(
         }
     }
 }
-

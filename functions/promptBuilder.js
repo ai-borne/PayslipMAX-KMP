@@ -25,52 +25,46 @@ function buildPrompt(payload) {
   const { earnings, deductions, summary } = payslip;
 
   const anomalySection = anomalies.length > 0
-    ? anomalies.map((a) => `  • [${a.type}] ${a.description}`).join("\n")
-    : "  • No anomalies detected this month.";
+    ? anomalies.map((a) => `[${a.type}] ${a.description}`).join(", ")
+    : "None";
 
   const prevMonth = history.length > 0 ? history[history.length - 1] : null;
   const comparisonText = prevMonth
     ? `Gross: ₹${Math.round(prevMonth.grossPay)}, Net: ₹${Math.round(prevMonth.netPay)}, Tax: ₹${Math.round(prevMonth.incomeTax)}, DSOP: ₹${Math.round(prevMonth.dsopSubscription || 0)} (${prevMonth.year}-${String(prevMonth.monthNum).padStart(2, "0")})`
-    : "No historical data available.";
+    : "None";
 
   return `You are an expert Chartered Accountant auditing Indian Defence Services pay.
-Generate a concise, fact-based salary audit using ONLY bullet points under each ## heading.
-DO NOT use paragraphs, intro/outro text, narrative summaries, motivational talk, or filler text.
-Limit the response to 8-12 bullets total. Every observation must be grounded in the provided numbers.
+Analyze the pay details and return a structured JSON report. Do NOT include any markdown wrapping, code block formatting (such as \`\`\`json), or conversational filler. Return only valid raw JSON.
 
-## This Month's Pay Summary
+Current Pay Data:
 - Gross Pay: ₹${Math.round(earnings.grossPay ?? summary.grossPay)}
 - Net Take-Home: ₹${Math.round(summary.netRemittance)}
-- Income Tax Deducted: ₹${Math.round(deductions.incomeTax)}
-- DSOP Subscription: ₹${Math.round(deductions.dsopSubscription)}
-- Savings Rate: ${monthlySavingRate.toFixed(1)}% (target ≥ 20%), Tax Ratio: ${taxRatio.toFixed(1)}%, Health Score: ${healthScore}/100
+- Income Tax: ₹${Math.round(deductions.incomeTax)}
+- DSOP: ₹${Math.round(deductions.dsopSubscription)}
+- Savings Rate: ${monthlySavingRate.toFixed(1)}% (target >= 20%), Tax Ratio: ${taxRatio.toFixed(1)}%, Health Score: ${healthScore}/100
 
-## Previous Month Context
-- Previous Month Pay Details: ${comparisonText}
+Previous Month Pay Context: ${comparisonText}
+Flagged Anomalies: ${anomalySection}
 
-## Flagged Anomalies
-${anomalySection}
-
-## Format the response exactly like this template (only include headings if there are matching findings):
-
-## Salary Changes
-• [Type of change - e.g., Basic Pay / DA / MSP] [increased/decreased/unchanged] by [exact ₹ delta]
-• [Metric] [increased/decreased] by [exact ₹ delta]
-
-## Missing Allowances
-• [Allowance Name] absent this month (was present in previous month)
-
-## New Deductions
-• [Deduction Name] [increased/decreased] by [exact ₹ delta]
-
-## Risk Alerts
-• [Risk Observation] (e.g. Net salary decreased by X%) -> [Impact/Action]
-
-## Opportunities
-• [Opportunity - e.g. DSOP contribution optimized at ₹X / NPS Section 80CCD(1B) space unutilised] -> [Action]
-
-## Action Required
-• [Required Action - e.g. Verify missing Transport Allowance / Check HRA tax declaration]`;
+Return JSON matching the following keys:
+{
+  "salaryChanges": [
+    {"item": "e.g. Basic Pay", "change": "increased|decreased|unchanged", "amount": 1200}
+  ],
+  "missingAllowances": ["e.g. Transport Allowance"],
+  "newDeductions": [
+    {"item": "e.g. Water Charges", "change": "increased|decreased", "amount": 100}
+  ],
+  "riskAlerts": [
+    {"observation": "Net salary decreased by 5%", "action": "Verify Base Pay and DA adjustments"}
+  ],
+  "opportunities": [
+    {"opportunity": "NPS Section 80CCD(1B) headroom of ₹50,000 unutilized", "action": "Invest ₹50,000 in NPS to save tax"}
+  ],
+  "actionRequired": [
+    "Verify missing Transport Allowance with PCDA Pune"
+  ]
+}`;
 }
 
 module.exports = { buildPrompt };

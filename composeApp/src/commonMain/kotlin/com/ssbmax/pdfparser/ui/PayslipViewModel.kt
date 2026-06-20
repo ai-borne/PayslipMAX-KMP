@@ -2,10 +2,9 @@ package com.ssbmax.pdfparser.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssbmax.pdfparser.crypto.CryptoHelper
 import com.ssbmax.pdfparser.domain.ParsedPayslip
-import com.ssbmax.pdfparser.repository.PayslipRepository
 import com.ssbmax.pdfparser.insights.NetworkErrorMapper
+import com.ssbmax.pdfparser.repository.PayslipRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -130,11 +129,12 @@ class PayslipViewModel(
                 } else {
                     _uiState.update {
                         val ex = result.exceptionOrNull()
-                        val mappedError = if (ex != null) {
-                            NetworkErrorMapper.getUserFriendlyMessage(ex)
-                        } else {
-                            "Failed to generate narrative insights"
-                        }
+                        val mappedError =
+                            if (ex != null) {
+                                NetworkErrorMapper.getUserFriendlyMessage(ex)
+                            } else {
+                                "Failed to generate narrative insights"
+                            }
                         it.copy(
                             aiError = mappedError,
                             isAiLoading = false,
@@ -216,11 +216,12 @@ class PayslipViewModel(
             repository.deletePayslip(dateStr)
             _uiState.update { state ->
                 val remaining = state.payslips.filter { it.dateStr != dateStr }
-                val nextSelected = if (state.selectedPayslip?.dateStr == dateStr) {
-                    remaining.lastOrNull()
-                } else {
-                    state.selectedPayslip
-                }
+                val nextSelected =
+                    if (state.selectedPayslip?.dateStr == dateStr) {
+                        remaining.lastOrNull()
+                    } else {
+                        state.selectedPayslip
+                    }
                 state.copy(selectedPayslip = nextSelected)
             }
             val next = _uiState.value.selectedPayslip

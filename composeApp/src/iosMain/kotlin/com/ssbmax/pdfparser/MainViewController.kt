@@ -1,12 +1,12 @@
 package com.ssbmax.pdfparser
 
 import androidx.compose.ui.window.ComposeUIViewController
+import com.ssbmax.pdfparser.auth.AuthTokenProvider
 import com.ssbmax.pdfparser.di.appModule
 import com.ssbmax.pdfparser.di.sharedModule
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import org.koin.core.context.startKoin
 import org.koin.mp.KoinPlatformTools
-import com.ssbmax.pdfparser.auth.AuthTokenProvider
 import platform.UIKit.UIViewController
 
 fun getAuthTokenProvider(): AuthTokenProvider = AuthTokenProvider()

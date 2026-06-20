@@ -10,7 +10,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class WellnessDriversTest {
-
     private fun makeEngine(
         anomalies: List<Anomaly> = emptyList(),
         savingRate: Double = 0.0,
@@ -22,13 +21,17 @@ class WellnessDriversTest {
         taxRatio = 4.0,
     )
 
-    private fun anomaly(type: String, amount: Double = 0.0) = Anomaly(
-        type = type,
-        field = "basicPay",
-        amount = amount,
-        month = "08/2024",
-        description = "Test anomaly: $type",
-    )
+    private fun anomaly(
+        type: String,
+        amount: Double = 0.0,
+    ) =
+        Anomaly(
+            type = type,
+            field = "basicPay",
+            amount = amount,
+            month = "08/2024",
+            description = "Test anomaly: $type",
+        )
 
     // ── Anomaly point impacts ────────────────────────────────────────────────
 

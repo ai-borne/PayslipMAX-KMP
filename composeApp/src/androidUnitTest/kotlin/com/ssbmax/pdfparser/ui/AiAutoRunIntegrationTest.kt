@@ -1,10 +1,10 @@
 package com.ssbmax.pdfparser.ui
 
-import io.ktor.client.network.sockets.SocketTimeoutException
 import com.ssbmax.pdfparser.database.toEncryptedEntity
 import com.ssbmax.pdfparser.repository.PayslipRepository
 import com.ssbmax.pdfparser.testing.FakePayslipDao
 import com.ssbmax.pdfparser.testing.FakePdfParser
+import io.ktor.client.network.sockets.SocketTimeoutException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -54,122 +54,128 @@ class AiAutoRunIntegrationTest {
     // ── Premium ON + no cache → auto-run fires ────────────────────────────────
 
     @Test
-    fun testAutoRunFiresWhenPremiumOnAndNoCache() = runTest {
-        val vm = createViewModel()
-        fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
-        advanceUntilIdle()
+    fun testAutoRunFiresWhenPremiumOnAndNoCache() =
+        runTest {
+            val vm = createViewModel()
+            fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
+            advanceUntilIdle()
 
-        vm.setPremiumEnabled(true)
-        advanceUntilIdle()
+            vm.setPremiumEnabled(true)
+            advanceUntilIdle()
 
-        assertTrue(vm.uiState.value.isPremiumEnabled)
-        assertFalse(vm.uiState.value.isAiLoading)
-        assertNotNull(vm.uiState.value.aiInsights)
-        assertEquals("Fake AI narrative", vm.uiState.value.aiInsights)
-        assertEquals(1, fakeFinancialRepo.generateCallCount)
-    }
+            assertTrue(vm.uiState.value.isPremiumEnabled)
+            assertFalse(vm.uiState.value.isAiLoading)
+            assertNotNull(vm.uiState.value.aiInsights)
+            assertEquals("Fake AI narrative", vm.uiState.value.aiInsights)
+            assertEquals(1, fakeFinancialRepo.generateCallCount)
+        }
 
     // ── Cache exists → no auto-run ────────────────────────────────────────────
 
     @Test
-    fun testAutoRunNotFiredWhenCacheExists() = runTest {
-        fakeFinancialRepo.cachedInsightsByMonth["08/2024"] = "Cached insights"
-        val vm = createViewModel()
-        fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
-        advanceUntilIdle()
+    fun testAutoRunNotFiredWhenCacheExists() =
+        runTest {
+            fakeFinancialRepo.cachedInsightsByMonth["08/2024"] = "Cached insights"
+            val vm = createViewModel()
+            fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
+            advanceUntilIdle()
 
-        vm.setPremiumEnabled(true)
-        advanceUntilIdle()
+            vm.setPremiumEnabled(true)
+            advanceUntilIdle()
 
-        assertTrue(vm.uiState.value.isPremiumEnabled)
-        assertEquals("Cached insights", vm.uiState.value.aiInsights)
-        assertEquals(0, fakeFinancialRepo.generateCallCount)
-    }
+            assertTrue(vm.uiState.value.isPremiumEnabled)
+            assertEquals("Cached insights", vm.uiState.value.aiInsights)
+            assertEquals(0, fakeFinancialRepo.generateCallCount)
+        }
 
     // ── Month switch to uncached month → auto-run fires ───────────────────────
 
     @Test
-    fun testAutoRunFiresOnMonthSwitchWithNoCache() = runTest {
-        val vm = createViewModel()
-        val payslip1 = helper.createMockPayslip("07/2024")
-        val payslip2 = helper.createMockPayslip("08/2024")
-        fakeDao.insertPayslip(payslip1.toEncryptedEntity())
-        fakeDao.insertPayslip(payslip2.toEncryptedEntity())
-        advanceUntilIdle()
+    fun testAutoRunFiresOnMonthSwitchWithNoCache() =
+        runTest {
+            val vm = createViewModel()
+            val payslip1 = helper.createMockPayslip("07/2024")
+            val payslip2 = helper.createMockPayslip("08/2024")
+            fakeDao.insertPayslip(payslip1.toEncryptedEntity())
+            fakeDao.insertPayslip(payslip2.toEncryptedEntity())
+            advanceUntilIdle()
 
-        vm.setPremiumEnabled(true)
-        advanceUntilIdle()
+            vm.setPremiumEnabled(true)
+            advanceUntilIdle()
 
-        // Switch to older month — no cache for it
-        vm.clearAiInsights()
-        vm.selectPayslip(payslip1)
-        advanceUntilIdle()
+            // Switch to older month — no cache for it
+            vm.clearAiInsights()
+            vm.selectPayslip(payslip1)
+            advanceUntilIdle()
 
-        assertNotNull(vm.uiState.value.aiInsights)
-        assertEquals("07/2024", vm.uiState.value.selectedPayslip?.dateStr)
-    }
+            assertNotNull(vm.uiState.value.aiInsights)
+            assertEquals("07/2024", vm.uiState.value.selectedPayslip?.dateStr)
+        }
 
     // ── AI generation fails → aiError is set, not a crash ────────────────────
 
     @Test
-    fun testAutoRunSetsAiErrorOnFailure() = runTest {
-        fakeFinancialRepo.narrativeResult = Result.failure(Exception("Gemini error"))
-        val vm = createViewModel()
-        fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
-        advanceUntilIdle()
+    fun testAutoRunSetsAiErrorOnFailure() =
+        runTest {
+            fakeFinancialRepo.narrativeResult = Result.failure(Exception("Gemini error"))
+            val vm = createViewModel()
+            fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
+            advanceUntilIdle()
 
-        vm.setPremiumEnabled(true)
-        advanceUntilIdle()
+            vm.setPremiumEnabled(true)
+            advanceUntilIdle()
 
-        assertTrue(vm.uiState.value.isPremiumEnabled)
-        assertNull(vm.uiState.value.aiInsights)
-        assertFalse(vm.uiState.value.isAiLoading)
-        assertEquals(
-            "Unable to generate AI insights due to a connection issue. Please check your network and try again.",
-            vm.uiState.value.aiError
-        )
-    }
+            assertTrue(vm.uiState.value.isPremiumEnabled)
+            assertNull(vm.uiState.value.aiInsights)
+            assertFalse(vm.uiState.value.isAiLoading)
+            assertEquals(
+                "Unable to generate AI insights due to a connection issue. Please check your network and try again.",
+                vm.uiState.value.aiError,
+            )
+        }
 
     @Test
-    fun testAutoRunSetsFriendlyTimeoutErrorOnSocketTimeout() = runTest {
-        fakeFinancialRepo.narrativeResult = Result.failure(SocketTimeoutException("timeout"))
-        val vm = createViewModel()
-        fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
-        advanceUntilIdle()
+    fun testAutoRunSetsFriendlyTimeoutErrorOnSocketTimeout() =
+        runTest {
+            fakeFinancialRepo.narrativeResult = Result.failure(SocketTimeoutException("timeout"))
+            val vm = createViewModel()
+            fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
+            advanceUntilIdle()
 
-        vm.setPremiumEnabled(true)
-        advanceUntilIdle()
+            vm.setPremiumEnabled(true)
+            advanceUntilIdle()
 
-        assertTrue(vm.uiState.value.isPremiumEnabled)
-        assertNull(vm.uiState.value.aiInsights)
-        assertFalse(vm.uiState.value.isAiLoading)
-        assertEquals(
-            "The server is taking too long to respond. Please check your internet connection and try again.",
-            vm.uiState.value.aiError
-        )
-    }
+            assertTrue(vm.uiState.value.isPremiumEnabled)
+            assertNull(vm.uiState.value.aiInsights)
+            assertFalse(vm.uiState.value.isAiLoading)
+            assertEquals(
+                "The server is taking too long to respond. Please check your internet connection and try again.",
+                vm.uiState.value.aiError,
+            )
+        }
 
     // ── Same month re-select → no double-run (cache guard) ───────────────────
 
     @Test
-    fun testAutoRunDoesNotDoubleFireForSameMonth() = runTest {
-        val vm = createViewModel()
-        val payslip = helper.createMockPayslip("08/2024")
-        fakeDao.insertPayslip(payslip.toEncryptedEntity())
-        advanceUntilIdle()
+    fun testAutoRunDoesNotDoubleFireForSameMonth() =
+        runTest {
+            val vm = createViewModel()
+            val payslip = helper.createMockPayslip("08/2024")
+            fakeDao.insertPayslip(payslip.toEncryptedEntity())
+            advanceUntilIdle()
 
-        vm.setPremiumEnabled(true)
-        advanceUntilIdle()
+            vm.setPremiumEnabled(true)
+            advanceUntilIdle()
 
-        // First run completed — cache is now populated inside fakeFinancialRepo
-        assertEquals(1, fakeFinancialRepo.generateCallCount)
-        assertNotNull(vm.uiState.value.aiInsights)
+            // First run completed — cache is now populated inside fakeFinancialRepo
+            assertEquals(1, fakeFinancialRepo.generateCallCount)
+            assertNotNull(vm.uiState.value.aiInsights)
 
-        // Re-select the same payslip
-        vm.selectPayslip(payslip)
-        advanceUntilIdle()
+            // Re-select the same payslip
+            vm.selectPayslip(payslip)
+            advanceUntilIdle()
 
-        // Generate must NOT have been called again (cache hit)
-        assertEquals(1, fakeFinancialRepo.generateCallCount)
-    }
+            // Generate must NOT have been called again (cache hit)
+            assertEquals(1, fakeFinancialRepo.generateCallCount)
+        }
 }

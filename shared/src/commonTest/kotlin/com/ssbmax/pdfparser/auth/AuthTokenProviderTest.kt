@@ -16,22 +16,23 @@ import kotlin.test.assertNull
  *   - It never throws; it returns null on failure / no-user state
  */
 class AuthTokenProviderTest {
+    @Test
+    fun `getIdToken returns null when no user is signed in`() =
+        runTest {
+            // The commonTest compilation resolves to the iOS actual which always
+            // returns null — this tests the contract that null is a valid response
+            // and never throws.
+            val provider = AuthTokenProvider()
+            val token = provider.getIdToken()
+            assertNull(token, "Token must be null when no Firebase user is present")
+        }
 
     @Test
-    fun `getIdToken returns null when no user is signed in`() = runTest {
-        // The commonTest compilation resolves to the iOS actual which always
-        // returns null — this tests the contract that null is a valid response
-        // and never throws.
-        val provider = AuthTokenProvider()
-        val token = provider.getIdToken()
-        assertNull(token, "Token must be null when no Firebase user is present")
-    }
-
-    @Test
-    fun `getIdToken does not throw on repeated calls`() = runTest {
-        val provider = AuthTokenProvider()
-        // Call twice — must not throw on either call
-        provider.getIdToken()
-        provider.getIdToken()
-    }
+    fun `getIdToken does not throw on repeated calls`() =
+        runTest {
+            val provider = AuthTokenProvider()
+            // Call twice — must not throw on either call
+            provider.getIdToken()
+            provider.getIdToken()
+        }
 }

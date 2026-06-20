@@ -28,9 +28,10 @@ async function callGemini(payload, apiKey) {
   const requestBody = {
     contents: [{ role: "user", parts: [{ text: prompt }] }],
     generationConfig: {
-      temperature: 0.3,        // Low temperature — financial advice must be deterministic
+      temperature: 0.1,        // Highly deterministic for structured JSON output
       maxOutputTokens: 2048,
       topP: 0.8,
+      responseMimeType: "application/json",
     },
     safetySettings: [
       { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },

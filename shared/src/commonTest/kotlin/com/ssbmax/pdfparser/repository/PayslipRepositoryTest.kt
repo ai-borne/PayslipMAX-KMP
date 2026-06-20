@@ -184,16 +184,17 @@ class PayslipRepositoryTest {
      */
     @Test
     fun testGeminiApiKeyIsRemovedFromSchema() {
-        val entity = AppSettingsEntity(
-            id = 0,
-            isPremiumEnabled = false,
-            appTheme = "system",
-            isLockEnabled = false,
-            appPinHash = "",
-            profileName = "",
-            profileCdaNumber = "",
-            profilePanNumber = "",
-        )
+        val entity =
+            AppSettingsEntity(
+                id = 0,
+                isPremiumEnabled = false,
+                appTheme = "system",
+                isLockEnabled = false,
+                appPinHash = "",
+                profileName = "",
+                profileCdaNumber = "",
+                profilePanNumber = "",
+            )
         // Verify the entity has exactly 8 fields (id + 7 settings).
         // If geminiApiKey is re-added, this count becomes 9 and the test fails.
         val (id, isPremium, appTheme, isLock, pinHash, name, cda, pan) = entity

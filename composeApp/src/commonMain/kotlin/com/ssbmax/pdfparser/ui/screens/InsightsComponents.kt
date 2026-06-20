@@ -7,17 +7,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 import kotlin.math.abs
-import androidx.compose.ui.text.font.FontWeight
 
 data class MoMChange(
     val name: String,
     val prevValue: Double,
     val currValue: Double,
-    val isEarning: Boolean
+    val isEarning: Boolean,
 )
 
 fun formatCurrency(amount: Double): String {

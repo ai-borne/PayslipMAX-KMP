@@ -19,7 +19,9 @@ import kotlinx.coroutines.tasks.await
  */
 interface FirebaseAuthWrapper {
     val currentUserExists: Boolean
+
     suspend fun signInAnonymously()
+
     suspend fun getUserIdToken(forceRefresh: Boolean): String?
 }
 
@@ -54,4 +56,3 @@ actual class AuthTokenProvider actual constructor() {
         var authWrapper: FirebaseAuthWrapper = DefaultFirebaseAuthWrapper()
     }
 }
-
