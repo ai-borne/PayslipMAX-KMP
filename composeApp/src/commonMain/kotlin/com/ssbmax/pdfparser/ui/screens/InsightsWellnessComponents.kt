@@ -183,7 +183,7 @@ fun WellnessChip(
             )
             Icon(
                 imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                contentDescription = null,
+                contentDescription = if (expanded) InsightsStrings.wellnessChipCollapseDesc else InsightsStrings.wellnessChipExpandDesc,
                 tint = color,
                 modifier = Modifier.size(AppDimensions.IconSizeSmall),
             )
