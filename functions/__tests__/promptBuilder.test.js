@@ -104,9 +104,9 @@ describe("buildPrompt", () => {
       },
     };
     const prompt = buildPrompt(payload);
-    expect(prompt).toContain("YTD Gross: ₹3600000");
-    expect(prompt).toContain("YTD Tax: ₹600000");
-    expect(prompt).toContain("DSOP Balance: ₹2460000");
+    expect(prompt).toContain("YTD Gross: Rs.3600000");
+    expect(prompt).toContain("YTD Tax: Rs.600000");
+    expect(prompt).toContain("DSOP Balance: Rs.2460000");
   });
 
   test("prompt contains multiple historical months in the history summary", () => {
