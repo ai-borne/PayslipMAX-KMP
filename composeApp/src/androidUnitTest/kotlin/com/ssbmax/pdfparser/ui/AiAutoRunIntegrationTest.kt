@@ -1,5 +1,6 @@
 package com.ssbmax.pdfparser.ui
 
+import io.ktor.client.network.sockets.SocketTimeoutException
 import com.ssbmax.pdfparser.database.toEncryptedEntity
 import com.ssbmax.pdfparser.repository.PayslipRepository
 import com.ssbmax.pdfparser.testing.FakePayslipDao
@@ -123,7 +124,29 @@ class AiAutoRunIntegrationTest {
         assertTrue(vm.uiState.value.isPremiumEnabled)
         assertNull(vm.uiState.value.aiInsights)
         assertFalse(vm.uiState.value.isAiLoading)
-        assertEquals("Gemini error", vm.uiState.value.aiError)
+        assertEquals(
+            "Unable to generate AI insights due to a connection issue. Please check your network and try again.",
+            vm.uiState.value.aiError
+        )
+    }
+
+    @Test
+    fun testAutoRunSetsFriendlyTimeoutErrorOnSocketTimeout() = runTest {
+        fakeFinancialRepo.narrativeResult = Result.failure(SocketTimeoutException("timeout"))
+        val vm = createViewModel()
+        fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
+        advanceUntilIdle()
+
+        vm.setPremiumEnabled(true)
+        advanceUntilIdle()
+
+        assertTrue(vm.uiState.value.isPremiumEnabled)
+        assertNull(vm.uiState.value.aiInsights)
+        assertFalse(vm.uiState.value.isAiLoading)
+        assertEquals(
+            "The server is taking too long to respond. Please check your internet connection and try again.",
+            vm.uiState.value.aiError
+        )
     }
 
     // ── Same month re-select → no double-run (cache guard) ───────────────────
