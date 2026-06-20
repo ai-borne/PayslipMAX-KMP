@@ -270,7 +270,7 @@ private fun WellnessDriverRow(driver: WellnessDriver) {
         }
         if (driver.improvePath != null) {
             Text(
-                text = "→ ${driver.improvePath}",
+                text = "${InsightsStrings.wellnessImprovePathPrefix}${driver.improvePath}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
