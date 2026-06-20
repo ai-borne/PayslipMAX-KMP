@@ -112,7 +112,16 @@ fun parseMarkdown(text: String): AnnotatedString {
     return buildAnnotatedString {
         val lines = text.split("\n")
         lines.forEachIndexed { index, line ->
+            val trimmed = line.trim()
             when {
+                // Skip JSON/code artifacts
+                trimmed.startsWith("{") || trimmed.startsWith("}") ||
+                trimmed.startsWith("[") || trimmed.startsWith("]") ||
+                trimmed.startsWith("\"") && trimmed.contains(":") ||
+                trimmed.startsWith("Summary") ||
+                trimmed.isEmpty() -> {
+                    // Skip these lines entirely
+                }
                 line.startsWith("# ") -> {
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold, fontSize = AppDimensions.TextSizeHuge)) {
                         append(line.substring(2))
@@ -136,7 +145,7 @@ fun parseMarkdown(text: String): AnnotatedString {
                     parseInlineStyle(line)
                 }
             }
-            if (index < lines.lastIndex) {
+            if (index < lines.lastIndex && trimmed.isNotEmpty()) {
                 append("\n")
             }
         }
