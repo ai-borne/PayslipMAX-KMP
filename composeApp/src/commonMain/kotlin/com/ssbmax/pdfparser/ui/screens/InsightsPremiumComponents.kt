@@ -31,9 +31,7 @@ private data class PremiumToolSpec(
 
 @Composable
 fun PremiumToolsSection(
-    isPremiumEnabled: Boolean,
     onNavigateTo: (Screen) -> Unit,
-    onUpgradeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val tools =
@@ -61,8 +59,7 @@ fun PremiumToolsSection(
             tools.forEach { tool ->
                 PremiumToolCard(
                     spec = tool,
-                    isPremiumEnabled = isPremiumEnabled,
-                    onClick = { if (isPremiumEnabled) onNavigateTo(tool.target) else onUpgradeClick() },
+                    onClick = { onNavigateTo(tool.target) },
                 )
             }
         }
@@ -150,22 +147,15 @@ private fun ProFeatureRow(icon: String, title: String, detail: String) {
 @Composable
 private fun PremiumToolCard(
     spec: PremiumToolSpec,
-    isPremiumEnabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
-        colors =
-            CardDefaults.cardColors(
-                containerColor =
-                    if (isPremiumEnabled) {
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                    } else {
-                        MaterialTheme.colorScheme.surfaceVariant
-                    },
-            ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+        ),
     ) {
         Row(
             modifier = Modifier.padding(AppDimensions.PaddingSmall),
@@ -191,7 +181,7 @@ private fun PremiumToolCard(
             }
             OutlinedButton(onClick = onClick) {
                 Text(
-                    text = if (isPremiumEnabled) InsightsStrings.premiumToolsOpenLabel else InsightsStrings.premiumToolsLockedLabel,
+                    text = InsightsStrings.premiumToolsOpenLabel,
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
