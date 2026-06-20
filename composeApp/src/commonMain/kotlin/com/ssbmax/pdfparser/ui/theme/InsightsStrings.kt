@@ -2,7 +2,7 @@ package com.ssbmax.pdfparser.ui.theme
 
 object InsightsStrings {
     // Wellness chip, month selector & score driver labels
-    const val wellnessChipLabel = "Wellness"
+    const val wellnessChipLabel = "Pay Health"
     const val wellnessDriversTitle = "Score Drivers"
     const val wellnessSavingsRateLabel = "Savings Rate:"
     const val wellnessNoIssuesBonus = "Clean payslip — no anomalies detected"
