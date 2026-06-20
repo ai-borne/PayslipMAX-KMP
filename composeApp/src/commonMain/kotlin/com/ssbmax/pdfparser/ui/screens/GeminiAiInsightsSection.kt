@@ -15,17 +15,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
@@ -60,101 +57,23 @@ internal fun extractAiSummary(
 
 @Composable
 fun GeminiAiInsightsSection(
-    isPremiumEnabled: Boolean,
     aiInsights: String?,
     isAiLoading: Boolean,
     aiError: String?,
     onGenerateClick: () -> Unit,
     onViewInsightsClick: () -> Unit,
     onClearClick: () -> Unit,
-    onUpgradeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (isPremiumEnabled) {
-        GeminiAiInsightsActiveCard(
-            aiInsights = aiInsights,
-            isAiLoading = isAiLoading,
-            aiError = aiError,
-            onGenerateClick = onGenerateClick,
-            onViewInsightsClick = onViewInsightsClick,
-            onClearClick = onClearClick,
-            modifier = modifier,
-        )
-    } else {
-        GeminiAiInsightsLockedCard(onUpgradeClick = onUpgradeClick, modifier = modifier)
-    }
-}
-
-@Composable
-private fun GeminiAiInsightsLockedCard(
-    onUpgradeClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            LockedCardHeader()
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            LockedCardBullets()
-            Spacer(Modifier.height(AppDimensions.SpacingTiny))
-            Button(onClick = onUpgradeClick, modifier = Modifier.fillMaxWidth()) {
-                Text(AppStrings.aiAuditUnlockBtn)
-            }
-            Text(
-                text = AppStrings.settingsAiPoweredByProxy,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-    }
-}
-
-@Composable
-private fun LockedCardHeader() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-    ) {
-        Text(AppStrings.proTeaserCrownIcon, fontSize = AppDimensions.TextSizeHuge)
-        Text(
-            text = AppStrings.settingsAiInsightsLockedTitle,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.weight(1f),
-        )
-        Surface(
-            shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
-            color = MaterialTheme.colorScheme.primaryContainer,
-        ) {
-            Text(
-                text = AppStrings.aiAuditPremiumBadge,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.padding(horizontal = AppDimensions.SpacingSmall, vertical = AppDimensions.SpacingTiny),
-            )
-        }
-    }
-}
-
-@Composable
-private fun LockedCardBullets() {
-    AppStrings.aiAuditTeaserBullets.split("\n").forEach { bullet ->
-        Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
-            Text("•", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-            Text(text = bullet, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
+    GeminiAiInsightsActiveCard(
+        aiInsights = aiInsights,
+        isAiLoading = isAiLoading,
+        aiError = aiError,
+        onGenerateClick = onGenerateClick,
+        onViewInsightsClick = onViewInsightsClick,
+        onClearClick = onClearClick,
+        modifier = modifier,
+    )
 }
 
 @Composable
