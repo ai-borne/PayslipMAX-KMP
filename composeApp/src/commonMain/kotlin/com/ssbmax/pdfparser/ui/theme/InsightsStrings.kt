@@ -47,4 +47,8 @@ object InsightsStrings {
     // Pro features teaser card
     const val proTeaserAiDetail = "CA-grade AI financial audit powered by Gemini"
     const val proTeaserToolsDetail = "Draft Claims · Tax Planner · DSOP Simulator"
+
+    // Accessibility content descriptions
+    const val wellnessChipExpandDesc = "Expand score drivers"
+    const val wellnessChipCollapseDesc = "Collapse score drivers"
 }
