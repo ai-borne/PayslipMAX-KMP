@@ -29,9 +29,9 @@ fun PremiumToolsSection(
 ) {
     val tools =
         listOf(
-            PremiumToolSpec("📋", AppStrings.premiumToolsDraftClaims, InsightsStrings.premiumToolsDraftClaimsValueProp, Screen.Representation),
-            PremiumToolSpec("📊", AppStrings.premiumToolsTaxPlanner, InsightsStrings.premiumToolsTaxPlannerValueProp, Screen.TaxPlanning),
-            PremiumToolSpec("📈", AppStrings.premiumToolsDsopSimulator, InsightsStrings.premiumToolsDsopValueProp, Screen.RetirementPlanning),
+            PremiumToolSpec(InsightsStrings.premiumToolsDraftClaimsIcon, AppStrings.premiumToolsDraftClaims, InsightsStrings.premiumToolsDraftClaimsValueProp, Screen.Representation),
+            PremiumToolSpec(InsightsStrings.premiumToolsTaxPlannerIcon, AppStrings.premiumToolsTaxPlanner, InsightsStrings.premiumToolsTaxPlannerValueProp, Screen.TaxPlanning),
+            PremiumToolSpec(InsightsStrings.premiumToolsDsopIcon, AppStrings.premiumToolsDsopSimulator, InsightsStrings.premiumToolsDsopValueProp, Screen.RetirementPlanning),
         )
     Card(
         modifier = modifier.fillMaxWidth(),

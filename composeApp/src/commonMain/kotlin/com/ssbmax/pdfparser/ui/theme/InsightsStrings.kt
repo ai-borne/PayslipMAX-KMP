@@ -40,6 +40,9 @@ object InsightsStrings {
     const val premiumToolsDsopValueProp = "Project your DSOP corpus at retirement"
     const val premiumToolsOpenLabel = "Open"
     const val premiumToolsLockedLabel = "Unlock"
+    const val premiumToolsDraftClaimsIcon = "📋"
+    const val premiumToolsTaxPlannerIcon = "📊"
+    const val premiumToolsDsopIcon = "📈"
 
     // Pro features teaser card
     const val proTeaserAiDetail = "CA-grade AI financial audit powered by Gemini"

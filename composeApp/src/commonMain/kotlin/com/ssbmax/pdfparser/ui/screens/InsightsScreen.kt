@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -173,33 +174,60 @@ private fun InsightsLazyBody(
         if (state.engineResult.anomalies.size > 1) {
             item { CriticalAlertsQueue(anomalies = state.engineResult.anomalies) }
         }
-        item {
-            GeminiAiInsightsSection(
-                isPremiumEnabled = uiState.isPremiumEnabled,
-                aiInsights = uiState.aiInsights,
-                isAiLoading = uiState.isAiLoading,
-                aiError = uiState.aiError,
-                onGenerateClick = onShowTransparency,
-                onViewInsightsClick = onViewInsightsClick,
-                onClearClick = { viewModel.clearAiInsights() },
-                onUpgradeClick = onShowUpgradeSheet,
-            )
-        }
-        if (showWellnessDrivers) {
-            item { WellnessDriversSection(score = state.engineResult.healthScore, drivers = drivers) }
+        if (uiState.isPremiumEnabled) {
+            premiumContentItems(uiState, showWellnessDrivers, drivers, state, onShowTransparency, onViewInsightsClick, onShowUpgradeSheet) { viewModel.clearAiInsights() }
         }
         item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
         if (state.momChanges.isNotEmpty()) {
             item { MomChangesGrid(current = state.currentRecord, previous = state.previousRecord) }
         }
         item { TrendsSparklinesSection(history = state.historySorted) }
+        bottomTierItem(uiState.isPremiumEnabled, onNavigateTo, onShowUpgradeSheet)
+    }
+}
+
+private fun LazyListScope.premiumContentItems(
+    uiState: PayslipUiState,
+    showWellnessDrivers: Boolean,
+    drivers: List<WellnessDriver>,
+    state: InsightsState,
+    onShowTransparency: () -> Unit,
+    onViewInsightsClick: () -> Unit,
+    onShowUpgradeSheet: () -> Unit,
+    onClearAiInsights: () -> Unit,
+) {
+    item {
+        GeminiAiInsightsSection(
+            isPremiumEnabled = true,
+            aiInsights = uiState.aiInsights,
+            isAiLoading = uiState.isAiLoading,
+            aiError = uiState.aiError,
+            onGenerateClick = onShowTransparency,
+            onViewInsightsClick = onViewInsightsClick,
+            onClearClick = onClearAiInsights,
+            onUpgradeClick = onShowUpgradeSheet,
+        )
+    }
+    if (showWellnessDrivers) {
+        item { WellnessDriversSection(score = state.engineResult.healthScore, drivers = drivers) }
+    }
+}
+
+private fun LazyListScope.bottomTierItem(
+    isPremiumEnabled: Boolean,
+    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onUpgradeClick: () -> Unit,
+) {
+    if (isPremiumEnabled) {
         item {
             PremiumToolsSection(
-                isPremiumEnabled = uiState.isPremiumEnabled,
+                isPremiumEnabled = true,
                 onNavigateTo = onNavigateTo,
-                onUpgradeClick = onShowUpgradeSheet,
+                onUpgradeClick = onUpgradeClick,
             )
         }
+    } else {
+        item { ProFeaturesTeaser(onUpgradeClick = onUpgradeClick) }
     }
 }
 
