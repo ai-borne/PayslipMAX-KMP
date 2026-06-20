@@ -24,15 +24,15 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Bridge the Firebase ID token provider delegate to KMP
         AuthTokenProvider.companion.tokenProviderDelegate = { completion in
             guard let user = Auth.auth().currentUser else {
-                completion(nil)
+                _ = completion(nil)
                 return
             }
             user.getIDToken { token, error in
                 if let error = error {
                     print("Error fetching ID token on iOS: \(error.localizedDescription)")
-                    completion(nil)
+                    _ = completion(nil)
                 } else {
-                    completion(token)
+                    _ = completion(token)
                 }
             }
         }
