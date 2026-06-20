@@ -289,7 +289,6 @@ private fun AiInsightsSummary(
         )
         Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
     }
-    Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
     Button(onClick = onViewClick, modifier = Modifier.fillMaxWidth()) {
         Text(AppStrings.geminiAiViewReportBtn)
     }
