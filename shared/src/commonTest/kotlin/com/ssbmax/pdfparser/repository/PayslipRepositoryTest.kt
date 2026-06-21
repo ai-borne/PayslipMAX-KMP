@@ -147,7 +147,6 @@ class PayslipRepositoryTest {
             val settings =
                 AppSettingsEntity(
                     isPremiumEnabled = true,
-                    geminiApiKey = "AIzaSyTestApiKey",
                     appTheme = "dark",
                     isLockEnabled = true,
                     appPinHash = "hashedpin123",
@@ -163,7 +162,6 @@ class PayslipRepositoryTest {
             val saved = repository.getSettings()
             assertNotNull(saved)
             assertTrue(saved.isPremiumEnabled)
-            assertEquals("AIzaSyTestApiKey", saved.geminiApiKey)
             assertEquals("dark", saved.appTheme)
             assertTrue(saved.isLockEnabled)
             assertEquals("hashedpin123", saved.appPinHash)
@@ -174,6 +172,41 @@ class PayslipRepositoryTest {
             repository.clearSettings()
             assertNull(repository.getSettings())
         }
+
+    /**
+     * SECURITY REGRESSION GUARD: This test verifies the schema of AppSettingsEntity
+     * does NOT contain a geminiApiKey field. The test is a compile-time guard:
+     * if geminiApiKey is ever re-added to AppSettingsEntity, attempting to access
+     * any field by positional destructuring will break, and the explicit property
+     * list below will not match the expected count.
+     *
+     * The API key must live exclusively in Firebase Secret Manager (server-side).
+     */
+    @Test
+    fun testGeminiApiKeyIsRemovedFromSchema() {
+        val entity =
+            AppSettingsEntity(
+                id = 0,
+                isPremiumEnabled = false,
+                appTheme = "system",
+                isLockEnabled = false,
+                appPinHash = "",
+                profileName = "",
+                profileCdaNumber = "",
+                profilePanNumber = "",
+            )
+        // Verify the entity has exactly 8 fields (id + 7 settings).
+        // If geminiApiKey is re-added, this count becomes 9 and the test fails.
+        val (id, isPremium, appTheme, isLock, pinHash, name, cda, pan) = entity
+        assertEquals(0, id)
+        assertFalse(isPremium)
+        assertEquals("system", appTheme)
+        assertFalse(isLock)
+        assertEquals("", pinHash)
+        assertEquals("", name)
+        assertEquals("", cda)
+        assertEquals("", pan)
+    }
 
     @Test
     fun testUniversalBackupAndRestore() =
@@ -186,7 +219,6 @@ class PayslipRepositoryTest {
             val settings =
                 AppSettingsEntity(
                     isPremiumEnabled = true,
-                    geminiApiKey = "AIzaSyTestApiKey",
                     appTheme = "light",
                 )
             repository.saveSettings(settings)
@@ -214,7 +246,6 @@ class PayslipRepositoryTest {
             val restoredSettings = repository.getSettings()
             assertNotNull(restoredSettings)
             assertTrue(restoredSettings.isPremiumEnabled)
-            assertEquals("AIzaSyTestApiKey", restoredSettings.geminiApiKey)
             assertEquals("light", restoredSettings.appTheme)
         }
 

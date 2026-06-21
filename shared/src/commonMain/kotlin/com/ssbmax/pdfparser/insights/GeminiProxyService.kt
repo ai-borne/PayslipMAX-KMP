@@ -29,15 +29,15 @@ data class InsightProxyResponse(
     val error: String? = null,
 )
 
-class GeminiProxyService(
+open class GeminiProxyService(
     private val client: HttpClient,
-    private val proxyUrl: String = "https://us-central1-payslipmax.cloudfunctions.net/generateInsights",
+    private val proxyUrl: String = "https://us-central1-payslip-app-475e1.cloudfunctions.net/generateInsights",
 ) {
     /**
      * Sends the sanitized payslip and deterministic calculations to the secure backend proxy.
      * The proxy handles injecting the developer's server-side Gemini API key and calling the AI model.
      */
-    suspend fun getNarrativeInsights(
+    open suspend fun getNarrativeInsights(
         sanitizedPayslip: ParsedPayslip,
         engineResult: EngineResult,
         history: List<LedgerRecordEntity> = emptyList(),

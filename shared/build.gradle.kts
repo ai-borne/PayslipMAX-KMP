@@ -56,6 +56,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.pdfbox.android)
             implementation(libs.ktor.client.okhttp)
+            // Firebase Auth — Android only; used by AuthTokenProvider.android.kt
+            implementation(libs.firebase.auth.ktx)
         }
 
         val androidUnitTest by getting {
@@ -91,9 +93,11 @@ room {
 }
 
 // KSP: generate Room _Impl for every KMP target
+// Firebase BOM: pins firebase-auth-ktx version (must be in legacy block, not KMP sourceSet)
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("androidMainImplementation", platform(libs.firebase.bom))
 }

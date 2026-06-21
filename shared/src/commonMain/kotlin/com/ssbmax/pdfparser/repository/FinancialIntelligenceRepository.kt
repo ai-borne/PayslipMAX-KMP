@@ -1,8 +1,8 @@
 package com.ssbmax.pdfparser.repository
 
+import com.ssbmax.pdfparser.auth.AuthTokenProvider
 import com.ssbmax.pdfparser.crypto.CryptoHelper
 import com.ssbmax.pdfparser.database.*
-import com.ssbmax.pdfparser.domain.Officer
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.insights.*
 import kotlinx.coroutines.Dispatchers
@@ -10,9 +10,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 
-class FinancialIntelligenceRepository(
+open class FinancialIntelligenceRepository(
     private val payslipDao: PayslipDao,
     private val geminiProxyService: GeminiProxyService,
+    private val authTokenProvider: AuthTokenProvider = AuthTokenProvider(),
     private val dispatcher: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.Default,
 ) {
     /**
@@ -72,7 +73,7 @@ class FinancialIntelligenceRepository(
      * Saves a parsed payslip into the ledger, executes the local deterministic checks,
      * updates database records, and automatically triggers representation drafts.
      */
-    suspend fun processPayslipAndRunAnalysis(
+    open suspend fun processPayslipAndRunAnalysis(
         payslip: ParsedPayslip,
     ): EngineResult =
         withContext(dispatcher) {
@@ -81,6 +82,11 @@ class FinancialIntelligenceRepository(
 
             // 1. Save Ledger Record
             payslipDao.insertLedgerRecord(currentRecord)
+
+            // Invalidate cached AI insights for this month if any exist to ensure prompt updates
+            payslipDao.getFinancialInsightsByMonth(dateStr)
+                .filter { it.category == "NARRATIVE" }
+                .forEach { payslipDao.deleteFinancialInsight(it.id) }
 
             // 2. Fetch history for analysis
             val history = payslipDao.getAllLedgerRecords().firstOrNull() ?: emptyList()
@@ -99,9 +105,12 @@ class FinancialIntelligenceRepository(
                     history = history,
                 )
 
-            // 4. Save deterministic insights to Database
+            // Prioritize anomalies to prevent dashboard clutter
+            val prioritizedAnomalies = InsightPrioritizationEngine.prioritize(engineResult.anomalies)
+
+            // 4. Save prioritized deterministic insights to Database
             val deterministicInsights =
-                engineResult.anomalies.map { anomaly ->
+                prioritizedAnomalies.map { anomaly ->
                     FinancialInsightEntity(
                         id = CryptoHelper.sha256("${anomaly.month}-${anomaly.type}-${anomaly.field}"),
                         monthStr = dateStr,
@@ -118,7 +127,7 @@ class FinancialIntelligenceRepository(
             engineResult.anomalies.forEach { anomaly ->
                 if (anomaly.type == "MISSING_ALLOWANCE" || anomaly.type == "TPTA_ENTITLEMENT" || anomaly.type == "SALARY_LOSS") {
                     val draft =
-                        generateRepresentationDraft(
+                        RepresentationDraftGenerator.generateRepresentationDraft(
                             disputeMonth = dateStr,
                             disputeType = anomaly.type,
                             amount = anomaly.amount,
@@ -132,24 +141,43 @@ class FinancialIntelligenceRepository(
         }
 
     /**
-     * Calls Gemini via proxy for narrative insights and saves the response.
+     * Calls Gemini via proxy or local Gemma provider based on settings, and saves the response.
+     * Auth token is fetched internally from [AuthTokenProvider] — callers
+     * do not need to know about Firebase Auth.
      */
-    suspend fun generateNarrativeInsights(
+    open suspend fun generateNarrativeInsights(
         payslip: ParsedPayslip,
         engineResult: EngineResult,
-        authToken: String? = null,
     ): Result<String> =
         withContext(dispatcher) {
+            val authToken = authTokenProvider.getIdToken()
             val history = payslipDao.getAllLedgerRecords().firstOrNull() ?: emptyList()
             val sanitizedPayslip = RedactionSanitizer.redact(payslip)
 
-            val result =
-                geminiProxyService.getNarrativeInsights(
+            val settings = payslipDao.getSettings() ?: AppSettingsEntity()
+            val useLocalAi = settings.useLocalAi
+
+            val cloudProvider = GeminiCloudProvider(geminiProxyService)
+            val manager =
+                AIProviderManager(
+                    cloudProvider = cloudProvider,
+                    localProvider = LocalGemmaProvider(),
+                    useLocalAi = useLocalAi,
+                )
+
+            val payload =
+                PromptPayload(
+                    currentMonthRawText = "",
+                    sanitizedJsonData = "",
+                    historicalSummaryText = "",
+                    anomaliesCount = engineResult.anomalies.size,
                     sanitizedPayslip = sanitizedPayslip,
                     engineResult = engineResult,
                     history = history,
                     authToken = authToken,
                 )
+
+            val result = manager.generateInsights(payload)
 
             if (result.isSuccess) {
                 val narrative = result.getOrThrow()
@@ -167,6 +195,16 @@ class FinancialIntelligenceRepository(
             }
 
             result
+        }
+
+    /**
+     * Retrieves the cached AI narrative report from local database if it exists.
+     */
+    open suspend fun getCachedAiInsights(monthStr: String): String? =
+        withContext(dispatcher) {
+            payslipDao.getFinancialInsightsByMonth(monthStr)
+                .firstOrNull { it.category == "NARRATIVE" }
+                ?.contentMarkdown
         }
 
     private fun ParsedPayslip.toLedgerRecordEntity(): LedgerRecordEntity {
@@ -189,10 +227,10 @@ class FinancialIntelligenceRepository(
 
     private fun mapAnomalyTypeToCategory(type: String): String {
         return when (type) {
-            "SALARY_LOSS" -> "SALARY_LOSS"
-            "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT" -> "ALLOWANCE"
-            "DEDUCTION_SPIKE" -> "TAX"
-            "DSOP_COMPLIANCE" -> "RETIREMENT"
+            "SALARY_LOSS", "DEBIT_RECOVERY" -> "SALARY_LOSS"
+            "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "ARREARS_AUDIT" -> "ALLOWANCE"
+            "DEDUCTION_SPIKE", "RENT_RECOVERY_RISK", "TAX_PROJECTION" -> "TAX"
+            "DSOP_COMPLIANCE", "DSOP_MILESTONE" -> "RETIREMENT"
             else -> "INFO"
         }
     }
@@ -204,74 +242,20 @@ class FinancialIntelligenceRepository(
             "TPTA_ENTITLEMENT" -> "TPTA Entitlement Advisory"
             "DEDUCTION_SPIKE" -> "Deduction Spike Alert"
             "DSOP_COMPLIANCE" -> "DSOP Subscription Advisory"
+            "RENT_RECOVERY_RISK" -> "Quarters Rent Recovery Risk"
+            "DEBIT_RECOVERY" -> "Unexpected Debit Recovery"
+            "DSOP_MILESTONE" -> "DSOP Milestone Credited"
+            "TAX_PROJECTION" -> "Income Tax Cycle Projection"
+            "ARREARS_AUDIT" -> "Dearness Allowance Arrears Verified"
             else -> "Financial Advisory"
         }
     }
 
     private fun mapAnomalyTypeToSeverity(type: String): String {
         return when (type) {
-            "SALARY_LOSS", "DSOP_COMPLIANCE" -> "CRITICAL"
-            "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "DEDUCTION_SPIKE" -> "WARNING"
+            "SALARY_LOSS", "DSOP_COMPLIANCE", "RENT_RECOVERY_RISK", "DEBIT_RECOVERY" -> "CRITICAL"
+            "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "DEDUCTION_SPIKE", "TAX_PROJECTION" -> "WARNING"
             else -> "INFO"
         }
-    }
-
-    private fun generateRepresentationDraft(
-        disputeMonth: String,
-        disputeType: String,
-        amount: Double,
-        officer: Officer,
-    ): RepresentationDraftEntity {
-        val id = CryptoHelper.sha256("$disputeMonth-$disputeType-${CryptoHelper.getCurrentTimeMillis()}")
-        val componentName =
-            when (disputeType) {
-                "MISSING_ALLOWANCE" -> "HRA / Allowance"
-                "TPTA_ENTITLEMENT" -> "Transport Allowance (TPTA)"
-                "SALARY_LOSS" -> "Net Pay"
-                else -> disputeType
-            }
-        val subject = "Representation regarding Non-Admissibility of $componentName"
-        val body =
-            """
-            To,
-            The Principal Controller of Defence Accounts (Officers)
-            Golibar Maidan, Pune - 411001
-            
-            SUBJECT: REPRESENTATION REGARDING NON-ADMISSIBILITY OF $componentName FOR THE MONTH OF $disputeMonth
-            
-            Sir/Madam,
-            
-            1.  I have the honour to submit that my monthly payslip for $disputeMonth indicates that my $componentName has not been correctly credited / has been adjusted.
-            
-            2.  My service particular details are as follows:
-                (a) Personal Number    : [Service Number]
-                (b) Rank               : [Rank]
-                (c) Name               : [Officer Name]
-                (d) CDA Account Number : [CDA Account No]
-            
-            3.  Discrepancy Details:
-                (a) Component name     : $componentName
-                (b) Discrepancy month  : $disputeMonth
-                (c) Estimated amount   : Rs. ${amount.toInt()}
-            
-            4.  It is requested that the admissibility of the above component may please be verified and the necessary arrears credited to my account.
-            
-            5.  Thanking you.
-            
-            Yours faithfully,
-            
-            [Officer Name]
-            [Rank]
-            """.trimIndent()
-
-        return RepresentationDraftEntity(
-            id = id,
-            disputeMonth = disputeMonth,
-            disputeType = disputeType,
-            recipient = "PCDA_O_PUNE",
-            subject = subject,
-            bodyText = body,
-            createdAt = CryptoHelper.getCurrentTimeMillis(),
-        )
     }
 }

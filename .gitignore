@@ -34,3 +34,11 @@ coverage/
 # Scan output
 scripts/scan_rh_output.txt
 
+# Firebase — only real secrets must be excluded
+# google-services.json is safe to commit (contains only public app/project IDs,
+# no private keys; consistent with Google Firebase docs and all quickstart repos)
+# GoogleService-Info.plist excluded until iOS Firebase Auth is integrated (Phase 2-iOS)
+GoogleService-Info.plist
+functions/.env
+functions/.secret.local
+.firebaserc.local

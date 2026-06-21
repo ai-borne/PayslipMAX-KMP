@@ -1,0 +1,195 @@
+package com.ssbmax.pdfparser.ui.screens
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import com.ssbmax.pdfparser.Screen
+import com.ssbmax.pdfparser.ui.theme.AppDimensions
+import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.InsightsStrings
+
+private data class PremiumToolSpec(
+    val icon: String,
+    val title: String,
+    val valueProp: String,
+    val target: Screen,
+)
+
+@Composable
+fun PremiumToolsSection(
+    onNavigateTo: (Screen) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val tools =
+        listOf(
+            PremiumToolSpec(InsightsStrings.premiumToolsDraftClaimsIcon, AppStrings.premiumToolsDraftClaims, InsightsStrings.premiumToolsDraftClaimsValueProp, Screen.Representation),
+            PremiumToolSpec(InsightsStrings.premiumToolsTaxPlannerIcon, AppStrings.premiumToolsTaxPlanner, InsightsStrings.premiumToolsTaxPlannerValueProp, Screen.TaxPlanning),
+            PremiumToolSpec(InsightsStrings.premiumToolsDsopIcon, AppStrings.premiumToolsDsopSimulator, InsightsStrings.premiumToolsDsopValueProp, Screen.RetirementPlanning),
+        )
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AppDimensions.CornerRadius),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+    ) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
+        ) {
+            Text(
+                text = AppStrings.premiumToolsTitle,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            tools.forEach { tool ->
+                PremiumToolCard(
+                    spec = tool,
+                    onClick = { onNavigateTo(tool.target) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ProFeaturesTeaser(
+    onUpgradeClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AppDimensions.CornerRadius),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+    ) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+        ) {
+            ProTeaserHeader()
+            ProFeatureRow(
+                icon = AppStrings.proTeaserAiIcon,
+                title = AppStrings.settingsAiInsightsLockedTitle,
+                detail = InsightsStrings.proTeaserAiDetail,
+            )
+            ProFeatureRow(
+                icon = AppStrings.proTeaserToolsIcon,
+                title = AppStrings.premiumToolsTitle,
+                detail = InsightsStrings.proTeaserToolsDetail,
+            )
+            Button(onClick = onUpgradeClick, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = AppStrings.settingsProUpgradeBtn,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProTeaserHeader() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+    ) {
+        Text(AppStrings.proTeaserCrownIcon, style = MaterialTheme.typography.titleMedium)
+        Column {
+            Text(
+                text = AppStrings.settingsProPlanTitle,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                text = AppStrings.settingsProPlanPrice,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProFeatureRow(
+    icon: String,
+    title: String,
+    detail: String,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(icon, style = MaterialTheme.typography.bodyLarge)
+        Column {
+            Text(title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+            Text(
+                text = detail,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PremiumToolCard(
+    spec: PremiumToolSpec,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+            ),
+    ) {
+        Row(
+            modifier = Modifier.padding(AppDimensions.PaddingSmall),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
+        ) {
+            Text(spec.icon, style = MaterialTheme.typography.titleLarge)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
+            ) {
+                Text(
+                    text = spec.title,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = spec.valueProp,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            OutlinedButton(onClick = onClick) {
+                Text(
+                    text = InsightsStrings.premiumToolsOpenLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+    }
+}

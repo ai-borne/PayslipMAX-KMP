@@ -58,44 +58,13 @@ fun PayslipViewModel.restoreDatabase(
 }
 
 fun PayslipViewModel.generateAiInsights(payslip: ParsedPayslip) {
-    val repo = financialIntelligenceRepository
-    if (repo == null) {
-        val apiKey = _uiState.value.geminiApiKey
-        if (apiKey.isBlank()) {
-            _uiState.update { it.copy(aiError = "API Key is missing. Configure it in Settings.") }
-            return
-        }
-        viewModelScope.launch {
-            _uiState.update { it.copy(isAiLoading = true, aiError = null, aiInsights = null) }
-            val result = geminiService.getFinancialInsights(payslip, apiKey)
-            if (result.isSuccess) {
-                _uiState.update { it.copy(aiInsights = result.getOrThrow(), isAiLoading = false) }
-            } else {
-                _uiState.update { it.copy(aiError = result.exceptionOrNull()?.message ?: "Failed to generate AI insights", isAiLoading = false) }
-            }
+    if (financialIntelligenceRepository == null) {
+        _uiState.update {
+            it.copy(aiError = "AI insights service is unavailable. Please restart the app.")
         }
         return
     }
-
-    viewModelScope.launch {
-        _uiState.update { it.copy(isAiLoading = true, aiError = null, aiInsights = null) }
-        try {
-            val engineResult = repo.processPayslipAndRunAnalysis(payslip)
-            val result = repo.generateNarrativeInsights(payslip, engineResult)
-            if (result.isSuccess) {
-                _uiState.update { it.copy(aiInsights = result.getOrThrow(), isAiLoading = false) }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        aiError = result.exceptionOrNull()?.message ?: "Failed to generate narrative insights",
-                        isAiLoading = false,
-                    )
-                }
-            }
-        } catch (e: Exception) {
-            _uiState.update { it.copy(aiError = e.message ?: "Failed to generate insights", isAiLoading = false) }
-        }
-    }
+    launchAiGeneration(payslip)
 }
 
 fun PayslipViewModel.clearAiInsights() {
@@ -167,5 +136,73 @@ fun PayslipViewModel.restoreFromCloud(
         }
         _uiState.update { it.copy(isLoading = false) }
         onComplete(result)
+    }
+}
+
+fun PayslipViewModel.setPremiumEnabled(enabled: Boolean) {
+    viewModelScope.launch {
+        val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+        repository.saveSettings(current.copy(isPremiumEnabled = enabled))
+    }
+}
+
+fun PayslipViewModel.setLocalAiEnabled(enabled: Boolean) {
+    viewModelScope.launch {
+        val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+        repository.saveSettings(current.copy(useLocalAi = enabled))
+    }
+}
+
+fun PayslipViewModel.setAppTheme(theme: String) {
+    viewModelScope.launch {
+        val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+        repository.saveSettings(current.copy(appTheme = theme))
+    }
+}
+
+fun PayslipViewModel.setLockEnabled(
+    enabled: Boolean,
+    pin: String = "",
+) {
+    viewModelScope.launch {
+        val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+        val pinHash = if (pin.isNotEmpty()) com.ssbmax.pdfparser.crypto.CryptoHelper.sha256(pin) else current.appPinHash
+        repository.saveSettings(current.copy(isLockEnabled = enabled, appPinHash = pinHash))
+    }
+}
+
+fun PayslipViewModel.verifyPin(pin: String): Boolean {
+    val hash = com.ssbmax.pdfparser.crypto.CryptoHelper.sha256(pin)
+    val matches = hash == _uiState.value.appPinHash
+    if (matches) {
+        _uiState.update { it.copy(isAppLocked = false) }
+    }
+    return matches
+}
+
+fun PayslipViewModel.lockApp() {
+    if (_uiState.value.isLockEnabled) {
+        _uiState.update { it.copy(isAppLocked = true) }
+    }
+}
+
+fun PayslipViewModel.unlockApp() {
+    _uiState.update { it.copy(isAppLocked = false) }
+}
+
+fun PayslipViewModel.updateProfileOverrides(
+    name: String,
+    cda: String,
+    pan: String,
+) {
+    viewModelScope.launch {
+        val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+        repository.saveSettings(current.copy(profileName = name, profileCdaNumber = cda, profilePanNumber = pan))
+    }
+}
+
+fun PayslipViewModel.updateRepresentationDraft(draft: com.ssbmax.pdfparser.database.RepresentationDraftEntity) {
+    viewModelScope.launch {
+        financialIntelligenceRepository?.insertRepresentationDraft(draft)
     }
 }

@@ -14,6 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import com.ssbmax.pdfparser.insights.ProjectionMath
+import com.ssbmax.pdfparser.insights.ProjectionResult
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
@@ -144,7 +146,7 @@ private fun ProjectionsList(
 ) {
     val projections =
         listOf(5, 10, 15).map { years ->
-            calculateProjection(initialBalance, monthlySub, years)
+            ProjectionMath.calculateProjection(initialBalance, monthlySub, years)
         }
 
     LazyColumn(
@@ -220,31 +222,4 @@ private fun ProjectionRow(
             color = if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
         )
     }
-}
-
-private data class ProjectionResult(
-    val years: Int,
-    val totalContributions: Double,
-    val totalInterest: Double,
-    val projectedBalance: Double,
-)
-
-private fun calculateProjection(
-    initialBalance: Double,
-    monthlySubscription: Double,
-    years: Int,
-    annualRate: Double = 0.071,
-): ProjectionResult {
-    var balance = initialBalance
-    val monthlyRate = annualRate / 12.0
-    val totalMonths = years * 12
-    var contributions = 0.0
-
-    for (m in 1..totalMonths) {
-        contributions += monthlySubscription
-        balance = (balance + monthlySubscription) * (1.0 + monthlyRate)
-    }
-
-    val totalInterest = balance - initialBalance - contributions
-    return ProjectionResult(years, contributions, totalInterest, balance)
 }

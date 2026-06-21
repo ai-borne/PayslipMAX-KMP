@@ -18,10 +18,13 @@ class DeterministicIntelligenceEngineTest {
     ): LedgerRecordEntity {
         val gross = basicPay + da + msp + hra + tpta
         val net = gross - dsop - tax
+        val parts = dateStr.split("/")
+        val month = parts.getOrNull(0)?.toIntOrNull() ?: 4
+        val yr = parts.getOrNull(1)?.toIntOrNull() ?: 2026
         return LedgerRecordEntity(
             dateStr = dateStr,
-            year = 2026,
-            monthNum = 4,
+            year = yr,
+            monthNum = month,
             basicPay = basicPay,
             dearnessAllowance = da,
             militaryServicePay = msp,
