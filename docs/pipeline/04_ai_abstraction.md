@@ -56,14 +56,23 @@ classDiagram
 ```kotlin
 package com.ssbmax.pdfparser.insights
 
+import com.ssbmax.pdfparser.database.LedgerRecordEntity
+import com.ssbmax.pdfparser.domain.ParsedPayslip
+import kotlinx.serialization.Serializable
+
 /**
  * Common payload structure independent of target model API.
  */
+@Serializable
 data class PromptPayload(
     val currentMonthRawText: String,
     val sanitizedJsonData: String,
     val historicalSummaryText: String,
-    val anomaliesCount: Int
+    val anomaliesCount: Int,
+    val sanitizedPayslip: ParsedPayslip,
+    val engineResult: EngineResult,
+    val history: List<LedgerRecordEntity> = emptyList(),
+    val authToken: String? = null
 )
 
 /**
