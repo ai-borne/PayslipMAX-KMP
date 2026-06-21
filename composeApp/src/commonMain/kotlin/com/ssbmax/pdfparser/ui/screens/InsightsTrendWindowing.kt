@@ -3,10 +3,12 @@ package com.ssbmax.pdfparser.ui.screens
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 
-data class TrendPoint(
+data class DeductionBar(
     val label: String,
-    val gross: Float,
     val net: Float,
+    val dsop: Float,
+    val tax: Float,
+    val other: Float,
     val isSelected: Boolean,
 )
 
@@ -18,30 +20,37 @@ private fun monthLabel(
     year: Int,
 ): String = "${monthAbbreviations[monthNum - 1]} '${year % 100}"
 
-fun buildTrailingWindow(
+private fun trailingRecords(
+    history: List<LedgerRecordEntity>,
+    selected: LedgerRecordEntity,
+    windowSize: Int,
+): List<LedgerRecordEntity> =
+    history
+        .filter { it.year < selected.year || (it.year == selected.year && it.monthNum <= selected.monthNum) }
+        .sortedWith(compareBy({ it.year }, { it.monthNum }))
+        .takeLast(windowSize)
+
+fun buildDeductionBars(
     history: List<LedgerRecordEntity>,
     selected: LedgerRecordEntity,
     windowSize: Int = 6,
-): List<TrendPoint> {
-    val uptoSelected =
-        history
-            .filter { it.year < selected.year || (it.year == selected.year && it.monthNum <= selected.monthNum) }
-            .sortedWith(compareBy({ it.year }, { it.monthNum }))
-            .takeLast(windowSize)
-    return uptoSelected.map {
-        TrendPoint(
+): List<DeductionBar> =
+    trailingRecords(history, selected, windowSize).map {
+        val other = (it.grossPay - it.netPay - it.incomeTax - it.dsopSubscription).coerceAtLeast(0.0)
+        DeductionBar(
             label = monthLabel(it.monthNum, it.year),
-            gross = it.grossPay.toFloat(),
             net = it.netPay.toFloat(),
+            dsop = it.dsopSubscription.toFloat(),
+            tax = it.incomeTax.toFloat(),
+            other = other.toFloat(),
             isSelected = it.dateStr == selected.dateStr,
         )
     }
+
+fun breakdownRangeCaption(bars: List<DeductionBar>): String {
+    if (bars.isEmpty()) return ""
+    return "${bars.first().label}${InsightsStrings.dateRangeSeparator}${bars.last().label}"
 }
 
-fun trendRangeCaption(points: List<TrendPoint>): String {
-    if (points.isEmpty()) return ""
-    return "${points.first().label}${InsightsStrings.trendDateRangeSeparator}${points.last().label}"
-}
-
-fun trendTitleFor(pointCount: Int): String =
-    if (pointCount == 6) InsightsStrings.sixMonthTrendTitle else "$pointCount${InsightsStrings.monthTrendTitleSuffix}"
+fun breakdownTitleFor(barCount: Int): String =
+    if (barCount == 6) InsightsStrings.sixMonthBreakdownTitle else "$barCount${InsightsStrings.monthBreakdownTitleSuffix}"
