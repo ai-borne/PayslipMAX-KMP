@@ -66,6 +66,7 @@ private val LightColorScheme =
 // Dimension Constants (Fulfills no-hardcoded-dimensions rule)
 object AppColors {
     val Warning = Color(0xFFF59E0B)
+    val Caution = Color(0xFFEA580C)
 }
 
 object AppDimensions {

@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.ui.screens
 
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
+import com.ssbmax.pdfparser.parser.PayslipPatternConfig
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -92,6 +93,14 @@ class InsightsDeductionsWindowingTest {
         assertEquals(1, window.size)
         assertEquals("1-Month Pay Breakdown", breakdownTitleFor(window.size))
         assertEquals("May '25", breakdownRangeCaption(window))
+    }
+
+    @Test
+    fun monthLabelReusesSharedMonthNamesNotADuplicateList() {
+        val selected = record(year = 2025, monthNum = 9)
+        val window = buildDeductionBars(listOf(selected), selected)
+        val expectedAbbreviation = PayslipPatternConfig.monthNames[9].take(3)
+        assertEquals("$expectedAbbreviation '25", window.first().label)
     }
 
     @Test
