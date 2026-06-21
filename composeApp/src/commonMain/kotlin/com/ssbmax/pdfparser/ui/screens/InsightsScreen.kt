@@ -128,20 +128,19 @@ private fun InsightsContent(
 ) {
     val ledgerRecords by viewModel.ledgerRecords.collectAsState()
     val state = rememberInsightsState(selected, ledgerRecords)
+    var wellnessExpanded by remember { mutableStateOf(false) }
     Column(modifier = modifier.fillMaxSize()) {
         InsightsTopBar(
             payslips = uiState.payslips,
             selected = selected,
-            score = state.engineResult.healthScore,
-            delta = state.scoreDelta,
-            expanded = false,
-            onExpandClick = {},
             onSelectPayslip = { viewModel.selectPayslip(it) },
         )
         InsightsLazyBody(
             state = state,
             uiState = uiState,
             viewModel = viewModel,
+            wellnessExpanded = wellnessExpanded,
+            onWellnessExpandClick = { wellnessExpanded = !wellnessExpanded },
             onShowUpgradeSheet = onShowUpgradeSheet,
             onShowTransparency = onShowTransparency,
             onViewInsightsClick = onViewInsightsClick,
@@ -156,6 +155,8 @@ private fun InsightsLazyBody(
     state: InsightsState,
     uiState: PayslipUiState,
     viewModel: PayslipViewModel,
+    wellnessExpanded: Boolean,
+    onWellnessExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
     onViewInsightsClick: () -> Unit,
@@ -167,38 +168,82 @@ private fun InsightsLazyBody(
         contentPadding = androidx.compose.foundation.layout.PaddingValues(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
-        // 1. Executive Summary
-        item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
-
-        // 2. Historical Trends
-        item { TrendsSparklinesSection(history = state.historySorted) }
-
-        // 3. Key Findings (Free)
-        item { KeyFindingsSection(state = state) }
-
-        // 4. AI Highlights (Free)
-        item { AiHighlightsSection(state = state) }
-
-        // 5. Premium Intelligence
         item {
-            PremiumIntelligenceCard(
-                isPremiumEnabled = uiState.isPremiumEnabled,
+            InsightsHealthKpiCardItem(
                 state = state,
-                onUpgradeClick = onShowUpgradeSheet,
+                isPremiumEnabled = uiState.isPremiumEnabled,
+                wellnessExpanded = wellnessExpanded,
+                onWellnessExpandClick = onWellnessExpandClick,
+                onShowUpgradeSheet = onShowUpgradeSheet,
                 onNavigateTo = onNavigateTo,
-                aiSectionContent = {
-                    GeminiAiInsightsSection(
-                        aiInsights = uiState.aiInsights,
-                        isAiLoading = uiState.isAiLoading,
-                        aiError = uiState.aiError,
-                        onGenerateClick = onShowTransparency,
-                        onViewInsightsClick = onViewInsightsClick,
-                        onClearClick = { viewModel.clearAiInsights() },
-                    )
-                }
+            )
+        }
+        item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
+        item { TrendsSparklinesSection(history = state.historySorted) }
+        item { KeyFindingsSection(state = state) }
+        item { AiHighlightsSection(state = state) }
+        item {
+            InsightsPremiumIntelligenceItem(
+                state = state,
+                uiState = uiState,
+                viewModel = viewModel,
+                onShowUpgradeSheet = onShowUpgradeSheet,
+                onShowTransparency = onShowTransparency,
+                onViewInsightsClick = onViewInsightsClick,
+                onNavigateTo = onNavigateTo,
             )
         }
     }
+}
+
+@Composable
+private fun InsightsHealthKpiCardItem(
+    state: InsightsState,
+    isPremiumEnabled: Boolean,
+    wellnessExpanded: Boolean,
+    onWellnessExpandClick: () -> Unit,
+    onShowUpgradeSheet: () -> Unit,
+    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+) {
+    HealthKpiCard(
+        score = state.engineResult.healthScore,
+        delta = state.scoreDelta,
+        expanded = wellnessExpanded,
+        onExpandClick = onWellnessExpandClick,
+        drivers = breakdownWellnessDrivers(state.engineResult),
+        opportunityAmount = state.optimizationResult.totalPotentialTaxSaving,
+        onSeeHowClick = {
+            if (isPremiumEnabled) onNavigateTo(com.ssbmax.pdfparser.Screen.TaxPlanning) else onShowUpgradeSheet()
+        },
+    )
+}
+
+@Composable
+private fun InsightsPremiumIntelligenceItem(
+    state: InsightsState,
+    uiState: PayslipUiState,
+    viewModel: PayslipViewModel,
+    onShowUpgradeSheet: () -> Unit,
+    onShowTransparency: () -> Unit,
+    onViewInsightsClick: () -> Unit,
+    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+) {
+    PremiumIntelligenceCard(
+        isPremiumEnabled = uiState.isPremiumEnabled,
+        state = state,
+        onUpgradeClick = onShowUpgradeSheet,
+        onNavigateTo = onNavigateTo,
+        aiSectionContent = {
+            GeminiAiInsightsSection(
+                aiInsights = uiState.aiInsights,
+                isAiLoading = uiState.isAiLoading,
+                aiError = uiState.aiError,
+                onGenerateClick = onShowTransparency,
+                onViewInsightsClick = onViewInsightsClick,
+                onClearClick = { viewModel.clearAiInsights() },
+            )
+        }
+    )
 }
 
 @Composable
