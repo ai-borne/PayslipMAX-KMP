@@ -138,6 +138,27 @@ class InsightsScreenUiTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
+    fun healthKpiCardRendersAndExpandsOnTap() =
+        runComposeUiTest {
+            runBlocking {
+                fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
+            }
+            testDispatcher.scheduler.runCurrent()
+            setContent { InsightsScreen(viewModel = viewModel, onNavigateTo = {}) }
+            testDispatcher.scheduler.runCurrent()
+            mainClock.advanceTimeBy(300)
+
+            onNodeWithText(InsightsStrings.wellnessChipLabel).assertIsDisplayed()
+            onNodeWithContentDescription(InsightsStrings.wellnessChipExpandDesc).assertExists()
+
+            onNodeWithText(InsightsStrings.wellnessChipLabel).performClick()
+            mainClock.advanceTimeBy(300)
+
+            onNodeWithContentDescription(InsightsStrings.wellnessChipCollapseDesc).assertExists()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
     fun premiumUserSeesCaReportInlineNotTeaser() =
         runComposeUiTest {
             runBlocking {

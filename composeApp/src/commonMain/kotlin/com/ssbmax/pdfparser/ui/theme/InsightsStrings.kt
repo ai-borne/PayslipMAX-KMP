@@ -3,7 +3,6 @@ package com.ssbmax.pdfparser.ui.theme
 object InsightsStrings {
     // Wellness chip, month selector & score driver labels
     const val wellnessChipLabel = "Pay Health"
-    const val wellnessDriversTitle = "Score Drivers"
     const val wellnessSavingsRateLabel = "Savings Rate:"
     const val wellnessNoIssuesBonus = "Clean payslip — no anomalies detected"
     const val wellnessImproveSavingsRate = "Increase DSOP subscription to improve savings rate"
@@ -50,6 +49,15 @@ object InsightsStrings {
     // Accessibility content descriptions
     const val wellnessChipExpandDesc = "Expand score drivers"
     const val wellnessChipCollapseDesc = "Collapse score drivers"
+
+    // Health KPI card (grade bands, expanded breakdown sections)
+    const val healthGradeExcellent = "Excellent"
+    const val healthGradeGood = "Good"
+    const val healthGradeFair = "Fair"
+    const val healthGradeNeedsAttention = "Needs Attention"
+    const val positiveFactorsTitle = "Positive Factors"
+    const val riskFactorsTitle = "Risk Factors"
+    const val opportunityTitle = "Opportunity"
 
     // Improve path prefix (SSOT for the "→" arrow used in driver rows)
     const val wellnessImprovePathPrefix = "→ "
