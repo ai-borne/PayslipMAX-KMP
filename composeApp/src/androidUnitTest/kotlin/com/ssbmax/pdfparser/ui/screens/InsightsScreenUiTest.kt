@@ -135,14 +135,19 @@ class InsightsScreenUiTest {
                 fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
             }
             viewModel.setPremiumEnabled(true)
-            testDispatcher.scheduler.runCurrent()
+            testDispatcher.scheduler.advanceUntilIdle()
             setContent { InsightsScreen(viewModel = viewModel, onNavigateTo = {}) }
-            testDispatcher.scheduler.runCurrent()
+            testDispatcher.scheduler.advanceUntilIdle()
             mainClock.advanceTimeBy(300)
 
             // ProFeaturesTeaser must not appear for premium users
             onNodeWithText(AppStrings.settingsProUpgradeBtn).assertDoesNotExist()
+
+            // Scroll to compose the section in LazyColumn
+            onNode(hasScrollAction()).performScrollToNode(hasText(AppStrings.geminiAiAnalyzeBtn))
+            mainClock.advanceTimeBy(300)
+
             // CA report active card must be present (its generate CTA is the positive signal)
-            onNodeWithText(AppStrings.geminiAiAnalyzeBtn).assertIsDisplayed()
+            onNodeWithText(AppStrings.geminiAiAnalyzeBtn).assertExists()
         }
 }

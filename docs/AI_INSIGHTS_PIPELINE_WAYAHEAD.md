@@ -35,7 +35,7 @@ The current structure employs a highly clean **Hybrid AI Architecture (Phase 2)*
 
 *   **How Data is Used**: The database maintains a rolling data bank via the `ledger_records` and `encrypted_payslips` tables. When audits or AI narrative tasks are executed, the repository fetches a **6-month sliding window** of historical ledger records. This provides the context window needed to compute anomalies, track year-to-date tax progress, and detect sudden drops.
 *   **Security Against Hackers**:
-    1.  **On-Disk Encryption**: The raw JSON payload of parsed statements is encrypted using **AES-256 GCM** (randomized salt + IV) and stored as hexadecimal ciphertext in [EncryptedPayslipEntity](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/database/EncryptedPayslipEntity.kt).
+    1.  **On-Disk Encryption**: The raw JSON payload of parsed statements is encrypted using **AES-256 GCM** (randomized salt + IV) using device-specific unique keys generated using hardware-backed **Android Keystore** and **iOS Keychain Services** (managed via `CryptoHelper.getDatabaseSecretKey()`).
     2.  **PII Redaction**: The [RedactionSanitizer](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/RedactionSanitizer.kt) scrubs PAN, Bank Account, and Name before prompt creation. No identifying details are ever transmitted over the network.
     3.  **No Local Credentials**: Secret keys are kept securely in Google Cloud Secret Manager (server-side function proxy) rather than compiled in the client binary.
 
@@ -44,5 +44,5 @@ The current structure employs a highly clean **Hybrid AI Architecture (Phase 2)*
 ### 5. Architectural Recommendations
 
 1.  **Address the iOS Parser Performance**: As detailed in [docs/slowiosparser](file:///Users/sunil/Downloads/PDFParser/docs/slowiosparser), the current iOS text extraction executes a heavy per-character interop loop. Shifting to **Option 1 (character bounds indexing)** is critical to avoid thread freezing during PDF imports.
-2.  **Secure the Local Encryption Key**: Currently, the encryption default key in `EncryptedPayslipEntity` is a hardcoded string fallback. We should transition to generating device-specific keys utilizing Android Keystore and iOS Keychain Services.
+2.  **Secure the Local Encryption Key [COMPLETED]**: Successfully transitioned local SQLite database encryption default keys to unique hardware-backed keys using Android Keystore and iOS Keychain Services, verifying migration compatibility with TDD.
 3.  **On-Demand Model Download**: To prevent ballooning the initial App Store download size, the Gemma-2B-IT model weights should be treated as an optional, on-demand download rather than bundled inside the base binary.

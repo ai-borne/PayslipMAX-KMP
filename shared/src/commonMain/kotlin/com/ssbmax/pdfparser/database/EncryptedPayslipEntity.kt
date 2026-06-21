@@ -49,7 +49,7 @@ private fun toCharDigit(ch: Char): Int {
     }
 }
 
-fun ParsedPayslip.toEncryptedEntity(password: String = "PCDAPayslipOfflineSecret2026!"): EncryptedPayslipEntity {
+fun ParsedPayslip.toEncryptedEntity(password: String = CryptoHelper.getDatabaseSecretKey()): EncryptedPayslipEntity {
     val jsonString = Json.encodeToString(ParsedPayslip.serializer(), this)
     val jsonBytes = jsonString.encodeToByteArray()
     val encryptedBytes = CryptoHelper.encrypt(jsonBytes, password).getOrThrow()
@@ -63,7 +63,7 @@ fun ParsedPayslip.toEncryptedEntity(password: String = "PCDAPayslipOfflineSecret
     )
 }
 
-fun EncryptedPayslipEntity.toDomain(password: String = "PCDAPayslipOfflineSecret2026!"): ParsedPayslip {
+fun EncryptedPayslipEntity.toDomain(password: String = CryptoHelper.getDatabaseSecretKey()): ParsedPayslip {
     val encryptedBytes = ciphertext.hexToByteArray()
     val decryptedBytes = CryptoHelper.decrypt(encryptedBytes, password).getOrThrow()
     val jsonString = decryptedBytes.decodeToString()
