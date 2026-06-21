@@ -41,7 +41,6 @@ fun InsightsTopBar(
     selected: ParsedPayslip,
     onSelectPayslip: (ParsedPayslip) -> Unit,
     healthScore: Int,
-    healthDelta: Int?,
     wellnessExpanded: Boolean,
     onWellnessExpandClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -67,7 +66,6 @@ fun InsightsTopBar(
             )
             PayHealthPill(
                 score = healthScore,
-                delta = healthDelta,
                 expanded = wellnessExpanded,
                 onClick = onWellnessExpandClick,
             )
@@ -78,18 +76,17 @@ fun InsightsTopBar(
 @Composable
 private fun PayHealthPill(
     score: Int,
-    delta: Int?,
     expanded: Boolean,
     onClick: () -> Unit,
 ) {
-    val grade = gradeFor(score)
-    val color = gradeColor(grade)
+    val status = statusFor(score)
+    val color = statusColor(status)
     FilterChip(
         selected = true,
         onClick = onClick,
         label = {
             Text(
-                text = "${grade.letter} $score/100${getDeltaText(delta)}",
+                text = "${InsightsStrings.wellnessChipLabel}: $score%",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
             )
@@ -160,12 +157,18 @@ private fun MonthSelectorDropdown(
 
 // ── Delta formatting (shared by HealthKpiCard) ───────────────────────────────
 
-fun getDeltaText(delta: Int?) =
-    when {
-        delta == null || delta == 0 -> ""
-        delta > 0 -> " ▲$delta"
-        else -> " ▼${abs(delta)}"
+fun getTrendText(
+    delta: Int?,
+    previousMonthLabel: String?,
+): String {
+    if (delta == null || delta == 0) return ""
+    val sinceLabel = previousMonthLabel ?: InsightsStrings.wellnessTrendSinceLastPayslip
+    return if (delta > 0) {
+        "${InsightsStrings.wellnessTrendImprovedPrefix} $delta ${InsightsStrings.wellnessTrendPointsSince} $sinceLabel"
+    } else {
+        "${InsightsStrings.wellnessTrendDownPrefix} ${abs(delta)} ${InsightsStrings.wellnessTrendPointsSince} $sinceLabel"
     }
+}
 
 // ── Wellness driver row (reused by HealthKpiCard breakdown) ─────────────────
 
@@ -192,8 +195,14 @@ fun WellnessDriverRow(driver: WellnessDriver) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            val titlePrefix =
+                if (driver.pointImpact >= 0) {
+                    InsightsStrings.wellnessPositiveDriverPrefix
+                } else {
+                    InsightsStrings.wellnessWatchDriverPrefix
+                }
             Text(
-                text = driver.title,
+                text = "$titlePrefix${driver.title}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),
