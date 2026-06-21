@@ -49,6 +49,7 @@ fun buildDeductionBars(
 
 fun breakdownRangeCaption(bars: List<DeductionBar>): String {
     if (bars.isEmpty()) return ""
+    if (bars.size == 1) return bars.first().label
     return "${bars.first().label}${InsightsStrings.dateRangeSeparator}${bars.last().label}"
 }
 

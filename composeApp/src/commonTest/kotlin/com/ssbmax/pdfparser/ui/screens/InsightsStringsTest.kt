@@ -5,7 +5,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class WellnessChipLabelTest {
+class InsightsStringsTest {
     @Test
     fun wellnessChipLabelIsPayHealth() {
         assertEquals("Pay Health", InsightsStrings.wellnessChipLabel)

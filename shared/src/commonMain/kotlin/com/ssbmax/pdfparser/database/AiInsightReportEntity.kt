@@ -11,5 +11,5 @@ data class AiInsightReportEntity(
     val payslipMonth: String,
     val generatedDate: Long,
     val reportJSON: String,
-    val reportVersion: String
+    val reportVersion: String,
 )

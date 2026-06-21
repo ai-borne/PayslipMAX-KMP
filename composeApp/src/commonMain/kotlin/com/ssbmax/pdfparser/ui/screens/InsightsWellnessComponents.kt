@@ -5,11 +5,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Surface
@@ -27,7 +32,7 @@ import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.math.abs
 
-// ── Top bar: month selector + wellness chip ──────────────────────────────────
+// ── Top bar: month selector + Pay Health pill ────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +40,10 @@ fun InsightsTopBar(
     payslips: List<ParsedPayslip>,
     selected: ParsedPayslip,
     onSelectPayslip: (ParsedPayslip) -> Unit,
+    healthScore: Int,
+    healthDelta: Int?,
+    wellnessExpanded: Boolean,
+    onWellnessExpandClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -56,8 +65,49 @@ fun InsightsTopBar(
                 onSelectPayslip = onSelectPayslip,
                 modifier = Modifier.weight(1f),
             )
+            PayHealthPill(
+                score = healthScore,
+                delta = healthDelta,
+                expanded = wellnessExpanded,
+                onClick = onWellnessExpandClick,
+            )
         }
     }
+}
+
+@Composable
+private fun PayHealthPill(
+    score: Int,
+    delta: Int?,
+    expanded: Boolean,
+    onClick: () -> Unit,
+) {
+    val grade = gradeFor(score)
+    val color = gradeColor(grade)
+    FilterChip(
+        selected = true,
+        onClick = onClick,
+        label = {
+            Text(
+                text = "${grade.letter} $score/100${getDeltaText(delta)}",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+            )
+        },
+        trailingIcon = {
+            Icon(
+                imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                contentDescription =
+                    if (expanded) InsightsStrings.wellnessChipCollapseDesc else InsightsStrings.wellnessChipExpandDesc,
+            )
+        },
+        colors =
+            FilterChipDefaults.filterChipColors(
+                selectedContainerColor = color.copy(alpha = 0.15f),
+                selectedLabelColor = color,
+                selectedTrailingIconColor = color,
+            ),
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

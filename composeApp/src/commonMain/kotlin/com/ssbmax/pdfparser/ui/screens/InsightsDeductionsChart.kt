@@ -14,54 +14,73 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import com.ssbmax.pdfparser.ui.theme.AppColors
+import com.ssbmax.pdfparser.ui.components.formatLakhs
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
+
+/** Net is the bold "what you kept" color; the rest are muted neutrals so the eye lands on Net first. */
+data class DeductionsChartColors(
+    val net: Color,
+    val dsop: Color,
+    val tax: Color,
+    val other: Color,
+    val highlight: Color,
+)
+
+@Composable
+fun deductionsChartColors(): DeductionsChartColors {
+    val neutral = MaterialTheme.colorScheme.onSurfaceVariant
+    return DeductionsChartColors(
+        net = MaterialTheme.colorScheme.secondary,
+        dsop = neutral.copy(alpha = 0.55f),
+        tax = neutral.copy(alpha = 0.35f),
+        other = neutral.copy(alpha = 0.20f),
+        highlight = MaterialTheme.colorScheme.primary,
+    )
+}
 
 @Composable
 fun DeductionsBarChart(
     bars: List<DeductionBar>,
+    colors: DeductionsChartColors = deductionsChartColors(),
     modifier: Modifier = Modifier.fillMaxWidth().height(AppDimensions.ChartHeightLarge),
-    netColor: Color = MaterialTheme.colorScheme.secondary,
-    dsopColor: Color = MaterialTheme.colorScheme.tertiary,
-    taxColor: Color = MaterialTheme.colorScheme.error,
-    otherColor: Color = AppColors.Warning,
     textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
-    highlightColor: Color = MaterialTheme.colorScheme.primary,
+    gridColor: Color = MaterialTheme.colorScheme.outlineVariant,
 ) {
     val textMeasurer = rememberTextMeasurer()
     val textStyle = TextStyle(color = textColor, fontSize = AppDimensions.TextSizeTiny)
     Canvas(modifier = modifier) {
-        drawDeductionBars(bars, netColor, dsopColor, taxColor, otherColor, highlightColor, textMeasurer, textStyle)
+        drawDeductionBars(bars, colors, gridColor, textMeasurer, textStyle)
     }
 }
 
 private fun DrawScope.drawDeductionBars(
     bars: List<DeductionBar>,
-    netColor: Color,
-    dsopColor: Color,
-    taxColor: Color,
-    otherColor: Color,
-    highlightColor: Color,
+    colors: DeductionsChartColors,
+    gridColor: Color,
     textMeasurer: androidx.compose.ui.text.TextMeasurer,
     textStyle: TextStyle,
 ) {
     if (bars.isEmpty()) return
 
+    val paddingLeft = 50f
     val paddingBottom = 30f
     val paddingTop = 10f
+    val chartWidth = size.width - paddingLeft
     val chartHeight = size.height - paddingTop - paddingBottom
     val maxGross = bars.maxOf { it.net + it.dsop + it.tax + it.other }.coerceAtLeast(1f)
 
-    val slotWidth = size.width / bars.size
+    drawDeductionsYAxis(maxGross, paddingLeft, paddingTop, chartHeight, size.width, gridColor, textMeasurer, textStyle)
+
+    val slotWidth = chartWidth / bars.size
     val barWidth = slotWidth * 0.55f
 
     bars.forEachIndexed { index, bar ->
-        val centerX = slotWidth * index + slotWidth / 2f
+        val centerX = paddingLeft + slotWidth * index + slotWidth / 2f
         val left = centerX - barWidth / 2f
-        drawStackedBar(bar, left, barWidth, paddingTop, chartHeight, maxGross, netColor, dsopColor, taxColor, otherColor)
+        drawStackedBar(bar, left, barWidth, paddingTop, chartHeight, maxGross, colors)
         if (bar.isSelected) {
             drawRect(
-                color = highlightColor,
+                color = colors.highlight,
                 topLeft = Offset(left - 4f, paddingTop - 4f),
                 size = Size(barWidth + 8f, chartHeight + 8f),
                 style = Stroke(width = 3f),
@@ -77,6 +96,35 @@ private fun DrawScope.drawDeductionBars(
     }
 }
 
+private fun DrawScope.drawDeductionsYAxis(
+    maxGross: Float,
+    paddingLeft: Float,
+    paddingTop: Float,
+    chartHeight: Float,
+    width: Float,
+    gridColor: Color,
+    textMeasurer: androidx.compose.ui.text.TextMeasurer,
+    textStyle: TextStyle,
+) {
+    val gridCount = 3
+    for (i in 0..gridCount) {
+        val y = paddingTop + (chartHeight / gridCount) * i
+        drawLine(
+            color = gridColor,
+            start = Offset(paddingLeft, y),
+            end = Offset(width, y),
+            strokeWidth = 1f,
+        )
+        val gridVal = maxGross * (gridCount - i) / gridCount
+        drawText(
+            textMeasurer = textMeasurer,
+            text = formatLakhs(gridVal.toDouble()),
+            topLeft = Offset(0f, y - 12f),
+            style = textStyle,
+        )
+    }
+}
+
 private fun DrawScope.drawStackedBar(
     bar: DeductionBar,
     left: Float,
@@ -84,12 +132,9 @@ private fun DrawScope.drawStackedBar(
     paddingTop: Float,
     chartHeight: Float,
     maxGross: Float,
-    netColor: Color,
-    dsopColor: Color,
-    taxColor: Color,
-    otherColor: Color,
+    colors: DeductionsChartColors,
 ) {
-    val segments = listOf(bar.net to netColor, bar.dsop to dsopColor, bar.tax to taxColor, bar.other to otherColor)
+    val segments = listOf(bar.net to colors.net, bar.dsop to colors.dsop, bar.tax to colors.tax, bar.other to colors.other)
     var bottomY = paddingTop + chartHeight
     segments.forEach { (value, color) ->
         val segmentHeight = chartHeight * (value / maxGross)

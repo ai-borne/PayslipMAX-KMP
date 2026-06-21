@@ -149,12 +149,33 @@ class InsightsScreenUiTest {
             mainClock.advanceTimeBy(300)
 
             onNodeWithText(InsightsStrings.wellnessChipLabel).assertIsDisplayed()
-            onNodeWithContentDescription(InsightsStrings.wellnessChipExpandDesc).assertExists()
+            // Both the top-bar pill and the KPI card expose the same expand affordance.
+            onAllNodesWithContentDescription(InsightsStrings.wellnessChipExpandDesc).assertCountEquals(2)
 
             onNodeWithText(InsightsStrings.wellnessChipLabel).performClick()
             mainClock.advanceTimeBy(300)
 
-            onNodeWithContentDescription(InsightsStrings.wellnessChipCollapseDesc).assertExists()
+            onAllNodesWithContentDescription(InsightsStrings.wellnessChipCollapseDesc).assertCountEquals(2)
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun topBarHealthPillTogglesSameKpiCardAsTheCardItself() =
+        runComposeUiTest {
+            runBlocking {
+                fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
+            }
+            testDispatcher.scheduler.runCurrent()
+            setContent { InsightsScreen(viewModel = viewModel, onNavigateTo = {}) }
+            testDispatcher.scheduler.runCurrent()
+            mainClock.advanceTimeBy(300)
+
+            // The top-bar pill exposes the same expand affordance as the KPI card below it.
+            onAllNodesWithContentDescription(InsightsStrings.wellnessChipExpandDesc)[0].performClick()
+            mainClock.advanceTimeBy(300)
+
+            onAllNodesWithContentDescription(InsightsStrings.wellnessChipCollapseDesc)
+                .assertCountEquals(2)
         }
 
     @OptIn(ExperimentalTestApi::class)

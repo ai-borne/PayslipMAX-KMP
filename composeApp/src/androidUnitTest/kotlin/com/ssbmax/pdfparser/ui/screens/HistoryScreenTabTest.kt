@@ -2,9 +2,7 @@ package com.ssbmax.pdfparser.ui.screens
 
 import androidx.compose.ui.test.*
 import com.ssbmax.pdfparser.database.AiInsightReportEntity
-import com.ssbmax.pdfparser.database.toEncryptedEntity
 import com.ssbmax.pdfparser.domain.*
-import com.ssbmax.pdfparser.repository.FinancialIntelligenceRepository
 import com.ssbmax.pdfparser.repository.PayslipRepository
 import com.ssbmax.pdfparser.testing.FakePayslipDao
 import com.ssbmax.pdfparser.testing.FakePdfParser
@@ -117,15 +115,15 @@ class HistoryScreenTabTest {
                         payslipMonth = "02/2026",
                         generatedDate = 1718919600000L,
                         reportJSON = "This is a **Premium Narrative** report for Feb 2026",
-                        reportVersion = "1.0"
-                    )
+                        reportVersion = "1.0",
+                    ),
                 )
             }
             testDispatcher.scheduler.runCurrent()
             setContent {
                 HistoryScreen(viewModel = viewModel, onOpenPdf = { _, _ -> })
             }
-            
+
             // Switch to AI Reports tab
             onNodeWithText(AppStrings.historyTabAiReports).performClick()
             testDispatcher.scheduler.runCurrent()
@@ -144,7 +142,7 @@ class HistoryScreenTabTest {
             onNodeWithText(AppStrings.settingsAiInsightsLockedTitle).assertIsDisplayed()
             // Verify content is parsed
             onNodeWithText("This is a Premium Narrative report for Feb 2026", substring = true).assertIsDisplayed()
-            
+
             // Verify there is no refresh/regenerate button (onRegenerateClick is null)
             onNodeWithText("🔄").assertDoesNotExist()
         }

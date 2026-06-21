@@ -154,22 +154,26 @@ private fun DrawScope.drawChartGrid(
         )
 
         val gridVal = maxVal * (gridCount - i) / gridCount
-        val lakhs = (gridVal / 1000.0).toInt() / 100.0
-        val lakhsStr = lakhs.toString()
-        val finalStr =
-            when {
-                lakhs == 0.0 -> "0"
-                lakhsStr.endsWith(".0") -> lakhsStr.dropLast(2)
-                else -> lakhsStr
-            }
-        val gridValStr = if (finalStr == "0") "₹0" else "₹${finalStr}L"
         drawText(
             textMeasurer = textMeasurer,
-            text = gridValStr,
+            text = formatLakhs(gridVal),
             topLeft = Offset(10f, y - 12f),
             style = textStyle,
         )
     }
+}
+
+/** Formats a rupee value in lakhs for compact chart axis labels, e.g. 250000.0 -> "₹2.5L". */
+fun formatLakhs(value: Double): String {
+    val lakhs = (value / 1000.0).toInt() / 100.0
+    val lakhsStr = lakhs.toString()
+    val finalStr =
+        when {
+            lakhs == 0.0 -> "0"
+            lakhsStr.endsWith(".0") -> lakhsStr.dropLast(2)
+            else -> lakhsStr
+        }
+    return if (finalStr == "0") "₹0" else "₹${finalStr}L"
 }
 
 private fun DrawScope.drawDatasetPath(

@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.ui.components.ChartLegend
-import com.ssbmax.pdfparser.ui.theme.AppColors
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -22,7 +21,7 @@ fun DeductionsBreakdownSection(
     modifier: Modifier = Modifier,
 ) {
     val bars = remember(history, selectedRecord) { buildDeductionBars(history, selectedRecord) }
-    if (bars.size >= 2) {
+    if (bars.isNotEmpty()) {
         Card(
             modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(AppDimensions.CornerRadius),
@@ -50,13 +49,14 @@ fun DeductionsBreakdownSection(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                DeductionsBarChart(bars = bars)
+                val chartColors = deductionsChartColors()
+                DeductionsBarChart(bars = bars, colors = chartColors)
                 ChartLegend(
                     listOf(
-                        AppStrings.legendNetTakeHome to MaterialTheme.colorScheme.secondary,
-                        AppStrings.legendDsop to MaterialTheme.colorScheme.tertiary,
-                        AppStrings.legendTax to MaterialTheme.colorScheme.error,
-                        AppStrings.legendOtherDeductions to AppColors.Warning,
+                        AppStrings.legendNetTakeHome to chartColors.net,
+                        AppStrings.legendDsop to chartColors.dsop,
+                        AppStrings.legendTax to chartColors.tax,
+                        AppStrings.legendOtherDeductions to chartColors.other,
                     ),
                 )
             }
