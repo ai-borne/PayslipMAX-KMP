@@ -89,7 +89,7 @@ fun HistoryScreen(
             AiInsightsBottomSheet(
                 aiInsights = report.reportJSON,
                 onDismissRequest = { selectedAiReport = null },
-                onRegenerateClick = null
+                onRegenerateClick = null,
             )
         }
     }
@@ -120,7 +120,7 @@ private fun HistoryListContainer(
 
         HistoryTabSelector(
             selectedTab = selectedTab,
-            onTabSelected = { selectedTab = it }
+            onTabSelected = { selectedTab = it },
         )
         Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
@@ -132,7 +132,7 @@ private fun HistoryListContainer(
             onPayslipClick = onPayslipClick,
             onLongPress = onLongPress,
             onSwipeDelete = onSwipeDelete,
-            onAiReportClick = onAiReportClick
+            onAiReportClick = onAiReportClick,
         )
     }
 }
@@ -170,7 +170,7 @@ private fun HistoryActiveList(
         } else {
             AiReportsLazyList(
                 aiReports = aiReports,
-                onAiReportClick = onAiReportClick
+                onAiReportClick = onAiReportClick,
             )
         }
     }

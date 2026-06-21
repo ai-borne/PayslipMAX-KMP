@@ -14,14 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.database.AiInsightReportEntity
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 enum class HistoryTab {
     STATEMENTS,
-    AI_REPORTS
+    AI_REPORTS,
 }
 
 @Composable
@@ -31,11 +30,12 @@ fun HistoryTabSelector(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium))
-            .padding(AppDimensions.SpacingTiny),
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium))
+                .padding(AppDimensions.SpacingTiny),
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
         HistoryTab.values().forEach { tab ->
             val isSelected = tab == selectedTab
@@ -43,21 +43,23 @@ fun HistoryTabSelector(
             val contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
             Button(
                 onClick = { onTabSelected(tab) },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = containerColor,
-                    contentColor = contentColor
-                ),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = containerColor,
+                        contentColor = contentColor,
+                    ),
                 shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
                 modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(vertical = AppDimensions.SpacingSmall)
+                contentPadding = PaddingValues(vertical = AppDimensions.SpacingSmall),
             ) {
                 Text(
-                    text = when (tab) {
-                        HistoryTab.STATEMENTS -> AppStrings.historyTabStatements
-                        HistoryTab.AI_REPORTS -> AppStrings.historyTabAiReports
-                    },
+                    text =
+                        when (tab) {
+                            HistoryTab.STATEMENTS -> AppStrings.historyTabStatements
+                            HistoryTab.AI_REPORTS -> AppStrings.historyTabAiReports
+                        },
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
             }
         }
@@ -82,9 +84,10 @@ fun AiReportsLazyList(
     onAiReportClick: (AiInsightReportEntity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val sortedReports = remember(aiReports) {
-        aiReports.sortedByDescending { it.generatedDate }
-    }
+    val sortedReports =
+        remember(aiReports) {
+            aiReports.sortedByDescending { it.generatedDate }
+        }
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
@@ -92,11 +95,11 @@ fun AiReportsLazyList(
     ) {
         items(
             items = sortedReports,
-            key = { it.id }
+            key = { it.id },
         ) { report ->
             AiReportCard(
                 report = report,
-                onClick = { onAiReportClick(report) }
+                onClick = { onAiReportClick(report) },
             )
         }
     }
@@ -109,9 +112,10 @@ private fun AiReportCard(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
         elevation = CardDefaults.cardElevation(defaultElevation = AppDimensions.BorderThin),
@@ -126,19 +130,20 @@ private fun AiReportCardContent(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(AppDimensions.PaddingMedium),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(AppDimensions.PaddingMedium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             Text(
                 text = "🤖",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
             )
             Column {
                 Text(
@@ -168,20 +173,21 @@ internal fun getReadableMonth(monthStr: String): String {
     if (parts.size != 2) return monthStr
     val monthNum = parts[0].toIntOrNull() ?: return monthStr
     val year = parts[1]
-    val monthName = when (monthNum) {
-        1 -> "January"
-        2 -> "February"
-        3 -> "March"
-        4 -> "April"
-        5 -> "May"
-        6 -> "June"
-        7 -> "July"
-        8 -> "August"
-        9 -> "September"
-        10 -> "October"
-        11 -> "November"
-        12 -> "December"
-        else -> monthStr
-    }
+    val monthName =
+        when (monthNum) {
+            1 -> "January"
+            2 -> "February"
+            3 -> "March"
+            4 -> "April"
+            5 -> "May"
+            6 -> "June"
+            7 -> "July"
+            8 -> "August"
+            9 -> "September"
+            10 -> "October"
+            11 -> "November"
+            12 -> "December"
+            else -> monthStr
+        }
     return "$monthName $year"
 }

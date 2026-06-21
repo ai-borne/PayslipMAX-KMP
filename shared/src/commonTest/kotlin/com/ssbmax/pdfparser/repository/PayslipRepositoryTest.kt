@@ -273,5 +273,4 @@ class PayslipRepositoryTest {
             assertTrue(restoredSettings.isPremiumEnabled)
             assertEquals("light", restoredSettings.appTheme)
         }
-
 }

@@ -5,11 +5,9 @@ import com.ssbmax.pdfparser.insights.Anomaly
 import com.ssbmax.pdfparser.insights.EngineResult
 import com.ssbmax.pdfparser.insights.OptimizationResult
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class FreeInsightsLogicTest {
-
     private fun makeLedgerRecord(
         dateStr: String = "02/2026",
         netPay: Double = 100000.0,
@@ -19,7 +17,7 @@ class FreeInsightsLogicTest {
         transportAllowance: Double = 3600.0,
         houseRentAllowance: Double = 15000.0,
         dsop: Double = 10000.0,
-        tax: Double = 15000.0
+        tax: Double = 15000.0,
     ) = LedgerRecordEntity(
         dateStr = dateStr,
         year = dateStr.split("/")[1].toInt(),
@@ -33,13 +31,13 @@ class FreeInsightsLogicTest {
         grossPay = grossPay,
         dsopSubscription = dsop,
         incomeTax = tax,
-        netPay = netPay
+        netPay = netPay,
     )
 
     private fun makeInsightsState(
         current: LedgerRecordEntity,
         previous: LedgerRecordEntity?,
-        anomalies: List<Anomaly> = emptyList()
+        anomalies: List<Anomaly> = emptyList(),
     ) = InsightsState(
         currentRecord = current,
         previousRecord = previous,
@@ -47,7 +45,7 @@ class FreeInsightsLogicTest {
         engineResult = EngineResult(85, anomalies, 10.0, 5.0),
         scoreDelta = 0,
         optimizationResult = OptimizationResult(12000.0, 0.20, "OLD", emptyList(), 1000.0, 50000.0),
-        momChanges = emptyList()
+        momChanges = emptyList(),
     )
 
     @Test

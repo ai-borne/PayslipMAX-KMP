@@ -9,24 +9,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import com.ssbmax.pdfparser.insights.Anomaly
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.math.abs
 
 data class FindingItem(
     val isPositive: Boolean,
-    val text: String
+    val text: String,
 )
 
 data class HighlightItem(
-    val text: String
+    val text: String,
 )
 
 @Composable
 fun KeyFindingsSection(
     state: InsightsState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val findings = remember(state) { calculateKeyFindings(state) }
     Card(
@@ -37,7 +36,7 @@ fun KeyFindingsSection(
     ) {
         Column(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
             Text(
                 text = InsightsStrings.keyFindingsTitle,
@@ -48,7 +47,7 @@ fun KeyFindingsSection(
             findings.forEach { finding ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)
+                    horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
                 ) {
                     Text(if (finding.isPositive) "✅" else "⚠️")
                     Text(text = finding.text, style = MaterialTheme.typography.bodyMedium)
@@ -61,7 +60,7 @@ fun KeyFindingsSection(
 @Composable
 fun AiHighlightsSection(
     state: InsightsState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val highlights = remember(state) { calculateAiHighlights(state) }
     Card(
@@ -72,7 +71,7 @@ fun AiHighlightsSection(
     ) {
         Column(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
             Text(
                 text = InsightsStrings.aiHighlightsTitle,
@@ -83,7 +82,7 @@ fun AiHighlightsSection(
             highlights.forEach { highlight ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)
+                    horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
                 ) {
                     Text("•")
                     Text(text = highlight.text, style = MaterialTheme.typography.bodyMedium)
@@ -157,12 +156,13 @@ fun calculateAiHighlights(state: InsightsState): List<HighlightItem> {
         val tptaDiff = current.transportAllowance - previous.transportAllowance
         val hraDiff = current.houseRentAllowance - previous.houseRentAllowance
 
-        val maxChange = listOf(
-            "Basic Pay" to basicDiff,
-            "Dearness Allowance" to daDiff,
-            "Transport Allowance" to tptaDiff,
-            "House Rent Allowance" to hraDiff
-        ).maxByOrNull { abs(it.second) }
+        val maxChange =
+            listOf(
+                "Basic Pay" to basicDiff,
+                "Dearness Allowance" to daDiff,
+                "Transport Allowance" to tptaDiff,
+                "House Rent Allowance" to hraDiff,
+            ).maxByOrNull { abs(it.second) }
 
         if (maxChange != null && abs(maxChange.second) > 10.0) {
             val direction = if (maxChange.second > 0) "increase" else "decrease"

@@ -86,6 +86,15 @@ class InsightsDeductionsWindowingTest {
     }
 
     @Test
+    fun singleRecordHistoryReturnsOneBarWithNonRedundantCaption() {
+        val selected = record(year = 2025, monthNum = 5)
+        val window = buildDeductionBars(listOf(selected), selected)
+        assertEquals(1, window.size)
+        assertEquals("1-Month Pay Breakdown", breakdownTitleFor(window.size))
+        assertEquals("May '25", breakdownRangeCaption(window))
+    }
+
+    @Test
     fun segmentsSumToGrossPay() {
         val selected = record(year = 2025, monthNum = 5, gross = 100000.0, net = 70000.0, tax = 15000.0, dsop = 10000.0)
         val window = buildDeductionBars(listOf(selected, record(year = 2025, monthNum = 4)), selected)

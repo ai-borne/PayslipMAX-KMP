@@ -134,6 +134,10 @@ private fun InsightsContent(
             payslips = uiState.payslips,
             selected = selected,
             onSelectPayslip = { viewModel.selectPayslip(it) },
+            healthScore = state.engineResult.healthScore,
+            healthDelta = state.scoreDelta,
+            wellnessExpanded = wellnessExpanded,
+            onWellnessExpandClick = { wellnessExpanded = !wellnessExpanded },
         )
         InsightsLazyBody(
             state = state,
@@ -242,7 +246,7 @@ private fun InsightsPremiumIntelligenceItem(
                 onViewInsightsClick = onViewInsightsClick,
                 onClearClick = { viewModel.clearAiInsights() },
             )
-        }
+        },
     )
 }
 

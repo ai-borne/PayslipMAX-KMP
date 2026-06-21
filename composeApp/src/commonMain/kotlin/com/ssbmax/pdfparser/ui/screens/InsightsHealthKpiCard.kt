@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import com.ssbmax.pdfparser.ui.theme.AppColors
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 
@@ -41,11 +42,11 @@ fun gradeFor(score: Int): HealthGrade =
     }
 
 @Composable
-private fun gradeColor(grade: HealthGrade): Color =
+fun gradeColor(grade: HealthGrade): Color =
     when (grade) {
         HealthGrade.EXCELLENT -> MaterialTheme.colorScheme.primary
         HealthGrade.GOOD -> MaterialTheme.colorScheme.secondary
-        HealthGrade.FAIR -> MaterialTheme.colorScheme.tertiary
+        HealthGrade.FAIR -> AppColors.Warning
         HealthGrade.NEEDS_ATTENTION -> MaterialTheme.colorScheme.error
     }
 

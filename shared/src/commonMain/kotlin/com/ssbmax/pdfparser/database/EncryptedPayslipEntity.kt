@@ -65,11 +65,12 @@ fun ParsedPayslip.toEncryptedEntity(password: String = CryptoHelper.getDatabaseS
 
 fun EncryptedPayslipEntity.toDomain(password: String = CryptoHelper.getDatabaseSecretKey()): ParsedPayslip {
     val encryptedBytes = ciphertext.hexToByteArray()
-    val decryptedBytes = try {
-        CryptoHelper.decrypt(encryptedBytes, password).getOrThrow()
-    } catch (e: Exception) {
-        CryptoHelper.decrypt(encryptedBytes, "PCDAPayslipOfflineSecret2026!").getOrThrow()
-    }
+    val decryptedBytes =
+        try {
+            CryptoHelper.decrypt(encryptedBytes, password).getOrThrow()
+        } catch (e: Exception) {
+            CryptoHelper.decrypt(encryptedBytes, "PCDAPayslipOfflineSecret2026!").getOrThrow()
+        }
     val jsonString = decryptedBytes.decodeToString()
     return Json.decodeFromString(ParsedPayslip.serializer(), jsonString)
 }
