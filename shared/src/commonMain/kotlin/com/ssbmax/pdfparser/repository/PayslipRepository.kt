@@ -21,7 +21,17 @@ class PayslipRepository(
      */
     fun getAllPayslips(): Flow<List<ParsedPayslip>> {
         return payslipDao.getAllPayslips().map { entities ->
-            entities.map { it.toDomain() }
+            try {
+                entities.map { it.toDomain() }
+            } catch (e: Exception) {
+                // If decryption fails completely, clear database to recover self-healing style
+                try {
+                    clearAll()
+                } catch (dbEx: Exception) {
+                    // Ignore database delete errors
+                }
+                emptyList()
+            }
         }
     }
 
