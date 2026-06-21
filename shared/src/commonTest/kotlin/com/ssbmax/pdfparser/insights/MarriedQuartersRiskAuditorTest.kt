@@ -12,7 +12,7 @@ class MarriedQuartersRiskAuditorTest {
         licenseFee: Double = 0.0,
         furnitureRent: Double = 0.0,
         monthNum: Int = 1,
-        year: Int = 2026
+        year: Int = 2026,
     ): ParsedPayslip {
         return ParsedPayslip(
             file = "test.pdf",
@@ -25,7 +25,7 @@ class MarriedQuartersRiskAuditorTest {
             deductions = Deductions(licenseFee = licenseFee, furnitureRent = furnitureRent),
             ledgerBalances = LedgerBalances(),
             summary = PayslipSummary(grossPay = 100000.0, totalDeductions = 10000.0, netRemittance = 90000.0),
-            taxAndSavings = null
+            taxAndSavings = null,
         )
     }
 

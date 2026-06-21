@@ -6,7 +6,7 @@ class MarriedQuartersRiskAuditor : RuleAuditor {
     override fun audit(
         current: ParsedPayslip,
         previous: ParsedPayslip?,
-        history: List<ParsedPayslip>
+        history: List<ParsedPayslip>,
     ): List<Anomaly> {
         val anomalies = mutableListOf<Anomaly>()
 
@@ -16,9 +16,10 @@ class MarriedQuartersRiskAuditor : RuleAuditor {
         }
 
         // Get past months including current, sorted chronologically
-        val sortedHistory = (history + current)
-            .distinctBy { it.dateStr }
-            .sortedWith(compareBy<ParsedPayslip> { it.year }.thenBy { it.monthNum })
+        val sortedHistory =
+            (history + current)
+                .distinctBy { it.dateStr }
+                .sortedWith(compareBy<ParsedPayslip> { it.year }.thenBy { it.monthNum })
 
         // Check if there are at least 3 months where HRA == 0, License Fee == 0, and Furniture Rent == 0
         var consecutiveMonths = 0
@@ -43,8 +44,8 @@ class MarriedQuartersRiskAuditor : RuleAuditor {
                     field = "licenseFee",
                     amount = estimatedTotalRisk,
                     month = current.dateStr,
-                    description = "Quarters Rent Recovery Risk: You have not received HRA or paid License Fee/Furniture Rent for $consecutiveMonths months. Expected retroactive debt recovery is approximately ₹${estimatedTotalRisk.toInt()}."
-                )
+                    description = "Quarters Rent Recovery Risk: You have not received HRA or paid License Fee/Furniture Rent for $consecutiveMonths months. Expected retroactive debt recovery is approximately ₹${estimatedTotalRisk.toInt()}.",
+                ),
             )
         }
 

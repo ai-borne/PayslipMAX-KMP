@@ -13,7 +13,7 @@ data class PromptPayload(
     val sanitizedPayslip: ParsedPayslip,
     val engineResult: EngineResult,
     val history: List<LedgerRecordEntity> = emptyList(),
-    val authToken: String? = null
+    val authToken: String? = null,
 )
 
 interface AIInsightProvider {

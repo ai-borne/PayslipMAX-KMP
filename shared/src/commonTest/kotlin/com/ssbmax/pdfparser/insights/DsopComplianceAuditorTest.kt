@@ -11,7 +11,7 @@ class DsopComplianceAuditorTest {
         dsop: Double = 10000.0,
         miscAdjYtd: Double = 0.0,
         closingBalance: Double = 0.0,
-        monthNum: Int = 4
+        monthNum: Int = 4,
     ): ParsedPayslip {
         val gross = basicPay + 15500.0 // basic + msp
         return ParsedPayslip(
@@ -25,12 +25,14 @@ class DsopComplianceAuditorTest {
             deductions = Deductions(dsopSubscription = dsop),
             ledgerBalances = LedgerBalances(),
             summary = PayslipSummary(grossPay = gross, totalDeductions = dsop, netRemittance = gross - dsop),
-            taxAndSavings = TaxAndSavings(
-                dsopFund = DsopFund(
-                    miscAdjYtd = miscAdjYtd,
-                    closingBalance = closingBalance
-                )
-            )
+            taxAndSavings =
+                TaxAndSavings(
+                    dsopFund =
+                        DsopFund(
+                            miscAdjYtd = miscAdjYtd,
+                            closingBalance = closingBalance,
+                        ),
+                ),
         )
     }
 

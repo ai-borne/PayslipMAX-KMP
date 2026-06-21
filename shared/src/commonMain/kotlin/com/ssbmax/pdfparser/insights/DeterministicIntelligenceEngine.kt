@@ -23,16 +23,17 @@ data class EngineResult(
 )
 
 object DeterministicIntelligenceEngine {
-    private val auditors = listOf(
-        SalaryLossAuditor(),
-        MissingAllowanceAuditor(),
-        TptaEntitlementAuditor(),
-        DaArrearsAuditor(),
-        MarriedQuartersRiskAuditor(),
-        UnexpectedDebitAuditor(),
-        DsopComplianceAuditor(),
-        TaxProjectionAuditor()
-    )
+    private val auditors =
+        listOf(
+            SalaryLossAuditor(),
+            MissingAllowanceAuditor(),
+            TptaEntitlementAuditor(),
+            DaArrearsAuditor(),
+            MarriedQuartersRiskAuditor(),
+            UnexpectedDebitAuditor(),
+            DsopComplianceAuditor(),
+            TaxProjectionAuditor(),
+        )
 
     fun analyze(
         current: LedgerRecordEntity,
@@ -50,9 +51,10 @@ object DeterministicIntelligenceEngine {
         previous: ParsedPayslip? = null,
         history: List<ParsedPayslip> = emptyList(),
     ): EngineResult {
-        val anomalies = auditors.flatMap { auditor ->
-            auditor.audit(current, previous, history)
-        }
+        val anomalies =
+            auditors.flatMap { auditor ->
+                auditor.audit(current, previous, history)
+            }
 
         val dsop = current.deductions.dsopSubscription
         val gross = current.summary.grossPay
@@ -117,25 +119,28 @@ object DeterministicIntelligenceEngine {
             monthName = "",
             dateStr = dateStr,
             officer = Officer("[REDACTED]", "[REDACTED]", "[REDACTED]"),
-            earnings = Earnings(
-                basicPay = basicPay,
-                dearnessAllowance = dearnessAllowance,
-                militaryServicePay = militaryServicePay,
-                transportAllowance = transportAllowance,
-                transportAllowanceDa = transportAllowanceDa,
-                houseRentAllowance = houseRentAllowance
-            ),
-            deductions = Deductions(
-                dsopSubscription = dsopSubscription,
-                incomeTax = incomeTax
-            ),
+            earnings =
+                Earnings(
+                    basicPay = basicPay,
+                    dearnessAllowance = dearnessAllowance,
+                    militaryServicePay = militaryServicePay,
+                    transportAllowance = transportAllowance,
+                    transportAllowanceDa = transportAllowanceDa,
+                    houseRentAllowance = houseRentAllowance,
+                ),
+            deductions =
+                Deductions(
+                    dsopSubscription = dsopSubscription,
+                    incomeTax = incomeTax,
+                ),
             ledgerBalances = LedgerBalances(),
-            summary = PayslipSummary(
-                grossPay = grossPay,
-                totalDeductions = dsopSubscription + incomeTax,
-                netRemittance = netPay
-            ),
-            taxAndSavings = null
+            summary =
+                PayslipSummary(
+                    grossPay = grossPay,
+                    totalDeductions = dsopSubscription + incomeTax,
+                    netRemittance = netPay,
+                ),
+            taxAndSavings = null,
         )
     }
 }

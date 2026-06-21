@@ -129,9 +129,10 @@ class PayslipRepository(
                 val settings = payslipDao.getSettings()
 
                 val deviceKey = CryptoHelper.getDatabaseSecretKey()
-                val exportedPayslips = payslips.map { entity ->
-                    entity.toDomain(deviceKey).toEncryptedEntity(password)
-                }
+                val exportedPayslips =
+                    payslips.map { entity ->
+                        entity.toDomain(deviceKey).toEncryptedEntity(password)
+                    }
 
                 val backup =
                     PortableBackup(
@@ -176,15 +177,17 @@ class PayslipRepository(
                 payslipDao.clearSettings()
 
                 val deviceKey = CryptoHelper.getDatabaseSecretKey()
-                val databasePayslips = backup.encryptedPayslips.map { entity ->
-                    val domainModel = try {
-                        entity.toDomain(password)
-                    } catch (e: Exception) {
-                        // Fallback: Version 1 backups are encrypted with the legacy key
-                        entity.toDomain("PCDAPayslipOfflineSecret2026!")
+                val databasePayslips =
+                    backup.encryptedPayslips.map { entity ->
+                        val domainModel =
+                            try {
+                                entity.toDomain(password)
+                            } catch (e: Exception) {
+                                // Fallback: Version 1 backups are encrypted with the legacy key
+                                entity.toDomain("PCDAPayslipOfflineSecret2026!")
+                            }
+                        domainModel.toEncryptedEntity(deviceKey)
                     }
-                    domainModel.toEncryptedEntity(deviceKey)
-                }
 
                 payslipDao.insertPayslips(databasePayslips)
                 backup.pdfs.forEach { pdf ->

@@ -6,6 +6,6 @@ interface RuleAuditor {
     fun audit(
         current: ParsedPayslip,
         previous: ParsedPayslip?,
-        history: List<ParsedPayslip>
+        history: List<ParsedPayslip>,
     ): List<Anomaly>
 }

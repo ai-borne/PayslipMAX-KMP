@@ -6,7 +6,7 @@ class DsopComplianceAuditor : RuleAuditor {
     override fun audit(
         current: ParsedPayslip,
         previous: ParsedPayslip?,
-        history: List<ParsedPayslip>
+        history: List<ParsedPayslip>,
     ): List<Anomaly> {
         val anomalies = mutableListOf<Anomaly>()
 
@@ -25,8 +25,8 @@ class DsopComplianceAuditor : RuleAuditor {
                     field = "dsopSubscription",
                     amount = minDsop,
                     month = current.dateStr,
-                    description = "DSOP contribution is zero. A minimum contribution of 6% of your Basic Pay (₹${minDsop.toInt()}) is mandatory."
-                )
+                    description = "DSOP contribution is zero. A minimum contribution of 6% of your Basic Pay (₹${minDsop.toInt()}) is mandatory.",
+                ),
             )
         } else if (dsop < minDsop) {
             anomalies.add(
@@ -35,8 +35,8 @@ class DsopComplianceAuditor : RuleAuditor {
                     field = "dsopSubscription",
                     amount = minDsop - dsop,
                     month = current.dateStr,
-                    description = "DSOP contribution of ₹${dsop.toInt()} is below the mandatory 6% threshold (₹${minDsop.toInt()})."
-                )
+                    description = "DSOP contribution of ₹${dsop.toInt()} is below the mandatory 6% threshold (₹${minDsop.toInt()}).",
+                ),
             )
         }
 
@@ -50,8 +50,8 @@ class DsopComplianceAuditor : RuleAuditor {
                     field = "dsopSubscription",
                     amount = miscAdj,
                     month = current.dateStr,
-                    description = "DSOP Milestone: Tax-free annual interest of ₹${miscAdj.toInt()} was credited to your DSOP ledger. Total compounding balance is ₹${closingBalance.toInt()}."
-                )
+                    description = "DSOP Milestone: Tax-free annual interest of ₹${miscAdj.toInt()} was credited to your DSOP ledger. Total compounding balance is ₹${closingBalance.toInt()}.",
+                ),
             )
         }
 
@@ -68,8 +68,8 @@ class DsopComplianceAuditor : RuleAuditor {
                         field = "dsopSubscription",
                         amount = 0.0,
                         month = current.dateStr,
-                        description = "DSOP contribution unchanged for 18+ months at ${savingRate.toInt()}%. Suggest increasing contribution for tax-free compounding retirement growth."
-                    )
+                        description = "DSOP contribution unchanged for 18+ months at ${savingRate.toInt()}%. Suggest increasing contribution for tax-free compounding retirement growth.",
+                    ),
                 )
             }
         }

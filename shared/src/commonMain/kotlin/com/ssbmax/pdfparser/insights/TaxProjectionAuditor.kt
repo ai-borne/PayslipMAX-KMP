@@ -6,7 +6,7 @@ class TaxProjectionAuditor : RuleAuditor {
     override fun audit(
         current: ParsedPayslip,
         previous: ParsedPayslip?,
-        history: List<ParsedPayslip>
+        history: List<ParsedPayslip>,
     ): List<Anomaly> {
         val anomalies = mutableListOf<Anomaly>()
 
@@ -27,8 +27,8 @@ class TaxProjectionAuditor : RuleAuditor {
                     field = "incomeTax",
                     amount = projectedTax,
                     month = current.dateStr,
-                    description = "New FY Tax Projection: April starts the new tax cycle. Estimated annual tax liability is ₹${projectedTax.toInt()} (${taxRatio.toString().take(4)}% of gross)."
-                )
+                    description = "New FY Tax Projection: April starts the new tax cycle. Estimated annual tax liability is ₹${projectedTax.toInt()} (${taxRatio.toString().take(4)}% of gross).",
+                ),
             )
         } else if (isTaxSpike) {
             val spikeAmount = currentTax - previousTax
@@ -38,8 +38,8 @@ class TaxProjectionAuditor : RuleAuditor {
                     field = "incomeTax",
                     amount = spikeAmount,
                     month = current.dateStr,
-                    description = "Income Tax deduction spiked by ₹${spikeAmount.toInt()} (+${(((currentTax - previousTax) / previousTax) * 100).toInt()}%). Plan tax deductions to avoid net pay shocks in Jan/Feb."
-                )
+                    description = "Income Tax deduction spiked by ₹${spikeAmount.toInt()} (+${(((currentTax - previousTax) / previousTax) * 100).toInt()}%). Plan tax deductions to avoid net pay shocks in Jan/Feb.",
+                ),
             )
         }
 

@@ -19,7 +19,7 @@ class DaArrearsAuditorTest {
         arrearsDa: Double = 0.0,
         arrearsTptaDa: Double = 0.0,
         monthNum: Int = 4,
-        year: Int = 2026
+        year: Int = 2026,
     ): ParsedPayslip {
         val gross = basicPay + da + msp + tpta + tptada + hra + arrearsDa + arrearsTptaDa
         val deductions = dsop + tax
@@ -31,23 +31,25 @@ class DaArrearsAuditorTest {
             monthName = "MonthName",
             dateStr = dateStr,
             officer = Officer("Name", "Acc", "PAN"),
-            earnings = Earnings(
-                basicPay = basicPay,
-                dearnessAllowance = da,
-                militaryServicePay = msp,
-                transportAllowance = tpta,
-                transportAllowanceDa = tptada,
-                houseRentAllowance = hra,
-                arrearsDa = arrearsDa,
-                arrearsTptaDa = arrearsTptaDa
-            ),
-            deductions = Deductions(
-                dsopSubscription = dsop,
-                incomeTax = tax
-            ),
+            earnings =
+                Earnings(
+                    basicPay = basicPay,
+                    dearnessAllowance = da,
+                    militaryServicePay = msp,
+                    transportAllowance = tpta,
+                    transportAllowanceDa = tptada,
+                    houseRentAllowance = hra,
+                    arrearsDa = arrearsDa,
+                    arrearsTptaDa = arrearsTptaDa,
+                ),
+            deductions =
+                Deductions(
+                    dsopSubscription = dsop,
+                    incomeTax = tax,
+                ),
             ledgerBalances = LedgerBalances(),
             summary = PayslipSummary(grossPay = gross, totalDeductions = deductions, netRemittance = net),
-            taxAndSavings = null
+            taxAndSavings = null,
         )
     }
 
@@ -66,10 +68,10 @@ class DaArrearsAuditorTest {
         // expected da arrears = 115500 * 0.03 * 3 = 10395.
         val previous = createMockPayslip("03/2026", da = 57750.0) // 115500 * 0.50 = 57750
         val current = createMockPayslip("04/2026", da = 61215.0, arrearsDa = 10395.0) // 115500 * 0.53 = 61215
-        
+
         val auditor = DaArrearsAuditor()
         val result = auditor.audit(current, previous, emptyList())
-        
+
         assertEquals(1, result.size)
         val anomaly = result.first()
         assertEquals("ARREARS_AUDIT", anomaly.type)
@@ -83,10 +85,10 @@ class DaArrearsAuditorTest {
         // actual arrears = 5000 (underpaid)
         val previous = createMockPayslip("03/2026", da = 57750.0)
         val current = createMockPayslip("04/2026", da = 61215.0, arrearsDa = 5000.0)
-        
+
         val auditor = DaArrearsAuditor()
         val result = auditor.audit(current, previous, emptyList())
-        
+
         assertEquals(1, result.size)
         val anomaly = result.first()
         assertEquals("SALARY_LOSS", anomaly.type)
