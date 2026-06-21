@@ -54,6 +54,10 @@ class FakePayslipDao : PayslipDao {
         pdfDatabase.value = pdfDatabase.value - dateStr
     }
 
+    override suspend fun clearAllPdfs() {
+        pdfDatabase.value = emptyMap()
+    }
+
     private val settingsDatabase = MutableStateFlow<com.ssbmax.pdfparser.database.AppSettingsEntity?>(null)
 
     override fun getSettingsFlow(): Flow<com.ssbmax.pdfparser.database.AppSettingsEntity?> {
@@ -126,6 +130,10 @@ class FakePayslipDao : PayslipDao {
         insightsDatabase.value = insightsDatabase.value - id
     }
 
+    override suspend fun deleteFinancialInsightsByMonth(monthStr: String) {
+        insightsDatabase.value = insightsDatabase.value.filter { it.value.monthStr != monthStr }
+    }
+
     override suspend fun clearAllFinancialInsights() {
         insightsDatabase.value = emptyMap()
     }
@@ -150,5 +158,33 @@ class FakePayslipDao : PayslipDao {
 
     override suspend fun clearAllRepresentationDrafts() {
         draftsDatabase.value = emptyMap()
+    }
+
+    private val reportsDatabase = MutableStateFlow<Map<String, AiInsightReportEntity>>(emptyMap())
+
+    override suspend fun insertAiInsightReport(report: AiInsightReportEntity) {
+        reportsDatabase.value = reportsDatabase.value + (report.id to report)
+    }
+
+    override suspend fun getAiInsightReportByMonth(monthStr: String): AiInsightReportEntity? {
+        return reportsDatabase.value.values.find { it.payslipMonth == monthStr }
+    }
+
+    override fun getAllAiInsightReports(): Flow<List<AiInsightReportEntity>> {
+        return reportsDatabase.map {
+            it.values.toList().sortedByDescending { it.generatedDate }
+        }
+    }
+
+    override suspend fun deleteAiInsightReport(id: String) {
+        reportsDatabase.value = reportsDatabase.value - id
+    }
+
+    override suspend fun deleteAiInsightReportByMonth(monthStr: String) {
+        reportsDatabase.value = reportsDatabase.value.filter { it.value.payslipMonth != monthStr }
+    }
+
+    override suspend fun clearAllAiInsightReports() {
+        reportsDatabase.value = emptyMap()
     }
 }

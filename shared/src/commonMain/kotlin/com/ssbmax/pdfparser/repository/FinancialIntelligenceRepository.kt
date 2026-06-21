@@ -192,6 +192,15 @@ open class FinancialIntelligenceRepository(
                         createdAt = CryptoHelper.getCurrentTimeMillis(),
                     )
                 payslipDao.insertFinancialInsight(insight)
+
+                val report = AiInsightReportEntity(
+                    id = CryptoHelper.sha256("${payslip.dateStr}-AI_REPORT"),
+                    payslipMonth = payslip.dateStr,
+                    generatedDate = CryptoHelper.getCurrentTimeMillis(),
+                    reportJSON = narrative,
+                    reportVersion = "1.0.0"
+                )
+                payslipDao.insertAiInsightReport(report)
             }
 
             result
@@ -202,10 +211,18 @@ open class FinancialIntelligenceRepository(
      */
     open suspend fun getCachedAiInsights(monthStr: String): String? =
         withContext(dispatcher) {
-            payslipDao.getFinancialInsightsByMonth(monthStr)
-                .firstOrNull { it.category == "NARRATIVE" }
-                ?.contentMarkdown
+            payslipDao.getAiInsightReportByMonth(monthStr)?.reportJSON
+                ?: payslipDao.getFinancialInsightsByMonth(monthStr)
+                    .firstOrNull { it.category == "NARRATIVE" }
+                    ?.contentMarkdown
         }
+
+    /**
+     * Retrieves all cached AI narrative reports.
+     */
+    fun getAllAiInsightReports(): Flow<List<AiInsightReportEntity>> {
+        return payslipDao.getAllAiInsightReports()
+    }
 
     private fun ParsedPayslip.toLedgerRecordEntity(): LedgerRecordEntity {
         return LedgerRecordEntity(

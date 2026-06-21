@@ -206,3 +206,11 @@ fun PayslipViewModel.updateRepresentationDraft(draft: com.ssbmax.pdfparser.datab
         financialIntelligenceRepository?.insertRepresentationDraft(draft)
     }
 }
+
+fun PayslipViewModel.clearError() {
+    _uiState.update { it.copy(error = null, importError = null) }
+}
+
+fun PayslipViewModel.resetImportSuccess() {
+    _uiState.update { it.copy(importSuccess = false) }
+}

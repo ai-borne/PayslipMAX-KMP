@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -129,23 +128,23 @@ private fun InsightsContent(
 ) {
     val ledgerRecords by viewModel.ledgerRecords.collectAsState()
     val state = rememberInsightsState(selected, ledgerRecords)
-    var showWellnessDrivers by remember { mutableStateOf(false) }
-    val drivers = remember(state.engineResult) { breakdownWellnessDrivers(state.engineResult) }
     Column(modifier = modifier.fillMaxSize()) {
         InsightsTopBar(
             payslips = uiState.payslips,
             selected = selected,
             score = state.engineResult.healthScore,
             delta = state.scoreDelta,
-            expanded = showWellnessDrivers,
-            onExpandClick = { showWellnessDrivers = !showWellnessDrivers },
+            expanded = false,
+            onExpandClick = {},
             onSelectPayslip = { viewModel.selectPayslip(it) },
         )
         InsightsLazyBody(
-            state = state, uiState = uiState,
-            showWellnessDrivers = showWellnessDrivers, drivers = drivers,
-            viewModel = viewModel, onShowUpgradeSheet = onShowUpgradeSheet,
-            onShowTransparency = onShowTransparency, onViewInsightsClick = onViewInsightsClick,
+            state = state,
+            uiState = uiState,
+            viewModel = viewModel,
+            onShowUpgradeSheet = onShowUpgradeSheet,
+            onShowTransparency = onShowTransparency,
+            onViewInsightsClick = onViewInsightsClick,
             onNavigateTo = onNavigateTo,
             modifier = Modifier.weight(1f),
         )
@@ -156,8 +155,6 @@ private fun InsightsContent(
 private fun InsightsLazyBody(
     state: InsightsState,
     uiState: PayslipUiState,
-    showWellnessDrivers: Boolean,
-    drivers: List<WellnessDriver>,
     viewModel: PayslipViewModel,
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
@@ -170,72 +167,38 @@ private fun InsightsLazyBody(
         contentPadding = androidx.compose.foundation.layout.PaddingValues(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
-        item { InsightsHeroItem(state, uiState, onNavigateTo, onShowUpgradeSheet) }
-        if (state.engineResult.anomalies.size > 1) {
-            item { CriticalAlertsQueue(anomalies = state.engineResult.anomalies) }
-        }
-        if (uiState.isPremiumEnabled) {
-            premiumContentItems(uiState, showWellnessDrivers, drivers, state, onShowTransparency, onViewInsightsClick) { viewModel.clearAiInsights() }
-        }
+        // 1. Executive Summary
         item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
-        if (state.momChanges.isNotEmpty()) {
-            item { MomChangesGrid(current = state.currentRecord, previous = state.previousRecord) }
-        }
+
+        // 2. Historical Trends
         item { TrendsSparklinesSection(history = state.historySorted) }
-        bottomTierItem(uiState.isPremiumEnabled, onNavigateTo, onShowUpgradeSheet)
-    }
-}
 
-private fun LazyListScope.premiumContentItems(
-    uiState: PayslipUiState,
-    showWellnessDrivers: Boolean,
-    drivers: List<WellnessDriver>,
-    state: InsightsState,
-    onShowTransparency: () -> Unit,
-    onViewInsightsClick: () -> Unit,
-    onClearAiInsights: () -> Unit,
-) {
-    item {
-        GeminiAiInsightsSection(
-            aiInsights = uiState.aiInsights,
-            isAiLoading = uiState.isAiLoading,
-            aiError = uiState.aiError,
-            onGenerateClick = onShowTransparency,
-            onViewInsightsClick = onViewInsightsClick,
-            onClearClick = onClearAiInsights,
-        )
-    }
-    if (showWellnessDrivers) {
-        item { WellnessDriversSection(score = state.engineResult.healthScore, drivers = drivers) }
-    }
-}
+        // 3. Key Findings (Free)
+        item { KeyFindingsSection(state = state) }
 
-private fun LazyListScope.bottomTierItem(
-    isPremiumEnabled: Boolean,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
-    onUpgradeClick: () -> Unit,
-) {
-    if (isPremiumEnabled) {
-        item { PremiumToolsSection(onNavigateTo = onNavigateTo) }
-    } else {
-        item { ProFeaturesTeaser(onUpgradeClick = onUpgradeClick) }
-    }
-}
+        // 4. AI Highlights (Free)
+        item { AiHighlightsSection(state = state) }
 
-@Composable
-private fun InsightsHeroItem(
-    state: InsightsState,
-    uiState: PayslipUiState,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
-    onUpgradeClick: () -> Unit,
-) {
-    AdaptiveHeroCard(
-        engineResult = state.engineResult,
-        optimizationResult = state.optimizationResult,
-        isPremiumEnabled = uiState.isPremiumEnabled,
-        onNavigateTo = onNavigateTo,
-        onUpgradeClick = onUpgradeClick,
-    )
+        // 5. Premium Intelligence
+        item {
+            PremiumIntelligenceCard(
+                isPremiumEnabled = uiState.isPremiumEnabled,
+                state = state,
+                onUpgradeClick = onShowUpgradeSheet,
+                onNavigateTo = onNavigateTo,
+                aiSectionContent = {
+                    GeminiAiInsightsSection(
+                        aiInsights = uiState.aiInsights,
+                        isAiLoading = uiState.isAiLoading,
+                        aiError = uiState.aiError,
+                        onGenerateClick = onShowTransparency,
+                        onViewInsightsClick = onViewInsightsClick,
+                        onClearClick = { viewModel.clearAiInsights() },
+                    )
+                }
+            )
+        }
+    }
 }
 
 @Composable
