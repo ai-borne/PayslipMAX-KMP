@@ -124,7 +124,7 @@ private fun UploadDialog(
     Dialog(onDismissRequest = onDismiss) {
         UploadWidget(
             isLoading = uiState.isLoading,
-            error = uiState.error,
+            error = uiState.importError,
             success = uiState.importSuccess,
             onPickPdfTrigger = onPickPdfTrigger,
             onClearError = { viewModel.clearError() },

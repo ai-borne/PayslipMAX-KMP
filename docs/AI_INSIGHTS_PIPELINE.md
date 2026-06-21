@@ -86,4 +86,6 @@ As of the latest sprint completion, the AI Insights Pipeline has transitioned fr
    - Transitioned local database encryption from hardcoded string fallbacks to unique hardware-backed keys utilizing `Android Keystore` and `iOS Keychain Services` via `CryptoHelper.getDatabaseSecretKey()`.
    - Implemented a secure cross-device porting flow: universal backups (.json) decrypt database records using the source device key, encrypt with the transit password, and re-encrypt with the target device's key on import.
    - Built a robust TDD test suite to verify encryption uniqueness across different devices and compatibility of the data-porting migration.
+   - **Auto-Backup & Keystore Gotcha Fixed**: Disabled Android Auto Backup (`allowBackup="false"`) in the Android Manifest to prevent restoring database files without their corresponding hardware-bound Keystore keys (which causes permanent `BAD_DECRYPT` errors on reinstall).
+   - **Self-Healing Decryption Recovery**: Implemented automatic fallback decryption using the legacy key `"PCDAPayslipOfflineSecret2026!"` for backward compatibility, and a self-healing database recovery routine that automatically wipes corrupt/undecryptable data on permanent key loss to prevent app bricking.
 
