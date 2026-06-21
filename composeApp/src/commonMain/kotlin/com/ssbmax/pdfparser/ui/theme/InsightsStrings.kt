@@ -50,14 +50,21 @@ object InsightsStrings {
     const val wellnessChipExpandDesc = "Expand score drivers"
     const val wellnessChipCollapseDesc = "Collapse score drivers"
 
-    // Health KPI card (grade bands, expanded breakdown sections)
-    const val healthGradeExcellent = "Excellent"
-    const val healthGradeGood = "Good"
-    const val healthGradeFair = "Fair"
-    const val healthGradeNeedsAttention = "Needs Attention"
-    const val positiveFactorsTitle = "Positive Factors"
-    const val riskFactorsTitle = "Risk Factors"
+    // Health KPI card (status bands, expanded breakdown sections)
+    const val healthStatusExcellent = "Excellent"
+    const val healthStatusHealthy = "Healthy"
+    const val healthStatusFair = "Fair"
+    const val healthStatusNeedsAttention = "Needs Attention"
+    const val healthStatusCritical = "Critical"
+    const val positiveSignalsTitle = "Positive Signals"
+    const val watchItemsTitle = "Watch Items"
     const val opportunityTitle = "Opportunity"
+    const val wellnessTrendSinceLastPayslip = "last payslip"
+    const val wellnessTrendImprovedPrefix = "↑ Improved by"
+    const val wellnessTrendDownPrefix = "↓ Down"
+    const val wellnessTrendPointsSince = "points since"
+    const val wellnessPositiveDriverPrefix = "✅ "
+    const val wellnessWatchDriverPrefix = "⚠ "
 
     // Improve path prefix (SSOT for the "→" arrow used in driver rows)
     const val wellnessImprovePathPrefix = "→ "
