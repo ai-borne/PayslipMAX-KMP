@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.ui.screens
 
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
+import com.ssbmax.pdfparser.parser.PayslipPatternConfig
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 
 data class DeductionBar(
@@ -12,13 +13,10 @@ data class DeductionBar(
     val isSelected: Boolean,
 )
 
-private val monthAbbreviations =
-    listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-
 private fun monthLabel(
     monthNum: Int,
     year: Int,
-): String = "${monthAbbreviations[monthNum - 1]} '${year % 100}"
+): String = "${PayslipPatternConfig.monthNames[monthNum].take(3)} '${year % 100}"
 
 private fun trailingRecords(
     history: List<LedgerRecordEntity>,

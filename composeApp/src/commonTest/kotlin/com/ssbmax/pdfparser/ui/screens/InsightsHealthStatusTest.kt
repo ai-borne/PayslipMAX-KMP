@@ -1,9 +1,16 @@
 package com.ssbmax.pdfparser.ui.screens
 
+import com.ssbmax.pdfparser.ui.theme.AppColors
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class InsightsHealthStatusTest {
+    @Test
+    fun fairAndNeedsAttentionUseDistinctColors() {
+        assertTrue(AppColors.Warning != AppColors.Caution)
+    }
+
     @Test
     fun testScore100IsExcellent() {
         assertEquals(HealthStatus.EXCELLENT, statusFor(100))
