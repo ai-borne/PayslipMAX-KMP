@@ -27,7 +27,6 @@ class DashboardScreenUiTest {
     private lateinit var fakeParser: FakePdfParser
     private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
-    private lateinit var fakeGeminiService: com.ssbmax.pdfparser.insights.GeminiService
     private lateinit var viewModel: PayslipViewModel
 
     @BeforeTest
@@ -36,9 +35,8 @@ class DashboardScreenUiTest {
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
         fakeBackupManager = FakeBackupManager()
-        fakeGeminiService = com.ssbmax.pdfparser.insights.GeminiService()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
-        viewModel = PayslipViewModel(repository, fakeBackupManager, fakeGeminiService)
+        viewModel = PayslipViewModel(repository, fakeBackupManager)
     }
 
     @AfterTest

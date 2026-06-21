@@ -1,0 +1,70 @@
+# .gitleaks.toml — Custom Secret Scanning Rules for PayslipMax
+# Runs in CI via gitleaks/gitleaks-action@v2
+# Detects API keys, Firebase secrets, and crypto material before they reach source control.
+
+title = "PayslipMax Gitleaks Config"
+
+[extend]
+# Start from gitleaks default ruleset (covers 100+ secret patterns)
+useDefault = true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Custom rules on top of the defaults
+# ─────────────────────────────────────────────────────────────────────────────
+
+[[rules]]
+id          = "google-gemini-api-key"
+description = "Google / Gemini AI API Key (AIza...)"
+regex       = '''AIza[0-9A-Za-z\-_]{35}'''
+tags        = ["key", "google", "gemini"]
+
+[[rules]]
+id          = "firebase-admin-sdk-json"
+description = "Firebase Admin SDK service account private_key field"
+regex       = '''\"private_key\"\s*:\s*\"-----BEGIN PRIVATE KEY-----'''
+tags        = ["key", "firebase", "service-account"]
+
+[[rules]]
+id          = "kotlin-hardcoded-api-key"
+description = "Kotlin/Java hardcoded API key assignment"
+regex       = '''(?i)(apiKey|api_key|apikey)\s*=\s*["'][A-Za-z0-9\-_]{20,}["']'''
+tags        = ["key", "kotlin", "hardcoded"]
+[rules.allowlist]
+  # Allow test/mock values
+  regexes = ['''(?i)(mock|test|fake|dummy|placeholder|example)''']
+
+[[rules]]
+id          = "google-services-json"
+description = "google-services.json file accidentally staged"
+path        = '''google-services\.json'''
+tags        = ["firebase", "config"]
+
+[[rules]]
+id          = "gemini-key-in-url"
+description = "Gemini API key embedded in a URL string"
+regex       = '''generativelanguage\.googleapis\.com.*[?&]key=AIza[0-9A-Za-z\-_]{35}'''
+tags        = ["key", "google", "gemini", "url"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Global Allowlist — patterns that are safe to ignore project-wide
+# ─────────────────────────────────────────────────────────────────────────────
+[allowlist]
+description = "Global PayslipMax allowlist"
+paths = [
+  # Lock files, generated files, and build output are never secrets
+  '''^.*\.lock$''',
+  '''^.*gradlew(\.bat)?$''',
+  '''^build/.*''',
+  '''^.*\.gradle(\.kts)?$''',
+  # Test fixtures and mock data may contain fake-looking keys
+  '''^.*Test.*\.kt$''',
+  '''^.*Mock.*\.kt$''',
+  # Test JS files with mock API keys
+  '''^.*test\.js$''',
+  # Firebase config (values are placeholders in dev)
+  '''google-services\.json$''',
+]
+regexes = [
+  # SDK version strings that look like keys
+  '''[0-9A-Za-z]{32,}@[a-z]+\.[a-z]+''',
+]

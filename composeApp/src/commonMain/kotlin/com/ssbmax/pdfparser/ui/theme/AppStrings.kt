@@ -8,8 +8,6 @@ object AppStrings {
     const val navigationHistory = "History"
     const val navigationInsights = "Insights"
     const val navigationSettings = "Settings"
-
-    // Metadata Badges
     const val badgeOfficer = "Officer"
     const val badgeCda = "CDA A/C No"
     const val badgePan = "PAN"
@@ -85,6 +83,10 @@ object AppStrings {
     const val settingsProfileCda = "CDA Account Number"
     const val settingsProfilePan = "PAN Number"
     const val settingsProPlanTitle = "Pro Analytical Insights"
+    const val proTeaserCrownIcon = "👑"
+    const val proTeaserAiIcon = "🤖"
+    const val proTeaserToolsIcon = "🛠"
+    const val aiRegenerateIcon = "🔄"
     const val settingsProPlanDesc = "Unlock personalization & CA-grade tax advice"
     const val settingsProPlanPrice = "₹99 / Year"
     const val settingsProPlanActive = "Pro Plan Activated"
@@ -100,8 +102,6 @@ object AppStrings {
     const val settingsSetPasscodeTitle = "Set 4-Digit Passcode"
     const val settingsSetPasscodeLabel = "Enter 4-Digit PIN"
     const val settingsSetPasscodeConfirmBtn = "Enable Lock"
-
-    // Profile Overrides Card
     const val settingsProfileSaveBtn = "Save Overrides"
 
     // Backup & Restore Card
@@ -131,9 +131,7 @@ object AppStrings {
     const val settingsOfflineFirst = "Offline-First"
     const val settingsOfflineSecureTitle = "100% Offline & Secure"
     const val settingsOfflineSecureDesc = "All payslip decryption and parsing happens locally on your device. Your data never leaves your control."
-    const val settingsApiKeyLabel = "Gemini API Key"
-    const val settingsApiKeyPlaceholder = "Enter AIZA..."
-    const val settingsApiKeyFooter = "Your API Key is kept 100% offline and stored in secure memory."
+    const val settingsAiPoweredByProxy = "AI insights powered by Gemini"
 
     // Sandbox / Testing
     const val settingsStagingTitle = "Staging & Testing Sandbox"
@@ -160,10 +158,7 @@ object AppStrings {
     const val settingsProPlanBullet4 = "• 100% Offline & Private Processing"
     const val settingsProUpgradeBtn = "Unlock Pro Tier"
     const val settingsDocumentationHeader = "Documentation"
-    const val settingsBackupLockPrompt = "Cloud backup and cross-platform sync are premium features. Upgrade to Pro to unlock."
-    const val settingsAiInsightsLockedTitle = "AI Chartered Accountant Audit"
-    const val settingsAiInsightsLockedDesc = "Get personalized tax saving advice and financial literacy tailored to your pay details. Under Rs. 9/month."
-    const val settingsAiInsightsLockedBtn = "Upgrade to Pro"
+    const val settingsAiInsightsLockedTitle = "CA Level AI Report"
     const val settingsRowThemeLabel = "Interface Theme"
     const val settingsRowPasscodeLabel = "App Passcode Lock"
     const val settingsRowBackupLabel = "Cloud Sync & Portability"
@@ -186,7 +181,7 @@ object AppStrings {
     const val historyActionShareSummary = "Share Summary"
     const val historyYearlySummary = "Yearly Summary"
     const val historyNetTakeHomeLabel = "Net Take-Home"
-    const val historyNetTakeHomeShort = "Net take home Rs"
+    const val historyNetTakeHomeShort = "Take Home"
     const val historyGrossPayLabel = "Gross"
     const val historyDsopLabel = "DSOP"
     const val historyTaxLabel = "Tax"
@@ -204,10 +199,16 @@ object AppStrings {
 
     // Insights Screen Strings
     const val insightsEmptyState = "Please import or select a payslip to unlock financial insights."
-    const val insightsSubheader = "Personalized financial wellness and savings audits"
+
     const val insightsSavingsRateTitle = "Monthly Savings Rate"
     const val insightsSavingsRateTarget = "Target: 20%+. You save "
     const val insightsSavingsRateSuffix = "% of your gross pay in DSOP and AGIF."
+
+    // Insights section labels
+    const val executiveSummaryLabel = "Executive Summary"
+    const val criticalAlertsLabel = "Critical Alerts"
+    const val changesThisMonthLabel = "Changes This Month"
+    const val historicalTrendsLabel = "Historical Trends"
 
     // Chart Legends
     const val legendNetTakeHome = "Net Take-Home"
@@ -216,8 +217,6 @@ object AppStrings {
     const val legendOtherDeductions = "Other Deductions"
     const val legendGrossPay = "Gross Pay"
     const val legendNetRemittance = "Net Remittance"
-
-    // PDF Card
     const val pdfIconLabel = "PDF"
     const val pdfTapToOpen = "Tap to open original statement"
 
@@ -230,9 +229,14 @@ object AppStrings {
     // Gemini AI Section Extra
     const val geminiAiAnalyzeBtn = "Analyze Payslip with Gemini AI"
     const val geminiAiAnalyzeDesc = "Generate professional tax saving suggestions, investment recommendations, and error audits using Gemini."
+    const val geminiAiViewReportBtn = "View Full Audit Report"
 
-    // Generic Actions
-    const val btnClose = "Close"
+    // AI CA Audit card (Phase 5)
+    const val aiAuditAnalyzingDesc = "Analyzing your payslip with Gemini AI…"
+    const val aiAuditSummaryLabel = "Summary"
+    const val aiAuditTeaserBullets = "Detect PCDA errors & recoverable amounts\nPersonalised tax-saving strategy (old regime)\nInvestment guidance from your AI CA"
+    const val aiAuditUnlockBtn = "Unlock AI CA Audit"
+    const val aiAuditPremiumBadge = "Premium"
 
     // Premium Features Screens Strings
     const val representationTitle = "Official Representations"
@@ -255,8 +259,6 @@ object AppStrings {
     const val retirementContributions = "Total Principal Contributions"
     const val retirementInterest = "Total Interest Earned"
     const val retirementProjectionDisclaimer = "Note: Compounding projections are estimated using a standard interest rate of 7.1% per annum. Actual rates may vary."
-
-    // Premium Tools & Extra Strings
     const val premiumToolsTitle = "Premium Financial Tools"
     const val premiumToolsDraftClaims = "Draft Claims"
     const val premiumToolsTaxPlanner = "Tax Planner"
@@ -268,8 +270,13 @@ object AppStrings {
 
     const val retirementNoBalance = "Import a payslip with DSOP ledger balance to simulate growth."
     const val retirementCurrentBalance = "Current DSOP Balance"
-
     const val taxPlanningSavingsProjections = "Section 80C & 80D Tax Savings Projections"
     const val taxPlanningNoProjections = "No YTD Tax Projections available for this month."
     const val taxPlanningCurrentYtdContribution = "Current YTD Contribution: ₹"
+
+    // Executive Summary row labels
+    const val execSummaryNetSalary = "Net Salary"
+    const val execSummaryGrossPay = "Gross Pay"
+    const val execSummaryIncomeTax = "Income Tax"
+    const val execSummaryDsop = "DSOP Subscription"
 }

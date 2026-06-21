@@ -2,8 +2,8 @@ package com.ssbmax.pdfparser.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssbmax.pdfparser.crypto.CryptoHelper
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.insights.NetworkErrorMapper
 import com.ssbmax.pdfparser.repository.PayslipRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,7 +20,6 @@ data class PayslipUiState(
     val error: String? = null,
     val importSuccess: Boolean = false,
     val isPremiumEnabled: Boolean = false,
-    val geminiApiKey: String = "",
     val aiInsights: String? = null,
     val isAiLoading: Boolean = false,
     val aiError: String? = null,
@@ -31,12 +30,12 @@ data class PayslipUiState(
     val profileCdaNumber: String = "",
     val profilePanNumber: String = "",
     val isAppLocked: Boolean = false,
+    val useLocalAi: Boolean = false,
 )
 
 class PayslipViewModel(
     internal val repository: PayslipRepository,
     internal val backupManager: com.ssbmax.pdfparser.backup.BackupManager,
-    internal val geminiService: com.ssbmax.pdfparser.insights.GeminiService,
     internal val financialIntelligenceRepository: com.ssbmax.pdfparser.repository.FinancialIntelligenceRepository? = null,
     internal val cloudSyncRepository: com.ssbmax.pdfparser.repository.CloudSyncRepository? = null,
 ) : ViewModel() {
@@ -68,12 +67,16 @@ class PayslipViewModel(
             _uiState.update { it.copy(isLoading = true) }
             try {
                 repository.getAllPayslips().collect { list ->
+                    val nextSelected = _uiState.value.selectedPayslip ?: list.lastOrNull()
                     _uiState.update { state ->
                         state.copy(
                             payslips = list,
-                            selectedPayslip = state.selectedPayslip ?: list.lastOrNull(),
+                            selectedPayslip = nextSelected,
                             isLoading = false,
                         )
+                    }
+                    if (nextSelected != null) {
+                        loadCachedAiInsights(nextSelected.dateStr)
                     }
                 }
             } catch (e: Exception) {
@@ -87,8 +90,66 @@ class PayslipViewModel(
         }
     }
 
+    private fun onPayslipSelected(payslip: ParsedPayslip?) {
+        if (payslip == null) {
+            _uiState.update { it.copy(selectedPayslip = null, aiInsights = null, aiError = null) }
+            return
+        }
+        _uiState.update { it.copy(selectedPayslip = payslip, aiInsights = null, aiError = null) }
+        loadCachedAiInsights(payslip.dateStr)
+    }
+
+    internal fun loadCachedAiInsights(dateStr: String) {
+        viewModelScope.launch {
+            val repo = financialIntelligenceRepository ?: return@launch
+            val cached = repo.getCachedAiInsights(dateStr)
+            var autoRunPayslip: ParsedPayslip? = null
+            _uiState.update { state ->
+                if (state.selectedPayslip?.dateStr == dateStr) {
+                    if (state.isPremiumEnabled && cached == null && !state.isAiLoading) {
+                        autoRunPayslip = state.selectedPayslip
+                    }
+                    state.copy(aiInsights = cached, aiError = null)
+                } else {
+                    state
+                }
+            }
+            autoRunPayslip?.let { launchAiGeneration(it) }
+        }
+    }
+
+    internal fun launchAiGeneration(payslip: ParsedPayslip) {
+        val repo = financialIntelligenceRepository ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isAiLoading = true, aiError = null, aiInsights = null) }
+            try {
+                val engineResult = repo.processPayslipAndRunAnalysis(payslip)
+                val result = repo.generateNarrativeInsights(payslip, engineResult)
+                if (result.isSuccess) {
+                    _uiState.update { it.copy(aiInsights = result.getOrThrow(), isAiLoading = false) }
+                } else {
+                    _uiState.update {
+                        val ex = result.exceptionOrNull()
+                        val mappedError =
+                            if (ex != null) {
+                                NetworkErrorMapper.getUserFriendlyMessage(ex)
+                            } else {
+                                "Failed to generate narrative insights"
+                            }
+                        it.copy(
+                            aiError = mappedError,
+                            isAiLoading = false,
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(aiError = NetworkErrorMapper.getUserFriendlyMessage(e), isAiLoading = false) }
+            }
+        }
+    }
+
     fun selectPayslip(payslip: ParsedPayslip) {
-        _uiState.update { it.copy(selectedPayslip = payslip) }
+        onPayslipSelected(payslip)
     }
 
     fun getAvailableYears(): List<Int> {
@@ -113,7 +174,7 @@ class PayslipViewModel(
                 it.year == year && it.monthNum == monthNum
             }
         if (match != null) {
-            _uiState.update { it.copy(selectedPayslip = match) }
+            onPayslipSelected(match)
         }
     }
 
@@ -137,6 +198,9 @@ class PayslipViewModel(
                         importSuccess = true,
                     )
                 }
+                if (parsed != null) {
+                    loadCachedAiInsights(parsed.dateStr)
+                }
             } else {
                 _uiState.update { state ->
                     state.copy(
@@ -153,14 +217,19 @@ class PayslipViewModel(
             repository.deletePayslip(dateStr)
             _uiState.update { state ->
                 val remaining = state.payslips.filter { it.dateStr != dateStr }
-                state.copy(
-                    selectedPayslip =
-                        if (state.selectedPayslip?.dateStr == dateStr) {
-                            remaining.lastOrNull()
-                        } else {
-                            state.selectedPayslip
-                        },
-                )
+                val nextSelected =
+                    if (state.selectedPayslip?.dateStr == dateStr) {
+                        remaining.lastOrNull()
+                    } else {
+                        state.selectedPayslip
+                    }
+                state.copy(selectedPayslip = nextSelected)
+            }
+            val next = _uiState.value.selectedPayslip
+            if (next != null) {
+                loadCachedAiInsights(next.dateStr)
+            } else {
+                _uiState.update { it.copy(aiInsights = null, aiError = null) }
             }
         }
     }
@@ -185,8 +254,10 @@ class PayslipViewModel(
 
     private fun observeSettings() {
         var isFirstSettingsLoad = true
+        var previousPremiumEnabled = false
         viewModelScope.launch {
             repository.getSettingsFlow().collect { settings ->
+                val isPremium = settings?.isPremiumEnabled ?: false
                 _uiState.update { state ->
                     val isLocked =
                         if (isFirstSettingsLoad) {
@@ -196,8 +267,7 @@ class PayslipViewModel(
                             state.isAppLocked && (settings?.isLockEnabled ?: false)
                         }
                     state.copy(
-                        isPremiumEnabled = settings?.isPremiumEnabled ?: false,
-                        geminiApiKey = settings?.geminiApiKey ?: "",
+                        isPremiumEnabled = isPremium,
                         appTheme = settings?.appTheme ?: "system",
                         isLockEnabled = settings?.isLockEnabled ?: false,
                         appPinHash = settings?.appPinHash ?: "",
@@ -205,77 +275,16 @@ class PayslipViewModel(
                         profileCdaNumber = settings?.profileCdaNumber ?: "",
                         profilePanNumber = settings?.profilePanNumber ?: "",
                         isAppLocked = isLocked,
+                        useLocalAi = settings?.useLocalAi ?: false,
                     )
                 }
+                if (isPremium && !previousPremiumEnabled) {
+                    _uiState.value.selectedPayslip?.let { payslip ->
+                        loadCachedAiInsights(payslip.dateStr)
+                    }
+                }
+                previousPremiumEnabled = isPremium
             }
-        }
-    }
-
-    fun setPremiumEnabled(enabled: Boolean) {
-        viewModelScope.launch {
-            val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
-            repository.saveSettings(current.copy(isPremiumEnabled = enabled))
-        }
-    }
-
-    fun setGeminiApiKey(key: String) {
-        viewModelScope.launch {
-            val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
-            repository.saveSettings(current.copy(geminiApiKey = key))
-        }
-    }
-
-    fun setAppTheme(theme: String) {
-        viewModelScope.launch {
-            val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
-            repository.saveSettings(current.copy(appTheme = theme))
-        }
-    }
-
-    fun setLockEnabled(
-        enabled: Boolean,
-        pin: String = "",
-    ) {
-        viewModelScope.launch {
-            val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
-            val pinHash = if (pin.isNotEmpty()) CryptoHelper.sha256(pin) else current.appPinHash
-            repository.saveSettings(current.copy(isLockEnabled = enabled, appPinHash = pinHash))
-        }
-    }
-
-    fun verifyPin(pin: String): Boolean {
-        val hash = CryptoHelper.sha256(pin)
-        val matches = hash == _uiState.value.appPinHash
-        if (matches) {
-            _uiState.update { it.copy(isAppLocked = false) }
-        }
-        return matches
-    }
-
-    fun lockApp() {
-        if (_uiState.value.isLockEnabled) {
-            _uiState.update { it.copy(isAppLocked = true) }
-        }
-    }
-
-    fun unlockApp() {
-        _uiState.update { it.copy(isAppLocked = false) }
-    }
-
-    fun updateProfileOverrides(
-        name: String,
-        cda: String,
-        pan: String,
-    ) {
-        viewModelScope.launch {
-            val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
-            repository.saveSettings(current.copy(profileName = name, profileCdaNumber = cda, profilePanNumber = pan))
-        }
-    }
-
-    fun updateRepresentationDraft(draft: com.ssbmax.pdfparser.database.RepresentationDraftEntity) {
-        viewModelScope.launch {
-            financialIntelligenceRepository?.insertRepresentationDraft(draft)
         }
     }
 }
