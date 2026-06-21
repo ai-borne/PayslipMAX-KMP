@@ -61,7 +61,7 @@ describe("callGemini client", () => {
       json: () => mockJsonPromise,
     });
 
-    const apiKey = "AIzaSyTestKey123";
+    const apiKey = "test-api-key-do-not-use";
     const result = await callGemini(VALID_PAYLOAD, apiKey);
 
     expect(result).toBe(mockResponseText);
@@ -88,7 +88,7 @@ describe("callGemini client", () => {
       text: () => Promise.resolve(errorBody),
     });
 
-    const apiKey = "AIzaSySecretLeakPreventionTest";
+    const apiKey = "test-api-key-error-handling";
     
     await expect(callGemini(VALID_PAYLOAD, apiKey)).rejects.toThrow(
       "Gemini API error: HTTP 403 — Quota exceeded or invalid API key configuration."
