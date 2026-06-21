@@ -8,6 +8,7 @@ import com.ssbmax.pdfparser.insights.DeterministicIntelligenceEngine
 import com.ssbmax.pdfparser.insights.EngineResult
 import com.ssbmax.pdfparser.insights.OptimizationResult
 import com.ssbmax.pdfparser.insights.WealthOptimizationEngine
+import com.ssbmax.pdfparser.parser.PayslipPatternConfig
 
 data class InsightsState(
     val currentRecord: LedgerRecordEntity,
@@ -17,7 +18,11 @@ data class InsightsState(
     val scoreDelta: Int?,
     val optimizationResult: OptimizationResult,
     val momChanges: List<MoMChange>,
+    val previousMonthLabel: String?,
 )
+
+fun previousMonthLabel(previousRecord: LedgerRecordEntity?): String? =
+    previousRecord?.let { PayslipPatternConfig.monthNames.getOrNull(it.monthNum) }
 
 @Composable
 fun rememberInsightsState(
@@ -41,8 +46,27 @@ fun rememberInsightsState(
         }
     val optimizationResult = remember(selected) { WealthOptimizationEngine.analyze(selected) }
     val momChanges = remember(currentRecord, previousRecord) { calculateMomChanges(currentRecord, previousRecord) }
-    return remember(currentRecord, previousRecord, historySorted, engineResult, scoreDelta, optimizationResult, momChanges) {
-        InsightsState(currentRecord, previousRecord, historySorted, engineResult, scoreDelta, optimizationResult, momChanges)
+    val monthLabel = remember(previousRecord) { previousMonthLabel(previousRecord) }
+    return remember(
+        currentRecord,
+        previousRecord,
+        historySorted,
+        engineResult,
+        scoreDelta,
+        optimizationResult,
+        momChanges,
+        monthLabel,
+    ) {
+        InsightsState(
+            currentRecord = currentRecord,
+            previousRecord = previousRecord,
+            historySorted = historySorted,
+            engineResult = engineResult,
+            scoreDelta = scoreDelta,
+            optimizationResult = optimizationResult,
+            momChanges = momChanges,
+            previousMonthLabel = monthLabel,
+        )
     }
 }
 

@@ -46,6 +46,7 @@ class FreeInsightsLogicTest {
         scoreDelta = 0,
         optimizationResult = OptimizationResult(12000.0, 0.20, "OLD", emptyList(), 1000.0, 50000.0),
         momChanges = emptyList(),
+        previousMonthLabel = null,
     )
 
     @Test

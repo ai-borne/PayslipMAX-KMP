@@ -26,34 +26,38 @@ import com.ssbmax.pdfparser.ui.theme.AppColors
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 
-enum class HealthGrade(val letter: String, val label: String) {
-    EXCELLENT("A", InsightsStrings.healthGradeExcellent),
-    GOOD("B", InsightsStrings.healthGradeGood),
-    FAIR("C", InsightsStrings.healthGradeFair),
-    NEEDS_ATTENTION("D", InsightsStrings.healthGradeNeedsAttention),
+enum class HealthStatus(val label: String) {
+    EXCELLENT(InsightsStrings.healthStatusExcellent),
+    HEALTHY(InsightsStrings.healthStatusHealthy),
+    FAIR(InsightsStrings.healthStatusFair),
+    NEEDS_ATTENTION(InsightsStrings.healthStatusNeedsAttention),
+    CRITICAL(InsightsStrings.healthStatusCritical),
 }
 
-fun gradeFor(score: Int): HealthGrade =
+fun statusFor(score: Int): HealthStatus =
     when {
-        score >= 90 -> HealthGrade.EXCELLENT
-        score >= 75 -> HealthGrade.GOOD
-        score >= 60 -> HealthGrade.FAIR
-        else -> HealthGrade.NEEDS_ATTENTION
+        score >= 90 -> HealthStatus.EXCELLENT
+        score >= 75 -> HealthStatus.HEALTHY
+        score >= 60 -> HealthStatus.FAIR
+        score >= 40 -> HealthStatus.NEEDS_ATTENTION
+        else -> HealthStatus.CRITICAL
     }
 
 @Composable
-fun gradeColor(grade: HealthGrade): Color =
-    when (grade) {
-        HealthGrade.EXCELLENT -> MaterialTheme.colorScheme.primary
-        HealthGrade.GOOD -> MaterialTheme.colorScheme.secondary
-        HealthGrade.FAIR -> AppColors.Warning
-        HealthGrade.NEEDS_ATTENTION -> MaterialTheme.colorScheme.error
+fun statusColor(status: HealthStatus): Color =
+    when (status) {
+        HealthStatus.EXCELLENT -> MaterialTheme.colorScheme.primary
+        HealthStatus.HEALTHY -> MaterialTheme.colorScheme.secondary
+        HealthStatus.FAIR -> AppColors.Warning
+        HealthStatus.NEEDS_ATTENTION -> AppColors.Warning
+        HealthStatus.CRITICAL -> MaterialTheme.colorScheme.error
     }
 
 @Composable
 fun HealthKpiCard(
     score: Int,
     delta: Int?,
+    previousMonthLabel: String?,
     expanded: Boolean,
     onExpandClick: () -> Unit,
     drivers: List<WellnessDriver>,
@@ -61,8 +65,8 @@ fun HealthKpiCard(
     onSeeHowClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val grade = gradeFor(score)
-    val color = gradeColor(grade)
+    val status = statusFor(score)
+    val color = statusColor(status)
     Card(
         modifier = modifier.fillMaxWidth().clickable(onClick = onExpandClick),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
@@ -73,7 +77,7 @@ fun HealthKpiCard(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
-            HealthKpiCardHeader(score, delta, expanded, grade, color)
+            HealthKpiCardHeader(score, delta, previousMonthLabel, expanded, status, color)
             if (expanded) {
                 HealthKpiCardBreakdown(drivers, opportunityAmount, onSeeHowClick)
             }
@@ -85,8 +89,9 @@ fun HealthKpiCard(
 private fun HealthKpiCardHeader(
     score: Int,
     delta: Int?,
+    previousMonthLabel: String?,
     expanded: Boolean,
-    grade: HealthGrade,
+    status: HealthStatus,
     color: Color,
 ) {
     Row(
@@ -99,29 +104,12 @@ private fun HealthKpiCardHeader(
             horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             Text(
-                text = grade.letter,
+                text = "$score%",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = color,
             )
-            Column {
-                Text(
-                    text = InsightsStrings.wellnessChipLabel,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = "$score/100${getDeltaText(delta)}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = color,
-                )
-                Text(
-                    text = grade.label,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            HealthKpiCardScoreDetails(delta, previousMonthLabel, status, color)
         }
         Icon(
             imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
@@ -129,6 +117,36 @@ private fun HealthKpiCardHeader(
                 if (expanded) InsightsStrings.wellnessChipCollapseDesc else InsightsStrings.wellnessChipExpandDesc,
             tint = color,
         )
+    }
+}
+
+@Composable
+private fun HealthKpiCardScoreDetails(
+    delta: Int?,
+    previousMonthLabel: String?,
+    status: HealthStatus,
+    color: Color,
+) {
+    Column {
+        Text(
+            text = InsightsStrings.wellnessChipLabel,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = status.label,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = color,
+        )
+        val trendText = getTrendText(delta, previousMonthLabel)
+        if (trendText.isNotEmpty()) {
+            Text(
+                text = trendText,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
@@ -142,10 +160,10 @@ private fun HealthKpiCardBreakdown(
     val riskDrivers = drivers.filter { it.pointImpact < 0 }
 
     if (positiveDrivers.isNotEmpty()) {
-        HealthKpiDriverGroup(InsightsStrings.positiveFactorsTitle, positiveDrivers)
+        HealthKpiDriverGroup(InsightsStrings.positiveSignalsTitle, positiveDrivers)
     }
     if (riskDrivers.isNotEmpty()) {
-        HealthKpiDriverGroup(InsightsStrings.riskFactorsTitle, riskDrivers)
+        HealthKpiDriverGroup(InsightsStrings.watchItemsTitle, riskDrivers)
     }
     if (opportunityAmount > 0.0) {
         Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {

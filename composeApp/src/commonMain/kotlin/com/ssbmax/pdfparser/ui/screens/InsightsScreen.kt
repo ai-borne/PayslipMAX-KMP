@@ -135,7 +135,6 @@ private fun InsightsContent(
             selected = selected,
             onSelectPayslip = { viewModel.selectPayslip(it) },
             healthScore = state.engineResult.healthScore,
-            healthDelta = state.scoreDelta,
             wellnessExpanded = wellnessExpanded,
             onWellnessExpandClick = { wellnessExpanded = !wellnessExpanded },
         )
@@ -212,6 +211,7 @@ private fun InsightsHealthKpiCardItem(
     HealthKpiCard(
         score = state.engineResult.healthScore,
         delta = state.scoreDelta,
+        previousMonthLabel = state.previousMonthLabel,
         expanded = wellnessExpanded,
         onExpandClick = onWellnessExpandClick,
         drivers = breakdownWellnessDrivers(state.engineResult),
