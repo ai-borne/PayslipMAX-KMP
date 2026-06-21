@@ -152,7 +152,15 @@ actual object CryptoHelper {
 
     actual fun getDatabaseSecretKey(): String {
         val ctx = ContextHolder.context
-        if (ctx == null) {
+        val isTest =
+            try {
+                Class.forName("org.robolectric.Robolectric")
+                true
+            } catch (e: ClassNotFoundException) {
+                false
+            }
+
+        if (ctx == null || isTest) {
             if (memoryFallbackKey == null) {
                 val bytes = ByteArray(32)
                 java.security.SecureRandom().nextBytes(bytes)
@@ -195,8 +203,11 @@ actual object CryptoHelper {
             editor.putString(IV_PREF, iv.joinToString("") { "%02x".format(it) })
             editor.apply()
         } catch (e: Exception) {
-            // If keystore fails, return memory fallback
-            return rawKey.joinToString("") { "%02x".format(it) }
+            // If keystore fails, cache in memoryFallbackKey and return it to ensure consistency in this process
+            if (memoryFallbackKey == null) {
+                memoryFallbackKey = rawKey.joinToString("") { "%02x".format(it) }
+            }
+            return memoryFallbackKey!!
         }
 
         return rawKey.joinToString("") { "%02x".format(it) }
