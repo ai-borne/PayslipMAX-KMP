@@ -42,4 +42,3 @@ GoogleService-Info.plist
 functions/.env
 functions/.secret.local
 .firebaserc.local
-gradle/wrapper/gradle-wrapper.jar
