@@ -37,8 +37,15 @@ class InsightsScreenUiTest {
     private val testOfficer = Officer("Test Officer", "00/000/000000X", "AA****00A")
     private val testSummary = PayslipSummary(grossPay = 100000.0, totalDeductions = 20000.0, netRemittance = 80000.0)
 
-    private fun buildPayslip(year: Int, monthNum: Int, monthName: String) = ParsedPayslip(
-        file = "test.pdf", year = year, monthNum = monthNum, monthName = monthName,
+    private fun buildPayslip(
+        year: Int,
+        monthNum: Int,
+        monthName: String,
+    ) = ParsedPayslip(
+        file = "test.pdf",
+        year = year,
+        monthNum = monthNum,
+        monthName = monthName,
         dateStr = "${monthNum.toString().padStart(2, '0')}/$year",
         officer = testOfficer,
         earnings = Earnings(basicPay = 100000.0),
@@ -63,7 +70,8 @@ class InsightsScreenUiTest {
         Dispatchers.resetMain()
         try {
             org.koin.core.context.stopKoin()
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
     }
 
     @OptIn(ExperimentalTestApi::class)
