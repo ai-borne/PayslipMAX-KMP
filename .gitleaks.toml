@@ -59,6 +59,10 @@ paths = [
   # Test fixtures and mock data may contain fake-looking keys
   '''^.*Test.*\.kt$''',
   '''^.*Mock.*\.kt$''',
+  # Test JS files with mock API keys
+  '''^.*test\.js$''',
+  # Firebase config (values are placeholders in dev)
+  '''google-services\.json$''',
 ]
 regexes = [
   # SDK version strings that look like keys
