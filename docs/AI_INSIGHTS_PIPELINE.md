@@ -82,3 +82,8 @@ As of the latest sprint completion, the AI Insights Pipeline has transitioned fr
    - Migrated local Room Database to Schema Version 7 to add `useLocalAi` preference to [AppSettingsEntity](file:///Users/test/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/database/AppSettingsEntity.kt).
    - Implemented a togglable preference switch in `SettingsScreen.kt` permitting the user to choose between the Cloud model and the Local Gemma model.
 
+5. **Hardware-Backed Device Keys & Secure Backups (TDD)**:
+   - Transitioned local database encryption from hardcoded string fallbacks to unique hardware-backed keys utilizing `Android Keystore` and `iOS Keychain Services` via `CryptoHelper.getDatabaseSecretKey()`.
+   - Implemented a secure cross-device porting flow: universal backups (.json) decrypt database records using the source device key, encrypt with the transit password, and re-encrypt with the target device's key on import.
+   - Built a robust TDD test suite to verify encryption uniqueness across different devices and compatibility of the data-porting migration.
+
