@@ -21,7 +21,7 @@ import androidx.room.migration.AutoMigrationSpec
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = PayslipDatabase.DeleteGeminiApiKeySpec::class),
-        AutoMigration(from = 6, to = 7)
+        AutoMigration(from = 6, to = 7),
     ],
 )
 @ConstructedBy(PayslipDatabaseConstructor::class)

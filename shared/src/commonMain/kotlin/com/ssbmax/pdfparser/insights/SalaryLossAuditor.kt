@@ -1,13 +1,12 @@
 package com.ssbmax.pdfparser.insights
 
 import com.ssbmax.pdfparser.domain.ParsedPayslip
-import kotlin.math.abs
 
 class SalaryLossAuditor : RuleAuditor {
     override fun audit(
         current: ParsedPayslip,
         previous: ParsedPayslip?,
-        history: List<ParsedPayslip>
+        history: List<ParsedPayslip>,
     ): List<Anomaly> {
         val anomalies = mutableListOf<Anomaly>()
         if (previous == null) return anomalies
@@ -24,12 +23,13 @@ class SalaryLossAuditor : RuleAuditor {
             val hraDiff = previous.earnings.houseRentAllowance - current.earnings.houseRentAllowance
             val taxDiff = current.deductions.incomeTax - previous.deductions.incomeTax
 
-            val reason = when {
-                hraDiff > 0.0 -> "primarily due to the absence or reduction of House Rent Allowance (HRA) by ₹${hraDiff.toInt()}"
-                basicDiff > 0.0 -> "due to an adjustment or drop in Basic Pay by ₹${basicDiff.toInt()}"
-                taxDiff > 0.0 -> "due to a spike in Income Tax deductions by ₹${taxDiff.toInt()}"
-                else -> "due to minor fluctuations across multiple pay and deduction elements"
-            }
+            val reason =
+                when {
+                    hraDiff > 0.0 -> "primarily due to the absence or reduction of House Rent Allowance (HRA) by ₹${hraDiff.toInt()}"
+                    basicDiff > 0.0 -> "due to an adjustment or drop in Basic Pay by ₹${basicDiff.toInt()}"
+                    taxDiff > 0.0 -> "due to a spike in Income Tax deductions by ₹${taxDiff.toInt()}"
+                    else -> "due to minor fluctuations across multiple pay and deduction elements"
+                }
 
             anomalies.add(
                 Anomaly(
@@ -37,8 +37,8 @@ class SalaryLossAuditor : RuleAuditor {
                     field = "netPay",
                     amount = netLoss,
                     month = current.dateStr,
-                    description = "Your net salary reduced by ₹${netLoss.toInt()} compared to the previous month, $reason."
-                )
+                    description = "Your net salary reduced by ₹${netLoss.toInt()} compared to the previous month, $reason.",
+                ),
             )
         }
 

@@ -6,7 +6,7 @@ class TptaEntitlementAuditor : RuleAuditor {
     override fun audit(
         current: ParsedPayslip,
         previous: ParsedPayslip?,
-        history: List<ParsedPayslip>
+        history: List<ParsedPayslip>,
     ): List<Anomaly> {
         val anomalies = mutableListOf<Anomaly>()
 
@@ -20,8 +20,8 @@ class TptaEntitlementAuditor : RuleAuditor {
                     field = "transportAllowance",
                     amount = 3600.0,
                     month = current.dateStr,
-                    description = "Basic Pay is ₹${basicPay.toInt()} (Level 10+), but Transport Allowance (TPTA) is missing from your earnings ledger."
-                )
+                    description = "Basic Pay is ₹${basicPay.toInt()} (Level 10+), but Transport Allowance (TPTA) is missing from your earnings ledger.",
+                ),
             )
         }
 

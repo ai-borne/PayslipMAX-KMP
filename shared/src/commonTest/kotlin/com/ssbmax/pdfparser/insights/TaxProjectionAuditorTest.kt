@@ -10,7 +10,7 @@ class TaxProjectionAuditorTest {
         dateStr: String,
         tax: Double = 5000.0,
         totalTaxPayable: Double = 0.0,
-        monthNum: Int = 5
+        monthNum: Int = 5,
     ): ParsedPayslip {
         return ParsedPayslip(
             file = "test.pdf",
@@ -23,9 +23,10 @@ class TaxProjectionAuditorTest {
             deductions = Deductions(incomeTax = tax),
             ledgerBalances = LedgerBalances(),
             summary = PayslipSummary(grossPay = 120000.0, totalDeductions = tax, netRemittance = 120000.0 - tax),
-            taxAndSavings = TaxAndSavings(
-                totalTaxPayable = totalTaxPayable
-            )
+            taxAndSavings =
+                TaxAndSavings(
+                    totalTaxPayable = totalTaxPayable,
+                ),
         )
     }
 

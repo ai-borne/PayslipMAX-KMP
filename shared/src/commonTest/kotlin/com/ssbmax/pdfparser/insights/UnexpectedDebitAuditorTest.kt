@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 class UnexpectedDebitAuditorTest {
     private fun createMockPayslip(
         debitRecovery: Double = 0.0,
-        ticketRecovery: Double = 0.0
+        ticketRecovery: Double = 0.0,
     ): ParsedPayslip {
         val gross = 100000.0
         val deductions = debitRecovery + ticketRecovery
@@ -20,13 +20,14 @@ class UnexpectedDebitAuditorTest {
             dateStr = "04/2026",
             officer = Officer("Name", "Acc", "PAN"),
             earnings = Earnings(),
-            deductions = Deductions(
-                recoveryOfDebits = debitRecovery,
-                ticketRecovery = ticketRecovery
-            ),
+            deductions =
+                Deductions(
+                    recoveryOfDebits = debitRecovery,
+                    ticketRecovery = ticketRecovery,
+                ),
             ledgerBalances = LedgerBalances(),
             summary = PayslipSummary(grossPay = gross, totalDeductions = deductions, netRemittance = gross - deductions),
-            taxAndSavings = null
+            taxAndSavings = null,
         )
     }
 

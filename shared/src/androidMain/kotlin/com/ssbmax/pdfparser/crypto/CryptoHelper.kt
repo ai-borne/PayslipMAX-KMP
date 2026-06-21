@@ -152,12 +152,13 @@ actual object CryptoHelper {
 
     actual fun getDatabaseSecretKey(): String {
         val ctx = ContextHolder.context
-        val isTest = try {
-            Class.forName("org.robolectric.Robolectric")
-            true
-        } catch (e: ClassNotFoundException) {
-            false
-        }
+        val isTest =
+            try {
+                Class.forName("org.robolectric.Robolectric")
+                true
+            } catch (e: ClassNotFoundException) {
+                false
+            }
 
         if (ctx == null || isTest) {
             if (memoryFallbackKey == null) {

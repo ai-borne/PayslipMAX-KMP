@@ -6,7 +6,7 @@ class UnexpectedDebitAuditor : RuleAuditor {
     override fun audit(
         current: ParsedPayslip,
         previous: ParsedPayslip?,
-        history: List<ParsedPayslip>
+        history: List<ParsedPayslip>,
     ): List<Anomaly> {
         val anomalies = mutableListOf<Anomaly>()
         val debitRecovery = current.deductions.recoveryOfDebits
@@ -20,11 +20,12 @@ class UnexpectedDebitAuditor : RuleAuditor {
         val gross = current.summary.grossPay
         val ratio = if (gross > 0.0) (totalRecovery / gross) * 100.0 else 0.0
 
-        val recoveryType = when {
-            debitRecovery > 0.0 && ticketRecovery > 0.0 -> "Debit and LTC Ticket Recoveries"
-            debitRecovery > 0.0 -> "Retroactive Debit Recovery"
-            else -> "LTC Ticket Recovery"
-        }
+        val recoveryType =
+            when {
+                debitRecovery > 0.0 && ticketRecovery > 0.0 -> "Debit and LTC Ticket Recoveries"
+                debitRecovery > 0.0 -> "Retroactive Debit Recovery"
+                else -> "LTC Ticket Recovery"
+            }
 
         anomalies.add(
             Anomaly(
@@ -32,8 +33,8 @@ class UnexpectedDebitAuditor : RuleAuditor {
                 field = "recoveryOfDebits",
                 amount = totalRecovery,
                 month = current.dateStr,
-                description = "Unexpected deduction of ₹${totalRecovery.toInt()} ($recoveryType) consumed ${ratio.toString().take(4)}% of your gross monthly pay."
-            )
+                description = "Unexpected deduction of ₹${totalRecovery.toInt()} ($recoveryType) consumed ${ratio.toString().take(4)}% of your gross monthly pay.",
+            ),
         )
 
         return anomalies

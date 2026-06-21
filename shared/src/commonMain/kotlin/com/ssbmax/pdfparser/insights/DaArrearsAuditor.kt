@@ -7,7 +7,7 @@ class DaArrearsAuditor : RuleAuditor {
     override fun audit(
         current: ParsedPayslip,
         previous: ParsedPayslip?,
-        history: List<ParsedPayslip>
+        history: List<ParsedPayslip>,
     ): List<Anomaly> {
         val anomalies = mutableListOf<Anomaly>()
         val arrearsDa = current.earnings.arrearsDa
@@ -35,7 +35,7 @@ class DaArrearsAuditor : RuleAuditor {
 
         val expectedDa = (basic + msp) * effectiveRateDiff * 3.0
         checkArrears(anomalies, arrearsDa, expectedDa, current.dateStr, "Dearness Allowance (DA)")
-        
+
         if (tpta > 0.0 && arrearsTptaDa > 0.0) {
             val expectedTptaDa = tpta * effectiveRateDiff * 3.0
             checkArrears(anomalies, arrearsTptaDa, expectedTptaDa, current.dateStr, "Transport Allowance DA (TPTA DA)")
@@ -49,7 +49,7 @@ class DaArrearsAuditor : RuleAuditor {
         actual: Double,
         expected: Double,
         month: String,
-        label: String
+        label: String,
     ) {
         if (actual <= 0.0) return
         val diff = abs(actual - expected)
@@ -60,8 +60,8 @@ class DaArrearsAuditor : RuleAuditor {
                     field = "arrearsDa",
                     amount = actual,
                     month = month,
-                    description = "Verified: Your $label arrears of ₹${actual.toInt()} match the expected calculation exactly."
-                )
+                    description = "Verified: Your $label arrears of ₹${actual.toInt()} match the expected calculation exactly.",
+                ),
             )
         } else {
             anomalies.add(
@@ -70,8 +70,8 @@ class DaArrearsAuditor : RuleAuditor {
                     field = "arrearsDa",
                     amount = expected - actual,
                     month = month,
-                    description = "Underpaid/Mismatched: Your $label arrears of ₹${actual.toInt()} do not match the expected calculation of ₹${expected.toInt()}."
-                )
+                    description = "Underpaid/Mismatched: Your $label arrears of ₹${actual.toInt()} do not match the expected calculation of ₹${expected.toInt()}.",
+                ),
             )
         }
     }

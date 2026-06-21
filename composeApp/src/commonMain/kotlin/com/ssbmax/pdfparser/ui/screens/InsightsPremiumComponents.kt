@@ -127,7 +127,11 @@ private fun ProTeaserHeader() {
 }
 
 @Composable
-private fun ProFeatureRow(icon: String, title: String, detail: String) {
+private fun ProFeatureRow(
+    icon: String,
+    title: String,
+    detail: String,
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         verticalAlignment = Alignment.CenterVertically,
@@ -153,9 +157,10 @@ private fun PremiumToolCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-        ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+            ),
     ) {
         Row(
             modifier = Modifier.padding(AppDimensions.PaddingSmall),
