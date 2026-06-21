@@ -62,10 +62,10 @@ object InsightsStrings {
     // Improve path prefix (SSOT for the "→" arrow used in driver rows)
     const val wellnessImprovePathPrefix = "→ "
 
-    // 6-Month Salary Trend chart
-    const val sixMonthTrendTitle = "6-Month Salary Trend"
-    const val monthTrendTitleSuffix = "-Month Trend"
-    const val trendDateRangeSeparator = " – "
+    // Pay breakdown chart (stacked Net/DSOP/Tax/Other across the trailing window)
+    const val sixMonthBreakdownTitle = "6-Month Pay Breakdown"
+    const val monthBreakdownTitleSuffix = "-Month Pay Breakdown"
+    const val dateRangeSeparator = " – "
 
     // AI summary truncation limit
     const val aiSummaryMaxLength = 200

@@ -3,6 +3,8 @@ package com.ssbmax.pdfparser.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,18 +26,23 @@ fun TrendChartLegend(
     color1: Color = MaterialTheme.colorScheme.primary,
     color2: Color = MaterialTheme.colorScheme.secondary,
 ) {
-    Row(
+    ChartLegend(listOf(label1 to color1, label2 to color2))
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun ChartLegend(entries: List<Pair<String, Color>>) {
+    FlowRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
     ) {
-        TrendChartLegendEntry(label1, color1)
-        TrendChartLegendEntry(label2, color2)
+        entries.forEach { (label, color) -> ChartLegendEntry(label, color) }
     }
 }
 
 @Composable
-private fun TrendChartLegendEntry(
+private fun ChartLegendEntry(
     label: String,
     color: Color,
 ) {
