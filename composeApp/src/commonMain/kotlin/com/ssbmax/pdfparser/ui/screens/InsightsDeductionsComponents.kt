@@ -10,19 +10,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
-import com.ssbmax.pdfparser.ui.components.TrendChartLegend
-import com.ssbmax.pdfparser.ui.components.TrendLineChart
+import com.ssbmax.pdfparser.ui.components.ChartLegend
+import com.ssbmax.pdfparser.ui.theme.AppColors
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @Composable
-fun TrendsSparklinesSection(
+fun DeductionsBreakdownSection(
     history: List<LedgerRecordEntity>,
     selectedRecord: LedgerRecordEntity,
     modifier: Modifier = Modifier,
 ) {
-    val points = remember(history, selectedRecord) { buildTrailingWindow(history, selectedRecord) }
-    if (points.size >= 2) {
+    val bars = remember(history, selectedRecord) { buildDeductionBars(history, selectedRecord) }
+    if (bars.size >= 2) {
         Card(
             modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(AppDimensions.CornerRadius),
@@ -39,26 +39,26 @@ fun TrendsSparklinesSection(
                     verticalAlignment = Alignment.Bottom,
                 ) {
                     Text(
-                        text = trendTitleFor(points.size),
+                        text = breakdownTitleFor(bars.size),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                     )
                     Text(
-                        text = trendRangeCaption(points),
+                        text = breakdownRangeCaption(bars),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                TrendLineChart(
-                    labels = points.map { it.label },
-                    lineData1 = points.map { it.gross.toDouble() },
-                    lineData2 = points.map { it.net.toDouble() },
-                    label1 = AppStrings.legendGrossPay,
-                    label2 = AppStrings.legendNetRemittance,
-                    highlightIndex = points.indexOfFirst { it.isSelected }.takeIf { it >= 0 },
+                DeductionsBarChart(bars = bars)
+                ChartLegend(
+                    listOf(
+                        AppStrings.legendNetTakeHome to MaterialTheme.colorScheme.secondary,
+                        AppStrings.legendDsop to MaterialTheme.colorScheme.tertiary,
+                        AppStrings.legendTax to MaterialTheme.colorScheme.error,
+                        AppStrings.legendOtherDeductions to AppColors.Warning,
+                    ),
                 )
-                TrendChartLegend(label1 = AppStrings.legendGrossPay, label2 = AppStrings.legendNetRemittance)
             }
         }
     }

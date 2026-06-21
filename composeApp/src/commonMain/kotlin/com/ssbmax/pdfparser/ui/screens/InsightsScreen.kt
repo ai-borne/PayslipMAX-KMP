@@ -179,7 +179,7 @@ private fun InsightsLazyBody(
             )
         }
         item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
-        item { TrendsSparklinesSection(history = state.historySorted, selectedRecord = state.currentRecord) }
+        item { DeductionsBreakdownSection(history = state.historySorted, selectedRecord = state.currentRecord) }
         item { KeyFindingsSection(state = state) }
         item { AiHighlightsSection(state = state) }
         item {
