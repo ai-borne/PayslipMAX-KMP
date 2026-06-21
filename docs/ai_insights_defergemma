@@ -1,0 +1,77 @@
+---
+  Current App State: 45% Complete
+  
+  The foundations are genuinely strong — but there are blockers that will kill adoption before the AI debate even matters.
+
+  What Actually Works Well
+
+  - 100+ pattern payslip parser — sophisticated, domain-specific, hard to replicate
+  - 9 deterministic auditors (DSOP compliance, TPTA entitlement, tax spike detection) — well-tested, real value
+  - AES-256 hardware-backed encryption — production-grade security
+  - Clean MVVM architecture, 47 Compose screens
+
+  Critical Blockers Right Now
+
+  ┌──────────────────────────────────────────────────────────────────────┬───────────────────────────────┬──────────────────────┐
+  │                                Issue                                 │             File              │        Impact        │
+  ├──────────────────────────────────────────────────────────────────────┼───────────────────────────────┼──────────────────────┤
+  │ iOS PDF parser freezes the UI on import (per-character interop loop) │ SpatialTextExtractor.kt       │ 🔴 iOS unusable      │
+  ├──────────────────────────────────────────────────────────────────────┼───────────────────────────────┼──────────────────────┤
+  │ LocalGemmaProvider returns hardcoded stub JSON                       │ LocalGemmaProvider.kt:1-25    │ 🔴 Offline tier fake │
+  ├──────────────────────────────────────────────────────────────────────┼───────────────────────────────┼──────────────────────┤
+  │ 8 println() calls in parser                                          │ PayslipTextParser.kt:37,78-84 │ 🟡 Production noise  │
+  ├──────────────────────────────────────────────────────────────────────┼───────────────────────────────┼──────────────────────┤
+  │ DSOP Simulator component exists but has no interactive controls      │ DsopSimulatorSection.kt       │ 🟡 Stub UI           │
+  ├──────────────────────────────────────────────────────────────────────┼───────────────────────────────┼──────────────────────┤
+  │ Representation letters: edit & copy, but no send/share               │ RepresentationScreen.kt:40-50 │ 🟡 Last-mile gap     │
+  ├──────────────────────────────────────────────────────────────────────┼───────────────────────────────┼──────────────────────┤
+  │ LedgerRecordEntity — full ledger data captured, never shown in UI    │ DB table unused               │ 🟡 Wasted data       │
+  └──────────────────────────────────────────────────────────────────────┴───────────────────────────────┴──────────────────────┘
+
+  ---
+  Will Users Buy It? Honest Answer
+  
+  The free tier gives away the most valuable thing — anomaly detection. A user can upload their payslip, see "Missing TPTA this month" or "DSOP
+  contribution below 6%", and fix the issue — all for free. The premium gate (AiInsightsBottomSheet) only adds a narrative paragraph around what the free
+  cards already show.
+
+  That's the real monetization problem, not the AI architecture.
+
+  The target cohort (Indian Army PCDA(O) officers) will pay for:
+  1. Something that recovers their money — anomaly detection already does this (free)
+  2. Something that protects their privacy — offline is compelling here
+  3. Something that takes action for them — representation letters that actually get sent
+
+  Right now premium = "better story around findings you already have." That's weak.
+
+  ---
+  My Recommendation: Defer Gemma, Fix the App
+  
+  Skip Gemma entirely for the next 3 months. Not because it's a bad idea — it's the right long-term call — but because you have higher-ROI work sitting
+  untouched.
+
+  What to build instead (prioritised):
+
+  Sprint 1 — Remove blockers
+  - Fix iOS parser freeze (replace per-character loop with bounds indexing)
+  - Replace println() with structured logging
+  - Add parser error recovery (silent failures are invisible to users)
+
+  Sprint 2 — Make premium worth buying
+  - Representation letter: add WhatsApp/email share (1 day of work, huge value for the cohort)
+  - DSOP Simulator: make the slider interactive ("what if I increase contribution by 2%?")
+  - Retroactive audit: run all 9 auditors across all uploaded months and surface a "historical anomaly" list (the data is already in LedgerRecordEntity —
+  you're just not showing it)
+
+  Sprint 3 — Add features that use existing data
+  - YoY salary comparison chart (uses LedgerRecordEntity which is already populated but never displayed)
+  - Export financial summary as PDF for tax filing season (high value, medium effort)
+  - Tax regime toggle (old vs new) in WealthOptimizationEngine — currently hardcoded to old regime
+
+  Then revisit Gemma / Foundation Models once the above is done and you have users paying for premium.
+
+  ---
+  The One-Liner
+  
+  ▎ The app has a strong engine but a weak revenue model. Before optimising the AI layer, add features that turn free-tier insights into paid-tier 
+  ▎ actions — sending the letter, running the retroactive audit, exporting the tax summary. That's what officers will pay for.
