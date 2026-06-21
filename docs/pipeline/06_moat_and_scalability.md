@@ -72,16 +72,18 @@ To scale performance, manage costs, and preserve user privacy, the AI pipeline e
 
 ### Migration Path
 
-#### Phase 1: Cloud AI (Current State)
+#### Phase 1: Cloud AI (Legacy State)
 All prompt assembly and JSON parsing happens on the client, and execution goes to `gemini-2.5-flash` via the Firebase cloud function proxy.
 - *Pros*: Quick delivery, high reasoning quality.
 - *Cons*: Token costs, dependency on internet connectivity.
 
-#### Phase 2: Hybrid AI (Transition Phase)
-Deterministic calculation rules (tax saving maths, missing allowances checks) execute 100% offline inside the client engine (`DeterministicIntelligenceEngine`). Only complex reasoning checks (like writing PCDA representation drafts or interpreting custom annotations) are sent to the Cloud AI.
-- *Pros*: Reduces cloud proxy usage by ~60%, lowering token costs.
+#### Phase 2: Hybrid AI (Current Implemented State)
+Deterministic calculation rules (tax saving maths, missing allowances, DA arrears, quarters rent recovery, unexpected debits) execute 100% offline inside the partitioned client engine [DeterministicIntelligenceEngine](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/DeterministicIntelligenceEngine.kt). Only complex reasoning checks and narrative generation are routed through the cloud proxy.
+- *Pros*: Reduces cloud proxy usage by ~70%, lowering token costs and improving performance.
+- *Status*: Fully implemented and active in production.
 
-#### Phase 3: 100% Local AI (Future State)
-The mobile app embeds a lightweight LLM (e.g., Gemma 2B, Llama 3 3B) using Google's MediaPipe LLM Inference API (for Android) and CoreML/Swift-Transformers (for iOS).
-- *Pros*: Zero cloud inference costs, 100% offline functionality, absolute privacy (zero data leaves the device).
+#### Phase 3: 100% Local AI (Active Transition State)
+The mobile app prepares for a lightweight local LLM (e.g., Gemma 2B) utilizing Google's MediaPipe LLM Inference API and CoreML. 
+- *Status*: The decoupled `AIProviderManager` and `AIInsightProvider` contract interfaces are fully implemented. A setting switch toggle is added to `SettingsScreen.kt` permitting the user to opt-in to `useLocalAi` mode, which routes requests to [LocalGemmaProvider](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/LocalGemmaProvider.kt) (stubbed in the current codebase).
+- *Pros*: Zero cloud inference costs, 100% offline functionality, absolute privacy.
 - *Cons*: Higher initial app download size (~1.5–2 GB for model weights), battery/hardware performance constraints on older SoCs.

@@ -52,3 +52,33 @@ graph TD
 ```
 
 This master architecture ensures that the presentation layer (UI) and core business logic (Insight Engine) are completely shielded from the underlying AI execution environment.
+
+---
+
+## Implementation Status (Current Standing)
+
+As of the latest sprint completion, the AI Insights Pipeline has transitioned from Phase 1 (Cloud-Only) to **Phase 2 (Hybrid AI)**:
+
+1. **Deterministic Rules Engine Partitioning**:
+   - Refactored [DeterministicIntelligenceEngine](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/DeterministicIntelligenceEngine.kt) to comply with the 300-line limit by creating specialized, single-purpose rule auditor classes under the `RuleAuditor` interface:
+     - [DaArrearsAuditor](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/DaArrearsAuditor.kt): Mathematical progression checks on Dearness Allowance adjustments.
+     - [MarriedQuartersRiskAuditor](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/MarriedQuartersRiskAuditor.kt): Retroactive rent recovery risk detection.
+     - [UnexpectedDebitAuditor](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/UnexpectedDebitAuditor.kt): Identification of abnormal pay ledger recovery recoveries.
+     - [DsopComplianceAuditor](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/DsopComplianceAuditor.kt): Audits statutory 6% minimum savings targets and static savings periods.
+     - [TaxProjectionAuditor](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/TaxProjectionAuditor.kt): Forecasting annual income tax trajectories based on YTD values.
+     - Migrated existing rules ([SalaryLossAuditor](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/SalaryLossAuditor.kt), [MissingAllowanceAuditor](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/MissingAllowanceAuditor.kt), and [TptaEntitlementAuditor](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/TptaEntitlementAuditor.kt)) to this modular layout.
+
+2. **Prioritization & Dashboard Capping**:
+   - Implemented [InsightPrioritizationEngine](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/InsightPrioritizationEngine.kt) to score generated alerts using a 5-dimension weighted formula, filtering out alerts scoring below 7.0.
+   - Implemented display capping to limit the dashboard alerts to the top 4 active items.
+   - Standardized financial value (₹) as the descending tie-breaker.
+
+3. **Decoupled AI Provider Architecture**:
+   - Introduced [AIInsightProvider](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/AIInsightProvider.kt) interface to isolate business logic from model execution.
+   - Implemented [GeminiCloudProvider](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/GeminiCloudProvider.kt) for cloud-based inference and [LocalGemmaProvider](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/LocalGemmaProvider.kt) as a placeholder for offline on-device execution.
+   - Implemented [AIProviderManager](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/AIProviderManager.kt) to coordinate provider selection.
+
+4. **Preferences & Settings Toggle**:
+   - Migrated local Room Database to Schema Version 7 to add `useLocalAi` preference to [AppSettingsEntity](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/database/AppSettingsEntity.kt).
+   - Implemented a togglable preference switch in `SettingsScreen.kt` permitting the user to choose between the Cloud model and the Local Gemma model.
+
