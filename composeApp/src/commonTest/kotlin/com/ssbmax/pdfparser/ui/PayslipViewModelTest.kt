@@ -124,7 +124,7 @@ class PayslipViewModelTest {
             assertNull(state.selectedPayslip)
             assertFalse(state.importSuccess)
             assertFalse(state.isLoading)
-            assertEquals("Invalid Password", state.error)
+            assertEquals("Invalid Password", state.importError)
         }
 
     @Test
@@ -172,9 +172,9 @@ class PayslipViewModelTest {
         fakeParser.result = Result.failure(exception)
         viewModel.importPayslip(byteArrayOf(1), "pass", "file.pdf")
 
-        assertNotNull(viewModel.uiState.value.error)
+        assertNotNull(viewModel.uiState.value.importError)
         viewModel.clearError()
-        assertNull(viewModel.uiState.value.error)
+        assertNull(viewModel.uiState.value.importError)
 
         fakeParser.result = Result.success(createMockPayslip("08/2024"))
         viewModel.importPayslip(byteArrayOf(1), "pass", "file.pdf")

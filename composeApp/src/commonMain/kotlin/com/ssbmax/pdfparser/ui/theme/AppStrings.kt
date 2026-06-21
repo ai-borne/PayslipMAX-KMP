@@ -186,6 +186,10 @@ object AppStrings {
     const val historyDsopLabel = "DSOP"
     const val historyTaxLabel = "Tax"
     const val historyTrendHike = "DA Hike / Increment"
+    const val historyTabStatements = "Statements"
+    const val historyTabAiReports = "AI Reports"
+    const val historyEmptyAiReports = "No saved AI reports. Generate one from the Insights screen."
+    const val historyPremiumIntelligenceNarrative = "Premium Intelligence Narrative"
     const val historyChevronContentDescription = "Toggle Year Visibility"
 
     // DSOP Simulator Strings

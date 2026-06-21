@@ -81,14 +81,23 @@ class PayslipRepository(
         withContext(dispatcher) {
             payslipDao.deletePayslip(dateStr)
             payslipDao.deletePayslipPdf(dateStr)
+            payslipDao.deleteLedgerRecord(dateStr)
+            payslipDao.deleteAiInsightReportByMonth(dateStr)
+            payslipDao.deleteFinancialInsightsByMonth(dateStr)
         }
 
     /**
      * Clears all local records from database.
      */
-    suspend fun clearAll() {
-        payslipDao.clearAll()
-    }
+    suspend fun clearAll() =
+        withContext(dispatcher) {
+            payslipDao.clearAll()
+            payslipDao.clearAllLedgerRecords()
+            payslipDao.clearAllFinancialInsights()
+            payslipDao.clearAllRepresentationDrafts()
+            payslipDao.clearAllAiInsightReports()
+            payslipDao.clearAllPdfs()
+        }
 
     /**
      * Seeds mock data for historical analytics.

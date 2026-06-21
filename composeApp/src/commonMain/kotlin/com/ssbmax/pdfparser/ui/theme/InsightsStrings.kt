@@ -56,4 +56,15 @@ object InsightsStrings {
 
     // AI summary truncation limit
     const val aiSummaryMaxLength = 200
+
+    // Refactor Strings
+    const val keyFindingsTitle = "Key Findings"
+    const val aiHighlightsTitle = "AI Highlights"
+    const val premiumIntelligenceTitle = "Premium Intelligence"
+    const val premiumIntelligencePrice = "₹99 / Year"
+    const val estimatedOpportunityLabel = "Estimated Opportunity:"
+    const val potentialTaxSavingsTitle = "Potential Tax Savings Found"
+    const val potentialRecoveryOpportunityTitle = "Recovery Opportunity Found"
+    const val unlockFullRecommendationLabel = "Unlock full recommendation"
+    const val unlockFullRepresentationsLabel = "Unlock full PCDA(O) representations"
 }

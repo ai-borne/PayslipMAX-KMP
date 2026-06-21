@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import com.ssbmax.pdfparser.database.AiInsightReportEntity
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
@@ -22,10 +23,12 @@ fun HistoryScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val aiReports by viewModel.aiInsightReports.collectAsState()
     val payslips = uiState.payslips
     var selectedDetailPayslip by remember { mutableStateOf<ParsedPayslip?>(null) }
     var activeActionPayslip by remember { mutableStateOf<ParsedPayslip?>(null) }
     var pendingDeletePayslip by remember { mutableStateOf<ParsedPayslip?>(null) }
+    var selectedAiReport by remember { mutableStateOf<AiInsightReportEntity?>(null) }
 
     if (selectedDetailPayslip != null) {
         PayslipReplicaScreen(
@@ -43,10 +46,12 @@ fun HistoryScreen(
     } else {
         HistoryListContainer(
             payslips = payslips,
+            aiReports = aiReports,
             isLoading = uiState.isLoading,
             onPayslipClick = { selectedDetailPayslip = it },
             onLongPress = { activeActionPayslip = it },
             onSwipeDelete = { pendingDeletePayslip = it },
+            onAiReportClick = { selectedAiReport = it },
             modifier = modifier,
         )
 
@@ -79,18 +84,30 @@ fun HistoryScreen(
                 onDismiss = { pendingDeletePayslip = null },
             )
         }
+
+        selectedAiReport?.let { report ->
+            AiInsightsBottomSheet(
+                aiInsights = report.reportJSON,
+                onDismissRequest = { selectedAiReport = null },
+                onRegenerateClick = null
+            )
+        }
     }
 }
 
 @Composable
 private fun HistoryListContainer(
     payslips: List<ParsedPayslip>,
+    aiReports: List<AiInsightReportEntity>,
     isLoading: Boolean,
     onPayslipClick: (ParsedPayslip) -> Unit,
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
+    onAiReportClick: (AiInsightReportEntity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var selectedTab by remember { mutableStateOf(HistoryTab.STATEMENTS) }
+
     Column(
         modifier =
             modifier
@@ -100,8 +117,41 @@ private fun HistoryListContainer(
     ) {
         HistoryHeader()
         Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+
+        HistoryTabSelector(
+            selectedTab = selectedTab,
+            onTabSelected = { selectedTab = it }
+        )
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+
+        HistoryActiveList(
+            selectedTab = selectedTab,
+            isLoading = isLoading,
+            payslips = payslips,
+            aiReports = aiReports,
+            onPayslipClick = onPayslipClick,
+            onLongPress = onLongPress,
+            onSwipeDelete = onSwipeDelete,
+            onAiReportClick = onAiReportClick
+        )
+    }
+}
+
+@Composable
+private fun HistoryActiveList(
+    selectedTab: HistoryTab,
+    isLoading: Boolean,
+    payslips: List<ParsedPayslip>,
+    aiReports: List<AiInsightReportEntity>,
+    onPayslipClick: (ParsedPayslip) -> Unit,
+    onLongPress: (ParsedPayslip) -> Unit,
+    onSwipeDelete: (ParsedPayslip) -> Unit,
+    onAiReportClick: (AiInsightReportEntity) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (selectedTab == HistoryTab.STATEMENTS) {
         if (isLoading && payslips.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         } else if (payslips.isEmpty()) {
@@ -112,6 +162,15 @@ private fun HistoryListContainer(
                 onPayslipClick = onPayslipClick,
                 onLongPress = onLongPress,
                 onSwipeDelete = onSwipeDelete,
+            )
+        }
+    } else {
+        if (aiReports.isEmpty()) {
+            EmptyAiReportsView()
+        } else {
+            AiReportsLazyList(
+                aiReports = aiReports,
+                onAiReportClick = onAiReportClick
             )
         }
     }
