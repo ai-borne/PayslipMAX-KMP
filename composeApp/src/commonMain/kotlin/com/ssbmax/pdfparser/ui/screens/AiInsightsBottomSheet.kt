@@ -116,9 +116,9 @@ fun parseMarkdown(text: String): AnnotatedString {
             when {
                 // Skip JSON/code artifacts
                 trimmed.startsWith("{") || trimmed.startsWith("}") ||
-                trimmed.startsWith("[") || trimmed.startsWith("]") ||
-                trimmed.startsWith("\"") && trimmed.contains(":") ||
-                trimmed.startsWith("Summary") -> {
+                    trimmed.startsWith("[") || trimmed.startsWith("]") ||
+                    trimmed.startsWith("\"") && trimmed.contains(":") ||
+                    trimmed.startsWith("Summary") -> {
                     // Skip these lines entirely
                 }
                 trimmed.isEmpty() -> {

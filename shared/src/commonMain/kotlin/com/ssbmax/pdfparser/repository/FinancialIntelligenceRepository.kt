@@ -158,22 +158,24 @@ open class FinancialIntelligenceRepository(
             val useLocalAi = settings.useLocalAi
 
             val cloudProvider = GeminiCloudProvider(geminiProxyService)
-            val manager = AIProviderManager(
-                cloudProvider = cloudProvider,
-                localProvider = LocalGemmaProvider(),
-                useLocalAi = useLocalAi
-            )
+            val manager =
+                AIProviderManager(
+                    cloudProvider = cloudProvider,
+                    localProvider = LocalGemmaProvider(),
+                    useLocalAi = useLocalAi,
+                )
 
-            val payload = PromptPayload(
-                currentMonthRawText = "",
-                sanitizedJsonData = "",
-                historicalSummaryText = "",
-                anomaliesCount = engineResult.anomalies.size,
-                sanitizedPayslip = sanitizedPayslip,
-                engineResult = engineResult,
-                history = history,
-                authToken = authToken
-            )
+            val payload =
+                PromptPayload(
+                    currentMonthRawText = "",
+                    sanitizedJsonData = "",
+                    historicalSummaryText = "",
+                    anomaliesCount = engineResult.anomalies.size,
+                    sanitizedPayslip = sanitizedPayslip,
+                    engineResult = engineResult,
+                    history = history,
+                    authToken = authToken,
+                )
 
             val result = manager.generateInsights(payload)
 

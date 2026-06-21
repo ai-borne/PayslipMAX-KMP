@@ -212,9 +212,10 @@ private fun HistoryCardFooterRow(payslip: ParsedPayslip) {
 @Composable
 private fun ColorDot(color: Color) {
     Box(
-        modifier = Modifier
-            .size(AppDimensions.SpacingSix)
-            .clip(CircleShape)
-            .background(color)
+        modifier =
+            Modifier
+                .size(AppDimensions.SpacingSix)
+                .clip(CircleShape)
+                .background(color),
     )
 }

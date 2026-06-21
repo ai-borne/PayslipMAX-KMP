@@ -127,9 +127,9 @@ private fun PreferencesSection(
                 trailingContent = {
                     Switch(
                         checked = uiState.useLocalAi,
-                        onCheckedChange = { viewModel.setLocalAiEnabled(it) }
+                        onCheckedChange = { viewModel.setLocalAiEnabled(it) },
                     )
-                }
+                },
             )
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))

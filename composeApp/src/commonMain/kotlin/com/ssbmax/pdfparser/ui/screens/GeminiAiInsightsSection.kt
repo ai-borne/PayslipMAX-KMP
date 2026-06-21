@@ -37,16 +37,16 @@ internal fun extractAiSummary(
             .map { it.trim() }
             .firstOrNull {
                 it.isNotEmpty() &&
-                !it.startsWith("#") &&
-                !it.startsWith("---") &&
-                !it.startsWith("{") &&
-                !it.startsWith("[") &&
-                !it.startsWith("}") &&
-                !it.startsWith("]") &&
-                !it.startsWith("```") &&
-                !it.startsWith("\"") &&
-                !it.startsWith("Summary") &&
-                !it.contains("\":") // skip JSON key-value lines
+                    !it.startsWith("#") &&
+                    !it.startsWith("---") &&
+                    !it.startsWith("{") &&
+                    !it.startsWith("[") &&
+                    !it.startsWith("}") &&
+                    !it.startsWith("]") &&
+                    !it.startsWith("```") &&
+                    !it.startsWith("\"") &&
+                    !it.startsWith("Summary") &&
+                    !it.contains("\":") // skip JSON key-value lines
             }
             ?.removePrefix("- ")
             ?.removePrefix("* ")
