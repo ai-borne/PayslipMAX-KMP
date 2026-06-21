@@ -110,10 +110,10 @@ private fun TeaserBodySection(
         )
     } else {
         TeaserValueSection(
-            title = "Premium Financial Analysis Found",
-            opportunityValue = "Complete Financial Toolkit",
-            insight = "Detailed projections, anomaly audits, and claims generators ready.",
-            buttonLabel = "Unlock Premium Intelligence",
+            title = InsightsStrings.premiumTeaserDefaultTitle,
+            opportunityValue = InsightsStrings.premiumTeaserDefaultOpportunity,
+            insight = InsightsStrings.premiumTeaserDefaultInsight,
+            buttonLabel = InsightsStrings.premiumTeaserDefaultButton,
             onClick = onUpgradeClick,
         )
     }
@@ -181,7 +181,7 @@ private fun ProPremiumSuite(
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             Text(
-                text = "👑 ${InsightsStrings.premiumIntelligenceTitle} (Activated)",
+                text = "👑 ${InsightsStrings.premiumIntelligenceTitle}${InsightsStrings.premiumActivatedSuffix}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,

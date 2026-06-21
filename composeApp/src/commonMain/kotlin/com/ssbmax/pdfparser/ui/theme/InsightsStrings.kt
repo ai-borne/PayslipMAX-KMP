@@ -87,4 +87,11 @@ object InsightsStrings {
     const val potentialRecoveryOpportunityTitle = "Recovery Opportunity Found"
     const val unlockFullRecommendationLabel = "Unlock full recommendation"
     const val unlockFullRepresentationsLabel = "Unlock full PCDA(O) representations"
+
+    // Premium teaser defaults & activated status
+    const val premiumTeaserDefaultTitle = "Premium Financial Analysis Found"
+    const val premiumTeaserDefaultOpportunity = "Complete Financial Toolkit"
+    const val premiumTeaserDefaultInsight = "Detailed projections, anomaly audits, and claims generators ready."
+    const val premiumTeaserDefaultButton = "Unlock Premium Intelligence"
+    const val premiumActivatedSuffix = " (Activated)"
 }
