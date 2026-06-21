@@ -49,7 +49,7 @@ fun statusColor(status: HealthStatus): Color =
         HealthStatus.EXCELLENT -> MaterialTheme.colorScheme.primary
         HealthStatus.HEALTHY -> MaterialTheme.colorScheme.secondary
         HealthStatus.FAIR -> AppColors.Warning
-        HealthStatus.NEEDS_ATTENTION -> AppColors.Warning
+        HealthStatus.NEEDS_ATTENTION -> AppColors.Caution
         HealthStatus.CRITICAL -> MaterialTheme.colorScheme.error
     }
 

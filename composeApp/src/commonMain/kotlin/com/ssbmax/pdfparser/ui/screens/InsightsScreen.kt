@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
@@ -18,15 +19,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import com.ssbmax.pdfparser.Screen
 import com.ssbmax.pdfparser.domain.ParsedPayslip
-import com.ssbmax.pdfparser.ui.*
+import com.ssbmax.pdfparser.ui.PayslipUiState
+import com.ssbmax.pdfparser.ui.PayslipViewModel
+import com.ssbmax.pdfparser.ui.clearAiInsights
+import com.ssbmax.pdfparser.ui.components.TransparencyDialog
+import com.ssbmax.pdfparser.ui.generateAiInsights
+import com.ssbmax.pdfparser.ui.setPremiumEnabled
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @Composable
 fun InsightsScreen(
     viewModel: PayslipViewModel,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -93,7 +100,7 @@ private fun InsightsOverlayDialogs(
     }
 
     if (showTransparencyDialog) {
-        com.ssbmax.pdfparser.ui.components.TransparencyDialog(
+        TransparencyDialog(
             payslip = selected,
             onConfirm = {
                 onDismissTransparency()
@@ -123,7 +130,7 @@ private fun InsightsContent(
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
     onViewInsightsClick: () -> Unit,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val ledgerRecords by viewModel.ledgerRecords.collectAsState()
@@ -163,12 +170,12 @@ private fun InsightsLazyBody(
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
     onViewInsightsClick: () -> Unit,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier.background(MaterialTheme.colorScheme.background),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(AppDimensions.PaddingMedium),
+        contentPadding = PaddingValues(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
         item {
@@ -206,7 +213,7 @@ private fun InsightsHealthKpiCardItem(
     wellnessExpanded: Boolean,
     onWellnessExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
 ) {
     HealthKpiCard(
         score = state.engineResult.healthScore,
@@ -217,7 +224,7 @@ private fun InsightsHealthKpiCardItem(
         drivers = breakdownWellnessDrivers(state.engineResult),
         opportunityAmount = state.optimizationResult.totalPotentialTaxSaving,
         onSeeHowClick = {
-            if (isPremiumEnabled) onNavigateTo(com.ssbmax.pdfparser.Screen.TaxPlanning) else onShowUpgradeSheet()
+            if (isPremiumEnabled) onNavigateTo(Screen.TaxPlanning) else onShowUpgradeSheet()
         },
     )
 }
@@ -230,7 +237,7 @@ private fun InsightsPremiumIntelligenceItem(
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
     onViewInsightsClick: () -> Unit,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
 ) {
     PremiumIntelligenceCard(
         isPremiumEnabled = uiState.isPremiumEnabled,
