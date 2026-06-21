@@ -212,7 +212,6 @@ object AppStrings {
     const val executiveSummaryLabel = "Executive Summary"
     const val criticalAlertsLabel = "Critical Alerts"
     const val changesThisMonthLabel = "Changes This Month"
-    const val historicalTrendsLabel = "Historical Trends"
 
     // Chart Legends
     const val legendNetTakeHome = "Net Take-Home"
@@ -221,6 +220,7 @@ object AppStrings {
     const val legendOtherDeductions = "Other Deductions"
     const val legendGrossPay = "Gross Pay"
     const val legendNetRemittance = "Net Remittance"
+    const val chartNoDataAvailable = "No data available"
     const val pdfIconLabel = "PDF"
     const val pdfTapToOpen = "Tap to open original statement"
 
