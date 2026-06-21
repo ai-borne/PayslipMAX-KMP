@@ -43,13 +43,14 @@ class PayslipViewModel(
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
 
-    val subscriptionManager = com.ssbmax.pdfparser.subscription.SubscriptionManager(
-        isPremiumEnabledProvider = { _uiState.value.isPremiumEnabled }
-    ).apply {
-        if (com.ssbmax.pdfparser.subscription.isDebugBuild()) {
-            enableDeveloperPro()
+    val subscriptionManager =
+        com.ssbmax.pdfparser.subscription.SubscriptionManager(
+            isPremiumEnabledProvider = { _uiState.value.isPremiumEnabled },
+        ).apply {
+            if (com.ssbmax.pdfparser.subscription.isDebugBuild()) {
+                enableDeveloperPro()
+            }
         }
-    }
 
     val ledgerRecords: StateFlow<List<com.ssbmax.pdfparser.database.LedgerRecordEntity>> =
         financialIntelligenceRepository?.getAllLedgerRecords()

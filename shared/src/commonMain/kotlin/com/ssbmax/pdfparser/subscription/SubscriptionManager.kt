@@ -7,7 +7,7 @@ enum class FeatureGate {
     TAX_PLANNER,
     DSOP_SIMULATOR,
     ANOMALY_DETECTION,
-    CLAIM_GENERATOR
+    CLAIM_GENERATOR,
 }
 
 interface SubscriptionService {
@@ -15,7 +15,7 @@ interface SubscriptionService {
 }
 
 class SubscriptionManager(
-    private val isPremiumEnabledProvider: () -> Boolean
+    private val isPremiumEnabledProvider: () -> Boolean,
 ) : SubscriptionService {
     var isDeveloperPro = false
 

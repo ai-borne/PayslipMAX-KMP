@@ -193,13 +193,14 @@ open class FinancialIntelligenceRepository(
                     )
                 payslipDao.insertFinancialInsight(insight)
 
-                val report = AiInsightReportEntity(
-                    id = CryptoHelper.sha256("${payslip.dateStr}-AI_REPORT"),
-                    payslipMonth = payslip.dateStr,
-                    generatedDate = CryptoHelper.getCurrentTimeMillis(),
-                    reportJSON = narrative,
-                    reportVersion = "1.0.0"
-                )
+                val report =
+                    AiInsightReportEntity(
+                        id = CryptoHelper.sha256("${payslip.dateStr}-AI_REPORT"),
+                        payslipMonth = payslip.dateStr,
+                        generatedDate = CryptoHelper.getCurrentTimeMillis(),
+                        reportJSON = narrative,
+                        reportVersion = "1.0.0",
+                    )
                 payslipDao.insertAiInsightReport(report)
             }
 

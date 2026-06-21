@@ -8,11 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import com.ssbmax.pdfparser.Screen
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
-import kotlin.math.abs
 
 @Composable
 fun PremiumIntelligenceCard(
@@ -21,20 +19,20 @@ fun PremiumIntelligenceCard(
     onUpgradeClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
     aiSectionContent: @Composable () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (!isPremiumEnabled) {
         FreePremiumTeaser(
             state = state,
             onUpgradeClick = onUpgradeClick,
-            modifier = modifier
+            modifier = modifier,
         )
     } else {
         ProPremiumSuite(
             state = state,
             onNavigateTo = onNavigateTo,
             aiSectionContent = aiSectionContent,
-            modifier = modifier
+            modifier = modifier,
         )
     }
 }
@@ -43,7 +41,7 @@ fun PremiumIntelligenceCard(
 private fun FreePremiumTeaser(
     state: InsightsState,
     onUpgradeClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -54,7 +52,7 @@ private fun FreePremiumTeaser(
         Column(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TeaserHeaderRow()
             TeaserBodySection(state = state, onUpgradeClick = onUpgradeClick)
@@ -67,7 +65,7 @@ private fun TeaserHeaderRow() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "👑 ${InsightsStrings.premiumIntelligenceTitle}",
@@ -87,7 +85,7 @@ private fun TeaserHeaderRow() {
 @Composable
 private fun TeaserBodySection(
     state: InsightsState,
-    onUpgradeClick: () -> Unit
+    onUpgradeClick: () -> Unit,
 ) {
     val taxSaving = state.optimizationResult.totalPotentialTaxSaving
     val anomalies = state.engineResult.anomalies.filter { it.type in setOf("MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "SALARY_LOSS") }
@@ -99,7 +97,7 @@ private fun TeaserBodySection(
             opportunityValue = formatCurrency(recoveryOpportunity),
             insight = anomalies.first().description,
             buttonLabel = InsightsStrings.unlockFullRepresentationsLabel,
-            onClick = onUpgradeClick
+            onClick = onUpgradeClick,
         )
     } else if (taxSaving > 0.0) {
         val firstOpp = state.optimizationResult.opportunities.firstOrNull()?.action ?: ""
@@ -108,7 +106,7 @@ private fun TeaserBodySection(
             opportunityValue = "${formatCurrency(taxSaving)}/year",
             insight = firstOpp,
             buttonLabel = InsightsStrings.unlockFullRecommendationLabel,
-            onClick = onUpgradeClick
+            onClick = onUpgradeClick,
         )
     } else {
         TeaserValueSection(
@@ -116,7 +114,7 @@ private fun TeaserBodySection(
             opportunityValue = "Complete Financial Toolkit",
             insight = "Detailed projections, anomaly audits, and claims generators ready.",
             buttonLabel = "Unlock Premium Intelligence",
-            onClick = onUpgradeClick
+            onClick = onUpgradeClick,
         )
     }
 }
@@ -127,39 +125,39 @@ private fun TeaserValueSection(
     opportunityValue: String,
     insight: String,
     buttonLabel: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        horizontalAlignment = Alignment.Start
+        horizontalAlignment = Alignment.Start,
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
             text = "${InsightsStrings.estimatedOpportunityLabel} $opportunityValue",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
         )
         Text(
             text = "• $insight",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
         Button(
             onClick = onClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
                 text = buttonLabel,
                 style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         }
     }
@@ -170,7 +168,7 @@ private fun ProPremiumSuite(
     state: InsightsState,
     onNavigateTo: (Screen) -> Unit,
     aiSectionContent: @Composable () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -180,7 +178,7 @@ private fun ProPremiumSuite(
     ) {
         Column(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             Text(
                 text = "👑 ${InsightsStrings.premiumIntelligenceTitle} (Activated)",
@@ -195,13 +193,13 @@ private fun ProPremiumSuite(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
                 color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
+                border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
             ) {
                 Column(modifier = Modifier.padding(AppDimensions.PaddingSmall)) {
                     Text(
                         text = "💰 ${formatCurrency(taxSaving)} ${InsightsStrings.heroWealthSubLabel}",
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }
