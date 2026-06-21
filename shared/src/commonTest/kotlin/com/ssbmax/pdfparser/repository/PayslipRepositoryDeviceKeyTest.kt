@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.repository
 
 import com.ssbmax.pdfparser.crypto.CryptoHelper
+import com.ssbmax.pdfparser.crypto.getLegacyFallbackKey
 import com.ssbmax.pdfparser.database.hexToByteArray
 import com.ssbmax.pdfparser.database.toDomain
 import com.ssbmax.pdfparser.database.toEncryptedEntity
@@ -53,7 +54,7 @@ class PayslipRepositoryDeviceKeyTest {
             assertTrue(decryptDeviceResult.isSuccess, "Decryption with device key should succeed")
 
             // 2. Verify decryption with the legacy fallback fails
-            val legacyKey = "PCDAPayslipOfflineSecret2026!"
+            val legacyKey = CryptoHelper.getLegacyFallbackKey()
             val decryptLegacyResult = CryptoHelper.decrypt(ciphertextBytes, legacyKey)
             assertTrue(decryptLegacyResult.isFailure, "Decryption with legacy fallback key must fail")
         }
@@ -153,7 +154,7 @@ class PayslipRepositoryDeviceKeyTest {
     fun testLegacyDecryptionFallbackSucceeds() =
         runTest {
             val payslip = createMockPayslip("08/2026")
-            val legacyKey = "PCDAPayslipOfflineSecret2026!"
+            val legacyKey = CryptoHelper.getLegacyFallbackKey()
             val entity = payslip.toEncryptedEntity(legacyKey)
 
             val decrypted = entity.toDomain()

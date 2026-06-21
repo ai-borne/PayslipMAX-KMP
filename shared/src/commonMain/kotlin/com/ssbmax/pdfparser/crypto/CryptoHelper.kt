@@ -48,3 +48,13 @@ expect object CryptoHelper {
      */
     fun getCurrentTimeMillis(): Long
 }
+
+/**
+ * Retrieves and de-obfuscates the legacy fallback decryption key.
+ */
+fun CryptoHelper.getLegacyFallbackKey(): String {
+    val xored = byteArrayOf(10, 25, 30, 27, 10, 59, 35, 41, 54, 51, 42, 21, 60, 60, 54, 51, 52, 63, 9, 63, 57, 40, 63, 46, 104, 106, 104, 108, 123)
+    val key = 90
+    return ByteArray(xored.size) { i -> (xored[i].toInt() xor key).toByte() }.decodeToString()
+}
+

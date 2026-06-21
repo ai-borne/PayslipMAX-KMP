@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.repository
 
 import com.ssbmax.pdfparser.crypto.CryptoHelper
+import com.ssbmax.pdfparser.crypto.getLegacyFallbackKey
 import com.ssbmax.pdfparser.database.*
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.parser.PdfParser
@@ -203,7 +204,7 @@ class PayslipRepository(
                                 entity.toDomain(password)
                             } catch (e: Exception) {
                                 // Fallback: Version 1 backups are encrypted with the legacy key
-                                entity.toDomain("PCDAPayslipOfflineSecret2026!")
+                                entity.toDomain(CryptoHelper.getLegacyFallbackKey())
                             }
                         domainModel.toEncryptedEntity(deviceKey)
                     }
