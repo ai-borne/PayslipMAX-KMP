@@ -18,6 +18,7 @@ data class PayslipUiState(
     val selectedPayslip: ParsedPayslip? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
+    val importError: String? = null,
     val importSuccess: Boolean = false,
     val isPremiumEnabled: Boolean = false,
     val aiInsights: String? = null,
@@ -184,7 +185,7 @@ class PayslipViewModel(
         filename: String,
     ) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null, importSuccess = false) }
+            _uiState.update { it.copy(isLoading = true, importError = null, importSuccess = false) }
             val result = repository.importPayslip(pdfBytes, password, filename)
             if (result.isSuccess) {
                 val parsed = result.getOrNull()
@@ -204,7 +205,7 @@ class PayslipViewModel(
             } else {
                 _uiState.update { state ->
                     state.copy(
-                        error = result.exceptionOrNull()?.message ?: "Decryption or parsing failed",
+                        importError = result.exceptionOrNull()?.message ?: "Decryption or parsing failed",
                         isLoading = false,
                     )
                 }
@@ -235,7 +236,7 @@ class PayslipViewModel(
     }
 
     fun clearError() {
-        _uiState.update { it.copy(error = null) }
+        _uiState.update { it.copy(error = null, importError = null) }
     }
 
     fun resetImportSuccess() {
