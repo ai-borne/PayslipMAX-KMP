@@ -43,6 +43,14 @@ class PayslipViewModel(
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
 
+    val subscriptionManager = com.ssbmax.pdfparser.subscription.SubscriptionManager(
+        isPremiumEnabledProvider = { _uiState.value.isPremiumEnabled }
+    ).apply {
+        if (com.ssbmax.pdfparser.subscription.isDebugBuild()) {
+            enableDeveloperPro()
+        }
+    }
+
     val ledgerRecords: StateFlow<List<com.ssbmax.pdfparser.database.LedgerRecordEntity>> =
         financialIntelligenceRepository?.getAllLedgerRecords()
             ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
@@ -55,6 +63,11 @@ class PayslipViewModel(
 
     val representationDrafts: StateFlow<List<com.ssbmax.pdfparser.database.RepresentationDraftEntity>> =
         financialIntelligenceRepository?.getAllRepresentationDrafts()
+            ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
+            ?: MutableStateFlow(emptyList())
+
+    val aiInsightReports: StateFlow<List<com.ssbmax.pdfparser.database.AiInsightReportEntity>> =
+        financialIntelligenceRepository?.getAllAiInsightReports()
             ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
             ?: MutableStateFlow(emptyList())
 
@@ -233,14 +246,6 @@ class PayslipViewModel(
                 _uiState.update { it.copy(aiInsights = null, aiError = null) }
             }
         }
-    }
-
-    fun clearError() {
-        _uiState.update { it.copy(error = null, importError = null) }
-    }
-
-    fun resetImportSuccess() {
-        _uiState.update { it.copy(importSuccess = false) }
     }
 
     fun getPayslipPdf(

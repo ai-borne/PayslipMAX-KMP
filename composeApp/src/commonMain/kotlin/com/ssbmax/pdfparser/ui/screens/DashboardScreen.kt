@@ -19,6 +19,7 @@ import androidx.compose.ui.window.Dialog
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.PayslipUiState
 import com.ssbmax.pdfparser.ui.PayslipViewModel
+import com.ssbmax.pdfparser.ui.clearError
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
