@@ -28,6 +28,7 @@ enum class Screen {
     Representation,
     TaxPlanning,
     RetirementPlanning,
+    HelpLegal,
 }
 
 @Composable
@@ -99,7 +100,7 @@ private fun ScreenContent(
                 viewModel = viewModel,
                 onNavigateTo = onNavigate,
             )
-        Screen.Settings -> SettingsScreen(viewModel = viewModel)
+        Screen.Settings -> SettingsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
         Screen.Representation ->
             com.ssbmax.pdfparser.ui.screens.RepresentationScreen(
                 viewModel = viewModel,
@@ -114,6 +115,10 @@ private fun ScreenContent(
             com.ssbmax.pdfparser.ui.screens.RetirementPlanningScreen(
                 viewModel = viewModel,
                 onBack = { onNavigate(Screen.Insights) },
+            )
+        Screen.HelpLegal ->
+            com.ssbmax.pdfparser.ui.screens.HelpLegalScreen(
+                onBack = { onNavigate(Screen.Settings) },
             )
     }
 }
