@@ -3,6 +3,7 @@
 package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.logging.Logger
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -152,12 +153,12 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                 yTotalCredit = CGRectGetMinY(rect)
             }
 
-            println("[PdfParserDebug] Raw coordinates: yBpay=$yBpay, xDsop=$xDsop, yTotalCredit=$yTotalCredit, xDetails=$xDetails")
+            Logger.d("PlatformPdfParser", "Raw coordinates: yBpay=$yBpay, xDsop=$xDsop, yTotalCredit=$yTotalCredit, xDetails=$xDetails")
 
             var yMinVal = yTotalCredit + 2.0
             var yMaxVal = yBpay + 25.0
             if (yMaxVal <= yMinVal) {
-                println("[PdfParserWarning] Invalid Y bounds detected (yMaxVal: $yMaxVal <= yMinVal: $yMinVal). Applying safe fallbacks.")
+                Logger.w("PlatformPdfParser", "Invalid Y bounds detected (yMaxVal: $yMaxVal <= yMinVal: $yMinVal). Applying safe fallbacks.")
                 yMaxVal = pageHeight - 180.0
                 yMinVal = pageHeight - 700.0
             }
@@ -171,8 +172,8 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
 
             val xRightBound = if (xDetails > xDsopVal - 2.0) xDetails else pageWidth
 
-            println("[PdfParserDebug] Final safe coordinates - yMinVal: $yMinVal, yMaxVal: $yMaxVal, xDsopVal: $xDsopVal, xRightBound: $xRightBound, pageWidth: $pageWidth, pageHeight: $pageHeight")
-            println("[PdfParserDebug] --- RAW TABLE PAGE STRING ---\n${tablePage.string}")
+            Logger.d("PlatformPdfParser", "Final safe coordinates - yMinVal: $yMinVal, yMaxVal: $yMaxVal, xDsopVal: $xDsopVal, xRightBound: $xRightBound, pageWidth: $pageWidth, pageHeight: $pageHeight")
+            Logger.d("PlatformPdfParser", "--- RAW TABLE PAGE STRING ---\n${tablePage.string}")
 
             val leftText =
                 extractTextSpatially(
@@ -214,7 +215,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                             pageTextLower.contains("income tax deducted")
                     )
                 ) {
-                    println("[PdfParserDebug] Dynamically found Tax details on page: ${i + 1}")
+                    Logger.d("PlatformPdfParser", "Dynamically found Tax details on page: ${i + 1}")
                     val pageBounds = page.boundsForBox(kPDFDisplayBoxCropBox)
                     val pHeight = pageBounds.useContents { size.height }
                     val pWidth = pageBounds.useContents { size.width }
@@ -237,7 +238,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                             )
                     )
                 ) {
-                    println("[PdfParserDebug] Dynamically found DSOP details on page: ${i + 1}")
+                    Logger.d("PlatformPdfParser", "Dynamically found DSOP details on page: ${i + 1}")
                     val pageBounds = page.boundsForBox(kPDFDisplayBoxCropBox)
                     val pHeight = pageBounds.useContents { size.height }
                     val pWidth = pageBounds.useContents { size.width }
@@ -254,9 +255,9 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                 dsopText = taxText
             }
 
-            println("[PdfParserDebug] --- LEFT COLUMN TEXT ---\n$leftText")
-            println("[PdfParserDebug] --- MIDDLE COLUMN TEXT ---\n$middleText")
-            println("[PdfParserDebug] --- FLAT TEXT ---\n$flatText")
+            Logger.d("PlatformPdfParser", "--- LEFT COLUMN TEXT ---\n$leftText")
+            Logger.d("PlatformPdfParser", "--- MIDDLE COLUMN TEXT ---\n$middleText")
+            Logger.d("PlatformPdfParser", "--- FLAT TEXT ---\n$flatText")
 
             PayslipTextParser.parse(
                 leftColumnText = leftText,
