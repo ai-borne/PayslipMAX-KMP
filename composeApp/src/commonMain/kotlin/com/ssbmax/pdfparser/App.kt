@@ -51,6 +51,10 @@ fun App(
         if (uiState.isLockEnabled && uiState.isAppLocked) {
             LockScreen(
                 onUnlock = { pin -> viewModel.verifyPin(pin) },
+                onPickPdf = onPickPdf,
+                onResetPin = { bytes, pwd, name, onResult ->
+                    viewModel.resetPinWithPdf(bytes, pwd, name, onResult)
+                }
             )
         } else {
             Scaffold(
@@ -94,7 +98,12 @@ private fun ScreenContent(
                 },
             )
         }
-        Screen.History -> HistoryScreen(viewModel = viewModel, onOpenPdf = onOpenPdf)
+        Screen.History ->
+            HistoryScreen(
+                viewModel = viewModel,
+                onOpenPdf = onOpenPdf,
+                onNavigateToInsights = { onNavigate(Screen.Insights) },
+            )
         Screen.Insights ->
             InsightsScreen(
                 viewModel = viewModel,
