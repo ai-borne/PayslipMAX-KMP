@@ -250,6 +250,7 @@ object AppStrings {
     const val representationCopyBtn = "Copy to Clipboard"
     const val representationEditBtn = "Edit Draft"
     const val representationSaveBtn = "Save Draft"
+    const val representationShareBtn = "Share"
 
     const val taxPlanningTitle = "Tax Optimization Planner"
     const val taxPlanningSubtitle = "Form 16 projections & tax-saving suggestions"
