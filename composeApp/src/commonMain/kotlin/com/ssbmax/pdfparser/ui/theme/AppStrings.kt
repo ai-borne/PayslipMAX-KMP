@@ -192,6 +192,13 @@ object AppStrings {
     const val historyEmptyAiReports = "No saved AI reports. Generate one from the Insights screen."
     const val historyPremiumIntelligenceNarrative = "Premium Intelligence Narrative"
     const val historyChevronContentDescription = "Toggle Year Visibility"
+    const val historyLedgerTitle = "Historical Ledger Table"
+    const val historyLedgerHeaderMonth = "Month"
+    const val historyLedgerHeaderBasic = "Basic"
+    const val historyLedgerHeaderGross = "Gross"
+    const val historyLedgerHeaderNet = "Net"
+    const val historyLedgerHeaderDsop = "DSOP"
+    const val historyLedgerHeaderTax = "Tax"
 
     // DSOP Simulator Strings
     const val dsopSimulatorTitle = "DSOP Compound Simulator"

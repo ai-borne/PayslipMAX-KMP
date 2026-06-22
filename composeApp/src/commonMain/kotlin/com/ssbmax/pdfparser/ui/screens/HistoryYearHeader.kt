@@ -3,6 +3,8 @@ package com.ssbmax.pdfparser.ui.screens
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
@@ -13,7 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
@@ -41,21 +47,14 @@ fun HistoryYearHeader(
     val rotationState by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f)
 
     Card(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .clickable { onToggleExpand() },
+        modifier = modifier.fillMaxWidth().clickable { onToggleExpand() },
         shape = CardDefaults.elevatedShape,
-        colors =
-            CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-            ),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        ),
     ) {
         Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(AppDimensions.PaddingMedium),
+            modifier = Modifier.fillMaxWidth().padding(AppDimensions.PaddingMedium),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -66,7 +65,7 @@ fun HistoryYearHeader(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
                 YearlyStatsRow(stats = stats)
             }
             IconButton(
@@ -86,7 +85,7 @@ fun HistoryYearHeader(
 @Composable
 private fun YearlyStatsRow(stats: YearlyStats) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -106,3 +105,116 @@ private fun YearlyStatsRow(stats: YearlyStats) {
         )
     }
 }
+
+@Composable
+fun HistoryHeader() {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = AppStrings.navigationHistory,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
+        Text(
+            text = AppStrings.historyHeaderDescription,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+fun EmptyHistoryView() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(
+            text = AppStrings.historyEmptyState,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+fun LazyListScope.historyYearGroup(
+    year: Int,
+    yearPayslips: List<ParsedPayslip>,
+    allPayslips: List<ParsedPayslip>,
+    isExpanded: Boolean,
+    onToggleExpand: () -> Unit,
+    onPayslipClick: (ParsedPayslip) -> Unit,
+    onLongPress: (ParsedPayslip) -> Unit,
+    onSwipeDelete: (ParsedPayslip) -> Unit,
+) {
+    item(key = year) {
+        HistoryYearHeader(
+            year = year,
+            payslips = yearPayslips,
+            isExpanded = isExpanded,
+            onToggleExpand = onToggleExpand,
+        )
+    }
+    if (isExpanded) {
+        items(
+            items = yearPayslips.sortedByDescending { it.monthNum },
+            key = { it.dateStr },
+        ) { payslip ->
+            HistoryCard(
+                payslip = payslip,
+                onViewReplica = { onPayslipClick(payslip) },
+                onLongPress = { onLongPress(payslip) },
+                onSwipeDelete = { onSwipeDelete(payslip) },
+            ) {
+                HistoryCardContent(
+                    payslip = payslip,
+                    allPayslips = allPayslips,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun HistoryLazyList(
+    payslips: List<ParsedPayslip>,
+    ledgerRecords: List<LedgerRecordEntity>,
+    onPayslipClick: (ParsedPayslip) -> Unit,
+    onLongPress: (ParsedPayslip) -> Unit,
+    onSwipeDelete: (ParsedPayslip) -> Unit,
+) {
+    val grouped = remember(payslips) {
+        payslips.groupBy { it.year }.toList().sortedByDescending { it.first }
+    }
+    val latestYear = remember(grouped) { grouped.firstOrNull()?.first }
+    var expandedYears by remember {
+        mutableStateOf(if (latestYear != null) setOf(latestYear) else emptySet())
+    }
+    val sortedLedger = remember(ledgerRecords) {
+        ledgerRecords.sortedWith(compareByDescending<LedgerRecordEntity> { it.year }.thenByDescending { it.monthNum })
+    }
+
+    androidx.compose.foundation.lazy.LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        if (sortedLedger.isNotEmpty()) {
+            item { HistoricalLedgerCard(ledgerRecords = sortedLedger) }
+        }
+        grouped.forEach { (year, yearPayslips) ->
+            val isExpanded = expandedYears.contains(year)
+            historyYearGroup(
+                year = year,
+                yearPayslips = yearPayslips,
+                allPayslips = payslips,
+                isExpanded = isExpanded,
+                onToggleExpand = {
+                    expandedYears = if (isExpanded) expandedYears - year else expandedYears + year
+                },
+                onPayslipClick = onPayslipClick,
+                onLongPress = onLongPress,
+                onSwipeDelete = onSwipeDelete,
+            )
+        }
+    }
+}
+
