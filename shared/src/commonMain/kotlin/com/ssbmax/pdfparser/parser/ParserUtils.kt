@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.domain.*
+import com.ssbmax.pdfparser.logging.Logger
 
 internal fun cleanCommasAndWhitespace(text: String): String {
     val cleaned =
@@ -210,9 +211,9 @@ internal fun parseOfficer(
     }
 
     if (officerName.isNotEmpty()) {
-        println("[DEBUG NAME] officerName before split: '$officerName'")
+        Logger.d("ParserUtils", "officerName before split: '$officerName'")
         officerName = officerName.split(Regex("\\b(?:A/C|Email|PAN|Basic|BPAY|CDA|tada|ta|laoKa|saM|For|rankpay|ledger|generalquery|contact|bankers)\\b", RegexOption.IGNORE_CASE))[0].trim()
-        println("[DEBUG NAME] officerName after split: '$officerName'")
+        Logger.d("ParserUtils", "officerName after split: '$officerName'")
         if (officerName.endsWith(" A", ignoreCase = true)) {
             officerName = officerName.substring(0, officerName.length - 2).trim()
         }

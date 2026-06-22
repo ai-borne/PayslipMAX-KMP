@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.logging.Logger
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.text.TextPosition
@@ -62,27 +63,29 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     var yEnd = layoutScanner.totalCreditY - 2f
                     var xSplit = layoutScanner.dsopX
 
-                    println("[PdfParserDebug] Found table on page: $tablePageIdx")
-                    println(
-                        "[PdfParserDebug] layoutScanner - bpayY: ${layoutScanner.bpayY}, totalCreditY: ${layoutScanner.totalCreditY}, dsopX: ${layoutScanner.dsopX}",
+                    Logger.d("PlatformPdfParser", "Found table on page: $tablePageIdx")
+                    Logger.d(
+                        "PlatformPdfParser",
+                        "layoutScanner - bpayY: ${layoutScanner.bpayY}, totalCreditY: ${layoutScanner.totalCreditY}, dsopX: ${layoutScanner.dsopX}",
                     )
-                    println(
-                        "[PdfParserDebug] Page dimensions - width: $pageWidth, height: $pageHeight, originX: $originX, originY: $originY",
+                    Logger.d(
+                        "PlatformPdfParser",
+                        "Page dimensions - width: $pageWidth, height: $pageHeight, originX: $originX, originY: $originY",
                     )
-                    println("[PdfParserDebug] Calculated coordinates - yStart: $yStart, yEnd: $yEnd, xSplit: $xSplit")
+                    Logger.d("PlatformPdfParser", "Calculated coordinates - yStart: $yStart, yEnd: $yEnd, xSplit: $xSplit")
 
                     if (yStart < 0f) yStart = 0f
                     if (yEnd <= yStart) {
-                        println("[PdfParserWarning] Invalid Y bounds detected (yEnd: $yEnd <= yStart: $yStart). Applying safe fallbacks.")
+                        Logger.w("PlatformPdfParser", "Invalid Y bounds detected (yEnd: $yEnd <= yStart: $yStart). Applying safe fallbacks.")
                         yStart = 180f
                         yEnd = kotlin.math.max(700f, pageHeight - 20f)
                     }
                     if (xSplit <= 10f || xSplit >= pageWidth) {
-                        println("[PdfParserWarning] Invalid xSplit ($xSplit). Falling back to 150f.")
+                        Logger.w("PlatformPdfParser", "Invalid xSplit ($xSplit). Falling back to 150f.")
                         xSplit = 150f
                     }
 
-                    println("[PdfParserDebug] Final safe coordinates - yStart: $yStart, yEnd: $yEnd, xSplit: $xSplit")
+                    Logger.d("PlatformPdfParser", "Final safe coordinates - yStart: $yStart, yEnd: $yEnd, xSplit: $xSplit")
 
                     // Extract Left Column (Credits) spatially
                     val leftStripper =
@@ -94,10 +97,10 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                         )
                     leftStripper.startPage = tablePageIdx + 1
                     leftStripper.endPage = tablePageIdx + 1
-                    println("[PdfParserDebug] Starting left column spatial extraction...")
+                    Logger.d("PlatformPdfParser", "Starting left column spatial extraction...")
                     leftStripper.getText(document)
                     val leftText = leftStripper.getFilteredText()
-                    println("[PdfParserDebug] Finished left column spatial extraction:\n$leftText")
+                    Logger.d("PlatformPdfParser", "Finished left column spatial extraction:\n$leftText")
 
                     // Extract Middle Column (Debits) spatially
                     val xRightBound = if (layoutScanner.detailsX > xSplit - 2f) layoutScanner.detailsX else pageWidth
@@ -110,12 +113,12 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                         )
                     middleStripper.startPage = tablePageIdx + 1
                     middleStripper.endPage = tablePageIdx + 1
-                    println("[PdfParserDebug] Starting middle column spatial extraction...")
+                    Logger.d("PlatformPdfParser", "Starting middle column spatial extraction...")
                     middleStripper.getText(document)
                     val middleText = middleStripper.getFilteredText()
-                    println("[PdfParserDebug] Finished middle column spatial extraction:\n$middleText")
+                    Logger.d("PlatformPdfParser", "Finished middle column spatial extraction:\n$middleText")
 
-                    println("[PdfParserDebug] Spatial extraction completed. Number of pages: ${document.numberOfPages}")
+                    Logger.d("PlatformPdfParser", "Spatial extraction completed. Number of pages: ${document.numberOfPages}")
 
                     var taxText = ""
                     var dsopText = ""
@@ -133,7 +136,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                                     pageTextLower.contains("income tax deducted")
                             )
                         ) {
-                            println("[PdfParserDebug] Dynamically found Tax details on page: ${i + 1}")
+                            Logger.d("PlatformPdfParser", "Dynamically found Tax details on page: ${i + 1}")
                             taxText = pageText
                         }
 
@@ -146,7 +149,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                                     )
                             )
                         ) {
-                            println("[PdfParserDebug] Dynamically found DSOP details on page: ${i + 1}")
+                            Logger.d("PlatformPdfParser", "Dynamically found DSOP details on page: ${i + 1}")
                             dsopText = pageText
                         }
                     }
@@ -154,7 +157,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                         dsopText = taxText
                     }
 
-                    println("[PdfParserDebug] Starting PayslipTextParser.parse...")
+                    Logger.d("PlatformPdfParser", "Starting PayslipTextParser.parse...")
                     val parseResult =
                         PayslipTextParser.parse(
                             leftColumnText = leftText,
@@ -164,7 +167,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                             dsopPageText = dsopText,
                             filename = filename,
                         )
-                    println("[PdfParserDebug] Finished PayslipTextParser.parse. Success: ${parseResult.isSuccess}")
+                    Logger.d("PlatformPdfParser", "Finished PayslipTextParser.parse. Success: ${parseResult.isSuccess}")
                     parseResult
                 }
             }
