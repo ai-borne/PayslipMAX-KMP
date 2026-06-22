@@ -67,14 +67,33 @@ fun HistoryTabSelector(
 }
 
 @Composable
-fun EmptyAiReportsView(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+fun EmptyAiReportsView(
+    onNavigateToInsights: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxSize().padding(AppDimensions.PaddingLarge),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
         Text(
             text = AppStrings.historyEmptyAiReports,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+        Button(
+            onClick = onNavigateToInsights,
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
+        ) {
+            Text(
+                text = "Go to Insights Screen",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+            )
+        }
     }
 }
 

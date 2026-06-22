@@ -70,6 +70,10 @@ object AppStrings {
     const val lockScreenTitle = "Secured Portal"
     const val lockScreenSubtitle = "Enter your 4-digit PIN to decrypt your dashboard"
     const val lockScreenError = "Incorrect PIN, please try again"
+    const val lockScreenForgotPin = "Forgot PIN?"
+    const val lockScreenResetDialogTitle = "Reset Passcode"
+    const val lockScreenResetDialogDesc = "Please select a valid statement PDF and enter its decryption password to verify ownership."
+    const val lockScreenResetErrorMismatch = "PDF does not match the active user profile."
 
     // Settings Interface
     const val settingsThemeLabel = "App Appearance"

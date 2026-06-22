@@ -214,3 +214,39 @@ fun PayslipViewModel.clearError() {
 fun PayslipViewModel.resetImportSuccess() {
     _uiState.update { it.copy(importSuccess = false) }
 }
+
+fun PayslipViewModel.resetPinWithPdf(
+    pdfBytes: ByteArray,
+    password: String,
+    filename: String,
+    onResult: (Result<Unit>) -> Unit,
+) {
+    viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true, error = null) }
+        val result = repository.importPayslip(pdfBytes, password, filename)
+        if (result.isSuccess) {
+            val parsed = result.getOrNull()
+            if (parsed != null) {
+                val expectedPan = _uiState.value.profilePanNumber
+                if (expectedPan.isNotEmpty() && parsed.officer.pan.isNotEmpty() &&
+                    !parsed.officer.pan.equals(expectedPan, ignoreCase = true)
+                ) {
+                    _uiState.update { it.copy(isLoading = false) }
+                    onResult(Result.failure(Exception("PDF does not match the active user profile")))
+                    return@launch
+                }
+                val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+                repository.saveSettings(current.copy(isLockEnabled = false, appPinHash = ""))
+                _uiState.update { it.copy(isAppLocked = false, isLockEnabled = false, appPinHash = "", isLoading = false) }
+                onResult(Result.success(Unit))
+            } else {
+                _uiState.update { it.copy(isLoading = false) }
+                onResult(Result.failure(Exception("Failed to parse payslip content")))
+            }
+        } else {
+            _uiState.update { it.copy(isLoading = false) }
+            onResult(Result.failure(result.exceptionOrNull() ?: Exception("Decryption failed. Invalid PDF password.")))
+        }
+    }
+}
+

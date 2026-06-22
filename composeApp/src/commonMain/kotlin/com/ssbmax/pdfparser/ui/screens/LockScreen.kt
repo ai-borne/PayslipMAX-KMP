@@ -15,49 +15,108 @@ import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.keyframes
+
 @Composable
 fun LockScreen(
     onUnlock: (String) -> Boolean,
+    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
+    onResetPin: (ByteArray, String, String, (Result<Unit>) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var enteredPin by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
+    var showResetDialog by remember { mutableStateOf(false) }
 
+    val shakeOffset = remember { Animatable(0f) }
+    LaunchedEffect(showError) {
+        if (showError) triggerShake(shakeOffset)
+    }
+
+    LockScreenContent(
+        showError = showError,
+        pinLength = enteredPin.length,
+        shakeOffset = shakeOffset.value,
+        onKeyPress = { char ->
+            if (enteredPin.length < 4) {
+                showError = false
+                enteredPin += char
+                if (enteredPin.length == 4 && !onUnlock(enteredPin)) {
+                    showError = true
+                    enteredPin = ""
+                }
+            }
+        },
+        onBackspace = {
+            if (enteredPin.isNotEmpty()) {
+                showError = false
+                enteredPin = enteredPin.dropLast(1)
+            }
+        },
+        onForgotPin = { showResetDialog = true },
+        modifier = modifier
+    )
+
+    if (showResetDialog) {
+        ResetPinDialog(
+            onDismiss = { showResetDialog = false },
+            onPickPdf = onPickPdf,
+            onResetPin = onResetPin
+        )
+    }
+}
+
+@Composable
+private fun LockScreenContent(
+    showError: Boolean,
+    pinLength: Int,
+    shakeOffset: Float,
+    onKeyPress: (Char) -> Unit,
+    onBackspace: () -> Unit,
+    onForgotPin: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(AppDimensions.PaddingLarge),
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(AppDimensions.PaddingLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly,
     ) {
         LockHeader(showError = showError)
 
-        PinIndicatorDots(pinLength = enteredPin.length)
+        PinIndicatorDots(
+            pinLength = pinLength,
+            modifier = Modifier.offset(x = shakeOffset.dp)
+        )
 
         LockKeyboard(
-            onKeyPress = { char ->
-                if (enteredPin.length < 4) {
-                    showError = false
-                    enteredPin += char
-                    if (enteredPin.length == 4) {
-                        val unlocked = onUnlock(enteredPin)
-                        if (!unlocked) {
-                            showError = true
-                            enteredPin = ""
-                        }
-                    }
-                }
-            },
-            onBackspace = {
-                if (enteredPin.isNotEmpty()) {
-                    showError = false
-                    enteredPin = enteredPin.dropLast(1)
-                }
-            },
+            onKeyPress = onKeyPress,
+            onBackspace = onBackspace,
         )
+
+        TextButton(onClick = onForgotPin) {
+            Text(AppStrings.lockScreenForgotPin, fontWeight = FontWeight.SemiBold)
+        }
     }
+}
+
+private suspend fun triggerShake(animatable: Animatable<Float, *>) {
+    animatable.animateTo(
+        targetValue = 0f,
+        animationSpec = keyframes {
+            durationMillis = 300
+            0f at 0
+            15f at 50
+            -15f at 100
+            15f at 150
+            -15f at 200
+            10f at 250
+            0f at 300
+        }
+    )
 }
 
 @Composable
