@@ -79,6 +79,7 @@ object AppDimensions {
     val CardElevation = 4.dp
     val DialogElevation = 6.dp
     val DialogMaxHeight = 240.dp
+    val LockKeyboardWidth = 280.dp
 
     val SpacingTwo = 2.dp
     val SpacingTiny = 4.dp

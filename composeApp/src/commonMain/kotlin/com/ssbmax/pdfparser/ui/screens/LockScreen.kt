@@ -127,9 +127,9 @@ private fun LockHeader(
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
-        Text("🛡️", fontSize = 64.sp)
+        Text("🛡️", fontSize = AppDimensions.FontSizeEmoji)
         Text(
             text = AppStrings.lockScreenTitle,
             style = MaterialTheme.typography.headlineLarge,
@@ -141,7 +141,7 @@ private fun LockHeader(
             style = MaterialTheme.typography.bodyMedium,
             color = if (showError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 24.dp),
+            modifier = Modifier.padding(horizontal = AppDimensions.SpacingHuge),
         )
     }
 }
@@ -161,8 +161,8 @@ private fun PinIndicatorDots(
             Box(
                 modifier =
                     Modifier
-                        .padding(8.dp)
-                        .size(16.dp)
+                        .padding(AppDimensions.SpacingSmall)
+                        .size(AppDimensions.SpacingLarge)
                         .clip(CircleShape)
                         .background(
                             if (isFilled) {
@@ -183,8 +183,8 @@ private fun LockKeyboard(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.width(280.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier.width(AppDimensions.LockKeyboardWidth),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
         val keys =
             listOf(
@@ -196,7 +196,7 @@ private fun LockKeyboard(
         keys.forEach { row ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
             ) {
                 row.forEach { char ->
                     Box(modifier = Modifier.weight(1f)) {
@@ -233,12 +233,12 @@ private fun LockKeyButton(
                 .fillMaxWidth(),
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp,
+        tonalElevation = AppDimensions.SpacingTwo,
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
                 text = label,
-                fontSize = 24.sp,
+                fontSize = AppDimensions.TextSizeHuge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,

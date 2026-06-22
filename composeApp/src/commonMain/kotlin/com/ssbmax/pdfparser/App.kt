@@ -88,47 +88,29 @@ private fun ScreenContent(
     onNavigate: (Screen) -> Unit,
 ) {
     when (currentScreen) {
-        Screen.Dashboard -> {
-            DashboardScreen(
-                viewModel = viewModel,
-                onPickPdfTrigger = { password ->
-                    onPickPdf { bytes, name ->
-                        viewModel.importPayslip(bytes, password, name)
-                    }
-                },
-            )
-        }
-        Screen.History ->
-            HistoryScreen(
-                viewModel = viewModel,
-                onOpenPdf = onOpenPdf,
-                onNavigateToInsights = { onNavigate(Screen.Insights) },
-            )
-        Screen.Insights ->
-            InsightsScreen(
-                viewModel = viewModel,
-                onNavigateTo = onNavigate,
-            )
+        Screen.Dashboard -> DashboardScreen(
+            viewModel = viewModel,
+            onPickPdfTrigger = { password -> onPickPdf { bytes, name -> viewModel.importPayslip(bytes, password, name) } }
+        )
+        Screen.History -> HistoryScreen(
+            viewModel = viewModel,
+            onOpenPdf = onOpenPdf,
+            onNavigateToInsights = { onNavigate(Screen.Insights) }
+        )
+        Screen.Insights -> InsightsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
         Screen.Settings -> SettingsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
-        Screen.Representation ->
-            com.ssbmax.pdfparser.ui.screens.RepresentationScreen(
-                viewModel = viewModel,
-                onBack = { onNavigate(Screen.Insights) },
-            )
-        Screen.TaxPlanning ->
-            com.ssbmax.pdfparser.ui.screens.TaxPlanningScreen(
-                viewModel = viewModel,
-                onBack = { onNavigate(Screen.Insights) },
-            )
-        Screen.RetirementPlanning ->
-            com.ssbmax.pdfparser.ui.screens.RetirementPlanningScreen(
-                viewModel = viewModel,
-                onBack = { onNavigate(Screen.Insights) },
-            )
-        Screen.HelpLegal ->
-            com.ssbmax.pdfparser.ui.screens.HelpLegalScreen(
-                onBack = { onNavigate(Screen.Settings) },
-            )
+        Screen.Representation -> com.ssbmax.pdfparser.ui.screens.RepresentationScreen(
+            viewModel = viewModel, onBack = { onNavigate(Screen.Insights) }
+        )
+        Screen.TaxPlanning -> com.ssbmax.pdfparser.ui.screens.TaxPlanningScreen(
+            viewModel = viewModel, onBack = { onNavigate(Screen.Insights) }
+        )
+        Screen.RetirementPlanning -> com.ssbmax.pdfparser.ui.screens.RetirementPlanningScreen(
+            viewModel = viewModel, onBack = { onNavigate(Screen.Insights) }
+        )
+        Screen.HelpLegal -> com.ssbmax.pdfparser.ui.screens.HelpLegalScreen(
+            onBack = { onNavigate(Screen.Settings) }
+        )
     }
 }
 

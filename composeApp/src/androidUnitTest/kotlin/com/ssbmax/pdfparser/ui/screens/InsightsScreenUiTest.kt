@@ -10,6 +10,7 @@ import com.ssbmax.pdfparser.ui.FakeBackupManager
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.setPremiumEnabled
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -129,7 +130,7 @@ class InsightsScreenUiTest {
             mainClock.advanceTimeBy(300)
 
             // Inline locked card removed for free users — its unique CTA must not exist
-            onNodeWithText(AppStrings.aiAuditUnlockBtn).assertDoesNotExist()
+            onNodeWithText(AppStringsPremium.aiAuditUnlockBtn).assertDoesNotExist()
             // ProFeaturesTeaser is at scroll bottom — swipe to compose it, then assert
             onRoot().performTouchInput { swipeUp() }
             mainClock.advanceTimeBy(300)
