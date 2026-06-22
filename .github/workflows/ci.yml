@@ -154,6 +154,9 @@ jobs:
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
 
+      - name: Verify iOS Kotlin Compilation (Fail-Fast)
+        run: ./gradlew compileKotlinIosSimulatorArm64 compileKotlinIosX64 -q
+
       - name: Run iOS Unit Tests
         run: ./gradlew iosX64Test iosSimulatorArm64Test
 
