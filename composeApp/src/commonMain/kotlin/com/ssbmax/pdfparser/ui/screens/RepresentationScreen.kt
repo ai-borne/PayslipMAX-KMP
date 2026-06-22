@@ -18,6 +18,7 @@ import com.ssbmax.pdfparser.database.RepresentationDraftEntity
 import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.utils.shareText
 
 @Composable
 fun RepresentationScreen(
@@ -85,7 +86,7 @@ private fun RepresentationHeader(
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),
         ) {
-            Text("← Back")
+            Text(AppStrings.btnBack)
         }
         Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
         Column {
@@ -144,7 +145,6 @@ private fun RepresentationCardItem(
     onSelect: (RepresentationDraftEntity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val clipboardManager = LocalClipboardManager.current
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
@@ -165,26 +165,43 @@ private fun RepresentationCardItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-            ) {
-                Button(
-                    onClick = { onSelect(draft) },
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(AppStrings.representationEditBtn)
-                }
-                OutlinedButton(
-                    onClick = { clipboardManager.setText(AnnotatedString(draft.bodyText)) },
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(AppStrings.representationCopyBtn)
-                }
-            }
+            RepresentationActionsRow(draft = draft, onSelect = onSelect)
         }
     }
 }
+
+@Composable
+private fun RepresentationActionsRow(
+    draft: RepresentationDraftEntity,
+    onSelect: (RepresentationDraftEntity) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val clipboardManager = LocalClipboardManager.current
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+    ) {
+        Button(
+            onClick = { onSelect(draft) },
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(AppStrings.representationEditBtn)
+        }
+        OutlinedButton(
+            onClick = { clipboardManager.setText(AnnotatedString(draft.bodyText)) },
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(AppStrings.representationCopyBtn)
+        }
+        OutlinedButton(
+            onClick = { shareText(draft.bodyText, draft.subject) },
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(AppStrings.representationShareBtn)
+        }
+    }
+}
+
 
 @Composable
 private fun RepresentationEditor(
