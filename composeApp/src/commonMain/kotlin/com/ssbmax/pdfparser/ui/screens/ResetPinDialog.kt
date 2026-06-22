@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @Composable
@@ -44,7 +45,7 @@ fun ResetPinDialog(
                     val bytes = selectedPdfBytes ?: return@Button
                     handleReset(bytes, pdfPassword, selectedPdfName, onResetPin, { isResetting = it }, { resetError = it }, onDismiss)
                 }
-            ) { Text("Verify & Reset") }
+            ) { Text(AppStrings.lockScreenResetConfirmBtn) }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(AppStrings.btnCancel) }
@@ -63,7 +64,7 @@ private fun ResetPinDialogContent(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)
     ) {
         Text(
             text = AppStrings.lockScreenResetDialogDesc,

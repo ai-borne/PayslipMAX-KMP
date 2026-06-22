@@ -18,6 +18,7 @@ import com.ssbmax.pdfparser.database.RepresentationDraftEntity
 import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
 import com.ssbmax.pdfparser.utils.shareText
 
 @Composable
@@ -91,13 +92,13 @@ private fun RepresentationHeader(
         Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
         Column {
             Text(
-                text = AppStrings.representationTitle,
+                text = AppStringsPremium.representationTitle,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = AppStrings.representationSubtitle,
+                text = AppStringsPremium.representationSubtitle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -114,7 +115,7 @@ private fun RepresentationEmptyState(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = AppStrings.representationDraftsEmpty,
+            text = AppStringsPremium.representationDraftsEmpty,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -160,7 +161,7 @@ private fun RepresentationCardItem(
             )
             Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
             Text(
-                text = "${AppStrings.representationMonthLabel} ${draft.disputeMonth} | ${AppStrings.representationRecipientPcda}",
+                text = "${AppStringsPremium.representationMonthLabel} ${draft.disputeMonth} | ${AppStringsPremium.representationRecipientPcda}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -185,19 +186,19 @@ private fun RepresentationActionsRow(
             onClick = { onSelect(draft) },
             modifier = Modifier.weight(1f),
         ) {
-            Text(AppStrings.representationEditBtn)
+            Text(AppStringsPremium.representationEditBtn)
         }
         OutlinedButton(
             onClick = { clipboardManager.setText(AnnotatedString(draft.bodyText)) },
             modifier = Modifier.weight(1f),
         ) {
-            Text(AppStrings.representationCopyBtn)
+            Text(AppStringsPremium.representationCopyBtn)
         }
         OutlinedButton(
             onClick = { shareText(draft.bodyText, draft.subject) },
             modifier = Modifier.weight(1f),
         ) {
-            Text(AppStrings.representationShareBtn)
+            Text(AppStringsPremium.representationShareBtn)
         }
     }
 }
@@ -217,7 +218,7 @@ private fun RepresentationEditor(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         Text(
-            text = "${AppStrings.representationEditDraftTitle} ${draft.disputeType}",
+            text = "${AppStringsPremium.representationEditDraftTitle} ${draft.disputeType}",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
@@ -240,7 +241,7 @@ private fun RepresentationEditor(
                 onClick = onSave,
                 modifier = Modifier.weight(1f),
             ) {
-                Text(AppStrings.representationSaveBtn)
+                Text(AppStringsPremium.representationSaveBtn)
             }
             OutlinedButton(
                 onClick = onCancel,

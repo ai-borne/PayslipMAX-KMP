@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
 
 @Composable
 fun RetirementPlanningScreen(
@@ -48,7 +49,7 @@ fun RetirementPlanningScreen(
             )
             Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
             Text(
-                text = AppStrings.retirementProjectionDisclaimer,
+                text = AppStringsPremium.retirementProjectionDisclaimer,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth(),
@@ -57,7 +58,7 @@ fun RetirementPlanningScreen(
         } else {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = AppStrings.retirementNoBalance,
+                    text = AppStringsPremium.retirementNoBalance,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -89,13 +90,13 @@ private fun RetirementHeader(
         Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
         Column {
             Text(
-                text = AppStrings.retirementTitle,
+                text = AppStringsPremium.retirementTitle,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = AppStrings.retirementSubtitle,
+                text = AppStringsPremium.retirementSubtitle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
