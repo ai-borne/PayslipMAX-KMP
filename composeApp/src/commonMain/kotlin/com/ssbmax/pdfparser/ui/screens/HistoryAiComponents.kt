@@ -89,7 +89,7 @@ fun EmptyAiReportsView(
             shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
         ) {
             Text(
-                text = "Go to Insights Screen",
+                text = AppStrings.historyNavigateToInsights,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
             )
