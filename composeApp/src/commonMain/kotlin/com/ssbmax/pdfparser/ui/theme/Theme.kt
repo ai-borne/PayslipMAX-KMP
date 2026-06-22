@@ -101,6 +101,7 @@ object AppDimensions {
     val IconSizeExtraLarge = 40.dp
     val IconSizeDouble = 48.dp
     val IconSizeHuge = 72.dp
+    val LedgerCellWidth = 75.dp
 
     val ChartHeightMedium = 180.dp
     val ChartHeightLarge = 200.dp
