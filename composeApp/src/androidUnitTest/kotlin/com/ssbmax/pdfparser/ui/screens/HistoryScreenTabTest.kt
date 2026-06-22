@@ -82,7 +82,7 @@ class HistoryScreenTabTest {
         runComposeUiTest {
             testDispatcher.scheduler.runCurrent()
             setContent {
-                HistoryScreen(viewModel = viewModel, onOpenPdf = { _, _ -> })
+                HistoryScreen(viewModel = viewModel, onOpenPdf = { _, _ -> }, onNavigateToInsights = {})
             }
             onNodeWithText(AppStrings.historyTabStatements).assertExists()
             onNodeWithText(AppStrings.historyTabAiReports).assertExists()
@@ -94,7 +94,7 @@ class HistoryScreenTabTest {
         runComposeUiTest {
             testDispatcher.scheduler.runCurrent()
             setContent {
-                HistoryScreen(viewModel = viewModel, onOpenPdf = { _, _ -> })
+                HistoryScreen(viewModel = viewModel, onOpenPdf = { _, _ -> }, onNavigateToInsights = {})
             }
             // Navigate to AI Reports tab
             onNodeWithText(AppStrings.historyTabAiReports).performClick()
@@ -121,7 +121,7 @@ class HistoryScreenTabTest {
             }
             testDispatcher.scheduler.runCurrent()
             setContent {
-                HistoryScreen(viewModel = viewModel, onOpenPdf = { _, _ -> })
+                HistoryScreen(viewModel = viewModel, onOpenPdf = { _, _ -> }, onNavigateToInsights = {})
             }
 
             // Switch to AI Reports tab

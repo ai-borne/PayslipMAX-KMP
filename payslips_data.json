@@ -11,21 +11,21 @@
     "earnings": {
       "Basic Pay": 22300.0,
       "Tpt. Allc": 3200.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
       "A/o DA": 10950.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 500.0,
       "D.A.": 34900.0
     },
     "deductions": {
-      "DSOPF Subn": 2094.0,
       "Educ. Cess": 210.0,
-      "Incm Tax": 9130.0,
+      "DSOPF Subn": 2094.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 9130.0,
       "L Fee": 741.0,
       "Furn.": 330.0,
-      "AOBF": 120.0,
       "AGIF": 5000.0,
+      "AOBF": 120.0,
       "DA": 1.0
     },
     "summary": {
@@ -63,20 +63,20 @@
     "earnings": {
       "Basic Pay": 23170.0,
       "Tpt. Allc": 3200.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 35770.0
     },
     "deductions": {
-      "DSOPF Subn": 2146.0,
       "Educ. Cess": 210.0,
-      "Incm Tax": 6870.0,
+      "DSOPF Subn": 2146.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 6870.0,
       "L Fee": 741.0,
       "Furn.": 331.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 75340.0,
@@ -87,7 +87,7 @@
       "gross_salary": 0.0,
       "total_taxable_income": 0.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 800636.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 43890.0,
       "cess_deducted": 0.0,
@@ -113,20 +113,20 @@
     "earnings": {
       "Basic Pay": 23170.0,
       "Tpt. Allc": 3200.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 35770.0
     },
     "deductions": {
-      "DSOPF Subn": 2146.0,
       "Educ. Cess": 240.0,
-      "Incm Tax": 7800.0,
+      "DSOPF Subn": 2146.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 7800.0,
       "L Fee": 741.0,
       "Furn.": 331.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 75340.0,
@@ -137,7 +137,7 @@
       "gross_salary": 0.0,
       "total_taxable_income": 0.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 808056.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 37020.0,
       "cess_deducted": 0.0,
@@ -163,20 +163,20 @@
     "earnings": {
       "Basic Pay": 22300.0,
       "Tpt. Allc": 3200.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 34900.0
     },
     "deductions": {
-      "DSOPF Subn": 2094.0,
       "Educ. Cess": 220.0,
-      "Incm Tax": 6940.0,
+      "DSOPF Subn": 2094.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 6940.0,
       "L Fee": 750.0,
       "Furn.": 340.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 73600.0,
@@ -187,7 +187,7 @@
       "gross_salary": 0.0,
       "total_taxable_income": 0.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 773700.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 29220.0,
       "cess_deducted": 0.0,
@@ -214,20 +214,20 @@
       "Arrs P & A": 400.0,
       "Basic Pay": 22300.0,
       "Tpt. Allc": 3200.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 34900.0
     },
     "deductions": {
-      "DSOPF Subn": 2094.0,
       "Educ. Cess": 210.0,
-      "Incm Tax": 6940.0,
+      "DSOPF Subn": 2094.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 6940.0,
       "L Fee": 741.0,
       "Furn.": 331.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 74000.0,
@@ -238,7 +238,7 @@
       "gross_salary": 0.0,
       "total_taxable_income": 0.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 773700.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 22280.0,
       "cess_deducted": 0.0,
@@ -264,21 +264,21 @@
     "earnings": {
       "Basic Pay": 23170.0,
       "Tpt. Allc": 3312.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
       "A/o DA": 7848.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 38274.0
     },
     "deductions": {
-      "DSOPF Subn": 2146.0,
       "Educ. Cess": 240.0,
-      "Incm Tax": 8970.0,
+      "DSOPF Subn": 2146.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 8970.0,
       "L Fee": 741.0,
       "Furn.": 331.0,
-      "AOBF": 120.0,
       "AGIF": 5000.0,
+      "AOBF": 120.0,
       "DA": 1.0
     },
     "summary": {
@@ -290,7 +290,7 @@
       "gross_salary": 0.0,
       "total_taxable_income": 0.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 821564.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 59730.0,
       "cess_deducted": 0.0,
@@ -316,20 +316,20 @@
     "earnings": {
       "Basic Pay": 23170.0,
       "Tpt. Allc": 3200.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 35770.0
     },
     "deductions": {
-      "DSOPF Subn": 2146.0,
       "Educ. Cess": 210.0,
-      "Incm Tax": 6870.0,
+      "DSOPF Subn": 2146.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 6870.0,
       "L Fee": 741.0,
       "Furn.": 331.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 75340.0,
@@ -340,7 +340,7 @@
       "gross_salary": 0.0,
       "total_taxable_income": 0.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 800636.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 50760.0,
       "cess_deducted": 0.0,
@@ -365,22 +365,22 @@
     },
     "earnings": {
       "Basic Pay": 24070.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
       "A/o DA": 6600.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 43637.0,
       "HRA": 628702.0
     },
     "deductions": {
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 270.0,
-      "Incm Tax": 9940.0,
+      "DSOPF Subn": 2200.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 9940.0,
       "L Fee": 740.0,
       "Furn.": 330.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 87507.0,
@@ -391,7 +391,7 @@
       "gross_salary": 639602.0,
       "total_taxable_income": 949930.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 97461.0,
       "tax_deducted": 62990.0,
       "cess_deducted": 1830.0,
@@ -416,21 +416,21 @@
     },
     "earnings": {
       "Basic Pay": 24070.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 43637.0,
       "HRA": 709009.0
     },
     "deductions": {
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 270.0,
-      "Incm Tax": 8620.0,
+      "DSOPF Subn": 2200.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 8620.0,
       "L Fee": 740.0,
       "Furn.": 330.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 80907.0,
@@ -441,7 +441,7 @@
       "gross_salary": 720509.0,
       "total_taxable_income": 949930.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 97461.0,
       "tax_deducted": 71610.0,
       "cess_deducted": 2100.0,
@@ -468,22 +468,22 @@
       "Arrs P & A": 24336.0,
       "Basic Pay": 24070.0,
       "Tpt. Allc": 3504.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
-      "TRAN1": 7520.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
+      "TRAN1": 7520.0,
       "D.A.": 43637.0,
       "HRA": 810756.0
     },
     "deductions": {
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 330.0,
-      "Incm Tax": 12910.0,
+      "DSOPF Subn": 2200.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 12910.0,
       "L Fee": 740.0,
       "Furn.": 330.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 108747.0,
@@ -494,7 +494,7 @@
       "gross_salary": 829256.0,
       "total_taxable_income": 976778.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 889154.0,
       "total_tax_payable": 102831.0,
       "tax_deducted": 84520.0,
       "cess_deducted": 2430.0,
@@ -520,16 +520,16 @@
     "earnings": {
       "Basic Pay": 23170.0,
       "Tpt. Allc": 3312.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 38274.0
     },
     "deductions": {
-      "Incm Tax": 7840.0,
       "AGIF-MCA": 7792.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "Incm Tax": 7840.0,
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 77956.0,
@@ -566,20 +566,20 @@
     "earnings": {
       "Basic Pay": 23170.0,
       "Tpt. Allc": 3312.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 38274.0
     },
     "deductions": {
-      "DSOPF Subn": 2146.0,
       "Educ. Cess": 190.0,
-      "Incm Tax": 6450.0,
+      "DSOPF Subn": 2146.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 6450.0,
       "L Fee": 740.0,
       "Furn.": 330.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 77956.0,
@@ -615,23 +615,23 @@
     },
     "earnings": {
       "Basic Pay": 23170.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
       "A/o DA": 8711.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 40420.0
     },
     "deductions": {
-      "DSOPF Subn": 2146.0,
-      "Educ. Cess": 190.0,
       "Recv P & A": 8871.0,
-      "Incm Tax": 7980.0,
+      "Educ. Cess": 190.0,
+      "DSOPF Subn": 2146.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 7980.0,
       "L Fee": 740.0,
       "Furn.": 330.0,
-      "AOBF": 120.0,
+      "ITAX": 78399.0,
       "AGIF": 5000.0,
-      "ITAX": 78399.0
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 85501.0,
@@ -642,7 +642,7 @@
       "gross_salary": 234684.0,
       "total_taxable_income": 0.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 4.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 22270.0,
       "cess_deducted": 620.0,
@@ -668,21 +668,21 @@
     "earnings": {
       "Outfit Alc": 4500.0,
       "Basic Pay": 23170.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 40420.0
     },
     "deductions": {
-      "DSOPF Subn": 2146.0,
       "Educ. Cess": 190.0,
-      "Incm Tax": 6240.0,
+      "DSOPF Subn": 2146.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 6240.0,
       "L Fee": 740.0,
       "Furn.": 330.0,
-      "AOBF": 120.0,
+      "ITAX": 78399.0,
       "AGIF": 5000.0,
-      "ITAX": 78399.0
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 81290.0,
@@ -693,7 +693,7 @@
       "gross_salary": 315974.0,
       "total_taxable_income": 0.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 4.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 28510.0,
       "cess_deducted": 810.0,
@@ -718,23 +718,23 @@
     },
     "earnings": {
       "Basic Pay": 24070.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 41437.0
     },
     "deductions": {
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 250.0,
-      "Incm Tax": 8180.0,
+      "DSOPF Subn": 2200.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 8180.0,
+      "Water": 1827.0,
       "L Fee": 740.0,
       "Furn.": 330.0,
-      "Water": 1827.0,
-      "AOBF": 120.0,
+      "ITAX": 93941.0,
       "Elec": 6370.0,
       "AGIF": 5000.0,
-      "ITAX": 93941.0
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 78707.0,
@@ -745,7 +745,7 @@
       "gross_salary": 394681.0,
       "total_taxable_income": 0.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 4.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 36690.0,
       "cess_deducted": 1060.0,
@@ -770,23 +770,23 @@
     },
     "earnings": {
       "Basic Pay": 24070.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 41437.0
     },
     "deductions": {
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 250.0,
-      "Incm Tax": 8180.0,
+      "DSOPF Subn": 2200.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 8180.0,
+      "Water": 783.0,
       "L Fee": 740.0,
       "Furn.": 330.0,
-      "Water": 783.0,
-      "AOBF": 120.0,
+      "ITAX": 93941.0,
       "Elec": 9415.0,
       "AGIF": 5000.0,
-      "ITAX": 93941.0
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 78707.0,
@@ -797,7 +797,7 @@
       "gross_salary": 473388.0,
       "total_taxable_income": 0.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 4.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 44870.0,
       "cess_deducted": 1310.0,
@@ -823,24 +823,24 @@
     "earnings": {
       "TA/DA Cheq": 11923.0,
       "Basic Pay": 24070.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 41437.0
     },
     "deductions": {
       "CC to bankers": 11923.0,
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 250.0,
-      "Incm Tax": 8180.0,
+      "DSOPF Subn": 2200.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 8180.0,
+      "Water": 731.0,
       "L Fee": 740.0,
       "Furn.": 330.0,
-      "Water": 731.0,
-      "AOBF": 120.0,
+      "ITAX": 93941.0,
       "Elec": 6279.0,
       "AGIF": 5000.0,
-      "ITAX": 93941.0
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 90630.0,
@@ -851,7 +851,7 @@
       "gross_salary": 552095.0,
       "total_taxable_income": 0.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 4.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 53050.0,
       "cess_deducted": 1560.0,
@@ -877,20 +877,20 @@
     "earnings": {
       "Instr Allce": 2700.0,
       "Basic Pay": 24990.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 46988.0,
       "HRA": 859710.0
     },
     "deductions": {
-      "DSOPF Subn": 2255.0,
       "Educ. Cess": 320.0,
+      "DSOPF Subn": 2255.0,
       "Incm Tax": 10750.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 87878.0,
@@ -901,7 +901,7 @@
       "gross_salary": 877253.0,
       "total_taxable_income": 1121544.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1033264.0,
       "total_tax_payable": 134979.0,
       "tax_deducted": 102748.0,
       "cess_deducted": 3074.0,
@@ -927,20 +927,20 @@
     "earnings": {
       "Instr Allce": 2700.0,
       "Basic Pay": 24990.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 46988.0,
       "HRA": 946988.0
     },
     "deductions": {
-      "DSOPF Subn": 2255.0,
       "Educ. Cess": 330.0,
+      "DSOPF Subn": 2255.0,
       "Incm Tax": 10740.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 87878.0,
@@ -951,7 +951,7 @@
       "gross_salary": 965131.0,
       "total_taxable_income": 1121544.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1033264.0,
       "total_tax_payable": 134979.0,
       "tax_deducted": 113488.0,
       "cess_deducted": 3404.0,
@@ -978,20 +978,20 @@
       "Instr Allce": 2700.0,
       "Basic Pay": 24070.0,
       "Tpt. Allc": 3504.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 43637.0,
       "HRA": 169822.0
     },
     "deductions": {
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 250.0,
+      "DSOPF Subn": 2200.0,
       "Incm Tax": 8230.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 87111.0,
@@ -1002,7 +1002,7 @@
       "gross_salary": 176222.0,
       "total_taxable_income": 1018932.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 868932.0,
       "total_tax_payable": 98786.0,
       "tax_deducted": 16460.0,
       "cess_deducted": 500.0,
@@ -1028,20 +1028,20 @@
     "earnings": {
       "Instr Allce": 2700.0,
       "Basic Pay": 24990.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 46988.0,
       "HRA": 523617.0
     },
     "deductions": {
-      "DSOPF Subn": 2255.0,
       "Educ. Cess": 310.0,
+      "DSOPF Subn": 2255.0,
       "Incm Tax": 10140.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 87878.0,
@@ -1052,7 +1052,7 @@
       "gross_salary": 539360.0,
       "total_taxable_income": 1047285.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 959005.0,
       "total_tax_payable": 116801.0,
       "tax_deducted": 55960.0,
       "cess_deducted": 1660.0,
@@ -1078,21 +1078,21 @@
     "earnings": {
       "Basic Pay": 24070.0,
       "Tpt. Allc": 3504.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 43637.0,
       "HRA": 892967.0
     },
     "deductions": {
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 320.0,
-      "Incm Tax": 9000.0,
+      "DSOPF Subn": 2200.0,
       "AGIF-CAR": 7792.0,
+      "Incm Tax": 9000.0,
       "L Fee": 740.0,
       "Furn.": 330.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 84411.0,
@@ -1103,7 +1103,7 @@
       "gross_salary": 913667.0,
       "total_taxable_income": 975178.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 887554.0,
       "total_tax_payable": 102511.0,
       "tax_deducted": 93520.0,
       "cess_deducted": 2750.0,
@@ -1130,24 +1130,24 @@
       "Instr Allce": 2700.0,
       "Arrs P & A": 9129.0,
       "Basic Pay": 24990.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
-      "TRAN1": 826.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
+      "TRAN1": 826.0,
       "D.A.": 46988.0,
       "HRA": 436339.0
     },
     "deductions": {
-      "DSOPF Subn": 2255.0,
-      "Educ. Cess": 310.0,
       "Recv P & A": 17255.0,
+      "Educ. Cess": 310.0,
+      "DSOPF Subn": 2255.0,
       "Incm Tax": 10140.0,
+      "Water": 1566.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "Water": 1566.0,
-      "AOBF": 120.0,
       "Elec": 19537.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 97007.0,
@@ -1158,7 +1158,7 @@
       "gross_salary": 451482.0,
       "total_taxable_income": 1047285.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 959005.0,
       "total_tax_payable": 116801.0,
       "tax_deducted": 45820.0,
       "cess_deducted": 1350.0,
@@ -1185,20 +1185,20 @@
       "Instr Allce": 2700.0,
       "Basic Pay": 24070.0,
       "Tpt. Allc": 3600.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 45838.0,
       "HRA": 353426.0
     },
     "deductions": {
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 270.0,
+      "DSOPF Subn": 2200.0,
       "Incm Tax": 8690.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 89408.0,
@@ -1209,7 +1209,7 @@
       "gross_salary": 364226.0,
       "total_taxable_income": 1051090.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 901090.0,
       "total_tax_payable": 105218.0,
       "tax_deducted": 35680.0,
       "cess_deducted": 1040.0,
@@ -1236,21 +1236,21 @@
       "Instr Allce": 2700.0,
       "Basic Pay": 24070.0,
       "Tpt. Allc": 3600.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
       "A/o DA": 9188.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 45838.0,
       "HRA": 266218.0
     },
     "deductions": {
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 270.0,
+      "DSOPF Subn": 2200.0,
       "Incm Tax": 10530.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 98596.0,
@@ -1261,7 +1261,7 @@
       "gross_salary": 274818.0,
       "total_taxable_income": 1051090.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 901090.0,
       "total_tax_payable": 105218.0,
       "tax_deducted": 26990.0,
       "cess_deducted": 770.0,
@@ -1288,21 +1288,21 @@
       "Instr Allce": 2700.0,
       "Adhoc Payt": 74259.0,
       "Basic Pay": 24990.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 46988.0,
       "HRA": 772432.0
     },
     "deductions": {
       "CC to bankers": 58657.0,
-      "DSOPF Subn": 2255.0,
       "Educ. Cess": 784.0,
+      "DSOPF Subn": 2255.0,
       "Incm Tax": 25898.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 162137.0,
@@ -1313,7 +1313,7 @@
       "gross_salary": 789375.0,
       "total_taxable_income": 1121544.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1033264.0,
       "total_tax_payable": 134979.0,
       "tax_deducted": 91998.0,
       "cess_deducted": 2754.0,
@@ -1339,22 +1339,22 @@
     "earnings": {
       "Instr Allce": 2700.0,
       "Basic Pay": 24990.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 46988.0,
       "HRA": 610895.0
     },
     "deductions": {
-      "DSOPF Subn": 2255.0,
       "Educ. Cess": 310.0,
+      "DSOPF Subn": 2255.0,
       "Incm Tax": 10140.0,
+      "Water": 731.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "Water": 731.0,
-      "AOBF": 120.0,
       "Elec": 3099.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 87878.0,
@@ -1365,7 +1365,7 @@
       "gross_salary": 627238.0,
       "total_taxable_income": 1047285.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 959005.0,
       "total_tax_payable": 116801.0,
       "tax_deducted": 66100.0,
       "cess_deducted": 1970.0,
@@ -1391,26 +1391,26 @@
     "earnings": {
       "Instr Allce": 2700.0,
       "Arrs P & A": 31146.0,
-      "Ref.L Fee": 8313.0,
       "Basic Pay": 24070.0,
       "Tpt. Allc": 3504.0,
       "Ref.Furn.": 3707.0,
-      "Gr Pay": 6600.0,
+      "Ref.L Fee": 8313.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 43637.0,
       "HRA": 999424.0
     },
     "deductions": {
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 471.0,
+      "DSOPF Subn": 2200.0,
       "Incm Tax": 13840.0,
+      "Water": 706.0,
       "L Fee": 9387.0,
       "Furn.": 3935.0,
-      "Water": 706.0,
-      "AOBF": 120.0,
       "Elec": 5927.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 130277.0,
@@ -1421,7 +1421,7 @@
       "gross_salary": 1031924.0,
       "total_taxable_income": 999424.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 911800.0,
       "total_tax_payable": 107360.0,
       "tax_deducted": 107360.0,
       "cess_deducted": 3221.0,
@@ -1446,23 +1446,23 @@
     },
     "earnings": {
       "Instr Allce": 2700.0,
-      "Reimb Med": 2000.0,
       "Basic Pay": 24070.0,
+      "Reimb Med": 2000.0,
       "Tpt. Allc": 3504.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 43637.0,
       "HRA": 84911.0
     },
     "deductions": {
-      "DSOPF Subn": 2200.0,
       "Educ. Cess": 250.0,
+      "DSOPF Subn": 2200.0,
       "Incm Tax": 8230.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 89111.0,
@@ -1473,7 +1473,7 @@
       "gross_salary": 89111.0,
       "total_taxable_income": 1018932.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 868932.0,
       "total_tax_payable": 98786.0,
       "tax_deducted": 8230.0,
       "cess_deducted": 250.0,
@@ -1501,22 +1501,22 @@
       "Arrs P & A": 38483.0,
       "Basic Pay": 24990.0,
       "Tpt. Allc": 3712.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
       "A/o DA": 16458.0,
-      "TRAN1": 6386.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
+      "TRAN1": 6386.0,
       "D.A.": 49619.0,
       "HRA": 1076846.0
     },
     "deductions": {
-      "DSOPF Subn": 2255.0,
       "Educ. Cess": 540.0,
+      "DSOPF Subn": 2255.0,
       "Incm Tax": 23520.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 149162.0,
@@ -1527,7 +1527,7 @@
       "gross_salary": 1114293.0,
       "total_taxable_income": 1168867.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1080587.0,
       "total_tax_payable": 149176.0,
       "tax_deducted": 137008.0,
       "cess_deducted": 3944.0,
@@ -1554,20 +1554,20 @@
       "Instr Allce": 2700.0,
       "Basic Pay": 24990.0,
       "Tpt. Allc": 3712.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 49619.0,
       "HRA": 1168867.0
     },
     "deductions": {
-      "DSOPF Subn": 2255.0,
       "Educ. Cess": 531.0,
+      "DSOPF Subn": 2255.0,
       "Incm Tax": 12168.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 94221.0,
@@ -1578,7 +1578,7 @@
       "gross_salary": 1208514.0,
       "total_taxable_income": 1168867.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1080587.0,
       "total_tax_payable": 149176.0,
       "tax_deducted": 149176.0,
       "cess_deducted": 4475.0,
@@ -1603,24 +1603,24 @@
     },
     "earnings": {
       "Instr Allce": 2700.0,
-      "C E A (T)": 16087.0,
       "Basic Pay": 24990.0,
       "Tpt. Allc": 3712.0,
+      "C E A (T)": 16087.0,
       "C E A(NT)": 1200.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 49619.0,
       "HRA": 108108.0
     },
     "deductions": {
-      "DSOPF Subn": 2255.0,
       "Educ. Cess": 270.0,
+      "DSOPF Subn": 2255.0,
       "Incm Tax": 11830.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 111508.0,
@@ -1631,7 +1631,7 @@
       "gross_salary": 111508.0,
       "total_taxable_income": 1120339.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 970339.0,
       "total_tax_payable": 106568.0,
       "tax_deducted": 11830.0,
       "cess_deducted": 270.0,
@@ -1658,20 +1658,20 @@
       "Instr Allce": 2700.0,
       "Basic Pay": 24990.0,
       "Tpt. Allc": 3712.0,
-      "Gr Pay": 6600.0,
       "M.S.P.": 6000.0,
+      "Gr Pay": 6600.0,
       "K.M.A": 600.0,
       "D.A.": 49619.0,
       "HRA": 200129.0
     },
     "deductions": {
-      "DSOPF Subn": 2255.0,
       "Educ. Cess": 270.0,
+      "DSOPF Subn": 2255.0,
       "Incm Tax": 8610.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 94221.0,
@@ -1682,7 +1682,7 @@
       "gross_salary": 205729.0,
       "total_taxable_income": 1120339.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 970339.0,
       "total_tax_payable": 106568.0,
       "tax_deducted": 20440.0,
       "cess_deducted": 540.0,
@@ -1708,24 +1708,24 @@
     "earnings": {
       "Instr Allce": 2700.0,
       "Arrs P & A": 218786.0,
-      "Grade Pay": 6600.0,
       "Basic Pay": 106870.0,
       "Tpt. Allc": 3712.0,
+      "Grade Pay": 6600.0,
       "M.S.P.": 15500.0,
       "K.M.A": 600.0,
       "D.A.": 3932.0,
-      "MSP": 6000.0,
       "HRA": 451700.0,
+      "MSP": 6000.0,
       "NPA": 125.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 520.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 56180.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 328030.0,
@@ -1736,7 +1736,7 @@
       "gross_salary": 459500.0,
       "total_taxable_income": 1415096.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1265096.0,
       "total_tax_payable": 192029.0,
       "tax_deducted": 76620.0,
       "cess_deducted": 1060.0,
@@ -1769,13 +1769,13 @@
       "HRA": 558744.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 520.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 12820.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 109244.0,
@@ -1786,7 +1786,7 @@
       "gross_salary": 568744.0,
       "total_taxable_income": 1415096.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1265096.0,
       "total_tax_payable": 192029.0,
       "tax_deducted": 89440.0,
       "cess_deducted": 1580.0,
@@ -1819,13 +1819,13 @@
       "HRA": 668388.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 550.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 13600.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 111844.0,
@@ -1836,7 +1836,7 @@
       "gross_salary": 680588.0,
       "total_taxable_income": 1435896.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1285896.0,
       "total_tax_payable": 198269.0,
       "tax_deducted": 103040.0,
       "cess_deducted": 2130.0,
@@ -1869,13 +1869,13 @@
       "HRA": 778032.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 550.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 13600.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 111844.0,
@@ -1886,7 +1886,7 @@
       "gross_salary": 792432.0,
       "total_taxable_income": 1435896.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1285896.0,
       "total_tax_payable": 198269.0,
       "tax_deducted": 116640.0,
       "cess_deducted": 2680.0,
@@ -1919,13 +1919,13 @@
       "HRA": 887676.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 550.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 13610.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 111844.0,
@@ -1936,7 +1936,7 @@
       "gross_salary": 904276.0,
       "total_taxable_income": 1435896.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1285896.0,
       "total_tax_payable": 198269.0,
       "tax_deducted": 130250.0,
       "cess_deducted": 3230.0,
@@ -1961,8 +1961,8 @@
     },
     "earnings": {
       "Instr Allce": 2700.0,
-      "TA/DA Cheq": 7356.0,
       "Arrs P & A": 204.0,
+      "TA/DA Cheq": 7356.0,
       "Basic Pay": 85300.0,
       "Tpt. Allc": 3780.0,
       "M.S.P.": 15500.0,
@@ -1973,13 +1973,13 @@
     },
     "deductions": {
       "CC to bankers": 7356.0,
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 560.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 14890.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 123504.0,
@@ -1990,7 +1990,7 @@
       "gross_salary": 1020424.0,
       "total_taxable_income": 1444504.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1294504.0,
       "total_tax_payable": 200851.0,
       "tax_deducted": 145140.0,
       "cess_deducted": 3790.0,
@@ -2023,13 +2023,13 @@
       "HRA": 1112344.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 560.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 13930.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 112920.0,
@@ -2040,7 +2040,7 @@
       "gross_salary": 1133344.0,
       "total_taxable_income": 1444504.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1294504.0,
       "total_tax_payable": 200851.0,
       "tax_deducted": 159070.0,
       "cess_deducted": 4350.0,
@@ -2072,14 +2072,14 @@
       "HRA": 1212870.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
-      "Educ. Cess": 510.0,
       "Recv P & A": 10974.0,
+      "Educ. Cess": 510.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 12370.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
-      "AOBF": 120.0,
-      "AGIF": 5000.0
+      "AGIF": 5000.0,
+      "AOBF": 120.0
     },
     "summary": {
       "gross_pay": 129620.0,
@@ -2090,7 +2090,7 @@
       "gross_salary": 1255470.0,
       "total_taxable_income": 1428910.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1278910.0,
       "total_tax_payable": 196173.0,
       "tax_deducted": 171440.0,
       "cess_deducted": 4860.0,
@@ -2114,9 +2114,9 @@
       "pan": "AR*****90G"
     },
     "earnings": {
-      "TA/DA Cheq": 25404.0,
       "Arrs P & A": 51077.0,
       "SCCI Allce": 16900.0,
+      "TA/DA Cheq": 25404.0,
       "HA/UCA All": 3400.0,
       "Basic Pay": 85300.0,
       "Tpt. Allc": 3780.0,
@@ -2126,8 +2126,8 @@
     },
     "deductions": {
       "CC to bankers": 25404.0,
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 830.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 28550.0,
       "L Fee": 748.0,
       "Furn.": 327.0,
@@ -2142,7 +2142,7 @@
       "gross_salary": 1436467.0,
       "total_taxable_income": 1498187.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1348187.0,
       "total_tax_payable": 216956.0,
       "tax_deducted": 199990.0,
       "cess_deducted": 5690.0,
@@ -2175,8 +2175,8 @@
       "HRA": 1498187.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 819.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 16966.0,
       "AGIF": 5000.0
     },
@@ -2189,7 +2189,7 @@
       "gross_salary": 1566387.0,
       "total_taxable_income": 1498187.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1348187.0,
       "total_tax_payable": 216956.0,
       "tax_deducted": 216956.0,
       "cess_deducted": 6509.0,
@@ -2222,8 +2222,8 @@
       "HRA": 123360.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 530.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 17630.0,
       "Water": 2297.0,
       "Elec": 20774.0,
@@ -2238,7 +2238,7 @@
       "gross_salary": 129920.0,
       "total_taxable_income": 1480320.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1330320.0,
       "total_tax_payable": 211596.0,
       "tax_deducted": 17630.0,
       "cess_deducted": 530.0,
@@ -2272,8 +2272,8 @@
       "HRA": 255072.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 550.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 20140.0,
       "Water": 1462.0,
       "Elec": 6198.0,
@@ -2288,7 +2288,7 @@
       "gross_salary": 268192.0,
       "total_taxable_income": 1509552.0,
       "standard_deduction": 0.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1359552.0,
       "total_tax_payable": 220366.0,
       "tax_deducted": 37770.0,
       "cess_deducted": 1080.0,
@@ -2321,8 +2321,8 @@
       "HRA": 382120.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 750.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 17540.0,
       "AGIF": 5000.0
     },
@@ -2335,7 +2335,7 @@
       "gross_salary": 400200.0,
       "total_taxable_income": 1525552.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1335552.0,
       "total_tax_payable": 213166.0,
       "tax_deducted": 55310.0,
       "cess_deducted": 1830.0,
@@ -2360,20 +2360,20 @@
     },
     "earnings": {
       "LTC Encash": 30785.0,
-      "C E A (T)": 23550.0,
-      "Ref.L Fee": 3441.0,
       "Basic Pay": 85300.0,
       "Tpt. Allc": 3852.0,
       "Ref.Furn.": 1504.0,
+      "C E A (T)": 23550.0,
       "C E A(NT)": 1200.0,
+      "Ref.L Fee": 3441.0,
       "M.S.P.": 15500.0,
       "D.A.": 7056.0,
       "HRA": 510423.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
-      "Educ. Cess": 580.0,
       "Recv P & A": 63761.0,
+      "Educ. Cess": 580.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 27980.0,
       "Water": 783.0,
       "Elec": 9428.0,
@@ -2388,7 +2388,7 @@
       "gross_salary": 526503.0,
       "total_taxable_income": 1404087.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1214087.0,
       "total_tax_payable": 176726.0,
       "tax_deducted": 83290.0,
       "cess_deducted": 2410.0,
@@ -2422,8 +2422,8 @@
     },
     "deductions": {
       "CC to bankers": 68240.0,
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 650.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 13240.0,
       "AGIF": 5000.0
     },
@@ -2436,7 +2436,7 @@
       "gross_salary": 660993.0,
       "total_taxable_income": 1426343.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1255567.0,
       "total_tax_payable": 189170.0,
       "tax_deducted": 96530.0,
       "cess_deducted": 3060.0,
@@ -2460,9 +2460,9 @@
       "pan": "AR*****90G"
     },
     "earnings": {
-      "TA/DA Cheq": 5000.0,
       "Arrs P & A": 24223.0,
       "SCCI Allce": 16900.0,
+      "TA/DA Cheq": 5000.0,
       "Basic Pay": 87900.0,
       "Tpt. Allc": 3852.0,
       "M.S.P.": 15500.0,
@@ -2471,8 +2471,8 @@
     },
     "deductions": {
       "CC to bankers": 5000.0,
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 830.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 22720.0,
       "AGIF": 5000.0
     },
@@ -2485,7 +2485,7 @@
       "gross_salary": 816606.0,
       "total_taxable_income": 1535976.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1365200.0,
       "total_tax_payable": 222060.0,
       "tax_deducted": 119250.0,
       "cess_deducted": 3890.0,
@@ -2517,8 +2517,8 @@
       "HRA": 898526.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 830.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 17140.0,
       "AGIF": 5000.0
     },
@@ -2531,7 +2531,7 @@
       "gross_salary": 947996.0,
       "total_taxable_income": 1535976.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1365200.0,
       "total_tax_payable": 222060.0,
       "tax_deducted": 136390.0,
       "cess_deducted": 4720.0,
@@ -2564,8 +2564,8 @@
       "HRA": 1034576.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 870.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 19700.0,
       "AGIF": 5000.0
     },
@@ -2578,7 +2578,7 @@
       "gross_salary": 1087946.0,
       "total_taxable_income": 1553096.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1382320.0,
       "total_tax_payable": 227196.0,
       "tax_deducted": 156090.0,
       "cess_deducted": 5590.0,
@@ -2610,8 +2610,8 @@
       "HRA": 1164206.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 880.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 17780.0,
       "Water": 740.0,
       "Elec": 10462.0,
@@ -2626,7 +2626,7 @@
       "gross_salary": 1221476.0,
       "total_taxable_income": 1553096.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1382320.0,
       "total_tax_payable": 227196.0,
       "tax_deducted": 173870.0,
       "cess_deducted": 6470.0,
@@ -2658,8 +2658,8 @@
       "HRA": 1417631.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 1370.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 54910.0,
       "AGIF": 5000.0
     },
@@ -2672,7 +2672,7 @@
       "gross_salary": 1355006.0,
       "total_taxable_income": 1676891.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1506115.0,
       "total_tax_payable": 264335.0,
       "tax_deducted": 228780.0,
       "cess_deducted": 7840.0,
@@ -2704,8 +2704,8 @@
       "HRA": 1423466.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 1370.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 17780.0,
       "AGIF": 5000.0
     },
@@ -2718,7 +2718,7 @@
       "gross_salary": 1488536.0,
       "total_taxable_income": 1676891.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1506115.0,
       "total_tax_payable": 264335.0,
       "tax_deducted": 246560.0,
       "cess_deducted": 9210.0,
@@ -2742,8 +2742,8 @@
       "pan": "AR*****90G"
     },
     "earnings": {
-      "TA/DA Cheq": 13117.0,
       "SCCI Allce": 16900.0,
+      "TA/DA Cheq": 13117.0,
       "Basic Pay": 87900.0,
       "Tpt. Allc": 3924.0,
       "M.S.P.": 15500.0,
@@ -2752,8 +2752,8 @@
     },
     "deductions": {
       "CC to bankers": 13117.0,
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 1363.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 17775.0,
       "AGIF": 5000.0
     },
@@ -2766,7 +2766,7 @@
       "gross_salary": 1622066.0,
       "total_taxable_income": 1676891.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1506115.0,
       "total_tax_payable": 264335.0,
       "tax_deducted": 264335.0,
       "cess_deducted": 10573.0,
@@ -2799,9 +2799,9 @@
       "HRA": 257449.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
-      "Educ. Cess": 900.0,
       "Recv P & A": 10903.0,
+      "Educ. Cess": 900.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 59170.0,
       "AGIF": 5000.0
     },
@@ -2814,7 +2814,7 @@
       "gross_salary": 134773.0,
       "total_taxable_income": 1718689.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1528689.0,
       "total_tax_payable": 271107.0,
       "tax_deducted": 59170.0,
       "cess_deducted": 900.0,
@@ -2846,8 +2846,8 @@
       "HRA": 263713.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 900.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 19270.0,
       "AGIF": 5000.0
     },
@@ -2860,7 +2860,7 @@
       "gross_salary": 271513.0,
       "total_taxable_income": 1718689.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1528689.0,
       "total_tax_payable": 271107.0,
       "tax_deducted": 78440.0,
       "cess_deducted": 1800.0,
@@ -2885,17 +2885,17 @@
     },
     "earnings": {
       "SCCI Allce": 16900.0,
-      "C E A (T)": 25800.0,
       "Basic Pay": 87900.0,
       "Tpt. Allc": 4032.0,
+      "C E A (T)": 25800.0,
       "C E A(NT)": 1200.0,
       "M.S.P.": 15500.0,
       "D.A.": 12408.0,
       "HRA": 422353.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 940.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 27010.0,
       "AGIF": 5000.0
     },
@@ -2908,7 +2908,7 @@
       "gross_salary": 435253.0,
       "total_taxable_income": 1744489.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1554489.0,
       "total_tax_payable": 278847.0,
       "tax_deducted": 105450.0,
       "cess_deducted": 2740.0,
@@ -2940,8 +2940,8 @@
       "HRA": 555193.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 940.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 19270.0,
       "AGIF": 5000.0
     },
@@ -2954,7 +2954,7 @@
       "gross_salary": 571993.0,
       "total_taxable_income": 1744489.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1554489.0,
       "total_tax_payable": 278847.0,
       "tax_deducted": 124720.0,
       "cess_deducted": 3680.0,
@@ -2987,8 +2987,8 @@
       "HRA": 690945.0
     },
     "deductions": {
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 1000.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 20860.0,
       "AGIF": 5000.0
     },
@@ -3001,7 +3001,7 @@
       "gross_salary": 731645.0,
       "total_taxable_income": 1767785.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1597009.0,
       "total_tax_payable": 291603.0,
       "tax_deducted": 145580.0,
       "cess_deducted": 4680.0,
@@ -3034,9 +3034,9 @@
     },
     "deductions": {
       "CC to bankers": 89742.0,
-      "DSOPF Subn": 5898.0,
-      "Educ. Cess": 760.0,
       "Recv P & A": 59150.0,
+      "Educ. Cess": 760.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 15010.0,
       "AGIF": 5000.0
     },
@@ -3049,7 +3049,7 @@
       "gross_salary": 808897.0,
       "total_taxable_income": 1631285.0,
       "standard_deduction": 40000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1460509.0,
       "total_tax_payable": 250653.0,
       "tax_deducted": 160590.0,
       "cess_deducted": 5440.0,
@@ -3082,8 +3082,8 @@
     },
     "deductions": {
       "CC to bankers": 74609.0,
-      "DSOPF Subn": 5898.0,
       "Educ. Cess": 740.0,
+      "DSOPF Subn": 5898.0,
       "Incm Tax": 14510.0,
       "AGIF": 5000.0
     },
@@ -3096,7 +3096,7 @@
       "gross_salary": 931649.0,
       "total_taxable_income": 1631285.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1450509.0,
       "total_tax_payable": 247653.0,
       "tax_deducted": 175100.0,
       "cess_deducted": 6180.0,
@@ -3131,8 +3131,8 @@
       "DA": 103152.0
     },
     "deductions": {
-      "DSOPF Subn": 7272.0,
       "Educ. Cess": 1590.0,
+      "DSOPF Subn": 7272.0,
       "Incm Tax": 71610.0,
       "AGIF": 5000.0
     },
@@ -3145,7 +3145,7 @@
       "gross_salary": 1246104.0,
       "total_taxable_income": 1988584.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1800938.0,
       "total_tax_payable": 352781.0,
       "tax_deducted": 246710.0,
       "cess_deducted": 7770.0,
@@ -3172,8 +3172,8 @@
       "TA/DA Cheq": 21199.0,
       "Basic Pay": 121200.0,
       "Tpt Allc": 4212.0,
-      "MSP": 15500.0,
       "HRA": 1369555.0,
+      "MSP": 15500.0,
       "DA": 23239.0
     },
     "deductions": {
@@ -3192,7 +3192,7 @@
       "gross_salary": 1410255.0,
       "total_taxable_income": 1988584.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1800938.0,
       "total_tax_payable": 352781.0,
       "tax_deducted": 273230.0,
       "cess_deducted": 9360.0,
@@ -3218,14 +3218,14 @@
     "earnings": {
       "TA/DA Cheq": 37791.0,
       "Basic Pay": 121200.0,
-      "MSP": 15500.0,
       "HRA": 1524195.0,
+      "MSP": 15500.0,
       "DA": 23239.0
     },
     "deductions": {
       "CC to bankers": 37791.0,
-      "DSOPF Subn": 7272.0,
       "Recv P & A": 5299.0,
+      "DSOPF Subn": 7272.0,
       "Educ Cess": 1510.0,
       "Incm Tax": 24720.0,
       "AGIF": 5000.0
@@ -3239,7 +3239,7 @@
       "gross_salary": 1564895.0,
       "total_taxable_income": 1970649.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1783003.0,
       "total_tax_payable": 347401.0,
       "tax_deducted": 297950.0,
       "cess_deducted": 10870.0,
@@ -3267,8 +3267,8 @@
       "Basic Pay": 124800.0,
       "Tpt Allc": 8424.0,
       "TRAN1": 6006.0,
-      "MSP": 15500.0,
       "HRA": 1712776.0,
+      "MSP": 15500.0,
       "DA": 23851.0
     },
     "deductions": {
@@ -3286,7 +3286,7 @@
       "gross_salary": 1753476.0,
       "total_taxable_income": 2011927.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1823849.0,
       "total_tax_payable": 359655.0,
       "tax_deducted": 331200.0,
       "cess_deducted": 12630.0,
@@ -3312,17 +3312,17 @@
     "earnings": {
       "Basic Pay": 124800.0,
       "Tpt Allc": 8424.0,
-      "MSP": 15500.0,
       "HRA": 1885351.0,
+      "MSP": 15500.0,
       "DA": 23851.0
     },
     "deductions": {
       "DSOPF Subn": 7488.0,
       "Educ Cess": 1756.0,
       "Incm Tax": 28455.0,
+      "Water": 520.0,
       "L Fee": 1919.0,
       "Furn.": 788.0,
-      "Water": 520.0,
       "Elec": 1125.0,
       "AGIF": 5000.0
     },
@@ -3335,7 +3335,7 @@
       "gross_salary": 1926051.0,
       "total_taxable_income": 2011927.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1823849.0,
       "total_tax_payable": 359655.0,
       "tax_deducted": 359655.0,
       "cess_deducted": 14386.0,
@@ -3361,8 +3361,8 @@
     "earnings": {
       "Basic Pay": 124800.0,
       "Tpt Allc": 8424.0,
-      "MSP": 15500.0,
       "HRA": 172575.0,
+      "MSP": 15500.0,
       "DA": 23851.0
     },
     "deductions": {
@@ -3382,7 +3382,7 @@
       "gross_salary": 172575.0,
       "total_taxable_income": 2070900.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1870900.0,
       "total_tax_payable": 373770.0,
       "tax_deducted": 31150.0,
       "cess_deducted": 1250.0,
@@ -3408,8 +3408,8 @@
     "earnings": {
       "Basic Pay": 124800.0,
       "Tpt Allc": 8424.0,
-      "MSP": 15500.0,
       "HRA": 345150.0,
+      "MSP": 15500.0,
       "DA": 23851.0
     },
     "deductions": {
@@ -3429,7 +3429,7 @@
       "gross_salary": 345150.0,
       "total_taxable_income": 2070900.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1866740.0,
       "total_tax_payable": 372522.0,
       "tax_deducted": 62180.0,
       "cess_deducted": 2490.0,
@@ -3475,7 +3475,7 @@
       "gross_salary": 517725.0,
       "total_taxable_income": 2070900.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1866740.0,
       "total_tax_payable": 372522.0,
       "tax_deducted": 93210.0,
       "cess_deducted": 3730.0,
@@ -3508,8 +3508,8 @@
       "DSOPF Subn": 7488.0,
       "Educ Cess": 1240.0,
       "Incm Tax": 31040.0,
-      "L Fee": 12883.0,
       "Water": 840.0,
+      "L Fee": 12883.0,
       "Elec": 4093.0,
       "AGIF": 5000.0,
       "FUR": 5733.0
@@ -3523,7 +3523,7 @@
       "gross_salary": 690300.0,
       "total_taxable_income": 2070900.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1866740.0,
       "total_tax_payable": 372522.0,
       "tax_deducted": 124250.0,
       "cess_deducted": 4970.0,
@@ -3570,7 +3570,7 @@
       "gross_salary": 882875.0,
       "total_taxable_income": 2090900.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1866884.0,
       "total_tax_payable": 372565.0,
       "tax_deducted": 155290.0,
       "cess_deducted": 6210.0,
@@ -3594,8 +3594,8 @@
       "pan": "AR*****90G"
     },
     "earnings": {
-      "C E A (T)": 25800.0,
       "Basic Pay": 124800.0,
+      "C E A (T)": 25800.0,
       "C E A(NT)": 1200.0,
       "Tpt Allc": 8424.0,
       "MSP": 15500.0,
@@ -3618,7 +3618,7 @@
       "gross_salary": 1081250.0,
       "total_taxable_income": 2096700.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1892684.0,
       "total_tax_payable": 380305.0,
       "tax_deducted": 194070.0,
       "cess_deducted": 7500.0,
@@ -3651,8 +3651,8 @@
       "DSOPF Subn": 7488.0,
       "Educ Cess": 1290.0,
       "Incm Tax": 31040.0,
-      "L Fee": 1411.0,
       "Water": 840.0,
+      "L Fee": 1411.0,
       "Elec": 4515.0,
       "AGIF": 5000.0,
       "FUR": 611.0
@@ -3666,7 +3666,7 @@
       "gross_salary": 1255025.0,
       "total_taxable_income": 2096700.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1892684.0,
       "total_tax_payable": 380305.0,
       "tax_deducted": 225110.0,
       "cess_deducted": 8790.0,
@@ -3699,8 +3699,8 @@
       "DSOPF Subn": 7488.0,
       "Educ Cess": 1280.0,
       "Incm Tax": 31040.0,
-      "L Fee": 1411.0,
       "Water": 1262.0,
+      "L Fee": 1411.0,
       "AGIF": 5000.0,
       "FUR": 611.0
     },
@@ -3713,7 +3713,7 @@
       "gross_salary": 1427600.0,
       "total_taxable_income": 2096700.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1892684.0,
       "total_tax_payable": 380305.0,
       "tax_deducted": 256150.0,
       "cess_deducted": 10070.0,
@@ -3748,8 +3748,8 @@
       "DSOPF Subn": 7488.0,
       "Educ Cess": 1290.0,
       "Incm Tax": 31040.0,
-      "L Fee": 533.0,
       "Water": 227.0,
+      "L Fee": 533.0,
       "AGIF": 5000.0,
       "FUR": 219.0
     },
@@ -3762,7 +3762,7 @@
       "gross_salary": 1578975.0,
       "total_taxable_income": 2096700.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1892684.0,
       "total_tax_payable": 380305.0,
       "tax_deducted": 287190.0,
       "cess_deducted": 11360.0,
@@ -3788,8 +3788,8 @@
     "earnings": {
       "Basic Pay": 124800.0,
       "Tpt Allc": 8424.0,
-      "MSP": 15500.0,
       "HRA": 63628.0,
+      "MSP": 15500.0,
       "DA": 23851.0
     },
     "deductions": {
@@ -3809,7 +3809,7 @@
       "gross_salary": 1751550.0,
       "total_taxable_income": 2160328.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1956312.0,
       "total_tax_payable": 399394.0,
       "tax_deducted": 324590.0,
       "cess_deducted": 12900.0,
@@ -3855,7 +3855,7 @@
       "gross_salary": 1928454.0,
       "total_taxable_income": 2168986.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1964826.0,
       "total_tax_payable": 401948.0,
       "tax_deducted": 363270.0,
       "cess_deducted": 14490.0,
@@ -3888,8 +3888,8 @@
       "DSOPF Subn": 7710.0,
       "Educ Cess": 1588.0,
       "Incm Tax": 38678.0,
-      "L Fee": 2004.0,
       "Water": 840.0,
+      "L Fee": 2004.0,
       "Elec": 17444.0,
       "AGIF": 5000.0,
       "FUR": 860.0
@@ -3903,7 +3903,7 @@
       "gross_salary": 2105358.0,
       "total_taxable_income": 2168986.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1964826.0,
       "total_tax_payable": 401948.0,
       "tax_deducted": 401948.0,
       "cess_deducted": 16078.0,
@@ -3936,8 +3936,8 @@
       "DSOPF Subn": 7710.0,
       "Educ Cess": 1300.0,
       "Incm Tax": 32450.0,
-      "L Fee": 1281.0,
       "Water": 840.0,
+      "L Fee": 1281.0,
       "Elec": 5630.0,
       "AGIF": 5000.0,
       "FUR": 545.0
@@ -3951,7 +3951,7 @@
       "gross_salary": 176904.0,
       "total_taxable_income": 2122848.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1922848.0,
       "total_tax_payable": 389354.0,
       "tax_deducted": 32450.0,
       "cess_deducted": 1300.0,
@@ -3997,7 +3997,7 @@
       "gross_salary": 347148.0,
       "total_taxable_income": 2116188.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1916188.0,
       "total_tax_payable": 387356.0,
       "tax_deducted": 64710.0,
       "cess_deducted": 2590.0,
@@ -4045,7 +4045,7 @@
       "gross_salary": 524052.0,
       "total_taxable_income": 2116188.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1916188.0,
       "total_tax_payable": 387356.0,
       "tax_deducted": 96980.0,
       "cess_deducted": 3880.0,
@@ -4069,8 +4069,8 @@
       "pan": "AR*****90G"
     },
     "earnings": {
-      "C E A (T)": 25800.0,
       "Basic Pay": 128500.0,
+      "C E A (T)": 25800.0,
       "C E A(NT)": 1200.0,
       "Tpt Allc": 8424.0,
       "MSP": 15500.0,
@@ -4093,7 +4093,7 @@
       "gross_salary": 727956.0,
       "total_taxable_income": 2141988.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1941988.0,
       "total_tax_payable": 395096.0,
       "tax_deducted": 136980.0,
       "cess_deducted": 5210.0,
@@ -4127,8 +4127,8 @@
       "DSOPF Subn": 7710.0,
       "Educ Cess": 1320.0,
       "Incm Tax": 32270.0,
-      "L Fee": 748.0,
       "Water": 840.0,
+      "L Fee": 748.0,
       "Elec": 7102.0,
       "AGIF": 5000.0,
       "FUR": 326.0
@@ -4142,7 +4142,7 @@
       "gross_salary": 924860.0,
       "total_taxable_income": 2141988.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1941988.0,
       "total_tax_payable": 395096.0,
       "tax_deducted": 169250.0,
       "cess_deducted": 6530.0,
@@ -4190,7 +4190,7 @@
       "gross_salary": 1135028.0,
       "total_taxable_income": 2275044.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2075044.0,
       "total_tax_payable": 435013.0,
       "tax_deducted": 211490.0,
       "cess_deducted": 8080.0,
@@ -4223,8 +4223,8 @@
       "DSOPF Subn": 7710.0,
       "Educ Cess": 1550.0,
       "Incm Tax": 37250.0,
-      "L Fee": 748.0,
       "Water": 840.0,
+      "L Fee": 748.0,
       "Elec": 11115.0,
       "AGIF": 5000.0,
       "FUR": 326.0
@@ -4238,7 +4238,7 @@
       "gross_salary": 1328564.0,
       "total_taxable_income": 2275044.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2075044.0,
       "total_tax_payable": 435013.0,
       "tax_deducted": 248740.0,
       "cess_deducted": 9630.0,
@@ -4262,8 +4262,8 @@
       "pan": "AR*****90G"
     },
     "earnings": {
-      "LTC Encash": 48672.0,
       "A/o TRAN-2": 648.0,
+      "LTC Encash": 48672.0,
       "Basic Pay": 128500.0,
       "Tpt Allc": 9432.0,
       "A/o DA-": 12960.0,
@@ -4287,7 +4287,7 @@
       "gross_salary": 1588916.0,
       "total_taxable_income": 2360004.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2160004.0,
       "total_tax_payable": 460501.0,
       "tax_deducted": 306040.0,
       "cess_deducted": 11390.0,
@@ -4333,7 +4333,7 @@
       "gross_salary": 1786988.0,
       "total_taxable_income": 2360004.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2160004.0,
       "total_tax_payable": 460501.0,
       "tax_deducted": 344660.0,
       "cess_deducted": 13150.0,
@@ -4366,8 +4366,8 @@
       "DSOPF Subn": 7710.0,
       "Educ Cess": 1510.0,
       "Incm Tax": 29740.0,
-      "L Fee": 748.0,
       "Water": 840.0,
+      "L Fee": 748.0,
       "Elec": 13095.0,
       "AGIF": 5000.0,
       "FUR": 326.0
@@ -4381,7 +4381,7 @@
       "gross_salary": 1985060.0,
       "total_taxable_income": 2161932.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1972122.0,
       "total_tax_payable": 404137.0,
       "tax_deducted": 374400.0,
       "cess_deducted": 14660.0,
@@ -4427,7 +4427,7 @@
       "gross_salary": 2188241.0,
       "total_taxable_income": 2167041.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1976997.0,
       "total_tax_payable": 405599.0,
       "tax_deducted": 405599.0,
       "cess_deducted": 16224.0,
@@ -4465,7 +4465,7 @@
       "gross_salary": 2194841.0,
       "total_taxable_income": 2167041.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 1976997.0,
       "total_tax_payable": 405599.0,
       "tax_deducted": 405599.0,
       "cess_deducted": 16224.0,
@@ -4495,8 +4495,8 @@
       "A/o DA-": 21287.0
     },
     "deductions": {
-      "L Fee": 748.0,
       "Water": 840.0,
+      "L Fee": 748.0,
       "Elec": 13095.0,
       "FUR": 326.0
     },
@@ -4509,7 +4509,7 @@
       "gross_salary": 94333.0,
       "total_taxable_income": 94333.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 44333.0,
       "total_tax_payable": 0.0,
       "tax_deducted": 0.0,
       "cess_deducted": 0.0,
@@ -4558,7 +4558,7 @@
       "gross_salary": 603690.0,
       "total_taxable_income": 2585550.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2388166.0,
       "total_tax_payable": 528950.0,
       "tax_deducted": 132950.0,
       "cess_deducted": 1920.0,
@@ -4603,7 +4603,7 @@
       "gross_salary": 801876.0,
       "total_taxable_income": 2585550.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2385550.0,
       "total_tax_payable": 528165.0,
       "tax_deducted": 172470.0,
       "cess_deducted": 3840.0,
@@ -4628,8 +4628,8 @@
     },
     "earnings": {
       "A/o Pay & Allce": 9959.0,
-      "C E A (T)": 25800.0,
       "Basic Pay": 132400.0,
+      "C E A (T)": 25800.0,
       "C E A(NT)": 1200.0,
       "Tpt Allc": 4824.0,
       "MSP": 15500.0,
@@ -4652,7 +4652,7 @@
       "gross_salary": 1041845.0,
       "total_taxable_income": 2664725.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2464725.0,
       "total_tax_payable": 551918.0,
       "tax_deducted": 224170.0,
       "cess_deducted": 5870.0,
@@ -4699,7 +4699,7 @@
       "gross_salary": 1264855.0,
       "total_taxable_income": 2664725.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2464725.0,
       "total_tax_payable": 551918.0,
       "tax_deducted": 265140.0,
       "cess_deducted": 7900.0,
@@ -4732,8 +4732,8 @@
       "DSOPF Subn": 7944.0,
       "Educ Cess": 2030.0,
       "Incm Tax": 40970.0,
-      "L Fee": 748.0,
       "Water": 840.0,
+      "L Fee": 748.0,
       "Elec": 13095.0,
       "AGIF": 10000.0,
       "FUR": 326.0
@@ -4747,7 +4747,7 @@
       "gross_salary": 1467865.0,
       "total_taxable_income": 2664725.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2464725.0,
       "total_tax_payable": 551918.0,
       "tax_deducted": 306110.0,
       "cess_deducted": 9930.0,
@@ -4793,7 +4793,7 @@
       "gross_salary": 1670875.0,
       "total_taxable_income": 2664725.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2464725.0,
       "total_tax_payable": 551918.0,
       "tax_deducted": 347080.0,
       "cess_deducted": 11960.0,
@@ -4830,8 +4830,8 @@
       "DSOPF Subn": 7944.0,
       "Educ Cess": 2140.0,
       "Incm Tax": 48240.0,
-      "L Fee": 1576.0,
       "Water": 731.0,
+      "L Fee": 1576.0,
       "AGIF": 10000.0,
       "FUR": 626.0
     },
@@ -4844,7 +4844,7 @@
       "gross_salary": 1898125.0,
       "total_taxable_income": 2713205.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2513205.0,
       "total_tax_payable": 566462.0,
       "tax_deducted": 395320.0,
       "cess_deducted": 14100.0,
@@ -4890,7 +4890,7 @@
       "gross_salary": 2107195.0,
       "total_taxable_income": 2713205.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2513205.0,
       "total_tax_payable": 566462.0,
       "tax_deducted": 438110.0,
       "cess_deducted": 16240.0,
@@ -4936,7 +4936,7 @@
       "gross_salary": 2316265.0,
       "total_taxable_income": 2713205.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2513205.0,
       "total_tax_payable": 566462.0,
       "tax_deducted": 480890.0,
       "cess_deducted": 18380.0,
@@ -4969,8 +4969,8 @@
       "DSOPF Subn": 8184.0,
       "Educ Cess": 2210.0,
       "Incm Tax": 44440.0,
-      "L Fee": 748.0,
       "Water": 157.0,
+      "L Fee": 748.0,
       "AGIF": 10000.0,
       "FUR": 326.0
     },
@@ -4983,7 +4983,7 @@
       "gross_salary": 2530855.0,
       "total_taxable_income": 2724245.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2524245.0,
       "total_tax_payable": 569774.0,
       "tax_deducted": 525330.0,
       "cess_deducted": 20590.0,
@@ -5008,8 +5008,8 @@
     },
     "earnings": {
       "A/o Pay & Allce": 125000.0,
-      "SpCmd Pay": 25000.0,
       "Basic Pay": 136400.0,
+      "SpCmd Pay": 25000.0,
       "Tpt Allc": 4968.0,
       "MSP": 15500.0,
       "DA": 57722.0
@@ -5031,7 +5031,7 @@
       "gross_salary": 2895445.0,
       "total_taxable_income": 2874245.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2674245.0,
       "total_tax_payable": 614774.0,
       "tax_deducted": 614774.0,
       "cess_deducted": 24591.0,
@@ -5057,8 +5057,8 @@
     "earnings": {
       "A/o RMONEYAllce-RA": 136.0,
       "A/o Pay & Allce": 136.0,
-      "SpCmd Pay": 25000.0,
       "Basic Pay": 136400.0,
+      "SpCmd Pay": 25000.0,
       "Tpt Allc": 4968.0,
       "MSP": 15500.0,
       "DA": 57722.0
@@ -5067,8 +5067,8 @@
       "DSOPF Subn": 40000.0,
       "Educ Cess": 1830.0,
       "Incm Tax": 45630.0,
-      "L Fee": 7801.0,
       "Water": 1235.0,
+      "L Fee": 7801.0,
       "AGIF": 10000.0,
       "FUR": 3475.0
     },
@@ -5081,7 +5081,7 @@
       "gross_salary": 239862.0,
       "total_taxable_income": 2875080.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2825352.0,
       "total_tax_payable": 547605.0,
       "tax_deducted": 45630.0,
       "cess_deducted": 1830.0,
@@ -5107,18 +5107,18 @@
     "earnings": {
       "A/o RMONEYAllce-RA": 136.0,
       "A/o FIELD-R1": 43750.0,
-      "A/o TRAN-1": 432.0,
       "A/o TRAN-2": 11082.0,
-      "SpCmd Pay": 25000.0,
+      "A/o TRAN-1": 432.0,
       "Basic Pay": 136400.0,
+      "SpCmd Pay": 25000.0,
       "Tpt Allc": 5112.0,
       "A/o DA-": 18228.0,
       "MSP": 15500.0,
       "DA": 63798.0
     },
     "deductions": {
-      "DSOPF Subn": 40000.0,
       "Rec CIA-FD": 30179.0,
+      "DSOPF Subn": 40000.0,
       "Educ Cess": 1960.0,
       "Incm Tax": 48880.0,
       "L Fee": 1626.0,
@@ -5134,7 +5134,7 @@
       "gross_salary": 536085.0,
       "total_taxable_income": 2993777.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2944185.0,
       "total_tax_payable": 583255.0,
       "tax_deducted": 94510.0,
       "cess_deducted": 3790.0,
@@ -5159,8 +5159,8 @@
     },
     "earnings": {
       "A/o RMONEYAllce-RA": 3411.0,
-      "SpCmd Pay": 25000.0,
       "Basic Pay": 136400.0,
+      "SpCmd Pay": 25000.0,
       "Tpt Allc": 5112.0,
       "ETKT-ref": 5948.0,
       "MSP": 15500.0,
@@ -5184,7 +5184,7 @@
       "gross_salary": 785306.0,
       "total_taxable_income": 2993777.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2947596.0,
       "total_tax_payable": 584279.0,
       "tax_deducted": 143490.0,
       "cess_deducted": 5750.0,
@@ -5232,7 +5232,7 @@
       "gross_salary": 956274.0,
       "total_taxable_income": 2718777.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2672754.0,
       "total_tax_payable": 501826.0,
       "tax_deducted": 183310.0,
       "cess_deducted": 7340.0,
@@ -5268,8 +5268,8 @@
       "Educ Cess": 1620.0,
       "R/o Etkt": 2872.0,
       "Incm Tax": 40570.0,
-      "L Fee": 1626.0,
       "Water": 731.0,
+      "L Fee": 1626.0,
       "AGIF": 10000.0,
       "FUR": 718.0
     },
@@ -5282,7 +5282,7 @@
       "gross_salary": 1197084.0,
       "total_taxable_income": 2718777.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2692754.0,
       "total_tax_payable": 507826.0,
       "tax_deducted": 223880.0,
       "cess_deducted": 8960.0,
@@ -5329,7 +5329,7 @@
       "gross_salary": 1417894.0,
       "total_taxable_income": 2718777.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 6.0,
+      "net_taxable_income": 2692754.0,
       "total_tax_payable": 507826.0,
       "tax_deducted": 264440.0,
       "cess_deducted": 10580.0,
@@ -5375,7 +5375,7 @@
       "gross_salary": 1638704.0,
       "total_taxable_income": 2742754.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 5.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 507826.0,
       "tax_deducted": 305000.0,
       "cess_deducted": 12200.0,
@@ -5427,7 +5427,7 @@
       "gross_salary": 1884394.0,
       "total_taxable_income": 2792514.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 5.0,
+      "net_taxable_income": 0.0,
       "total_tax_payable": 522754.0,
       "tax_deducted": 353030.0,
       "cess_deducted": 13940.0,
@@ -5460,9 +5460,9 @@
     },
     "deductions": {
       "EHCESS": 1750.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 42540.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "ETKT": 2129.0,
       "FUR": 392.0,
       "LF": 878.0
@@ -5476,7 +5476,7 @@
       "gross_salary": 2112851.0,
       "total_taxable_income": 2793941.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 2743941.0,
       "total_tax_payable": 523182.0,
       "tax_deducted": 395570.0,
       "cess_deducted": 15690.0,
@@ -5507,9 +5507,9 @@
     },
     "deductions": {
       "EHCESS": 1750.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 42540.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "FUR": 392.0,
       "LF": 878.0
     },
@@ -5522,7 +5522,7 @@
       "gross_salary": 2339881.0,
       "total_taxable_income": 2793941.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 2743941.0,
       "total_tax_payable": 523182.0,
       "tax_deducted": 438110.0,
       "cess_deducted": 17440.0,
@@ -5547,16 +5547,16 @@
     },
     "earnings": {
       "TPTADA": 1656.0,
-      "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "TPTA": 3600.0,
       "MSP": 15500.0,
       "DA": 71760.0
     },
     "deductions": {
       "EHCESS": 1621.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 40521.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "FUR": 392.0,
       "LF": 878.0
     },
@@ -5569,7 +5569,7 @@
       "gross_salary": 2547493.0,
       "total_taxable_income": 2780509.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 2730510.0,
       "total_tax_payable": 519153.0,
       "tax_deducted": 478631.0,
       "cess_deducted": 19061.0,
@@ -5595,8 +5595,8 @@
     "earnings": {
       "ARR-SPCDO": 181665.0,
       "TPTADA": 1656.0,
-      "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "TPTA": 3600.0,
       "ETKT": 1025.0,
       "MSP": 15500.0,
       "DA": 71760.0
@@ -5604,9 +5604,9 @@
     "deductions": {
       "EHCESS": 2910.0,
       "SPCDO": 106665.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 70642.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "ETKT": 1445.0,
       "FUR": 392.0,
       "LF": 878.0
@@ -5620,7 +5620,7 @@
       "gross_salary": 2880913.0,
       "total_taxable_income": 2880913.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 2830910.0,
       "total_tax_payable": 549273.0,
       "tax_deducted": 549273.0,
       "cess_deducted": 21971.0,
@@ -5648,16 +5648,16 @@
       "ARR-SPCDO": 106665.0,
       "TPTADA": 1800.0,
       "ARR-DA": 12480.0,
-      "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "TPTA": 3600.0,
       "MSP": 15500.0,
       "DA": 78000.0
     },
     "deductions": {
       "EHCESS": 1942.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 48555.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "ETKT": 702.0,
       "FUR": 392.0,
       "LF": 878.0
@@ -5671,7 +5671,7 @@
       "gross_salary": 358833.0,
       "total_taxable_income": 2992233.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 2942230.0,
       "total_tax_payable": 582669.0,
       "tax_deducted": 48555.0,
       "cess_deducted": 1942.0,
@@ -5697,17 +5697,17 @@
     "earnings": {
       "ARR-RSHNA": 856.0,
       "TPTADA": 1800.0,
-      "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "TPTA": 3600.0,
       "MSP": 15500.0,
       "DA": 78000.0
     },
     "deductions": {
       "EHCESS": 1943.0,
       "RSHNA": 143.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 48575.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "FUR": 392.0,
       "LF": 878.0
     },
@@ -5720,7 +5720,7 @@
       "gross_salary": 598946.0,
       "total_taxable_income": 2992946.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 2942950.0,
       "total_tax_payable": 582885.0,
       "tax_deducted": 97130.0,
       "cess_deducted": 3885.0,
@@ -5745,16 +5745,16 @@
     },
     "earnings": {
       "TPTADA": 1800.0,
-      "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "TPTA": 3600.0,
       "MSP": 15500.0,
       "DA": 78000.0
     },
     "deductions": {
       "EHCESS": 1943.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 48575.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "FUR": 392.0,
       "LF": 878.0
     },
@@ -5767,7 +5767,7 @@
       "gross_salary": 838346.0,
       "total_taxable_income": 2992946.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 2942950.0,
       "total_tax_payable": 582885.0,
       "tax_deducted": 145705.0,
       "cess_deducted": 5828.0,
@@ -5793,16 +5793,16 @@
     "earnings": {
       "ARR-CEA": 27000.0,
       "TPTADA": 1800.0,
-      "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "TPTA": 3600.0,
       "MSP": 15500.0,
       "DA": 78000.0
     },
     "deductions": {
       "EHCESS": 1979.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 49475.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "FUR": 392.0,
       "LF": 878.0
     },
@@ -5815,7 +5815,7 @@
       "gross_salary": 1104746.0,
       "total_taxable_income": 3019946.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 2969950.0,
       "total_tax_payable": 590985.0,
       "tax_deducted": 195180.0,
       "cess_deducted": 7807.0,
@@ -5842,16 +5842,16 @@
       "ARR-RSHNA": 4282.0,
       "DRESALW": 25000.0,
       "TPTADA": 1800.0,
-      "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "TPTA": 3600.0,
       "MSP": 15500.0,
       "DA": 78000.0
     },
     "deductions": {
       "EHCESS": 2023.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 50573.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "ETKT": 1117.0,
       "FUR": 392.0,
       "LF": 878.0
@@ -5865,7 +5865,7 @@
       "gross_salary": 1373428.0,
       "total_taxable_income": 3049228.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 2999230.0,
       "total_tax_payable": 599769.0,
       "tax_deducted": 245753.0,
       "cess_deducted": 9830.0,
@@ -5892,17 +5892,17 @@
       "ARR-SPCDO": 125000.0,
       "TPTADA": 1800.0,
       "SPCDO": 31250.0,
-      "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "TPTA": 3600.0,
       "MSP": 15500.0,
       "DA": 78000.0
     },
     "deductions": {
       "EHCESS": 2612.0,
       "Water": 3552.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 65305.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "FUR": 392.0,
       "LF": 878.0
     },
@@ -5915,7 +5915,7 @@
       "gross_salary": 1769078.0,
       "total_taxable_income": 3392978.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3342980.0,
       "total_tax_payable": 702894.0,
       "tax_deducted": 311058.0,
       "cess_deducted": 12442.0,
@@ -5947,12 +5947,12 @@
     "deductions": {
       "TPTADA": 116.0,
       "EHCESS": 1860.0,
-      "SPCDO": 156250.0,
       "Water": 3552.0,
-      "TPTA": 232.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
+      "SPCDO": 156250.0,
       "ITAX": 46492.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
+      "TPTA": 232.0,
       "FUR": 392.0,
       "LF": 878.0
     },
@@ -5965,7 +5965,7 @@
       "gross_salary": 1846698.0,
       "total_taxable_income": 3016698.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 2966700.0,
       "total_tax_payable": 590010.0,
       "tax_deducted": 357550.0,
       "cess_deducted": 14302.0,
@@ -5996,17 +5996,17 @@
       "TPTADA": 1908.0,
       "ARR-DA": 14040.0,
       "Water": 3552.0,
-      "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 82680.0
     },
     "deductions": {
       "EHCESS": 2302.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 57560.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "FUR": 392.0,
       "LF": 878.0
     },
@@ -6019,7 +6019,7 @@
       "gross_salary": 2139914.0,
       "total_taxable_income": 3201166.0,
       "standard_deduction": 50000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3151170.0,
       "total_tax_payable": 645351.0,
       "tax_deducted": 415110.0,
       "cess_deducted": 16604.0,
@@ -6044,17 +6044,17 @@
     },
     "earnings": {
       "TPTADA": 1908.0,
-      "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 82680.0
     },
     "deductions": {
       "EHCESS": 2227.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 55685.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "FUR": 392.0,
       "LF": 878.0
     },
@@ -6067,7 +6067,7 @@
       "gross_salary": 2405227.0,
       "total_taxable_income": 3201166.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3126170.0,
       "total_tax_payable": 637851.0,
       "tax_deducted": 470795.0,
       "cess_deducted": 18831.0,
@@ -6094,8 +6094,8 @@
       "ARR-HH32": 3290.0,
       "ARR-RH11": 24193.0,
       "TPTADA": 1908.0,
-      "TPTA": 3600.0,
       "BPAY": 140500.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "FUR": 1032.0,
       "MSP": 15500.0,
@@ -6105,9 +6105,9 @@
     "deductions": {
       "EHCESS": 2204.0,
       "Water": 887.0,
-      "AGIF": 10000.0,
-      "DSOP": 40000.0,
       "ITAX": 55100.0,
+      "DSOP": 40000.0,
+      "AGIF": 10000.0,
       "FUR": 3825.0,
       "LF": 9044.0
     },
@@ -6120,7 +6120,7 @@
       "gross_salary": 2698023.0,
       "total_taxable_income": 3228649.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3153650.0,
       "total_tax_payable": 636095.0,
       "tax_deducted": 525895.0,
       "cess_deducted": 21035.0,
@@ -6145,17 +6145,17 @@
     },
     "earnings": {
       "TPTADA": 1908.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 84906.0
     },
     "deductions": {
       "EHCESS": 2281.0,
-      "AGIF": 10000.0,
+      "ITAX": 57027.0,
       "DSOP": 40000.0,
-      "ITAX": 57027.0
+      "AGIF": 10000.0
     },
     "summary": {
       "gross_pay": 271739.0,
@@ -6166,7 +6166,7 @@
       "gross_salary": 2969762.0,
       "total_taxable_income": 3241501.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3166500.0,
       "total_tax_payable": 639950.0,
       "tax_deducted": 582922.0,
       "cess_deducted": 23316.0,
@@ -6191,17 +6191,17 @@
     },
     "earnings": {
       "TPTADA": 1908.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 84906.0
     },
     "deductions": {
       "EHCESS": 2282.0,
-      "AGIF": 10000.0,
+      "ITAX": 57028.0,
       "DSOP": 40000.0,
-      "ITAX": 57028.0
+      "AGIF": 10000.0
     },
     "summary": {
       "gross_pay": 271739.0,
@@ -6212,7 +6212,7 @@
       "gross_salary": 3241501.0,
       "total_taxable_income": 3241501.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3166500.0,
       "total_tax_payable": 639950.0,
       "tax_deducted": 639950.0,
       "cess_deducted": 25598.0,
@@ -6237,17 +6237,17 @@
     },
     "earnings": {
       "TPTADA": 1908.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 84906.0
     },
     "deductions": {
       "EHCESS": 1786.0,
-      "AGIF": 10000.0,
+      "ITAX": 44646.0,
       "DSOP": 40000.0,
-      "ITAX": 44646.0
+      "AGIF": 10000.0
     },
     "summary": {
       "gross_pay": 271739.0,
@@ -6258,7 +6258,7 @@
       "gross_salary": 271739.0,
       "total_taxable_income": 3260868.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3185870.0,
       "total_tax_payable": 535761.0,
       "tax_deducted": 44646.0,
       "cess_deducted": 1786.0,
@@ -6286,17 +6286,17 @@
       "ARR-CEA": 33750.0,
       "TPTADA": 1980.0,
       "ARR-DA": 9612.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1873.0,
-      "AGIF": 15000.0,
+      "ITAX": 46818.0,
       "DSOP": 40000.0,
-      "ITAX": 46818.0
+      "AGIF": 15000.0
     },
     "summary": {
       "gross_pay": 318593.0,
@@ -6307,7 +6307,7 @@
       "gross_salary": 590332.0,
       "total_taxable_income": 3340482.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3265480.0,
       "total_tax_payable": 559644.0,
       "tax_deducted": 91464.0,
       "cess_deducted": 3659.0,
@@ -6333,18 +6333,18 @@
     "earnings": {
       "ARR-RSHNA": 1650.0,
       "TPTADA": 1980.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1866.0,
-      "AGIF": 12500.0,
-      "RH12": 7518.0,
+      "ITAX": 46641.0,
       "DSOP": 40000.0,
-      "ITAX": 46641.0
+      "AGIF": 12500.0,
+      "RH12": 7518.0
     },
     "summary": {
       "gross_pay": 276665.0,
@@ -6355,7 +6355,7 @@
       "gross_salary": 859479.0,
       "total_taxable_income": 3334614.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3259610.0,
       "total_tax_payable": 557883.0,
       "tax_deducted": 138105.0,
       "cess_deducted": 5525.0,
@@ -6381,17 +6381,17 @@
     "earnings": {
       "ARR-RSHNA": 1350.0,
       "TPTADA": 1980.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1867.0,
-      "AGIF": 12500.0,
+      "ITAX": 46687.0,
       "DSOP": 40000.0,
-      "ITAX": 46687.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 276365.0,
@@ -6402,7 +6402,7 @@
       "gross_salary": 1135844.0,
       "total_taxable_income": 3335964.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3260960.0,
       "total_tax_payable": 558288.0,
       "tax_deducted": 184792.0,
       "cess_deducted": 7392.0,
@@ -6426,20 +6426,20 @@
       "pan": "AR*****90G"
     },
     "earnings": {
-      "MEDICAL": 1455.0,
       "DRESALW": 25000.0,
+      "MEDICAL": 1455.0,
       "TPTADA": 1980.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1905.0,
-      "AGIF": 12500.0,
-      "DSOP": 40000.0,
       "ITAX": 47624.0,
+      "DSOP": 40000.0,
+      "AGIF": 12500.0,
       "ETKT": 1806.0
     },
     "summary": {
@@ -6451,7 +6451,7 @@
       "gross_salary": 1435859.0,
       "total_taxable_income": 3360964.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3285960.0,
       "total_tax_payable": 565788.0,
       "tax_deducted": 232416.0,
       "cess_deducted": 9297.0,
@@ -6476,17 +6476,17 @@
     },
     "earnings": {
       "TPTADA": 1980.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1905.0,
-      "AGIF": 12500.0,
+      "ITAX": 47624.0,
       "DSOP": 40000.0,
-      "ITAX": 47624.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 275015.0,
@@ -6497,7 +6497,7 @@
       "gross_salary": 1710874.0,
       "total_taxable_income": 3360964.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3285960.0,
       "total_tax_payable": 565788.0,
       "tax_deducted": 280040.0,
       "cess_deducted": 11202.0,
@@ -6522,17 +6522,17 @@
     },
     "earnings": {
       "TPTADA": 1980.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 88110.0
     },
     "deductions": {
       "EHCESS": 1905.0,
-      "AGIF": 12500.0,
+      "ITAX": 47624.0,
       "DSOP": 40000.0,
-      "ITAX": 47624.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 275015.0,
@@ -6543,7 +6543,7 @@
       "gross_salary": 1985889.0,
       "total_taxable_income": 3360964.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3285960.0,
       "total_tax_payable": 565788.0,
       "tax_deducted": 327664.0,
       "cess_deducted": 13107.0,
@@ -6570,17 +6570,17 @@
       "ARR-TPTADA": 324.0,
       "TPTADA": 2088.0,
       "ARR-DA": 14418.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 92916.0
     },
     "deductions": {
       "EHCESS": 1999.0,
-      "AGIF": 12500.0,
+      "ITAX": 49984.0,
       "DSOP": 40000.0,
-      "ITAX": 49984.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 294671.0,
@@ -6591,7 +6591,7 @@
       "gross_salary": 2280560.0,
       "total_taxable_income": 3400276.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3325280.0,
       "total_tax_payable": 577584.0,
       "tax_deducted": 377648.0,
       "cess_deducted": 15106.0,
@@ -6616,17 +6616,17 @@
     },
     "earnings": {
       "TPTADA": 2088.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 92916.0
     },
     "deductions": {
       "EHCESS": 1999.0,
-      "AGIF": 12500.0,
+      "ITAX": 49984.0,
       "DSOP": 40000.0,
-      "ITAX": 49984.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 279929.0,
@@ -6637,7 +6637,7 @@
       "gross_salary": 2560489.0,
       "total_taxable_income": 3400276.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3325280.0,
       "total_tax_payable": 577584.0,
       "tax_deducted": 427632.0,
       "cess_deducted": 17105.0,
@@ -6663,18 +6663,18 @@
     "earnings": {
       "ARR-RSHNA": 17.0,
       "TPTADA": 2088.0,
-      "TPTA": 3600.0,
       "BPAY": 144700.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 92916.0
     },
     "deductions": {
       "EHCESS": 1936.0,
-      "AGIF": 12500.0,
-      "RH12": 15742.0,
+      "ITAX": 48411.0,
       "DSOP": 40000.0,
-      "ITAX": 48411.0
+      "AGIF": 12500.0,
+      "RH12": 15742.0
     },
     "summary": {
       "gross_pay": 279946.0,
@@ -6685,7 +6685,7 @@
       "gross_salary": 2824693.0,
       "total_taxable_income": 3384551.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3309550.0,
       "total_tax_payable": 572865.0,
       "tax_deducted": 476043.0,
       "cess_deducted": 19041.0,
@@ -6710,17 +6710,17 @@
     },
     "earnings": {
       "TPTADA": 2088.0,
-      "TPTA": 3600.0,
       "BPAY": 149000.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 95410.0
     },
     "deductions": {
       "EHCESS": 2341.0,
-      "AGIF": 12500.0,
+      "ITAX": 58527.0,
       "DSOP": 40000.0,
-      "ITAX": 58527.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 286723.0,
@@ -6731,7 +6731,7 @@
       "gross_salary": 3165270.0,
       "total_taxable_income": 3451993.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3376990.0,
       "total_tax_payable": 593097.0,
       "tax_deducted": 534570.0,
       "cess_deducted": 21382.0,
@@ -6756,17 +6756,17 @@
     },
     "earnings": {
       "TPTADA": 2088.0,
-      "TPTA": 3600.0,
       "BPAY": 149000.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 95410.0
     },
     "deductions": {
       "EHCESS": 1696.0,
-      "AGIF": 12500.0,
+      "ITAX": 42372.0,
       "DSOP": 40000.0,
-      "ITAX": 42372.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 286723.0,
@@ -6777,7 +6777,7 @@
       "gross_salary": 3398139.0,
       "total_taxable_income": 3398139.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3323140.0,
       "total_tax_payable": 576942.0,
       "tax_deducted": 576942.0,
       "cess_deducted": 23078.0,
@@ -6802,17 +6802,17 @@
     },
     "earnings": {
       "TPTADA": 2088.0,
-      "TPTA": 3600.0,
       "BPAY": 149000.0,
+      "TPTA": 3600.0,
       "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 95410.0
     },
     "deductions": {
       "EHCESS": 1966.0,
-      "AGIF": 12500.0,
+      "ITAX": 49142.0,
       "DSOP": 40000.0,
-      "ITAX": 49142.0
+      "AGIF": 12500.0
     },
     "summary": {
       "gross_pay": 286723.0,
@@ -6823,7 +6823,7 @@
       "gross_salary": 286723.0,
       "total_taxable_income": 3440676.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3365680.0,
       "total_tax_payable": 589704.0,
       "tax_deducted": 49142.0,
       "cess_deducted": 1966.0,
@@ -6850,18 +6850,18 @@
       "ARR-TPTADA": 216.0,
       "TPTADA": 2160.0,
       "ARR-DA": 9870.0,
-      "TPTA": 3600.0,
       "BPAY": 149000.0,
-      "RH12": 21125.0,
+      "TPTA": 3600.0,
       "ETKT": 1657.0,
+      "RH12": 21125.0,
       "MSP": 15500.0,
       "DA": 98700.0
     },
     "deductions": {
       "EHCESS": 2017.0,
-      "AGIF": 12500.0,
-      "DSOP": 40000.0,
       "ITAX": 50425.0,
+      "DSOP": 40000.0,
+      "AGIF": 12500.0,
       "ETKT": 3056.0
     },
     "summary": {
@@ -6873,7 +6873,7 @@
       "gross_salary": 586894.0,
       "total_taxable_income": 3487744.0,
       "standard_deduction": 75000.0,
-      "net_taxable_income": 7.0,
+      "net_taxable_income": 3412740.0,
       "total_tax_payable": 603822.0,
       "tax_deducted": 99567.0,
       "cess_deducted": 3983.0,

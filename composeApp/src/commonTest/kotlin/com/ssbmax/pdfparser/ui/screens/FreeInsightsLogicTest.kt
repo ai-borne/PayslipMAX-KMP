@@ -93,4 +93,15 @@ class FreeInsightsLogicTest {
         assertTrue(highlights.any { it.text.contains("Largest deduction this month: Income Tax") })
         assertTrue(highlights.any { it.text.contains("Biggest component change: Basic Pay") })
     }
+
+    @Test
+    fun testAiHighlightsNoDuplicatedNotableAllowance() {
+        val curr = makeLedgerRecord(dearnessAllowance = 45000.0) // increased DA by 15000
+        val prev = makeLedgerRecord("01/2026", dearnessAllowance = 30000.0)
+        val state = makeInsightsState(curr, prev)
+
+        val highlights = calculateAiHighlights(state)
+        assertTrue(highlights.any { it.text.contains("Biggest component change: Dearness Allowance") })
+        assertTrue(highlights.none { it.text.contains("Notable allowance movement: Dearness Allowance") })
+    }
 }

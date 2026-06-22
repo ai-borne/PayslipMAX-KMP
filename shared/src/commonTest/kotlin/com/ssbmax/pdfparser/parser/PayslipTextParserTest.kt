@@ -209,4 +209,36 @@ class PayslipTextParserTest {
         val (gross, ded, net) = parseTotals(cleaned)
         println("[TEST RESULT] gross: $gross, ded: $ded")
     }
+
+    @Test
+    fun testNetTaxableIncomeParsingAndCapping() {
+        // Test Case 1: Simple parenthetical formula (6 - 7 - 8)
+        val text1 = """
+            1. Gross Salary upto 30/04/2026 586894
+            6. Total Taxable Income 3487744
+            8. Standard Deduction 75000
+            9. Net Taxable Income (6 - 7 - 8) 3412740
+            10. Total Tax Payable 603822
+        """.trimIndent()
+        val res1 = parseTaxAndSavings(text1, null, text1)
+        assertNotNull(res1)
+        assertEquals(3412740.0, res1.netTaxableIncome)
+        // Verify early-month capping: since 603822 > 586894, totalTaxPayable is capped to 586894 * 0.30 = 176068.2 (rounded to 176068.0)
+        assertEquals(176068.0, res1.totalTaxPayable)
+
+        // Test Case 2: Nested parenthetical formula
+        val text2 = """
+            Gross Salary upto 31/01/2024 2547493
+            Total Taxable Income 2780509
+            Standard Deduction 50000
+            Net Taxable Income ((Sl.No. 6 + Sl.No. 7) - (Sl.No. 8)) 2730510
+            Total Tax Payable 519153
+        """.trimIndent()
+        val res2 = parseTaxAndSavings(text2, null, text2)
+        assertNotNull(res2)
+        assertEquals(2730510.0, res2.netTaxableIncome)
+        // No capping should apply since 519153 < 2547493
+        assertEquals(519153.0, res2.totalTaxPayable)
+    }
 }
+

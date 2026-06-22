@@ -665,15 +665,20 @@ def parse_pdf(file_path, filename):
         gross_sal_match = re.search(r"Gross Salary (?:upto \d+/\d+/\d+)?\s+(\d+)", tax_text, re.IGNORECASE) or re.search(r"Pay & Allce upto\s+\d+/\d+/\d+\s+(\d+)", tax_text, re.IGNORECASE)
         taxable_inc_match = re.search(r"Total Taxable Income\s+(\d+)", tax_text, re.IGNORECASE) or re.search(r"Total taxable pay\s+\(Sl\.No\.\s*\d+\+\d+\+\d+\+\d+\)\s+(\d+)", tax_text, re.IGNORECASE)
         std_ded_match = re.search(r"Standard Deduction\s+(\d+)", tax_text, re.IGNORECASE)
-        net_taxable_match = re.search(r"Net Taxable Income.*?\s+(\d+)", tax_text, re.IGNORECASE) or re.search(r"Net Taxable Income\s+\(\(Sl\.No\.\s*\d+\s*\+\s*Sl\.No\.\s*\d+\)\s*-\s*\(Sl\.No\.\s*\d+\)\)\s+(\d+)", tax_text, re.IGNORECASE)
+        net_taxable_match = (
+            re.search(r"Net Taxable Income\s+\(\(Sl\.No\.\s*\d+\s*\+\s*Sl\.No\.\s*\d+\)\s*-\s*\(Sl\.No\.\s*\d+\)\)\s+(\d+)", tax_text, re.IGNORECASE) or
+            re.search(r"Net Taxable Income\s+\(\d+\s*-\s*\d+\s*-\s*\d+\)\s+(\d+)", tax_text, re.IGNORECASE) or
+            re.search(r"Net Taxable Income\s+(\d+)", tax_text, re.IGNORECASE)
+        )
         tax_payable_match = re.search(r"Total Tax Payable\s+(\d+)", tax_text, re.IGNORECASE) or re.search(r"Total Income Tax\s+\(Tax on Sl\.No\.\s*\d+\)\s+(\d+)", tax_text, re.IGNORECASE)
         tax_deducted_match = re.search(r"Income Tax Deducted\s+(\d+)", tax_text, re.IGNORECASE)
         cess_deducted_match = re.search(r"Ed\.\s*Cess Deducted\s+(\d+)", tax_text, re.IGNORECASE) or re.search(r"Educ\.\s*Cess Deducted\s+(\d+)", tax_text, re.IGNORECASE)
         
+        gross_salary_ytd = 0.0
         if gross_sal_match:
-            val = float(gross_sal_match.group(1))
-            tax_and_savings_raw["gross_salary"] = val
-            tax_and_savings_std["gross_salary_ytd"] = val
+            gross_salary_ytd = float(gross_sal_match.group(1))
+            tax_and_savings_raw["gross_salary"] = gross_salary_ytd
+            tax_and_savings_std["gross_salary_ytd"] = gross_salary_ytd
         if taxable_inc_match:
             val = float(taxable_inc_match.group(1))
             tax_and_savings_raw["total_taxable_income"] = val
@@ -689,7 +694,10 @@ def parse_pdf(file_path, filename):
         if tax_payable_match:
             val = float(tax_payable_match.group(1))
             tax_and_savings_raw["total_tax_payable"] = val
-            tax_and_savings_std["total_tax_payable"] = val
+            if gross_salary_ytd > 0.0 and val > gross_salary_ytd:
+                tax_and_savings_std["total_tax_payable"] = round(gross_salary_ytd * 0.30)
+            else:
+                tax_and_savings_std["total_tax_payable"] = val
         if tax_deducted_match:
             val = float(tax_deducted_match.group(1))
             tax_and_savings_raw["tax_deducted"] = val

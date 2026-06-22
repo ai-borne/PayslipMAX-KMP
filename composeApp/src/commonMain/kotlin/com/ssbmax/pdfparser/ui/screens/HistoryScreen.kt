@@ -19,6 +19,7 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 fun HistoryScreen(
     viewModel: PayslipViewModel,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onNavigateToInsights: () -> Unit,
     onSharePayslip: (ParsedPayslip) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -60,6 +61,7 @@ fun HistoryScreen(
         onDismissDelete = { pendingDeletePayslip = null },
         onDismissAiReport = { selectedAiReport = null },
         viewModel = viewModel,
+        onNavigateToInsights = onNavigateToInsights,
         modifier = modifier,
     )
 }
@@ -84,12 +86,14 @@ private fun HistoryMainView(
     onSelectDetail: (ParsedPayslip?) -> Unit, onOpenOriginal: (ParsedPayslip) -> Unit, onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit, onAiReportClick: (AiInsightReportEntity) -> Unit, onSharePayslip: (ParsedPayslip) -> Unit,
     onDismissAction: () -> Unit, onDeleteRequest: () -> Unit, onConfirmDelete: (ParsedPayslip) -> Unit,
-    onDismissDelete: () -> Unit, onDismissAiReport: () -> Unit, modifier: Modifier = Modifier,
+    onDismissDelete: () -> Unit, onDismissAiReport: () -> Unit,
+    onNavigateToInsights: () -> Unit, modifier: Modifier = Modifier,
 ) {
     HistoryListContainer(
         payslips = uiState.payslips, aiReports = aiReports, ledgerRecords = ledgerRecords,
         isLoading = uiState.isLoading, onPayslipClick = onSelectDetail, onLongPress = onLongPress,
-        onSwipeDelete = onSwipeDelete, onAiReportClick = onAiReportClick, modifier = modifier,
+        onSwipeDelete = onSwipeDelete, onAiReportClick = onAiReportClick,
+        onNavigateToInsights = onNavigateToInsights, modifier = modifier,
     )
     HistoryOverlays(
         activeActionPayslip = activeActionPayslip, pendingDeletePayslip = pendingDeletePayslip,
@@ -112,7 +116,7 @@ private fun HistoryContent(
     onLongPress: (ParsedPayslip) -> Unit, onSwipeDelete: (ParsedPayslip) -> Unit, onAiReportClick: (AiInsightReportEntity) -> Unit,
     onSharePayslip: (ParsedPayslip) -> Unit, onDismissAction: () -> Unit, onDeleteRequest: () -> Unit,
     onConfirmDelete: (ParsedPayslip) -> Unit, onDismissDelete: () -> Unit, onDismissAiReport: () -> Unit,
-    viewModel: PayslipViewModel, modifier: Modifier = Modifier,
+    viewModel: PayslipViewModel, onNavigateToInsights: () -> Unit, modifier: Modifier = Modifier,
 ) {
     if (selectedDetailPayslip != null) {
         HistoryReplicaView(
@@ -132,7 +136,7 @@ private fun HistoryContent(
             onSharePayslip = onSharePayslip, onDismissAction = onDismissAction,
             onDeleteRequest = onDeleteRequest, onConfirmDelete = onConfirmDelete,
             onDismissDelete = onDismissDelete, onDismissAiReport = onDismissAiReport,
-            modifier = modifier,
+            onNavigateToInsights = onNavigateToInsights, modifier = modifier,
         )
     }
 }
@@ -189,6 +193,7 @@ private fun HistoryListContainer(
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
     onAiReportClick: (AiInsightReportEntity) -> Unit,
+    onNavigateToInsights: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var selectedTab by remember { mutableStateOf(HistoryTab.STATEMENTS) }
@@ -219,6 +224,7 @@ private fun HistoryListContainer(
             onLongPress = onLongPress,
             onSwipeDelete = onSwipeDelete,
             onAiReportClick = onAiReportClick,
+            onNavigateToInsights = onNavigateToInsights,
         )
     }
 }
@@ -234,6 +240,7 @@ private fun HistoryActiveList(
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
     onAiReportClick: (AiInsightReportEntity) -> Unit,
+    onNavigateToInsights: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (selectedTab == HistoryTab.STATEMENTS) {
@@ -254,7 +261,7 @@ private fun HistoryActiveList(
         }
     } else {
         if (aiReports.isEmpty()) {
-            EmptyAiReportsView()
+            EmptyAiReportsView(onNavigateToInsights = onNavigateToInsights)
         } else {
             AiReportsLazyList(
                 aiReports = aiReports,

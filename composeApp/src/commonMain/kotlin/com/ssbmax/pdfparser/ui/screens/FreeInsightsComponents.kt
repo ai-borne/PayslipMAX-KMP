@@ -170,9 +170,9 @@ fun calculateAiHighlights(state: InsightsState): List<HighlightItem> {
         }
 
         // Notable Allowance Movement
-        if (abs(daDiff) > 10.0) {
+        if (abs(daDiff) > 10.0 && maxChange?.first != "Dearness Allowance") {
             highlights.add(HighlightItem("Notable allowance movement: Dearness Allowance changed by ${formatCurrency(abs(daDiff))}"))
-        } else if (abs(hraDiff) > 10.0) {
+        } else if (abs(hraDiff) > 10.0 && maxChange?.first != "House Rent Allowance") {
             highlights.add(HighlightItem("Notable allowance movement: House Rent Allowance changed by ${formatCurrency(abs(hraDiff))}"))
         }
     }
