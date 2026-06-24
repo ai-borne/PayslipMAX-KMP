@@ -11,8 +11,10 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 @Composable
 fun ResetPinDialog(
     onDismiss: () -> Unit,
-    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
-    onResetPin: (ByteArray, String, String, (Result<Unit>) -> Unit) -> Unit,
+    onPickPdf:
+        (onResult: (ByteArray, String) -> Unit) -> Unit,
+    onResetPin:
+        (ByteArray, String, String, (Result<Unit>) -> Unit) -> Unit,
 ) {
     var selectedPdfBytes by remember { mutableStateOf<ByteArray?>(null) }
     var selectedPdfName by remember { mutableStateOf("") }
