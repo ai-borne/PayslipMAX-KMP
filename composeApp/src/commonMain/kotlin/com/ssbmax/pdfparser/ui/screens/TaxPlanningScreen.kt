@@ -18,6 +18,7 @@ import com.ssbmax.pdfparser.insights.WealthOptimizationEngine
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 
 data class TaxOptViewItem(
@@ -66,7 +67,7 @@ fun TaxPlanningScreen(
         } else {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = AppStrings.taxPlanningNoProjections,
+                    text = AppStringsPremium.taxPlanningNoProjections,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -82,7 +83,7 @@ private fun TaxOpportunitiesHeader(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
     ) {
         Text(
-            text = AppStrings.taxPlanningSavingsProjections,
+            text = AppStringsPremium.taxPlanningSavingsProjections,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -112,18 +113,18 @@ private fun TaxHeader(
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),
         ) {
-            Text("← Back")
+            Text(AppStrings.btnBack)
         }
         Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
         Column {
             Text(
-                text = AppStrings.taxPlanningTitle,
+                text = AppStringsPremium.taxPlanningTitle,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = AppStrings.taxPlanningSubtitle,
+                text = AppStringsPremium.taxPlanningSubtitle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -146,10 +147,10 @@ private fun TaxSummaryCard(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
-            TaxMetricsRow(label = AppStrings.taxPlanningGrossYtd, value = tax.grossSalaryYtd)
-            TaxMetricsRow(label = AppStrings.taxPlanningTaxable, value = tax.netTaxableIncome)
+            TaxMetricsRow(label = AppStringsPremium.taxPlanningGrossYtd, value = tax.grossSalaryYtd)
+            TaxMetricsRow(label = AppStringsPremium.taxPlanningTaxable, value = tax.netTaxableIncome)
             HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-            TaxMetricsRow(label = AppStrings.taxPlanningITax, value = tax.totalTaxPayable, isHighlight = true)
+            TaxMetricsRow(label = AppStringsPremium.taxPlanningITax, value = tax.totalTaxPayable, isHighlight = true)
         }
     }
 }

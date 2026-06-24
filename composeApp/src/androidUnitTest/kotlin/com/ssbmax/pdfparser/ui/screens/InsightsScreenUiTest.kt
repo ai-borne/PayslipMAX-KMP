@@ -10,6 +10,8 @@ import com.ssbmax.pdfparser.ui.FakeBackupManager
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.setPremiumEnabled
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
+import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -128,11 +130,53 @@ class InsightsScreenUiTest {
             mainClock.advanceTimeBy(300)
 
             // Inline locked card removed for free users — its unique CTA must not exist
-            onNodeWithText(AppStrings.aiAuditUnlockBtn).assertDoesNotExist()
+            onNodeWithText(AppStringsPremium.aiAuditUnlockBtn).assertDoesNotExist()
             // ProFeaturesTeaser is at scroll bottom — swipe to compose it, then assert
             onRoot().performTouchInput { swipeUp() }
             mainClock.advanceTimeBy(300)
-            onNodeWithText(AppStrings.settingsProUpgradeBtn).assertExists()
+            onNodeWithText("Unlock full PCDA(O) representations").assertExists()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun healthKpiCardRendersAndExpandsOnTap() =
+        runComposeUiTest {
+            runBlocking {
+                fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
+            }
+            testDispatcher.scheduler.runCurrent()
+            setContent { InsightsScreen(viewModel = viewModel, onNavigateTo = {}) }
+            testDispatcher.scheduler.runCurrent()
+            mainClock.advanceTimeBy(300)
+
+            onNodeWithText(InsightsStrings.wellnessChipLabel).assertIsDisplayed()
+            // Both the top-bar pill and the KPI card expose the same expand affordance.
+            onAllNodesWithContentDescription(InsightsStrings.wellnessChipExpandDesc).assertCountEquals(2)
+
+            onNodeWithText(InsightsStrings.wellnessChipLabel).performClick()
+            mainClock.advanceTimeBy(300)
+
+            onAllNodesWithContentDescription(InsightsStrings.wellnessChipCollapseDesc).assertCountEquals(2)
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun topBarHealthPillTogglesSameKpiCardAsTheCardItself() =
+        runComposeUiTest {
+            runBlocking {
+                fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
+            }
+            testDispatcher.scheduler.runCurrent()
+            setContent { InsightsScreen(viewModel = viewModel, onNavigateTo = {}) }
+            testDispatcher.scheduler.runCurrent()
+            mainClock.advanceTimeBy(300)
+
+            // The top-bar pill exposes the same expand affordance as the KPI card below it.
+            onAllNodesWithContentDescription(InsightsStrings.wellnessChipExpandDesc)[0].performClick()
+            mainClock.advanceTimeBy(300)
+
+            onAllNodesWithContentDescription(InsightsStrings.wellnessChipCollapseDesc)
+                .assertCountEquals(2)
         }
 
     @OptIn(ExperimentalTestApi::class)
@@ -149,7 +193,7 @@ class InsightsScreenUiTest {
             mainClock.advanceTimeBy(300)
 
             // ProFeaturesTeaser must not appear for premium users
-            onNodeWithText(AppStrings.settingsProUpgradeBtn).assertDoesNotExist()
+            onNodeWithText("Unlock full PCDA(O) representations").assertDoesNotExist()
 
             // Scroll to compose the section in LazyColumn
             onNode(hasScrollAction()).performScrollToNode(hasText(AppStrings.geminiAiAnalyzeBtn))

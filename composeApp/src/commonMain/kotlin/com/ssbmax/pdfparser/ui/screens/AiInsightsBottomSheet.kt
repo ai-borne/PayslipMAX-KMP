@@ -22,7 +22,7 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
 fun AiInsightsBottomSheet(
     aiInsights: String,
     onDismissRequest: () -> Unit,
-    onRegenerateClick: () -> Unit,
+    onRegenerateClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     ModalBottomSheet(
@@ -47,7 +47,7 @@ fun AiInsightsBottomSheet(
 @Composable
 private fun HeaderRow(
     onDismissRequest: () -> Unit,
-    onRegenerateClick: () -> Unit,
+    onRegenerateClick: (() -> Unit)?,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -64,10 +64,12 @@ private fun HeaderRow(
             )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onRegenerateClick, modifier = Modifier.size(AppDimensions.IconSizeMedium)) {
-                Text("🔄", fontSize = AppDimensions.TextSizeLarge)
+            if (onRegenerateClick != null) {
+                IconButton(onClick = onRegenerateClick, modifier = Modifier.size(AppDimensions.IconSizeMedium)) {
+                    Text("🔄", fontSize = AppDimensions.TextSizeLarge)
+                }
+                Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
             }
-            Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
             IconButton(onClick = onDismissRequest, modifier = Modifier.size(AppDimensions.IconSizeMedium)) {
                 Text("✕", fontSize = AppDimensions.TextSizeLarge)
             }

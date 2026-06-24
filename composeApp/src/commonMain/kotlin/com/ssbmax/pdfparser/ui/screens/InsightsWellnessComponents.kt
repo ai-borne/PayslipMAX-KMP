@@ -1,24 +1,19 @@
 package com.ssbmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
@@ -37,18 +32,17 @@ import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.math.abs
 
-// ── Top bar: month selector + wellness chip ──────────────────────────────────
+// ── Top bar: month selector + Pay Health pill ────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InsightsTopBar(
     payslips: List<ParsedPayslip>,
     selected: ParsedPayslip,
-    score: Int,
-    delta: Int?,
-    expanded: Boolean,
-    onExpandClick: () -> Unit,
     onSelectPayslip: (ParsedPayslip) -> Unit,
+    healthScore: Int,
+    wellnessExpanded: Boolean,
+    onWellnessExpandClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -70,14 +64,47 @@ fun InsightsTopBar(
                 onSelectPayslip = onSelectPayslip,
                 modifier = Modifier.weight(1f),
             )
-            WellnessChip(
-                score = score,
-                delta = delta,
-                expanded = expanded,
-                onExpandClick = onExpandClick,
+            PayHealthPill(
+                score = healthScore,
+                expanded = wellnessExpanded,
+                onClick = onWellnessExpandClick,
             )
         }
     }
+}
+
+@Composable
+private fun PayHealthPill(
+    score: Int,
+    expanded: Boolean,
+    onClick: () -> Unit,
+) {
+    val status = statusFor(score)
+    val color = statusColor(status)
+    FilterChip(
+        selected = true,
+        onClick = onClick,
+        label = {
+            Text(
+                text = "${InsightsStrings.wellnessChipLabel}: $score%",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+            )
+        },
+        trailingIcon = {
+            Icon(
+                imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                contentDescription =
+                    if (expanded) InsightsStrings.wellnessChipCollapseDesc else InsightsStrings.wellnessChipExpandDesc,
+            )
+        },
+        colors =
+            FilterChipDefaults.filterChipColors(
+                selectedContainerColor = color.copy(alpha = 0.15f),
+                selectedLabelColor = color,
+                selectedTrailingIconColor = color,
+            ),
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,112 +155,25 @@ private fun MonthSelectorDropdown(
     }
 }
 
-// ── Wellness chip (compact, tappable) ────────────────────────────────────────
+// ── Delta formatting (shared by HealthKpiCard) ───────────────────────────────
 
-@Composable
-private fun getWellnessColor(score: Int) =
-    when {
-        score >= 80 -> MaterialTheme.colorScheme.primary
-        score >= 50 -> MaterialTheme.colorScheme.secondary
-        else -> MaterialTheme.colorScheme.error
-    }
-
-private fun getDeltaText(delta: Int?) =
-    when {
-        delta == null || delta == 0 -> ""
-        delta > 0 -> " ▲$delta"
-        else -> " ▼${abs(delta)}"
-    }
-
-@Composable
-fun WellnessChip(
-    score: Int,
+fun getTrendText(
     delta: Int?,
-    expanded: Boolean,
-    onExpandClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val color = getWellnessColor(score)
-    val deltaText = getDeltaText(delta)
-    Surface(
-        modifier = modifier.clickable(onClick = onExpandClick),
-        shape = RoundedCornerShape(AppDimensions.IconSizeHuge),
-        color = color.copy(alpha = 0.12f),
-        border = BorderStroke(AppDimensions.BorderThin, color.copy(alpha = 0.4f)),
-    ) {
-        Row(
-            modifier =
-                Modifier.padding(
-                    horizontal = AppDimensions.PaddingSmall,
-                    vertical = AppDimensions.SpacingTiny,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
-        ) {
-            Text(
-                text = InsightsStrings.wellnessChipLabel,
-                style = MaterialTheme.typography.labelSmall,
-                color = color,
-            )
-            Text(
-                text = "$score$deltaText",
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Bold,
-                color = color,
-            )
-            Icon(
-                imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                contentDescription = if (expanded) InsightsStrings.wellnessChipCollapseDesc else InsightsStrings.wellnessChipExpandDesc,
-                tint = color,
-                modifier = Modifier.size(AppDimensions.IconSizeSmall),
-            )
-        }
+    previousMonthLabel: String?,
+): String {
+    if (delta == null || delta == 0) return ""
+    val sinceLabel = previousMonthLabel ?: InsightsStrings.wellnessTrendSinceLastPayslip
+    return if (delta > 0) {
+        "${InsightsStrings.wellnessTrendImprovedPrefix} $delta ${InsightsStrings.wellnessTrendPointsSince} $sinceLabel"
+    } else {
+        "${InsightsStrings.wellnessTrendDownPrefix} ${abs(delta)} ${InsightsStrings.wellnessTrendPointsSince} $sinceLabel"
     }
 }
 
-// ── Wellness drivers panel (expanded section) ────────────────────────────────
+// ── Wellness driver row (reused by HealthKpiCard breakdown) ─────────────────
 
 @Composable
-fun WellnessDriversSection(
-    score: Int,
-    drivers: List<WellnessDriver>,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = InsightsStrings.wellnessDriversTitle,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                Text(
-                    text = "$score/100",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            }
-            drivers.forEach { driver -> WellnessDriverRow(driver = driver) }
-        }
-    }
-}
-
-@Composable
-private fun WellnessDriverRow(driver: WellnessDriver) {
+fun WellnessDriverRow(driver: WellnessDriver) {
     val impactColor =
         when {
             driver.pointImpact > 0 -> MaterialTheme.colorScheme.primary
@@ -255,8 +195,14 @@ private fun WellnessDriverRow(driver: WellnessDriver) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            val titlePrefix =
+                if (driver.pointImpact >= 0) {
+                    InsightsStrings.wellnessPositiveDriverPrefix
+                } else {
+                    InsightsStrings.wellnessWatchDriverPrefix
+                }
             Text(
-                text = driver.title,
+                text = "$titlePrefix${driver.title}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),

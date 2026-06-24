@@ -1,7 +1,9 @@
 package com.ssbmax.pdfparser.repository
 
 import com.ssbmax.pdfparser.crypto.CryptoHelper
+import com.ssbmax.pdfparser.crypto.getLegacyFallbackKey
 import com.ssbmax.pdfparser.database.hexToByteArray
+import com.ssbmax.pdfparser.database.toDomain
 import com.ssbmax.pdfparser.database.toEncryptedEntity
 import com.ssbmax.pdfparser.domain.Deductions
 import com.ssbmax.pdfparser.domain.Earnings
@@ -52,7 +54,7 @@ class PayslipRepositoryDeviceKeyTest {
             assertTrue(decryptDeviceResult.isSuccess, "Decryption with device key should succeed")
 
             // 2. Verify decryption with the legacy fallback fails
-            val legacyKey = "PCDAPayslipOfflineSecret2026!"
+            val legacyKey = CryptoHelper.getLegacyFallbackKey()
             val decryptLegacyResult = CryptoHelper.decrypt(ciphertextBytes, legacyKey)
             assertTrue(decryptLegacyResult.isFailure, "Decryption with legacy fallback key must fail")
         }
@@ -146,5 +148,32 @@ class PayslipRepositoryDeviceKeyTest {
             val deviceAKey = "SomeOtherDeviceKeyString12345678"
             val decryptedWithDeviceA = CryptoHelper.decrypt(restoredEntity.ciphertext.hexToByteArray(), deviceAKey)
             assertTrue(decryptedWithDeviceA.isFailure, "Restored entity should not be decryptable by Device A's key anymore")
+        }
+
+    @Test
+    fun testLegacyDecryptionFallbackSucceeds() =
+        runTest {
+            val payslip = createMockPayslip("08/2026")
+            val legacyKey = CryptoHelper.getLegacyFallbackKey()
+            val entity = payslip.toEncryptedEntity(legacyKey)
+
+            val decrypted = entity.toDomain()
+            assertEquals(payslip.dateStr, decrypted.dateStr)
+        }
+
+    @Test
+    fun testGracefulRecoveryOnUndecryptableData() =
+        runTest {
+            val fakeDao = FakePayslipDao()
+            val fakeParser = FakePdfParser()
+            val repository = PayslipRepository(fakeDao, fakeParser, kotlinx.coroutines.Dispatchers.Unconfined)
+
+            val payslip = createMockPayslip("08/2026")
+            val entity = payslip.toEncryptedEntity("TotallyWrongRandomPassword")
+            fakeDao.insertPayslip(entity)
+
+            val list = repository.getAllPayslips().first()
+            assertTrue(list.isEmpty(), "List should be empty due to graceful recovery")
+            assertTrue(fakeDao.getAllPayslips().first().isEmpty(), "Database should have been cleared")
         }
 }

@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
 import kotlin.math.abs
 
 data class MoMChange(
@@ -63,10 +64,10 @@ fun ExecutiveSummaryCard(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
-            ExecutiveSummaryRow(AppStrings.execSummaryNetSalary, current.netPay, previous?.netPay)
-            ExecutiveSummaryRow(AppStrings.execSummaryGrossPay, current.grossPay, previous?.grossPay)
-            ExecutiveSummaryRow(AppStrings.execSummaryIncomeTax, current.incomeTax, previous?.incomeTax)
-            ExecutiveSummaryRow(AppStrings.execSummaryDsop, current.dsopSubscription, previous?.dsopSubscription)
+            ExecutiveSummaryRow(AppStringsPremium.execSummaryNetSalary, current.netPay, previous?.netPay)
+            ExecutiveSummaryRow(AppStringsPremium.execSummaryGrossPay, current.grossPay, previous?.grossPay)
+            ExecutiveSummaryRow(AppStringsPremium.execSummaryIncomeTax, current.incomeTax, previous?.incomeTax)
+            ExecutiveSummaryRow(AppStringsPremium.execSummaryDsop, current.dsopSubscription, previous?.dsopSubscription)
         }
     }
 }

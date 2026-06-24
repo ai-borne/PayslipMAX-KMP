@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.ssbmax.pdfparser.Screen
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 
 private data class PremiumToolSpec(
@@ -36,9 +37,9 @@ fun PremiumToolsSection(
 ) {
     val tools =
         listOf(
-            PremiumToolSpec(InsightsStrings.premiumToolsDraftClaimsIcon, AppStrings.premiumToolsDraftClaims, InsightsStrings.premiumToolsDraftClaimsValueProp, Screen.Representation),
-            PremiumToolSpec(InsightsStrings.premiumToolsTaxPlannerIcon, AppStrings.premiumToolsTaxPlanner, InsightsStrings.premiumToolsTaxPlannerValueProp, Screen.TaxPlanning),
-            PremiumToolSpec(InsightsStrings.premiumToolsDsopIcon, AppStrings.premiumToolsDsopSimulator, InsightsStrings.premiumToolsDsopValueProp, Screen.RetirementPlanning),
+            PremiumToolSpec(InsightsStrings.premiumToolsDraftClaimsIcon, AppStringsPremium.premiumToolsDraftClaims, InsightsStrings.premiumToolsDraftClaimsValueProp, Screen.Representation),
+            PremiumToolSpec(InsightsStrings.premiumToolsTaxPlannerIcon, AppStringsPremium.premiumToolsTaxPlanner, InsightsStrings.premiumToolsTaxPlannerValueProp, Screen.TaxPlanning),
+            PremiumToolSpec(InsightsStrings.premiumToolsDsopIcon, AppStringsPremium.premiumToolsDsopSimulator, InsightsStrings.premiumToolsDsopValueProp, Screen.RetirementPlanning),
         )
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -51,7 +52,7 @@ fun PremiumToolsSection(
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             Text(
-                text = AppStrings.premiumToolsTitle,
+                text = AppStringsPremium.premiumToolsTitle,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -89,7 +90,7 @@ fun ProFeaturesTeaser(
             )
             ProFeatureRow(
                 icon = AppStrings.proTeaserToolsIcon,
-                title = AppStrings.premiumToolsTitle,
+                title = AppStringsPremium.premiumToolsTitle,
                 detail = InsightsStrings.proTeaserToolsDetail,
             )
             Button(onClick = onUpgradeClick, modifier = Modifier.fillMaxWidth()) {

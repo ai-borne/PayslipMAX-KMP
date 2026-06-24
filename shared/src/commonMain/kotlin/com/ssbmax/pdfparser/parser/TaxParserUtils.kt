@@ -18,8 +18,9 @@ internal fun parseTaxAndSavings(
             ?: Regex("Total taxable pay\\s+\\(Sl\\.No\\.\\s*\\d+\\+\\d+\\+\\d+\\+\\d+\\)\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
     val stdDedMatch = Regex("Standard Deduction\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
     val netTaxableMatch =
-        Regex("Net Taxable Income.*?\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
-            ?: Regex("Net Taxable Income\\s+\\(\\(Sl\\.No\\.\\s*\\d+\\s*\\+\\s*Sl\\.No\\.\\s*\\d+\\)\\s*-\\s*\\(Sl\\.No\\.\\s*\\d+\\)\\)\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
+        Regex("Net Taxable Income\\s+\\(\\(Sl\\.No\\.\\s*\\d+\\s*\\+\\s*Sl\\.No\\.\\s*\\d+\\)\\s*-\\s*\\(Sl\\.No\\.\\s*\\d+\\)\\)\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
+            ?: Regex("Net Taxable Income\\s+\\(\\d+\\s*-\\s*\\d+\\s*-\\s*\\d+\\)\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
+            ?: Regex("Net Taxable Income\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
     val taxPayableMatch =
         Regex("Total Tax Payable\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
             ?: Regex("Total Income Tax\\s+\\(Tax on Sl\\.No\\.\\s*\\d+\\)\\s+(\\d+)", RegexOption.IGNORE_CASE).find(taxText)
@@ -50,12 +51,21 @@ internal fun parseTaxAndSavings(
             }
         }
 
+        val grossSalaryYtd = grossSalMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
+        val totalTaxPayableRaw = taxPayableMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
+        val totalTaxPayable =
+            if (grossSalaryYtd > 0.0 && totalTaxPayableRaw > grossSalaryYtd) {
+                kotlin.math.round(grossSalaryYtd * 0.30)
+            } else {
+                totalTaxPayableRaw
+            }
+
         return TaxAndSavings(
-            grossSalaryYtd = grossSalMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
+            grossSalaryYtd = grossSalaryYtd,
             totalTaxableIncome = taxableIncMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
             standardDeduction = stdDedMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
             netTaxableIncome = netTaxableMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
-            totalTaxPayable = taxPayableMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
+            totalTaxPayable = totalTaxPayable,
             taxDeductedYtd = taxDeductedMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
             cessDeductedYtd = cessDeductedMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
             dsopFund = dsopFund,

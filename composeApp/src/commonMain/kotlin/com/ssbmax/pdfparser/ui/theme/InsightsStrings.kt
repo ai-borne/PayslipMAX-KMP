@@ -3,7 +3,6 @@ package com.ssbmax.pdfparser.ui.theme
 object InsightsStrings {
     // Wellness chip, month selector & score driver labels
     const val wellnessChipLabel = "Pay Health"
-    const val wellnessDriversTitle = "Score Drivers"
     const val wellnessSavingsRateLabel = "Savings Rate:"
     const val wellnessNoIssuesBonus = "Clean payslip — no anomalies detected"
     const val wellnessImproveSavingsRate = "Increase DSOP subscription to improve savings rate"
@@ -51,9 +50,48 @@ object InsightsStrings {
     const val wellnessChipExpandDesc = "Expand score drivers"
     const val wellnessChipCollapseDesc = "Collapse score drivers"
 
+    // Health KPI card (status bands, expanded breakdown sections)
+    const val healthStatusExcellent = "Excellent"
+    const val healthStatusHealthy = "Healthy"
+    const val healthStatusFair = "Fair"
+    const val healthStatusNeedsAttention = "Needs Attention"
+    const val healthStatusCritical = "Critical"
+    const val positiveSignalsTitle = "Positive Signals"
+    const val watchItemsTitle = "Watch Items"
+    const val opportunityTitle = "Opportunity"
+    const val wellnessTrendSinceLastPayslip = "last payslip"
+    const val wellnessTrendImprovedPrefix = "↑ Improved by"
+    const val wellnessTrendDownPrefix = "↓ Down"
+    const val wellnessTrendPointsSince = "points since"
+    const val wellnessPositiveDriverPrefix = "✅ "
+    const val wellnessWatchDriverPrefix = "⚠ "
+
     // Improve path prefix (SSOT for the "→" arrow used in driver rows)
     const val wellnessImprovePathPrefix = "→ "
 
+    // Pay breakdown chart (stacked Net/DSOP/Tax/Other across the trailing window)
+    const val sixMonthBreakdownTitle = "6-Month Pay Breakdown"
+    const val monthBreakdownTitleSuffix = "-Month Pay Breakdown"
+    const val dateRangeSeparator = " – "
+
     // AI summary truncation limit
     const val aiSummaryMaxLength = 200
+
+    // Refactor Strings
+    const val keyFindingsTitle = "Key Findings"
+    const val aiHighlightsTitle = "AI Highlights"
+    const val premiumIntelligenceTitle = "Premium Intelligence"
+    const val premiumIntelligencePrice = "₹99 / Year"
+    const val estimatedOpportunityLabel = "Estimated Opportunity:"
+    const val potentialTaxSavingsTitle = "Potential Tax Savings Found"
+    const val potentialRecoveryOpportunityTitle = "Recovery Opportunity Found"
+    const val unlockFullRecommendationLabel = "Unlock full recommendation"
+    const val unlockFullRepresentationsLabel = "Unlock full PCDA(O) representations"
+
+    // Premium teaser defaults & activated status
+    const val premiumTeaserDefaultTitle = "Premium Financial Analysis Found"
+    const val premiumTeaserDefaultOpportunity = "Complete Financial Toolkit"
+    const val premiumTeaserDefaultInsight = "Detailed projections, anomaly audits, and claims generators ready."
+    const val premiumTeaserDefaultButton = "Unlock Premium Intelligence"
+    const val premiumActivatedSuffix = " (Activated)"
 }

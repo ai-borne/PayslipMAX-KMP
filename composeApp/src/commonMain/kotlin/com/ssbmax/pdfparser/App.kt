@@ -28,6 +28,7 @@ enum class Screen {
     Representation,
     TaxPlanning,
     RetirementPlanning,
+    HelpLegal,
 }
 
 @Composable
@@ -50,6 +51,10 @@ fun App(
         if (uiState.isLockEnabled && uiState.isAppLocked) {
             LockScreen(
                 onUnlock = { pin -> viewModel.verifyPin(pin) },
+                onPickPdf = onPickPdf,
+                onResetPin = { bytes, pwd, name, onResult ->
+                    viewModel.resetPinWithPdf(bytes, pwd, name, onResult)
+                },
             )
         } else {
             Scaffold(
@@ -83,23 +88,19 @@ private fun ScreenContent(
     onNavigate: (Screen) -> Unit,
 ) {
     when (currentScreen) {
-        Screen.Dashboard -> {
+        Screen.Dashboard ->
             DashboardScreen(
                 viewModel = viewModel,
-                onPickPdfTrigger = { password ->
-                    onPickPdf { bytes, name ->
-                        viewModel.importPayslip(bytes, password, name)
-                    }
-                },
+                onPickPdfTrigger = { password -> onPickPdf { bytes, name -> viewModel.importPayslip(bytes, password, name) } },
             )
-        }
-        Screen.History -> HistoryScreen(viewModel = viewModel, onOpenPdf = onOpenPdf)
-        Screen.Insights ->
-            InsightsScreen(
+        Screen.History ->
+            HistoryScreen(
                 viewModel = viewModel,
-                onNavigateTo = onNavigate,
+                onOpenPdf = onOpenPdf,
+                onNavigateToInsights = { onNavigate(Screen.Insights) },
             )
-        Screen.Settings -> SettingsScreen(viewModel = viewModel)
+        Screen.Insights -> InsightsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
+        Screen.Settings -> SettingsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
         Screen.Representation ->
             com.ssbmax.pdfparser.ui.screens.RepresentationScreen(
                 viewModel = viewModel,
@@ -114,6 +115,10 @@ private fun ScreenContent(
             com.ssbmax.pdfparser.ui.screens.RetirementPlanningScreen(
                 viewModel = viewModel,
                 onBack = { onNavigate(Screen.Insights) },
+            )
+        Screen.HelpLegal ->
+            com.ssbmax.pdfparser.ui.screens.HelpLegalScreen(
+                onBack = { onNavigate(Screen.Settings) },
             )
     }
 }

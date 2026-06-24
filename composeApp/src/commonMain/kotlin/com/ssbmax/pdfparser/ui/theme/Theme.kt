@@ -66,6 +66,7 @@ private val LightColorScheme =
 // Dimension Constants (Fulfills no-hardcoded-dimensions rule)
 object AppColors {
     val Warning = Color(0xFFF59E0B)
+    val Caution = Color(0xFFEA580C)
 }
 
 object AppDimensions {
@@ -78,6 +79,7 @@ object AppDimensions {
     val CardElevation = 4.dp
     val DialogElevation = 6.dp
     val DialogMaxHeight = 240.dp
+    val LockKeyboardWidth = 280.dp
 
     val SpacingTwo = 2.dp
     val SpacingTiny = 4.dp
@@ -100,6 +102,7 @@ object AppDimensions {
     val IconSizeExtraLarge = 40.dp
     val IconSizeDouble = 48.dp
     val IconSizeHuge = 72.dp
+    val LedgerCellWidth = 75.dp
 
     val ChartHeightMedium = 180.dp
     val ChartHeightLarge = 200.dp
