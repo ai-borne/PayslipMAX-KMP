@@ -43,7 +43,7 @@ class HistoricalLedgerCardTest {
             grossPay = 200300.0,
             dsopSubscription = 20000.0,
             incomeTax = 25000.0,
-            netPay = 155300.0
+            netPay = 155300.0,
         )
     }
 }

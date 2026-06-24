@@ -1,5 +1,7 @@
 package com.ssbmax.pdfparser.ui.screens
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -11,12 +13,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
-
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.keyframes
 
 @Composable
 fun LockScreen(
@@ -55,14 +53,14 @@ fun LockScreen(
             }
         },
         onForgotPin = { showResetDialog = true },
-        modifier = modifier
+        modifier = modifier,
     )
 
     if (showResetDialog) {
         ResetPinDialog(
             onDismiss = { showResetDialog = false },
             onPickPdf = onPickPdf,
-            onResetPin = onResetPin
+            onResetPin = onResetPin,
         )
     }
 }
@@ -78,10 +76,11 @@ private fun LockScreenContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(AppDimensions.PaddingLarge),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(AppDimensions.PaddingLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly,
     ) {
@@ -89,7 +88,7 @@ private fun LockScreenContent(
 
         PinIndicatorDots(
             pinLength = pinLength,
-            modifier = Modifier.offset(x = shakeOffset.dp)
+            modifier = Modifier.offset(x = shakeOffset.dp),
         )
 
         LockKeyboard(
@@ -106,16 +105,17 @@ private fun LockScreenContent(
 private suspend fun triggerShake(animatable: Animatable<Float, *>) {
     animatable.animateTo(
         targetValue = 0f,
-        animationSpec = keyframes {
-            durationMillis = 300
-            0f at 0
-            15f at 50
-            -15f at 100
-            15f at 150
-            -15f at 200
-            10f at 250
-            0f at 300
-        }
+        animationSpec =
+            keyframes {
+                durationMillis = 300
+                0f at 0
+                15f at 50
+                -15f at 100
+                15f at 150
+                -15f at 200
+                10f at 250
+                0f at 300
+            },
     )
 }
 

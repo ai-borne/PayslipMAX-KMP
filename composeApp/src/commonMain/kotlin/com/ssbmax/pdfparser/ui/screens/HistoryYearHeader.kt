@@ -10,15 +10,14 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
@@ -49,9 +48,10 @@ fun HistoryYearHeader(
     Card(
         modifier = modifier.fillMaxWidth().clickable { onToggleExpand() },
         shape = CardDefaults.elevatedShape,
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        ),
+        colors =
+            CardDefaults.elevatedCardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            ),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(AppDimensions.PaddingMedium),
@@ -182,16 +182,18 @@ fun HistoryLazyList(
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
 ) {
-    val grouped = remember(payslips) {
-        payslips.groupBy { it.year }.toList().sortedByDescending { it.first }
-    }
+    val grouped =
+        remember(payslips) {
+            payslips.groupBy { it.year }.toList().sortedByDescending { it.first }
+        }
     val latestYear = remember(grouped) { grouped.firstOrNull()?.first }
     var expandedYears by remember {
         mutableStateOf(if (latestYear != null) setOf(latestYear) else emptySet())
     }
-    val sortedLedger = remember(ledgerRecords) {
-        ledgerRecords.sortedWith(compareByDescending<LedgerRecordEntity> { it.year }.thenByDescending { it.monthNum })
-    }
+    val sortedLedger =
+        remember(ledgerRecords) {
+            ledgerRecords.sortedWith(compareByDescending<LedgerRecordEntity> { it.year }.thenByDescending { it.monthNum })
+        }
 
     androidx.compose.foundation.lazy.LazyColumn(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
@@ -217,4 +219,3 @@ fun HistoryLazyList(
         }
     }
 }
-
