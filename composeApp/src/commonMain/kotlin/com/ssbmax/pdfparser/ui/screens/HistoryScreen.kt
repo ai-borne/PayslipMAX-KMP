@@ -6,14 +6,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import com.ssbmax.pdfparser.database.AiInsightReportEntity
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
-import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @Composable
 fun HistoryScreen(
@@ -68,8 +65,11 @@ fun HistoryScreen(
 
 @Composable
 private fun HistoryReplicaView(
-    payslip: ParsedPayslip, onBack: () -> Unit, onOpenOriginal: (ParsedPayslip) -> Unit,
-    viewModel: PayslipViewModel, modifier: Modifier = Modifier,
+    payslip: ParsedPayslip,
+    onBack: () -> Unit,
+    onOpenOriginal: (ParsedPayslip) -> Unit,
+    viewModel: PayslipViewModel,
+    modifier: Modifier = Modifier,
 ) {
     PayslipReplicaScreen(
         payslip = payslip,
@@ -81,13 +81,25 @@ private fun HistoryReplicaView(
 
 @Composable
 private fun HistoryMainView(
-    uiState: PayslipUiState, aiReports: List<AiInsightReportEntity>, ledgerRecords: List<LedgerRecordEntity>,
-    activeActionPayslip: ParsedPayslip?, pendingDeletePayslip: ParsedPayslip?, selectedAiReport: AiInsightReportEntity?,
-    onSelectDetail: (ParsedPayslip?) -> Unit, onOpenOriginal: (ParsedPayslip) -> Unit, onLongPress: (ParsedPayslip) -> Unit,
-    onSwipeDelete: (ParsedPayslip) -> Unit, onAiReportClick: (AiInsightReportEntity) -> Unit, onSharePayslip: (ParsedPayslip) -> Unit,
-    onDismissAction: () -> Unit, onDeleteRequest: () -> Unit, onConfirmDelete: (ParsedPayslip) -> Unit,
-    onDismissDelete: () -> Unit, onDismissAiReport: () -> Unit,
-    onNavigateToInsights: () -> Unit, modifier: Modifier = Modifier,
+    uiState: PayslipUiState,
+    aiReports: List<AiInsightReportEntity>,
+    ledgerRecords: List<LedgerRecordEntity>,
+    activeActionPayslip: ParsedPayslip?,
+    pendingDeletePayslip: ParsedPayslip?,
+    selectedAiReport: AiInsightReportEntity?,
+    onSelectDetail: (ParsedPayslip?) -> Unit,
+    onOpenOriginal: (ParsedPayslip) -> Unit,
+    onLongPress: (ParsedPayslip) -> Unit,
+    onSwipeDelete: (ParsedPayslip) -> Unit,
+    onAiReportClick: (AiInsightReportEntity) -> Unit,
+    onSharePayslip: (ParsedPayslip) -> Unit,
+    onDismissAction: () -> Unit,
+    onDeleteRequest: () -> Unit,
+    onConfirmDelete: (ParsedPayslip) -> Unit,
+    onDismissDelete: () -> Unit,
+    onDismissAiReport: () -> Unit,
+    onNavigateToInsights: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     HistoryListContainer(
         payslips = uiState.payslips, aiReports = aiReports, ledgerRecords = ledgerRecords,
@@ -110,13 +122,27 @@ private fun HistoryMainView(
 
 @Composable
 private fun HistoryContent(
-    uiState: PayslipUiState, aiReports: List<AiInsightReportEntity>, ledgerRecords: List<LedgerRecordEntity>,
-    selectedDetailPayslip: ParsedPayslip?, activeActionPayslip: ParsedPayslip?, pendingDeletePayslip: ParsedPayslip?,
-    selectedAiReport: AiInsightReportEntity?, onSelectDetail: (ParsedPayslip?) -> Unit, onOpenOriginal: (ParsedPayslip) -> Unit,
-    onLongPress: (ParsedPayslip) -> Unit, onSwipeDelete: (ParsedPayslip) -> Unit, onAiReportClick: (AiInsightReportEntity) -> Unit,
-    onSharePayslip: (ParsedPayslip) -> Unit, onDismissAction: () -> Unit, onDeleteRequest: () -> Unit,
-    onConfirmDelete: (ParsedPayslip) -> Unit, onDismissDelete: () -> Unit, onDismissAiReport: () -> Unit,
-    viewModel: PayslipViewModel, onNavigateToInsights: () -> Unit, modifier: Modifier = Modifier,
+    uiState: PayslipUiState,
+    aiReports: List<AiInsightReportEntity>,
+    ledgerRecords: List<LedgerRecordEntity>,
+    selectedDetailPayslip: ParsedPayslip?,
+    activeActionPayslip: ParsedPayslip?,
+    pendingDeletePayslip: ParsedPayslip?,
+    selectedAiReport: AiInsightReportEntity?,
+    onSelectDetail: (ParsedPayslip?) -> Unit,
+    onOpenOriginal: (ParsedPayslip) -> Unit,
+    onLongPress: (ParsedPayslip) -> Unit,
+    onSwipeDelete: (ParsedPayslip) -> Unit,
+    onAiReportClick: (AiInsightReportEntity) -> Unit,
+    onSharePayslip: (ParsedPayslip) -> Unit,
+    onDismissAction: () -> Unit,
+    onDeleteRequest: () -> Unit,
+    onConfirmDelete: (ParsedPayslip) -> Unit,
+    onDismissDelete: () -> Unit,
+    onDismissAiReport: () -> Unit,
+    viewModel: PayslipViewModel,
+    onNavigateToInsights: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     if (selectedDetailPayslip != null) {
         HistoryReplicaView(
@@ -140,7 +166,6 @@ private fun HistoryContent(
         )
     }
 }
-
 
 @Composable
 private fun HistoryOverlays(
@@ -270,5 +295,3 @@ private fun HistoryActiveList(
         }
     }
 }
-
-

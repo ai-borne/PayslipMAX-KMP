@@ -24,13 +24,14 @@ fun PremiumSettingsCard(
     val borderColor = getPremiumCardBorderColor(isPremiumEnabled)
 
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable {
-                if (!isPremiumEnabled) {
-                    onUpgradePrompt()
-                }
-            },
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable {
+                    if (!isPremiumEnabled) {
+                        onUpgradePrompt()
+                    }
+                },
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
         colors = CardDefaults.cardColors(containerColor = containerColor),
         border = BorderStroke(AppDimensions.BorderThin, borderColor),
@@ -40,13 +41,22 @@ fun PremiumSettingsCard(
 }
 
 @Composable
-private fun getPremiumCardContainerColor(isPremiumEnabled: Boolean, isDark: Boolean) =
+private fun getPremiumCardContainerColor(
+    isPremiumEnabled: Boolean,
+    isDark: Boolean,
+) =
     if (isPremiumEnabled) {
-        if (isDark) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
-        else MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+        if (isDark) {
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
+        } else {
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+        }
     } else {
-        if (isDark) MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.15f)
-        else MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.1f)
+        if (isDark) {
+            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.15f)
+        } else {
+            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.1f)
+        }
     }
 
 @Composable
@@ -60,9 +70,10 @@ private fun getPremiumCardBorderColor(isPremiumEnabled: Boolean) =
 @Composable
 private fun PremiumCardContent(isPremiumEnabled: Boolean) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(AppDimensions.PaddingMedium),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(AppDimensions.PaddingMedium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -73,7 +84,7 @@ private fun PremiumCardContent(isPremiumEnabled: Boolean) {
             Text(
                 text = "👑",
                 fontSize = AppDimensions.TextSizeHuge,
-                modifier = Modifier.padding(end = AppDimensions.SpacingMedium)
+                modifier = Modifier.padding(end = AppDimensions.SpacingMedium),
             )
             PremiumTextDetails(isPremiumEnabled = isPremiumEnabled)
         }
@@ -81,7 +92,7 @@ private fun PremiumCardContent(isPremiumEnabled: Boolean) {
             Text(
                 text = "➔",
                 fontSize = AppDimensions.TextSizeLarge,
-                color = MaterialTheme.colorScheme.tertiary
+                color = MaterialTheme.colorScheme.tertiary,
             )
         }
     }
@@ -98,11 +109,12 @@ private fun PremiumTextDetails(isPremiumEnabled: Boolean) {
         )
         Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
         Text(
-            text = if (isPremiumEnabled) {
-                "Subscribed (Next billing: Oct 2026)"
-            } else {
-                "Unlock Advanced Insights & Cloud Backup (₹99 / Year)"
-            },
+            text =
+                if (isPremiumEnabled) {
+                    "Subscribed (Next billing: Oct 2026)"
+                } else {
+                    "Unlock Advanced Insights & Cloud Backup (₹99 / Year)"
+                },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

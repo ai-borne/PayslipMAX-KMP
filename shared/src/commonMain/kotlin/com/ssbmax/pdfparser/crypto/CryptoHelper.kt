@@ -57,4 +57,3 @@ fun CryptoHelper.getLegacyFallbackKey(): String {
     val key = 90
     return ByteArray(xored.size) { i -> (xored[i].toInt() xor key).toByte() }.decodeToString()
 }
-

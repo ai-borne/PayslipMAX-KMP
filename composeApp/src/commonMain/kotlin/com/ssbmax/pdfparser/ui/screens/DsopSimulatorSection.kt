@@ -140,7 +140,10 @@ private fun TaxSafeTooltip() {
 }
 
 @Composable
-private fun ProjectionRow(initialBalance: Double, monthly: Double) {
+private fun ProjectionRow(
+    initialBalance: Double,
+    monthly: Double,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
@@ -193,4 +196,3 @@ private fun formatShortAmount(value: Double): String {
         else -> value.toLong().toString()
     }
 }
-

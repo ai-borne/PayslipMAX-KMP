@@ -203,7 +203,6 @@ private fun RepresentationActionsRow(
     }
 }
 
-
 @Composable
 private fun RepresentationEditor(
     draft: RepresentationDraftEntity,
