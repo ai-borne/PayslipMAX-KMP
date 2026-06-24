@@ -39,4 +39,3 @@ class DsopSimulatorTest {
         assertTrue(result15.projectedBalance > result10.projectedBalance, "15-year projected balance should be greater than 10-year balance")
     }
 }
-
