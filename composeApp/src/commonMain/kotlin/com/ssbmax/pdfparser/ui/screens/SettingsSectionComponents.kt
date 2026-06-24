@@ -175,11 +175,12 @@ fun SettingsHeader(
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onTitleClick,
-                ),
+                modifier =
+                    Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onTitleClick,
+                    ),
             )
             OfflineStatusPill()
         }
@@ -198,9 +199,10 @@ fun VersionFooter(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = AppDimensions.PaddingMedium),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = AppDimensions.PaddingMedium),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
