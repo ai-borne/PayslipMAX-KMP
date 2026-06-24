@@ -4,7 +4,10 @@ import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIWindow
 
-actual fun shareText(text: String, title: String) {
+actual fun shareText(
+    text: String,
+    title: String
+) {
     val keyWindow = UIApplication.sharedApplication.keyWindow
         ?: UIApplication.sharedApplication.windows.firstOrNull() as? UIWindow
     val rootViewController = keyWindow?.rootViewController ?: return
