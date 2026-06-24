@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
+import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 /**
  * Renders a simple, elegant line chart representing values over time.
@@ -36,70 +36,100 @@ fun TrendLineChart(
     color2: Color = MaterialTheme.colorScheme.secondary,
     gridColor: Color = MaterialTheme.colorScheme.outlineVariant,
     textColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    highlightIndex: Int? = null,
+    highlightColor: Color = MaterialTheme.colorScheme.tertiary,
 ) {
     val textMeasurer = rememberTextMeasurer()
     val textStyle = TextStyle(color = textColor, fontSize = AppDimensions.TextSizeTiny)
 
     Canvas(modifier = modifier) {
-        val width = size.width
-        val height = size.height
-
-        val paddingLeft = 110f
-        val paddingRight = 30f
-        val paddingTop = 30f
-        val paddingBottom = 60f
-
-        val chartWidth = width - paddingLeft - paddingRight
-        val chartHeight = height - paddingTop - paddingBottom
-
-        if (labels.isEmpty() || lineData1.isEmpty()) {
-            drawText(
-                textMeasurer = textMeasurer,
-                text = "No data available",
-                topLeft = Offset(width / 2f - 60f, height / 2f - 10f),
-                style = textStyle.copy(fontSize = 12.sp),
-            )
-            return@Canvas
-        }
-
-        val maxVal =
-            maxOf(
-                lineData1.maxOrNull() ?: 1.0,
-                lineData2.maxOrNull() ?: 1.0,
-            ).coerceAtLeast(1.0)
-
-        drawChartGrid(
-            textMeasurer = textMeasurer,
-            textStyle = textStyle,
-            maxVal = maxVal,
-            gridCount = 4,
-            paddingLeft = paddingLeft,
-            paddingRight = paddingRight,
-            paddingTop = paddingTop,
-            chartHeight = chartHeight,
-            width = width,
-            gridColor = gridColor,
+        drawTrendSeries(
+            labels, lineData1, lineData2, color1, color2, gridColor, highlightIndex, highlightColor, textMeasurer, textStyle, textColor,
         )
-
-        val steps = labels.size
-        val xPoints =
-            FloatArray(steps) { i ->
-                if (steps > 1) {
-                    paddingLeft + (chartWidth / (steps - 1)) * i
-                } else {
-                    paddingLeft + chartWidth / 2f
-                }
-            }
-
-        if (lineData1.isNotEmpty()) {
-            drawDatasetPath(lineData1, color1, xPoints, maxVal, paddingTop, chartHeight)
-        }
-        if (lineData2.isNotEmpty()) {
-            drawDatasetPath(lineData2, color2, xPoints, maxVal, paddingTop, chartHeight)
-        }
-
-        drawXAxisLabels(labels, xPoints, paddingTop, chartHeight, textMeasurer, textStyle)
     }
+}
+
+private fun DrawScope.drawTrendSeries(
+    labels: List<String>,
+    lineData1: List<Double>,
+    lineData2: List<Double>,
+    color1: Color,
+    color2: Color,
+    gridColor: Color,
+    highlightIndex: Int?,
+    highlightColor: Color,
+    textMeasurer: androidx.compose.ui.text.TextMeasurer,
+    textStyle: TextStyle,
+    textColor: Color,
+) {
+    val paddingLeft = 110f
+    val paddingRight = 30f
+    val paddingTop = 30f
+    val paddingBottom = 60f
+    val chartWidth = size.width - paddingLeft - paddingRight
+    val chartHeight = size.height - paddingTop - paddingBottom
+
+    if (labels.isEmpty() || lineData1.isEmpty()) {
+        drawNoDataPlaceholder(textMeasurer, textColor)
+        return
+    }
+
+    val maxVal = maxOf(lineData1.maxOrNull() ?: 1.0, lineData2.maxOrNull() ?: 1.0).coerceAtLeast(1.0)
+    drawChartGrid(
+        textMeasurer = textMeasurer,
+        textStyle = textStyle,
+        maxVal = maxVal,
+        gridCount = 4,
+        paddingLeft = paddingLeft,
+        paddingRight = paddingRight,
+        paddingTop = paddingTop,
+        chartHeight = chartHeight,
+        width = size.width,
+        gridColor = gridColor,
+    )
+
+    val xPoints = computeXPoints(labels.size, paddingLeft, chartWidth)
+    if (highlightIndex != null && highlightIndex in xPoints.indices) {
+        drawHighlightLine(xPoints[highlightIndex], paddingTop, chartHeight, highlightColor)
+    }
+    if (lineData1.isNotEmpty()) drawDatasetPath(lineData1, color1, xPoints, maxVal, paddingTop, chartHeight)
+    if (lineData2.isNotEmpty()) drawDatasetPath(lineData2, color2, xPoints, maxVal, paddingTop, chartHeight)
+    drawXAxisLabels(labels, xPoints, paddingTop, chartHeight, textMeasurer, textStyle)
+}
+
+private fun computeXPoints(
+    steps: Int,
+    paddingLeft: Float,
+    chartWidth: Float,
+): FloatArray =
+    FloatArray(steps) { i ->
+        if (steps > 1) paddingLeft + (chartWidth / (steps - 1)) * i else paddingLeft + chartWidth / 2f
+    }
+
+private fun DrawScope.drawNoDataPlaceholder(
+    textMeasurer: androidx.compose.ui.text.TextMeasurer,
+    textColor: Color,
+) {
+    drawText(
+        textMeasurer = textMeasurer,
+        text = AppStrings.chartNoDataAvailable,
+        topLeft = Offset(size.width / 2f - 60f, size.height / 2f - 10f),
+        style = TextStyle(color = textColor, fontSize = AppDimensions.TextSizeMedium),
+    )
+}
+
+private fun DrawScope.drawHighlightLine(
+    x: Float,
+    paddingTop: Float,
+    chartHeight: Float,
+    highlightColor: Color,
+) {
+    drawLine(
+        color = highlightColor.copy(alpha = 0.3f),
+        start = Offset(x, paddingTop),
+        end = Offset(x, paddingTop + chartHeight),
+        strokeWidth = 6f,
+    )
 }
 
 private fun DrawScope.drawChartGrid(
@@ -124,22 +154,26 @@ private fun DrawScope.drawChartGrid(
         )
 
         val gridVal = maxVal * (gridCount - i) / gridCount
-        val lakhs = (gridVal / 1000.0).toInt() / 100.0
-        val lakhsStr = lakhs.toString()
-        val finalStr =
-            when {
-                lakhs == 0.0 -> "0"
-                lakhsStr.endsWith(".0") -> lakhsStr.dropLast(2)
-                else -> lakhsStr
-            }
-        val gridValStr = if (finalStr == "0") "₹0" else "₹${finalStr}L"
         drawText(
             textMeasurer = textMeasurer,
-            text = gridValStr,
+            text = formatLakhs(gridVal),
             topLeft = Offset(10f, y - 12f),
             style = textStyle,
         )
     }
+}
+
+/** Formats a rupee value in lakhs for compact chart axis labels, e.g. 250000.0 -> "₹2.5L". */
+fun formatLakhs(value: Double): String {
+    val lakhs = (value / 1000.0).toInt() / 100.0
+    val lakhsStr = lakhs.toString()
+    val finalStr =
+        when {
+            lakhs == 0.0 -> "0"
+            lakhsStr.endsWith(".0") -> lakhsStr.dropLast(2)
+            else -> lakhsStr
+        }
+    return if (finalStr == "0") "₹0" else "₹${finalStr}L"
 }
 
 private fun DrawScope.drawDatasetPath(

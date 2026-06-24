@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.domain.*
+import com.ssbmax.pdfparser.logging.Logger
 
 object PayslipTextParser {
     fun parse(
@@ -34,7 +35,7 @@ object PayslipTextParser {
 
             val officer = parseOfficer(cleanedFullText, monthNum, year)
             val (grossPay, totalDeductions, netRemittance) = parseTotals(cleanedFullTextRaw)
-            println("[DEBUG PARSE TOTALS] filename: $filename, grossPay: $grossPay, totalDeductions: $totalDeductions, netRemittance: $netRemittance")
+            Logger.d("PayslipTextParser", "filename: $filename, grossPay: $grossPay, totalDeductions: $totalDeductions, netRemittance: $netRemittance")
 
             // Extract Earnings (Left Column) & Deductions (Middle Column)
             val leftExtracted =
@@ -75,13 +76,13 @@ object PayslipTextParser {
             val ledgerDebitKeys = setOf("openingDebitBalance", "closingCreditBalance")
             val creditReversalDebitKeys = setOf("licenseFee", "furnitureRent", "waterCharges", "electricityCharges", "barrackDamage", "ticketRecovery")
 
-            println("[DEBUG PARSE KEYS] filename: $filename")
-            println("[DEBUG PARSE KEYS] cleanedLeftText: '$cleanedLeftText'")
-            println("[DEBUG PARSE KEYS] cleanedLeftText CHAR CODES: ${cleanedLeftText.map { it.code }.joinToString(",")}")
-            println("[DEBUG PARSE KEYS] cleanedMiddleText: '$cleanedMiddleText'")
-            println("[DEBUG PARSE KEYS] cleanedMiddleText CHAR CODES: ${cleanedMiddleText.map { it.code }.joinToString(",")}")
-            println("[DEBUG PARSE KEYS] finalLeftExtracted: $finalLeftExtracted")
-            println("[DEBUG PARSE KEYS] finalMiddleExtracted: $finalMiddleExtracted")
+            Logger.d("PayslipTextParser", "filename: $filename")
+            Logger.d("PayslipTextParser", "cleanedLeftText: '$cleanedLeftText'")
+            Logger.d("PayslipTextParser", "cleanedLeftText CHAR CODES: ${cleanedLeftText.map { it.code }.joinToString(",")}")
+            Logger.d("PayslipTextParser", "cleanedMiddleText: '$cleanedMiddleText'")
+            Logger.d("PayslipTextParser", "cleanedMiddleText CHAR CODES: ${cleanedMiddleText.map { it.code }.joinToString(",")}")
+            Logger.d("PayslipTextParser", "finalLeftExtracted: $finalLeftExtracted")
+            Logger.d("PayslipTextParser", "finalMiddleExtracted: $finalMiddleExtracted")
 
             for ((key, value) in finalLeftExtracted) {
                 if (key in PayslipPatternConfig.creditKeysMapping.keys) {
@@ -157,7 +158,7 @@ object PayslipTextParser {
                     trueGross - sumEarnings
                 } else {
                     if (sumEarnings > trueGross && trueGross > 0.0) {
-                        println("[WARNING] Parsed sum of earnings ($sumEarnings) exceeds true gross pay ($trueGross) in $filename")
+                        Logger.w("PayslipTextParser", "Parsed sum of earnings ($sumEarnings) exceeds true gross pay ($trueGross) in $filename")
                     }
                     0.0
                 }
@@ -167,7 +168,7 @@ object PayslipTextParser {
                     trueDeductions - sumDeductions
                 } else {
                     if (sumDeductions > trueDeductions && trueDeductions > 0.0) {
-                        println("[WARNING] Parsed sum of deductions ($sumDeductions) exceeds true total deductions ($trueDeductions) in $filename")
+                        Logger.w("PayslipTextParser", "Parsed sum of deductions ($sumDeductions) exceeds true total deductions ($trueDeductions) in $filename")
                     }
                     0.0
                 }

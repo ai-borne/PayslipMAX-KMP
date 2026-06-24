@@ -63,7 +63,13 @@ private fun AllocationLegend(
     gross: Double,
     colors: List<Color>,
 ) {
-    val items = listOf("Net Take-Home", "Provident Fund (DSOP)", "Taxes & Cess", "Other Deductions")
+    val items =
+        listOf(
+            AppStrings.legendNetTakeHome,
+            AppStrings.legendDsop,
+            AppStrings.legendTax,
+            AppStrings.legendOtherDeductions,
+        )
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSix)) {
         items.forEachIndexed { i, label ->
             val value = values[i]

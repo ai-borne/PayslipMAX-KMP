@@ -142,4 +142,66 @@ class PayslipViewModelSettingsTest {
                     ),
             )
         }
+
+    @Test
+    fun testResetPinWithPdfSuccess() =
+        runTest {
+            viewModel.setLockEnabled(true, "1234")
+            viewModel.updateProfileOverrides("Test Officer", "CDA123", "PAN123")
+            runCurrent()
+            viewModel.lockApp()
+            runCurrent()
+            assertTrue(viewModel.uiState.value.isAppLocked)
+
+            val mockPayslip =
+                createMockPayslip("04/2026").let {
+                    it.copy(officer = it.officer.copy(pan = "PAN123"))
+                }
+            fakeParser.result = Result.success(mockPayslip)
+
+            var callbackResult: Result<Unit>? = null
+            viewModel.resetPinWithPdf(
+                pdfBytes = byteArrayOf(1, 2, 3),
+                password = "pass",
+                filename = "04 Apr 2026.pdf",
+            ) { callbackResult = it }
+            runCurrent()
+
+            assertNotNull(callbackResult)
+            assertTrue(callbackResult!!.isSuccess)
+            val state = viewModel.uiState.value
+            assertFalse(state.isLockEnabled)
+            assertFalse(state.isAppLocked)
+            assertEquals("", state.appPinHash)
+        }
+
+    @Test
+    fun testResetPinWithPdfPanMismatch() =
+        runTest {
+            viewModel.setLockEnabled(true, "1234")
+            viewModel.updateProfileOverrides("Test Officer", "CDA123", "PAN123")
+            runCurrent()
+            viewModel.lockApp()
+            runCurrent()
+            assertTrue(viewModel.uiState.value.isAppLocked)
+
+            val mockPayslip =
+                createMockPayslip("04/2026").let {
+                    it.copy(officer = it.officer.copy(pan = "DIFFERENT_PAN"))
+                }
+            fakeParser.result = Result.success(mockPayslip)
+
+            var callbackResult: Result<Unit>? = null
+            viewModel.resetPinWithPdf(
+                pdfBytes = byteArrayOf(1, 2, 3),
+                password = "pass",
+                filename = "04 Apr 2026.pdf",
+            ) { callbackResult = it }
+            runCurrent()
+
+            assertNotNull(callbackResult)
+            assertTrue(callbackResult!!.isFailure)
+            assertEquals("PDF does not match the active user profile", callbackResult!!.exceptionOrNull()?.message)
+            assertTrue(viewModel.uiState.value.isAppLocked)
+        }
 }

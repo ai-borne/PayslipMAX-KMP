@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.repository
 
 import com.ssbmax.pdfparser.crypto.CryptoHelper
+import com.ssbmax.pdfparser.crypto.getLegacyFallbackKey
 import com.ssbmax.pdfparser.database.*
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.parser.PdfParser
@@ -21,7 +22,17 @@ class PayslipRepository(
      */
     fun getAllPayslips(): Flow<List<ParsedPayslip>> {
         return payslipDao.getAllPayslips().map { entities ->
-            entities.map { it.toDomain() }
+            try {
+                entities.map { it.toDomain() }
+            } catch (e: Exception) {
+                // If decryption fails completely, clear database to recover self-healing style
+                try {
+                    clearAll()
+                } catch (dbEx: Exception) {
+                    // Ignore database delete errors
+                }
+                emptyList()
+            }
         }
     }
 
@@ -71,14 +82,23 @@ class PayslipRepository(
         withContext(dispatcher) {
             payslipDao.deletePayslip(dateStr)
             payslipDao.deletePayslipPdf(dateStr)
+            payslipDao.deleteLedgerRecord(dateStr)
+            payslipDao.deleteAiInsightReportByMonth(dateStr)
+            payslipDao.deleteFinancialInsightsByMonth(dateStr)
         }
 
     /**
      * Clears all local records from database.
      */
-    suspend fun clearAll() {
-        payslipDao.clearAll()
-    }
+    suspend fun clearAll() =
+        withContext(dispatcher) {
+            payslipDao.clearAll()
+            payslipDao.clearAllLedgerRecords()
+            payslipDao.clearAllFinancialInsights()
+            payslipDao.clearAllRepresentationDrafts()
+            payslipDao.clearAllAiInsightReports()
+            payslipDao.clearAllPdfs()
+        }
 
     /**
      * Seeds mock data for historical analytics.
@@ -184,7 +204,7 @@ class PayslipRepository(
                                 entity.toDomain(password)
                             } catch (e: Exception) {
                                 // Fallback: Version 1 backups are encrypted with the legacy key
-                                entity.toDomain("PCDAPayslipOfflineSecret2026!")
+                                entity.toDomain(CryptoHelper.getLegacyFallbackKey())
                             }
                         domainModel.toEncryptedEntity(deviceKey)
                     }

@@ -18,6 +18,7 @@ data class PayslipUiState(
     val selectedPayslip: ParsedPayslip? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
+    val importError: String? = null,
     val importSuccess: Boolean = false,
     val isPremiumEnabled: Boolean = false,
     val aiInsights: String? = null,
@@ -42,6 +43,15 @@ class PayslipViewModel(
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
 
+    val subscriptionManager =
+        com.ssbmax.pdfparser.subscription.SubscriptionManager(
+            isPremiumEnabledProvider = { _uiState.value.isPremiumEnabled },
+        ).apply {
+            if (com.ssbmax.pdfparser.subscription.isDebugBuild()) {
+                enableDeveloperPro()
+            }
+        }
+
     val ledgerRecords: StateFlow<List<com.ssbmax.pdfparser.database.LedgerRecordEntity>> =
         financialIntelligenceRepository?.getAllLedgerRecords()
             ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
@@ -54,6 +64,11 @@ class PayslipViewModel(
 
     val representationDrafts: StateFlow<List<com.ssbmax.pdfparser.database.RepresentationDraftEntity>> =
         financialIntelligenceRepository?.getAllRepresentationDrafts()
+            ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
+            ?: MutableStateFlow(emptyList())
+
+    val aiInsightReports: StateFlow<List<com.ssbmax.pdfparser.database.AiInsightReportEntity>> =
+        financialIntelligenceRepository?.getAllAiInsightReports()
             ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
             ?: MutableStateFlow(emptyList())
 
@@ -184,7 +199,7 @@ class PayslipViewModel(
         filename: String,
     ) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null, importSuccess = false) }
+            _uiState.update { it.copy(isLoading = true, importError = null, importSuccess = false) }
             val result = repository.importPayslip(pdfBytes, password, filename)
             if (result.isSuccess) {
                 val parsed = result.getOrNull()
@@ -204,7 +219,7 @@ class PayslipViewModel(
             } else {
                 _uiState.update { state ->
                     state.copy(
-                        error = result.exceptionOrNull()?.message ?: "Decryption or parsing failed",
+                        importError = result.exceptionOrNull()?.message ?: "Decryption or parsing failed",
                         isLoading = false,
                     )
                 }
@@ -232,14 +247,6 @@ class PayslipViewModel(
                 _uiState.update { it.copy(aiInsights = null, aiError = null) }
             }
         }
-    }
-
-    fun clearError() {
-        _uiState.update { it.copy(error = null) }
-    }
-
-    fun resetImportSuccess() {
-        _uiState.update { it.copy(importSuccess = false) }
     }
 
     fun getPayslipPdf(
