@@ -242,4 +242,40 @@ class PayslipTextParserTest {
         // No capping should apply since 519153 < 2547493
         assertEquals(519153.0, res2.totalTaxPayable)
     }
+
+    @Test
+    fun testDynamicSpatialParserKeyValueExtraction() {
+        val sampleText = """
+            BPAY (12A) 144700
+            DA 84906
+            CC to bankers 11923
+            to 31/08/2024
+        """.trimIndent()
+        
+        val pairs = DynamicSpatialParser.extractDynamicPairs(sampleText)
+        assertEquals(144700.0, pairs["BPAY"])
+        assertEquals(84906.0, pairs["DA"])
+        assertEquals(11923.0, pairs["CC to bankers"])
+        // standalone "to" should be blocked
+        assertTrue(pairs["to"] == null)
+    }
+
+    @Test
+    fun testMathematicalReconciliationFailure() {
+        val mockText =
+            """
+            01/2024  STATEMENT OF ACCOUNT FOR 01/2024
+            Name: Officer Officer Officer A/C No - 16/000/000000X PAN No: AR*****90G
+            BPAY 140500
+            DA 71760
+            DSOP 40000
+            kuula Aaya Gross Pay 212260 kuula kTaOtI Total Deductions 40000
+            Net Remittance : Rs.130000
+            """.trimIndent()
+
+        val result = PayslipTextParser.parse(mockText, "01 Jan 2024.pdf")
+        assertTrue(result.isFailure)
+        val msg = result.exceptionOrNull()?.message ?: ""
+        assertTrue(msg.contains("reconciliation check failed"), "Error message should complain about reconciliation failure, got: '$msg'")
+    }
 }

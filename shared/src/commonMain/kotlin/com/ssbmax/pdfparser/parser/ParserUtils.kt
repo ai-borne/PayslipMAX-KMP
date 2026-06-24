@@ -102,6 +102,8 @@ internal fun splitCreditDebitSections(cleanedText: String): Triple<String, Strin
     for (anchor in debitOnlyAnchors) {
         val idx = tableText.indexOf(anchor, ignoreCase = true)
         if (idx in 1 until splitIdx) {
+            val context = tableText.substring(kotlin.math.max(0, idx - 8), idx).lowercase()
+            if (context.contains("ref")) continue
             splitIdx = idx
             found = true
         }
@@ -109,6 +111,8 @@ internal fun splitCreditDebitSections(cleanedText: String): Triple<String, Strin
     for (anchor in caseSensitiveAnchors) {
         val idx = tableText.indexOf(anchor, ignoreCase = false)
         if (idx in 1 until splitIdx) {
+            val context = tableText.substring(kotlin.math.max(0, idx - 8), idx).lowercase()
+            if (context.contains("ref")) continue
             splitIdx = idx
             found = true
         }

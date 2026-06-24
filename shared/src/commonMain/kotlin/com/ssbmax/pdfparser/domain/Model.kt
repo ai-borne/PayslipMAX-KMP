@@ -15,6 +15,8 @@ data class ParsedPayslip(
     val ledgerBalances: LedgerBalances,
     val summary: PayslipSummary,
     val taxAndSavings: TaxAndSavings?,
+    val rawEarnings: Map<String, Double> = emptyMap(),
+    val rawDeductions: Map<String, Double> = emptyMap(),
 )
 
 @Serializable
