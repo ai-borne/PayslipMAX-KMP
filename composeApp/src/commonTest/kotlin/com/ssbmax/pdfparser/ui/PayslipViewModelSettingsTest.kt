@@ -153,16 +153,17 @@ class PayslipViewModelSettingsTest {
             runCurrent()
             assertTrue(viewModel.uiState.value.isAppLocked)
 
-            val mockPayslip = createMockPayslip("04/2026").let {
-                it.copy(officer = it.officer.copy(pan = "PAN123"))
-            }
+            val mockPayslip =
+                createMockPayslip("04/2026").let {
+                    it.copy(officer = it.officer.copy(pan = "PAN123"))
+                }
             fakeParser.result = Result.success(mockPayslip)
 
             var callbackResult: Result<Unit>? = null
             viewModel.resetPinWithPdf(
                 pdfBytes = byteArrayOf(1, 2, 3),
                 password = "pass",
-                filename = "04 Apr 2026.pdf"
+                filename = "04 Apr 2026.pdf",
             ) { callbackResult = it }
             runCurrent()
 
@@ -184,16 +185,17 @@ class PayslipViewModelSettingsTest {
             runCurrent()
             assertTrue(viewModel.uiState.value.isAppLocked)
 
-            val mockPayslip = createMockPayslip("04/2026").let {
-                it.copy(officer = it.officer.copy(pan = "DIFFERENT_PAN"))
-            }
+            val mockPayslip =
+                createMockPayslip("04/2026").let {
+                    it.copy(officer = it.officer.copy(pan = "DIFFERENT_PAN"))
+                }
             fakeParser.result = Result.success(mockPayslip)
 
             var callbackResult: Result<Unit>? = null
             viewModel.resetPinWithPdf(
                 pdfBytes = byteArrayOf(1, 2, 3),
                 password = "pass",
-                filename = "04 Apr 2026.pdf"
+                filename = "04 Apr 2026.pdf",
             ) { callbackResult = it }
             runCurrent()
 

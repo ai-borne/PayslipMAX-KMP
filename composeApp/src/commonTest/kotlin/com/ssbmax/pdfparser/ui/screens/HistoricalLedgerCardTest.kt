@@ -3,7 +3,6 @@ package com.ssbmax.pdfparser.ui.screens
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class HistoricalLedgerCardTest {
     @Test
@@ -26,7 +25,11 @@ class HistoricalLedgerCardTest {
         assertEquals("5,500", formatAmount(5500.0))
     }
 
-    private fun createMockLedgerRecord(dateStr: String, year: Int, monthNum: Int): LedgerRecordEntity {
+    private fun createMockLedgerRecord(
+        dateStr: String,
+        year: Int,
+        monthNum: Int,
+    ): LedgerRecordEntity {
         return LedgerRecordEntity(
             dateStr = dateStr,
             year = year,
