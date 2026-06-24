@@ -3,7 +3,10 @@ package com.ssbmax.pdfparser.utils
 import android.content.Intent
 import com.ssbmax.pdfparser.crypto.ContextHolder
 
-actual fun shareText(text: String, title: String) {
+actual fun shareText(
+    text: String,
+    title: String
+) {
     val context = ContextHolder.context ?: return
     val intent = Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
