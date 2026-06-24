@@ -53,11 +53,12 @@ internal fun parseTaxAndSavings(
 
         val grossSalaryYtd = grossSalMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
         val totalTaxPayableRaw = taxPayableMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
-        val totalTaxPayable = if (grossSalaryYtd > 0.0 && totalTaxPayableRaw > grossSalaryYtd) {
-            kotlin.math.round(grossSalaryYtd * 0.30)
-        } else {
-            totalTaxPayableRaw
-        }
+        val totalTaxPayable =
+            if (grossSalaryYtd > 0.0 && totalTaxPayableRaw > grossSalaryYtd) {
+                kotlin.math.round(grossSalaryYtd * 0.30)
+            } else {
+                totalTaxPayableRaw
+            }
 
         return TaxAndSavings(
             grossSalaryYtd = grossSalaryYtd,

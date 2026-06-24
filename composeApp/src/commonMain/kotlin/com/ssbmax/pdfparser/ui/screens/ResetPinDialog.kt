@@ -4,17 +4,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @Composable
 fun ResetPinDialog(
     onDismiss: () -> Unit,
-    onPickPdf:
-        (onResult: (ByteArray, String) -> Unit) -> Unit,
-    onResetPin:
-        (ByteArray, String, String, (Result<Unit>) -> Unit) -> Unit,
+    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
+    onResetPin: (ByteArray, String, String, (Result<Unit>) -> Unit) -> Unit,
 ) {
     var selectedPdfBytes by remember { mutableStateOf<ByteArray?>(null) }
     var selectedPdfName by remember { mutableStateOf("") }
@@ -37,7 +34,7 @@ fun ResetPinDialog(
                         selectedPdfName = name
                         resetError = null
                     }
-                }
+                },
             )
         },
         confirmButton = {
@@ -46,12 +43,12 @@ fun ResetPinDialog(
                 onClick = {
                     val bytes = selectedPdfBytes ?: return@Button
                     handleReset(bytes, pdfPassword, selectedPdfName, onResetPin, { isResetting = it }, { resetError = it }, onDismiss)
-                }
+                },
             ) { Text(AppStrings.lockScreenResetConfirmBtn) }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text(AppStrings.btnCancel) }
-        }
+        },
     )
 }
 
@@ -66,15 +63,15 @@ private fun ResetPinDialogContent(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
         Text(
             text = AppStrings.lockScreenResetDialogDesc,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
         )
         Button(
             onClick = onSelectPdfClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(if (selectedPdfName.isNotEmpty()) selectedPdfName else AppStrings.labelSelectPdf)
         }
@@ -84,13 +81,13 @@ private fun ResetPinDialogContent(
             label = { Text(AppStrings.labelPassword) },
             visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
         )
         if (resetError != null) {
             Text(
                 text = resetError,
                 color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
             )
         }
     }
@@ -103,7 +100,7 @@ private fun handleReset(
     onResetPin: (ByteArray, String, String, (Result<Unit>) -> Unit) -> Unit,
     setResetting: (Boolean) -> Unit,
     setResetError: (String?) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     setResetting(true)
     setResetError(null)
@@ -113,11 +110,12 @@ private fun handleReset(
             onDismiss()
         } else {
             val msg = result.exceptionOrNull()?.message
-            val errorMsg = if (msg?.contains("PAN", ignoreCase = true) == true) {
-                AppStrings.lockScreenResetErrorMismatch
-            } else {
-                msg ?: "Failed to reset passcode."
-            }
+            val errorMsg =
+                if (msg?.contains("PAN", ignoreCase = true) == true) {
+                    AppStrings.lockScreenResetErrorMismatch
+                } else {
+                    msg ?: "Failed to reset passcode."
+                }
             setResetError(errorMsg)
         }
     }

@@ -60,9 +60,10 @@ private fun LedgerTable(
 ) {
     val scrollState = rememberScrollState()
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .horizontalScroll(scrollState),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .horizontalScroll(scrollState),
     ) {
         LedgerTableHeader()
         ledgerRecords.forEach { record ->
@@ -75,9 +76,10 @@ private fun LedgerTable(
 @Composable
 private fun LedgerTableHeader() {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = AppDimensions.SpacingSmall),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = AppDimensions.SpacingSmall),
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         val cellModifier = Modifier.width(AppDimensions.LedgerCellWidth)
@@ -93,9 +95,10 @@ private fun LedgerTableHeader() {
 @Composable
 private fun LedgerTableRow(record: LedgerRecordEntity) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = AppDimensions.SpacingSmall),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = AppDimensions.SpacingSmall),
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         val cellModifier = Modifier.width(AppDimensions.LedgerCellWidth)

@@ -38,17 +38,19 @@ class LocalGemmaProvider : AIInsightProvider {
 
     private fun buildSalaryChanges(anomalies: List<Anomaly>): Pair<List<SalaryChangeItem>, List<String>> {
         val actions = mutableListOf<String>()
-        val items = anomalies.filter { it.type == "SALARY_LOSS" }.map {
-            actions.add("Verify basic pay and submit representation for salary reduction.")
-            SalaryChangeItem(
-                item = it.field.ifEmpty { "Basic Pay" },
-                change = "decreased",
-                amount = it.amount,
-            )
-        }
-        val finalItems = items.ifEmpty {
-            listOf(SalaryChangeItem(item = "Basic Pay", change = "unchanged", amount = 0.0))
-        }
+        val items =
+            anomalies.filter { it.type == "SALARY_LOSS" }.map {
+                actions.add("Verify basic pay and submit representation for salary reduction.")
+                SalaryChangeItem(
+                    item = it.field.ifEmpty { "Basic Pay" },
+                    change = "decreased",
+                    amount = it.amount,
+                )
+            }
+        val finalItems =
+            items.ifEmpty {
+                listOf(SalaryChangeItem(item = "Basic Pay", change = "unchanged", amount = 0.0))
+            }
         return Pair(finalItems, actions)
     }
 
@@ -88,7 +90,7 @@ class LocalGemmaProvider : AIInsightProvider {
                         RiskAlertItem(
                             observation = "DSOP subscription non-compliance: ${anomaly.description}",
                             action = "Adjust monthly subscription to be within permissible limits (6% to 100% of basic pay).",
-                        )
+                        ),
                     )
                     actions.add("Adjust DSOP subscription rate in next monthly cycle.")
                 }
@@ -97,7 +99,7 @@ class LocalGemmaProvider : AIInsightProvider {
                         RiskAlertItem(
                             observation = anomaly.description,
                             action = "Submit occupancy returns and clarify quarters rent recovery status with PCDA.",
-                        )
+                        ),
                     )
                 }
                 "DEBIT_RECOVERY" -> {
@@ -105,7 +107,7 @@ class LocalGemmaProvider : AIInsightProvider {
                         RiskAlertItem(
                             observation = "Unexpected debit recovery: ${anomaly.description}",
                             action = "Check DOB Part II order or recovery schedule for details.",
-                        )
+                        ),
                     )
                 }
             }
@@ -114,7 +116,7 @@ class LocalGemmaProvider : AIInsightProvider {
             RiskAlertItem(
                 observation = "Offline local audit completed.",
                 action = "Ensure settings match PCDA records.",
-            )
+            ),
         )
         return Pair(alerts, actions)
     }

@@ -6,7 +6,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
@@ -22,32 +21,33 @@ fun HelpLegalScreen(
         modifier = modifier,
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(AppDimensions.PaddingMedium),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+                    .padding(AppDimensions.PaddingMedium),
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
         ) {
             DocSection(
                 title = AppStrings.settingsHelpFaqTitle,
-                content = AppStrings.settingsHelpFaqContent
+                content = AppStrings.settingsHelpFaqContent,
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             DocSection(
                 title = AppStrings.settingsHelpPrivacyTitle,
-                content = AppStrings.settingsHelpPrivacyContent
+                content = AppStrings.settingsHelpPrivacyContent,
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             DocSection(
                 title = AppStrings.settingsHelpAiTitle,
-                content = AppStrings.settingsHelpAiContent
+                content = AppStrings.settingsHelpAiContent,
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             DocSection(
                 title = AppStrings.settingsHelpDisclaimerTitle,
-                content = AppStrings.settingsHelpDisclaimerContent
+                content = AppStrings.settingsHelpDisclaimerContent,
             )
         }
     }
@@ -65,10 +65,11 @@ private fun HelpLegalTopAppBar(
                 Text(AppStrings.btnBack)
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-        )
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+            ),
     )
 }
 
@@ -80,7 +81,7 @@ private fun DocSection(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
         Text(
             text = title,
