@@ -68,6 +68,16 @@ object PayslipTextParser {
                 }
             }
 
+            val (dynamicEarnings, dynamicDeductions) = DynamicSpatialParser.extractDynamicEarningsAndDeductions(
+                isSplit = isSplit,
+                leftColumnText = leftColumnText,
+                middleColumnText = middleColumnText,
+                fullText = fullText,
+                cleanedLeftText = cleanedLeftText,
+                cleanedMiddleText = cleanedMiddleText,
+                cleanedFullText = cleanedFullText
+            )
+
             val earningsMap = mutableMapOf<String, Double>()
             val deductionsMap = mutableMapOf<String, Double>()
 
@@ -119,7 +129,7 @@ object PayslipTextParser {
                 }
             }
 
-            applyHistoricalOverrides(year, monthNum, earningsMap, deductionsMap)
+            DynamicSpatialParser.applyHistoricalOverrides(year, monthNum, earningsMap, deductionsMap)
 
             val openingCr = earningsMap.remove("openingCreditBalance") ?: 0.0
             val closingDr = earningsMap.remove("closingDebitBalance") ?: 0.0
@@ -152,6 +162,18 @@ object PayslipTextParser {
             // Subtract carried-over ledger balances from printed totals for true reconciliation math
             val trueGross = (realGross - openingCr - closingDr).coerceAtLeast(0.0)
             val trueDeductions = (realDeductions - openingDr - closingCr).coerceAtLeast(0.0)
+
+            if (netRemittance != 0.0) {
+                val expectedNet = if (realDeductions == sumDeductions) {
+                    realGross - realDeductions - openingDr - closingCr
+                } else {
+                    realGross - realDeductions
+                }
+                val reconciliationDiff = kotlin.math.abs(expectedNet - finalNet)
+                if (reconciliationDiff >= 2.0) {
+                    return Result.failure(Exception("Mathematical reconciliation check failed for $filename. expectedNet: $expectedNet, finalNet: $finalNet, Diff: $reconciliationDiff"))
+                }
+            }
 
             val miscCr =
                 if (trueGross > 0.0 && trueGross > sumEarnings) {
@@ -252,37 +274,12 @@ object PayslipTextParser {
                     ledgerBalances = ledgerBalances,
                     summary = summary,
                     taxAndSavings = taxAndSavings,
+                    rawEarnings = dynamicEarnings,
+                    rawDeductions = dynamicDeductions,
                 ),
             )
         } catch (e: Exception) {
             Result.failure(e)
-        }
-    }
-
-    private fun applyHistoricalOverrides(
-        year: Int,
-        monthNum: Int,
-        earningsMap: MutableMap<String, Double>,
-        deductionsMap: MutableMap<String, Double>,
-    ) {
-        when {
-            year == 2022 && monthNum == 4 -> { // April 2022
-                earningsMap["basicPay"] = (earningsMap["basicPay"] ?: 0.0) + 14.0
-                earningsMap["dearnessAllowance"] = (earningsMap["dearnessAllowance"] ?: 0.0) + 29.0
-                earningsMap["militaryServicePay"] = (earningsMap["militaryServicePay"] ?: 0.0) + 24.0
-            }
-            year == 2023 && monthNum == 3 -> { // March 2023
-                earningsMap["rationMoney"] = (earningsMap["rationMoney"] ?: 0.0) + 28.0
-            }
-            year == 2023 && monthNum == 4 -> { // April 2023
-                earningsMap["dearnessAllowance"] = (earningsMap["dearnessAllowance"] ?: 0.0) + 58.0
-                earningsMap["transportAllowance"] = (earningsMap["transportAllowance"] ?: 0.0) + 79.0
-                earningsMap["fieldAllowance"] = 36.0
-            }
-            year == 2023 && monthNum == 6 -> { // June 2023
-                earningsMap["rationMoney"] = (earningsMap["rationMoney"] ?: 0.0) + 17.0
-                earningsMap["specialForcesPay"] = 28.0
-            }
         }
     }
 }
