@@ -17,6 +17,34 @@ object PayslipPatternConfig {
             "december" to 12, "dec" to 12,
         )
 
+    val hindiTransliterations =
+        listOf(
+            "kuula", "kula", "uula", "Aaya", "kTaOtI", "laona", "dona", "ivavarNa", "raiSa", "laoKa",
+            "inavala", "p`oiYat", "Qana", "rxaa", "p`Qaana", "inayaM~k", "Af,sar", "puNao",
+            "ka", "kI", "ivavarNaI", "sqaayaI", "Kata", "saM#yaa", "laoKaI", "Aiga`ma", "?Na",
+        )
+
+    val blocklist = setOf(
+        "gross pay", "total credit", "total debit", "total deductions", "net remittance", "remittance",
+        "gross salary", "total taxable income", "net taxable income", "standard deduction", "tax payable",
+        "tax deducted", "cess deducted", "page", "note", "date", "cda", "pan", "account", "name", "rank",
+        "january", "jan", "february", "feb", "march", "mar", "april", "apr", "may", "june", "jun",
+        "july", "jul", "august", "aug", "september", "sep", "october", "oct", "november", "nov", "december", "dec",
+        "amount", "description", "credit", "debit", "earnings", "deductions"
+    )
+
+    val sentenceWords = setOf(
+        "the", "in", "with", "and", "will", "be", "is", "as", "has", "have", "been",
+        "this", "that", "which", "ensuing", "provisions", "conformity", "interim", "budget",
+        "recovery", "units", "formations", "connected", "manual", "transmission", "hard",
+        "copies", "cease", "effect", "network", "accept", "officers"
+    )
+
+    val invalidEntireKeys = setOf(
+        "to", "from", "for", "of", "on", "at", "by", "or", "no", "amt", "units", "bill",
+        "recovery", "inst", "instal", "dated", "order", "pt", "ii", "part", "note", "date", "page"
+    )
+
     val creditKeysMapping =
         mapOf(
             "Basic Pay" to "basicPay",
