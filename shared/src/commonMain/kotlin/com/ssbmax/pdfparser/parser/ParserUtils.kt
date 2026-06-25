@@ -25,6 +25,24 @@ internal fun negateHindiTransliterations(text: String): String {
     return cleaned.replace(Regex("\\s+"), " ")
 }
 
+internal fun cleanPreservingNewlines(text: String): String {
+    var cleaned =
+        text.replace(Regex("(\\d),(\\d)")) { match ->
+            match.groupValues[1] + match.groupValues[2]
+        }
+    val hindiTransliterations =
+        listOf(
+            "kuula", "kula", "Aaya", "kTaOtI", "laona", "dona", "ivavarNa", "raiSa", "laoKa",
+            "inavala", "p`oiYat", "Qana", "rxaa", "p`Qaana", "inayaM~k", "Af,sar", "puNao",
+            "ka", "kI", "ivavarNaI", "sqaayaI", "Kata", "saM#yaa", "laoKaI", "Aiga`ma", "?Na",
+        )
+    for (word in hindiTransliterations) {
+        cleaned = cleaned.replace(Regex("(?<![a-zA-Z0-9])${Regex.escape(word)}(?![a-zA-Z0-9])", RegexOption.IGNORE_CASE), " ")
+    }
+    return cleaned.split('\n').map { it.replace(Regex("[ \\t]+"), " ").trim() }.joinToString("\n")
+}
+
+
 internal fun stripNotesAndDescriptions(text: String): String {
     val lines = text.split('\n')
     val filteredLines =
