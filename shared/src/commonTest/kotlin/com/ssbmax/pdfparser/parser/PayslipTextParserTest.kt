@@ -258,7 +258,22 @@ class PayslipTextParserTest {
         assertEquals(11923.0, pairs["CC to bankers"])
         // standalone "to" should be blocked
         assertTrue(pairs["to"] == null)
+
+        val sampleTextWithHeaders = """
+            ivavarNa
+            Description
+            raiSa
+            Amount
+            BPAY (12A) 144700
+            DA 84906
+        """.trimIndent()
+        val cleanedText = cleanPreservingNewlines(sampleTextWithHeaders)
+        val pairsWithHeaders = DynamicSpatialParser.extractDynamicPairs(cleanedText)
+        assertEquals(144700.0, pairsWithHeaders["BPAY"])
+        assertEquals(84906.0, pairsWithHeaders["DA"])
+        assertTrue(pairsWithHeaders["Description Amount BPAY"] == null)
     }
+
 
     @Test
     fun testMathematicalReconciliationFailure() {
