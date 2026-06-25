@@ -114,7 +114,7 @@ private fun LedgerRowItem(
             color = MaterialTheme.colorScheme.onSurface,
         )
         Text(
-            text = "₹${formatVal(amount)}",
+            text = formatVal(amount),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
