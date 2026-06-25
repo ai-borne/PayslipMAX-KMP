@@ -66,7 +66,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     Logger.d("PlatformPdfParser", "Found table on page: $tablePageIdx")
                     Logger.d(
                         "PlatformPdfParser",
-                        "layoutScanner - bpayY: ${layoutScanner.bpayY}, totalCreditY: ${layoutScanner.totalCreditY}, dsopX: ${layoutScanner.dsopX}",
+                        "layoutScanner - bpayY: ${layoutScanner.bpayY}, totalCreditY: ${layoutScanner.totalCreditY}, dsopX: ${layoutScanner.dsopX}, detailsX: ${layoutScanner.detailsX}",
                     )
                     Logger.d(
                         "PlatformPdfParser",

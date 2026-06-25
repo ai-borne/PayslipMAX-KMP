@@ -14,7 +14,7 @@ internal fun cleanCommasAndWhitespace(text: String): String {
 internal fun negateHindiTransliterations(text: String): String {
     val hindiTransliterations =
         listOf(
-            "kuula", "kula", "Aaya", "kTaOtI", "laona", "dona", "ivavarNa", "raiSa", "laoKa",
+            "kuula", "kula", "uula", "Aaya", "kTaOtI", "laona", "dona", "ivavarNa", "raiSa", "laoKa",
             "inavala", "p`oiYat", "Qana", "rxaa", "p`Qaana", "inayaM~k", "Af,sar", "puNao",
             "ka", "kI", "ivavarNaI", "sqaayaI", "Kata", "saM#yaa", "laoKaI", "Aiga`ma", "?Na",
         )
@@ -32,7 +32,7 @@ internal fun cleanPreservingNewlines(text: String): String {
         }
     val hindiTransliterations =
         listOf(
-            "kuula", "kula", "Aaya", "kTaOtI", "laona", "dona", "ivavarNa", "raiSa", "laoKa",
+            "kuula", "kula", "uula", "Aaya", "kTaOtI", "laona", "dona", "ivavarNa", "raiSa", "laoKa",
             "inavala", "p`oiYat", "Qana", "rxaa", "p`Qaana", "inayaM~k", "Af,sar", "puNao",
             "ka", "kI", "ivavarNaI", "sqaayaI", "Kata", "saM#yaa", "laoKaI", "Aiga`ma", "?Na",
         )

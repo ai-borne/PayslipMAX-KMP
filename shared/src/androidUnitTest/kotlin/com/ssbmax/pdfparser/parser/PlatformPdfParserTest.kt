@@ -75,6 +75,8 @@ class PlatformPdfParserTest {
                         comparePayslips(file.name, payslip, expected)
                         successfullyParsed++
                         println("✅ ${file.name} - Perfect match!")
+                        println("   [RAW CREDIT] ${payslip.rawEarnings}")
+                        println("   [RAW DEBIT] ${payslip.rawDeductions}")
                     } catch (e: AssertionError) {
                         errors.add("❌ ${file.name} - Mismatch: ${e.message}")
                         println("❌ ${file.name} - Mismatch: ${e.message}")
