@@ -43,6 +43,12 @@ The raw extracted text is passed through the component mapper:
 2. **Parsing Rules**: Standard regex anchors extract pay components.
 3. **Normalization**: Number formats are normalized (removing commas, currency symbols like `₹`, and standardizing decimal delimiters).
 
+### Dynamic Token Parsing (DynamicSpatialParser)
+To capture custom, unmapped, and arrears entries (such as `ARR-DA`, `ARR-TPTADA`, and recovery items like `ETKT`), the system employs a two-pass token reconstruction process:
+1. **First-Pass Filtering**: The parser processes the text line-by-line, filtering out lines containing only blocklisted headers (e.g. `Description`, `Amount`, `Earnings`, `Deductions`) or sentence-style filler words.
+2. **Second-Pass Joining**: The remaining lines are joined with space separators into a single-line string. This reconstructs key-value token segments (such as `ARR-DA 9870`) even when the underlying PDF extractor yields key labels and their numeric values on separate lines.
+3. **Regex Pattern Extraction**: A regex extraction pattern isolates word and number groupings from the reconstructed single-line string, mapping them into the dynamic `rawEarnings` and `rawDeductions` maps.
+
 ---
 
 ## 3. Storage Layer & Schemas
