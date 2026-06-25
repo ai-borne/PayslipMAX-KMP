@@ -26,28 +26,47 @@ object DynamicSpatialParser {
 
     fun cleanAndJoinColumns(colText: String): String {
         val lines = colText.split("\n")
-        val filteredLines = mutableListOf<String>()
+        val auditedLines = mutableListOf<String>()
         for (line in lines) {
             val trimmed = line.trim()
             if (trimmed.isEmpty()) continue
 
-            if (trimmed.any { it.isDigit() }) {
-                filteredLines.add(trimmed)
+            val isPurelyNumeric = trimmed.matches(Regex("^[-\\d,\\s.()]+$"))
+            if (isPurelyNumeric) {
+                auditedLines.add(trimmed)
                 continue
             }
 
             val cleanedTag = trimmed.replace(Regex("\\(\\w+\\)"), " ")
             val workingLine = cleanedTag.replace(Regex("[^a-zA-Z\\s]"), " ").trim()
             val lower = workingLine.lowercase()
-            if (lower.isEmpty()) continue
+            if (lower.isEmpty() || lower.length == 1) continue
 
             val words = lower.split(Regex("\\s+"))
-            if (words.any { it in blocklist || it in sentenceWords || it in invalidEntireKeys }) {
+            if (lower in invalidEntireKeys || words.any { it in blocklist || it in sentenceWords }) {
                 continue
             }
-            filteredLines.add(trimmed)
+            auditedLines.add(trimmed)
         }
-        return filteredLines.joinToString(" ")
+
+        val joined = mutableListOf<String>()
+        var i = 0
+        while (i < auditedLines.size) {
+            val current = auditedLines[i]
+            if (i < auditedLines.size - 1) {
+                val next = auditedLines[i + 1]
+                val currentHasDigits = current.any { it.isDigit() }
+                val nextHasDigits = next.any { it.isDigit() }
+                if (!currentHasDigits && nextHasDigits) {
+                    joined.add("$current $next")
+                    i += 2
+                    continue
+                }
+            }
+            joined.add(current)
+            i++
+        }
+        return joined.joinToString(" ")
     }
 
     fun extractDynamicPairs(colText: String): Map<String, Double> {
@@ -65,6 +84,11 @@ object DynamicSpatialParser {
             val valStr = match.groupValues[2]
             
             if (key.length < 2 || key.matches(Regex("^\\d+$"))) continue
+            
+            val isHardcoded = key in PayslipPatternConfig.creditKeysMapping.keys || key in PayslipPatternConfig.debitKeysMapping.keys
+            if (!isHardcoded) {
+                if (!key.matches(Regex("^[A-Z0-9\\-/.]+$")) || key.length < 2) continue
+            }
             
             val keyLower = key.lowercase()
             if (keyLower in blocklist || keyLower in invalidEntireKeys) continue
