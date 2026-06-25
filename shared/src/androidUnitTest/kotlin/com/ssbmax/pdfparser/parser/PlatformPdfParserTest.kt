@@ -93,6 +93,23 @@ class PlatformPdfParserTest {
         assertTrue(errors.isEmpty(), "There were failed/mismatched files:\n${errors.joinToString("\n")}")
     }
 
+    @Test
+    fun verify2026Payslip() {
+        val file = File("/Users/test/Desktop/Pay Slip Elements/2026/04 Apr 2026.pdf")
+        if (!file.exists()) {
+            println("04 Apr 2026.pdf not found, skipping.")
+            return
+        }
+        val parser = PlatformPdfParser()
+        val result = parser.decryptAndParse(file.readBytes(), "535d04", file.name)
+        assertTrue(result.isSuccess)
+        val payslip = result.getOrNull()!!
+        println("--- 2026 rawEarnings ---")
+        payslip.rawEarnings.forEach { (k, v) -> println("$k: $v") }
+        println("--- 2026 rawDeductions ---")
+        payslip.rawDeductions.forEach { (k, v) -> println("$k: $v") }
+    }
+
     private fun comparePayslips(
         filename: String,
         actual: ParsedPayslip,

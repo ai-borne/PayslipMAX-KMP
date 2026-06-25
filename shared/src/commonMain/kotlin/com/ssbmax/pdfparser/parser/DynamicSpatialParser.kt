@@ -8,7 +8,8 @@ object DynamicSpatialParser {
         "gross salary", "total taxable income", "net taxable income", "standard deduction", "tax payable",
         "tax deducted", "cess deducted", "page", "note", "date", "cda", "pan", "account", "name", "rank",
         "january", "jan", "february", "feb", "march", "mar", "april", "apr", "may", "june", "jun",
-        "july", "jul", "august", "aug", "september", "sep", "october", "oct", "november", "nov", "december", "dec"
+        "july", "jul", "august", "aug", "september", "sep", "october", "oct", "november", "nov", "december", "dec",
+        "amount", "description", "credit", "debit", "earnings", "deductions"
     )
 
     val sentenceWords = setOf(
@@ -23,36 +24,57 @@ object DynamicSpatialParser {
         "recovery", "inst", "instal", "dated", "order", "pt", "ii", "part", "note", "date", "page"
     )
 
-    fun extractDynamicPairs(colText: String): Map<String, Double> {
-        val extracted = mutableMapOf<String, Double>()
+    fun cleanAndJoinColumns(colText: String): String {
         val lines = colText.split("\n")
-        val pattern = Regex("\\b([A-Za-z/().&-]{1,15}(?:\\s+[A-Za-z/().&-]{1,15}){0,2}\\d*)\\s+(-?\\d+)\\b")
-        
+        val filteredLines = mutableListOf<String>()
         for (line in lines) {
             val trimmed = line.trim()
             if (trimmed.isEmpty()) continue
-            
-            val cleanedTag = trimmed.replace(Regex("\\(\\w+\\)"), " ")
-            val cleanVal = cleanCommasAndWhitespace(cleanedTag)
-            val workingLine = cleanVal.replace(Regex("[^a-zA-Z0-9\\s()/.&-]"), " ")
-            
-            val matches = pattern.findAll(workingLine)
-            for (match in matches) {
-                val key = match.groupValues[1].trim()
-                val valStr = match.groupValues[2]
-                
-                if (key.length < 2 || key.matches(Regex("^\\d+$"))) continue
-                
-                val keyLower = key.lowercase()
-                if (keyLower in blocklist || keyLower in invalidEntireKeys) continue
-                if (!key.any { it.isLetter() }) continue
-                
-                val wordsInKey = Regex("\\b[a-z]+\\b").findAll(keyLower).map { it.value }.toList()
-                if (wordsInKey.any { it in blocklist || it in sentenceWords }) continue
-                
-                val value = valStr.toDoubleOrNull() ?: 0.0
-                extracted[key] = (extracted[key] ?: 0.0) + value
+
+            if (trimmed.any { it.isDigit() }) {
+                filteredLines.add(trimmed)
+                continue
             }
+
+            val cleanedTag = trimmed.replace(Regex("\\(\\w+\\)"), " ")
+            val workingLine = cleanedTag.replace(Regex("[^a-zA-Z\\s]"), " ").trim()
+            val lower = workingLine.lowercase()
+            if (lower.isEmpty()) continue
+
+            val words = lower.split(Regex("\\s+"))
+            if (words.any { it in blocklist || it in sentenceWords || it in invalidEntireKeys }) {
+                continue
+            }
+            filteredLines.add(trimmed)
+        }
+        return filteredLines.joinToString(" ")
+    }
+
+    fun extractDynamicPairs(colText: String): Map<String, Double> {
+        val cleanedText = cleanAndJoinColumns(colText)
+        val extracted = mutableMapOf<String, Double>()
+        val pattern = Regex("\\b([A-Za-z/().&-]{1,15}(?:\\s+[A-Za-z/().&-]{1,15}){0,2}\\d*)\\s+(-?\\d+)\\b")
+        
+        val cleanedTag = cleanedText.replace(Regex("\\(\\w+\\)"), " ")
+        val cleanVal = cleanCommasAndWhitespace(cleanedTag)
+        val workingLine = cleanVal.replace(Regex("[^a-zA-Z0-9\\s()/.&-]"), " ")
+        
+        val matches = pattern.findAll(workingLine)
+        for (match in matches) {
+            val key = match.groupValues[1].trim()
+            val valStr = match.groupValues[2]
+            
+            if (key.length < 2 || key.matches(Regex("^\\d+$"))) continue
+            
+            val keyLower = key.lowercase()
+            if (keyLower in blocklist || keyLower in invalidEntireKeys) continue
+            if (!key.any { it.isLetter() }) continue
+            
+            val wordsInKey = Regex("\\b[a-z]+\\b").findAll(keyLower).map { it.value }.toList()
+            if (wordsInKey.any { it in blocklist || it in sentenceWords }) continue
+            
+            val value = valStr.toDoubleOrNull() ?: 0.0
+            extracted[key] = (extracted[key] ?: 0.0) + value
         }
         return extracted
     }

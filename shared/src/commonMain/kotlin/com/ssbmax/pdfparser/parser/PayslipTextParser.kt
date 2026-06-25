@@ -68,15 +68,20 @@ object PayslipTextParser {
                 }
             }
 
+            val cleanedLeftTextPreserved = cleanPreservingNewlines(stripNotesAndDescriptions(leftColumnText))
+            val cleanedMiddleTextPreserved = cleanPreservingNewlines(stripNotesAndDescriptions(middleColumnText))
+            val cleanedFullTextPreserved = cleanPreservingNewlines(fullText)
+
             val (dynamicEarnings, dynamicDeductions) = DynamicSpatialParser.extractDynamicEarningsAndDeductions(
                 isSplit = isSplit,
                 leftColumnText = leftColumnText,
                 middleColumnText = middleColumnText,
                 fullText = fullText,
-                cleanedLeftText = cleanedLeftText,
-                cleanedMiddleText = cleanedMiddleText,
-                cleanedFullText = cleanedFullText
+                cleanedLeftText = cleanedLeftTextPreserved,
+                cleanedMiddleText = cleanedMiddleTextPreserved,
+                cleanedFullText = cleanedFullTextPreserved
             )
+
 
             val earningsMap = mutableMapOf<String, Double>()
             val deductionsMap = mutableMapOf<String, Double>()
