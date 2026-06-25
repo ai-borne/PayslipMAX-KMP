@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.insights.NetworkErrorMapper
+import com.ssbmax.pdfparser.logging.Logger
 import com.ssbmax.pdfparser.repository.PayslipRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -147,6 +148,7 @@ class PayslipViewModel(
                         val ex = result.exceptionOrNull()
                         val mappedError =
                             if (ex != null) {
+                                Logger.e("PayslipViewModel", "generateNarrativeInsights failed", ex)
                                 NetworkErrorMapper.getUserFriendlyMessage(ex)
                             } else {
                                 "Failed to generate narrative insights"
@@ -158,6 +160,7 @@ class PayslipViewModel(
                     }
                 }
             } catch (e: Exception) {
+                Logger.e("PayslipViewModel", "launchAiGeneration failed", e)
                 _uiState.update { it.copy(aiError = NetworkErrorMapper.getUserFriendlyMessage(e), isAiLoading = false) }
             }
         }
