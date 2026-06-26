@@ -90,22 +90,42 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                 yBpay = CGRectGetMinY(rect)
             }
 
+            // Find yTotalCredit BEFORE xDsop so the Y-range guard below is valid
+            findCoordinates("Total Credit") { rect ->
+                yTotalCredit = CGRectGetMinY(rect)
+            }
+            findCoordinates("Gross Pay") { rect ->
+                yTotalCredit = CGRectGetMinY(rect)
+            }
+            findCoordinates("Total Debit") { rect ->
+                yTotalCredit = CGRectGetMinY(rect)
+            }
+            findCoordinates("Total Deductions") { rect ->
+                yTotalCredit = CGRectGetMinY(rect)
+            }
+
+            // Find column split X using debit-only anchors.
+            // PDFKit Y=0 is at bottom; table rows have Y in (yTotalCredit..yBpay).
+            // Guard against footer/header occurrences of these keywords at unrelated X positions.
             findCoordinates("DSOP") { rect ->
+                val ry = CGRectGetMinY(rect)
                 val rx = CGRectGetMinX(rect)
-                if (xDsop == 150.0 || rx < xDsop) {
-                    xDsop = rx
+                if (ry in (yTotalCredit - 10.0)..(yBpay + 25.0)) {
+                    if (xDsop == 150.0 || rx < xDsop) xDsop = rx
                 }
             }
             findCoordinates("AGIF") { rect ->
+                val ry = CGRectGetMinY(rect)
                 val rx = CGRectGetMinX(rect)
-                if (xDsop == 150.0 || rx < xDsop) {
-                    xDsop = rx
+                if (ry in (yTotalCredit - 10.0)..(yBpay + 25.0)) {
+                    if (xDsop == 150.0 || rx < xDsop) xDsop = rx
                 }
             }
             findCoordinates("ITAX") { rect ->
+                val ry = CGRectGetMinY(rect)
                 val rx = CGRectGetMinX(rect)
-                if (xDsop == 150.0 || rx < xDsop) {
-                    xDsop = rx
+                if (ry in (yTotalCredit - 10.0)..(yBpay + 25.0)) {
+                    if (xDsop == 150.0 || rx < xDsop) xDsop = rx
                 }
             }
 
@@ -140,19 +160,6 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                 }
             }
 
-            findCoordinates("Total Credit") { rect ->
-                yTotalCredit = CGRectGetMinY(rect)
-            }
-            findCoordinates("Gross Pay") { rect ->
-                yTotalCredit = CGRectGetMinY(rect)
-            }
-            findCoordinates("Total Debit") { rect ->
-                yTotalCredit = CGRectGetMinY(rect)
-            }
-            findCoordinates("Total Deductions") { rect ->
-                yTotalCredit = CGRectGetMinY(rect)
-            }
-
             Logger.d("PlatformPdfParser", "Raw coordinates: yBpay=$yBpay, xDsop=$xDsop, yTotalCredit=$yTotalCredit, xDetails=$xDetails")
 
             var yMinVal = yTotalCredit + 2.0
@@ -166,7 +173,8 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             if (yMaxVal > pageHeight) yMaxVal = pageHeight
 
             var xDsopVal = xDsop
-            if (xDsopVal <= 10.0 || xDsopVal >= pageWidth) {
+            if (xDsopVal <= 50.0 || xDsopVal >= pageWidth) {
+                Logger.w("PlatformPdfParser", "Invalid xDsopVal ($xDsopVal). Falling back to 150.0.")
                 xDsopVal = 150.0
             }
 
