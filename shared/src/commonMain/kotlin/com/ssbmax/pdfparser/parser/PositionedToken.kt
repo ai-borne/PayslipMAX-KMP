@@ -1,5 +1,7 @@
 package com.ssbmax.pdfparser.parser
 
+import kotlinx.serialization.Serializable
+
 /**
  * Platform-independent intermediate representation (IR) of a single piece of text positioned on a
  * PDF page. Both Android (PDFBox `TextPosition`) and iOS (PDFKit bounds) emit `List<PositionedToken>`
@@ -11,7 +13,9 @@ package com.ssbmax.pdfparser.parser
  * downward. This removes the historical iOS (bottom-up) vs Android (top-down) divergence.
  *
  * Introduced in Phase 1 as the SSOT contract; populated by the platform extractors in Phase 2.
+ * `@Serializable` so de-identified token fixtures can be committed for the offline regression net.
  */
+@Serializable
 data class PositionedToken(
     val text: String,
     val x: Float,

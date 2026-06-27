@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.parser.corpus
 
 import com.ssbmax.pdfparser.parser.ExtractedPayslipTexts
+import com.ssbmax.pdfparser.parser.PositionedToken
 import com.ssbmax.pdfparser.parser.cleanCommasAndWhitespace
 import com.ssbmax.pdfparser.parser.negateHindiTransliterations
 import com.ssbmax.pdfparser.parser.parseOfficer
@@ -29,12 +30,15 @@ object CorpusScrubber {
     // letter distinguishes them from monetary amounts (pure digits), which must NOT be scrubbed.
     private val accountSerialRegex = Regex("""\b\d{5,}[A-Z]\b""")
 
-    fun scrub(
-        texts: ExtractedPayslipTexts,
+    /** Name words + account serials to remove, derived from the officer parsed out of [fullText]. */
+    data class Identifiers(val nameWords: List<String>, val idSerials: List<String>)
+
+    fun identifiersFrom(
+        fullText: String,
         monthNum: Int,
         year: Int,
-    ): ExtractedPayslipTexts {
-        val officer = officerFrom(texts.fullText, monthNum, year)
+    ): Identifiers {
+        val officer = officerFrom(fullText, monthNum, year)
         val nameWords =
             officer.name
                 .split(Regex("\\s+"))
@@ -48,7 +52,15 @@ object CorpusScrubber {
                 .split(Regex("[^0-9A-Za-z]+"))
                 .filter { token -> token.count { it.isDigit() } >= 5 }
                 .distinct()
+        return Identifiers(nameWords, idSerials)
+    }
 
+    fun scrub(
+        texts: ExtractedPayslipTexts,
+        monthNum: Int,
+        year: Int,
+    ): ExtractedPayslipTexts {
+        val (nameWords, idSerials) = identifiersFrom(texts.fullText, monthNum, year)
         return ExtractedPayslipTexts(
             leftColumnText = scrubText(texts.leftColumnText, nameWords, idSerials),
             middleColumnText = scrubText(texts.middleColumnText, nameWords, idSerials),
@@ -57,6 +69,15 @@ object CorpusScrubber {
             dsopPageText = scrubText(texts.dsopPageText, nameWords, idSerials),
         )
     }
+
+    /**
+     * Removes PII from token IR text (Phase 2). Each token's text is a single word, so the same
+     * regex/word/serial rules apply; numeric amount tokens are pure digits and are never matched.
+     */
+    fun scrubTokens(
+        tokens: List<PositionedToken>,
+        ids: Identifiers,
+    ): List<PositionedToken> = tokens.map { it.copy(text = scrubText(it.text, ids.nameWords, ids.idSerials)) }
 
     private fun officerFrom(
         fullText: String,

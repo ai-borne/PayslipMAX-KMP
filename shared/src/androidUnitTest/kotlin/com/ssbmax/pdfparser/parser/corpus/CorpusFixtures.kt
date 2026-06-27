@@ -6,6 +6,7 @@ import com.ssbmax.pdfparser.domain.Officer
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.domain.PayslipSummary
 import com.ssbmax.pdfparser.domain.TaxAndSavings
+import com.ssbmax.pdfparser.parser.PositionedToken
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
@@ -55,6 +56,21 @@ data class CorpusExpected(
     val taxAndSavings: TaxAndSavings? = null,
 )
 
+/**
+ * De-identified token IR captured from a payslip (Phase 2). Mirrors the [TokenizedPayslip] contract
+ * but carries the corpus id/filename so it can be committed alongside the text fixtures and replayed
+ * by the always-on token regression test without a device.
+ */
+@Serializable
+data class CorpusTokens(
+    val id: String,
+    val filename: String,
+    val year: Int,
+    val tableTokens: List<PositionedToken>,
+    val taxTokens: List<PositionedToken>,
+    val dsopTokens: List<PositionedToken>,
+)
+
 object CorpusFixtures {
     const val RESOURCE_DIR = "corpus"
 
@@ -74,6 +90,8 @@ object CorpusFixtures {
 
     fun expectedResourcePath(id: String): String = "$RESOURCE_DIR/$id.expected.json"
 
+    fun tokensResourcePath(id: String): String = "$RESOURCE_DIR/$id.tokens.json"
+
     /** Reads a committed corpus resource from the test classpath, or null if absent. */
     fun readResource(path: String): String? =
         CorpusFixtures::class.java.classLoader
@@ -92,6 +110,9 @@ object CorpusFixtures {
 
     fun loadExpected(id: String): CorpusExpected =
         json.decodeFromString(CorpusExpected.serializer(), readResource(expectedResourcePath(id)) ?: error("Missing expected fixture: $id"))
+
+    fun loadTokens(id: String): CorpusTokens =
+        json.decodeFromString(CorpusTokens.serializer(), readResource(tokensResourcePath(id)) ?: error("Missing tokens fixture: $id"))
 
     /** Stable fixture id derived from a payslip filename, safe for use as a file name. */
     fun idFor(filename: String): String =
