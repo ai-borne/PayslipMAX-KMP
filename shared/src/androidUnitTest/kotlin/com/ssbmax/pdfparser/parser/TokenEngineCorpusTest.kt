@@ -17,13 +17,11 @@ import kotlin.test.assertTrue
  * the classification core, not the final reconciliation.
  *
  * ### Quarantine
- * The engine extracts the *raw* on-page amounts. For a few 2022–2023 slips the committed ground truth
- * bakes in the legacy [DynamicSpatialParser.applyHistoricalOverrides] micro-patches (e.g. basicPay +14,
- * DA +29, MSP +24 for Apr-2022; DA +58 for Apr-2023) that round-reconcile those older layouts. Those
- * hardcoded patches are exactly what the Phase 4 arithmetic solver will replace, so the affected
- * `<fixture>:<field>` pairs are quarantined here with the expected delta. The test still asserts the
- * raw value is correct *to within that documented override*, and flags any quarantine entry that
- * starts matching exactly (so the list never rots once Phase 4 lands).
+ * The engine extracts the *raw* on-page amounts. Phase 4 deleted the legacy historical-override
+ * micro-patches and corrected the four affected 2022–2023 fixtures to their real on-page values, so
+ * [quarantine] is now empty: every fixture's raw token value matches ground truth exactly. The
+ * mechanism is retained so any future divergence can be parked with a documented per-field delta; an
+ * entry that starts matching exactly is flagged so the list can never rot.
  */
 class TokenEngineCorpusTest {
     /** Standardized credit keys that always appear as a plain (label, amount) row. */
@@ -32,14 +30,13 @@ class TokenEngineCorpusTest {
     /** Standardized debit keys that always appear as a plain (label, amount) row. */
     private val debitChecks = listOf("dsopSubscription", "agif", "incomeTax", "educationCess")
 
-    /** "<fixtureId>:<field>" → rupee delta the legacy historical override adds on top of the raw token value. */
-    private val quarantine: Map<String, Double> =
-        mapOf(
-            "04_april_2022:basicPay" to 14.0,
-            "04_april_2022:dearnessAllowance" to 29.0,
-            "04_april_2022:militaryServicePay" to 24.0,
-            "04_apr_2023:dearnessAllowance" to 58.0,
-        )
+    /**
+     * "<fixtureId>:<field>" → rupee delta the legacy historical override added on top of the raw token
+     * value. Emptied at the Phase 4 cut-over: DynamicSpatialParser.applyHistoricalOverrides (removed in Phase 4) is deleted
+     * and the four affected fixtures were corrected to their real on-page values, so the raw token value
+     * now equals ground truth exactly.
+     */
+    private val quarantine: Map<String, Double> = emptyMap()
 
     @Test
     fun engineRecoversCoreLineItemsFromAllTokenFixtures() {

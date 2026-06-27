@@ -14,9 +14,19 @@ data class ClassifiedEntry(
     val rawLabel: String,
     val standardKey: String?,
     val amount: Double,
+    /** Geometric side the entry physically sits on (the learned credit/debit label column). */
     val side: TableSide,
     val labelCenterX: Float,
     val centerY: Float,
+    /**
+     * The standardized key its label matched in [PayslipPatternConfig], regardless of which column it
+     * physically sits in. Populated even when [standardKey] is null (i.e. a keyword match stranded in
+     * the opposite column), so the Phase 4 [ReconciliationSolver] can route cross-column reversals
+     * (a credit key in the debit column → recovery; a debit reversal in the credit column → adjustment).
+     */
+    val matchedKey: String? = null,
+    /** Canonical side of [matchedKey] (the side that key normally belongs to), or null if unmatched. */
+    val matchedSide: TableSide? = null,
 )
 
 /** The fully classified earnings/deductions table produced by the Phase 3 token engine. */
@@ -96,13 +106,15 @@ object TokenTableClassifier {
                 val mappedBand = if (c.side == TableSide.CREDIT) creditBand else debitBand
                 if (c.cleanMatch && c.side != null && withinBand(c.labelCenterX, mappedBand, acceptRadius)) {
                     // Trusted: a recognized key sitting in its own column. Keep its standardized key.
-                    ClassifiedEntry(c.label, c.standardKey, c.amount, c.side, c.labelCenterX, c.centerY)
+                    // Here geometric side == canonical side (the band check guaranteed it).
+                    ClassifiedEntry(c.label, c.standardKey, c.amount, c.side, c.labelCenterX, c.centerY, c.standardKey, c.side)
                 } else {
-                    // Everything else — unknown labels, and keyword matches stranded in the details
-                    // column — is placed by geometry alone and treated as a raw (unmatched) line item.
+                    // Everything else — unknown labels, and keyword matches stranded in the opposite
+                    // column — is placed by geometry alone and treated as a raw (unmatched) line item,
+                    // but we retain any keyword match so the solver can route cross-column reversals.
                     // Anything too far from both label bands (detail text, footers) is dropped.
                     val side = assignSide(c.labelCenterX, creditBand, debitBand, acceptRadius) ?: return@mapNotNull null
-                    ClassifiedEntry(c.label, standardKey = null, c.amount, side, c.labelCenterX, c.centerY)
+                    ClassifiedEntry(c.label, standardKey = null, c.amount, side, c.labelCenterX, c.centerY, c.standardKey, c.side)
                 }
             }
         return ClassifiedTable(entries)

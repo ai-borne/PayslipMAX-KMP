@@ -200,4 +200,31 @@ object PayslipPatternConfig {
             "", "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December",
         )
+
+    /**
+     * Debit standardized keys that are ledger carry-over balances, not real deductions. When such a
+     * key surfaces in the credit column it must be routed to the deductions map (so the ledger
+     * resolver can pull it out), never folded into pay adjustments. SSOT for the cross-column routing
+     * shared by the legacy string path and the Phase 4 [ReconciliationSolver].
+     */
+    val ledgerDebitKeys = setOf("openingDebitBalance", "closingCreditBalance")
+
+    /**
+     * Debit standardized keys that, when they appear in the *credit* column, are credit reversals of a
+     * prior deduction (e.g. a refunded licence fee) and therefore become a pay adjustment.
+     */
+    val creditReversalDebitKeys =
+        setOf("licenseFee", "furnitureRent", "waterCharges", "electricityCharges", "barrackDamage", "ticketRecovery")
+
+    /**
+     * Maps a credit standardized key found in the *debit* column (a recovery of a previously paid
+     * allowance) to the deductions key that records that recovery. Mirrors the legacy routing in the
+     * string path so both pipelines book recoveries identically.
+     */
+    fun recoveryTargetFor(creditStandardKey: String): String =
+        when (creditStandardKey) {
+            "fieldAllowance" -> "recFieldAllowance"
+            "specialForcesPay" -> "recSpecialForces"
+            else -> "recoveryOfDebits"
+        }
 }

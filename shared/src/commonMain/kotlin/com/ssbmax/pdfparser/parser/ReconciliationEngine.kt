@@ -71,6 +71,12 @@ internal data class ReconciledTotals(
     val miscEarnings: Double,
     val miscDeductions: Double,
     val ledger: LedgerCarryOver,
+    /**
+     * Absolute residual between the net implied by the parsed line items and the printed net. Phase 4
+     * replaced the old hard-fail (which threw and discarded the whole parse on >= 2 rupees) with this
+     * signal: [ReconciliationSolver] turns it into a confidence score and a `needsReview` flag instead.
+     */
+    val netResidual: Double = 0.0,
 )
 
 /**
@@ -124,6 +130,7 @@ internal fun reconcileTotals(
     val trueGross = (realGross - openingCr - closingDr).coerceAtLeast(0.0)
     val trueDeductions = (realDeductions - openingDr - closingCr).coerceAtLeast(0.0)
 
+    var netResidual = 0.0
     if (netRemittance != 0.0) {
         val expectedNet =
             if (realDeductions == sumDeductions) {
@@ -131,9 +138,10 @@ internal fun reconcileTotals(
             } else {
                 realGross - realDeductions
             }
-        val reconciliationDiff = kotlin.math.abs(expectedNet - finalNet)
-        if (reconciliationDiff >= 2.0) {
-            throw Exception("Mathematical reconciliation check failed for $filename. expectedNet: $expectedNet, finalNet: $finalNet, Diff: $reconciliationDiff")
+        netResidual = kotlin.math.abs(expectedNet - finalNet)
+        if (netResidual >= 2.0) {
+            // Phase 4: no longer a hard fail. The parse is kept; the solver surfaces it via confidence.
+            Logger.w("PayslipTextParser", "Net reconciliation residual ${netResidual.toInt()} for $filename (expected $expectedNet, got $finalNet)")
         }
     }
 
@@ -164,5 +172,6 @@ internal fun reconcileTotals(
         miscEarnings = miscCr,
         miscDeductions = miscDr,
         ledger = ledger,
+        netResidual = netResidual,
     )
 }
