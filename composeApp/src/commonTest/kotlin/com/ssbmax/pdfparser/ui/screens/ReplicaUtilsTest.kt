@@ -3,9 +3,35 @@ package com.ssbmax.pdfparser.ui.screens
 import com.ssbmax.pdfparser.domain.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class ReplicaUtilsTest {
+
+    @Test
+    fun `risk hardship label uses actual raw key not hardcoded RHA alias`() {
+        val payslip = ParsedPayslip(
+            file = "dec2025.pdf",
+            year = 2025,
+            monthNum = 12,
+            monthName = "December",
+            dateStr = "12/2025",
+            officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
+            earnings = Earnings(riskHardshipAllowance = 21125.0),
+            deductions = Deductions(),
+            ledgerBalances = LedgerBalances(),
+            summary = PayslipSummary(21125.0, 0.0, 21125.0),
+            taxAndSavings = null,
+            rawEarnings = mapOf("RH12" to 21125.0),
+            rawDeductions = emptyMap()
+        )
+
+        val credits = getCreditsList(payslip)
+
+        val rhEntry = credits.find { it.second == 21125.0 }
+        assertNotNull(rhEntry, "RH entry should exist in credits list")
+        assertEquals("RH12", rhEntry.first, "Label must be the actual PDF key 'RH12', not hardcoded 'RHA'")
+    }
 
     @Test
     fun testLegacyFallback() {

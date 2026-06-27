@@ -63,6 +63,7 @@ kotlin {
         val androidUnitTest by getting {
             dependencies {
                 implementation("org.json:json:20240303")
+                implementation(libs.mockk)
             }
         }
 
