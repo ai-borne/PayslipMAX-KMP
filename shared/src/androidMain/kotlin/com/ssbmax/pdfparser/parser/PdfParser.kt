@@ -80,7 +80,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                         yStart = 180f
                         yEnd = kotlin.math.max(700f, pageHeight - 20f)
                     }
-                    if (xSplit <= 10f || xSplit >= pageWidth) {
+                    if (xSplit <= 50f || xSplit >= pageWidth) {
                         Logger.w("PlatformPdfParser", "Invalid xSplit ($xSplit). Falling back to 150f.")
                         xSplit = 150f
                     }
@@ -104,6 +104,9 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
 
                     // Extract Middle Column (Debits) spatially
                     val xRightBound = if (layoutScanner.detailsX > xSplit - 2f) layoutScanner.detailsX else pageWidth
+                    if (layoutScanner.detailsX > 0f && layoutScanner.detailsX <= xSplit) {
+                        Logger.w("PlatformPdfParser", "xDetails (${layoutScanner.detailsX}) ≤ xSplit ($xSplit); using pageWidth as right bound.")
+                    }
                     val middleStripper =
                         SpatialTextStripper(
                             xMin = xSplit - 2f,

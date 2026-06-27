@@ -4,7 +4,7 @@ import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.text.TextPosition
 import java.io.IOException
 
-class LayoutScanner : PDFTextStripper() {
+open class LayoutScanner : PDFTextStripper() {
     var bpayY: Float = 250f
     var dsopX: Float = 150f
     var totalCreditY: Float = 700f
@@ -19,14 +19,13 @@ class LayoutScanner : PDFTextStripper() {
         text: String?,
         textPositions: MutableList<TextPosition>?,
     ) {
-        super.writeString(text, textPositions)
         if (text == null || textPositions == null || textPositions.isEmpty()) return
 
         val lineText = text.trim()
         val lowerText = lineText.lowercase()
 
-        // Locate BPAY / Basic Pay Y coordinate
-        if (lowerText.contains("bpay") || lowerText.contains("basic pay")) {
+        // Locate BPAY / Basic Pay Y coordinate — first occurrence wins
+        if (bpayY == 250f && (lowerText.contains("bpay") || lowerText.contains("basic pay"))) {
             bpayY = textPositions.first().yDirAdj
         }
 

@@ -83,11 +83,13 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                 }
             }
 
+            // First occurrence wins — later BPAY/Basic Pay matches (e.g., footers) must not overwrite
+            var yBpayFound = false
             findCoordinates("BPAY") { rect ->
-                yBpay = CGRectGetMinY(rect)
+                if (!yBpayFound) { yBpay = CGRectGetMinY(rect); yBpayFound = true }
             }
             findCoordinates("Basic Pay") { rect ->
-                yBpay = CGRectGetMinY(rect)
+                if (!yBpayFound) { yBpay = CGRectGetMinY(rect); yBpayFound = true }
             }
 
             // Find yTotalCredit BEFORE xDsop so the Y-range guard below is valid
@@ -179,6 +181,9 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             }
 
             val xRightBound = if (xDetails > xDsopVal - 2.0) xDetails else pageWidth
+            if (xDetails > 0.0 && xDetails <= xDsopVal) {
+                Logger.w("PlatformPdfParser", "xDetails ($xDetails) ≤ xDsopVal ($xDsopVal); using pageWidth as right bound.")
+            }
 
             Logger.d("PlatformPdfParser", "Final safe coordinates - yMinVal: $yMinVal, yMaxVal: $yMaxVal, xDsopVal: $xDsopVal, xRightBound: $xRightBound, pageWidth: $pageWidth, pageHeight: $pageHeight")
             Logger.d("PlatformPdfParser", "--- RAW TABLE PAGE STRING ---\n${tablePage.string}")
