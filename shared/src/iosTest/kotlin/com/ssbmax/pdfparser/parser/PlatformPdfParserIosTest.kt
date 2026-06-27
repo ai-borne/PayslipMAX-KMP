@@ -4,6 +4,7 @@ package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.domain.*
 import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.toKString
 import kotlinx.cinterop.usePinned
 import platform.Foundation.NSData
 import platform.Foundation.NSFileManager
@@ -34,16 +35,21 @@ class PlatformPdfParserIosTest {
 
     @Test
     @kotlin.test.Ignore
-    fun verifyAll46RealPayslipsOnIos() {
+    fun verifyRealPayslipsOnIos() {
         val fileManager = NSFileManager.defaultManager
-        val basePath = "/Users/sunil/Desktop/Pay Slip Elements"
-
-        if (!fileManager.fileExistsAtPath(basePath)) {
-            println("Pay Slip Elements directory not found at $basePath, skipping iOS integration test.")
+        // Opt-in, machine-local integration test: paths come from the environment so no absolute
+        // paths or out-of-repo data are committed. Skips cleanly when the env vars are absent.
+        val basePath = platform.posix.getenv("PAYSLIP_LOCAL_CORPUS")?.toKString()
+        if (basePath.isNullOrBlank() || !fileManager.fileExistsAtPath(basePath)) {
+            println("PAYSLIP_LOCAL_CORPUS not set or directory missing; skipping iOS integration test.")
             return
         }
 
-        val jsonPath = "/Users/sunil/Downloads/PDFParser/payslips_data_standardized.json"
+        val jsonPath = platform.posix.getenv("PAYSLIP_LOCAL_CORPUS_JSON")?.toKString()
+        if (jsonPath.isNullOrBlank()) {
+            println("PAYSLIP_LOCAL_CORPUS_JSON not set; skipping iOS integration test.")
+            return
+        }
         val jsonData = NSData.create(contentsOfFile = jsonPath)
         assertNotNull(jsonData, "Standardized JSON file not found at $jsonPath!")
 

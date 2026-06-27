@@ -1,0 +1,83 @@
+{
+    "id": "04_apr_2026",
+    "filename": "04 Apr 2026.pdf",
+    "year": 2026,
+    "monthNum": 4,
+    "officer": {
+        "name": "Officer Officer Officer",
+        "accountNo": "16/000/000000X",
+        "pan": "AR*****90G"
+    },
+    "summary": {
+        "grossPay": 301828.0,
+        "totalDeductions": 107998.0,
+        "netRemittance": 193830.0
+    },
+    "earnings": {
+        "basicPay": 149000.0,
+        "dearnessAllowance": 98700.0,
+        "militaryServicePay": 15500.0,
+        "transportAllowance": 3600.0,
+        "transportAllowanceDa": 2160.0,
+        "dressAllowance": 0.0,
+        "rationMoney": 0.0,
+        "specialForcesPay": 0.0,
+        "fieldAllowance": 0.0,
+        "childrenEducationAllowance": 0.0,
+        "houseRentAllowance": 0.0,
+        "riskHardshipAllowance": 21125.0,
+        "nonPracticingAllowance": 0.0,
+        "adjBasicPay": 0.0,
+        "adjDa": 0.0,
+        "adjMsp": 0.0,
+        "adjTpta": 0.0,
+        "arrearsCea": 0.0,
+        "arrearsDa": 9870.0,
+        "arrearsRation": 0.0,
+        "arrearsSpecialForces": 0.0,
+        "arrearsTpta": 0.0,
+        "arrearsTptaDa": 216.0,
+        "arrearsHra": 0.0,
+        "arrearsRiskHardship": 0.0,
+        "adjPayAndAllce": 1657.0,
+        "adjFieldAllowance": 0.0,
+        "medicalAllowance": 0.0,
+        "adjTicketRecovery": 0.0,
+        "miscEarnings": 0.0
+    },
+    "deductions": {
+        "dsopSubscription": 40000.0,
+        "agif": 12500.0,
+        "incomeTax": 50425.0,
+        "educationCess": 2017.0,
+        "licenseFee": 0.0,
+        "furnitureRent": 0.0,
+        "waterCharges": 0.0,
+        "electricityCharges": 0.0,
+        "barrackDamage": 0.0,
+        "ticketRecovery": 3056.0,
+        "recFieldAllowance": 0.0,
+        "recSpecialForces": 0.0,
+        "recoveryOfDebits": 0.0,
+        "aobf": 0.0,
+        "agifLoanRecovery": 0.0,
+        "miscDeductions": 0.0
+    },
+    "taxAndSavings": {
+        "grossSalaryYtd": 586894.0,
+        "totalTaxableIncome": 3487744.0,
+        "standardDeduction": 75000.0,
+        "netTaxableIncome": 3412740.0,
+        "totalTaxPayable": 176068.0,
+        "taxDeductedYtd": 99567.0,
+        "cessDeductedYtd": 3983.0,
+        "dsopFund": {
+            "openingBalance": 2427492.0,
+            "subscriptionYtd": 40000.0,
+            "refundYtd": 0.0,
+            "miscAdjYtd": 0.0,
+            "withdrawalYtd": 0.0,
+            "closingBalance": 2467492.0
+        }
+    }
+}

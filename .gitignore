@@ -42,3 +42,6 @@ GoogleService-Info.plist
 functions/.env
 functions/.secret.local
 .firebaserc.local
+
+# Contains real payslip PII; kept locally for opt-in dev/integration tests only
+/payslips_data_standardized.json

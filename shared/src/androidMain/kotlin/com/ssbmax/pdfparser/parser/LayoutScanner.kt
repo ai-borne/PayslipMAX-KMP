@@ -6,6 +6,7 @@ import java.io.IOException
 
 open class LayoutScanner : PDFTextStripper() {
     var bpayY: Float = 250f
+    var tableHeaderY: Float = 0f
     var dsopX: Float = 150f
     var totalCreditY: Float = 700f
     var detailsX: Float = 0f
@@ -23,6 +24,15 @@ open class LayoutScanner : PDFTextStripper() {
 
         val lineText = text.trim()
         val lowerText = lineText.lowercase()
+
+        // Locate Table Header / Earnings Y coordinate
+        if (tableHeaderY == 0f && (
+                lowerText.contains("earnings") || lowerText.contains("aaya") ||
+                    lowerText.contains("bpay") || lowerText.contains("basic pay")
+            )
+        ) {
+            tableHeaderY = textPositions.first().yDirAdj - 5f
+        }
 
         // Locate BPAY / Basic Pay Y coordinate — first occurrence wins
         if (bpayY == 250f && (lowerText.contains("bpay") || lowerText.contains("basic pay"))) {
@@ -66,11 +76,24 @@ open class LayoutScanner : PDFTextStripper() {
             }
         }
 
+        // Locate Remittance / Closing Balance Y coordinate to ensure table extraction stops before summary footer
+        if (lowerText.contains("remittance") || lowerText.contains("closing balance") ||
+            lowerText.contains("cl. cr") || lowerText.contains("cl. dr")
+        ) {
+            val y = textPositions.first().yDirAdj
+            if (y < totalCreditY) {
+                totalCreditY = y
+            }
+        }
+
         // Locate Total Credit / Gross Pay / Total Debit Y coordinate
         if (lowerText.contains("total credit") || lowerText.contains("gross pay") ||
             lowerText.contains("total debit") || lowerText.contains("total deductions")
         ) {
-            totalCreditY = textPositions.first().yDirAdj
+            val y = textPositions.first().yDirAdj
+            if (y < totalCreditY) {
+                totalCreditY = y
+            }
         }
     }
 }

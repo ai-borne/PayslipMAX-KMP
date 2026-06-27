@@ -136,10 +136,11 @@ object PayslipTextParser {
 
             DynamicSpatialParser.applyHistoricalOverrides(year, monthNum, earningsMap, deductionsMap)
 
-            val openingCr = earningsMap.remove("openingCreditBalance") ?: 0.0
-            val closingDr = earningsMap.remove("closingDebitBalance") ?: 0.0
-            val openingDr = deductionsMap.remove("openingDebitBalance") ?: 0.0
-            val closingCr = deductionsMap.remove("closingCreditBalance") ?: 0.0
+            val ledger = resolveLedgerBalances(earningsMap, deductionsMap, fullText)
+            val openingCr = ledger.openingCredit
+            val closingDr = ledger.closingDebit
+            val openingDr = ledger.openingDebit
+            val closingCr = ledger.closingCredit
 
             val sumEarnings = earningsMap.values.sum()
             val sumDeductions = deductionsMap.values.sum()

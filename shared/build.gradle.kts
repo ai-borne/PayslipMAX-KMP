@@ -96,6 +96,21 @@ room {
     schemaDirectory("$projectDir/schemas")
 }
 
+// Forward opt-in local-corpus system properties to the forked unit-test JVM so the
+// developer-only CorpusCaptureTest / PlatformPdfParserTest can locate real PDFs. These are
+// absent in CI, so the gated tests skip cleanly and no machine-specific paths are committed.
+tasks.withType<Test>().configureEach {
+    listOf(
+        "payslip.localCorpus",
+        "payslip.localCorpus.json",
+        "payslip.localCorpus.password",
+        "payslip.localCorpus.minYear",
+        "payslip.localCorpus.out",
+    ).forEach { key ->
+        System.getProperty(key)?.let { systemProperty(key, it) }
+    }
+}
+
 // KSP: generate Room _Impl for every KMP target
 // Firebase BOM: pins firebase-auth-ktx version (must be in legacy block, not KMP sourceSet)
 dependencies {
