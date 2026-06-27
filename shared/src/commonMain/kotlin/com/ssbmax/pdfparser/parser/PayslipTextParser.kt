@@ -136,150 +136,31 @@ object PayslipTextParser {
 
             DynamicSpatialParser.applyHistoricalOverrides(year, monthNum, earningsMap, deductionsMap)
 
-            val ledger = resolveLedgerBalances(earningsMap, deductionsMap, fullText)
-            val openingCr = ledger.openingCredit
-            val closingDr = ledger.closingDebit
-            val openingDr = ledger.openingDebit
-            val closingCr = ledger.closingCredit
-
-            val sumEarnings = earningsMap.values.sum()
-            val sumDeductions = deductionsMap.values.sum()
-
-            var realGross = grossPay
-            if (realGross == 0.0) {
-                realGross = sumEarnings
-            }
-
-            var realDeductions = totalDeductions
-            if (realDeductions == 0.0 ||
-                realDeductions == realGross ||
-                realDeductions == netRemittance
-            ) {
-                realDeductions = sumDeductions
-            }
-
-            val finalNet =
-                if (netRemittance == 0.0) {
-                    realGross - realDeductions
-                } else {
-                    netRemittance
-                }
-
-            // Subtract carried-over ledger balances from printed totals for true reconciliation math
-            val trueGross = (realGross - openingCr - closingDr).coerceAtLeast(0.0)
-            val trueDeductions = (realDeductions - openingDr - closingCr).coerceAtLeast(0.0)
-
-            if (netRemittance != 0.0) {
-                val expectedNet =
-                    if (realDeductions == sumDeductions) {
-                        realGross - realDeductions - openingDr - closingCr
-                    } else {
-                        realGross - realDeductions
-                    }
-                val reconciliationDiff = kotlin.math.abs(expectedNet - finalNet)
-                if (reconciliationDiff >= 2.0) {
-                    return Result.failure(Exception("Mathematical reconciliation check failed for $filename. expectedNet: $expectedNet, finalNet: $finalNet, Diff: $reconciliationDiff"))
-                }
-            }
-
-            val miscCr =
-                if (trueGross > 0.0 && trueGross > sumEarnings) {
-                    trueGross - sumEarnings
-                } else {
-                    if (sumEarnings > trueGross && trueGross > 0.0) {
-                        Logger.w("PayslipTextParser", "Parsed sum of earnings ($sumEarnings) exceeds true gross pay ($trueGross) in $filename")
-                    }
-                    0.0
-                }
-
-            val miscDr =
-                if (trueDeductions > 0.0 && trueDeductions > sumDeductions) {
-                    trueDeductions - sumDeductions
-                } else {
-                    if (sumDeductions > trueDeductions && trueDeductions > 0.0) {
-                        Logger.w("PayslipTextParser", "Parsed sum of deductions ($sumDeductions) exceeds true total deductions ($trueDeductions) in $filename")
-                    }
-                    0.0
-                }
-
-            val earnings =
-                Earnings(
-                    basicPay = earningsMap["basicPay"] ?: 0.0,
-                    dearnessAllowance = earningsMap["dearnessAllowance"] ?: 0.0,
-                    militaryServicePay = earningsMap["militaryServicePay"] ?: 0.0,
-                    transportAllowance = earningsMap["transportAllowance"] ?: 0.0,
-                    transportAllowanceDa = earningsMap["transportAllowanceDa"] ?: 0.0,
-                    dressAllowance = earningsMap["dressAllowance"] ?: 0.0,
-                    rationMoney = earningsMap["rationMoney"] ?: 0.0,
-                    specialForcesPay = earningsMap["specialForcesPay"] ?: 0.0,
-                    fieldAllowance = earningsMap["fieldAllowance"] ?: 0.0,
-                    childrenEducationAllowance = earningsMap["childrenEducationAllowance"] ?: 0.0,
-                    houseRentAllowance = earningsMap["houseRentAllowance"] ?: 0.0,
-                    riskHardshipAllowance = earningsMap["riskHardshipAllowance"] ?: 0.0,
-                    nonPracticingAllowance = earningsMap["nonPracticingAllowance"] ?: 0.0,
-                    adjBasicPay = earningsMap["adjBasicPay"] ?: 0.0,
-                    adjDa = earningsMap["adjDa"] ?: 0.0,
-                    adjMsp = earningsMap["adjMsp"] ?: 0.0,
-                    adjTpta = earningsMap["adjTpta"] ?: 0.0,
-                    arrearsCea = earningsMap["arrearsCea"] ?: 0.0,
-                    arrearsDa = earningsMap["arrearsDa"] ?: 0.0,
-                    arrearsRation = earningsMap["arrearsRation"] ?: 0.0,
-                    arrearsSpecialForces = earningsMap["arrearsSpecialForces"] ?: 0.0,
-                    arrearsTpta = earningsMap["arrearsTpta"] ?: 0.0,
-                    arrearsTptaDa = earningsMap["arrearsTptaDa"] ?: 0.0,
-                    arrearsHra = earningsMap["arrearsHra"] ?: 0.0,
-                    arrearsRiskHardship = earningsMap["arrearsRiskHardship"] ?: 0.0,
-                    adjPayAndAllce = earningsMap["adjPayAndAllce"] ?: 0.0,
-                    adjFieldAllowance = earningsMap["adjFieldAllowance"] ?: 0.0,
-                    medicalAllowance = earningsMap["medicalAllowance"] ?: 0.0,
-                    adjTicketRecovery = earningsMap["adjTicketRecovery"] ?: 0.0,
-                    miscEarnings = miscCr,
+            val reconciled =
+                reconcileTotals(
+                    earningsMap = earningsMap,
+                    deductionsMap = deductionsMap,
+                    fullText = fullText,
+                    grossPay = grossPay,
+                    totalDeductions = totalDeductions,
+                    netRemittance = netRemittance,
+                    filename = filename,
                 )
 
-            val deductions =
-                Deductions(
-                    dsopSubscription = deductionsMap["dsopSubscription"] ?: 0.0,
-                    agif = deductionsMap["agif"] ?: 0.0,
-                    incomeTax = deductionsMap["incomeTax"] ?: 0.0,
-                    educationCess = deductionsMap["educationCess"] ?: 0.0,
-                    licenseFee = deductionsMap["licenseFee"] ?: 0.0,
-                    furnitureRent = deductionsMap["furnitureRent"] ?: 0.0,
-                    waterCharges = deductionsMap["waterCharges"] ?: 0.0,
-                    electricityCharges = deductionsMap["electricityCharges"] ?: 0.0,
-                    barrackDamage = deductionsMap["barrackDamage"] ?: 0.0,
-                    ticketRecovery = deductionsMap["ticketRecovery"] ?: 0.0,
-                    recFieldAllowance = deductionsMap["recFieldAllowance"] ?: 0.0,
-                    recSpecialForces = deductionsMap["recSpecialForces"] ?: 0.0,
-                    recoveryOfDebits = deductionsMap["recoveryOfDebits"] ?: 0.0,
-                    aobf = deductionsMap["aobf"] ?: 0.0,
-                    agifLoanRecovery = deductionsMap["agifLoanRecovery"] ?: 0.0,
-                    miscDeductions = miscDr,
-                )
-
-            val ledgerBalances =
-                LedgerBalances(
-                    openingCreditBalance = openingCr,
-                    openingDebitBalance = openingDr,
-                    closingCreditBalance = closingCr,
-                    closingDebitBalance = closingDr,
-                )
-
-            val summary = PayslipSummary(grossPay = realGross, totalDeductions = realDeductions, netRemittance = finalNet)
             val taxAndSavings = parseTaxAndSavings(taxPageText, dsopPageText, cleanedFullText)
             val dateStr = "${monthNum.toString().padStart(2, '0')}/$year"
 
             Result.success(
-                ParsedPayslip(
-                    file = filename,
+                assembleParsedPayslip(
+                    filename = filename,
                     year = year,
                     monthNum = monthNum,
                     monthName = monthName,
                     dateStr = dateStr,
                     officer = officer,
-                    earnings = earnings,
-                    deductions = deductions,
-                    ledgerBalances = ledgerBalances,
-                    summary = summary,
+                    earningsMap = earningsMap,
+                    deductionsMap = deductionsMap,
+                    reconciled = reconciled,
                     taxAndSavings = taxAndSavings,
                     rawEarnings = dynamicEarnings,
                     rawDeductions = dynamicDeductions,

@@ -17,6 +17,15 @@ data class ParsedPayslip(
     val taxAndSavings: TaxAndSavings?,
     val rawEarnings: Map<String, Double> = emptyMap(),
     val rawDeductions: Map<String, Double> = emptyMap(),
+    /**
+     * Confidence sidecar (SSOT). Maps a field key (e.g. "basicPay", "incomeTax") to a 0..1 score
+     * describing how certain the parser is about that value. Empty until the arithmetic solver
+     * populates it (Phase 4); kept as a non-invasive sidecar so the 40+ raw double fields above
+     * stay untouched (DRY). Consumed by the confidence-gated correction UI (Phase 5).
+     */
+    val fieldConfidence: Map<String, Float> = emptyMap(),
+    /** True when at least one field is below the review threshold and should be surfaced for user correction. */
+    val needsReview: Boolean = false,
 )
 
 @Serializable
