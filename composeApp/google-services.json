@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:233295963763:android:656e41a9468f3d46ebac06",
+        "mobilesdk_app_id": "1:233295963763:android:42f3c3cbf0b85b61ebac06",
         "android_client_info": {
           "package_name": "com.payslipmax.pdfparser"
         }
