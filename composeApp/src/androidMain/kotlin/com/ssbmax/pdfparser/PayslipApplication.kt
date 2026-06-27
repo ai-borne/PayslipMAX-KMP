@@ -1,4 +1,4 @@
-package com.ssbmax.pdfparser
+package com.payslipmax.pdfparser
 
 import android.app.Application
 import com.ssbmax.pdfparser.di.appModule
