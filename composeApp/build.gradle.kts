@@ -77,10 +77,10 @@ kotlin {
 }
 
 android {
-    namespace = "com.ssbmax.pdfparser"
+    namespace = "com.payslipmax.pdfparser"
     compileSdk = 35
     defaultConfig {
-        applicationId = "com.ssbmax.pdfparser"
+        applicationId = "com.payslipmax.pdfparser"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
