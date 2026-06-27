@@ -41,6 +41,23 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         }
     }
 
+    actual override fun extractTokens(
+        pdfBytes: ByteArray,
+        password: String,
+        filename: String,
+    ): Result<TokenizedPayslip> {
+        return try {
+            initResourceLoader()
+            ByteArrayInputStream(pdfBytes).use { inputStream ->
+                PDDocument.load(inputStream, password).use { document ->
+                    Result.success(extractTokenized(document))
+                }
+            }
+        } catch (e: Throwable) {
+            Result.failure(e)
+        }
+    }
+
     /**
      * Decrypts a payslip PDF and runs only the platform text-extraction stage (no parsing).
      * Behavior-preserving extraction of the logic previously inlined in [decryptAndParse]; both

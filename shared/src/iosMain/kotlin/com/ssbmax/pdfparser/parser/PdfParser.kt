@@ -174,4 +174,32 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             Result.failure(e)
         }
     }
+
+    actual override fun extractTokens(
+        pdfBytes: ByteArray,
+        password: String,
+        filename: String,
+    ): Result<TokenizedPayslip> {
+        return try {
+            val nsData =
+                pdfBytes.usePinned { pinned ->
+                    NSData.create(
+                        bytes = pinned.addressOf(0),
+                        length = pdfBytes.size.toULong(),
+                    )
+                }
+
+            val pdfDoc = PDFDocument(data = nsData)
+            if (pdfDoc.isEncrypted) {
+                val success = pdfDoc.unlockWithPassword(password)
+                if (!success) {
+                    return Result.failure(Exception("Failed to decrypt PDF: Incorrect password"))
+                }
+            }
+
+            Result.success(extractTokenized(pdfDoc))
+        } catch (e: Throwable) {
+            Result.failure(e)
+        }
+    }
 }

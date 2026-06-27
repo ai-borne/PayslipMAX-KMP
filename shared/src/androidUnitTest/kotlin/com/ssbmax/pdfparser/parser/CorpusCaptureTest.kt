@@ -4,6 +4,7 @@ import com.ssbmax.pdfparser.parser.corpus.CorpusExpected
 import com.ssbmax.pdfparser.parser.corpus.CorpusFixtures
 import com.ssbmax.pdfparser.parser.corpus.CorpusInput
 import com.ssbmax.pdfparser.parser.corpus.CorpusScrubber
+import com.ssbmax.pdfparser.parser.corpus.CorpusTokens
 import com.ssbmax.pdfparser.parser.corpus.StandardizedGroundTruth
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
@@ -141,9 +142,43 @@ class CorpusCaptureTest {
 
         File(outDir, "$id.input.json").writeText(CorpusFixtures.json.encodeToString(CorpusInput.serializer(), input))
         File(outDir, "$id.expected.json").writeText(CorpusFixtures.json.encodeToString(CorpusExpected.serializer(), expected))
+        captureTokens(parser, pdf, id, year, password, texts.fullText, parsed.monthNum, outDir, mismatches)
 
         val diff = CorpusFixtures.diff(expected, parsed)
         if (diff.isNotEmpty()) mismatches += "$id: ${diff.size} field(s) -> ${diff.take(4)}"
+    }
+
+    /**
+     * Captures the Phase 2 token IR via the new [PlatformPdfParser.extractTokens] path, scrubs PII
+     * from each token's text (numeric amounts are untouched), and commits it as `<id>.tokens.json`.
+     */
+    private fun captureTokens(
+        parser: PlatformPdfParser,
+        pdf: File,
+        id: String,
+        year: Int,
+        password: String,
+        fullText: String,
+        monthNum: Int,
+        outDir: File,
+        mismatches: MutableList<String>,
+    ) {
+        val tokenized =
+            parser.extractTokens(pdf.readBytes(), password).getOrElse {
+                mismatches += "$id: TOKEN EXTRACTION FAILED: ${it.message}"
+                return
+            }
+        val ids = CorpusScrubber.identifiersFrom(fullText, monthNum, year)
+        val tokens =
+            CorpusTokens(
+                id = id,
+                filename = pdf.name,
+                year = year,
+                tableTokens = CorpusScrubber.scrubTokens(tokenized.tableTokens, ids),
+                taxTokens = CorpusScrubber.scrubTokens(tokenized.taxTokens, ids),
+                dsopTokens = CorpusScrubber.scrubTokens(tokenized.dsopTokens, ids),
+            )
+        File(outDir, "$id.tokens.json").writeText(CorpusFixtures.json.encodeToString(CorpusTokens.serializer(), tokens))
     }
 
     private fun parseTexts(
