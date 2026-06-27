@@ -1,10 +1,11 @@
-package com.ssbmax.pdfparser
+package com.payslipmax.pdfparser
 
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import com.ssbmax.pdfparser.App
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import org.koin.compose.koinInject
 
