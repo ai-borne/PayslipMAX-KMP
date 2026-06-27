@@ -74,7 +74,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.ssbmax.pdfparser.shared"
+    namespace = "com.payslipmax.pdfparser.shared"
     compileSdk = 35
     defaultConfig {
         minSdk = 26
