@@ -7,49 +7,54 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class ReplicaUtilsTest {
-
     @Test
     fun `risk hardship label uses actual raw key not hardcoded RHA alias`() {
-        val payslip = ParsedPayslip(
-            file = "dec2025.pdf",
-            year = 2025,
-            monthNum = 12,
-            monthName = "December",
-            dateStr = "12/2025",
-            officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
-            earnings = Earnings(riskHardshipAllowance = 21125.0),
-            deductions = Deductions(),
-            ledgerBalances = LedgerBalances(),
-            summary = PayslipSummary(21125.0, 0.0, 21125.0),
-            taxAndSavings = null,
-            rawEarnings = mapOf("RH12" to 21125.0),
-            rawDeductions = emptyMap()
-        )
+        val payslip =
+            ParsedPayslip(
+                file = "dec2025.pdf",
+                year = 2025,
+                monthNum = 12,
+                monthName = "December",
+                dateStr = "12/2025",
+                officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
+                earnings = Earnings(riskHardshipAllowance = 21125.0),
+                deductions = Deductions(),
+                ledgerBalances = LedgerBalances(),
+                summary = PayslipSummary(21125.0, 0.0, 21125.0),
+                taxAndSavings = null,
+                rawEarnings = mapOf("RH12" to 21125.0),
+                rawDeductions = emptyMap(),
+            )
 
         val credits = getCreditsList(payslip)
 
         val rhEntry = credits.find { it.second == 21125.0 }
         assertNotNull(rhEntry, "RH entry should exist in credits list")
-        assertEquals("RH12", rhEntry.first, "Label must be the actual PDF key 'RH12', not hardcoded 'RHA'")
+        assertEquals(
+            "RH12",
+            rhEntry.first,
+            "Label must be the actual PDF key 'RH12', not hardcoded 'RHA'",
+        )
     }
 
     @Test
     fun testLegacyFallback() {
-        val payslip = ParsedPayslip(
-            file = "legacy.pdf",
-            year = 2024,
-            monthNum = 1,
-            monthName = "January",
-            dateStr = "01/2024",
-            officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
-            earnings = Earnings(basicPay = 140500.0, dearnessAllowance = 71760.0),
-            deductions = Deductions(dsopSubscription = 40000.0, licenseFee = 878.0),
-            ledgerBalances = LedgerBalances(),
-            summary = PayslipSummary(212260.0, 40878.0, 171382.0),
-            taxAndSavings = null,
-            rawEarnings = emptyMap(),
-            rawDeductions = emptyMap()
-        )
+        val payslip =
+            ParsedPayslip(
+                file = "legacy.pdf",
+                year = 2024,
+                monthNum = 1,
+                monthName = "January",
+                dateStr = "01/2024",
+                officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
+                earnings = Earnings(basicPay = 140500.0, dearnessAllowance = 71760.0),
+                deductions = Deductions(dsopSubscription = 40000.0, licenseFee = 878.0),
+                ledgerBalances = LedgerBalances(),
+                summary = PayslipSummary(212260.0, 40878.0, 171382.0),
+                taxAndSavings = null,
+                rawEarnings = emptyMap(),
+                rawDeductions = emptyMap(),
+            )
 
         val credits = getCreditsList(payslip)
         val debits = getDebitsList(payslip)
@@ -69,55 +74,52 @@ class ReplicaUtilsTest {
 
     @Test
     fun testDynamicMappingWithCustomAndLedgerKeys() {
-        val payslip = ParsedPayslip(
-            file = "dynamic.pdf",
-            year = 2024,
-            monthNum = 1,
-            monthName = "January",
-            dateStr = "01/2024",
-            officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
-            earnings = Earnings(),
-            deductions = Deductions(),
-            ledgerBalances = LedgerBalances(),
-            summary = PayslipSummary(212260.0, 40878.0, 171382.0),
-            taxAndSavings = null,
-            rawEarnings = mapOf(
-                "BPAY" to 140500.0,
-                "SPECIAL BONUS" to 15000.0,
-                "Op Cr Bal" to 71650.0  // Ledger balance, should be excluded
-            ),
-            rawDeductions = mapOf(
-                "DSOP" to 40000.0,
-                "CUSTOM RECOVERY" to 2500.0,
-                "Cl. Cr. Bal." to 27119.0 // Ledger balance, should be excluded
+        val payslip =
+            ParsedPayslip(
+                file = "dynamic.pdf",
+                year = 2024,
+                monthNum = 1,
+                monthName = "January",
+                dateStr = "01/2024",
+                officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
+                earnings = Earnings(),
+                deductions = Deductions(),
+                ledgerBalances = LedgerBalances(),
+                summary = PayslipSummary(212260.0, 40878.0, 171382.0),
+                taxAndSavings = null,
+                rawEarnings =
+                    mapOf(
+                        "BPAY" to 140500.0,
+                        "SPECIAL BONUS" to 15000.0,
+                        "Op Cr Bal" to 71650.0,
+                    ),
+                rawDeductions =
+                    mapOf(
+                        "DSOP" to 40000.0,
+                        "CUSTOM RECOVERY" to 2500.0,
+                        "Cl. Cr. Bal." to 27119.0,
+                    ),
             )
-        )
 
         val credits = getCreditsList(payslip)
         val debits = getDebitsList(payslip)
 
-        // Excludes Op Cr Bal
         assertEquals(2, credits.size)
-        
-        // Assert Standard Key BPAY has premium description
+
         val bpayCredit = credits.first { it.first == "BPAY" }
         assertEquals(140500.0, bpayCredit.second)
         assertTrue(bpayCredit.third.contains("Core salary based on rank"))
 
-        // Assert Custom Key SPECIAL BONUS has generic description
         val customCredit = credits.first { it.first == "SPECIAL BONUS" }
         assertEquals(15000.0, customCredit.second)
         assertEquals("Custom allowance or adjustment amount.", customCredit.third)
 
-        // Excludes Cl. Cr. Bal.
         assertEquals(2, debits.size)
 
-        // Assert Standard Key DSOP has premium description
         val dsopDebit = debits.first { it.first == "DSOP" }
         assertEquals(40000.0, dsopDebit.second)
         assertTrue(dsopDebit.third.contains("Provident Fund"))
 
-        // Assert Custom Key CUSTOM RECOVERY has generic description
         val customDebit = debits.first { it.first == "CUSTOM RECOVERY" }
         assertEquals(2500.0, customDebit.second)
         assertEquals("Custom deduction or recovery amount.", customDebit.third)
