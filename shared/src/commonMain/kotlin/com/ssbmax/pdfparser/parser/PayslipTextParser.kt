@@ -72,16 +72,16 @@ object PayslipTextParser {
             val cleanedMiddleTextPreserved = cleanPreservingNewlines(stripNotesAndDescriptions(middleColumnText))
             val cleanedFullTextPreserved = cleanPreservingNewlines(fullText)
 
-            val (dynamicEarnings, dynamicDeductions) = DynamicSpatialParser.extractDynamicEarningsAndDeductions(
-                isSplit = isSplit,
-                leftColumnText = leftColumnText,
-                middleColumnText = middleColumnText,
-                fullText = fullText,
-                cleanedLeftText = cleanedLeftTextPreserved,
-                cleanedMiddleText = cleanedMiddleTextPreserved,
-                cleanedFullText = cleanedFullTextPreserved
-            )
-
+            val (dynamicEarnings, dynamicDeductions) =
+                DynamicSpatialParser.extractDynamicEarningsAndDeductions(
+                    isSplit = isSplit,
+                    leftColumnText = leftColumnText,
+                    middleColumnText = middleColumnText,
+                    fullText = fullText,
+                    cleanedLeftText = cleanedLeftTextPreserved,
+                    cleanedMiddleText = cleanedMiddleTextPreserved,
+                    cleanedFullText = cleanedFullTextPreserved,
+                )
 
             val earningsMap = mutableMapOf<String, Double>()
             val deductionsMap = mutableMapOf<String, Double>()
@@ -169,11 +169,12 @@ object PayslipTextParser {
             val trueDeductions = (realDeductions - openingDr - closingCr).coerceAtLeast(0.0)
 
             if (netRemittance != 0.0) {
-                val expectedNet = if (realDeductions == sumDeductions) {
-                    realGross - realDeductions - openingDr - closingCr
-                } else {
-                    realGross - realDeductions
-                }
+                val expectedNet =
+                    if (realDeductions == sumDeductions) {
+                        realGross - realDeductions - openingDr - closingCr
+                    } else {
+                        realGross - realDeductions
+                    }
                 val reconciliationDiff = kotlin.math.abs(expectedNet - finalNet)
                 if (reconciliationDiff >= 2.0) {
                     return Result.failure(Exception("Mathematical reconciliation check failed for $filename. expectedNet: $expectedNet, finalNet: $finalNet, Diff: $reconciliationDiff"))

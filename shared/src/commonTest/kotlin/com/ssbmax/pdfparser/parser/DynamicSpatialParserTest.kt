@@ -7,13 +7,14 @@ import kotlin.test.assertTrue
 class DynamicSpatialParserTest {
     @Test
     fun testDynamicSpatialParserKeyValueExtraction() {
-        val sampleText = """
+        val sampleText =
+            """
             BPAY (12A) 144700
             DA 84906
             CC to bankers 11923
             to 31/08/2024
-        """.trimIndent()
-        
+            """.trimIndent()
+
         val pairs = DynamicSpatialParser.extractDynamicPairs(sampleText)
         assertEquals(144700.0, pairs["BPAY"])
         assertEquals(84906.0, pairs["DA"])
@@ -21,14 +22,15 @@ class DynamicSpatialParserTest {
         // standalone "to" should be blocked
         assertTrue(pairs["to"] == null)
 
-        val sampleTextWithHeaders = """
+        val sampleTextWithHeaders =
+            """
             ivavarNa
             Description
             raiSa
             Amount
             BPAY (12A) 144700
             DA 84906
-        """.trimIndent()
+            """.trimIndent()
         val cleanedText = cleanPreservingNewlines(sampleTextWithHeaders)
         val pairsWithHeaders = DynamicSpatialParser.extractDynamicPairs(cleanedText)
         assertEquals(144700.0, pairsWithHeaders["BPAY"])
@@ -38,7 +40,8 @@ class DynamicSpatialParserTest {
 
     @Test
     fun testSmartDynamicKeyExclusions() {
-        val text = """
+        val text =
+            """
             Basic Pay 144700
             DA 84906
             uula 109308
@@ -47,18 +50,18 @@ class DynamicSpatialParserTest {
             ROUS NEW YEAR 2026
             ARR-DA 14040
             ETKT 1117
-        """.trimIndent()
+            """.trimIndent()
 
         val pairs = DynamicSpatialParser.extractDynamicPairs(text)
-        
+
         // Assert that valid hardcoded keys are kept
         assertEquals(144700.0, pairs["Basic Pay"])
         assertEquals(84906.0, pairs["DA"])
-        
+
         // Assert that valid dynamic keys (matching the strict format) are kept
         assertEquals(14040.0, pairs["ARR-DA"])
         assertEquals(1117.0, pairs["ETKT"])
-        
+
         // Assert that spurious keys are ignored
         assertTrue(pairs["uula"] == null)
         assertTrue(pairs["D DSOP"] == null)
@@ -79,11 +82,12 @@ class DynamicSpatialParserTest {
 
     @Test
     fun testBlocklistFiltering() {
-        val text = """
+        val text =
+            """
             gross pay 12345
             Total Credit 54321
             Basic Pay 144700
-        """.trimIndent()
+            """.trimIndent()
         val pairs = DynamicSpatialParser.extractDynamicPairs(text)
         assertTrue(pairs["gross pay"] == null)
         assertTrue(pairs["Total Credit"] == null)
@@ -92,12 +96,13 @@ class DynamicSpatialParserTest {
 
     @Test
     fun testEdgeCasesInDynamicSpatialParser() {
-        val text = """
+        val text =
+            """
             A 100
             123 200
             BPAY 144700
             - 300
-        """.trimIndent()
+            """.trimIndent()
         val pairs = DynamicSpatialParser.extractDynamicPairs(text)
         assertTrue(pairs["A"] == null)
         assertTrue(pairs["123"] == null)

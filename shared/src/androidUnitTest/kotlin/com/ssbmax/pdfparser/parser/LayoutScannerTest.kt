@@ -8,17 +8,21 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 private class TestableLayoutScanner : LayoutScanner() {
-    fun simulateText(text: String, yAdj: Float, xAdj: Float = 10f) {
-        val mockPos = mockk<TextPosition>(relaxed = true) {
-            every { yDirAdj } returns yAdj
-            every { xDirAdj } returns xAdj
-        }
+    fun simulateText(
+        text: String,
+        yAdj: Float,
+        xAdj: Float = 10f,
+    ) {
+        val mockPos =
+            mockk<TextPosition>(relaxed = true) {
+                every { yDirAdj } returns yAdj
+                every { xDirAdj } returns xAdj
+            }
         writeString(text, mutableListOf(mockPos))
     }
 }
 
 class LayoutScannerTest {
-
     @Test
     fun `bpayY uses first occurrence when BPAY appears multiple times`() {
         val scanner = TestableLayoutScanner()

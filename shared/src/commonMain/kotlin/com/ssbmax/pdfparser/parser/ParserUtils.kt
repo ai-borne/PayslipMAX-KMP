@@ -30,7 +30,6 @@ internal fun cleanPreservingNewlines(text: String): String {
     return cleaned.split('\n').map { it.replace(Regex("[ \\t]+"), " ").trim() }.joinToString("\n")
 }
 
-
 internal fun stripNotesAndDescriptions(text: String): String {
     val lines = text.split('\n')
     val filteredLines =
@@ -62,10 +61,14 @@ internal fun stripNotesAndDescriptions(text: String): String {
  */
 private fun truncateFooterAndTotals(cleanedText: String): String {
     var tableText = cleanedText
-    val footerIndicators = listOf(
-        "Note: This is a system", "Note: This is system", "Note : This is a system",
-        "Note: This is a system generated document", "Note: This is system generated document",
-    )
+    val footerIndicators =
+        listOf(
+            "Note: This is a system",
+            "Note: This is system",
+            "Note : This is a system",
+            "Note: This is a system generated document",
+            "Note: This is system generated document",
+        )
     for (indicator in footerIndicators) {
         val idx = cleanedText.indexOf(indicator, ignoreCase = true)
         if (idx >= 0) {
@@ -73,9 +76,15 @@ private fun truncateFooterAndTotals(cleanedText: String): String {
             break
         }
     }
-    val endOfTableIndicators = listOf(
-        "Total Credit", "Total Debit", "Total Deductions", "Gross Pay", "Net Remittance", "REMITTANCE",
-    )
+    val endOfTableIndicators =
+        listOf(
+            "Total Credit",
+            "Total Debit",
+            "Total Deductions",
+            "Gross Pay",
+            "Net Remittance",
+            "REMITTANCE",
+        )
     for (indicator in endOfTableIndicators) {
         val idx = tableText.indexOf(indicator, ignoreCase = true)
         if (idx >= 0) {
@@ -87,11 +96,12 @@ private fun truncateFooterAndTotals(cleanedText: String): String {
 
 internal fun splitCreditDebitSections(cleanedText: String): Triple<String, String, Boolean> {
     val tableText = truncateFooterAndTotals(cleanedText)
-    val debitOnlyAnchors = listOf(
-        "DSOPF Subn", "DSOPF", "DSOP", "AGIF", "Incm Tax", "ITAX",
-        "Educ Cess", "EHCESS", "Educ. Cess", "Op Dr Bal",
-        "OP Bal(-)", "Cl. Cr. Bal.", "Clos Bal(+)", "R/o Of /Drs",
-    )
+    val debitOnlyAnchors =
+        listOf(
+            "DSOPF Subn", "DSOPF", "DSOP", "AGIF", "Incm Tax", "ITAX",
+            "Educ Cess", "EHCESS", "Educ. Cess", "Op Dr Bal",
+            "OP Bal(-)", "Cl. Cr. Bal.", "Clos Bal(+)", "R/o Of /Drs",
+        )
     val caseSensitiveAnchors = listOf("LF", "FUR")
     var splitIdx = tableText.length
     var found = false
