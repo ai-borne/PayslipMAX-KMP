@@ -110,31 +110,4 @@ object DynamicSpatialParser {
         }
         return Pair(dynamicEarnings, dynamicDeductions)
     }
-
-    fun applyHistoricalOverrides(
-        year: Int,
-        monthNum: Int,
-        earningsMap: MutableMap<String, Double>,
-        deductionsMap: MutableMap<String, Double>,
-    ) {
-        when {
-            year == 2022 && monthNum == 4 -> { // April 2022
-                earningsMap["basicPay"] = (earningsMap["basicPay"] ?: 0.0) + 14.0
-                earningsMap["dearnessAllowance"] = (earningsMap["dearnessAllowance"] ?: 0.0) + 29.0
-                earningsMap["militaryServicePay"] = (earningsMap["militaryServicePay"] ?: 0.0) + 24.0
-            }
-            year == 2023 && monthNum == 3 -> { // March 2023
-                earningsMap["rationMoney"] = (earningsMap["rationMoney"] ?: 0.0) + 28.0
-            }
-            year == 2023 && monthNum == 4 -> { // April 2023
-                earningsMap["dearnessAllowance"] = (earningsMap["dearnessAllowance"] ?: 0.0) + 58.0
-                earningsMap["transportAllowance"] = (earningsMap["transportAllowance"] ?: 0.0) + 79.0
-                earningsMap["fieldAllowance"] = 36.0
-            }
-            year == 2023 && monthNum == 6 -> { // June 2023
-                earningsMap["rationMoney"] = (earningsMap["rationMoney"] ?: 0.0) + 17.0
-                earningsMap["specialForcesPay"] = 28.0
-            }
-        }
-    }
 }

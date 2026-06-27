@@ -86,10 +86,10 @@ object PayslipTextParser {
             val earningsMap = mutableMapOf<String, Double>()
             val deductionsMap = mutableMapOf<String, Double>()
 
-            // Debit keys that represent ledger balance entries — they must never go to adjPayAndAllce.
-            // They are handled separately by the earningsMap/deductionsMap.remove() calls below.
-            val ledgerDebitKeys = setOf("openingDebitBalance", "closingCreditBalance")
-            val creditReversalDebitKeys = setOf("licenseFee", "furnitureRent", "waterCharges", "electricityCharges", "barrackDamage", "ticketRecovery")
+            // Cross-column routing key-sets are the SSOT in PayslipPatternConfig (shared with the
+            // Phase 4 ReconciliationSolver) so both pipelines book ledger entries and reversals alike.
+            val ledgerDebitKeys = PayslipPatternConfig.ledgerDebitKeys
+            val creditReversalDebitKeys = PayslipPatternConfig.creditReversalDebitKeys
 
             Logger.d("PayslipTextParser", "filename: $filename")
             Logger.d("PayslipTextParser", "cleanedLeftText: '$cleanedLeftText'")
@@ -123,18 +123,10 @@ object PayslipTextParser {
                     deductionsMap[stdKey] = (deductionsMap[stdKey] ?: 0.0) + value
                 } else if (isSplit && key in PayslipPatternConfig.creditKeysMapping.keys) {
                     val baseStdKey = PayslipPatternConfig.creditKeysMapping[key]!!
-                    val stdKey = "rec" + baseStdKey.replaceFirstChar { it.uppercaseChar() }
-                    val targetKey =
-                        when (stdKey) {
-                            "recFieldAllowance" -> "recFieldAllowance"
-                            "recSpecialForces", "recSpecialForcesPay" -> "recSpecialForces"
-                            else -> "recoveryOfDebits"
-                        }
+                    val targetKey = PayslipPatternConfig.recoveryTargetFor(baseStdKey)
                     deductionsMap[targetKey] = (deductionsMap[targetKey] ?: 0.0) + value
                 }
             }
-
-            DynamicSpatialParser.applyHistoricalOverrides(year, monthNum, earningsMap, deductionsMap)
 
             val reconciled =
                 reconcileTotals(
