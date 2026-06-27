@@ -243,10 +243,6 @@ class PayslipTextParserTest {
         assertEquals(519153.0, res2.totalTaxPayable)
     }
 
-
-
-
-
     @Test
     fun testMathematicalReconciliationFailure() {
         val mockText =

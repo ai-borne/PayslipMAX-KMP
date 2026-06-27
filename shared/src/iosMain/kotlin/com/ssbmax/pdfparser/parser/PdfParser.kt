@@ -86,10 +86,16 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             // First occurrence wins — later BPAY/Basic Pay matches (e.g., footers) must not overwrite
             var yBpayFound = false
             findCoordinates("BPAY") { rect ->
-                if (!yBpayFound) { yBpay = CGRectGetMinY(rect); yBpayFound = true }
+                if (!yBpayFound) {
+                    yBpay = CGRectGetMinY(rect)
+                    yBpayFound = true
+                }
             }
             findCoordinates("Basic Pay") { rect ->
-                if (!yBpayFound) { yBpay = CGRectGetMinY(rect); yBpayFound = true }
+                if (!yBpayFound) {
+                    yBpay = CGRectGetMinY(rect)
+                    yBpayFound = true
+                }
             }
 
             // Find yTotalCredit BEFORE xDsop so the Y-range guard below is valid

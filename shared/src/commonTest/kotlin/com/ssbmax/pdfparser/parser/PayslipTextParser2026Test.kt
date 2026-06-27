@@ -8,7 +8,8 @@ import kotlin.test.assertTrue
 class PayslipTextParser2026Test {
     @Test
     fun testParse2026Format() {
-        val leftText = """
+        val leftText =
+            """
             BPAY (12A) 149000
             DA 98700
             MSP 15500
@@ -18,29 +19,32 @@ class PayslipTextParser2026Test {
             ARR-DA 9870
             ARR-TPTADA 216
             ETKT 1657
-        """.trimIndent()
+            """.trimIndent()
 
-        val middleText = """
+        val middleText =
+            """
             ETKT 3056
             DSOP 40000
             AGIF 12500
             ITAX 50425
             EHCESS 2017
-        """.trimIndent()
+            """.trimIndent()
 
-        val fullText = """
+        val fullText =
+            """
             04/2026  STATEMENT OF ACCOUNT FOR 04/2026
             Name: Officer Officer Officer A/C No: 16/111/206718K PAN No: AR*****90G
             kuula Aaya Gross Pay 301828 kuula kTaOtI Total Deductions 107998
             Net Remittance : Rs.1,93,830
-        """.trimIndent()
+            """.trimIndent()
 
-        val result = PayslipTextParser.parse(
-            leftColumnText = leftText,
-            middleColumnText = middleText,
-            fullText = fullText,
-            filename = "04 Apr 2026.pdf"
-        )
+        val result =
+            PayslipTextParser.parse(
+                leftColumnText = leftText,
+                middleColumnText = middleText,
+                fullText = fullText,
+                filename = "04 Apr 2026.pdf",
+            )
         assertTrue(result.isSuccess)
         val payslip = result.getOrNull()!!
         assertNotNull(payslip)

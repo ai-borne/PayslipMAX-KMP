@@ -3,50 +3,52 @@ package com.ssbmax.pdfparser.ui.screens
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.parser.PayslipPatternConfig
 
-private val creditsDescriptions = mapOf(
-    "basicPay" to "Core salary based on rank and service years under 7th Pay Commission rules.",
-    "militaryServicePay" to "Military Service Pay. Compensates for hazardous and volatile lifestyle of military personnel.",
-    "dearnessAllowance" to "Dearness Allowance. Cost of living adjustment, revised twice a year.",
-    "transportAllowance" to "Transport Allowance. Commuting allowance based on duty station.",
-    "transportAllowanceDa" to "Dearness Allowance computed on Transport Allowance amount.",
-    "rationMoney" to "Ration Money Allowance. Dietary compensation when mess is not occupied.",
-    "dressAllowance" to "Outfit/Dress Allowance. Annual uniform allowance credited usually in July month.",
-    "specialForcesPay" to "Special Forces hazard pay for commando or airborne units.",
-    "fieldAllowance" to "Field Area Allowance for deployment in active operational zones.",
-    "houseRentAllowance" to "House Rent Allowance. Compensation for housing expenses when government quarters are not availed.",
-    "riskHardshipAllowance" to "Risk & Hardship Allowance. Compensates for postings in difficult or operational areas.",
-    "nonPracticingAllowance" to "Non-Practicing Allowance. Compensatory allowance for medical officers.",
-    "arrearsRiskHardship" to "Arrears of Risk & Hardship Allowance.",
-    "arrearsHra" to "Arrears of House Rent Allowance.",
-    "adjBasicPay" to "Adjustment of Basic Pay.",
-    "adjDa" to "Adjustment of Dearness Allowance.",
-    "adjMsp" to "Adjustment of Military Service Pay.",
-    "adjTpta" to "Adjustment of Transport Allowance.",
-    "adjPayAndAllce" to "Adjustment of Pay and Allowance.",
-    "adjFieldAllowance" to "Adjustment of Field Allowance.",
-    "medicalAllowance" to "Medical Allowance or Reimbursement.",
-    "adjTicketRecovery" to "Adjustment of ticket recovery.",
-    "miscEarnings" to "Miscellaneous unmapped credits or adjustment reconciliation difference."
-)
+private val creditsDescriptions =
+    mapOf(
+        "basicPay" to "Core salary based on rank and service years under 7th Pay Commission rules.",
+        "militaryServicePay" to "Military Service Pay. Compensates for hazardous and volatile lifestyle of military personnel.",
+        "dearnessAllowance" to "Dearness Allowance. Cost of living adjustment, revised twice a year.",
+        "transportAllowance" to "Transport Allowance. Commuting allowance based on duty station.",
+        "transportAllowanceDa" to "Dearness Allowance computed on Transport Allowance amount.",
+        "rationMoney" to "Ration Money Allowance. Dietary compensation when mess is not occupied.",
+        "dressAllowance" to "Outfit/Dress Allowance. Annual uniform allowance credited usually in July month.",
+        "specialForcesPay" to "Special Forces hazard pay for commando or airborne units.",
+        "fieldAllowance" to "Field Area Allowance for deployment in active operational zones.",
+        "houseRentAllowance" to "House Rent Allowance. Compensation for housing expenses when government quarters are not availed.",
+        "riskHardshipAllowance" to "Risk & Hardship Allowance. Compensates for postings in difficult or operational areas.",
+        "nonPracticingAllowance" to "Non-Practicing Allowance. Compensatory allowance for medical officers.",
+        "arrearsRiskHardship" to "Arrears of Risk & Hardship Allowance.",
+        "arrearsHra" to "Arrears of House Rent Allowance.",
+        "adjBasicPay" to "Adjustment of Basic Pay.",
+        "adjDa" to "Adjustment of Dearness Allowance.",
+        "adjMsp" to "Adjustment of Military Service Pay.",
+        "adjTpta" to "Adjustment of Transport Allowance.",
+        "adjPayAndAllce" to "Adjustment of Pay and Allowance.",
+        "adjFieldAllowance" to "Adjustment of Field Allowance.",
+        "medicalAllowance" to "Medical Allowance or Reimbursement.",
+        "adjTicketRecovery" to "Adjustment of ticket recovery.",
+        "miscEarnings" to "Miscellaneous unmapped credits or adjustment reconciliation difference.",
+    )
 
-private val debitsDescriptions = mapOf(
-    "dsopSubscription" to "Defence Services Officers Provident Fund. Tax-free retirement fund compound savings.",
-    "agif" to "Army Group Insurance Fund. Mandatory life cover and survival benefits contribution.",
-    "incomeTax" to "Income Tax deducted at source based on annual projections.",
-    "educationCess" to "Health & Education Cess (4% of primary Income Tax amount).",
-    "licenseFee" to "License Fee charged for occupying government married/single quarters.",
-    "furnitureRent" to "Furniture Rent for government-provided appliances and items in quarters.",
-    "waterCharges" to "Water supply charges for occupied quarters.",
-    "electricityCharges" to "Electricity charges consumed in quarters.",
-    "barrackDamage" to "Recoveries for damages or missing furniture items in quarters.",
-    "ticketRecovery" to "Recovery of ticket or travel charges.",
-    "recFieldAllowance" to "Recovery of Field Allowance.",
-    "recSpecialForces" to "Recovery of Special Forces Pay.",
-    "recoveryOfDebits" to "Recovery of debits or other ledger balance elements.",
-    "aobf" to "Army Officers Benevolent Fund. Recurring welfare contribution.",
-    "agifLoanRecovery" to "Recovery of AGIF Car/Motorcycle loans.",
-    "miscDeductions" to "Miscellaneous unmapped deductions or debit reconciliation difference."
-)
+private val debitsDescriptions =
+    mapOf(
+        "dsopSubscription" to "Defence Services Officers Provident Fund. Tax-free retirement fund compound savings.",
+        "agif" to "Army Group Insurance Fund. Mandatory life cover and survival benefits contribution.",
+        "incomeTax" to "Income Tax deducted at source based on annual projections.",
+        "educationCess" to "Health & Education Cess (4% of primary Income Tax amount).",
+        "licenseFee" to "License Fee charged for occupying government married/single quarters.",
+        "furnitureRent" to "Furniture Rent for government-provided appliances and items in quarters.",
+        "waterCharges" to "Water supply charges for occupied quarters.",
+        "electricityCharges" to "Electricity charges consumed in quarters.",
+        "barrackDamage" to "Recoveries for damages or missing furniture items in quarters.",
+        "ticketRecovery" to "Recovery of ticket or travel charges.",
+        "recFieldAllowance" to "Recovery of Field Allowance.",
+        "recSpecialForces" to "Recovery of Special Forces Pay.",
+        "recoveryOfDebits" to "Recovery of debits or other ledger balance elements.",
+        "aobf" to "Army Officers Benevolent Fund. Recurring welfare contribution.",
+        "agifLoanRecovery" to "Recovery of AGIF Car/Motorcycle loans.",
+        "miscDeductions" to "Miscellaneous unmapped deductions or debit reconciliation difference.",
+    )
 
 private fun getCreditDesc(key: String): String {
     val stdKey = PayslipPatternConfig.creditKeysMapping[key] ?: key

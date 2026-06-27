@@ -1,7 +1,5 @@
 package com.ssbmax.pdfparser.parser
 
-import com.ssbmax.pdfparser.logging.Logger
-
 object DynamicSpatialParser {
     private val blocklist get() = PayslipPatternConfig.blocklist
     private val sentenceWords get() = PayslipPatternConfig.sentenceWords
@@ -56,30 +54,30 @@ object DynamicSpatialParser {
         val cleanedText = cleanAndJoinColumns(colText)
         val extracted = mutableMapOf<String, Double>()
         val pattern = Regex("\\b([A-Za-z/().&-]{1,15}(?:\\s+[A-Za-z/().&-]{1,15}){0,2}\\d*)\\s+(-?\\d+)\\b")
-        
+
         val cleanedTag = cleanedText.replace(Regex("\\(\\w+\\)"), " ")
         val cleanVal = cleanCommasAndWhitespace(cleanedTag)
         val workingLine = cleanVal.replace(Regex("[^a-zA-Z0-9\\s()/.&-]"), " ")
-        
+
         val matches = pattern.findAll(workingLine)
         for (match in matches) {
             val key = match.groupValues[1].trim()
             val valStr = match.groupValues[2]
-            
+
             if (key.length < 2 || key.matches(Regex("^\\d+$"))) continue
-            
+
             val isHardcoded = key in PayslipPatternConfig.creditKeysMapping.keys || key in PayslipPatternConfig.debitKeysMapping.keys
             if (!isHardcoded) {
                 if (!key.matches(Regex("^[A-Z0-9\\-/.]+$")) || key.length < 2) continue
             }
-            
+
             val keyLower = key.lowercase()
             if (keyLower in blocklist || keyLower in invalidEntireKeys) continue
             if (!key.any { it.isLetter() }) continue
-            
+
             val wordsInKey = Regex("\\b[a-z]+\\b").findAll(keyLower).map { it.value }.toList()
             if (wordsInKey.any { it in blocklist || it in sentenceWords }) continue
-            
+
             val value = valStr.toDoubleOrNull() ?: 0.0
             extracted[key] = (extracted[key] ?: 0.0) + value
         }
@@ -93,7 +91,7 @@ object DynamicSpatialParser {
         fullText: String,
         cleanedLeftText: String,
         cleanedMiddleText: String,
-        cleanedFullText: String
+        cleanedFullText: String,
     ): Pair<Map<String, Double>, Map<String, Double>> {
         val dynamicEarnings: Map<String, Double>
         val dynamicDeductions: Map<String, Double>

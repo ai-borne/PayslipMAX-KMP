@@ -9,7 +9,6 @@ import kotlin.test.assertTrue
  * iOS uses xDsopVal <= 50.0 as the fallback guard; Android must match.
  */
 class PdfParserCoordinateValidationTest {
-
     // The required threshold — must stay in sync with PdfParser.kt
     private val XSPLIT_FALLBACK_THRESHOLD = 50f
 
