@@ -51,8 +51,6 @@ internal fun extractTextSpatially(
 
         // Check if the word is roughly within bounds
         if (cx >= xMin && cx <= xMax && cy >= yMin && cy <= yMax) {
-            // We got the word bounds. Distribute the word bounds equally to its characters
-            // This preserves the character-level structure for the sorting logic below
             val charWidth = cw / wordStr.length
             for ((charIdx, char) in wordStr.withIndex()) {
                 val charX = cx + (charIdx * charWidth)
@@ -71,8 +69,8 @@ internal fun extractTextSpatially(
     for (c in sortedChars) {
         val line =
             lines.find { lineChars ->
-                val avgY = lineChars.map { it.y }.average()
-                kotlin.math.abs(avgY - c.y) < 5.0
+                val firstY = lineChars.first().y
+                kotlin.math.abs(firstY - c.y) <= 3.0
             }
         if (line != null) {
             line.add(c)
@@ -84,7 +82,7 @@ internal fun extractTextSpatially(
     // Sort lines by Y descending
     val sortedLines =
         lines.sortedByDescending { lineChars ->
-            lineChars.map { it.y }.average()
+            lineChars.first().y
         }
 
     // Reconstruct words with space thresholding

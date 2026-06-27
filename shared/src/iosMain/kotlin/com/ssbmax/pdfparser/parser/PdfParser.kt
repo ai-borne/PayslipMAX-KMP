@@ -5,19 +5,13 @@ package com.ssbmax.pdfparser.parser
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.logging.Logger
 import kotlinx.cinterop.BetaInteropApi
-import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.useContents
 import kotlinx.cinterop.usePinned
-import platform.CoreGraphics.CGRect
-import platform.CoreGraphics.CGRectGetMinX
-import platform.CoreGraphics.CGRectGetMinY
 import platform.Foundation.NSData
 import platform.Foundation.create
 import platform.PDFKit.PDFDocument
-import platform.PDFKit.PDFPage
-import platform.PDFKit.PDFSelection
 import platform.PDFKit.kPDFDisplayBoxCropBox
 
 actual class PlatformPdfParser actual constructor() : PdfParser {
@@ -59,119 +53,13 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             val pageHeight = pageBounds.useContents { size.height }
             val pageWidth = pageBounds.useContents { size.width }
 
-            var yBpay = pageHeight - 250.0
-            var xDsop = 150.0
-            var yTotalCredit = pageHeight - 700.0
-            var xDetails = 0.0
+            val scanner = IosLayoutScanner(pdfDoc, tablePageIdx, pageHeight)
+            scanner.scan()
 
-            fun findCoordinates(
-                searchTerm: String,
-                onSelection: (CValue<CGRect>) -> Unit,
-            ) {
-                val selections = pdfDoc.findString(searchTerm, withOptions = 1UL) // 1UL is NSCaseInsensitiveSearch
-                selections?.forEach { selObj ->
-                    val selection = selObj as? PDFSelection ?: return@forEach
-                    val pagesList = selection.pages ?: return@forEach
-                    for (pageObj in pagesList) {
-                        val page = pageObj as? PDFPage ?: continue
-                        val idx = pdfDoc.indexForPage(page).toInt()
-                        if (idx == tablePageIdx) {
-                            val rect = selection.boundsForPage(page)
-                            onSelection(rect)
-                        }
-                    }
-                }
-            }
+            Logger.d("PlatformPdfParser", "Raw coordinates: yBpay=${scanner.yBpay}, xDsop=${scanner.xDsop}, yTotalCredit=${scanner.yTotalCredit}, xDetails=${scanner.xDetails}")
 
-            // First occurrence wins — later BPAY/Basic Pay matches (e.g., footers) must not overwrite
-            var yBpayFound = false
-            findCoordinates("BPAY") { rect ->
-                if (!yBpayFound) {
-                    yBpay = CGRectGetMinY(rect)
-                    yBpayFound = true
-                }
-            }
-            findCoordinates("Basic Pay") { rect ->
-                if (!yBpayFound) {
-                    yBpay = CGRectGetMinY(rect)
-                    yBpayFound = true
-                }
-            }
-
-            // Find yTotalCredit BEFORE xDsop so the Y-range guard below is valid
-            findCoordinates("Total Credit") { rect ->
-                yTotalCredit = CGRectGetMinY(rect)
-            }
-            findCoordinates("Gross Pay") { rect ->
-                yTotalCredit = CGRectGetMinY(rect)
-            }
-            findCoordinates("Total Debit") { rect ->
-                yTotalCredit = CGRectGetMinY(rect)
-            }
-            findCoordinates("Total Deductions") { rect ->
-                yTotalCredit = CGRectGetMinY(rect)
-            }
-
-            // Find column split X using debit-only anchors.
-            // PDFKit Y=0 is at bottom; table rows have Y in (yTotalCredit..yBpay).
-            // Guard against footer/header occurrences of these keywords at unrelated X positions.
-            findCoordinates("DSOP") { rect ->
-                val ry = CGRectGetMinY(rect)
-                val rx = CGRectGetMinX(rect)
-                if (ry in (yTotalCredit - 10.0)..(yBpay + 25.0)) {
-                    if (xDsop == 150.0 || rx < xDsop) xDsop = rx
-                }
-            }
-            findCoordinates("AGIF") { rect ->
-                val ry = CGRectGetMinY(rect)
-                val rx = CGRectGetMinX(rect)
-                if (ry in (yTotalCredit - 10.0)..(yBpay + 25.0)) {
-                    if (xDsop == 150.0 || rx < xDsop) xDsop = rx
-                }
-            }
-            findCoordinates("ITAX") { rect ->
-                val ry = CGRectGetMinY(rect)
-                val rx = CGRectGetMinX(rect)
-                if (ry in (yTotalCredit - 10.0)..(yBpay + 25.0)) {
-                    if (xDsop == 150.0 || rx < xDsop) xDsop = rx
-                }
-            }
-
-            findCoordinates("DETAILS OF TRANSACTIONS") { rect ->
-                val rx = CGRectGetMinX(rect)
-                if (xDetails == 0.0 || rx < xDetails) {
-                    xDetails = rx
-                }
-            }
-            findCoordinates("DETAILS OF DO2s") { rect ->
-                val rx = CGRectGetMinX(rect)
-                if (xDetails == 0.0 || rx < xDetails) {
-                    xDetails = rx
-                }
-            }
-            findCoordinates("DETAILS OF") { rect ->
-                val rx = CGRectGetMinX(rect)
-                if (xDetails == 0.0 || rx < xDetails) {
-                    xDetails = rx
-                }
-            }
-            findCoordinates("laona dona") { rect ->
-                val rx = CGRectGetMinX(rect)
-                if (xDetails == 0.0 || rx < xDetails) {
-                    xDetails = rx
-                }
-            }
-            findCoordinates("loona dona") { rect ->
-                val rx = CGRectGetMinX(rect)
-                if (xDetails == 0.0 || rx < xDetails) {
-                    xDetails = rx
-                }
-            }
-
-            Logger.d("PlatformPdfParser", "Raw coordinates: yBpay=$yBpay, xDsop=$xDsop, yTotalCredit=$yTotalCredit, xDetails=$xDetails")
-
-            var yMinVal = yTotalCredit + 2.0
-            var yMaxVal = yBpay + 25.0
+            var yMinVal = scanner.yTotalCredit + 2.0
+            var yMaxVal = if (scanner.tableHeaderY > 0.0) kotlin.math.max(pageHeight - 180.0, scanner.tableHeaderY) else scanner.yBpay + 25.0
             if (yMaxVal <= yMinVal) {
                 Logger.w("PlatformPdfParser", "Invalid Y bounds detected (yMaxVal: $yMaxVal <= yMinVal: $yMinVal). Applying safe fallbacks.")
                 yMaxVal = pageHeight - 180.0
@@ -180,19 +68,16 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             if (yMinVal < 0.0) yMinVal = 0.0
             if (yMaxVal > pageHeight) yMaxVal = pageHeight
 
-            var xDsopVal = xDsop
+            var xDsopVal = scanner.xDsop
             if (xDsopVal <= 50.0 || xDsopVal >= pageWidth) {
                 Logger.w("PlatformPdfParser", "Invalid xDsopVal ($xDsopVal). Falling back to 150.0.")
                 xDsopVal = 150.0
             }
 
-            val xRightBound = if (xDetails > xDsopVal - 2.0) xDetails else pageWidth
-            if (xDetails > 0.0 && xDetails <= xDsopVal) {
-                Logger.w("PlatformPdfParser", "xDetails ($xDetails) ≤ xDsopVal ($xDsopVal); using pageWidth as right bound.")
-            }
+            val calculatedBound = if (xDsopVal >= 250.0) (xDsopVal + 190.0) else 308.0
+            val xRightBound = if (scanner.xDetails > xDsopVal + 20.0 && scanner.xDetails < calculatedBound) scanner.xDetails else calculatedBound
 
             Logger.d("PlatformPdfParser", "Final safe coordinates - yMinVal: $yMinVal, yMaxVal: $yMaxVal, xDsopVal: $xDsopVal, xRightBound: $xRightBound, pageWidth: $pageWidth, pageHeight: $pageHeight")
-            Logger.d("PlatformPdfParser", "--- RAW TABLE PAGE STRING ---\n${tablePage.string}")
 
             val leftText =
                 extractTextSpatially(
@@ -235,9 +120,9 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     )
                 ) {
                     Logger.d("PlatformPdfParser", "Dynamically found Tax details on page: ${i + 1}")
-                    val pageBounds = page.boundsForBox(kPDFDisplayBoxCropBox)
-                    val pHeight = pageBounds.useContents { size.height }
-                    val pWidth = pageBounds.useContents { size.width }
+                    val pBounds = page.boundsForBox(kPDFDisplayBoxCropBox)
+                    val pHeight = pBounds.useContents { size.height }
+                    val pWidth = pBounds.useContents { size.width }
 
                     val startIdx = pageTextLower.indexOf("income tax details").takeIf { it >= 0 } ?: 0
                     val endIdx1 = pageTextLower.indexOf("dsop fund").takeIf { it > startIdx } ?: pageText.length
@@ -258,9 +143,9 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     )
                 ) {
                     Logger.d("PlatformPdfParser", "Dynamically found DSOP details on page: ${i + 1}")
-                    val pageBounds = page.boundsForBox(kPDFDisplayBoxCropBox)
-                    val pHeight = pageBounds.useContents { size.height }
-                    val pWidth = pageBounds.useContents { size.width }
+                    val pBounds = page.boundsForBox(kPDFDisplayBoxCropBox)
+                    val pHeight = pBounds.useContents { size.height }
+                    val pWidth = pBounds.useContents { size.width }
 
                     val startIdx = pageTextLower.indexOf("dsop fund").takeIf { it >= 0 } ?: 0
                     val endIdx1 = pageTextLower.indexOf("loans & advances").takeIf { it > startIdx } ?: pageText.length
@@ -276,7 +161,6 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
 
             Logger.d("PlatformPdfParser", "--- LEFT COLUMN TEXT ---\n$leftText")
             Logger.d("PlatformPdfParser", "--- MIDDLE COLUMN TEXT ---\n$middleText")
-            Logger.d("PlatformPdfParser", "--- FLAT TEXT ---\n$flatText")
 
             PayslipTextParser.parse(
                 leftColumnText = leftText,
