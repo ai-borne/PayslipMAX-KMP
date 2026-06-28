@@ -76,14 +76,21 @@ fun PreferencesSection(
         )
         if (uiState.isPremiumEnabled) {
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            val subtitle =
+                if (uiState.isGemmaSupported) {
+                    "Runs 100% offline on-device to protect privacy and battery."
+                } else {
+                    uiState.gemmaSupportReason ?: "Requires device with 4GB RAM and 1.5GB free storage."
+                }
             SettingsRow(
                 icon = "🤖",
                 title = "Use Local Gemma AI Model",
-                subtitle = "Runs 100% offline on-device to protect privacy and battery.",
+                subtitle = subtitle,
                 trailingContent = {
                     Switch(
-                        checked = uiState.useLocalAi,
-                        onCheckedChange = { viewModel.setLocalAiEnabled(it) },
+                        checked = uiState.useLocalAi && uiState.isGemmaSupported,
+                        onCheckedChange = { if (uiState.isGemmaSupported) viewModel.setLocalAiEnabled(it) },
+                        enabled = uiState.isGemmaSupported,
                     )
                 },
             )

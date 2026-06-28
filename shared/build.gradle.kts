@@ -56,6 +56,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.pdfbox.android)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.mediapipe.tasks.genai)
             // Firebase Auth — Android only; used by AuthTokenProvider.android.kt
             implementation(libs.firebase.auth.ktx)
         }

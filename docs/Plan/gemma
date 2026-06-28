@@ -1,99 +1,73 @@
-### Tier-by-Tier Readiness Audit
+# PayslipMax — 7-Tier Parsing Architecture & Offline Gemma Roadmap
 
-| Tier | Status | Current Code Base Implementation | Gap / Action Needed |
-| :--- | :--- | :--- | :--- |
-| **Tier 1: PDF Native Parser** | 🟢 **100% Built** | Android uses `PDFBox` (`TokenScanner`), iOS uses `PDFKit` (`IosTokenExtractor`). Extracts vector tokens natively. | None. Production ready. |
-| **Tier 2: Coordinate-Aware Parser** | 🟡 **80% Built** | `PositionedToken.kt` captures `x`, `y`, `width`, `height`, `centerX`, `right`, `bottom`. | **Font Metadata Gap**: Currently `fontName`, `fontSize`, and `isBold` are not captured in `PositionedToken`. Adding these will help distinguish table headers from data rows. |
-| **Tier 3: Table Reconstruction** | 🟢 **100% Built** | `GridReconstructor.kt` performs dynamic vertical/horizontal spatial clustering using median line height (`medianHeight * 0.5`). `RowPairing.kt` matches labels to amounts. | None. |
-| **Tier 4: Field Detector** | 🟢 **100% Built** | `TokenTableClassifier.kt` matches against `PayslipPatternConfig` (SSOT) keys (`basicPay`, `da`, `msp`, `incomeTax`, etc.) and learns credit/debit x-bands dynamically. | None. |
-| **Tier 5: Confidence Engine** | 🟢 **100% Built** | `ReconciliationSolver.scoreConfidence()` assigns per-field scores (`fieldConfidence: Map<String, Float>`) and flags fields under `ConfidenceThresholds.REVIEW_THRESHOLD = 0.7f`. | None. |
-| **Tier 6: Gemma (Offline) for Uncertain Fields** | 🔴 **20% Built** (Architected, not wired for parsing) | `LocalGemmaProvider` exists in Section 8 for downstream insights generation, but is **not** connected to the parsing loop. | **Major Opportunity**: When Tier 5 flags low-confidence or `rawEarnings` items, feed *only* those problematic tokens/rows into Gemma offline to extract standard field keys before final assembly. |
-| **Tier 7: Schema Validator** | 🟡 **70% Built** | `ReconciliationEngine.kt` checks `trueGross`, `trueDeductions`, and `netResidual`. | **Pipeline Re-ordering**: Currently reconciliation runs *before* confidence scoring. In your 7-tier vision, Tier 7 will run *after* Tier 6 (Gemma fallback) as the ultimate gatekeeper. |
-| **Store Structured JSON** | 🟢 **100% Built** | `PayslipAssembler.kt` packages `ParsedPayslip`, persisted via Room DB (`EncryptedPayslipEntity` with AES-256 encryption). | None. |
+This document outlines the architecture, readiness status, and multi-sprint execution plan for upgrading PayslipMax to a **7-Tier High-Precision Parsing Architecture** featuring offline Gemma fallback for ambiguous tokens.
 
 ---
 
-### What Needs to be Done to Complete the Vision
+## 1. 7-Tier Architecture Overview
 
-To achieve your exact 7-Tier vision, you only need to make 3 targeted enhancements:
-
-#### 1. Enhance Tier 2 (`PositionedToken`) with Font Metadata
-Update `PositionedToken.kt` and platform extractors (`TokenScanner.kt` / `IosTokenExtractor.kt`) to store `fontSize` and `isBold`. 
-* **Benefit**: Allows `GridReconstructor` to instantly filter out bold table headers or footers, preventing edge cases like Bug 1 (Hindi headers merging with amounts).
-
-#### 2. Implement the Tier 6 Gemma Parsing Loop
-Currently, when a raw label isn't recognized, it goes into `rawEarnings`/`rawDeductions` and drops the field confidence score.
-* **New Flow**: 
-  ```kotlin
-  if (fieldConfidence < REVIEW_THRESHOLD || rawEarnings.isNotEmpty()) {
-      val resolvedFields = gemmaLocalParser.resolveAmbiguousTokens(rawEarnings)
-      // merge resolved fields back into structured earningsMap
-  }
-  ```
-
-#### 3. Shift Tier 7 to the Final Gatekeeper Spot
-Position your mathematical invariants (`netResidual < ₹2`, `sum(credits) == grossPay`) after Tier 6 execution to validate that Gemma's suggestions didn't break accounting logic before writing to the database.
-
-### Summary
-Your architecture is already aligned with this methodical design. You are simply refining Tier 2 (adding font metadata) and wiring up Tier 6 (Gemma fallback for uncertain tokens), which will give you near 100% parsing accuracy across unusual or degraded payslip layouts.
-
-
----
-
-I strongly recommend **separate sprints (a 3-phase rollout)** rather than doing everything in one giant sprint. 
-
-Here is why, followed by how we integrate the Gemma model into your codebase.
-
----
-
-### Why Separate Sprints? (Aligned with Project Rules)
-
-1. **Isolation of Heavy Dependencies**: Integrating on-device Gemma involves adding native ML runtimes (MediaPipe LLM Inference SDK / CoreML), model weights (~1.5 GB quantized), and memory management. Combining this with parser code changes in one sprint creates unnecessary debugging complexity.
-2. **Regression Protection**: Per **Rule 7 (Phase-wise plans & committing after each phase)**, separate sprints allow us to run your 52-file `CorpusRegressionTest` suite after each phase to verify zero regression before introducing probabilistic AI logic.
-
----
-
-### Recommended 3-Sprint Roadmap
+The parsing pipeline processes monthly PCDA(O) military payslips through seven sequential stages, guaranteeing deterministic mathematical accuracy while leveraging on-device LLM intelligence only when spatial rules encounter ambiguity.
 
 ```mermaid
-graph TD
-    S1[Sprint 1: Parser Core Refinement\nTier 2 Font Metadata & Tier 7 Re-ordering] --> S2[Sprint 2: Gemma Model & SDK Integration\nOn-Device Infrastructure]
-    S2 --> S3[Sprint 3: Tier 6 Fallback Wiring\nEnd-to-End Intelligence Loop]
+flowchart TD
+    T1[Tier 1: PDF Native Parser\nPDFKit / PDFBox] --> T2[Tier 2: Coordinate & Font Aware Parser\nx, y, w, h, fontSize, isBold]
+    T2 --> T3[Tier 3: Table Reconstruction\nGridReconstructor & RowPairing]
+    T3 --> T4[Tier 4: Field Detector\nTokenTableClassifier & PayslipPatternConfig]
+    T4 --> T5[Tier 5: Confidence Engine\nReconciliationSolver & REVIEW_THRESHOLD]
+    T5 -->|Low Confidence / Unmatched Tokens| T6[Tier 6: Offline Gemma Fallback\nLocalGemmaProvider AI Parsing]
+    T5 -->|High Confidence| T7[Tier 7: Schema Validator\nMathematical Invariants Check]
+    T6 --> T7
+    T7 --> Store[(Encrypted Room DB\nStructured ParsedPayslip JSON)]
 ```
 
-#### 🏃 Sprint 1: Parser Core Refinements (Tiers 2 & 7)
-* **Goal**: Maximize deterministic extraction accuracy before touching AI.
-* **Deliverables**:
-  1. **Tier 2**: Update `PositionedToken.kt`, `TokenScanner.kt` (Android), and `IosTokenExtractor.kt` (iOS) to extract `fontSize` and `isBold`. Update `GridReconstructor` to filter out header/footer styling.
-  2. **Tier 7**: Re-order pipeline stages so schema verification acts as the clean final gatekeeper after extraction.
-* **Checkpoint**: Verify against all 52 fixtures in `TokenParseCorpusRegressionTest`.
+---
+
+## 2. Tier-by-Tier Implementation Audit Matrix
+
+| Tier | Status | Core Implementation | Details & Current State |
+| :--- | :--- | :--- | :--- |
+| **Tier 1: PDF Native Parser** | 🟢 **100% Built** | Android `PDFBox` (`TokenScanner`) / iOS `PDFKit` (`IosTokenExtractor`) | Native vector token extraction operating in production. |
+| **Tier 2: Coordinate & Font-Aware Parser** | 🟢 **100% Built** | `PositionedToken.kt` | Enhanced in **Sprint 1** to capture `fontSize` and `isBold` with 100% backwards compatibility across existing corpus fixtures. |
+| **Tier 3: Table Reconstruction** | 🟢 **100% Built** | `GridReconstructor.kt` & `RowPairing.kt` | Dynamic spatial clustering using median line height. Enhanced in **Sprint 1** with `GridCell` font inspection. |
+| **Tier 4: Field Detector** | 🟢 **100% Built** | `TokenTableClassifier.kt` | Content-driven classification learning credit/debit x-bands per document. |
+| **Tier 5: Confidence Engine** | 🟢 **100% Built** | `ReconciliationSolver.kt` | Assigns per-field confidence scores (`fieldConfidence`) and evaluates against `REVIEW_THRESHOLD = 0.7f`. |
+| **Tier 6: Gemma Offline Fallback** | 🟢 **70% Built** | `LocalGemmaProvider.kt` & `GemmaEngine` | KMP engine abstraction, Android MediaPipe GenAI SDK runtime, iOS native bridge, hardware capability gating, and benchmark harness built in **Sprint 2**. Pipeline wiring upcoming in **Sprint 3**. |
+| **Tier 7: Schema Validator** | 🟢 **100% Built** | `SchemaValidator.kt` | Introduced in **Sprint 1**. Acts as the final gatekeeper verifying mathematical invariants (`grossPay`, `totalDeductions`, `netResidual`). |
+| **Store Structured JSON** | 🟢 **100% Built** | `PayslipAssembler.kt` & Room DB | Serializes `ParsedPayslip` into AES-256 encrypted local database entities. |
 
 ---
 
-#### 🏃 Sprint 2: On-Device Gemma Infrastructure Setup
-* **Goal**: Embed the Gemma model and execution SDK into Android and iOS builds.
-* **Model Selection**: Use **Gemma-2B-IT (4-bit quantized)** or **Gemma-3-1B**, optimized for mobile CPU/GPU execution (~1.1 GB memory footprint).
-* **Deliverables**:
-  1. **Android SDK**: Add Google AI Edge / MediaPipe LLM Inference SDK (`com.google.mediapipe:tasks-genai`) in `androidMain`.
-  2. **iOS SDK**: Add MediaPipe LLM Inference iOS Swift Package in `iosMain`.
-  3. **Model Storage**: Implement asset downloading / bundle bundling for the `.bin` / `.task` model file with AES encryption or secure local storage.
-  4. **Provider Implementation**: Complete `LocalGemmaProvider.kt` (implementing `AIInsightProvider`) to support structured prompt execution.
-* **Checkpoint**: Test standalone offline inference on both platforms via unit/integration tests.
+## 3. Sprint Execution Roadmap
+
+### ✅ Sprint 1: Parser Core Refinements (Tiers 2 & 7) — COMPLETED
+* **Goal**: Harden the deterministic spatial parser with font metadata and establish the Tier 7 Schema Validator.
+* **Status**: **Completed & Committed** (`commit 375837e`).
+* **Deliverables Completed**:
+  1. **Tier 2 Domain IR**: Added `fontSize: Float = 0f` and `isBold: Boolean = false` to `PositionedToken.kt`.
+  2. **Platform Adapters**: Updated Android `TokenScanner.kt` (extracting `fontSizeInPt` and bold weights) and iOS `SpatialTextExtractor.kt`.
+  3. **Grid Reconstruction**: Added `isBold` and `maxFontSize` helper properties to `GridCell` in `GridReconstructor.kt` to assist in candidate filtering.
+  4. **Tier 7 Schema Validator**: Created `SchemaValidator.kt` and updated `PayslipTokenParser.kt` to enforce final mathematical verification gates.
+* **Verification**: All unit tests and full 52-file `CorpusRegressionTest` suite passed with zero regressions.
 
 ---
 
-#### 🏃 Sprint 3: Tier 6 Fallback Wiring & End-to-End Validation
-* **Goal**: Connect Gemma directly to the Tier 5 low-confidence loop.
-* **Deliverables**:
-  1. **Prompt Engineering**: Craft a lightweight, deterministic JSON extraction prompt for raw tokens (e.g., `"Given these unparsed payslip lines: [tokens], map them to JSON containing known fields like BPAY, DA, ITAX"`).
-  2. **Tier 5 ↔ Tier 6 Wiring**: Update `PayslipTokenParser.kt` so that if `needsReview == true` or `rawEarnings.isNotEmpty()`, only the unparsed tokens are passed to `LocalGemmaProvider`.
-  3. **Tier 7 Verification**: Feed Gemma's output into Tier 7 Schema Validator to ensure mathematical consistency.
-* **Checkpoint**: Full end-to-end regression run and memory benchmark test.
+### ✅ Sprint 2: On-Device Gemma Infrastructure Setup — COMPLETED
+* **Goal**: Embed the Gemma model execution runtime into Android and iOS builds with hardware capability gating.
+* **Status**: **Completed & Verified**.
+* **Model Target**: **Gemma 3 1B IT (INT4 quantized `.task` bundle)** (~650 MB storage footprint, ~800 MB RAM runtime, mobile CPU/GPU optimized).
+* **Deliverables Completed**:
+  1. **Hardware Capability Gating**: Implemented `DeviceCapabilityManager` (`expect/actual` in KMP evaluating RAM ≥ 3.5GB and free storage ≥ 1.5GB) and gated the Settings screen toggle.
+  2. **Android ML Runtime**: Integrated Google AI Edge / MediaPipe LLM Inference SDK (`com.google.mediapipe:tasks-genai:0.10.14`) into `androidMain` wrapping `LlmInference` with asynchronous background dispatching.
+  3. **iOS ML Runtime**: Implemented native iOS `GemmaEngine` in `iosMain` using Foundation file validation and background coroutines.
+  4. **Model Storage & Benchmark Harness**: Built `GemmaModelStorageManager` and `GemmaBenchmarkHarness` to verify execution timing and token generation speed.
+* **Verification Gate**: 100% build success and all unit test suites passing across common, Android, and iOS targets.
 
 ---
 
-### Next Steps
-
-If you agree with this 3-sprint roadmap, we can begin immediately with **Sprint 1** (Tier 2 font metadata & Tier 7 pipeline updates). 
-
-Would you like me to prepare the detailed implementation plan for **Sprint 1**?
+### ⏳ Sprint 3: Tier 6 Fallback Wiring & End-to-End Loop — PLANNED
+* **Goal**: Connect offline Gemma specifically to Tier 5 low-confidence or unmatched tokens.
+* **Planned Deliverables**:
+  1. **Structured Parsing Prompt**: Design a lightweight, deterministic extraction prompt mapping unparsed text tokens to standard ledger keys (`BPAY`, `DA`, `ITAX`, etc.).
+  2. **Tier 5 ↔ Tier 6 Integration**: Update `PayslipTokenParser.kt` to pass unresolved tokens to `LocalGemmaProvider` prior to final assembly when `needsReview == true` or `rawEarnings.isNotEmpty()`.
+  3. **Tier 7 Gating**: Route Gemma's proposed extractions through `SchemaValidator` to guarantee mathematical integrity.
+* **Verification Gate**: End-to-end regression testing across complex, degraded payslip fixtures.

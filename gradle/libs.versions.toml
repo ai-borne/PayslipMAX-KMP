@@ -13,8 +13,10 @@ koin = "4.0.0"
 kotlinx-serialization = "1.7.3"
 ktor = "2.3.12"
 firebase-bom = "33.7.0"
+mediapipe-tasks-genai = "0.10.14"
 
 [libraries]
+mediapipe-tasks-genai = { module = "com.google.mediapipe:tasks-genai", version.ref = "mediapipe-tasks-genai" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
