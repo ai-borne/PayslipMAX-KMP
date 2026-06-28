@@ -462,24 +462,4 @@ graph TD
 
 ---
 
-## Post-Plan Bugfixes
 
-### Bug 1 — Phantom "uula" Deduction (Feb 2025)
-
-**Root cause**: In Feb 2025's PDF layout, the credit-total amount token (`"271739"`) sits 4 px from the adjacent Hindi label (`"kuula kTaOtI"`). Since 4 px < `cellGap` (7.2 px), `GridReconstructor` merges them into one cell: `"271739 kuula kTaOtI"`. After `negateHindiTransliterations`, the label becomes `"271739"` — not blank, not in blocklist → passes toCandidate → gets booked as a debit raw entry with amount 109310 (the actual total deductions, displayed as a phantom line item).
-
-**Fix (two-layer)**:
-1. Parser (`TokenTableClassifier.toCandidate`): `if (normalized.none { it.isLetter() }) return null` — drops digit-only pseudo-labels.
-2. Display (`ReplicaUtils.isValidRawKey`): filters any stale DB keys that are digit-only/Hindi-word-only after negation.
-
-Commit: `4468b5b`. Regression test: `TokenTableEngineTest.hindiTotalsMergedWithAmountDropped`.
-
-### Bug 3 — Item Sum vs Footer Total Verification
-
-**Root cause**: The display layer showed raw items without accounting for the gap between item sums and printed footer totals. Under-extraction meant some credits/debits were invisible; phantom entries couldn't be flagged.
-
-**Fix (Option C)**:
-1. **MISC absorb row**: raw path appends a MISC row for `(printedTotal − itemSum)` when the difference exceeds `ITEM_SUM_TOLERANCE`. Turns invisible residuals into a visible, labeled row.
-2. **Mismatch banner**: after MISC absorb, any remaining positive mismatch (items > printed total = phantom entry) fires an `AppColors.Warning` banner in `LedgerTableFooter` with the over-count amount.
-
-Commit: `b33f034`. Tests: `ReplicaUtilsMismatchTest` (9 cases).
