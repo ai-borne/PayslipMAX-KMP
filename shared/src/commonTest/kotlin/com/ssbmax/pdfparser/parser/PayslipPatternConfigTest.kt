@@ -47,4 +47,18 @@ class PayslipPatternConfigTest {
         assertTrue(PayslipPatternConfig.strictlyMandatoryDebits.contains("agif"))
         assertTrue(PayslipPatternConfig.strictlyMandatoryDebits.contains("dsopSubscription"))
     }
+
+    @Test
+    fun bpayVaryingLevelTagsClassifyToBasicPay() {
+        val pairs =
+            listOf(
+                LabelAmount("BPAY (14)", 140000.0, 44f, 140f, 200f),
+                LabelAmount("BPAY (12A)", 120000.0, 44f, 140f, 180f),
+                LabelAmount("BPAY (15)", 150000.0, 44f, 140f, 160f),
+                LabelAmount("BPAY (Level 10)", 100000.0, 44f, 140f, 140f),
+            )
+        val classified = TokenTableClassifier.classifyPairs(pairs)
+        val bpayEntries = classified.entries.filter { it.standardKey == "basicPay" }
+        assertEquals(4, bpayEntries.size, "All varying BPAY (X) level tags must cleanly classify to basicPay")
+    }
 }
