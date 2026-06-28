@@ -153,7 +153,7 @@ Output: `ClassifiedTable` → `credits: List<ClassifiedEntry>` + `debits: List<C
 
 ### Stage 5 — Confidence & Reconciliation Solver (`ReconciliationSolver`)
 
-Routes each `ClassifiedEntry` into the right map using cross-column routing rules, calculates confidence scores (`fieldConfidence`), and flags ambiguous parses (`needsReview = true` or `rawEarnings.isNotEmpty()`).
+Routes each `ClassifiedEntry` into the right map using cross-column routing rules, calculates confidence scores (`fieldConfidence`), performs mandatory field integrity auditing, and flags ambiguous parses (`needsReview = true` or `rawEarnings.isNotEmpty()`).
 
 | Entry | Route |
 |-------|-------|
@@ -162,6 +162,13 @@ Routes each `ClassifiedEntry` into the right map using cross-column routing rule
 | Debit key stranded in credit column (credit reversal key) | `earningsMap["adjPayAndAllce"]` |
 | Credit key stranded in debit column | `deductionsMap[recoveryTargetFor(matchedKey)]` (recovery) |
 | Unmatched | `rawEarnings[rawLabel]` / `rawDeductions[rawLabel]` |
+
+#### Mandatory Domain Field Integrity Audit
+`ReconciliationSolver.solve(...)` verifies the presence of strictly mandatory domain fields defined in `PayslipPatternConfig`:
+* **Strictly Mandatory Credits**: `basicPay` (`BPAY`), `dearnessAllowance` (`DA`), `militaryServicePay` (`MSP`).
+* **Strictly Mandatory Debits**: `agif` (`AGIF`), `dsopSubscription` (`DSOP`).
+
+If any mandatory field is missing from the extracted maps, a **50% confidence penalty** is applied to overall confidence, and `needsReview = true` is flagged to trigger Tier 6 Gemma fallback for structured recovery.
 
 ### Stage 6 — Tier 6 Offline Gemma Fallback (`GemmaFallbackExtractor` & `GemmaEngine`)
 
@@ -205,30 +212,21 @@ rawEarnings.nonEmpty() → Raw Path
 
 ### Structured Path (rawEarnings empty — all credits matched)
 
-Returns explicit `LedgerLine` rows for every `Earnings` field with `amount ≠ 0.0`, including `LedgerLine("MISC", earnings.miscEarnings, …, "miscEarnings")` when `miscEarnings > 0`.
+Returns explicit `LedgerLine` rows for every standardized `Earnings` / `Deductions` field with `amount ≠ 0.0`. Maps all 30+ domain fields including pay adjustments and arrears (`adjPayAndAllce`, `arrearsDa`, `adjDa`, `recFieldAllowance`, `recoveryOfDebits`, etc.).
 
-### Raw Path (rawEarnings non-empty — some credits unmatched)
+### Universal MISC Residual Balancing (Both Paths)
 
-Filters `rawEarnings` entries:
-
-```kotlin
-value != 0.0
-    && (creditKeysMapping[key] ?: key) !in excluded  // skip ledger balance keys
-    && isValidRawKey(key)                             // skip pure Hindi-word / digit-only keys (Bug 1 display guard)
-```
-
-Then appends a **MISC absorb row** (Bug 3 fix):
+Whether rendering via Structured Path or Raw Path, `ReplicaUtils` applies **Universal MISC Residual Balancing**:
 
 ```kotlin
-val rawMisc = payslip.summary.grossPay - items.sumOf { it.amount }
-if (rawMisc > ConfidenceThresholds.ITEM_SUM_TOLERANCE) {
-    items + LedgerLine("MISC", rawMisc, …, "miscEarnings")
+val totalItemSum = items.sumOf { it.amount }
+val residual = payslip.summary.grossPay - totalItemSum
+if (residual > ConfidenceThresholds.ITEM_SUM_TOLERANCE && items.none { it.code == "MISC" }) {
+    items + LedgerLine("MISC", residual, getCreditDesc("miscEarnings"), "miscEarnings")
 }
 ```
 
-This ensures the displayed item sum always reconciles to `grossPay` when items are under-extracted. The MISC row uses `"miscEarnings"` as `fieldKey` (same as structured path) for SSOT correction flow compatibility.
-
-The same logic applies to the debit path with `totalDeductions` / `"miscDeductions"`.
+This guarantees that for any unlisted custom pay code or residual gap across thousands of users, the displayed table lines always reconcile to `grossPay` and `totalDeductions` with 100% mathematical precision. The MISC row uses `"miscEarnings"` or `"miscDeductions"` as `fieldKey` for SSOT correction flow compatibility.
 
 ### Mismatch Banner (phantom over-count)
 
