@@ -106,75 +106,98 @@ internal data class LedgerLine(
 )
 
 internal fun getCreditsList(payslip: ParsedPayslip): List<LedgerLine> {
-    if (payslip.rawEarnings.isEmpty()) {
-        val earnings = payslip.earnings
-        return listOf(
-            LedgerLine("BPAY", earnings.basicPay, getCreditDesc("BPAY"), "basicPay"),
-            LedgerLine("MSP", earnings.militaryServicePay, getCreditDesc("MSP"), "militaryServicePay"),
-            LedgerLine("DA", earnings.dearnessAllowance, getCreditDesc("DA"), "dearnessAllowance"),
-            LedgerLine("TPTA", earnings.transportAllowance, getCreditDesc("TPTA"), "transportAllowance"),
-            LedgerLine("TPTADA", earnings.transportAllowanceDa, getCreditDesc("TPTADA"), "transportAllowanceDa"),
-            LedgerLine("RSHNA", earnings.rationMoney, getCreditDesc("RSHNA"), "rationMoney"),
-            LedgerLine("DRESALW", earnings.dressAllowance, getCreditDesc("DRESALW"), "dressAllowance"),
-            LedgerLine("SPCDO", earnings.specialForcesPay, getCreditDesc("SPCDO"), "specialForcesPay"),
-            LedgerLine("FD", earnings.fieldAllowance, getCreditDesc("FD"), "fieldAllowance"),
-            LedgerLine("HRA", earnings.houseRentAllowance, getCreditDesc("HRA"), "houseRentAllowance"),
-            LedgerLine("RHA", earnings.riskHardshipAllowance, getCreditDesc("RHA"), "riskHardshipAllowance"),
-            LedgerLine("NPA", earnings.nonPracticingAllowance, getCreditDesc("NPA"), "nonPracticingAllowance"),
-            LedgerLine("ARR-RHA", earnings.arrearsRiskHardship, getCreditDesc("ARR-RHA"), "arrearsRiskHardship"),
-            LedgerLine("ARR-HRA", earnings.arrearsHra, getCreditDesc("ARR-HRA"), "arrearsHra"),
-            LedgerLine("MISC", earnings.miscEarnings, getCreditDesc("miscEarnings"), "miscEarnings"),
-        ).filter { it.amount != 0.0 }
-    }
-
-    val excluded = setOf("openingCreditBalance", "closingDebitBalance", "openingDebitBalance", "closingCreditBalance")
     val items =
-        payslip.rawEarnings
-            .filter { (key, value) ->
-                value != 0.0 &&
-                    (PayslipPatternConfig.creditKeysMapping[key] ?: key) !in excluded &&
-                    isValidRawKey(key)
-            }
-            .map { (key, value) -> LedgerLine(key, value, getCreditDesc(key), key) }
-    val rawMisc = payslip.summary.grossPay - items.sumOf { it.amount }
-    return if (rawMisc > ConfidenceThresholds.ITEM_SUM_TOLERANCE) {
-        items + LedgerLine("MISC", rawMisc, getCreditDesc("miscEarnings"), "miscEarnings")
+        if (payslip.rawEarnings.isEmpty()) {
+            val earnings = payslip.earnings
+            listOf(
+                LedgerLine("BPAY", earnings.basicPay, getCreditDesc("BPAY"), "basicPay"),
+                LedgerLine("MSP", earnings.militaryServicePay, getCreditDesc("MSP"), "militaryServicePay"),
+                LedgerLine("DA", earnings.dearnessAllowance, getCreditDesc("DA"), "dearnessAllowance"),
+                LedgerLine("TPTA", earnings.transportAllowance, getCreditDesc("TPTA"), "transportAllowance"),
+                LedgerLine("TPTADA", earnings.transportAllowanceDa, getCreditDesc("TPTADA"), "transportAllowanceDa"),
+                LedgerLine("RSHNA", earnings.rationMoney, getCreditDesc("RSHNA"), "rationMoney"),
+                LedgerLine("DRESALW", earnings.dressAllowance, getCreditDesc("DRESALW"), "dressAllowance"),
+                LedgerLine("SPCDO", earnings.specialForcesPay, getCreditDesc("SPCDO"), "specialForcesPay"),
+                LedgerLine("FD", earnings.fieldAllowance, getCreditDesc("FD"), "fieldAllowance"),
+                LedgerLine("CEA", earnings.childrenEducationAllowance, getCreditDesc("CEA"), "childrenEducationAllowance"),
+                LedgerLine("HRA", earnings.houseRentAllowance, getCreditDesc("HRA"), "houseRentAllowance"),
+                LedgerLine("RHA", earnings.riskHardshipAllowance, getCreditDesc("RHA"), "riskHardshipAllowance"),
+                LedgerLine("NPA", earnings.nonPracticingAllowance, getCreditDesc("NPA"), "nonPracticingAllowance"),
+                LedgerLine("A/o BPAY", earnings.adjBasicPay, getCreditDesc("adjBasicPay"), "adjBasicPay"),
+                LedgerLine("A/o DA-", earnings.adjDa, getCreditDesc("adjDa"), "adjDa"),
+                LedgerLine("A/o MSP-", earnings.adjMsp, getCreditDesc("adjMsp"), "adjMsp"),
+                LedgerLine("A/o TPTA", earnings.adjTpta, getCreditDesc("adjTpta"), "adjTpta"),
+                LedgerLine("ARR-CEA", earnings.arrearsCea, getCreditDesc("arrearsCea"), "arrearsCea"),
+                LedgerLine("A/o DA", earnings.arrearsDa, getCreditDesc("arrearsDa"), "arrearsDa"),
+                LedgerLine("ARR-RSHNA", earnings.arrearsRation, getCreditDesc("ARR-RSHNA"), "arrearsRation"),
+                LedgerLine("ARR-SPCDO", earnings.arrearsSpecialForces, getCreditDesc("ARR-SPCDO"), "arrearsSpecialForces"),
+                LedgerLine("ARR-TPTA", earnings.arrearsTpta, getCreditDesc("ARR-TPTA"), "arrearsTpta"),
+                LedgerLine("ARR-TPTADA", earnings.arrearsTptaDa, getCreditDesc("ARR-TPTADA"), "arrearsTptaDa"),
+                LedgerLine("ARR-HRA", earnings.arrearsHra, getCreditDesc("ARR-HRA"), "arrearsHra"),
+                LedgerLine("ARR-RHA", earnings.arrearsRiskHardship, getCreditDesc("ARR-RHA"), "arrearsRiskHardship"),
+                LedgerLine("ADJ P&A", earnings.adjPayAndAllce, getCreditDesc("adjPayAndAllce"), "adjPayAndAllce"),
+                LedgerLine("A/o FD", earnings.adjFieldAllowance, getCreditDesc("adjFieldAllowance"), "adjFieldAllowance"),
+                LedgerLine("MEDICAL", earnings.medicalAllowance, getCreditDesc("medicalAllowance"), "medicalAllowance"),
+                LedgerLine("ETKT-REF", earnings.adjTicketRecovery, getCreditDesc("adjTicketRecovery"), "adjTicketRecovery"),
+                LedgerLine("MISC", earnings.miscEarnings, getCreditDesc("miscEarnings"), "miscEarnings"),
+            ).filter { it.amount != 0.0 }
+        } else {
+            val excluded = setOf("openingCreditBalance", "closingDebitBalance", "openingDebitBalance", "closingCreditBalance")
+            payslip.rawEarnings
+                .filter { (key, value) ->
+                    value != 0.0 &&
+                        (PayslipPatternConfig.creditKeysMapping[key] ?: key) !in excluded &&
+                        isValidRawKey(key)
+                }
+                .map { (key, value) -> LedgerLine(key, value, getCreditDesc(key), key) }
+        }
+
+    val totalItemSum = items.sumOf { it.amount }
+    val residual = payslip.summary.grossPay - totalItemSum
+    return if (residual > ConfidenceThresholds.ITEM_SUM_TOLERANCE && items.none { it.code == "MISC" }) {
+        items + LedgerLine("MISC", residual, getCreditDesc("miscEarnings"), "miscEarnings")
     } else {
         items
     }
 }
 
 internal fun getDebitsList(payslip: ParsedPayslip): List<LedgerLine> {
-    if (payslip.rawDeductions.isEmpty()) {
-        val deductions = payslip.deductions
-        return listOf(
-            LedgerLine("DSOP", deductions.dsopSubscription, getDebitDesc("DSOP"), "dsopSubscription"),
-            LedgerLine("AGIF", deductions.agif, getDebitDesc("AGIF"), "agif"),
-            LedgerLine("ITAX", deductions.incomeTax, getDebitDesc("ITAX"), "incomeTax"),
-            LedgerLine("EHCESS", deductions.educationCess, getDebitDesc("EHCESS"), "educationCess"),
-            LedgerLine("LF", deductions.licenseFee, getDebitDesc("LF"), "licenseFee"),
-            LedgerLine("FUR", deductions.furnitureRent, getDebitDesc("FUR"), "furnitureRent"),
-            LedgerLine("WATER", deductions.waterCharges, getDebitDesc("WATER"), "waterCharges"),
-            LedgerLine("Elec", deductions.electricityCharges, getDebitDesc("Elec"), "electricityCharges"),
-            LedgerLine("Barrack Damage", deductions.barrackDamage, getDebitDesc("Barrack Damage"), "barrackDamage"),
-            LedgerLine("AOBF", deductions.aobf, getDebitDesc("AOBF"), "aobf"),
-            LedgerLine("AGIF Loan", deductions.agifLoanRecovery, getDebitDesc("AGIF Loan"), "agifLoanRecovery"),
-            LedgerLine("MISC", deductions.miscDeductions, getDebitDesc("miscDeductions"), "miscDeductions"),
-        ).filter { it.amount != 0.0 }
-    }
-
-    val excluded = setOf("openingCreditBalance", "closingDebitBalance", "openingDebitBalance", "closingCreditBalance")
     val items =
-        payslip.rawDeductions
-            .filter { (key, value) ->
-                value != 0.0 &&
-                    (PayslipPatternConfig.debitKeysMapping[key] ?: key) !in excluded &&
-                    isValidRawKey(key)
-            }
-            .map { (key, value) -> LedgerLine(key, value, getDebitDesc(key), key) }
-    val rawMisc = payslip.summary.totalDeductions - items.sumOf { it.amount }
-    return if (rawMisc > ConfidenceThresholds.ITEM_SUM_TOLERANCE) {
-        items + LedgerLine("MISC", rawMisc, getDebitDesc("miscDeductions"), "miscDeductions")
+        if (payslip.rawDeductions.isEmpty()) {
+            val deductions = payslip.deductions
+            listOf(
+                LedgerLine("DSOP", deductions.dsopSubscription, getDebitDesc("DSOP"), "dsopSubscription"),
+                LedgerLine("AGIF", deductions.agif, getDebitDesc("AGIF"), "agif"),
+                LedgerLine("ITAX", deductions.incomeTax, getDebitDesc("ITAX"), "incomeTax"),
+                LedgerLine("EHCESS", deductions.educationCess, getDebitDesc("EHCESS"), "educationCess"),
+                LedgerLine("LF", deductions.licenseFee, getDebitDesc("LF"), "licenseFee"),
+                LedgerLine("FUR", deductions.furnitureRent, getDebitDesc("FUR"), "furnitureRent"),
+                LedgerLine("WATER", deductions.waterCharges, getDebitDesc("WATER"), "waterCharges"),
+                LedgerLine("Elec", deductions.electricityCharges, getDebitDesc("Elec"), "electricityCharges"),
+                LedgerLine("Barrack Damage", deductions.barrackDamage, getDebitDesc("Barrack Damage"), "barrackDamage"),
+                LedgerLine("ETKT", deductions.ticketRecovery, getDebitDesc("ETKT"), "ticketRecovery"),
+                LedgerLine("Rec FD", deductions.recFieldAllowance, getDebitDesc("Rec FD"), "recFieldAllowance"),
+                LedgerLine("Rec SPCDO", deductions.recSpecialForces, getDebitDesc("Rec SPCDO"), "recSpecialForces"),
+                LedgerLine("Recv P&A", deductions.recoveryOfDebits, getDebitDesc("Recv P&A"), "recoveryOfDebits"),
+                LedgerLine("AOBF", deductions.aobf, getDebitDesc("AOBF"), "aobf"),
+                LedgerLine("AGIF Loan", deductions.agifLoanRecovery, getDebitDesc("AGIF Loan"), "agifLoanRecovery"),
+                LedgerLine("MISC", deductions.miscDeductions, getDebitDesc("miscDeductions"), "miscDeductions"),
+            ).filter { it.amount != 0.0 }
+        } else {
+            val excluded = setOf("openingCreditBalance", "closingDebitBalance", "openingDebitBalance", "closingCreditBalance")
+            payslip.rawDeductions
+                .filter { (key, value) ->
+                    value != 0.0 &&
+                        (PayslipPatternConfig.debitKeysMapping[key] ?: key) !in excluded &&
+                        isValidRawKey(key)
+                }
+                .map { (key, value) -> LedgerLine(key, value, getDebitDesc(key), key) }
+        }
+
+    val totalItemSum = items.sumOf { it.amount }
+    val residual = payslip.summary.totalDeductions - totalItemSum
+    return if (residual > ConfidenceThresholds.ITEM_SUM_TOLERANCE && items.none { it.code == "MISC" }) {
+        items + LedgerLine("MISC", residual, getDebitDesc("miscDeductions"), "miscDeductions")
     } else {
         items
     }
