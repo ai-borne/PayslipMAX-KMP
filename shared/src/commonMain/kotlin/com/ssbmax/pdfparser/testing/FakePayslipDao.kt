@@ -38,6 +38,28 @@ class FakePayslipDao : PayslipDao {
         pdfDatabase.value = emptyMap()
     }
 
+    private val correctionsDatabase = MutableStateFlow<Map<String, PayslipCorrectionEntity>>(emptyMap())
+
+    override suspend fun insertCorrection(correction: PayslipCorrectionEntity) {
+        correctionsDatabase.value = correctionsDatabase.value + (correction.dateStr to correction)
+    }
+
+    override fun getAllCorrections(): Flow<List<PayslipCorrectionEntity>> {
+        return correctionsDatabase.map { it.values.toList() }
+    }
+
+    override suspend fun getCorrectionByDate(dateStr: String): PayslipCorrectionEntity? {
+        return correctionsDatabase.value[dateStr]
+    }
+
+    override suspend fun deleteCorrection(dateStr: String) {
+        correctionsDatabase.value = correctionsDatabase.value - dateStr
+    }
+
+    override suspend fun clearAllCorrections() {
+        correctionsDatabase.value = emptyMap()
+    }
+
     override suspend fun insertPayslipPdf(pdf: PayslipPdfEntity) {
         pdfDatabase.value = pdfDatabase.value + (pdf.dateStr to pdf)
     }

@@ -47,6 +47,29 @@ class PayslipDaoTest {
         }
 
     @Test
+    fun testCorrectionEntityEncryptsAndRoundTrips() =
+        runTest {
+            val password = "device-key-test"
+            val corrections = mapOf("basicPay" to 132414.0, "incomeTax" to 24000.0)
+            val entity = corrections.toCorrectionEntity("04/2024", password)
+
+            // Stored ciphertext must not leak the plaintext numbers.
+            assertTrue(!entity.ciphertext.contains("132414"))
+
+            dao.insertCorrection(entity)
+
+            val fetched = dao.getCorrectionByDate("04/2024")
+            assertNotNull(fetched)
+            assertEquals(corrections, fetched.toCorrectionMap(password))
+
+            val all = dao.getAllCorrections().first()
+            assertEquals(1, all.size)
+
+            dao.deleteCorrection("04/2024")
+            assertNull(dao.getCorrectionByDate("04/2024"))
+        }
+
+    @Test
     fun testFinancialInsightOperations() =
         runTest {
             val insight =

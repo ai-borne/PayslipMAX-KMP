@@ -46,6 +46,23 @@ object AppStrings {
     const val ledgerGrossPay = "Gross Pay (Credits)"
     const val ledgerTotalDeductions = "Total Deductions (Debits)"
 
+    // Replica metadata & glossary
+    const val replicaBackDesc = "Back"
+    const val replicaOfficerPrefix = "Officer: "
+    const val replicaCdaPrefix = "CDA A/C: "
+    const val replicaPanPrefix = "PAN: "
+    const val glossaryUnderstood = "Understood"
+
+    // Confidence-gated correction (Phase 5)
+    const val correctionReviewBadge = "Review"
+    const val correctionIndicatorDesc = "Low confidence — tap to review and correct this value"
+    const val correctionDialogTitle = "Correct value"
+    const val correctionDialogHint = "This value was parsed with low confidence. Enter the correct amount from your payslip."
+    const val correctionFieldLabel = "Amount (₹)"
+    const val correctionInvalidAmount = "Enter a valid amount"
+    const val correctionSave = "Save"
+    const val correctionCancel = "Cancel"
+
     // Upload & Decrypt
     const val uploadHeader = "Import Encrypted Payslip"
     const val uploadDesc = "Secure, 100% offline-first parsing engine"

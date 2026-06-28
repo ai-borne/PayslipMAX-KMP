@@ -31,8 +31,8 @@ internal data class SolvedTable(
  * the string path books them.
  */
 internal object ReconciliationSolver {
-    /** A field at or below this confidence is surfaced for user review in Phase 5. */
-    const val REVIEW_THRESHOLD = 0.7f
+    /** A field below this confidence is surfaced for user review in Phase 5 (SSOT in [ConfidenceThresholds]). */
+    const val REVIEW_THRESHOLD = com.ssbmax.pdfparser.domain.ConfidenceThresholds.REVIEW_THRESHOLD
 
     /** Raw/ambiguous line items are inherently less certain than a clean keyword match in its column. */
     private const val RAW_PENALTY = 0.8f

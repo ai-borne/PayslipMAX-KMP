@@ -4,9 +4,11 @@ import com.ssbmax.pdfparser.crypto.CryptoHelper
 import com.ssbmax.pdfparser.crypto.getLegacyFallbackKey
 import com.ssbmax.pdfparser.database.*
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.domain.applyCorrections
 import com.ssbmax.pdfparser.parser.PdfParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -21,9 +23,19 @@ class PayslipRepository(
      * Observes all parsed payslips from the local Room database.
      */
     fun getAllPayslips(): Flow<List<ParsedPayslip>> {
-        return payslipDao.getAllPayslips().map { entities ->
+        return combine(
+            payslipDao.getAllPayslips(),
+            payslipDao.getAllCorrections(),
+        ) { entities, corrections ->
             try {
-                entities.map { it.toDomain() }
+                val correctionsByDate = corrections.associateBy { it.dateStr }
+                entities.map { entity ->
+                    val parsed = entity.toDomain()
+                    // Merge user corrections on read so the stored parse is never mutated (SSOT).
+                    correctionsByDate[entity.dateStr]
+                        ?.let { parsed.applyCorrections(it.toCorrectionMap()) }
+                        ?: parsed
+                }
             } catch (e: Exception) {
                 // If decryption fails completely, clear database to recover self-healing style
                 try {
@@ -72,7 +84,24 @@ class PayslipRepository(
      * Retrieves a payslip by its specific date string (e.g. "08/2024").
      */
     suspend fun getPayslipByDate(dateStr: String): ParsedPayslip? {
-        return payslipDao.getPayslipByDate(dateStr)?.toDomain()
+        val parsed = payslipDao.getPayslipByDate(dateStr)?.toDomain() ?: return null
+        val corrections = payslipDao.getCorrectionByDate(dateStr) ?: return parsed
+        return parsed.applyCorrections(corrections.toCorrectionMap())
+    }
+
+    /**
+     * Persists a single user correction for a low-confidence field, encrypted at rest. Corrections are
+     * stored separately from the parsed payslip and merged on read, so the original parse is preserved.
+     * Re-runs over the existing correction set for the month so multiple fields accumulate.
+     */
+    suspend fun saveCorrection(
+        dateStr: String,
+        fieldKey: String,
+        newValue: Double,
+    ) = withContext(dispatcher) {
+        val existing = payslipDao.getCorrectionByDate(dateStr)?.toCorrectionMap() ?: emptyMap()
+        val updated = existing + (fieldKey to newValue)
+        payslipDao.insertCorrection(updated.toCorrectionEntity(dateStr))
     }
 
     /**
@@ -81,6 +110,7 @@ class PayslipRepository(
     suspend fun deletePayslip(dateStr: String) =
         withContext(dispatcher) {
             payslipDao.deletePayslip(dateStr)
+            payslipDao.deleteCorrection(dateStr)
             payslipDao.deletePayslipPdf(dateStr)
             payslipDao.deleteLedgerRecord(dateStr)
             payslipDao.deleteAiInsightReportByMonth(dateStr)
@@ -93,6 +123,7 @@ class PayslipRepository(
     suspend fun clearAll() =
         withContext(dispatcher) {
             payslipDao.clearAll()
+            payslipDao.clearAllCorrections()
             payslipDao.clearAllLedgerRecords()
             payslipDao.clearAllFinancialInsights()
             payslipDao.clearAllRepresentationDrafts()

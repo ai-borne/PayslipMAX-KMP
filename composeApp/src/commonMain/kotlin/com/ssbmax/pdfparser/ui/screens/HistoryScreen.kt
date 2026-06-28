@@ -76,6 +76,7 @@ private fun HistoryReplicaView(
         onBackClick = onBack,
         onViewPdfClick = { viewModel.getPayslipPdf(it) { bytes -> if (bytes != null) onOpenOriginal(payslip) } },
         modifier = modifier,
+        onCorrectField = { fieldKey, newValue -> viewModel.applyCorrection(payslip.dateStr, fieldKey, newValue) },
     )
 }
 
