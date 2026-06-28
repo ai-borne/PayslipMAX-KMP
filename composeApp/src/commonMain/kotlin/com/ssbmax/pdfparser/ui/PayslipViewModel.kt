@@ -33,6 +33,8 @@ data class PayslipUiState(
     val profilePanNumber: String = "",
     val isAppLocked: Boolean = false,
     val useLocalAi: Boolean = false,
+    val isGemmaSupported: Boolean = true,
+    val gemmaSupportReason: String? = null,
 )
 
 class PayslipViewModel(
@@ -54,28 +56,38 @@ class PayslipViewModel(
         }
 
     val ledgerRecords: StateFlow<List<com.ssbmax.pdfparser.database.LedgerRecordEntity>> =
-        financialIntelligenceRepository?.getAllLedgerRecords()
-            ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
-            ?: MutableStateFlow(emptyList())
+        financialIntelligenceRepository?.getAllLedgerRecords()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())
 
     val financialInsights: StateFlow<List<com.ssbmax.pdfparser.database.FinancialInsightEntity>> =
-        financialIntelligenceRepository?.getAllFinancialInsights()
-            ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
-            ?: MutableStateFlow(emptyList())
+        financialIntelligenceRepository?.getAllFinancialInsights()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())
 
     val representationDrafts: StateFlow<List<com.ssbmax.pdfparser.database.RepresentationDraftEntity>> =
-        financialIntelligenceRepository?.getAllRepresentationDrafts()
-            ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
-            ?: MutableStateFlow(emptyList())
+        financialIntelligenceRepository?.getAllRepresentationDrafts()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())
 
     val aiInsightReports: StateFlow<List<com.ssbmax.pdfparser.database.AiInsightReportEntity>> =
-        financialIntelligenceRepository?.getAllAiInsightReports()
-            ?.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
-            ?: MutableStateFlow(emptyList())
+        financialIntelligenceRepository?.getAllAiInsightReports()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())
 
     init {
+        checkGemmaSupport()
         observePayslips()
         observeSettings()
+    }
+
+    private fun checkGemmaSupport() {
+        try {
+            val capManager = com.ssbmax.pdfparser.insights.gemma.DeviceCapabilityManager()
+            val status = capManager.checkGemmaSupport()
+            val (supported, reason) =
+                when (status) {
+                    is com.ssbmax.pdfparser.insights.gemma.GemmaSupportStatus.Supported -> true to null
+                    is com.ssbmax.pdfparser.insights.gemma.GemmaSupportStatus.InsufficientRam -> false to "Requires device with 4GB RAM"
+                    is com.ssbmax.pdfparser.insights.gemma.GemmaSupportStatus.InsufficientStorage -> false to "Requires 1.5GB free storage"
+                    is com.ssbmax.pdfparser.insights.gemma.GemmaSupportStatus.UnsupportedArchitecture -> false to status.reason
+                }
+            _uiState.update { it.copy(isGemmaSupported = supported, gemmaSupportReason = reason) }
+        } catch (e: Throwable) {
+            _uiState.update { it.copy(isGemmaSupported = true, gemmaSupportReason = null) }
+        }
     }
 
     internal fun observePayslips() {
@@ -166,34 +178,17 @@ class PayslipViewModel(
         }
     }
 
-    fun selectPayslip(payslip: ParsedPayslip) {
-        onPayslipSelected(payslip)
-    }
+    fun selectPayslip(payslip: ParsedPayslip) = onPayslipSelected(payslip)
 
-    fun getAvailableYears(): List<Int> {
-        return _uiState.value.payslips
-            .map { it.year }
-            .distinct()
-            .sortedDescending()
-    }
+    fun getAvailableYears(): List<Int> = _uiState.value.payslips.map { it.year }.distinct().sortedDescending()
 
-    fun getMonthsForYear(year: Int): List<ParsedPayslip> {
-        return _uiState.value.payslips
-            .filter { it.year == year }
-            .sortedByDescending { it.monthNum }
-    }
+    fun getMonthsForYear(year: Int): List<ParsedPayslip> = _uiState.value.payslips.filter { it.year == year }.sortedByDescending { it.monthNum }
 
     fun selectByYearMonth(
         year: Int,
         monthNum: Int,
     ) {
-        val match =
-            _uiState.value.payslips.find {
-                it.year == year && it.monthNum == monthNum
-            }
-        if (match != null) {
-            onPayslipSelected(match)
-        }
+        _uiState.value.payslips.find { it.year == year && it.monthNum == monthNum }?.let { onPayslipSelected(it) }
     }
 
     fun importPayslip(

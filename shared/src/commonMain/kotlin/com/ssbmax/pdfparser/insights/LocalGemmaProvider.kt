@@ -1,12 +1,23 @@
 package com.ssbmax.pdfparser.insights
 
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.insights.gemma.MockGemmaEngine
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-class LocalGemmaProvider : AIInsightProvider {
+class LocalGemmaProvider(
+    private val mockEngine: MockGemmaEngine? = null,
+) : AIInsightProvider {
     override suspend fun generateInsights(payload: PromptPayload): Result<String> {
         return try {
+            if (mockEngine != null && mockEngine.isInitialized) {
+                val prompt = "Analyze payslip data for ${payload.sanitizedPayslip.officer.name}"
+                val engineResult = mockEngine.generateResponse(prompt)
+                if (engineResult.isSuccess) {
+                    val report = buildReport(payload)
+                    return Result.success(Json.encodeToString(report))
+                }
+            }
             val report = buildReport(payload)
             val jsonStr = Json.encodeToString(report)
             Result.success(jsonStr)
