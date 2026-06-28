@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.insights.gemma.GemmaEngine
 import com.ssbmax.pdfparser.logging.Logger
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper
@@ -30,7 +31,25 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         // so Android and iOS share one device-independent engine instead of diverging column crops.
         return extractTokens(pdfBytes, password, filename).mapCatching { tokenized ->
             Logger.d("PlatformPdfParser", "Starting PayslipTokenParser.parse...")
-            val parseResult = PayslipTokenParser.parse(tokenized, filename)
+            val fallbackExtractor =
+                try {
+                    val context = Class.forName("android.app.ActivityThread").getMethod("currentApplication").invoke(null) as? android.content.Context
+                    val modelFile = if (context != null) java.io.File(context.filesDir, "gemma-3-1b-it-int4.task") else null
+                    if (modelFile != null && modelFile.exists()) {
+                        Logger.d("PlatformPdfParser", "Gemma model binary detected (${modelFile.length()} bytes). Initializing GemmaEngine...")
+                        val config = com.ssbmax.pdfparser.insights.gemma.GemmaEngineConfig(modelPath = modelFile.absolutePath)
+                        val engine = GemmaEngine(config)
+                        Logger.d("PlatformPdfParser", "GemmaEngine initialized successfully! isInitialized=${engine.isInitialized}")
+                        GemmaFallbackExtractor(gemmaEngine = engine)
+                    } else {
+                        Logger.d("PlatformPdfParser", "Gemma model file not found in filesDir.")
+                        null
+                    }
+                } catch (e: Throwable) {
+                    Logger.e("PlatformPdfParser", "Failed to initialize GemmaEngine", e)
+                    null
+                }
+            val parseResult = PayslipTokenParser.parse(tokenized, filename, fallbackExtractor = fallbackExtractor)
             Logger.d("PlatformPdfParser", "Finished PayslipTokenParser.parse. Success: ${parseResult.isSuccess}")
             parseResult.getOrThrow()
         }

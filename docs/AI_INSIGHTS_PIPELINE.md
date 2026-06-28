@@ -163,13 +163,14 @@ Routes each `ClassifiedEntry` into the right map using cross-column routing rule
 | Credit key stranded in debit column | `deductionsMap[recoveryTargetFor(matchedKey)]` (recovery) |
 | Unmatched | `rawEarnings[rawLabel]` / `rawDeductions[rawLabel]` |
 
-### Stage 6 — Tier 6 Offline Gemma Fallback (`GemmaFallbackExtractor`)
+### Stage 6 — Tier 6 Offline Gemma Fallback (`GemmaFallbackExtractor` & `GemmaEngine`)
 
-When `solved.needsReview == true` or raw unresolved tokens exist:
-1. **Hardware Gate**: `DeviceCapabilityManager` verifies device RAM ≥ 3.5GB and free storage.
-2. **Prompt Contract**: `GemmaPromptBuilder` formats unresolved token labels and amounts into a lightweight deterministic extraction prompt.
-3. **Engine Execution**: `GemmaEngine` (Android MediaPipe GenAI SDK / iOS native runtime) runs local inference asynchronously.
-4. **Structured Parsing**: `GemmaResponseParser` safely parses JSON extractions into candidate field mappings (`Map<String, Double>`).
+When spatial confidence rules encounter ambiguity (`solved.needsReview == true` or raw unresolved tokens exist):
+1. **On-Demand Storage & Download Lifecycle**: The quantized Gemma model binary (`gemma-3-1b-it-int4.task`, ~650MB) is managed locally via `GemmaModelStorageManager`. Users trigger on-demand background streaming via `GemmaModelDownloadManager` directly from app settings.
+2. **Hardware Capability Gate**: `DeviceCapabilityManager` (`expect/actual` in KMP) inspects host hardware before model load, verifying RAM ≥ 3.5GB and free disk space ≥ 1.5GB.
+3. **Platform Binding & Runtime**: `PlatformPdfParser` (Android/iOS) verifies binary readiness in app storage (`context.filesDir`) and instantiates `GemmaEngine` wrapping the native Google MediaPipe LLM Inference SDK / native Apple Metal runtime.
+4. **Prompt & Response Contract**: `GemmaPromptBuilder` formats unresolved token labels into a deterministic prompt. `GemmaEngine` executes local asynchronous inference, and `GemmaResponseParser` safely parses JSON extractions into standard ledger keys (`BPAY`, `DA`, `ITAX`, `DSOP`, etc.).
+5. **Standby Optimization**: If Tiers 1–5 achieve 100% mathematical reconciliation (`needsReview == false`), Tier 6 inference stays on standby to preserve device battery and thermals.
 
 ### Stage 7 — Tier 7 Schema Validator (`SchemaValidator`)
 
