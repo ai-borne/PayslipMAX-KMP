@@ -20,30 +20,30 @@ PayslipMax is an offline-first military payslip intelligence platform for Indian
 
 ---
 
-## 1. PDF → ParsedPayslip: Token-IR Pipeline
+## 1. PDF → ParsedPayslip: 7-Tier Token-IR Pipeline
 
 ### High-Level Data Flow
 
 ```mermaid
 flowchart TD
-    PDF([PCDA-O PDF]) -->|AES decrypt + page scan| TokAndroid[Android: TokenScanner / PDFBox]
-    PDF -->|AES decrypt + PDFKit| TokIOS[iOS: IosTokenExtractor / PDFKit]
+    PDF([PCDA-O PDF]) -->|Tier 1: AES decrypt + page scan| TokAndroid[Android: TokenScanner / PDFBox]
+    PDF -->|Tier 1: AES decrypt + PDFKit| TokIOS[iOS: IosTokenExtractor / PDFKit]
 
-    TokAndroid -->|List<PositionedToken> top-down Y| PageCls[PageClassifier\ncommonMain]
-    TokIOS -->|List<PositionedToken> top-down Y\n IosTokenCoordinates.topDownY| PageCls
+    TokAndroid -->|List<PositionedToken> top-down Y\nfontSize & isBold| PageCls[Tier 2: PageClassifier & IR\nPositionedToken]
+    TokIOS -->|List<PositionedToken> top-down Y\nfontSize & isBold| PageCls
 
-    PageCls -->|tableTokens\ntaxTokens / dsopTokens| GR[GridReconstructor\ncluster y→rows, x→cells]
-    GR -->|ReconstructedGrid| RP[RowPairing\nlabel→amount per row]
-    RP -->|List<LabelAmount>| TTC[TokenTableClassifier\ncontent-driven classification]
+    PageCls -->|tableTokens\ntaxTokens / dsopTokens| GR[Tier 3: GridReconstructor & RowPairing\ncluster y→rows, x→cells]
+    GR -->|ReconstructedGrid| TTC[Tier 4: TokenTableClassifier\ncontent-driven classification]
 
-    TTC -->|ClassifiedTable| RS[ReconciliationSolver\ncross-column routing\nGross / Deductions / Net invariants]
-    TTC -->|ClassifiedTable| RS
+    TTC -->|ClassifiedTable| RS[Tier 5: ReconciliationSolver\ncross-column routing\nGross / Deductions / Net invariants]
 
-    RS -->|earningsMap deductionsMap\nrawEarnings rawDeductions\nfieldConfidence needsReview| RecEng[reconcileTotals\nReconciliationEngine\nledger carry-over → miscEarnings/miscDeductions]
+    RS -->|needsReview || rawTokens| GFE[Tier 6: Offline Gemma Fallback\nGemmaFallbackExtractor & GemmaEngine]
+    RS -->|High Confidence| SV[Tier 7: SchemaValidator\nMathematical Invariants Check]
+    GFE -->|Proposed Extractions| SV
 
-    RecEng -->|ReconciledTotals| ASM[PayslipAssembler\nbuilds Earnings + Deductions domain objects]
+    SV -->|Validated ReconciledTotals| ASM[PayslipAssembler\nbuilds Earnings + Deductions domain objects]
     
-    PageCls -->|fullText| Meta[parseDate / parseOfficer\nParseTotals - ParserUtils]
+    PageCls -->|fullText| Meta[parseDate / parseOfficer\nparseTotals - ParserUtils]
     Meta -->|Officer, year/month\ngrossPay, totalDeductions| ASM
 
     ASM -->|ParsedPayslip| DB[(Room DB\nEncryptedPayslipEntity)]
@@ -54,13 +54,13 @@ flowchart TD
 
 ### What Changed from the Old Parser
 
-| Old (string path)                               | New (token-IR, primary since Phase 4)                              |
+| Old (string path)                               | New (7-Tier Token-IR + Gemma Architecture)                         |
 |-------------------------------------------------|--------------------------------------------------------------------|
-| Platform crops PDF into `leftColumnText` / `middleColumnText` using guessed `xSplit` geometry | Both platforms emit `List<PositionedToken>` — un-cropped, word-level, top-down Y |
-| `splitCreditDebitSections()` tries to find the column boundary in text | `GridReconstructor` **learns** the credit and debit label x-bands per document from cleanly-matched keywords |
-| `DynamicSpatialParser.applyHistoricalOverrides(year, month, …)` hardcodes per-month fudge factors | Deleted. Any residual is absorbed into `miscEarnings`/`miscDeductions` and recorded as a confidence signal |
-| `reconciliation throws away the whole parse` on mismatch ≥ ₹2 | `netResidual` → `fieldConfidence` → `needsReview` — the parse is kept and surfaced for user review |
-| iOS and Android diverge per-month (different crop geometry) | Both platforms follow the same `PositionedToken` contract; coordinate normalization in `IosTokenCoordinates.topDownY` |
+| Platform crops PDF into `leftColumnText` / `middleColumnText` using guessed `xSplit` geometry | Both platforms emit `List<PositionedToken>` with font metadata (`fontSize`, `isBold`) — top-down Y |
+| `splitCreditDebitSections()` tries to find the column boundary in text | `GridReconstructor` **learns** credit/debit x-bands per document from matched keywords |
+| `DynamicSpatialParser.applyHistoricalOverrides(year, month, …)` hardcodes per-month fudge factors | Deleted. Any residual is booked to `miscEarnings`/`miscDeductions` and recorded as confidence signals |
+| `reconciliation throws away the whole parse` on mismatch ≥ ₹2 | Ambiguous fields route to **Tier 6 Offline Gemma Fallback** (`GemmaFallbackExtractor`) for structured resolution |
+| Final output unvalidated after extractions | **Tier 7 Schema Validator** validates exact mathematical accounting invariants (`grossPay`, `totalDeductions`, `netRemittance`) |
 
 ---
 
@@ -109,9 +109,9 @@ Content-driven classifier — never geometry-hardcoded:
 
 Output: `ClassifiedTable` → `credits: List<ClassifiedEntry>` + `debits: List<ClassifiedEntry>` + `rawCredits()` / `rawDeductions()`.
 
-### Stage 5 — Reconciliation Solver (`ReconciliationSolver`)
+### Stage 5 — Confidence & Reconciliation Solver (`ReconciliationSolver`)
 
-Routes each `ClassifiedEntry` into the right map using three rules:
+Routes each `ClassifiedEntry` into the right map using cross-column routing rules, calculates confidence scores (`fieldConfidence`), and flags ambiguous parses (`needsReview = true` or `rawEarnings.isNotEmpty()`).
 
 | Entry | Route |
 |-------|-------|
@@ -121,24 +121,26 @@ Routes each `ClassifiedEntry` into the right map using three rules:
 | Credit key stranded in debit column | `deductionsMap[recoveryTargetFor(matchedKey)]` (recovery) |
 | Unmatched | `rawEarnings[rawLabel]` / `rawDeductions[rawLabel]` |
 
-Cross-column key-sets (`ledgerDebitKeys`, `creditReversalDebitKeys`, `recoveryTargetFor`) are SSOT in `PayslipPatternConfig`.
+### Stage 6 — Tier 6 Offline Gemma Fallback (`GemmaFallbackExtractor`)
 
-### Stage 6 — Reconciliation Engine (`reconcileTotals` in `ReconciliationEngine`)
+When `solved.needsReview == true` or raw unresolved tokens exist:
+1. **Hardware Gate**: `DeviceCapabilityManager` verifies device RAM ≥ 3.5GB and free storage.
+2. **Prompt Contract**: `GemmaPromptBuilder` formats unresolved token labels and amounts into a lightweight deterministic extraction prompt.
+3. **Engine Execution**: `GemmaEngine` (Android MediaPipe GenAI SDK / iOS native runtime) runs local inference asynchronously.
+4. **Structured Parsing**: `GemmaResponseParser` safely parses JSON extractions into candidate field mappings (`Map<String, Double>`).
 
-1. **Ledger carry-over extraction**: removes `openingCreditBalance`, `closingDebitBalance`, etc. from the maps into `LedgerCarryOver` (with fullText fallback regex).
-2. **True totals**: `trueGross = realGross − openingCr − closingDr`; `trueDeductions = realDeductions − openingDr − closingCr`.
-3. **Misc residuals**: `miscEarnings = trueGross − sumEarnings` (if positive); `miscDeductions = trueDeductions − sumDeductions` (if positive). A large residual means items were missed; a negative residual (parsed sum > true total) is logged as a warning.
-4. **Net residual**: `|expectedNet − printedNet|`. ≥ ₹2 → logged + `needsReview = true`. No longer a hard failure.
+### Stage 7 — Tier 7 Schema Validator (`SchemaValidator`)
 
-> **Why "Gross Pay ≠ sum of displayed items" is often correct**: `realGross` from the PDF footer includes `openingCreditBalance` and `closingDebitBalance` (PCDA ledger carry-overs). After stripping these, `trueGross ≈ sumEarnings` and `miscEarnings ≈ 0`. The displayed items sum to `trueGross`, not `realGross`. This explains why some payslips show Gross Pay ₹3,37,772 but only ₹2,34,000 of credit rows — the difference is ledger balances, not missing items.
+Acts as the final gatekeeper verifying mathematical accounting invariants across extracted figures:
+- `grossMismatch = |grossPay - creditsSum| <= 2.0`
+- `deductionsMismatch = |totalDeductions - debitsSum| <= 2.0`
+- `netResidual = |(grossPay - totalDeductions) - netRemittance| <= 2.0`
 
-### Stage 7 — Confidence Scoring (`scoreConfidence`)
-
-`sideConfidence = 1.0 − (misc / trueTotal)`. A side that reconciles cleanly (small misc) gives high confidence to all its line items. Raw/ambiguous items carry `× RAW_PENALTY (0.8)`. Populated into `ParsedPayslip.fieldConfidence: Map<String, Float>`.
+If `isValid == false`, the parse is preserved but flagged with `needsReview = true` for Phase 5 user correction UI.
 
 ### Stage 8 — Domain Assembly (`PayslipAssembler`)
 
-Maps `earningsMap` → `Earnings` struct + `miscEarnings`, `deductionsMap` → `Deductions` struct + `miscDeductions`. `ParsedPayslip.rawEarnings` and `rawDeductions` hold unmatched items. Both are committed to the DB via `EncryptedPayslipEntity` (AES-256).
+Maps validated `earningsMap` → `Earnings` struct + `miscEarnings`, and `deductionsMap` → `Deductions` struct + `miscDeductions`. Serializes and commits `ParsedPayslip` to local Room DB via `EncryptedPayslipEntity` (AES-256).
 
 ---
 
@@ -367,9 +369,13 @@ graph TD
 | `parser/RowPairing.kt` | Row-local label→amount pairing; `parseAmount()` rejection rules |
 | `parser/TokenTableClassifier.kt` | Content-driven credit/debit classification; learns x-bands per document |
 | `parser/ReconciliationSolver.kt` | Cross-column routing; confidence scoring; `needsReview` flag |
+| `parser/GemmaFallbackExtractor.kt` | Tier 6 fallback extraction service wrapping `GemmaEngine` runtime |
+| `parser/GemmaPromptBuilder.kt` | Formats deterministic extraction prompts mapping unresolved tokens to standard keys |
+| `parser/GemmaResponseParser.kt` | Safely parses structured JSON responses from Gemma offline fallback |
+| `parser/SchemaValidator.kt` | Tier 7 final gatekeeper verifying exact mathematical accounting invariants |
 | `parser/ReconciliationEngine.kt` | Ledger carry-over extraction; `miscEarnings`/`miscDeductions` computation |
 | `parser/PayslipAssembler.kt` | `earningsMap` + `miscEarnings` → `Earnings` domain object; final `ParsedPayslip` construction |
-| `parser/PayslipTokenParser.kt` | Primary parse entry point: tokens → `ParsedPayslip` |
+| `parser/PayslipTokenParser.kt` | Primary 7-tier parse entry point: tokens → `ParsedPayslip` |
 | `parser/PayslipPatternConfig.kt` | SSOT: `creditKeysMapping`, `debitKeysMapping`, `blocklist`, `hindiTransliterations`, cross-column routing sets |
 | `parser/ParserUtils.kt` | `negateHindiTransliterations()`, `parseTotals()`, `parseOfficer()`, `splitCreditDebitSections()` (legacy) |
 | `domain/ConfidenceThresholds.kt` | SSOT: `REVIEW_THRESHOLD = 0.7f`, `ITEM_SUM_TOLERANCE = 2.0` |
