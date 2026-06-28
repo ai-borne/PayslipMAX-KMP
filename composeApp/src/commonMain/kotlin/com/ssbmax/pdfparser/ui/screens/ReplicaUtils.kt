@@ -3,6 +3,17 @@ package com.ssbmax.pdfparser.ui.screens
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.parser.PayslipPatternConfig
 
+// Pre-computed set of lower-cased Hindi transliteration words for display-layer filtering.
+// Defensive guard: parser-level filtering handles new parses; this catches any that slipped
+// through in old DB data or edge-case token layouts.
+private val hindiWordSet: Set<String> = PayslipPatternConfig.hindiTransliterations.map { it.lowercase() }.toSet()
+
+/** True when a raw map key is a valid payslip code — has at least one letter after stripping Hindi words. */
+private fun isValidRawKey(key: String): Boolean {
+    val afterHindi = key.lowercase().split(Regex("\\s+")).filterNot { it in hindiWordSet }.joinToString(" ").trim()
+    return afterHindi.any { it.isLetter() }
+}
+
 private val creditsDescriptions =
     mapOf(
         "basicPay" to "Core salary based on rank and service years under 7th Pay Commission rules.",
@@ -118,7 +129,9 @@ internal fun getCreditsList(payslip: ParsedPayslip): List<LedgerLine> {
     val excluded = setOf("openingCreditBalance", "closingDebitBalance", "openingDebitBalance", "closingCreditBalance")
     return payslip.rawEarnings
         .filter { (key, value) ->
-            value != 0.0 && (PayslipPatternConfig.creditKeysMapping[key] ?: key) !in excluded
+            value != 0.0 &&
+                (PayslipPatternConfig.creditKeysMapping[key] ?: key) !in excluded &&
+                isValidRawKey(key)
         }
         .map { (key, value) ->
             LedgerLine(key, value, getCreditDesc(key), key)
@@ -147,7 +160,9 @@ internal fun getDebitsList(payslip: ParsedPayslip): List<LedgerLine> {
     val excluded = setOf("openingCreditBalance", "closingDebitBalance", "openingDebitBalance", "closingCreditBalance")
     return payslip.rawDeductions
         .filter { (key, value) ->
-            value != 0.0 && (PayslipPatternConfig.debitKeysMapping[key] ?: key) !in excluded
+            value != 0.0 &&
+                (PayslipPatternConfig.debitKeysMapping[key] ?: key) !in excluded &&
+                isValidRawKey(key)
         }
         .map { (key, value) ->
             LedgerLine(key, value, getDebitDesc(key), key)

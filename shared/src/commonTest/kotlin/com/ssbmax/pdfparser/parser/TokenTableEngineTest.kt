@@ -105,4 +105,38 @@ class TokenTableEngineTest {
         assertEquals(base.standardizedDebits(), shifted.standardizedDebits())
         assertEquals(base.rawCredits(), shifted.rawCredits())
     }
+
+    /**
+     * Regression for the Feb-2025 cell-merge bug: when the credit-total amount token sits close
+     * enough to the adjacent debit-label Hindi tokens that GridReconstructor groups them into one
+     * cell, RowPairing creates a phantom pair whose label is "271739 kuula kTaOtI" (or similar).
+     * After Hindi negation the label becomes "271739" — pure digits, no letters — and must be
+     * dropped by toCandidate rather than booked as a raw deduction.
+     */
+    @Test
+    fun hindiTotalsMergedWithAmountDropped() {
+        // Mimics the Feb-2025 token layout at y=385: credit total (233016) sits 4 px to the left
+        // of the debit-label "kuula kTaOtI", close enough to be merged into the same cell.
+        val creditTotalRight = 145f + 33f // ≈ 178  (x of "233016" + its width)
+        val debitLabelX = creditTotalRight + 4f // 4 px gap < cellGap → merges!
+        val tokens =
+            sampleTable() +
+                listOf(
+                    // Debit totals row: "kuula kTaOtI" label merged into the "233016" amount cell
+                    tok("kuula", debitLabelX, 385f, w = 13f),
+                    tok("kTaOtI", debitLabelX + 15f, 385f, w = 21f),
+                    tok("109310", debitLabelX + 90f, 385f, w = 33f),
+                )
+        val table = TokenTableClassifier.classify(tokens)
+        // The merged label "233016 kuula kTaOtI" → after Hindi removal = "233016" (no letters)
+        // must be dropped; its amount 109310 must NOT appear as any line item.
+        assertTrue(
+            table.debits.none { it.amount == 109310.0 },
+            "debit total row must not appear as a phantom deduction",
+        )
+        assertTrue(
+            table.credits.none { it.amount == 109310.0 },
+            "debit total must not bleed into credit channel either",
+        )
+    }
 }
