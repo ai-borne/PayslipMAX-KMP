@@ -91,6 +91,11 @@ android {
             isMinifyEnabled = false
         }
     }
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
