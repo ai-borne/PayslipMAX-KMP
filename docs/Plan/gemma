@@ -31,7 +31,7 @@ flowchart TD
 | **Tier 3: Table Reconstruction** | 🟢 **100% Built** | `GridReconstructor.kt` & `RowPairing.kt` | Dynamic spatial clustering using median line height. Enhanced in **Sprint 1** with `GridCell` font inspection. |
 | **Tier 4: Field Detector** | 🟢 **100% Built** | `TokenTableClassifier.kt` | Content-driven classification learning credit/debit x-bands per document. |
 | **Tier 5: Confidence Engine** | 🟢 **100% Built** | `ReconciliationSolver.kt` | Assigns per-field confidence scores (`fieldConfidence`) and evaluates against `REVIEW_THRESHOLD = 0.7f`. |
-| **Tier 6: Gemma Offline Fallback** | 🟢 **70% Built** | `LocalGemmaProvider.kt` & `GemmaEngine` | KMP engine abstraction, Android MediaPipe GenAI SDK runtime, iOS native bridge, hardware capability gating, and benchmark harness built in **Sprint 2**. Pipeline wiring upcoming in **Sprint 3**. |
+| **Tier 6: Gemma Offline Fallback** | 🟢 **100% Built** | `GemmaFallbackExtractor.kt` & `GemmaEngine` | KMP engine abstraction, Android MediaPipe GenAI SDK runtime, iOS native bridge, hardware capability gating, prompt/parser contracts, and Tier 5 ↔ Tier 7 pipeline wiring completed in **Sprint 2** & **Sprint 3**. |
 | **Tier 7: Schema Validator** | 🟢 **100% Built** | `SchemaValidator.kt` | Introduced in **Sprint 1**. Acts as the final gatekeeper verifying mathematical invariants (`grossPay`, `totalDeductions`, `netResidual`). |
 | **Store Structured JSON** | 🟢 **100% Built** | `PayslipAssembler.kt` & Room DB | Serializes `ParsedPayslip` into AES-256 encrypted local database entities. |
 
@@ -64,10 +64,11 @@ flowchart TD
 
 ---
 
-### ⏳ Sprint 3: Tier 6 Fallback Wiring & End-to-End Loop — PLANNED
+### ✅ Sprint 3: Tier 6 Fallback Wiring & End-to-End Loop — COMPLETED
 * **Goal**: Connect offline Gemma specifically to Tier 5 low-confidence or unmatched tokens.
-* **Planned Deliverables**:
-  1. **Structured Parsing Prompt**: Design a lightweight, deterministic extraction prompt mapping unparsed text tokens to standard ledger keys (`BPAY`, `DA`, `ITAX`, etc.).
-  2. **Tier 5 ↔ Tier 6 Integration**: Update `PayslipTokenParser.kt` to pass unresolved tokens to `LocalGemmaProvider` prior to final assembly when `needsReview == true` or `rawEarnings.isNotEmpty()`.
-  3. **Tier 7 Gating**: Route Gemma's proposed extractions through `SchemaValidator` to guarantee mathematical integrity.
-* **Verification Gate**: End-to-end regression testing across complex, degraded payslip fixtures.
+* **Status**: **Completed & Committed** (`commit 31690d7`).
+* **Deliverables Completed**:
+  1. **Structured Parsing Prompt & Response Contract**: Built `GemmaPromptBuilder.kt` and `GemmaResponseParser.kt` mapping raw unresolved text tokens to standard ledger keys (`BPAY`, `DA`, `ITAX`, `DSOP`, etc.) with resilient markdown/JSON block parsing.
+  2. **Tier 6 Extraction Service**: Built `GemmaFallbackExtractor.kt` wrapping `GemmaEngine` runtime with hardware capability gating (`DeviceCapabilityManager`).
+  3. **Tier 5 ↔ Tier 6 ↔ Tier 7 Integration**: Updated `PayslipTokenParser.kt` to dispatch unmatched/low-confidence tokens to Tier 6 fallback prior to assembly, and re-validated proposed extractions through `SchemaValidator.kt` to guarantee mathematical integrity.
+* **Verification Gate**: 100% test pass rate across unit tests and full corpus regression test suites.
