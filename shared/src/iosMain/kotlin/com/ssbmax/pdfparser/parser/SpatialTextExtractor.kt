@@ -60,6 +60,8 @@ internal fun extractPageTokens(
                 y = IosTokenCoordinates.topDownY(cyBottom, ch, pageHeight).toFloat(),
                 width = cw.toFloat(),
                 height = ch.toFloat(),
+                fontSize = ch.toFloat(),
+                isBold = false,
             ),
         )
     }

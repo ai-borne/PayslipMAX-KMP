@@ -67,10 +67,19 @@ object PayslipTokenParser {
                     rawDeductions = solved.rawDeductions,
                 )
 
+            val schemaValidation =
+                SchemaValidator.validate(
+                    grossPay = grossPay,
+                    totalDeductions = totalDeductions,
+                    netRemittance = netRemittance,
+                    creditsSum = solved.earningsMap.values.sum() + solved.rawEarnings.values.sum(),
+                    debitsSum = solved.deductionsMap.values.sum() + solved.rawDeductions.values.sum(),
+                )
+
             Result.success(
                 parsed.copy(
                     fieldConfidence = solved.fieldConfidence,
-                    needsReview = solved.needsReview,
+                    needsReview = solved.needsReview || !schemaValidation.isValid,
                 ),
             )
         } catch (e: Exception) {

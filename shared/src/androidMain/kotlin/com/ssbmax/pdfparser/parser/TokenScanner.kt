@@ -58,6 +58,14 @@ open class TokenScanner : PDFTextStripper() {
         val minY = glyphs.minOf { it.yDirAdj }
         val maxRight = glyphs.maxOf { it.xDirAdj + it.widthDirAdj }
         val maxBottom = glyphs.maxOf { it.yDirAdj + it.heightDir }
+        val avgFontSize = glyphs.map { it.fontSizeInPt }.average().toFloat()
+        val isBold =
+            glyphs.any { tp ->
+                val fontName = tp.font?.name ?: ""
+                fontName.contains("Bold", ignoreCase = true) ||
+                    fontName.contains("Heavy", ignoreCase = true) ||
+                    fontName.contains("Black", ignoreCase = true)
+            }
         tokens.add(
             PositionedToken(
                 text = text,
@@ -65,6 +73,8 @@ open class TokenScanner : PDFTextStripper() {
                 y = minY,
                 width = maxRight - minX,
                 height = maxBottom - minY,
+                fontSize = avgFontSize,
+                isBold = isBold,
             ),
         )
     }
