@@ -69,9 +69,18 @@ internal object ReconciliationSolver {
                 filename = filename,
             )
 
-        val confidence = scoreConfidence(earningsMap, deductionsMap, rawEarnings, rawDeductions, reconciled)
+        val confidence = scoreConfidence(earningsMap, deductionsMap, rawEarnings, rawDeductions, reconciled).toMutableMap()
+        val missingCredits = PayslipPatternConfig.strictlyMandatoryCredits.filter { (earningsMap[it] ?: 0.0) <= 0.0 }
+        val missingDebits = PayslipPatternConfig.strictlyMandatoryDebits.filter { (deductionsMap[it] ?: 0.0) <= 0.0 }
+        val hasMissingMandatory = missingCredits.isNotEmpty() || missingDebits.isNotEmpty()
+        if (hasMissingMandatory) {
+            for (key in confidence.keys) {
+                confidence[key] = (confidence[key] ?: 1.0f) * 0.5f
+            }
+        }
+
         val needsReview =
-            reconciled.netResidual >= NET_TOLERANCE || confidence.values.any { it < REVIEW_THRESHOLD }
+            reconciled.netResidual >= NET_TOLERANCE || confidence.values.any { it < REVIEW_THRESHOLD } || hasMissingMandatory
 
         return SolvedTable(
             earningsMap = earningsMap,

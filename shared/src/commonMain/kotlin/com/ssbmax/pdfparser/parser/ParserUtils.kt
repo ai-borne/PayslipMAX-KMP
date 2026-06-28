@@ -271,7 +271,7 @@ internal fun parseTotals(cleanedFullText: String): Triple<Double, Double, Double
         mapOf(
             "Gross Pay" to listOf("kuula Aaya Gross Pay", "kula Aaya Gross Pay", "kuula Aaya", "kula Aaya", "Gross Pay", "Total Credit"),
             "Total Deductions" to listOf("kuula kTaOtI Total Deductions", "kula kTaOtI Total Deductions", "kuula kTaOtI", "kula kTaOtI", "Total Deductions", "Total Debit"),
-            "Net Remittance" to listOf("Net Remittance", "REMITTANCE", "inavala p`oiYat Qana/Net Remittance", "inavala p`oiYat Qana"),
+            "Net Remittance" to listOf("Net Remittance", "REMITTANCE", "REMITANCE", "inavala p`oiYat Qana/Net Remittance", "inavala p`oiYat Qana"),
         )
 
     val extractedTotals = mutableMapOf<String, Double>()

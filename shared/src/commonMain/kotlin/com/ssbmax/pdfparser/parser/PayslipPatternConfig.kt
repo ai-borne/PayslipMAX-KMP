@@ -26,13 +26,16 @@ object PayslipPatternConfig {
 
     val blocklist =
         setOf(
-            "gross pay", "total credit", "total debit", "total deductions", "net remittance", "remittance",
+            "gross pay", "total credit", "total debit", "total deductions", "net remittance", "remittance", "remitance", "remitancer",
             "gross salary", "total taxable income", "net taxable income", "standard deduction", "tax payable",
             "tax deducted", "cess deducted", "page", "note", "date", "cda", "pan", "account", "name", "rank",
             "january", "jan", "february", "feb", "march", "mar", "april", "apr", "may", "june", "jun",
             "july", "jul", "august", "aug", "september", "sep", "october", "oct", "november", "nov", "december", "dec",
             "amount", "description", "credit", "debit", "earnings", "deductions",
         )
+
+    val strictlyMandatoryCredits = setOf("basicPay", "dearnessAllowance", "militaryServicePay")
+    val strictlyMandatoryDebits = setOf("agif", "dsopSubscription")
 
     val sentenceWords =
         setOf(
@@ -52,8 +55,17 @@ object PayslipPatternConfig {
         mapOf(
             "Basic Pay" to "basicPay",
             "BPAY" to "basicPay",
+            "B.PAY" to "basicPay",
+            "B PAY" to "basicPay",
+            "Gr. Pay" to "basicPay",
             "DA" to "dearnessAllowance",
+            "D.A." to "dearnessAllowance",
+            "D.A" to "dearnessAllowance",
+            "Dearness Allowance" to "dearnessAllowance",
             "MSP" to "militaryServicePay",
+            "M.S.P." to "militaryServicePay",
+            "M.S.P" to "militaryServicePay",
+            "Military Service Pay" to "militaryServicePay",
             "Tpt Allc" to "transportAllowance",
             "TPTA" to "transportAllowance",
             "TRAN1" to "transportAllowance",
@@ -162,10 +174,22 @@ object PayslipPatternConfig {
     val debitKeysMapping =
         mapOf(
             "DSOPF Subn" to "dsopSubscription",
+            "DSOPF" to "dsopSubscription",
             "DSOP" to "dsopSubscription",
+            "D.S.O.P.F." to "dsopSubscription",
+            "D.S.O.P.F" to "dsopSubscription",
+            "DSOP Subn" to "dsopSubscription",
             "AGIF" to "agif",
+            "A.G.I.F." to "agif",
+            "A.G.I.F" to "agif",
+            "AGIF Subn" to "agif",
+            "AGIF Subscription" to "agif",
             "Incm Tax" to "incomeTax",
+            "Income Tax" to "incomeTax",
             "ITAX" to "incomeTax",
+            "Inc Tax" to "incomeTax",
+            "Incm. Tax" to "incomeTax",
+            "I Tax" to "incomeTax",
             "Educ Cess" to "educationCess",
             "EHCESS" to "educationCess",
             "L Fee" to "licenseFee",
