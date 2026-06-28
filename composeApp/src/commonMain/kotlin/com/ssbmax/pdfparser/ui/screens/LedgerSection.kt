@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import com.ssbmax.pdfparser.domain.ConfidenceThresholds
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.domain.isFieldLowConfidence
 import com.ssbmax.pdfparser.ui.theme.AppColors
@@ -29,6 +30,8 @@ fun LedgerSection(
     onCorrectField: (fieldKey: String, newValue: Double) -> Unit = { _, _ -> },
 ) {
     var editingLine by remember(payslip.dateStr) { mutableStateOf<LedgerLine?>(null) }
+    val creditMismatch = creditsMismatch(payslip)
+    val debitMismatch = debitsMismatch(payslip)
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -78,7 +81,7 @@ fun LedgerSection(
                 }
             }
 
-            LedgerTableFooter(payslip)
+            LedgerTableFooter(payslip, creditMismatch, debitMismatch)
         }
     }
 
@@ -171,7 +174,11 @@ private fun LedgerRowItem(
 }
 
 @Composable
-private fun LedgerTableFooter(payslip: ParsedPayslip) {
+private fun LedgerTableFooter(
+    payslip: ParsedPayslip,
+    creditMismatch: Double,
+    debitMismatch: Double,
+) {
     Column(
         modifier =
             Modifier
@@ -204,6 +211,63 @@ private fun LedgerTableFooter(payslip: ParsedPayslip) {
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary,
             )
+        }
+        if (creditMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE ||
+            debitMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE
+        ) {
+            LedgerMismatchBanner(creditMismatch, debitMismatch)
+        }
+    }
+}
+
+@Composable
+private fun LedgerMismatchBanner(
+    creditMismatch: Double,
+    debitMismatch: Double,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = AppDimensions.SpacingSix)
+                .background(
+                    AppColors.Warning.copy(alpha = 0.12f),
+                    RoundedCornerShape(AppDimensions.CornerRadiusSmall),
+                )
+                .padding(AppDimensions.PaddingSmall),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
+    ) {
+        if (creditMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = AppStrings.ledgerMismatchIconDesc,
+                    tint = AppColors.Warning,
+                    modifier = Modifier.size(AppDimensions.IconSizeSmall),
+                )
+                Spacer(Modifier.size(AppDimensions.SpacingTiny))
+                Text(
+                    text = "${AppStrings.ledgerCreditMismatchPrefix}${formatVal(creditMismatch)}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AppColors.Warning,
+                )
+            }
+        }
+        if (debitMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = AppStrings.ledgerMismatchIconDesc,
+                    tint = AppColors.Warning,
+                    modifier = Modifier.size(AppDimensions.IconSizeSmall),
+                )
+                Spacer(Modifier.size(AppDimensions.SpacingTiny))
+                Text(
+                    text = "${AppStrings.ledgerDebitMismatchPrefix}${formatVal(debitMismatch)}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AppColors.Warning,
+                )
+            }
         }
     }
 }

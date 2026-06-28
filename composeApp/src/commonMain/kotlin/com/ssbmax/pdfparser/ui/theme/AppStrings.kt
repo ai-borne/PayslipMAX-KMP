@@ -267,4 +267,9 @@ object AppStrings {
     const val dashboardEmptyStateDescSandbox = "Import your PDF payslips or seed simulated data from the import screen to view financial analytics."
 
     const val geminiAiAnalyzeBtn = "Analyze Payslip with Gemini AI"
+
+    // Ledger mismatch banner (Bug 3 — item-sum vs footer-total verification)
+    const val ledgerMismatchIconDesc = "Ledger mismatch"
+    const val ledgerCreditMismatchPrefix = "Credits over by ₹"
+    const val ledgerDebitMismatchPrefix = "Debits over by ₹"
 }

@@ -7,6 +7,9 @@ package com.ssbmax.pdfparser.domain
 object ConfidenceThresholds {
     /** A field whose confidence is strictly below this is considered uncertain and surfaced for correction. */
     const val REVIEW_THRESHOLD = 0.7f
+
+    /** Maximum ₹ gap between displayed item sum and printed footer total before a mismatch banner fires. */
+    const val ITEM_SUM_TOLERANCE = 2.0
 }
 
 /**

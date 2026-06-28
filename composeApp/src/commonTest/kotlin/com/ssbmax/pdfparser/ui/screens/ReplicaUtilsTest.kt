@@ -85,7 +85,7 @@ class ReplicaUtilsTest {
                 earnings = Earnings(),
                 deductions = Deductions(),
                 ledgerBalances = LedgerBalances(),
-                summary = PayslipSummary(212260.0, 40878.0, 171382.0),
+                summary = PayslipSummary(155500.0, 42500.0, 113000.0),
                 taxAndSavings = null,
                 rawEarnings =
                     mapOf(
