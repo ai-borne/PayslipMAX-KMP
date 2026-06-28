@@ -139,4 +139,14 @@ class TokenTableEngineTest {
             "debit total must not bleed into credit channel either",
         )
     }
+
+    @Test
+    fun gridCellFontPropertiesCalculatedCorrectly() {
+        val boldToken = PositionedToken("HEADER", 10f, 20f, 40f, 10f, fontSize = 14f, isBold = true)
+        val normalToken = PositionedToken("SUB", 55f, 20f, 30f, 10f, fontSize = 10f, isBold = false)
+        val cell = GridCell(listOf(boldToken, normalToken))
+
+        assertTrue(cell.isBold, "Cell containing bold token must report isBold true")
+        assertEquals(14f, cell.maxFontSize, "Cell maxFontSize must reflect maximum token font size")
+    }
 }

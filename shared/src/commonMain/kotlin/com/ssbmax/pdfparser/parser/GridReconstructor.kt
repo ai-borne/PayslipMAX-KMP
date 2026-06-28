@@ -13,6 +13,8 @@ data class GridCell(
     val right: Float get() = tokens.maxOf { it.right }
     val centerX: Float get() = (left + right) / 2f
     val centerY: Float get() = tokens.map { it.centerY }.average().toFloat()
+    val isBold: Boolean get() = tokens.any { it.isBold }
+    val maxFontSize: Float get() = tokens.maxOfOrNull { it.fontSize } ?: 0f
 }
 
 /** One reconstructed visual row of the table: its cells, left-to-right. */

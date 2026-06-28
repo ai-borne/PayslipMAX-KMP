@@ -22,6 +22,8 @@ data class PositionedToken(
     val y: Float,
     val width: Float,
     val height: Float,
+    val fontSize: Float = 0f,
+    val isBold: Boolean = false,
 ) {
     /** Right edge of the bounding box. */
     val right: Float get() = x + width
