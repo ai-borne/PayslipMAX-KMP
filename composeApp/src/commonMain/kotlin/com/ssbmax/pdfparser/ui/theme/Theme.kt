@@ -115,6 +115,7 @@ object AppDimensions {
     val TextSizeButton = 16.sp
     val TextSizeHuge = 24.sp
     val FontSizeEmoji = 64.sp
+    val FontSizeEmojiMedium = 48.sp
 }
 
 // Typography Tokens

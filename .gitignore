@@ -45,3 +45,8 @@ functions/.secret.local
 
 # Contains real payslip PII; kept locally for opt-in dev/integration tests only
 /payslips_data_standardized.json
+
+# Python build artifacts
+__pycache__/
+*.pyc
+/payslips_data.json

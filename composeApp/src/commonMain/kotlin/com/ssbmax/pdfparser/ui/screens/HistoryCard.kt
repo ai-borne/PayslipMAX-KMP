@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 
@@ -53,8 +52,8 @@ fun HistoryCard(
                         onLongClick = onLongPress,
                     ),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = AppDimensions.BorderThin),
         ) {
             content()
         }
@@ -75,7 +74,7 @@ private fun SwipeDismissBackground() {
             imageVector = Icons.Default.Delete,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onError,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(AppDimensions.IconSizeMedium),
         )
     }
 }
