@@ -9,7 +9,7 @@ class RedactionSanitizerTest {
     fun testPiiRedaction() {
         val original =
             ParsedPayslip(
-                file = "/users/sunil/payslips/2026-SunilPawar-May.pdf",
+                file = "/users/test/payslips/2026-OfficerOfficer-May.pdf",
                 year = 2026,
                 monthNum = 5,
                 monthName = "May",

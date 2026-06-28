@@ -25,7 +25,7 @@ fun UploadWidget(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var password by remember { mutableStateOf("535d04") }
+    var password by remember { mutableStateOf("") }
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),

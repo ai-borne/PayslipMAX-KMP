@@ -6,7 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 data class BackupStatus(
@@ -26,7 +26,7 @@ fun UniversalBackupSection(
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         Text(
@@ -36,7 +36,7 @@ fun UniversalBackupSection(
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
             Button(onClick = onExportClick, modifier = Modifier.weight(1f)) {
                 Text(AppStrings.settingsBackupExportBtn)
@@ -94,6 +94,6 @@ fun StatusMessage(status: BackupStatus) {
         style = MaterialTheme.typography.labelSmall,
         color = if (status.isSuccess) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
         textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingTiny),
     )
 }

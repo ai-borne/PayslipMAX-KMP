@@ -18,7 +18,7 @@ fun SettingsScreen(
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var password by remember { mutableStateOf("535d04") }
+    var password by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
     var showUpgradeSheet by remember { mutableStateOf(false) }
     var devClicks by remember { mutableStateOf(0) }

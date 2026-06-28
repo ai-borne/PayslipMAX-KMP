@@ -33,7 +33,7 @@ class PayslipTextParser2026Test {
         val fullText =
             """
             04/2026  STATEMENT OF ACCOUNT FOR 04/2026
-            Name: Officer Officer Officer A/C No: 16/111/206718K PAN No: AR*****90G
+            Name: Officer Officer Officer A/C No: 16/000/000000X PAN No: AR*****90G
             kuula Aaya Gross Pay 301828 kuula kTaOtI Total Deductions 107998
             Net Remittance : Rs.1,93,830
             """.trimIndent()

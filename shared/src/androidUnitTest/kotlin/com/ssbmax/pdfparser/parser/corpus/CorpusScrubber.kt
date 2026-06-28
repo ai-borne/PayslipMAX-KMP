@@ -26,7 +26,7 @@ object CorpusScrubber {
     private val panPlainRegex = Regex("""\b[A-Z]{5}\d{4}[A-Z]\b""")
     private val emailRegex = Regex("""[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}""")
 
-    // Account serials survive column-splitting as bare tails like "206718K". The trailing capital
+    // Account serials survive column-splitting as bare tails like "000000X". The trailing capital
     // letter distinguishes them from monetary amounts (pure digits), which must NOT be scrubbed.
     private val accountSerialRegex = Regex("""\b\d{5,}[A-Z]\b""")
 
@@ -45,7 +45,7 @@ object CorpusScrubber {
                 .map { it.trim() }
                 .filter { it.length >= 3 && it.all { c -> c.isLetter() } }
                 .distinct()
-        // Distinctive alphanumeric pieces of the real account number (e.g. "206718K"), so that
+        // Distinctive alphanumeric pieces of the real account number (e.g. "000000X"), so that
         // column-split fragments containing only the serial are still removed.
         val idSerials =
             officer.accountNo
