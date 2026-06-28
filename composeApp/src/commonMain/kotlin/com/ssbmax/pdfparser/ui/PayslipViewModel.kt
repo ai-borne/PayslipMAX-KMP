@@ -35,6 +35,9 @@ data class PayslipUiState(
     val useLocalAi: Boolean = false,
     val isGemmaSupported: Boolean = true,
     val gemmaSupportReason: String? = null,
+    val isDownloadingModel: Boolean = false,
+    val modelDownloadProgress: Float = 0f,
+    val modelDownloadError: String? = null,
 )
 
 class PayslipViewModel(

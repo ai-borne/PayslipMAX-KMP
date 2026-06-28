@@ -77,23 +77,35 @@ fun PreferencesSection(
         if (uiState.isPremiumEnabled) {
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
             val subtitle =
-                if (uiState.isGemmaSupported) {
+                if (uiState.isDownloadingModel) {
+                    "Downloading Gemma Model... ${(uiState.modelDownloadProgress * 100).toInt()}%"
+                } else if (uiState.modelDownloadError != null) {
+                    "Download Error: ${uiState.modelDownloadError}"
+                } else if (uiState.isGemmaSupported) {
                     "Runs 100% offline on-device to protect privacy and battery."
                 } else {
                     uiState.gemmaSupportReason ?: "Requires device with 4GB RAM and 1.5GB free storage."
                 }
-            SettingsRow(
-                icon = "🤖",
-                title = "Use Local Gemma AI Model",
-                subtitle = subtitle,
-                trailingContent = {
-                    Switch(
-                        checked = uiState.useLocalAi && uiState.isGemmaSupported,
-                        onCheckedChange = { if (uiState.isGemmaSupported) viewModel.setLocalAiEnabled(it) },
-                        enabled = uiState.isGemmaSupported,
+            Column {
+                SettingsRow(
+                    icon = "🤖",
+                    title = "Use Local Gemma AI Model",
+                    subtitle = subtitle,
+                    trailingContent = {
+                        Switch(
+                            checked = uiState.useLocalAi && uiState.isGemmaSupported,
+                            onCheckedChange = { if (uiState.isGemmaSupported) viewModel.setLocalAiEnabled(it) },
+                            enabled = uiState.isGemmaSupported && !uiState.isDownloadingModel,
+                        )
+                    },
+                )
+                if (uiState.isDownloadingModel) {
+                    LinearProgressIndicator(
+                        progress = { uiState.modelDownloadProgress },
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = AppDimensions.PaddingMedium),
                     )
-                },
-            )
+                }
+            }
         }
     }
 }
