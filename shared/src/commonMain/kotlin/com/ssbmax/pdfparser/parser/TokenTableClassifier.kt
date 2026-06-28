@@ -135,6 +135,11 @@ object TokenTableClassifier {
     private fun toCandidate(pair: LabelAmount): Candidate? {
         val normalized = normalize(negateHindiTransliterations(pair.label))
         if (normalized.isBlank()) return null
+        // Drop pseudo-labels that contain only digits/punctuation after Hindi words are removed —
+        // this happens when the "Total" row's credit amount merges with the adjacent debit label
+        // tokens in GridReconstructor (e.g. "271739 kuula kTaOtI" → "271739"). Valid payslip
+        // codes always contain at least one letter.
+        if (normalized.none { it.isLetter() }) return null
         if (normalized in normalizedBlocklist) return null
 
         val match = combinedKeys.firstOrNull { (key, _, _) -> boundaryStartsWith(normalized, key) }
