@@ -33,7 +33,7 @@ class ReconciliationSolverTest {
     fun balancedTableReconcilesWithHighConfidence() {
         val solved =
             solve(
-                listOf(credit("basicPay", 140500.0), credit("dearnessAllowance", 71760.0), credit("militaryServicePay", 15500.0), debit("dsopSubscription", 40000.0), debit("incomeTax", 40521.0)),
+                listOf(credit("basicPay", 140500.0), credit("dearnessAllowance", 71760.0), credit("militaryServicePay", 15500.0), debit("dsopSubscription", 40000.0), debit("agif", 5000.0), debit("incomeTax", 35521.0)),
                 gross = 227760.0,
                 deductions = 80521.0,
                 net = 147239.0,
@@ -69,10 +69,10 @@ class ReconciliationSolverTest {
     fun openingCreditBalanceIsPulledToLedgerNotEarnings() {
         val solved =
             solve(
-                listOf(credit("basicPay", 100000.0), credit("openingCreditBalance", 5000.0), debit("dsopSubscription", 20000.0)),
-                gross = 105000.0,
+                listOf(credit("basicPay", 100000.0), credit("dearnessAllowance", 30000.0), credit("militaryServicePay", 15500.0), credit("openingCreditBalance", 5000.0), debit("dsopSubscription", 15000.0), debit("agif", 5000.0)),
+                gross = 150500.0,
                 deductions = 20000.0,
-                net = 85000.0,
+                net = 130500.0,
             )
 
         assertEquals(5000.0, solved.reconciled.ledger.openingCredit)
@@ -97,5 +97,19 @@ class ReconciliationSolverTest {
 
         assertTrue(solved.reconciled.netResidual >= 2.0)
         assertTrue(solved.needsReview, "a net mismatch surfaces as needsReview, not a thrown failure")
+    }
+
+    @Test
+    fun missingMandatoryFieldsPenalizesConfidenceAndFlagsReview() {
+        // Balanced arithmetic but missing mandatory debit 'agif' and mandatory credit 'militaryServicePay'
+        val solved =
+            solve(
+                listOf(credit("basicPay", 140500.0), credit("dearnessAllowance", 71760.0), debit("dsopSubscription", 40000.0)),
+                gross = 212260.0,
+                deductions = 40000.0,
+                net = 172260.0,
+            )
+
+        assertTrue(solved.needsReview, "missing mandatory fields must set needsReview to true to fire Gemma")
     }
 }
