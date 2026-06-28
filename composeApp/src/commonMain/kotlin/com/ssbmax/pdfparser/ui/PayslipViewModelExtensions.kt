@@ -150,6 +150,29 @@ fun PayslipViewModel.setLocalAiEnabled(enabled: Boolean) {
     viewModelScope.launch {
         val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
         repository.saveSettings(current.copy(useLocalAi = enabled))
+
+        if (enabled) {
+            val storageManager = com.ssbmax.pdfparser.insights.gemma.GemmaModelStorageManager()
+            val downloadManager = com.ssbmax.pdfparser.insights.gemma.GemmaModelDownloadManager()
+            val modelUrl = "https://huggingface.co/google/gemma-3-1b-it-gguf/resolve/main/gemma-3-1b-it-int4.task"
+
+            downloadManager.downloadModel(modelUrl, storageManager.getRecommendedModelFileName()).collect { status ->
+                when (status) {
+                    is com.ssbmax.pdfparser.insights.gemma.DownloadStatus.Idle -> {
+                        _uiState.update { it.copy(isDownloadingModel = false) }
+                    }
+                    is com.ssbmax.pdfparser.insights.gemma.DownloadStatus.Downloading -> {
+                        _uiState.update { it.copy(isDownloadingModel = true, modelDownloadProgress = status.progress, modelDownloadError = null) }
+                    }
+                    is com.ssbmax.pdfparser.insights.gemma.DownloadStatus.Success -> {
+                        _uiState.update { it.copy(isDownloadingModel = false, modelDownloadProgress = 1f, modelDownloadError = null) }
+                    }
+                    is com.ssbmax.pdfparser.insights.gemma.DownloadStatus.Error -> {
+                        _uiState.update { it.copy(isDownloadingModel = false, modelDownloadError = status.message) }
+                    }
+                }
+            }
+        }
     }
 }
 
