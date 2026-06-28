@@ -207,6 +207,29 @@ fun PayslipViewModel.updateRepresentationDraft(draft: com.ssbmax.pdfparser.datab
     }
 }
 
+/**
+ * Phase 5 — persists a single per-field correction for a low-confidence field and immediately
+ * reflects the merged value in [PayslipUiState] (the observed flow also re-emits, but updating the
+ * selected payslip here keeps the open replica screen in sync without waiting for re-collection).
+ */
+fun PayslipViewModel.applyCorrection(
+    dateStr: String,
+    fieldKey: String,
+    newValue: Double,
+) {
+    viewModelScope.launch {
+        repository.saveCorrection(dateStr, fieldKey, newValue)
+        val merged = repository.getPayslipByDate(dateStr) ?: return@launch
+        _uiState.update { state ->
+            state.copy(
+                selectedPayslip =
+                    if (state.selectedPayslip?.dateStr == dateStr) merged else state.selectedPayslip,
+                payslips = state.payslips.map { if (it.dateStr == dateStr) merged else it },
+            )
+        }
+    }
+}
+
 fun PayslipViewModel.clearError() {
     _uiState.update { it.copy(error = null, importError = null) }
 }

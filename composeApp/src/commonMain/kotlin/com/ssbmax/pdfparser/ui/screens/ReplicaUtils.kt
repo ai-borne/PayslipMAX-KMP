@@ -81,26 +81,38 @@ internal fun formatVal(value: Double): String {
     return "$builder,$lastThree"
 }
 
-internal fun getCreditsList(payslip: ParsedPayslip): List<Triple<String, Double, String>> {
+/**
+ * One displayed ledger row. [fieldKey] is the SSOT key the parser uses in
+ * [ParsedPayslip.fieldConfidence] and that the Phase 5 correction flow persists against — a
+ * standardized domain field name for structured rows, or the raw label for ambiguous ones.
+ */
+internal data class LedgerLine(
+    val code: String,
+    val amount: Double,
+    val desc: String,
+    val fieldKey: String,
+)
+
+internal fun getCreditsList(payslip: ParsedPayslip): List<LedgerLine> {
     if (payslip.rawEarnings.isEmpty()) {
         val earnings = payslip.earnings
         return listOf(
-            Triple("BPAY", earnings.basicPay, getCreditDesc("BPAY")),
-            Triple("MSP", earnings.militaryServicePay, getCreditDesc("MSP")),
-            Triple("DA", earnings.dearnessAllowance, getCreditDesc("DA")),
-            Triple("TPTA", earnings.transportAllowance, getCreditDesc("TPTA")),
-            Triple("TPTADA", earnings.transportAllowanceDa, getCreditDesc("TPTADA")),
-            Triple("RSHNA", earnings.rationMoney, getCreditDesc("RSHNA")),
-            Triple("DRESALW", earnings.dressAllowance, getCreditDesc("DRESALW")),
-            Triple("SPCDO", earnings.specialForcesPay, getCreditDesc("SPCDO")),
-            Triple("FD", earnings.fieldAllowance, getCreditDesc("FD")),
-            Triple("HRA", earnings.houseRentAllowance, getCreditDesc("HRA")),
-            Triple("RHA", earnings.riskHardshipAllowance, getCreditDesc("RHA")),
-            Triple("NPA", earnings.nonPracticingAllowance, getCreditDesc("NPA")),
-            Triple("ARR-RHA", earnings.arrearsRiskHardship, getCreditDesc("ARR-RHA")),
-            Triple("ARR-HRA", earnings.arrearsHra, getCreditDesc("ARR-HRA")),
-            Triple("MISC", earnings.miscEarnings, getCreditDesc("miscEarnings")),
-        ).filter { it.second != 0.0 }
+            LedgerLine("BPAY", earnings.basicPay, getCreditDesc("BPAY"), "basicPay"),
+            LedgerLine("MSP", earnings.militaryServicePay, getCreditDesc("MSP"), "militaryServicePay"),
+            LedgerLine("DA", earnings.dearnessAllowance, getCreditDesc("DA"), "dearnessAllowance"),
+            LedgerLine("TPTA", earnings.transportAllowance, getCreditDesc("TPTA"), "transportAllowance"),
+            LedgerLine("TPTADA", earnings.transportAllowanceDa, getCreditDesc("TPTADA"), "transportAllowanceDa"),
+            LedgerLine("RSHNA", earnings.rationMoney, getCreditDesc("RSHNA"), "rationMoney"),
+            LedgerLine("DRESALW", earnings.dressAllowance, getCreditDesc("DRESALW"), "dressAllowance"),
+            LedgerLine("SPCDO", earnings.specialForcesPay, getCreditDesc("SPCDO"), "specialForcesPay"),
+            LedgerLine("FD", earnings.fieldAllowance, getCreditDesc("FD"), "fieldAllowance"),
+            LedgerLine("HRA", earnings.houseRentAllowance, getCreditDesc("HRA"), "houseRentAllowance"),
+            LedgerLine("RHA", earnings.riskHardshipAllowance, getCreditDesc("RHA"), "riskHardshipAllowance"),
+            LedgerLine("NPA", earnings.nonPracticingAllowance, getCreditDesc("NPA"), "nonPracticingAllowance"),
+            LedgerLine("ARR-RHA", earnings.arrearsRiskHardship, getCreditDesc("ARR-RHA"), "arrearsRiskHardship"),
+            LedgerLine("ARR-HRA", earnings.arrearsHra, getCreditDesc("ARR-HRA"), "arrearsHra"),
+            LedgerLine("MISC", earnings.miscEarnings, getCreditDesc("miscEarnings"), "miscEarnings"),
+        ).filter { it.amount != 0.0 }
     }
 
     val excluded = setOf("openingCreditBalance", "closingDebitBalance", "openingDebitBalance", "closingCreditBalance")
@@ -109,27 +121,27 @@ internal fun getCreditsList(payslip: ParsedPayslip): List<Triple<String, Double,
             value != 0.0 && (PayslipPatternConfig.creditKeysMapping[key] ?: key) !in excluded
         }
         .map { (key, value) ->
-            Triple(key, value, getCreditDesc(key))
+            LedgerLine(key, value, getCreditDesc(key), key)
         }
 }
 
-internal fun getDebitsList(payslip: ParsedPayslip): List<Triple<String, Double, String>> {
+internal fun getDebitsList(payslip: ParsedPayslip): List<LedgerLine> {
     if (payslip.rawDeductions.isEmpty()) {
         val deductions = payslip.deductions
         return listOf(
-            Triple("DSOP", deductions.dsopSubscription, getDebitDesc("DSOP")),
-            Triple("AGIF", deductions.agif, getDebitDesc("AGIF")),
-            Triple("ITAX", deductions.incomeTax, getDebitDesc("ITAX")),
-            Triple("EHCESS", deductions.educationCess, getDebitDesc("EHCESS")),
-            Triple("LF", deductions.licenseFee, getDebitDesc("LF")),
-            Triple("FUR", deductions.furnitureRent, getDebitDesc("FUR")),
-            Triple("WATER", deductions.waterCharges, getDebitDesc("WATER")),
-            Triple("Elec", deductions.electricityCharges, getDebitDesc("Elec")),
-            Triple("Barrack Damage", deductions.barrackDamage, getDebitDesc("Barrack Damage")),
-            Triple("AOBF", deductions.aobf, getDebitDesc("AOBF")),
-            Triple("AGIF Loan", deductions.agifLoanRecovery, getDebitDesc("AGIF Loan")),
-            Triple("MISC", deductions.miscDeductions, getDebitDesc("miscDeductions")),
-        ).filter { it.second != 0.0 }
+            LedgerLine("DSOP", deductions.dsopSubscription, getDebitDesc("DSOP"), "dsopSubscription"),
+            LedgerLine("AGIF", deductions.agif, getDebitDesc("AGIF"), "agif"),
+            LedgerLine("ITAX", deductions.incomeTax, getDebitDesc("ITAX"), "incomeTax"),
+            LedgerLine("EHCESS", deductions.educationCess, getDebitDesc("EHCESS"), "educationCess"),
+            LedgerLine("LF", deductions.licenseFee, getDebitDesc("LF"), "licenseFee"),
+            LedgerLine("FUR", deductions.furnitureRent, getDebitDesc("FUR"), "furnitureRent"),
+            LedgerLine("WATER", deductions.waterCharges, getDebitDesc("WATER"), "waterCharges"),
+            LedgerLine("Elec", deductions.electricityCharges, getDebitDesc("Elec"), "electricityCharges"),
+            LedgerLine("Barrack Damage", deductions.barrackDamage, getDebitDesc("Barrack Damage"), "barrackDamage"),
+            LedgerLine("AOBF", deductions.aobf, getDebitDesc("AOBF"), "aobf"),
+            LedgerLine("AGIF Loan", deductions.agifLoanRecovery, getDebitDesc("AGIF Loan"), "agifLoanRecovery"),
+            LedgerLine("MISC", deductions.miscDeductions, getDebitDesc("miscDeductions"), "miscDeductions"),
+        ).filter { it.amount != 0.0 }
     }
 
     val excluded = setOf("openingCreditBalance", "closingDebitBalance", "openingDebitBalance", "closingCreditBalance")
@@ -138,6 +150,6 @@ internal fun getDebitsList(payslip: ParsedPayslip): List<Triple<String, Double, 
             value != 0.0 && (PayslipPatternConfig.debitKeysMapping[key] ?: key) !in excluded
         }
         .map { (key, value) ->
-            Triple(key, value, getDebitDesc(key))
+            LedgerLine(key, value, getDebitDesc(key), key)
         }
 }

@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
@@ -22,6 +21,7 @@ fun PayslipReplicaScreen(
     onBackClick: () -> Unit,
     onViewPdfClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    onCorrectField: (fieldKey: String, newValue: Double) -> Unit = { _, _ -> },
 ) {
     var activeGlossaryItem by remember { mutableStateOf<Pair<String, String>?>(null) }
 
@@ -34,19 +34,21 @@ fun PayslipReplicaScreen(
                 .padding(AppDimensions.PaddingMedium),
     ) {
         ReplicaHeader(onBackClick)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
         MetadataSection(payslip = payslip)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
         PdfDocumentCard(payslip = payslip, onViewPdfClick = onViewPdfClick)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
-        LedgerSection(payslip = payslip) { code, desc ->
-            activeGlossaryItem = code to desc
-        }
+        LedgerSection(
+            payslip = payslip,
+            onItemClick = { code, desc -> activeGlossaryItem = code to desc },
+            onCorrectField = onCorrectField,
+        )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingHuge))
         FooterSection()
 
         activeGlossaryItem?.let { (code, desc) ->
@@ -64,10 +66,10 @@ private fun ReplicaHeader(onBackClick: () -> Unit) {
         IconButton(onClick = onBackClick) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
+                contentDescription = AppStrings.replicaBackDesc,
             )
         }
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
         Column {
             Text(
                 text = AppStrings.explorerHeader,
@@ -88,22 +90,22 @@ private fun ReplicaHeader(onBackClick: () -> Unit) {
 private fun MetadataSection(payslip: ParsedPayslip) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
             Text(
-                text = "Officer: ${payslip.officer.name}",
+                text = "${AppStrings.replicaOfficerPrefix}${payslip.officer.name}",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingTiny),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(text = "CDA A/C: ${payslip.officer.accountNo}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "PAN: ${payslip.officer.pan}", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "${AppStrings.replicaCdaPrefix}${payslip.officer.accountNo}", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "${AppStrings.replicaPanPrefix}${payslip.officer.pan}", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
@@ -132,7 +134,7 @@ private fun GlossaryDialog(
         text = { Text(text = desc, style = MaterialTheme.typography.bodyLarge) },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Understood")
+                Text(text = AppStrings.glossaryUnderstood)
             }
         },
     )

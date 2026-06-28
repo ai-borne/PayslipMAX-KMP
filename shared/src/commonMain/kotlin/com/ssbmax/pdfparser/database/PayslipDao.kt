@@ -26,6 +26,22 @@ interface PayslipDao {
     @Query("DELETE FROM encrypted_payslips")
     suspend fun clearAll()
 
+    // PayslipCorrection queries (Phase 5 — per-field user corrections, merged on read)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCorrection(correction: PayslipCorrectionEntity)
+
+    @Query("SELECT * FROM payslip_corrections")
+    fun getAllCorrections(): Flow<List<PayslipCorrectionEntity>>
+
+    @Query("SELECT * FROM payslip_corrections WHERE dateStr = :dateStr LIMIT 1")
+    suspend fun getCorrectionByDate(dateStr: String): PayslipCorrectionEntity?
+
+    @Query("DELETE FROM payslip_corrections WHERE dateStr = :dateStr")
+    suspend fun deleteCorrection(dateStr: String)
+
+    @Query("DELETE FROM payslip_corrections")
+    suspend fun clearAllCorrections()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayslipPdf(pdf: PayslipPdfEntity)
 
