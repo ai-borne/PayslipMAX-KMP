@@ -72,3 +72,19 @@ flowchart TD
   2. **Tier 6 Extraction Service**: Built `GemmaFallbackExtractor.kt` wrapping `GemmaEngine` runtime with hardware capability gating (`DeviceCapabilityManager`).
   3. **Tier 5 ↔ Tier 6 ↔ Tier 7 Integration**: Updated `PayslipTokenParser.kt` to dispatch unmatched/low-confidence tokens to Tier 6 fallback prior to assembly, and re-validated proposed extractions through `SchemaValidator.kt` to guarantee mathematical integrity.
 * **Verification Gate**: 100% test pass rate across unit tests and full corpus regression test suites.
+
+---
+
+## 4. User Model Acquisition & Platform Maintenance
+
+### User Model Download & Storage Lifecycle
+1. **Model Binary**: Gemma 3 1B IT (INT4 quantized) `.task` bundle (`gemma-3-1b-it-int4.task`, ~650 MB storage footprint, ~800 MB runtime RAM).
+2. **On-Device Storage**: Model is downloaded/stored in the app's internal sandboxed directory managed via `GemmaModelStorageManager.kt`.
+3. **Hardware Capability Gating**: `DeviceCapabilityManager.kt` checks device hardware eligibility (RAM ≥ 3.5GB and free storage ≥ 1.5GB) before enabling model execution in Settings.
+
+### Android 15+ 16 KB Page Alignment Tracking
+* **Context**: Android 15+ introduces support for 16 KB memory page sizes. In debug builds on Android 15 devices, a system warning is surfaced regarding pre-compiled third-party `.so` binaries.
+* **Gradle Configuration**: Updated `composeApp/build.gradle.kts` with `packaging { jniLibs { useLegacyPackaging = false } }` to enforce uncompressed JNI packaging alignment.
+* **Dependency Maintenance Tracker**: Track upstream SDK updates for 16 KB pre-compiled native library releases:
+  - `com.google.mediapipe:tasks-genai` (`libllm_inference_engine_jni.so`)
+  - `androidx.sqlite:sqlite-bundled` (`libsqliteJni.so`)
