@@ -8,7 +8,8 @@ PayslipMax is an offline-first military payslip intelligence platform for Indian
 
 ## Table of Contents
 
-1. [PDF → ParsedPayslip: Token-IR Pipeline](#1-pdf--parsedpayslip-token-ir-pipeline)
+0. [End-to-End User Interaction Lifecycle](#0-end-to-end-user-interaction-lifecycle)
+1. [PDF → ParsedPayslip: 7-Tier Token-IR Pipeline](#1-pdf--parsedpayslip-7-tier-token-ir-pipeline)
 2. [Stage-by-Stage: Engine Reference](#2-stage-by-stage-engine-reference)
 3. [Display Layer: Raw Path vs Structured Path](#3-display-layer-raw-path-vs-structured-path)
 4. [Confidence Scoring & Per-Field Correction UI](#4-confidence-scoring--per-field-correction-ui)
@@ -17,6 +18,40 @@ PayslipMax is an offline-first military payslip intelligence platform for Indian
 7. [Security & PII Controls](#7-security--pii-controls)
 8. [AI Insights Pipeline](#8-ai-insights-pipeline)
 9. [Key File Reference](#9-key-file-reference)
+
+---
+
+## 0. End-to-End User Interaction Lifecycle
+
+This document serves as the primary technical guide detailing how PayslipMax operates from the moment an officer interacts with the UI to the final local database storage and interactive review loop.
+
+### Complete Interaction Sequence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Officer / User
+    participant UI as Compose UI / ReplicaScreen
+    participant VM as PayslipViewModel
+    participant Repo as FinancialIntelligenceRepository
+    participant Engine as 7-Tier Token-IR Parser
+    participant DB as Room Database (Encrypted)
+
+    User->>UI: 1. Selects PDF payslip & enters password
+    UI->>VM: 2. Triggers onUploadPayslip(file, password)
+    VM->>Repo: 3. Calls parseAndSavePayslip(pdfBytes, password)
+    Repo->>Engine: 4. Delegates to PlatformPdfParser.decryptAndParse()
+    Note over Engine: Runs Tiers 1-7 (Native Extractor → Grid → Classifier → Solver → Gemma Fallback → Validator)
+    Engine-->>Repo: 5. Returns Result<ParsedPayslip>
+    Repo->>DB: 6. Encrypts (AES-256) & persists EncryptedPayslipEntity
+    DB-->>VM: 7. StateFlow emits updated payslips list
+    VM-->>UI: 8. Renders Replica view & Ledger Section
+    Note over UI: Highlights fields with fieldConfidence < 0.7f with warning icons
+    User->>UI: 9. Taps low-confidence item & enters correction
+    UI->>VM: 10. Calls applyCorrection(dateStr, fieldKey, newValue)
+    VM->>Repo: 11. Saves encrypted PayslipCorrectionEntity (v9)
+    Repo-->>UI: 12. UI updates dynamically on read via combine flow
+```
 
 ---
 
@@ -66,6 +101,13 @@ flowchart TD
 
 ## 2. Stage-by-Stage: Engine Reference
 
+### Stage 0 — User Ingestion & ViewModel Handshake
+
+1. **User Action**: Officer selects a PDF file and inputs password in `UploadWidget` or `PayslipReplicaScreen`.
+2. **ViewModel Dispatch**: `PayslipViewModel.onUploadPayslip()` handles asynchronous state transitions (loading/error states).
+3. **Repository Execution**: Calls `FinancialIntelligenceRepository.parseAndSavePayslip(pdfBytes, password)`.
+4. **Platform Binding**: Delegates directly to platform implementations (`PlatformPdfParser.decryptAndParse()`).
+
 ### Stage 1 — Platform Token Extraction
 
 | Platform | Entry point | Library | Notes |
@@ -75,7 +117,7 @@ flowchart TD
 
 Both produce `TokenizedPayslip(tableTokens, taxTokens, dsopTokens, fullText)`. `PageClassifier` (commonMain SSOT) classifies each page by keyword into table / tax / DSOP buckets — no per-platform divergence.
 
-`PositionedToken` fields: `text`, `x`, `y` (top-down), `width`, `height`. Derived: `centerX`, `centerY`, `right`, `bottom`.
+`PositionedToken` fields: `text`, `x`, `y` (top-down), `width`, `height`, `fontSize`, `isBold`. Derived: `centerX`, `centerY`, `right`, `bottom`.
 
 ### Stage 2 — Grid Reconstruction (`GridReconstructor`)
 
@@ -141,6 +183,13 @@ If `isValid == false`, the parse is preserved but flagged with `needsReview = tr
 ### Stage 8 — Domain Assembly (`PayslipAssembler`)
 
 Maps validated `earningsMap` → `Earnings` struct + `miscEarnings`, and `deductionsMap` → `Deductions` struct + `miscDeductions`. Serializes and commits `ParsedPayslip` to local Room DB via `EncryptedPayslipEntity` (AES-256).
+
+### Stage 9 — Interactive Review & Encrypted Persistence
+
+1. **Reactive Render**: `PayslipViewModel` emits updated `ParsedPayslip` to `PayslipReplicaScreen` and `LedgerSection`.
+2. **Low-Confidence Alerting**: Fields with `fieldConfidence < 0.7f` render with `AppColors.Warning` warning icons.
+3. **User Correction Dialog**: Tapping an item opens `LedgerCorrectionDialog` allowing manual value entry.
+4. **Encrypted Overlay Persistence**: `repository.saveCorrection(dateStr, fieldKey, newValue)` stores an encrypted `PayslipCorrectionEntity` (v9). Applied seamlessly on read via `combine` flow without mutating raw parsed ground truth.
 
 ---
 
