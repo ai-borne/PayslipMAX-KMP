@@ -1,5 +1,6 @@
 package com.ssbmax.pdfparser.ui.screens
 
+import com.ssbmax.pdfparser.domain.ConfidenceThresholds
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.parser.PayslipPatternConfig
 
@@ -127,15 +128,20 @@ internal fun getCreditsList(payslip: ParsedPayslip): List<LedgerLine> {
     }
 
     val excluded = setOf("openingCreditBalance", "closingDebitBalance", "openingDebitBalance", "closingCreditBalance")
-    return payslip.rawEarnings
-        .filter { (key, value) ->
-            value != 0.0 &&
-                (PayslipPatternConfig.creditKeysMapping[key] ?: key) !in excluded &&
-                isValidRawKey(key)
-        }
-        .map { (key, value) ->
-            LedgerLine(key, value, getCreditDesc(key), key)
-        }
+    val items =
+        payslip.rawEarnings
+            .filter { (key, value) ->
+                value != 0.0 &&
+                    (PayslipPatternConfig.creditKeysMapping[key] ?: key) !in excluded &&
+                    isValidRawKey(key)
+            }
+            .map { (key, value) -> LedgerLine(key, value, getCreditDesc(key), key) }
+    val rawMisc = payslip.summary.grossPay - items.sumOf { it.amount }
+    return if (rawMisc > ConfidenceThresholds.ITEM_SUM_TOLERANCE) {
+        items + LedgerLine("MISC", rawMisc, getCreditDesc("miscEarnings"), "miscEarnings")
+    } else {
+        items
+    }
 }
 
 internal fun getDebitsList(payslip: ParsedPayslip): List<LedgerLine> {
@@ -158,13 +164,26 @@ internal fun getDebitsList(payslip: ParsedPayslip): List<LedgerLine> {
     }
 
     val excluded = setOf("openingCreditBalance", "closingDebitBalance", "openingDebitBalance", "closingCreditBalance")
-    return payslip.rawDeductions
-        .filter { (key, value) ->
-            value != 0.0 &&
-                (PayslipPatternConfig.debitKeysMapping[key] ?: key) !in excluded &&
-                isValidRawKey(key)
-        }
-        .map { (key, value) ->
-            LedgerLine(key, value, getDebitDesc(key), key)
-        }
+    val items =
+        payslip.rawDeductions
+            .filter { (key, value) ->
+                value != 0.0 &&
+                    (PayslipPatternConfig.debitKeysMapping[key] ?: key) !in excluded &&
+                    isValidRawKey(key)
+            }
+            .map { (key, value) -> LedgerLine(key, value, getDebitDesc(key), key) }
+    val rawMisc = payslip.summary.totalDeductions - items.sumOf { it.amount }
+    return if (rawMisc > ConfidenceThresholds.ITEM_SUM_TOLERANCE) {
+        items + LedgerLine("MISC", rawMisc, getDebitDesc("miscDeductions"), "miscDeductions")
+    } else {
+        items
+    }
 }
+
+/** Positive when displayed credit items sum exceeds the printed Gross Pay (phantom entry detected). */
+internal fun creditsMismatch(payslip: ParsedPayslip): Double =
+    getCreditsList(payslip).sumOf { it.amount } - payslip.summary.grossPay
+
+/** Positive when displayed debit items sum exceeds the printed Total Deductions (phantom entry detected). */
+internal fun debitsMismatch(payslip: ParsedPayslip): Double =
+    getDebitsList(payslip).sumOf { it.amount } - payslip.summary.totalDeductions
