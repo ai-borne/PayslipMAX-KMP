@@ -21,6 +21,7 @@ object PayslipTokenParser {
     fun parse(
         tokenized: TokenizedPayslip,
         filename: String,
+        fallbackExtractor: GemmaFallbackExtractor? = null,
     ): Result<ParsedPayslip> {
         return try {
             val cleanedFullTextRaw = cleanCommasAndWhitespace(tokenized.fullText)
@@ -32,7 +33,7 @@ object PayslipTokenParser {
             val (grossPay, totalDeductions, netRemittance) = parseTotals(cleanedFullTextRaw)
 
             val table = TokenTableClassifier.classify(tokenized.tableTokens)
-            val solved =
+            var solved =
                 ReconciliationSolver.solve(
                     table = table,
                     grossPay = grossPay,
@@ -41,10 +42,12 @@ object PayslipTokenParser {
                     fullText = tokenized.fullText,
                     filename = filename,
                 )
-            Logger.d(
-                "PayslipTokenParser",
-                "filename: $filename, gross: $grossPay, deductions: $totalDeductions, net: $netRemittance, needsReview: ${solved.needsReview}",
-            )
+
+            if (fallbackExtractor != null && (solved.needsReview || solved.rawEarnings.isNotEmpty() || solved.rawDeductions.isNotEmpty())) {
+                solved = applyGemmaFallback(solved, fallbackExtractor)
+            }
+
+            Logger.d("PayslipTokenParser", "filename: $filename, gross: $grossPay, deductions: $totalDeductions, net: $netRemittance, needsReview: ${solved.needsReview}")
 
             val taxText = TokenText.readingOrder(tokenized.taxTokens)
             val dsopText = TokenText.readingOrder(tokenized.dsopTokens)
@@ -53,18 +56,10 @@ object PayslipTokenParser {
 
             val parsed =
                 assembleParsedPayslip(
-                    filename = filename,
-                    year = year,
-                    monthNum = monthNum,
-                    monthName = monthName,
-                    dateStr = dateStr,
-                    officer = officer,
-                    earningsMap = solved.earningsMap,
-                    deductionsMap = solved.deductionsMap,
-                    reconciled = solved.reconciled,
-                    taxAndSavings = taxAndSavings,
-                    rawEarnings = solved.rawEarnings,
-                    rawDeductions = solved.rawDeductions,
+                    filename = filename, year = year, monthNum = monthNum, monthName = monthName,
+                    dateStr = dateStr, officer = officer, earningsMap = solved.earningsMap,
+                    deductionsMap = solved.deductionsMap, reconciled = solved.reconciled,
+                    taxAndSavings = taxAndSavings, rawEarnings = solved.rawEarnings, rawDeductions = solved.rawDeductions,
                 )
 
             val schemaValidation =
@@ -76,14 +71,31 @@ object PayslipTokenParser {
                     debitsSum = solved.deductionsMap.values.sum() + solved.rawDeductions.values.sum(),
                 )
 
-            Result.success(
-                parsed.copy(
-                    fieldConfidence = solved.fieldConfidence,
-                    needsReview = solved.needsReview || !schemaValidation.isValid,
-                ),
-            )
+            Result.success(parsed.copy(fieldConfidence = solved.fieldConfidence, needsReview = solved.needsReview || !schemaValidation.isValid))
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    private fun applyGemmaFallback(
+        solved: SolvedTable,
+        extractor: GemmaFallbackExtractor,
+    ): SolvedTable {
+        return try {
+            val extractions =
+                kotlinx.coroutines.runBlocking {
+                    extractor.extractFallback(solved.rawEarnings, solved.rawDeductions)
+                }
+            if (extractions.earnings.isEmpty() && extractions.deductions.isEmpty()) return solved
+
+            val mergedEarnings = solved.earningsMap.toMutableMap()
+            val mergedDeductions = solved.deductionsMap.toMutableMap()
+            extractions.earnings.forEach { (k, v) -> mergedEarnings[k] = (mergedEarnings[k] ?: 0.0) + v }
+            extractions.deductions.forEach { (k, v) -> mergedDeductions[k] = (mergedDeductions[k] ?: 0.0) + v }
+
+            solved.copy(earningsMap = mergedEarnings, deductionsMap = mergedDeductions)
+        } catch (e: Exception) {
+            solved
         }
     }
 }
