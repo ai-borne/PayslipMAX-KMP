@@ -96,26 +96,26 @@ object PayslipTokenParser {
             Result.failure(e)
         }
     }
+}
 
-    private fun applyGemmaFallback(
-        solved: SolvedTable,
-        extractor: GemmaFallbackExtractor,
-    ): SolvedTable {
-        return try {
-            val extractions =
-                kotlinx.coroutines.runBlocking {
-                    extractor.extractFallback(solved.rawEarnings, solved.rawDeductions)
-                }
-            if (extractions.earnings.isEmpty() && extractions.deductions.isEmpty()) return solved
+internal fun applyGemmaFallback(
+    solved: SolvedTable,
+    extractor: GemmaFallbackExtractor,
+): SolvedTable {
+    return try {
+        val extractions =
+            kotlinx.coroutines.runBlocking {
+                extractor.extractFallback(solved.rawEarnings, solved.rawDeductions)
+            }
+        if (extractions.earnings.isEmpty() && extractions.deductions.isEmpty()) return solved
 
-            val mergedEarnings = solved.earningsMap.toMutableMap()
-            val mergedDeductions = solved.deductionsMap.toMutableMap()
-            extractions.earnings.forEach { (k, v) -> mergedEarnings[k] = (mergedEarnings[k] ?: 0.0) + v }
-            extractions.deductions.forEach { (k, v) -> mergedDeductions[k] = (mergedDeductions[k] ?: 0.0) + v }
+        val mergedEarnings = solved.earningsMap.toMutableMap()
+        val mergedDeductions = solved.deductionsMap.toMutableMap()
+        extractions.earnings.forEach { (k, v) -> mergedEarnings[k] = (mergedEarnings[k] ?: 0.0) + v }
+        extractions.deductions.forEach { (k, v) -> mergedDeductions[k] = (mergedDeductions[k] ?: 0.0) + v }
 
-            solved.copy(earningsMap = mergedEarnings, deductionsMap = mergedDeductions)
-        } catch (e: Exception) {
-            solved
-        }
+        solved.copy(earningsMap = mergedEarnings, deductionsMap = mergedDeductions)
+    } catch (e: Exception) {
+        solved
     }
 }
