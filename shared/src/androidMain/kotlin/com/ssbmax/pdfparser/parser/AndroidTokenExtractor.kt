@@ -23,12 +23,25 @@ internal fun extractTokenized(document: PDDocument): TokenizedPayslip {
     if (dsopIdx < 0) dsopIdx = taxIdx
 
     val fullText = PDFTextStripper().getText(document) ?: ""
-    return TokenizedPayslip(
-        tableTokens = scanPageTokens(document, tableIdx),
-        taxTokens = if (taxIdx >= 0) scanPageTokens(document, taxIdx) else emptyList(),
-        dsopTokens = if (dsopIdx >= 0) scanPageTokens(document, dsopIdx) else emptyList(),
-        fullText = fullText,
-    )
+    val tokenized =
+        TokenizedPayslip(
+            tableTokens = scanPageTokens(document, tableIdx),
+            taxTokens = if (taxIdx >= 0) scanPageTokens(document, taxIdx) else emptyList(),
+            dsopTokens = if (dsopIdx >= 0) scanPageTokens(document, dsopIdx) else emptyList(),
+            fullText = fullText,
+        )
+
+    val allTokens = tokenized.tableTokens + tokenized.taxTokens + tokenized.dsopTokens
+    println("=== STAGE 0: RAW PDF EXTRACTION (ANDROID PDFBox) ===")
+    println("total character count extracted: ${fullText.length}")
+    println("total token count: ${allTokens.size}")
+    println("page count: ${document.numberOfPages}")
+    allTokens.forEachIndexed { idx, t ->
+        val pg = if (idx < tokenized.tableTokens.size) 1 else 2
+        println("TOKEN #$idx\ntext=${t.text}\npage=$pg\nx=${t.x}\ny=${t.y}\nw=${t.width}\nh=${t.height}\nfont=N/A\nsize=${t.fontSize}")
+    }
+    println("=====================================================")
+    return tokenized
 }
 
 private fun singlePageText(

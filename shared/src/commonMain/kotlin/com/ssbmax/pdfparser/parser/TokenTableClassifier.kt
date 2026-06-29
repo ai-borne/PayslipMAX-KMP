@@ -82,12 +82,18 @@ object TokenTableClassifier {
     private val normalizedBlocklist: Set<String> = PayslipPatternConfig.blocklist.map { normalize(it) }.toSet()
 
     /** Full pipeline entry point: raw table-page tokens → classified credit/debit line items. */
-    fun classify(tableTokens: List<PositionedToken>): ClassifiedTable {
-        val pairs = RowPairing.pair(GridReconstructor.reconstruct(tableTokens))
-        return classifyPairs(pairs)
+    fun classify(
+        tableTokens: List<PositionedToken>,
+        debugCollector: com.ssbmax.pdfparser.parser.debug.ParserDebugCollector? = null,
+    ): ClassifiedTable {
+        val pairs = RowPairing.pair(GridReconstructor.reconstruct(tableTokens, debugCollector))
+        return classifyPairs(pairs, debugCollector)
     }
 
-    internal fun classifyPairs(pairs: List<LabelAmount>): ClassifiedTable {
+    internal fun classifyPairs(
+        pairs: List<LabelAmount>,
+        debugCollector: com.ssbmax.pdfparser.parser.debug.ParserDebugCollector? = null,
+    ): ClassifiedTable {
         val candidates = pairs.mapNotNull { toCandidate(it) }
 
         val creditBand = bandFrom(candidates, TableSide.CREDIT)
@@ -101,22 +107,101 @@ object TokenTableClassifier {
                 DEFAULT_ACCEPT_RADIUS
             }
 
+        val assignedDumps = mutableListOf<com.ssbmax.pdfparser.parser.debug.EntryAssignmentDump>()
+        val droppedDumps = mutableListOf<com.ssbmax.pdfparser.parser.debug.EntryAssignmentDump>()
+
         val entries =
             candidates.mapNotNull { c ->
                 val mappedBand = if (c.side == TableSide.CREDIT) creditBand else debitBand
                 if (c.cleanMatch && c.side != null && withinBand(c.labelCenterX, mappedBand, acceptRadius)) {
                     // Trusted: a recognized key sitting in its own column. Keep its standardized key.
-                    // Here geometric side == canonical side (the band check guaranteed it).
+                    debugCollector?.recordStage4Field(
+                        com.ssbmax.pdfparser.parser.debug.FieldClassificationDump(
+                            fieldKeyOrLabel = c.standardKey ?: c.label,
+                            amount = c.amount,
+                            status = com.ssbmax.pdfparser.parser.debug.FieldStatus.RECOGNIZED,
+                            reason = "Clean match in ${c.side} column band (x=${c.labelCenterX})",
+                            side = c.side,
+                            sourceTokens = c.label,
+                        ),
+                    )
+                    assignedDumps.add(
+                        com.ssbmax.pdfparser.parser.debug.EntryAssignmentDump(
+                            rawLabel = c.label,
+                            amount = c.amount,
+                            side = c.side,
+                            labelCenterX = c.labelCenterX,
+                            centerY = c.centerY,
+                            isCleanMatch = true,
+                            matchedKey = c.standardKey,
+                        ),
+                    )
                     ClassifiedEntry(c.label, c.standardKey, c.amount, c.side, c.labelCenterX, c.centerY, c.standardKey, c.side)
                 } else {
-                    // Everything else — unknown labels, and keyword matches stranded in the opposite
-                    // column — is placed by geometry alone and treated as a raw (unmatched) line item,
-                    // but we retain any keyword match so the solver can route cross-column reversals.
-                    // Anything too far from both label bands (detail text, footers) is dropped.
-                    val side = assignSide(c.labelCenterX, creditBand, debitBand, acceptRadius) ?: return@mapNotNull null
-                    ClassifiedEntry(c.label, standardKey = null, c.amount, side, c.labelCenterX, c.centerY, c.standardKey, c.side)
+                    // Everything else — unknown labels, and keyword matches stranded in the opposite column.
+                    val side = assignSide(c.labelCenterX, creditBand, debitBand, acceptRadius)
+                    if (side != null) {
+                        val reasonStr = if (c.standardKey != null) "Stranded key ${c.standardKey} (routed to raw)" else "Unrecognized raw label"
+                        debugCollector?.recordStage4Field(
+                            com.ssbmax.pdfparser.parser.debug.FieldClassificationDump(
+                                fieldKeyOrLabel = c.standardKey ?: c.label,
+                                amount = c.amount,
+                                status = com.ssbmax.pdfparser.parser.debug.FieldStatus.REJECTED,
+                                reason = reasonStr,
+                                side = side,
+                                sourceTokens = c.label,
+                            ),
+                        )
+                        assignedDumps.add(
+                            com.ssbmax.pdfparser.parser.debug.EntryAssignmentDump(
+                                rawLabel = c.label,
+                                amount = c.amount,
+                                side = side,
+                                labelCenterX = c.labelCenterX,
+                                centerY = c.centerY,
+                                isCleanMatch = false,
+                                matchedKey = c.standardKey,
+                            ),
+                        )
+                        ClassifiedEntry(c.label, standardKey = null, c.amount, side, c.labelCenterX, c.centerY, c.standardKey, c.side)
+                    } else {
+                        debugCollector?.recordStage4Field(
+                            com.ssbmax.pdfparser.parser.debug.FieldClassificationDump(
+                                fieldKeyOrLabel = c.standardKey ?: c.label,
+                                amount = c.amount,
+                                status = com.ssbmax.pdfparser.parser.debug.FieldStatus.REJECTED,
+                                reason = "Outside acceptance radius ($acceptRadius) from both column bands",
+                                side = null,
+                                sourceTokens = c.label,
+                            ),
+                        )
+                        if (c.side != null) {
+                            droppedDumps.add(
+                                com.ssbmax.pdfparser.parser.debug.EntryAssignmentDump(
+                                    rawLabel = c.label,
+                                    amount = c.amount,
+                                    side = c.side,
+                                    labelCenterX = c.labelCenterX,
+                                    centerY = c.centerY,
+                                    isCleanMatch = false,
+                                    matchedKey = c.standardKey,
+                                ),
+                            )
+                        }
+                        null
+                    }
                 }
             }
+
+        debugCollector?.stage3 =
+            com.ssbmax.pdfparser.parser.debug.Stage3ColumnDump(
+                creditBand = creditBand,
+                debitBand = debitBand,
+                acceptRadius = acceptRadius,
+                assignedEntries = assignedDumps,
+                droppedEntries = droppedDumps,
+            )
+
         return ClassifiedTable(entries)
     }
 

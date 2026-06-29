@@ -30,12 +30,26 @@ internal fun extractTokenized(pdfDoc: PDFDocument): TokenizedPayslip {
     if (tableIdx < 0) tableIdx = 0
     if (dsopIdx < 0) dsopIdx = taxIdx
 
-    return TokenizedPayslip(
-        tableTokens = pageTokens(pdfDoc, tableIdx),
-        taxTokens = if (taxIdx >= 0) pageTokens(pdfDoc, taxIdx) else emptyList(),
-        dsopTokens = if (dsopIdx >= 0) pageTokens(pdfDoc, dsopIdx) else emptyList(),
-        fullText = fullText.toString(),
-    )
+    val fullStr = fullText.toString()
+    val tokenized =
+        TokenizedPayslip(
+            tableTokens = pageTokens(pdfDoc, tableIdx),
+            taxTokens = if (taxIdx >= 0) pageTokens(pdfDoc, taxIdx) else emptyList(),
+            dsopTokens = if (dsopIdx >= 0) pageTokens(pdfDoc, dsopIdx) else emptyList(),
+            fullText = fullStr,
+        )
+
+    val allTokens = tokenized.tableTokens + tokenized.taxTokens + tokenized.dsopTokens
+    println("=== STAGE 0: RAW PDF EXTRACTION (IOS PDFKit) ===")
+    println("total character count extracted: ${fullStr.length}")
+    println("total token count: ${allTokens.size}")
+    println("page count: $pageCount")
+    allTokens.forEachIndexed { idx, t ->
+        val pg = if (idx < tokenized.tableTokens.size) 1 else 2
+        println("TOKEN #$idx\ntext=${t.text}\npage=$pg\nx=${t.x}\ny=${t.y}\nw=${t.width}\nh=${t.height}\nfont=N/A\nsize=${t.fontSize}")
+    }
+    println("=================================================")
+    return tokenized
 }
 
 private fun pageTokens(

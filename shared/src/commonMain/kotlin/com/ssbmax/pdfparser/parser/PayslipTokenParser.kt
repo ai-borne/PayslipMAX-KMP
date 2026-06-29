@@ -22,8 +22,10 @@ object PayslipTokenParser {
         tokenized: TokenizedPayslip,
         filename: String,
         fallbackExtractor: GemmaFallbackExtractor? = null,
+        debugCollector: com.ssbmax.pdfparser.parser.debug.ParserDebugCollector? = null,
     ): Result<ParsedPayslip> {
         return try {
+            debugCollector?.recordStage1(tokenized)
             val cleanedFullTextRaw = cleanCommasAndWhitespace(tokenized.fullText)
             val cleanedFullText = negateHindiTransliterations(cleanedFullTextRaw)
 
@@ -32,7 +34,7 @@ object PayslipTokenParser {
             val officer = parseOfficer(cleanedFullText, monthNum, year)
             val (grossPay, totalDeductions, netRemittance) = parseTotals(cleanedFullTextRaw)
 
-            val table = TokenTableClassifier.classify(tokenized.tableTokens)
+            val table = TokenTableClassifier.classify(tokenized.tableTokens, debugCollector)
             var solved =
                 ReconciliationSolver.solve(
                     table = table,
@@ -41,6 +43,7 @@ object PayslipTokenParser {
                     netRemittance = netRemittance,
                     fullText = tokenized.fullText,
                     filename = filename,
+                    debugCollector = debugCollector,
                 )
 
             if (fallbackExtractor != null && (solved.needsReview || solved.rawEarnings.isNotEmpty() || solved.rawDeductions.isNotEmpty())) {
@@ -71,7 +74,24 @@ object PayslipTokenParser {
                     debitsSum = solved.deductionsMap.values.sum() + solved.rawDeductions.values.sum(),
                 )
 
-            Result.success(parsed.copy(fieldConfidence = solved.fieldConfidence, needsReview = solved.needsReview || !schemaValidation.isValid))
+            val finalParsed = parsed.copy(fieldConfidence = solved.fieldConfidence, needsReview = solved.needsReview || !schemaValidation.isValid)
+
+            val missingCredits = PayslipPatternConfig.strictlyMandatoryCredits.filter { (solved.earningsMap[it] ?: 0.0) <= 0.0 }
+            val missingDebits = PayslipPatternConfig.strictlyMandatoryDebits.filter { (solved.deductionsMap[it] ?: 0.0) <= 0.0 }
+            val missingMandatory = missingCredits + missingDebits
+
+            println("=== STAGE 3: FINAL PARSER MODEL ===")
+            println("earningsMap: ${finalParsed.earnings}")
+            println("deductionsMap: ${finalParsed.deductions}")
+            println("rawEarnings: ${finalParsed.rawEarnings}")
+            println("rawDeductions: ${finalParsed.rawDeductions}")
+            println("summary: grossPay=$grossPay, totalDeductions=$totalDeductions, netRemittance=$netRemittance")
+            println("missingMandatoryFields: $missingMandatory")
+            println("fieldConfidence: ${finalParsed.fieldConfidence}")
+            println("needsReview: ${finalParsed.needsReview}")
+            println("===================================")
+
+            Result.success(finalParsed)
         } catch (e: Exception) {
             Result.failure(e)
         }

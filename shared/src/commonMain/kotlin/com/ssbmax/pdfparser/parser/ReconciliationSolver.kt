@@ -47,6 +47,7 @@ internal object ReconciliationSolver {
         netRemittance: Double,
         fullText: String,
         filename: String,
+        debugCollector: com.ssbmax.pdfparser.parser.debug.ParserDebugCollector? = null,
     ): SolvedTable {
         val earningsMap = mutableMapOf<String, Double>()
         val deductionsMap = mutableMapOf<String, Double>()
@@ -79,8 +80,36 @@ internal object ReconciliationSolver {
             }
         }
 
+        val reviewReasons = mutableListOf<String>()
+        if (reconciled.netResidual >= NET_TOLERANCE) {
+            reviewReasons.add("Net residual ${reconciled.netResidual} >= NET_TOLERANCE ($NET_TOLERANCE)")
+        }
+        val lowConfFields = confidence.filter { it.value < REVIEW_THRESHOLD }
+        if (lowConfFields.isNotEmpty()) {
+            reviewReasons.add("Low confidence fields (< $REVIEW_THRESHOLD): ${lowConfFields.keys.joinToString()}")
+        }
+        if (missingCredits.isNotEmpty()) {
+            reviewReasons.add("Missing mandatory credits: ${missingCredits.joinToString()}")
+        }
+        if (missingDebits.isNotEmpty()) {
+            reviewReasons.add("Missing mandatory debits: ${missingDebits.joinToString()}")
+        }
+
         val needsReview =
             reconciled.netResidual >= NET_TOLERANCE || confidence.values.any { it < REVIEW_THRESHOLD } || hasMissingMandatory
+
+        debugCollector?.stage5 =
+            com.ssbmax.pdfparser.parser.debug.Stage5ReconciliationDump(
+                grossPay = grossPay,
+                totalDeductions = totalDeductions,
+                netRemittance = netRemittance,
+                earningsSum = earningsMap.values.sum() + rawEarnings.values.sum(),
+                deductionsSum = deductionsMap.values.sum() + rawDeductions.values.sum(),
+                netResidual = reconciled.netResidual,
+                needsReview = needsReview,
+                reviewReasons = reviewReasons,
+                fieldConfidence = confidence,
+            )
 
         return SolvedTable(
             earningsMap = earningsMap,
