@@ -72,7 +72,7 @@ object DefaultGrammarDescriptors {
             priority = 40,
             displayName = "Modern Reconstructed Spatial Grid",
             detectorMatcher = { tokenized -> matchModernGrid(tokenized) },
-            strategySet = StubStrategySet,
+            strategySet = com.ssbmax.pdfparser.parser.strategy.modern.ModernGridStrategySet,
         )
 
     val EXTENDED_GRID =
@@ -81,7 +81,7 @@ object DefaultGrammarDescriptors {
             priority = 50,
             displayName = "Extended Multi-Container Spatial Grid",
             detectorMatcher = { tokenized -> matchExtendedGrid(tokenized) },
-            strategySet = StubStrategySet,
+            strategySet = com.ssbmax.pdfparser.parser.strategy.modern.ExtendedGridStrategySet,
         )
 
     fun registerAll(registry: GrammarRegistry) {
