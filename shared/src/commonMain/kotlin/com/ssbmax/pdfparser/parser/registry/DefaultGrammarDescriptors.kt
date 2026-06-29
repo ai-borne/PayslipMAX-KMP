@@ -63,7 +63,7 @@ object DefaultGrammarDescriptors {
             priority = 30,
             displayName = "7th CPC Transitional Key-Value",
             detectorMatcher = { tokenized -> matchTransitional7thCpc(tokenized) },
-            strategySet = StubStrategySet,
+            strategySet = com.ssbmax.pdfparser.parser.strategy.transitional.Transitional7thCpcStrategySet,
         )
 
     val MODERN_GRID =
