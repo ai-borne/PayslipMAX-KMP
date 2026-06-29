@@ -45,7 +45,7 @@ object DefaultGrammarDescriptors {
             priority = 10,
             displayName = "Legacy Monolithic Statement",
             detectorMatcher = { tokenized -> matchLegacyStatement(tokenized) },
-            strategySet = StubStrategySet,
+            strategySet = com.ssbmax.pdfparser.parser.strategy.legacy.LegacyStatementStrategySet,
         )
 
     val EARLY_DUAL_COL =
@@ -54,7 +54,7 @@ object DefaultGrammarDescriptors {
             priority = 20,
             displayName = "Early Dual-Column Statement",
             detectorMatcher = { tokenized -> matchEarlyDualCol(tokenized) },
-            strategySet = StubStrategySet,
+            strategySet = com.ssbmax.pdfparser.parser.strategy.legacy.EarlyDualColStrategySet,
         )
 
     val TRANSITIONAL_7TH_CPC =
