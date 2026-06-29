@@ -42,18 +42,36 @@ object GridReconstructor {
     /** Fallback used when token heights are unavailable; mirrors the legacy ±3f y-clustering. */
     private const val MIN_TOLERANCE = 3f
 
-    fun reconstruct(tokens: List<PositionedToken>): Grid {
+    fun reconstruct(
+        tokens: List<PositionedToken>,
+        debugCollector: com.ssbmax.pdfparser.parser.debug.ParserDebugCollector? = null,
+    ): Grid {
         val usable = tokens.filter { it.text.isNotBlank() }
         if (usable.isEmpty()) return Grid(emptyList())
 
-        val medianHeight = medianOf(usable.map { it.height })
-        // Tokens on the same printed line share a baseline; allow ~half a line-height of jitter.
-        val rowTolerance = maxOf(MIN_TOLERANCE, medianHeight * 0.5f)
-        // A gap wider than roughly one character-height separates columns; narrower joins words.
-        val cellGap = maxOf(MIN_TOLERANCE, medianHeight * 1.2f)
+        val pageTablesIr = com.ssbmax.pdfparser.engine.TableReconstructionEngine.reconstructPage(usable, pageIndex = 0)
+        val tableIr = pageTablesIr.tables.firstOrNull() ?: return Grid(emptyList())
 
-        val rows = clusterRows(usable, rowTolerance).map { rowTokens -> buildRow(rowTokens, cellGap) }
-        return Grid(rows)
+        val gridRows =
+            tableIr.rows.map { irRow ->
+                val cells =
+                    irRow.map { irCell ->
+                        GridCell(tokens = irCell.tokens.map { it.sourceToken })
+                    }
+                GridRow(cells = cells)
+            }
+        val grid = Grid(gridRows)
+        debugCollector?.recordStage2(grid)
+
+        println("=== STAGE 2: ROW RECONSTRUCTION (ENGINE DELEGATE) ===")
+        println("Reconstructed grid confidence: ${tableIr.confidenceScore}")
+        grid.rows.forEachIndexed { idx, row ->
+            val rowStr = row.cells.joinToString(" | ") { it.text }
+            println("ROW $idx\n$rowStr")
+        }
+        println("=====================================================")
+
+        return grid
     }
 
     /** Groups tokens whose vertical centers fall within [tolerance] of the row's running center. */
@@ -83,13 +101,19 @@ object GridReconstructor {
         val sorted = rowTokens.sortedBy { it.x }
         val cells = mutableListOf<MutableList<PositionedToken>>()
         var prevRight = Float.NaN
+        var prevToken: PositionedToken? = null
         for (token in sorted) {
+            if (prevToken != null) {
+                val gap = token.x - prevToken.right
+                println("GAP: ${prevToken.text} -> ${token.text} = $gap pt (cellGap=$cellGap pt)")
+            }
             if (cells.isEmpty() || token.x - prevRight > cellGap) {
                 cells.add(mutableListOf(token))
             } else {
                 cells.last().add(token)
             }
             prevRight = maxOf(if (prevRight.isNaN()) token.right else prevRight, token.right)
+            prevToken = token
         }
         return GridRow(cells.map { GridCell(it) })
     }

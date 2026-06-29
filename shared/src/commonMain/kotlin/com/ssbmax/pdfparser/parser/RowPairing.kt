@@ -24,25 +24,26 @@ object RowPairing {
     fun pair(grid: Grid): List<LabelAmount> {
         val pairs = mutableListOf<LabelAmount>()
         for (row in grid.rows) {
-            var pendingLabel: GridCell? = null
+            val pendingLabels = mutableListOf<GridCell>()
             for (cell in row.cells) {
                 val amount = parseAmount(cell.text)
                 if (amount == null) {
-                    // Text cell — becomes the candidate label for the next amount on this row.
-                    pendingLabel = cell
+                    // Text cell — becomes candidate label for next amount on this row.
+                    pendingLabels.add(cell)
                 } else {
-                    val label = pendingLabel
-                    if (label != null) {
+                    if (pendingLabels.isNotEmpty()) {
+                        val combinedText = pendingLabels.joinToString(" ") { it.text }
+                        val firstLabel = pendingLabels.first()
                         pairs +=
                             LabelAmount(
-                                label = label.text,
+                                label = combinedText,
                                 amount = amount,
-                                labelCenterX = label.centerX,
+                                labelCenterX = firstLabel.centerX,
                                 amountCenterX = cell.centerX,
                                 centerY = row.centerY,
                             )
-                        // An amount consumes its label so the next number needs a fresh one.
-                        pendingLabel = null
+                        // An amount consumes its labels so the next number needs a fresh set.
+                        pendingLabels.clear()
                     }
                 }
             }
