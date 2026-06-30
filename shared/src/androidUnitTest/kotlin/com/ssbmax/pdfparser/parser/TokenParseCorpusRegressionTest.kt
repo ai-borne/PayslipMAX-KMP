@@ -5,22 +5,21 @@ import org.junit.Test
 import kotlin.test.assertTrue
 
 /**
- * Phase 4 cut-over gate. It drives the **new primary** [PayslipTokenParser] over the committed,
+ * Corpus regression gate. It drives the **production engine** [GrammarAwareParser] over the committed,
  * de-identified token fixtures (geometry from `<id>.tokens.json`, document text from `<id>.input.json`)
  * and diffs the full [com.ssbmax.pdfparser.domain.ParsedPayslip] against human-verified ground truth.
  *
- * This is the structural proof that the token engine *meets or beats* the Phase 0 string-path baseline:
- * it passes all 52/52 fixtures with an empty quarantine. It is fully offline — no device, no PDFs, no PII.
+ * [GrammarAwareParser] is the engine wired into both Android and iOS (RC3), so this suite tests exactly
+ * what ships. It passes all 52/52 fixtures with an empty quarantine and is fully offline — no device,
+ * no PDFs, no PII.
  *
  * ### Ground-truth correction (Phase 4)
  * Four months (Apr-2022, Mar/Apr/Jun-2023) previously relied on the legacy
- * DynamicSpatialParser.applyHistoricalOverrides (removed in Phase 4) micro-fudge, which sprinkled a small unattributed
- * residual (₹14–₹79) onto a named earning (Basic Pay / DA / MSP / Ration / SF) to force a balance. That
- * made those fixtures internally inconsistent — their earnings summed *past* the ledger-adjusted gross by
- * exactly the fudge. Phase 4 deletes the override and corrects those four fixtures to the **real on-page
- * values** (verified against the committed tokens), after which the engine reconciles each to its printed
- * gross with `miscEarnings == 0`. The [quarantine] mechanism is retained (empty) so any future known-bad
- * month can be parked with a documented reason without breaking the build.
+ * DynamicSpatialParser.applyHistoricalOverrides micro-fudge (removed in Phase 4), which sprinkled a small
+ * unattributed residual (₹14–₹79) onto a named earning to force a balance. Those fixtures were corrected
+ * to the real on-page values; the engine now reconciles each to its printed gross with `miscEarnings == 0`.
+ * The [quarantine] mechanism is retained (empty) so any future known-bad month can be parked with a
+ * documented reason without breaking the build.
  */
 class TokenParseCorpusRegressionTest {
     /** Fixture ids the token engine is known to get wrong, each with a documented reason. Empty at cut-over. */
@@ -45,7 +44,7 @@ class TokenParseCorpusRegressionTest {
                     fullText = input.fullText,
                 )
 
-            val result = PayslipTokenParser.parse(tokenized, input.filename)
+            val result = GrammarAwareParser.parse(tokenized, input.filename)
             val parsed = result.getOrNull()
             val expected = CorpusFixtures.loadExpected(id)
             val mismatches =
