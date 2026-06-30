@@ -140,6 +140,45 @@ class TokenTableEngineTest {
         )
     }
 
+    /**
+     * Regression for RC1 — single-column layout (iOS PDFKit coordinate collapse or legacy flat format).
+     *
+     * When PDFKit extracts all label tokens at the same x-position, [TokenTableClassifier] learns
+     * creditBand ≈ debitBand (separation < 20 pt). The resulting acceptRadius ≈ 1 pt causes most
+     * clean matches to miss [withinBand], and [assignSide] resolves every tie as CREDIT — so DSOP,
+     * AGIF, and ITAX are either misclassified as raw deductions or dropped entirely.
+     *
+     * Fix: when bandSeparation < SINGLE_COLUMN_BAND_THRESHOLD, trust the label key's own canonical
+     * side for all clean matches, bypassing the geometric check.
+     */
+    @Test
+    fun singleColumnLayoutTrustsLabelSideForDebitKeys() {
+        // All credit and debit labels at x = 11; widths differ by text length → label centers vary
+        // by ≤ 5 pt, producing a bandSeparation << 20 pt that triggers the single-column path.
+        val tokens =
+            listOf(
+                tok("BPAY", 11f, 50f), tok("136400", 115f, 50f),
+                tok("DA", 11f, 65f), tok("45849", 115f, 65f),
+                tok("MSP", 11f, 80f), tok("15500", 115f, 80f),
+                tok("DSOP", 11f, 95f), tok("40000", 115f, 95f),
+                tok("AGIF", 11f, 110f), tok("5000", 115f, 110f),
+                tok("ITAX", 11f, 125f), tok("22000", 115f, 125f),
+            )
+        val table = TokenTableClassifier.classify(tokens)
+        val credits = table.standardizedCredits()
+        val debits = table.standardizedDebits()
+
+        // Credit keys must survive even though their center-x overlaps the debit band.
+        assertEquals(136400.0, credits["basicPay"], "BPAY must be CREDIT in single-column layout")
+        assertEquals(45849.0, credits["dearnessAllowance"], "DA must be CREDIT in single-column layout")
+        assertEquals(15500.0, credits["militaryServicePay"], "MSP must be CREDIT in single-column layout")
+
+        // Debit keys must not be misclassified as CREDIT or dropped.
+        assertEquals(40000.0, debits["dsopSubscription"], "DSOP must be DEBIT in single-column layout")
+        assertEquals(5000.0, debits["agif"], "AGIF must be DEBIT in single-column layout")
+        assertEquals(22000.0, debits["incomeTax"], "ITAX must be DEBIT in single-column layout")
+    }
+
     @Test
     fun gridCellFontPropertiesCalculatedCorrectly() {
         val boldToken = PositionedToken("HEADER", 10f, 20f, 40f, 10f, fontSize = 14f, isBold = true)

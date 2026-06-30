@@ -98,14 +98,11 @@ object TokenTableClassifier {
 
         val creditBand = bandFrom(candidates, TableSide.CREDIT)
         val debitBand = bandFrom(candidates, TableSide.DEBIT)
-        // Half the gap between the two label columns is a generous yet exclusive acceptance radius;
-        // it keeps the right-hand "details" column out while tolerating per-document jitter.
-        val acceptRadius =
-            if (creditBand != null && debitBand != null) {
-                abs(debitBand - creditBand) * 0.5f
-            } else {
-                DEFAULT_ACCEPT_RADIUS
-            }
+        // Half the gap: generous for per-document jitter, exclusive enough to drop the details column.
+        val acceptRadius = if (creditBand != null && debitBand != null) abs(debitBand - creditBand) * 0.5f else DEFAULT_ACCEPT_RADIUS
+        // Single-column layout (bandSep < threshold): geometry cannot split sides; trust label keys.
+        val bandSeparation = if (creditBand != null && debitBand != null) abs(debitBand - creditBand) else Float.MAX_VALUE
+        val isSingleColumnLayout = bandSeparation < SINGLE_COLUMN_BAND_THRESHOLD
 
         val assignedDumps = mutableListOf<com.ssbmax.pdfparser.parser.debug.EntryAssignmentDump>()
         val droppedDumps = mutableListOf<com.ssbmax.pdfparser.parser.debug.EntryAssignmentDump>()
@@ -113,14 +110,20 @@ object TokenTableClassifier {
         val entries =
             candidates.mapNotNull { c ->
                 val mappedBand = if (c.side == TableSide.CREDIT) creditBand else debitBand
-                if (c.cleanMatch && c.side != null && withinBand(c.labelCenterX, mappedBand, acceptRadius)) {
-                    // Trusted: a recognized key sitting in its own column. Keep its standardized key.
+                val isTrustedByLabel = isSingleColumnLayout && c.cleanMatch && c.side != null
+                if (c.cleanMatch && c.side != null && (withinBand(c.labelCenterX, mappedBand, acceptRadius) || isTrustedByLabel)) {
+                    val classificationReason =
+                        if (isTrustedByLabel && !withinBand(c.labelCenterX, mappedBand, acceptRadius)) {
+                            "Single-column layout (bandSep=${bandSeparation}pt): trusted ${c.side} label (x=${c.labelCenterX})"
+                        } else {
+                            "Clean match in ${c.side} column band (x=${c.labelCenterX})"
+                        }
                     debugCollector?.recordStage4Field(
                         com.ssbmax.pdfparser.parser.debug.FieldClassificationDump(
                             fieldKeyOrLabel = c.standardKey ?: c.label,
                             amount = c.amount,
                             status = com.ssbmax.pdfparser.parser.debug.FieldStatus.RECOGNIZED,
-                            reason = "Clean match in ${c.side} column band (x=${c.labelCenterX})",
+                            reason = classificationReason,
                             side = c.side,
                             sourceTokens = c.label,
                         ),
@@ -206,6 +209,7 @@ object TokenTableClassifier {
     }
 
     private const val DEFAULT_ACCEPT_RADIUS = 30f
+    private const val SINGLE_COLUMN_BAND_THRESHOLD = 20f // two-column PCDA layouts have ≥140pt separation
 
     private data class Candidate(
         val label: String,

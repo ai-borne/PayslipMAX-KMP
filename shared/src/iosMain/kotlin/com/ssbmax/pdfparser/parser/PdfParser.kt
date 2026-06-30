@@ -19,9 +19,9 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
     ): Result<ParsedPayslip> {
         // Phase 4 cut-over: the token IR is now the primary path. The previous PDFKit column-crop
         // (extractTextSpatially + IosLayoutScanner) diverged per-platform and per-month; it is replaced
-        // by the shared common engine (PayslipTokenParser), so iOS and Android parse identically.
+        // by the shared common engine (GrammarAwareParser), so iOS and Android parse identically.
         return extractTokens(pdfBytes, password, filename).mapCatching { tokenized ->
-            PayslipTokenParser.parse(tokenized, filename).getOrThrow()
+            GrammarAwareParser.parse(tokenized, filename).getOrThrow()
         }
     }
 
