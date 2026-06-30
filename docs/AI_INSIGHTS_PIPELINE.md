@@ -55,30 +55,40 @@ sequenceDiagram
 
 ---
 
-## 1. PDF → ParsedPayslip: 7-Tier Token-IR Pipeline
+## 1. PDF → ParsedPayslip: Version-Aware Strategy Pipeline
 
 ### High-Level Data Flow
 
 ```mermaid
 flowchart TD
-    PDF([PCDA-O PDF]) -->|Tier 1: AES decrypt + page scan| TokAndroid[Android: TokenScanner / PDFBox]
-    PDF -->|Tier 1: AES decrypt + PDFKit| TokIOS[iOS: IosTokenExtractor / PDFKit]
+    PDF([PCDA-O PDF]) -->|AES decrypt + page scan| TokAndroid[Android: TokenScanner / PDFBox]
+    PDF -->|AES decrypt + PDFKit| TokIOS[iOS: IosTokenExtractor / PDFKit]
 
-    TokAndroid -->|List<PositionedToken> top-down Y\nfontSize & isBold| PageCls[Tier 2: PageClassifier & IR\nPositionedToken]
-    TokIOS -->|List<PositionedToken> top-down Y\nfontSize & isBold| PageCls
+    TokAndroid -->|List<PositionedToken> top-down Y\nfontSize & isBold| IR[Page Layout & IR Analysis]
+    TokIOS -->|List<PositionedToken> top-down Y\nfontSize & isBold| IR
 
-    PageCls -->|tableTokens\ntaxTokens / dsopTokens| GR[Tier 3: GridReconstructor & RowPairing\ncluster y→rows, x→cells]
-    GR -->|ReconstructedGrid| TTC[Tier 4: TokenTableClassifier\ncontent-driven classification]
+    IR -->|TokenizedPayslip| Registry[Grammar Registry Engine\nConflict Resolution]
+    Registry -->|GrammarMatchResult| Detector{Deterministic\nGrammar Matcher}
 
-    TTC -->|ClassifiedTable| RS[Tier 5: ReconciliationSolver\ncross-column routing\nGross / Deductions / Net invariants]
+    Detector -->|PCDA_LEGACY_STATEMENT| Strategy1[Legacy Strategy Set]
+    Detector -->|PCDA_EARLY_DUAL_COL| Strategy2[Early Dual-Col Strategy Set]
+    Detector -->|PCDA_TRANSITIONAL_7TH_CPC| Strategy3[Transitional 7th CPC Strategy Set]
+    Detector -->|PCDA_MODERN_GRID| Strategy4[Modern Grid Strategy Set]
+    Detector -->|PCDA_EXTENDED_GRID| Strategy5[Extended Grid Strategy Set]
 
-    RS -->|needsReview || rawTokens| GFE[Tier 6: Offline Gemma Fallback\nGemmaFallbackExtractor & GemmaEngine]
-    RS -->|High Confidence| SV[Tier 7: SchemaValidator\nMathematical Invariants Check]
-    GFE -->|Proposed Extractions| SV
+    Strategy1 & Strategy2 & Strategy3 & Strategy4 & Strategy5 --> Pipeline[Shared Parsing Pipeline]
+
+    subgraph Shared Parsing Pipeline
+        Pipeline --> GR[GridReconstructor & RowPairing]
+        Pipeline --> TTC[TokenTableClassifier]
+        Pipeline --> RS[ReconciliationSolver]
+        Pipeline --> GFE[Offline Gemma Fallback]
+        Pipeline --> SV[SchemaValidator]
+    end
 
     SV -->|Validated ReconciledTotals| ASM[PayslipAssembler\nbuilds Earnings + Deductions domain objects]
     
-    PageCls -->|fullText| Meta[parseDate / parseOfficer\nparseTotals - ParserUtils]
+    IR -->|fullText| Meta[parseDate / parseOfficer\nparseTotals - ParserUtils]
     Meta -->|Officer, year/month\ngrossPay, totalDeductions| ASM
 
     ASM -->|ParsedPayslip| DB[(Room DB\nEncryptedPayslipEntity)]
@@ -87,15 +97,14 @@ flowchart TD
     VM --> UI[LedgerSection\nReplicaUtils]
 ```
 
-### What Changed from the Old Parser
+### What Changed from the Old Monolithic Parser
 
-| Old (string path)                               | New (7-Tier Token-IR + Gemma Architecture)                         |
-|-------------------------------------------------|--------------------------------------------------------------------|
-| Platform crops PDF into `leftColumnText` / `middleColumnText` using guessed `xSplit` geometry | Both platforms emit `List<PositionedToken>` with font metadata (`fontSize`, `isBold`) — top-down Y |
-| `splitCreditDebitSections()` tries to find the column boundary in text | `GridReconstructor` **learns** credit/debit x-bands per document from matched keywords |
-| `DynamicSpatialParser.applyHistoricalOverrides(year, month, …)` hardcodes per-month fudge factors | Deleted. Any residual is booked to `miscEarnings`/`miscDeductions` and recorded as confidence signals |
-| `reconciliation throws away the whole parse` on mismatch ≥ ₹2 | Ambiguous fields route to **Tier 6 Offline Gemma Fallback** (`GemmaFallbackExtractor`) for structured resolution |
-| Final output unvalidated after extractions | **Tier 7 Schema Validator** validates exact mathematical accounting invariants (`grossPay`, `totalDeductions`, `netRemittance`) |
+| Old (monolithic token path) | New (Version-Aware Strategy Pipeline) |
+|---|---|
+| Handled all document layouts under a single rigid parser logic, introducing fragility and regression side-effects | Deterministic Grammar Detection Layer evaluates layout fingerprints to select descriptive, version-specific strategy sets |
+| Hardcoded version selectors and enums integrated into parser dispatch logic | Plugin-style `GrammarDescriptor` registry. Strategy sets are 100% stateless and side-effect free |
+| Indecisive matching heuristics | Deterministic priority conflict resolution resolving multiple matches cleanly with explicit priority scores |
+| No standardized diagnostic output or explainability tools | Parser explainability layer emitting structured `GrammarDiagnosticReport` detailing fingerprints, active strategies, and reconciliation status |
 
 ---
 
@@ -118,6 +127,15 @@ flowchart TD
 Both produce `TokenizedPayslip(tableTokens, taxTokens, dsopTokens, fullText)`. `PageClassifier` (commonMain SSOT) classifies each page by keyword into table / tax / DSOP buckets — no per-platform divergence.
 
 `PositionedToken` fields: `text`, `x`, `y` (top-down), `width`, `height`, `fontSize`, `isBold`. Derived: `centerX`, `centerY`, `right`, `bottom`.
+
+### Stage 1.5 — Deterministic Grammar Detection & Conflict Resolution
+
+Once the `TokenizedPayslip` IR is produced, the pipeline runs deterministic classification:
+1. **Descriptor Mapping**: The `GrammarRegistry` evaluates the token stream against all registered `GrammarDescriptor` plugins (`PCDA_LEGACY_STATEMENT`, `PCDA_EARLY_DUAL_COL`, `PCDA_TRANSITIONAL_7TH_CPC`, `PCDA_MODERN_GRID`, `PCDA_EXTENDED_GRID`).
+2. **Deterministic Rules Matching**: Fingerprints such as unique anchor tokens (e.g. `BPAY (12A)`, `Band Pay`), page signatures, and text patterns compute a 100% deterministic match result.
+3. **Priority-Based Conflict Resolution**: If multiple grammar profiles match, the candidate with the highest priority score is selected. Unrecognized formats return `GrammarFamily.UNKNOWN`.
+4. **Strategy Dispatch**: The matching descriptor's stateless strategies (Header, Table, Page strategies) are bound to the `SharedParsingPipeline` context for execution.
+5. **Diagnostics Telemetry**: A structured `GrammarDiagnosticReport` is generated, detailing the detected family, fingerprints, selected strategies, and math validation checks.
 
 ### Stage 2 — Grid Reconstruction (`GridReconstructor`)
 
@@ -411,6 +429,16 @@ graph TD
 
 | File | Role |
 |------|------|
+| `parser/detection/GrammarFamily.kt` | Descriptive grammar family identifiers (Legacy, Transitional, Modern, Extended) |
+| `parser/detection/GrammarMatchResult.kt` | Encapsulates matched fingerprints and rejected reasons for a document stream |
+| `parser/detection/GrammarDiagnosticReport.kt` | Diagnostic report detailing matched family, fingerprints, selected strategies, and validation status |
+| `parser/registry/GrammarDescriptor.kt` | Plugin container mapping a family to priority matcher and strategy bindings |
+| `parser/registry/GrammarRegistry.kt` | Priority-based conflict resolution registry matching documents to descriptors |
+| `parser/registry/DefaultGrammarDescriptors.kt` | Registers the default matchers and strategy bindings for PCDA document families |
+| `parser/pipeline/PipelineContext.kt` | Immutable state context passing inputs and intermediate results through the pipeline layers |
+| `parser/pipeline/SharedParsingPipeline.kt` | 7-layer orchestrator coordinating token analysis, strategy execution, and reconciliation |
+| `parser/GrammarAwareParser.kt` | Entry facade delegating parse execution to `SharedParsingPipeline` with diagnostics |
+| `parser/strategy/` | Stateless strategies describing document layout overrides (Header, Table, Page strategy contracts) |
 | `parser/PositionedToken.kt` | Token IR data class (text, x, y, width, height + derived helpers) |
 | `parser/PageClassifier.kt` | SSOT page-type detection (table / tax / DSOP) by keyword |
 | `parser/GridReconstructor.kt` | Clusters tokens → 2D grid; tolerances derived from median height |
@@ -418,12 +446,12 @@ graph TD
 | `parser/TokenTableClassifier.kt` | Content-driven credit/debit classification; learns x-bands per document |
 | `parser/ReconciliationSolver.kt` | Cross-column routing; confidence scoring; `needsReview` flag |
 | `parser/GemmaFallbackExtractor.kt` | Tier 6 fallback extraction service wrapping `GemmaEngine` runtime |
-| `parser/GemmaPromptBuilder.kt` | Formats deterministic extraction prompts mapping unresolved tokens to standard keys |
+| `parser/GemmaPromptBuilder.kt` | Formats extraction prompts mapping unresolved tokens to standard keys |
 | `parser/GemmaResponseParser.kt` | Safely parses structured JSON responses from Gemma offline fallback |
-| `parser/SchemaValidator.kt` | Tier 7 final gatekeeper verifying exact mathematical accounting invariants |
+| `parser/SchemaValidator.kt` | Final gatekeeper verifying exact mathematical accounting invariants |
 | `parser/ReconciliationEngine.kt` | Ledger carry-over extraction; `miscEarnings`/`miscDeductions` computation |
 | `parser/PayslipAssembler.kt` | `earningsMap` + `miscEarnings` → `Earnings` domain object; final `ParsedPayslip` construction |
-| `parser/PayslipTokenParser.kt` | Primary 7-tier parse entry point: tokens → `ParsedPayslip` |
+| `parser/PayslipTokenParser.kt` | Primary token parse entry point (delegates to `GrammarAwareParser` facade) |
 | `parser/PayslipPatternConfig.kt` | SSOT: `creditKeysMapping`, `debitKeysMapping`, `blocklist`, `hindiTransliterations`, cross-column routing sets |
 | `parser/ParserUtils.kt` | `negateHindiTransliterations()`, `parseTotals()`, `parseOfficer()`, `splitCreditDebitSections()` (legacy) |
 | `domain/ConfidenceThresholds.kt` | SSOT: `REVIEW_THRESHOLD = 0.7f`, `ITEM_SUM_TOLERANCE = 2.0` |
