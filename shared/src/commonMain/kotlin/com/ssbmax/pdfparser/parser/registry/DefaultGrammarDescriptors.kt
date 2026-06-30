@@ -117,7 +117,9 @@ object DefaultGrammarDescriptors {
     private fun matchTransitional7thCpc(tokenized: TokenizedPayslip): GrammarMatchResult {
         val text = tokenized.fullText
         val hasBasicPay = text.contains("Basic Pay", ignoreCase = true)
-        val hasBpay = text.contains("BPAY", ignoreCase = true)
+        // "BPAY-" (hyphenated) appears in arrears text ("A/o BPAY-") and must not disqualify the
+        // transitional grammar — only a standalone BPAY table label (not followed by '-') does so.
+        val hasBpay = Regex("(?i)BPAY(?!-)").containsMatchIn(text)
         return if (hasBasicPay && !hasBpay) {
             GrammarMatchResult(true, listOf("Signature: Basic Pay without BPAY"))
         } else {
