@@ -39,16 +39,6 @@ internal fun extractTokenized(pdfDoc: PDFDocument): TokenizedPayslip {
             fullText = fullStr,
         )
 
-    val allTokens = tokenized.tableTokens + tokenized.taxTokens + tokenized.dsopTokens
-    println("=== STAGE 0: RAW PDF EXTRACTION (IOS PDFKit) ===")
-    println("total character count extracted: ${fullStr.length}")
-    println("total token count: ${allTokens.size}")
-    println("page count: $pageCount")
-    allTokens.forEachIndexed { idx, t ->
-        val pg = if (idx < tokenized.tableTokens.size) 1 else 2
-        println("TOKEN #$idx\ntext=${t.text}\npage=$pg\nx=${t.x}\ny=${t.y}\nw=${t.width}\nh=${t.height}\nfont=N/A\nsize=${t.fontSize}")
-    }
-    println("=================================================")
     return tokenized
 }
 

@@ -63,14 +63,6 @@ object GridReconstructor {
         val grid = Grid(gridRows)
         debugCollector?.recordStage2(grid)
 
-        println("=== STAGE 2: ROW RECONSTRUCTION (ENGINE DELEGATE) ===")
-        println("Reconstructed grid confidence: ${tableIr.confidenceScore}")
-        grid.rows.forEachIndexed { idx, row ->
-            val rowStr = row.cells.joinToString(" | ") { it.text }
-            println("ROW $idx\n$rowStr")
-        }
-        println("=====================================================")
-
         return grid
     }
 
@@ -101,19 +93,13 @@ object GridReconstructor {
         val sorted = rowTokens.sortedBy { it.x }
         val cells = mutableListOf<MutableList<PositionedToken>>()
         var prevRight = Float.NaN
-        var prevToken: PositionedToken? = null
         for (token in sorted) {
-            if (prevToken != null) {
-                val gap = token.x - prevToken.right
-                println("GAP: ${prevToken.text} -> ${token.text} = $gap pt (cellGap=$cellGap pt)")
-            }
             if (cells.isEmpty() || token.x - prevRight > cellGap) {
                 cells.add(mutableListOf(token))
             } else {
                 cells.last().add(token)
             }
             prevRight = maxOf(if (prevRight.isNaN()) token.right else prevRight, token.right)
-            prevToken = token
         }
         return GridRow(cells.map { GridCell(it) })
     }

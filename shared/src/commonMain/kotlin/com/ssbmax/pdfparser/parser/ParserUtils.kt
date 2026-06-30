@@ -44,21 +44,6 @@ internal fun stripNotesAndDescriptions(text: String): String {
     return filteredLines.joinToString("\n")
 }
 
-/**
- * Splits the full payslip page text into a credit (earnings) section and a debit (deductions) section.
- *
- * In some older payslip formats the PDF crop box approach fails and both columns return the same
- * full text. This function finds the position of the first confirmed debit-only anchor — i.e., the
- * first occurrence of DSOPF/AGIF/ITAX/Incm Tax (items that can ONLY appear in the debit column) —
- * and splits there.
- *
- * - Text BEFORE the anchor = credit/earnings section (may contain debit labels like "L Fee" that
- *   are actually credit reversals of those deductions).
- * - Text FROM the anchor onwards = debit/deductions section.
- *
- * Returns Triple(creditSectionText, debitSectionText, anchorFound).
- * If no anchor was found, anchorFound=false and creditSection=fullText, debitSection="".
- */
 private fun truncateFooterAndTotals(cleanedText: String): String {
     var tableText = cleanedText
     val footerIndicators =
@@ -286,6 +271,19 @@ internal fun parseTotals(cleanedFullText: String): Triple<Double, Double, Double
             }
         }
     }
+
+    // PDFKit artifact: labels serialised before amounts → "REMITTANCE … Total Debit 400000 27119 581007".
+    // Standard loop captures 400000 (remittance) as deductions; recover via label-block pattern.
+    if ((extractedTotals["Net Remittance"] ?: 0.0) == 0.0) {
+        val blockMatch =
+            Regex("""(?i)REMITTANCE[^0-9]+Total\s+Debit\s+(\d+)(?:\s+\d+)*\s+(\d+)""")
+                .find(cleanedFullText)
+        if (blockMatch != null) {
+            extractedTotals["Net Remittance"] = blockMatch.groupValues[1].toDoubleOrNull() ?: 0.0
+            extractedTotals["Total Deductions"] = blockMatch.groupValues[2].toDoubleOrNull() ?: 0.0
+        }
+    }
+
     return Triple(
         extractedTotals["Gross Pay"] ?: 0.0,
         extractedTotals["Total Deductions"] ?: 0.0,

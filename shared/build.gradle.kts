@@ -112,6 +112,14 @@ tasks.withType<Test>().configureEach {
     }
 }
 
+// Forward corpus paths into the iOS Simulator test binary. simctl spawn does not inherit the
+// host environment; it only passes through vars prefixed with SIMCTL_CHILD_. Set these in your
+// shell before calling ./gradlew iosSimulatorArm64Test:
+//   export SIMCTL_CHILD_PAYSLIP_LOCAL_CORPUS="/path/to/Pay Slip Elements"
+//   export SIMCTL_CHILD_PAYSLIP_LOCAL_CORPUS_JSON="/path/to/payslips_data_standardized.json"
+// The test reads PAYSLIP_LOCAL_CORPUS / PAYSLIP_LOCAL_CORPUS_JSON (without prefix) at runtime
+// because simctl strips the SIMCTL_CHILD_ prefix before setting the child's env.
+
 // KSP: generate Room _Impl for every KMP target
 // Firebase BOM: pins firebase-auth-ktx version (must be in legacy block, not KMP sourceSet)
 dependencies {
