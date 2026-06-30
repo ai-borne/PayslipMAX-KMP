@@ -117,6 +117,7 @@ tasks.withType<Test>().configureEach {
 // shell before calling ./gradlew iosSimulatorArm64Test:
 //   export SIMCTL_CHILD_PAYSLIP_LOCAL_CORPUS="/path/to/Pay Slip Elements"
 //   export SIMCTL_CHILD_PAYSLIP_LOCAL_CORPUS_JSON="/path/to/payslips_data_standardized.json"
+//   export SIMCTL_CHILD_PAYSLIP_LOCAL_CORPUS_TOKENS_OUT="/tmp/ios_corpus_tokens"   # IosTokenCaptureTest
 // The test reads PAYSLIP_LOCAL_CORPUS / PAYSLIP_LOCAL_CORPUS_JSON (without prefix) at runtime
 // because simctl strips the SIMCTL_CHILD_ prefix before setting the child's env.
 

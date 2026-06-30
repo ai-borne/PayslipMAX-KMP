@@ -18,7 +18,9 @@ object RowDetector {
         if (usable.isEmpty()) return emptyList()
 
         val medianHeight = medianOf(usable.map { it.height })
-        val rowTolerance = maxOf(MIN_TOLERANCE, medianHeight * 0.5f)
+        // 0.25× keeps rowTolerance at MIN_TOLERANCE (3pt) for both PDFBox (~6pt heights) and
+        // PDFKit (~12pt heights, which reports line-box rather than character height).
+        val rowTolerance = maxOf(MIN_TOLERANCE, medianHeight * 0.25f)
 
         val sorted = usable.sortedBy { it.centerY }
         val rows = mutableListOf<MutableList<PositionedToken>>()
