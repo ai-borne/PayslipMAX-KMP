@@ -200,16 +200,9 @@ class PlatformPdfParserIosTest {
             assertEquals((expDeductions.objectForKey("recovery_of_debits") as? Number)?.toDouble() ?: 0.0, actual.deductions.recoveryOfDebits, 5.0, "$filename: recoveryOfDebits mismatch")
         }
 
-        // 5. Spatial extraction sanity check via rawEarnings
-        // If the iOS Y-axis column split bug regresses, spatial extraction fails and rawEarnings
-        // becomes empty — the text-based fallback rescues structured fields (so they still match),
-        // but the UI would display wrong data from rawDeductions. This check catches that.
-        val expEarningsForRaw = expected.objectForKey("earnings") as? platform.Foundation.NSDictionary
-        val expectedBpay = (expEarningsForRaw?.objectForKey("basic_pay") as? Number)?.toDouble() ?: 0.0
-        if (expectedBpay > 0.0) {
-            assertTrue(actual.rawEarnings.isNotEmpty(), "$filename: rawEarnings is empty — iOS spatial column split likely failed (check Y-axis guard in PdfParser.kt)")
-            assertEquals(expectedBpay, actual.rawEarnings["BPAY"] ?: 0.0, 1.0, "$filename: rawEarnings BPAY mismatch — spatial extraction produced wrong left column")
-        }
+        // 5. (removed) The old spatial sanity check via rawEarnings is gone: GrammarAwareParser routes
+        // BPAY into earnings.basicPay (standardized), never into rawEarnings. The basicPay assertion
+        // in section 3 above already catches any token-extraction failure for that field.
 
         // 6. Tax & Savings
         val expTax = expected.objectForKey("tax_and_savings") as? platform.Foundation.NSDictionary
