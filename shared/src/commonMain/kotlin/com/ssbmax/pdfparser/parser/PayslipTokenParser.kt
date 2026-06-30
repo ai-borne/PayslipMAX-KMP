@@ -80,17 +80,6 @@ object PayslipTokenParser {
             val missingDebits = PayslipPatternConfig.strictlyMandatoryDebits.filter { (solved.deductionsMap[it] ?: 0.0) <= 0.0 }
             val missingMandatory = missingCredits + missingDebits
 
-            println("=== STAGE 3: FINAL PARSER MODEL ===")
-            println("earningsMap: ${finalParsed.earnings}")
-            println("deductionsMap: ${finalParsed.deductions}")
-            println("rawEarnings: ${finalParsed.rawEarnings}")
-            println("rawDeductions: ${finalParsed.rawDeductions}")
-            println("summary: grossPay=$grossPay, totalDeductions=$totalDeductions, netRemittance=$netRemittance")
-            println("missingMandatoryFields: $missingMandatory")
-            println("fieldConfidence: ${finalParsed.fieldConfidence}")
-            println("needsReview: ${finalParsed.needsReview}")
-            println("===================================")
-
             Result.success(finalParsed)
         } catch (e: Exception) {
             Result.failure(e)
