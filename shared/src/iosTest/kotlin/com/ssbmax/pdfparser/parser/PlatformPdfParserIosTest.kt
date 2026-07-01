@@ -67,7 +67,7 @@ class PlatformPdfParserIosTest {
             expectedMap[fileName] = obj
         }
 
-        val years = listOf("2022", "2023", "2024", "2025")
+        val years = listOf("2022", "2023", "2024", "2025", "2026")
         val password = "535d04"
         val parser = PlatformPdfParser()
 

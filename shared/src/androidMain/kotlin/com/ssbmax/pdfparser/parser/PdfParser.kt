@@ -26,11 +26,11 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         password: String,
         filename: String,
     ): Result<ParsedPayslip> {
-        // Phase 4 cut-over: the token IR is now the primary path. Grid reconstruction, row pairing,
-        // classification and the arithmetic confidence solver all live in common code (PayslipTokenParser),
-        // so Android and iOS share one device-independent engine instead of diverging column crops.
+        // Token IR is the primary path. Grid reconstruction, row pairing, classification and the
+        // arithmetic confidence solver all live in common code (GrammarAwareParser), so Android and
+        // iOS share one device-independent engine instead of diverging column crops.
         return extractTokens(pdfBytes, password, filename).mapCatching { tokenized ->
-            Logger.d("PlatformPdfParser", "Starting PayslipTokenParser.parse...")
+            Logger.d("PlatformPdfParser", "Starting GrammarAwareParser.parse...")
             val fallbackExtractor =
                 try {
                     val context = Class.forName("android.app.ActivityThread").getMethod("currentApplication").invoke(null) as? android.content.Context
@@ -49,8 +49,8 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     Logger.e("PlatformPdfParser", "Failed to initialize GemmaEngine", e)
                     null
                 }
-            val parseResult = PayslipTokenParser.parse(tokenized, filename, fallbackExtractor = fallbackExtractor)
-            Logger.d("PlatformPdfParser", "Finished PayslipTokenParser.parse. Success: ${parseResult.isSuccess}")
+            val parseResult = GrammarAwareParser.parse(tokenized, filename, fallbackExtractor = fallbackExtractor)
+            Logger.d("PlatformPdfParser", "Finished GrammarAwareParser.parse. Success: ${parseResult.isSuccess}")
             parseResult.getOrThrow()
         }
     }
