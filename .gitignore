@@ -50,3 +50,9 @@ functions/.secret.local
 __pycache__/
 *.pyc
 /payslips_data.json
+
+# Contains real payslip PII; local dev DB snapshots and debug logs, never committed
+/payslips.db
+/payslips_device.db
+/docs/Plan/difflogandroid
+/docs/Plan/difflogios
