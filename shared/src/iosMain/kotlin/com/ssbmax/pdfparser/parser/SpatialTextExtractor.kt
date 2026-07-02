@@ -7,6 +7,7 @@ import platform.CoreGraphics.CGRectGetHeight
 import platform.CoreGraphics.CGRectGetMinX
 import platform.CoreGraphics.CGRectGetMinY
 import platform.CoreGraphics.CGRectGetWidth
+import platform.Foundation.NSMakeRange
 import platform.PDFKit.PDFPage
 
 /*
@@ -30,123 +31,69 @@ internal object IosTokenCoordinates {
 }
 
 /**
- * Raw PDFKit character data in bottom-up (PDFKit) coordinate space. [x]/[y] are the left/bottom
- * edges of the glyph bounding box as returned by [PDFPage.characterBoundsAtIndex]. Used by
- * [groupCharactersIntoWords] to group page characters into word tokens without holding a PDFKit
- * reference, making the grouping logic unit-testable with synthetic inputs.
+ * Splits [text] into whitespace-delimited word ranges (start inclusive, end exclusive). Pure and
+ * PDFKit-free, so it is unit-testable with synthetic strings (see `IosTokenCoordinatesTest`).
+ * Used by [extractPageTokens] to find word boundaries in [PDFPage.string] before resolving each
+ * word's visual bounds via PDFKit.
  */
-internal data class CharBound(
-    val char: String,
-    val x: Double,
-    /** Bottom edge in PDFKit's bottom-up coordinate space. */
-    val y: Double,
-    val width: Double,
-    val height: Double,
-)
-
-/**
- * Groups consecutive non-whitespace [CharBound]s into [PositionedToken]s by unioning their bounds
- * and converting from PDFKit bottom-up to the common top-down convention. Pure — no PDFKit
- * dependency — so it is unit-testable with synthetic inputs (see `IosTokenCoordinatesTest`).
- *
- * Zero-size glyphs (PDFKit synthetic characters with no visual extent, e.g., ligature components
- * or word-boundary markers inserted by PDFKit into [PDFPage.string]) are silently skipped — they
- * carry no geometry and must not break a word or corrupt its bounding box.
- */
-internal fun groupCharactersIntoWords(
-    charBounds: List<CharBound>,
-    pageHeight: Double,
-): List<PositionedToken> {
-    val tokens = ArrayList<PositionedToken>()
-    val wordText = StringBuilder()
-    var wordMinX = 0.0
-    var wordMinY = 0.0
-    var wordMaxX = 0.0
-    var wordMaxY = 0.0
-
-    fun flush() {
-        if (wordText.isEmpty()) return
-        val w = wordMaxX - wordMinX
-        val h = wordMaxY - wordMinY
-        tokens.add(
-            PositionedToken(
-                text = wordText.toString(),
-                x = wordMinX.toFloat(),
-                y = IosTokenCoordinates.topDownY(wordMinY, h, pageHeight).toFloat(),
-                width = w.toFloat(),
-                height = h.toFloat(),
-                fontSize = h.toFloat(),
-                isBold = false,
-            ),
-        )
-        wordText.clear()
-    }
-
-    for (cb in charBounds) {
-        if (cb.char.isEmpty() || cb.char[0].isWhitespace()) {
-            flush()
-            continue
+internal fun findWordRanges(text: String): List<IntRange> {
+    val ranges = ArrayList<IntRange>()
+    var wordStart = -1
+    for (i in text.indices) {
+        if (text[i].isWhitespace()) {
+            if (wordStart >= 0) ranges.add(wordStart until i)
+            wordStart = -1
+        } else if (wordStart < 0) {
+            wordStart = i
         }
-        // Zero-size glyphs: PDFKit inserts synthetic characters into page.string (e.g., to mark word
-        // boundaries or represent ligature components). They have no visual extent and no physical
-        // position in document space — skip them entirely so they don't corrupt word bounds.
-        if (cb.width == 0.0 && cb.height == 0.0) continue
-        if (wordText.isEmpty()) {
-            wordMinX = cb.x
-            wordMinY = cb.y
-            wordMaxX = cb.x + cb.width
-            wordMaxY = cb.y + cb.height
-        } else {
-            if (cb.x < wordMinX) wordMinX = cb.x
-            if (cb.y < wordMinY) wordMinY = cb.y
-            val maxX = cb.x + cb.width
-            val maxY = cb.y + cb.height
-            if (maxX > wordMaxX) wordMaxX = maxX
-            if (maxY > wordMaxY) wordMaxY = maxY
-        }
-        wordText.append(cb.char)
     }
-    flush()
-
-    return tokens
+    if (wordStart >= 0) ranges.add(wordStart until text.length)
+    return ranges
 }
 
 /**
- * Emits word-level [PositionedToken]s for a whole PDFKit page using [PDFPage.numberOfCharacters]
- * and [PDFPage.characterBoundsAtIndex] for geometry, then groups them via [groupCharactersIntoWords].
+ * Emits word-level [PositionedToken]s for a whole PDFKit page by walking [PDFPage.string] via
+ * [findWordRanges], then obtaining each word's visual bounds via [PDFPage.selectionForRange] +
+ * [PDFSelection.boundsForPage].
  *
- * This replaces the previous [PDFPage.string] + [PDFPage.selectionForRange] approach, which had an
- * index-space bug: PDFKit inserts synthetic word-boundary spaces into [PDFPage.string], inflating
- * Kotlin regex match indices so that [NSMakeRange] pointed to the wrong internal glyph — producing
- * consistently offset bounds (the dominant GEOMETRY_OFFSET divergence seen in Phase 1). By walking
- * character-by-character with [characterBoundsAtIndex], the glyph index and bounds index stay in
- * lockstep, eliminating the mismatch.
+ * [selectionForRange] uses [PDFPage.string] indices (as Apple's PDFKit docs specify), giving
+ * reliable word-level positions even for PDFs where [PDFPage.characterBoundsAtIndex] returns
+ * corrupted glyph bounding boxes — e.g. PCDA payslip PDFs where the per-character bounds are
+ * inflated (BPAY reported width 131 pt instead of 27 pt) causing every column-band misclassification.
  *
- * Exception-safe: returns an empty list for null [PDFPage.string] or zero character count.
+ * Exception-safe: returns an empty list for null string or empty page.
  */
 internal fun extractPageTokens(
     page: PDFPage,
     pageHeight: Double,
 ): List<PositionedToken> {
-    val charCount = page.numberOfCharacters.toInt()
-    if (charCount <= 0) return emptyList()
     val pageString = page.string ?: return emptyList()
-    // Guard against any edge case where PDFKit's character count exceeds the string length.
-    val safeCount = minOf(charCount, pageString.length)
+    if (pageString.isEmpty()) return emptyList()
 
-    val charBounds = ArrayList<CharBound>(safeCount)
-    for (i in 0 until safeCount) {
-        val bounds = page.characterBoundsAtIndex(i.toLong())
-        charBounds.add(
-            CharBound(
-                char = pageString[i].toString(),
-                x = CGRectGetMinX(bounds),
-                y = CGRectGetMinY(bounds),
-                width = CGRectGetWidth(bounds),
-                height = CGRectGetHeight(bounds),
+    val tokens = ArrayList<PositionedToken>()
+    for (range in findWordRanges(pageString)) {
+        val selection =
+            page.selectionForRange(
+                NSMakeRange(range.first.toULong(), (range.last - range.first + 1).toULong()),
+            ) ?: continue
+        val bounds = selection.boundsForPage(page)
+        val w = CGRectGetWidth(bounds).toFloat()
+        val h = CGRectGetHeight(bounds).toFloat()
+        if (w <= 0f || h <= 0f) continue
+        val x = CGRectGetMinX(bounds).toFloat()
+        val yBot = CGRectGetMinY(bounds)
+        val y = IosTokenCoordinates.topDownY(yBot, h.toDouble(), pageHeight).toFloat()
+        tokens.add(
+            PositionedToken(
+                text = pageString.substring(range.first, range.last + 1),
+                x = x,
+                y = y,
+                width = w,
+                height = h,
+                fontSize = h,
+                isBold = false,
             ),
         )
     }
-
-    return groupCharactersIntoWords(charBounds, pageHeight)
+    return tokens
 }

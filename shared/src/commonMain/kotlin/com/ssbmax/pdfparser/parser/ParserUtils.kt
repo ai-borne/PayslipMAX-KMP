@@ -199,7 +199,7 @@ private fun extractOfficerName(text: String): String {
     }
     if (officerName.isNotEmpty()) {
         Logger.d("ParserUtils", "officerName before split: '$officerName'")
-        officerName = officerName.split(Regex("\\b(?:A/C|Email|PAN|Basic|BPAY|CDA|tada|ta|laoKa|saM|For|rankpay|ledger|generalquery|contact|bankers)\\b", RegexOption.IGNORE_CASE))[0].trim()
+        officerName = officerName.split(Regex("\\b(?:A/C|Email|PAN|Basic|BPAY|CDA|tada|ta|laoKa|saM|For|rankpay|ledger|generalquery|contact|bankers|PRO)\\b", RegexOption.IGNORE_CASE))[0].trim()
         Logger.d("ParserUtils", "officerName after split: '$officerName'")
         if (officerName.endsWith(" A", ignoreCase = true)) {
             officerName = officerName.substring(0, officerName.length - 2).trim()
@@ -228,7 +228,7 @@ private fun extractAccountNumber(text: String): String {
 }
 
 private fun extractPanNumber(text: String): String {
-    val panRegex = Regex("(?:PAN No|sqaayaI Kata saM#yaa/PAN No)\\s*:\\s*([^\\s]+)", RegexOption.IGNORE_CASE)
+    val panRegex = Regex("(?:PAN No|sqaayaI Kata saM#yaa/PAN No)\\s*:\\s*([A-Za-z*0-9]{8,})", RegexOption.IGNORE_CASE)
     var panNo = panRegex.find(text)?.groupValues?.get(1)?.trim() ?: ""
     if (panNo.isEmpty()) {
         val fallbackPanRegex = Regex("([A-Z]{2}[*\\d]{7}[A-Z])", RegexOption.IGNORE_CASE)
