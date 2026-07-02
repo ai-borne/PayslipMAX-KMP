@@ -11,7 +11,10 @@ import kotlin.test.assertTrue
 
 class ModernGridStrategyTest {
     @Test
-    fun testModernGridStrategyExecution() {
+    fun testApr2026WithoutArrearsResolvesExtendedGrid() {
+        // Apr 2026 is Extended-Grid era by statement period even though this month has no ARR-
+        // arrears line item; the incidental-text detector alone used to misclassify this as Modern
+        // Grid (same failure shape as the real-world Mar 2025 bug this fix addresses).
         val tableTokens =
             listOf(
                 PositionedToken("BPAY", 10f, 10f, 30f, 15f),
@@ -43,7 +46,7 @@ class ModernGridStrategyTest {
         val (payslip, report) = result.getOrNull()!!
 
         assertNotNull(payslip)
-        assertEquals(GrammarFamily.PCDA_MODERN_GRID, report.selectedFamily)
+        assertEquals(GrammarFamily.PCDA_EXTENDED_GRID, report.selectedFamily)
         assertTrue(report.isKnownGrammar)
         assertEquals("ModernGridHeaderStrategy", report.selectedStrategies["HeaderStrategy"])
         assertEquals(247700.0, payslip.summary.grossPay)

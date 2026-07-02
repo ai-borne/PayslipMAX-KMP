@@ -230,8 +230,8 @@ object TokenTableClassifier {
         // codes always contain at least one letter.
         if (normalized.none { it.isLetter() }) return null
         if (normalized in normalizedBlocklist) return null
-
         val match = combinedKeys.firstOrNull { (key, _, _) -> boundaryStartsWith(normalized, key) }
+        if (match == null && RawLabelNoiseFilter.isProseNoise(normalized)) return null
         val clean = match != null && isCleanMatch(normalized, match.first)
         return Candidate(
             label = pair.label.trim(),
