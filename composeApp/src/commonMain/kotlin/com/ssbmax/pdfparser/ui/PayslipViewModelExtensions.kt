@@ -146,13 +146,6 @@ fun PayslipViewModel.setPremiumEnabled(enabled: Boolean) {
     }
 }
 
-fun PayslipViewModel.setLocalAiEnabled(enabled: Boolean) {
-    viewModelScope.launch {
-        val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
-        repository.saveSettings(current.copy(useLocalAi = enabled))
-    }
-}
-
 fun PayslipViewModel.setAppTheme(theme: String) {
     viewModelScope.launch {
         val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
@@ -204,5 +197,71 @@ fun PayslipViewModel.updateProfileOverrides(
 fun PayslipViewModel.updateRepresentationDraft(draft: com.ssbmax.pdfparser.database.RepresentationDraftEntity) {
     viewModelScope.launch {
         financialIntelligenceRepository?.insertRepresentationDraft(draft)
+    }
+}
+
+/**
+ * Phase 5 — persists a single per-field correction for a low-confidence field and immediately
+ * reflects the merged value in [PayslipUiState] (the observed flow also re-emits, but updating the
+ * selected payslip here keeps the open replica screen in sync without waiting for re-collection).
+ */
+fun PayslipViewModel.applyCorrection(
+    dateStr: String,
+    fieldKey: String,
+    newValue: Double,
+) {
+    viewModelScope.launch {
+        repository.saveCorrection(dateStr, fieldKey, newValue)
+        val merged = repository.getPayslipByDate(dateStr) ?: return@launch
+        _uiState.update { state ->
+            state.copy(
+                selectedPayslip =
+                    if (state.selectedPayslip?.dateStr == dateStr) merged else state.selectedPayslip,
+                payslips = state.payslips.map { if (it.dateStr == dateStr) merged else it },
+            )
+        }
+    }
+}
+
+fun PayslipViewModel.clearError() {
+    _uiState.update { it.copy(error = null, importError = null) }
+}
+
+fun PayslipViewModel.resetImportSuccess() {
+    _uiState.update { it.copy(importSuccess = false) }
+}
+
+fun PayslipViewModel.resetPinWithPdf(
+    pdfBytes: ByteArray,
+    password: String,
+    filename: String,
+    onResult: (Result<Unit>) -> Unit,
+) {
+    viewModelScope.launch {
+        _uiState.update { it.copy(isLoading = true, error = null) }
+        val result = repository.importPayslip(pdfBytes, password, filename)
+        if (result.isSuccess) {
+            val parsed = result.getOrNull()
+            if (parsed != null) {
+                val expectedPan = _uiState.value.profilePanNumber
+                if (expectedPan.isNotEmpty() && parsed.officer.pan.isNotEmpty() &&
+                    !parsed.officer.pan.equals(expectedPan, ignoreCase = true)
+                ) {
+                    _uiState.update { it.copy(isLoading = false) }
+                    onResult(Result.failure(Exception("PDF does not match the active user profile")))
+                    return@launch
+                }
+                val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
+                repository.saveSettings(current.copy(isLockEnabled = false, appPinHash = ""))
+                _uiState.update { it.copy(isAppLocked = false, isLockEnabled = false, appPinHash = "", isLoading = false) }
+                onResult(Result.success(Unit))
+            } else {
+                _uiState.update { it.copy(isLoading = false) }
+                onResult(Result.failure(Exception("Failed to parse payslip content")))
+            }
+        } else {
+            _uiState.update { it.copy(isLoading = false) }
+            onResult(Result.failure(result.exceptionOrNull() ?: Exception("Decryption failed. Invalid PDF password.")))
+        }
     }
 }

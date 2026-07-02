@@ -95,15 +95,23 @@ class PayslipRepositoryTest {
         }
 
     @Test
-    fun testDeletePayslip() =
+    fun testDeletePayslipCascading() =
         runTest {
             val mockPayslip = createMockPayslip("05/2024")
             fakeParser.result = Result.success(mockPayslip)
             repository.importPayslip(byteArrayOf(9, 9), "pass", "file.pdf")
 
+            // Insert records directly via fakeDao
+            fakeDao.insertLedgerRecord(LedgerRecordEntity(dateStr = "05/2024", year = 2024, monthNum = 5, basicPay = 10000.0, dearnessAllowance = 1000.0, militaryServicePay = 1000.0, transportAllowance = 100.0, transportAllowanceDa = 10.0, houseRentAllowance = 500.0, grossPay = 15000.0, dsopSubscription = 1000.0, incomeTax = 1000.0, netPay = 13000.0))
+            fakeDao.insertFinancialInsight(FinancialInsightEntity("id1", "05/2024", "NARRATIVE", "Title", "Markdown", "INFO", 1234567890L))
+            fakeDao.insertAiInsightReport(AiInsightReportEntity("id3", "05/2024", 1234567890L, "Narrative report", "1.0"))
+
             // Assert inserted
             assertNotNull(repository.getPayslipByDate("05/2024"))
             assertNotNull(repository.getPayslipPdf("05/2024"))
+            assertEquals(1, fakeDao.getAllLedgerRecords().first().size)
+            assertEquals(1, fakeDao.getAllFinancialInsights().first().size)
+            assertEquals(1, fakeDao.getAllAiInsightReports().first().size)
 
             // Delete
             repository.deletePayslip("05/2024")
@@ -111,25 +119,42 @@ class PayslipRepositoryTest {
             // Assert deleted
             assertNull(repository.getPayslipByDate("05/2024"))
             assertNull(repository.getPayslipPdf("05/2024"))
+            assertTrue(fakeDao.getAllLedgerRecords().first().isEmpty())
+            assertTrue(fakeDao.getAllFinancialInsights().first().isEmpty())
+            assertTrue(fakeDao.getAllAiInsightReports().first().isEmpty())
         }
 
     @Test
-    fun testClearAll() =
+    fun testClearAllCompleteness() =
         runTest {
+            // Seed a statement
             fakeParser.result = Result.success(createMockPayslip("01/2024"))
             repository.importPayslip(byteArrayOf(1, 1), "pass", "file.pdf")
-            fakeParser.result = Result.success(createMockPayslip("02/2024"))
-            repository.importPayslip(byteArrayOf(2, 2), "pass", "file.pdf")
 
-            assertEquals(2, repository.getAllPayslips().first().size)
+            // Insert records directly via fakeDao
+            fakeDao.insertLedgerRecord(LedgerRecordEntity(dateStr = "01/2024", year = 2024, monthNum = 1, basicPay = 10000.0, dearnessAllowance = 1000.0, militaryServicePay = 1000.0, transportAllowance = 100.0, transportAllowanceDa = 10.0, houseRentAllowance = 500.0, grossPay = 15000.0, dsopSubscription = 1000.0, incomeTax = 1000.0, netPay = 13000.0))
+            fakeDao.insertFinancialInsight(FinancialInsightEntity("id1", "01/2024", "NARRATIVE", "Title", "Markdown", "INFO", 1234567890L))
+            fakeDao.insertRepresentationDraft(RepresentationDraftEntity("id2", "01/2024", "MISSING_HRA", "PCDA_O_PUNE", "Subject", "Body", 1234567890L))
+            fakeDao.insertAiInsightReport(AiInsightReportEntity("id3", "01/2024", 1234567890L, "Narrative report", "1.0"))
+
+            // Verify they exist in DAO
+            assertEquals(1, repository.getAllPayslips().first().size)
             assertNotNull(repository.getPayslipPdf("01/2024"))
-            assertNotNull(repository.getPayslipPdf("02/2024"))
+            assertEquals(1, fakeDao.getAllLedgerRecords().first().size)
+            assertEquals(1, fakeDao.getAllFinancialInsights().first().size)
+            assertEquals(1, fakeDao.getAllRepresentationDrafts().first().size)
+            assertEquals(1, fakeDao.getAllAiInsightReports().first().size)
 
+            // Clear all
             repository.clearAll()
 
+            // Verify everything is cleared
             assertTrue(repository.getAllPayslips().first().isEmpty())
             assertNull(repository.getPayslipPdf("01/2024"))
-            assertNull(repository.getPayslipPdf("02/2024"))
+            assertTrue(fakeDao.getAllLedgerRecords().first().isEmpty())
+            assertTrue(fakeDao.getAllFinancialInsights().first().isEmpty())
+            assertTrue(fakeDao.getAllRepresentationDrafts().first().isEmpty())
+            assertTrue(fakeDao.getAllAiInsightReports().first().isEmpty())
         }
 
     @Test
@@ -248,33 +273,4 @@ class PayslipRepositoryTest {
             assertTrue(restoredSettings.isPremiumEnabled)
             assertEquals("light", restoredSettings.appTheme)
         }
-
-    private fun createMockPayslip(dateStr: String): ParsedPayslip {
-        val split = dateStr.split("/")
-        val month = split[0].toInt()
-        val year = split[1].toInt()
-        return ParsedPayslip(
-            file = "payslip_$dateStr.pdf",
-            year = year,
-            monthNum = month,
-            monthName = "Month_$month",
-            dateStr = dateStr,
-            officer = Officer("Name", "Acc", "PAN"),
-            earnings = Earnings(100.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0),
-            deductions = Deductions(10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0),
-            ledgerBalances = LedgerBalances(0.0, 0.0, 0.0, 0.0),
-            summary = PayslipSummary(100.0, 80.0, 20.0),
-            taxAndSavings =
-                TaxAndSavings(
-                    grossSalaryYtd = 1000.0,
-                    totalTaxableIncome = 900.0,
-                    standardDeduction = 50.0,
-                    netTaxableIncome = 850.0,
-                    totalTaxPayable = 100.0,
-                    taxDeductedYtd = 80.0,
-                    cessDeductedYtd = 20.0,
-                    dsopFund = DsopFund(100.0, 10.0, 0.0, 0.0, 0.0, 110.0),
-                ),
-        )
-    }
 }

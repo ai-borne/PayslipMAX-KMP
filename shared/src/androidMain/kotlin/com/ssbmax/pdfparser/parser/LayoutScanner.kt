@@ -4,8 +4,9 @@ import com.tom_roush.pdfbox.text.PDFTextStripper
 import com.tom_roush.pdfbox.text.TextPosition
 import java.io.IOException
 
-class LayoutScanner : PDFTextStripper() {
+open class LayoutScanner : PDFTextStripper() {
     var bpayY: Float = 250f
+    var tableHeaderY: Float = 0f
     var dsopX: Float = 150f
     var totalCreditY: Float = 700f
     var detailsX: Float = 0f
@@ -19,14 +20,22 @@ class LayoutScanner : PDFTextStripper() {
         text: String?,
         textPositions: MutableList<TextPosition>?,
     ) {
-        super.writeString(text, textPositions)
         if (text == null || textPositions == null || textPositions.isEmpty()) return
 
         val lineText = text.trim()
         val lowerText = lineText.lowercase()
 
-        // Locate BPAY / Basic Pay Y coordinate
-        if (lowerText.contains("bpay") || lowerText.contains("basic pay")) {
+        // Locate Table Header / Earnings Y coordinate
+        if (tableHeaderY == 0f && (
+                lowerText.contains("earnings") || lowerText.contains("aaya") ||
+                    lowerText.contains("bpay") || lowerText.contains("basic pay")
+            )
+        ) {
+            tableHeaderY = textPositions.first().yDirAdj - 5f
+        }
+
+        // Locate BPAY / Basic Pay Y coordinate — first occurrence wins
+        if (bpayY == 250f && (lowerText.contains("bpay") || lowerText.contains("basic pay"))) {
             bpayY = textPositions.first().yDirAdj
         }
 
@@ -67,11 +76,24 @@ class LayoutScanner : PDFTextStripper() {
             }
         }
 
+        // Locate Remittance / Closing Balance Y coordinate to ensure table extraction stops before summary footer
+        if (lowerText.contains("remittance") || lowerText.contains("closing balance") ||
+            lowerText.contains("cl. cr") || lowerText.contains("cl. dr")
+        ) {
+            val y = textPositions.first().yDirAdj
+            if (y < totalCreditY) {
+                totalCreditY = y
+            }
+        }
+
         // Locate Total Credit / Gross Pay / Total Debit Y coordinate
         if (lowerText.contains("total credit") || lowerText.contains("gross pay") ||
             lowerText.contains("total debit") || lowerText.contains("total deductions")
         ) {
-            totalCreditY = textPositions.first().yDirAdj
+            val y = textPositions.first().yDirAdj
+            if (y < totalCreditY) {
+                totalCreditY = y
+            }
         }
     }
 }

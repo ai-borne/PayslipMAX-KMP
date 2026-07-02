@@ -154,6 +154,9 @@ jobs:
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
 
+      - name: Verify iOS Framework Links (Fail-Fast, mirrors Xcode build phase)
+        run: ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 :composeApp:linkDebugFrameworkIosArm64 -q
+
       - name: Run iOS Unit Tests
         run: ./gradlew iosX64Test iosSimulatorArm64Test
 

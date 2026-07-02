@@ -12,11 +12,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.ssbmax.pdfparser.insights.ProjectionMath
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @Composable
 fun DsopSimulatorSection(
+    initialBalance: Double,
     initialContribution: Double,
     modifier: Modifier = Modifier,
 ) {
@@ -54,7 +56,7 @@ fun DsopSimulatorSection(
             }
 
             Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
-            ProjectionRow(monthlyContribution.toDouble())
+            ProjectionRow(initialBalance, monthlyContribution.toDouble())
         }
     }
 }
@@ -138,14 +140,17 @@ private fun TaxSafeTooltip() {
 }
 
 @Composable
-private fun ProjectionRow(monthly: Double) {
+private fun ProjectionRow(
+    initialBalance: Double,
+    monthly: Double,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
-        val calculated5 = remember(monthly) { calculateProjectedSavings(monthly, 5) }
-        val calculated10 = remember(monthly) { calculateProjectedSavings(monthly, 10) }
-        val calculated15 = remember(monthly) { calculateProjectedSavings(monthly, 15) }
+        val calculated5 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 5).projectedBalance }
+        val calculated10 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 10).projectedBalance }
+        val calculated15 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 15).projectedBalance }
 
         ProjectionCard(AppStrings.dsopSimulator5Years, calculated5, Modifier.weight(1f))
         ProjectionCard(AppStrings.dsopSimulator10Years, calculated10, Modifier.weight(1f))
@@ -182,19 +187,6 @@ private fun ProjectionCard(
             )
         }
     }
-}
-
-private fun calculateProjectedSavings(
-    monthly: Double,
-    years: Int,
-    rate: Double = 0.071,
-): Double {
-    var balance = 0.0
-    val annualContribution = monthly * 12.0
-    for (i in 1..years) {
-        balance = (balance + annualContribution) * (1.0 + rate)
-    }
-    return balance
 }
 
 private fun formatShortAmount(value: Double): String {

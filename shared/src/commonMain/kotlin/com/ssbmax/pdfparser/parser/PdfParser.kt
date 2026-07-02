@@ -14,6 +14,18 @@ interface PdfParser {
         password: String,
         filename: String = "payslip.pdf",
     ): Result<ParsedPayslip>
+
+    /**
+     * Decrypts a password-protected payslip PDF and emits the platform-independent token IR
+     * (Phase 2). Both platforms produce an identical [TokenizedPayslip] so all downstream grid
+     * reconstruction and reconciliation lives in common, device-independent code.
+     * @return A Result containing the [TokenizedPayslip] or an exception on failure.
+     */
+    fun extractTokens(
+        pdfBytes: ByteArray,
+        password: String,
+        filename: String = "payslip.pdf",
+    ): Result<TokenizedPayslip>
 }
 
 expect class PlatformPdfParser() : PdfParser {
@@ -22,4 +34,10 @@ expect class PlatformPdfParser() : PdfParser {
         password: String,
         filename: String,
     ): Result<ParsedPayslip>
+
+    override fun extractTokens(
+        pdfBytes: ByteArray,
+        password: String,
+        filename: String,
+    ): Result<TokenizedPayslip>
 }

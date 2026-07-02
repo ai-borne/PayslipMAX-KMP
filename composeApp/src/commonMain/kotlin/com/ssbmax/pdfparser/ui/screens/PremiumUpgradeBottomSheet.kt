@@ -9,8 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -48,7 +46,7 @@ private fun UpgradeSheetContent(
                 .padding(horizontal = AppDimensions.PaddingMedium)
                 .padding(bottom = AppDimensions.PaddingLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
         UpgradeHeaderSection()
         UpgradeBenefitsSection()
@@ -61,9 +59,9 @@ private fun UpgradeSheetContent(
 private fun UpgradeHeaderSection() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
     ) {
-        Text("👑", fontSize = 48.sp)
+        Text("👑", fontSize = AppDimensions.FontSizeEmojiMedium)
         Text(
             text = AppStrings.settingsProPlanTitle,
             style = MaterialTheme.typography.headlineSmall,
@@ -82,8 +80,8 @@ private fun UpgradeHeaderSection() {
 @Composable
 private fun UpgradeBenefitsSection() {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = AppDimensions.SpacingSmall),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         horizontalAlignment = Alignment.Start,
     ) {
         Text(
@@ -113,7 +111,7 @@ private fun UpgradeBenefitsSection() {
 private fun UpgradePricingSection() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTwo),
     ) {
         Text(
             text = AppStrings.settingsProPlanPrice,
@@ -122,7 +120,7 @@ private fun UpgradePricingSection() {
             color = MaterialTheme.colorScheme.onSurface,
         )
         Text(
-            text = "Yearly Auto-Renewing Subscription",
+            text = AppStrings.settingsProPlanBillingNote,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -136,7 +134,7 @@ private fun UpgradeActionsSection(
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
         Button(
             onClick = onUnlockClick,

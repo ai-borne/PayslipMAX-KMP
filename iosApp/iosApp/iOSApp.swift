@@ -21,18 +21,45 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             }
         }
         
-        // Bridge the Firebase ID token provider delegate to KMP
+        // Bridge the Firebase ID token provider delegate to KMP.
+        // fetchToken: gets ID token for a known user, retrying sign-in once on internal error.
         AuthTokenProvider.companion.tokenProviderDelegate = { completion in
-            guard let user = Auth.auth().currentUser else {
-                _ = completion(nil)
-                return
+            func fetchToken(user: User) {
+                user.getIDToken { token, error in
+                    if let error = error as NSError? {
+                        print("Error fetching ID token on iOS: domain=\(error.domain) code=\(error.code) \(error.userInfo)")
+                        // code 17999 = AuthErrorCodeInternalError (keychain/network transient failure)
+                        // Re-sign-in anonymously and retry once.
+                        if error.code == 17999 {
+                            Auth.auth().signInAnonymously { result, signInError in
+                                if let newUser = result?.user {
+                                    newUser.getIDToken { retryToken, _ in _ = completion(retryToken) }
+                                } else {
+                                    print("Re-auth failed: \(signInError?.localizedDescription ?? "unknown")")
+                                    _ = completion(nil)
+                                }
+                            }
+                        } else {
+                            _ = completion(nil)
+                        }
+                    } else {
+                        _ = completion(token)
+                    }
+                }
             }
-            user.getIDToken { token, error in
-                if let error = error {
-                    print("Error fetching ID token on iOS: \(error.localizedDescription)")
-                    _ = completion(nil)
-                } else {
-                    _ = completion(token)
+
+            if let user = Auth.auth().currentUser {
+                fetchToken(user: user)
+            } else {
+                // currentUser is nil — sign-in hasn't completed yet (race condition at startup).
+                // Sign in now so we can get a valid token.
+                Auth.auth().signInAnonymously { result, error in
+                    if let user = result?.user {
+                        fetchToken(user: user)
+                    } else {
+                        print("signInAnonymously failed: \(error?.localizedDescription ?? "unknown")")
+                        _ = completion(nil)
+                    }
                 }
             }
         }

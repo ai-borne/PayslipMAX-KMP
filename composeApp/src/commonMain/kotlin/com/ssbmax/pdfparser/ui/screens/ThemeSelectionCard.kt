@@ -9,7 +9,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -80,7 +79,7 @@ private fun ThemeSheetContent(
                 .navigationBarsPadding()
                 .padding(horizontal = AppDimensions.PaddingMedium)
                 .padding(bottom = AppDimensions.PaddingLarge),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         Text(
             text = AppStrings.settingsThemeLabel,
@@ -116,7 +115,7 @@ private fun ThemeOptionRow(
             Modifier
                 .fillMaxWidth()
                 .clickable(onClick = onClick)
-                .padding(vertical = 12.dp),
+                .padding(vertical = AppDimensions.SpacingMedium),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {

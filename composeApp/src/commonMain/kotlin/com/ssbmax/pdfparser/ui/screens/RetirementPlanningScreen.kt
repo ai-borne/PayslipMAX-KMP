@@ -1,11 +1,9 @@
 package com.ssbmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -14,11 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import com.ssbmax.pdfparser.insights.ProjectionMath
-import com.ssbmax.pdfparser.insights.ProjectionResult
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
 
 @Composable
 fun RetirementPlanningScreen(
@@ -33,28 +30,35 @@ fun RetirementPlanningScreen(
     val initialBalance = dsopFund?.closingBalance ?: 0.0
     val monthlySub = selected?.deductions?.dsopSubscription ?: 0.0
 
+    val scrollState = rememberScrollState()
+
     Column(
         modifier =
             modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .padding(AppDimensions.PaddingMedium),
+                .padding(AppDimensions.PaddingMedium)
+                .then(if (initialBalance > 0.0) Modifier.verticalScroll(scrollState) else Modifier),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         RetirementHeader(onBack = onBack)
         if (initialBalance > 0.0) {
-            DsopBalanceCard(balance = initialBalance, subscription = monthlySub)
-            Text(
-                text = AppStrings.retirementCompounding,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
+            DsopSimulatorSection(
+                initialBalance = initialBalance,
+                initialContribution = monthlySub,
             )
-            ProjectionsList(initialBalance = initialBalance, monthlySub = monthlySub)
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
+            Text(
+                text = AppStringsPremium.retirementProjectionDisclaimer,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+            )
         } else {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = AppStrings.retirementNoBalance,
+                    text = AppStringsPremium.retirementNoBalance,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -81,145 +85,21 @@ private fun RetirementHeader(
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),
         ) {
-            Text("← Back")
+            Text(AppStrings.btnBack)
         }
         Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
         Column {
             Text(
-                text = AppStrings.retirementTitle,
+                text = AppStringsPremium.retirementTitle,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = AppStrings.retirementSubtitle,
+                text = AppStringsPremium.retirementSubtitle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-    }
-}
-
-@Composable
-private fun DsopBalanceCard(
-    balance: Double,
-    subscription: Double,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = AppStrings.retirementCurrentBalance,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(text = "₹${balance.toInt()}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(text = AppStrings.dsopSimulatorMonthlySub, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(text = "₹${subscription.toInt()}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProjectionsList(
-    initialBalance: Double,
-    monthlySub: Double,
-    modifier: Modifier = Modifier,
-) {
-    val projections =
-        listOf(5, 10, 15).map { years ->
-            ProjectionMath.calculateProjection(initialBalance, monthlySub, years)
-        }
-
-    LazyColumn(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-    ) {
-        items(projections) { result ->
-            ProjectionCard(result = result)
-        }
-        item {
-            Text(
-                text = AppStrings.retirementProjectionDisclaimer,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingSmall),
-                textAlign = TextAlign.Center,
-            )
-        }
-    }
-}
-
-@Composable
-private fun ProjectionCard(
-    result: ProjectionResult,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
-        ) {
-            Text(
-                text = "${result.years} Years Outlook",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
-            ProjectionRow(label = AppStrings.retirementContributions, value = result.totalContributions)
-            ProjectionRow(label = AppStrings.retirementInterest, value = result.totalInterest)
-            ProjectionRow(label = AppStrings.retirementBalance, value = result.projectedBalance, isHighlight = true)
-        }
-    }
-}
-
-@Composable
-private fun ProjectionRow(
-    label: String,
-    value: Double,
-    isHighlight: Boolean = false,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = label,
-            style = if (isHighlight) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall,
-            fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Normal,
-            color = if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            text = "₹${value.toInt()}",
-            style = if (isHighlight) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Bold,
-            color = if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-        )
     }
 }

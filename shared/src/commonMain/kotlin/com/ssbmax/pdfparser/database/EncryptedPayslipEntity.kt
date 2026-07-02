@@ -3,6 +3,7 @@ package com.ssbmax.pdfparser.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.ssbmax.pdfparser.crypto.CryptoHelper
+import com.ssbmax.pdfparser.crypto.getLegacyFallbackKey
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -65,7 +66,12 @@ fun ParsedPayslip.toEncryptedEntity(password: String = CryptoHelper.getDatabaseS
 
 fun EncryptedPayslipEntity.toDomain(password: String = CryptoHelper.getDatabaseSecretKey()): ParsedPayslip {
     val encryptedBytes = ciphertext.hexToByteArray()
-    val decryptedBytes = CryptoHelper.decrypt(encryptedBytes, password).getOrThrow()
+    val decryptedBytes =
+        try {
+            CryptoHelper.decrypt(encryptedBytes, password).getOrThrow()
+        } catch (e: Exception) {
+            CryptoHelper.decrypt(encryptedBytes, CryptoHelper.getLegacyFallbackKey()).getOrThrow()
+        }
     val jsonString = decryptedBytes.decodeToString()
     return Json.decodeFromString(ParsedPayslip.serializer(), jsonString)
 }

@@ -4,9 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,15 +19,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import com.ssbmax.pdfparser.Screen
 import com.ssbmax.pdfparser.domain.ParsedPayslip
-import com.ssbmax.pdfparser.ui.*
+import com.ssbmax.pdfparser.ui.PayslipUiState
+import com.ssbmax.pdfparser.ui.PayslipViewModel
+import com.ssbmax.pdfparser.ui.clearAiInsights
+import com.ssbmax.pdfparser.ui.components.TransparencyDialog
+import com.ssbmax.pdfparser.ui.generateAiInsights
+import com.ssbmax.pdfparser.ui.setPremiumEnabled
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @Composable
 fun InsightsScreen(
     viewModel: PayslipViewModel,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -94,7 +100,7 @@ private fun InsightsOverlayDialogs(
     }
 
     if (showTransparencyDialog) {
-        com.ssbmax.pdfparser.ui.components.TransparencyDialog(
+        TransparencyDialog(
             payslip = selected,
             onConfirm = {
                 onDismissTransparency()
@@ -124,28 +130,30 @@ private fun InsightsContent(
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
     onViewInsightsClick: () -> Unit,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val ledgerRecords by viewModel.ledgerRecords.collectAsState()
     val state = rememberInsightsState(selected, ledgerRecords)
-    var showWellnessDrivers by remember { mutableStateOf(false) }
-    val drivers = remember(state.engineResult) { breakdownWellnessDrivers(state.engineResult) }
+    var wellnessExpanded by remember { mutableStateOf(false) }
     Column(modifier = modifier.fillMaxSize()) {
         InsightsTopBar(
             payslips = uiState.payslips,
             selected = selected,
-            score = state.engineResult.healthScore,
-            delta = state.scoreDelta,
-            expanded = showWellnessDrivers,
-            onExpandClick = { showWellnessDrivers = !showWellnessDrivers },
             onSelectPayslip = { viewModel.selectPayslip(it) },
+            healthScore = state.engineResult.healthScore,
+            wellnessExpanded = wellnessExpanded,
+            onWellnessExpandClick = { wellnessExpanded = !wellnessExpanded },
         )
         InsightsLazyBody(
-            state = state, uiState = uiState,
-            showWellnessDrivers = showWellnessDrivers, drivers = drivers,
-            viewModel = viewModel, onShowUpgradeSheet = onShowUpgradeSheet,
-            onShowTransparency = onShowTransparency, onViewInsightsClick = onViewInsightsClick,
+            state = state,
+            uiState = uiState,
+            viewModel = viewModel,
+            wellnessExpanded = wellnessExpanded,
+            onWellnessExpandClick = { wellnessExpanded = !wellnessExpanded },
+            onShowUpgradeSheet = onShowUpgradeSheet,
+            onShowTransparency = onShowTransparency,
+            onViewInsightsClick = onViewInsightsClick,
             onNavigateTo = onNavigateTo,
             modifier = Modifier.weight(1f),
         )
@@ -156,85 +164,96 @@ private fun InsightsContent(
 private fun InsightsLazyBody(
     state: InsightsState,
     uiState: PayslipUiState,
-    showWellnessDrivers: Boolean,
-    drivers: List<WellnessDriver>,
     viewModel: PayslipViewModel,
+    wellnessExpanded: Boolean,
+    onWellnessExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
     onViewInsightsClick: () -> Unit,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier.background(MaterialTheme.colorScheme.background),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(AppDimensions.PaddingMedium),
+        contentPadding = PaddingValues(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
-        item { InsightsHeroItem(state, uiState, onNavigateTo, onShowUpgradeSheet) }
-        if (state.engineResult.anomalies.size > 1) {
-            item { CriticalAlertsQueue(anomalies = state.engineResult.anomalies) }
-        }
-        if (uiState.isPremiumEnabled) {
-            premiumContentItems(uiState, showWellnessDrivers, drivers, state, onShowTransparency, onViewInsightsClick) { viewModel.clearAiInsights() }
+        item {
+            InsightsHealthKpiCardItem(
+                state = state,
+                isPremiumEnabled = uiState.isPremiumEnabled,
+                wellnessExpanded = wellnessExpanded,
+                onWellnessExpandClick = onWellnessExpandClick,
+                onShowUpgradeSheet = onShowUpgradeSheet,
+                onNavigateTo = onNavigateTo,
+            )
         }
         item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
-        if (state.momChanges.isNotEmpty()) {
-            item { MomChangesGrid(current = state.currentRecord, previous = state.previousRecord) }
+        item { DeductionsBreakdownSection(history = state.historySorted, selectedRecord = state.currentRecord) }
+        item { KeyFindingsSection(state = state) }
+        item { AiHighlightsSection(state = state) }
+        item {
+            InsightsPremiumIntelligenceItem(
+                state = state,
+                uiState = uiState,
+                viewModel = viewModel,
+                onShowUpgradeSheet = onShowUpgradeSheet,
+                onShowTransparency = onShowTransparency,
+                onViewInsightsClick = onViewInsightsClick,
+                onNavigateTo = onNavigateTo,
+            )
         }
-        item { TrendsSparklinesSection(history = state.historySorted) }
-        bottomTierItem(uiState.isPremiumEnabled, onNavigateTo, onShowUpgradeSheet)
-    }
-}
-
-private fun LazyListScope.premiumContentItems(
-    uiState: PayslipUiState,
-    showWellnessDrivers: Boolean,
-    drivers: List<WellnessDriver>,
-    state: InsightsState,
-    onShowTransparency: () -> Unit,
-    onViewInsightsClick: () -> Unit,
-    onClearAiInsights: () -> Unit,
-) {
-    item {
-        GeminiAiInsightsSection(
-            aiInsights = uiState.aiInsights,
-            isAiLoading = uiState.isAiLoading,
-            aiError = uiState.aiError,
-            onGenerateClick = onShowTransparency,
-            onViewInsightsClick = onViewInsightsClick,
-            onClearClick = onClearAiInsights,
-        )
-    }
-    if (showWellnessDrivers) {
-        item { WellnessDriversSection(score = state.engineResult.healthScore, drivers = drivers) }
-    }
-}
-
-private fun LazyListScope.bottomTierItem(
-    isPremiumEnabled: Boolean,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
-    onUpgradeClick: () -> Unit,
-) {
-    if (isPremiumEnabled) {
-        item { PremiumToolsSection(onNavigateTo = onNavigateTo) }
-    } else {
-        item { ProFeaturesTeaser(onUpgradeClick = onUpgradeClick) }
     }
 }
 
 @Composable
-private fun InsightsHeroItem(
+private fun InsightsHealthKpiCardItem(
+    state: InsightsState,
+    isPremiumEnabled: Boolean,
+    wellnessExpanded: Boolean,
+    onWellnessExpandClick: () -> Unit,
+    onShowUpgradeSheet: () -> Unit,
+    onNavigateTo: (Screen) -> Unit,
+) {
+    HealthKpiCard(
+        score = state.engineResult.healthScore,
+        delta = state.scoreDelta,
+        previousMonthLabel = state.previousMonthLabel,
+        expanded = wellnessExpanded,
+        onExpandClick = onWellnessExpandClick,
+        drivers = breakdownWellnessDrivers(state.engineResult),
+        opportunityAmount = state.optimizationResult.totalPotentialTaxSaving,
+        onSeeHowClick = {
+            if (isPremiumEnabled) onNavigateTo(Screen.TaxPlanning) else onShowUpgradeSheet()
+        },
+    )
+}
+
+@Composable
+private fun InsightsPremiumIntelligenceItem(
     state: InsightsState,
     uiState: PayslipUiState,
-    onNavigateTo: (com.ssbmax.pdfparser.Screen) -> Unit,
-    onUpgradeClick: () -> Unit,
+    viewModel: PayslipViewModel,
+    onShowUpgradeSheet: () -> Unit,
+    onShowTransparency: () -> Unit,
+    onViewInsightsClick: () -> Unit,
+    onNavigateTo: (Screen) -> Unit,
 ) {
-    AdaptiveHeroCard(
-        engineResult = state.engineResult,
-        optimizationResult = state.optimizationResult,
+    PremiumIntelligenceCard(
         isPremiumEnabled = uiState.isPremiumEnabled,
+        state = state,
+        onUpgradeClick = onShowUpgradeSheet,
         onNavigateTo = onNavigateTo,
-        onUpgradeClick = onUpgradeClick,
+        aiSectionContent = {
+            GeminiAiInsightsSection(
+                aiInsights = uiState.aiInsights,
+                isAiLoading = uiState.isAiLoading,
+                aiError = uiState.aiError,
+                onGenerateClick = onShowTransparency,
+                onViewInsightsClick = onViewInsightsClick,
+                onClearClick = { viewModel.clearAiInsights() },
+            )
+        },
     )
 }
 
