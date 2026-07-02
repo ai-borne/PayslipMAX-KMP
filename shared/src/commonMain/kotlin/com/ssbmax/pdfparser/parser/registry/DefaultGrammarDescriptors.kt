@@ -1,42 +1,8 @@
 package com.ssbmax.pdfparser.parser.registry
 
-import com.ssbmax.pdfparser.domain.Officer
-import com.ssbmax.pdfparser.domain.TaxAndSavings
 import com.ssbmax.pdfparser.parser.TokenizedPayslip
 import com.ssbmax.pdfparser.parser.detection.GrammarFamily
 import com.ssbmax.pdfparser.parser.detection.GrammarMatchResult
-import com.ssbmax.pdfparser.parser.strategy.IGrammarHeaderStrategy
-import com.ssbmax.pdfparser.parser.strategy.IGrammarPageStrategy
-import com.ssbmax.pdfparser.parser.strategy.IGrammarStrategySet
-import com.ssbmax.pdfparser.parser.strategy.IGrammarTableStrategy
-
-object StubHeaderStrategy : IGrammarHeaderStrategy {
-    override fun extractOfficer(
-        tokenized: TokenizedPayslip,
-        cleanedText: String,
-    ): Officer {
-        return Officer(name = "OFFICER", accountNo = "16/000/000000X", pan = "AR*****90G")
-    }
-}
-
-object StubTableStrategy : IGrammarTableStrategy {
-    override fun extractRawEarnings(tokenized: TokenizedPayslip): Map<String, Double> = emptyMap()
-
-    override fun extractRawDeductions(tokenized: TokenizedPayslip): Map<String, Double> = emptyMap()
-}
-
-object StubPageStrategy : IGrammarPageStrategy {
-    override fun extractTaxAndSavings(
-        tokenized: TokenizedPayslip,
-        cleanedText: String,
-    ): TaxAndSavings? = null
-}
-
-object StubStrategySet : IGrammarStrategySet {
-    override val headerStrategy: IGrammarHeaderStrategy = StubHeaderStrategy
-    override val tableStrategy: IGrammarTableStrategy = StubTableStrategy
-    override val pageStrategy: IGrammarPageStrategy = StubPageStrategy
-}
 
 object DefaultGrammarDescriptors {
     val LEGACY_STATEMENT =

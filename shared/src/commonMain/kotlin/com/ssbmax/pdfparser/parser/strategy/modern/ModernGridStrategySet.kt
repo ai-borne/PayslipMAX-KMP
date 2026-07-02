@@ -3,7 +3,6 @@ package com.ssbmax.pdfparser.parser.strategy.modern
 import com.ssbmax.pdfparser.parser.strategy.IGrammarHeaderStrategy
 import com.ssbmax.pdfparser.parser.strategy.IGrammarPageStrategy
 import com.ssbmax.pdfparser.parser.strategy.IGrammarStrategySet
-import com.ssbmax.pdfparser.parser.strategy.IGrammarTableStrategy
 
 /**
  * Strategy bundle for the Modern Spatial Grid era (Nov 2023–Feb 2025).
@@ -11,7 +10,6 @@ import com.ssbmax.pdfparser.parser.strategy.IGrammarTableStrategy
  */
 object ModernGridStrategySet : IGrammarStrategySet {
     override val headerStrategy: IGrammarHeaderStrategy = ModernGridHeaderStrategy
-    override val tableStrategy: IGrammarTableStrategy = ModernGridTableStrategy
     override val pageStrategy: IGrammarPageStrategy = ModernGridPageStrategy
 }
 
@@ -21,6 +19,5 @@ object ModernGridStrategySet : IGrammarStrategySet {
  */
 object ExtendedGridStrategySet : IGrammarStrategySet {
     override val headerStrategy: IGrammarHeaderStrategy = ModernGridHeaderStrategy
-    override val tableStrategy: IGrammarTableStrategy = ModernGridTableStrategy
     override val pageStrategy: IGrammarPageStrategy = ModernGridPageStrategy
 }
