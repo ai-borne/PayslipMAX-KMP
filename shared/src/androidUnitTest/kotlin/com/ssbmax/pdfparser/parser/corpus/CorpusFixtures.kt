@@ -75,7 +75,7 @@ object CorpusFixtures {
     const val RESOURCE_DIR = "corpus"
 
     /** Tolerance (in rupees) for numeric field comparison — mirrors PlatformPdfParserTest. */
-    const val TOLERANCE = 5.0
+    const val TOLERANCE = 1.0
 
     val json: Json =
         Json {
