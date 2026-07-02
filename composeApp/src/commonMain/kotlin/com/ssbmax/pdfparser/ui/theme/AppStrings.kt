@@ -198,6 +198,17 @@ object AppStrings {
     const val settingsStatusDisabled = "Disabled"
     const val settingsStatusDefault = "Default"
 
+    // Re-parse All Payslips
+    const val settingsRowReparseLabel = "Re-parse All Payslips"
+    const val settingsReparseSubtitle = "Fix payslips parsed before an app update"
+    const val settingsReparseDialogTitle = "Re-parse All Payslips"
+    const val settingsReparseDialogBody = "Re-runs every saved payslip through the current parser and replaces its stored result. Your saved corrections are kept. Enter your payslip PDF password to continue."
+    const val settingsReparsePasswordLabel = "Payslip PDF Password"
+    const val settingsReparseConfirmBtn = "Re-parse All"
+    const val settingsReparseSuccessPrefix = "Re-parsed "
+    const val settingsReparseFailedSuffix = "Could not re-parse: "
+    const val settingsReparseErrorPrefix = "Re-parse failed: "
+
     // History Redesign Strings
     const val historyActionDelete = "Delete Statement"
     const val historyConfirmDeleteTitle = "Delete Payslip?"

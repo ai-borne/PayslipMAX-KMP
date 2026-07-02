@@ -14,6 +14,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
+/** Outcome of [PayslipRepository.reparseAllPayslips]: how many of the stored payslips re-parsed cleanly. */
+data class ReparseSummary(
+    val total: Int,
+    val succeeded: Int,
+    val failedDates: List<String>,
+)
+
 class PayslipRepository(
     private val payslipDao: PayslipDao,
     private val pdfParser: PdfParser,
@@ -78,6 +85,31 @@ class PayslipRepository(
     suspend fun getPayslipPdf(dateStr: String): ByteArray? =
         withContext(dispatcher) {
             payslipDao.getPayslipPdfByDate(dateStr)?.pdfData
+        }
+
+    /**
+     * Re-runs every stored payslip's saved PDF bytes through the current [pdfParser] and overwrites
+     * the existing record (REPLACE, keyed by dateStr). [importPayslip] only ever parses a document
+     * once, at import time, and [getAllPayslips] just reads back whatever was stored then — so a
+     * parser bugfix never reaches an already-imported payslip on its own. This is the maintenance
+     * action that closes that gap. A payslip that fails to re-parse (e.g. wrong password) is left
+     * untouched rather than deleted, so nothing is ever lost on failure.
+     */
+    suspend fun reparseAllPayslips(password: String): ReparseSummary =
+        withContext(dispatcher) {
+            val pdfs = payslipDao.getAllPdfs()
+            var succeeded = 0
+            val failedDates = mutableListOf<String>()
+            for (pdf in pdfs) {
+                val payslip = pdfParser.decryptAndParse(pdf.pdfData, password, "${pdf.dateStr}.pdf").getOrNull()
+                if (payslip != null) {
+                    payslipDao.insertPayslip(payslip.toEncryptedEntity())
+                    succeeded++
+                } else {
+                    failedDates += pdf.dateStr
+                }
+            }
+            ReparseSummary(total = pdfs.size, succeeded = succeeded, failedDates = failedDates)
         }
 
     /**

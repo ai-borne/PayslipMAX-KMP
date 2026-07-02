@@ -133,6 +133,10 @@ fun DataManagementSection(
             onUpgradePrompt = onUpgradePrompt,
         )
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        ReparseAllCard(
+            onReparseClick = { pw, onComplete -> viewModel.reparseAllPayslips(pw, onComplete) },
+        )
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         DangerZoneCard(
             onDeleteAllClick = { viewModel.clearAllData() },
         )
