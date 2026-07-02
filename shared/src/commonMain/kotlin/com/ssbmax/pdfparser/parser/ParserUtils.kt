@@ -144,31 +144,11 @@ internal fun parseDate(
     cleanedFullText: String,
     filename: String,
 ): Pair<Int, Int> {
-    // Match 1: STATEMENT OF ACCOUNT FOR MM/YYYY
-    val dateMatch = Regex("STATEMENT OF ACCOUNT FOR (\\d{2})/(\\d{4})", RegexOption.IGNORE_CASE).find(cleanedFullText)
-    if (dateMatch != null) {
-        return Pair(
-            dateMatch.groupValues[1].toIntOrNull() ?: 1,
-            dateMatch.groupValues[2].toIntOrNull() ?: 2024,
-        )
-    }
-
-    // Match 2: STATEMENT OF ACCOUNT FOR [Month] [YYYY]
-    val stmtMonthMatch = Regex("STATEMENT OF ACCOUNT FOR\\s+([A-Za-z]+)\\s+(\\d{4})", RegexOption.IGNORE_CASE).find(cleanedFullText)
-    if (stmtMonthMatch != null) {
-        val monthStr = stmtMonthMatch.groupValues[1].lowercase()
-        val mNum = PayslipPatternConfig.monthMap[monthStr] ?: 1
-        val yVal = stmtMonthMatch.groupValues[2].toIntOrNull() ?: 2024
-        return Pair(mNum, yVal)
-    }
-
-    // Match 3: standalone MM/YYYY in the text
-    val standaloneMatch = Regex("\\b(0[1-9]|1[0-2])/(\\d{4})\\b").find(cleanedFullText)
-    if (standaloneMatch != null) {
-        return Pair(
-            standaloneMatch.groupValues[1].toIntOrNull() ?: 1,
-            standaloneMatch.groupValues[2].toIntOrNull() ?: 2024,
-        )
+    // Matches 1-3 (anchored MM/YYYY, anchored Month YYYY, standalone MM/YYYY): shared with the
+    // grammar-era detector via extractStatementPeriod, kept as a single source of truth.
+    val period = com.ssbmax.pdfparser.parser.detection.extractStatementPeriod(cleanedFullText)
+    if (period != null) {
+        return Pair(period.month, period.year)
     }
 
     // Match 4: Filename fallback

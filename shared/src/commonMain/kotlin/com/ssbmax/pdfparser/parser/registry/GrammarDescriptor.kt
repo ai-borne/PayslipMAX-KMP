@@ -17,4 +17,12 @@ data class GrammarDescriptor(
     val displayName: String,
     val detectorMatcher: (TokenizedPayslip) -> GrammarMatchResult,
     val strategySet: IGrammarStrategySet,
+    /**
+     * Broad sanity check run only when the statement period already selected this family
+     * (see [com.ssbmax.pdfparser.parser.detection.GrammarEraMapper]): confirms the document plausibly
+     * belongs to this family at all, without trying to distinguish it from a neighboring era the way
+     * [detectorMatcher] must when no date is available. Defaults to [detectorMatcher] for families
+     * whose detector is already broad enough to double as verification.
+     */
+    val verificationMatcher: (TokenizedPayslip) -> GrammarMatchResult = detectorMatcher,
 )

@@ -13,4 +13,6 @@ data class GrammarDiagnosticReport(
     val selectedStrategies: Map<String, String> = emptyMap(),
     val validationStatus: String = "PENDING",
     val warnings: List<String> = emptyList(),
+    /** Why this family was selected, e.g. "Date mapping (Mar 2025+)" or "Statement period unavailable; fallback detector used". */
+    val selectionReason: String = "",
 )

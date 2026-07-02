@@ -106,18 +106,21 @@ class GrammarRegistryTest {
         assertEquals(GrammarFamily.PCDA_EXTENDED_GRID, descriptor.family)
         assertEquals(GrammarFamily.PCDA_EXTENDED_GRID, report.selectedFamily)
         assertTrue(report.isKnownGrammar)
-        assertTrue(report.matchedFingerprints.any { it.contains("ARR-") })
+        // Date-primary path verifies structurally (BPAY), not via the incidental ARR- marker.
+        assertTrue(report.matchedFingerprints.any { it.contains("BPAY") })
+        assertTrue(report.selectionReason.contains("Date mapping"))
     }
 
     @Test
-    fun testDeterministicConflictResolution() {
-        // Mock stream that matches BOTH Modern Grid (Priority 40) AND Extended Grid (Priority 50)
+    fun testDeterministicConflictResolutionWithoutDate() {
+        // No parseable statement period -> falls back to text-signature priority arbitration.
+        // Mock stream that matches BOTH Modern Grid (Priority 40) AND Extended Grid (Priority 50).
         val mockTokenized =
             TokenizedPayslip(
                 tableTokens = emptyList(),
                 taxTokens = emptyList(),
                 dsopTokens = emptyList(),
-                fullText = "STATEMENT OF ACCOUNT FOR 04/2026\nBPAY 149000 Gross Pay 301828 ARR-DA 9870",
+                fullText = "BPAY 149000 Gross Pay 301828 ARR-DA 9870",
             )
         val (descriptor, report) = registry.detectAndSelect(mockTokenized)
 
@@ -129,6 +132,7 @@ class GrammarRegistryTest {
         val rejectedReason = report.rejectedCandidates[GrammarFamily.PCDA_MODERN_GRID.name]?.firstOrNull()
         assertNotNull(rejectedReason)
         assertTrue(rejectedReason.contains("lost in priority resolution"))
+        assertTrue(report.selectionReason.contains("Statement period unavailable"))
     }
 
     @Test
@@ -146,5 +150,140 @@ class GrammarRegistryTest {
         assertEquals(GrammarFamily.UNKNOWN, report.selectedFamily)
         assertFalse(report.isKnownGrammar)
         assertEquals(-1, report.selectedPriority)
+    }
+
+    // --- Date-primary era boundary coverage -------------------------------------------------
+
+    @Test
+    fun testPreOct2023ResolvesTransitional() {
+        val mockTokenized =
+            TokenizedPayslip(
+                tableTokens = emptyList(),
+                taxTokens = emptyList(),
+                dsopTokens = emptyList(),
+                fullText = "STATEMENT OF ACCOUNT FOR 09/2023\nCDA A/C NO : 16/000/000000X\nBasic Pay 130000 DA 44720",
+            )
+        val (descriptor, report) = registry.detectAndSelect(mockTokenized)
+
+        assertEquals(GrammarFamily.PCDA_TRANSITIONAL_7TH_CPC, descriptor?.family)
+        assertTrue(report.selectionReason.contains("Date mapping"))
+    }
+
+    @Test
+    fun testOct2023BoundaryResolvesTransitional() {
+        val mockTokenized =
+            TokenizedPayslip(
+                tableTokens = emptyList(),
+                taxTokens = emptyList(),
+                dsopTokens = emptyList(),
+                fullText = "STATEMENT OF ACCOUNT FOR 10/2023\nBasic Pay 130000 DA 44720",
+            )
+        val (descriptor, _) = registry.detectAndSelect(mockTokenized)
+
+        assertEquals(GrammarFamily.PCDA_TRANSITIONAL_7TH_CPC, descriptor?.family)
+    }
+
+    @Test
+    fun testNov2023BoundaryResolvesModernGrid() {
+        val mockTokenized =
+            TokenizedPayslip(
+                tableTokens = emptyList(),
+                taxTokens = emptyList(),
+                dsopTokens = emptyList(),
+                fullText = "STATEMENT OF ACCOUNT FOR 11/2023\nBPAY 132400 DA 45849",
+            )
+        val (descriptor, _) = registry.detectAndSelect(mockTokenized)
+
+        assertEquals(GrammarFamily.PCDA_MODERN_GRID, descriptor?.family)
+    }
+
+    @Test
+    fun testJan2024ResolvesModernGrid() {
+        val mockTokenized =
+            TokenizedPayslip(
+                tableTokens = emptyList(),
+                taxTokens = emptyList(),
+                dsopTokens = emptyList(),
+                fullText = "STATEMENT OF ACCOUNT FOR 01/2024\nBPAY 140500 DA 71760",
+            )
+        val (descriptor, _) = registry.detectAndSelect(mockTokenized)
+
+        assertEquals(GrammarFamily.PCDA_MODERN_GRID, descriptor?.family)
+    }
+
+    @Test
+    fun testFeb2025BoundaryResolvesModernGrid() {
+        val mockTokenized =
+            TokenizedPayslip(
+                tableTokens = emptyList(),
+                taxTokens = emptyList(),
+                dsopTokens = emptyList(),
+                fullText = "STATEMENT OF ACCOUNT FOR 02/2025\nBPAY 144700 DA 84906",
+            )
+        val (descriptor, _) = registry.detectAndSelect(mockTokenized)
+
+        assertEquals(GrammarFamily.PCDA_MODERN_GRID, descriptor?.family)
+    }
+
+    @Test
+    fun testMar2025BoundaryResolvesExtendedGrid() {
+        val mockTokenized =
+            TokenizedPayslip(
+                tableTokens = emptyList(),
+                taxTokens = emptyList(),
+                dsopTokens = emptyList(),
+                fullText = "STATEMENT OF ACCOUNT FOR 03/2025\nBPAY 144700 ARR-DA 9870",
+            )
+        val (descriptor, _) = registry.detectAndSelect(mockTokenized)
+
+        assertEquals(GrammarFamily.PCDA_EXTENDED_GRID, descriptor?.family)
+    }
+
+    @Test
+    fun testMar2025WithoutArrearsStillResolvesExtendedGrid() {
+        // Regression test for the real-world bug: a Mar-2025+ payslip with no arrears line item that
+        // month must not fall back to Modern Grid just because the incidental "ARR-" text is absent.
+        val mockTokenized =
+            TokenizedPayslip(
+                tableTokens = emptyList(),
+                taxTokens = emptyList(),
+                dsopTokens = emptyList(),
+                fullText =
+                    "STATEMENT OF ACCOUNT FOR 03/2025\nEARNINGS DEDUCTIONS\nBPAY 144700 DSOP 40000\n" +
+                        "DA 84906 AGIF 10000\nMSP 15500\nGross Pay 271739 Total Deductions 96432",
+            )
+        val (descriptor, report) = registry.detectAndSelect(mockTokenized)
+
+        assertEquals(GrammarFamily.PCDA_EXTENDED_GRID, descriptor?.family)
+        assertTrue(report.selectionReason.contains("Date mapping"))
+        assertTrue(report.validationStatus.contains("Passed"))
+    }
+
+    @Test
+    fun testFutureMonthResolvesExtendedGrid() {
+        val mockTokenized =
+            TokenizedPayslip(
+                tableTokens = emptyList(),
+                taxTokens = emptyList(),
+                dsopTokens = emptyList(),
+                fullText = "STATEMENT OF ACCOUNT FOR 04/2025\nBPAY 150000 DA 87000",
+            )
+        val (descriptor, _) = registry.detectAndSelect(mockTokenized)
+
+        assertEquals(GrammarFamily.PCDA_EXTENDED_GRID, descriptor?.family)
+    }
+
+    @Test
+    fun testFarFutureMonthResolvesExtendedGrid() {
+        val mockTokenized =
+            TokenizedPayslip(
+                tableTokens = emptyList(),
+                taxTokens = emptyList(),
+                dsopTokens = emptyList(),
+                fullText = "STATEMENT OF ACCOUNT FOR 12/2030\nBPAY 200000 DA 120000",
+            )
+        val (descriptor, _) = registry.detectAndSelect(mockTokenized)
+
+        assertEquals(GrammarFamily.PCDA_EXTENDED_GRID, descriptor?.family)
     }
 }

@@ -39,6 +39,7 @@ object DefaultGrammarDescriptors {
             displayName = "Modern Reconstructed Spatial Grid",
             detectorMatcher = { tokenized -> matchModernGrid(tokenized) },
             strategySet = com.ssbmax.pdfparser.parser.strategy.modern.ModernGridStrategySet,
+            verificationMatcher = { tokenized -> matchGridStructural(tokenized) },
         )
 
     val EXTENDED_GRID =
@@ -48,6 +49,7 @@ object DefaultGrammarDescriptors {
             displayName = "Extended Multi-Container Spatial Grid",
             detectorMatcher = { tokenized -> matchExtendedGrid(tokenized) },
             strategySet = com.ssbmax.pdfparser.parser.strategy.modern.ExtendedGridStrategySet,
+            verificationMatcher = { tokenized -> matchGridStructural(tokenized) },
         )
 
     fun registerAll(registry: GrammarRegistry) {
@@ -112,6 +114,23 @@ object DefaultGrammarDescriptors {
             GrammarMatchResult(true, listOf("Signature: BPAY and Extended Arrears Container (ARR-)"))
         } else {
             GrammarMatchResult(false, rejectedReasons = listOf("Missing extended arrears container anchor"))
+        }
+    }
+
+    /**
+     * Shared verification-only check for both grid-era families (Modern and Extended): confirms the
+     * document is structurally a PCDA grid-format payslip at all. Deliberately does NOT try to
+     * distinguish Modern from Extended — that distinction is the statement period's job (see
+     * [com.ssbmax.pdfparser.parser.detection.GrammarEraMapper]); an incidental marker like "ARR-" varies
+     * month to month (e.g. no arrears due) and must not gate verification of a date-selected family.
+     */
+    private fun matchGridStructural(tokenized: TokenizedPayslip): GrammarMatchResult {
+        val text = tokenized.fullText
+        val hasBpay = text.contains("BPAY", ignoreCase = true)
+        return if (hasBpay) {
+            GrammarMatchResult(true, listOf("Signature: BPAY grid anchor"))
+        } else {
+            GrammarMatchResult(false, rejectedReasons = listOf("Missing BPAY grid anchor"))
         }
     }
 }

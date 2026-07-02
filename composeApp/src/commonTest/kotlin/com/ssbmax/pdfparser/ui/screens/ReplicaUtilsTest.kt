@@ -17,7 +17,10 @@ class ReplicaUtilsTest {
                 monthName = "December",
                 dateStr = "12/2025",
                 officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
-                earnings = Earnings(riskHardshipAllowance = 21125.0),
+                // The parser books a matched field to earnings XOR rawEarnings, never both (see
+                // ReconciliationSolver.route) — this raw-only fixture models a key the parser could
+                // not standardize, not a duplicate of a structured field.
+                earnings = Earnings(),
                 deductions = Deductions(),
                 ledgerBalances = LedgerBalances(),
                 summary = PayslipSummary(21125.0, 0.0, 21125.0),

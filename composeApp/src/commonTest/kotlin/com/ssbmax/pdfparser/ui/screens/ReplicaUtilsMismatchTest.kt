@@ -102,4 +102,42 @@ class ReplicaUtilsMismatchTest {
         val payslip = rawPayslip(rawDeductions = mapOf("DSOP" to 40000.0), totalDeductions = 35000.0)
         assertEquals(5000.0, debitsMismatch(payslip))
     }
+
+    // Regression: an unrelated unmatched entry in rawEarnings (e.g. a genuinely novel allowance code
+    // the parser couldn't map to a standard field) must not hide an otherwise fully itemized
+    // structured earnings breakdown. This is the shape of the real Mar 2025 payslip bug: earnings
+    // were correctly classified into standard fields, but any non-empty rawEarnings map used to make
+    // getCreditsList() discard all of them and fall back to a single synthetic MISC line instead.
+    @Test
+    fun structuredEarningsSurviveAlongsideUnrelatedRawEntry() {
+        val payslip =
+            ParsedPayslip(
+                file = "test.pdf",
+                year = 2025,
+                monthNum = 3,
+                monthName = "March",
+                dateStr = "03/2025",
+                officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
+                earnings =
+                    Earnings(
+                        basicPay = 144700.0,
+                        dearnessAllowance = 84906.0,
+                        militaryServicePay = 15500.0,
+                        transportAllowance = 3600.0,
+                        transportAllowanceDa = 1908.0,
+                        riskHardshipAllowance = 21125.0,
+                    ),
+                deductions = Deductions(dsopSubscription = 40000.0, agif = 10000.0, incomeTax = 44646.0, educationCess = 1786.0),
+                ledgerBalances = LedgerBalances(),
+                summary = PayslipSummary(grossPay = 271739.0 + 500.0, totalDeductions = 96432.0, netRemittance = 175807.0),
+                taxAndSavings = null,
+                rawEarnings = mapOf("SPECIALDUTY" to 500.0),
+                rawDeductions = emptyMap(),
+            )
+
+        val credits = getCreditsList(payslip)
+        assertEquals(setOf("BPAY", "DA", "MSP", "TPTA", "TPTADA", "RHA", "SPECIALDUTY"), credits.map { it.code }.toSet())
+        assertTrue(credits.none { it.code == "MISC" }, "MISC must not appear when structured + raw items already sum to grossPay")
+        assertEquals(271739.0 + 500.0, credits.sumOf { it.amount })
+    }
 }

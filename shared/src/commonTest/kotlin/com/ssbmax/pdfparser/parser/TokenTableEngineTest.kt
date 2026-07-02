@@ -188,4 +188,33 @@ class TokenTableEngineTest {
         assertTrue(cell.isBold, "Cell containing bold token must report isBold true")
         assertEquals(14f, cell.maxFontSize, "Cell maxFontSize must reflect maximum token font size")
     }
+
+    /**
+     * Regression for the real Mar-2025 payslip bug: a footer disclaimer sentence
+     * ("This payslip is computer generated. Hence no signature is required. Page") gets paired by
+     * RowPairing with a stray nearby page number, landing in the credit column band. Unlike a real
+     * (if unrecognized) line item, this text is far longer than any legitimate PCDA label — it must
+     * be dropped as noise, not booked to rawEarnings where it can eclipse a correctly itemized parse
+     * downstream in the UI.
+     */
+    @Test
+    fun proseFooterLabelMisPairedWithStrayNumberIsDropped() {
+        val pairs =
+            RowPairing.pair(GridReconstructor.reconstruct(sampleTable())) +
+                LabelAmount(
+                    label = "This payslip is computer generated. Hence no signature is required. Page",
+                    amount = 1.0,
+                    labelCenterX = 44f,
+                    amountCenterX = 44f,
+                    centerY = 420f,
+                )
+        val table = TokenTableClassifier.classifyPairs(pairs)
+
+        assertTrue(table.credits.none { it.amount == 1.0 }, "footer noise must not appear as a credit line item")
+        assertTrue(
+            table.rawCredits().keys.none { it.startsWith("This payslip") },
+            "footer noise must not land in rawEarnings",
+        )
+        assertEquals(999.0, table.rawCredits()["XYZALW"], "genuine short unmatched labels must still route to rawEarnings")
+    }
 }
