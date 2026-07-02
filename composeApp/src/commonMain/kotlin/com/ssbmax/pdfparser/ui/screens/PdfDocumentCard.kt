@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
+import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @Composable
 fun PdfDocumentCard(
@@ -45,14 +46,14 @@ fun PdfDocumentCard(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "Tap to open original statement",
+                    text = AppStrings.pdfCardTapHint,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
             Icon(
                 imageVector = Icons.Default.Share,
-                contentDescription = "Open",
+                contentDescription = AppStrings.pdfCardOpenCdesc,
                 tint = MaterialTheme.colorScheme.primary,
             )
         }
@@ -69,7 +70,7 @@ private fun PdfIconBox(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "PDF",
+            text = AppStrings.pdfCardBadge,
             fontWeight = FontWeight.Bold,
             color = Color.White,
             fontSize = AppDimensions.TextSizeMedium,

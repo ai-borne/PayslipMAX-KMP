@@ -26,6 +26,22 @@ interface PayslipDao {
     @Query("DELETE FROM encrypted_payslips")
     suspend fun clearAll()
 
+    // PayslipCorrection queries (Phase 5 — per-field user corrections, merged on read)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCorrection(correction: PayslipCorrectionEntity)
+
+    @Query("SELECT * FROM payslip_corrections")
+    fun getAllCorrections(): Flow<List<PayslipCorrectionEntity>>
+
+    @Query("SELECT * FROM payslip_corrections WHERE dateStr = :dateStr LIMIT 1")
+    suspend fun getCorrectionByDate(dateStr: String): PayslipCorrectionEntity?
+
+    @Query("DELETE FROM payslip_corrections WHERE dateStr = :dateStr")
+    suspend fun deleteCorrection(dateStr: String)
+
+    @Query("DELETE FROM payslip_corrections")
+    suspend fun clearAllCorrections()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayslipPdf(pdf: PayslipPdfEntity)
 
@@ -37,6 +53,9 @@ interface PayslipDao {
 
     @Query("DELETE FROM payslip_pdfs WHERE dateStr = :dateStr")
     suspend fun deletePayslipPdf(dateStr: String)
+
+    @Query("DELETE FROM payslip_pdfs")
+    suspend fun clearAllPdfs()
 
     @Query("SELECT * FROM app_settings WHERE id = 0 LIMIT 1")
     fun getSettingsFlow(): Flow<AppSettingsEntity?>
@@ -85,6 +104,9 @@ interface PayslipDao {
     @Query("DELETE FROM financial_insights WHERE id = :id")
     suspend fun deleteFinancialInsight(id: String)
 
+    @Query("DELETE FROM financial_insights WHERE monthStr = :monthStr")
+    suspend fun deleteFinancialInsightsByMonth(monthStr: String)
+
     @Query("DELETE FROM financial_insights")
     suspend fun clearAllFinancialInsights()
 
@@ -103,4 +125,23 @@ interface PayslipDao {
 
     @Query("DELETE FROM representation_drafts")
     suspend fun clearAllRepresentationDrafts()
+
+    // AiInsightReport queries
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAiInsightReport(report: AiInsightReportEntity)
+
+    @Query("SELECT * FROM ai_insight_reports WHERE payslipMonth = :monthStr LIMIT 1")
+    suspend fun getAiInsightReportByMonth(monthStr: String): AiInsightReportEntity?
+
+    @Query("SELECT * FROM ai_insight_reports ORDER BY generatedDate DESC")
+    fun getAllAiInsightReports(): Flow<List<AiInsightReportEntity>>
+
+    @Query("DELETE FROM ai_insight_reports WHERE id = :id")
+    suspend fun deleteAiInsightReport(id: String)
+
+    @Query("DELETE FROM ai_insight_reports WHERE payslipMonth = :monthStr")
+    suspend fun deleteAiInsightReportByMonth(monthStr: String)
+
+    @Query("DELETE FROM ai_insight_reports")
+    suspend fun clearAllAiInsightReports()
 }

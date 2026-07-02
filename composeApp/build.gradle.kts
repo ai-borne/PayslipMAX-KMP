@@ -46,6 +46,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.koin.compose)
+            implementation(libs.ktor.client.core)
         }
 
         androidMain.dependencies {
@@ -77,10 +78,10 @@ kotlin {
 }
 
 android {
-    namespace = "com.ssbmax.pdfparser"
+    namespace = "com.payslipmax.pdfparser"
     compileSdk = 35
     defaultConfig {
-        applicationId = "com.ssbmax.pdfparser"
+        applicationId = "com.payslipmax.pdfparser"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -89,6 +90,11 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+        }
+    }
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
         }
     }
     testOptions {

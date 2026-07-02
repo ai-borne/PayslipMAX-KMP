@@ -175,12 +175,12 @@ class PayslipTextParserTest {
     }
 
     @Test
-    fun testParseWithRenamedFileHistoricalCorrections() {
-        // Mock a statement for April 2022 (04/2022)
+    fun testNoHistoricalOverrideFudgeApplied() {
+        // Mock a statement for April 2022 (04/2022) — the month the legacy parser used to fudge.
         val mockText =
             """
             04/2022  kI laoKa ivavarNaI  / STATEMENT OF ACCOUNT FOR 04/2022
-            Name: Officer Officer Officer A/C No - 16/000/000000X PAN No: AR*****90G
+            Name: Officer A/C No - 16/000/000000X PAN No: AR*****90G
             Aaya / EARNINGS (`) kTaOtI / DEDUCTIONS (`) laona dona ka ivavarNa / DETAILS OF TRANSACTIONS
             BPAY 130000
             DA 40000
@@ -189,16 +189,15 @@ class PayslipTextParserTest {
             Net Remittance : Rs.1,85,500
             """.trimIndent()
 
-        // Pass a totally different filename (not "04 April 2022.pdf")
         val result = PayslipTextParser.parse(mockText, "my_custom_renamed_payslip.pdf")
         assertTrue(result.isSuccess)
         val payslip = result.getOrNull()!!
 
-        // Assert that the corrections (BPAY + 14, DA + 29, MSP + 24) are applied
-        // since the parser extracts April 2022 from the content.
-        assertEquals(130014.0, payslip.earnings.basicPay)
-        assertEquals(40029.0, payslip.earnings.dearnessAllowance)
-        assertEquals(15524.0, payslip.earnings.militaryServicePay)
+        // Phase 4 removed DynamicSpatialParser.applyHistoricalOverrides: the parser now reports the
+        // real on-page values, never the old per-month +14/+29/+24 micro-fudge.
+        assertEquals(130000.0, payslip.earnings.basicPay)
+        assertEquals(40000.0, payslip.earnings.dearnessAllowance)
+        assertEquals(15500.0, payslip.earnings.militaryServicePay)
     }
 
     @Test
@@ -208,5 +207,58 @@ class PayslipTextParserTest {
         println("cleaned: '$cleaned'")
         val (gross, ded, net) = parseTotals(cleaned)
         println("[TEST RESULT] gross: $gross, ded: $ded")
+    }
+
+    @Test
+    fun testNetTaxableIncomeParsingAndCapping() {
+        // Test Case 1: Simple parenthetical formula (6 - 7 - 8)
+        val text1 =
+            """
+            1. Gross Salary upto 30/04/2026 586894
+            6. Total Taxable Income 3487744
+            8. Standard Deduction 75000
+            9. Net Taxable Income (6 - 7 - 8) 3412740
+            10. Total Tax Payable 603822
+            """.trimIndent()
+        val res1 = parseTaxAndSavings(text1, null, text1)
+        assertNotNull(res1)
+        assertEquals(3412740.0, res1.netTaxableIncome)
+        // Verify early-month capping: since 603822 > 586894, totalTaxPayable is capped to 586894 * 0.30 = 176068.2 (rounded to 176068.0)
+        assertEquals(176068.0, res1.totalTaxPayable)
+
+        // Test Case 2: Nested parenthetical formula
+        val text2 =
+            """
+            Gross Salary upto 31/01/2024 2547493
+            Total Taxable Income 2780509
+            Standard Deduction 50000
+            Net Taxable Income ((Sl.No. 6 + Sl.No. 7) - (Sl.No. 8)) 2730510
+            Total Tax Payable 519153
+            """.trimIndent()
+        val res2 = parseTaxAndSavings(text2, null, text2)
+        assertNotNull(res2)
+        assertEquals(2730510.0, res2.netTaxableIncome)
+        // No capping should apply since 519153 < 2547493
+        assertEquals(519153.0, res2.totalTaxPayable)
+    }
+
+    @Test
+    fun testReconciliationResidualNoLongerHardFails() {
+        // gross − deductions = 172260 but the printed net is 130000: a large net residual that the
+        // legacy parser threw on. Phase 4 keeps the parse (the token path surfaces it via needsReview).
+        val mockText =
+            """
+            01/2024  STATEMENT OF ACCOUNT FOR 01/2024
+            Name: Officer A/C No - 16/000/000000X PAN No: AR*****90G
+            BPAY 140500
+            DA 71760
+            DSOP 40000
+            kuula Aaya Gross Pay 212260 kuula kTaOtI Total Deductions 40000
+            Net Remittance : Rs.130000
+            """.trimIndent()
+
+        val result = PayslipTextParser.parse(mockText, "01 Jan 2024.pdf")
+        assertTrue(result.isSuccess, "a reconciliation residual must no longer discard the whole parse")
+        assertEquals(140500.0, result.getOrNull()!!.earnings.basicPay)
     }
 }

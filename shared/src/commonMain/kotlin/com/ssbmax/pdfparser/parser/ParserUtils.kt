@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.domain.*
+import com.ssbmax.pdfparser.logging.Logger
 
 internal fun cleanCommasAndWhitespace(text: String): String {
     val cleaned =
@@ -11,17 +12,22 @@ internal fun cleanCommasAndWhitespace(text: String): String {
 }
 
 internal fun negateHindiTransliterations(text: String): String {
-    val hindiTransliterations =
-        listOf(
-            "kuula", "kula", "Aaya", "kTaOtI", "laona", "dona", "ivavarNa", "raiSa", "laoKa",
-            "inavala", "p`oiYat", "Qana", "rxaa", "p`Qaana", "inayaM~k", "Af,sar", "puNao",
-            "ka", "kI", "ivavarNaI", "sqaayaI", "Kata", "saM#yaa", "laoKaI", "Aiga`ma", "?Na",
-        )
     var cleaned = text
-    for (word in hindiTransliterations) {
+    for (word in PayslipPatternConfig.hindiTransliterations) {
         cleaned = cleaned.replace(Regex("(?<![a-zA-Z0-9])${Regex.escape(word)}(?![a-zA-Z0-9])", RegexOption.IGNORE_CASE), " ")
     }
     return cleaned.replace(Regex("\\s+"), " ")
+}
+
+internal fun cleanPreservingNewlines(text: String): String {
+    var cleaned =
+        text.replace(Regex("(\\d),(\\d)")) { match ->
+            match.groupValues[1] + match.groupValues[2]
+        }
+    for (word in PayslipPatternConfig.hindiTransliterations) {
+        cleaned = cleaned.replace(Regex("(?<![a-zA-Z0-9])${Regex.escape(word)}(?![a-zA-Z0-9])", RegexOption.IGNORE_CASE), " ")
+    }
+    return cleaned.split('\n').map { it.replace(Regex("[ \\t]+"), " ").trim() }.joinToString("\n")
 }
 
 internal fun stripNotesAndDescriptions(text: String): String {
@@ -38,23 +44,7 @@ internal fun stripNotesAndDescriptions(text: String): String {
     return filteredLines.joinToString("\n")
 }
 
-/**
- * Splits the full payslip page text into a credit (earnings) section and a debit (deductions) section.
- *
- * In some older payslip formats the PDF crop box approach fails and both columns return the same
- * full text. This function finds the position of the first confirmed debit-only anchor — i.e., the
- * first occurrence of DSOPF/AGIF/ITAX/Incm Tax (items that can ONLY appear in the debit column) —
- * and splits there.
- *
- * - Text BEFORE the anchor = credit/earnings section (may contain debit labels like "L Fee" that
- *   are actually credit reversals of those deductions).
- * - Text FROM the anchor onwards = debit/deductions section.
- *
- * Returns Triple(creditSectionText, debitSectionText, anchorFound).
- * If no anchor was found, anchorFound=false and creditSection=fullText, debitSection="".
- */
-internal fun splitCreditDebitSections(cleanedText: String): Triple<String, String, Boolean> {
-    // Truncate to page 1 to exclude subsequent pages (tax/dsop details)
+private fun truncateFooterAndTotals(cleanedText: String): String {
     var tableText = cleanedText
     val footerIndicators =
         listOf(
@@ -71,7 +61,6 @@ internal fun splitCreditDebitSections(cleanedText: String): Triple<String, Strin
             break
         }
     }
-
     val endOfTableIndicators =
         listOf(
             "Total Credit",
@@ -87,8 +76,11 @@ internal fun splitCreditDebitSections(cleanedText: String): Triple<String, Strin
             tableText = tableText.substring(0, idx)
         }
     }
+    return tableText
+}
 
-    // These anchor labels can ONLY appear in the debit column; use the earliest one found.
+internal fun splitCreditDebitSections(cleanedText: String): Triple<String, String, Boolean> {
+    val tableText = truncateFooterAndTotals(cleanedText)
     val debitOnlyAnchors =
         listOf(
             "DSOPF Subn", "DSOPF", "DSOP", "AGIF", "Incm Tax", "ITAX",
@@ -101,6 +93,8 @@ internal fun splitCreditDebitSections(cleanedText: String): Triple<String, Strin
     for (anchor in debitOnlyAnchors) {
         val idx = tableText.indexOf(anchor, ignoreCase = true)
         if (idx in 1 until splitIdx) {
+            val context = tableText.substring(kotlin.math.max(0, idx - 8), idx).lowercase()
+            if (context.contains("ref")) continue
             splitIdx = idx
             found = true
         }
@@ -108,6 +102,8 @@ internal fun splitCreditDebitSections(cleanedText: String): Triple<String, Strin
     for (anchor in caseSensitiveAnchors) {
         val idx = tableText.indexOf(anchor, ignoreCase = false)
         if (idx in 1 until splitIdx) {
+            val context = tableText.substring(kotlin.math.max(0, idx - 8), idx).lowercase()
+            if (context.contains("ref")) continue
             splitIdx = idx
             found = true
         }
@@ -148,31 +144,11 @@ internal fun parseDate(
     cleanedFullText: String,
     filename: String,
 ): Pair<Int, Int> {
-    // Match 1: STATEMENT OF ACCOUNT FOR MM/YYYY
-    val dateMatch = Regex("STATEMENT OF ACCOUNT FOR (\\d{2})/(\\d{4})", RegexOption.IGNORE_CASE).find(cleanedFullText)
-    if (dateMatch != null) {
-        return Pair(
-            dateMatch.groupValues[1].toIntOrNull() ?: 1,
-            dateMatch.groupValues[2].toIntOrNull() ?: 2024,
-        )
-    }
-
-    // Match 2: STATEMENT OF ACCOUNT FOR [Month] [YYYY]
-    val stmtMonthMatch = Regex("STATEMENT OF ACCOUNT FOR\\s+([A-Za-z]+)\\s+(\\d{4})", RegexOption.IGNORE_CASE).find(cleanedFullText)
-    if (stmtMonthMatch != null) {
-        val monthStr = stmtMonthMatch.groupValues[1].lowercase()
-        val mNum = PayslipPatternConfig.monthMap[monthStr] ?: 1
-        val yVal = stmtMonthMatch.groupValues[2].toIntOrNull() ?: 2024
-        return Pair(mNum, yVal)
-    }
-
-    // Match 3: standalone MM/YYYY in the text
-    val standaloneMatch = Regex("\\b(0[1-9]|1[0-2])/(\\d{4})\\b").find(cleanedFullText)
-    if (standaloneMatch != null) {
-        return Pair(
-            standaloneMatch.groupValues[1].toIntOrNull() ?: 1,
-            standaloneMatch.groupValues[2].toIntOrNull() ?: 2024,
-        )
+    // Matches 1-3 (anchored MM/YYYY, anchored Month YYYY, standalone MM/YYYY): shared with the
+    // grammar-era detector via extractStatementPeriod, kept as a single source of truth.
+    val period = com.ssbmax.pdfparser.parser.detection.extractStatementPeriod(cleanedFullText)
+    if (period != null) {
+        return Pair(period.month, period.year)
     }
 
     // Match 4: Filename fallback
@@ -194,55 +170,64 @@ internal fun parseDate(
     return Pair(mNum, yVal)
 }
 
-internal fun parseOfficer(
-    cleanedFullText: String,
-    monthNum: Int,
-    year: Int,
-): Officer {
+private fun extractOfficerName(text: String): String {
     val nameRegex = Regex("(?:Name|naama/Name)\\s*:\\s*([A-Za-z\\s]+)", RegexOption.IGNORE_CASE)
-    val acRegex = Regex("(?:A/C No|CDA A/C NO|laoKa saM#yaa /A/C No)\\s*[:\\-–]?\\s*([^\\s]+)", RegexOption.IGNORE_CASE)
-    val panRegex = Regex("(?:PAN No|sqaayaI Kata saM#yaa/PAN No)\\s*:\\s*([^\\s]+)", RegexOption.IGNORE_CASE)
-
-    var officerName = nameRegex.find(cleanedFullText)?.groupValues?.get(1)?.trim() ?: ""
+    var officerName = nameRegex.find(text)?.groupValues?.get(1)?.trim() ?: ""
     if (officerName.isEmpty()) {
         val fallbackNameRegex = Regex("PAN No\\s*[:\\-–]?\\s*([A-Za-z\\s]+)", RegexOption.IGNORE_CASE)
-        officerName = fallbackNameRegex.find(cleanedFullText)?.groupValues?.get(1)?.trim() ?: ""
+        officerName = fallbackNameRegex.find(text)?.groupValues?.get(1)?.trim() ?: ""
     }
-
     if (officerName.isNotEmpty()) {
-        println("[DEBUG NAME] officerName before split: '$officerName'")
-        officerName = officerName.split(Regex("\\b(?:A/C|Email|PAN|Basic|BPAY|CDA|tada|ta|laoKa|saM|For|rankpay|ledger|generalquery|contact|bankers)\\b", RegexOption.IGNORE_CASE))[0].trim()
-        println("[DEBUG NAME] officerName after split: '$officerName'")
+        Logger.d("ParserUtils", "officerName before split: '$officerName'")
+        officerName = officerName.split(Regex("\\b(?:A/C|Email|PAN|Basic|BPAY|CDA|tada|ta|laoKa|saM|For|rankpay|ledger|generalquery|contact|bankers|PRO)\\b", RegexOption.IGNORE_CASE))[0].trim()
+        Logger.d("ParserUtils", "officerName after split: '$officerName'")
         if (officerName.endsWith(" A", ignoreCase = true)) {
             officerName = officerName.substring(0, officerName.length - 2).trim()
         }
     }
+    return officerName
+}
 
+private fun extractAccountNumber(text: String): String {
+    val acRegex = Regex("(?:A/C No|CDA A/C NO|laoKa saM#yaa /A/C No)\\s*[:\\-–]?\\s*([^\\s]+)", RegexOption.IGNORE_CASE)
     val fallbackAcRegex = Regex("([0-9]{2,}/[0-9]{2,}/[0-9]{5,}[A-Z]?)", RegexOption.IGNORE_CASE)
-    var accountNo = fallbackAcRegex.find(cleanedFullText)?.groupValues?.get(1)?.trim() ?: ""
+    var accountNo = fallbackAcRegex.find(text)?.groupValues?.get(1)?.trim() ?: ""
     if (accountNo.isEmpty()) {
-        accountNo = acRegex.find(cleanedFullText)?.groupValues?.get(1)?.trim() ?: ""
+        accountNo = acRegex.find(text)?.groupValues?.get(1)?.trim() ?: ""
     }
     if (accountNo.isEmpty()) {
         accountNo = "16/000/000000X"
     }
-
     if (accountNo.endsWith("PAN")) {
         accountNo = accountNo.removeSuffix("PAN").trim()
     }
     if (accountNo.startsWith(":")) {
         accountNo = accountNo.removePrefix(":").trim()
     }
+    return accountNo
+}
 
-    var panNo = panRegex.find(cleanedFullText)?.groupValues?.get(1)?.trim() ?: ""
+private fun extractPanNumber(text: String): String {
+    val panRegex = Regex("(?:PAN No|sqaayaI Kata saM#yaa/PAN No)\\s*:\\s*([A-Za-z*0-9]{8,})", RegexOption.IGNORE_CASE)
+    var panNo = panRegex.find(text)?.groupValues?.get(1)?.trim() ?: ""
     if (panNo.isEmpty()) {
         val fallbackPanRegex = Regex("([A-Z]{2}[*\\d]{7}[A-Z])", RegexOption.IGNORE_CASE)
-        panNo = fallbackPanRegex.find(cleanedFullText)?.groupValues?.get(1)?.trim() ?: ""
+        panNo = fallbackPanRegex.find(text)?.groupValues?.get(1)?.trim() ?: ""
     }
     if (panNo.isEmpty()) {
         panNo = "AR*****90G"
     }
+    return panNo
+}
 
+internal fun parseOfficer(
+    cleanedFullText: String,
+    monthNum: Int,
+    year: Int,
+): Officer {
+    val officerName = extractOfficerName(cleanedFullText)
+    val accountNo = extractAccountNumber(cleanedFullText)
+    val panNo = extractPanNumber(cleanedFullText)
     return Officer(name = officerName, accountNo = accountNo, pan = panNo)
 }
 
@@ -251,7 +236,7 @@ internal fun parseTotals(cleanedFullText: String): Triple<Double, Double, Double
         mapOf(
             "Gross Pay" to listOf("kuula Aaya Gross Pay", "kula Aaya Gross Pay", "kuula Aaya", "kula Aaya", "Gross Pay", "Total Credit"),
             "Total Deductions" to listOf("kuula kTaOtI Total Deductions", "kula kTaOtI Total Deductions", "kuula kTaOtI", "kula kTaOtI", "Total Deductions", "Total Debit"),
-            "Net Remittance" to listOf("Net Remittance", "REMITTANCE", "inavala p`oiYat Qana/Net Remittance", "inavala p`oiYat Qana"),
+            "Net Remittance" to listOf("Net Remittance", "REMITTANCE", "REMITANCE", "inavala p`oiYat Qana/Net Remittance", "inavala p`oiYat Qana"),
         )
 
     val extractedTotals = mutableMapOf<String, Double>()
@@ -266,6 +251,19 @@ internal fun parseTotals(cleanedFullText: String): Triple<Double, Double, Double
             }
         }
     }
+
+    // PDFKit artifact: labels serialised before amounts → "REMITTANCE … Total Debit 400000 27119 581007".
+    // Standard loop captures 400000 (remittance) as deductions; recover via label-block pattern.
+    if ((extractedTotals["Net Remittance"] ?: 0.0) == 0.0) {
+        val blockMatch =
+            Regex("""(?i)REMITTANCE[^0-9]+Total\s+Debit\s+(\d+)(?:\s+\d+)*\s+(\d+)""")
+                .find(cleanedFullText)
+        if (blockMatch != null) {
+            extractedTotals["Net Remittance"] = blockMatch.groupValues[1].toDoubleOrNull() ?: 0.0
+            extractedTotals["Total Deductions"] = blockMatch.groupValues[2].toDoubleOrNull() ?: 0.0
+        }
+    }
+
     return Triple(
         extractedTotals["Gross Pay"] ?: 0.0,
         extractedTotals["Total Deductions"] ?: 0.0,

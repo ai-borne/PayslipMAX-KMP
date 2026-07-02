@@ -2,6 +2,7 @@ package com.ssbmax.pdfparser.insights
 
 import com.ssbmax.pdfparser.database.LedgerRecordEntity
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.logging.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -70,6 +71,7 @@ open class GeminiProxyService(
                 Result.failure(Exception(response.error ?: "Failed to generate narrative insights from proxy backend."))
             }
         } catch (e: Exception) {
+            Logger.e("GeminiProxyService", "getNarrativeInsights failed calling $proxyUrl", e)
             Result.failure(e)
         }
     }

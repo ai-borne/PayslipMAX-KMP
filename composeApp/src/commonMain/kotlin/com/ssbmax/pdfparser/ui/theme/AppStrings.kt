@@ -11,6 +11,7 @@ object AppStrings {
     const val badgeOfficer = "Officer"
     const val badgeCda = "CDA A/C No"
     const val badgePan = "PAN"
+    const val appVersion = "PayslipMax iOS - Version 1.4.2"
 
     // Statistics Cards
     const val cardNetTitle = "Latest Net Remittance"
@@ -36,14 +37,31 @@ object AppStrings {
     // Explorer
     const val explorerHeader = "Payslip Digital Replica"
     const val explorerSubheader = "Tap any transaction code for detailed explanations"
-    const val replicaEarningTitle = "Earnings"
-    const val replicaDeductionTitle = "Deductions"
+    const val replicaEarningTitle = "Earnings (₹)"
+    const val replicaDeductionTitle = "Deductions (₹)"
     const val replicaGrossLabel = "Gross Pay (कुल आय)"
     const val replicaDeductionsLabel = "Total Deductions (कुल कटौती)"
     const val replicaNetLabel = "Net Remittance (Take Home)"
     const val replicaFooter = "Principal Controller of Defence Accounts (Officers), Pune\nMinistry of Defence, Government of India"
     const val ledgerGrossPay = "Gross Pay (Credits)"
     const val ledgerTotalDeductions = "Total Deductions (Debits)"
+
+    // Replica metadata & glossary
+    const val replicaBackDesc = "Back"
+    const val replicaOfficerPrefix = "Officer: "
+    const val replicaCdaPrefix = "CDA A/C: "
+    const val replicaPanPrefix = "PAN: "
+    const val glossaryUnderstood = "Understood"
+
+    // Confidence-gated correction (Phase 5)
+    const val correctionReviewBadge = "Review"
+    const val correctionIndicatorDesc = "Low confidence — tap to review and correct this value"
+    const val correctionDialogTitle = "Correct value"
+    const val correctionDialogHint = "This value was parsed with low confidence. Enter the correct amount from your payslip."
+    const val correctionFieldLabel = "Amount (₹)"
+    const val correctionInvalidAmount = "Enter a valid amount"
+    const val correctionSave = "Save"
+    const val correctionCancel = "Cancel"
 
     // Upload & Decrypt
     const val uploadHeader = "Import Encrypted Payslip"
@@ -69,46 +87,56 @@ object AppStrings {
     const val lockScreenTitle = "Secured Portal"
     const val lockScreenSubtitle = "Enter your 4-digit PIN to decrypt your dashboard"
     const val lockScreenError = "Incorrect PIN, please try again"
+    const val lockScreenForgotPin = "Forgot PIN?"
+    const val lockScreenResetDialogTitle = "Reset Passcode"
+    const val lockScreenResetDialogDesc = "Please select a valid statement PDF and enter its decryption password to verify ownership."
+    const val lockScreenResetErrorMismatch = "PDF does not match the active user profile."
+    const val lockScreenResetConfirmBtn = "Verify & Reset"
 
     // Settings Interface
-    const val settingsThemeLabel = "Interface Theme"
+    const val settingsThemeLabel = "App Appearance"
     const val settingsThemeLight = "Light Mode"
     const val settingsThemeDark = "Dark Mode"
     const val settingsThemeSystem = "System Default"
     const val settingsAppLockLabel = "Security Passcode"
     const val settingsAppLockDesc = "Protect your financial data with a local PIN"
-    const val settingsProfileHeader = "Custom Profile Overrides"
-    const val settingsProfileDesc = "Override Name, CDA, or PAN if parsed incorrectly"
+    const val settingsProfileHeader = "Salary & Allowance Settings"
+    const val settingsProfileDesc = "Manage ranks, allowances, and custom overrides"
     const val settingsProfileName = "Officer Name"
     const val settingsProfileCda = "CDA Account Number"
     const val settingsProfilePan = "PAN Number"
-    const val settingsProPlanTitle = "Pro Analytical Insights"
+    const val settingsProPlanTitle = "Advanced Tax & Financial Insights"
     const val proTeaserCrownIcon = "👑"
     const val proTeaserAiIcon = "🤖"
     const val proTeaserToolsIcon = "🛠"
     const val aiRegenerateIcon = "🔄"
     const val settingsProPlanDesc = "Unlock personalization & CA-grade tax advice"
     const val settingsProPlanPrice = "₹99 / Year"
+    const val settingsProPlanBillingNote = "Yearly Auto-Renewing Subscription"
     const val settingsProPlanActive = "Pro Plan Activated"
     const val settingsDangerZone = "Danger Zone"
-    const val settingsDeleteAll = "Delete All App Data"
+    const val settingsDeleteAll = "Reset App & Clear Data"
     const val settingsDeleteConfirm = "Are you sure you want to wipe all local database records? This action is permanent."
-    const val settingsDangerZoneDesc = "Wipe all local database statements, cached PDFs, overrides, and passcode security configuration."
+    const val settingsDangerZoneDesc = "Wipe all local database statements, cached PDFs, and passcode configuration."
     const val settingsDeleteConfirmTitle = "Wipe App Data?"
     const val settingsDeleteConfirmBtn = "Delete Everything"
     const val btnCancel = "Cancel"
+    const val btnBack = "← Back"
 
     // Passcode Setup Dialog
     const val settingsSetPasscodeTitle = "Set 4-Digit Passcode"
     const val settingsSetPasscodeLabel = "Enter 4-Digit PIN"
     const val settingsSetPasscodeConfirmBtn = "Enable Lock"
-    const val settingsProfileSaveBtn = "Save Overrides"
+    const val settingsProfileSaveBtn = "Save Adjustments"
 
     // Backup & Restore Card
     const val settingsBackupHeader = "Personal Cloud Sync & Backup"
     const val settingsBackupDesc = "Backup is locally AES-256 encrypted using your password."
     const val settingsBackupLocalBtn = "Local Backup"
     const val settingsRestoreLocalBtn = "Local Restore"
+    const val pdfCardTapHint = "Tap to open original statement"
+    const val pdfCardBadge = "PDF"
+    const val pdfCardOpenCdesc = "Open"
     const val settingsBackupCrossPlatform = "Cross-Platform Portability (iOS ⇄ Android)"
     const val settingsBackupExportBtn = "Export Archive"
     const val settingsBackupImportBtn = "Import Archive"
@@ -127,7 +155,7 @@ object AppStrings {
     const val statusInvalidFormat = "Invalid backup string format"
 
     // Main Settings Screen
-    const val settingsSubtitle = "Manage your data, sync backups, and configure sandbox options"
+    const val settingsSubtitle = "Manage your profile, security, and data backups"
     const val settingsOfflineFirst = "Offline-First"
     const val settingsOfflineSecureTitle = "100% Offline & Secure"
     const val settingsOfflineSecureDesc = "All payslip decryption and parsing happens locally on your device. Your data never leaves your control."
@@ -140,10 +168,10 @@ object AppStrings {
     const val settingsStagingClearBtn = "Clear All"
 
     // Help & Legal Docs
-    const val settingsHelpDocsHeader = "Help & Legal Documentation"
+    const val settingsHelpDocsHeader = "Help & Legal"
     const val settingsHelpFaqTitle = "Frequently Asked Questions (FAQ)"
-    const val settingsHelpPrivacyTitle = "Privacy & Data Security Policy"
-    const val settingsHelpAiTitle = "Gemini AI: No PII Policy"
+    const val settingsHelpPrivacyTitle = "Privacy Policy"
+    const val settingsHelpAiTitle = "AI Privacy Promise"
     const val settingsHelpDisclaimerTitle = "Legal Disclaimer"
 
     const val settingsHelpFaqContent = "Q: How is my payslip decrypted?\nA: Decryption happens entirely offline on your device using local AES-256 libraries. Your password is never sent online.\n\nQ: Where is my data stored?\nA: Your data is saved in a secure, local Room database on your device."
@@ -157,18 +185,29 @@ object AppStrings {
     const val settingsProPlanBullet3 = "• Secure Local & Cross-Platform Backups"
     const val settingsProPlanBullet4 = "• 100% Offline & Private Processing"
     const val settingsProUpgradeBtn = "Unlock Pro Tier"
-    const val settingsDocumentationHeader = "Documentation"
+    const val settingsDocumentationHeader = "Help & Legal"
     const val settingsAiInsightsLockedTitle = "CA Level AI Report"
-    const val settingsRowThemeLabel = "Interface Theme"
+    const val settingsRowThemeLabel = "App Appearance"
     const val settingsRowPasscodeLabel = "App Passcode Lock"
-    const val settingsRowBackupLabel = "Cloud Sync & Portability"
-    const val settingsRowProfileLabel = "Custom Profile Overrides"
+    const val settingsRowBackupLabel = "Secure Backup & Sync"
+    const val settingsRowProfileLabel = "Salary & Allowance Settings"
     const val settingsStatusNotConfigured = "Not Configured"
     const val settingsStatusConfigured = "Configured"
     const val settingsStatusProOnly = "Pro Feature"
     const val settingsStatusEnabled = "Enabled"
     const val settingsStatusDisabled = "Disabled"
     const val settingsStatusDefault = "Default"
+
+    // Re-parse All Payslips
+    const val settingsRowReparseLabel = "Re-parse All Payslips"
+    const val settingsReparseSubtitle = "Fix payslips parsed before an app update"
+    const val settingsReparseDialogTitle = "Re-parse All Payslips"
+    const val settingsReparseDialogBody = "Re-runs every saved payslip through the current parser and replaces its stored result. Your saved corrections are kept. Enter your payslip PDF password to continue."
+    const val settingsReparsePasswordLabel = "Payslip PDF Password"
+    const val settingsReparseConfirmBtn = "Re-parse All"
+    const val settingsReparseSuccessPrefix = "Re-parsed "
+    const val settingsReparseFailedSuffix = "Could not re-parse: "
+    const val settingsReparseErrorPrefix = "Re-parse failed: "
 
     // History Redesign Strings
     const val historyActionDelete = "Delete Statement"
@@ -186,7 +225,19 @@ object AppStrings {
     const val historyDsopLabel = "DSOP"
     const val historyTaxLabel = "Tax"
     const val historyTrendHike = "DA Hike / Increment"
+    const val historyTabStatements = "Statements"
+    const val historyTabAiReports = "AI Reports"
+    const val historyEmptyAiReports = "No saved AI reports. Generate one from the Insights screen."
+    const val historyNavigateToInsights = "Go to Insights Screen"
+    const val historyPremiumIntelligenceNarrative = "Premium Intelligence Narrative"
     const val historyChevronContentDescription = "Toggle Year Visibility"
+    const val historyLedgerTitle = "Historical Ledger Table"
+    const val historyLedgerHeaderMonth = "Month"
+    const val historyLedgerHeaderBasic = "Basic"
+    const val historyLedgerHeaderGross = "Gross"
+    const val historyLedgerHeaderNet = "Net"
+    const val historyLedgerHeaderDsop = "DSOP"
+    const val historyLedgerHeaderTax = "Tax"
 
     // DSOP Simulator Strings
     const val dsopSimulatorTitle = "DSOP Compound Simulator"
@@ -208,7 +259,6 @@ object AppStrings {
     const val executiveSummaryLabel = "Executive Summary"
     const val criticalAlertsLabel = "Critical Alerts"
     const val changesThisMonthLabel = "Changes This Month"
-    const val historicalTrendsLabel = "Historical Trends"
 
     // Chart Legends
     const val legendNetTakeHome = "Net Take-Home"
@@ -217,6 +267,7 @@ object AppStrings {
     const val legendOtherDeductions = "Other Deductions"
     const val legendGrossPay = "Gross Pay"
     const val legendNetRemittance = "Net Remittance"
+    const val chartNoDataAvailable = "No data available"
     const val pdfIconLabel = "PDF"
     const val pdfTapToOpen = "Tap to open original statement"
 
@@ -226,57 +277,10 @@ object AppStrings {
     const val dashboardEmptyStateLabel = "Tap the + button below to get started"
     const val dashboardEmptyStateDescSandbox = "Import your PDF payslips or seed simulated data from the import screen to view financial analytics."
 
-    // Gemini AI Section Extra
     const val geminiAiAnalyzeBtn = "Analyze Payslip with Gemini AI"
-    const val geminiAiAnalyzeDesc = "Generate professional tax saving suggestions, investment recommendations, and error audits using Gemini."
-    const val geminiAiViewReportBtn = "View Full Audit Report"
 
-    // AI CA Audit card (Phase 5)
-    const val aiAuditAnalyzingDesc = "Analyzing your payslip with Gemini AI…"
-    const val aiAuditSummaryLabel = "Summary"
-    const val aiAuditTeaserBullets = "Detect PCDA errors & recoverable amounts\nPersonalised tax-saving strategy (old regime)\nInvestment guidance from your AI CA"
-    const val aiAuditUnlockBtn = "Unlock AI CA Audit"
-    const val aiAuditPremiumBadge = "Premium"
-
-    // Premium Features Screens Strings
-    const val representationTitle = "Official Representations"
-    const val representationSubtitle = "Formal correspondence for pay and allowance disputes"
-    const val representationDraftsEmpty = "No salary discrepancies or missing allowances detected. Representation drafts will appear here if the local audit engine flags any issues."
-    const val representationCopyBtn = "Copy to Clipboard"
-    const val representationEditBtn = "Edit Draft"
-    const val representationSaveBtn = "Save Draft"
-
-    const val taxPlanningTitle = "Tax Optimization Planner"
-    const val taxPlanningSubtitle = "Form 16 projections & tax-saving suggestions"
-    const val taxPlanningGrossYtd = "YTD Gross Salary"
-    const val taxPlanningTaxable = "Net Taxable Income"
-    const val taxPlanningITax = "Estimated Tax Liability"
-
-    const val retirementTitle = "Retirement Wealth Projection"
-    const val retirementSubtitle = "DSOP contribution & compound wealth estimates"
-    const val retirementCompounding = "Compounding Growth Projections"
-    const val retirementBalance = "Projected DSOP Balance"
-    const val retirementContributions = "Total Principal Contributions"
-    const val retirementInterest = "Total Interest Earned"
-    const val retirementProjectionDisclaimer = "Note: Compounding projections are estimated using a standard interest rate of 7.1% per annum. Actual rates may vary."
-    const val premiumToolsTitle = "Premium Financial Tools"
-    const val premiumToolsDraftClaims = "Draft Claims"
-    const val premiumToolsTaxPlanner = "Tax Planner"
-    const val premiumToolsDsopSimulator = "DSOP Simulator"
-
-    const val representationMonthLabel = "Month:"
-    const val representationRecipientPcda = "Recipient: PCDA Pune"
-    const val representationEditDraftTitle = "Edit Draft:"
-
-    const val retirementNoBalance = "Import a payslip with DSOP ledger balance to simulate growth."
-    const val retirementCurrentBalance = "Current DSOP Balance"
-    const val taxPlanningSavingsProjections = "Section 80C & 80D Tax Savings Projections"
-    const val taxPlanningNoProjections = "No YTD Tax Projections available for this month."
-    const val taxPlanningCurrentYtdContribution = "Current YTD Contribution: ₹"
-
-    // Executive Summary row labels
-    const val execSummaryNetSalary = "Net Salary"
-    const val execSummaryGrossPay = "Gross Pay"
-    const val execSummaryIncomeTax = "Income Tax"
-    const val execSummaryDsop = "DSOP Subscription"
+    // Ledger mismatch banner (Bug 3 — item-sum vs footer-total verification)
+    const val ledgerMismatchIconDesc = "Ledger mismatch"
+    const val ledgerCreditMismatchPrefix = "Credits over by ₹"
+    const val ledgerDebitMismatchPrefix = "Debits over by ₹"
 }

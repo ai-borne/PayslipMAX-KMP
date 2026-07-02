@@ -17,12 +17,57 @@ object PayslipPatternConfig {
             "december" to 12, "dec" to 12,
         )
 
+    val hindiTransliterations =
+        listOf(
+            "kuula", "kula", "uula", "Aaya", "kTaOtI", "laona", "dona", "ivavarNa", "raiSa", "laoKa",
+            "inavala", "p`oiYat", "Qana", "rxaa", "p`Qaana", "inayaM~k", "Af,sar", "puNao",
+            "ka", "kI", "ivavarNaI", "sqaayaI", "Kata", "saM#yaa", "laoKaI", "Aiga`ma", "?Na",
+        )
+
+    val blocklist =
+        setOf(
+            "gross pay", "total credit", "total debit", "total deductions", "net remittance", "remittance", "remitance", "remitancer",
+            "gross salary", "total taxable income", "net taxable income", "standard deduction", "tax payable",
+            "tax deducted", "cess deducted", "page", "note", "date", "cda", "pan", "account", "name", "rank",
+            "january", "jan", "february", "feb", "march", "mar", "april", "apr", "may", "june", "jun",
+            "july", "jul", "august", "aug", "september", "sep", "october", "oct", "november", "nov", "december", "dec",
+            "amount", "description", "credit", "debit", "earnings", "deductions",
+        )
+
+    val strictlyMandatoryCredits = setOf("basicPay", "dearnessAllowance", "militaryServicePay")
+    val strictlyMandatoryDebits = setOf("agif", "dsopSubscription")
+
+    val sentenceWords =
+        setOf(
+            "the", "in", "with", "and", "will", "be", "is", "as", "has", "have", "been",
+            "this", "that", "which", "ensuing", "provisions", "conformity", "interim", "budget",
+            "recovery", "units", "formations", "connected", "manual", "transmission", "hard",
+            "copies", "cease", "effect", "network", "accept", "officers",
+        )
+
+    val invalidEntireKeys =
+        setOf(
+            "to", "from", "for", "of", "on", "at", "by", "or", "no", "amt", "units", "bill",
+            "recovery", "inst", "instal", "dated", "order", "pt", "ii", "part", "note", "date", "page",
+        )
+
     val creditKeysMapping =
         mapOf(
             "Basic Pay" to "basicPay",
             "BPAY" to "basicPay",
+            "BPAY (12A)" to "basicPay",
+            "B.PAY" to "basicPay",
+            "B PAY" to "basicPay",
+            "Gr. Pay" to "basicPay",
+            "A/o HRA" to "arrearsHra",
             "DA" to "dearnessAllowance",
+            "D.A." to "dearnessAllowance",
+            "D.A" to "dearnessAllowance",
+            "Dearness Allowance" to "dearnessAllowance",
             "MSP" to "militaryServicePay",
+            "M.S.P." to "militaryServicePay",
+            "M.S.P" to "militaryServicePay",
+            "Military Service Pay" to "militaryServicePay",
             "Tpt Allc" to "transportAllowance",
             "TPTA" to "transportAllowance",
             "TRAN1" to "transportAllowance",
@@ -131,30 +176,62 @@ object PayslipPatternConfig {
     val debitKeysMapping =
         mapOf(
             "DSOPF Subn" to "dsopSubscription",
+            "DSOPF" to "dsopSubscription",
             "DSOP" to "dsopSubscription",
+            "D.S.O.P.F." to "dsopSubscription",
+            "D.S.O.P.F" to "dsopSubscription",
+            "DSOP Subn" to "dsopSubscription",
             "AGIF" to "agif",
+            "A.G.I.F." to "agif",
+            "A.G.I.F" to "agif",
+            "AGIF Subn" to "agif",
+            "AGIF Subscription" to "agif",
             "Incm Tax" to "incomeTax",
+            "Income Tax" to "incomeTax",
             "ITAX" to "incomeTax",
+            "Inc Tax" to "incomeTax",
+            "Incm. Tax" to "incomeTax",
+            "I Tax" to "incomeTax",
             "Educ Cess" to "educationCess",
+            "E Cess" to "educationCess",
             "EHCESS" to "educationCess",
             "L Fee" to "licenseFee",
             "LF" to "licenseFee",
+            "Dr L Fee" to "licenseFee",
+            "Dr. L. fee" to "licenseFee",
+            "1.  Recovery of LF  from" to "licenseFee",
+            "2.  Recovery of LF  from" to "licenseFee",
+            "3.  Recovery of LF  from" to "licenseFee",
+            "4.  Recovery of LF  from" to "licenseFee",
             "Fur" to "furnitureRent",
             "FUR" to "furnitureRent",
+            "Dr Furn." to "furnitureRent",
+            "Dr. fur" to "furnitureRent",
+            "2.  Recovery of FUR  from" to "furnitureRent",
+            "3.  Recovery of FUR  from" to "furnitureRent",
+            "4.  Recovery of FUR  from" to "furnitureRent",
+            "5.  Recovery of FUR  from" to "furnitureRent",
             "Water" to "waterCharges",
             "WATER" to "waterCharges",
+            "Dr Water" to "waterCharges",
             "Elec" to "electricityCharges",
+            "Dr Elec." to "electricityCharges",
             "Barrack Damage" to "barrackDamage",
             "Dr Barrack Damage" to "barrackDamage",
             "ETKT" to "ticketRecovery",
             "R/o Etkt" to "ticketRecovery",
             "Rec CIA-FD" to "recFieldAllowance",
+            "Dr CIA-FD" to "recFieldAllowance",
             "Rec PARA-SC" to "recSpecialForces",
+            "Dr PARA-SC" to "recSpecialForces",
+            "Rec INSTR-" to "recoveryOfDebits",
+            "Dr INSTR-" to "recoveryOfDebits",
             "Op Dr Bal" to "openingDebitBalance",
             "Cl. Cr. Bal." to "closingCreditBalance",
             "Clos Bal(+)" to "closingCreditBalance",
             "OP Bal(-)" to "openingDebitBalance",
             "R/o Of /Drs" to "recoveryOfDebits",
+            "R/o P & A" to "recoveryOfDebits",
             "AOBF" to "aobf",
             "AGIF-CAR" to "agifLoanRecovery",
             "AGIF-MCA" to "agifLoanRecovery",
@@ -169,4 +246,31 @@ object PayslipPatternConfig {
             "", "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December",
         )
+
+    /**
+     * Debit standardized keys that are ledger carry-over balances, not real deductions. When such a
+     * key surfaces in the credit column it must be routed to the deductions map (so the ledger
+     * resolver can pull it out), never folded into pay adjustments. SSOT for the cross-column routing
+     * shared by the legacy string path and the Phase 4 [ReconciliationSolver].
+     */
+    val ledgerDebitKeys = setOf("openingDebitBalance", "closingCreditBalance")
+
+    /**
+     * Debit standardized keys that, when they appear in the *credit* column, are credit reversals of a
+     * prior deduction (e.g. a refunded licence fee) and therefore become a pay adjustment.
+     */
+    val creditReversalDebitKeys =
+        setOf("licenseFee", "furnitureRent", "waterCharges", "electricityCharges", "barrackDamage", "ticketRecovery")
+
+    /**
+     * Maps a credit standardized key found in the *debit* column (a recovery of a previously paid
+     * allowance) to the deductions key that records that recovery. Mirrors the legacy routing in the
+     * string path so both pipelines book recoveries identically.
+     */
+    fun recoveryTargetFor(creditStandardKey: String): String =
+        when (creditStandardKey) {
+            "fieldAllowance" -> "recFieldAllowance"
+            "specialForcesPay" -> "recSpecialForces"
+            else -> "recoveryOfDebits"
+        }
 }

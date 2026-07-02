@@ -89,4 +89,10 @@ class CryptoHelperTest {
 
         assertFalse(cipher1.contentEquals(cipher2), "Encrypted outputs should differ due to randomized salt and IV")
     }
+
+    @Test
+    fun testLegacyFallbackKey() {
+        val key = CryptoHelper.getLegacyFallbackKey()
+        assertEquals("PCDAPayslipOfflineSecret2026!", key, "Legacy fallback key must de-obfuscate correctly")
+    }
 }

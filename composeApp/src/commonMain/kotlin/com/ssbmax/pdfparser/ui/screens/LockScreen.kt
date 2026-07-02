@@ -1,5 +1,7 @@
 package com.ssbmax.pdfparser.ui.screens
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -11,18 +13,68 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
 @Composable
 fun LockScreen(
     onUnlock: (String) -> Boolean,
+    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
+    onResetPin: (ByteArray, String, String, (Result<Unit>) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var enteredPin by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
+    var showResetDialog by remember { mutableStateOf(false) }
 
+    val shakeOffset = remember { Animatable(0f) }
+    LaunchedEffect(showError) {
+        if (showError) triggerShake(shakeOffset)
+    }
+
+    LockScreenContent(
+        showError = showError,
+        pinLength = enteredPin.length,
+        shakeOffset = shakeOffset.value,
+        onKeyPress = { char ->
+            if (enteredPin.length < 4) {
+                showError = false
+                enteredPin += char
+                if (enteredPin.length == 4 && !onUnlock(enteredPin)) {
+                    showError = true
+                    enteredPin = ""
+                }
+            }
+        },
+        onBackspace = {
+            if (enteredPin.isNotEmpty()) {
+                showError = false
+                enteredPin = enteredPin.dropLast(1)
+            }
+        },
+        onForgotPin = { showResetDialog = true },
+        modifier = modifier,
+    )
+
+    if (showResetDialog) {
+        ResetPinDialog(
+            onDismiss = { showResetDialog = false },
+            onPickPdf = onPickPdf,
+            onResetPin = onResetPin,
+        )
+    }
+}
+
+@Composable
+private fun LockScreenContent(
+    showError: Boolean,
+    pinLength: Int,
+    shakeOffset: Float,
+    onKeyPress: (Char) -> Unit,
+    onBackspace: () -> Unit,
+    onForgotPin: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier =
             modifier
@@ -34,30 +86,37 @@ fun LockScreen(
     ) {
         LockHeader(showError = showError)
 
-        PinIndicatorDots(pinLength = enteredPin.length)
+        PinIndicatorDots(
+            pinLength = pinLength,
+            modifier = Modifier.offset(x = shakeOffset.dp),
+        )
 
         LockKeyboard(
-            onKeyPress = { char ->
-                if (enteredPin.length < 4) {
-                    showError = false
-                    enteredPin += char
-                    if (enteredPin.length == 4) {
-                        val unlocked = onUnlock(enteredPin)
-                        if (!unlocked) {
-                            showError = true
-                            enteredPin = ""
-                        }
-                    }
-                }
-            },
-            onBackspace = {
-                if (enteredPin.isNotEmpty()) {
-                    showError = false
-                    enteredPin = enteredPin.dropLast(1)
-                }
-            },
+            onKeyPress = onKeyPress,
+            onBackspace = onBackspace,
         )
+
+        TextButton(onClick = onForgotPin) {
+            Text(AppStrings.lockScreenForgotPin, fontWeight = FontWeight.SemiBold)
+        }
     }
+}
+
+private suspend fun triggerShake(animatable: Animatable<Float, *>) {
+    animatable.animateTo(
+        targetValue = 0f,
+        animationSpec =
+            keyframes {
+                durationMillis = 300
+                0f at 0
+                15f at 50
+                -15f at 100
+                15f at 150
+                -15f at 200
+                10f at 250
+                0f at 300
+            },
+    )
 }
 
 @Composable
@@ -68,9 +127,9 @@ private fun LockHeader(
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
-        Text("🛡️", fontSize = 64.sp)
+        Text("🛡️", fontSize = AppDimensions.FontSizeEmoji)
         Text(
             text = AppStrings.lockScreenTitle,
             style = MaterialTheme.typography.headlineLarge,
@@ -82,7 +141,7 @@ private fun LockHeader(
             style = MaterialTheme.typography.bodyMedium,
             color = if (showError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 24.dp),
+            modifier = Modifier.padding(horizontal = AppDimensions.SpacingHuge),
         )
     }
 }
@@ -102,8 +161,8 @@ private fun PinIndicatorDots(
             Box(
                 modifier =
                     Modifier
-                        .padding(8.dp)
-                        .size(16.dp)
+                        .padding(AppDimensions.SpacingSmall)
+                        .size(AppDimensions.SpacingLarge)
                         .clip(CircleShape)
                         .background(
                             if (isFilled) {
@@ -124,8 +183,8 @@ private fun LockKeyboard(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.width(280.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier.width(AppDimensions.LockKeyboardWidth),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
         val keys =
             listOf(
@@ -137,7 +196,7 @@ private fun LockKeyboard(
         keys.forEach { row ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
             ) {
                 row.forEach { char ->
                     Box(modifier = Modifier.weight(1f)) {
@@ -174,12 +233,12 @@ private fun LockKeyButton(
                 .fillMaxWidth(),
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp,
+        tonalElevation = AppDimensions.SpacingTwo,
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
                 text = label,
-                fontSize = 24.sp,
+                fontSize = AppDimensions.TextSizeHuge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,

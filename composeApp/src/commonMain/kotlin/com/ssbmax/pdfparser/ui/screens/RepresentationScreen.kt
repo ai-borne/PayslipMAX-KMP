@@ -18,6 +18,8 @@ import com.ssbmax.pdfparser.database.RepresentationDraftEntity
 import com.ssbmax.pdfparser.ui.*
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
+import com.ssbmax.pdfparser.utils.shareText
 
 @Composable
 fun RepresentationScreen(
@@ -85,18 +87,18 @@ private fun RepresentationHeader(
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),
         ) {
-            Text("← Back")
+            Text(AppStrings.btnBack)
         }
         Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
         Column {
             Text(
-                text = AppStrings.representationTitle,
+                text = AppStringsPremium.representationTitle,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = AppStrings.representationSubtitle,
+                text = AppStringsPremium.representationSubtitle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -113,7 +115,7 @@ private fun RepresentationEmptyState(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = AppStrings.representationDraftsEmpty,
+            text = AppStringsPremium.representationDraftsEmpty,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -144,7 +146,6 @@ private fun RepresentationCardItem(
     onSelect: (RepresentationDraftEntity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val clipboardManager = LocalClipboardManager.current
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
@@ -160,28 +161,44 @@ private fun RepresentationCardItem(
             )
             Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
             Text(
-                text = "${AppStrings.representationMonthLabel} ${draft.disputeMonth} | ${AppStrings.representationRecipientPcda}",
+                text = "${AppStringsPremium.representationMonthLabel} ${draft.disputeMonth} | ${AppStringsPremium.representationRecipientPcda}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-            ) {
-                Button(
-                    onClick = { onSelect(draft) },
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(AppStrings.representationEditBtn)
-                }
-                OutlinedButton(
-                    onClick = { clipboardManager.setText(AnnotatedString(draft.bodyText)) },
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Text(AppStrings.representationCopyBtn)
-                }
-            }
+            RepresentationActionsRow(draft = draft, onSelect = onSelect)
+        }
+    }
+}
+
+@Composable
+private fun RepresentationActionsRow(
+    draft: RepresentationDraftEntity,
+    onSelect: (RepresentationDraftEntity) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val clipboardManager = LocalClipboardManager.current
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+    ) {
+        Button(
+            onClick = { onSelect(draft) },
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(AppStringsPremium.representationEditBtn)
+        }
+        OutlinedButton(
+            onClick = { clipboardManager.setText(AnnotatedString(draft.bodyText)) },
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(AppStringsPremium.representationCopyBtn)
+        }
+        OutlinedButton(
+            onClick = { shareText(draft.bodyText, draft.subject) },
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(AppStringsPremium.representationShareBtn)
         }
     }
 }
@@ -200,7 +217,7 @@ private fun RepresentationEditor(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         Text(
-            text = "${AppStrings.representationEditDraftTitle} ${draft.disputeType}",
+            text = "${AppStringsPremium.representationEditDraftTitle} ${draft.disputeType}",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
@@ -223,7 +240,7 @@ private fun RepresentationEditor(
                 onClick = onSave,
                 modifier = Modifier.weight(1f),
             ) {
-                Text(AppStrings.representationSaveBtn)
+                Text(AppStringsPremium.representationSaveBtn)
             }
             OutlinedButton(
                 onClick = onCancel,

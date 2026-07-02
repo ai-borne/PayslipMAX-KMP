@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.ui.screens
 
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -28,7 +29,7 @@ class ProFeaturesTeaserTest {
 
     @Test
     fun premiumToolsTitleConstantNotBlank() {
-        assertTrue(AppStrings.premiumToolsTitle.isNotBlank())
+        assertTrue(AppStringsPremium.premiumToolsTitle.isNotBlank())
     }
 
     @Test

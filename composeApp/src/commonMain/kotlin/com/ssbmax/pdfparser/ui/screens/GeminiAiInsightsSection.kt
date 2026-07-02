@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
 import com.ssbmax.pdfparser.ui.theme.InsightsStrings
 
 /** Returns the first non-header, non-JSON paragraph from AI insights, truncated to [maxLength]. */
@@ -168,7 +169,7 @@ private fun ActiveContent(
         aiInsights != null -> AiInsightsSummary(aiInsights = aiInsights, onViewClick = onViewInsightsClick)
         else -> {
             Text(
-                text = AppStrings.geminiAiAnalyzeDesc,
+                text = AppStringsPremium.geminiAiAnalyzeDesc,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -188,7 +189,7 @@ private fun AiLoadingIndicator() {
     ) {
         CircularProgressIndicator(modifier = Modifier.size(AppDimensions.IconSizeSmall))
         Text(
-            text = AppStrings.aiAuditAnalyzingDesc,
+            text = AppStringsPremium.aiAuditAnalyzingDesc,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -210,6 +211,6 @@ private fun AiInsightsSummary(
         Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
     }
     Button(onClick = onViewClick, modifier = Modifier.fillMaxWidth()) {
-        Text(AppStrings.geminiAiViewReportBtn)
+        Text(AppStringsPremium.geminiAiViewReportBtn)
     }
 }

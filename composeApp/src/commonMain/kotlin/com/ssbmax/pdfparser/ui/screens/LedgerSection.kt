@@ -3,13 +3,22 @@ package com.ssbmax.pdfparser.ui.screens
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import com.ssbmax.pdfparser.domain.ConfidenceThresholds
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.domain.isFieldLowConfidence
+import com.ssbmax.pdfparser.ui.theme.AppColors
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -18,7 +27,12 @@ fun LedgerSection(
     payslip: ParsedPayslip,
     modifier: Modifier = Modifier,
     onItemClick: (code: String, desc: String) -> Unit,
+    onCorrectField: (fieldKey: String, newValue: Double) -> Unit = { _, _ -> },
 ) {
+    var editingLine by remember(payslip.dateStr) { mutableStateOf<LedgerLine?>(null) }
+    val creditMismatch = creditsMismatch(payslip)
+    val debitMismatch = debitsMismatch(payslip)
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
@@ -38,8 +52,13 @@ fun LedgerSection(
                                 BorderStroke(AppDimensions.BorderHairline, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
                             ),
                 ) {
-                    getCreditsList(payslip).forEach { (code, amount, desc) ->
-                        LedgerRowItem(code = code, amount = amount, desc = desc, onClick = onItemClick)
+                    getCreditsList(payslip).forEach { line ->
+                        LedgerRowItem(
+                            line = line,
+                            isLowConfidence = payslip.isFieldLowConfidence(line.fieldKey),
+                            onClick = onItemClick,
+                            onReview = { editingLine = line },
+                        )
                     }
                 }
                 // Debits Column
@@ -51,14 +70,30 @@ fun LedgerSection(
                                 BorderStroke(AppDimensions.BorderHairline, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
                             ),
                 ) {
-                    getDebitsList(payslip).forEach { (code, amount, desc) ->
-                        LedgerRowItem(code = code, amount = amount, desc = desc, onClick = onItemClick)
+                    getDebitsList(payslip).forEach { line ->
+                        LedgerRowItem(
+                            line = line,
+                            isLowConfidence = payslip.isFieldLowConfidence(line.fieldKey),
+                            onClick = onItemClick,
+                            onReview = { editingLine = line },
+                        )
                     }
                 }
             }
 
-            LedgerTableFooter(payslip)
+            LedgerTableFooter(payslip, creditMismatch, debitMismatch)
         }
+    }
+
+    editingLine?.let { line ->
+        LedgerCorrectionDialog(
+            line = line,
+            onDismiss = { editingLine = null },
+            onConfirm = { fieldKey, newValue ->
+                onCorrectField(fieldKey, newValue)
+                editingLine = null
+            },
+        )
     }
 }
 
@@ -93,38 +128,57 @@ private fun LedgerTableHeader() {
 
 @Composable
 private fun LedgerRowItem(
-    code: String,
-    amount: Double,
-    desc: String,
+    line: LedgerLine,
+    isLowConfidence: Boolean,
     onClick: (String, String) -> Unit,
+    onReview: () -> Unit,
 ) {
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable { onClick(code, desc) }
+                .clickable { onClick(line.code, line.desc) }
                 .padding(horizontal = AppDimensions.PaddingSmall, vertical = AppDimensions.SpacingSix),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = line.code,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            if (isLowConfidence) {
+                IconButton(
+                    onClick = onReview,
+                    modifier = Modifier.size(AppDimensions.IconSizeMedium),
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Info,
+                        contentDescription = AppStrings.correctionIndicatorDesc,
+                        tint = AppColors.Warning,
+                        modifier = Modifier.size(AppDimensions.IconSizeSmall),
+                    )
+                }
+            }
+        }
         Text(
-            text = code,
-            style = MaterialTheme.typography.labelSmall,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Text(
-            text = "₹${formatVal(amount)}",
+            text = formatVal(line.amount),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary,
+            color = if (isLowConfidence) AppColors.Warning else MaterialTheme.colorScheme.primary,
         )
     }
     HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
 }
 
 @Composable
-private fun LedgerTableFooter(payslip: ParsedPayslip) {
+private fun LedgerTableFooter(
+    payslip: ParsedPayslip,
+    creditMismatch: Double,
+    debitMismatch: Double,
+) {
     Column(
         modifier =
             Modifier
@@ -157,6 +211,63 @@ private fun LedgerTableFooter(payslip: ParsedPayslip) {
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.secondary,
             )
+        }
+        if (creditMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE ||
+            debitMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE
+        ) {
+            LedgerMismatchBanner(creditMismatch, debitMismatch)
+        }
+    }
+}
+
+@Composable
+private fun LedgerMismatchBanner(
+    creditMismatch: Double,
+    debitMismatch: Double,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = AppDimensions.SpacingSix)
+                .background(
+                    AppColors.Warning.copy(alpha = 0.12f),
+                    RoundedCornerShape(AppDimensions.CornerRadiusSmall),
+                )
+                .padding(AppDimensions.PaddingSmall),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
+    ) {
+        if (creditMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = AppStrings.ledgerMismatchIconDesc,
+                    tint = AppColors.Warning,
+                    modifier = Modifier.size(AppDimensions.IconSizeSmall),
+                )
+                Spacer(Modifier.size(AppDimensions.SpacingTiny))
+                Text(
+                    text = "${AppStrings.ledgerCreditMismatchPrefix}${formatVal(creditMismatch)}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AppColors.Warning,
+                )
+            }
+        }
+        if (debitMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = AppStrings.ledgerMismatchIconDesc,
+                    tint = AppColors.Warning,
+                    modifier = Modifier.size(AppDimensions.IconSizeSmall),
+                )
+                Spacer(Modifier.size(AppDimensions.SpacingTiny))
+                Text(
+                    text = "${AppStrings.ledgerDebitMismatchPrefix}${formatVal(debitMismatch)}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = AppColors.Warning,
+                )
+            }
         }
     }
 }
