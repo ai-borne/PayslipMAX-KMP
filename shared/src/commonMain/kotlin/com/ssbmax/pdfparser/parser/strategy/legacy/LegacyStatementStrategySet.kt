@@ -3,7 +3,6 @@ package com.ssbmax.pdfparser.parser.strategy.legacy
 import com.ssbmax.pdfparser.parser.strategy.IGrammarHeaderStrategy
 import com.ssbmax.pdfparser.parser.strategy.IGrammarPageStrategy
 import com.ssbmax.pdfparser.parser.strategy.IGrammarStrategySet
-import com.ssbmax.pdfparser.parser.strategy.IGrammarTableStrategy
 
 /**
  * Strategy bundle for the 2014 Legacy Statement era.
@@ -11,7 +10,6 @@ import com.ssbmax.pdfparser.parser.strategy.IGrammarTableStrategy
  */
 object LegacyStatementStrategySet : IGrammarStrategySet {
     override val headerStrategy: IGrammarHeaderStrategy = LegacyHeaderStrategy
-    override val tableStrategy: IGrammarTableStrategy = LegacyTableStrategy
     override val pageStrategy: IGrammarPageStrategy = LegacyPageStrategy
 }
 
@@ -21,6 +19,5 @@ object LegacyStatementStrategySet : IGrammarStrategySet {
  */
 object EarlyDualColStrategySet : IGrammarStrategySet {
     override val headerStrategy: IGrammarHeaderStrategy = LegacyHeaderStrategy
-    override val tableStrategy: IGrammarTableStrategy = LegacyTableStrategy
     override val pageStrategy: IGrammarPageStrategy = LegacyPageStrategy
 }

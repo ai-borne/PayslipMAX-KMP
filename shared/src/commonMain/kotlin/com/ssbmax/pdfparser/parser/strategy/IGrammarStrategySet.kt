@@ -6,6 +6,5 @@ package com.ssbmax.pdfparser.parser.strategy
  */
 interface IGrammarStrategySet {
     val headerStrategy: IGrammarHeaderStrategy
-    val tableStrategy: IGrammarTableStrategy
     val pageStrategy: IGrammarPageStrategy
 }

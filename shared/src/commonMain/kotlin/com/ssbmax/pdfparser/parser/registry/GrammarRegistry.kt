@@ -66,7 +66,6 @@ class GrammarRegistry {
                 selectedStrategies =
                     mapOf(
                         "HeaderStrategy" to winningDescriptor.strategySet.headerStrategy::class.simpleName.orEmpty(),
-                        "TableStrategy" to winningDescriptor.strategySet.tableStrategy::class.simpleName.orEmpty(),
                         "PageStrategy" to winningDescriptor.strategySet.pageStrategy::class.simpleName.orEmpty(),
                     ),
             )
