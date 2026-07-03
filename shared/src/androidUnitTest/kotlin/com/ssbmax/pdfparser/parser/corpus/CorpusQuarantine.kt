@@ -12,6 +12,10 @@ package com.ssbmax.pdfparser.parser.corpus
  * tolerance. Re-verified against the Phase 2 capture — the previous quarantine additionally covered
  * Mar-Dec 2025 and all of 2026, but those eras show zero DSOP/tax divergence and were removed rather
  * than kept as unexamined debt.
+ *
+ * Verified cosmetic, not a bug: a one-off run of the production parser against these 22 ids' committed
+ * iOS tokens showed 0 structured-field mismatches vs ground truth — the DSOP token divergence never
+ * reaches the final parsed numbers, so quarantining here costs no real parity proof.
  */
 object CorpusQuarantine {
     val legacyDsopQuarantine =
