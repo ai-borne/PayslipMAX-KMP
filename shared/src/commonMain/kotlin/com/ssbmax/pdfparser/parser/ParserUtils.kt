@@ -14,7 +14,7 @@ internal fun cleanCommasAndWhitespace(text: String): String {
 internal fun negateHindiTransliterations(text: String): String {
     var cleaned = text
     for (word in PayslipPatternConfig.hindiTransliterations) {
-        cleaned = cleaned.replace(Regex("(?<![a-zA-Z0-9])${Regex.escape(word)}(?![a-zA-Z0-9])", RegexOption.IGNORE_CASE), " ")
+        cleaned = replaceWholeWordIgnoreCase(cleaned, word, " ")
     }
     return cleaned.replace(Regex("\\s+"), " ")
 }
@@ -242,11 +242,9 @@ internal fun parseTotals(cleanedFullText: String): Triple<Double, Double, Double
     val extractedTotals = mutableMapOf<String, Double>()
     for ((term, keys) in totalsMapping) {
         for (key in keys) {
-            val escapedKey = Regex.escape(key)
-            val pattern = Regex("(?<![a-zA-Z0-9])$escapedKey(?![a-zA-Z0-9])\\s*[:\\-–]?\\s*(?:Rs\\.?\\s*)?(\\d+)", RegexOption.IGNORE_CASE)
-            val match = pattern.find(cleanedFullText)
-            if (match != null) {
-                extractedTotals[term] = match.groupValues[1].toDoubleOrNull() ?: 0.0
+            val value = findKeyedNumber(cleanedFullText, key)
+            if (value != null) {
+                extractedTotals[term] = value
                 break
             }
         }
