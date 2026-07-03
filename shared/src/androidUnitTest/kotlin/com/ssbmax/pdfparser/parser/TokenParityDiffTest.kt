@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.parser.corpus.CorpusFixtures
+import com.ssbmax.pdfparser.parser.corpus.CorpusQuarantine
 import com.ssbmax.pdfparser.parser.diff.DivergenceCategory
 import com.ssbmax.pdfparser.parser.diff.TokenDiff
 import com.ssbmax.pdfparser.parser.diff.TokenDiffReport
@@ -25,22 +26,6 @@ import kotlin.test.assertTrue
  * would fail on 100% of fixtures for a difference the project has already decided is fine.
  */
 class TokenParityDiffTest {
-    /**
-     * Legacy grammar era with confirmed genuine DSOP-page content divergence (pre-Oct-2023):
-     * real capture shows ~150-200 DSOP tokens differ between platforms in this era alone (a
-     * distinct DSOP page/table structure), while every other era and section matches within
-     * [MAX_BENIGN_CONTENT_DIFF]. Re-verified against the fresh Phase 2 capture — the previous
-     * quarantine additionally covered Mar-Dec 2025 and all of 2026, but those eras show zero
-     * DSOP/tax divergence and only the same small benign table-token variance seen everywhere
-     * else, so they are removed here rather than kept as unexamined debt.
-     */
-    private val legacyDsopQuarantine =
-        listOf(
-            Regex(".*_2022$"),
-            Regex("0[1-9]_.*_2023$"),
-            Regex("10_oct_2023$"),
-        )
-
     /**
      * Max tolerated per-section combined (onlyAndroid + onlyIos) token-text-count mismatch for
      * non-quarantined ids. Real capture shows a consistent combined diff of 0 or 4 across all
@@ -68,7 +53,7 @@ class TokenParityDiffTest {
 
             geometryReports += id to TokenDiff.compare(androidTokens.tableTokens, iosTokens.tableTokens)
 
-            if (legacyDsopQuarantine.any { it.matches(id) }) continue
+            if (CorpusQuarantine.isQuarantined(id)) continue
 
             failures += contentMismatches(id, "tableTokens", androidTokens.tableTokens, iosTokens.tableTokens)
             failures += contentMismatches(id, "taxTokens", androidTokens.taxTokens, iosTokens.taxTokens)
@@ -120,8 +105,8 @@ class TokenParityDiffTest {
         println("Fixtures: ${results.size} | Perfect: ${perfect.size} | With geometry/order deltas: ${diverged.size}")
         println()
 
-        val quarantined = diverged.filter { (id, _) -> legacyDsopQuarantine.any { it.matches(id) } }
-        val asserted = diverged.filter { (id, _) -> legacyDsopQuarantine.none { it.matches(id) } }
+        val quarantined = diverged.filter { (id, _) -> CorpusQuarantine.isQuarantined(id) }
+        val asserted = diverged.filter { (id, _) -> !CorpusQuarantine.isQuarantined(id) }
 
         if (quarantined.isNotEmpty()) {
             println("── QUARANTINED (legacy DSOP era, content not asserted) (${quarantined.size}) ──")
