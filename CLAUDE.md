@@ -1,6 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Keep this file at 200 lines or below.
 
 ## What this is
 
@@ -36,7 +37,7 @@ python3 scripts/check_tech_debt_limits.py --strict <files> # 300-line-file / com
 ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64   # verify iOS framework links cleanly (mirrors Xcode build phase; pre-commit runs this when commonMain/iosMain files are staged)
 ```
 
-Opt-in, developer-machine-only integration tests (never run in CI, never touch committed fixtures):
+Opt-in, developer-machine-only integration tests (never run in CI, never touch committed fixtures, ±1.0 field tolerance):
 
 ```bash
 ./gradlew :shared:testDebugUnitTest --tests "*PlatformPdfParserTest*" \
@@ -77,20 +78,19 @@ task), not just style guidance:
 - **Phase-wise plans for non-trivial work**, each phase ending in a fully green build. At the end of every phase: state what tech debt was incurred, how it was resolved immediately, and confirm build+tests are green before moving on — don't silently defer cleanup to "later."
 - **Surgical changes**: touch only what the task requires; don't opportunistically refactor or reformat adjacent code.
 
-## AI agent cooperation rules
+## Working style rules
 
-- **Rule 1 — Think before coding.** State assumptions explicitly; ask rather than guess. Present multiple interpretations when ambiguous. Push back when a simpler approach exists. Stop and name what's unclear when confused.
-- **Rule 2 — Simplicity first.** Minimum code that solves the problem; nothing speculative. No features beyond what was asked, no abstractions for single-use code. If a senior engineer would call it overcomplicated, simplify.
-- **Rule 3 — Surgical changes.** Touch only what you must; clean up only your own mess. Don't "improve" adjacent code, comments, or formatting. Don't refactor what isn't broken. Match existing style.
-- **Rule 4 — Goal-driven execution.** Define success criteria and iterate until verified, rather than mechanically following steps.
-- **Rule 5 — Use the model only for judgment calls.** Classification, drafting, summarization, extraction — yes. Routing, retries, deterministic transforms — no, let code handle those.
-- **Rule 6 — Token budgets are not advisory.** ~4,000 tokens/task, ~30,000/session. If approaching budget, summarize and start fresh; surface the breach rather than silently overrunning.
-- **Rule 7 — Surface conflicts, don't average them.** If two patterns contradict, pick one (more recent/more tested), explain why, and flag the other for cleanup — don't blend them.
-- **Rule 8 — Read before you write.** Check exports, immediate callers, and shared utilities before adding code. "Looks orthogonal" is dangerous — if unsure why code is structured a way, ask.
-- **Rule 9 — Tests verify intent, not just behavior.** Encode WHY behavior matters, not just WHAT it does. A test that can't fail when business logic changes is wrong.
-- **Rule 10 — Checkpoint after every significant step.** Summarize what was done, what's verified, what's left. If you lose track, stop and restate rather than continuing from an undescribable state.
-- **Rule 11 — Match the codebase's conventions, even if you disagree.** Conformance beats taste inside this codebase. If a convention seems genuinely harmful, surface it — don't fork silently.
-- **Rule 12 — Fail loud.** "Completed" is wrong if anything was skipped silently; "tests pass" is wrong if any were skipped. Default to surfacing uncertainty, not hiding it.
+- **Think before coding.** State assumptions explicitly; ask rather than guess when uncertain. Present multiple interpretations when a request is genuinely ambiguous. Push back if a simpler approach exists. Stop and name what's unclear rather than working around confusion.
+- **Simplicity first.** Minimum code that solves the problem — nothing speculative, no features beyond what was asked, no abstractions for single-use code. Test: would a senior engineer call this overcomplicated? If yes, simplify.
+- **Surgical changes.** Touch only what you must; clean up only your own mess. Don't "improve" adjacent code, comments, or formatting. Don't refactor what isn't broken. Match existing style. (Same rule as above, under Non-negotiable project rules — restated here because it governs working style, not just file mechanics.)
+- **Goal-driven execution.** Define success criteria up front and iterate until verified, rather than mechanically following a fixed list of steps.
+- **Use judgment calls, not deterministic transforms, for LLM-shaped work.** Classification, drafting, summarization, extraction are good fits. Routing, retries, and deterministic transforms belong in code, not in a model call.
+- **Surface conflicts, don't average them.** If two existing patterns in the codebase contradict, pick one (the more recent or better-tested) and explain why; flag the other for cleanup. Never silently blend conflicting patterns together.
+- **Read before you write.** Before adding code, read its exports, immediate callers, and shared utilities it touches. "Looks orthogonal" is dangerous — if unsure why code is structured a certain way, ask before changing it.
+- **Tests verify intent, not just behavior.** A test must encode *why* the behavior matters, not just *what* it does. A test that can't fail when the underlying business logic changes is a wrong test.
+- **Checkpoint after every significant step.** Summarize what was done, what's verified, and what's left. Don't continue from a state you can't describe back; if you lose track, stop and restate.
+- **Match the codebase's conventions, even when you disagree.** Conformance beats personal taste inside this codebase. If a convention seems genuinely harmful, surface it explicitly rather than forking silently.
+- **Fail loud.** "Completed" is wrong if anything was skipped silently; "tests pass" is wrong if any test was skipped. Default to surfacing uncertainty, not hiding it.
 
 ## Architecture — KMP app
 
@@ -103,18 +103,22 @@ task), not just style guidance:
 ### Parser pipeline (high level — full detail in `docs/AI_INSIGHTS_PIPELINE.md`)
 
 Both platforms extract tokens (`AndroidTokenExtractor`/PDFBox vs `IosTokenExtractor`/PDFKit) into a shared
-`TokenizedPayslip` IR, then run the **same** `GrammarAwareParser` → `SharedParsingPipeline` on both
-platforms — there is no platform-specific parsing logic beyond token extraction. Key architectural facts
-that aren't obvious from reading any single file:
+`TokenizedPayslip` IR, then run the **same** `GrammarAwareParser` → `SharedParsingPipeline` (a 7-tier
+pipeline: token extraction → grammar detection → grid reconstruction → table classification →
+reconciliation solver → offline Gemma fallback → schema validator) on both platforms — there is no
+platform-specific parsing logic beyond token extraction. Key architectural facts that aren't obvious from
+reading any single file:
 
 - **Grammar detection is date-primary, not text-signature-primary.** The printed statement period (parsed via `StatementPeriodExtractor`) is mapped directly to a `GrammarFamily` by `GrammarEraMapper` (open-ended past Mar 2025 — new months need no code change). Text-signature matching (`GrammarDescriptor.detectorMatcher`, priority-sorted across all 5 registered families) is only the fallback path for undated/unparseable documents, or a broad `verificationMatcher` sanity check on the date-primary path.
-- **Table/earnings-deductions extraction is grammar-agnostic.** `SharedParsingPipeline` always calls the single geometry-learning `TokenTableClassifier` directly, regardless of which `GrammarFamily` won detection. Grammar strategy dispatch (`IGrammarHeaderStrategy`/`IGrammarPageStrategy`) only affects officer-name parsing and tax/DSOP page extraction — there is no per-era table strategy. `ModernGridStrategySet`/`ExtendedGridStrategySet` and `LegacyStatementStrategySet`/`EarlyDualColStrategySet` are each two `object`s wired to identical underlying strategy instances (intentional, documented — not yet differentiated).
+- **Table/earnings-deductions extraction is grammar-agnostic.** `SharedParsingPipeline` always calls the single geometry-learning `TokenTableClassifier` directly, regardless of which `GrammarFamily` won detection — there is no `IGrammarTableStrategy` extension point (it existed as an all-`emptyMap()` stub cluster and was deleted as dead code). Grammar strategy dispatch (`IGrammarHeaderStrategy`/`IGrammarPageStrategy`) only affects officer-name parsing and tax/DSOP page extraction. `ModernGridStrategySet`/`ExtendedGridStrategySet` and `LegacyStatementStrategySet`/`EarlyDualColStrategySet` are each two `object`s wired to identical underlying strategy instances (intentional, documented — not yet differentiated; see the doc's SWOT for the tradeoff).
 - **Structured (`ParsedPayslip.earnings`/`.deductions`) and raw (`.rawEarnings`/`.rawDeductions`) fields are populated disjointly** by `ReconciliationSolver.route()` — an item is never in both. The display layer (`ReplicaUtils.getCreditsList`/`getDebitsList`) always merges both; treating them as either/or was a real production bug (see the doc's changelog).
+- **Tier 6 offline Gemma fallback** (`GemmaFallbackExtractor`/`GemmaEngine`) only runs when `ReconciliationSolver` flags `needsReview` or leaves raw leftovers — otherwise it stays on standby for battery/thermals. Its structured-JSON output is trusted directly into the same maps the geometry classifier populates, with no distinct lower-confidence marker (a known SWOT weakness).
+- **Tier 7 `SchemaValidator`** is the final gatekeeper: it checks gross/deductions/net arithmetic against `TOLERANCE = 2.0` and flags `needsReview = true` on mismatch rather than failing the parse outright.
 - `PayslipTokenParser` and the legacy `PayslipTextParser`/`DynamicSpatialParser` string path are **dead in production** (only referenced by debug/test tooling) — don't extend them; `GrammarAwareParser` is the only production entry point on both platforms.
-- Corpus regression fixtures live in `shared/src/androidUnitTest/resources/corpus/` (52 de-identified real-era fixtures, Jan 2022–Apr 2026) and are the primary safety net against "fix one month, break another." `TokenParseCorpusRegressionTest` running the production engine against all 52 is the main gate.
+- Corpus regression fixtures live in `shared/src/androidUnitTest/resources/corpus/` (52 de-identified real-era fixtures, Jan 2022–Apr 2026) and are the primary safety net against "fix one month, break another." `TokenParseCorpusRegressionTest` running the production engine against all 52 is the main gate — but 52/52 green does not by itself guarantee no user-visible regression on real documents whose exact layout noise (e.g. footer disclaimers) the corpus doesn't model.
 
 ### Persistence & security
 
-- Payslip data and per-field corrections are AES-256 encrypted at rest (`CryptoHelper`, Android Keystore / iOS Keychain) via Room (`EncryptedPayslipEntity`, `PayslipCorrectionEntity`).
-- Corrections are applied on read (`ParsedPayslip.applyCorrections`), never mutating the original parse — this lets re-parsing overwrite only the parsed side later.
+- Payslip data and per-field corrections are AES-256 encrypted at rest (`CryptoHelper`, Android Keystore / iOS Keychain) via Room (`EncryptedPayslipEntity`, `PayslipCorrectionEntity`, schema v9). Corrections apply on read only (`ParsedPayslip.applyCorrections`) and never mutate the original parse — this lets re-parsing overwrite only the parsed side later.
 - `CorpusScrubber` strips all PII (name/account/PAN/email) before any fixture is committed; numeric values are left untouched. Never commit a real PDF, real token dump, or unscrubbed fixture.
+- Real PII from before the Phase 6 scrub commit remains in git history; a destructive history rewrite (`filter-repo`/BFG) is deferred pending explicit user decision — don't attempt it unprompted.
