@@ -9,7 +9,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         FirebaseApp.configure()
-        
+
         // Ensure user is signed in anonymously to retrieve a valid ID token
         if Auth.auth().currentUser == nil {
             Auth.auth().signInAnonymously { authResult, error in
