@@ -24,9 +24,10 @@ import kotlin.test.Test
  * Opt-in developer utility: extracts the iOS PDFKit token IR from real PDFs and writes
  * `<id>.tokens.json` files using the same schema as the committed Android corpus fixtures.
  *
- * Purpose: provides real-device token streams for A/B comparison against Android so that
- * RC2 (column merge threshold) and RC4 (token height normalization) can be evaluated with
- * evidence before any code change is made.
+ * Purpose: produces the real-device token dumps committed at
+ * `shared/src/androidUnitTest/resources/corpus_ios_tokens/` (one file per Android corpus id),
+ * which [TokenParityDiffTest] asserts token-content parity against on every CI run. Re-run this
+ * and recommit the output only when Tier-1 token extraction changes on either platform.
  *
  * Skips entirely when PAYSLIP_LOCAL_CORPUS is absent (CI-safe).
  *
@@ -39,9 +40,10 @@ import kotlin.test.Test
  * Run:
  *   ./gradlew :shared:iosSimulatorArm64Test --tests "*IosTokenCaptureTest*"
  *
- * Compare output against Android:
- *   diff /tmp/ios_corpus_tokens/04_april_2022.tokens.json \
- *        shared/src/androidUnitTest/resources/corpus/04_april_2022.tokens.json
+ * Then, for each id present in the committed Android corpus, scrub (already done inline here)
+ * and copy into the repo:
+ *   cp /tmp/ios_corpus_tokens/04_april_2022.tokens.json \
+ *      shared/src/androidUnitTest/resources/corpus_ios_tokens/04_april_2022.tokens.json
  */
 class IosTokenCaptureTest {
     @Test

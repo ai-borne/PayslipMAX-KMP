@@ -74,6 +74,9 @@ data class CorpusTokens(
 object CorpusFixtures {
     const val RESOURCE_DIR = "corpus"
 
+    /** Committed iOS PDFKit token dumps (Phase 2 parity corpus), keyed by the same fixture ids as [RESOURCE_DIR]. */
+    const val IOS_TOKENS_RESOURCE_DIR = "corpus_ios_tokens"
+
     /** Tolerance (in rupees) for numeric field comparison — mirrors PlatformPdfParserTest. */
     const val TOLERANCE = 1.0
 
@@ -91,6 +94,8 @@ object CorpusFixtures {
     fun expectedResourcePath(id: String): String = "$RESOURCE_DIR/$id.expected.json"
 
     fun tokensResourcePath(id: String): String = "$RESOURCE_DIR/$id.tokens.json"
+
+    fun iosTokensResourcePath(id: String): String = "$IOS_TOKENS_RESOURCE_DIR/$id.tokens.json"
 
     /** Reads a committed corpus resource from the test classpath, or null if absent. */
     fun readResource(path: String): String? =
@@ -113,6 +118,10 @@ object CorpusFixtures {
 
     fun loadTokens(id: String): CorpusTokens =
         json.decodeFromString(CorpusTokens.serializer(), readResource(tokensResourcePath(id)) ?: error("Missing tokens fixture: $id"))
+
+    /** Committed iOS token dump for the same fixture id, or null if not yet captured (see [IOS_TOKENS_RESOURCE_DIR]). */
+    fun loadIosTokens(id: String): CorpusTokens? =
+        readResource(iosTokensResourcePath(id))?.let { json.decodeFromString(CorpusTokens.serializer(), it) }
 
     /** Stable fixture id derived from a payslip filename, safe for use as a file name. */
     fun idFor(filename: String): String =

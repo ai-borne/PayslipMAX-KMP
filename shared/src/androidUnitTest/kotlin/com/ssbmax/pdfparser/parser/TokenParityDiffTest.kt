@@ -1,153 +1,156 @@
 package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.parser.corpus.CorpusFixtures
-import com.ssbmax.pdfparser.parser.corpus.CorpusTokens
 import com.ssbmax.pdfparser.parser.diff.DivergenceCategory
 import com.ssbmax.pdfparser.parser.diff.TokenDiff
 import com.ssbmax.pdfparser.parser.diff.TokenDiffReport
 import org.junit.Test
-import java.io.File
+import kotlin.test.assertTrue
 
 /**
- * Opt-in corpus parity tool: compares committed Android tokens against iOS tokens captured
- * by [IosTokenCaptureTest] and emits a categorized divergence report.
+ * CI-enforced corpus parity gate: compares the committed Android token corpus
+ * (`androidUnitTest/resources/corpus/`) against the committed iOS PDFKit token dumps
+ * (`androidUnitTest/resources/corpus_ios_tokens/`, captured via [IosTokenCaptureTest] on a
+ * real device/simulator against the full local PDF corpus, then scrubbed and committed) for the
+ * same 52 fixture ids. Runs by default under `:shared:testDebugUnitTest` — no opt-in env vars,
+ * both fixture sets are committed.
  *
- * Skips entirely when the iOS token directory is absent (CI-safe). Run locally after capturing:
- *   ./gradlew :shared:iosSimulatorArm64Test --tests "*IosTokenCaptureTest*"
- * then:
- *   PAYSLIP_LOCAL_CORPUS_TOKENS_OUT=/tmp/ios_corpus_tokens ./gradlew :shared:testDebugUnitTest \
- *       --tests "*TokenParityDiffTest*"
- *
- * No assertions — the test always passes; the value is the printed report.
+ * The real assertion is *token-content* parity per section (tableTokens/taxTokens/dsopTokens),
+ * comparing text multisets so the check is insensitive to platform-specific reading order.
+ * Per-token geometry (dx/dy/dHeight) is reported for visibility only, not asserted: real-device
+ * capture shows PDFBox and PDFKit apply a small but highly consistent ~6-7pt y-offset and
+ * ~3-4pt height difference from differing font-metrics conventions on every matched token — this
+ * is expected, already-accepted platform variance (see the parser pipeline doc's Tier-1 token
+ * extraction note), not a correctness signal, so asserting an absolute geometry threshold here
+ * would fail on 100% of fixtures for a difference the project has already decided is fine.
  */
 class TokenParityDiffTest {
-    /** Failing eras per the execution plan: ≤ Oct 2023 and ≥ Mar 2025. */
-    private val failingEraPatterns =
+    /**
+     * Legacy grammar era with confirmed genuine DSOP-page content divergence (pre-Oct-2023):
+     * real capture shows ~150-200 DSOP tokens differ between platforms in this era alone (a
+     * distinct DSOP page/table structure), while every other era and section matches within
+     * [MAX_BENIGN_CONTENT_DIFF]. Re-verified against the fresh Phase 2 capture — the previous
+     * quarantine additionally covered Mar-Dec 2025 and all of 2026, but those eras show zero
+     * DSOP/tax divergence and only the same small benign table-token variance seen everywhere
+     * else, so they are removed here rather than kept as unexamined debt.
+     */
+    private val legacyDsopQuarantine =
         listOf(
             Regex(".*_2022$"),
             Regex("0[1-9]_.*_2023$"),
             Regex("10_oct_2023$"),
-            Regex("0[3-9]_.*_2025$"),
-            Regex("1[0-2]_.*_2025$"),
-            Regex(".*_2026$"),
         )
+
+    /**
+     * Max tolerated per-section combined (onlyAndroid + onlyIos) token-text-count mismatch for
+     * non-quarantined ids. Real capture shows a consistent combined diff of 0 or 4 across all
+     * non-quarantined fixtures — e.g. 2 occurrences of "kuula" only-Android plus 2 occurrences of
+     * "kula" only-iOS — from known benign tokenization quirks: a Hindi-transliteration spelling
+     * variant ("kuula"/"kula"), a stamped watermark word ("ATTENTION") that PDFBox splits into
+     * single-letter tokens while PDFKit keeps merged, and one iOS token with a trailing null
+     * byte. Anything beyond this is a real regression, not known noise.
+     */
+    private val maxBenignContentDiff = 4
 
     @Test
-    fun compareIosAndAndroidTokensAcrossCorpus() {
-        val iosTokenDir =
-            System.getenv("PAYSLIP_LOCAL_CORPUS_TOKENS_OUT")
-                ?.takeIf { it.isNotBlank() } ?: "/tmp/ios_corpus_tokens"
-
-        val dir = File(iosTokenDir)
-        if (!dir.exists()) {
-            println("[TokenParityDiff] iOS token dir '$iosTokenDir' absent — skipping (expected in CI).")
-            println("[TokenParityDiff] Capture first: ./gradlew :shared:iosSimulatorArm64Test --tests \"*IosTokenCaptureTest*\"")
-            return
-        }
-
+    fun androidAndIosTokensMatchAcrossCorpus() {
         val ids = CorpusFixtures.loadIndex()
-        if (ids.isEmpty()) {
-            println("[TokenParityDiff] Corpus index is empty — no fixtures to compare.")
-            return
-        }
+        assertTrue(ids.isNotEmpty(), "Corpus index is empty — no fixtures to compare.")
 
-        val results = mutableListOf<Pair<String, TokenDiffReport?>>()
-        var missing = 0
+        val geometryReports = mutableListOf<Pair<String, TokenDiffReport>>()
+        val failures = mutableListOf<String>()
 
         for (id in ids) {
-            val iosFile = File(dir, "$id.tokens.json")
-            if (!iosFile.exists()) {
-                println("[TokenParityDiff] ⚠️  iOS tokens missing for $id — skipping.")
-                missing++
-                continue
-            }
-            val iosTokensResult =
-                runCatching {
-                    CorpusFixtures.json.decodeFromString(CorpusTokens.serializer(), iosFile.readText())
-                }
-            if (iosTokensResult.isFailure) {
-                println("[TokenParityDiff] ❌ Failed to parse iOS tokens for $id: ${iosTokensResult.exceptionOrNull()?.message}")
-                results += id to null
-                continue
-            }
-            val androidTokensResult = runCatching { CorpusFixtures.loadTokens(id) }
-            if (androidTokensResult.isFailure) {
-                println("[TokenParityDiff] ❌ Failed to load Android tokens for $id: ${androidTokensResult.exceptionOrNull()?.message}")
-                results += id to null
-                continue
-            }
+            val androidTokens = CorpusFixtures.loadTokens(id)
+            val iosTokens =
+                CorpusFixtures.loadIosTokens(id)
+                    ?: error("Missing committed iOS token dump for '$id' — recapture with IosTokenCaptureTest and commit it.")
 
-            val report =
-                TokenDiff.compare(
-                    androidTokensResult.getOrThrow().tableTokens,
-                    iosTokensResult.getOrThrow().tableTokens,
-                )
-            results += id to report
+            geometryReports += id to TokenDiff.compare(androidTokens.tableTokens, iosTokens.tableTokens)
+
+            if (legacyDsopQuarantine.any { it.matches(id) }) continue
+
+            failures += contentMismatches(id, "tableTokens", androidTokens.tableTokens, iosTokens.tableTokens)
+            failures += contentMismatches(id, "taxTokens", androidTokens.taxTokens, iosTokens.taxTokens)
+            failures += contentMismatches(id, "dsopTokens", androidTokens.dsopTokens, iosTokens.dsopTokens)
         }
 
-        printReport(results, missing, ids.size)
+        printGeometryReport(geometryReports)
+
+        assertTrue(
+            failures.isEmpty(),
+            "Token content parity failures beyond the known-benign tolerance ($maxBenignContentDiff):\n" +
+                failures.joinToString("\n"),
+        )
     }
 
-    private fun printReport(
-        results: List<Pair<String, TokenDiffReport?>>,
-        missing: Int,
-        total: Int,
-    ) {
+    /** Returns a failure message if the text-multiset diff between [android] and [ios] exceeds tolerance, else empty. */
+    private fun contentMismatches(
+        id: String,
+        section: String,
+        android: List<PositionedToken>,
+        ios: List<PositionedToken>,
+    ): List<String> {
+        val androidCounts = android.groupingBy { it.text }.eachCount()
+        val iosCounts = ios.groupingBy { it.text }.eachCount()
+        val onlyAndroid = surplus(androidCounts, iosCounts)
+        val onlyIos = surplus(iosCounts, androidCounts)
+        val totalDiff = onlyAndroid.values.sum() + onlyIos.values.sum()
+        if (totalDiff <= maxBenignContentDiff) return emptyList()
+        return listOf(
+            "$id.$section: content diff=$totalDiff exceeds tolerance $maxBenignContentDiff " +
+                "(onlyAndroid=$onlyAndroid, onlyIos=$onlyIos)",
+        )
+    }
+
+    /** Per-key counts present in [a] beyond what [b] has of the same key. */
+    private fun surplus(
+        a: Map<String, Int>,
+        b: Map<String, Int>,
+    ): Map<String, Int> = a.mapValues { (key, count) -> count - (b[key] ?: 0) }.filterValues { it > 0 }
+
+    private fun printGeometryReport(results: List<Pair<String, TokenDiffReport>>) {
         val separator = "═".repeat(72)
         println("\n$separator")
-        println("TOKEN PARITY DIFF REPORT  (Android corpus vs iOS captured tokens)")
+        println("TOKEN GEOMETRY REPORT  (Android corpus vs committed iOS tokens — informational only)")
         println(separator)
 
-        val withReports = results.filter { it.second != null }
-        val perfect = withReports.filter { it.second!!.deltas.isEmpty() }
-        val diverged = withReports.filter { it.second!!.deltas.isNotEmpty() }
-
-        println(
-            "Fixtures total: $total | Compared: ${withReports.size} | Missing iOS: $missing | " +
-                "Perfect: ${perfect.size} | Diverged: ${diverged.size}",
-        )
+        val perfect = results.filter { it.second.deltas.isEmpty() }
+        val diverged = results.filter { it.second.deltas.isNotEmpty() }
+        println("Fixtures: ${results.size} | Perfect: ${perfect.size} | With geometry/order deltas: ${diverged.size}")
         println()
 
-        val failingEra = diverged.filter { (id, _) -> failingEraPatterns.any { it.matches(id) } }
-        val otherEra = diverged.filter { (id, _) -> failingEraPatterns.none { it.matches(id) } }
+        val quarantined = diverged.filter { (id, _) -> legacyDsopQuarantine.any { it.matches(id) } }
+        val asserted = diverged.filter { (id, _) -> legacyDsopQuarantine.none { it.matches(id) } }
 
-        if (failingEra.isNotEmpty()) {
-            println("── FAILING-ERA DIVERGENCES (${failingEra.size}) ──────────────────────────────")
-            failingEra.forEach { (id, report) -> printFixtureRow(id, report!!, highlight = true) }
+        if (quarantined.isNotEmpty()) {
+            println("── QUARANTINED (legacy DSOP era, content not asserted) (${quarantined.size}) ──")
+            quarantined.forEach { (id, report) -> printFixtureRow(id, report) }
+            println()
+        }
+        if (asserted.isNotEmpty()) {
+            println("── ASSERTED (content parity enforced; geometry informational) (${asserted.size}) ──")
+            asserted.forEach { (id, report) -> printFixtureRow(id, report) }
             println()
         }
 
-        if (otherEra.isNotEmpty()) {
-            println("── OTHER-ERA DIVERGENCES (${otherEra.size}) ──────────────────────────────────")
-            otherEra.forEach { (id, report) -> printFixtureRow(id, report!!, highlight = false) }
-            println()
-        }
-
-        if (perfect.isNotEmpty()) {
-            println("── PERFECT MATCHES (${perfect.size}) ─────────────────────────────────────────")
-            perfect.forEach { (id, _) -> println("  ✅ $id") }
-            println()
-        }
-
-        printCategorySummary(withReports.mapNotNull { it.second })
+        printCategorySummary(results.map { it.second })
         println(separator)
     }
 
     private fun printFixtureRow(
         id: String,
         report: TokenDiffReport,
-        highlight: Boolean,
     ) {
-        val prefix = if (highlight) "  ❌" else "  ⚠️ "
         val dominant = report.dominantCategory?.name ?: "NONE"
-        println("$prefix $id  [android=${report.androidCount} ios=${report.iosCount} deltas=${report.deltas.size} dominant=$dominant]")
+        println("  $id  [android=${report.androidCount} ios=${report.iosCount} deltas=${report.deltas.size} dominant=$dominant]")
         DivergenceCategory.entries.filter { (report.categoryCounts[it] ?: 0) > 0 }.forEach { cat ->
             println("       ${cat.name}: ${report.categoryCounts[cat]}")
         }
     }
 
     private fun printCategorySummary(reports: List<TokenDiffReport>) {
-        println("── CATEGORY TOTALS ACROSS ALL FIXTURES ──────────────────────────────")
+        println("── CATEGORY TOTALS ACROSS ALL FIXTURES (informational) ──────────────")
         DivergenceCategory.entries.forEach { cat ->
             val total = reports.sumOf { it.categoryCounts.getOrDefault(cat, 0) }
             val fixtures = reports.count { (it.categoryCounts[cat] ?: 0) > 0 }
