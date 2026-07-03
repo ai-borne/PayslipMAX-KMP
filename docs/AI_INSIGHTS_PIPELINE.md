@@ -1,6 +1,6 @@
 # PayslipMax — Parser & AI Insights Architecture
 
-**One-stop reference (SSOT) for how the PCDA(O) payslip parser works end-to-end, how AI Insights are generated, and how all the pieces connect. Updated to reflect the full Token-IR re-architecture (Phases 0–6), the iOS/Android token-parity fixes, the date-primary grammar detection redesign, and the raw/structured display-merge fix (see [§10 SWOT](#10-swot-analysis) and [§11 Changelog](#11-changelog) for the story behind each).**
+**One-stop reference (SSOT) for how the PCDA(O) payslip parser works end-to-end, how AI Insights are generated, and how all the pieces connect. Updated to reflect the full Token-IR re-architecture (Phases 0–6), the iOS/Android token-parity fixes, the date-primary grammar detection redesign, the raw/structured display-merge fix, and the CI-enforced iOS/Android token- and structured-field-parity gate with documented Android-only Tier 6 scoping (see [§10 SWOT](#10-swot-analysis) and [§11 Changelog](#11-changelog) for the story behind each).**
 
 PayslipMax is an offline-first military payslip intelligence platform for Indian Army officers. It extracts structured salary data from monthly PCDA(O) PDF payslips and turns it into wealth-optimization suggestions and error-detection alerts. Everything described in this document runs on-device with no data leaving the device except for optional cloud AI inference.
 
@@ -373,11 +373,15 @@ PayslipViewModel      → repository.saveCorrection(dateStr, fieldKey, newValue)
 ```
 shared/src/androidUnitTest/resources/corpus/
     <id>.input.json     ← scrubbed full-text / column texts (input, legacy string path)
-    <id>.tokens.json    ← scrubbed positioned tokens (input, token path)
+    <id>.tokens.json    ← scrubbed positioned tokens (input, token path — Android/PDFBox)
     <id>.expected.json  ← human-verified ParsedPayslip JSON (expected output)
+shared/src/androidUnitTest/resources/corpus_ios_tokens/
+    <id>.tokens.json    ← scrubbed positioned tokens (input, token path — iOS/PDFKit), captured
+                           via IosTokenCaptureTest on a real device/simulator, committed so the
+                           iOS/Android parity tests below run on the JVM with no live device
 ```
 
-52 fixtures covering Jan 2022 – Apr 2026 (4 per month across eras, including the Nov/Dec transition and Mar 2025 boundary). De-identified by `CorpusScrubber`:
+52 fixtures covering Jan 2022 – Apr 2026 (4 per month across eras, including the Nov/Dec transition and Mar 2025 boundary), plus the matching 52 committed iOS token dumps above. De-identified by `CorpusScrubber`:
 - Name → `Officer Officer Officer`
 - Account → `16/000/000000X`
 - PAN → `AR*****90G`
@@ -396,6 +400,10 @@ shared/src/androidUnitTest/resources/corpus/
 | `GrammarRegistryTest` | commonTest | Date-primary era boundaries (pre-Oct-2023, Oct/Nov 2023 transition, Feb/Mar 2025 transition, future months, dateless fallback) |
 | `GrammarEraMapperTest` / `StatementPeriodExtractorTest` | commonTest | Pure unit tests for the era-boundary lookup and period-parsing helpers |
 | `ReplicaUtilsMismatchTest` / `ReplicaUtilsTest` | commonTest | MISC row appearance, `creditsMismatch`/`debitsMismatch` helpers, structured+raw merge regression |
+| `TokenParityDiffTest` | androidUnitTest | **CI-enforced iOS/Android token parity.** Compares the committed Android token corpus against the committed `corpus_ios_tokens/` iOS dump for all 52 ids: asserts per-section (table/tax/dsop) token-*content* parity (order-insensitive multiset diff, small documented benign-tokenization tolerance) for every id outside `CorpusQuarantine`; reports per-token geometry (dx/dy/dHeight) informationally only, since PDFBox/PDFKit apply a small, consistent, already-accepted font-metrics offset. No env vars — both fixture sets are committed, so this runs by default, unlike the manual/report-only check it replaced. |
+| `IosTokenParseCorpusRegressionTest` | androidUnitTest | **CI-enforced iOS/Android structured-field parity.** Builds a `TokenizedPayslip` from each committed iOS token dump, runs it through the same production `GrammarAwareParser.parse`, and diffs against the same `<id>.expected.json` ground truth used for the Android corpus (±1.0 tolerance), for every id outside `CorpusQuarantine`. This is the strongest available proof — short of a live device run — that iOS and Android parse a given payslip to the same salary numbers through the identical `SharedParsingPipeline` code path. |
+
+`CorpusQuarantine` (`androidUnitTest/.../parser/corpus/CorpusQuarantine.kt`) is the single reviewed list of ids with a known, empirically-verified platform token divergence (legacy DSOP-page era: all 2022 + Jan–Oct 2023, 22 ids) — shared by both parity tests above rather than duplicated, per the project's SSOT rule.
 
 ### Opt-In Local / Integration Tests (never in CI)
 
@@ -403,7 +411,7 @@ shared/src/androidUnitTest/resources/corpus/
 |------|---------|---------------|
 | `CorpusCaptureTest` | `-Dpayslip.localCorpus=<path>` | Runs the real pipeline over PDFs at `~/Desktop/Pay Slip Elements`, writes scrubbed fixtures. Gated; no PII ever committed. |
 | `PlatformPdfParserTest.verifyRealPayslipsAgainstGroundTruth` | `-Dpayslip.localCorpus=<dir>` + `-Dpayslip.localCorpus.json=<ground-truth-file>` | Full end-to-end integration: decrypts and parses every real PDF under the local corpus directory and diffs every field against a hand-verified JSON, at **±1.0 tolerance** (tightened from ±5.0 — the looser tolerance was hiding small 0-vs-small-value extraction errors) |
-| `IosTokenCaptureTest` / `PlatformPdfParserIosTest` (iosTest) | `PAYSLIP_LOCAL_CORPUS` env var | iOS-side equivalents; used to capture PDFKit tokens for iOS/Android parity diffing (`TokenParityDiffTest`, `TokenDiff`) |
+| `IosTokenCaptureTest` / `PlatformPdfParserIosTest` (iosTest) | `PAYSLIP_LOCAL_CORPUS` env var | iOS-side capture/integration equivalents. `IosTokenCaptureTest` is how the committed `corpus_ios_tokens/` dumps above were produced in the first place (run once per corpus update, output scrubbed and committed) — it is not required for day-to-day CI, since the parity tests above run against the already-committed dump. |
 
 ---
 
@@ -584,6 +592,7 @@ Assessed against the current state of the pipeline (post date-primary grammar de
 - **Date-primary grammar detection is now deterministic and future-proof.** `GrammarEraMapper`'s open-ended upper bound means a payslip dated years from now needs zero code changes to route correctly, and detection no longer depends on an incidental marker (like that month happening to have an arrears line) being present.
 - **Disjoint structured/raw invariant is enforced at the source** (`ReconciliationSolver.route()`), and now correctly relied upon at the display layer too — eliminating a whole class of "one stray entry hides an otherwise-correct parse" bugs.
 - **Strong regression net.** 52 real-era fixtures, always-on in CI, plus an opt-in ±1.0-tolerance integration test against real local PDFs. The corpus caught zero regressions across this session's changes.
+- **iOS/Android parity is now proven in CI, not asserted by claim.** `TokenParityDiffTest` (token-content parity) and `IosTokenParseCorpusRegressionTest` (structured-field parity against the same ground truth used for Android) both run by default under `:shared:testDebugUnitTest` against committed fixtures — no manual device run or env var required. See [§5](#5-corpus-regression-safety-net) and [§11 Changelog](#11-changelog).
 - **Full explainability.** `GrammarDiagnosticReport` and `ParserDebugCollector` give a structured, stage-by-stage trace (which family, why, what verification passed/failed, per-field classification reason) — this is what let the Mar-2025 bug be root-caused from evidence instead of guesswork.
 - **PII discipline.** Corpus fixtures are scrubbed before commit; encrypted-at-rest storage; no hardcoded passwords in UI; opt-in-only real-PDF tooling.
 
@@ -624,3 +633,5 @@ Selected fixes with enough context to explain *why* the current design looks the
 - **Structured/raw display merge.** Root cause: `ReplicaUtils.getCreditsList`/`getDebitsList` treated a non-empty `rawEarnings`/`rawDeductions` map as a signal to show *only* raw entries, discarding the structured breakdown entirely — even though the parser (`ReconciliationSolver`) had already correctly itemized everything and the one raw entry was unrelated noise (a footer disclaimer mis-paired with a stray page number). Root-caused via real-PDF diagnostics (`ParserDebugCollector`) showing the parser itself was already correct; fixed by always merging both sources, since they're populated disjointly by design. See [§3](#3-display-layer-structured--raw-merge).
 - **`RawLabelNoiseFilter` added** as defense-in-depth alongside the display fix, dropping prose-length unmatched labels at classification time so footer noise never reaches `rawEarnings` in the first place.
 - **`IGrammarTableStrategy` stub cluster removed** — every implementation returned `emptyMap()` and was never called by `SharedParsingPipeline`; dead abstraction deleted rather than left in place.
+- **iOS Gemma fake-success trap closed; field provenance added (Phase 1 of the parity-verification plan).** `GemmaEngine.ios.kt`'s `actual` implementation used to return a fabricated success string instead of running real inference — harmless only because nothing wired it up yet, but a landmine for the next engineer who did. It now fails loudly (`Result.failure`) unconditionally. Added `ParsedPayslip.fieldSource: Map<String, FieldSource>` (`GEOMETRY` | `GEMMA_FALLBACK`) as an additive provenance sidecar to `fieldConfidence`, closing the "black box" SWOT weakness (see [§10 Threats](#10-swot-analysis)).
+- **Manual, assertion-free iOS/Android parity check replaced with a CI-enforced gate (Phases 2–3 of the same plan).** `TokenParityDiffTest` used to require a developer to manually run `IosTokenCaptureTest` against a live corpus and point an env var at the output, and had zero assertions ("the test always passes; the value is the printed report"). Real iOS PDFKit token dumps for all 52 corpus fixtures are now captured once, scrubbed, and committed (`corpus_ios_tokens/`), so `TokenParityDiffTest` asserts real token-content parity by default with no env vars. A sibling test, `IosTokenParseCorpusRegressionTest`, goes one step further and proves *structured-field* parity — running the committed iOS tokens through the same production `GrammarAwareParser.parse` and diffing against the same ground truth used for Android — closing the gap between "the test suite's name claims parity is checked" and what it actually checked. Two of the original plan's literal assertions turned out to be technically infeasible against real captured data and were adjusted with explicit sign-off: a hard 2f geometry threshold (real PDFBox/PDFKit font-metrics offsets are ~6-7pt/~3-4pt on essentially every token, which the project already treats as accepted variance) became informational-only, and `TokenDiff.compare`'s windowed sequential matching (which misclassified benign cross-platform token reordering as `MISSING_TOKEN`) was replaced with a more accurate order-insensitive content-multiset assertion. See [§5](#5-corpus-regression-safety-net).
