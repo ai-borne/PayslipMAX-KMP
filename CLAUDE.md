@@ -71,12 +71,23 @@ cd web-prototype && npm run lint:css     # stylelint
 These are enforced mechanically (pre-commit hook + CI `checkFileSizes`/`check_tech_debt_limits.py` Gradle
 task), not just style guidance:
 
-- **300-line hard limit per file** (Kotlin, JS, CSS, HTML alike). Split into smaller modules immediately if a file approaches it. Composable functions also have a max-length check.
-- **No hardcoded UI strings or colors.** All copy lives in `AppStrings.kt` (KMP) / `strings.js` (web-prototype); all theme tokens in `Theme.kt` (KMP) / `theme.css` (web-prototype).
-- **MVVM / SOLID / DRY / SSOT** across the codebase — Model is fully decoupled from ViewModel/View; consolidate shared config/formulas into one source of truth rather than duplicating (e.g. `PayslipPatternConfig`, `ConfidenceThresholds`, `GrammarEraMapper` are canonical SSOT objects — extend them, don't shadow them).
-- **TDD**: tests written before/alongside implementation; 100% passing before a phase is considered done.
-- **Phase-wise plans for non-trivial work**, each phase ending in a fully green build. At the end of every phase: state what tech debt was incurred, how it was resolved immediately, and confirm build+tests are green before moving on — don't silently defer cleanup to "later."
+0. **Strict, phase-wise execution strategy.** Non-trivial work is broken into explicit phases up front; phases execute in order, one at a time — no skipping ahead or collapsing phases to save time.
+1. **Phase independence & success.** Every phase must end with a fully successful build. Do not proceed to the next phase if the current build is failing.
+2. **TDD.** Tests (unit and integration) are written before or alongside implementation. 100% of tests must pass before a phase is marked complete.
+3. **Architecture & clean code.** Strictly uphold MVVM, SOLID, DRY, and SSOT (Single Source of Truth) — Model is fully decoupled from ViewModel/View; consolidate shared config/formulas into one source of truth rather than duplicating (e.g. `PayslipPatternConfig`, `ConfidenceThresholds`, `GrammarEraMapper` are canonical SSOT objects — extend them, don't shadow them). **300-line hard limit per file** (Kotlin, JS, CSS, HTML alike) — split immediately if a file approaches it; composable functions also have a max-length check.
+4. **Resource management.** Never hardcode UI strings or colors. All copy lives in `AppStrings.kt` (KMP) / `strings.js` (web-prototype); all theme tokens in `Theme.kt` (KMP) / `theme.css` (web-prototype).
+5. **Cybersecurity.** The codebase must remain 100% secure — actively check for and prevent security vulnerabilities (e.g. OWASP top 10, PII leakage) in every addition or update.
 - **Surgical changes**: touch only what the task requires; don't opportunistically refactor or reformat adjacent code.
+
+### Phase Handoff Protocol
+
+At the end of every phase, before moving to the next, pause and provide a Phase Summary containing:
+
+1. What tech debt was incurred during the phase.
+2. The exact steps taken to immediately and fully resolve it (no skipping or delaying tech debt).
+3. Confirmation that the build succeeds and all tests pass.
+
+Only after resolving all debt and verifying tests will the next phase begin.
 
 ## Working style rules
 
