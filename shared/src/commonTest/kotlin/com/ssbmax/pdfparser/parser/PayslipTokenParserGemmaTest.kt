@@ -1,8 +1,10 @@
 package com.ssbmax.pdfparser.parser
 
+import com.ssbmax.pdfparser.domain.FieldSource
 import com.ssbmax.pdfparser.insights.gemma.GemmaEngineConfig
 import com.ssbmax.pdfparser.insights.gemma.MockGemmaEngine
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -65,5 +67,59 @@ class PayslipTokenParserGemmaTest {
         assertTrue(result.isSuccess)
         val parsed = result.getOrThrow()
         assertTrue(parsed.needsReview, "Missing mandatory fields should keep needsReview flag true or set field confidence")
+    }
+
+    @Test
+    fun applyGemmaFallbackTagsMergedFieldsAsGemmaFallbackNotGeometry() {
+        val mockEngine = MockGemmaEngine(config = testConfig)
+        mockEngine.mockResponse =
+            """
+            {
+              "earnings": { "specialAllowance": 1200.0 },
+              "deductions": { "incomeTax": 400.0 }
+            }
+            """.trimIndent()
+        val extractor = GemmaFallbackExtractor(mockEngine = mockEngine)
+
+        // A solved table with genuine raw leftovers (unmatched tokens), as ReconciliationSolver.solve()
+        // would produce it, and every already-solved field tagged GEOMETRY.
+        val solved =
+            SolvedTable(
+                earningsMap = mapOf("basicPay" to 100000.0),
+                deductionsMap = emptyMap(),
+                rawEarnings = mapOf("SPL ALLW" to 1200.0),
+                rawDeductions = mapOf("ITAX" to 400.0),
+                reconciled =
+                    ReconciledTotals(
+                        realGross = 101200.0,
+                        realDeductions = 400.0,
+                        finalNet = 100800.0,
+                        miscEarnings = 0.0,
+                        miscDeductions = 0.0,
+                        ledger = LedgerCarryOver(0.0, 0.0, 0.0, 0.0),
+                    ),
+                fieldConfidence = mapOf("basicPay" to 1.0f, "SPL ALLW" to 0.8f, "ITAX" to 0.8f),
+                fieldSource = mapOf("basicPay" to FieldSource.GEOMETRY, "SPL ALLW" to FieldSource.GEOMETRY, "ITAX" to FieldSource.GEOMETRY),
+                needsReview = true,
+            )
+
+        val merged = applyGemmaFallback(solved, extractor)
+
+        assertEquals(1200.0, merged.earningsMap["specialAllowance"])
+        assertEquals(400.0, merged.deductionsMap["incomeTax"])
+        assertEquals(
+            FieldSource.GEMMA_FALLBACK,
+            merged.fieldSource["specialAllowance"],
+            "a field Gemma recovered from raw leftovers must be provenance-tagged GEMMA_FALLBACK",
+        )
+        assertEquals(
+            FieldSource.GEMMA_FALLBACK,
+            merged.fieldSource["incomeTax"],
+        )
+        assertEquals(
+            FieldSource.GEOMETRY,
+            merged.fieldSource["basicPay"],
+            "a field the geometry solver already had must keep its GEOMETRY tag untouched by the merge",
+        )
     }
 }

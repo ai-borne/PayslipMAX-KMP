@@ -153,7 +153,11 @@ class SharedParsingPipeline(
                 debitsSum = solved.deductionsMap.values.sum() + solved.rawDeductions.values.sum(),
             )
 
-        return parsed.copy(fieldConfidence = solved.fieldConfidence, needsReview = solved.needsReview || !schemaValidation.isValid)
+        return parsed.copy(
+            fieldConfidence = solved.fieldConfidence,
+            fieldSource = solved.fieldSource,
+            needsReview = solved.needsReview || !schemaValidation.isValid,
+        )
     }
 
     companion object {

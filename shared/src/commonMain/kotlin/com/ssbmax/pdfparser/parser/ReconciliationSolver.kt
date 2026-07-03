@@ -1,5 +1,7 @@
 package com.ssbmax.pdfparser.parser
 
+import com.ssbmax.pdfparser.domain.FieldSource
+
 /**
  * The fully solved table: standardized earnings/deductions, the raw (unmatched) channel, the
  * reconciled totals, and the per-field confidence sidecar consumed by the Phase 5 correction UI.
@@ -11,6 +13,7 @@ internal data class SolvedTable(
     val rawDeductions: Map<String, Double>,
     val reconciled: ReconciledTotals,
     val fieldConfidence: Map<String, Float>,
+    val fieldSource: Map<String, FieldSource> = emptyMap(),
     val needsReview: Boolean,
 )
 
@@ -98,6 +101,10 @@ internal object ReconciliationSolver {
         val needsReview =
             reconciled.netResidual >= NET_TOLERANCE || confidence.values.any { it < REVIEW_THRESHOLD } || hasMissingMandatory
 
+        // Every field reaching this point came from the geometry solver — Tier 6 Gemma fallback (if any)
+        // runs as a later pipeline step and overwrites the relevant keys to GEMMA_FALLBACK there.
+        val fieldSource: Map<String, FieldSource> = confidence.keys.associateWith { FieldSource.GEOMETRY }
+
         debugCollector?.stage5 =
             com.ssbmax.pdfparser.parser.debug.Stage5ReconciliationDump(
                 grossPay = grossPay,
@@ -118,6 +125,7 @@ internal object ReconciliationSolver {
             rawDeductions = rawDeductions,
             reconciled = reconciled,
             fieldConfidence = confidence,
+            fieldSource = fieldSource,
             needsReview = needsReview,
         )
     }

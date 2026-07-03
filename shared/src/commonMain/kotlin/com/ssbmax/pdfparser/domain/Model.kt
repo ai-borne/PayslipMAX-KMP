@@ -24,6 +24,13 @@ data class ParsedPayslip(
      * stay untouched (DRY). Consumed by the confidence-gated correction UI (Phase 5).
      */
     val fieldConfidence: Map<String, Float> = emptyMap(),
+    /**
+     * Provenance sidecar (SSOT, [FieldSource]). Maps a field key to which tier produced it —
+     * `GEOMETRY` (the deterministic solver) or `GEMMA_FALLBACK` (Tier 6 on-device LLM, Android-only).
+     * Empty until the solver/fallback populate it; lets the UI distinguish "solver was certain" from
+     * "Gemma inferred this" instead of both collapsing into the same `fieldConfidence` number.
+     */
+    val fieldSource: Map<String, FieldSource> = emptyMap(),
     /** True when at least one field is below the review threshold and should be surfaced for user correction. */
     val needsReview: Boolean = false,
 )

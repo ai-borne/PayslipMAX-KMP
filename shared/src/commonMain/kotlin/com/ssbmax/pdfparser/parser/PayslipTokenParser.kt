@@ -1,5 +1,6 @@
 package com.ssbmax.pdfparser.parser
 
+import com.ssbmax.pdfparser.domain.FieldSource
 import com.ssbmax.pdfparser.domain.ParsedPayslip
 import com.ssbmax.pdfparser.logging.Logger
 
@@ -74,7 +75,12 @@ object PayslipTokenParser {
                     debitsSum = solved.deductionsMap.values.sum() + solved.rawDeductions.values.sum(),
                 )
 
-            val finalParsed = parsed.copy(fieldConfidence = solved.fieldConfidence, needsReview = solved.needsReview || !schemaValidation.isValid)
+            val finalParsed =
+                parsed.copy(
+                    fieldConfidence = solved.fieldConfidence,
+                    fieldSource = solved.fieldSource,
+                    needsReview = solved.needsReview || !schemaValidation.isValid,
+                )
 
             val missingCredits = PayslipPatternConfig.strictlyMandatoryCredits.filter { (solved.earningsMap[it] ?: 0.0) <= 0.0 }
             val missingDebits = PayslipPatternConfig.strictlyMandatoryDebits.filter { (solved.deductionsMap[it] ?: 0.0) <= 0.0 }
@@ -100,10 +106,17 @@ internal fun applyGemmaFallback(
 
         val mergedEarnings = solved.earningsMap.toMutableMap()
         val mergedDeductions = solved.deductionsMap.toMutableMap()
-        extractions.earnings.forEach { (k, v) -> mergedEarnings[k] = (mergedEarnings[k] ?: 0.0) + v }
-        extractions.deductions.forEach { (k, v) -> mergedDeductions[k] = (mergedDeductions[k] ?: 0.0) + v }
+        val mergedSource = solved.fieldSource.toMutableMap()
+        extractions.earnings.forEach { (k, v) ->
+            mergedEarnings[k] = (mergedEarnings[k] ?: 0.0) + v
+            mergedSource[k] = FieldSource.GEMMA_FALLBACK
+        }
+        extractions.deductions.forEach { (k, v) ->
+            mergedDeductions[k] = (mergedDeductions[k] ?: 0.0) + v
+            mergedSource[k] = FieldSource.GEMMA_FALLBACK
+        }
 
-        solved.copy(earningsMap = mergedEarnings, deductionsMap = mergedDeductions)
+        solved.copy(earningsMap = mergedEarnings, deductionsMap = mergedDeductions, fieldSource = mergedSource)
     } catch (e: Exception) {
         solved
     }

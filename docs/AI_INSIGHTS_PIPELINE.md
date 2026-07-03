@@ -238,9 +238,10 @@ If any mandatory field is missing from the extracted maps, a **50% confidence pe
 When spatial confidence rules encounter ambiguity (`solved.needsReview == true`, or `solved.rawEarnings`/`solved.rawDeductions` are non-empty):
 1. **On-Demand Storage & Download Lifecycle**: The quantized Gemma model binary (`gemma-3-1b-it-int4.task`, ~650MB) is managed locally via `GemmaModelStorageManager`. Users trigger on-demand background streaming via `GemmaModelDownloadManager` directly from app settings.
 2. **Hardware Capability Gate**: `DeviceCapabilityManager` (`expect/actual` in KMP) inspects host hardware before model load, verifying RAM ≥ 3.5GB and free disk space ≥ 1.5GB.
-3. **Platform Binding & Runtime**: `PlatformPdfParser` (Android/iOS) verifies binary readiness in app storage (`context.filesDir`) and instantiates `GemmaEngine` wrapping the native Google MediaPipe LLM Inference SDK / native Apple Metal runtime.
+3. **Platform Binding & Runtime**: `PlatformPdfParser` (Android) verifies binary readiness in app storage (`context.filesDir`) and instantiates `GemmaEngine` wrapping the native Google MediaPipe LLM Inference SDK.
 4. **Prompt & Response Contract**: `GemmaPromptBuilder` formats unresolved token labels into a deterministic prompt. `GemmaEngine` executes local asynchronous inference, and `GemmaResponseParser` safely parses JSON extractions into standard ledger keys (`BPAY`, `DA`, `ITAX`, `DSOP`, etc.).
 5. **Standby Optimization**: If Tiers 1–5 achieve full mathematical reconciliation with no raw leftovers, Tier 6 inference stays on standby to preserve device battery and thermals.
+6. **Android-only by design.** `iosMain/.../PdfParser.kt` never constructs a `GemmaFallbackExtractor`, so `GrammarAwareParser` always runs Tiers 1–5 and 7 only on iOS — MediaPipe has no iOS/Kotlin-Native artifact, and a real port (ONNX Runtime Mobile or Apple's on-device Foundation Models) is a separate multi-week initiative tracked in `docs/ai_insights_adoptgemma.md`, not undertaken here. The iOS `actual GemmaEngine` (`GemmaEngine.ios.kt`) exists only to satisfy the `expect`/`actual` contract and always returns `Result.failure` from `generateResponse` — it does **not** run real inference, so it must never be wired into `PlatformPdfParser` without first implementing a real runtime.
 
 Note: raw entries left over after fallback are exactly what flows to `rawEarnings`/`rawDeductions` on `ParsedPayslip`, and (post-fix) are always shown *alongside* the structured breakdown in the UI, not instead of it — see [§3](#3-display-layer-structured--raw-merge).
 
@@ -332,9 +333,14 @@ ReconciliationSolver.scoreConfidence()
     → ParsedPayslip.fieldConfidence: Map<String, Float>
     → ParsedPayslip.needsReview: Boolean
 
+ReconciliationSolver.solve() / applyGemmaFallback()
+    → ParsedPayslip.fieldSource: Map<String, FieldSource>   (GEOMETRY | GEMMA_FALLBACK)
+
 ConfidenceThresholds.REVIEW_THRESHOLD = 0.7f  (SSOT)
 ParsedPayslip.isFieldLowConfidence(fieldKey)   (extension, ConfidenceThresholds.kt)
 ```
+
+`fieldSource` is a provenance sidecar parallel to `fieldConfidence`: every field starts tagged `GEOMETRY` in `ReconciliationSolver.solve()`, and `applyGemmaFallback` (`PayslipTokenParser.kt`, shared by both `PayslipTokenParser` and `SharedParsingPipeline`) re-tags any key it merges in from Tier 6 to `GEMMA_FALLBACK`. This closes the SWOT weakness below — the UI/auditors can now tell "the geometry solver was certain" apart from "Gemma inferred this" instead of both collapsing into the same `fieldConfidence` number.
 
 ### Correction Persistence
 
@@ -603,7 +609,7 @@ Assessed against the current state of the pipeline (post date-primary grammar de
 - **PCDA(O) may change document layout again** (as it already has 4 times: Legacy → EarlyDualCol → Transitional → Modern → Extended) in a way `GrammarEraMapper`'s date ranges don't anticipate — the pipeline is well-positioned to add a 6th era via one mapper entry + one descriptor, but a genuinely new *table* geometry (not just header/page) has no differentiated table-strategy extension point today (see Weaknesses).
 - **AI Insights auditors trust `ParsedPayslip` as ground truth.** Any upstream misclassification that survives Stage 5/7's arithmetic checks (i.e., still reconciles to the printed totals, just attributed to the wrong field) propagates silently into `MissingAllowanceAuditor`/`SalaryLossAuditor`'s month-over-month comparisons — these have no independent cross-check against the parser.
 - **Real PII in git history predates the Phase 6 scrub** and remains un-rewritten; any clone of the full history still exposes it until a deliberate, user-approved history rewrite happens.
-- **Gemma fallback is a black box relative to the deterministic solver.** Its structured-JSON output is trusted directly into the same maps the geometry classifier populates, with no explicit lower-confidence marker distinguishing "Gemma inferred this" from "the geometry solver was certain of this" once it lands in `fieldConfidence`.
+- ~~**Gemma fallback is a black box relative to the deterministic solver**, with no explicit marker distinguishing "Gemma inferred this" from "the geometry solver was certain of this" once it lands in `fieldConfidence`.~~ **Fixed.** `ParsedPayslip.fieldSource: Map<String, FieldSource>` (`GEOMETRY` | `GEMMA_FALLBACK`) is now populated in parallel to `fieldConfidence` — see [§4](#4-confidence-scoring--per-field-correction-ui). Separately, Gemma/Tier 6 being Android-only is now an explicit, documented product decision rather than a silent gap: `GrammarAwareParser` never receives a `GemmaFallbackExtractor` on iOS, and the iOS `actual GemmaEngine` always fails loudly (`Result.failure`) rather than faking a response — see [§2 Stage 6](#stage-6--tier-6-offline-gemma-fallback-gemmafallbackextractor--gemmaengine). A real iOS port (ONNX Runtime Mobile / Apple Foundation Models) is tracked separately in `docs/ai_insights_adoptgemma.md` and is not scheduled until product prioritizes Tier 6 parity.
 
 ---
 

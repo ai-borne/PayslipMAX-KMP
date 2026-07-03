@@ -12,17 +12,15 @@ actual class GemmaEngine actual constructor(private val config: GemmaEngineConfi
 
     actual suspend fun generateResponse(prompt: String): Result<String> =
         withContext(Dispatchers.Default) {
-            if (config.modelPath.isEmpty()) {
-                return@withContext Result.failure(IllegalStateException("iOS model path is empty"))
-            }
-            if (!isFileExists(config.modelPath)) {
-                return@withContext Result.failure(IllegalStateException("Model weights file missing at iOS path: ${config.modelPath}"))
-            }
-            try {
-                Result.success("iOS Gemma runtime execution completed for model at path: ${config.modelPath}")
-            } catch (e: Throwable) {
-                Result.failure(e)
-            }
+            // Tier 6 Gemma inference is not implemented on iOS (no MediaPipe/Kotlin-Native artifact
+            // exists — see docs/AI_INSIGHTS_PIPELINE.md). Always fail loudly rather than returning a
+            // fake success string, so wiring this into PlatformPdfParser later fails fast instead of
+            // silently returning garbage into the reconciled maps.
+            Result.failure(
+                NotImplementedError(
+                    "Gemma/Tier 6 offline fallback is unavailable on iOS: no on-device inference runtime is wired up.",
+                ),
+            )
         }
 
     actual fun close() {

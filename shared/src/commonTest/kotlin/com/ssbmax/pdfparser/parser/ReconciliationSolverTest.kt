@@ -1,5 +1,6 @@
 package com.ssbmax.pdfparser.parser
 
+import com.ssbmax.pdfparser.domain.FieldSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -44,6 +45,12 @@ class ReconciliationSolverTest {
         assertEquals(0.0, solved.reconciled.miscDeductions)
         assertFalse(solved.needsReview, "a fully reconciled slip needs no review")
         assertEquals(1.0f, solved.fieldConfidence["basicPay"])
+        assertEquals(
+            FieldSource.GEOMETRY,
+            solved.fieldSource["basicPay"],
+            "the solver never calls Gemma — every field it produces must be tagged GEOMETRY",
+        )
+        assertEquals(solved.fieldConfidence.keys, solved.fieldSource.keys, "fieldSource must cover exactly the same keys as fieldConfidence")
     }
 
     @Test
