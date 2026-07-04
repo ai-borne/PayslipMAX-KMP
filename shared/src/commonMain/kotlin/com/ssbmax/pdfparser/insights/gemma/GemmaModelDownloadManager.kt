@@ -36,7 +36,7 @@ class GemmaModelDownloadManager(
                 val response =
                     httpClient.get(url) {
                         onDownload { bytesSentTotal, contentLength ->
-                            if (contentLength != null && contentLength > 0) {
+                            if (contentLength > 0) {
                                 currentProgress = bytesSentTotal.toFloat() / contentLength.toFloat()
                             }
                         }

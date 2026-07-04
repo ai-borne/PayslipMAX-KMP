@@ -316,7 +316,7 @@ We outline the implementation phases from MVP to long-term scale:
 
 ### V1: On-Demand Gemma Integration
 *   **Dynamic Asset Delivery**: Download weights dynamically using Google Cloud Storage CDN or Firebase Dynamic Feature Delivery.
-*   **Inference Engine**: Execute via **ONNX Runtime Mobile** or **Google MediaPipe LLM Inference SDK** (providing uniform Kotlin Multiplatform bindings).
+*   **Inference Engine**: Execute via **ONNX Runtime Mobile** or **Google MediaPipe LLM Inference SDK** (providing uniform Kotlin Multiplatform bindings). *Superseded — see §15: MediaPipe LLM Inference is now maintenance-only/deprecated; LiteRT-LM is the current candidate.*
 *   **Verification**: Check model SHA-256 before instantiation.
 *   **Storage**: Store in App Sandbox (`NSCachesDirectory` on iOS, `cacheDir` on Android) with `URLResourceKey.isExcludedFromBackupKey` enabled to avoid iCloud storage warnings.
 
@@ -386,3 +386,36 @@ Remove all technical jargon. Focus on user benefit: **"Instant Secure Cloud"** v
 *   **30%** of Cloud-active users convert to Offline AI within 30 days.
 *   **90%** download completion rate using background session recovery.
 *   **50%** reduction in narrative API costs by month 3.
+
+---
+
+## 15. iOS On-Device Inference Runtime — Spike Scope (deferred)
+
+**Status today:** `GemmaEngine.ios.kt` deliberately always returns `Result.failure(NotImplementedError(...))`
+— a documented gap, not an accident (see `docs/AI_INSIGHTS_PIPELINE.md` §2 Stage 6). Even a correctly
+downloaded model file (fixed separately — see that doc's Changelog, Phase A of the Tier 6 Gemma plan) does
+nothing on iOS today, because no Kotlin/Native inference runtime is wired up at all.
+
+**Research finding (corrects §11's V1 roadmap above):** Android's current runtime, MediaPipe's `LlmInference`
+(`com.google.mediapipe.tasks.genai.llminference`), does have an iOS/Swift artifact (`MediaPipeTasksGenai` via
+CocoaPods) — but the entire MediaPipe LLM Inference API is now **maintenance-only/deprecated on both Android
+and iOS**. Google's supported successor, **LiteRT-LM**, has a genuine open-source **Swift API** (Swift Package
+Manager, Metal GPU acceleration) and also runs on Android — so there's a real case for migrating *both*
+platforms to it rather than adding new iOS work on top of a sunsetting dependency.
+
+**Why this is a spike, not a build-out:** the concrete interop mechanics are unverified:
+1. **Kotlin/Native ⇄ LiteRT-LM Swift Package** — direct `cinterop` (which targets C/Objective-C headers), or
+   does this need a Swift-side bridge (implement LiteRT-LM calls in `iosApp`'s Swift code, expose a thin
+   interface to Kotlin through the existing `expect`/`actual GemmaEngine.ios.kt` boundary via a
+   callback/protocol registered at app startup — the standard KMP pattern for Swift-only capabilities)?
+2. **Model format** — does LiteRT-LM accept the same `gemma-3-1b-it-int4.task` artifact Android downloads
+   today, or does iOS need a different converted model file (changing what the download pipeline needs to
+   fetch for iOS)?
+3. **Scope** — given MediaPipe is deprecated on Android too, should Android migrate to LiteRT-LM in the same
+   effort (one current runtime, both platforms) rather than iOS adopting a second, newer runtime while
+   Android stays on the deprecated one?
+
+**Recommended next step:** a time-boxed technical spike answering exactly these three questions, before any
+real build-out plan is written. Not undertaken in this pass.
+
+Sources: [LLM Inference guide for iOS](https://developers.google.com/edge/mediapipe/solutions/genai/llm_inference/ios), [LiteRT-LM Swift API](https://developers.google.com/edge/litert-lm/swift), [LiteRT-LM Overview](https://developers.google.com/edge/litert-lm/overview), [google-ai-edge/LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM).
