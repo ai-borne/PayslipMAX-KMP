@@ -12,6 +12,20 @@
         "__tests__"
       ]
     }
-  ]
+  ],
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/models/**",
+        "function": "serveGemmaModel"
+      }
+    ]
+  }
 }
 
