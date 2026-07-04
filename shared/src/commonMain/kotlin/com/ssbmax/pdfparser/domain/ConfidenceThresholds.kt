@@ -8,6 +8,13 @@ object ConfidenceThresholds {
     /** A field whose confidence is strictly below this is considered uncertain and surfaced for correction. */
     const val REVIEW_THRESHOLD = 0.7f
 
+    /**
+     * Fixed confidence assigned to a field recovered by the Tier 6 Gemma fallback. It is a floor, not a
+     * computed score — an LLM-guessed field is always uncertain regardless of how confident the geometry
+     * solver was before Gemma ran, so it must sit below [REVIEW_THRESHOLD] to surface for review.
+     */
+    const val GEMMA_FALLBACK_CONFIDENCE = 0.5f
+
     /** Maximum ₹ gap between displayed item sum and printed footer total before a mismatch banner fires. */
     const val ITEM_SUM_TOLERANCE = 2.0
 }

@@ -156,4 +156,33 @@ class ReplicaUtilsTest {
             payslip.copy(earnings = Earnings(), rawEarnings = mapOf("BONUS X" to 5000.0))
         assertEquals("BONUS X", getCreditsList(rawPayslip).first { it.code == "BONUS X" }.fieldKey)
     }
+
+    @Test
+    fun `a Gemma-recovered field is shown exactly once and flagged low-confidence`() {
+        // Post-fix shape of applyGemmaFallback's output: the recovered field lives only in the
+        // structured map (rawDeductions no longer carries it, see PayslipTokenParserGemmaTest), tagged
+        // GEMMA_FALLBACK at the fixed confidence floor.
+        val payslip =
+            ParsedPayslip(
+                file = "gemma.pdf",
+                year = 2024,
+                monthNum = 1,
+                monthName = "January",
+                dateStr = "01/2024",
+                officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
+                earnings = Earnings(basicPay = 100000.0),
+                deductions = Deductions(incomeTax = 400.0),
+                ledgerBalances = LedgerBalances(),
+                summary = PayslipSummary(100000.0, 400.0, 99600.0),
+                taxAndSavings = null,
+                rawEarnings = emptyMap(),
+                rawDeductions = emptyMap(),
+                fieldConfidence = mapOf("incomeTax" to ConfidenceThresholds.GEMMA_FALLBACK_CONFIDENCE),
+                fieldSource = mapOf("incomeTax" to FieldSource.GEMMA_FALLBACK),
+            )
+
+        val debits = getDebitsList(payslip)
+        assertEquals(1, debits.count { it.fieldKey == "incomeTax" }, "must appear exactly once, not double-counted from a leftover raw entry")
+        assertTrue(payslip.isFieldLowConfidence("incomeTax"), "a Gemma-recovered field must be surfaced for review, not read as certain")
+    }
 }

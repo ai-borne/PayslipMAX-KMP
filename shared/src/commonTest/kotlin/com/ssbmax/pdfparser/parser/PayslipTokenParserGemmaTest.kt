@@ -1,10 +1,12 @@
 package com.ssbmax.pdfparser.parser
 
+import com.ssbmax.pdfparser.domain.ConfidenceThresholds
 import com.ssbmax.pdfparser.domain.FieldSource
 import com.ssbmax.pdfparser.insights.gemma.GemmaEngineConfig
 import com.ssbmax.pdfparser.insights.gemma.MockGemmaEngine
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -120,6 +122,68 @@ class PayslipTokenParserGemmaTest {
             FieldSource.GEOMETRY,
             merged.fieldSource["basicPay"],
             "a field the geometry solver already had must keep its GEOMETRY tag untouched by the merge",
+        )
+        assertFalse(
+            merged.rawEarnings.containsKey("SPL ALLW"),
+            "the raw entry Gemma resolved must be removed, or getCreditsList/creditsSum double-count it",
+        )
+        assertFalse(
+            merged.rawDeductions.containsKey("ITAX"),
+            "the raw entry Gemma resolved must be removed, or getDebitsList/debitsSum double-count it",
+        )
+        assertEquals(
+            ConfidenceThresholds.GEMMA_FALLBACK_CONFIDENCE,
+            merged.fieldConfidence["specialAllowance"],
+            "a Gemma-recovered field must get the fixed low-confidence floor, not be left unset (unset reads as certain)",
+        )
+        assertEquals(
+            ConfidenceThresholds.GEMMA_FALLBACK_CONFIDENCE,
+            merged.fieldConfidence["incomeTax"],
+        )
+        assertTrue(
+            ConfidenceThresholds.GEMMA_FALLBACK_CONFIDENCE < ConfidenceThresholds.REVIEW_THRESHOLD,
+            "the floor must actually be low-confidence, or isFieldLowConfidence won't flag it for review",
+        )
+    }
+
+    @Test
+    fun applyGemmaFallbackLeavesUntouchedSideAloneWhenGemmaOnlyResolvesOneSide() {
+        val mockEngine = MockGemmaEngine(config = testConfig)
+        mockEngine.mockResponse =
+            """
+            {
+              "earnings": { "specialAllowance": 1200.0 },
+              "deductions": {}
+            }
+            """.trimIndent()
+        val extractor = GemmaFallbackExtractor(mockEngine = mockEngine)
+
+        val solved =
+            SolvedTable(
+                earningsMap = mapOf("basicPay" to 100000.0),
+                deductionsMap = emptyMap(),
+                rawEarnings = mapOf("SPL ALLW" to 1200.0),
+                rawDeductions = mapOf("UNRESOLVED" to 250.0),
+                reconciled =
+                    ReconciledTotals(
+                        realGross = 101200.0,
+                        realDeductions = 250.0,
+                        finalNet = 100950.0,
+                        miscEarnings = 0.0,
+                        miscDeductions = 0.0,
+                        ledger = LedgerCarryOver(0.0, 0.0, 0.0, 0.0),
+                    ),
+                fieldConfidence = mapOf("basicPay" to 1.0f, "SPL ALLW" to 0.8f, "UNRESOLVED" to 0.8f),
+                fieldSource = mapOf("basicPay" to FieldSource.GEOMETRY, "SPL ALLW" to FieldSource.GEOMETRY, "UNRESOLVED" to FieldSource.GEOMETRY),
+                needsReview = true,
+            )
+
+        val merged = applyGemmaFallback(solved, extractor)
+
+        assertFalse(merged.rawEarnings.containsKey("SPL ALLW"), "earnings side was resolved by Gemma, so its raw leftover must clear")
+        assertTrue(
+            merged.rawDeductions.containsKey("UNRESOLVED"),
+            "Gemma returned no deductions at all, so the untouched deductions side's raw leftovers must be left alone",
         )
     }
 }
