@@ -38,6 +38,7 @@ data class PayslipUiState(
     val isDownloadingModel: Boolean = false,
     val modelDownloadProgress: Float = 0f,
     val modelDownloadError: String? = null,
+    val modelDownloadNotice: String? = null,
 )
 
 class PayslipViewModel(

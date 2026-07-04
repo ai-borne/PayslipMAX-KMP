@@ -20,7 +20,7 @@ class GemmaBenchmarkTest {
     fun testBenchmarkHarnessTracksExecution() =
         runTest {
             val harness = GemmaBenchmarkHarness()
-            val config = GemmaEngineConfig(modelPath = "test/path.task")
+            val config = GemmaEngineConfig(modelPath = "test/path.litertlm")
             val engine = MockGemmaEngine(config, mockResponse = "Output tokens response for benchmarking test")
             val result = harness.benchmarkMockEngine(engine)
 

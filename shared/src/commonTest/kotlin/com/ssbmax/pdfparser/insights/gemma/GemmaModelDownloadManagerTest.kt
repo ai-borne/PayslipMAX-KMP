@@ -44,8 +44,8 @@ class GemmaModelDownloadManagerTest {
 
             val states = mutableListOf<DownloadStatus>()
             downloadManager.downloadModel(
-                url = "https://example.com/gemma.task",
-                destinationPath = "test_gemma.task",
+                url = "https://example.com/gemma.litertlm",
+                destinationPath = "test_gemma.litertlm",
             ).toList(states)
 
             assertTrue(states.first() is DownloadStatus.Idle)
@@ -101,8 +101,8 @@ class GemmaModelDownloadManagerTest {
 
             val states = mutableListOf<DownloadStatus>()
             downloadManager.downloadModel(
-                url = "https://example.com/missing.task",
-                destinationPath = "test_gemma.task",
+                url = "https://example.com/missing.litertlm",
+                destinationPath = "test_gemma.litertlm",
             ).toList(states)
 
             val lastState = states.last()

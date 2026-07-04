@@ -287,8 +287,9 @@ To maintain user trust, weight updates must happen silently and securely.
   [ Remove Old Weight ]          [ Show Notification ]
 ```
 
-### Rollback Strategy
+### Rollback Strategy — **implemented** (was: sketched)
 *   **Dual-Slot Execution (A/B)**: Keep the active model weights in Slot A. Write the new download to Slot B. Run a checksum and a sanity prompt test. If it succeeds, point the engine to Slot B and delete Slot A. If it fails, keep Slot A active.
+*   **As built (LiteRT-LM unification, §15):** this is no longer a sketch. `GemmaModelStorageManager`/`GemmaModelPaths` define an **active slot** (`gemma-active.litertlm`), a **staging slot** (`gemma-staging.litertlm`), and a `gemma-active.version` metadata record, all in `shared/commonMain` (one state machine, used identically by both platforms' `PdfParser.kt`). `GemmaModelVersionManager.fetchManifest()` returns the current `{version, sha256}`; `PayslipViewModelGemmaExtensions.setLocalAiEnabled` downloads a differing version into staging, `verifyStagingChecksum` runs SHA-256 (pure-Kotlin `Sha256.kt`, pinned to NIST vectors), and `promoteStagingToActive` performs an **atomic rename that overwrites the old active** (strictly better than delete-then-move for the "never half-written" guarantee) — a checksum mismatch calls `discardStaging` and leaves the active slot and recorded version untouched. Regression tests prove both directions: staging-verified→promote, and staging-checksum-fails→active-survives. (The "sanity prompt test" step above is not yet wired — checksum is the current gate; a post-promote inference smoke test is a possible future hardening, not required for correctness since a bad-bytes model fails checksum before promotion.)
 
 ---
 
@@ -316,7 +317,7 @@ We outline the implementation phases from MVP to long-term scale:
 
 ### V1: On-Demand Gemma Integration
 *   **Dynamic Asset Delivery**: Download weights dynamically using Google Cloud Storage CDN or Firebase Dynamic Feature Delivery.
-*   **Inference Engine**: Execute via **ONNX Runtime Mobile** or **Google MediaPipe LLM Inference SDK** (providing uniform Kotlin Multiplatform bindings). *Superseded — see §15: MediaPipe LLM Inference is now maintenance-only/deprecated; LiteRT-LM is the current candidate.*
+*   **Inference Engine**: Execute via **ONNX Runtime Mobile** or **Google MediaPipe LLM Inference SDK** (providing uniform Kotlin Multiplatform bindings). *Superseded — see §15: MediaPipe LLM Inference is maintenance-only/deprecated and both platforms now run on **LiteRT-LM**, implemented (not just a candidate).*
 *   **Verification**: Check model SHA-256 before instantiation.
 *   **Storage**: Store in App Sandbox (`NSCachesDirectory` on iOS, `cacheDir` on Android) with `URLResourceKey.isExcludedFromBackupKey` enabled to avoid iCloud storage warnings.
 
@@ -389,33 +390,54 @@ Remove all technical jargon. Focus on user benefit: **"Instant Secure Cloud"** v
 
 ---
 
-## 15. iOS On-Device Inference Runtime — Spike Scope (deferred)
+## 15. On-Device Inference Runtime — LiteRT-LM, **built out on both platforms** (was: deferred spike)
 
-**Status today:** `GemmaEngine.ios.kt` deliberately always returns `Result.failure(NotImplementedError(...))`
-— a documented gap, not an accident (see `docs/AI_INSIGHTS_PIPELINE.md` §2 Stage 6). Even a correctly
-downloaded model file (fixed separately — see that doc's Changelog, Phase A of the Tier 6 Gemma plan) does
-nothing on iOS today, because no Kotlin/Native inference runtime is wired up at all.
+**Status now:** real on-device Gemma inference runs on **both** Android and iOS through Google's supported
+**LiteRT-LM** runtime, downloaded via one version-aware dual-slot pipeline backed by a Firebase-Hosting/GCS
+model cache. This supersedes the earlier "deferred spike" framing of this section: the three interop
+questions that gated a build-out are all answered below, and the runtime is implemented (see
+`docs/AI_INSIGHTS_PIPELINE.md` §2 Stage 6 + §11 Changelog for the parser-side view). The iOS
+`GemmaEngine.ios.kt` no longer returns `Result.failure(NotImplementedError(...))` — it bridges to a real
+Swift LiteRT-LM engine; it now fails only if its delegate was never registered (a wiring bug, not a
+deliberate stub).
 
-**Research finding (corrects §11's V1 roadmap above):** Android's current runtime, MediaPipe's `LlmInference`
-(`com.google.mediapipe.tasks.genai.llminference`), does have an iOS/Swift artifact (`MediaPipeTasksGenai` via
-CocoaPods) — but the entire MediaPipe LLM Inference API is now **maintenance-only/deprecated on both Android
-and iOS**. Google's supported successor, **LiteRT-LM**, has a genuine open-source **Swift API** (Swift Package
-Manager, Metal GPU acceleration) and also runs on Android — so there's a real case for migrating *both*
-platforms to it rather than adding new iOS work on top of a sunsetting dependency.
+**Why LiteRT-LM and not MediaPipe:** Android's previous runtime, MediaPipe's `LlmInference`
+(`com.google.mediapipe.tasks.genai.llminference`), does ship an iOS/Swift artifact — but the entire MediaPipe
+LLM Inference API is **maintenance-only/deprecated on both platforms**. Rather than add new iOS work on top
+of a sunsetting dependency, both platforms were migrated to LiteRT-LM (stable Android Maven artifact + a
+genuine Swift Package with Metal GPU acceleration) in one coordinated effort.
 
-**Why this is a spike, not a build-out:** the concrete interop mechanics are unverified:
-1. **Kotlin/Native ⇄ LiteRT-LM Swift Package** — direct `cinterop` (which targets C/Objective-C headers), or
-   does this need a Swift-side bridge (implement LiteRT-LM calls in `iosApp`'s Swift code, expose a thin
-   interface to Kotlin through the existing `expect`/`actual GemmaEngine.ios.kt` boundary via a
-   callback/protocol registered at app startup — the standard KMP pattern for Swift-only capabilities)?
-2. **Model format** — does LiteRT-LM accept the same `gemma-3-1b-it-int4.task` artifact Android downloads
-   today, or does iOS need a different converted model file (changing what the download pipeline needs to
-   fetch for iOS)?
-3. **Scope** — given MediaPipe is deprecated on Android too, should Android migrate to LiteRT-LM in the same
-   effort (one current runtime, both platforms) rather than iOS adopting a second, newer runtime while
-   Android stays on the deprecated one?
+**The three interop questions — answered:**
+1. **Kotlin/Native ⇄ LiteRT-LM Swift Package → Swift-side bridge, not `cinterop`.** LiteRT-LM's iOS package
+   is pure Swift with no Objective-C headers, so Kotlin/Native `cinterop` cannot bind it. The build uses the
+   established KMP pattern: `GemmaEngine.ios.kt` exposes a companion `inferenceDelegate` closure (mirroring
+   `AuthTokenProvider.ios.kt`), a native Swift wrapper `GemmaInferenceBridge.swift` implements it against
+   LiteRT-LM's `Engine`/`Conversation` Swift API, and it is registered at app startup in `iOSApp.swift`.
+2. **Model format → the unified `.litertlm` build, not the old `.task`.** Both platforms download the
+   *identical* generic CPU/GPU int4 file `gemma3-1b-it-int4.litertlm` (~529MB). The NPU-optimized
+   Android-only variant was deliberately rejected to preserve SSOT (one file, one code path). The download
+   pipeline's `verifyModelFile` gate was flipped from `.task` to `.litertlm` accordingly.
+3. **Scope → Android migrated too, in the same effort.** Because MediaPipe is deprecated on Android as well,
+   Android's `GemmaEngine.android.kt` was rewritten onto the same LiteRT-LM `Engine`/`Conversation` API
+   (`com.google.ai.edge.litertlm:litertlm-android`) — one current runtime across both platforms, rather than
+   iOS adopting a newer runtime while Android stayed on the deprecated one. This required a verified toolchain
+   bump (Kotlin 2.0.21→2.2.x, AGP/Compose aligned), since no published LiteRT-LM AAR loads under 2.0.21.
 
-**Recommended next step:** a time-boxed technical spike answering exactly these three questions, before any
-real build-out plan is written. Not undertaken in this pass.
+**Backend / access control:** the model is served from a private GCS bucket behind Firebase Hosting (a thin
+`serveGemmaModel` function streams it with `immutable` `Cache-Control` for edge caching); a `refreshGemmaModelCache`
+Cloud Function authenticates to Hugging Face via Secret Manager and SHA-256-verifies before publishing; a
+`gemmaModelManifest` endpoint returns `{version, url, sha256, noticeText, noticeUrl}`. The manifest is gated by
+a **constant-time interim shared-key check** — explicitly a temporary safeguard **weaker than real Firebase
+App Check** (Play Integrity / App Attest), which is blocked until both apps are properly registered/signed in
+Play Console and App Store Connect. Upgrading to real App Check is a tracked fast-follow, not silently dropped.
+The Gemma Terms-of-Use notice travels in the manifest (`noticeText`/`noticeUrl`) and is surfaced in the
+local-AI settings copy before download, satisfying the license's redistribution-notice requirement.
+
+**One honest, non-gradle-verifiable gap:** no gradle task compiles the `.xcodeproj`, so "Swift bridge compiles
+against the real LiteRT-LM API" and "SPM package resolves" were verified against Google's official Swift docs,
+not by a build. End-to-end compile + a real on-device run (manifest fetch → ~529MB staging download → checksum
+→ atomic promote → model load → real inference → forced-mismatch rollback leaving active untouched) is a
+**manual on-device smoke test**, matching this project's existing pattern for anything needing a live
+network/model call.
 
 Sources: [LLM Inference guide for iOS](https://developers.google.com/edge/mediapipe/solutions/genai/llm_inference/ios), [LiteRT-LM Swift API](https://developers.google.com/edge/litert-lm/swift), [LiteRT-LM Overview](https://developers.google.com/edge/litert-lm/overview), [google-ai-edge/LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM).

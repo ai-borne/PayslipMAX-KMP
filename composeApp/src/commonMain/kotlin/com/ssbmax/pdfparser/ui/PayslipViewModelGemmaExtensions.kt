@@ -24,14 +24,16 @@ private val GEMMA_CACHE_KEY: String? = null
  * atomically promote it to active. A failed download or checksum leaves the existing active slot
  * untouched, so enabling can never take an already-working model offline.
  */
-fun PayslipViewModel.setLocalAiEnabled(enabled: Boolean) {
+fun PayslipViewModel.setLocalAiEnabled(
+    enabled: Boolean,
+    storage: GemmaModelStorageManager = GemmaModelStorageManager(),
+    versionManager: GemmaModelVersionManager = GemmaModelVersionManager(interimKey = GEMMA_CACHE_KEY),
+    downloadManager: GemmaModelDownloadManager = GemmaModelDownloadManager(),
+) {
     viewModelScope.launch {
         val current = repository.getSettings() ?: com.ssbmax.pdfparser.database.AppSettingsEntity()
         repository.saveSettings(current.copy(useLocalAi = enabled))
         if (!enabled) return@launch
-
-        val storage = GemmaModelStorageManager()
-        val versionManager = GemmaModelVersionManager(interimKey = GEMMA_CACHE_KEY)
 
         _uiState.update { it.copy(isDownloadingModel = true, modelDownloadError = null) }
 
@@ -41,6 +43,10 @@ fun PayslipViewModel.setLocalAiEnabled(enabled: Boolean) {
                 _uiState.update { s -> s.copy(isDownloadingModel = false, modelDownloadError = AppStrings.modelManifestUnavailable) }
                 return@launch
             }
+
+        // Surface the Gemma Terms-of-Use notice as soon as the manifest is known — before/at
+        // download — so the license's redistribution-notice requirement is met on every path below.
+        _uiState.update { it.copy(modelDownloadNotice = manifest.noticeText) }
 
         // 2. Already on this version with the active slot present? Nothing to download.
         val activeReady = storage.verifyModelFile(storage.getRecommendedModelFileName()).isReady
@@ -53,7 +59,7 @@ fun PayslipViewModel.setLocalAiEnabled(enabled: Boolean) {
         val headers =
             if (GEMMA_CACHE_KEY != null) mapOf(GemmaModelVersionManager.INTERIM_KEY_HEADER to GEMMA_CACHE_KEY) else emptyMap()
         var downloadFailed = false
-        GemmaModelDownloadManager().downloadModel(manifest.url, storage.stagingSlotFileName(), headers).collect { status ->
+        downloadManager.downloadModel(manifest.url, storage.stagingSlotFileName(), headers).collect { status ->
             when (status) {
                 is DownloadStatus.Idle -> {}
                 is DownloadStatus.Downloading ->
