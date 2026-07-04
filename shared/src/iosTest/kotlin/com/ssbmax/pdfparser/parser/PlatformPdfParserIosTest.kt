@@ -27,13 +27,6 @@ class PlatformPdfParserIosTest {
     }
 
     @Test
-    fun testExtractFromColumn() {
-        val colText = "DESCRIPTION AMOUNT A/o BPAY- 61471 A/o DA- 21287 A/o MSP- 7196 A/o TRAN-2 4379"
-        val leftExtracted = extractFromColumn(colText, PayslipPatternConfig.creditKeysMapping, PayslipPatternConfig.debitKeysMapping)
-        println("### LEFT EXTRACTED: $leftExtracted")
-    }
-
-    @Test
     fun verifyRealPayslipsOnIos() {
         val fileManager = NSFileManager.defaultManager
         // Opt-in, machine-local integration test: paths come from the environment so no absolute
