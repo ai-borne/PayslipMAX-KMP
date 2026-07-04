@@ -123,6 +123,10 @@ object AppStrings {
     const val btnCancel = "Cancel"
     const val btnBack = "← Back"
 
+    // Offline AI model download (Tier 6 Gemma fallback)
+    const val modelManifestUnavailable = "Couldn't check for the offline AI model. Check your connection and try again."
+    const val modelVerificationFailed = "Downloaded model failed verification. Please try again."
+
     // Passcode Setup Dialog
     const val settingsSetPasscodeTitle = "Set 4-Digit Passcode"
     const val settingsSetPasscodeLabel = "Enter 4-Digit PIN"

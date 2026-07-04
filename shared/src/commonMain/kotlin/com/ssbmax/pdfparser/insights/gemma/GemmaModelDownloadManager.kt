@@ -28,6 +28,7 @@ class GemmaModelDownloadManager(
     fun downloadModel(
         url: String,
         destinationPath: String,
+        headers: Map<String, String> = emptyMap(),
     ): Flow<DownloadStatus> =
         flow {
             emit(DownloadStatus.Idle)
@@ -35,6 +36,7 @@ class GemmaModelDownloadManager(
                 var currentProgress = 0f
                 val response =
                     httpClient.get(url) {
+                        headers.forEach { (name, value) -> this.headers.append(name, value) }
                         onDownload { bytesSentTotal, contentLength ->
                             if (contentLength > 0) {
                                 currentProgress = bytesSentTotal.toFloat() / contentLength.toFloat()

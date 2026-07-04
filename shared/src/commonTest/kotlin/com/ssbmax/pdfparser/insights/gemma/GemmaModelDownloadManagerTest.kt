@@ -60,6 +60,33 @@ class GemmaModelDownloadManagerTest {
         }
 
     @Test
+    fun testDownloadAttachesProvidedHeaders() =
+        runTest {
+            // Callers may attach the interim shared-key header; the download manager forwards it
+            // verbatim without taking on any auth responsibility of its own.
+            var sentHeader: String? = null
+            val mockEngine =
+                MockEngine { request ->
+                    sentHeader = request.headers["x-gemma-cache-key"]
+                    respond(
+                        content = ByteArray(8) { 1 },
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentLength, "8"),
+                    )
+                }
+            val downloadManager =
+                GemmaModelDownloadManager(HttpClient(mockEngine), sinkFactory = { FakeModelSink() })
+
+            downloadManager.downloadModel(
+                url = "https://example.com/gemma.litertlm",
+                destinationPath = "test_gemma.litertlm",
+                headers = mapOf("x-gemma-cache-key" to "abc"),
+            ).toList(mutableListOf())
+
+            assertEquals("abc", sentHeader)
+        }
+
+    @Test
     fun testDownloadFailureEmitsError() =
         runTest {
             val mockEngine =

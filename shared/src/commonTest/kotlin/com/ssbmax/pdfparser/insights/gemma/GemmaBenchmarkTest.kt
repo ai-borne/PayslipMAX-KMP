@@ -13,7 +13,7 @@ class GemmaBenchmarkTest {
         val emptyInfo = manager.verifyModelFile("")
         assertFalse(emptyInfo.isReady)
 
-        assertEquals("gemma-3-1b-it-int4.task", manager.getRecommendedModelFileName())
+        assertEquals("gemma-active.litertlm", manager.getRecommendedModelFileName())
     }
 
     @Test
