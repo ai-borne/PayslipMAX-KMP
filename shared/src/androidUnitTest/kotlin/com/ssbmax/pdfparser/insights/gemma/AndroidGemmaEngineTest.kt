@@ -20,7 +20,7 @@ class AndroidGemmaEngineTest {
     @Test
     fun testAndroidGemmaEngineGracefulHandlingForNonExistentFile() =
         runTest {
-            val config = GemmaEngineConfig(modelPath = "/tmp/non_existent_gemma_model.task")
+            val config = GemmaEngineConfig(modelPath = "/tmp/non_existent_gemma_model.litertlm")
             val engine = GemmaEngine(config)
             assertFalse(engine.isInitialized)
             val result = engine.generateResponse("Test prompt")

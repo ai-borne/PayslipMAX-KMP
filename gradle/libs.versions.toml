@@ -1,22 +1,26 @@
 [versions]
-agp = "8.7.3"
+agp = "8.13.2"
 mockk = "1.13.12"
-kotlin = "2.0.21"
-ksp = "2.0.21-1.0.28"
-compose-multiplatform = "1.7.0"
+kotlin = "2.2.21"
+ksp = "2.2.21-2.0.5"
+compose-multiplatform = "1.9.3"
+# Material Icons were unbundled from Compose Multiplatform in 1.8.0; JetBrains' documented
+# migration is to depend on the final standalone icons artifact (1.7.3), which stays ABI-stable
+# alongside newer Compose (compose-ui resolves up to compose-multiplatform's version).
+compose-material-icons = "1.7.3"
 androidx-activityCompose = "1.9.3"
 androidx-lifecycle = "2.8.3"
-room = "2.7.0-alpha11"
-sqlite = "2.5.0-alpha11"
+room = "2.7.2"
+sqlite = "2.5.2"
 coroutines = "1.9.0"
 koin = "4.0.0"
 kotlinx-serialization = "1.7.3"
 ktor = "2.3.12"
 firebase-bom = "33.7.0"
-mediapipe-tasks-genai = "0.10.14"
+litertlm-android = "0.13.1"
 
 [libraries]
-mediapipe-tasks-genai = { module = "com.google.mediapipe:tasks-genai", version.ref = "mediapipe-tasks-genai" }
+litertlm-android = { module = "com.google.ai.edge.litertlm:litertlm-android", version.ref = "litertlm-android" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
@@ -42,6 +46,9 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 # Firebase — Auth (BOM manages version alignment)
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
+
+# Compose Material Icons — standalone artifact (see compose-material-icons version note)
+compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-material-icons" }
 
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }

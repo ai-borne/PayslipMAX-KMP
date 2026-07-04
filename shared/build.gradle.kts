@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
@@ -8,10 +10,8 @@ plugins {
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
@@ -56,7 +56,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.pdfbox.android)
             implementation(libs.ktor.client.okhttp)
-            implementation(libs.mediapipe.tasks.genai)
+            implementation(libs.litertlm.android)
             // Firebase Auth — Android only; used by AuthTokenProvider.android.kt
             implementation(libs.firebase.auth.ktx)
         }

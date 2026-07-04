@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -8,10 +10,8 @@ plugins {
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
@@ -41,6 +41,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(libs.compose.material.icons.core)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
@@ -70,8 +71,8 @@ kotlin {
         val androidUnitTest by getting {
             dependencies {
                 implementation("org.robolectric:robolectric:4.12.2")
-                implementation("androidx.compose.ui:ui-test-junit4:1.7.0")
-                implementation("androidx.compose.ui:ui-test-manifest:1.7.0")
+                implementation("androidx.compose.ui:ui-test-junit4:1.9.4")
+                implementation("androidx.compose.ui:ui-test-manifest:1.9.4")
             }
         }
     }
