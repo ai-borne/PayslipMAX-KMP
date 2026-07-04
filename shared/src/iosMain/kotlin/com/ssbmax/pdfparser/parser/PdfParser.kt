@@ -3,6 +3,11 @@
 package com.ssbmax.pdfparser.parser
 
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.insights.gemma.GemmaEngine
+import com.ssbmax.pdfparser.insights.gemma.GemmaEngineConfig
+import com.ssbmax.pdfparser.insights.gemma.GemmaModelStorageManager
+import com.ssbmax.pdfparser.insights.gemma.fileExistsAt
+import com.ssbmax.pdfparser.insights.gemma.gemmaModelStorageDir
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
@@ -21,7 +26,28 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         // (extractTextSpatially + IosLayoutScanner) diverged per-platform and per-month; it is replaced
         // by the shared common engine (GrammarAwareParser), so iOS and Android parse identically.
         return extractTokens(pdfBytes, password, filename).mapCatching { tokenized ->
-            GrammarAwareParser.parse(tokenized, filename).getOrThrow()
+            GrammarAwareParser.parse(tokenized, filename, fallbackExtractor = buildGemmaFallbackExtractor()).getOrThrow()
+        }
+    }
+
+    /**
+     * Constructs the Tier 6 Gemma fallback iff the active-slot model file is present on disk, mirroring
+     * the Android [PlatformPdfParser] gating. Resolution goes through the shared
+     * [GemmaModelStorageManager] SSOT (Phase 1) so both platforms load the exact same active slot; the
+     * actual inference runs in the Swift LiteRT-LM bridge registered on [GemmaEngine.inferenceDelegate].
+     * Returns null (Tier 6 stays on standby) when the model has not been downloaded, so a fresh install
+     * never blocks on it.
+     */
+    private fun buildGemmaFallbackExtractor(): GemmaFallbackExtractor? {
+        return try {
+            val storageDir = gemmaModelStorageDir()
+            if (storageDir.isEmpty()) return null
+            val modelPath = "$storageDir/${GemmaModelStorageManager().getRecommendedModelFileName()}"
+            if (!fileExistsAt(modelPath)) return null
+            val engine = GemmaEngine(GemmaEngineConfig(modelPath = modelPath))
+            GemmaFallbackExtractor(gemmaEngine = engine)
+        } catch (e: Throwable) {
+            null
         }
     }
 

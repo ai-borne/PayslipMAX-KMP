@@ -12,15 +12,19 @@ import platform.Foundation.create
 import platform.Foundation.writeToFile
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class IosGemmaEngineTest {
-    private val tempModelPath = NSTemporaryDirectory() + "fake_ios_gemma_model.task"
+    private val tempModelPath = NSTemporaryDirectory() + "fake_ios_gemma_model.litertlm"
 
     @AfterTest
     fun cleanup() {
         NSFileManager.defaultManager.removeItemAtPath(tempModelPath, error = null)
+        // Reset the companion-object delegate so a delegate registered by one test can never leak
+        // into the next (the same @AfterTest discipline the temp file already gets).
+        GemmaEngine.inferenceDelegate = null
     }
 
     @Test
@@ -37,7 +41,7 @@ class IosGemmaEngineTest {
     @Test
     fun testIosGemmaEngineGracefulHandlingForNonExistentFile() =
         runTest {
-            val config = GemmaEngineConfig(modelPath = "/tmp/non_existent_ios_gemma_model.task")
+            val config = GemmaEngineConfig(modelPath = "/tmp/non_existent_ios_gemma_model.litertlm")
             val engine = GemmaEngine(config)
             assertFalse(engine.isInitialized)
             val result = engine.generateResponse("Test prompt")
@@ -46,17 +50,52 @@ class IosGemmaEngineTest {
         }
 
     @Test
-    fun testIosGemmaEngineFailsLoudlyEvenWhenModelFileExists() =
+    fun testGenerateResponseFailsLoudlyWhenNoInferenceRuntimeRegistered() =
         runTest {
-            // Regression guard: generateResponse used to return a fake success string whenever the
-            // model path pointed at a real file, regardless of whether any real inference ran. It must
-            // now fail loudly instead, since no iOS inference runtime is actually wired up.
+            // A model file exists, but no Swift bridge is registered. It must fail loudly rather than
+            // return a fake success string — otherwise garbage would flow into the reconciled maps.
             writeTempFile(tempModelPath, "not a real gemma model".encodeToByteArray())
+            GemmaEngine.inferenceDelegate = null
             val config = GemmaEngineConfig(modelPath = tempModelPath)
             val engine = GemmaEngine(config)
             assertTrue(engine.isInitialized, "the file exists, so isInitialized must be true")
             val result = engine.generateResponse("Test prompt")
-            assertTrue(result.isFailure, "generateResponse must fail even when the model file exists")
+            assertTrue(result.isFailure, "generateResponse must fail when no inference runtime is wired")
+            engine.close()
+        }
+
+    @Test
+    fun testGenerateResponseSucceedsWhenDelegateReturnsText() =
+        runTest {
+            // The regression guard that used to assert "always fails" flips here: with a registered
+            // inference delegate (simulating the Swift LiteRT-LM bridge), real inference must succeed.
+            writeTempFile(tempModelPath, "not a real gemma model".encodeToByteArray())
+            var seenModelPath: String? = null
+            GemmaEngine.inferenceDelegate = { modelPath, prompt, completion ->
+                seenModelPath = modelPath
+                completion("PARSED::$prompt", null)
+            }
+            val config = GemmaEngineConfig(modelPath = tempModelPath)
+            val engine = GemmaEngine(config)
+            val result = engine.generateResponse("Test prompt")
+            assertTrue(result.isSuccess, "generateResponse must succeed when the delegate returns text")
+            assertEquals("PARSED::Test prompt", result.getOrNull())
+            assertEquals(tempModelPath, seenModelPath, "the active-slot model path must reach the bridge")
+            engine.close()
+        }
+
+    @Test
+    fun testGenerateResponseFailsWhenDelegateReportsError() =
+        runTest {
+            // The bridge signals failure via a non-null error string; that must surface as a failed Result.
+            writeTempFile(tempModelPath, "not a real gemma model".encodeToByteArray())
+            GemmaEngine.inferenceDelegate = { _, _, completion ->
+                completion(null, "native inference failed")
+            }
+            val config = GemmaEngineConfig(modelPath = tempModelPath)
+            val engine = GemmaEngine(config)
+            val result = engine.generateResponse("Test prompt")
+            assertTrue(result.isFailure, "a delegate error must surface as a failed Result")
             engine.close()
         }
 

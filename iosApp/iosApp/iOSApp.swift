@@ -63,7 +63,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                 }
             }
         }
-        
+
+        // Bridge the LiteRT-LM Gemma inference runtime (Tier 6 offline fallback) to KMP. The shared
+        // GemmaEngine.ios.kt fails loudly until this delegate is registered.
+        GemmaInferenceBridge.register()
+
         return true
     }
 }
