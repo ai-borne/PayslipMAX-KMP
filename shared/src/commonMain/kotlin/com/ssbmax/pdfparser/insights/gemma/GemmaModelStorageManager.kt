@@ -14,11 +14,12 @@ class GemmaModelStorageManager(
         if (filePath.isEmpty()) {
             return GemmaModelInfo(filePath = "", isReady = false)
         }
+        val fullPath = "${gemmaModelStorageDir()}/$filePath"
         val capabilityManager = DeviceCapabilityManager()
         val status = capabilityManager.checkGemmaSupport()
-        val isReady = status.isSupported && filePath.endsWith(".task")
+        val isReady = status.isSupported && filePath.endsWith(".task") && fileExistsAt(fullPath)
         return GemmaModelInfo(
-            filePath = filePath,
+            filePath = fullPath,
             isReady = isReady,
         )
     }

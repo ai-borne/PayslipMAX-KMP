@@ -33,8 +33,9 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             Logger.d("PlatformPdfParser", "Starting GrammarAwareParser.parse...")
             val fallbackExtractor =
                 try {
-                    val context = Class.forName("android.app.ActivityThread").getMethod("currentApplication").invoke(null) as? android.content.Context
-                    val modelFile = if (context != null) java.io.File(context.filesDir, "gemma-3-1b-it-int4.task") else null
+                    val storageDir = com.ssbmax.pdfparser.insights.gemma.gemmaModelStorageDir()
+                    val modelFileName = com.ssbmax.pdfparser.insights.gemma.GemmaModelStorageManager().getRecommendedModelFileName()
+                    val modelFile = if (storageDir.isNotEmpty()) java.io.File(storageDir, modelFileName) else null
                     if (modelFile != null && modelFile.exists()) {
                         Logger.d("PlatformPdfParser", "Gemma model binary detected (${modelFile.length()} bytes). Initializing GemmaEngine...")
                         val config = com.ssbmax.pdfparser.insights.gemma.GemmaEngineConfig(modelPath = modelFile.absolutePath)

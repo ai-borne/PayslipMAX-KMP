@@ -9,7 +9,21 @@ import io.ktor.http.headersOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+
+private class FakeModelSink : ModelSink {
+    val received = mutableListOf<Byte>()
+    var closed = false
+
+    override fun append(bytes: ByteArray) {
+        received.addAll(bytes.toList())
+    }
+
+    override fun close() {
+        closed = true
+    }
+}
 
 class GemmaModelDownloadManagerTest {
     @Test
@@ -25,7 +39,8 @@ class GemmaModelDownloadManagerTest {
                     )
                 }
             val httpClient = HttpClient(mockEngine)
-            val downloadManager = GemmaModelDownloadManager(httpClient)
+            val fakeSink = FakeModelSink()
+            val downloadManager = GemmaModelDownloadManager(httpClient, sinkFactory = { fakeSink })
 
             val states = mutableListOf<DownloadStatus>()
             downloadManager.downloadModel(
@@ -37,6 +52,11 @@ class GemmaModelDownloadManagerTest {
             assertTrue(states.any { it is DownloadStatus.Downloading })
             val lastState = states.last()
             assertTrue(lastState is DownloadStatus.Success, "Expected Success but got $lastState")
+
+            // The regression this test guards: downloadModel used to discard every downloaded byte
+            // and still emit Success, so a "successful" download produced no usable model file.
+            assertEquals(mockData.size, fakeSink.received.size)
+            assertTrue(fakeSink.closed)
         }
 
     @Test

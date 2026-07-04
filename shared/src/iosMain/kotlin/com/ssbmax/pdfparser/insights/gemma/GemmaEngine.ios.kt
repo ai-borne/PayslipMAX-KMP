@@ -3,7 +3,6 @@ package com.ssbmax.pdfparser.insights.gemma
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import platform.Foundation.NSFileManager
 
 @OptIn(ExperimentalForeignApi::class)
 actual class GemmaEngine actual constructor(private val config: GemmaEngineConfig) {
@@ -29,7 +28,7 @@ actual class GemmaEngine actual constructor(private val config: GemmaEngineConfi
 
     private fun isFileExists(path: String): Boolean {
         return try {
-            NSFileManager.defaultManager.fileExistsAtPath(path)
+            fileExistsAt(path)
         } catch (e: Throwable) {
             false
         }

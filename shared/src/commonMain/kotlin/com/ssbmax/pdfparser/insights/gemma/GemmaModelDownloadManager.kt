@@ -23,6 +23,7 @@ sealed class DownloadStatus {
 
 class GemmaModelDownloadManager(
     private val httpClient: HttpClient = HttpClient(),
+    private val sinkFactory: (String) -> ModelSink = { path -> ModelFileSink(path) },
 ) {
     fun downloadModel(
         url: String,
@@ -47,14 +48,20 @@ class GemmaModelDownloadManager(
                 }
 
                 emit(DownloadStatus.Downloading(currentProgress))
-                val channel: ByteReadChannel = response.bodyAsChannel()
-                while (!channel.isClosedForRead) {
-                    val packet = channel.readRemaining(8192)
-                    if (packet.isEmpty) break
-                    packet.readBytes() // Read chunks into memory / storage sink
+                val fullPath = "${gemmaModelStorageDir()}/$destinationPath"
+                val sink = sinkFactory(fullPath)
+                try {
+                    val channel: ByteReadChannel = response.bodyAsChannel()
+                    while (!channel.isClosedForRead) {
+                        val packet = channel.readRemaining(8192)
+                        if (packet.isEmpty) break
+                        sink.append(packet.readBytes())
+                    }
+                } finally {
+                    sink.close()
                 }
 
-                emit(DownloadStatus.Success(destinationPath))
+                emit(DownloadStatus.Success(fullPath))
             } catch (e: Exception) {
                 emit(DownloadStatus.Error(e.message ?: "Unknown download error"))
             }
