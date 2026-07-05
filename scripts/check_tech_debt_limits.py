@@ -6,8 +6,8 @@ import argparse
 
 # Default directory paths to scan if no specific files are passed
 SCAN_DIRECTORIES = [
-    "composeApp/src/commonMain/kotlin/com/ssbmax/pdfparser/ui",
-    "shared/src/commonMain/kotlin/com/ssbmax/pdfparser"
+    "composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui",
+    "shared/src/commonMain/kotlin/com/payslipmax/pdfparser"
 ]
 
 def check_file_limits(filepath):

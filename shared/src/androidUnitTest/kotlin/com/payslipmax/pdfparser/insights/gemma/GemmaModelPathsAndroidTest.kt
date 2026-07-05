@@ -1,0 +1,31 @@
+package com.payslipmax.pdfparser.insights.gemma
+
+import org.junit.Test
+import java.io.File
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+class GemmaModelPathsAndroidTest {
+    @Test
+    fun fileExistsAtFindsARealFileAndRejectsAMissingOne() {
+        val tempFile = File.createTempFile("gemma_model_paths_test", ".task")
+        tempFile.deleteOnExit()
+        try {
+            assertTrue(fileExistsAt(tempFile.absolutePath))
+        } finally {
+            tempFile.delete()
+        }
+
+        assertFalse(fileExistsAt(tempFile.absolutePath))
+        assertFalse(fileExistsAt(""))
+    }
+
+    @Test
+    fun gemmaModelStorageDirNeverThrowsAndOnlyReturnsExistingDirectories() {
+        // No real android.content.Context is available in a plain-JVM unit test, so this can
+        // legitimately resolve to "" here — the invariant this proves is that it degrades safely
+        // rather than crashing, and never claims a directory exists when it doesn't.
+        val dir = gemmaModelStorageDir()
+        assertTrue(dir.isEmpty() || File(dir).exists())
+    }
+}

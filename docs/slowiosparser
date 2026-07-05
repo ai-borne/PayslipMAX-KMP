@@ -1,5 +1,5 @@
 ### 1. The Root Cause: Per-Character Interop & PDFKit Calls on iOS
-In the iOS implementation, the [extractTextSpatially](file:///Users/test/Downloads/PDFParser/shared/src/iosMain/kotlin/com/ssbmax/pdfparser/parser/SpatialTextExtractor.kt#L21-L50) function loops through every single character index of the page:
+In the iOS implementation, the [extractTextSpatially](file:///Users/test/Downloads/PDFParser/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/parser/SpatialTextExtractor.kt#L21-L50) function loops through every single character index of the page:
 
 ```kotlin
 for (i in 0 until pageString.length) {
@@ -64,8 +64,8 @@ Instead of using `PDFKit`, utilize `CGPDFPage` and configure a `CGPDFScanner` wi
 
 ### Summary of Work
 1. Analyzed the workspace project files.
-2. Examined the Android parser implementation in [PlatformPdfParser.kt](file:///Users/test/Downloads/PDFParser/shared/src/androidMain/kotlin/com/ssbmax/pdfparser/parser/PdfParser.kt).
-3. Examined the iOS parser implementation in [PdfParser.kt](file:///Users/test/Downloads/PDFParser/shared/src/iosMain/kotlin/com/ssbmax/pdfparser/parser/PdfParser.kt) and [SpatialTextExtractor.kt](file:///Users/test/Downloads/PDFParser/shared/src/iosMain/kotlin/com/ssbmax/pdfparser/parser/SpatialTextExtractor.kt).
+2. Examined the Android parser implementation in [PlatformPdfParser.kt](file:///Users/test/Downloads/PDFParser/shared/src/androidMain/kotlin/com/payslipmax/pdfparser/parser/PdfParser.kt).
+3. Examined the iOS parser implementation in [PdfParser.kt](file:///Users/test/Downloads/PDFParser/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/parser/PdfParser.kt) and [SpatialTextExtractor.kt](file:///Users/test/Downloads/PDFParser/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/parser/SpatialTextExtractor.kt).
 4. Identified the tight loop calling PDFKit's `selectionForRange` and `boundsForPage` per character as the root cause of the iOS performance bottleneck.
 
 
@@ -116,7 +116,7 @@ Use low-level CoreGraphics APIs to scan the PDF stream directly.
 
 ### [Component: Shared iOS PDF Parser]
 
-#### [MODIFY] [SpatialTextExtractor.kt](file:///Users/test/Downloads/PDFParser/shared/src/iosMain/kotlin/com/ssbmax/pdfparser/parser/SpatialTextExtractor.kt)
+#### [MODIFY] [SpatialTextExtractor.kt](file:///Users/test/Downloads/PDFParser/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/parser/SpatialTextExtractor.kt)
 
 Implement **Option 1** by updating the main extraction loop:
 - Replace `page.selectionForRange` and `selection.boundsForPage` with `page.characterBoundsAtIndex`.

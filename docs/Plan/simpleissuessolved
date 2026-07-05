@@ -1,0 +1,91 @@
+Execution Plan — Clearing the 10 Verified Findings
+Ordered low-risk → high-risk, grouped so each phase is buildable/testable independently within one module (avoids cross-module build noise). Each phase follows the Phase Handoff Protocol from CLAUDE.md.
+
+
+---
+
+
+Phase 1 — Kotlin: Trivial logic fixes (tax-rate formatting + tautological test)
+Scope: #8 (DashboardScreen.kt:214 truncation bug), #9 (DeviceCapabilityManagerTest.kt no-op assertion)
+
+Replace taxRate.toString().take(4) with a proper rounding formatter (e.g. "%.2f".format(taxRate) equivalent available in KMP, or reuse the Phase 3 FormatUtils if sequenced after — for now inline a correct one-line fix so this phase stays independent).
+Rewrite DeviceCapabilityManagerTest assertion to check a real property of the sealed subtype returned (e.g. assertTrue(status is GemmaSupportStatus.Supported || status is GemmaSupportStatus.InsufficientRam) or assert on the specific case given requiredRamMb = 100L).
+Tests: new/updated unit test asserting taxRate = 100.0 → "100.0%" (not "100.%"); updated DeviceCapabilityManagerTest asserting the correct subtype.
+Build gate: ./gradlew :shared:testDebugUnitTest :composeApp:testDebugUnitTest ktlintCheck
+
+---
+
+Phase 2 — Kotlin: Password visibility toggle (UploadWidget.kt)
+Scope: #10
+
+Add var passwordVisible by remember { mutableStateOf(false) }.
+Toggle visualTransformation between PasswordVisualTransformation() and VisualTransformation.None.
+Add trailing IconButton with Icons.Default.Visibility/VisibilityOff.
+New string entries in AppStrings.kt for content descriptions (no hardcoded strings — rule #4).
+Tests: Compose UI test (or existing UploadWidget test file if present) verifying toggle flips transformation state.
+Build gate: ./gradlew :composeApp:testDebugUnitTest ktlintCheck
+
+---
+
+Phase 3 — Kotlin: SSOT for formatAmount
+Scope: #1
+
+Create shared/src/commonMain/kotlin/com/payslipmax/pdfparser/utils/FormatUtils.kt (new file, well under 300 lines) with the Lakh/Crore formatter.
+Update FinancialInsights.kt and DashboardComponents.kt to import and delegate to it; delete both private/internal duplicates.
+Tests: unit test on FormatUtils covering thousands/lakh/crore boundary values (existing behavior must be preserved — diff the two old implementations first to confirm they agree before consolidating, since SSOT must not silently change output).
+Build gate: ./gradlew :shared:testDebugUnitTest :composeApp:testDebugUnitTest ktlintCheck
+
+
+---
+
+Phase 4 — Web: Chart desync + income filter state
+Scope: #4, #5 (bundled — #5 only manifests once #4 is fixed)
+
+In view.js, track this.currentIncomeFilter = 'all' in the constructor; update it in handleIncomeChartFilter.
+In render(), re-render incomeChart, dsopChart, taxChart using current data + this.currentIncomeFilter, mirroring the existing shareChart refresh pattern.
+Tests: extend viewModel.test.js/add a view.test.js (vitest + jsdom) asserting that after a simulated data-add, renderIncomeTrend/renderDsopGrowth/renderTaxProjections are called with updated data, and that the active filter persists across re-render.
+Build gate: cd web-prototype && npm run test && npm run lint
+
+
+---
+
+Phase 5 — Web: Remove dead skipped test
+Scope: #3
+
+Delete web-prototype/tests/aiInsightsEngine.test.js (fully superseded by viewModel.test.js).
+Tests: N/A (removal only) — confirm no other file imports it.
+Build gate: cd web-prototype && npm run test && npm run lint
+
+
+---
+
+Phase 6 — Web: Theme/CSS polish
+Scope: #7 (hardcoded shadow), #6 (explorer grid ratio)
+
+Introduce --shadow-card / --shadow-card-hover CSS variables in theme.css (dark defaults = current values), add light-theme overrides in the existing @media (prefers-color-scheme: light) block, then reference the variables in components.css:10,16.
+Flip .explorer-section grid to 1.8fr 1.2fr in layout.css:109.
+Tests: npm run lint:css (stylelint) must pass; manual visual check in both themes (no unit-testable CSS logic here, so verification = running npm run dev and toggling OS theme).
+Build gate: cd web-prototype && npm run lint:css && npm run build
+
+
+---
+
+Phase 7 — Kotlin: Remove dead PayslipTokenParser (highest risk, sequenced last)
+Scope: #2
+
+First verify GrammarAwareParser.parse(..., debugCollector) populates all 7 debug stages identically to PayslipTokenParser.parse (confirmed both accept the same ParserDebugCollector? signature and delegate through the same pipeline — but must diff actual stage-by-stage output before cutting over, since CorpusDebugDiffTest exists specifically to catch platform divergence).
+Migrate CorpusDebugDiffTest.kt and PayslipTokenParserGemmaTest.kt to call GrammarAwareParser.parse.
+Run both migrated tests and diff output against the pre-migration baseline (capture current println diff report output before changing, compare after).
+Only once outputs match: delete PayslipTokenParser.kt.
+Tests: existing CorpusDebugDiffTest/PayslipTokenParserGemmaTest, now pointed at GrammarAwareParser, must pass with equivalent diff reports; full corpus regression (TokenParseCorpusRegressionTest, 52/52) must stay green since this touches parser entry points.
+Build gate: ./gradlew check -x iosX64Test -x iosSimulatorArm64Test (full suite, since this is the riskiest phase and touches the parser used by every corpus fixture)
+
+
+---
+
+Handoff protocol per phase (applies to all 7)
+At the end of each phase I will report:
+
+Tech debt incurred — anything deferred within that phase's scope.
+Resolution steps — exact commands/edits used to close it out immediately.
+Build/test confirmation — the literal gate command output showing green.

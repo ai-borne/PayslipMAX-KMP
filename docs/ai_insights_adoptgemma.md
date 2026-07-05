@@ -44,7 +44,7 @@ We evaluate four positioning paths for PayslipMax's AI capabilities:
 
 ### Recommended Approach: Option D — Adaptive AI (Privacy-Shielded Cloud default with Local Upgrade)
 *   **The Paradigm**: Position PayslipMax as **"Local-First, Privacy-Shielded"**.
-*   **The Out-of-Box Experience**: Users run on *Sanitized Cloud AI*. A local sanitization layer ([RedactionSanitizer](file:///Users/test/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/RedactionSanitizer.kt)) scrubs PII (names, PAN, bank accounts) before sending data.
+*   **The Out-of-Box Experience**: Users run on *Sanitized Cloud AI*. A local sanitization layer ([RedactionSanitizer](file:///Users/test/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/RedactionSanitizer.kt)) scrubs PII (names, PAN, bank accounts) before sending data.
 *   **The Upgrade**: Highlight the **"Maximum Security Vault"** option, which downloads the local model to achieve 100% offline, zero-network auditing.
 
 ---
@@ -312,7 +312,7 @@ We outline the implementation phases from MVP to long-term scale:
 
 ### MVP (Current Phase)
 *   **Focus**: Solidify structured parsing and cloud API proxy.
-*   **Redaction**: Local [RedactionSanitizer](file:///Users/test/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/RedactionSanitizer.kt) strips names, PAN, bank numbers.
+*   **Redaction**: Local [RedactionSanitizer](file:///Users/test/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/RedactionSanitizer.kt) strips names, PAN, bank numbers.
 *   **Security**: DB encrypted using keys from `Keychain` / `Keystore`.
 
 ### V1: On-Demand Gemma Integration

@@ -78,12 +78,12 @@ All prompt assembly and JSON parsing happens on the client, and execution goes t
 - *Cons*: Token costs, dependency on internet connectivity.
 
 #### Phase 2: Hybrid AI (Current Implemented State)
-Deterministic calculation rules (tax saving maths, missing allowances, DA arrears, quarters rent recovery, unexpected debits) execute 100% offline inside the partitioned client engine [DeterministicIntelligenceEngine](file:///Users/test/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/DeterministicIntelligenceEngine.kt). Only complex reasoning checks and narrative generation are routed through the cloud proxy.
+Deterministic calculation rules (tax saving maths, missing allowances, DA arrears, quarters rent recovery, unexpected debits) execute 100% offline inside the partitioned client engine [DeterministicIntelligenceEngine](file:///Users/test/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/DeterministicIntelligenceEngine.kt). Only complex reasoning checks and narrative generation are routed through the cloud proxy.
 - *Pros*: Reduces cloud proxy usage by ~70%, lowering token costs and improving performance.
 - *Status*: Fully implemented and active in production.
 
 #### Phase 3: 100% Local AI (Active Transition State)
 The mobile app prepares for a lightweight local LLM (e.g., Gemma 2B) utilizing Google's MediaPipe LLM Inference API and CoreML. 
-- *Status*: The decoupled `AIProviderManager` and `AIInsightProvider` contract interfaces are fully implemented. A setting switch toggle is added to `SettingsScreen.kt` permitting the user to opt-in to `useLocalAi` mode, which routes requests to [LocalGemmaProvider](file:///Users/test/Downloads/PDFParser/shared/src/commonMain/kotlin/com/ssbmax/pdfparser/insights/LocalGemmaProvider.kt) (stubbed in the current codebase).
+- *Status*: The decoupled `AIProviderManager` and `AIInsightProvider` contract interfaces are fully implemented. A setting switch toggle is added to `SettingsScreen.kt` permitting the user to opt-in to `useLocalAi` mode, which routes requests to [LocalGemmaProvider](file:///Users/test/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/LocalGemmaProvider.kt) (stubbed in the current codebase).
 - *Pros*: Zero cloud inference costs, 100% offline functionality, absolute privacy.
 - *Cons*: Higher initial app download size (~1.5–2 GB for model weights), battery/hardware performance constraints on older SoCs.
