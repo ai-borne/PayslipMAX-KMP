@@ -3,6 +3,7 @@ package com.ssbmax.pdfparser.ui.screens
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,10 +22,13 @@ import com.ssbmax.pdfparser.ui.theme.AppStrings
  * Phase 5 — inline correction dialog for a single low-confidence ledger field. Pre-fills the parsed
  * value; on save it parses the entered amount and reports it back keyed by [LedgerLine.fieldKey] so the
  * caller can persist an encrypted, merged-on-read correction. Strings/dimensions are themed (no literals).
+ * [reasons] are the payslip-level (not field-specific) causes of [com.ssbmax.pdfparser.domain.ParsedPayslip.needsReview],
+ * surfaced here since opening this dialog is the moment a user is already looking at a flagged field.
  */
 @Composable
 internal fun LedgerCorrectionDialog(
     line: LedgerLine,
+    reasons: List<String> = emptyList(),
     onDismiss: () -> Unit,
     onConfirm: (fieldKey: String, newValue: Double) -> Unit,
 ) {
@@ -40,6 +44,7 @@ internal fun LedgerCorrectionDialog(
         text = {
             Column {
                 Text(text = AppStrings.correctionDialogHint)
+                ReviewReasonsList(reasons)
                 OutlinedTextField(
                     value = input,
                     onValueChange = { input = it },
@@ -69,6 +74,20 @@ internal fun LedgerCorrectionDialog(
             }
         },
     )
+}
+
+/** Payslip-level reasons [com.ssbmax.pdfparser.domain.ParsedPayslip.needsReview] fired, shown above the correction field. */
+@Composable
+private fun ReviewReasonsList(reasons: List<String>) {
+    if (reasons.isEmpty()) return
+    Text(
+        text = AppStrings.correctionReasonsHeading,
+        style = MaterialTheme.typography.labelMedium,
+        modifier = Modifier.padding(top = AppDimensions.SpacingSmall),
+    )
+    reasons.forEach { reason ->
+        Text(text = "• $reason", style = MaterialTheme.typography.bodySmall)
+    }
 }
 
 /** Renders the stored double without a trailing ".0" so whole-rupee amounts pre-fill cleanly. */

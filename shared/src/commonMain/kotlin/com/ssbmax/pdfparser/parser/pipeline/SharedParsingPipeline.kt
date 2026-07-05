@@ -153,10 +153,20 @@ class SharedParsingPipeline(
                 debitsSum = solved.deductionsMap.values.sum() + solved.rawDeductions.values.sum(),
             )
 
+        val reviewReasons =
+            if (schemaValidation.isValid) {
+                solved.reviewReasons
+            } else {
+                solved.reviewReasons +
+                    "Schema validation failed (post Tier 6): gross mismatch ${schemaValidation.grossMismatch}, " +
+                    "deductions mismatch ${schemaValidation.deductionsMismatch}, net residual ${schemaValidation.netResidual}"
+            }
+
         return parsed.copy(
             fieldConfidence = solved.fieldConfidence,
             fieldSource = solved.fieldSource,
             needsReview = solved.needsReview || !schemaValidation.isValid,
+            reviewReasons = reviewReasons,
         )
     }
 

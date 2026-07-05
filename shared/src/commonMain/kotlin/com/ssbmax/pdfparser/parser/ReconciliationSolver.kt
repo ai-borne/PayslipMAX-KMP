@@ -15,6 +15,8 @@ internal data class SolvedTable(
     val fieldConfidence: Map<String, Float>,
     val fieldSource: Map<String, FieldSource> = emptyMap(),
     val needsReview: Boolean,
+    /** Human-readable reasons [needsReview] is true, for the Phase 5 correction UI (SSOT, never recomputed downstream). */
+    val reviewReasons: List<String> = emptyList(),
 )
 
 /**
@@ -127,6 +129,7 @@ internal object ReconciliationSolver {
             fieldConfidence = confidence,
             fieldSource = fieldSource,
             needsReview = needsReview,
+            reviewReasons = reviewReasons,
         )
     }
 

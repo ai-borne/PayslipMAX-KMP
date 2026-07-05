@@ -33,6 +33,13 @@ data class ParsedPayslip(
     val fieldSource: Map<String, FieldSource> = emptyMap(),
     /** True when at least one field is below the review threshold and should be surfaced for user correction. */
     val needsReview: Boolean = false,
+    /**
+     * Human-readable reasons [needsReview] is true (e.g. "Net residual 128370 >= 2.0", "Low confidence
+     * fields: dsopSubscription"). Computed once by [com.ssbmax.pdfparser.parser.ReconciliationSolver] and
+     * carried through verbatim — never recomputed in the UI — so the Phase 5 correction flow can explain
+     * *why* a payslip needs review, not just flag that it does.
+     */
+    val reviewReasons: List<String> = emptyList(),
 )
 
 @Serializable

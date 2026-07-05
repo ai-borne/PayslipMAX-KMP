@@ -27,3 +27,12 @@ fun ParsedPayslip.isFieldLowConfidence(fieldKey: String): Boolean {
     val confidence = fieldConfidence[fieldKey] ?: return false
     return confidence < ConfidenceThresholds.REVIEW_THRESHOLD
 }
+
+/**
+ * True when [fieldKey] was recovered by the Tier 6 Gemma fallback rather than the deterministic
+ * geometry solver. Distinct from [isFieldLowConfidence] — every Gemma-sourced field is already
+ * low-confidence by construction ([ConfidenceThresholds.GEMMA_FALLBACK_CONFIDENCE] sits below
+ * [ConfidenceThresholds.REVIEW_THRESHOLD]), but the UI needs to tell "AI inferred this" apart from
+ * "the deterministic solver was merely unsure" instead of both collapsing into the same warning icon.
+ */
+fun ParsedPayslip.isFieldGemmaSourced(fieldKey: String): Boolean = fieldSource[fieldKey] == FieldSource.GEMMA_FALLBACK

@@ -81,6 +81,7 @@ object PayslipTokenParser {
                     fieldConfidence = solved.fieldConfidence,
                     fieldSource = solved.fieldSource,
                     needsReview = solved.needsReview || !schemaValidation.isValid,
+                    reviewReasons = solved.reviewReasons,
                 )
 
             val missingCredits = PayslipPatternConfig.strictlyMandatoryCredits.filter { (solved.earningsMap[it] ?: 0.0) <= 0.0 }

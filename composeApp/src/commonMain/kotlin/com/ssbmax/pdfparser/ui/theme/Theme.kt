@@ -67,6 +67,9 @@ private val LightColorScheme =
 object AppColors {
     val Warning = Color(0xFFF59E0B)
     val Caution = Color(0xFFEA580C)
+
+    /** Distinct from [Warning]/[Caution] — marks a value inferred by the on-device Gemma fallback, not a solver warning. */
+    val AiInferred = Color(0xFF8B5CF6)
 }
 
 object AppDimensions {

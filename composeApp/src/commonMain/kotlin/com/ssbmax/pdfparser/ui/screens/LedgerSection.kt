@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.ssbmax.pdfparser.domain.ConfidenceThresholds
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.domain.isFieldGemmaSourced
 import com.ssbmax.pdfparser.domain.isFieldLowConfidence
 import com.ssbmax.pdfparser.ui.theme.AppColors
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
@@ -56,6 +57,7 @@ fun LedgerSection(
                         LedgerRowItem(
                             line = line,
                             isLowConfidence = payslip.isFieldLowConfidence(line.fieldKey),
+                            isGemmaSourced = payslip.isFieldGemmaSourced(line.fieldKey),
                             onClick = onItemClick,
                             onReview = { editingLine = line },
                         )
@@ -74,6 +76,7 @@ fun LedgerSection(
                         LedgerRowItem(
                             line = line,
                             isLowConfidence = payslip.isFieldLowConfidence(line.fieldKey),
+                            isGemmaSourced = payslip.isFieldGemmaSourced(line.fieldKey),
                             onClick = onItemClick,
                             onReview = { editingLine = line },
                         )
@@ -88,6 +91,7 @@ fun LedgerSection(
     editingLine?.let { line ->
         LedgerCorrectionDialog(
             line = line,
+            reasons = if (payslip.needsReview) payslip.reviewReasons else emptyList(),
             onDismiss = { editingLine = null },
             onConfirm = { fieldKey, newValue ->
                 onCorrectField(fieldKey, newValue)
@@ -130,6 +134,7 @@ private fun LedgerTableHeader() {
 private fun LedgerRowItem(
     line: LedgerLine,
     isLowConfidence: Boolean,
+    isGemmaSourced: Boolean,
     onClick: (String, String) -> Unit,
     onReview: () -> Unit,
 ) {
@@ -149,6 +154,9 @@ private fun LedgerRowItem(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
+            if (isGemmaSourced) {
+                GemmaSourceBadge()
+            }
             if (isLowConfidence) {
                 IconButton(
                     onClick = onReview,
