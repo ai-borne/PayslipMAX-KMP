@@ -1,6 +1,6 @@
 package com.ssbmax.pdfparser.parser.debug
 
-import com.ssbmax.pdfparser.parser.PayslipTokenParser
+import com.ssbmax.pdfparser.parser.GrammarAwareParser
 import com.ssbmax.pdfparser.parser.PositionedToken
 import com.ssbmax.pdfparser.parser.TokenizedPayslip
 import com.ssbmax.pdfparser.parser.corpus.CorpusFixtures
@@ -24,7 +24,7 @@ class CorpusDebugDiffTest {
             )
 
         val androidCollector = ParserDebugCollector(platform = "Android (PDFBox)", filename = input.filename)
-        val androidResult = PayslipTokenParser.parse(androidTokenized, input.filename, debugCollector = androidCollector)
+        val androidResult = GrammarAwareParser.parse(androidTokenized, input.filename, debugCollector = androidCollector)
         assertTrue(androidResult.isSuccess, "Android parse should succeed for $id")
         val androidArtifact = androidCollector.buildArtifact()
 
@@ -39,7 +39,7 @@ class CorpusDebugDiffTest {
             )
 
         val iosCollector = ParserDebugCollector(platform = "iOS (PDFKit)", filename = input.filename)
-        val iosResult = PayslipTokenParser.parse(iosTokenized, input.filename, debugCollector = iosCollector)
+        val iosResult = GrammarAwareParser.parse(iosTokenized, input.filename, debugCollector = iosCollector)
         val iosArtifact = iosCollector.buildArtifact()
 
         val diffReport = ParserDiffEngine.compare(androidArtifact, iosArtifact)
@@ -85,7 +85,7 @@ class CorpusDebugDiffTest {
             )
 
         val androidCollector = ParserDebugCollector(platform = "Android (PDFBox)", filename = input.filename)
-        val androidResult = PayslipTokenParser.parse(androidTokenized, input.filename, debugCollector = androidCollector)
+        val androidResult = GrammarAwareParser.parse(androidTokenized, input.filename, debugCollector = androidCollector)
         assertTrue(androidResult.isSuccess, "Android parse should succeed for $id")
         val androidArtifact = androidCollector.buildArtifact()
 
@@ -99,7 +99,7 @@ class CorpusDebugDiffTest {
             )
 
         val iosCollector = ParserDebugCollector(platform = "iOS (PDFKit)", filename = input.filename)
-        val iosResult = PayslipTokenParser.parse(iosTokenized, input.filename, debugCollector = iosCollector)
+        val iosResult = GrammarAwareParser.parse(iosTokenized, input.filename, debugCollector = iosCollector)
         val iosArtifact = iosCollector.buildArtifact()
 
         val diffReport = ParserDiffEngine.compare(androidArtifact, iosArtifact)

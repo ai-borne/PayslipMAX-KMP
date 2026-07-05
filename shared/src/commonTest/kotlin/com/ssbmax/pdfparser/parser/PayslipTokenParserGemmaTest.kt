@@ -33,7 +33,7 @@ class PayslipTokenParserGemmaTest {
                 dsopTokens = emptyList(),
             )
 
-        val result = PayslipTokenParser.parse(tokenized, "test.pdf", fallbackExtractor = extractor)
+        val result = GrammarAwareParser.parse(tokenized, "test.pdf", fallbackExtractor = extractor)
         assertTrue(result.isSuccess)
         assertNotNull(result.getOrNull())
     }
@@ -65,7 +65,7 @@ class PayslipTokenParserGemmaTest {
                 dsopTokens = emptyList(),
             )
 
-        val result = PayslipTokenParser.parse(tokenized, "apr14.pdf", fallbackExtractor = extractor)
+        val result = GrammarAwareParser.parse(tokenized, "apr14.pdf", fallbackExtractor = extractor)
         assertTrue(result.isSuccess)
         val parsed = result.getOrThrow()
         assertTrue(parsed.needsReview, "Missing mandatory fields should keep needsReview flag true or set field confidence")
