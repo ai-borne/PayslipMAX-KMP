@@ -73,11 +73,20 @@ class PayslipViewModel(
             try {
                 repository.getAllPayslips().collect { list ->
                     val nextSelected = _uiState.value.selectedPayslip ?: list.lastOrNull()
+                    val latestYear = list.maxOfOrNull { it.year }
                     _uiState.update { state ->
+                        val expandedYears =
+                            if (latestYear != null && latestYear != state.lastKnownHistoryYear) {
+                                state.expandedHistoryYears + latestYear
+                            } else {
+                                state.expandedHistoryYears
+                            }
                         state.copy(
                             payslips = list,
                             selectedPayslip = nextSelected,
                             isLoading = false,
+                            expandedHistoryYears = expandedYears,
+                            lastKnownHistoryYear = latestYear ?: state.lastKnownHistoryYear,
                         )
                     }
                     if (nextSelected != null) {
