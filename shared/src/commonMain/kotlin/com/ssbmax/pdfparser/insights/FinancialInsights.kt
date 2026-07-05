@@ -1,6 +1,7 @@
 package com.ssbmax.pdfparser.insights
 
 import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.utils.FormatUtils
 
 data class FinancialInsight(
     val title: String,
@@ -28,7 +29,7 @@ object FinancialInsightsGenerator {
             insights.add(
                 FinancialInsight(
                     title = "Excellent Savings Rate (${dsopRate.toString().take(4)}%)",
-                    description = "You saved ₹${formatAmount(
+                    description = "You saved ₹${FormatUtils.formatIndianGrouped(
                         dsop,
                     )} in your DSOP Fund this month, which represents ${dsopRate.toString().take(
                         4,
@@ -55,7 +56,7 @@ object FinancialInsightsGenerator {
             insights.add(
                 FinancialInsight(
                     title = "Income Tax Burden (${taxRate.toString().take(4)}%)",
-                    description = "A total of ₹${formatAmount(
+                    description = "A total of ₹${FormatUtils.formatIndianGrouped(
                         tax,
                     )} was deducted for Income Tax & Cess this month, consuming ${taxRate.toString().take(
                         4,
@@ -74,11 +75,11 @@ object FinancialInsightsGenerator {
             insights.add(
                 FinancialInsight(
                     title = "Government Housing Subsidy",
-                    description = "You paid a License Fee of ₹${formatAmount(
+                    description = "You paid a License Fee of ₹${FormatUtils.formatIndianGrouped(
                         lf,
-                    )} and Furniture Rent of ₹${formatAmount(
+                    )} and Furniture Rent of ₹${FormatUtils.formatIndianGrouped(
                         fur,
-                    )} (Total: ₹${formatAmount(
+                    )} (Total: ₹${FormatUtils.formatIndianGrouped(
                         totalAcc,
                     )}). Occupying government quarters represents an implied subsidy of ₹20,000+ per month compared to market rentals.",
                     icon = "🏠",
@@ -93,7 +94,7 @@ object FinancialInsightsGenerator {
             insights.add(
                 FinancialInsight(
                     title = "Special Forces Allowance Active",
-                    description = "Your ledger includes ₹${formatAmount(
+                    description = "Your ledger includes ₹${FormatUtils.formatIndianGrouped(
                         sfPay,
                     )} credited as Special Forces/Command Pay. This is an elite hazard allowance recognizing specialized operational service.",
                     icon = "🦅",
@@ -114,7 +115,7 @@ object FinancialInsightsGenerator {
         if (arrearsSum > 0.0) {
             insights.add(
                 FinancialInsight(
-                    title = "Arrears Credited: ₹${formatAmount(arrearsSum)}",
+                    title = "Arrears Credited: ₹${FormatUtils.formatIndianGrouped(arrearsSum)}",
                     description = "You received lump-sum arrears this month. A standard wealth building strategy is to route these unexpected credits directly into long-term investments rather than general spending.",
                     icon = "💰",
                     type = "success",
@@ -127,7 +128,7 @@ object FinancialInsightsGenerator {
         if (msp > 0.0) {
             insights.add(
                 FinancialInsight(
-                    title = "Military Service Pay (₹${formatAmount(msp)})",
+                    title = "Military Service Pay (₹${FormatUtils.formatIndianGrouped(msp)})",
                     description = "MSP is a distinct military allowance paid under the 7th Pay Commission. Unlike civil services, it specifically compensates for the constant relocations, hazards, and severe constraints of active military life.",
                     icon = "🎖️",
                     type = "accent",
@@ -143,7 +144,7 @@ object FinancialInsightsGenerator {
                 insights.add(
                     FinancialInsight(
                         title = "Utility Charge Spike Detected",
-                        description = "Your electricity charges increased from ₹${formatAmount(prevElec)} to ₹${formatAmount(currentElec)} (+${((currentElec - prevElec) / prevElec * 100).toInt()}%). Consider checking for billing anomalies or seasonal surges.",
+                        description = "Your electricity charges increased from ₹${FormatUtils.formatIndianGrouped(prevElec)} to ₹${FormatUtils.formatIndianGrouped(currentElec)} (+${((currentElec - prevElec) / prevElec * 100).toInt()}%). Consider checking for billing anomalies or seasonal surges.",
                         icon = "⚡",
                         type = "warning",
                     ),
@@ -159,7 +160,7 @@ object FinancialInsightsGenerator {
                 insights.add(
                     FinancialInsight(
                         title = "Allowance Recovery Alert (SF)",
-                        description = "Special Forces Pay (₹${formatAmount(prevSf)}) was credited in your last statement but is absent this month. Please audit with your CDA office if this wasn't an expected posting transfer.",
+                        description = "Special Forces Pay (₹${FormatUtils.formatIndianGrouped(prevSf)}) was credited in your last statement but is absent this month. Please audit with your CDA office if this wasn't an expected posting transfer.",
                         icon = "⚠️",
                         type = "warning",
                     ),
@@ -172,7 +173,7 @@ object FinancialInsightsGenerator {
                 insights.add(
                     FinancialInsight(
                         title = "Allowance Recovery Alert (Field)",
-                        description = "Field Allowance (₹${formatAmount(prevField)}) was active in your last statement but is absent this month. Please audit with your unit clerk if posting status changed.",
+                        description = "Field Allowance (₹${FormatUtils.formatIndianGrouped(prevField)}) was active in your last statement but is absent this month. Please audit with your unit clerk if posting status changed.",
                         icon = "⚠️",
                         type = "warning",
                     ),
@@ -181,26 +182,5 @@ object FinancialInsightsGenerator {
         }
 
         return insights
-    }
-
-    private fun formatAmount(amount: Double): String {
-        val longVal = amount.toLong()
-        val str = longVal.toString()
-        if (str.length <= 3) return str
-        val lastThree = str.substring(str.length - 3)
-        val remaining = str.substring(0, str.length - 3)
-        val builder = StringBuilder()
-        var i = remaining.length
-        while (i > 0) {
-            if (i >= 2) {
-                builder.insert(0, remaining.substring(i - 2, i))
-                if (i - 2 > 0) builder.insert(0, ",")
-                i -= 2
-            } else {
-                builder.insert(0, remaining.substring(0, 1))
-                i -= 1
-            }
-        }
-        return "$builder,$lastThree"
     }
 }

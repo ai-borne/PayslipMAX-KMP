@@ -1,16 +1,23 @@
 package com.ssbmax.pdfparser.insights.gemma
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DeviceCapabilityManagerTest {
     @Test
-    fun testDeviceCapabilityCheckReturnsStatus() {
+    fun testDeviceCapabilitySupportedWithTrivialRequirements() {
         val manager = DeviceCapabilityManager()
-        val status = manager.checkGemmaSupport(requiredRamMb = 100L, requiredStorageMb = 100L)
-        // Verify that check runs without throwing exceptions
-        assertTrue(status is GemmaSupportStatus)
+        val status = manager.checkGemmaSupport(requiredRamMb = 1L, requiredStorageMb = 1L)
+        assertEquals(GemmaSupportStatus.Supported, status)
+    }
+
+    @Test
+    fun testDeviceCapabilityInsufficientRamWithImpossibleRequirement() {
+        val manager = DeviceCapabilityManager()
+        val status = manager.checkGemmaSupport(requiredRamMb = Long.MAX_VALUE, requiredStorageMb = 1L)
+        assertTrue(status is GemmaSupportStatus.InsufficientRam)
     }
 
     @Test

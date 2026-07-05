@@ -22,6 +22,7 @@ import com.ssbmax.pdfparser.ui.PayslipViewModel
 import com.ssbmax.pdfparser.ui.clearError
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
+import kotlin.math.round
 
 @Composable
 fun DashboardScreen(
@@ -185,7 +186,8 @@ private fun StatsGridSection(payslip: ParsedPayslip) {
     val basic = payslip.earnings.basicPay
     val dsop = payslip.taxAndSavings?.dsopFund?.closingBalance ?: 0.0
     val tax = payslip.deductions.incomeTax + payslip.deductions.educationCess
-    val taxRate = if (payslip.summary.grossPay > 0) (tax / payslip.summary.grossPay) * 100 else 0.0
+    val taxRateRaw = if (payslip.summary.grossPay > 0) (tax / payslip.summary.grossPay) * 100 else 0.0
+    val taxRate = round(taxRateRaw * 10) / 10.0
 
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
         Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
@@ -211,7 +213,7 @@ private fun StatsGridSection(payslip: ParsedPayslip) {
             )
             StatCard(
                 title = AppStrings.cardTaxTitle,
-                value = "${taxRate.toString().take(4)}%",
+                value = "$taxRate%",
                 subtitle = AppStrings.cardTaxDesc,
                 modifier = Modifier.weight(1f),
             )

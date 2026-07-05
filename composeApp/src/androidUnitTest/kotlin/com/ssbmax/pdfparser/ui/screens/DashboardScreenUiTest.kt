@@ -1,6 +1,13 @@
 package com.ssbmax.pdfparser.ui.screens
 
 import androidx.compose.ui.test.*
+import com.ssbmax.pdfparser.database.toEncryptedEntity
+import com.ssbmax.pdfparser.domain.Deductions
+import com.ssbmax.pdfparser.domain.Earnings
+import com.ssbmax.pdfparser.domain.LedgerBalances
+import com.ssbmax.pdfparser.domain.Officer
+import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.ssbmax.pdfparser.domain.PayslipSummary
 import com.ssbmax.pdfparser.repository.PayslipRepository
 import com.ssbmax.pdfparser.testing.FakePayslipDao
 import com.ssbmax.pdfparser.testing.FakePdfParser
@@ -8,6 +15,7 @@ import com.ssbmax.pdfparser.ui.FakeBackupManager
 import com.ssbmax.pdfparser.ui.PayslipViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -81,5 +89,40 @@ class DashboardScreenUiTest {
             onNodeWithTag("dashboard_empty").assertExists()
             // Verify loading indicator is gone
             onNodeWithTag("dashboard_loading").assertDoesNotExist()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testTaxRateCardRoundsCleanlyWithoutTrailingDot() =
+        runComposeUiTest {
+            // grossPay == incomeTax makes the rate exactly 100.0 -- the old
+            // `taxRate.toString().take(4)` truncation rendered this as "100.%".
+            val payslip =
+                ParsedPayslip(
+                    file = "test.pdf",
+                    year = 2026,
+                    monthNum = 4,
+                    monthName = "April",
+                    dateStr = "04/2026",
+                    officer = Officer("Test Officer", "00/000/000000X", "AA****00A"),
+                    earnings = Earnings(basicPay = 500.0),
+                    deductions = Deductions(incomeTax = 500.0),
+                    ledgerBalances = LedgerBalances(),
+                    summary = PayslipSummary(grossPay = 500.0, totalDeductions = 500.0, netRemittance = 0.0),
+                    taxAndSavings = null,
+                )
+            runBlocking { fakeDao.insertPayslip(payslip.toEncryptedEntity()) }
+            testDispatcher.scheduler.runCurrent()
+
+            setContent {
+                DashboardScreen(
+                    viewModel = viewModel,
+                    onPickPdfTrigger = {},
+                )
+            }
+            testDispatcher.scheduler.runCurrent()
+
+            onNodeWithText("100.0%").assertExists()
+            onNodeWithText("100.%").assertDoesNotExist()
         }
 }

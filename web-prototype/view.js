@@ -7,7 +7,8 @@ export class PayslipView {
   constructor(viewModel, chartManager) {
     this.vm = viewModel;
     this.cm = chartManager;
-    
+    this.currentIncomeFilter = 'all';
+
     this.selectYear = document.getElementById('select-year');
     this.selectMonth = document.getElementById('select-month');
     this.modal = document.getElementById('upload-modal');
@@ -98,15 +99,17 @@ export class PayslipView {
   }
 
   handleIncomeChartFilter(filter) {
+    this.currentIncomeFilter = filter;
+
     const buttons = document.querySelectorAll('.filter-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
-    
-    const activeBtn = Array.from(buttons).find(btn => 
-      btn.textContent.toLowerCase() === filter.toLowerCase() || 
+
+    const activeBtn = Array.from(buttons).find(btn =>
+      btn.textContent.toLowerCase() === filter.toLowerCase() ||
       (filter === 'all' && btn.textContent === 'All')
     );
     if (activeBtn) activeBtn.classList.add('active');
-    
+
     const ctx = document.getElementById('incomeTrendChart').getContext('2d');
     this.cm.renderIncomeTrend(ctx, this.vm.model.getPayslips(), filter);
   }
@@ -182,10 +185,27 @@ export class PayslipView {
     // 4. Insights panel
     this.renderInsights();
 
-    // 5. Update Share Chart
+    // 5. Update charts with latest data
+    const payslips = this.vm.model.getPayslips();
+
     if (this.cm.shareChart && record) {
       const shareCtx = document.getElementById('shareBreakdownChart').getContext('2d');
       this.cm.renderShareBreakdown(shareCtx, record);
+    }
+
+    if (this.cm.incomeChart) {
+      const incomeCtx = document.getElementById('incomeTrendChart').getContext('2d');
+      this.cm.renderIncomeTrend(incomeCtx, payslips, this.currentIncomeFilter);
+    }
+
+    if (this.cm.dsopChart) {
+      const dsopCtx = document.getElementById('dsopGrowthChart').getContext('2d');
+      this.cm.renderDsopGrowth(dsopCtx, payslips);
+    }
+
+    if (this.cm.taxChart) {
+      const taxCtx = document.getElementById('taxProjectionsChart').getContext('2d');
+      this.cm.renderTaxProjections(taxCtx, payslips);
     }
   }
 
