@@ -65,6 +65,7 @@ object AppStrings {
     const val correctionAiSourceBadge = "AI"
     const val correctionAiSourceDesc = "This value was inferred by on-device AI (Gemma), not parsed directly — please verify against your payslip"
     const val correctionReasonsHeading = "This payslip needs review because:"
+    const val correctionDiagnosticHintHeading = "AI flagged this field as possibly mis-extracted:"
 
     // Upload & Decrypt
     const val uploadHeader = "Import Encrypted Payslip"

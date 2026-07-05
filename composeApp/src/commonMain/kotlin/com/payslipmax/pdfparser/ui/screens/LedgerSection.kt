@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.domain.ConfidenceThresholds
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.diagnosticSuggestionFor
+import com.payslipmax.pdfparser.domain.isFieldDiagnosed
 import com.payslipmax.pdfparser.domain.isFieldGemmaSourced
 import com.payslipmax.pdfparser.domain.isFieldLowConfidence
 import com.payslipmax.pdfparser.ui.theme.AppColors
@@ -58,6 +60,7 @@ fun LedgerSection(
                             line = line,
                             isLowConfidence = payslip.isFieldLowConfidence(line.fieldKey),
                             isGemmaSourced = payslip.isFieldGemmaSourced(line.fieldKey),
+                            isDiagnosed = payslip.isFieldDiagnosed(line.fieldKey),
                             onClick = onItemClick,
                             onReview = { editingLine = line },
                         )
@@ -77,6 +80,7 @@ fun LedgerSection(
                             line = line,
                             isLowConfidence = payslip.isFieldLowConfidence(line.fieldKey),
                             isGemmaSourced = payslip.isFieldGemmaSourced(line.fieldKey),
+                            isDiagnosed = payslip.isFieldDiagnosed(line.fieldKey),
                             onClick = onItemClick,
                             onReview = { editingLine = line },
                         )
@@ -92,6 +96,7 @@ fun LedgerSection(
         LedgerCorrectionDialog(
             line = line,
             reasons = if (payslip.needsReview) payslip.reviewReasons else emptyList(),
+            diagnosticHint = payslip.diagnosticSuggestionFor(line.fieldKey),
             onDismiss = { editingLine = null },
             onConfirm = { fieldKey, newValue ->
                 onCorrectField(fieldKey, newValue)
@@ -135,6 +140,7 @@ private fun LedgerRowItem(
     line: LedgerLine,
     isLowConfidence: Boolean,
     isGemmaSourced: Boolean,
+    isDiagnosed: Boolean,
     onClick: (String, String) -> Unit,
     onReview: () -> Unit,
 ) {
@@ -157,7 +163,7 @@ private fun LedgerRowItem(
             if (isGemmaSourced) {
                 GemmaSourceBadge()
             }
-            if (isLowConfidence) {
+            if (isLowConfidence || isDiagnosed) {
                 IconButton(
                     onClick = onReview,
                     modifier = Modifier.size(AppDimensions.IconSizeMedium),

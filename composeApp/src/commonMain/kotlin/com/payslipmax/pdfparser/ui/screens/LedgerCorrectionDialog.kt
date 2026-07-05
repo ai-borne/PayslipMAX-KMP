@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -15,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import com.payslipmax.pdfparser.ui.theme.AppColors
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 
@@ -29,6 +31,7 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 internal fun LedgerCorrectionDialog(
     line: LedgerLine,
     reasons: List<String> = emptyList(),
+    diagnosticHint: String? = null,
     onDismiss: () -> Unit,
     onConfirm: (fieldKey: String, newValue: Double) -> Unit,
 ) {
@@ -45,6 +48,7 @@ internal fun LedgerCorrectionDialog(
             Column {
                 Text(text = AppStrings.correctionDialogHint)
                 ReviewReasonsList(reasons)
+                DiagnosticHintText(diagnosticHint)
                 OutlinedTextField(
                     value = input,
                     onValueChange = { input = it },
@@ -54,8 +58,7 @@ internal fun LedgerCorrectionDialog(
                     supportingText = {
                         if (!isValid) Text(text = AppStrings.correctionInvalidAmount)
                     },
-                    keyboardOptions =
-                        androidx.compose.foundation.text.KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.padding(top = AppDimensions.SpacingMedium),
                 )
             }
@@ -88,6 +91,22 @@ private fun ReviewReasonsList(reasons: List<String>) {
     reasons.forEach { reason ->
         Text(text = "• $reason", style = MaterialTheme.typography.bodySmall)
     }
+}
+
+/**
+ * Tier 6 diagnostic hint for this specific field ([com.payslipmax.pdfparser.domain.diagnosticSuggestionFor]) —
+ * distinct from [ReviewReasonsList], which is payslip-level. Read-only prose; never proposes a corrected value.
+ */
+@Composable
+private fun DiagnosticHintText(diagnosticHint: String?) {
+    if (diagnosticHint == null) return
+    Text(
+        text = AppStrings.correctionDiagnosticHintHeading,
+        style = MaterialTheme.typography.labelMedium,
+        color = AppColors.AiInferred,
+        modifier = Modifier.padding(top = AppDimensions.SpacingSmall),
+    )
+    Text(text = diagnosticHint, style = MaterialTheme.typography.bodySmall)
 }
 
 /** Renders the stored double without a trailing ".0" so whole-rupee amounts pre-fill cleanly. */

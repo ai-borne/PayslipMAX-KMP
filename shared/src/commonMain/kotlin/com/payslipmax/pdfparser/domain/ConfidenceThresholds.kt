@@ -36,3 +36,16 @@ fun ParsedPayslip.isFieldLowConfidence(fieldKey: String): Boolean {
  * "the deterministic solver was merely unsure" instead of both collapsing into the same warning icon.
  */
 fun ParsedPayslip.isFieldGemmaSourced(fieldKey: String): Boolean = fieldSource[fieldKey] == FieldSource.GEMMA_FALLBACK
+
+/**
+ * True when the Tier 6 diagnostic pass named [fieldKey] as the field most likely mis-extracted. Independent
+ * of [isFieldLowConfidence] — the whole point is catching a field the geometry solver was confidently wrong about.
+ */
+fun ParsedPayslip.isFieldDiagnosed(fieldKey: String): Boolean = diagnosticSuggestion?.fieldKey == fieldKey
+
+/**
+ * The Tier 6 diagnostic hint's prose, if [diagnosticSuggestion] names [fieldKey] as the field most likely
+ * mis-extracted. Read-only lookup — surfacing this in the UI never mutates the field it describes.
+ */
+fun ParsedPayslip.diagnosticSuggestionFor(fieldKey: String): String? =
+    diagnosticSuggestion?.takeIf { it.fieldKey == fieldKey }?.reason
