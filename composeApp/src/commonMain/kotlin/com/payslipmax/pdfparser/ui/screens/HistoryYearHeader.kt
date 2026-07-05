@@ -5,14 +5,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -181,21 +181,30 @@ fun HistoryLazyList(
     onPayslipClick: (ParsedPayslip) -> Unit,
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
+    expandedYears: Set<Int>,
+    onToggleYear: (Int) -> Unit,
+    initialScrollIndex: Int,
+    initialScrollOffset: Int,
+    onScrollPositionChanged: (Int, Int) -> Unit,
 ) {
     val grouped =
         remember(payslips) {
             payslips.groupBy { it.year }.toList().sortedByDescending { it.first }
         }
-    val latestYear = remember(grouped) { grouped.firstOrNull()?.first }
-    var expandedYears by remember {
-        mutableStateOf(if (latestYear != null) setOf(latestYear) else emptySet())
-    }
     val sortedLedger =
         remember(ledgerRecords) {
             ledgerRecords.sortedWith(compareByDescending<LedgerRecordEntity> { it.year }.thenByDescending { it.monthNum })
         }
+    val listState = rememberLazyListState(initialScrollIndex, initialScrollOffset)
+
+    DisposableEffect(Unit) {
+        onDispose {
+            onScrollPositionChanged(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset)
+        }
+    }
 
     androidx.compose.foundation.lazy.LazyColumn(
+        state = listState,
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -203,15 +212,12 @@ fun HistoryLazyList(
             item { HistoricalLedgerCard(ledgerRecords = sortedLedger) }
         }
         grouped.forEach { (year, yearPayslips) ->
-            val isExpanded = expandedYears.contains(year)
             historyYearGroup(
                 year = year,
                 yearPayslips = yearPayslips,
                 allPayslips = payslips,
-                isExpanded = isExpanded,
-                onToggleExpand = {
-                    expandedYears = if (isExpanded) expandedYears - year else expandedYears + year
-                },
+                isExpanded = expandedYears.contains(year),
+                onToggleExpand = { onToggleYear(year) },
                 onPayslipClick = onPayslipClick,
                 onLongPress = onLongPress,
                 onSwipeDelete = onSwipeDelete,
