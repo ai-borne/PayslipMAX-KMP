@@ -23,7 +23,7 @@ object GemmaResponseParser {
 
     fun parse(response: String): GemmaFallbackExtraction {
         return try {
-            val cleaned = cleanMarkdownBlocks(response)
+            val cleaned = GemmaMarkdownCleaner.clean(response)
             val root = jsonInstance.parseToJsonElement(cleaned).jsonObject
             val earningsMap = extractSection(root["earnings"]?.jsonObject)
             val deductionsMap = extractSection(root["deductions"]?.jsonObject)
@@ -31,19 +31,6 @@ object GemmaResponseParser {
         } catch (e: Exception) {
             GemmaFallbackExtraction()
         }
-    }
-
-    private fun cleanMarkdownBlocks(raw: String): String {
-        var text = raw.trim()
-        if (text.startsWith("```json")) {
-            text = text.removePrefix("```json").trim()
-        } else if (text.startsWith("```")) {
-            text = text.removePrefix("```").trim()
-        }
-        if (text.endsWith("```")) {
-            text = text.removeSuffix("```").trim()
-        }
-        return text
     }
 
     private fun extractSection(obj: JsonObject?): Map<String, Double> {
