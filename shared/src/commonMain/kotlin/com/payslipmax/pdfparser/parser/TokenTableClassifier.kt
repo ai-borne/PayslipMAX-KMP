@@ -296,5 +296,5 @@ object TokenTableClassifier {
         return rest.none { it.isLetterOrDigit() }
     }
 
-    private fun normalize(text: String): String = text.lowercase().replace(Regex("\\s+"), " ").trim()
+    private fun normalize(text: String): String = text.lowercase().replace(Regex("\\s+"), " ").trim().removeSuffix(":").trim()
 }

@@ -222,18 +222,18 @@ class TokenTableEngineTest {
      * Regression for a real on-device finding (Aug-2014 PCDA_TRANSITIONAL_7TH_CPC payslip, smoke-tested
      * during the Tier 6 diagnostic-mode rollout): unlike the footer-disclaimer case above, these bank-detail
      * and statement-header labels are *short* (2-5 words) — under RawLabelNoiseFilter's length guard — so
-     * they were never rejected as prose noise. They must instead be caught by the exact-match blocklist
-     * (`"bank code"`, `"bank a/c no"`) and the new prefix blocklist (`"statement of account for"`, which
-     * varies by printed month), or a bank account number gets booked as a deduction and inflates
-     * `SchemaValidator`'s debitsSum by orders of magnitude.
+     * they were never rejected as prose noise. The real on-page labels also carry a trailing colon
+     * ("BANK CODE :", "BANK A/C NO :", as printed on the statement), which the exact-match blocklist
+     * would silently miss without stripping it in [normalize] first. Uncaught, a bank account number
+     * gets booked as a deduction and inflates `SchemaValidator`'s debitsSum by orders of magnitude.
      */
     @Test
     fun bankDetailAndStatementHeaderLabelsDroppedFromDebits() {
         val pairs =
             RowPairing.pair(GridReconstructor.reconstruct(sampleTable())) +
                 listOf(
-                    LabelAmount("BANK CODE", 6900047.0, 186f, 275f, 440f),
-                    LabelAmount("BANK A/C NO", 62400106755.0, 186f, 275f, 460f),
+                    LabelAmount("BANK CODE :", 6900047.0, 186f, 275f, 440f),
+                    LabelAmount("BANK A/C NO :", 62400106755.0, 186f, 275f, 460f),
                     LabelAmount("STATEMENT OF ACCOUNT FOR AUG", 12345.0, 186f, 275f, 480f),
                 )
         val table = TokenTableClassifier.classifyPairs(pairs)
