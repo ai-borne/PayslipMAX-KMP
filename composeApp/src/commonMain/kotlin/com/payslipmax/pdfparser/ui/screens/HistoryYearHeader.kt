@@ -55,7 +55,7 @@ fun HistoryYearHeader(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(AppDimensions.PaddingMedium),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(modifier = Modifier.weight(1f)) {
