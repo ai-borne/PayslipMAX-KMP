@@ -22,17 +22,19 @@ object GrammarAwareParser {
         tokenized: TokenizedPayslip,
         filename: String,
         fallbackExtractor: GemmaFallbackExtractor? = null,
+        diagnosticExtractor: GemmaDiagnosticExtractor? = null,
         debugCollector: ParserDebugCollector? = null,
     ): Result<ParsedPayslip> {
-        return parseWithDiagnostics(tokenized, filename, fallbackExtractor, debugCollector).map { it.first }
+        return parseWithDiagnostics(tokenized, filename, fallbackExtractor, diagnosticExtractor, debugCollector).map { it.first }
     }
 
     fun parseWithDiagnostics(
         tokenized: TokenizedPayslip,
         filename: String,
         fallbackExtractor: GemmaFallbackExtractor? = null,
+        diagnosticExtractor: GemmaDiagnosticExtractor? = null,
         debugCollector: ParserDebugCollector? = null,
     ): Result<Pair<ParsedPayslip, GrammarDiagnosticReport>> {
-        return pipeline.parse(tokenized, filename, fallbackExtractor, debugCollector)
+        return pipeline.parse(tokenized, filename, fallbackExtractor, diagnosticExtractor, debugCollector)
     }
 }

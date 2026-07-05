@@ -31,7 +31,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         // iOS share one device-independent engine instead of diverging column crops.
         return extractTokens(pdfBytes, password, filename).mapCatching { tokenized ->
             Logger.d("PlatformPdfParser", "Starting GrammarAwareParser.parse...")
-            val fallbackExtractor =
+            val gemmaEngine =
                 try {
                     val storageDir = com.payslipmax.pdfparser.insights.gemma.gemmaModelStorageDir()
                     val modelFileName = com.payslipmax.pdfparser.insights.gemma.GemmaModelStorageManager().getRecommendedModelFileName()
@@ -41,7 +41,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                         val config = com.payslipmax.pdfparser.insights.gemma.GemmaEngineConfig(modelPath = modelFile.absolutePath)
                         val engine = GemmaEngine(config)
                         Logger.d("PlatformPdfParser", "GemmaEngine initialized successfully! isInitialized=${engine.isInitialized}")
-                        GemmaFallbackExtractor(gemmaEngine = engine)
+                        engine
                     } else {
                         Logger.d("PlatformPdfParser", "Gemma model file not found in filesDir.")
                         null
@@ -50,7 +50,17 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     Logger.e("PlatformPdfParser", "Failed to initialize GemmaEngine", e)
                     null
                 }
-            val parseResult = GrammarAwareParser.parse(tokenized, filename, fallbackExtractor = fallbackExtractor)
+            // Same GemmaEngine instance backs both Tier 6 fallback and the Tier 6 diagnostic pass —
+            // GemmaEngine opens a fresh stateless Conversation per call, so this is free of extra model-load cost.
+            val fallbackExtractor = gemmaEngine?.let { GemmaFallbackExtractor(gemmaEngine = it) }
+            val diagnosticExtractor = gemmaEngine?.let { GemmaDiagnosticExtractor(gemmaEngine = it) }
+            val parseResult =
+                GrammarAwareParser.parse(
+                    tokenized,
+                    filename,
+                    fallbackExtractor = fallbackExtractor,
+                    diagnosticExtractor = diagnosticExtractor,
+                )
             Logger.d("PlatformPdfParser", "Finished GrammarAwareParser.parse. Success: ${parseResult.isSuccess}")
             parseResult.getOrThrow()
         }

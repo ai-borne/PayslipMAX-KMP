@@ -33,16 +33,6 @@ class GemmaFallbackExtractor(
     }
 
     private suspend fun generateResponse(prompt: String): Result<String> {
-        return try {
-            if (mockEngine != null && mockEngine.isInitialized) {
-                mockEngine.generateResponse(prompt)
-            } else if (gemmaEngine != null && gemmaEngine.isInitialized) {
-                gemmaEngine.generateResponse(prompt)
-            } else {
-                Result.failure(IllegalStateException("Gemma engine not initialized"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        return GemmaEngineInvoker.generateResponse(prompt, gemmaEngine, mockEngine)
     }
 }

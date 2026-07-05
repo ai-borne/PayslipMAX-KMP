@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.parser
 
+import com.payslipmax.pdfparser.domain.DiagnosticSuggestion
 import kotlinx.serialization.json.Json
 
 /**

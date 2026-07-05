@@ -40,6 +40,12 @@ data class ParsedPayslip(
      * *why* a payslip needs review, not just flag that it does.
      */
     val reviewReasons: List<String> = emptyList(),
+    /**
+     * Tier 6 diagnostic hint (see [DiagnosticSuggestion]) naming the single field most likely
+     * mis-extracted, populated only when Tier 7 [com.payslipmax.pdfparser.parser.SchemaValidator]
+     * fails arithmetic reconciliation. Read-only — never merged into [earnings]/[deductions].
+     */
+    val diagnosticSuggestion: DiagnosticSuggestion? = null,
 )
 
 @Serializable

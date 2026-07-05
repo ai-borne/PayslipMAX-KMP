@@ -1,12 +1,15 @@
 package com.payslipmax.pdfparser.parser.pipeline
 
+import com.payslipmax.pdfparser.domain.DiagnosticSuggestion
 import com.payslipmax.pdfparser.domain.Officer
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.TaxAndSavings
 import com.payslipmax.pdfparser.logging.Logger
+import com.payslipmax.pdfparser.parser.GemmaDiagnosticExtractor
 import com.payslipmax.pdfparser.parser.GemmaFallbackExtractor
 import com.payslipmax.pdfparser.parser.PayslipPatternConfig
 import com.payslipmax.pdfparser.parser.ReconciliationSolver
+import com.payslipmax.pdfparser.parser.SchemaValidationResult
 import com.payslipmax.pdfparser.parser.SchemaValidator
 import com.payslipmax.pdfparser.parser.SolvedTable
 import com.payslipmax.pdfparser.parser.TokenTableClassifier
@@ -36,6 +39,7 @@ class SharedParsingPipeline(
         tokenized: TokenizedPayslip,
         filename: String,
         fallbackExtractor: GemmaFallbackExtractor? = null,
+        diagnosticExtractor: GemmaDiagnosticExtractor? = null,
         debugCollector: ParserDebugCollector? = null,
     ): Result<Pair<ParsedPayslip, GrammarDiagnosticReport>> {
         return try {
@@ -47,7 +51,7 @@ class SharedParsingPipeline(
             val solved = executeTableReconciliation(descriptor, initialContext, fallbackExtractor, debugCollector)
             val taxAndSavings = extractTaxAndSavings(descriptor, initialContext)
 
-            val finalParsed = assembleAndValidate(initialContext, officer, solved, taxAndSavings)
+            val finalParsed = assembleAndValidate(initialContext, officer, solved, taxAndSavings, diagnosticExtractor)
             val finalReport =
                 report.copy(
                     validationStatus = if (finalParsed.needsReview) "NEEDS_REVIEW" else "PASSED",
@@ -135,6 +139,7 @@ class SharedParsingPipeline(
         officer: Officer,
         solved: SolvedTable,
         taxAndSavings: TaxAndSavings?,
+        diagnosticExtractor: GemmaDiagnosticExtractor?,
     ): ParsedPayslip {
         val parsed =
             assembleParsedPayslip(
@@ -162,12 +167,42 @@ class SharedParsingPipeline(
                     "deductions mismatch ${schemaValidation.deductionsMismatch}, net residual ${schemaValidation.netResidual}"
             }
 
+        val diagnosticSuggestion =
+            if (!schemaValidation.isValid && diagnosticExtractor != null) {
+                runDiagnostic(diagnosticExtractor, solved, context, schemaValidation)
+            } else {
+                null
+            }
+
         return parsed.copy(
             fieldConfidence = solved.fieldConfidence,
             fieldSource = solved.fieldSource,
             needsReview = solved.needsReview || !schemaValidation.isValid,
             reviewReasons = reviewReasons,
+            diagnosticSuggestion = diagnosticSuggestion,
         )
+    }
+
+    private fun runDiagnostic(
+        diagnosticExtractor: GemmaDiagnosticExtractor,
+        solved: SolvedTable,
+        context: PipelineContext,
+        schemaValidation: SchemaValidationResult,
+    ): DiagnosticSuggestion? {
+        return try {
+            kotlinx.coroutines.runBlocking {
+                diagnosticExtractor.suggestDiagnostic(
+                    earnings = solved.earningsMap,
+                    deductions = solved.deductionsMap,
+                    grossPay = context.grossPay,
+                    totalDeductions = context.totalDeductions,
+                    netRemittance = context.netRemittance,
+                    residual = maxOf(schemaValidation.grossMismatch, schemaValidation.deductionsMismatch, schemaValidation.netResidual),
+                )
+            }
+        } catch (e: Exception) {
+            null
+        }
     }
 
     companion object {

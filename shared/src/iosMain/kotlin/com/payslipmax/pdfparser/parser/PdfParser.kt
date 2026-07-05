@@ -26,26 +26,33 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         // (extractTextSpatially + IosLayoutScanner) diverged per-platform and per-month; it is replaced
         // by the shared common engine (GrammarAwareParser), so iOS and Android parse identically.
         return extractTokens(pdfBytes, password, filename).mapCatching { tokenized ->
-            GrammarAwareParser.parse(tokenized, filename, fallbackExtractor = buildGemmaFallbackExtractor()).getOrThrow()
+            // Same GemmaEngine instance backs both Tier 6 fallback and the Tier 6 diagnostic pass —
+            // GemmaEngine opens a fresh stateless Conversation per call, so this is free of extra model-load cost.
+            val gemmaEngine = buildGemmaEngine()
+            GrammarAwareParser.parse(
+                tokenized,
+                filename,
+                fallbackExtractor = gemmaEngine?.let { GemmaFallbackExtractor(gemmaEngine = it) },
+                diagnosticExtractor = gemmaEngine?.let { GemmaDiagnosticExtractor(gemmaEngine = it) },
+            ).getOrThrow()
         }
     }
 
     /**
-     * Constructs the Tier 6 Gemma fallback iff the active-slot model file is present on disk, mirroring
-     * the Android [PlatformPdfParser] gating. Resolution goes through the shared
+     * Constructs the shared Tier 6 Gemma engine iff the active-slot model file is present on disk,
+     * mirroring the Android [PlatformPdfParser] gating. Resolution goes through the shared
      * [GemmaModelStorageManager] SSOT (Phase 1) so both platforms load the exact same active slot; the
      * actual inference runs in the Swift LiteRT-LM bridge registered on [GemmaEngine.inferenceDelegate].
      * Returns null (Tier 6 stays on standby) when the model has not been downloaded, so a fresh install
      * never blocks on it.
      */
-    private fun buildGemmaFallbackExtractor(): GemmaFallbackExtractor? {
+    private fun buildGemmaEngine(): GemmaEngine? {
         return try {
             val storageDir = gemmaModelStorageDir()
             if (storageDir.isEmpty()) return null
             val modelPath = "$storageDir/${GemmaModelStorageManager().getRecommendedModelFileName()}"
             if (!fileExistsAt(modelPath)) return null
-            val engine = GemmaEngine(GemmaEngineConfig(modelPath = modelPath))
-            GemmaFallbackExtractor(gemmaEngine = engine)
+            GemmaEngine(GemmaEngineConfig(modelPath = modelPath))
         } catch (e: Throwable) {
             null
         }
