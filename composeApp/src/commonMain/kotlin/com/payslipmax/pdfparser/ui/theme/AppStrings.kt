@@ -99,6 +99,8 @@ object AppStrings {
     const val lockScreenResetConfirmBtn = "Verify & Reset"
 
     // Settings Interface
+    const val settingsAccountSubscriptionHeader = "Account & Subscription"
+    const val settingsSecurityPrivacyHeader = "Security & Privacy"
     const val settingsThemeLabel = "App Appearance"
     const val settingsThemeLight = "Light Mode"
     const val settingsThemeDark = "Dark Mode"
