@@ -3,19 +3,19 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
+		105CF80B2FF9EE0C00B6F15D /* LiteRTLM in Frameworks */ = {isa = PBXBuildFile; productRef = 105CF80A2FF9EE0C00B6F15D /* LiteRTLM */; };
 		1C81D6F669B7BB6D2FFCCEB3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = "TEMP_834FB1A8-C57C-45E2-A2C0-832D795320CE" /* FirebaseAuth */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		445C052442747365B7CB2124 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 617043448F4869026C2F0BB4 /* FirebaseAuth */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
-		C87B4FA04BDA1DA04158D48E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */; };
 		AA01000000000000000000B2 /* GemmaInferenceBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01000000000000000000B1 /* GemmaInferenceBridge.swift */; };
-		AA01000000000000000000C2 /* LiteRTLM in Frameworks */ = {isa = PBXBuildFile; productRef = AA01000000000000000000C1 /* LiteRTLM */; };
+		C87B4FA04BDA1DA04158D48E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,8 +26,8 @@
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		AB3632DC29227652001CCB65 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		AA01000000000000000000B1 /* GemmaInferenceBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GemmaInferenceBridge.swift; sourceTree = "<group>"; };
+		AB3632DC29227652001CCB65 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,7 +37,7 @@
 			files = (
 				1C81D6F669B7BB6D2FFCCEB3 /* FirebaseAuth in Frameworks */,
 				445C052442747365B7CB2124 /* FirebaseAuth in Frameworks */,
-				AA01000000000000000000C2 /* LiteRTLM in Frameworks */,
+				105CF80B2FF9EE0C00B6F15D /* LiteRTLM in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,7 +118,7 @@
 			name = iosApp;
 			packageProductDependencies = (
 				617043448F4869026C2F0BB4 /* FirebaseAuth */,
-				AA01000000000000000000C1 /* LiteRTLM */,
+				105CF80A2FF9EE0C00B6F15D /* LiteRTLM */,
 			);
 			productName = iosApp;
 			productReference = 7555FF7B242A565900829871 /* PDFParser.app */;
@@ -151,7 +151,7 @@
 			mainGroup = 7555FF72242A565900829871;
 			packageReferences = (
 				7C4F1707FE80007C7DCEAE3C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				AA01000000000000000000D1 /* XCRemoteSwiftPackageReference "LiteRT-LM" */,
+				105CF8092FF9EE0C00B6F15D /* XCLocalSwiftPackageReference "Vendor/LiteRTLM" */,
 			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
@@ -424,6 +424,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		105CF8092FF9EE0C00B6F15D /* XCLocalSwiftPackageReference "Vendor/LiteRTLM" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Vendor/LiteRTLM;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		7C4F1707FE80007C7DCEAE3C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -433,17 +440,13 @@
 				minimumVersion = 10.24.0;
 			};
 		};
-		AA01000000000000000000D1 /* XCRemoteSwiftPackageReference "LiteRT-LM" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google-ai-edge/LiteRT-LM";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.12.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		105CF80A2FF9EE0C00B6F15D /* LiteRTLM */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = LiteRTLM;
+		};
 		617043448F4869026C2F0BB4 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 7C4F1707FE80007C7DCEAE3C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
@@ -453,11 +456,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7C4F1707FE80007C7DCEAE3C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
-		};
-		AA01000000000000000000C1 /* LiteRTLM */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = AA01000000000000000000D1 /* XCRemoteSwiftPackageReference "LiteRT-LM" */;
-			productName = LiteRTLM;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
