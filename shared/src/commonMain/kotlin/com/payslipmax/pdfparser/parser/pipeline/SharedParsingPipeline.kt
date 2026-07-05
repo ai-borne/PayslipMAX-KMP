@@ -57,7 +57,12 @@ class SharedParsingPipeline(
                     validationStatus = if (finalParsed.needsReview) "NEEDS_REVIEW" else "PASSED",
                 )
 
-            Logger.d(TAG, "filename: $filename, gross: ${initialContext.grossPay}, net: ${initialContext.netRemittance}, grammar: ${finalReport.selectedFamily}")
+            Logger.d(
+                TAG,
+                "filename: $filename, gross: ${initialContext.grossPay}, net: ${initialContext.netRemittance}, " +
+                    "grammar: ${finalReport.selectedFamily}, needsReview: ${finalParsed.needsReview}, " +
+                    "diagnostic: ${finalParsed.diagnosticSuggestion?.fieldKey ?: "none"}",
+            )
             Result.success(Pair(finalParsed, finalReport))
         } catch (e: Exception) {
             Result.failure(e)
