@@ -32,6 +32,17 @@ object PayslipPatternConfig {
             "january", "jan", "february", "feb", "march", "mar", "april", "apr", "may", "june", "jun",
             "july", "jul", "august", "aug", "september", "sep", "october", "oct", "november", "nov", "december", "dec",
             "amount", "description", "credit", "debit", "earnings", "deductions",
+            "bank code", "bank a/c no", "a/c no", "ifsc", "ifsc code", "bank account",
+        )
+
+    /**
+     * Whole-label *prefix* blocklist, for header/statement-title boilerplate whose trailing text varies
+     * (the printed month/year) so it can never be captured by [blocklist]'s exact-match check. Checked
+     * via `normalized.startsWith(prefix)` in [TokenTableClassifier], same guard, minimum added generality.
+     */
+    val blocklistPrefixes =
+        setOf(
+            "statement of account for",
         )
 
     val strictlyMandatoryCredits = setOf("basicPay", "dearnessAllowance", "militaryServicePay")

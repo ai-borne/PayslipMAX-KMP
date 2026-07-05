@@ -217,4 +217,30 @@ class TokenTableEngineTest {
         )
         assertEquals(999.0, table.rawCredits()["XYZALW"], "genuine short unmatched labels must still route to rawEarnings")
     }
+
+    /**
+     * Regression for a real on-device finding (Aug-2014 PCDA_TRANSITIONAL_7TH_CPC payslip, smoke-tested
+     * during the Tier 6 diagnostic-mode rollout): unlike the footer-disclaimer case above, these bank-detail
+     * and statement-header labels are *short* (2-5 words) — under RawLabelNoiseFilter's length guard — so
+     * they were never rejected as prose noise. They must instead be caught by the exact-match blocklist
+     * (`"bank code"`, `"bank a/c no"`) and the new prefix blocklist (`"statement of account for"`, which
+     * varies by printed month), or a bank account number gets booked as a deduction and inflates
+     * `SchemaValidator`'s debitsSum by orders of magnitude.
+     */
+    @Test
+    fun bankDetailAndStatementHeaderLabelsDroppedFromDebits() {
+        val pairs =
+            RowPairing.pair(GridReconstructor.reconstruct(sampleTable())) +
+                listOf(
+                    LabelAmount("BANK CODE", 6900047.0, 186f, 275f, 440f),
+                    LabelAmount("BANK A/C NO", 62400106755.0, 186f, 275f, 460f),
+                    LabelAmount("STATEMENT OF ACCOUNT FOR AUG", 12345.0, 186f, 275f, 480f),
+                )
+        val table = TokenTableClassifier.classifyPairs(pairs)
+
+        assertTrue(table.debits.none { it.amount == 6900047.0 }, "bank code must not appear as a debit line item")
+        assertTrue(table.debits.none { it.amount == 62400106755.0 }, "bank account number must not appear as a debit line item")
+        assertTrue(table.debits.none { it.amount == 12345.0 }, "statement-header noise must not appear as a debit line item")
+        assertEquals(40000.0, table.standardizedDebits()["dsopSubscription"], "genuine debits on the same page must be unaffected")
+    }
 }

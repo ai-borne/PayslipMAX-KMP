@@ -78,8 +78,8 @@ object TokenTableClassifier {
             for ((key, std) in PayslipPatternConfig.creditKeysMapping) add(Triple(normalize(key), TableSide.CREDIT, std))
             for ((key, std) in PayslipPatternConfig.debitKeysMapping) add(Triple(normalize(key), TableSide.DEBIT, std))
         }.sortedByDescending { it.first.length }
-
     private val normalizedBlocklist: Set<String> = PayslipPatternConfig.blocklist.map { normalize(it) }.toSet()
+    private val normalizedBlocklistPrefixes: Set<String> = PayslipPatternConfig.blocklistPrefixes.map { normalize(it) }.toSet()
 
     /** Full pipeline entry point: raw table-page tokens → classified credit/debit line items. */
     fun classify(
@@ -229,7 +229,7 @@ object TokenTableClassifier {
         // tokens in GridReconstructor (e.g. "271739 kuula kTaOtI" → "271739"). Valid payslip
         // codes always contain at least one letter.
         if (normalized.none { it.isLetter() }) return null
-        if (normalized in normalizedBlocklist) return null
+        if (normalized in normalizedBlocklist || normalizedBlocklistPrefixes.any { normalized.startsWith(it) }) return null
         val match = combinedKeys.firstOrNull { (key, _, _) -> boundaryStartsWith(normalized, key) }
         if (match == null && RawLabelNoiseFilter.isProseNoise(normalized)) return null
         val clean = match != null && isCleanMatch(normalized, match.first)
