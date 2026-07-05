@@ -33,6 +33,7 @@ object PayslipPatternConfig {
             "july", "jul", "august", "aug", "september", "sep", "october", "oct", "november", "nov", "december", "dec",
             "amount", "description", "credit", "debit", "earnings", "deductions",
             "bank code", "bank a/c no", "a/c no", "ifsc", "ifsc code", "bank account",
+            "prosperous new year",
         )
 
     /**

@@ -243,4 +243,21 @@ class TokenTableEngineTest {
         assertTrue(table.debits.none { it.amount == 12345.0 }, "statement-header noise must not appear as a debit line item")
         assertEquals(40000.0, table.standardizedDebits()["dsopSubscription"], "genuine debits on the same page must be unaffected")
     }
+
+    /**
+     * Regression for a real on-device finding: a January payslip's festive "PROSPEROUS NEW YEAR"
+     * greeting text gets row-paired with the adjacent printed year (e.g. "2022"), which reads as a
+     * clean amount and lands as a bogus credit line item — inflating `SchemaValidator`'s creditsSum by
+     * exactly the calendar year.
+     */
+    @Test
+    fun newYearGreetingDroppedFromCredits() {
+        val pairs =
+            RowPairing.pair(GridReconstructor.reconstruct(sampleTable())) +
+                listOf(LabelAmount("PROSPEROUS NEW YEAR", 2022.0, 44f, 145f, 440f))
+        val table = TokenTableClassifier.classifyPairs(pairs)
+
+        assertTrue(table.credits.none { it.amount == 2022.0 }, "New Year greeting must not appear as a credit line item")
+        assertEquals(140500.0, table.standardizedCredits()["basicPay"], "genuine credits on the same page must be unaffected")
+    }
 }
