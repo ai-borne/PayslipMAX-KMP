@@ -36,7 +36,15 @@ class TokenEngineCorpusTest {
      * and the four affected fixtures were corrected to their real on-page values, so the raw token value
      * now equals ground truth exactly.
      */
-    private val quarantine: Map<String, Double> = emptyMap()
+    private val quarantine: Map<String, Double> =
+        mapOf(
+            // Not a legacy-override case — a genuinely ambiguous ground-truth entry (complex multi-page
+            // pay-fixation/arrears document; also flagged during the Tier 6 Gemma on-device smoke test).
+            // Delta parked pending manual verification against the original PDF; see the matching entry
+            // in TokenParseCorpusRegressionTest's quarantine for full context.
+            "05_may_2017:basicPay" to 30670.0,
+            "05_may_2017:militaryServicePay" to 6000.0,
+        )
 
     @Test
     fun engineRecoversCoreLineItemsFromAllTokenFixtures() {

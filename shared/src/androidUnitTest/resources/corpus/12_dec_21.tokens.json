@@ -1,0 +1,6896 @@
+{
+    "id": "12_dec_21",
+    "filename": "12 Dec 21.pdf",
+    "year": 2021,
+    "tableTokens": [
+        {
+            "text": "12/2021",
+            "x": 147.4,
+            "y": 25.51001,
+            "width": 32.525986,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "STATEMENT",
+            "x": 269.29,
+            "y": 25.51001,
+            "width": 54.99893,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "OF",
+            "x": 326.79095,
+            "y": 25.51001,
+            "width": 12.501007,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "ACCOUNT",
+            "x": 341.79398,
+            "y": 25.51001,
+            "width": 44.990936,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "FOR",
+            "x": 389.28693,
+            "y": 25.51001,
+            "width": 18.998993,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "12/2021",
+            "x": 410.78793,
+            "y": 25.51001,
+            "width": 32.526,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "CONTACT",
+            "x": 14.17,
+            "y": 51.02002,
+            "width": 39.104004,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Tel",
+            "x": 55.498,
+            "y": 51.02002,
+            "width": 11.559998,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Nos",
+            "x": 69.282,
+            "y": 51.02002,
+            "width": 15.1119995,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "in",
+            "x": 86.618,
+            "y": 51.02002,
+            "width": 7.1119995,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "PCDA(O),",
+            "x": 95.953995,
+            "y": 51.02002,
+            "width": 36.440002,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Pune",
+            "x": 134.618,
+            "y": 51.02002,
+            "width": 19.559998,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 156.402,
+            "y": 51.02002,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Email",
+            "x": 467.72,
+            "y": 51.02002,
+            "width": 21.343994,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 491.288,
+            "y": 51.02002,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "TA/DA",
+            "x": 467.72,
+            "y": 62.359985,
+            "width": 23.559998,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Grievance:",
+            "x": 493.504,
+            "y": 62.359985,
+            "width": 38.679962,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "PCDA(O)",
+            "x": 14.17,
+            "y": 68.03003,
+            "width": 33.776,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Secretariat",
+            "x": 50.170002,
+            "y": 68.03003,
+            "width": 38.679996,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 91.074,
+            "y": 68.03003,
+            "width": 2.223999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "((020)",
+            "x": 99.21,
+            "y": 68.03003,
+            "width": 21.335999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "26401101)",
+            "x": 122.77,
+            "y": 68.03003,
+            "width": 38.247993,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "NAME",
+            "x": 246.61,
+            "y": 68.03003,
+            "width": 23.551987,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 278.604,
+            "y": 68.03003,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Officer",
+            "x": 282.854,
+            "y": 68.03003,
+            "width": 24.0,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Officer",
+            "x": 309.078,
+            "y": 68.03003,
+            "width": 33.336,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Officer",
+            "x": 344.638,
+            "y": 68.03003,
+            "width": 30.216003,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 73.70001,
+            "width": 84.608,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "PRO",
+            "x": 14.17,
+            "y": 85.04004,
+            "width": 17.336,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "CIVIL",
+            "x": 33.73,
+            "y": 85.04004,
+            "width": 20.008,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 55.961998,
+            "y": 85.04004,
+            "width": 2.223999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "((020)",
+            "x": 65.2,
+            "y": 85.04004,
+            "width": 21.335999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "2640-",
+            "x": 88.759995,
+            "y": 85.04004,
+            "width": 20.455994,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "1111/1333/1353/1356)",
+            "x": 111.43999,
+            "y": 85.04004,
+            "width": 80.50397,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 278.604,
+            "y": 87.869995,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "16/000/000000X",
+            "x": 283.46,
+            "y": 87.869995,
+            "width": 59.151978,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Ledger",
+            "x": 467.72,
+            "y": 85.04004,
+            "width": 24.903992,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Grievance:",
+            "x": 494.848,
+            "y": 85.04004,
+            "width": 38.679962,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "PRO",
+            "x": 14.17,
+            "y": 99.21002,
+            "width": 17.336,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "ARMY",
+            "x": 33.73,
+            "y": 99.21002,
+            "width": 23.112,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 59.065998,
+            "y": 99.21002,
+            "width": 2.223999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "(6512/6528/7756/7761/7762/7763)",
+            "x": 65.2,
+            "y": 99.21002,
+            "width": 123.19995,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "CDA",
+            "x": 226.77,
+            "y": 99.21002,
+            "width": 17.328003,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "A/C",
+            "x": 246.322,
+            "y": 99.21002,
+            "width": 13.775986,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "NO",
+            "x": 262.322,
+            "y": 99.21002,
+            "width": 12.0,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 96.380005,
+            "width": 91.272,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Rank",
+            "x": 467.72,
+            "y": 107.72003,
+            "width": 18.671997,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "pay",
+            "x": 488.616,
+            "y": 107.72003,
+            "width": 12.895996,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "related",
+            "x": 503.736,
+            "y": 107.72003,
+            "width": 24.455963,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "issue:",
+            "x": 530.41595,
+            "y": 107.72003,
+            "width": 20.895996,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 119.06,
+            "width": 97.496,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Other",
+            "x": 467.72,
+            "y": 130.39001,
+            "width": 20.007996,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "grievances:",
+            "x": 489.952,
+            "y": 130.39001,
+            "width": 40.904022,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Grievance",
+            "x": 14.17,
+            "y": 141.73004,
+            "width": 43.523994,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "Portal",
+            "x": 60.19599,
+            "y": 141.73004,
+            "width": 25.505997,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 88.20399,
+            "y": 141.73004,
+            "width": 2.9970016,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "https://pcdaopune.gov.in",
+            "x": 93.70299,
+            "y": 141.73004,
+            "width": 107.00993,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 141.73004,
+            "width": 115.727936,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "/",
+            "x": 83.818,
+            "y": 168.66003,
+            "width": 2.223999,
+            "height": 4.7599945,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "CREDIT",
+            "x": 90.49,
+            "y": 168.66003,
+            "width": 29.776001,
+            "height": 4.7599945,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "/",
+            "x": 211.37799,
+            "y": 168.66003,
+            "width": 2.223999,
+            "height": 4.7599945,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "DEBIT",
+            "x": 218.04999,
+            "y": 168.66003,
+            "width": 24.0,
+            "height": 4.7599945,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "/",
+            "x": 433.7,
+            "y": 184.25,
+            "width": 2.223999,
+            "height": 4.7599945,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "DETAILS",
+            "x": 442.596,
+            "y": 184.25,
+            "width": 34.224,
+            "height": 4.7599945,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "OF",
+            "x": 479.044,
+            "y": 184.25,
+            "width": 11.1119995,
+            "height": 4.7599945,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "TRANSACTIONS",
+            "x": 492.38,
+            "y": 184.25,
+            "width": 63.552002,
+            "height": 4.7599945,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "DESCRIPTION",
+            "x": 14.17,
+            "y": 204.09003,
+            "width": 54.671997,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "AMOUNT",
+            "x": 93.54,
+            "y": 204.09003,
+            "width": 34.663994,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "DESCRIPTION",
+            "x": 158.74,
+            "y": 204.09003,
+            "width": 54.671997,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "AMOUNT",
+            "x": 240.94,
+            "y": 204.09003,
+            "width": 34.664,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Basic",
+            "x": 11.34,
+            "y": 223.94,
+            "width": 19.560001,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Pay",
+            "x": 33.124,
+            "y": 223.94,
+            "width": 13.783997,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "128500",
+            "x": 115.05,
+            "y": 224.92004,
+            "width": 26.687988,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "DSOPF",
+            "x": 153.07,
+            "y": 223.94,
+            "width": 27.559998,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Subn",
+            "x": 182.854,
+            "y": 223.94,
+            "width": 18.679993,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "7710",
+            "x": 279.85,
+            "y": 224.92004,
+            "width": 17.791992,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "RL//46/",
+            "x": 311.81,
+            "y": 223.94,
+            "width": 25.791992,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "P-0",
+            "x": 339.826,
+            "y": 223.94,
+            "width": 12.447998,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Dt:",
+            "x": 354.498,
+            "y": 223.94,
+            "width": 10.223999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "22/11/2021",
+            "x": 366.94598,
+            "y": 223.94,
+            "width": 40.031982,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Bldg",
+            "x": 411.42596,
+            "y": 223.94,
+            "width": 16.007996,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 429.65796,
+            "y": 223.94,
+            "width": 2.223999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "159/2.New",
+            "x": 434.10596,
+            "y": 223.94,
+            "width": 38.23999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "DA",
+            "x": 11.34,
+            "y": 238.10999,
+            "width": 11.112001,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "44640",
+            "x": 119.5,
+            "y": 239.09003,
+            "width": 22.23999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "AGIF",
+            "x": 153.07,
+            "y": 238.10999,
+            "width": 18.671997,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "5000",
+            "x": 279.85,
+            "y": 239.09003,
+            "width": 17.791992,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Dr",
+            "x": 311.81,
+            "y": 238.10999,
+            "width": 8.440002,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Water",
+            "x": 322.474,
+            "y": 238.10999,
+            "width": 21.335999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "(090000",
+            "x": 348.258,
+            "y": 238.10999,
+            "width": 29.35199,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Units)",
+            "x": 382.05798,
+            "y": 238.10999,
+            "width": 20.888,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Dt",
+            "x": 409.61798,
+            "y": 238.10999,
+            "width": 8.0,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 419.84198,
+            "y": 238.10999,
+            "width": 2.223999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "01/07/2021",
+            "x": 426.51398,
+            "y": 238.10999,
+            "width": 40.031982,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "to",
+            "x": 468.76996,
+            "y": 238.10999,
+            "width": 6.671997,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "30/09/2021",
+            "x": 477.66595,
+            "y": 238.10999,
+            "width": 40.031982,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "840",
+            "x": 567.76,
+            "y": 239.09003,
+            "width": 13.343994,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "MSP",
+            "x": 11.34,
+            "y": 252.28003,
+            "width": 17.336,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "15500",
+            "x": 119.5,
+            "y": 253.27002,
+            "width": 22.23999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Incm",
+            "x": 153.07,
+            "y": 252.28003,
+            "width": 17.335999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Tax",
+            "x": 172.63,
+            "y": 252.28003,
+            "width": 13.335999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "29740",
+            "x": 275.4,
+            "y": 253.27002,
+            "width": 22.23999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Dr",
+            "x": 311.81,
+            "y": 252.28003,
+            "width": 8.440002,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Ele",
+            "x": 322.474,
+            "y": 252.28003,
+            "width": 11.559998,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "(2250",
+            "x": 342.93,
+            "y": 252.28003,
+            "width": 20.455994,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Units)",
+            "x": 367.83398,
+            "y": 252.28003,
+            "width": 20.888,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Dt",
+            "x": 395.39398,
+            "y": 252.28003,
+            "width": 8.0,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 405.61798,
+            "y": 252.28003,
+            "width": 2.223999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "01/07/2021",
+            "x": 412.28998,
+            "y": 252.28003,
+            "width": 40.031982,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "to",
+            "x": 454.54596,
+            "y": 252.28003,
+            "width": 6.671997,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "30/09/2021",
+            "x": 463.44196,
+            "y": 252.28003,
+            "width": 40.031982,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "13095",
+            "x": 558.87,
+            "y": 253.27002,
+            "width": 22.23999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Tpt",
+            "x": 11.34,
+            "y": 266.46002,
+            "width": 11.560001,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Allc",
+            "x": 25.124,
+            "y": 266.46002,
+            "width": 12.8880005,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "9432",
+            "x": 123.94,
+            "y": 267.44,
+            "width": 17.791992,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Educ",
+            "x": 153.07,
+            "y": 266.46002,
+            "width": 18.231995,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Cess",
+            "x": 173.526,
+            "y": 266.46002,
+            "width": 18.223999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "1510",
+            "x": 279.85,
+            "y": 267.44,
+            "width": 17.791992,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "RL//3/",
+            "x": 311.81,
+            "y": 266.46002,
+            "width": 21.343994,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "P-0",
+            "x": 335.378,
+            "y": 266.46002,
+            "width": 12.447998,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Dt:",
+            "x": 350.05,
+            "y": 266.46002,
+            "width": 10.223999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "05/02/2021",
+            "x": 362.498,
+            "y": 266.46002,
+            "width": 40.031982,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Bldg",
+            "x": 406.97797,
+            "y": 266.46002,
+            "width": 16.007996,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 425.20996,
+            "y": 266.46002,
+            "width": 2.223999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "159/2.Ne",
+            "x": 429.65796,
+            "y": 266.46002,
+            "width": 32.46399,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "L",
+            "x": 153.07,
+            "y": 280.63,
+            "width": 4.447998,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Fee",
+            "x": 159.742,
+            "y": 280.63,
+            "width": 13.783997,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "748",
+            "x": 284.3,
+            "y": 281.61,
+            "width": 13.343994,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Dr",
+            "x": 311.81,
+            "y": 280.63,
+            "width": 8.440002,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "L",
+            "x": 322.474,
+            "y": 280.63,
+            "width": 4.447998,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "fee",
+            "x": 329.146,
+            "y": 280.63,
+            "width": 11.119995,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Dt",
+            "x": 355.83398,
+            "y": 280.63,
+            "width": 8.0,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 366.05798,
+            "y": 280.63,
+            "width": 2.223999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "01/12/2021",
+            "x": 372.72998,
+            "y": 280.63,
+            "width": 40.031982,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "to",
+            "x": 414.98596,
+            "y": 280.63,
+            "width": 6.671997,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "31/12/2021",
+            "x": 423.88196,
+            "y": 280.63,
+            "width": 40.031982,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "748",
+            "x": 567.76,
+            "y": 281.61,
+            "width": 13.343994,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Fur",
+            "x": 153.07,
+            "y": 294.8,
+            "width": 12.0,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "326",
+            "x": 284.3,
+            "y": 295.79004,
+            "width": 13.343994,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Dr.",
+            "x": 311.81,
+            "y": 294.8,
+            "width": 10.664001,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "fur",
+            "x": 324.698,
+            "y": 294.8,
+            "width": 9.335999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Dt",
+            "x": 358.498,
+            "y": 294.8,
+            "width": 8.0,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 368.722,
+            "y": 294.8,
+            "width": 2.223999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "01/12/2021",
+            "x": 375.39398,
+            "y": 294.8,
+            "width": 40.031982,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "to",
+            "x": 417.64996,
+            "y": 294.8,
+            "width": 6.671997,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "31/12/2021",
+            "x": 426.54596,
+            "y": 294.8,
+            "width": 40.031982,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "326",
+            "x": 567.76,
+            "y": 295.79004,
+            "width": 13.343994,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Water",
+            "x": 153.07,
+            "y": 308.98004,
+            "width": 21.335999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "840",
+            "x": 284.3,
+            "y": 309.96002,
+            "width": 13.343994,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Elec",
+            "x": 153.07,
+            "y": 323.15002,
+            "width": 15.559998,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "13095",
+            "x": 275.4,
+            "y": 324.13,
+            "width": 22.23999,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "REMITTANCE",
+            "x": 155.91,
+            "y": 674.65,
+            "width": 52.440002,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "139103",
+            "x": 269.29,
+            "y": 674.65,
+            "width": 26.687988,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Total",
+            "x": 14.17,
+            "y": 728.5,
+            "width": 17.783998,
+            "height": 4.6240234,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Credit",
+            "x": 34.177998,
+            "y": 728.5,
+            "width": 21.336002,
+            "height": 4.6240234,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "198072",
+            "x": 113.39,
+            "y": 728.5,
+            "width": 26.687988,
+            "height": 4.6240234,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Total",
+            "x": 155.91,
+            "y": 728.5,
+            "width": 17.783997,
+            "height": 4.6240234,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Debit",
+            "x": 175.918,
+            "y": 728.5,
+            "width": 18.671997,
+            "height": 4.6240234,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "198072",
+            "x": 269.29,
+            "y": 728.5,
+            "width": 26.687988,
+            "height": 4.6240234,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Officers",
+            "x": 14.17,
+            "y": 761.05,
+            "width": 52.906,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "and",
+            "x": 70.967995,
+            "y": 761.05,
+            "width": 24.891998,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "Staff",
+            "x": 99.75199,
+            "y": 761.05,
+            "width": 31.107994,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "of",
+            "x": 134.75198,
+            "y": 761.05,
+            "width": 13.216003,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "PCDA(O),",
+            "x": 151.85999,
+            "y": 761.05,
+            "width": 63.770004,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "Pune",
+            "x": 219.52199,
+            "y": 761.05,
+            "width": 34.229996,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "Wishes",
+            "x": 257.64398,
+            "y": 761.05,
+            "width": 49.013977,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "you",
+            "x": 310.54996,
+            "y": 761.05,
+            "width": 24.891968,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "and",
+            "x": 339.33392,
+            "y": 761.05,
+            "width": 24.891968,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "your",
+            "x": 368.1179,
+            "y": 761.05,
+            "width": 30.337982,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "family",
+            "x": 402.34787,
+            "y": 761.05,
+            "width": 40.45999,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "a",
+            "x": 446.69986,
+            "y": 761.05,
+            "width": 7.7839966,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "HAPPY",
+            "x": 458.37585,
+            "y": 761.05,
+            "width": 48.23004,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "AND",
+            "x": 510.4979,
+            "y": 761.05,
+            "width": 30.323944,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "PROSPEROUS",
+            "x": 14.17,
+            "y": 789.39996,
+            "width": 98.798,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "NEW",
+            "x": 116.85999,
+            "y": 789.39996,
+            "width": 32.66201,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "YEAR",
+            "x": 153.414,
+            "y": 789.39996,
+            "width": 38.892,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "2022",
+            "x": 196.198,
+            "y": 789.39996,
+            "width": 31.135986,
+            "height": 8.330017,
+            "fontSize": 14.0,
+            "isBold": true
+        },
+        {
+            "text": "Note:",
+            "x": 31.19,
+            "y": 839.47,
+            "width": 20.440004,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "This",
+            "x": 53.854004,
+            "y": 839.47,
+            "width": 16.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "is",
+            "x": 72.526,
+            "y": 839.47,
+            "width": 6.671997,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "a",
+            "x": 81.422,
+            "y": 839.47,
+            "width": 4.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "system",
+            "x": 88.093994,
+            "y": 839.47,
+            "width": 27.567993,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "generated",
+            "x": 117.88599,
+            "y": 839.47,
+            "width": 38.231995,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "document.",
+            "x": 158.34198,
+            "y": 839.47,
+            "width": 40.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Page",
+            "x": 270.96,
+            "y": 841.46,
+            "width": 19.119995,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "-",
+            "x": 292.304,
+            "y": 841.46,
+            "width": 2.6640015,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "1",
+            "x": 297.192,
+            "y": 841.46,
+            "width": 4.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "/",
+            "x": 303.86398,
+            "y": 841.46,
+            "width": 2.223999,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "3",
+            "x": 308.31198,
+            "y": 841.46,
+            "width": 4.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        }
+    ],
+    "taxTokens": [
+        {
+            "text": "12/2021",
+            "x": 147.4,
+            "y": 25.51001,
+            "width": 32.525986,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "STATEMENT",
+            "x": 269.29,
+            "y": 25.51001,
+            "width": 54.99893,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "OF",
+            "x": 326.79095,
+            "y": 25.51001,
+            "width": 12.501007,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "ACCOUNT",
+            "x": 341.79398,
+            "y": 25.51001,
+            "width": 44.990936,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "FOR",
+            "x": 389.28693,
+            "y": 25.51001,
+            "width": 18.998993,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "12/2021",
+            "x": 410.78793,
+            "y": 25.51001,
+            "width": 32.526,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "CONTACT",
+            "x": 14.17,
+            "y": 51.02002,
+            "width": 39.104004,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Tel",
+            "x": 55.498,
+            "y": 51.02002,
+            "width": 11.559998,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Nos",
+            "x": 69.282,
+            "y": 51.02002,
+            "width": 15.1119995,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "in",
+            "x": 86.618,
+            "y": 51.02002,
+            "width": 7.1119995,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "PCDA(O),",
+            "x": 95.953995,
+            "y": 51.02002,
+            "width": 36.440002,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Pune",
+            "x": 134.618,
+            "y": 51.02002,
+            "width": 19.559998,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 156.402,
+            "y": 51.02002,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Email",
+            "x": 467.72,
+            "y": 51.02002,
+            "width": 21.343994,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 491.288,
+            "y": 51.02002,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "TA/DA",
+            "x": 467.72,
+            "y": 62.359985,
+            "width": 23.559998,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Grievance:",
+            "x": 493.504,
+            "y": 62.359985,
+            "width": 38.679962,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "PCDA(O)",
+            "x": 14.17,
+            "y": 68.03003,
+            "width": 33.776,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Secretariat",
+            "x": 50.170002,
+            "y": 68.03003,
+            "width": 38.679996,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 91.074,
+            "y": 68.03003,
+            "width": 2.223999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "((020)",
+            "x": 99.21,
+            "y": 68.03003,
+            "width": 21.335999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "26401101)",
+            "x": 122.77,
+            "y": 68.03003,
+            "width": 38.247993,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "NAME",
+            "x": 246.61,
+            "y": 68.03003,
+            "width": 23.551987,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 278.604,
+            "y": 68.03003,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Officer",
+            "x": 282.854,
+            "y": 68.03003,
+            "width": 24.0,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Officer",
+            "x": 309.078,
+            "y": 68.03003,
+            "width": 33.336,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Officer",
+            "x": 344.638,
+            "y": 68.03003,
+            "width": 30.216003,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 73.70001,
+            "width": 84.608,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "PRO",
+            "x": 14.17,
+            "y": 85.04004,
+            "width": 17.336,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "CIVIL",
+            "x": 33.73,
+            "y": 85.04004,
+            "width": 20.008,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 55.961998,
+            "y": 85.04004,
+            "width": 2.223999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "((020)",
+            "x": 65.2,
+            "y": 85.04004,
+            "width": 21.335999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "2640-",
+            "x": 88.759995,
+            "y": 85.04004,
+            "width": 20.455994,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "1111/1333/1353/1356)",
+            "x": 111.43999,
+            "y": 85.04004,
+            "width": 80.50397,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 278.604,
+            "y": 87.869995,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "16/000/000000X",
+            "x": 283.46,
+            "y": 87.869995,
+            "width": 59.151978,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Ledger",
+            "x": 467.72,
+            "y": 85.04004,
+            "width": 24.903992,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Grievance:",
+            "x": 494.848,
+            "y": 85.04004,
+            "width": 38.679962,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "PRO",
+            "x": 14.17,
+            "y": 99.21002,
+            "width": 17.336,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "ARMY",
+            "x": 33.73,
+            "y": 99.21002,
+            "width": 23.112,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 59.065998,
+            "y": 99.21002,
+            "width": 2.223999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "(6512/6528/7756/7761/7762/7763)",
+            "x": 65.2,
+            "y": 99.21002,
+            "width": 123.19995,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "CDA",
+            "x": 226.77,
+            "y": 99.21002,
+            "width": 17.328003,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "A/C",
+            "x": 246.322,
+            "y": 99.21002,
+            "width": 13.775986,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "NO",
+            "x": 262.322,
+            "y": 99.21002,
+            "width": 12.0,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 96.380005,
+            "width": 91.272,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Rank",
+            "x": 467.72,
+            "y": 107.72003,
+            "width": 18.671997,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "pay",
+            "x": 488.616,
+            "y": 107.72003,
+            "width": 12.895996,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "related",
+            "x": 503.736,
+            "y": 107.72003,
+            "width": 24.455963,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "issue:",
+            "x": 530.41595,
+            "y": 107.72003,
+            "width": 20.895996,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 119.06,
+            "width": 97.496,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Other",
+            "x": 467.72,
+            "y": 130.39001,
+            "width": 20.007996,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "grievances:",
+            "x": 489.952,
+            "y": 130.39001,
+            "width": 40.904022,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Grievance",
+            "x": 14.17,
+            "y": 141.73004,
+            "width": 43.523994,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "Portal",
+            "x": 60.19599,
+            "y": 141.73004,
+            "width": 25.505997,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 88.20399,
+            "y": 141.73004,
+            "width": 2.9970016,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "https://pcdaopune.gov.in",
+            "x": 93.70299,
+            "y": 141.73004,
+            "width": 107.00993,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 141.73004,
+            "width": 115.727936,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "/",
+            "x": 262.62604,
+            "y": 178.58002,
+            "width": 2.5020142,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "INCOME",
+            "x": 270.13208,
+            "y": 178.58002,
+            "width": 36.0,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "TAX",
+            "x": 308.6341,
+            "y": 178.58002,
+            "width": 17.99997,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "DETAILS",
+            "x": 329.13608,
+            "y": 178.58002,
+            "width": 38.501953,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "1.",
+            "x": 22.68,
+            "y": 212.60004,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Pay",
+            "x": 35.19,
+            "y": 212.60004,
+            "width": 15.507,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "&",
+            "x": 53.198997,
+            "y": 212.60004,
+            "width": 6.0029984,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Allce",
+            "x": 61.703995,
+            "y": 212.60004,
+            "width": 19.502998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "upto",
+            "x": 83.70899,
+            "y": 212.60004,
+            "width": 17.513992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "31/12/2021",
+            "x": 106.22698,
+            "y": 212.60004,
+            "width": 45.035988,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "1985060",
+            "x": 546.08,
+            "y": 213.88,
+            "width": 35.0282,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "2.",
+            "x": 22.68,
+            "y": 226.77002,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Taxable",
+            "x": 35.19,
+            "y": 226.77002,
+            "width": 32.012997,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Income",
+            "x": 69.704994,
+            "y": 226.77002,
+            "width": 29.510994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "upto",
+            "x": 101.71799,
+            "y": 226.77002,
+            "width": 17.513992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "31/12/2021",
+            "x": 124.23598,
+            "y": 226.77002,
+            "width": 45.03598,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Excluding",
+            "x": 174.27596,
+            "y": 226.77002,
+            "width": 39.015,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "HRA",
+            "x": 215.79295,
+            "y": 226.77002,
+            "width": 18.999008,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "1963860",
+            "x": 546.08,
+            "y": 228.04999,
+            "width": 35.0282,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "3.",
+            "x": 22.68,
+            "y": 240.94,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Estimated",
+            "x": 35.19,
+            "y": 240.94,
+            "width": 40.013996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "future",
+            "x": 77.70599,
+            "y": 240.94,
+            "width": 23.012993,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "taxable",
+            "x": 103.220985,
+            "y": 240.94,
+            "width": 29.015999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "pay",
+            "x": 134.73898,
+            "y": 240.94,
+            "width": 14.507996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Curr",
+            "x": 151.74898,
+            "y": 240.94,
+            "width": 20.492981,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "month",
+            "x": 174.74396,
+            "y": 240.94,
+            "width": 25.010986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "salary",
+            "x": 202.25694,
+            "y": 240.94,
+            "width": 24.00299,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "x",
+            "x": 228.76193,
+            "y": 240.94,
+            "width": 4.5,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "remaining",
+            "x": 235.76393,
+            "y": 240.94,
+            "width": 39.509964,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "months)",
+            "x": 277.7759,
+            "y": 240.94,
+            "width": 32.508026,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "198072",
+            "x": 551.08,
+            "y": 242.23004,
+            "width": 30.02417,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "4.",
+            "x": 22.68,
+            "y": 255.12,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "H.R.A",
+            "x": 35.19,
+            "y": 255.12,
+            "width": 24.002998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "/",
+            "x": 61.694996,
+            "y": 255.12,
+            "width": 2.5020027,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "H.R.R.",
+            "x": 66.699,
+            "y": 255.12,
+            "width": 27.0,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Taxable",
+            "x": 96.201,
+            "y": 255.12,
+            "width": 35.010002,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Amount)",
+            "x": 133.713,
+            "y": 255.12,
+            "width": 34.010986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 576.1,
+            "y": 256.40002,
+            "width": 5.0040283,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "5.",
+            "x": 22.68,
+            "y": 269.29004,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Income",
+            "x": 35.19,
+            "y": 269.29004,
+            "width": 29.510998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "from",
+            "x": 67.202995,
+            "y": 269.29004,
+            "width": 18.0,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "other",
+            "x": 87.704994,
+            "y": 269.29004,
+            "width": 20.510994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Source/House",
+            "x": 110.71799,
+            "y": 269.29004,
+            "width": 57.023987,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Property",
+            "x": 170.24397,
+            "y": 269.29004,
+            "width": 34.010986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "6.",
+            "x": 22.68,
+            "y": 283.46002,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Total",
+            "x": 35.19,
+            "y": 283.46002,
+            "width": 20.007,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "taxable",
+            "x": 57.698997,
+            "y": 283.46002,
+            "width": 29.015991,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "pay",
+            "x": 89.21699,
+            "y": 283.46002,
+            "width": 14.507996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Sl.No.",
+            "x": 106.22698,
+            "y": 283.46002,
+            "width": 27.504005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "2+3+4+5)",
+            "x": 136.23299,
+            "y": 283.46002,
+            "width": 38.780975,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "2161932",
+            "x": 546.08,
+            "y": 284.75,
+            "width": 35.0282,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "7.",
+            "x": 22.68,
+            "y": 297.64,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Other",
+            "x": 35.19,
+            "y": 297.64,
+            "width": 22.508999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "taxable",
+            "x": 60.200996,
+            "y": 297.64,
+            "width": 29.015991,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "income",
+            "x": 91.71899,
+            "y": 297.64,
+            "width": 29.006996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Ent.Allce,etc.)",
+            "x": 123.22798,
+            "y": 297.64,
+            "width": 58.51799,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "8.",
+            "x": 22.68,
+            "y": 311.81,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Deductions",
+            "x": 35.19,
+            "y": 311.81,
+            "width": 45.017994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Under",
+            "x": 82.70999,
+            "y": 311.81,
+            "width": 24.506996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Chapter",
+            "x": 109.71899,
+            "y": 311.81,
+            "width": 32.012993,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "VI-A",
+            "x": 144.23398,
+            "y": 311.81,
+            "width": 17.505005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "*",
+            "x": 178.58,
+            "y": 313.51,
+            "width": 3.501007,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Savings",
+            "x": 184.25697,
+            "y": 311.81,
+            "width": 32.013,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Declared",
+            "x": 218.77197,
+            "y": 311.81,
+            "width": 36.008987,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Savings",
+            "x": 277.29907,
+            "y": 311.81,
+            "width": 32.01297,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Cleared",
+            "x": 311.81406,
+            "y": 311.81,
+            "width": 31.508972,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Actual",
+            "x": 363.33914,
+            "y": 311.81,
+            "width": 25.010986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Amount",
+            "x": 390.85214,
+            "y": 311.81,
+            "width": 31.014008,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "a)",
+            "x": 52.703987,
+            "y": 325.98004,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80C",
+            "x": 68.21098,
+            "y": 325.98004,
+            "width": 16.505997,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 247.28,
+            "y": 327.27002,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 343.66,
+            "y": 327.27002,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "139810",
+            "x": 398.01,
+            "y": 327.27002,
+            "width": 30.023987,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "139810",
+            "x": 551.08,
+            "y": 327.27002,
+            "width": 30.02417,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "b)",
+            "x": 52.703987,
+            "y": 340.15997,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80D",
+            "x": 68.21098,
+            "y": 340.15997,
+            "width": 16.505997,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 247.28,
+            "y": 341.43997,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 343.66,
+            "y": 341.43997,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "c)",
+            "x": 52.703987,
+            "y": 354.33,
+            "width": 7.4970016,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80DD",
+            "x": 67.706985,
+            "y": 354.33,
+            "width": 23.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "d)",
+            "x": 52.703987,
+            "y": 368.49997,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80E",
+            "x": 68.21098,
+            "y": 368.49997,
+            "width": 16.010994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "e)",
+            "x": 52.703987,
+            "y": 382.68,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80DDB",
+            "x": 68.21098,
+            "y": 382.68,
+            "width": 29.006996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "f)",
+            "x": 52.703987,
+            "y": 396.84998,
+            "width": 5.4990005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80U",
+            "x": 68.21098,
+            "y": 396.84998,
+            "width": 16.505997,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "g)",
+            "x": 52.703987,
+            "y": 411.02,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80G(G1+G2)",
+            "x": 68.21098,
+            "y": 411.02,
+            "width": 52.271988,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 247.28,
+            "y": 412.31,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 343.66,
+            "y": 412.31,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 423.03,
+            "y": 412.31,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 576.1,
+            "y": 412.31,
+            "width": 5.0040283,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "h)",
+            "x": 52.703987,
+            "y": 425.19998,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Neg.",
+            "x": 68.21098,
+            "y": 425.19998,
+            "width": 19.007996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Inc",
+            "x": 89.72098,
+            "y": 425.19998,
+            "width": 12.005997,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "from",
+            "x": 104.22897,
+            "y": 425.19998,
+            "width": 18.0,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "House",
+            "x": 124.73097,
+            "y": 425.19998,
+            "width": 26.009995,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Property",
+            "x": 153.24297,
+            "y": 425.19998,
+            "width": 34.010986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "*Valid",
+            "x": 190.31393,
+            "y": 439.37,
+            "width": 23.50801,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "upto",
+            "x": 216.32394,
+            "y": 439.37,
+            "width": 17.513992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Nov",
+            "x": 236.33994,
+            "y": 439.37,
+            "width": 16.001999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "2021",
+            "x": 254.84393,
+            "y": 439.37,
+            "width": 20.015991,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Max",
+            "x": 35.189995,
+            "y": 453.53998,
+            "width": 17.001,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "permissible",
+            "x": 54.692993,
+            "y": 453.53998,
+            "width": 45.503998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "exemption",
+            "x": 102.69899,
+            "y": 453.53998,
+            "width": 41.517,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "from",
+            "x": 146.71799,
+            "y": 453.53998,
+            "width": 17.999985,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "IT",
+            "x": 167.21997,
+            "y": 453.53998,
+            "width": 8.000992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "under",
+            "x": 177.72296,
+            "y": 453.53998,
+            "width": 23.012985,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Chapter",
+            "x": 203.23795,
+            "y": 453.53998,
+            "width": 32.012985,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "VI-A",
+            "x": 237.75293,
+            "y": 453.53998,
+            "width": 17.505005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "139810",
+            "x": 551.08,
+            "y": 454.83,
+            "width": 30.02417,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Standard",
+            "x": 35.189995,
+            "y": 467.71997,
+            "width": 36.521988,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Deduction",
+            "x": 74.21398,
+            "y": 467.71997,
+            "width": 40.51799,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "50000",
+            "x": 556.09,
+            "y": 468.99997,
+            "width": 25.020142,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "9.",
+            "x": 22.68,
+            "y": 481.88998,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Net",
+            "x": 35.19,
+            "y": 481.88998,
+            "width": 14.004002,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Taxable",
+            "x": 51.696,
+            "y": 481.88998,
+            "width": 32.012993,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Income",
+            "x": 86.21099,
+            "y": 481.88998,
+            "width": 29.510994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "((Sl.No.",
+            "x": 118.22398,
+            "y": 481.88998,
+            "width": 30.501007,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "6",
+            "x": 151.22699,
+            "y": 481.88998,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "+",
+            "x": 158.73299,
+            "y": 481.88998,
+            "width": 5.2559967,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Sl.No.",
+            "x": 166.49098,
+            "y": 481.88998,
+            "width": 24.507004,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "7)",
+            "x": 193.49998,
+            "y": 481.88998,
+            "width": 8.000992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "-",
+            "x": 204.00298,
+            "y": 481.88998,
+            "width": 2.996994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Sl.No.",
+            "x": 209.50197,
+            "y": 481.88998,
+            "width": 27.503998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "8))",
+            "x": 239.50797,
+            "y": 481.88998,
+            "width": 10.997986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "1972122",
+            "x": 546.08,
+            "y": 483.16998,
+            "width": 35.0282,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "10.",
+            "x": 22.68,
+            "y": 496.06,
+            "width": 12.509998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Total",
+            "x": 40.193996,
+            "y": 496.06,
+            "width": 20.007,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Income",
+            "x": 62.702995,
+            "y": 496.06,
+            "width": 29.510994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Tax",
+            "x": 94.71599,
+            "y": 496.06,
+            "width": 15.002998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Tax",
+            "x": 112.220985,
+            "y": 496.06,
+            "width": 17.999992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "on",
+            "x": 132.72298,
+            "y": 496.06,
+            "width": 10.007996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Sl.No.",
+            "x": 145.23297,
+            "y": 496.06,
+            "width": 24.507004,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "9)",
+            "x": 172.24197,
+            "y": 496.06,
+            "width": 8.000992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "404137",
+            "x": 551.08,
+            "y": 497.34998,
+            "width": 30.02417,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "11.",
+            "x": 22.68,
+            "y": 510.24,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Income",
+            "x": 40.193996,
+            "y": 510.24,
+            "width": 29.510998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Tax",
+            "x": 72.20699,
+            "y": 510.24,
+            "width": 15.002998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Deducted",
+            "x": 89.71199,
+            "y": 510.24,
+            "width": 38.51999,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "374400",
+            "x": 551.08,
+            "y": 511.52,
+            "width": 30.02417,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "12.",
+            "x": 22.68,
+            "y": 524.41,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Educ.Cess",
+            "x": 40.193996,
+            "y": 524.41,
+            "width": 43.514996,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Deducted",
+            "x": 86.21099,
+            "y": 524.41,
+            "width": 38.51999,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "14660",
+            "x": 556.09,
+            "y": 525.68994,
+            "width": 25.020142,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "13.",
+            "x": 22.68,
+            "y": 538.57996,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Saving",
+            "x": 40.193996,
+            "y": 538.57996,
+            "width": 27.512997,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Thru",
+            "x": 70.20899,
+            "y": 538.57996,
+            "width": 18.503998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "IRLA",
+            "x": 91.21499,
+            "y": 538.57996,
+            "width": 20.006996,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "upto",
+            "x": 113.72398,
+            "y": 538.57996,
+            "width": 17.513992,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "12/2021",
+            "x": 133.73997,
+            "y": 538.57996,
+            "width": 32.525986,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "127100",
+            "x": 551.08,
+            "y": 539.87,
+            "width": 30.02417,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "14.",
+            "x": 22.68,
+            "y": 552.76,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Est.Savings",
+            "x": 40.193996,
+            "y": 552.76,
+            "width": 47.519993,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "for",
+            "x": 90.21599,
+            "y": 552.76,
+            "width": 10.502998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "2020-2021",
+            "x": 103.220985,
+            "y": 552.76,
+            "width": 43.028984,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "139810",
+            "x": 551.08,
+            "y": 554.04,
+            "width": 30.02417,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "15.",
+            "x": 22.68,
+            "y": 566.93,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Personal",
+            "x": 40.193996,
+            "y": 566.93,
+            "width": 35.513996,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Savings",
+            "x": 78.20999,
+            "y": 566.93,
+            "width": 32.012993,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Declared",
+            "x": 112.72498,
+            "y": 566.93,
+            "width": 36.008995,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "16.",
+            "x": 22.68,
+            "y": 581.1,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Personal",
+            "x": 40.193996,
+            "y": 581.1,
+            "width": 35.513996,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Savings",
+            "x": 78.20999,
+            "y": 581.1,
+            "width": 32.012993,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Cleared",
+            "x": 112.72498,
+            "y": 581.1,
+            "width": 31.508995,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "/",
+            "x": 158.412,
+            "y": 623.62,
+            "width": 2.501999,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "DSOP",
+            "x": 165.918,
+            "y": 623.62,
+            "width": 25.506012,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "FUND",
+            "x": 193.92601,
+            "y": 623.62,
+            "width": 24.992996,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "FOR",
+            "x": 221.421,
+            "y": 623.62,
+            "width": 18.998993,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "THE",
+            "x": 242.922,
+            "y": 623.62,
+            "width": 18.0,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "CURRENT",
+            "x": 263.424,
+            "y": 623.62,
+            "width": 43.991913,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "YEAR",
+            "x": 309.91794,
+            "y": 623.62,
+            "width": 25.001953,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "UPTO",
+            "x": 337.4219,
+            "y": 623.62,
+            "width": 25.001984,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "30/11/2021",
+            "x": 364.9259,
+            "y": 623.62,
+            "width": 45.03601,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "OPENING",
+            "x": 42.52,
+            "y": 637.8,
+            "width": 41.50799,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "BALANCE",
+            "x": 86.52999,
+            "y": 637.8,
+            "width": 42.012,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "422361",
+            "x": 147.4,
+            "y": 637.8,
+            "width": 30.023987,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "SUBSCRIPTION",
+            "x": 226.77,
+            "y": 637.8,
+            "width": 67.50902,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "69390",
+            "x": 311.81,
+            "y": 637.8,
+            "width": 25.019989,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "REFUND",
+            "x": 411.02,
+            "y": 637.8,
+            "width": 37.493927,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 510.24,
+            "y": 637.8,
+            "width": 5.0040283,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "MISC",
+            "x": 42.52,
+            "y": 657.64,
+            "width": 22.499996,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "ADJ",
+            "x": 67.521996,
+            "y": 657.64,
+            "width": 17.001,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 147.4,
+            "y": 657.64,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "WITHDRAWAL",
+            "x": 226.77,
+            "y": 657.64,
+            "width": 61.496964,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 311.81,
+            "y": 657.64,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "CLOSING",
+            "x": 411.02,
+            "y": 657.64,
+            "width": 40.509003,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "BALANCE",
+            "x": 454.031,
+            "y": 657.64,
+            "width": 42.011932,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "491751",
+            "x": 510.24,
+            "y": 657.64,
+            "width": 30.02417,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "/",
+            "x": 130.062,
+            "y": 677.48,
+            "width": 2.501999,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "LOANS",
+            "x": 137.568,
+            "y": 677.48,
+            "width": 31.5,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "&",
+            "x": 171.56999,
+            "y": 677.48,
+            "width": 6.498001,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "ADVANCES",
+            "x": 180.56999,
+            "y": 677.48,
+            "width": 50.499023,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "UPTO",
+            "x": 233.57101,
+            "y": 677.48,
+            "width": 25.002014,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "30/11/2021",
+            "x": 261.07504,
+            "y": 677.48,
+            "width": 45.03601,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "TYPE",
+            "x": 42.52,
+            "y": 697.32,
+            "width": 23.508,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "TOTAL",
+            "x": 127.56,
+            "y": 697.32,
+            "width": 29.006989,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "AMOUNT",
+            "x": 159.06898,
+            "y": 697.32,
+            "width": 38.996994,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "REFUNDED",
+            "x": 297.64,
+            "y": 697.32,
+            "width": 49.994904,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "CLOSING",
+            "x": 439.37,
+            "y": 697.32,
+            "width": 40.509003,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "BALANCE",
+            "x": 482.381,
+            "y": 697.32,
+            "width": 42.011932,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "HBA",
+            "x": 42.52,
+            "y": 708.66003,
+            "width": 18.503998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 138.9,
+            "y": 708.66003,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 308.98,
+            "y": 708.66003,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 450.71,
+            "y": 708.66003,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "MCA",
+            "x": 42.52,
+            "y": 725.67,
+            "width": 19.998001,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 138.9,
+            "y": 725.67,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 308.98,
+            "y": 725.67,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 450.71,
+            "y": 725.67,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "PCA",
+            "x": 42.52,
+            "y": 742.68,
+            "width": 18.503998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 138.9,
+            "y": 742.68,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 308.98,
+            "y": 742.68,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 450.71,
+            "y": 742.68,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "*",
+            "x": 42.52,
+            "y": 756.85,
+            "width": 3.5009995,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "INDICATES",
+            "x": 48.523,
+            "y": 756.85,
+            "width": 48.005993,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "RECOVERY",
+            "x": 99.03099,
+            "y": 756.85,
+            "width": 50.50801,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "OF",
+            "x": 152.041,
+            "y": 756.85,
+            "width": 12.500992,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "INTEREST",
+            "x": 167.04399,
+            "y": 756.85,
+            "width": 44.505005,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Note:",
+            "x": 31.19,
+            "y": 839.47,
+            "width": 20.440004,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "This",
+            "x": 53.854004,
+            "y": 839.47,
+            "width": 16.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "is",
+            "x": 72.526,
+            "y": 839.47,
+            "width": 6.671997,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "a",
+            "x": 81.422,
+            "y": 839.47,
+            "width": 4.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "system",
+            "x": 88.093994,
+            "y": 839.47,
+            "width": 27.567993,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "generated",
+            "x": 117.88599,
+            "y": 839.47,
+            "width": 38.231995,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "document.",
+            "x": 158.34198,
+            "y": 839.47,
+            "width": 40.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Page",
+            "x": 270.96,
+            "y": 841.46,
+            "width": 19.119995,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "-",
+            "x": 292.304,
+            "y": 841.46,
+            "width": 2.6640015,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "3",
+            "x": 297.192,
+            "y": 841.46,
+            "width": 4.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "/",
+            "x": 303.86398,
+            "y": 841.46,
+            "width": 2.223999,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "3",
+            "x": 308.31198,
+            "y": 841.46,
+            "width": 4.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        }
+    ],
+    "dsopTokens": [
+        {
+            "text": "12/2021",
+            "x": 147.4,
+            "y": 25.51001,
+            "width": 32.525986,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "STATEMENT",
+            "x": 269.29,
+            "y": 25.51001,
+            "width": 54.99893,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "OF",
+            "x": 326.79095,
+            "y": 25.51001,
+            "width": 12.501007,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "ACCOUNT",
+            "x": 341.79398,
+            "y": 25.51001,
+            "width": 44.990936,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "FOR",
+            "x": 389.28693,
+            "y": 25.51001,
+            "width": 18.998993,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "12/2021",
+            "x": 410.78793,
+            "y": 25.51001,
+            "width": 32.526,
+            "height": 5.3549995,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "CONTACT",
+            "x": 14.17,
+            "y": 51.02002,
+            "width": 39.104004,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Tel",
+            "x": 55.498,
+            "y": 51.02002,
+            "width": 11.559998,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Nos",
+            "x": 69.282,
+            "y": 51.02002,
+            "width": 15.1119995,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "in",
+            "x": 86.618,
+            "y": 51.02002,
+            "width": 7.1119995,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "PCDA(O),",
+            "x": 95.953995,
+            "y": 51.02002,
+            "width": 36.440002,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Pune",
+            "x": 134.618,
+            "y": 51.02002,
+            "width": 19.559998,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 156.402,
+            "y": 51.02002,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Email",
+            "x": 467.72,
+            "y": 51.02002,
+            "width": 21.343994,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 491.288,
+            "y": 51.02002,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "TA/DA",
+            "x": 467.72,
+            "y": 62.359985,
+            "width": 23.559998,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Grievance:",
+            "x": 493.504,
+            "y": 62.359985,
+            "width": 38.679962,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "PCDA(O)",
+            "x": 14.17,
+            "y": 68.03003,
+            "width": 33.776,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Secretariat",
+            "x": 50.170002,
+            "y": 68.03003,
+            "width": 38.679996,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 91.074,
+            "y": 68.03003,
+            "width": 2.223999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "((020)",
+            "x": 99.21,
+            "y": 68.03003,
+            "width": 21.335999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "26401101)",
+            "x": 122.77,
+            "y": 68.03003,
+            "width": 38.247993,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "NAME",
+            "x": 246.61,
+            "y": 68.03003,
+            "width": 23.551987,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 278.604,
+            "y": 68.03003,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Officer",
+            "x": 282.854,
+            "y": 68.03003,
+            "width": 24.0,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Officer",
+            "x": 309.078,
+            "y": 68.03003,
+            "width": 33.336,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Officer",
+            "x": 344.638,
+            "y": 68.03003,
+            "width": 30.216003,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 73.70001,
+            "width": 84.608,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "PRO",
+            "x": 14.17,
+            "y": 85.04004,
+            "width": 17.336,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "CIVIL",
+            "x": 33.73,
+            "y": 85.04004,
+            "width": 20.008,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 55.961998,
+            "y": 85.04004,
+            "width": 2.223999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "((020)",
+            "x": 65.2,
+            "y": 85.04004,
+            "width": 21.335999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "2640-",
+            "x": 88.759995,
+            "y": 85.04004,
+            "width": 20.455994,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "1111/1333/1353/1356)",
+            "x": 111.43999,
+            "y": 85.04004,
+            "width": 80.50397,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 278.604,
+            "y": 87.869995,
+            "width": 2.6640015,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "16/000/000000X",
+            "x": 283.46,
+            "y": 87.869995,
+            "width": 59.151978,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Ledger",
+            "x": 467.72,
+            "y": 85.04004,
+            "width": 24.903992,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Grievance:",
+            "x": 494.848,
+            "y": 85.04004,
+            "width": 38.679962,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "PRO",
+            "x": 14.17,
+            "y": 99.21002,
+            "width": 17.336,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "ARMY",
+            "x": 33.73,
+            "y": 99.21002,
+            "width": 23.112,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": ":",
+            "x": 59.065998,
+            "y": 99.21002,
+            "width": 2.223999,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "(6512/6528/7756/7761/7762/7763)",
+            "x": 65.2,
+            "y": 99.21002,
+            "width": 123.19995,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "CDA",
+            "x": 226.77,
+            "y": 99.21002,
+            "width": 17.328003,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "A/C",
+            "x": 246.322,
+            "y": 99.21002,
+            "width": 13.775986,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "NO",
+            "x": 262.322,
+            "y": 99.21002,
+            "width": 12.0,
+            "height": 4.760002,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 96.380005,
+            "width": 91.272,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Rank",
+            "x": 467.72,
+            "y": 107.72003,
+            "width": 18.671997,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "pay",
+            "x": 488.616,
+            "y": 107.72003,
+            "width": 12.895996,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "related",
+            "x": 503.736,
+            "y": 107.72003,
+            "width": 24.455963,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "issue:",
+            "x": 530.41595,
+            "y": 107.72003,
+            "width": 20.895996,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 119.06,
+            "width": 97.496,
+            "height": 4.6240005,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Other",
+            "x": 467.72,
+            "y": 130.39001,
+            "width": 20.007996,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "grievances:",
+            "x": 489.952,
+            "y": 130.39001,
+            "width": 40.904022,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "Grievance",
+            "x": 14.17,
+            "y": 141.73004,
+            "width": 43.523994,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "Portal",
+            "x": 60.19599,
+            "y": 141.73004,
+            "width": 25.505997,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": ":",
+            "x": 88.20399,
+            "y": 141.73004,
+            "width": 2.9970016,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "https://pcdaopune.gov.in",
+            "x": 93.70299,
+            "y": 141.73004,
+            "width": 107.00993,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "user@example.com",
+            "x": 467.72,
+            "y": 141.73004,
+            "width": 115.727936,
+            "height": 4.623993,
+            "fontSize": 8.0,
+            "isBold": false
+        },
+        {
+            "text": "/",
+            "x": 262.62604,
+            "y": 178.58002,
+            "width": 2.5020142,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "INCOME",
+            "x": 270.13208,
+            "y": 178.58002,
+            "width": 36.0,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "TAX",
+            "x": 308.6341,
+            "y": 178.58002,
+            "width": 17.99997,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "DETAILS",
+            "x": 329.13608,
+            "y": 178.58002,
+            "width": 38.501953,
+            "height": 5.3549957,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "1.",
+            "x": 22.68,
+            "y": 212.60004,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Pay",
+            "x": 35.19,
+            "y": 212.60004,
+            "width": 15.507,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "&",
+            "x": 53.198997,
+            "y": 212.60004,
+            "width": 6.0029984,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Allce",
+            "x": 61.703995,
+            "y": 212.60004,
+            "width": 19.502998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "upto",
+            "x": 83.70899,
+            "y": 212.60004,
+            "width": 17.513992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "31/12/2021",
+            "x": 106.22698,
+            "y": 212.60004,
+            "width": 45.035988,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "1985060",
+            "x": 546.08,
+            "y": 213.88,
+            "width": 35.0282,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "2.",
+            "x": 22.68,
+            "y": 226.77002,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Taxable",
+            "x": 35.19,
+            "y": 226.77002,
+            "width": 32.012997,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Income",
+            "x": 69.704994,
+            "y": 226.77002,
+            "width": 29.510994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "upto",
+            "x": 101.71799,
+            "y": 226.77002,
+            "width": 17.513992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "31/12/2021",
+            "x": 124.23598,
+            "y": 226.77002,
+            "width": 45.03598,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Excluding",
+            "x": 174.27596,
+            "y": 226.77002,
+            "width": 39.015,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "HRA",
+            "x": 215.79295,
+            "y": 226.77002,
+            "width": 18.999008,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "1963860",
+            "x": 546.08,
+            "y": 228.04999,
+            "width": 35.0282,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "3.",
+            "x": 22.68,
+            "y": 240.94,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Estimated",
+            "x": 35.19,
+            "y": 240.94,
+            "width": 40.013996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "future",
+            "x": 77.70599,
+            "y": 240.94,
+            "width": 23.012993,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "taxable",
+            "x": 103.220985,
+            "y": 240.94,
+            "width": 29.015999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "pay",
+            "x": 134.73898,
+            "y": 240.94,
+            "width": 14.507996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Curr",
+            "x": 151.74898,
+            "y": 240.94,
+            "width": 20.492981,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "month",
+            "x": 174.74396,
+            "y": 240.94,
+            "width": 25.010986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "salary",
+            "x": 202.25694,
+            "y": 240.94,
+            "width": 24.00299,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "x",
+            "x": 228.76193,
+            "y": 240.94,
+            "width": 4.5,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "remaining",
+            "x": 235.76393,
+            "y": 240.94,
+            "width": 39.509964,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "months)",
+            "x": 277.7759,
+            "y": 240.94,
+            "width": 32.508026,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "198072",
+            "x": 551.08,
+            "y": 242.23004,
+            "width": 30.02417,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "4.",
+            "x": 22.68,
+            "y": 255.12,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "H.R.A",
+            "x": 35.19,
+            "y": 255.12,
+            "width": 24.002998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "/",
+            "x": 61.694996,
+            "y": 255.12,
+            "width": 2.5020027,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "H.R.R.",
+            "x": 66.699,
+            "y": 255.12,
+            "width": 27.0,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Taxable",
+            "x": 96.201,
+            "y": 255.12,
+            "width": 35.010002,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Amount)",
+            "x": 133.713,
+            "y": 255.12,
+            "width": 34.010986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 576.1,
+            "y": 256.40002,
+            "width": 5.0040283,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "5.",
+            "x": 22.68,
+            "y": 269.29004,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Income",
+            "x": 35.19,
+            "y": 269.29004,
+            "width": 29.510998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "from",
+            "x": 67.202995,
+            "y": 269.29004,
+            "width": 18.0,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "other",
+            "x": 87.704994,
+            "y": 269.29004,
+            "width": 20.510994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Source/House",
+            "x": 110.71799,
+            "y": 269.29004,
+            "width": 57.023987,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Property",
+            "x": 170.24397,
+            "y": 269.29004,
+            "width": 34.010986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "6.",
+            "x": 22.68,
+            "y": 283.46002,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Total",
+            "x": 35.19,
+            "y": 283.46002,
+            "width": 20.007,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "taxable",
+            "x": 57.698997,
+            "y": 283.46002,
+            "width": 29.015991,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "pay",
+            "x": 89.21699,
+            "y": 283.46002,
+            "width": 14.507996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Sl.No.",
+            "x": 106.22698,
+            "y": 283.46002,
+            "width": 27.504005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "2+3+4+5)",
+            "x": 136.23299,
+            "y": 283.46002,
+            "width": 38.780975,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "2161932",
+            "x": 546.08,
+            "y": 284.75,
+            "width": 35.0282,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "7.",
+            "x": 22.68,
+            "y": 297.64,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Other",
+            "x": 35.19,
+            "y": 297.64,
+            "width": 22.508999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "taxable",
+            "x": 60.200996,
+            "y": 297.64,
+            "width": 29.015991,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "income",
+            "x": 91.71899,
+            "y": 297.64,
+            "width": 29.006996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Ent.Allce,etc.)",
+            "x": 123.22798,
+            "y": 297.64,
+            "width": 58.51799,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "8.",
+            "x": 22.68,
+            "y": 311.81,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Deductions",
+            "x": 35.19,
+            "y": 311.81,
+            "width": 45.017994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Under",
+            "x": 82.70999,
+            "y": 311.81,
+            "width": 24.506996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Chapter",
+            "x": 109.71899,
+            "y": 311.81,
+            "width": 32.012993,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "VI-A",
+            "x": 144.23398,
+            "y": 311.81,
+            "width": 17.505005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "*",
+            "x": 178.58,
+            "y": 313.51,
+            "width": 3.501007,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Savings",
+            "x": 184.25697,
+            "y": 311.81,
+            "width": 32.013,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Declared",
+            "x": 218.77197,
+            "y": 311.81,
+            "width": 36.008987,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Savings",
+            "x": 277.29907,
+            "y": 311.81,
+            "width": 32.01297,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Cleared",
+            "x": 311.81406,
+            "y": 311.81,
+            "width": 31.508972,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Actual",
+            "x": 363.33914,
+            "y": 311.81,
+            "width": 25.010986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Amount",
+            "x": 390.85214,
+            "y": 311.81,
+            "width": 31.014008,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "a)",
+            "x": 52.703987,
+            "y": 325.98004,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80C",
+            "x": 68.21098,
+            "y": 325.98004,
+            "width": 16.505997,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 247.28,
+            "y": 327.27002,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 343.66,
+            "y": 327.27002,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "139810",
+            "x": 398.01,
+            "y": 327.27002,
+            "width": 30.023987,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "139810",
+            "x": 551.08,
+            "y": 327.27002,
+            "width": 30.02417,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "b)",
+            "x": 52.703987,
+            "y": 340.15997,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80D",
+            "x": 68.21098,
+            "y": 340.15997,
+            "width": 16.505997,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 247.28,
+            "y": 341.43997,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 343.66,
+            "y": 341.43997,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "c)",
+            "x": 52.703987,
+            "y": 354.33,
+            "width": 7.4970016,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80DD",
+            "x": 67.706985,
+            "y": 354.33,
+            "width": 23.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "d)",
+            "x": 52.703987,
+            "y": 368.49997,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80E",
+            "x": 68.21098,
+            "y": 368.49997,
+            "width": 16.010994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "e)",
+            "x": 52.703987,
+            "y": 382.68,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80DDB",
+            "x": 68.21098,
+            "y": 382.68,
+            "width": 29.006996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "f)",
+            "x": 52.703987,
+            "y": 396.84998,
+            "width": 5.4990005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80U",
+            "x": 68.21098,
+            "y": 396.84998,
+            "width": 16.505997,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "g)",
+            "x": 52.703987,
+            "y": 411.02,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "80G(G1+G2)",
+            "x": 68.21098,
+            "y": 411.02,
+            "width": 52.271988,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 247.28,
+            "y": 412.31,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 343.66,
+            "y": 412.31,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 423.03,
+            "y": 412.31,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 576.1,
+            "y": 412.31,
+            "width": 5.0040283,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "h)",
+            "x": 52.703987,
+            "y": 425.19998,
+            "width": 8.000999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Neg.",
+            "x": 68.21098,
+            "y": 425.19998,
+            "width": 19.007996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Inc",
+            "x": 89.72098,
+            "y": 425.19998,
+            "width": 12.005997,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "from",
+            "x": 104.22897,
+            "y": 425.19998,
+            "width": 18.0,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "House",
+            "x": 124.73097,
+            "y": 425.19998,
+            "width": 26.009995,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Property",
+            "x": 153.24297,
+            "y": 425.19998,
+            "width": 34.010986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "*Valid",
+            "x": 190.31393,
+            "y": 439.37,
+            "width": 23.50801,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "upto",
+            "x": 216.32394,
+            "y": 439.37,
+            "width": 17.513992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Nov",
+            "x": 236.33994,
+            "y": 439.37,
+            "width": 16.001999,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "2021",
+            "x": 254.84393,
+            "y": 439.37,
+            "width": 20.015991,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Max",
+            "x": 35.189995,
+            "y": 453.53998,
+            "width": 17.001,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "permissible",
+            "x": 54.692993,
+            "y": 453.53998,
+            "width": 45.503998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "exemption",
+            "x": 102.69899,
+            "y": 453.53998,
+            "width": 41.517,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "from",
+            "x": 146.71799,
+            "y": 453.53998,
+            "width": 17.999985,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "IT",
+            "x": 167.21997,
+            "y": 453.53998,
+            "width": 8.000992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "under",
+            "x": 177.72296,
+            "y": 453.53998,
+            "width": 23.012985,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Chapter",
+            "x": 203.23795,
+            "y": 453.53998,
+            "width": 32.012985,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "VI-A",
+            "x": 237.75293,
+            "y": 453.53998,
+            "width": 17.505005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "139810",
+            "x": 551.08,
+            "y": 454.83,
+            "width": 30.02417,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Standard",
+            "x": 35.189995,
+            "y": 467.71997,
+            "width": 36.521988,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Deduction",
+            "x": 74.21398,
+            "y": 467.71997,
+            "width": 40.51799,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "50000",
+            "x": 556.09,
+            "y": 468.99997,
+            "width": 25.020142,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "9.",
+            "x": 22.68,
+            "y": 481.88998,
+            "width": 7.5060005,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Net",
+            "x": 35.19,
+            "y": 481.88998,
+            "width": 14.004002,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Taxable",
+            "x": 51.696,
+            "y": 481.88998,
+            "width": 32.012993,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Income",
+            "x": 86.21099,
+            "y": 481.88998,
+            "width": 29.510994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "((Sl.No.",
+            "x": 118.22398,
+            "y": 481.88998,
+            "width": 30.501007,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "6",
+            "x": 151.22699,
+            "y": 481.88998,
+            "width": 5.003998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "+",
+            "x": 158.73299,
+            "y": 481.88998,
+            "width": 5.2559967,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Sl.No.",
+            "x": 166.49098,
+            "y": 481.88998,
+            "width": 24.507004,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "7)",
+            "x": 193.49998,
+            "y": 481.88998,
+            "width": 8.000992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "-",
+            "x": 204.00298,
+            "y": 481.88998,
+            "width": 2.996994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Sl.No.",
+            "x": 209.50197,
+            "y": 481.88998,
+            "width": 27.503998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "8))",
+            "x": 239.50797,
+            "y": 481.88998,
+            "width": 10.997986,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "1972122",
+            "x": 546.08,
+            "y": 483.16998,
+            "width": 35.0282,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "10.",
+            "x": 22.68,
+            "y": 496.06,
+            "width": 12.509998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Total",
+            "x": 40.193996,
+            "y": 496.06,
+            "width": 20.007,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Income",
+            "x": 62.702995,
+            "y": 496.06,
+            "width": 29.510994,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Tax",
+            "x": 94.71599,
+            "y": 496.06,
+            "width": 15.002998,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "(Tax",
+            "x": 112.220985,
+            "y": 496.06,
+            "width": 17.999992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "on",
+            "x": 132.72298,
+            "y": 496.06,
+            "width": 10.007996,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Sl.No.",
+            "x": 145.23297,
+            "y": 496.06,
+            "width": 24.507004,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "9)",
+            "x": 172.24197,
+            "y": 496.06,
+            "width": 8.000992,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "404137",
+            "x": 551.08,
+            "y": 497.34998,
+            "width": 30.02417,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "11.",
+            "x": 22.68,
+            "y": 510.24,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Income",
+            "x": 40.193996,
+            "y": 510.24,
+            "width": 29.510998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Tax",
+            "x": 72.20699,
+            "y": 510.24,
+            "width": 15.002998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Deducted",
+            "x": 89.71199,
+            "y": 510.24,
+            "width": 38.51999,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "374400",
+            "x": 551.08,
+            "y": 511.52,
+            "width": 30.02417,
+            "height": 5.201996,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "12.",
+            "x": 22.68,
+            "y": 524.41,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Educ.Cess",
+            "x": 40.193996,
+            "y": 524.41,
+            "width": 43.514996,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Deducted",
+            "x": 86.21099,
+            "y": 524.41,
+            "width": 38.51999,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "14660",
+            "x": 556.09,
+            "y": 525.68994,
+            "width": 25.020142,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "13.",
+            "x": 22.68,
+            "y": 538.57996,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Saving",
+            "x": 40.193996,
+            "y": 538.57996,
+            "width": 27.512997,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Thru",
+            "x": 70.20899,
+            "y": 538.57996,
+            "width": 18.503998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "IRLA",
+            "x": 91.21499,
+            "y": 538.57996,
+            "width": 20.006996,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "upto",
+            "x": 113.72398,
+            "y": 538.57996,
+            "width": 17.513992,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "12/2021",
+            "x": 133.73997,
+            "y": 538.57996,
+            "width": 32.525986,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "127100",
+            "x": 551.08,
+            "y": 539.87,
+            "width": 30.02417,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "14.",
+            "x": 22.68,
+            "y": 552.76,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Est.Savings",
+            "x": 40.193996,
+            "y": 552.76,
+            "width": 47.519993,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "for",
+            "x": 90.21599,
+            "y": 552.76,
+            "width": 10.502998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "2020-2021",
+            "x": 103.220985,
+            "y": 552.76,
+            "width": 43.028984,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "139810",
+            "x": 551.08,
+            "y": 554.04,
+            "width": 30.02417,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "15.",
+            "x": 22.68,
+            "y": 566.93,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Personal",
+            "x": 40.193996,
+            "y": 566.93,
+            "width": 35.513996,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Savings",
+            "x": 78.20999,
+            "y": 566.93,
+            "width": 32.012993,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Declared",
+            "x": 112.72498,
+            "y": 566.93,
+            "width": 36.008995,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "16.",
+            "x": 22.68,
+            "y": 581.1,
+            "width": 12.509998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Personal",
+            "x": 40.193996,
+            "y": 581.1,
+            "width": 35.513996,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Savings",
+            "x": 78.20999,
+            "y": 581.1,
+            "width": 32.012993,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Cleared",
+            "x": 112.72498,
+            "y": 581.1,
+            "width": 31.508995,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "/",
+            "x": 158.412,
+            "y": 623.62,
+            "width": 2.501999,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "DSOP",
+            "x": 165.918,
+            "y": 623.62,
+            "width": 25.506012,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "FUND",
+            "x": 193.92601,
+            "y": 623.62,
+            "width": 24.992996,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "FOR",
+            "x": 221.421,
+            "y": 623.62,
+            "width": 18.998993,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "THE",
+            "x": 242.922,
+            "y": 623.62,
+            "width": 18.0,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "CURRENT",
+            "x": 263.424,
+            "y": 623.62,
+            "width": 43.991913,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "YEAR",
+            "x": 309.91794,
+            "y": 623.62,
+            "width": 25.001953,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "UPTO",
+            "x": 337.4219,
+            "y": 623.62,
+            "width": 25.001984,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "30/11/2021",
+            "x": 364.9259,
+            "y": 623.62,
+            "width": 45.03601,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "OPENING",
+            "x": 42.52,
+            "y": 637.8,
+            "width": 41.50799,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "BALANCE",
+            "x": 86.52999,
+            "y": 637.8,
+            "width": 42.012,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "422361",
+            "x": 147.4,
+            "y": 637.8,
+            "width": 30.023987,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "SUBSCRIPTION",
+            "x": 226.77,
+            "y": 637.8,
+            "width": 67.50902,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "69390",
+            "x": 311.81,
+            "y": 637.8,
+            "width": 25.019989,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "REFUND",
+            "x": 411.02,
+            "y": 637.8,
+            "width": 37.493927,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 510.24,
+            "y": 637.8,
+            "width": 5.0040283,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "MISC",
+            "x": 42.52,
+            "y": 657.64,
+            "width": 22.499996,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "ADJ",
+            "x": 67.521996,
+            "y": 657.64,
+            "width": 17.001,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 147.4,
+            "y": 657.64,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "WITHDRAWAL",
+            "x": 226.77,
+            "y": 657.64,
+            "width": 61.496964,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 311.81,
+            "y": 657.64,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "CLOSING",
+            "x": 411.02,
+            "y": 657.64,
+            "width": 40.509003,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "BALANCE",
+            "x": 454.031,
+            "y": 657.64,
+            "width": 42.011932,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "491751",
+            "x": 510.24,
+            "y": 657.64,
+            "width": 30.02417,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "/",
+            "x": 130.062,
+            "y": 677.48,
+            "width": 2.501999,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "LOANS",
+            "x": 137.568,
+            "y": 677.48,
+            "width": 31.5,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "&",
+            "x": 171.56999,
+            "y": 677.48,
+            "width": 6.498001,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "ADVANCES",
+            "x": 180.56999,
+            "y": 677.48,
+            "width": 50.499023,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "UPTO",
+            "x": 233.57101,
+            "y": 677.48,
+            "width": 25.002014,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "30/11/2021",
+            "x": 261.07504,
+            "y": 677.48,
+            "width": 45.03601,
+            "height": 5.3549805,
+            "fontSize": 9.0,
+            "isBold": true
+        },
+        {
+            "text": "TYPE",
+            "x": 42.52,
+            "y": 697.32,
+            "width": 23.508,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "TOTAL",
+            "x": 127.56,
+            "y": 697.32,
+            "width": 29.006989,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "AMOUNT",
+            "x": 159.06898,
+            "y": 697.32,
+            "width": 38.996994,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "REFUNDED",
+            "x": 297.64,
+            "y": 697.32,
+            "width": 49.994904,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "CLOSING",
+            "x": 439.37,
+            "y": 697.32,
+            "width": 40.509003,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "BALANCE",
+            "x": 482.381,
+            "y": 697.32,
+            "width": 42.011932,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "HBA",
+            "x": 42.52,
+            "y": 708.66003,
+            "width": 18.503998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 138.9,
+            "y": 708.66003,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 308.98,
+            "y": 708.66003,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 450.71,
+            "y": 708.66003,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "MCA",
+            "x": 42.52,
+            "y": 725.67,
+            "width": 19.998001,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 138.9,
+            "y": 725.67,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 308.98,
+            "y": 725.67,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 450.71,
+            "y": 725.67,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "PCA",
+            "x": 42.52,
+            "y": 742.68,
+            "width": 18.503998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 138.9,
+            "y": 742.68,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 308.98,
+            "y": 742.68,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "0",
+            "x": 450.71,
+            "y": 742.68,
+            "width": 5.003998,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "*",
+            "x": 42.52,
+            "y": 756.85,
+            "width": 3.5009995,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "INDICATES",
+            "x": 48.523,
+            "y": 756.85,
+            "width": 48.005993,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "RECOVERY",
+            "x": 99.03099,
+            "y": 756.85,
+            "width": 50.50801,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "OF",
+            "x": 152.041,
+            "y": 756.85,
+            "width": 12.500992,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "INTEREST",
+            "x": 167.04399,
+            "y": 756.85,
+            "width": 44.505005,
+            "height": 5.2020264,
+            "fontSize": 9.0,
+            "isBold": false
+        },
+        {
+            "text": "Note:",
+            "x": 31.19,
+            "y": 839.47,
+            "width": 20.440004,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "This",
+            "x": 53.854004,
+            "y": 839.47,
+            "width": 16.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "is",
+            "x": 72.526,
+            "y": 839.47,
+            "width": 6.671997,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "a",
+            "x": 81.422,
+            "y": 839.47,
+            "width": 4.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "system",
+            "x": 88.093994,
+            "y": 839.47,
+            "width": 27.567993,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "generated",
+            "x": 117.88599,
+            "y": 839.47,
+            "width": 38.231995,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "document.",
+            "x": 158.34198,
+            "y": 839.47,
+            "width": 40.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "Page",
+            "x": 270.96,
+            "y": 841.46,
+            "width": 19.119995,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "-",
+            "x": 292.304,
+            "y": 841.46,
+            "width": 2.6640015,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "3",
+            "x": 297.192,
+            "y": 841.46,
+            "width": 4.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "/",
+            "x": 303.86398,
+            "y": 841.46,
+            "width": 2.223999,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        },
+        {
+            "text": "3",
+            "x": 308.31198,
+            "y": 841.46,
+            "width": 4.447998,
+            "height": 4.76001,
+            "fontSize": 8.0,
+            "isBold": true
+        }
+    ]
+}

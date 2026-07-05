@@ -1,0 +1,83 @@
+{
+    "id": "4_apr_15",
+    "filename": "4 Apr 15.pdf",
+    "year": 2015,
+    "monthNum": 4,
+    "officer": {
+        "name": "Officer Officer Officer",
+        "accountNo": "16/000/000000X",
+        "pan": "AR*****90G"
+    },
+    "summary": {
+        "grossPay": 77956.0,
+        "totalDeductions": 22768.0,
+        "netRemittance": 55188.0
+    },
+    "earnings": {
+        "basicPay": 29770.0,
+        "dearnessAllowance": 38274.0,
+        "militaryServicePay": 6000.0,
+        "transportAllowance": 3312.0,
+        "transportAllowanceDa": 0.0,
+        "dressAllowance": 600.0,
+        "rationMoney": 0.0,
+        "specialForcesPay": 0.0,
+        "fieldAllowance": 0.0,
+        "childrenEducationAllowance": 0.0,
+        "houseRentAllowance": 0.0,
+        "riskHardshipAllowance": 0.0,
+        "nonPracticingAllowance": 0.0,
+        "adjBasicPay": 0.0,
+        "adjDa": 0.0,
+        "adjMsp": 0.0,
+        "adjTpta": 0.0,
+        "arrearsCea": 0.0,
+        "arrearsDa": 0.0,
+        "arrearsRation": 0.0,
+        "arrearsSpecialForces": 0.0,
+        "arrearsTpta": 0.0,
+        "arrearsTptaDa": 0.0,
+        "arrearsHra": 0.0,
+        "arrearsRiskHardship": 0.0,
+        "adjPayAndAllce": 0.0,
+        "adjFieldAllowance": 0.0,
+        "medicalAllowance": 0.0,
+        "adjTicketRecovery": 0.0,
+        "miscEarnings": 0.0
+    },
+    "deductions": {
+        "dsopSubscription": 2146.0,
+        "agif": 5000.0,
+        "incomeTax": 6450.0,
+        "educationCess": 190.0,
+        "licenseFee": 740.0,
+        "furnitureRent": 330.0,
+        "waterCharges": 0.0,
+        "electricityCharges": 0.0,
+        "barrackDamage": 0.0,
+        "ticketRecovery": 0.0,
+        "recFieldAllowance": 0.0,
+        "recSpecialForces": 0.0,
+        "recoveryOfDebits": 0.0,
+        "aobf": 120.0,
+        "agifLoanRecovery": 7792.0,
+        "miscDeductions": 0.0
+    },
+    "taxAndSavings": {
+        "grossSalaryYtd": 0.0,
+        "totalTaxableIncome": 0.0,
+        "standardDeduction": 0.0,
+        "netTaxableIncome": 0.0,
+        "totalTaxPayable": 0.0,
+        "taxDeductedYtd": 0.0,
+        "cessDeductedYtd": 0.0,
+        "dsopFund": {
+            "openingBalance": 0.0,
+            "subscriptionYtd": 0.0,
+            "refundYtd": 0.0,
+            "miscAdjYtd": 0.0,
+            "withdrawalYtd": 0.0,
+            "closingBalance": 0.0
+        }
+    }
+}

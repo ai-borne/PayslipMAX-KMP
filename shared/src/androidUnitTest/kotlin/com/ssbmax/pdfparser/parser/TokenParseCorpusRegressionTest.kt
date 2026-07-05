@@ -23,7 +23,19 @@ import kotlin.test.assertTrue
  */
 class TokenParseCorpusRegressionTest {
     /** Fixture ids the token engine is known to get wrong, each with a documented reason. Empty at cut-over. */
-    private val quarantine: Set<String> = emptySet()
+    private val quarantine: Set<String> =
+        setOf(
+            // Real arrears-recap-table credit (e.g. "Cr.NPA26107") that the main transaction-table
+            // classifier doesn't parse — a genuine, narrow extraction gap, not a ground-truth error
+            // (the printed value 26107 was independently verified against the real document).
+            "10_oct_2019",
+            // Ambiguous: this is a complex multi-page pay-fixation/arrears document (also flagged during
+            // the Tier 6 Gemma on-device smoke test for a large net-reconciliation residual). Ground
+            // truth's basicPay/militaryServicePay/nonPracticingAllowance don't match anything visible on
+            // the printed page, but neither could be confidently confirmed as the parser's fault — needs
+            // manual verification against the original PDF before it's corrected either way.
+            "05_may_2017",
+        )
 
     @Test
     fun tokenEngineMeetsOrBeatsBaseline() {
