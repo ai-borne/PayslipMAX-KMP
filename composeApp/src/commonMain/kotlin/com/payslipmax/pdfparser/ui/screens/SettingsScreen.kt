@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 
 @Composable
 fun SettingsScreen(
@@ -92,16 +93,19 @@ private fun PrimarySettingsGroup(
     uiState: PayslipUiState,
     onUpgradePrompt: () -> Unit,
 ) {
-    // 1. Profile Section
+    // 1. Account & Subscription
+    SettingsCategoryHeader(title = AppStrings.settingsAccountSubscriptionHeader)
+
+    // Profile Section
     ProfileSection(viewModel = viewModel, uiState = uiState)
 
-    // 2. PayslipMax Pro Section
+    // PayslipMax Pro Section
     PremiumSection(viewModel = viewModel, uiState = uiState, onUpgradePrompt = onUpgradePrompt)
 
-    // 3. Security & Privacy
+    // 2. Security & Privacy
     SecuritySection(viewModel = viewModel, uiState = uiState)
 
-    // 4. Preferences
+    // 3. Preferences
     PreferencesSection(viewModel = viewModel, uiState = uiState)
 }
 

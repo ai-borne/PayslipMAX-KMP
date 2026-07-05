@@ -48,7 +48,7 @@ fun SecuritySection(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,
 ) {
-    SettingsCategoryHeader(title = AppStrings.settingsHelpPrivacyTitle)
+    SettingsCategoryHeader(title = AppStrings.settingsSecurityPrivacyHeader)
     SettingsCategoryCard {
         PasscodeSettingsCard(
             isLockEnabled = uiState.isLockEnabled,
