@@ -66,7 +66,7 @@ class IosTokenCaptureTest {
 
         val password = "535d04"
         val parser = PlatformPdfParser()
-        val years = listOf("2022", "2023", "2024", "2025", "2026")
+        val years = listOf("2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026")
         var total = 0
         var written = 0
         val errors = mutableListOf<String>()
