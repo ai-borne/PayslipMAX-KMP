@@ -12,11 +12,24 @@ import composeApp
 /// model on every Tier 6 call would be prohibitively slow. LiteRT-LM is session-based, so each prompt
 /// runs through a fresh, stateless `Conversation` (Tier 6 extraction has no multi-turn history — history
 /// must never bleed between payslips).
+/// Actor-isolated cache of loaded `Engine`s, keyed by model path. Actors are the Swift 6-mandated
+/// async-safe replacement for locking a mutable dictionary across `await` boundaries.
+private actor EngineStore {
+    private var engines: [String: Engine] = [:]
+
+    func engine(for modelPath: String) -> Engine? {
+        engines[modelPath]
+    }
+
+    func store(_ engine: Engine, for modelPath: String) {
+        engines[modelPath] = engine
+    }
+}
+
 final class GemmaInferenceBridge {
     static let shared = GemmaInferenceBridge()
 
-    private let lock = NSLock()
-    private var engines: [String: Engine] = [:]
+    private let store = EngineStore()
 
     private init() {}
 
@@ -51,16 +64,14 @@ final class GemmaInferenceBridge {
     }
 
     /// Returns the cached `Engine` for `modelPath`, loading and initializing it on first use. The
-    /// cache lookup is lock-guarded; initialization runs outside the lock (holding a lock across
-    /// `await` is unsafe). Two concurrent first-loads could both initialize — a benign, rare race for
-    /// Tier 6 (invoked at most once per parse) where the last writer simply wins the cache slot.
+    /// cache is guarded by the `EngineStore` actor; initialization runs between the lookup and the
+    /// store call, outside actor isolation. Two concurrent first-loads could both initialize — a
+    /// benign, rare race for Tier 6 (invoked at most once per parse) where the last writer simply
+    /// wins the cache slot.
     private func engine(for modelPath: String) async throws -> Engine {
-        lock.lock()
-        if let cached = engines[modelPath] {
-            lock.unlock()
+        if let cached = await store.engine(for: modelPath) {
             return cached
         }
-        lock.unlock()
 
         let engineConfig = try EngineConfig(
             modelPath: modelPath,
@@ -71,9 +82,7 @@ final class GemmaInferenceBridge {
         let engine = Engine(engineConfig: engineConfig)
         try await engine.initialize()
 
-        lock.lock()
-        engines[modelPath] = engine
-        lock.unlock()
+        await store.store(engine, for: modelPath)
         return engine
     }
 }

@@ -10,12 +10,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.ssbmax.pdfparser.database.RepresentationDraftEntity
 import com.ssbmax.pdfparser.ui.*
+import com.ssbmax.pdfparser.ui.platform.rememberClipboardCopier
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 import com.ssbmax.pdfparser.ui.theme.AppStringsPremium
@@ -177,7 +176,7 @@ private fun RepresentationActionsRow(
     onSelect: (RepresentationDraftEntity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val clipboardManager = LocalClipboardManager.current
+    val copyToClipboard = rememberClipboardCopier()
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
@@ -189,7 +188,7 @@ private fun RepresentationActionsRow(
             Text(AppStringsPremium.representationEditBtn)
         }
         OutlinedButton(
-            onClick = { clipboardManager.setText(AnnotatedString(draft.bodyText)) },
+            onClick = { copyToClipboard(draft.bodyText) },
             modifier = Modifier.weight(1f),
         ) {
             Text(AppStringsPremium.representationCopyBtn)

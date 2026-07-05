@@ -138,7 +138,7 @@ private fun YearDropdown(
             readOnly = true,
             label = { Text(AppStrings.selectYearLabel) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, true).fillMaxWidth(),
+            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true).fillMaxWidth(),
             singleLine = true,
         )
         ExposedDropdownMenu(
@@ -179,7 +179,7 @@ private fun MonthDropdown(
             readOnly = true,
             label = { Text(AppStrings.selectMonthLabel) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, true).fillMaxWidth(),
+            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, true).fillMaxWidth(),
             singleLine = true,
         )
         ExposedDropdownMenu(

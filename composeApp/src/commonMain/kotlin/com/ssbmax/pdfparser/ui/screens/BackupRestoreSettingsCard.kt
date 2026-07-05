@@ -7,10 +7,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import com.ssbmax.pdfparser.database.hexToByteArray
 import com.ssbmax.pdfparser.database.toHex
+import com.ssbmax.pdfparser.ui.platform.rememberClipboardCopier
 import com.ssbmax.pdfparser.ui.theme.AppDimensions
 import com.ssbmax.pdfparser.ui.theme.AppStrings
 
@@ -110,7 +109,7 @@ private fun BackupRestoreSheetContent(
     onCloseClick: () -> Unit,
 ) {
     var status by remember { mutableStateOf<BackupStatus?>(null) }
-    val clipboardManager = LocalClipboardManager.current
+    val copyToClipboard = rememberClipboardCopier()
 
     Column(
         modifier =
@@ -127,7 +126,7 @@ private fun BackupRestoreSheetContent(
         LocalSyncButtonsRow(password, onBackupClick, onRestoreClick) { status = it }
         UniversalBackupSectionWrapper(
             password = password,
-            clipboardManager = clipboardManager,
+            copyToClipboard = copyToClipboard,
             onExportBackup = onExportBackup,
             onImportBackup = onImportBackup,
             onStatusChange = { status = it },
@@ -185,7 +184,7 @@ private fun CloudSyncWrapper(
 @Composable
 private fun UniversalBackupSectionWrapper(
     password: String,
-    clipboardManager: androidx.compose.ui.platform.ClipboardManager,
+    copyToClipboard: (String) -> Unit,
     onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
     onImportBackup: (ByteArray, String, (Result<Unit>) -> Unit) -> Unit,
     onStatusChange: (BackupStatus) -> Unit,
@@ -196,7 +195,7 @@ private fun UniversalBackupSectionWrapper(
             onExportBackup(password) { result ->
                 if (result.isSuccess) {
                     val hex = result.getOrThrow().toHex()
-                    clipboardManager.setText(AnnotatedString(hex))
+                    copyToClipboard(hex)
                     onStatusChange(BackupStatus(AppStrings.statusCopiedSuccess, isSuccess = true))
                 } else {
                     onStatusChange(
