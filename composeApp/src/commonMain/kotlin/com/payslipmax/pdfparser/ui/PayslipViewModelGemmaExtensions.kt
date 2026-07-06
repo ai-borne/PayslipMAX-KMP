@@ -1,95 +1,58 @@
 package com.payslipmax.pdfparser.ui
 
 import androidx.lifecycle.viewModelScope
-import com.payslipmax.pdfparser.insights.gemma.DownloadStatus
-import com.payslipmax.pdfparser.insights.gemma.GemmaModelDownloadManager
+import com.payslipmax.pdfparser.insights.gemma.BaseModelInstallState
+import com.payslipmax.pdfparser.insights.gemma.GemmaBaseModelInstaller
 import com.payslipmax.pdfparser.insights.gemma.GemmaModelStorageManager
-import com.payslipmax.pdfparser.insights.gemma.GemmaModelVersionManager
-import com.payslipmax.pdfparser.ui.theme.AppStrings
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-
-// Interim shared access key for the manifest endpoint (Decision 3). Provisioning the real
-// GEMMA_CACHE_KEY secret is an ops step tracked in the Phase 0 handoff; until it is wired the
-// manifest fetch fails closed (403 → friendly error), which is the intended dev-mode behavior.
-private val GEMMA_CACHE_KEY: String? = null
 
 /**
- * Turns local (offline) AI on/off. When enabling, runs the version-aware, dual-slot download:
- * fetch the manifest (SSOT of the current version) → skip if the active slot already matches →
- * otherwise download the new version into the **staging** slot → verify its SHA-256 → only then
- * atomically promote it to active. A failed download or checksum leaves the existing active slot
- * untouched, so enabling can never take an already-working model offline.
+ * Sets which source (local Gemma vs. cloud Gemini) [FinancialIntelligenceRepository]'s narrative
+ * insight generation reads from. The Tier 6 base model itself is downloaded unconditionally via
+ * [PayslipViewModel]'s `GemmaBaseModelInstaller` trigger — this toggle no longer gates or triggers
+ * that download.
  */
-fun PayslipViewModel.setLocalAiEnabled(
-    enabled: Boolean,
-    storage: GemmaModelStorageManager = GemmaModelStorageManager(),
-    versionManager: GemmaModelVersionManager = GemmaModelVersionManager(interimKey = GEMMA_CACHE_KEY),
-    downloadManager: GemmaModelDownloadManager = GemmaModelDownloadManager(),
-) {
+fun PayslipViewModel.setLocalAiEnabled(enabled: Boolean) {
     viewModelScope.launch {
         val current = repository.getSettings() ?: com.payslipmax.pdfparser.database.AppSettingsEntity()
         repository.saveSettings(current.copy(useLocalAi = enabled))
-        if (!enabled) return@launch
+    }
+}
 
-        _uiState.update { it.copy(isDownloadingModel = true, modelDownloadError = null) }
-
-        // 1. Fetch the manifest — the single source of truth for what version is current.
-        val manifest =
-            versionManager.fetchManifest().getOrElse {
-                _uiState.update { s -> s.copy(isDownloadingModel = false, modelDownloadError = AppStrings.modelManifestUnavailable) }
-                return@launch
-            }
-
-        // Surface the Gemma Terms-of-Use notice as soon as the manifest is known — before/at
-        // download — so the license's redistribution-notice requirement is met on every path below.
-        _uiState.update { it.copy(modelDownloadNotice = manifest.noticeText) }
-
-        // 2. Already on this version with the active slot present? Nothing to download.
-        val activeReady = storage.verifyModelFile(storage.getRecommendedModelFileName()).isReady
-        if (storage.getActiveVersion() == manifest.version && activeReady) {
-            _uiState.update { it.copy(isDownloadingModel = false, modelDownloadProgress = 1f, modelDownloadError = null) }
-            return@launch
+/**
+ * Tier 6's base model is a mandatory, free-for-all background install, decoupled from the
+ * "Use Local Gemma AI Model" toggle — it fires on every launch regardless of whether the user ever
+ * touches that setting. Re-checks [GemmaModelStorageManager.verifyModelFile] on every init (not
+ * just first-ever launch): a previously-installed model that's missing or fails validation (OS
+ * storage cleanup, user clears app storage, partial delivery) is treated exactly like "not yet
+ * installed" and re-triggers [GemmaBaseModelInstaller.install], closing the gap where a
+ * corrupted/cleared model would otherwise silently leave Tier 6 dead forever.
+ */
+internal fun PayslipViewModel.installGemmaBaseModel() {
+    viewModelScope.launch {
+        gemmaBaseModelInstaller.state.collect { installState ->
+            _uiState.update { it.applyInstallState(installState) }
         }
-
-        // 3. Download the new version into the staging slot (active slot untouched meanwhile).
-        val headers =
-            if (GEMMA_CACHE_KEY != null) mapOf(GemmaModelVersionManager.INTERIM_KEY_HEADER to GEMMA_CACHE_KEY) else emptyMap()
-        var downloadFailed = false
-        downloadManager.downloadModel(manifest.url, storage.stagingSlotFileName(), headers).collect { status ->
-            when (status) {
-                is DownloadStatus.Idle -> {}
-                is DownloadStatus.Downloading ->
-                    _uiState.update { it.copy(isDownloadingModel = true, modelDownloadProgress = status.progress, modelDownloadError = null) }
-                is DownloadStatus.Success -> {}
-                is DownloadStatus.Error -> {
-                    downloadFailed = true
-                    _uiState.update { it.copy(isDownloadingModel = false, modelDownloadError = status.message) }
-                }
-            }
-        }
-        if (downloadFailed) return@launch
-
-        // 4. Verify checksum, then atomically promote. On mismatch, discard staging and keep active.
-        val promoted =
-            withContext(Dispatchers.IO) {
-                if (!storage.verifyStagingChecksum(manifest.sha256)) {
-                    storage.discardStaging()
-                    false
-                } else {
-                    storage.promoteStagingToActive(manifest.version)
-                }
-            }
-
-        _uiState.update {
-            if (promoted) {
-                it.copy(isDownloadingModel = false, modelDownloadProgress = 1f, modelDownloadError = null)
-            } else {
-                it.copy(isDownloadingModel = false, modelDownloadError = AppStrings.modelVerificationFailed)
-            }
+    }
+    viewModelScope.launch {
+        val alreadyReady = gemmaModelStorage.verifyModelFile(gemmaModelStorage.getRecommendedModelFileName()).isReady
+        if (!alreadyReady) {
+            gemmaBaseModelInstaller.install()
         }
     }
 }
+
+private fun PayslipUiState.applyInstallState(installState: BaseModelInstallState): PayslipUiState =
+    when (installState) {
+        is BaseModelInstallState.NotStarted ->
+            copy(isDownloadingModel = false)
+        is BaseModelInstallState.Downloading ->
+            copy(isDownloadingModel = true, modelDownloadProgress = installState.progress, modelDownloadError = null)
+        is BaseModelInstallState.NeedsUserConfirmation ->
+            copy(isDownloadingModel = false)
+        is BaseModelInstallState.Installed ->
+            copy(isDownloadingModel = false, modelDownloadProgress = 1f, modelDownloadError = null)
+        is BaseModelInstallState.Failed ->
+            copy(isDownloadingModel = false, modelDownloadError = installState.message)
+    }

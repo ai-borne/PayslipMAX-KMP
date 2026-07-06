@@ -3,12 +3,13 @@ package com.payslipmax.pdfparser.insights.gemma
 import org.junit.Test
 import java.io.File
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class GemmaModelPathsAndroidTest {
     @Test
     fun fileExistsAtFindsARealFileAndRejectsAMissingOne() {
-        val tempFile = File.createTempFile("gemma_model_paths_test", ".task")
+        val tempFile = File.createTempFile("gemma_model_paths_test", ".litertlm")
         tempFile.deleteOnExit()
         try {
             assertTrue(fileExistsAt(tempFile.absolutePath))
@@ -27,5 +28,12 @@ class GemmaModelPathsAndroidTest {
         // rather than crashing, and never claims a directory exists when it doesn't.
         val dir = gemmaModelStorageDir()
         assertTrue(dir.isEmpty() || File(dir).exists())
+    }
+
+    @Test
+    fun resolveInstalledGemmaModelPathIsAPhase1PlaceholderReturningNull() {
+        // Play Asset Delivery resolution (AssetPackManager.getPackLocation) lands in Phase 3; until
+        // then this must never claim a model is installed.
+        assertNull(resolveInstalledGemmaModelPath())
     }
 }

@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.insights.NetworkErrorMapper
+import com.payslipmax.pdfparser.insights.gemma.GemmaBaseModelInstaller
+import com.payslipmax.pdfparser.insights.gemma.GemmaModelStorageManager
+import com.payslipmax.pdfparser.insights.gemma.provideGemmaBaseModelInstaller
 import com.payslipmax.pdfparser.logging.Logger
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +22,8 @@ class PayslipViewModel(
     internal val backupManager: com.payslipmax.pdfparser.backup.BackupManager,
     internal val financialIntelligenceRepository: com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository? = null,
     internal val cloudSyncRepository: com.payslipmax.pdfparser.repository.CloudSyncRepository? = null,
+    internal val gemmaBaseModelInstaller: GemmaBaseModelInstaller = provideGemmaBaseModelInstaller(),
+    internal val gemmaModelStorage: GemmaModelStorageManager = GemmaModelStorageManager(),
 ) : ViewModel() {
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
@@ -48,6 +53,7 @@ class PayslipViewModel(
         checkGemmaSupport()
         observePayslips()
         observeSettings()
+        installGemmaBaseModel()
     }
 
     private fun checkGemmaSupport() {

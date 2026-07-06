@@ -26,7 +26,6 @@ data class PayslipUiState(
     val isDownloadingModel: Boolean = false,
     val modelDownloadProgress: Float = 0f,
     val modelDownloadError: String? = null,
-    val modelDownloadNotice: String? = null,
     val expandedHistoryYears: Set<Int> = emptySet(),
     val lastKnownHistoryYear: Int? = null,
     val historyScrollIndex: Int = 0,

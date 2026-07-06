@@ -14,6 +14,7 @@ import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.GemmaModelStrings
 
 @Composable
 fun ProfileSection(
@@ -74,55 +75,40 @@ fun PreferencesSection(
             currentTheme = uiState.appTheme,
             onThemeSelect = { viewModel.setAppTheme(it) },
         )
-        if (uiState.isPremiumEnabled) {
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-            LocalGemmaAiSettingRow(viewModel, uiState)
-        }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        LocalGemmaAiSettingRow(viewModel, uiState)
     }
 }
 
+/**
+ * This row now controls only *which source* [FinancialIntelligenceRepository] reads narrative
+ * insights from (local Gemma vs. cloud Gemini) — free for everyone, no premium gate. The Tier 6
+ * base model's own download progress/errors are surfaced separately by [BaseModelDownloadBanner],
+ * which is unconditional and independent of this toggle.
+ */
 @Composable
 private fun LocalGemmaAiSettingRow(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,
 ) {
     val subtitle =
-        if (uiState.isDownloadingModel) {
-            "Downloading Gemma Model... ${(uiState.modelDownloadProgress * 100).toInt()}%"
-        } else if (uiState.modelDownloadError != null) {
-            "Download Error: ${uiState.modelDownloadError}"
-        } else if (uiState.isGemmaSupported) {
-            "Runs 100% offline on-device to protect privacy and battery."
+        if (uiState.isGemmaSupported) {
+            GemmaModelStrings.gemmaAiSettingRowSubtitleSupported
         } else {
-            uiState.gemmaSupportReason ?: "Requires device with 4GB RAM and 1.5GB free storage."
+            uiState.gemmaSupportReason ?: GemmaModelStrings.gemmaAiSettingRowSubtitleUnsupported
         }
-    Column {
-        SettingsRow(
-            icon = "🤖",
-            title = "Use Local Gemma AI Model",
-            subtitle = subtitle,
-            trailingContent = {
-                Switch(
-                    checked = uiState.useLocalAi && uiState.isGemmaSupported,
-                    onCheckedChange = { if (uiState.isGemmaSupported) viewModel.setLocalAiEnabled(it) },
-                    enabled = uiState.isGemmaSupported && !uiState.isDownloadingModel,
-                )
-            },
-        )
-        if (uiState.isDownloadingModel) {
-            LinearProgressIndicator(
-                progress = { uiState.modelDownloadProgress },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = AppDimensions.PaddingMedium),
+    SettingsRow(
+        icon = "🤖",
+        title = GemmaModelStrings.gemmaAiSettingRowTitle,
+        subtitle = subtitle,
+        trailingContent = {
+            Switch(
+                checked = uiState.useLocalAi && uiState.isGemmaSupported,
+                onCheckedChange = { if (uiState.isGemmaSupported) viewModel.setLocalAiEnabled(it) },
+                enabled = uiState.isGemmaSupported,
             )
-        }
-        uiState.modelDownloadNotice?.let { notice ->
-            SettingsRow(
-                icon = "📜",
-                title = AppStrings.gemmaLicenseNoticeTitle,
-                subtitle = notice,
-            )
-        }
-    }
+        },
+    )
 }
 
 @Composable

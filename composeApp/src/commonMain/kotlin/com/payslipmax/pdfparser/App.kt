@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -12,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.ui.*
+import com.payslipmax.pdfparser.ui.screens.BaseModelDownloadBanner
 import com.payslipmax.pdfparser.ui.screens.DashboardScreen
 import com.payslipmax.pdfparser.ui.screens.HistoryScreen
 import com.payslipmax.pdfparser.ui.screens.InsightsScreen
@@ -65,14 +67,17 @@ fun App(
                     )
                 },
             ) { paddingValues ->
-                Box(modifier = Modifier.padding(paddingValues)) {
-                    ScreenContent(
-                        currentScreen = currentScreen,
-                        viewModel = viewModel,
-                        onPickPdf = onPickPdf,
-                        onOpenPdf = onOpenPdf,
-                        onNavigate = { currentScreen = it },
-                    )
+                Column(modifier = Modifier.padding(paddingValues)) {
+                    BaseModelDownloadBanner(uiState = uiState)
+                    Box(modifier = Modifier.weight(1f)) {
+                        ScreenContent(
+                            currentScreen = currentScreen,
+                            viewModel = viewModel,
+                            onPickPdf = onPickPdf,
+                            onOpenPdf = onOpenPdf,
+                            onNavigate = { currentScreen = it },
+                        )
+                    }
                 }
             }
         }

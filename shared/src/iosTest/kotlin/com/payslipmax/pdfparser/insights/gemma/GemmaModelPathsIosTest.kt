@@ -8,15 +8,15 @@ import platform.Foundation.NSData
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.create
-import platform.Foundation.dataWithContentsOfFile
 import platform.Foundation.writeToFile
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class GemmaModelPathsIosTest {
-    private val tempPath = NSTemporaryDirectory() + "gemma_model_paths_test.task"
+    private val tempPath = NSTemporaryDirectory() + "gemma_model_paths_test.litertlm"
 
     @AfterTest
     fun cleanup() {
@@ -46,27 +46,20 @@ class GemmaModelPathsIosTest {
         assertTrue(dir.isNotEmpty())
         assertTrue(dir.startsWith("/"))
 
-        val sink = ModelFileSink("$dir/gemma_model_paths_storage_dir_test.tmp")
-        sink.append(byteArrayOf(1))
-        sink.close()
-        assertTrue(fileExistsAt("$dir/gemma_model_paths_storage_dir_test.tmp"))
-        NSFileManager.defaultManager.removeItemAtPath("$dir/gemma_model_paths_storage_dir_test.tmp", error = null)
+        val probePath = "$dir/gemma_model_paths_storage_dir_test.tmp"
+        val bytes = byteArrayOf(1)
+        bytes.usePinned { pinned ->
+            NSData.create(bytes = pinned.addressOf(0), length = bytes.size.toULong())
+                .writeToFile(probePath, atomically = true)
+        }
+        assertTrue(fileExistsAt(probePath))
+        NSFileManager.defaultManager.removeItemAtPath(probePath, error = null)
     }
 
     @Test
-    fun modelFileSinkPersistsAppendedBytesAndTruncatesOnReopen() {
-        val sink = ModelFileSink(tempPath)
-        sink.append(byteArrayOf(1, 2, 3))
-        sink.append(byteArrayOf(4, 5))
-        sink.close()
-        assertTrue(fileExistsAt(tempPath))
-
-        // Reopening for a fresh download must truncate the old content, not append onto it.
-        val secondSink = ModelFileSink(tempPath)
-        secondSink.append(byteArrayOf(9))
-        secondSink.close()
-
-        val data = NSData.dataWithContentsOfFile(tempPath)
-        assertTrue(data != null && data.length.toInt() == 1)
+    fun resolveInstalledGemmaModelPathIsAPhase1PlaceholderReturningNull() {
+        // App Group container resolution (Background Assets) lands in Phase 4; until then this
+        // must never claim a model is installed.
+        assertNull(resolveInstalledGemmaModelPath())
     }
 }
