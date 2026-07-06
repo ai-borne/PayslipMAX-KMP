@@ -33,17 +33,15 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             Logger.d("PlatformPdfParser", "Starting GrammarAwareParser.parse...")
             val gemmaEngine =
                 try {
-                    val storageDir = com.payslipmax.pdfparser.insights.gemma.gemmaModelStorageDir()
-                    val modelFileName = com.payslipmax.pdfparser.insights.gemma.GemmaModelStorageManager().getRecommendedModelFileName()
-                    val modelFile = if (storageDir.isNotEmpty()) java.io.File(storageDir, modelFileName) else null
-                    if (modelFile != null && modelFile.exists()) {
-                        Logger.d("PlatformPdfParser", "Gemma model binary detected (${modelFile.length()} bytes). Initializing GemmaEngine...")
-                        val config = com.payslipmax.pdfparser.insights.gemma.GemmaEngineConfig(modelPath = modelFile.absolutePath)
+                    val modelPath = com.payslipmax.pdfparser.insights.gemma.resolveInstalledGemmaModelPath()
+                    if (modelPath != null) {
+                        Logger.d("PlatformPdfParser", "Gemma model asset pack installed. Initializing GemmaEngine...")
+                        val config = com.payslipmax.pdfparser.insights.gemma.GemmaEngineConfig(modelPath = modelPath)
                         val engine = GemmaEngine(config)
                         Logger.d("PlatformPdfParser", "GemmaEngine initialized successfully! isInitialized=${engine.isInitialized}")
                         engine
                     } else {
-                        Logger.d("PlatformPdfParser", "Gemma model file not found in filesDir.")
+                        Logger.d("PlatformPdfParser", "Gemma model asset pack not yet installed.")
                         null
                     }
                 } catch (e: Throwable) {

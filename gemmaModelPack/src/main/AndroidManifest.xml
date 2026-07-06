@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    package="com.payslipmax.pdfparser.gemmamodelpack">
+
+    <!--
+      On-demand asset pack carrying the Tier 6 offline Gemma base model (~529MB). Delivered by
+      Google Play's own CDN via Play Asset Delivery (AssetPackManagerFactory.getInstance(...)
+      in AndroidGemmaBaseModelInstaller), not self-hosted — see the parser doc's Gemma
+      re-architecture changelog for why. dist:fusing include="false" because on-demand delivery
+      is the whole point: this must never be folded into the base APK install.
+    -->
+    <dist:module
+        dist:instant="false"
+        dist:title="@string/gemma_model_pack_title">
+        <dist:delivery>
+            <dist:on-demand />
+        </dist:delivery>
+        <dist:fusing dist:include="false" />
+    </dist:module>
+</manifest>

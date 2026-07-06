@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import com.payslipmax.pdfparser.insights.gemma.AndroidGemmaBaseModelInstaller
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import org.koin.compose.koinInject
 
@@ -24,8 +25,21 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    // Play Asset Delivery's cellular-consent / unrecognized-app confirmation shows an IntentSender
+    // the OS can only launch from an Activity — AndroidGemmaBaseModelInstaller lives outside any
+    // Activity, so it calls back into this launcher via the confirmationHandler bridge instead. The
+    // result itself needs no handling here: the next AssetPackStateUpdateListener callback reports
+    // whatever the user decided.
+    private val gemmaConfirmationLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult(),
+        ) { }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidGemmaBaseModelInstaller.confirmationHandler = { assetPackManager ->
+            assetPackManager.showConfirmationDialog(gemmaConfirmationLauncher)
+        }
         setContent {
             val viewModel: PayslipViewModel = koinInject()
             App(

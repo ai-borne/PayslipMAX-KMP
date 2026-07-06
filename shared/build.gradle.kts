@@ -59,6 +59,8 @@ kotlin {
             implementation(libs.litertlm.android)
             // Firebase Auth — Android only; used by AuthTokenProvider.android.kt
             implementation(libs.firebase.auth.ktx)
+            // Play Asset Delivery — Tier 6 base model on-demand install (AndroidGemmaBaseModelInstaller)
+            implementation(libs.play.asset.delivery.ktx)
         }
 
         val androidUnitTest by getting {

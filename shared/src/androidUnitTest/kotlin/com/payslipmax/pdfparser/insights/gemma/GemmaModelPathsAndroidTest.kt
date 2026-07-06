@@ -31,9 +31,10 @@ class GemmaModelPathsAndroidTest {
     }
 
     @Test
-    fun resolveInstalledGemmaModelPathIsAPhase1PlaceholderReturningNull() {
-        // Play Asset Delivery resolution (AssetPackManager.getPackLocation) lands in Phase 3; until
-        // then this must never claim a model is installed.
+    fun resolveInstalledGemmaModelPathDegradesSafelyWithoutAContext() {
+        // No real android.content.Context is available in a plain-JVM unit test (ContextHolder.context
+        // is never set here), so AssetPackManagerFactory can't be reached — the invariant this proves
+        // is that this degrades to null rather than crashing, never claiming a model is installed.
         assertNull(resolveInstalledGemmaModelPath())
     }
 }

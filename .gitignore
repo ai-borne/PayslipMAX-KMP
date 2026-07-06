@@ -57,3 +57,7 @@ __pycache__/
 /docs/Plan/difflogandroid
 /docs/Plan/difflogios
 iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/test.xcuserdatad/UserInterfaceState.xcuserstate
+
+# Tier 6 Gemma base model binary (~529MB) — release-only Gradle task acquires it before
+# bundleRelease; never committed (see gemmaModelPack/src/main/assets/PLACEHOLDER_*.txt)
+gemmaModelPack/src/main/assets/*.litertlm

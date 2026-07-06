@@ -53,6 +53,12 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlinx.coroutines.android)
+            // Play Asset Delivery — MainActivity wires the AssetPackManager confirmation-dialog hook
+            implementation(libs.play.asset.delivery.ktx)
+            // asset-delivery-ktx transitively pulls androidx.fragment:fragment:1.1.0, too old for
+            // registerForActivityResult (lint: InvalidFragmentVersionForActivityResult) — force it
+            // up to a version compatible with androidx.activity's activity-result APIs.
+            implementation(libs.androidx.fragment)
         }
 
         iosMain.dependencies {
@@ -88,6 +94,8 @@ android {
         versionCode = 1
         versionName = "1.0.0"
     }
+    // On-demand asset pack carrying the Tier 6 Gemma base model (Play Asset Delivery).
+    assetPacks += listOf(":gemmaModelPack")
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false

@@ -1,0 +1,7 @@
+This directory holds the Tier 6 Gemma base model binary (~529MB, `gemma-active.litertlm`),
+acquired by a release-only Gradle task before `bundleRelease` — see `gemmaModelPack/build.gradle.kts`.
+
+The real model binary is never committed to git (see `.gitignore` in the repo root). This
+placeholder file exists only because AGP's asset-pack plugin requires `src/main/assets/` to be a
+real, non-empty directory even for debug builds where no model is fetched. The release-time fetch
+task must delete this file before writing the real model, so it never ships in a real release build.
