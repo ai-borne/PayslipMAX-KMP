@@ -52,7 +52,10 @@ fun DashboardScreen(
         } else {
             PopulatedDashboard(payslips, selected, viewModel, modifier.testTag("dashboard_populated"))
         }
-        UploadFab(onClick = { showUploadDialog = true }, modifier = Modifier.align(Alignment.BottomEnd))
+        UploadFab(
+            onClick = { showUploadDialog = true },
+            modifier = Modifier.align(Alignment.BottomEnd).testTag("upload_fab"),
+        )
     }
 
     if (showUploadDialog) {
@@ -175,8 +178,10 @@ private fun PopulatedDashboard(
             TrendChartCard(payslips = payslips)
 
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-            AllocationChartCard(payslip = it)
+            AllocationChartCard(payslip = it, modifier = Modifier.testTag("allocation_chart_card"))
         }
+
+        Spacer(modifier = Modifier.height(AppDimensions.FabClearanceHeight))
     }
 }
 

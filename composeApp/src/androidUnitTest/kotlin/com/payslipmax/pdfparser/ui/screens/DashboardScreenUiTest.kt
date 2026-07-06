@@ -125,4 +125,49 @@ class DashboardScreenUiTest {
             onNodeWithText("100.0%").assertExists()
             onNodeWithText("100.%").assertDoesNotExist()
         }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testAllocationChartCardNotObscuredByUploadFab() =
+        runComposeUiTest {
+            val payslip =
+                ParsedPayslip(
+                    file = "test.pdf",
+                    year = 2026,
+                    monthNum = 4,
+                    monthName = "April",
+                    dateStr = "04/2026",
+                    officer = Officer("Test Officer", "00/000/000000X", "AA****00A"),
+                    earnings = Earnings(basicPay = 50000.0),
+                    deductions = Deductions(incomeTax = 5000.0),
+                    ledgerBalances = LedgerBalances(),
+                    summary = PayslipSummary(grossPay = 60000.0, totalDeductions = 10000.0, netRemittance = 50000.0),
+                    taxAndSavings = null,
+                )
+            runBlocking { fakeDao.insertPayslip(payslip.toEncryptedEntity()) }
+            testDispatcher.scheduler.runCurrent()
+
+            setContent {
+                DashboardScreen(
+                    viewModel = viewModel,
+                    onPickPdfTrigger = {},
+                )
+            }
+            testDispatcher.scheduler.runCurrent()
+
+            // Swipe to the true end of scroll -- not just far enough to bring the card into view --
+            // so the trailing FAB-clearance space is actually scrolled past.
+            onRoot().performTouchInput { swipeUp() }
+            mainClock.advanceTimeBy(300)
+
+            val cardBottom = onNodeWithTag("allocation_chart_card").getUnclippedBoundsInRoot().bottom
+            val fabTop = onNodeWithTag("upload_fab").getUnclippedBoundsInRoot().top
+
+            // The FAB is overlaid on top of the scrollable content, so the last card's bottom edge
+            // must sit above the FAB's top edge once fully scrolled -- otherwise the FAB permanently
+            // covers the bottom of the card's figures.
+            assert(cardBottom <= fabTop) {
+                "Expected allocation card bottom ($cardBottom) to be above the FAB top ($fabTop), but it overlaps"
+            }
+        }
 }

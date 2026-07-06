@@ -110,6 +110,9 @@ object AppDimensions {
     val ChartHeightMedium = 180.dp
     val ChartHeightLarge = 200.dp
 
+    /** Default M3 FAB (56dp) + its edge margin (16dp) + breathing room (8dp) so scrolled content clears it. */
+    val FabClearanceHeight = 80.dp
+
     val TextSizeTiny = 9.sp
     val TextSizeSmall = 11.sp
     val TextSizeMedium = 12.sp
