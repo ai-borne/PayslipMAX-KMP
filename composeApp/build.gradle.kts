@@ -116,3 +116,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
+
+// A release bundle must never ship the placeholder that stands in for the real Gemma model in
+// debug builds — verify and copy the real binary into gemmaModelPack's assets first.
+tasks.matching { it.name == "assetPackReleasePreBundleTask" }.configureEach {
+    dependsOn(":gemmaModelPack:fetchGemmaModelForRelease")
+}
