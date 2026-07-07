@@ -57,9 +57,12 @@ class GemmaModelPathsIosTest {
     }
 
     @Test
-    fun resolveInstalledGemmaModelPathIsAPhase1PlaceholderReturningNull() {
-        // App Group container resolution (Background Assets) lands in Phase 4; until then this
-        // must never claim a model is installed.
+    fun resolveInstalledGemmaModelPathDegradesSafelyWithoutTheAppGroupEntitlement() {
+        // The App Group entitlement (Phase 4's remaining Xcode-side work, blocked on Apple
+        // Developer Program enrollment) isn't configured in a plain XCTest host, so
+        // containerURLForSecurityApplicationGroupIdentifier returns nil — this proves the
+        // invariant that resolution degrades to null rather than crashing, never claiming a model
+        // is installed when the container isn't even reachable.
         assertNull(resolveInstalledGemmaModelPath())
     }
 }

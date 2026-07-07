@@ -5,9 +5,7 @@ package com.payslipmax.pdfparser.parser
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.insights.gemma.GemmaEngine
 import com.payslipmax.pdfparser.insights.gemma.GemmaEngineConfig
-import com.payslipmax.pdfparser.insights.gemma.GemmaModelStorageManager
-import com.payslipmax.pdfparser.insights.gemma.fileExistsAt
-import com.payslipmax.pdfparser.insights.gemma.gemmaModelStorageDir
+import com.payslipmax.pdfparser.insights.gemma.resolveInstalledGemmaModelPath
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
@@ -39,19 +37,15 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
     }
 
     /**
-     * Constructs the shared Tier 6 Gemma engine iff the active-slot model file is present on disk,
-     * mirroring the Android [PlatformPdfParser] gating. Resolution goes through the shared
-     * [GemmaModelStorageManager] SSOT (Phase 1) so both platforms load the exact same active slot; the
-     * actual inference runs in the Swift LiteRT-LM bridge registered on [GemmaEngine.inferenceDelegate].
-     * Returns null (Tier 6 stays on standby) when the model has not been downloaded, so a fresh install
-     * never blocks on it.
+     * Constructs the shared Tier 6 Gemma engine iff Background Assets has installed the model into
+     * the App Group container, mirroring the Android [PlatformPdfParser] gating against Play Asset
+     * Delivery. The actual inference runs in the Swift LiteRT-LM bridge registered on
+     * [GemmaEngine.inferenceDelegate]. Returns null (Tier 6 stays on standby) when the model hasn't
+     * been installed yet, so a fresh install never blocks on it.
      */
     private fun buildGemmaEngine(): GemmaEngine? {
         return try {
-            val storageDir = gemmaModelStorageDir()
-            if (storageDir.isEmpty()) return null
-            val modelPath = "$storageDir/${GemmaModelStorageManager().getRecommendedModelFileName()}"
-            if (!fileExistsAt(modelPath)) return null
+            val modelPath = resolveInstalledGemmaModelPath() ?: return null
             GemmaEngine(GemmaEngineConfig(modelPath = modelPath))
         } catch (e: Throwable) {
             null
