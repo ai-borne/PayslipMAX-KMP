@@ -260,4 +260,26 @@ class TokenTableEngineTest {
         assertTrue(table.credits.none { it.amount == 2022.0 }, "New Year greeting must not appear as a credit line item")
         assertEquals(140500.0, table.standardizedCredits()["basicPay"], "genuine credits on the same page must be unaffected")
     }
+
+    /**
+     * Generalization check for [RawLabelNoiseFilter]'s stopword-density guard: Dec/Jan payslips carry
+     * whatever seasonal greeting the issuing office typed that year, not just "prosperous new year" (the
+     * one exact string in [PayslipPatternConfig.blocklist]). A greeting never seen before must still be
+     * dropped — via stopword density, not a growing per-phrase blocklist — since its trailing year figure
+     * (e.g. 2026) reads as a clean amount just like the 2022 case above.
+     */
+    @Test
+    fun unlistedGreetingVariantsDroppedFromCredits() {
+        val pairs =
+            RowPairing.pair(GridReconstructor.reconstruct(sampleTable())) +
+                listOf(
+                    LabelAmount("HAPPY NEW YEAR", 2026.0, 44f, 145f, 440f),
+                    LabelAmount("WISHING YOU A HAPPY DIWALI", 2018.0, 44f, 145f, 460f),
+                )
+        val table = TokenTableClassifier.classifyPairs(pairs)
+
+        assertTrue(table.credits.none { it.amount == 2026.0 }, "unlisted 'Happy New Year' greeting must not appear as a credit line item")
+        assertTrue(table.credits.none { it.amount == 2018.0 }, "unlisted Diwali greeting must not appear as a credit line item")
+        assertEquals(140500.0, table.standardizedCredits()["basicPay"], "genuine credits on the same page must be unaffected")
+    }
 }
