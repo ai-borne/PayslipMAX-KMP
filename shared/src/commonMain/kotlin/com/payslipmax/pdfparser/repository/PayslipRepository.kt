@@ -3,8 +3,7 @@ package com.payslipmax.pdfparser.repository
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.database.*
-import com.payslipmax.pdfparser.domain.ParsedPayslip
-import com.payslipmax.pdfparser.domain.applyCorrections
+import com.payslipmax.pdfparser.domain.*
 import com.payslipmax.pdfparser.parser.PdfParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -40,7 +39,7 @@ class PayslipRepository(
                     val parsed = entity.toDomain()
                     // Merge user corrections on read so the stored parse is never mutated (SSOT).
                     correctionsByDate[entity.dateStr]
-                        ?.let { parsed.applyCorrections(it.toCorrectionMap()) }
+                        ?.let { parsed.applyCorrections(it.toCorrectionList()) }
                         ?: parsed
                 }
             } catch (e: Exception) {
@@ -118,7 +117,19 @@ class PayslipRepository(
     suspend fun getPayslipByDate(dateStr: String): ParsedPayslip? {
         val parsed = payslipDao.getPayslipByDate(dateStr)?.toDomain() ?: return null
         val corrections = payslipDao.getCorrectionByDate(dateStr) ?: return parsed
-        return parsed.applyCorrections(corrections.toCorrectionMap())
+        return parsed.applyCorrections(corrections.toCorrectionList())
+    }
+
+    suspend fun getPayslipCorrections(dateStr: String): PayslipCorrectionEntity? =
+        withContext(dispatcher) {
+            payslipDao.getCorrectionByDate(dateStr)
+        }
+
+    suspend fun saveAllCorrections(
+        dateStr: String,
+        corrections: List<SingleCorrection>,
+    ) = withContext(dispatcher) {
+        payslipDao.insertCorrection(corrections.toCorrectionEntity(dateStr))
     }
 
     /**
@@ -166,40 +177,15 @@ class PayslipRepository(
     /**
      * Seeds mock data for historical analytics.
      */
-    suspend fun seedMockData() {
-        com.payslipmax.pdfparser.database.MockDataSeeder.seedDatabase(payslipDao)
-    }
+    suspend fun seedMockData() = com.payslipmax.pdfparser.database.MockDataSeeder.seedDatabase(payslipDao)
 
-    /**
-     * Observes the app settings from the database.
-     */
-    fun getSettingsFlow(): Flow<AppSettingsEntity?> {
-        return payslipDao.getSettingsFlow()
-    }
+    fun getSettingsFlow(): Flow<AppSettingsEntity?> = payslipDao.getSettingsFlow()
 
-    /**
-     * Retrieves the current app settings.
-     */
-    suspend fun getSettings(): AppSettingsEntity? =
-        withContext(dispatcher) {
-            payslipDao.getSettings()
-        }
+    suspend fun getSettings(): AppSettingsEntity? = withContext(dispatcher) { payslipDao.getSettings() }
 
-    /**
-     * Saves the app settings.
-     */
-    suspend fun saveSettings(settings: AppSettingsEntity) =
-        withContext(dispatcher) {
-            payslipDao.insertSettings(settings)
-        }
+    suspend fun saveSettings(settings: AppSettingsEntity) = withContext(dispatcher) { payslipDao.insertSettings(settings) }
 
-    /**
-     * Clears all settings data.
-     */
-    suspend fun clearSettings() =
-        withContext(dispatcher) {
-            payslipDao.clearSettings()
-        }
+    suspend fun clearSettings() = withContext(dispatcher) { payslipDao.clearSettings() }
 
     /**
      * Exports all app data (payslips, PDFs, settings) as an encrypted JSON archive.

@@ -1,6 +1,6 @@
 package com.payslipmax.pdfparser.ui
 
-import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.*
 
 data class PayslipUiState(
     val payslips: List<ParsedPayslip> = emptyList(),
@@ -30,4 +30,6 @@ data class PayslipUiState(
     val lastKnownHistoryYear: Int? = null,
     val historyScrollIndex: Int = 0,
     val historyScrollOffset: Int = 0,
+    val isEditModeActive: Boolean = false,
+    val draftCorrections: Map<String, SingleCorrection> = emptyMap(),
 )
