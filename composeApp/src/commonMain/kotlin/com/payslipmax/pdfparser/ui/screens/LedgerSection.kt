@@ -1,29 +1,47 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import com.payslipmax.pdfparser.domain.ConfidenceThresholds
+import com.payslipmax.pdfparser.domain.CorrectionType
+import com.payslipmax.pdfparser.domain.EntryCategory
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.SingleCorrection
 import com.payslipmax.pdfparser.domain.diagnosticSuggestionFor
 import com.payslipmax.pdfparser.domain.isFieldDiagnosed
 import com.payslipmax.pdfparser.domain.isFieldGemmaSourced
 import com.payslipmax.pdfparser.domain.isFieldLowConfidence
-import com.payslipmax.pdfparser.ui.theme.AppColors
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
-import com.payslipmax.pdfparser.ui.theme.AppStrings
+
+internal data class DisplayLedgerLine(
+    val code: String,
+    val amount: Double,
+    val desc: String,
+    val fieldKey: String,
+    val isModified: Boolean = false,
+    val isDeleted: Boolean = false,
+    val isAdded: Boolean = false,
+)
 
 @Composable
 fun LedgerSection(
@@ -31,10 +49,30 @@ fun LedgerSection(
     modifier: Modifier = Modifier,
     onItemClick: (code: String, desc: String) -> Unit,
     onCorrectField: (fieldKey: String, newValue: Double) -> Unit = { _, _ -> },
+    isEditModeActive: Boolean = false,
+    draftCorrections: Map<String, SingleCorrection> = emptyMap(),
+    onUpdateDraft: (SingleCorrection) -> Unit = {},
+    onDeleteDraft: (fieldKey: String, codeHead: String, category: EntryCategory, originalAmount: Double?) -> Unit = { _, _, _, _ -> },
 ) {
-    var editingLine by remember(payslip.dateStr) { mutableStateOf<LedgerLine?>(null) }
-    val creditMismatch = creditsMismatch(payslip)
-    val debitMismatch = debitsMismatch(payslip)
+    var editingLine by remember(payslip.dateStr) { mutableStateOf<DisplayLedgerLine?>(null) }
+    var addingEarning by remember { mutableStateOf(false) }
+    var addingDeduction by remember { mutableStateOf(false) }
+
+    val displayCredits =
+        if (isEditModeActive) {
+            buildDisplayList(getCreditsList(payslip), EntryCategory.EARNING, draftCorrections)
+        } else {
+            getCreditsList(payslip).map { DisplayLedgerLine(it.code, it.amount, it.desc, it.fieldKey) }
+        }
+    val displayDebits =
+        if (isEditModeActive) {
+            buildDisplayList(getDebitsList(payslip), EntryCategory.DEDUCTION, draftCorrections)
+        } else {
+            getDebitsList(payslip).map { DisplayLedgerLine(it.code, it.amount, it.desc, it.fieldKey) }
+        }
+
+    val creditMismatch = if (isEditModeActive) computeDisplayMismatch(displayCredits, payslip.summary.grossPay) else creditsMismatch(payslip)
+    val debitMismatch = if (isEditModeActive) computeDisplayMismatch(displayDebits, payslip.summary.totalDeductions) else debitsMismatch(payslip)
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -43,247 +81,218 @@ fun LedgerSection(
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
     ) {
         Column {
-            LedgerTableHeader()
-
+            ReplicaLedgerTableHeader()
             Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-                // Credits Column
-                Column(
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .border(
-                                BorderStroke(AppDimensions.BorderHairline, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
-                            ),
-                ) {
-                    getCreditsList(payslip).forEach { line ->
-                        LedgerRowItem(
-                            line = line,
-                            isLowConfidence = payslip.isFieldLowConfidence(line.fieldKey),
-                            isGemmaSourced = payslip.isFieldGemmaSourced(line.fieldKey),
-                            isDiagnosed = payslip.isFieldDiagnosed(line.fieldKey),
-                            onClick = onItemClick,
-                            onReview = { editingLine = line },
-                        )
-                    }
-                }
-                // Debits Column
-                Column(
-                    modifier =
-                        Modifier
-                            .weight(1f)
-                            .border(
-                                BorderStroke(AppDimensions.BorderHairline, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
-                            ),
-                ) {
-                    getDebitsList(payslip).forEach { line ->
-                        LedgerRowItem(
-                            line = line,
-                            isLowConfidence = payslip.isFieldLowConfidence(line.fieldKey),
-                            isGemmaSourced = payslip.isFieldGemmaSourced(line.fieldKey),
-                            isDiagnosed = payslip.isFieldDiagnosed(line.fieldKey),
-                            onClick = onItemClick,
-                            onReview = { editingLine = line },
-                        )
-                    }
-                }
+                CreditsColumn(payslip, displayCredits, isEditModeActive, onItemClick, onReview = { editingLine = it }, onAddClick = { addingEarning = true })
+                DebitsColumn(payslip, displayDebits, isEditModeActive, onItemClick, onReview = { editingLine = it }, onAddClick = { addingDeduction = true })
             }
-
             LedgerTableFooter(payslip, creditMismatch, debitMismatch)
         }
     }
 
-    editingLine?.let { line ->
-        val isEarning = getCreditsList(payslip).any { it.fieldKey == line.fieldKey }
-        LedgerCorrectionDialog(
-            line = line,
-            isEarning = isEarning,
-            reasons = if (payslip.needsReview) payslip.reviewReasons else emptyList(),
-            diagnosticHint = payslip.diagnosticSuggestionFor(line.fieldKey),
-            onDismiss = { editingLine = null },
-            onConfirm = { fieldKey, _, newValue, _ ->
-                onCorrectField(fieldKey, newValue)
-                editingLine = null
-            },
-        )
-    }
+    DialogHandles(
+        editingLine = editingLine, addingEarning = addingEarning, addingDeduction = addingDeduction,
+        payslip = payslip, isEditModeActive = isEditModeActive, draftCorrections = draftCorrections,
+        onUpdateDraft = onUpdateDraft, onDeleteDraft = onDeleteDraft, onCorrectField = onCorrectField,
+        onDismissEditing = { editingLine = null }, onDismissAddingEarning = { addingEarning = false },
+        onDismissAddingDeduction = { addingDeduction = false },
+    )
 }
 
 @Composable
-private fun LedgerTableHeader() {
-    Row(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(AppDimensions.PaddingSmall),
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            text = AppStrings.replicaEarningTitle,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = AppStrings.replicaDeductionTitle,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.weight(1f),
-            textAlign = TextAlign.Center,
-        )
-    }
-}
-
-@Composable
-private fun LedgerRowItem(
-    line: LedgerLine,
-    isLowConfidence: Boolean,
-    isGemmaSourced: Boolean,
-    isDiagnosed: Boolean,
-    onClick: (String, String) -> Unit,
-    onReview: () -> Unit,
+private fun RowScope.CreditsColumn(
+    payslip: ParsedPayslip,
+    displayCredits: List<DisplayLedgerLine>,
+    isEditModeActive: Boolean,
+    onItemClick: (code: String, desc: String) -> Unit,
+    onReview: (DisplayLedgerLine) -> Unit,
+    onAddClick: () -> Unit,
 ) {
-    Row(
+    Column(
+        modifier =
+            Modifier
+                .weight(1f)
+                .border(BorderStroke(AppDimensions.BorderHairline, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))),
+    ) {
+        displayCredits.forEach { line ->
+            LedgerRowItem(
+                line = line,
+                isLowConfidence = payslip.isFieldLowConfidence(line.fieldKey),
+                isGemmaSourced = payslip.isFieldGemmaSourced(line.fieldKey),
+                isDiagnosed = payslip.isFieldDiagnosed(line.fieldKey),
+                isEditModeActive = isEditModeActive,
+                onClick = onItemClick,
+                onReview = { onReview(line) },
+            )
+        }
+        if (isEditModeActive) {
+            AddEntryButton(isEarning = true, onClick = onAddClick)
+        }
+    }
+}
+
+@Composable
+private fun RowScope.DebitsColumn(
+    payslip: ParsedPayslip,
+    displayDebits: List<DisplayLedgerLine>,
+    isEditModeActive: Boolean,
+    onItemClick: (code: String, desc: String) -> Unit,
+    onReview: (DisplayLedgerLine) -> Unit,
+    onAddClick: () -> Unit,
+) {
+    Column(
+        modifier =
+            Modifier
+                .weight(1f)
+                .border(BorderStroke(AppDimensions.BorderHairline, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))),
+    ) {
+        displayDebits.forEach { line ->
+            LedgerRowItem(
+                line = line,
+                isLowConfidence = payslip.isFieldLowConfidence(line.fieldKey),
+                isGemmaSourced = payslip.isFieldGemmaSourced(line.fieldKey),
+                isDiagnosed = payslip.isFieldDiagnosed(line.fieldKey),
+                isEditModeActive = isEditModeActive,
+                onClick = onItemClick,
+                onReview = { onReview(line) },
+            )
+        }
+        if (isEditModeActive) {
+            AddEntryButton(isEarning = false, onClick = onAddClick)
+        }
+    }
+}
+
+@Composable
+private fun AddEntryButton(
+    isEarning: Boolean,
+    onClick: () -> Unit,
+) {
+    TextButton(
+        onClick = onClick,
         modifier =
             Modifier
                 .fillMaxWidth()
-                .clickable { onClick(line.code, line.desc) }
-                .padding(horizontal = AppDimensions.PaddingSmall, vertical = AppDimensions.SpacingSix),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+                .padding(vertical = AppDimensions.SpacingTiny),
+        contentPadding = PaddingValues(AppDimensions.SpacingSix),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = line.code,
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            if (isGemmaSourced) {
-                GemmaSourceBadge()
-            }
-            if (isLowConfidence || isDiagnosed) {
-                IconButton(
-                    onClick = onReview,
-                    modifier = Modifier.size(AppDimensions.IconSizeMedium),
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Info,
-                        contentDescription = AppStrings.correctionIndicatorDesc,
-                        tint = AppColors.Warning,
-                        modifier = Modifier.size(AppDimensions.IconSizeSmall),
+        Text(
+            text = if (isEarning) "+ Add Earning" else "+ Add Deduction",
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
+}
+
+@Composable
+private fun DialogHandles(
+    editingLine: DisplayLedgerLine?,
+    addingEarning: Boolean,
+    addingDeduction: Boolean,
+    payslip: ParsedPayslip,
+    isEditModeActive: Boolean,
+    draftCorrections: Map<String, SingleCorrection>,
+    onUpdateDraft: (SingleCorrection) -> Unit,
+    onDeleteDraft: (fieldKey: String, codeHead: String, category: EntryCategory, originalAmount: Double?) -> Unit,
+    onCorrectField: (fieldKey: String, newValue: Double) -> Unit,
+    onDismissEditing: () -> Unit,
+    onDismissAddingEarning: () -> Unit,
+    onDismissAddingDeduction: () -> Unit,
+) {
+    editingLine?.let { line ->
+        EditDialog(
+            line = line,
+            payslip = payslip,
+            isEditModeActive = isEditModeActive,
+            draftCorrections = draftCorrections,
+            onUpdateDraft = onUpdateDraft,
+            onDeleteDraft = onDeleteDraft,
+            onCorrectField = onCorrectField,
+            onDismiss = onDismissEditing,
+        )
+    }
+
+    if (addingEarning) {
+        AddDialog(isEarning = true, onDismiss = onDismissAddingEarning, onUpdateDraft = onUpdateDraft)
+    }
+    if (addingDeduction) {
+        AddDialog(isEarning = false, onDismiss = onDismissAddingDeduction, onUpdateDraft = onUpdateDraft)
+    }
+}
+
+@Composable
+private fun EditDialog(
+    line: DisplayLedgerLine,
+    payslip: ParsedPayslip,
+    isEditModeActive: Boolean,
+    draftCorrections: Map<String, SingleCorrection>,
+    onUpdateDraft: (SingleCorrection) -> Unit,
+    onDeleteDraft: (fieldKey: String, codeHead: String, category: EntryCategory, originalAmount: Double?) -> Unit,
+    onCorrectField: (fieldKey: String, newValue: Double) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val isEarning = getCreditsList(payslip).any { it.fieldKey == line.fieldKey } || line.isAdded
+    val isDeletedInitial = draftCorrections[line.fieldKey]?.type == CorrectionType.DELETED
+    val original = if (line.isAdded) null else line.amount
+    val category = if (isEarning) EntryCategory.EARNING else EntryCategory.DEDUCTION
+    LedgerCorrectionDialog(
+        line = LedgerLine(line.code, line.amount, line.desc, line.fieldKey),
+        isEarning = isEarning,
+        isDeletedInitial = isDeletedInitial,
+        reasons = if (payslip.needsReview) payslip.reviewReasons else emptyList(),
+        diagnosticHint = payslip.diagnosticSuggestionFor(line.fieldKey),
+        onDismiss = onDismiss,
+        onConfirm = { fieldKey, codeHead, amount, isDelete ->
+            if (isEditModeActive) {
+                if (isDelete) {
+                    onDeleteDraft(fieldKey, codeHead, category, original)
+                } else {
+                    onUpdateDraft(
+                        SingleCorrection(
+                            fieldKey = fieldKey,
+                            codeHead = codeHead,
+                            amount = amount,
+                            category = category,
+                            type = if (line.isAdded) CorrectionType.ADDED else CorrectionType.EDITED,
+                            originalAmount = original,
+                            originalCodeHead = codeHead,
+                            timestamp = 0L,
+                        ),
                     )
                 }
+            } else {
+                onCorrectField(fieldKey, amount)
             }
-        }
-        Text(
-            text = formatVal(line.amount),
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold,
-            color = if (isLowConfidence) AppColors.Warning else MaterialTheme.colorScheme.primary,
-        )
-    }
-    HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
+            onDismiss()
+        },
+    )
 }
 
 @Composable
-private fun LedgerTableFooter(
-    payslip: ParsedPayslip,
-    creditMismatch: Double,
-    debitMismatch: Double,
+private fun AddDialog(
+    isEarning: Boolean,
+    onDismiss: () -> Unit,
+    onUpdateDraft: (SingleCorrection) -> Unit,
 ) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
-                .padding(AppDimensions.SpacingMedium),
-    ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = AppStrings.ledgerGrossPay, style = MaterialTheme.typography.bodyMedium)
-            Text(text = "₹${formatVal(payslip.summary.grossPay)}", fontWeight = FontWeight.Bold)
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingTiny),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(text = AppStrings.ledgerTotalDeductions, style = MaterialTheme.typography.bodyMedium)
-            Text(text = "₹${formatVal(payslip.summary.totalDeductions)}", fontWeight = FontWeight.Bold)
-        }
-        HorizontalDivider(modifier = Modifier.padding(vertical = AppDimensions.SpacingSix))
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(
-                text = AppStrings.replicaNetLabel,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+    LedgerCorrectionDialog(
+        line = null,
+        isEarning = isEarning,
+        onDismiss = onDismiss,
+        onConfirm = { fieldKey, codeHead, amount, _ ->
+            onUpdateDraft(
+                SingleCorrection(
+                    fieldKey = fieldKey,
+                    codeHead = codeHead,
+                    amount = amount,
+                    category = if (isEarning) EntryCategory.EARNING else EntryCategory.DEDUCTION,
+                    type = CorrectionType.ADDED,
+                    originalAmount = null,
+                    originalCodeHead = codeHead,
+                    timestamp = 0L,
+                ),
             )
-            Text(
-                text = "₹${formatVal(payslip.summary.netRemittance)}",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.secondary,
-            )
-        }
-        if (creditMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE ||
-            debitMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE
-        ) {
-            LedgerMismatchBanner(creditMismatch, debitMismatch)
-        }
-    }
-}
-
-@Composable
-private fun LedgerMismatchBanner(
-    creditMismatch: Double,
-    debitMismatch: Double,
-) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = AppDimensions.SpacingSix)
-                .background(
-                    AppColors.Warning.copy(alpha = 0.12f),
-                    RoundedCornerShape(AppDimensions.CornerRadiusSmall),
-                )
-                .padding(AppDimensions.PaddingSmall),
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
-    ) {
-        if (creditMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Filled.Info,
-                    contentDescription = AppStrings.ledgerMismatchIconDesc,
-                    tint = AppColors.Warning,
-                    modifier = Modifier.size(AppDimensions.IconSizeSmall),
-                )
-                Spacer(Modifier.size(AppDimensions.SpacingTiny))
-                Text(
-                    text = "${AppStrings.ledgerCreditMismatchPrefix}${formatVal(creditMismatch)}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = AppColors.Warning,
-                )
-            }
-        }
-        if (debitMismatch > ConfidenceThresholds.ITEM_SUM_TOLERANCE) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Filled.Info,
-                    contentDescription = AppStrings.ledgerMismatchIconDesc,
-                    tint = AppColors.Warning,
-                    modifier = Modifier.size(AppDimensions.IconSizeSmall),
-                )
-                Spacer(Modifier.size(AppDimensions.SpacingTiny))
-                Text(
-                    text = "${AppStrings.ledgerDebitMismatchPrefix}${formatVal(debitMismatch)}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = AppColors.Warning,
-                )
-            }
-        }
-    }
+            onDismiss()
+        },
+    )
 }

@@ -34,10 +34,11 @@ internal fun LedgerCorrectionDialog(
     isEarning: Boolean,
     reasons: List<String> = emptyList(),
     diagnosticHint: String? = null,
+    isDeletedInitial: Boolean = false,
     onDismiss: () -> Unit,
     onConfirm: (fieldKey: String, codeHead: String, amount: Double, isDelete: Boolean) -> Unit,
 ) {
-    var isDeleteSelected by remember { mutableStateOf(false) }
+    var isDeleteSelected by remember { mutableStateOf(isDeletedInitial) }
     var codeHeadInput by remember { mutableStateOf("") }
     var amountInput by remember { mutableStateOf(if (line != null) formatEditable(line.amount) else "") }
     val parsedAmount = amountInput.trim().replace(",", "").toDoubleOrNull()

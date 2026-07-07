@@ -288,4 +288,7 @@ object AppStrings {
     const val correctionDialogOriginalAmountLabel = "Original Parsed Amount: ₹"
     const val correctionDialogSaveDraft = "Add to Session"
     const val correctionDialogDeleteWarning = "This entry will be marked as deleted in your local replica session."
+    const val correctionSessionActivePrefix = "Draft Session Active"
+    const val correctionSessionDiscard = "Discard"
+    const val correctionSessionApply = "Apply"
 }

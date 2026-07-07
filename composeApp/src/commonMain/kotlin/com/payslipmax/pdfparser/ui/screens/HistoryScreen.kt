@@ -6,7 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.database.AiInsightReportEntity
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
-import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.*
 import com.payslipmax.pdfparser.ui.*
 
 @Composable
@@ -68,12 +68,22 @@ private fun HistoryReplicaView(
     viewModel: PayslipViewModel,
     modifier: Modifier = Modifier,
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     PayslipReplicaScreen(
         payslip = payslip,
         onBackClick = onBack,
         onViewPdfClick = { viewModel.getPayslipPdf(it) { bytes -> if (bytes != null) onOpenOriginal(payslip) } },
         modifier = modifier,
         onCorrectField = { fieldKey, newValue -> viewModel.applyCorrection(payslip.dateStr, fieldKey, newValue) },
+        isEditModeActive = uiState.isEditModeActive,
+        draftCorrections = uiState.draftCorrections,
+        onStartEditing = { viewModel.startEditingSession(payslip.dateStr) },
+        onUpdateDraft = { viewModel.updateDraftCorrection(it) },
+        onDeleteDraft = { fieldKey, codeHead, category, originalAmount ->
+            viewModel.deleteDraftCorrection(fieldKey, codeHead, category, originalAmount)
+        },
+        onSaveSession = { viewModel.saveEditingSession(payslip.dateStr) },
+        onCancelSession = { viewModel.cancelEditingSession() },
     )
 }
 
