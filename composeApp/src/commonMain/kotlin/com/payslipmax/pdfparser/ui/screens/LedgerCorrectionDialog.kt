@@ -251,7 +251,7 @@ private fun ReviewReasonsList(reasons: List<String>) {
     }
 }
 
-private fun formatReviewReason(reason: String): String {
+internal fun formatReviewReason(reason: String): String {
     return when {
         reason.startsWith("Net residual") || reason.contains("NET_TOLERANCE") -> {
             "The Take-Home pay does not match the difference between total earnings and deductions."
