@@ -247,7 +247,31 @@ private fun ReviewReasonsList(reasons: List<String>) {
         modifier = Modifier.padding(top = AppDimensions.SpacingSmall),
     )
     reasons.forEach { reason ->
-        Text(text = "• $reason", style = MaterialTheme.typography.bodySmall)
+        Text(text = "• ${formatReviewReason(reason)}", style = MaterialTheme.typography.bodySmall)
+    }
+}
+
+private fun formatReviewReason(reason: String): String {
+    return when {
+        reason.startsWith("Net residual") || reason.contains("NET_TOLERANCE") -> {
+            "The Take-Home pay does not match the difference between total earnings and deductions."
+        }
+        reason.startsWith("Low confidence fields") -> {
+            val fields = reason.substringAfter(": ").trim()
+            "Verify these low confidence entries: $fields"
+        }
+        reason.startsWith("Missing mandatory credits") -> {
+            val fields = reason.substringAfter(": ").trim()
+            "Expected earnings entries not detected: $fields"
+        }
+        reason.startsWith("Missing mandatory debits") -> {
+            val fields = reason.substringAfter(": ").trim()
+            "Expected deductions entries not detected: $fields"
+        }
+        reason.startsWith("Schema validation failed") || reason.contains("mismatch") -> {
+            "The sum of items does not match the printed Gross Pay or Total Deductions."
+        }
+        else -> reason
     }
 }
 

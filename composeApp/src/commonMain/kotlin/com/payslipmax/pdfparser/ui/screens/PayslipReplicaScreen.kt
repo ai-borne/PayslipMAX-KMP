@@ -227,14 +227,24 @@ private fun BoxScope.BottomConfirmationBanner(
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
             )
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 TextButton(onClick = onCancelSession) {
-                    Text(AppStrings.correctionSessionDiscard, color = MaterialTheme.colorScheme.error)
+                    Text(
+                        text = AppStrings.correctionSessionDiscard,
+                        color = MaterialTheme.colorScheme.error,
+                        maxLines = 1,
+                        softWrap = false,
+                    )
                 }
                 Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
                 Button(onClick = onSaveSession) {
-                    Text(AppStrings.correctionSessionApply)
+                    Text(
+                        text = AppStrings.correctionSessionApply,
+                        maxLines = 1,
+                        softWrap = false,
+                    )
                 }
             }
         }
