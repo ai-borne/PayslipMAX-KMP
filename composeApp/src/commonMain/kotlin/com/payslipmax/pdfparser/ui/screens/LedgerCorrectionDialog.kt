@@ -1,11 +1,16 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -13,62 +18,73 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import com.payslipmax.pdfparser.ui.theme.AppColors
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 
 /**
- * Phase 5 — inline correction dialog for a single low-confidence ledger field. Pre-fills the parsed
- * value; on save it parses the entered amount and reports it back keyed by [LedgerLine.fieldKey] so the
- * caller can persist an encrypted, merged-on-read correction. Strings/dimensions are themed (no literals).
- * [reasons] are the payslip-level (not field-specific) causes of [com.payslipmax.pdfparser.domain.ParsedPayslip.needsReview],
- * surfaced here since opening this dialog is the moment a user is already looking at a flagged field.
+ * Phase 7 — inline correction dialog supporting edits, additions, and deletions of ledger fields.
  */
 @Composable
 internal fun LedgerCorrectionDialog(
-    line: LedgerLine,
+    line: LedgerLine?,
+    isEarning: Boolean,
     reasons: List<String> = emptyList(),
     diagnosticHint: String? = null,
     onDismiss: () -> Unit,
-    onConfirm: (fieldKey: String, newValue: Double) -> Unit,
+    onConfirm: (fieldKey: String, codeHead: String, amount: Double, isDelete: Boolean) -> Unit,
 ) {
-    var input by remember {
-        mutableStateOf(TextFieldValue(formatEditable(line.amount)))
-    }
-    val parsed = input.text.trim().replace(",", "").toDoubleOrNull()
-    val isValid = parsed != null
+    var isDeleteSelected by remember { mutableStateOf(false) }
+    var codeHeadInput by remember { mutableStateOf("") }
+    var amountInput by remember { mutableStateOf(if (line != null) formatEditable(line.amount) else "") }
+    val parsedAmount = amountInput.trim().replace(",", "").toDoubleOrNull()
+    val isAmountValid = parsedAmount != null && parsedAmount >= 0.0
+    val isValid = if (line != null && isDeleteSelected) true else (isAmountValid && (line != null || codeHeadInput.isNotBlank()))
+    val dialogTitle =
+        if (line != null) {
+            "${AppStrings.correctionDialogTitle} · ${line.code}"
+        } else if (isEarning) {
+            AppStrings.correctionDialogAddEarningTitle
+        } else {
+            AppStrings.correctionDialogAddDeductionTitle
+        }
+    val confirmText = if (line == null) AppStrings.correctionDialogSaveDraft else AppStrings.correctionSave
 
+    RenderDialog(
+        title = dialogTitle,
+        confirmText = confirmText,
+        isValid = isValid,
+        onDismiss = onDismiss,
+        onConfirmClick = { performConfirm(line, isEarning, isDeleteSelected, codeHeadInput, parsedAmount, onConfirm) },
+    ) {
+        DialogBody(
+            line = line, isEarning = isEarning, reasons = reasons, diagnosticHint = diagnosticHint,
+            isDeleteSelected = isDeleteSelected, onDeleteSelectedChange = { isDeleteSelected = it },
+            codeHeadInput = codeHeadInput, onCodeHeadChange = { codeHeadInput = it },
+            amountInput = amountInput, onAmountChange = { amountInput = it }, isAmountValid = isAmountValid,
+        )
+    }
+}
+
+@Composable
+private fun RenderDialog(
+    title: String,
+    confirmText: String,
+    isValid: Boolean,
+    onDismiss: () -> Unit,
+    onConfirmClick: () -> Unit,
+    content: @Composable () -> Unit,
+) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = "${AppStrings.correctionDialogTitle} · ${line.code}") },
-        text = {
-            Column {
-                Text(text = AppStrings.correctionDialogHint)
-                ReviewReasonsList(reasons)
-                DiagnosticHintText(diagnosticHint)
-                OutlinedTextField(
-                    value = input,
-                    onValueChange = { input = it },
-                    singleLine = true,
-                    isError = !isValid,
-                    label = { Text(text = AppStrings.correctionFieldLabel) },
-                    supportingText = {
-                        if (!isValid) Text(text = AppStrings.correctionInvalidAmount)
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.padding(top = AppDimensions.SpacingMedium),
-                )
-            }
-        },
+        title = { Text(text = title) },
+        text = content,
         confirmButton = {
-            TextButton(
-                onClick = { parsed?.let { onConfirm(line.fieldKey, it) } },
-                enabled = isValid,
-            ) {
-                Text(text = AppStrings.correctionSave)
+            TextButton(onClick = onConfirmClick, enabled = isValid) {
+                Text(text = confirmText)
             }
         },
         dismissButton = {
@@ -79,7 +95,148 @@ internal fun LedgerCorrectionDialog(
     )
 }
 
-/** Payslip-level reasons [com.payslipmax.pdfparser.domain.ParsedPayslip.needsReview] fired, shown above the correction field. */
+private fun performConfirm(
+    line: LedgerLine?,
+    isEarning: Boolean,
+    isDeleteSelected: Boolean,
+    codeHeadInput: String,
+    parsedAmount: Double?,
+    onConfirm: (fieldKey: String, codeHead: String, amount: Double, isDelete: Boolean) -> Unit,
+) {
+    if (line != null) {
+        if (isDeleteSelected) {
+            onConfirm(line.fieldKey, line.code, 0.0, true)
+        } else {
+            parsedAmount?.let { onConfirm(line.fieldKey, line.code, it, false) }
+        }
+    } else {
+        val finalCodeHead = codeHeadInput.trim()
+        val finalFieldKey =
+            if (isEarning) {
+                com.payslipmax.pdfparser.parser.PayslipPatternConfig.creditKeysMapping[finalCodeHead]
+            } else {
+                com.payslipmax.pdfparser.parser.PayslipPatternConfig.debitKeysMapping[finalCodeHead]
+            } ?: finalCodeHead
+        parsedAmount?.let { onConfirm(finalFieldKey, finalCodeHead, it, false) }
+    }
+}
+
+@Composable
+private fun DialogBody(
+    line: LedgerLine?,
+    isEarning: Boolean,
+    reasons: List<String>,
+    diagnosticHint: String?,
+    isDeleteSelected: Boolean,
+    onDeleteSelectedChange: (Boolean) -> Unit,
+    codeHeadInput: String,
+    onCodeHeadChange: (String) -> Unit,
+    amountInput: String,
+    onAmountChange: (String) -> Unit,
+    isAmountValid: Boolean,
+) {
+    Column {
+        if (line == null) {
+            Text(text = AppStrings.correctionDialogHint)
+        }
+        ReviewReasonsList(reasons)
+        DiagnosticHintText(diagnosticHint)
+        Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
+
+        if (line != null) {
+            ActionSelector(isDeleteSelected = isDeleteSelected, onToggle = onDeleteSelectedChange)
+        }
+
+        if (isDeleteSelected) {
+            DeleteWarningText()
+        } else {
+            CorrectionForm(
+                isAdding = line == null,
+                codeHeadInput = codeHeadInput,
+                onCodeHeadChange = onCodeHeadChange,
+                amountInput = amountInput,
+                onAmountChange = onAmountChange,
+                isAmountValid = isAmountValid,
+                originalAmount = line?.amount,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActionSelector(
+    isDeleteSelected: Boolean,
+    onToggle: (Boolean) -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(bottom = AppDimensions.SpacingMedium),
+    ) {
+        RadioButton(selected = !isDeleteSelected, onClick = { onToggle(false) })
+        Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
+        Text(AppStrings.correctionDialogEditOption, style = MaterialTheme.typography.bodyMedium)
+        Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
+        RadioButton(selected = isDeleteSelected, onClick = { onToggle(true) })
+        Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
+        Text(AppStrings.correctionDialogDeleteOption, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+@Composable
+private fun CorrectionForm(
+    isAdding: Boolean,
+    codeHeadInput: String,
+    onCodeHeadChange: (String) -> Unit,
+    amountInput: String,
+    onAmountChange: (String) -> Unit,
+    isAmountValid: Boolean,
+    originalAmount: Double?,
+) {
+    Column {
+        if (isAdding) {
+            OutlinedTextField(
+                value = codeHeadInput,
+                onValueChange = onCodeHeadChange,
+                singleLine = true,
+                label = { Text(AppStrings.correctionDialogCodeHeadLabel) },
+                placeholder = { Text(AppStrings.correctionDialogCustomCodeHeadPlaceholder) },
+                modifier = Modifier.fillMaxWidth().padding(bottom = AppDimensions.SpacingSmall),
+            )
+        }
+        OutlinedTextField(
+            value = amountInput,
+            onValueChange = onAmountChange,
+            singleLine = true,
+            isError = !isAmountValid && amountInput.isNotEmpty(),
+            label = { Text(AppStrings.correctionDialogAmountLabel) },
+            supportingText = {
+                if (!isAmountValid && amountInput.isNotEmpty()) {
+                    Text(AppStrings.correctionInvalidAmount)
+                }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingSmall),
+        )
+        if (originalAmount != null) {
+            Text(
+                text = "${AppStrings.correctionDialogOriginalAmountLabel}${formatEditable(originalAmount)}",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = AppDimensions.SpacingSmall),
+            )
+        }
+    }
+}
+
+@Composable
+private fun DeleteWarningText() {
+    Text(
+        text = AppStrings.correctionDialogDeleteWarning,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.error,
+        modifier = Modifier.padding(top = AppDimensions.SpacingSmall),
+    )
+}
+
 @Composable
 private fun ReviewReasonsList(reasons: List<String>) {
     if (reasons.isEmpty()) return
@@ -93,10 +250,6 @@ private fun ReviewReasonsList(reasons: List<String>) {
     }
 }
 
-/**
- * Tier 6 diagnostic hint for this specific field ([com.payslipmax.pdfparser.domain.diagnosticSuggestionFor]) —
- * distinct from [ReviewReasonsList], which is payslip-level. Read-only prose; never proposes a corrected value.
- */
 @Composable
 private fun DiagnosticHintText(diagnosticHint: String?) {
     if (diagnosticHint == null) return
@@ -109,7 +262,6 @@ private fun DiagnosticHintText(diagnosticHint: String?) {
     Text(text = diagnosticHint, style = MaterialTheme.typography.bodySmall)
 }
 
-/** Renders the stored double without a trailing ".0" so whole-rupee amounts pre-fill cleanly. */
 private fun formatEditable(value: Double): String {
     val asLong = value.toLong()
     return if (value == asLong.toDouble()) asLong.toString() else value.toString()

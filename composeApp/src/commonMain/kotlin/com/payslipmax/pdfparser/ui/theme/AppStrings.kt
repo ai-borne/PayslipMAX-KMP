@@ -246,8 +246,6 @@ object AppStrings {
     const val historyLedgerHeaderNet = "Net"
     const val historyLedgerHeaderDsop = "DSOP"
     const val historyLedgerHeaderTax = "Tax"
-
-    // DSOP Simulator Strings
     const val dsopSimulatorTitle = "DSOP Compound Simulator"
     const val dsopSimulatorMonthlySub = "Monthly Subscription"
     const val dsopSimulatorTaxWarning = "Tax Warning: Annual DSOP contributions above ₹5 Lakhs (₹41,666/mo) attract income tax on interest earned. Stay below ₹41,666/mo to keep gains 100% tax-free."
@@ -255,20 +253,13 @@ object AppStrings {
     const val dsopSimulator5Years = "5 Years"
     const val dsopSimulator10Years = "10 Years"
     const val dsopSimulator15Years = "15 Years"
-
-    // Insights Screen Strings
     const val insightsEmptyState = "Please import or select a payslip to unlock financial insights."
-
     const val insightsSavingsRateTitle = "Monthly Savings Rate"
     const val insightsSavingsRateTarget = "Target: 20%+. You save "
     const val insightsSavingsRateSuffix = "% of your gross pay in DSOP and AGIF."
-
-    // Insights section labels
     const val executiveSummaryLabel = "Executive Summary"
     const val criticalAlertsLabel = "Critical Alerts"
     const val changesThisMonthLabel = "Changes This Month"
-
-    // Chart Legends
     const val legendNetTakeHome = "Net Take-Home"
     const val legendDsop = "Provident Fund (DSOP)"
     const val legendTax = "Taxes & Cess"
@@ -278,17 +269,23 @@ object AppStrings {
     const val chartNoDataAvailable = "No data available"
     const val pdfIconLabel = "PDF"
     const val pdfTapToOpen = "Tap to open original statement"
-
-    // Dashboard Empty State
     const val dashboardEmptyStateTitle = "No Payslips Imported"
     const val dashboardEmptyStateDesc = "Import your monthly payslips to unlock digital replicas, historical tracking, financial insights, and tax audits."
     const val dashboardEmptyStateLabel = "Tap the + button below to get started"
     const val dashboardEmptyStateDescSandbox = "Import your PDF payslips or seed simulated data from the import screen to view financial analytics."
-
     const val geminiAiAnalyzeBtn = "Analyze Payslip with Gemini AI"
-
-    // Ledger mismatch banner (Bug 3 — item-sum vs footer-total verification)
     const val ledgerMismatchIconDesc = "Ledger mismatch"
     const val ledgerCreditMismatchPrefix = "Credits over by ₹"
     const val ledgerDebitMismatchPrefix = "Debits over by ₹"
+    const val correctionDialogSelectAction = "Select Action"
+    const val correctionDialogEditOption = "Edit Value"
+    const val correctionDialogDeleteOption = "Delete Entry"
+    const val correctionDialogAddEarningTitle = "Add Earning Entry"
+    const val correctionDialogAddDeductionTitle = "Add Deduction Entry"
+    const val correctionDialogCodeHeadLabel = "Code Head (Abbreviation)"
+    const val correctionDialogCustomCodeHeadPlaceholder = "e.g., A/o DA, Misc"
+    const val correctionDialogAmountLabel = "Amount (₹)"
+    const val correctionDialogOriginalAmountLabel = "Original Parsed Amount: ₹"
+    const val correctionDialogSaveDraft = "Add to Session"
+    const val correctionDialogDeleteWarning = "This entry will be marked as deleted in your local replica session."
 }

@@ -93,12 +93,14 @@ fun LedgerSection(
     }
 
     editingLine?.let { line ->
+        val isEarning = getCreditsList(payslip).any { it.fieldKey == line.fieldKey }
         LedgerCorrectionDialog(
             line = line,
+            isEarning = isEarning,
             reasons = if (payslip.needsReview) payslip.reviewReasons else emptyList(),
             diagnosticHint = payslip.diagnosticSuggestionFor(line.fieldKey),
             onDismiss = { editingLine = null },
-            onConfirm = { fieldKey, newValue ->
+            onConfirm = { fieldKey, _, newValue, _ ->
                 onCorrectField(fieldKey, newValue)
                 editingLine = null
             },
