@@ -12,6 +12,49 @@ package com.payslipmax.pdfparser.domain
  * ([PayslipSummary]) are authoritative on the slip and are left untouched — a correction only fixes
  * the value of an individual line item the parser was unsure about. An empty map is a no-op.
  */
+fun ParsedPayslip.applyCorrections(corrections: List<SingleCorrection>): ParsedPayslip {
+    if (corrections.isEmpty()) return this
+    var earnings = this.earnings
+    var deductions = this.deductions
+    val rawEarnings = this.rawEarnings.toMutableMap()
+    val rawDeductions = this.rawDeductions.toMutableMap()
+
+    for (correction in corrections) {
+        val key = correction.fieldKey
+        val value = correction.amount
+        when (correction.type) {
+            CorrectionType.DELETED -> {
+                earnings = applyEarningsCorrection(earnings, key, 0.0) ?: earnings
+                deductions = applyDeductionsCorrection(deductions, key, 0.0) ?: deductions
+                rawEarnings.remove(key)
+                rawDeductions.remove(key)
+            }
+            CorrectionType.EDITED -> {
+                earnings = applyEarningsCorrection(earnings, key, value) ?: earnings
+                deductions = applyDeductionsCorrection(deductions, key, value) ?: deductions
+                if (key in rawEarnings) rawEarnings[key] = value
+                if (key in rawDeductions) rawDeductions[key] = value
+            }
+            CorrectionType.ADDED -> {
+                val code = correction.codeHead
+                if (correction.category == EntryCategory.EARNING) {
+                    val updated = applyEarningsCorrection(earnings, key, value) ?: applyEarningsCorrection(earnings, code, value)
+                    if (updated != null) earnings = updated else rawEarnings[code] = value
+                } else {
+                    val updated = applyDeductionsCorrection(deductions, key, value) ?: applyDeductionsCorrection(deductions, code, value)
+                    if (updated != null) deductions = updated else rawDeductions[code] = value
+                }
+            }
+        }
+    }
+    return copy(
+        earnings = earnings,
+        deductions = deductions,
+        rawEarnings = rawEarnings,
+        rawDeductions = rawDeductions,
+    )
+}
+
 fun ParsedPayslip.applyCorrections(corrections: Map<String, Double>): ParsedPayslip {
     if (corrections.isEmpty()) return this
 

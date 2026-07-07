@@ -145,3 +145,28 @@ data class DsopFund(
     val withdrawalYtd: Double = 0.0,
     val closingBalance: Double = 0.0,
 )
+
+@Serializable
+enum class EntryCategory {
+    EARNING,
+    DEDUCTION,
+}
+
+@Serializable
+enum class CorrectionType {
+    ADDED,
+    EDITED,
+    DELETED,
+}
+
+@Serializable
+data class SingleCorrection(
+    val fieldKey: String,
+    val codeHead: String,
+    val amount: Double,
+    val category: EntryCategory,
+    val type: CorrectionType,
+    val originalAmount: Double?,
+    val originalCodeHead: String?,
+    val timestamp: Long,
+)
