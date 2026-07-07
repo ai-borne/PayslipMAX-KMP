@@ -161,8 +161,9 @@ private fun HistoryContent(
     modifier: Modifier = Modifier,
 ) {
     if (selectedDetailPayslip != null) {
+        val activePayslip = uiState.payslips.find { it.dateStr == selectedDetailPayslip.dateStr } ?: selectedDetailPayslip
         HistoryReplicaView(
-            payslip = selectedDetailPayslip,
+            payslip = activePayslip,
             onBack = { onSelectDetail(null) },
             onOpenOriginal = onOpenOriginal,
             viewModel = viewModel,
