@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.ComposeUIViewController
@@ -58,7 +59,10 @@ class IosNavHost(
         )
 
     fun rootViewController(): UIViewController =
-        ComposeUIViewController {
+        // App() themes itself internally (required for Android, which calls App() directly), so the
+        // wrapper's theme is redundant-but-harmless here — the point is that ALL iOS VCs go through
+        // one themed factory, leaving no un-themed path to create by accident.
+        themedViewController {
             App(
                 viewModel = viewModel,
                 onPickPdf = onPickPdf,
@@ -70,20 +74,29 @@ class IosNavHost(
 
     fun detailViewController(screenName: String): UIViewController {
         val onBack = { bridge.requestPop() }
-        return ComposeUIViewController {
-            // Each detail screen is an independent Compose tree (its own VC), so it must apply the
-            // app theme itself — it does not inherit the root tree's PDFParserTheme.
-            val uiState by viewModel.uiState.collectAsState()
-            PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) {
-                when (Screen.valueOf(screenName)) {
-                    Screen.Representation -> RepresentationScreen(viewModel = viewModel, onBack = onBack)
-                    Screen.TaxPlanning -> TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
-                    Screen.RetirementPlanning -> RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
-                    else -> HelpLegalScreen(onBack = onBack)
-                }
+        return themedViewController {
+            when (Screen.valueOf(screenName)) {
+                Screen.Representation -> RepresentationScreen(viewModel = viewModel, onBack = onBack)
+                Screen.TaxPlanning -> TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
+                Screen.RetirementPlanning -> RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
+                else -> HelpLegalScreen(onBack = onBack)
             }
         }
     }
+
+    /**
+     * The single approved way to host Compose in a `UIViewController` on iOS: every VC is its own
+     * independent Compose tree that does NOT inherit any provider (theme, etc.) from another VC, so
+     * this factory applies [PDFParserTheme] centrally. Routing all VC creation through here makes an
+     * un-themed screen — the Phase 4 regression where pushed detail screens rendered in the default
+     * light theme — impossible to introduce by forgetting a wrapper. Enforced by the structural
+     * guard in `check_tech_debt_limits.py` (no bare `ComposeUIViewController` elsewhere in iosMain).
+     */
+    private fun themedViewController(content: @Composable () -> Unit): UIViewController =
+        ComposeUIViewController {
+            val uiState by viewModel.uiState.collectAsState()
+            PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) { content() }
+        }
 
     /** Called by the Swift nav delegate after the stack returns to the root (native pop/swipe). */
     fun onNativePopObserved() {
