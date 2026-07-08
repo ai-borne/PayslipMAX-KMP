@@ -16,7 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
@@ -41,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.payslipmax.pdfparser.domain.EntryCategory
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.SingleCorrection
+import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 
@@ -115,26 +115,12 @@ private fun ReplicaHeader(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onBackClick) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = AppStrings.replicaBackDesc,
-            )
-        }
-        Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = AppStrings.explorerHeader,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-            Text(
-                text = AppStrings.explorerSubheader,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        ScreenBackHeader(
+            title = AppStrings.explorerHeader,
+            subtitle = AppStrings.explorerSubheader,
+            onBack = onBackClick,
+            modifier = Modifier.weight(1f),
+        )
         IconButton(onClick = { if (isEditModeActive) onCancelSession() else onStartEditing() }) {
             Icon(
                 imageVector = if (isEditModeActive) Icons.Default.Close else Icons.Default.Edit,

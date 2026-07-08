@@ -16,8 +16,8 @@ import com.payslipmax.pdfparser.domain.TaxAndSavings
 import com.payslipmax.pdfparser.insights.OptimizationResult
 import com.payslipmax.pdfparser.insights.WealthOptimizationEngine
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
-import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
@@ -59,7 +59,7 @@ fun TaxPlanningScreen(
                 .padding(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
-        TaxHeader(onBack = onBack)
+        ScreenBackHeader(title = AppStringsPremium.taxPlanningTitle, subtitle = AppStringsPremium.taxPlanningSubtitle, onBack = onBack)
         if (tax != null && optimizationResult != null) {
             TaxSummaryCard(tax = tax)
             TaxOpportunitiesHeader()
@@ -93,42 +93,6 @@ private fun TaxOpportunitiesHeader(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-    }
-}
-
-@Composable
-private fun TaxHeader(
-    onBack: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Button(
-            onClick = onBack,
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                ),
-        ) {
-            Text(AppStrings.btnBack)
-        }
-        Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
-        Column {
-            Text(
-                text = AppStringsPremium.taxPlanningTitle,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-            Text(
-                text = AppStringsPremium.taxPlanningSubtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
     }
 }
 

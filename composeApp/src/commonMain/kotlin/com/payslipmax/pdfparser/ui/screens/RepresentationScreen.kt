@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.database.RepresentationDraftEntity
 import com.payslipmax.pdfparser.ui.*
+import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.platform.rememberClipboardCopier
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -51,7 +52,7 @@ fun RepresentationScreen(
             )
         } else {
             Column(modifier = Modifier.fillMaxSize()) {
-                RepresentationHeader(onBack = onBack)
+                ScreenBackHeader(title = AppStringsPremium.representationTitle, subtitle = AppStringsPremium.representationSubtitle, onBack = onBack)
                 Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
                 if (drafts.isEmpty()) {
                     RepresentationEmptyState()
@@ -65,42 +66,6 @@ fun RepresentationScreen(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun RepresentationHeader(
-    onBack: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Button(
-            onClick = onBack,
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                ),
-        ) {
-            Text(AppStrings.btnBack)
-        }
-        Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
-        Column {
-            Text(
-                text = AppStringsPremium.representationTitle,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-            Text(
-                text = AppStringsPremium.representationSubtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }

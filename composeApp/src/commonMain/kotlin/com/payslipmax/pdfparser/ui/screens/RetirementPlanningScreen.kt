@@ -10,11 +10,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
-import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 
 @Composable
@@ -41,7 +40,7 @@ fun RetirementPlanningScreen(
                 .then(if (initialBalance > 0.0) Modifier.verticalScroll(scrollState) else Modifier),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
-        RetirementHeader(onBack = onBack)
+        ScreenBackHeader(title = AppStringsPremium.retirementTitle, subtitle = AppStringsPremium.retirementSubtitle, onBack = onBack)
         if (initialBalance > 0.0) {
             DsopSimulatorSection(
                 initialBalance = initialBalance,
@@ -64,42 +63,6 @@ fun RetirementPlanningScreen(
                     textAlign = TextAlign.Center,
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun RetirementHeader(
-    onBack: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Button(
-            onClick = onBack,
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                ),
-        ) {
-            Text(AppStrings.btnBack)
-        }
-        Spacer(modifier = Modifier.width(AppDimensions.SpacingMedium))
-        Column {
-            Text(
-                text = AppStringsPremium.retirementTitle,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-            Text(
-                text = AppStringsPremium.retirementSubtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }

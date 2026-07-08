@@ -47,7 +47,6 @@ object AppStrings {
     const val ledgerTotalDeductions = "Total Deductions (Debits)"
 
     // Replica metadata & glossary
-    const val replicaBackDesc = "Back"
     const val replicaOfficerPrefix = "Officer: "
     const val replicaCdaPrefix = "CDA A/C: "
     const val replicaPanPrefix = "PAN: "
@@ -129,7 +128,7 @@ object AppStrings {
     const val settingsDeleteConfirmTitle = "Wipe App Data?"
     const val settingsDeleteConfirmBtn = "Delete Everything"
     const val btnCancel = "Cancel"
-    const val btnBack = "← Back"
+    const val btnBack = "Back"
 
     // Passcode Setup Dialog
     const val settingsSetPasscodeTitle = "Set 4-Digit Passcode"
