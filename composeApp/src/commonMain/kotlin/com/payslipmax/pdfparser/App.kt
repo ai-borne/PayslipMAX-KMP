@@ -1,6 +1,5 @@
 package com.payslipmax.pdfparser
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -27,6 +26,7 @@ import com.payslipmax.pdfparser.ui.screens.LockScreen
 import com.payslipmax.pdfparser.ui.screens.SettingsScreen
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
+import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
 
 enum class Screen {
     Dashboard,
@@ -81,14 +81,7 @@ fun App(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val darkTheme =
-        when (uiState.appTheme) {
-            "light" -> false
-            "dark" -> true
-            else -> isSystemInDarkTheme()
-        }
-
-    PDFParserTheme(darkTheme = darkTheme) {
+    PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) {
         if (uiState.isLockEnabled && uiState.isAppLocked) {
             // No BackHandler is composed here, so system back falls through to the OS default
             // (backgrounding the app) — locked content can never be revealed via back (decision 5).

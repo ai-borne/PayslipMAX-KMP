@@ -186,3 +186,17 @@ fun PDFParserTheme(
         content = content,
     )
 }
+
+/**
+ * Resolves the effective dark/light mode from the persisted [appTheme] preference
+ * ("light" / "dark" / anything else = follow the system). Single source of truth so every
+ * Compose tree — the Android/root [App] tree and each iOS detail `ComposeUIViewController`,
+ * which are independent trees — computes the same theme identically.
+ */
+@Composable
+fun resolveDarkTheme(appTheme: String): Boolean =
+    when (appTheme) {
+        "light" -> false
+        "dark" -> true
+        else -> isSystemInDarkTheme()
+    }

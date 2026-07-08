@@ -1,5 +1,7 @@
 package com.payslipmax.pdfparser
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.ComposeUIViewController
 import com.payslipmax.pdfparser.auth.AuthTokenProvider
 import com.payslipmax.pdfparser.di.appModule
@@ -11,6 +13,8 @@ import com.payslipmax.pdfparser.ui.screens.HelpLegalScreen
 import com.payslipmax.pdfparser.ui.screens.RepresentationScreen
 import com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen
 import com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen
+import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
+import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
 import org.koin.core.context.startKoin
 import org.koin.mp.KoinPlatformTools
 import platform.UIKit.UIViewController
@@ -67,11 +71,16 @@ class IosNavHost(
     fun detailViewController(screenName: String): UIViewController {
         val onBack = { bridge.requestPop() }
         return ComposeUIViewController {
-            when (Screen.valueOf(screenName)) {
-                Screen.Representation -> RepresentationScreen(viewModel = viewModel, onBack = onBack)
-                Screen.TaxPlanning -> TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
-                Screen.RetirementPlanning -> RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
-                else -> HelpLegalScreen(onBack = onBack)
+            // Each detail screen is an independent Compose tree (its own VC), so it must apply the
+            // app theme itself — it does not inherit the root tree's PDFParserTheme.
+            val uiState by viewModel.uiState.collectAsState()
+            PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) {
+                when (Screen.valueOf(screenName)) {
+                    Screen.Representation -> RepresentationScreen(viewModel = viewModel, onBack = onBack)
+                    Screen.TaxPlanning -> TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
+                    Screen.RetirementPlanning -> RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
+                    else -> HelpLegalScreen(onBack = onBack)
+                }
             }
         }
     }
