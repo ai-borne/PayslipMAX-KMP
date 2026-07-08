@@ -11,6 +11,7 @@
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
 		105CF80B2FF9EE0C00B6F15D /* LiteRTLM in Frameworks */ = {isa = PBXBuildFile; productRef = 105CF80A2FF9EE0C00B6F15D /* LiteRTLM */; };
 		1C81D6F669B7BB6D2FFCCEB3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = "TEMP_834FB1A8-C57C-45E2-A2C0-832D795320CE" /* FirebaseAuth */; };
+		CA0100000000000000000002 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = CA0100000000000000000001 /* FirebaseCrashlytics */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		445C052442747365B7CB2124 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 617043448F4869026C2F0BB4 /* FirebaseAuth */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
@@ -37,6 +38,7 @@
 			files = (
 				1C81D6F669B7BB6D2FFCCEB3 /* FirebaseAuth in Frameworks */,
 				445C052442747365B7CB2124 /* FirebaseAuth in Frameworks */,
+				CA0100000000000000000002 /* FirebaseCrashlytics in Frameworks */,
 				105CF80B2FF9EE0C00B6F15D /* LiteRTLM in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -118,6 +120,7 @@
 			name = iosApp;
 			packageProductDependencies = (
 				617043448F4869026C2F0BB4 /* FirebaseAuth */,
+				CA0100000000000000000001 /* FirebaseCrashlytics */,
 				105CF80A2FF9EE0C00B6F15D /* LiteRTLM */,
 			);
 			productName = iosApp;
@@ -451,6 +454,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7C4F1707FE80007C7DCEAE3C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
+		};
+		CA0100000000000000000001 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7C4F1707FE80007C7DCEAE3C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 		"TEMP_834FB1A8-C57C-45E2-A2C0-832D795320CE" /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;

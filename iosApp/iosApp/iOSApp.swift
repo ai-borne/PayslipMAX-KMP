@@ -1,6 +1,7 @@
 import SwiftUI
 import FirebaseCore
 import FirebaseAuth
+import FirebaseCrashlytics
 import composeApp
 
 class AppDelegate: NSObject, UIApplicationDelegate {

@@ -46,9 +46,10 @@ pdfbox-android = { module = "com.tom-roush:pdfbox-android", version = "2.0.27.0"
 # MockK for Android unit tests
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
-# Firebase — Auth (BOM manages version alignment)
+# Firebase — Auth + Crashlytics (BOM manages version alignment)
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 
 # Play Asset Delivery — Tier 6 base model on-demand install (gemmaModelPack)
 play-asset-delivery-ktx = { module = "com.google.android.play:asset-delivery-ktx", version.ref = "play-asset-delivery" }
@@ -74,3 +75,4 @@ room = { id = "androidx.room", version.ref = "room" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 googleServices = { id = "com.google.gms.google-services", version = "4.4.2" }
+firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.2" }

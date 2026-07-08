@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.room) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.googleServices) apply false
+    alias(libs.plugins.firebaseCrashlytics) apply false
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 }
 

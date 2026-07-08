@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebaseCrashlytics)
 }
 
 kotlin {
@@ -53,6 +54,10 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlinx.coroutines.android)
+            // Firebase Crashlytics — auto-initializes via ContentProvider; captures native-bridge
+            // crashes during dev/beta. BOM (pinned in the legacy dependencies block below) aligns
+            // the version with the existing firebase-auth-ktx already used in :shared.
+            implementation(libs.firebase.crashlytics)
             // Play Asset Delivery — MainActivity wires the AssetPackManager confirmation-dialog hook
             implementation(libs.play.asset.delivery.ktx)
             // asset-delivery-ktx transitively pulls androidx.fragment:fragment:1.1.0, too old for
@@ -115,6 +120,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+// Firebase BOM: pins firebase-crashlytics version (must be in legacy block, not KMP sourceSet)
+dependencies {
+    add("androidMainImplementation", platform(libs.firebase.bom))
 }
 
 // A release bundle must never ship the placeholder that stands in for the real Gemma model in
