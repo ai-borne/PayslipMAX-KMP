@@ -7,8 +7,15 @@ import argparse
 # Default directory paths to scan if no specific files are passed
 SCAN_DIRECTORIES = [
     "composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui",
+    "composeApp/src/iosMain/kotlin/com/payslipmax/pdfparser",
     "shared/src/commonMain/kotlin/com/payslipmax/pdfparser"
 ]
+
+# On iOS every ComposeUIViewController is an independent Compose tree that inherits no providers
+# (theme, etc.) from any other VC. To stop a screen being hosted un-themed (the Phase 4 regression
+# where pushed detail screens rendered in the default light theme), ComposeUIViewController may only
+# be constructed inside these approved factories, which apply PDFParserTheme centrally.
+IOS_VC_ALLOWED_FUNCTIONS = {"themedViewController"}
 
 def check_file_limits(filepath):
     errors = []
@@ -91,6 +98,48 @@ def check_file_limits(filepath):
         i += 1
     return errors
 
+def check_ios_vc_theming(filepath):
+    """Structural guard: in iosMain, ComposeUIViewController may only be constructed inside an
+    approved themed factory (IOS_VC_ALLOWED_FUNCTIONS), so no screen is ever hosted without the
+    app theme applied. Only enforced on files under an iosMain source set."""
+    if "iosMain" not in filepath.replace("\\", "/"):
+        return []
+
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+    except Exception as e:
+        return [f"Error reading file: {str(e)}"]
+
+    errors = []
+    fun_re = re.compile(r'\bfun\s+([A-Za-z0-9_]+)')
+    # A construction call — "ComposeUIViewController(" or "ComposeUIViewController {" — not the
+    # import statement or a KDoc/comment mention.
+    call_re = re.compile(r'\bComposeUIViewController\s*[({]')
+    current_fun = None
+
+    for idx, raw in enumerate(lines):
+        m = fun_re.search(raw)
+        if m:
+            current_fun = m.group(1)
+
+        stripped = raw.strip()
+        if stripped.startswith(("import ", "//", "*", "/*")):
+            continue
+
+        if call_re.search(raw) and current_fun not in IOS_VC_ALLOWED_FUNCTIONS:
+            allowed = " or ".join(sorted(IOS_VC_ALLOWED_FUNCTIONS)) + "()"
+            errors.append(
+                f"Bare ComposeUIViewController at line {idx+1} (in '{current_fun}') — host iOS "
+                f"Compose VCs only via {allowed} so the app theme is always applied"
+            )
+    return errors
+
+
+def audit_file(filepath):
+    return check_file_limits(filepath) + check_ios_vc_theming(filepath)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Audit codebase files for tech debt limit violations.")
     parser.add_argument("files", nargs="*", help="Specific Kotlin files to audit. If none, runs full scan.")
@@ -107,7 +156,7 @@ def main():
         for file in args.files:
             if file.endswith(".kt") and os.path.exists(file):
                 rel_path = os.path.relpath(file, workspace_dir)
-                errors = check_file_limits(file)
+                errors = audit_file(file)
                 total_files_checked += 1
                 if errors:
                     all_errors[rel_path] = errors
@@ -123,7 +172,7 @@ def main():
                     if file.endswith(".kt"):
                         filepath = os.path.join(root, file)
                         rel_path = os.path.relpath(filepath, workspace_dir)
-                        errors = check_file_limits(filepath)
+                        errors = audit_file(filepath)
                         total_files_checked += 1
                         if errors:
                             all_errors[rel_path] = errors
