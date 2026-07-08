@@ -4,31 +4,91 @@ import androidx.compose.ui.window.ComposeUIViewController
 import com.payslipmax.pdfparser.auth.AuthTokenProvider
 import com.payslipmax.pdfparser.di.appModule
 import com.payslipmax.pdfparser.di.sharedModule
+import com.payslipmax.pdfparser.nav.AppNavState
+import com.payslipmax.pdfparser.nav.NavBridge
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.screens.HelpLegalScreen
+import com.payslipmax.pdfparser.ui.screens.RepresentationScreen
+import com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen
+import com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen
 import org.koin.core.context.startKoin
 import org.koin.mp.KoinPlatformTools
 import platform.UIKit.UIViewController
 
 fun getAuthTokenProvider(): AuthTokenProvider = AuthTokenProvider()
 
-fun MainViewController(
-    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
-    onOpenPdf: (ByteArray, String) -> Unit,
-): UIViewController {
-    // Auto-initialize Koin context if not already set up
+private fun ensureKoin() {
     if (KoinPlatformTools.defaultContext().getOrNull() == null) {
-        startKoin {
-            modules(sharedModule, appModule)
+        startKoin { modules(sharedModule, appModule) }
+    }
+}
+
+/**
+ * Kotlin side of the iOS native back-navigation bridge (Phase 4). Owns the shared
+ * [PayslipViewModel], [AppNavState] and [NavBridge], and hands Swift:
+ *  - [rootViewController]: the tab-root Compose tree (Scaffold + bottom bar + current tab),
+ *    with detail navigation routed to the native stack via [NavBridge.navigateToDetail].
+ *  - [detailViewController]: a thin `ComposeUIViewController` per pushed detail screen, reusing
+ *    the existing screen composables unchanged (they already take a plain `onBack`).
+ *  - [onNativePopObserved]: called by the Swift `UINavigationControllerDelegate` after any native
+ *    pop (including an edge-swipe) so [AppNavState] stays in sync without re-triggering a pop.
+ *
+ * @param pushScreen Swift closure that pushes the native VC for a [Screen] name.
+ * @param requestPop Swift closure that pops the top native VC.
+ */
+class IosNavHost(
+    private val onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
+    private val onOpenPdf: (ByteArray, String) -> Unit,
+    pushScreen: (screenName: String) -> Unit,
+    requestPop: () -> Unit,
+) {
+    private val viewModel: PayslipViewModel =
+        KoinPlatformTools.defaultContext().get().get()
+    private val navState = AppNavState()
+    private val bridge =
+        NavBridge(
+            navState = navState,
+            isLocked = { viewModel.uiState.value.isAppLocked },
+            pushToNative = { screen -> pushScreen(screen.name) },
+            popFromNative = requestPop,
+        )
+
+    fun rootViewController(): UIViewController =
+        ComposeUIViewController {
+            App(
+                viewModel = viewModel,
+                onPickPdf = onPickPdf,
+                onOpenPdf = onOpenPdf,
+                navState = navState,
+                nativeDetailNavigator = { screen -> bridge.navigateToDetail(screen) },
+            )
+        }
+
+    fun detailViewController(screenName: String): UIViewController {
+        val onBack = { bridge.requestPop() }
+        return ComposeUIViewController {
+            when (Screen.valueOf(screenName)) {
+                Screen.Representation -> RepresentationScreen(viewModel = viewModel, onBack = onBack)
+                Screen.TaxPlanning -> TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
+                Screen.RetirementPlanning -> RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
+                else -> HelpLegalScreen(onBack = onBack)
+            }
         }
     }
 
-    val viewModel = KoinPlatformTools.defaultContext().get().get<PayslipViewModel>()
-
-    return ComposeUIViewController {
-        App(
-            viewModel = viewModel,
-            onPickPdf = onPickPdf,
-            onOpenPdf = onOpenPdf,
-        )
+    /** Called by the Swift nav delegate after the stack returns to the root (native pop/swipe). */
+    fun onNativePopObserved() {
+        bridge.onNativePopObserved()
     }
+}
+
+/** Factory Swift calls to build the nav host, initializing Koin on first use. */
+fun createNavHost(
+    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
+    onOpenPdf: (ByteArray, String) -> Unit,
+    pushScreen: (screenName: String) -> Unit,
+    requestPop: () -> Unit,
+): IosNavHost {
+    ensureKoin()
+    return IosNavHost(onPickPdf, onOpenPdf, pushScreen, requestPop)
 }

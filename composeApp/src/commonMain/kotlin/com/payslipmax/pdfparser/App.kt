@@ -63,13 +63,22 @@ internal val AppNavStateSaver: Saver<AppNavState, Any> =
 private fun restoreScreen(name: String?): Screen? =
     name?.let { runCatching { Screen.valueOf(it) }.getOrNull() }
 
+/**
+ * @param navState hoisted so iOS can share one instance between the root Compose tree and its
+ *   [com.payslipmax.pdfparser.nav.NavBridge]; Android uses the default `rememberSaveable` instance.
+ * @param nativeDetailNavigator when non-null (iOS), a detail navigation request is routed to the
+ *   native `UINavigationController` instead of being rendered inline, and the root tree keeps
+ *   showing tab content + bottom bar (the pushed native VC covers it). Null on Android, where
+ *   details render inline via [AppNavState.push].
+ */
 @Composable
 fun App(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    navState: AppNavState = rememberSaveable(saver = AppNavStateSaver) { AppNavState() },
+    nativeDetailNavigator: ((Screen) -> Unit)? = null,
 ) {
-    val navState = rememberSaveable(saver = AppNavStateSaver) { AppNavState() }
     val uiState by viewModel.uiState.collectAsState()
 
     val darkTheme =
@@ -97,6 +106,7 @@ fun App(
                 viewModel = viewModel,
                 onPickPdf = onPickPdf,
                 onOpenPdf = onOpenPdf,
+                nativeDetailNavigator = nativeDetailNavigator,
             )
         }
     }
@@ -110,11 +120,16 @@ private fun MainScaffold(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    nativeDetailNavigator: ((Screen) -> Unit)?,
 ) {
+    // On iOS details are hosted as native VCs covering this tree, so the root scaffold keeps
+    // showing tab content + bottom bar and never handles back itself (native nav owns it).
+    val hostDetailsNatively = nativeDetailNavigator != null
     Scaffold(
         bottomBar = {
-            // Detail screens are pushed on top and hide the tab bar (decision 8).
-            if (navState.activeDetail == null) {
+            // Detail screens are pushed on top and hide the tab bar (decision 8) — but on iOS the
+            // native VC covers the whole root tree, so the bar stays here (hidden behind it).
+            if (hostDetailsNatively || navState.activeDetail == null) {
                 BottomBar(
                     currentScreen = navState.currentTab,
                     onNavigate = { navState.switchTab(it) },
@@ -123,7 +138,8 @@ private fun MainScaffold(
         },
     ) { paddingValues ->
         // System back pops a pushed detail; at a tab root it stays disabled so back exits.
-        BackHandler(enabled = navState.activeDetail != null) { navState.pop() }
+        // Never enabled on iOS — the native UINavigationController handles back there.
+        BackHandler(enabled = !hostDetailsNatively && navState.activeDetail != null) { navState.pop() }
         Column(modifier = Modifier.padding(paddingValues)) {
             BaseModelDownloadBanner(uiState = uiState)
             Box(modifier = Modifier.weight(1f)) {
@@ -132,6 +148,7 @@ private fun MainScaffold(
                     viewModel = viewModel,
                     onPickPdf = onPickPdf,
                     onOpenPdf = onOpenPdf,
+                    nativeDetailNavigator = nativeDetailNavigator,
                 )
             }
         }
@@ -144,13 +161,17 @@ private fun ScreenContent(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    nativeDetailNavigator: ((Screen) -> Unit)?,
 ) {
     val activeDetail = navState.activeDetail
-    if (activeDetail != null) {
+    if (activeDetail != null && nativeDetailNavigator == null) {
         DetailContent(detail = activeDetail, viewModel = viewModel, onBack = { navState.pop() })
     } else {
-        // Route by destination: tab roots switch tabs, detail screens are pushed (SSOT via isTabRoot).
-        val onNavigate: (Screen) -> Unit = { if (it.isTabRoot) navState.switchTab(it) else navState.push(it) }
+        // Route by destination: tab roots switch tabs; detail screens push natively on iOS
+        // (nativeDetailNavigator) or render inline on Android (SSOT via isTabRoot).
+        val onNavigate: (Screen) -> Unit = {
+            if (it.isTabRoot) navState.switchTab(it) else nativeDetailNavigator?.invoke(it) ?: navState.push(it)
+        }
         when (navState.currentTab) {
             Screen.History ->
                 HistoryScreen(
