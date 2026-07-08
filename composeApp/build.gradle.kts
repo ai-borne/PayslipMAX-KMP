@@ -42,6 +42,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(libs.compose.ui.backhandler)
             implementation(libs.compose.material.icons.core)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)

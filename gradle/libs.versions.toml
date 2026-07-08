@@ -57,6 +57,10 @@ play-asset-delivery-ktx = { module = "com.google.android.play:asset-delivery-ktx
 # Compose Material Icons — standalone artifact (see compose-material-icons version note)
 compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-material-icons" }
 
+# Multiplatform BackHandler/PredictiveBackHandler. material3 pulls ui-backhandler transitively at
+# runtime only (implementation, not api), so it must be a direct dependency to compile against.
+compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform" }
+
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }

@@ -1,0 +1,144 @@
+package com.payslipmax.pdfparser
+
+import androidx.activity.ComponentActivity
+import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import com.payslipmax.pdfparser.nav.AppNavState
+import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.testing.FakePayslipDao
+import com.payslipmax.pdfparser.testing.FakePdfParser
+import com.payslipmax.pdfparser.ui.FakeBackupManager
+import com.payslipmax.pdfparser.ui.FakeFinancialIntelligenceRepository
+import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.theme.AppStrings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.Rule
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+@OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [34])
+class AppBackNavigationTest {
+    @get:Rule
+    val composeRule = createAndroidComposeRule<ComponentActivity>()
+
+    private val testDispatcher = StandardTestDispatcher()
+    private lateinit var viewModel: PayslipViewModel
+
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+        val fakeDao = FakePayslipDao()
+        val repository = PayslipRepository(fakeDao, FakePdfParser(), Dispatchers.Unconfined)
+        viewModel =
+            PayslipViewModel(
+                repository,
+                FakeBackupManager(),
+                FakeFinancialIntelligenceRepository(fakeDao),
+            )
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+        try {
+            org.koin.core.context.stopKoin()
+        } catch (_: Exception) {
+        }
+    }
+
+    private fun pressBack() =
+        composeRule.runOnUiThread {
+            composeRule.activity.onBackPressedDispatcher.onBackPressed()
+        }
+
+    // --- Decision 9: state survives process death via the two-slot Saver ---
+
+    @Test
+    fun saverRoundTripsTabAndDetail() {
+        val state = AppNavState(currentTab = Screen.Insights, activeDetail = Screen.TaxPlanning)
+        val saved = with(AppNavStateSaver) { SaverScope { true }.save(state) }
+        val restored = AppNavStateSaver.restore(saved!!)!!
+        assertEquals(Screen.Insights, restored.currentTab)
+        assertEquals(Screen.TaxPlanning, restored.activeDetail)
+    }
+
+    @Test
+    fun saverCrashGuardFallsBackWhenScreenConstantRemoved() {
+        // Simulates a user mid-navigation who updates to a build where the persisted Screen
+        // constant no longer exists: restoration must fall back, not throw a launch-crash-loop.
+        val restored = AppNavStateSaver.restore(listOf("RenamedTabScreen", "DeletedDetailScreen"))!!
+        assertEquals(Screen.Dashboard, restored.currentTab)
+        assertNull(restored.activeDetail)
+        assertTrue(restored.canExitApp)
+    }
+
+    @Test
+    fun saverRejectsMisbucketedScreenNames() {
+        // A detail name in the tab slot (or a tab name in the detail slot) must not silently
+        // produce an impossible state — the slot guards coerce each back to a valid bucket.
+        val restored = AppNavStateSaver.restore(listOf(Screen.TaxPlanning.name, Screen.Dashboard.name))!!
+        assertEquals(Screen.Dashboard, restored.currentTab)
+        assertNull(restored.activeDetail)
+    }
+
+    // --- Complaint #3 + decision 7: system back at a tab root exits, not intercepted ---
+
+    @Test
+    fun backAtTabRootExitsApp() {
+        composeRule.setContent {
+            App(viewModel = viewModel, onPickPdf = { }, onOpenPdf = { _, _ -> })
+        }
+        composeRule.waitForIdle()
+        // At the Dashboard tab root there is no enabled BackHandler, so back falls through to the
+        // OS default (finish) — the app exits rather than navigating (decisions 7 and 3).
+        assertFalse(composeRule.activity.isFinishing)
+        pressBack()
+        composeRule.waitForIdle()
+        assertTrue(composeRule.activity.isFinishing)
+    }
+
+    // --- Complaint #3 + decision 8: a pushed detail hides the tab bar; back returns to its root ---
+
+    @Test
+    fun backFromPushedDetailReturnsToTabRootWithoutExiting() {
+        composeRule.setContent {
+            App(viewModel = viewModel, onPickPdf = { }, onOpenPdf = { _, _ -> })
+        }
+        composeRule.waitForIdle()
+
+        // Switch to the Settings tab, then push the Help/Legal detail from it.
+        composeRule.onAllNodesWithText(AppStrings.navigationSettings).onFirst().performClick()
+        composeRule.waitForIdle()
+        composeRule.onNodeWithText(AppStrings.settingsHelpFaqTitle).performScrollTo().performClick()
+        composeRule.waitForIdle()
+
+        // Decision 8: the bottom tab bar is hidden while a detail is pushed.
+        composeRule.onNodeWithText(AppStrings.navigationHome).assertDoesNotExist()
+
+        // Back pops the detail and returns to the Settings tab root — the app does not exit.
+        pressBack()
+        composeRule.waitForIdle()
+        assertFalse(composeRule.activity.isFinishing)
+        composeRule.onNodeWithText(AppStrings.navigationHome).assertIsDisplayed()
+    }
+}

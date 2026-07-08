@@ -9,7 +9,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.database.RepresentationDraftEntity
@@ -21,6 +23,7 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.utils.shareText
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RepresentationScreen(
     viewModel: PayslipViewModel,
@@ -30,6 +33,10 @@ fun RepresentationScreen(
     val drafts by viewModel.representationDrafts.collectAsState()
     var selectedDraft by remember { mutableStateOf<RepresentationDraftEntity?>(null) }
     var editedBody by remember { mutableStateOf("") }
+
+    // Nested handler: while a draft is open, back closes it and returns to the list (mirrors the
+    // editor's Cancel button). Disabled at the list level, so App.kt's handler pops the screen.
+    BackHandler(enabled = selectedDraft != null) { selectedDraft = null }
 
     Box(
         modifier =
@@ -51,21 +58,31 @@ fun RepresentationScreen(
                 onCancel = { selectedDraft = null },
             )
         } else {
-            Column(modifier = Modifier.fillMaxSize()) {
-                ScreenBackHeader(title = AppStringsPremium.representationTitle, subtitle = AppStringsPremium.representationSubtitle, onBack = onBack)
-                Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
-                if (drafts.isEmpty()) {
-                    RepresentationEmptyState()
-                } else {
-                    RepresentationList(
-                        drafts = drafts,
-                        onSelect = {
-                            selectedDraft = it
-                            editedBody = it.bodyText
-                        },
-                    )
-                }
-            }
+            RepresentationDraftList(
+                drafts = drafts,
+                onBack = onBack,
+                onSelect = {
+                    selectedDraft = it
+                    editedBody = it.bodyText
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun RepresentationDraftList(
+    drafts: List<RepresentationDraftEntity>,
+    onBack: () -> Unit,
+    onSelect: (RepresentationDraftEntity) -> Unit,
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        ScreenBackHeader(title = AppStringsPremium.representationTitle, subtitle = AppStringsPremium.representationSubtitle, onBack = onBack)
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
+        if (drafts.isEmpty()) {
+            RepresentationEmptyState()
+        } else {
+            RepresentationList(drafts = drafts, onSelect = onSelect)
         }
     }
 }

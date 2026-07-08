@@ -3,7 +3,9 @@ package com.payslipmax.pdfparser.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import com.payslipmax.pdfparser.database.AiInsightReportEntity
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
 import com.payslipmax.pdfparser.domain.*
@@ -60,6 +62,7 @@ fun HistoryScreen(
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun HistoryReplicaView(
     payslip: ParsedPayslip,
@@ -69,6 +72,12 @@ private fun HistoryReplicaView(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    // Nested handler: only mounted while a payslip detail is open, so it takes priority over
+    // App.kt's handler here. Mid-edit, back cancels the session and stays on the replica (exits
+    // edit mode only); a second back — now not editing — returns to the list (decision 6).
+    BackHandler(enabled = true) {
+        if (uiState.isEditModeActive) viewModel.cancelEditingSession() else onBack()
+    }
     PayslipReplicaScreen(
         payslip = payslip,
         onBackClick = onBack,
