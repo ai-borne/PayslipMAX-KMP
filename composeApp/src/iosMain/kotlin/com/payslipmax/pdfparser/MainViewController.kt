@@ -15,6 +15,7 @@ import com.payslipmax.pdfparser.nav.AppNavState
 import com.payslipmax.pdfparser.nav.NavBridge
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.HelpLegalScreen
+import com.payslipmax.pdfparser.ui.screens.PayslipReplicaDetailScreen
 import com.payslipmax.pdfparser.ui.screens.RepresentationScreen
 import com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen
 import com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen
@@ -62,6 +63,12 @@ class IosNavHost(
             popFromNative = requestPop,
         )
 
+    // Backs the edge-swipe gate (Phase 5, Swift side): true while the pushed detail screen has an
+    // unsaved sub-state (mid-edit) that the two-step back path must not let a native swipe bypass.
+    // Representation's `selectedDraft` is genuinely screen-local (not promoted into PayslipUiState,
+    // which would violate SSOT the other way), so it reports itself via a per-push callback instead.
+    private var activeDetailHasUnsavedState: () -> Boolean = { false }
+
     fun rootViewController(): UIViewController =
         // App() themes itself internally (required for Android, which calls App() directly), so the
         // wrapper's theme is redundant-but-harmless here — the point is that ALL iOS VCs go through
@@ -78,17 +85,39 @@ class IosNavHost(
 
     fun detailViewController(screenName: String): UIViewController {
         val onBack = { bridge.requestPop() }
+        // Reset before each push so a stale flag from the previous detail screen can never leak in.
+        activeDetailHasUnsavedState = { false }
         return themedViewController {
             when (Screen.valueOf(screenName)) {
-                Screen.Representation -> RepresentationScreen(viewModel = viewModel, onBack = onBack)
+                Screen.Representation ->
+                    RepresentationScreen(
+                        viewModel = viewModel,
+                        onBack = onBack,
+                        onUnsavedStateChanged = { unsaved -> activeDetailHasUnsavedState = { unsaved } },
+                    )
                 Screen.TaxPlanning -> TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
                 Screen.RetirementPlanning -> RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
                 Screen.FAQ -> HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
                 Screen.PrivacyPolicy -> HelpLegalScreen(screen = Screen.PrivacyPolicy, onBack = onBack)
+                Screen.PayslipReplica -> {
+                    activeDetailHasUnsavedState = { viewModel.uiState.value.isEditModeActive }
+                    PayslipReplicaDetailScreen(
+                        viewModel = viewModel,
+                        onBack = onBack,
+                        onOpenOriginal = { payslip ->
+                            viewModel.getPayslipPdf(payslip.dateStr) { bytes ->
+                                if (bytes != null) onOpenPdf(bytes, payslip.file)
+                            }
+                        },
+                    )
+                }
                 else -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
             }
         }
     }
+
+    /** Called by Swift's `gestureRecognizerShouldBegin` to gate the edge-swipe while mid-edit. */
+    fun hasActiveUnsavedSubState(): Boolean = activeDetailHasUnsavedState()
 
     /**
      * The single approved way to host Compose in a `UIViewController` on iOS: every VC is its own

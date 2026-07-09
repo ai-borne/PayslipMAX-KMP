@@ -30,6 +30,7 @@ fun RepresentationScreen(
     viewModel: PayslipViewModel,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onUnsavedStateChanged: (Boolean) -> Unit = {},
 ) {
     val drafts by viewModel.representationDrafts.collectAsState()
     var selectedDraft by remember { mutableStateOf<RepresentationDraftEntity?>(null) }
@@ -38,6 +39,7 @@ fun RepresentationScreen(
     // Nested handler: while a draft is open, back closes it and returns to the list (mirrors the
     // editor's Cancel button). Disabled at the list level, so App.kt's handler pops the screen.
     BackHandler(enabled = selectedDraft != null) { selectedDraft = null }
+    LaunchedEffect(selectedDraft) { onUnsavedStateChanged(selectedDraft != null) }
 
     Box(
         modifier =

@@ -90,6 +90,19 @@ class NavBridgeTest {
     }
 
     @Test
+    fun navigateToDetailPushesPayslipReplica() {
+        // Documents that the bridge is generic over Screen.PayslipReplica (Phase 4's iOS cutover)
+        // exactly like every other detail screen — no special-casing needed here.
+        val navState = AppNavState(currentTab = Screen.History)
+        val (bridge, rec) = bridge(navState)
+
+        bridge.navigateToDetail(Screen.PayslipReplica)
+
+        assertEquals(Screen.PayslipReplica, navState.activeDetail)
+        assertEquals(listOf(Screen.PayslipReplica), rec.pushed)
+    }
+
+    @Test
     fun redundantNativeSyncAfterRequestPopIsHarmless() {
         // requestPop pops native; the delegate's didShow then also calls onNativePopObserved.
         // pop() is idempotent, so the second call is a safe no-op (no double state change).
