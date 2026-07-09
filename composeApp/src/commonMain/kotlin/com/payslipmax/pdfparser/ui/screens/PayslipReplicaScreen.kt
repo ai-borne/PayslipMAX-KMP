@@ -41,6 +41,7 @@ import com.payslipmax.pdfparser.domain.EntryCategory
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.SingleCorrection
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
+import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 
@@ -67,6 +68,7 @@ fun PayslipReplicaScreen(
                 Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
+                    .detailScreenSafeArea()
                     .verticalScroll(rememberScrollState())
                     .padding(AppDimensions.PaddingMedium)
                     .padding(bottom = if (isEditModeActive) 80.dp else 0.dp),
