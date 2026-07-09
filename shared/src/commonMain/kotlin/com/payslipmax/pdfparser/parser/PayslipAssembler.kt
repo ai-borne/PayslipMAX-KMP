@@ -10,8 +10,7 @@ import com.payslipmax.pdfparser.domain.TaxAndSavings
 
 /**
  * Assembles the final [ParsedPayslip] domain object from the classified credit/debit maps, the
- * reconciled totals, and the parsed metadata. Pure map→domain mapping extracted verbatim from
- * [PayslipTextParser] to keep that file within the 300-line limit (SSOT for domain construction).
+ * reconciled totals, and the parsed metadata. Pure map→domain mapping (SSOT for domain construction).
  */
 internal fun assembleParsedPayslip(
     filename: String,

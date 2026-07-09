@@ -101,14 +101,29 @@ class CorpusCaptureTest {
         val monthNum = pdf.name.takeWhile { it.isDigit() }.toIntOrNull() ?: 0
         val scrubbed = CorpusScrubber.scrub(texts, monthNum, year)
 
-        val parsedReal = parseTexts(texts, pdf.name)
-        val parsedScrubbed = parseTexts(scrubbed, pdf.name)
+        val tokenizedReal =
+            parser.extractTokens(pdf.readBytes(), password).getOrElse {
+                mismatches += "$id: TOKEN EXTRACTION FAILED: ${it.message}"
+                return
+            }
+        val ids = CorpusScrubber.identifiersFrom(tokenizedReal.fullText, monthNum, year)
+        val tokenizedScrubbed =
+            TokenizedPayslip(
+                tableTokens = CorpusScrubber.scrubTokens(tokenizedReal.tableTokens, ids),
+                taxTokens = CorpusScrubber.scrubTokens(tokenizedReal.taxTokens, ids),
+                dsopTokens = CorpusScrubber.scrubTokens(tokenizedReal.dsopTokens, ids),
+                fullText = scrubbed.fullText,
+            )
+
+        val parsedReal = GrammarAwareParser.parse(tokenizedReal, pdf.name).getOrNull()
+        val parsedScrubbed = GrammarAwareParser.parse(tokenizedScrubbed, pdf.name).getOrNull()
+
         if (parsedReal != null && parsedScrubbed != null && parsedReal.earnings != parsedScrubbed.earnings) {
             scrubChangedNumbers += id
         }
         val parsed =
             parsedScrubbed ?: run {
-                mismatches += "$id: PARSE FAILED on scrubbed text"
+                mismatches += "$id: PARSE FAILED on scrubbed tokens"
                 return
             }
 
@@ -142,54 +157,19 @@ class CorpusCaptureTest {
 
         File(outDir, "$id.input.json").writeText(CorpusFixtures.json.encodeToString(CorpusInput.serializer(), input))
         File(outDir, "$id.expected.json").writeText(CorpusFixtures.json.encodeToString(CorpusExpected.serializer(), expected))
-        captureTokens(parser, pdf, id, year, password, texts.fullText, parsed.monthNum, outDir, mismatches)
 
-        val diff = CorpusFixtures.diff(expected, parsed)
-        if (diff.isNotEmpty()) mismatches += "$id: ${diff.size} field(s) -> ${diff.take(4)}"
-    }
-
-    /**
-     * Captures the Phase 2 token IR via the new [PlatformPdfParser.extractTokens] path, scrubs PII
-     * from each token's text (numeric amounts are untouched), and commits it as `<id>.tokens.json`.
-     */
-    private fun captureTokens(
-        parser: PlatformPdfParser,
-        pdf: File,
-        id: String,
-        year: Int,
-        password: String,
-        fullText: String,
-        monthNum: Int,
-        outDir: File,
-        mismatches: MutableList<String>,
-    ) {
-        val tokenized =
-            parser.extractTokens(pdf.readBytes(), password).getOrElse {
-                mismatches += "$id: TOKEN EXTRACTION FAILED: ${it.message}"
-                return
-            }
-        val ids = CorpusScrubber.identifiersFrom(fullText, monthNum, year)
         val tokens =
             CorpusTokens(
                 id = id,
                 filename = pdf.name,
                 year = year,
-                tableTokens = CorpusScrubber.scrubTokens(tokenized.tableTokens, ids),
-                taxTokens = CorpusScrubber.scrubTokens(tokenized.taxTokens, ids),
-                dsopTokens = CorpusScrubber.scrubTokens(tokenized.dsopTokens, ids),
+                tableTokens = tokenizedScrubbed.tableTokens,
+                taxTokens = tokenizedScrubbed.taxTokens,
+                dsopTokens = tokenizedScrubbed.dsopTokens,
             )
         File(outDir, "$id.tokens.json").writeText(CorpusFixtures.json.encodeToString(CorpusTokens.serializer(), tokens))
-    }
 
-    private fun parseTexts(
-        texts: ExtractedPayslipTexts,
-        filename: String,
-    ) = PayslipTextParser.parse(
-        leftColumnText = texts.leftColumnText,
-        middleColumnText = texts.middleColumnText,
-        fullText = texts.fullText,
-        taxPageText = texts.taxPageText,
-        dsopPageText = texts.dsopPageText,
-        filename = filename,
-    ).getOrNull()
+        val diff = CorpusFixtures.diff(expected, parsed)
+        if (diff.isNotEmpty()) mismatches += "$id: ${diff.size} field(s) -> ${diff.take(4)}"
+    }
 }

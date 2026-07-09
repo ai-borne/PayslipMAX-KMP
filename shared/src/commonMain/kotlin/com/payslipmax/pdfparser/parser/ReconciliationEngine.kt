@@ -13,8 +13,7 @@ internal data class LedgerCarryOver(
 /**
  * Resolves the four ledger carry-over balances. Values are taken from the already-classified
  * earnings/deductions maps (removing them so they don't pollute the credit/debit totals) and, when
- * absent there, recovered via fallback regexes over the raw full text. Behavior extracted verbatim
- * from [PayslipTextParser] to keep that file within the 300-line limit.
+ * absent there, recovered via fallback regexes over the raw full text.
  */
 internal fun resolveLedgerBalances(
     earningsMap: MutableMap<String, Double>,
@@ -81,9 +80,7 @@ internal data class ReconciledTotals(
 
 /**
  * Resolves the trusted gross/deductions/net totals using the payslip's own arithmetic, falling back
- * to parsed sums when the printed totals are missing or self-contradictory, and computes the misc
- * residuals. Behavior extracted verbatim from [PayslipTextParser]; the hard-fail reconciliation
- * check is preserved (thrown here, caught by the parser) — Phase 4 will replace it with confidence.
+ * residuals. The hard-fail reconciliation check is preserved.
  *
  * Note: this mutates the maps via [resolveLedgerBalances], which removes ledger entries so they do
  * not pollute the credit/debit sums.

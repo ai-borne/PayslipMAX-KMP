@@ -8,9 +8,8 @@ import com.tom_roush.pdfbox.text.PDFTextStripper
 import java.io.ByteArrayInputStream
 
 /**
- * Intermediate text representation extracted from a payslip PDF, before [PayslipTextParser]
- * turns it into a [ParsedPayslip]. Exposed so the opt-in corpus-capture utility can persist the
- * exact inputs the parser sees (see Phase 0 regression net).
+ * Intermediate text representation extracted from a payslip PDF. Exposed so the opt-in
+ * corpus-capture utility can persist the exact inputs the parser sees (see Phase 0 regression net).
  */
 data class ExtractedPayslipTexts(
     val leftColumnText: String,

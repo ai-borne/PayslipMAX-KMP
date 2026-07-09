@@ -28,7 +28,7 @@ import kotlinx.serialization.json.jsonObject
  * (PayslipCorpusRegressionTest) read from this single source of truth.
  */
 
-/** The exact, de-identified inputs fed to [com.payslipmax.pdfparser.parser.PayslipTextParser.parse]. */
+/** The exact, de-identified text inputs extracted from a payslip. */
 @Serializable
 data class CorpusInput(
     val id: String,

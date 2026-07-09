@@ -26,7 +26,7 @@ internal data class SolvedTable(
  * *solver and confidence signal* rather than a hard failure.
  *
  * It supersedes the legacy string pipeline's two brittle mechanisms:
- *  - the per-month [DynamicSpatialParser.applyHistoricalOverrides] fudge factors — gone; any residual
+ *  - historical per-month fudge factors — gone; any residual
  *    that can't be attributed to a line item is booked to `miscEarnings`/`miscDeductions` and lowers
  *    confidence, instead of being sprinkled onto Basic Pay/DA/MSP to force a balance, and
  *  - the hard-fail reconciliation that discarded the whole parse — replaced by [SolvedTable.needsReview].

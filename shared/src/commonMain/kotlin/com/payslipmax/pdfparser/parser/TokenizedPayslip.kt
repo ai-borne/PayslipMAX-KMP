@@ -12,9 +12,6 @@ package com.payslipmax.pdfparser.parser
  * All token coordinates follow the single top-down convention documented on [PositionedToken]
  * (origin top-left, y growing downward); the iOS adapter normalizes PDFKit's bottom-up bounds before
  * the tokens reach common code.
- *
- * The old string pipeline ([PayslipTextParser.parse]) remains the default path until the Phase 4
- * cut-over; this contract is populated and validated independently in the interim.
  */
 data class TokenizedPayslip(
     /** Word tokens from the earnings/deductions table page (contains BPAY / Basic Pay). */
