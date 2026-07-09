@@ -15,6 +15,11 @@ import androidx.compose.ui.Modifier
  * consumed down the tree, this resolves to ~0 wherever an ancestor already handled them (e.g. under
  * App's `Scaffold`, which `consumeWindowInsets`) and to the real inset on a standalone VC — so the
  * same shared screen renders identically on both platforms without any platform-specific code.
+ *
+ * Every composable registered as a pushed iOS detail-screen entry point in
+ * `IosNavHost.detailViewController` must apply this modifier (or its own `Scaffold(...)`) on its
+ * root container — directly, or via its one presentational delegate. This is mechanically enforced
+ * by `check_pushed_screen_insets` in `scripts/check_tech_debt_limits.py`.
  */
 @Composable
 fun Modifier.detailScreenSafeArea(): Modifier = windowInsetsPadding(WindowInsets.safeDrawing)
