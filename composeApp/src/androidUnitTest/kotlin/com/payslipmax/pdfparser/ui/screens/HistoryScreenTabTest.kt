@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.ui.test.*
 import com.payslipmax.pdfparser.database.AiInsightReportEntity
+import com.payslipmax.pdfparser.database.toEncryptedEntity
 import com.payslipmax.pdfparser.domain.*
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
@@ -22,6 +23,7 @@ import org.robolectric.annotation.Config
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -145,5 +147,32 @@ class HistoryScreenTabTest {
 
             // Verify there is no refresh/regenerate button (onRegenerateClick is null)
             onNodeWithText("🔄").assertDoesNotExist()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testTapPayslipRowInvokesOnOpenPayslipDetail() =
+        runComposeUiTest {
+            val payslip = buildPayslip(year = 2024, monthNum = 8, monthName = "August")
+            runBlocking { fakeDao.insertPayslip(payslip.toEncryptedEntity()) }
+            testDispatcher.scheduler.runCurrent()
+
+            var openedPayslip: ParsedPayslip? = null
+            setContent {
+                HistoryScreen(
+                    viewModel = viewModel,
+                    onOpenPdf = { _, _ -> },
+                    onNavigateToInsights = {},
+                    onOpenPayslipDetail = { openedPayslip = it },
+                )
+            }
+            testDispatcher.scheduler.runCurrent()
+
+            // The most recent payslip's year auto-expands on load (observePayslips), so the row
+            // is reachable without any extra expand click.
+            onNodeWithText("August").performClick()
+            waitForIdle()
+
+            assertEquals("08/2024", openedPayslip?.dateStr)
         }
 }

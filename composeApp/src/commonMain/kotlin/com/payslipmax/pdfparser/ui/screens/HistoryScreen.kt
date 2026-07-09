@@ -3,9 +3,7 @@ package com.payslipmax.pdfparser.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import com.payslipmax.pdfparser.database.AiInsightReportEntity
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
 import com.payslipmax.pdfparser.domain.*
@@ -17,12 +15,12 @@ fun HistoryScreen(
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
     onNavigateToInsights: () -> Unit,
     onSharePayslip: (ParsedPayslip) -> Unit = {},
+    onOpenPayslipDetail: (ParsedPayslip) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val aiReports by viewModel.aiInsightReports.collectAsState()
     val ledgerRecords by viewModel.ledgerRecords.collectAsState()
-    var selectedDetailPayslip by remember { mutableStateOf<ParsedPayslip?>(null) }
     var activeActionPayslip by remember { mutableStateOf<ParsedPayslip?>(null) }
     var pendingDeletePayslip by remember { mutableStateOf<ParsedPayslip?>(null) }
     var selectedAiReport by remember { mutableStateOf<AiInsightReportEntity?>(null) }
@@ -31,11 +29,10 @@ fun HistoryScreen(
         uiState = uiState,
         aiReports = aiReports,
         ledgerRecords = ledgerRecords,
-        selectedDetailPayslip = selectedDetailPayslip,
         activeActionPayslip = activeActionPayslip,
         pendingDeletePayslip = pendingDeletePayslip,
         selectedAiReport = selectedAiReport,
-        onSelectDetail = { selectedDetailPayslip = it },
+        onSelectDetail = onOpenPayslipDetail,
         onOpenOriginal = { payslip ->
             viewModel.getPayslipPdf(payslip.dateStr) { bytes ->
                 if (bytes != null) onOpenPdf(bytes, payslip.file)
@@ -62,40 +59,6 @@ fun HistoryScreen(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun HistoryReplicaView(
-    payslip: ParsedPayslip,
-    onBack: () -> Unit,
-    onOpenOriginal: (ParsedPayslip) -> Unit,
-    viewModel: PayslipViewModel,
-    modifier: Modifier = Modifier,
-) {
-    val uiState by viewModel.uiState.collectAsState()
-    // Nested handler: only mounted while a payslip detail is open, so it takes priority over
-    // App.kt's handler here. Mid-edit, back cancels the session and stays on the replica (exits
-    // edit mode only); a second back — now not editing — returns to the list (decision 6).
-    BackHandler(enabled = true) {
-        if (uiState.isEditModeActive) viewModel.cancelEditingSession() else onBack()
-    }
-    PayslipReplicaScreen(
-        payslip = payslip,
-        onBackClick = onBack,
-        onViewPdfClick = { viewModel.getPayslipPdf(it) { bytes -> if (bytes != null) onOpenOriginal(payslip) } },
-        modifier = modifier,
-        onCorrectField = { fieldKey, newValue -> viewModel.applyCorrection(payslip.dateStr, fieldKey, newValue) },
-        isEditModeActive = uiState.isEditModeActive,
-        draftCorrections = uiState.draftCorrections,
-        onStartEditing = { viewModel.startEditingSession(payslip.dateStr) },
-        onUpdateDraft = { viewModel.updateDraftCorrection(it) },
-        onDeleteDraft = { fieldKey, codeHead, category, originalAmount ->
-            viewModel.deleteDraftCorrection(fieldKey, codeHead, category, originalAmount)
-        },
-        onSaveSession = { viewModel.saveEditingSession(payslip.dateStr) },
-        onCancelSession = { viewModel.cancelEditingSession() },
-    )
-}
-
 @Composable
 private fun HistoryMainView(
     uiState: PayslipUiState,
@@ -104,7 +67,7 @@ private fun HistoryMainView(
     activeActionPayslip: ParsedPayslip?,
     pendingDeletePayslip: ParsedPayslip?,
     selectedAiReport: AiInsightReportEntity?,
-    onSelectDetail: (ParsedPayslip?) -> Unit,
+    onSelectDetail: (ParsedPayslip) -> Unit,
     onOpenOriginal: (ParsedPayslip) -> Unit,
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
@@ -135,7 +98,7 @@ private fun HistoryMainView(
     HistoryOverlays(
         activeActionPayslip = activeActionPayslip, pendingDeletePayslip = pendingDeletePayslip,
         selectedAiReport = selectedAiReport, onDismissAction = onDismissAction,
-        onViewReplica = { onSelectDetail(activeActionPayslip) },
+        onViewReplica = { activeActionPayslip?.let(onSelectDetail) },
         onViewOriginal = { activeActionPayslip?.let(onOpenOriginal) },
         onShareSummary = { activeActionPayslip?.let(onSharePayslip) },
         onDeleteRequest = onDeleteRequest,
@@ -150,11 +113,10 @@ private fun HistoryContent(
     uiState: PayslipUiState,
     aiReports: List<AiInsightReportEntity>,
     ledgerRecords: List<LedgerRecordEntity>,
-    selectedDetailPayslip: ParsedPayslip?,
     activeActionPayslip: ParsedPayslip?,
     pendingDeletePayslip: ParsedPayslip?,
     selectedAiReport: AiInsightReportEntity?,
-    onSelectDetail: (ParsedPayslip?) -> Unit,
+    onSelectDetail: (ParsedPayslip) -> Unit,
     onOpenOriginal: (ParsedPayslip) -> Unit,
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
@@ -169,31 +131,20 @@ private fun HistoryContent(
     onNavigateToInsights: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (selectedDetailPayslip != null) {
-        val activePayslip = uiState.payslips.find { it.dateStr == selectedDetailPayslip.dateStr } ?: selectedDetailPayslip
-        HistoryReplicaView(
-            payslip = activePayslip,
-            onBack = { onSelectDetail(null) },
-            onOpenOriginal = onOpenOriginal,
-            viewModel = viewModel,
-            modifier = modifier,
-        )
-    } else {
-        HistoryMainView(
-            uiState = uiState, aiReports = aiReports, ledgerRecords = ledgerRecords,
-            activeActionPayslip = activeActionPayslip, pendingDeletePayslip = pendingDeletePayslip,
-            selectedAiReport = selectedAiReport, onSelectDetail = onSelectDetail,
-            onOpenOriginal = onOpenOriginal, onLongPress = onLongPress,
-            onSwipeDelete = onSwipeDelete, onAiReportClick = onAiReportClick,
-            onSharePayslip = onSharePayslip, onDismissAction = onDismissAction,
-            onDeleteRequest = onDeleteRequest, onConfirmDelete = onConfirmDelete,
-            onDismissDelete = onDismissDelete, onDismissAiReport = onDismissAiReport,
-            onNavigateToInsights = onNavigateToInsights, expandedYears = uiState.expandedHistoryYears,
-            onToggleYear = viewModel::toggleHistoryYearExpanded, initialScrollIndex = uiState.historyScrollIndex,
-            initialScrollOffset = uiState.historyScrollOffset, onScrollPositionChanged = viewModel::saveHistoryScrollPosition,
-            modifier = modifier,
-        )
-    }
+    HistoryMainView(
+        uiState = uiState, aiReports = aiReports, ledgerRecords = ledgerRecords,
+        activeActionPayslip = activeActionPayslip, pendingDeletePayslip = pendingDeletePayslip,
+        selectedAiReport = selectedAiReport, onSelectDetail = onSelectDetail,
+        onOpenOriginal = onOpenOriginal, onLongPress = onLongPress,
+        onSwipeDelete = onSwipeDelete, onAiReportClick = onAiReportClick,
+        onSharePayslip = onSharePayslip, onDismissAction = onDismissAction,
+        onDeleteRequest = onDeleteRequest, onConfirmDelete = onConfirmDelete,
+        onDismissDelete = onDismissDelete, onDismissAiReport = onDismissAiReport,
+        onNavigateToInsights = onNavigateToInsights, expandedYears = uiState.expandedHistoryYears,
+        onToggleYear = viewModel::toggleHistoryYearExpanded, initialScrollIndex = uiState.historyScrollIndex,
+        initialScrollOffset = uiState.historyScrollOffset, onScrollPositionChanged = viewModel::saveHistoryScrollPosition,
+        modifier = modifier,
+    )
 }
 
 @Composable

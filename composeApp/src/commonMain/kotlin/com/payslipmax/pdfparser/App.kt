@@ -165,7 +165,7 @@ private fun ScreenContent(
 ) {
     val activeDetail = navState.activeDetail
     if (activeDetail != null && nativeDetailNavigator == null) {
-        DetailContent(detail = activeDetail, viewModel = viewModel, onBack = { navState.pop() })
+        DetailContent(detail = activeDetail, viewModel = viewModel, onBack = { navState.pop() }, onOpenPdf = onOpenPdf)
     } else {
         // Route by destination: tab roots switch tabs; detail screens push natively on iOS
         // (nativeDetailNavigator) or render inline on Android (SSOT via isTabRoot).
@@ -178,6 +178,10 @@ private fun ScreenContent(
                     viewModel = viewModel,
                     onOpenPdf = onOpenPdf,
                     onNavigateToInsights = { onNavigate(Screen.Insights) },
+                    onOpenPayslipDetail = { payslip ->
+                        viewModel.selectHistoryDetailPayslip(payslip.dateStr)
+                        onNavigate(Screen.PayslipReplica)
+                    },
                 )
             Screen.Insights -> InsightsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
             Screen.Settings -> SettingsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
@@ -195,6 +199,7 @@ private fun DetailContent(
     detail: Screen,
     viewModel: PayslipViewModel,
     onBack: () -> Unit,
+    onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
 ) {
     when (detail) {
         Screen.Representation ->
@@ -207,6 +212,16 @@ private fun DetailContent(
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
         Screen.PrivacyPolicy ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.PrivacyPolicy, onBack = onBack)
+        Screen.PayslipReplica ->
+            com.payslipmax.pdfparser.ui.screens.PayslipReplicaDetailScreen(
+                viewModel = viewModel,
+                onBack = onBack,
+                onOpenOriginal = { payslip ->
+                    viewModel.getPayslipPdf(payslip.dateStr) { bytes ->
+                        if (bytes != null) onOpenPdf(bytes, payslip.file)
+                    }
+                },
+            )
         else ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
     }
