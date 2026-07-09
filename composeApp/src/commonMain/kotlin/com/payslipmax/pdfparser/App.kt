@@ -40,6 +40,7 @@ enum class Screen {
     HelpLegal,
     FAQ,
     PrivacyPolicy,
+    PayslipReplica,
 }
 
 /** The four bottom-tab roots; the remaining [Screen] values are pushed detail screens. */

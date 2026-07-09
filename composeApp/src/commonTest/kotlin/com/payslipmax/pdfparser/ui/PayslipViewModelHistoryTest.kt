@@ -106,6 +106,20 @@ class PayslipViewModelHistoryTest {
             assertEquals(expandedBefore, state.expandedHistoryYears)
         }
 
+    @Test
+    fun testSelectHistoryDetailPayslipSetsIdWithoutTouchingSelectedPayslip() =
+        runTest {
+            fakeDao.insertPayslip(createMockPayslip("08/2023").toEncryptedEntity())
+            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val selectedBefore = testViewModel.uiState.value.selectedPayslip
+
+            testViewModel.selectHistoryDetailPayslip("08/2023")
+
+            val state = testViewModel.uiState.value
+            assertEquals("08/2023", state.historyDetailPayslipId)
+            assertEquals(selectedBefore, state.selectedPayslip)
+        }
+
     private fun createMockPayslip(dateStr: String) =
         dateStr.split("/").let { split ->
             val month = split[0].toInt()
