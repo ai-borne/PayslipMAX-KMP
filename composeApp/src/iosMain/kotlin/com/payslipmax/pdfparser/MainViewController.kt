@@ -1,8 +1,12 @@
 package com.payslipmax.pdfparser
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
 import com.payslipmax.pdfparser.auth.AuthTokenProvider
 import com.payslipmax.pdfparser.di.appModule
@@ -95,7 +99,15 @@ class IosNavHost(
     private fun themedViewController(content: @Composable () -> Unit): UIViewController =
         ComposeUIViewController {
             val uiState by viewModel.uiState.collectAsState()
-            PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) { content() }
+            PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) {
+                // Mirror Android's App Scaffold host: a Surface establishes both the themed background
+                // and the LocalContentColor baseline. Without it, content that inherits the content
+                // color (e.g. the ScreenBackHeader back arrow) falls back to Compose's default
+                // near-black and disappears in dark mode — a standalone VC has no Scaffold ancestor.
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    content()
+                }
+            }
         }
 
     /** Called by the Swift nav delegate after the stack returns to the root (native pop/swipe). */

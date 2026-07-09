@@ -13,10 +13,10 @@ object AppStringsPremium {
 
     // Premium Features Screens Strings
     const val representationTitle = "Official Representations"
-    const val representationSubtitle = "Formal correspondence for pay and allowance disputes"
+    const val representationSubtitle = "Pay & allowance dispute letters"
     const val representationDraftsEmpty = "No salary discrepancies or missing allowances detected. Representation drafts will appear here if the local audit engine flags any issues."
-    const val representationCopyBtn = "Copy to Clipboard"
-    const val representationEditBtn = "Edit Draft"
+    const val representationCopyBtn = "Copy"
+    const val representationEditBtn = "Edit"
     const val representationSaveBtn = "Save Draft"
     const val representationShareBtn = "Share"
 
