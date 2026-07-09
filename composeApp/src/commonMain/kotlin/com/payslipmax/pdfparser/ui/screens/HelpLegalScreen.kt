@@ -10,16 +10,25 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.LegalStrings
 
 @Composable
 fun HelpLegalScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    screen: Screen = Screen.HelpLegal,
 ) {
+    val title =
+        when (screen) {
+            Screen.FAQ -> AppStrings.settingsHelpFaqTitle
+            Screen.PrivacyPolicy -> AppStrings.settingsHelpPrivacyTitle
+            else -> AppStrings.settingsHelpDocsHeader
+        }
     Scaffold(
-        topBar = { HelpLegalTopAppBar(onBack) },
+        topBar = { HelpLegalTopAppBar(title = title, onBack = onBack) },
         modifier = modifier,
     ) { paddingValues ->
         Column(
@@ -32,36 +41,56 @@ fun HelpLegalScreen(
                     .padding(AppDimensions.PaddingMedium),
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
         ) {
-            DocSection(
-                title = AppStrings.settingsHelpFaqTitle,
-                content = AppStrings.settingsHelpFaqContent,
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-            DocSection(
-                title = AppStrings.settingsHelpPrivacyTitle,
-                content = AppStrings.settingsHelpPrivacyContent,
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-            DocSection(
-                title = AppStrings.settingsHelpAiTitle,
-                content = AppStrings.settingsHelpAiContent,
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-            DocSection(
-                title = AppStrings.settingsHelpDisclaimerTitle,
-                content = AppStrings.settingsHelpDisclaimerContent,
-            )
+            when (screen) {
+                Screen.FAQ -> FaqContent()
+                Screen.PrivacyPolicy -> PrivacyContent()
+                else -> AllLegalContent()
+            }
         }
     }
+}
+
+@Composable
+private fun FaqContent() {
+    DocSection(
+        title = AppStrings.settingsHelpFaqTitle,
+        content = LegalStrings.settingsHelpFaqContent,
+    )
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+    DocSection(
+        title = AppStrings.settingsHelpDisclaimerTitle,
+        content = LegalStrings.settingsHelpDisclaimerContent,
+    )
+}
+
+@Composable
+private fun PrivacyContent() {
+    DocSection(
+        title = AppStrings.settingsHelpPrivacyTitle,
+        content = LegalStrings.settingsHelpPrivacyContent,
+    )
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+    DocSection(
+        title = AppStrings.settingsHelpAiTitle,
+        content = LegalStrings.settingsHelpAiContent,
+    )
+}
+
+@Composable
+private fun AllLegalContent() {
+    FaqContent()
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+    PrivacyContent()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HelpLegalTopAppBar(
+    title: String,
     onBack: () -> Unit,
 ) {
     TopAppBar(
-        title = { Text(AppStrings.settingsHelpDocsHeader) },
+        title = { Text(title) },
         navigationIcon = {
             IconButton(onClick = onBack) {
                 Icon(

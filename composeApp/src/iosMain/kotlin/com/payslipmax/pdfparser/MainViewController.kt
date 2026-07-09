@@ -83,7 +83,9 @@ class IosNavHost(
                 Screen.Representation -> RepresentationScreen(viewModel = viewModel, onBack = onBack)
                 Screen.TaxPlanning -> TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
                 Screen.RetirementPlanning -> RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
-                else -> HelpLegalScreen(onBack = onBack)
+                Screen.FAQ -> HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
+                Screen.PrivacyPolicy -> HelpLegalScreen(screen = Screen.PrivacyPolicy, onBack = onBack)
+                else -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
             }
         }
     }

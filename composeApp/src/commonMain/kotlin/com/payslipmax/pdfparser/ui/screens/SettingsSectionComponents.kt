@@ -153,13 +153,13 @@ fun HelpSupportSection(
         SettingsRow(
             icon = "❓",
             title = AppStrings.settingsHelpFaqTitle,
-            onClick = { onNavigateTo(Screen.HelpLegal) },
+            onClick = { onNavigateTo(Screen.FAQ) },
         )
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         SettingsRow(
             icon = "📜",
             title = AppStrings.settingsHelpPrivacyTitle,
-            onClick = { onNavigateTo(Screen.HelpLegal) },
+            onClick = { onNavigateTo(Screen.PrivacyPolicy) },
         )
     }
 }
@@ -243,7 +243,7 @@ fun VersionFooter(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable { onNavigateTo(Screen.HelpLegal) },
+                modifier = Modifier.clickable { onNavigateTo(Screen.PrivacyPolicy) },
             )
             Text(
                 text = "•",
@@ -255,7 +255,7 @@ fun VersionFooter(
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable { onNavigateTo(Screen.HelpLegal) },
+                modifier = Modifier.clickable { onNavigateTo(Screen.PrivacyPolicy) },
             )
         }
     }

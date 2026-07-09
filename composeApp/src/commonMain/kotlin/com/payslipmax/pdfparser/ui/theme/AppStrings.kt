@@ -181,11 +181,6 @@ object AppStrings {
     const val settingsHelpAiTitle = "AI Privacy Promise"
     const val settingsHelpDisclaimerTitle = "Legal Disclaimer"
 
-    const val settingsHelpFaqContent = "Q: How is my payslip decrypted?\nA: Decryption happens entirely offline on your device using local AES-256 libraries. Your password is never sent online.\n\nQ: Where is my data stored?\nA: Your data is saved in a secure, local Room database on your device."
-    const val settingsHelpPrivacyContent = "We enforce a 100% offline-first architecture. All parsing, decryption, and storage tasks run strictly in your local sandbox. No data leaves your control unless you explicitly run a sync backup."
-    const val settingsHelpAiContent = "To preserve confidentiality, the app strips all Personal Identifying Information (PII) like Name, CDA account number, and PAN number from data sent to the Gemini API. Only numeric financial values are processed to generate insights."
-    const val settingsHelpDisclaimerContent = "This analytical tool is for reference purposes only. It is not an official app of the PCDA, Ministry of Defence, or the Indian Army. It does not replace professional advice from chartered accountants or official audit statements."
-
     // Redesign & Pro Tier
     const val settingsProPlanBullet1 = "• CA-Grade Financial Audits & Advice"
     const val settingsProPlanBullet2 = "• Personalized Tax Saving Insights"

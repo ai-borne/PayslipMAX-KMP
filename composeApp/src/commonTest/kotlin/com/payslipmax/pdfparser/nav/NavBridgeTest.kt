@@ -95,7 +95,7 @@ class NavBridgeTest {
         // pop() is idempotent, so the second call is a safe no-op (no double state change).
         val navState = AppNavState(currentTab = Screen.Settings)
         val (bridge, rec) = bridge(navState)
-        bridge.navigateToDetail(Screen.HelpLegal)
+        bridge.navigateToDetail(Screen.FAQ)
 
         bridge.requestPop()
         bridge.onNativePopObserved()

@@ -38,6 +38,8 @@ enum class Screen {
     TaxPlanning,
     RetirementPlanning,
     HelpLegal,
+    FAQ,
+    PrivacyPolicy,
 }
 
 /** The four bottom-tab roots; the remaining [Screen] values are pushed detail screens. */
@@ -200,8 +202,12 @@ private fun DetailContent(
             com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
         Screen.RetirementPlanning ->
             com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
+        Screen.FAQ ->
+            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
+        Screen.PrivacyPolicy ->
+            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.PrivacyPolicy, onBack = onBack)
         else ->
-            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(onBack = onBack)
+            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
     }
 }
 

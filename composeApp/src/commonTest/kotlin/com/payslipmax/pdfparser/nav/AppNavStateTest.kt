@@ -11,7 +11,7 @@ class AppNavStateTest {
     /** The four bottom-tab roots; the remaining [Screen] values are detail-only destinations. */
     private val tabRoots = setOf(Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings)
     private val detailScreens =
-        setOf(Screen.Representation, Screen.TaxPlanning, Screen.RetirementPlanning, Screen.HelpLegal)
+        setOf(Screen.Representation, Screen.TaxPlanning, Screen.RetirementPlanning, Screen.HelpLegal, Screen.FAQ, Screen.PrivacyPolicy)
 
     @Test
     fun defaultsToDashboardTabWithNoDetail() {
