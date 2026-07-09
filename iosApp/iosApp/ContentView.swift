@@ -125,9 +125,13 @@ final class NavCoordinator: NSObject, UINavigationControllerDelegate, UIGestureR
         }
     }
 
-    // Only allow the interactive pop gesture when there is something to pop back to.
+    // Only allow the interactive pop gesture when there is something to pop back to, and never
+    // while the pushed detail has an unsaved edit in flight — an edge-swipe bypasses Compose's
+    // BackHandler, so without this gate it would silently discard drafts/corrections instead of
+    // running the two-step cancel-then-exit path (Phase 5).
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return (navController?.viewControllers.count ?? 0) > 1
+        guard (navController?.viewControllers.count ?? 0) > 1 else { return false }
+        return !(navHost?.hasActiveUnsavedSubState() ?? false)
     }
 }
 
