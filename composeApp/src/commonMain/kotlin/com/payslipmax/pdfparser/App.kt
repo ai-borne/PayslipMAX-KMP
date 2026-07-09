@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -133,7 +134,10 @@ private fun MainScaffold(
         // System back pops a pushed detail; at a tab root it stays disabled so back exits.
         // Never enabled on iOS — the native UINavigationController handles back there.
         BackHandler(enabled = !hostDetailsNatively && navState.activeDetail != null) { navState.pop() }
-        Column(modifier = Modifier.padding(paddingValues)) {
+        // Scaffold already applies the safe-area inset via paddingValues here; consume it so a
+        // screen's own detailScreenSafeArea() resolves to ~0 on this path (no double padding) while
+        // still applying on a standalone iOS detail VC, which has no ancestor to consume it.
+        Column(modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues)) {
             BaseModelDownloadBanner(uiState = uiState)
             Box(modifier = Modifier.weight(1f)) {
                 ScreenContent(

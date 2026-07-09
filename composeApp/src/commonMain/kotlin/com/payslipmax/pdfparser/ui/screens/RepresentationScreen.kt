@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.database.RepresentationDraftEntity
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
+import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
 import com.payslipmax.pdfparser.ui.platform.rememberClipboardCopier
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -43,6 +44,7 @@ fun RepresentationScreen(
             modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
+                .detailScreenSafeArea()
                 .padding(AppDimensions.PaddingMedium),
     ) {
         val currentSelected = selectedDraft

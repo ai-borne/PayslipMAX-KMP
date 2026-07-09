@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
+import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 
@@ -36,6 +37,7 @@ fun RetirementPlanningScreen(
             modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
+                .detailScreenSafeArea()
                 .padding(AppDimensions.PaddingMedium)
                 .then(if (initialBalance > 0.0) Modifier.verticalScroll(scrollState) else Modifier),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
