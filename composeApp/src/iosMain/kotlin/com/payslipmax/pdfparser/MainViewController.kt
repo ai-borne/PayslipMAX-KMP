@@ -111,7 +111,13 @@ class IosNavHost(
                         },
                     )
                 }
-                else -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+                Screen.HelpLegal -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+                // Tab roots are structurally unreachable here: onNavigate() routes them via
+                // switchTab(), never push()/nativeDetailNavigator, and AppNavStateSaver.restore()
+                // filters activeDetail to !isTabRoot. Handled only so this `when` stays exhaustive
+                // against future Screen cases.
+                Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings ->
+                    HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
             }
         }
     }

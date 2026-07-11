@@ -222,7 +222,12 @@ private fun DetailContent(
                     }
                 },
             )
-        else ->
+        Screen.HelpLegal ->
+            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+        // Tab roots are structurally unreachable here: onNavigate() routes them via switchTab(),
+        // never push(), and AppNavStateSaver.restore() filters activeDetail to !isTabRoot. Handled
+        // only so this `when` stays exhaustive against future Screen cases.
+        Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
     }
 }
