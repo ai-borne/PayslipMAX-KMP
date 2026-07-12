@@ -43,28 +43,38 @@ class WealthOptimizationEngineTest {
 
     @Test
     fun testMarginalRateZeroBelowExemptionLimit() {
-        assertEquals(0.0, WealthOptimizationEngine.deriveMarginalRate(200_000.0))
+        assertEquals(0.0, WealthOptimizationEngine.deriveMarginalRate(200_000.0, TaxRegime.OLD))
     }
 
     @Test
     fun testMarginalRateFivePercent() {
-        assertEquals(0.05, WealthOptimizationEngine.deriveMarginalRate(400_000.0))
+        assertEquals(0.05, WealthOptimizationEngine.deriveMarginalRate(400_000.0, TaxRegime.OLD))
     }
 
     @Test
     fun testMarginalRateTwentyPercent() {
-        assertEquals(0.20, WealthOptimizationEngine.deriveMarginalRate(700_000.0))
+        assertEquals(0.20, WealthOptimizationEngine.deriveMarginalRate(700_000.0, TaxRegime.OLD))
     }
 
     @Test
     fun testMarginalRateThirtyPercent() {
-        assertEquals(0.30, WealthOptimizationEngine.deriveMarginalRate(1_200_000.0))
+        assertEquals(0.30, WealthOptimizationEngine.deriveMarginalRate(1_200_000.0, TaxRegime.OLD))
     }
 
     @Test
     fun testMarginalRateAtExactSlabBoundary() {
         // Exactly 5L → lower boundary of 20% band
-        assertEquals(0.20, WealthOptimizationEngine.deriveMarginalRate(500_001.0))
+        assertEquals(0.20, WealthOptimizationEngine.deriveMarginalRate(500_001.0, TaxRegime.OLD))
+    }
+
+    @Test
+    fun testNewRegimeMarginalRates() {
+        assertEquals(0.0, WealthOptimizationEngine.deriveMarginalRate(250_000.0, TaxRegime.NEW))
+        assertEquals(0.05, WealthOptimizationEngine.deriveMarginalRate(500_000.0, TaxRegime.NEW))
+        assertEquals(0.10, WealthOptimizationEngine.deriveMarginalRate(800_000.0, TaxRegime.NEW))
+        assertEquals(0.15, WealthOptimizationEngine.deriveMarginalRate(1_100_000.0, TaxRegime.NEW))
+        assertEquals(0.20, WealthOptimizationEngine.deriveMarginalRate(1_300_000.0, TaxRegime.NEW))
+        assertEquals(0.30, WealthOptimizationEngine.deriveMarginalRate(1_600_000.0, TaxRegime.NEW))
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -147,9 +157,22 @@ class WealthOptimizationEngineTest {
     // ──────────────────────────────────────────────────────────────────────────
 
     @Test
-    fun testRegimeIsAlwaysOld() {
+    fun testRegimeIsDefaultOld() {
         val result = WealthOptimizationEngine.analyze(createPayslip())
         assertEquals("OLD", result.regimeAssumed)
+    }
+
+    @Test
+    fun testRegimeIsNewWhenSpecified() {
+        val payslip =
+            createPayslip().let {
+                it.copy(taxAndSavings = it.taxAndSavings?.copy(taxRegime = TaxRegime.NEW))
+            }
+        val result = WealthOptimizationEngine.analyze(payslip)
+        assertEquals("NEW", result.regimeAssumed)
+        assertEquals(0.0, result.totalPotentialTaxSaving)
+        assertTrue(result.opportunities.isEmpty(), "Opportunities must be empty under the New Tax Regime")
+        assertEquals(0.0, result.dsopGapMonthly)
     }
 
     // ──────────────────────────────────────────────────────────────────────────

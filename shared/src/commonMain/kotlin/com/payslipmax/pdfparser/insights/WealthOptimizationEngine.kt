@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.insights
 
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.TaxRegime
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -37,32 +38,59 @@ object WealthOptimizationEngine {
         val netTaxableIncome = payslip.taxAndSavings?.netTaxableIncome ?: 0.0
         val dsopClosingBalance = payslip.taxAndSavings?.dsopFund?.closingBalance ?: 0.0
 
-        val marginalRate = deriveMarginalRate(netTaxableIncome)
-        val annual80CUsed = (dsopMonthly + agifMonthly) * 12.0
-        val annual80CHeadroom = maxOf(0.0, LIMIT_80C - annual80CUsed)
+        val regime = payslip.taxAndSavings?.taxRegime ?: TaxRegime.OLD
+        val marginalRate = deriveMarginalRate(netTaxableIncome, regime)
 
-        val opportunities = buildOpportunities(annual80CHeadroom, marginalRate)
+        val opportunities =
+            if (regime == TaxRegime.NEW) {
+                emptyList()
+            } else {
+                val annual80CUsed = (dsopMonthly + agifMonthly) * 12.0
+                val annual80CHeadroom = maxOf(0.0, LIMIT_80C - annual80CUsed)
+                buildOpportunities(annual80CHeadroom, marginalRate)
+            }
 
-        val dsopGapMonthly = computeDsopGap(dsopMonthly, grossPay, annual80CHeadroom)
+        val dsopGapMonthly =
+            if (regime == TaxRegime.NEW) {
+                0.0
+            } else {
+                val annual80CUsed = (dsopMonthly + agifMonthly) * 12.0
+                val annual80CHeadroom = maxOf(0.0, LIMIT_80C - annual80CUsed)
+                computeDsopGap(dsopMonthly, grossPay, annual80CHeadroom)
+            }
         val corpusUplift = computeCorpusUplift(dsopMonthly, dsopGapMonthly, dsopClosingBalance, yearsToRetirement)
 
         return OptimizationResult(
             totalPotentialTaxSaving = opportunities.sumOf { it.estTaxSaved },
             marginalRatePct = marginalRate,
-            regimeAssumed = "OLD",
+            regimeAssumed = regime.name,
             opportunities = opportunities,
             dsopGapMonthly = dsopGapMonthly,
             dsopCorpusUpliftAtRetirement = corpusUplift,
         )
     }
 
-    // Old-regime slabs (FY 2024-25); used to estimate savings under old-regime assumption.
-    fun deriveMarginalRate(netTaxableIncome: Double): Double =
-        when {
-            netTaxableIncome <= 250_000.0 -> 0.0
-            netTaxableIncome <= 500_000.0 -> 0.05
-            netTaxableIncome <= 1_000_000.0 -> 0.20
-            else -> 0.30
+    // Regime-specific slabs (FY 2024-25 / FY 2025-26); used to estimate marginal rate.
+    fun deriveMarginalRate(
+        netTaxableIncome: Double,
+        regime: TaxRegime = TaxRegime.OLD,
+    ): Double =
+        if (regime == TaxRegime.NEW) {
+            when {
+                netTaxableIncome <= 300_000.0 -> 0.0
+                netTaxableIncome <= 700_000.0 -> 0.05
+                netTaxableIncome <= 1_000_000.0 -> 0.10
+                netTaxableIncome <= 1_200_000.0 -> 0.15
+                netTaxableIncome <= 1_500_000.0 -> 0.20
+                else -> 0.30
+            }
+        } else {
+            when {
+                netTaxableIncome <= 250_000.0 -> 0.0
+                netTaxableIncome <= 500_000.0 -> 0.05
+                netTaxableIncome <= 1_000_000.0 -> 0.20
+                else -> 0.30
+            }
         }
 
     private fun buildOpportunities(

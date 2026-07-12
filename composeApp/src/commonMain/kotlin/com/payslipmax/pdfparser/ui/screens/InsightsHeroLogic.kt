@@ -16,6 +16,7 @@ sealed class HeroBranch {
     data class Wealth(
         val totalPotentialTaxSaving: Double,
         val topOpportunityAction: String,
+        val regimeAssumed: String,
     ) : HeroBranch()
 }
 
@@ -34,6 +35,7 @@ fun selectHeroBranch(
         HeroBranch.Wealth(
             totalPotentialTaxSaving = optimizationResult.totalPotentialTaxSaving,
             topOpportunityAction = optimizationResult.opportunities.firstOrNull()?.action ?: "",
+            regimeAssumed = optimizationResult.regimeAssumed,
         )
     }
 }

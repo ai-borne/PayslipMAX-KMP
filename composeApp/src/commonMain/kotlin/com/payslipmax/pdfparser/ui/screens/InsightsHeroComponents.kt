@@ -133,7 +133,11 @@ private fun WealthHeroCard(
                 )
             }
             Text(
-                InsightsStrings.heroWealthRegimeDisclaimer,
+                if (branch.regimeAssumed == "NEW") {
+                    InsightsStrings.heroWealthRegimeNewActive
+                } else {
+                    InsightsStrings.heroWealthRegimeDisclaimer
+                },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f),
             )

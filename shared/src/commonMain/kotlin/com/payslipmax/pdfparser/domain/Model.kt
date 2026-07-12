@@ -134,7 +134,14 @@ data class TaxAndSavings(
     val taxDeductedYtd: Double = 0.0,
     val cessDeductedYtd: Double = 0.0,
     val dsopFund: DsopFund? = null,
+    val taxRegime: TaxRegime = TaxRegime.OLD,
 )
+
+@Serializable
+enum class TaxRegime {
+    OLD,
+    NEW,
+}
 
 @Serializable
 data class DsopFund(

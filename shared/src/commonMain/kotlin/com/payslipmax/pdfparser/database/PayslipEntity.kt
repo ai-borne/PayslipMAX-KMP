@@ -38,6 +38,7 @@ data class RoomTaxAndSavings(
     val cessDeductedYtd: Double = 0.0,
     @Embedded(prefix = "dsop_")
     val dsopFund: DsopFund? = null,
+    val taxRegime: TaxRegime = TaxRegime.OLD,
 )
 
 // Helper extension functions to map between Entity and Domain model
@@ -64,6 +65,7 @@ fun ParsedPayslip.toEntity(): PayslipEntity {
                     taxDeductedYtd = it.taxDeductedYtd,
                     cessDeductedYtd = it.cessDeductedYtd,
                     dsopFund = it.dsopFund,
+                    taxRegime = it.taxRegime,
                 )
             },
     )
@@ -92,6 +94,7 @@ fun PayslipEntity.toDomain(): ParsedPayslip {
                     taxDeductedYtd = it.taxDeductedYtd,
                     cessDeductedYtd = it.cessDeductedYtd,
                     dsopFund = it.dsopFund,
+                    taxRegime = it.taxRegime,
                 )
             },
     )

@@ -7,11 +7,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TaxPlannerViewStateTest {
-    private fun makeOptResult(vararg opps: Opportunity) =
+    private fun makeOptResult(
+        vararg opps: Opportunity,
+        regime: String = "OLD",
+    ) =
         OptimizationResult(
             totalPotentialTaxSaving = opps.sumOf { it.estTaxSaved },
             marginalRatePct = 0.20,
-            regimeAssumed = "OLD",
+            regimeAssumed = regime,
             opportunities = opps.toList(),
             dsopGapMonthly = 1_000.0,
             dsopCorpusUpliftAtRetirement = 500_000.0,
@@ -56,6 +59,12 @@ class TaxPlannerViewStateTest {
     fun testRegimeLabelContainsOldRegime() {
         val item = buildTaxOptViewItems(makeOptResult(opp("80c_dsop", "80C", 60_000.0, 12_000.0))).single()
         assertTrue(item.regimeLabel.contains("old regime", ignoreCase = true))
+    }
+
+    @Test
+    fun testRegimeLabelContainsNewRegime() {
+        val item = buildTaxOptViewItems(makeOptResult(opp("80c_dsop", "80C", 60_000.0, 12_000.0), regime = "NEW")).single()
+        assertTrue(item.regimeLabel.contains("new regime", ignoreCase = true))
     }
 
     @Test

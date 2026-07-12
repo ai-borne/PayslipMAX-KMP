@@ -37,7 +37,12 @@ fun buildTaxOptViewItems(optimizationResult: OptimizationResult): List<TaxOptVie
             action = opp.action,
             unusedAmount = opp.unusedAmount,
             estTaxSaved = opp.estTaxSaved,
-            regimeLabel = InsightsStrings.taxPlanningOldRegimeEst,
+            regimeLabel =
+                if (optimizationResult.regimeAssumed == "NEW") {
+                    InsightsStrings.taxPlanningNewRegimeEst
+                } else {
+                    InsightsStrings.taxPlanningOldRegimeEst
+                },
         )
     }
 
@@ -64,7 +69,7 @@ fun TaxPlanningScreen(
         ScreenBackHeader(title = AppStringsPremium.taxPlanningTitle, subtitle = AppStringsPremium.taxPlanningSubtitle, onBack = onBack)
         if (tax != null && optimizationResult != null) {
             TaxSummaryCard(tax = tax)
-            TaxOpportunitiesHeader()
+            TaxOpportunitiesHeader(isNewRegime = optimizationResult.regimeAssumed == "NEW")
             TaxOptimizationsList(optimizationResult = optimizationResult)
         } else {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -79,7 +84,10 @@ fun TaxPlanningScreen(
 }
 
 @Composable
-private fun TaxOpportunitiesHeader(modifier: Modifier = Modifier) {
+private fun TaxOpportunitiesHeader(
+    isNewRegime: Boolean,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
@@ -91,7 +99,12 @@ private fun TaxOpportunitiesHeader(modifier: Modifier = Modifier) {
             color = MaterialTheme.colorScheme.onBackground,
         )
         Text(
-            text = InsightsStrings.taxPlanningRegimeDisclaimer,
+            text =
+                if (isNewRegime) {
+                    InsightsStrings.taxPlanningRegimeDisclaimerNew
+                } else {
+                    InsightsStrings.taxPlanningRegimeDisclaimer
+                },
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

@@ -60,6 +60,9 @@ internal fun parseTaxAndSavings(
                 totalTaxPayableRaw
             }
 
+        val isNewRegime = taxText.contains("New Tax Regime", ignoreCase = true)
+        val taxRegime = if (isNewRegime) TaxRegime.NEW else TaxRegime.OLD
+
         return TaxAndSavings(
             grossSalaryYtd = grossSalaryYtd,
             totalTaxableIncome = taxableIncMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
@@ -69,6 +72,7 @@ internal fun parseTaxAndSavings(
             taxDeductedYtd = taxDeductedMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
             cessDeductedYtd = cessDeductedMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
             dsopFund = dsopFund,
+            taxRegime = taxRegime,
         )
     }
     return null

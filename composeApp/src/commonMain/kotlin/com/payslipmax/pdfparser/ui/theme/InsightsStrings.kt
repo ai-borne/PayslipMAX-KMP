@@ -26,12 +26,15 @@ object InsightsStrings {
     const val heroWealthSubLabel = "tax saving available"
     const val heroWealthCtaLabel = "See how →"
     const val heroWealthRegimeDisclaimer = "Old regime est. — verify with PAO if on new regime"
+    const val heroWealthRegimeNewActive = "New Tax Regime active — no further standard optimizations."
 
     // Tax Planner real numbers
     const val taxPlanningOldRegimeEst = "(old regime est.)"
+    const val taxPlanningNewRegimeEst = "(new regime)"
     const val taxPlanningEstTaxSaved = "Est. tax saved: ₹"
     const val taxPlanningHeadroom = "Headroom: ₹"
     const val taxPlanningRegimeDisclaimer = "Figures assume old-regime deductions. Verify with PAO if on new regime."
+    const val taxPlanningRegimeDisclaimerNew = "Figures assume New Tax Regime. Standard deductions are auto-applied by PCDA."
 
     // Premium tools value props
     const val premiumToolsDraftClaimsValueProp = "Recover money with official PCDA(O) representations"
