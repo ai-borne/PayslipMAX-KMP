@@ -40,29 +40,25 @@ class PhantomFreeCorpusInvariantTest {
      * tokens as "outside acceptance radius". The gaps that *do* reproduce today are a different,
      * still-in-scope instance of the same root cause: the "Details of Transactions" narrative text
      * (quarter-allotment notes carrying an office PIN code) landing inside the credit/debit column
-     * band and leaking into `rawEarnings`/`rawDeductions` — the exact class Phase 1's vertical-band
-     * filter and Phase 2's plausibility backstop are designed to close off.
+     * band and leaking into `rawEarnings`/`rawDeductions`.
+     *
+     * Phase 1's [VerticalBandFilter] closed 9 of the original 10 entries: the office-PIN leaks
+     * (`04_apr_2021`, `07_jul_2020`, `08_aug_2020`, `09_sep_2020`, `10_oct_20`, `04_apr_2023`,
+     * `05_may_2023`, `06_jun_2023`, `07_jul_2023`) all turned out to sit *below* the printed totals
+     * row — a "Details of Transactions during the month" note printed under the main table, not
+     * interspersed between real line items — so the learned bottom bound now drops them directly. Only
+     * `01_jan_18` remains: its narrative ('R/oEtkt 1915') sits *inside* the vertical table body
+     * (between two real rows), so no Y-bound can distinguish it from a legitimate item — that is
+     * exactly Phase 2's plausibility-backstop scope (a structurally-noise label, not a geometry gap).
      */
     private val quarantine: Map<String, String> =
         mapOf(
             "01_jan_18" to
                 "D1: 'Details of Transactions' narrative ('R/oEtkt 1915' — recovery-of-e-ticket note) " +
                 "leaks a raw deduction whose value coincidentally falls in the bare-year range; a real " +
-                "rupee amount, not a statement year — flags the noise-column leak, not a year phantom.",
-            "04_apr_2021" to
-                "D1: quarter-allotment narrative ('...at AO BSOChennai 600016 w.e.f...') leaks the " +
-                "office PIN code 600016 (Chennai) as a raw earnings entry.",
-            "07_jul_2020" to
-                "D1: same office-PIN leak as 04_apr_2021 ('AO BSOChennai 600016').",
-            "08_aug_2020" to "D1: same office-PIN leak pattern ('AgraAgra Cantt' quarter-allotment note, PIN 282001).",
-            "09_sep_2020" to "D1: same office-PIN leak pattern ('AgraAgra Cantt' quarter-allotment note, PIN 282001).",
-            "10_oct_20" to "D1: same office-PIN leak pattern ('AgraAgra Cantt' quarter-allotment note, PIN 282001).",
-            "04_apr_2023" to
-                "D1: quarter-allotment narrative ('...at AOGE (E) AgraAgra Cantt 282001 w.e.f...') leaks " +
-                "the office PIN code 282001 (Agra Cantt) as a raw earnings entry.",
-            "05_may_2023" to "D1: same office-PIN leak as 04_apr_2023 ('AgraAgra Cantt 282001').",
-            "06_jun_2023" to "D1: same office-PIN leak as 04_apr_2023 ('AgraAgra Cantt 282001').",
-            "07_jul_2023" to "D1: same office-PIN leak as 04_apr_2023 ('AgraAgra Cantt 282001').",
+                "rupee amount, not a statement year — flags the noise-column leak, not a year phantom. " +
+                "Sits inside the vertical table body (unlike the other 9, now-fixed entries), so Phase " +
+                "1's vertical-band filter cannot distinguish it by geometry alone — Phase 2 scope.",
         )
 
     @Test

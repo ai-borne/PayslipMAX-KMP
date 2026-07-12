@@ -109,7 +109,13 @@ class SharedParsingPipeline(
         fallbackExtractor: GemmaFallbackExtractor?,
         debugCollector: ParserDebugCollector?,
     ): SolvedTable {
-        val table = TokenTableClassifier.classify(context.tokenized.tableTokens, debugCollector)
+        val table =
+            TokenTableClassifier.classify(
+                context.tokenized.tableTokens,
+                debugCollector,
+                context.grossPay,
+                context.totalDeductions,
+            )
         var solved =
             ReconciliationSolver.solve(
                 table = table,
