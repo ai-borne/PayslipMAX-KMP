@@ -46,10 +46,17 @@ class PhantomFreeCorpusInvariantTest {
      * (`04_apr_2021`, `07_jul_2020`, `08_aug_2020`, `09_sep_2020`, `10_oct_20`, `04_apr_2023`,
      * `05_may_2023`, `06_jun_2023`, `07_jul_2023`) all turned out to sit *below* the printed totals
      * row — a "Details of Transactions during the month" note printed under the main table, not
-     * interspersed between real line items — so the learned bottom bound now drops them directly. Only
-     * `01_jan_18` remains: its narrative ('R/oEtkt 1915') sits *inside* the vertical table body
-     * (between two real rows), so no Y-bound can distinguish it from a legitimate item — that is
-     * exactly Phase 2's plausibility-backstop scope (a structurally-noise label, not a geometry gap).
+     * interspersed between real line items — so the learned bottom bound now drops them directly.
+     *
+     * Only `01_jan_18` remains, and it turned out **not** to be Phase 2's scope after all: its two
+     * raw deductions (`'R/oEtkt'=1915`, `'TA Debit'=22314`, aggregated from two narrative sub-notes)
+     * sit *inside* the vertical table body with real alphabetic labels — neither "no alphabetic
+     * content" nor "solely date/place stopwords" (Phase 2's [RawLabelNoiseFilter.isDatePlaceOnlyNoise]
+     * predicate, confirmed against this exact case before implementation) fires on them, so a
+     * label-shape rule cannot safely remove them without risking a real allowance whose label happens
+     * to be terse. What *does* prove them phantom: `1915 + 22314 = 24229`, exactly the fixture's
+     * existing reconciliation residual — Phase 3's totals-driven arithmetic removal is the correct,
+     * principled fix, not a broadened stopword list.
      */
     private val quarantine: Map<String, String> =
         mapOf(

@@ -31,6 +31,20 @@ internal object RawLabelNoiseFilter {
             wordCount(normalizedLabel) > MAX_UNMATCHED_LABEL_WORDS ||
             stopwordCount(normalizedLabel) >= MIN_STOPWORDS_FOR_PROSE
 
+    /**
+     * Phantom-numbers sprint, Phase 2 — a narrower backstop than [isProseNoise]: an unmatched
+     * candidate whose label is built *entirely* from [PayslipPatternConfig.invalidEntireKeys]
+     * administrative filler ("Part II Order No... Dated...", "Page No") carries no real PCDA
+     * line-item content, however few words it has. A real allowance/deduction code is never
+     * composed solely of these markers, so this can never fire on a genuine (if unrecognized) item
+     * — the label's no-alphabetic-content case is already excluded upstream by
+     * [TokenTableClassifier]'s own `none { isLetter() }` guard before a candidate ever reaches here.
+     */
+    fun isDatePlaceOnlyNoise(normalizedLabel: String): Boolean {
+        val words = normalizedLabel.split(" ").filter { it.isNotBlank() }
+        return words.isNotEmpty() && words.all { it in PayslipPatternConfig.invalidEntireKeys }
+    }
+
     private fun wordCount(text: String): Int = text.split(" ").count { it.isNotBlank() }
 
     private fun stopwordCount(text: String): Int = text.split(" ").count { it in ENGLISH_STOPWORDS }
