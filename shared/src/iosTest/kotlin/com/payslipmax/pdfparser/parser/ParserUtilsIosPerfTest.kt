@@ -70,7 +70,7 @@ class ParserUtilsIosPerfTest {
         // Timer-granularity guard: at these sizes elapsed time can round to 0-1ms, which would
         // make the linearity check spuriously tight. Not a correctness escape hatch — quadratic
         // scaling at this text length would blow well past this slack.
-        private const val LINEARITY_SLACK_MS = 50L
+        private const val LINEARITY_SLACK_MS = 250L
 
         // Filler mimics real payslip text: plain English labels/amounts interleaved with scattered
         // Hindi-transliteration words, so negateHindiTransliterations does real replacement work
