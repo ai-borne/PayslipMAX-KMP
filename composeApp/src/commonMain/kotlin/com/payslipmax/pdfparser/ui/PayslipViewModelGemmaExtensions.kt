@@ -21,6 +21,16 @@ fun PayslipViewModel.setLocalAiEnabled(enabled: Boolean) {
 }
 
 /**
+ * Persists the user's choice to enable or disable telemetry collection.
+ */
+fun PayslipViewModel.setTelemetryEnabled(enabled: Boolean) {
+    viewModelScope.launch {
+        val current = repository.getSettings() ?: com.payslipmax.pdfparser.database.AppSettingsEntity()
+        repository.saveSettings(current.copy(isTelemetryEnabled = enabled))
+    }
+}
+
+/**
  * Tier 6's base model is a mandatory, free-for-all background install, decoupled from the
  * "Use Local Gemma AI Model" toggle — it fires on every launch regardless of whether the user ever
  * touches that setting. Re-checks [GemmaModelStorageManager.verifyModelFile] on every init (not
@@ -32,6 +42,7 @@ fun PayslipViewModel.setLocalAiEnabled(enabled: Boolean) {
 internal fun PayslipViewModel.installGemmaBaseModel() {
     viewModelScope.launch {
         gemmaBaseModelInstaller.state.collect { installState ->
+            gemmaInstallTelemetry.trackInstallState(installState)
             _uiState.update { it.applyInstallState(installState) }
         }
     }

@@ -21,6 +21,7 @@ data class PayslipUiState(
     val profilePanNumber: String = "",
     val isAppLocked: Boolean = false,
     val useLocalAi: Boolean = false,
+    val isTelemetryEnabled: Boolean = true,
     val isGemmaSupported: Boolean = true,
     val gemmaSupportReason: String? = null,
     val isDownloadingModel: Boolean = false,

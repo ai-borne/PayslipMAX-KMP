@@ -19,13 +19,17 @@ Q: What happens if I use "Reset App & Clear Data"?
 A: It permanently wipes your local database statements, cached PDF documents, saved custom corrections, passcode PIN, and local encryption keys. This cannot be undone.
 
 Q: Is this application officially associated with the PCDA or Indian Army?
-A: No. PayslipMax is an independent financial analytics tool. It is not affiliated with, endorsed by, or connected to the PCDA (O) Pune, the Ministry of Defence, or the Indian Army."""
+A: No. PayslipMax is an independent financial analytics tool. It is not affiliated with, endorsed by, or connected to the PCDA (O) Pune, the Ministry of Defence, or the Indian Army.
+
+Q: Does the app collect any telemetry or usage data?
+A: We collect anonymous telemetry regarding the Gemma AI model installation status (downloading progress, success, and failure) to troubleshoot and improve installation reliability. No personal or financial data is ever collected. You can disable telemetry at any time in Settings."""
 
     const val settingsHelpPrivacyContent = """PayslipMax is committed to protecting your privacy through an offline-first architecture:
 1. No Personal Data Collection: We do not collect, store, or monitor your personal or financial data on external servers.
 2. Local Sandboxed Processing: PDF decryption, parsing, and ledger storage are done entirely on-device.
 3. Secure Backup Encryption: If you configure Secure Backup & Sync, your archive is encrypted on-device via AES-256 before upload. We cannot decrypt or view your backup.
-4. Data Control: You have full control over your data and can permanently wipe everything instantly using the "Reset App & Clear Data" option."""
+4. Data Control: You have full control over your data and can permanently wipe everything instantly using the "Reset App & Clear Data" option.
+5. Anonymous Telemetry: We collect anonymous events regarding the Gemma model's installation state (downloading progress, success, and failure) to improve model delivery reliability. This contains no personal or financial data, and can be disabled at any time under Settings."""
 
     const val settingsHelpAiContent = """To preserve strict confidentiality, the app enforces the following AI Privacy Promise:
 1. Complete PII Stripping: Before sending any payslip data to the Gemini API, the app automatically redacts your Name, CDA Account Number, PAN, and other identifiers.

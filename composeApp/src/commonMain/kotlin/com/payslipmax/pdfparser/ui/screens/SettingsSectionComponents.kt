@@ -61,6 +61,18 @@ fun SecuritySection(
             title = "Local Encryption Status",
             subtitle = "100% Offline & Encrypted",
         )
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        SettingsRow(
+            icon = "📊",
+            title = AppStrings.settingsTelemetryLabel,
+            subtitle = AppStrings.settingsTelemetryDesc,
+            trailingContent = {
+                Switch(
+                    checked = uiState.isTelemetryEnabled,
+                    onCheckedChange = { viewModel.setTelemetryEnabled(it) },
+                )
+            },
+        )
     }
 }
 

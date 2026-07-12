@@ -2,7 +2,19 @@ import SwiftUI
 import FirebaseCore
 import FirebaseAuth
 import FirebaseCrashlytics
+import FirebaseAnalytics
 import composeApp
+
+class SwiftGemmaInstallTelemetry: NSObject, IosTelemetryDelegate {
+    func onTelemetryEnabledChanged(enabled: Bool) {
+        Analytics.setAnalyticsCollectionEnabled(enabled)
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(enabled)
+    }
+
+    func logEvent(name: String, params: [String : String]?) {
+        Analytics.logEvent(name, parameters: params)
+    }
+}
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
@@ -10,6 +22,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         FirebaseApp.configure()
+
+        // Register telemetry delegate
+        IosGemmaInstallTelemetry.companion.delegate = SwiftGemmaInstallTelemetry()
 
         // Ensure user is signed in anonymously to retrieve a valid ID token
         if Auth.auth().currentUser == nil {

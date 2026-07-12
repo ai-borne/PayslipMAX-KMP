@@ -9,6 +9,8 @@ import com.payslipmax.pdfparser.insights.gemma.GemmaModelStorageManager
 import com.payslipmax.pdfparser.insights.gemma.provideGemmaBaseModelInstaller
 import com.payslipmax.pdfparser.logging.Logger
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.telemetry.GemmaInstallTelemetry
+import com.payslipmax.pdfparser.telemetry.provideGemmaInstallTelemetry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +26,7 @@ class PayslipViewModel(
     internal val cloudSyncRepository: com.payslipmax.pdfparser.repository.CloudSyncRepository? = null,
     internal val gemmaBaseModelInstaller: GemmaBaseModelInstaller = provideGemmaBaseModelInstaller(),
     internal val gemmaModelStorage: GemmaModelStorageManager = GemmaModelStorageManager(),
+    internal val gemmaInstallTelemetry: GemmaInstallTelemetry = provideGemmaInstallTelemetry(),
 ) : ViewModel() {
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
@@ -255,6 +258,8 @@ class PayslipViewModel(
         viewModelScope.launch {
             repository.getSettingsFlow().collect { settings ->
                 val isPremium = settings?.isPremiumEnabled ?: false
+                val isTelemetry = settings?.isTelemetryEnabled ?: true
+                gemmaInstallTelemetry.setTelemetryEnabled(isTelemetry)
                 _uiState.update { state ->
                     val isLocked =
                         if (isFirstSettingsLoad) {
@@ -273,6 +278,7 @@ class PayslipViewModel(
                         profilePanNumber = settings?.profilePanNumber ?: "",
                         isAppLocked = isLocked,
                         useLocalAi = settings?.useLocalAi ?: false,
+                        isTelemetryEnabled = isTelemetry,
                     )
                 }
                 if (isPremium && !previousPremiumEnabled) {

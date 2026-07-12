@@ -32,13 +32,14 @@ class AndroidGemmaInstallTelemetry : BaseGemmaInstallTelemetry() {
         params: Map<String, String>?,
     ) {
         if (!isEnabled) return
+        val targetAnalytics = analytics ?: return
         val bundle =
             Bundle().apply {
                 params?.forEach { (key, value) ->
                     putString(key, value)
                 }
             }
-        analytics?.logEvent(name, bundle)
+        targetAnalytics.logEvent(name, bundle)
     }
 }
 
