@@ -59,6 +59,7 @@ kotlin {
             // crashes during dev/beta. BOM (pinned in the legacy dependencies block below) aligns
             // the version with the existing firebase-auth-ktx already used in :shared.
             implementation(libs.firebase.crashlytics)
+            implementation(libs.firebase.analytics)
             // Play Asset Delivery — MainActivity wires the AssetPackManager confirmation-dialog hook
             implementation(libs.play.asset.delivery.ktx)
             // asset-delivery-ktx transitively pulls androidx.fragment:fragment:1.1.0, too old for
