@@ -63,7 +63,9 @@ internal object ReconciliationSolver {
             route(entry, earningsMap, deductionsMap, rawEarnings, rawDeductions)
         }
 
-        // reconcileTotals removes ledger entries from the maps and computes the misc residuals.
+        // reconcileTotals removes ledger entries from the maps, self-corrects a misparsed printed total
+        // (e.g. totalDeductions mis-OCR'd as a duplicate of grossPay) and computes the misc residuals —
+        // all from the structured maps only, so it's safe to run before Phase 3 touches the raw channel.
         val reconciled =
             reconcileTotals(
                 earningsMap = earningsMap,
@@ -74,6 +76,11 @@ internal object ReconciliationSolver {
                 netRemittance = netRemittance,
                 filename = filename,
             )
+
+        // Phase 3 (#1): strip any raw subset that exactly explains an overshoot vs the trusted,
+        // ledger-adjusted totals reconcileTotals just computed — provable phantom removal.
+        PhantomReconciler.reconcileCredits(earningsMap, rawEarnings, reconciled.trueGross, debugCollector)
+        PhantomReconciler.reconcileDebits(deductionsMap, rawDeductions, reconciled.trueDeductions, debugCollector)
 
         val confidence = scoreConfidence(earningsMap, deductionsMap, rawEarnings, rawDeductions, reconciled).toMutableMap()
         val missingCredits = PayslipPatternConfig.strictlyMandatoryCredits.filter { (earningsMap[it] ?: 0.0) <= 0.0 }

@@ -48,25 +48,17 @@ class PhantomFreeCorpusInvariantTest {
      * row — a "Details of Transactions during the month" note printed under the main table, not
      * interspersed between real line items — so the learned bottom bound now drops them directly.
      *
-     * Only `01_jan_18` remains, and it turned out **not** to be Phase 2's scope after all: its two
-     * raw deductions (`'R/oEtkt'=1915`, `'TA Debit'=22314`, aggregated from two narrative sub-notes)
-     * sit *inside* the vertical table body with real alphabetic labels — neither "no alphabetic
-     * content" nor "solely date/place stopwords" (Phase 2's [RawLabelNoiseFilter.isDatePlaceOnlyNoise]
-     * predicate, confirmed against this exact case before implementation) fires on them, so a
-     * label-shape rule cannot safely remove them without risking a real allowance whose label happens
-     * to be terse. What *does* prove them phantom: `1915 + 22314 = 24229`, exactly the fixture's
-     * existing reconciliation residual — Phase 3's totals-driven arithmetic removal is the correct,
-     * principled fix, not a broadened stopword list.
+     * `01_jan_18` turned out **not** to be Phase 2's scope: its two raw deductions (`'R/oEtkt'=1915`,
+     * `'TA Debit'=22314`, aggregated from two narrative sub-notes) sit *inside* the vertical table body
+     * with real alphabetic labels — neither "no alphabetic content" nor "solely date/place stopwords"
+     * (Phase 2's [RawLabelNoiseFilter.isDatePlaceOnlyNoise] predicate, confirmed against this exact case
+     * before implementation) fires on them, so a label-shape rule could not safely remove them without
+     * risking a real allowance whose label happens to be terse. What *does* prove them phantom:
+     * `1915 + 22314 = 24229`, exactly this fixture's deduction-side overshoot vs the printed Total
+     * Deductions — Phase 3's [PhantomReconciler] removes exactly that subset via bounded subset-sum,
+     * emptying the quarantine.
      */
-    private val quarantine: Map<String, String> =
-        mapOf(
-            "01_jan_18" to
-                "D1: 'Details of Transactions' narrative ('R/oEtkt 1915' — recovery-of-e-ticket note) " +
-                "leaks a raw deduction whose value coincidentally falls in the bare-year range; a real " +
-                "rupee amount, not a statement year — flags the noise-column leak, not a year phantom. " +
-                "Sits inside the vertical table body (unlike the other 9, now-fixed entries), so Phase " +
-                "1's vertical-band filter cannot distinguish it by geometry alone — Phase 2 scope.",
-        )
+    private val quarantine: Map<String, String> = emptyMap()
 
     @Test
     fun corpusIsPhantomFreeAndReconciles() {

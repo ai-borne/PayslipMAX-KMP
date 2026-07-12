@@ -76,6 +76,14 @@ internal data class ReconciledTotals(
      * signal: [ReconciliationSolver] turns it into a confidence score and a `needsReview` flag instead.
      */
     val netResidual: Double = 0.0,
+    /**
+     * [realGross]/[realDeductions] minus the carried-over ledger balances — the SSOT trusted totals
+     * [ReconciliationSolver]'s [PhantomReconciler] compares the raw channel against, self-corrected the
+     * same way [miscEarnings]/[miscDeductions] are (e.g. a `totalDeductions` mis-OCR'd as a duplicate of
+     * `grossPay`). Never recompute this formula elsewhere — read it from here.
+     */
+    val trueGross: Double = realGross,
+    val trueDeductions: Double = realDeductions,
 )
 
 /**
@@ -170,5 +178,7 @@ internal fun reconcileTotals(
         miscDeductions = miscDr,
         ledger = ledger,
         netResidual = netResidual,
+        trueGross = trueGross,
+        trueDeductions = trueDeductions,
     )
 }
