@@ -57,9 +57,9 @@ kotlin {
             implementation(libs.pdfbox.android)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.litertlm.android)
-            // Firebase Auth — Android only; used by AuthTokenProvider.android.kt
             implementation(libs.firebase.auth.ktx)
             implementation(libs.firebase.analytics)
+            implementation(libs.firebase.crashlytics)
             // Play Asset Delivery — Tier 6 base model on-demand install (AndroidGemmaBaseModelInstaller)
             implementation(libs.play.asset.delivery.ktx)
         }
