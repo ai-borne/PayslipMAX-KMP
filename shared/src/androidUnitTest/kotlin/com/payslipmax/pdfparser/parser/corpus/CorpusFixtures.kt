@@ -165,6 +165,69 @@ object CorpusFixtures {
         return mismatches
     }
 
+    /**
+     * Phase 0 diagnostic (no production effect): raw earnings/deductions entries whose (label, amount)
+     * shape matches a known phantom pattern — a bare statement-title/increment-date year, a pin-code-
+     * shaped 6-digit value, or a label with no alphabetic content at all. Used only by
+     * `PhantomFreeCorpusInvariantTest` to assert D1; never consumed by the production pipeline.
+     */
+    fun phantomRawEntries(parsed: ParsedPayslip): List<String> {
+        val entries = mutableListOf<String>()
+        for ((label, amount) in parsed.rawEarnings) if (isPhantomShaped(label, amount)) entries += "rawEarnings[$label]=$amount"
+        for ((label, amount) in parsed.rawDeductions) if (isPhantomShaped(label, amount)) entries += "rawDeductions[$label]=$amount"
+        return entries
+    }
+
+    private const val PHANTOM_YEAR_MIN = 1900.0
+    private const val PHANTOM_YEAR_MAX = 2100.0
+    private const val PHANTOM_PIN_MIN = 100000.0
+    private const val PHANTOM_PIN_MAX = 999999.0
+
+    private fun isPhantomShaped(
+        label: String,
+        amount: Double,
+    ): Boolean {
+        val isWholeNumber = amount == kotlin.math.floor(amount)
+        val isBareYear = isWholeNumber && amount in PHANTOM_YEAR_MIN..PHANTOM_YEAR_MAX
+        val isPinShaped = isWholeNumber && amount in PHANTOM_PIN_MIN..PHANTOM_PIN_MAX
+        val hasNoAlphabeticLabel = label.none { it.isLetter() }
+        return isBareYear || isPinShaped || hasNoAlphabeticLabel
+    }
+
+    /**
+     * Phase 0 diagnostic (D3): true when the printed totals reconcile with the parsed line items
+     * within [com.payslipmax.pdfparser.parser.SchemaValidator]'s own `TOLERANCE`, or the parse is
+     * already flagged for review. Mirrors exactly the credits/debits sum
+     * [com.payslipmax.pdfparser.parser.pipeline.SharedParsingPipeline] feeds into
+     * [com.payslipmax.pdfparser.parser.SchemaValidator.validate] (structured fields minus the misc
+     * residual, plus the raw channel) — reused, not reimplemented, so this can never silently drift
+     * from the production tolerance check.
+     */
+    fun reconcilesOrFlagged(parsed: ParsedPayslip): Boolean {
+        if (parsed.needsReview) return true
+        val creditsSum =
+            sumJsonNumericFieldsExcluding(json.encodeToJsonElement(parsed.earnings).jsonObject, "miscEarnings") +
+                parsed.rawEarnings.values.sum()
+        val debitsSum =
+            sumJsonNumericFieldsExcluding(json.encodeToJsonElement(parsed.deductions).jsonObject, "miscDeductions") +
+                parsed.rawDeductions.values.sum()
+        return com.payslipmax.pdfparser.parser.SchemaValidator.validate(
+            grossPay = parsed.summary.grossPay,
+            totalDeductions = parsed.summary.totalDeductions,
+            netRemittance = parsed.summary.netRemittance,
+            creditsSum = creditsSum,
+            debitsSum = debitsSum,
+        ).isValid
+    }
+
+    private fun sumJsonNumericFieldsExcluding(
+        obj: JsonObject,
+        excludeKey: String,
+    ): Double =
+        obj.entries
+            .filter { it.key != excludeKey }
+            .sumOf { (it.value as? JsonPrimitive)?.doubleOrNull ?: 0.0 }
+
     private fun numericDiff(
         label: String,
         expected: JsonObject,
