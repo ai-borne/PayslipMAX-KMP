@@ -178,6 +178,8 @@ class PayslipRepositoryTest {
                     profileName = "Col Officer Officer",
                     profileCdaNumber = "12345A",
                     profilePanNumber = "ABCDE1234F",
+                    useLocalAi = true,
+                    isTelemetryEnabled = false,
                 )
 
             assertNull(repository.getSettings())
@@ -193,6 +195,8 @@ class PayslipRepositoryTest {
             assertEquals("Col Officer Officer", saved.profileName)
             assertEquals("12345A", saved.profileCdaNumber)
             assertEquals("ABCDE1234F", saved.profilePanNumber)
+            assertTrue(saved.useLocalAi)
+            assertFalse(saved.isTelemetryEnabled)
 
             repository.clearSettings()
             assertNull(repository.getSettings())
@@ -219,10 +223,12 @@ class PayslipRepositoryTest {
                 profileName = "",
                 profileCdaNumber = "",
                 profilePanNumber = "",
+                useLocalAi = false,
+                isTelemetryEnabled = true,
             )
-        // Verify the entity has exactly 8 fields (id + 7 settings).
-        // If geminiApiKey is re-added, this count becomes 9 and the test fails.
-        val (id, isPremium, appTheme, isLock, pinHash, name, cda, pan) = entity
+        // Verify the entity has exactly 10 fields (id + 9 settings).
+        // If geminiApiKey is re-added, this count becomes 11 and the test fails.
+        val (id, isPremium, appTheme, isLock, pinHash, name, cda, pan, useLocalAi, isTelemetryEnabled) = entity
         assertEquals(0, id)
         assertFalse(isPremium)
         assertEquals("system", appTheme)
@@ -231,6 +237,8 @@ class PayslipRepositoryTest {
         assertEquals("", name)
         assertEquals("", cda)
         assertEquals("", pan)
+        assertFalse(useLocalAi)
+        assertTrue(isTelemetryEnabled)
     }
 
     @Test

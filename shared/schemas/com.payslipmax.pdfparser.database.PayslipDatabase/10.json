@@ -1,0 +1,423 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 10,
+    "identityHash": "9284673f00d80ff3dcfa0929886b461c",
+    "entities": [
+      {
+        "tableName": "encrypted_payslips",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dateStr` TEXT NOT NULL, `year` INTEGER NOT NULL, `monthNum` INTEGER NOT NULL, `monthName` TEXT NOT NULL, `ciphertext` TEXT NOT NULL, PRIMARY KEY(`dateStr`))",
+        "fields": [
+          {
+            "fieldPath": "dateStr",
+            "columnName": "dateStr",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "year",
+            "columnName": "year",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "monthNum",
+            "columnName": "monthNum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "monthName",
+            "columnName": "monthName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ciphertext",
+            "columnName": "ciphertext",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "dateStr"
+          ]
+        }
+      },
+      {
+        "tableName": "payslip_corrections",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dateStr` TEXT NOT NULL, `ciphertext` TEXT NOT NULL, PRIMARY KEY(`dateStr`))",
+        "fields": [
+          {
+            "fieldPath": "dateStr",
+            "columnName": "dateStr",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ciphertext",
+            "columnName": "ciphertext",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "dateStr"
+          ]
+        }
+      },
+      {
+        "tableName": "payslip_pdfs",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dateStr` TEXT NOT NULL, `pdfData` BLOB NOT NULL, PRIMARY KEY(`dateStr`))",
+        "fields": [
+          {
+            "fieldPath": "dateStr",
+            "columnName": "dateStr",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pdfData",
+            "columnName": "pdfData",
+            "affinity": "BLOB",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "dateStr"
+          ]
+        }
+      },
+      {
+        "tableName": "app_settings",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `isPremiumEnabled` INTEGER NOT NULL, `appTheme` TEXT NOT NULL, `isLockEnabled` INTEGER NOT NULL, `appPinHash` TEXT NOT NULL, `profileName` TEXT NOT NULL, `profileCdaNumber` TEXT NOT NULL, `profilePanNumber` TEXT NOT NULL, `useLocalAi` INTEGER NOT NULL DEFAULT 0, `isTelemetryEnabled` INTEGER NOT NULL DEFAULT 1, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPremiumEnabled",
+            "columnName": "isPremiumEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appTheme",
+            "columnName": "appTheme",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isLockEnabled",
+            "columnName": "isLockEnabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appPinHash",
+            "columnName": "appPinHash",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileName",
+            "columnName": "profileName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileCdaNumber",
+            "columnName": "profileCdaNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profilePanNumber",
+            "columnName": "profilePanNumber",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "useLocalAi",
+            "columnName": "useLocalAi",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isTelemetryEnabled",
+            "columnName": "isTelemetryEnabled",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "ledger_records",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dateStr` TEXT NOT NULL, `year` INTEGER NOT NULL, `monthNum` INTEGER NOT NULL, `basicPay` REAL NOT NULL, `dearnessAllowance` REAL NOT NULL, `militaryServicePay` REAL NOT NULL, `transportAllowance` REAL NOT NULL, `transportAllowanceDa` REAL NOT NULL, `houseRentAllowance` REAL NOT NULL, `grossPay` REAL NOT NULL, `dsopSubscription` REAL NOT NULL, `incomeTax` REAL NOT NULL, `netPay` REAL NOT NULL, PRIMARY KEY(`dateStr`))",
+        "fields": [
+          {
+            "fieldPath": "dateStr",
+            "columnName": "dateStr",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "year",
+            "columnName": "year",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "monthNum",
+            "columnName": "monthNum",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "basicPay",
+            "columnName": "basicPay",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dearnessAllowance",
+            "columnName": "dearnessAllowance",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "militaryServicePay",
+            "columnName": "militaryServicePay",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transportAllowance",
+            "columnName": "transportAllowance",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transportAllowanceDa",
+            "columnName": "transportAllowanceDa",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "houseRentAllowance",
+            "columnName": "houseRentAllowance",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "grossPay",
+            "columnName": "grossPay",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dsopSubscription",
+            "columnName": "dsopSubscription",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "incomeTax",
+            "columnName": "incomeTax",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "netPay",
+            "columnName": "netPay",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "dateStr"
+          ]
+        }
+      },
+      {
+        "tableName": "financial_insights",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `monthStr` TEXT NOT NULL, `category` TEXT NOT NULL, `title` TEXT NOT NULL, `contentMarkdown` TEXT NOT NULL, `severity` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `isArchived` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "monthStr",
+            "columnName": "monthStr",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contentMarkdown",
+            "columnName": "contentMarkdown",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "severity",
+            "columnName": "severity",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isArchived",
+            "columnName": "isArchived",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "representation_drafts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `disputeMonth` TEXT NOT NULL, `disputeType` TEXT NOT NULL, `recipient` TEXT NOT NULL, `subject` TEXT NOT NULL, `bodyText` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "disputeMonth",
+            "columnName": "disputeMonth",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "disputeType",
+            "columnName": "disputeType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recipient",
+            "columnName": "recipient",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subject",
+            "columnName": "subject",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bodyText",
+            "columnName": "bodyText",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "ai_insight_reports",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `payslipMonth` TEXT NOT NULL, `generatedDate` INTEGER NOT NULL, `reportJSON` TEXT NOT NULL, `reportVersion` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payslipMonth",
+            "columnName": "payslipMonth",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "generatedDate",
+            "columnName": "generatedDate",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reportJSON",
+            "columnName": "reportJSON",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reportVersion",
+            "columnName": "reportVersion",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9284673f00d80ff3dcfa0929886b461c')"
+    ]
+  }
+}

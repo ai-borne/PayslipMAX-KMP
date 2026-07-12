@@ -19,4 +19,5 @@ data class AppSettingsEntity(
     val profileCdaNumber: String = "",
     val profilePanNumber: String = "",
     @ColumnInfo(defaultValue = "0") val useLocalAi: Boolean = false,
+    @ColumnInfo(defaultValue = "1") val isTelemetryEnabled: Boolean = true,
 )
