@@ -23,29 +23,24 @@ fun BackupRestoreSettingsCard(
     onImportBackup: (ByteArray, String, (Result<Unit>) -> Unit) -> Unit,
     onCloudBackupClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
     onCloudRestoreClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
-    isPremiumEnabled: Boolean,
+    canBackup: Boolean,
     onUpgradePrompt: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showSheet by remember { mutableStateOf(false) }
+    // Restore is free (D3), so the sheet always opens; backup *creation* inside it is gated.
     val subtitleText =
-        if (isPremiumEnabled) {
+        if (canBackup) {
             AppStrings.settingsStatusConfigured
         } else {
-            AppStrings.settingsStatusProOnly
+            AppStrings.settingsStatusBackupPro
         }
 
     SettingsRow(
         icon = "☁️",
         title = AppStrings.settingsRowBackupLabel,
         subtitle = subtitleText,
-        onClick = {
-            if (isPremiumEnabled) {
-                showSheet = true
-            } else {
-                onUpgradePrompt()
-            }
-        },
+        onClick = { showSheet = true },
         modifier = modifier,
     )
 
@@ -53,6 +48,11 @@ fun BackupRestoreSettingsCard(
         BackupRestoreBottomSheet(
             password = password,
             onPasswordChange = onPasswordChange,
+            canBackup = canBackup,
+            onLockedBackup = {
+                showSheet = false
+                onUpgradePrompt()
+            },
             onBackupClick = onBackupClick,
             onRestoreClick = onRestoreClick,
             onExportBackup = onExportBackup,
@@ -68,6 +68,8 @@ fun BackupRestoreSettingsCard(
 private fun BackupRestoreBottomSheet(
     password: String,
     onPasswordChange: (String) -> Unit,
+    canBackup: Boolean,
+    onLockedBackup: () -> Unit,
     onBackupClick: (String, (Result<Unit>) -> Unit) -> Unit,
     onRestoreClick: (String, (Result<Unit>) -> Unit) -> Unit,
     onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
@@ -85,6 +87,8 @@ private fun BackupRestoreBottomSheet(
         BackupRestoreSheetContent(
             password = password,
             onPasswordChange = onPasswordChange,
+            canBackup = canBackup,
+            onLockedBackup = onLockedBackup,
             onBackupClick = onBackupClick,
             onRestoreClick = onRestoreClick,
             onExportBackup = onExportBackup,
@@ -100,6 +104,8 @@ private fun BackupRestoreBottomSheet(
 private fun BackupRestoreSheetContent(
     password: String,
     onPasswordChange: (String) -> Unit,
+    canBackup: Boolean,
+    onLockedBackup: () -> Unit,
     onBackupClick: (String, (Result<Unit>) -> Unit) -> Unit,
     onRestoreClick: (String, (Result<Unit>) -> Unit) -> Unit,
     onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
@@ -123,9 +129,11 @@ private fun BackupRestoreSheetContent(
     ) {
         BackupRestoreHeader(onCloseClick = onCloseClick)
         BackupRestorePasswordField(password = password, onPasswordChange = onPasswordChange)
-        LocalSyncButtonsRow(password, onBackupClick, onRestoreClick) { status = it }
+        LocalSyncButtonsRow(password, canBackup, onLockedBackup, onBackupClick, onRestoreClick) { status = it }
         UniversalBackupSectionWrapper(
             password = password,
+            canBackup = canBackup,
+            onLockedBackup = onLockedBackup,
             copyToClipboard = copyToClipboard,
             onExportBackup = onExportBackup,
             onImportBackup = onImportBackup,
@@ -133,6 +141,8 @@ private fun BackupRestoreSheetContent(
         )
         CloudSyncWrapper(
             password = password,
+            canBackup = canBackup,
+            onLockedBackup = onLockedBackup,
             onCloudBackupClick = onCloudBackupClick,
             onCloudRestoreClick = onCloudRestoreClick,
             onStatusChange = { status = it },
@@ -144,6 +154,8 @@ private fun BackupRestoreSheetContent(
 @Composable
 private fun CloudSyncWrapper(
     password: String,
+    canBackup: Boolean,
+    onLockedBackup: () -> Unit,
     onCloudBackupClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
     onCloudRestoreClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
     onStatusChange: (BackupStatus) -> Unit,
@@ -156,6 +168,8 @@ private fun CloudSyncWrapper(
         onUserIdChange = { cloudUserId = it },
         authToken = cloudAuthToken,
         onAuthTokenChange = { cloudAuthToken = it },
+        canBackup = canBackup,
+        onLockedBackup = onLockedBackup,
         onCloudBackupClick = {
             onCloudBackupClick(cloudUserId, cloudAuthToken, password) { result ->
                 val statusMsg =
@@ -184,6 +198,8 @@ private fun CloudSyncWrapper(
 @Composable
 private fun UniversalBackupSectionWrapper(
     password: String,
+    canBackup: Boolean,
+    onLockedBackup: () -> Unit,
     copyToClipboard: (String) -> Unit,
     onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
     onImportBackup: (ByteArray, String, (Result<Unit>) -> Unit) -> Unit,
@@ -191,6 +207,8 @@ private fun UniversalBackupSectionWrapper(
 ) {
     UniversalBackupSection(
         password = password,
+        canBackup = canBackup,
+        onLockedBackup = onLockedBackup,
         onExportClick = {
             onExportBackup(password) { result ->
                 if (result.isSuccess) {

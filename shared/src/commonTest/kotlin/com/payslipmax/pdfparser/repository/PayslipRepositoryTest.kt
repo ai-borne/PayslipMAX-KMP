@@ -278,7 +278,10 @@ class PayslipRepositoryTest {
 
             val restoredSettings = repository.getSettings()
             assertNotNull(restoredSettings)
-            assertTrue(restoredSettings.isPremiumEnabled)
+            // Entitlement never travels inside a backup (D3): the device had none at import time
+            // (settings were cleared in step 3), so it stays free even though the backup was premium.
+            assertFalse(restoredSettings.isPremiumEnabled)
+            // Non-entitlement settings still round-trip.
             assertEquals("light", restoredSettings.appTheme)
         }
 }

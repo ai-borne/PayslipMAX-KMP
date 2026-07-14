@@ -141,7 +141,7 @@ fun DataManagementSection(
             onImportBackup = { bytes, pw, onComplete -> viewModel.importBackup(bytes, pw, onComplete) },
             onCloudBackupClick = { uid, token, pw, onComplete -> viewModel.backupToCloud(uid, token, pw, onComplete) },
             onCloudRestoreClick = { uid, token, pw, onComplete -> viewModel.restoreFromCloud(uid, token, pw, onComplete) },
-            isPremiumEnabled = uiState.isPremiumEnabled,
+            canBackup = viewModel.rememberHasAccess(com.payslipmax.pdfparser.subscription.FeatureGate.BACKUP_RESTORE),
             onUpgradePrompt = onUpgradePrompt,
         )
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))

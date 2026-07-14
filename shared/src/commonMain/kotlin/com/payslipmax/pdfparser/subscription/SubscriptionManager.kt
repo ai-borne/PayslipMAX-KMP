@@ -12,6 +12,9 @@ enum class FeatureGate {
     DSOP_SIMULATOR,
     ANOMALY_DETECTION,
     CLAIM_GENERATOR,
+
+    /** Gates backup *creation* only. Restore stays free so a new device can always recover its data. */
+    BACKUP_RESTORE,
 }
 
 /**

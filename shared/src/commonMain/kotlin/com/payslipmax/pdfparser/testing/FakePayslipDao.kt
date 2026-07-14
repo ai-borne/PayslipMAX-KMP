@@ -90,7 +90,14 @@ class FakePayslipDao : PayslipDao {
         return settingsDatabase.value
     }
 
+    /**
+     * When this predicate returns true for the entity being written, [insertSettings] throws —
+     * lets tests exercise fail-loud settings-write paths (e.g. only fail the sanitizing write).
+     */
+    var failInsertSettingsWhen: (com.payslipmax.pdfparser.database.AppSettingsEntity) -> Boolean = { false }
+
     override suspend fun insertSettings(settings: com.payslipmax.pdfparser.database.AppSettingsEntity) {
+        if (failInsertSettingsWhen(settings)) throw RuntimeException("Simulated settings write failure")
         settingsDatabase.value = settings
     }
 

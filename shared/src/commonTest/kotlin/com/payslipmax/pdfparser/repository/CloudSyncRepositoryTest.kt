@@ -148,10 +148,11 @@ class CloudSyncRepositoryTest {
             assertTrue(requestUrl.contains("alt=media"))
             assertEquals("Bearer token123", authHeader)
 
-            // Verify state is restored
+            // Verify state is restored, but entitlement never travels inside a backup (D3): the
+            // device was free at restore time (settings cleared above), so it stays free.
             val restoredSettings = payslipRepository.getSettings()
             assertNotNull(restoredSettings)
-            assertTrue(restoredSettings.isPremiumEnabled)
+            assertFalse(restoredSettings.isPremiumEnabled)
         }
 
     @Test

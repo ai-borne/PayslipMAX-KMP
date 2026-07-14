@@ -241,6 +241,10 @@ class PayslipRepository(
 
                 val backup = Json.decodeFromString(PortableBackup.serializer(), jsonStr)
 
+                // Capture this device's own entitlement before the swap so a restored backup can
+                // never grant (or revoke) PRO — entitlement must never travel inside a backup file.
+                val deviceEntitlement = payslipDao.getSettings()?.isPremiumEnabled ?: false
+
                 // Restore to Room DB
                 payslipDao.clearAll()
                 payslipDao.clearSettings()
@@ -262,9 +266,10 @@ class PayslipRepository(
                 backup.pdfs.forEach { pdf ->
                     payslipDao.insertPayslipPdf(pdf)
                 }
-                backup.settings?.let { settings ->
-                    payslipDao.insertSettings(settings)
-                }
+                // Always write settings with the *device's* entitlement, never the backup's, so a
+                // shared/premium backup restored onto a free device leaves it free (and vice versa).
+                val restoredSettings = backup.settings ?: AppSettingsEntity()
+                payslipDao.insertSettings(restoredSettings.copy(isPremiumEnabled = deviceEntitlement))
 
                 Result.success(Unit)
             } catch (e: Exception) {

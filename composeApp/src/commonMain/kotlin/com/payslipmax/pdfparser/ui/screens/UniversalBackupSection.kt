@@ -17,6 +17,8 @@ data class BackupStatus(
 @Composable
 fun UniversalBackupSection(
     password: String,
+    canBackup: Boolean,
+    onLockedBackup: () -> Unit,
     onExportClick: () -> Unit,
     onImportClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -34,23 +36,13 @@ fun UniversalBackupSection(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            Button(onClick = onExportClick, modifier = Modifier.weight(1f)) {
-                Text(AppStrings.settingsBackupExportBtn)
-            }
-            OutlinedButton(onClick = { isImporting = !isImporting }, modifier = Modifier.weight(1f)) {
-                Text(
-                    if (isImporting) {
-                        AppStrings.settingsBackupCancelImportBtn
-                    } else {
-                        AppStrings.settingsBackupImportBtn
-                    },
-                )
-            }
-        }
+        ExportImportButtonsRow(
+            canBackup = canBackup,
+            isImporting = isImporting,
+            onLockedBackup = onLockedBackup,
+            onExportClick = onExportClick,
+            onToggleImport = { isImporting = !isImporting },
+        )
         if (isImporting) {
             ImportControls(
                 importText = importText,
@@ -61,6 +53,30 @@ fun UniversalBackupSection(
                     isImporting = false
                 },
             )
+        }
+    }
+}
+
+@Composable
+private fun ExportImportButtonsRow(
+    canBackup: Boolean,
+    isImporting: Boolean,
+    onLockedBackup: () -> Unit,
+    onExportClick: () -> Unit,
+    onToggleImport: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+    ) {
+        Button(
+            onClick = { if (canBackup) onExportClick() else onLockedBackup() },
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(if (canBackup) AppStrings.settingsBackupExportBtn else "🔒 ${AppStrings.settingsBackupExportBtn}")
+        }
+        OutlinedButton(onClick = onToggleImport, modifier = Modifier.weight(1f)) {
+            Text(if (isImporting) AppStrings.settingsBackupCancelImportBtn else AppStrings.settingsBackupImportBtn)
         }
     }
 }

@@ -59,6 +59,8 @@ fun BackupRestorePasswordField(
 @Composable
 fun LocalSyncButtonsRow(
     password: String,
+    canBackup: Boolean,
+    onLockedBackup: () -> Unit,
     onBackupClick: (String, (Result<Unit>) -> Unit) -> Unit,
     onRestoreClick: (String, (Result<Unit>) -> Unit) -> Unit,
     onStatusChange: (BackupStatus) -> Unit,
@@ -69,6 +71,10 @@ fun LocalSyncButtonsRow(
     ) {
         Button(
             onClick = {
+                if (!canBackup) {
+                    onLockedBackup()
+                    return@Button
+                }
                 onBackupClick(password) { result ->
                     val statusMsg =
                         if (result.isSuccess) {
@@ -81,7 +87,7 @@ fun LocalSyncButtonsRow(
             },
             modifier = Modifier.weight(1f),
         ) {
-            Text(AppStrings.settingsBackupLocalBtn)
+            Text(if (canBackup) AppStrings.settingsBackupLocalBtn else "🔒 ${AppStrings.settingsBackupLocalBtn}")
         }
         OutlinedButton(
             onClick = {

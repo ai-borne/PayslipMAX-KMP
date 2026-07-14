@@ -152,6 +152,8 @@ object AppStrings {
     const val settingsBackupCancelImportBtn = "Cancel Import"
     const val settingsBackupPasteLabel = "Paste Encrypted Backup String"
     const val settingsBackupDecryptBtn = "Decrypt & Restore"
+    const val settingsStatusBackupPro = "Restore free · Backup is PRO"
+    const val errorRestoreSanitizeFailed = "Restore completed but could not verify entitlement. Please restart the app."
 
     // Backup Status Messages
     const val statusSyncSuccess = "Sync Completed!"

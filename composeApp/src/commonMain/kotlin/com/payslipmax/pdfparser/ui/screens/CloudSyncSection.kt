@@ -14,6 +14,8 @@ fun CloudSyncSection(
     onUserIdChange: (String) -> Unit,
     authToken: String,
     onAuthTokenChange: (String) -> Unit,
+    canBackup: Boolean,
+    onLockedBackup: () -> Unit,
     onCloudBackupClick: () -> Unit,
     onCloudRestoreClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -38,6 +40,8 @@ fun CloudSyncSection(
         )
 
         CloudSyncButtons(
+            canBackup = canBackup,
+            onLockedBackup = onLockedBackup,
             onCloudBackupClick = onCloudBackupClick,
             onCloudRestoreClick = onCloudRestoreClick,
             enabled = userId.isNotBlank() && authToken.isNotBlank(),
@@ -75,6 +79,8 @@ private fun CloudSyncInputs(
 
 @Composable
 private fun CloudSyncButtons(
+    canBackup: Boolean,
+    onLockedBackup: () -> Unit,
     onCloudBackupClick: () -> Unit,
     onCloudRestoreClick: () -> Unit,
     enabled: Boolean,
@@ -84,11 +90,12 @@ private fun CloudSyncButtons(
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
         Button(
-            onClick = onCloudBackupClick,
-            enabled = enabled,
+            onClick = { if (canBackup) onCloudBackupClick() else onLockedBackup() },
+            // When locked, stay clickable so it can open the upgrade sheet.
+            enabled = !canBackup || enabled,
             modifier = Modifier.weight(1f),
         ) {
-            Text(CloudSyncStrings.cloudSyncBackupBtn)
+            Text(if (canBackup) CloudSyncStrings.cloudSyncBackupBtn else "🔒 ${CloudSyncStrings.cloudSyncBackupBtn}")
         }
 
         OutlinedButton(

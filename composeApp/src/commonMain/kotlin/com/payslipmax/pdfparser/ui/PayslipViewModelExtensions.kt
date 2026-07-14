@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui
 
 import androidx.lifecycle.viewModelScope
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -48,8 +49,27 @@ fun PayslipViewModel.restoreDatabase(
 ) {
     viewModelScope.launch {
         _uiState.update { it.copy(isLoading = true, error = null) }
+        // Capture this device's own entitlement before the whole-DB file swap so the restored
+        // backup can never carry PRO in or out (see D3). The actuals stay dumb file-swappers.
+        val deviceEntitlement = repository.getSettings()?.isPremiumEnabled ?: false
         val result = backupManager.restore(password)
         if (result.isSuccess) {
+            val sanitized =
+                runCatching {
+                    val restored =
+                        repository.getSettings() ?: com.payslipmax.pdfparser.database.AppSettingsEntity()
+                    if (restored.isPremiumEnabled != deviceEntitlement) {
+                        repository.saveSettings(restored.copy(isPremiumEnabled = deviceEntitlement))
+                    }
+                }
+            // Fail loud: never leave imported entitlement in place if the sanitizing write failed.
+            if (sanitized.isFailure) {
+                _uiState.update {
+                    it.copy(isLoading = false, error = AppStrings.errorRestoreSanitizeFailed)
+                }
+                onComplete(Result.failure(sanitized.exceptionOrNull() ?: Exception(AppStrings.errorRestoreSanitizeFailed)))
+                return@launch
+            }
             observePayslips()
         }
         _uiState.update { it.copy(isLoading = false) }
