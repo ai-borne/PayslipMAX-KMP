@@ -4,10 +4,12 @@ import androidx.compose.ui.test.*
 import com.payslipmax.pdfparser.database.toEncryptedEntity
 import com.payslipmax.pdfparser.domain.*
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.subscription.DevOverride
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.FakeBackupManager
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.setDevOverride
 import com.payslipmax.pdfparser.ui.setPremiumEnabled
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
@@ -65,6 +67,9 @@ class InsightsScreenUiTest {
         fakeBackupManager = FakeBackupManager()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
         viewModel = PayslipViewModel(repository, fakeBackupManager)
+        // Debug builds default the entitlement override to FORCE_PRO; drive the real flag path so
+        // these tests exercise production free-vs-premium gating rather than the dev bypass.
+        viewModel.setDevOverride(DevOverride.FOLLOW_FLAG)
     }
 
     @AfterTest

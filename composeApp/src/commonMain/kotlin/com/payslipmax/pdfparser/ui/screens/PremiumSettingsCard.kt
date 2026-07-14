@@ -15,7 +15,6 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 @Composable
 fun PremiumSettingsCard(
     isPremiumEnabled: Boolean,
-    onPremiumToggle: (Boolean) -> Unit,
     onUpgradePrompt: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

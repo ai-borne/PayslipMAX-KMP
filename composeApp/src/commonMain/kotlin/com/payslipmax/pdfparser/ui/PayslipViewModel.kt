@@ -31,14 +31,13 @@ class PayslipViewModel(
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
 
+    // SSOT for PRO entitlement. Defaults to FORCE_PRO in debug (preserving prior dev behaviour) and
+    // FOLLOW_FLAG in release, where the DevOverride mechanism is inert. Composables never read this
+    // directly — they go through the hasAccess/devOverride/setDevOverride façade (SubscriptionAccess.kt).
     val subscriptionManager =
         com.payslipmax.pdfparser.subscription.SubscriptionManager(
             isPremiumEnabledProvider = { _uiState.value.isPremiumEnabled },
-        ).apply {
-            if (com.payslipmax.pdfparser.subscription.isDebugBuild()) {
-                enableDeveloperPro()
-            }
-        }
+        )
 
     val ledgerRecords: StateFlow<List<com.payslipmax.pdfparser.database.LedgerRecordEntity>> =
         financialIntelligenceRepository?.getAllLedgerRecords()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())

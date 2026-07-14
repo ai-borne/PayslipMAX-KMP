@@ -39,7 +39,6 @@ fun PremiumSection(
 ) {
     PremiumSettingsCard(
         isPremiumEnabled = uiState.isPremiumEnabled,
-        onPremiumToggle = { viewModel.setPremiumEnabled(it) },
         onUpgradePrompt = onUpgradePrompt,
     )
 }

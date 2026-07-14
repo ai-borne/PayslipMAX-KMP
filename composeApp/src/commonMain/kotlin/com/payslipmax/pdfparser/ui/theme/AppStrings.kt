@@ -170,6 +170,13 @@ object AppStrings {
     const val settingsOfflineSecureDesc = "All payslip decryption and parsing happens locally on your device. Your data never leaves your control."
     const val settingsAiPoweredByProxy = "AI insights powered by Gemini"
 
+    // Developer PRO override (debug builds only)
+    const val settingsDevOverrideTitle = "Developer · PRO Override"
+    const val settingsDevOverrideDesc = "Debug-only entitlement override. Not present in release builds."
+    const val settingsDevOverrideFollowFlag = "Follow Flag"
+    const val settingsDevOverrideForcePro = "Force PRO"
+    const val settingsDevOverrideForceFree = "Force Free"
+
     // Sandbox / Testing
     const val settingsStagingTitle = "Staging & Testing Sandbox"
     const val settingsStagingDesc = "Load simulated Army Officer records (2022-2025) to evaluate the analytical tools immediately."

@@ -21,11 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.clearAiInsights
 import com.payslipmax.pdfparser.ui.components.TransparencyDialog
 import com.payslipmax.pdfparser.ui.generateAiInsights
+import com.payslipmax.pdfparser.ui.rememberHasAccess
 import com.payslipmax.pdfparser.ui.setPremiumEnabled
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -173,6 +175,8 @@ private fun InsightsLazyBody(
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val hasTaxPlanner = viewModel.rememberHasAccess(FeatureGate.TAX_PLANNER)
+    val hasPremiumIntelligence = viewModel.rememberHasAccess(FeatureGate.PREMIUM_INTELLIGENCE)
     LazyColumn(
         modifier = modifier.background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(AppDimensions.PaddingMedium),
@@ -181,7 +185,7 @@ private fun InsightsLazyBody(
         item {
             InsightsHealthKpiCardItem(
                 state = state,
-                isPremiumEnabled = uiState.isPremiumEnabled,
+                hasTaxPlanner = hasTaxPlanner,
                 wellnessExpanded = wellnessExpanded,
                 onWellnessExpandClick = onWellnessExpandClick,
                 onShowUpgradeSheet = onShowUpgradeSheet,
@@ -196,6 +200,7 @@ private fun InsightsLazyBody(
             InsightsPremiumIntelligenceItem(
                 state = state,
                 uiState = uiState,
+                hasPremiumIntelligence = hasPremiumIntelligence,
                 viewModel = viewModel,
                 onShowUpgradeSheet = onShowUpgradeSheet,
                 onShowTransparency = onShowTransparency,
@@ -209,7 +214,7 @@ private fun InsightsLazyBody(
 @Composable
 private fun InsightsHealthKpiCardItem(
     state: InsightsState,
-    isPremiumEnabled: Boolean,
+    hasTaxPlanner: Boolean,
     wellnessExpanded: Boolean,
     onWellnessExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
@@ -224,7 +229,7 @@ private fun InsightsHealthKpiCardItem(
         drivers = breakdownWellnessDrivers(state.engineResult),
         opportunityAmount = state.optimizationResult.totalPotentialTaxSaving,
         onSeeHowClick = {
-            if (isPremiumEnabled) onNavigateTo(Screen.TaxPlanning) else onShowUpgradeSheet()
+            if (hasTaxPlanner) onNavigateTo(Screen.TaxPlanning) else onShowUpgradeSheet()
         },
     )
 }
@@ -233,6 +238,7 @@ private fun InsightsHealthKpiCardItem(
 private fun InsightsPremiumIntelligenceItem(
     state: InsightsState,
     uiState: PayslipUiState,
+    hasPremiumIntelligence: Boolean,
     viewModel: PayslipViewModel,
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
@@ -240,7 +246,7 @@ private fun InsightsPremiumIntelligenceItem(
     onNavigateTo: (Screen) -> Unit,
 ) {
     PremiumIntelligenceCard(
-        isPremiumEnabled = uiState.isPremiumEnabled,
+        isPremiumEnabled = hasPremiumIntelligence,
         state = state,
         onUpgradeClick = onShowUpgradeSheet,
         onNavigateTo = onNavigateTo,
