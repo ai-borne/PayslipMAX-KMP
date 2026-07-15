@@ -2,6 +2,8 @@ package com.payslipmax.pdfparser.ui
 
 import com.payslipmax.pdfparser.database.toEncryptedEntity
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.subscription.DevOverride
+import com.payslipmax.pdfparser.subscription.isDebugBuild
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import io.ktor.client.network.sockets.SocketTimeoutException
@@ -110,6 +112,29 @@ class AiAutoRunIntegrationTest {
 
             assertNotNull(vm.uiState.value.aiInsights)
             assertEquals("07/2024", vm.uiState.value.selectedPayslip?.dateStr)
+        }
+
+    // ── Auto-run keys off hasAccess(AI_AUDIT), not the raw premium flag ───────
+
+    @Test
+    fun testAutoRunSuppressedByForceFreeOverrideDespitePremiumFlagOn() =
+        runTest {
+            // The override is debug-only; in release it is inert and the raw-flag/hasAccess paths
+            // coincide (already covered by PayslipViewModelSubscriptionTest).
+            if (!isDebugBuild()) return@runTest
+
+            val vm = createViewModel()
+            vm.setDevOverride(DevOverride.FORCE_FREE)
+            vm.setPremiumEnabled(true)
+            advanceUntilIdle()
+            fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
+            advanceUntilIdle()
+
+            // Flag is ON, but the gate says FREE → auto-run must not fire.
+            assertTrue(vm.uiState.value.isPremiumEnabled)
+            assertEquals(0, fakeFinancialRepo.generateCallCount)
+            assertNull(vm.uiState.value.aiInsights)
+            assertFalse(vm.uiState.value.isAiLoading)
         }
 
     // ── AI generation fails → aiError is set, not a crash ────────────────────

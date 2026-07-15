@@ -9,6 +9,7 @@ import com.payslipmax.pdfparser.insights.gemma.GemmaModelStorageManager
 import com.payslipmax.pdfparser.insights.gemma.provideGemmaBaseModelInstaller
 import com.payslipmax.pdfparser.logging.Logger
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.telemetry.GemmaInstallTelemetry
 import com.payslipmax.pdfparser.telemetry.provideGemmaInstallTelemetry
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -125,10 +126,13 @@ class PayslipViewModel(
         viewModelScope.launch {
             val repo = financialIntelligenceRepository ?: return@launch
             val cached = repo.getCachedAiInsights(dateStr)
+            // AI auto-run is an AI_AUDIT-gated behaviour — route it through the SSOT gate (honours the
+            // debug DevOverride too), not the raw premium flag.
+            val hasAiAudit = subscriptionManager.hasAccess(FeatureGate.AI_AUDIT)
             var autoRunPayslip: ParsedPayslip? = null
             _uiState.update { state ->
                 if (state.selectedPayslip?.dateStr == dateStr) {
-                    if (state.isPremiumEnabled && cached == null && !state.isAiLoading) {
+                    if (hasAiAudit && cached == null && !state.isAiLoading) {
                         autoRunPayslip = state.selectedPayslip
                     }
                     state.copy(aiInsights = cached, aiError = null)
