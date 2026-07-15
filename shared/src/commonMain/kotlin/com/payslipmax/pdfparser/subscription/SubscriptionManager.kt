@@ -13,6 +13,9 @@ enum class FeatureGate {
     ANOMALY_DETECTION,
     CLAIM_GENERATOR,
 
+    /** Gates the offline post-retirement calculators (pension/gratuity/commutation/leave-encashment). */
+    RETIREMENT_CALCULATORS,
+
     /** Gates backup *creation* only. Restore stays free so a new device can always recover its data. */
     BACKUP_RESTORE,
 }

@@ -37,6 +37,7 @@ enum class Screen {
     Representation,
     TaxPlanning,
     RetirementPlanning,
+    RetirementCalculators,
     HelpLegal,
     FAQ,
     PrivacyPolicy,
@@ -221,6 +222,8 @@ private fun DetailContent(
             com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
         Screen.RetirementPlanning ->
             com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
+        Screen.RetirementCalculators ->
+            com.payslipmax.pdfparser.ui.screens.RetirementCalculatorsScreen(viewModel = viewModel, onBack = onBack)
         Screen.FAQ ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
         Screen.PrivacyPolicy ->

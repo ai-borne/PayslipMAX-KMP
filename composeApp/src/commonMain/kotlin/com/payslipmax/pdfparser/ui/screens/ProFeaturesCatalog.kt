@@ -99,6 +99,15 @@ fun featureMeta(gate: FeatureGate): ProFeatureMeta =
                 target = Screen.Representation,
                 availability = ProFeatureAvailability.AVAILABLE,
             )
+        FeatureGate.RETIREMENT_CALCULATORS ->
+            ProFeatureMeta(
+                gate = gate,
+                icon = AppStringsPremium.proCatalogRetCalcIcon,
+                title = AppStringsPremium.proCatalogRetCalcTitle,
+                description = AppStringsPremium.proCatalogRetCalcDesc,
+                target = Screen.RetirementCalculators,
+                availability = ProFeatureAvailability.AVAILABLE,
+            )
         FeatureGate.BACKUP_RESTORE ->
             ProFeatureMeta(
                 gate = gate,

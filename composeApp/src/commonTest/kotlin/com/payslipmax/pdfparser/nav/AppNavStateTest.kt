@@ -15,6 +15,7 @@ class AppNavStateTest {
             Screen.Representation,
             Screen.TaxPlanning,
             Screen.RetirementPlanning,
+            Screen.RetirementCalculators,
             Screen.HelpLegal,
             Screen.FAQ,
             Screen.PrivacyPolicy,

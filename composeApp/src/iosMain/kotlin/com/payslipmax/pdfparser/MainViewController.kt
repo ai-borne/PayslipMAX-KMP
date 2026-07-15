@@ -18,6 +18,7 @@ import com.payslipmax.pdfparser.ui.screens.HelpLegalScreen
 import com.payslipmax.pdfparser.ui.screens.PayslipReplicaDetailScreen
 import com.payslipmax.pdfparser.ui.screens.ProFeaturesScreen
 import com.payslipmax.pdfparser.ui.screens.RepresentationScreen
+import com.payslipmax.pdfparser.ui.screens.RetirementCalculatorsScreen
 import com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen
 import com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
@@ -104,6 +105,7 @@ class IosNavHost(
                     )
                 Screen.TaxPlanning -> TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
                 Screen.RetirementPlanning -> RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
+                Screen.RetirementCalculators -> RetirementCalculatorsScreen(viewModel = viewModel, onBack = onBack)
                 Screen.FAQ -> HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
                 Screen.PrivacyPolicy -> HelpLegalScreen(screen = Screen.PrivacyPolicy, onBack = onBack)
                 Screen.PayslipReplica -> {

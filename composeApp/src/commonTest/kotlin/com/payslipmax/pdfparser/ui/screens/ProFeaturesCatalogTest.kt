@@ -53,6 +53,7 @@ class ProFeaturesCatalogTest {
         assertEquals(Screen.TaxPlanning, featureMeta(FeatureGate.TAX_PLANNER).target)
         assertEquals(Screen.RetirementPlanning, featureMeta(FeatureGate.DSOP_SIMULATOR).target)
         assertEquals(Screen.Representation, featureMeta(FeatureGate.CLAIM_GENERATOR).target)
+        assertEquals(Screen.RetirementCalculators, featureMeta(FeatureGate.RETIREMENT_CALCULATORS).target)
     }
 
     @Test
