@@ -24,6 +24,27 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+# Run debug-variant unit tests only for the module(s) actually touched, so the
+# inner dev loop stays fast — the exhaustive matrix (release variant + full
+# iOS suite) is pre-push's job, not pre-commit's.
+if echo "$staged_files" | grep -qE 'shared/src/'; then
+    echo "🧪 Running shared module unit tests (debug variant)..."
+    ./gradlew :shared:testDebugUnitTest -q 2>&1
+    if [ $? -ne 0 ]; then
+        echo "❌ Commit rejected: shared module unit tests failed."
+        exit 1
+    fi
+fi
+
+if echo "$staged_files" | grep -qE 'composeApp/src/'; then
+    echo "🧪 Running composeApp module unit tests (debug variant)..."
+    ./gradlew :composeApp:testDebugUnitTest -q 2>&1
+    if [ $? -ne 0 ]; then
+        echo "❌ Commit rejected: composeApp module unit tests failed."
+        exit 1
+    fi
+fi
+
 # Trigger iOS verification on any KMP source change, not just iosMain —
 # expect/actual mismatches (the popoverPresentationController-class bug) are
 # often introduced by a commonMain change, not the iosMain side.
