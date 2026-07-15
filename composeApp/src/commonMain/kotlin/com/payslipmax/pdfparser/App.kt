@@ -41,6 +41,7 @@ enum class Screen {
     FAQ,
     PrivacyPolicy,
     PayslipReplica,
+    ProFeatures,
 }
 
 /** The four bottom-tab roots; the remaining [Screen] values are pushed detail screens. */
@@ -165,7 +166,16 @@ private fun ScreenContent(
 ) {
     val activeDetail = navState.activeDetail
     if (activeDetail != null && nativeDetailNavigator == null) {
-        DetailContent(detail = activeDetail, viewModel = viewModel, onBack = { navState.pop() }, onOpenPdf = onOpenPdf)
+        // A pushed detail can itself open a further detail (e.g. the PRO catalog → Tax/DSOP screens):
+        // tab roots switch tabs, detail screens push on top (SSOT via isTabRoot).
+        val onNavigateFromDetail: (Screen) -> Unit = { if (it.isTabRoot) navState.switchTab(it) else navState.push(it) }
+        DetailContent(
+            detail = activeDetail,
+            viewModel = viewModel,
+            onBack = { navState.pop() },
+            onOpenPdf = onOpenPdf,
+            onNavigateTo = onNavigateFromDetail,
+        )
     } else {
         // Route by destination: tab roots switch tabs; detail screens push natively on iOS
         // (nativeDetailNavigator) or render inline on Android (SSOT via isTabRoot).
@@ -200,8 +210,11 @@ private fun DetailContent(
     viewModel: PayslipViewModel,
     onBack: () -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
 ) {
     when (detail) {
+        Screen.ProFeatures ->
+            com.payslipmax.pdfparser.ui.screens.ProFeaturesScreen(viewModel = viewModel, onNavigateTo = onNavigateTo, onBack = onBack)
         Screen.Representation ->
             com.payslipmax.pdfparser.ui.screens.RepresentationScreen(viewModel = viewModel, onBack = onBack)
         Screen.TaxPlanning ->

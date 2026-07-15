@@ -14,6 +14,7 @@ import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.GemmaModelStrings
 
 @Composable
@@ -36,11 +37,20 @@ fun PremiumSection(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,
     onUpgradePrompt: () -> Unit,
+    onNavigateTo: (Screen) -> Unit,
 ) {
     PremiumSettingsCard(
         isPremiumEnabled = uiState.isPremiumEnabled,
         onUpgradePrompt = onUpgradePrompt,
     )
+    SettingsCategoryCard {
+        SettingsRow(
+            icon = "✨",
+            title = AppStringsPremium.proCatalogTitle,
+            subtitle = AppStringsPremium.proCatalogSettingsEntrySubtitle,
+            onClick = { onNavigateTo(Screen.ProFeatures) },
+        )
+    }
 }
 
 @Composable

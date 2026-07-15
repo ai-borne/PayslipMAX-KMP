@@ -19,6 +19,7 @@ class AppNavStateTest {
             Screen.FAQ,
             Screen.PrivacyPolicy,
             Screen.PayslipReplica,
+            Screen.ProFeatures,
         )
 
     @Test

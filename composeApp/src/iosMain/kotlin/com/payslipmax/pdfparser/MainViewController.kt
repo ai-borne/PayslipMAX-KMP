@@ -16,6 +16,7 @@ import com.payslipmax.pdfparser.nav.NavBridge
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.HelpLegalScreen
 import com.payslipmax.pdfparser.ui.screens.PayslipReplicaDetailScreen
+import com.payslipmax.pdfparser.ui.screens.ProFeaturesScreen
 import com.payslipmax.pdfparser.ui.screens.RepresentationScreen
 import com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen
 import com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen
@@ -89,6 +90,12 @@ class IosNavHost(
         activeDetailHasUnsavedState = { false }
         return themedViewController {
             when (Screen.valueOf(screenName)) {
+                Screen.ProFeatures ->
+                    ProFeaturesScreen(
+                        viewModel = viewModel,
+                        onNavigateTo = { screen -> bridge.navigateToDetail(screen) },
+                        onBack = onBack,
+                    )
                 Screen.Representation ->
                     RepresentationScreen(
                         viewModel = viewModel,

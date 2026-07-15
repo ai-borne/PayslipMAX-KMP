@@ -74,7 +74,7 @@ private fun SettingsContent(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
         SettingsHeader(onTitleClick = onHeaderClick)
-        PrimarySettingsGroup(viewModel, uiState, onUpgradePrompt)
+        PrimarySettingsGroup(viewModel, uiState, onUpgradePrompt, onNavigateTo)
         SecondarySettingsGroup(
             viewModel = viewModel,
             uiState = uiState,
@@ -92,6 +92,7 @@ private fun PrimarySettingsGroup(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,
     onUpgradePrompt: () -> Unit,
+    onNavigateTo: (Screen) -> Unit,
 ) {
     // 1. Account & Subscription
     SettingsCategoryHeader(title = AppStrings.settingsAccountSubscriptionHeader)
@@ -100,7 +101,7 @@ private fun PrimarySettingsGroup(
     ProfileSection(viewModel = viewModel, uiState = uiState)
 
     // PayslipMax Pro Section
-    PremiumSection(viewModel = viewModel, uiState = uiState, onUpgradePrompt = onUpgradePrompt)
+    PremiumSection(viewModel = viewModel, uiState = uiState, onUpgradePrompt = onUpgradePrompt, onNavigateTo = onNavigateTo)
 
     // 2. Security & Privacy
     SecuritySection(viewModel = viewModel, uiState = uiState)
