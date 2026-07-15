@@ -97,4 +97,9 @@ object InsightsStrings {
     const val premiumTeaserDefaultInsight = "Detailed projections, anomaly audits, and claims generators ready."
     const val premiumTeaserDefaultButton = "Unlock Premium Intelligence"
     const val premiumActivatedSuffix = " (Activated)"
+
+    // Wealth Optimization card locked/teaser state (WEALTH_OPTIMIZATION gate)
+    const val wealthLockedTitle = "🔒 Wealth Optimization"
+    const val wealthLockedBody = "80C/NPS headroom & DSOP corpus projections"
+    const val wealthLockedCta = "Unlock Wealth Optimization"
 }

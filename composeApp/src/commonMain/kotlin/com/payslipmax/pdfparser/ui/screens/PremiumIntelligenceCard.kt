@@ -15,6 +15,7 @@ import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 @Composable
 fun PremiumIntelligenceCard(
     isPremiumEnabled: Boolean,
+    hasWealthOptimization: Boolean,
     state: InsightsState,
     onUpgradeClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
@@ -30,6 +31,8 @@ fun PremiumIntelligenceCard(
     } else {
         ProPremiumSuite(
             state = state,
+            hasWealthOptimization = hasWealthOptimization,
+            onUpgradeClick = onUpgradeClick,
             onNavigateTo = onNavigateTo,
             aiSectionContent = aiSectionContent,
             modifier = modifier,
@@ -166,6 +169,8 @@ private fun TeaserValueSection(
 @Composable
 private fun ProPremiumSuite(
     state: InsightsState,
+    hasWealthOptimization: Boolean,
+    onUpgradeClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
     aiSectionContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
@@ -187,21 +192,11 @@ private fun ProPremiumSuite(
                 color = MaterialTheme.colorScheme.primary,
             )
 
-            // 1. Wealth Optimization Card
-            val taxSaving = state.optimizationResult.totalPotentialTaxSaving
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
-                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
-            ) {
-                Column(modifier = Modifier.padding(AppDimensions.PaddingSmall)) {
-                    Text(
-                        text = "💰 ${formatCurrency(taxSaving)} ${InsightsStrings.heroWealthSubLabel}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
+            // 1. Wealth Optimization Card — gated behind FeatureGate.WEALTH_OPTIMIZATION (D4)
+            if (hasWealthOptimization) {
+                WealthOptimizationCard(taxSaving = state.optimizationResult.totalPotentialTaxSaving)
+            } else {
+                WealthOptimizationLockedCard(onUpgradeClick = onUpgradeClick)
             }
 
             // 2. CA-Level AI Audit
@@ -209,6 +204,61 @@ private fun ProPremiumSuite(
 
             // 3. Premium Tools Navigation
             PremiumToolsSection(onNavigateTo = onNavigateTo)
+        }
+    }
+}
+
+@Composable
+private fun WealthOptimizationCard(taxSaving: Double) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
+        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+    ) {
+        Column(modifier = Modifier.padding(AppDimensions.PaddingSmall)) {
+            Text(
+                text = "💰 ${formatCurrency(taxSaving)} ${InsightsStrings.heroWealthSubLabel}",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+    }
+}
+
+@Composable
+private fun WealthOptimizationLockedCard(onUpgradeClick: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)),
+    ) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.PaddingSmall),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+        ) {
+            Text(
+                text = InsightsStrings.wealthLockedTitle,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = InsightsStrings.wealthLockedBody,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            TextButton(
+                onClick = onUpgradeClick,
+                modifier = Modifier.align(Alignment.End),
+            ) {
+                Text(
+                    text = InsightsStrings.wealthLockedCta,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
     }
 }

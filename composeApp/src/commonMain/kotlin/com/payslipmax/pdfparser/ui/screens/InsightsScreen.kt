@@ -177,6 +177,7 @@ private fun InsightsLazyBody(
 ) {
     val hasTaxPlanner = viewModel.rememberHasAccess(FeatureGate.TAX_PLANNER)
     val hasPremiumIntelligence = viewModel.rememberHasAccess(FeatureGate.PREMIUM_INTELLIGENCE)
+    val hasWealthOptimization = viewModel.rememberHasAccess(FeatureGate.WEALTH_OPTIMIZATION)
     LazyColumn(
         modifier = modifier.background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(AppDimensions.PaddingMedium),
@@ -201,6 +202,7 @@ private fun InsightsLazyBody(
                 state = state,
                 uiState = uiState,
                 hasPremiumIntelligence = hasPremiumIntelligence,
+                hasWealthOptimization = hasWealthOptimization,
                 viewModel = viewModel,
                 onShowUpgradeSheet = onShowUpgradeSheet,
                 onShowTransparency = onShowTransparency,
@@ -239,6 +241,7 @@ private fun InsightsPremiumIntelligenceItem(
     state: InsightsState,
     uiState: PayslipUiState,
     hasPremiumIntelligence: Boolean,
+    hasWealthOptimization: Boolean,
     viewModel: PayslipViewModel,
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
@@ -247,6 +250,7 @@ private fun InsightsPremiumIntelligenceItem(
 ) {
     PremiumIntelligenceCard(
         isPremiumEnabled = hasPremiumIntelligence,
+        hasWealthOptimization = hasWealthOptimization,
         state = state,
         onUpgradeClick = onShowUpgradeSheet,
         onNavigateTo = onNavigateTo,
