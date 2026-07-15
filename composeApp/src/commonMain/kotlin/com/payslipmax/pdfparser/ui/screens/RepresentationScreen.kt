@@ -15,6 +15,7 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.database.RepresentationDraftEntity
+import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
@@ -22,6 +23,8 @@ import com.payslipmax.pdfparser.ui.platform.rememberClipboardCopier
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
+import com.payslipmax.pdfparser.utils.PdfLetterFormatter
+import com.payslipmax.pdfparser.utils.sharePdf
 import com.payslipmax.pdfparser.utils.shareText
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -35,11 +38,31 @@ fun RepresentationScreen(
     val drafts by viewModel.representationDrafts.collectAsState()
     var selectedDraft by remember { mutableStateOf<RepresentationDraftEntity?>(null) }
     var editedBody by remember { mutableStateOf("") }
+    var showUpgradeSheet by remember { mutableStateOf(false) }
+
+    // Export to PDF is gated by CLAIM_GENERATOR (Phase 4d): unlocked users get the share sheet; locked
+    // users get the upgrade sheet (D4). Everything else (edit/copy/text-share) stays free within this
+    // already-premium screen.
+    val hasClaimGenerator = viewModel.rememberHasAccess(FeatureGate.CLAIM_GENERATOR)
+    val onExportPdf: (RepresentationDraftEntity) -> Unit = { draft ->
+        if (hasClaimGenerator) {
+            sharePdf(PdfLetterFormatter.fileName(draft.disputeMonth), draft.subject, draft.bodyText)
+        } else {
+            showUpgradeSheet = true
+        }
+    }
 
     // Nested handler: while a draft is open, back closes it and returns to the list (mirrors the
     // editor's Cancel button). Disabled at the list level, so App.kt's handler pops the screen.
     BackHandler(enabled = selectedDraft != null) { selectedDraft = null }
     LaunchedEffect(selectedDraft) { onUnsavedStateChanged(selectedDraft != null) }
+
+    if (showUpgradeSheet) {
+        PremiumUpgradeBottomSheet(
+            onDismissRequest = { showUpgradeSheet = false },
+            onUnlockClick = { viewModel.setPremiumEnabled(true) },
+        )
+    }
 
     Box(
         modifier =
@@ -69,6 +92,7 @@ fun RepresentationScreen(
                     selectedDraft = it
                     editedBody = it.bodyText
                 },
+                onExportPdf = onExportPdf,
             )
         }
     }
@@ -79,6 +103,7 @@ private fun RepresentationDraftList(
     drafts: List<RepresentationDraftEntity>,
     onBack: () -> Unit,
     onSelect: (RepresentationDraftEntity) -> Unit,
+    onExportPdf: (RepresentationDraftEntity) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         ScreenBackHeader(title = AppStringsPremium.representationTitle, subtitle = AppStringsPremium.representationSubtitle, onBack = onBack)
@@ -86,7 +111,7 @@ private fun RepresentationDraftList(
         if (drafts.isEmpty()) {
             RepresentationEmptyState()
         } else {
-            RepresentationList(drafts = drafts, onSelect = onSelect)
+            RepresentationList(drafts = drafts, onSelect = onSelect, onExportPdf = onExportPdf)
         }
     }
 }
@@ -113,6 +138,7 @@ private fun RepresentationEmptyState(
 private fun RepresentationList(
     drafts: List<RepresentationDraftEntity>,
     onSelect: (RepresentationDraftEntity) -> Unit,
+    onExportPdf: (RepresentationDraftEntity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -120,7 +146,7 @@ private fun RepresentationList(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         items(items = drafts, key = { it.id }) { draft ->
-            RepresentationCardItem(draft = draft, onSelect = onSelect)
+            RepresentationCardItem(draft = draft, onSelect = onSelect, onExportPdf = onExportPdf)
         }
     }
 }
@@ -129,6 +155,7 @@ private fun RepresentationList(
 private fun RepresentationCardItem(
     draft: RepresentationDraftEntity,
     onSelect: (RepresentationDraftEntity) -> Unit,
+    onExportPdf: (RepresentationDraftEntity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -151,7 +178,7 @@ private fun RepresentationCardItem(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
-            RepresentationActionsRow(draft = draft, onSelect = onSelect)
+            RepresentationActionsRow(draft = draft, onSelect = onSelect, onExportPdf = onExportPdf)
         }
     }
 }
@@ -160,6 +187,7 @@ private fun RepresentationCardItem(
 private fun RepresentationActionsRow(
     draft: RepresentationDraftEntity,
     onSelect: (RepresentationDraftEntity) -> Unit,
+    onExportPdf: (RepresentationDraftEntity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val copyToClipboard = rememberClipboardCopier()
@@ -184,6 +212,12 @@ private fun RepresentationActionsRow(
             modifier = Modifier.weight(1f),
         ) {
             Text(AppStringsPremium.representationShareBtn)
+        }
+        OutlinedButton(
+            onClick = { onExportPdf(draft) },
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(AppStringsPremium.representationExportPdfBtn)
         }
     }
 }

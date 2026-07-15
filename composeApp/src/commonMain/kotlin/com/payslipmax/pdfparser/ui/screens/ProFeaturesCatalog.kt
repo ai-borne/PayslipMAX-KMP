@@ -7,8 +7,8 @@ import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
 /**
  * Whether a catalogued PRO feature is shippable today ([AVAILABLE]) or a roadmap placeholder
- * ([COMING_SOON], e.g. `CLAIM_GENERATOR` until Phase 4d). Coming-soon rows are visible but never
- * navigate and never open the upgrade sheet.
+ * ([COMING_SOON]). Coming-soon rows are visible but never navigate and never open the upgrade sheet.
+ * (No gate is coming-soon at present — `CLAIM_GENERATOR` went [AVAILABLE] in Phase 4d.)
  */
 enum class ProFeatureAvailability { AVAILABLE, COMING_SOON }
 
@@ -96,8 +96,8 @@ fun featureMeta(gate: FeatureGate): ProFeatureMeta =
                 icon = InsightsStrings.premiumToolsDraftClaimsIcon,
                 title = AppStringsPremium.proCatalogClaimTitle,
                 description = AppStringsPremium.proCatalogClaimDesc,
-                target = null,
-                availability = ProFeatureAvailability.COMING_SOON,
+                target = Screen.Representation,
+                availability = ProFeatureAvailability.AVAILABLE,
             )
         FeatureGate.BACKUP_RESTORE ->
             ProFeatureMeta(

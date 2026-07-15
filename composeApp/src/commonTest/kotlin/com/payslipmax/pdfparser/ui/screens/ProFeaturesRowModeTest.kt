@@ -14,7 +14,18 @@ import kotlin.test.assertEquals
 class ProFeaturesRowModeTest {
     private val dsop = featureMeta(FeatureGate.DSOP_SIMULATOR) // AVAILABLE, target = RetirementPlanning
     private val includedGate = featureMeta(FeatureGate.WEALTH_OPTIMIZATION) // AVAILABLE, target = null
-    private val comingSoon = featureMeta(FeatureGate.CLAIM_GENERATOR) // COMING_SOON
+
+    // No production gate is coming-soon today (CLAIM_GENERATOR went AVAILABLE in Phase 4d), so the
+    // COMING_SOON row-mode branch is exercised with a synthetic meta rather than a real gate.
+    private val comingSoon =
+        ProFeatureMeta(
+            gate = FeatureGate.CLAIM_GENERATOR,
+            icon = "🧪",
+            title = "Roadmap Feature",
+            description = "Not shippable yet",
+            target = null,
+            availability = ProFeatureAvailability.COMING_SOON,
+        )
 
     @Test
     fun lockedTargetedFeatureResolvesToLockedNotOpenable() {

@@ -41,16 +41,18 @@ class ProFeaturesCatalogTest {
     }
 
     @Test
-    fun claimGeneratorIsComingSoonWithNoTarget() {
+    fun claimGeneratorIsAvailableAndOpensRepresentation() {
+        // Phase 4d: the PDF claim generator shipped, so its catalog row is live and navigable.
         val meta = featureMeta(FeatureGate.CLAIM_GENERATOR)
-        assertEquals(ProFeatureAvailability.COMING_SOON, meta.availability)
-        assertNull(meta.target, "a coming-soon feature must not navigate anywhere")
+        assertEquals(ProFeatureAvailability.AVAILABLE, meta.availability)
+        assertEquals(Screen.Representation, meta.target)
     }
 
     @Test
     fun availableGatesWithDedicatedScreensPointAtThem() {
         assertEquals(Screen.TaxPlanning, featureMeta(FeatureGate.TAX_PLANNER).target)
         assertEquals(Screen.RetirementPlanning, featureMeta(FeatureGate.DSOP_SIMULATOR).target)
+        assertEquals(Screen.Representation, featureMeta(FeatureGate.CLAIM_GENERATOR).target)
     }
 
     @Test

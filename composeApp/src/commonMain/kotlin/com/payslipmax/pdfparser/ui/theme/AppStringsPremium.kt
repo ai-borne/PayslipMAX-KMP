@@ -19,6 +19,7 @@ object AppStringsPremium {
     const val representationEditBtn = "Edit"
     const val representationSaveBtn = "Save Draft"
     const val representationShareBtn = "Share"
+    const val representationExportPdfBtn = "Export PDF"
 
     const val taxPlanningTitle = "Tax Optimization Planner"
     const val taxPlanningSubtitle = "Form 16 projections & tax-saving suggestions"
