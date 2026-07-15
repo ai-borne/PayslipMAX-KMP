@@ -68,6 +68,7 @@ kotlin {
             dependencies {
                 implementation("org.json:json:20240303")
                 implementation(libs.mockk)
+                implementation("org.robolectric:robolectric:4.12.2")
             }
         }
 
@@ -93,6 +94,7 @@ android {
     }
     testOptions {
         unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
     }
 }
 
