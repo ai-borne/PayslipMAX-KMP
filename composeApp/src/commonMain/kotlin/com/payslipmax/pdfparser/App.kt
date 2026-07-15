@@ -50,18 +50,23 @@ internal val Screen.isTabRoot: Boolean
     get() = this == Screen.Dashboard || this == Screen.History || this == Screen.Insights || this == Screen.Settings
 
 /**
- * Persists [AppNavState] across process death via two primitive [Screen] name slots
- * (decision 9). Restoration is crash-guarded: if a saved constant was renamed or removed
- * in a later build, [restoreScreen] falls back rather than throwing on cold start.
+ * Persists [AppNavState] across process death via a [Screen] name list: tab root first, then
+ * the pushed detail stack bottom-to-top (decision 9). Restoration is crash-guarded and
+ * truncates from the first invalid entry onward — if a saved constant was renamed or removed,
+ * or a detail name turns up in the tab slot, everything from that point on is discarded rather
+ * than reconstructing a stack ordering the user never actually created.
  */
 internal val AppNavStateSaver: Saver<AppNavState, Any> =
     listSaver(
-        // listSaver requires a non-null element type, so absent detail is stored as an empty slot.
-        save = { listOf(it.currentTab.name, it.activeDetail?.name ?: "") },
-        restore = {
+        save = { listOf(it.currentTab.name) + it.detailStack.map(Screen::name) },
+        restore = { saved ->
             AppNavState(
-                currentTab = restoreScreen(it.getOrNull(0))?.takeIf(Screen::isTabRoot) ?: Screen.Dashboard,
-                activeDetail = restoreScreen(it.getOrNull(1))?.takeIf { s -> !s.isTabRoot },
+                currentTab = restoreScreen(saved.getOrNull(0))?.takeIf(Screen::isTabRoot) ?: Screen.Dashboard,
+                initialDetailStack =
+                    saved.drop(1)
+                        .map(::restoreScreen)
+                        .takeWhile { it != null && !it.isTabRoot }
+                        .filterNotNull(),
             )
         },
     )

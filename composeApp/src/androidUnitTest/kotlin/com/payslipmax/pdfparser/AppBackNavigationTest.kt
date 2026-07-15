@@ -88,11 +88,43 @@ class AppBackNavigationTest {
 
     @Test
     fun saverRoundTripsTabAndDetail() {
-        val state = AppNavState(currentTab = Screen.Insights, activeDetail = Screen.TaxPlanning)
+        val state = AppNavState(currentTab = Screen.Insights, initialDetailStack = listOf(Screen.TaxPlanning))
         val saved = with(AppNavStateSaver) { SaverScope { true }.save(state) }
         val restored = AppNavStateSaver.restore(saved!!)!!
         assertEquals(Screen.Insights, restored.currentTab)
         assertEquals(Screen.TaxPlanning, restored.activeDetail)
+    }
+
+    @Test
+    fun saverRoundTripsChainedDetailStack() {
+        // Two-level chain (Settings -> ProFeatures -> TaxPlanning): a process-death restore must
+        // bring back the whole stack, not just the top, so a subsequent pop lands on ProFeatures.
+        val state =
+            AppNavState(
+                currentTab = Screen.Settings,
+                initialDetailStack = listOf(Screen.ProFeatures, Screen.TaxPlanning),
+            )
+        val saved = with(AppNavStateSaver) { SaverScope { true }.save(state) }
+        val restored = AppNavStateSaver.restore(saved!!)!!
+        assertEquals(Screen.Settings, restored.currentTab)
+        assertEquals(Screen.TaxPlanning, restored.activeDetail)
+        assertTrue(restored.pop())
+        assertEquals(Screen.ProFeatures, restored.activeDetail)
+    }
+
+    @Test
+    fun saverTruncatesStackFromFirstInvalidEntry() {
+        // D2: a corrupt entry mid-stack (e.g. a since-deleted Screen constant) discards it and
+        // everything pushed after it, rather than dropping just the bad entry and keeping later
+        // ones — that would reconstruct an ordering the user never actually created.
+        val restored =
+            AppNavStateSaver.restore(
+                listOf(Screen.Settings.name, Screen.ProFeatures.name, "DeletedScreen", Screen.TaxPlanning.name),
+            )!!
+        assertEquals(Screen.Settings, restored.currentTab)
+        assertEquals(Screen.ProFeatures, restored.activeDetail)
+        assertTrue(restored.pop())
+        assertTrue(restored.canExitApp)
     }
 
     @Test
