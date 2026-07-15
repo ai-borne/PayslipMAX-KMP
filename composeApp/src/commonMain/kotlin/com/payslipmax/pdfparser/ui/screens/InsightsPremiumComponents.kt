@@ -23,24 +23,12 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
-private data class PremiumToolSpec(
-    val icon: String,
-    val title: String,
-    val valueProp: String,
-    val target: Screen,
-)
-
 @Composable
 fun PremiumToolsSection(
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val tools =
-        listOf(
-            PremiumToolSpec(InsightsStrings.premiumToolsDraftClaimsIcon, AppStringsPremium.premiumToolsDraftClaims, InsightsStrings.premiumToolsDraftClaimsValueProp, Screen.Representation),
-            PremiumToolSpec(InsightsStrings.premiumToolsTaxPlannerIcon, AppStringsPremium.premiumToolsTaxPlanner, InsightsStrings.premiumToolsTaxPlannerValueProp, Screen.TaxPlanning),
-            PremiumToolSpec(InsightsStrings.premiumToolsDsopIcon, AppStringsPremium.premiumToolsDsopSimulator, InsightsStrings.premiumToolsDsopValueProp, Screen.RetirementPlanning),
-        )
+    val tools = quickAccessTools()
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
@@ -60,7 +48,8 @@ fun PremiumToolsSection(
             tools.forEach { tool ->
                 PremiumToolCard(
                     spec = tool,
-                    onClick = { onNavigateTo(tool.target) },
+                    // Non-null by construction: quickAccessTools() filters out entries with a null target.
+                    onClick = { onNavigateTo(requireNotNull(tool.target)) },
                 )
             }
         }
@@ -151,7 +140,7 @@ private fun ProFeatureRow(
 
 @Composable
 private fun PremiumToolCard(
-    spec: PremiumToolSpec,
+    spec: ProFeatureMeta,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -180,7 +169,7 @@ private fun PremiumToolCard(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = spec.valueProp,
+                    text = spec.description,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

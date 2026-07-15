@@ -37,7 +37,6 @@ object InsightsStrings {
     const val taxPlanningRegimeDisclaimerNew = "Figures assume New Tax Regime. Standard deductions are auto-applied by PCDA."
 
     // Premium tools value props
-    const val premiumToolsDraftClaimsValueProp = "Recover money with official PCDA(O) representations"
     const val premiumToolsTaxPlannerValueProp = "See 80C/NPS headroom & estimated tax savings"
     const val premiumToolsDsopValueProp = "Project your DSOP corpus at retirement"
     const val premiumToolsOpenLabel = "Open"

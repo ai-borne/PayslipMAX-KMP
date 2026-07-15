@@ -121,3 +121,10 @@ fun featureMeta(gate: FeatureGate): ProFeatureMeta =
 
 /** The full catalog in [FeatureGate] declaration order — one row per gate, none forgotten. */
 fun proFeatureCatalog(): List<ProFeatureMeta> = FeatureGate.values().map(::featureMeta)
+
+/**
+ * The catalog subset with a standalone screen — the Insights tab's quick-access cards. Derived
+ * (not hand-maintained) so a gate that ships a [ProFeatureMeta.target] can never be forgotten there.
+ */
+fun quickAccessTools(): List<ProFeatureMeta> =
+    proFeatureCatalog().filter { it.target != null && it.availability == ProFeatureAvailability.AVAILABLE }

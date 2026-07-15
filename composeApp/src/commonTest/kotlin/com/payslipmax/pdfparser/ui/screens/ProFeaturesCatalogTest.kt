@@ -64,4 +64,21 @@ class ProFeaturesCatalogTest {
             }
         }
     }
+
+    @Test
+    fun quickAccessToolsIncludesEveryAvailableGateWithADedicatedScreen() {
+        // Regression guard: Insights' quick-access cards must derive from the catalog, not a hand-maintained
+        // list — RETIREMENT_CALCULATORS shipped a dedicated screen but was forgotten from a hardcoded list.
+        val quick = quickAccessTools().map { it.gate }.toSet()
+        assertEquals(
+            proFeatureCatalog()
+                .filter { it.target != null && it.availability == ProFeatureAvailability.AVAILABLE }
+                .map { it.gate }.toSet(),
+            quick,
+        )
+        assertTrue(FeatureGate.TAX_PLANNER in quick)
+        assertTrue(FeatureGate.DSOP_SIMULATOR in quick)
+        assertTrue(FeatureGate.CLAIM_GENERATOR in quick)
+        assertTrue(FeatureGate.RETIREMENT_CALCULATORS in quick)
+    }
 }

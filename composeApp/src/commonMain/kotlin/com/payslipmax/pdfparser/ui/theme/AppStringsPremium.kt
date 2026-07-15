@@ -55,7 +55,6 @@ object AppStringsPremium {
     const val retirementInterest = "Total Interest Earned"
     const val retirementProjectionDisclaimer = "Note: Compounding projections are estimated using a standard interest rate of 7.1% per annum. Actual rates may vary."
     const val premiumToolsTitle = "Premium Financial Tools"
-    const val premiumToolsDraftClaims = "Draft Claims"
     const val premiumToolsTaxPlanner = "Tax Planner"
     const val premiumToolsDsopSimulator = "DSOP Simulator"
 
