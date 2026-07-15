@@ -1,7 +1,6 @@
 package com.payslipmax.pdfparser
 
 import androidx.activity.ComponentActivity
-import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.hasText
@@ -20,14 +19,15 @@ import com.payslipmax.pdfparser.domain.LedgerBalances
 import com.payslipmax.pdfparser.domain.Officer
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.PayslipSummary
-import com.payslipmax.pdfparser.nav.AppNavState
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.FakeBackupManager
 import com.payslipmax.pdfparser.ui.FakeFinancialIntelligenceRepository
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.setPremiumEnabled
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -41,9 +41,7 @@ import org.robolectric.annotation.Config
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -84,67 +82,9 @@ class AppBackNavigationTest {
             composeRule.activity.onBackPressedDispatcher.onBackPressed()
         }
 
-    // --- Decision 9: state survives process death via the two-slot Saver ---
-
-    @Test
-    fun saverRoundTripsTabAndDetail() {
-        val state = AppNavState(currentTab = Screen.Insights, initialDetailStack = listOf(Screen.TaxPlanning))
-        val saved = with(AppNavStateSaver) { SaverScope { true }.save(state) }
-        val restored = AppNavStateSaver.restore(saved!!)!!
-        assertEquals(Screen.Insights, restored.currentTab)
-        assertEquals(Screen.TaxPlanning, restored.activeDetail)
-    }
-
-    @Test
-    fun saverRoundTripsChainedDetailStack() {
-        // Two-level chain (Settings -> ProFeatures -> TaxPlanning): a process-death restore must
-        // bring back the whole stack, not just the top, so a subsequent pop lands on ProFeatures.
-        val state =
-            AppNavState(
-                currentTab = Screen.Settings,
-                initialDetailStack = listOf(Screen.ProFeatures, Screen.TaxPlanning),
-            )
-        val saved = with(AppNavStateSaver) { SaverScope { true }.save(state) }
-        val restored = AppNavStateSaver.restore(saved!!)!!
-        assertEquals(Screen.Settings, restored.currentTab)
-        assertEquals(Screen.TaxPlanning, restored.activeDetail)
-        assertTrue(restored.pop())
-        assertEquals(Screen.ProFeatures, restored.activeDetail)
-    }
-
-    @Test
-    fun saverTruncatesStackFromFirstInvalidEntry() {
-        // D2: a corrupt entry mid-stack (e.g. a since-deleted Screen constant) discards it and
-        // everything pushed after it, rather than dropping just the bad entry and keeping later
-        // ones — that would reconstruct an ordering the user never actually created.
-        val restored =
-            AppNavStateSaver.restore(
-                listOf(Screen.Settings.name, Screen.ProFeatures.name, "DeletedScreen", Screen.TaxPlanning.name),
-            )!!
-        assertEquals(Screen.Settings, restored.currentTab)
-        assertEquals(Screen.ProFeatures, restored.activeDetail)
-        assertTrue(restored.pop())
-        assertTrue(restored.canExitApp)
-    }
-
-    @Test
-    fun saverCrashGuardFallsBackWhenScreenConstantRemoved() {
-        // Simulates a user mid-navigation who updates to a build where the persisted Screen
-        // constant no longer exists: restoration must fall back, not throw a launch-crash-loop.
-        val restored = AppNavStateSaver.restore(listOf("RenamedTabScreen", "DeletedDetailScreen"))!!
-        assertEquals(Screen.Dashboard, restored.currentTab)
-        assertNull(restored.activeDetail)
-        assertTrue(restored.canExitApp)
-    }
-
-    @Test
-    fun saverRejectsMisbucketedScreenNames() {
-        // A detail name in the tab slot (or a tab name in the detail slot) must not silently
-        // produce an impossible state — the slot guards coerce each back to a valid bucket.
-        val restored = AppNavStateSaver.restore(listOf(Screen.TaxPlanning.name, Screen.Dashboard.name))!!
-        assertEquals(Screen.Dashboard, restored.currentTab)
-        assertNull(restored.activeDetail)
-    }
+    // --- Decision 9: state survives process death via the Saver ---
+    // (pure-Saver-logic round-trip tests live in AppNavStateSaverTest.kt / commonTest — no
+    // Robolectric/Compose UI host needed there; kept this file within its line budget.)
 
     // --- Complaint #3 + decision 7: system back at a tab root exits, not intercepted ---
 
@@ -243,6 +183,45 @@ class AppBackNavigationTest {
         composeRule.onNodeWithText(AppStrings.navigationHome).assertDoesNotExist()
 
         // Second back — no longer editing — returns to the History list.
+        pressBack()
+        composeRule.waitForIdle()
+        assertFalse(composeRule.activity.isFinishing)
+        composeRule.onNodeWithText(AppStrings.navigationHome).assertIsDisplayed()
+    }
+
+    // --- Phase 2: chained detail push (Settings -> ProFeatures -> TaxPlanning) must unwind one
+    // level per back-press, not skip straight to the tab root (the reported regression) ---
+
+    @Test
+    fun backFromChainedProFeaturesDetailReturnsToProFeaturesNotSettings() {
+        // Drive the real premium flag rather than relying on the debug-only FORCE_PRO override
+        // (which the release unit test variant never applies), so Tax Planner is OPENABLE here
+        // regardless of build type.
+        viewModel.setPremiumEnabled(true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        composeRule.setContent {
+            App(viewModel = viewModel, onPickPdf = { }, onOpenPdf = { _, _ -> })
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+        composeRule.waitForIdle()
+
+        composeRule.onAllNodesWithText(AppStrings.navigationSettings).onFirst().performClick()
+        composeRule.waitForIdle()
+        composeRule.onNodeWithText(AppStringsPremium.proCatalogTitle).performScrollTo().performClick()
+        composeRule.waitForIdle()
+        composeRule.onNodeWithText(AppStringsPremium.premiumToolsTaxPlanner).performScrollTo().performClick()
+        composeRule.waitForIdle()
+
+        // On Tax Optimization Planner; back once must land on ProFeatures, not Settings.
+        composeRule.onNodeWithText(AppStringsPremium.taxPlanningTitle).assertIsDisplayed()
+        pressBack()
+        composeRule.waitForIdle()
+        assertFalse(composeRule.activity.isFinishing)
+        composeRule.onNodeWithText(AppStringsPremium.proCatalogSubtitle).assertIsDisplayed()
+        composeRule.onNodeWithText(AppStrings.navigationHome).assertDoesNotExist()
+
+        // Second back returns to the Settings tab root.
         pressBack()
         composeRule.waitForIdle()
         assertFalse(composeRule.activity.isFinishing)
