@@ -34,9 +34,15 @@ import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 
 /** How a catalog row reacts to the user's entitlement — drives its trailing widget and click action. */
-private enum class RowMode { OPENABLE, INCLUDED, LOCKED, COMING_SOON }
+internal enum class RowMode { OPENABLE, INCLUDED, LOCKED, COMING_SOON }
 
-private fun rowMode(
+/**
+ * The single decision that gates every catalog row: a coming-soon feature is always inert; a feature the
+ * user lacks access to is always [LOCKED] (teaser + upgrade sheet, D4) regardless of its target; only an
+ * unlocked, available feature opens ([OPENABLE] with a screen, [INCLUDED] when it lives inside a tab).
+ * Kept `internal` (not `private`) so the D4 invariant is regression-tested, not just verified by eye.
+ */
+internal fun rowMode(
     meta: ProFeatureMeta,
     hasAccess: Boolean,
 ): RowMode =
