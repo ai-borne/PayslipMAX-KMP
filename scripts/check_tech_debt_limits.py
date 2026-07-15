@@ -275,11 +275,50 @@ def check_pushed_screen_insets(filepath, workspace_dir):
     return errors
 
 
+_REGEX_CONSTRUCT_RE = re.compile(r'\bRegex\s*\(|\.toRegex\s*\(')
+_LOOKAROUND_RE = re.compile(r'\(\?=|\(\?!|\(\?<=|\(\?<!')
+_BACKREF_RE = re.compile(r'\\+[1-9]')
+
+
+def check_risky_regex_patterns(filepath):
+    """Structural guard: a Regex(...)/.toRegex(...) construction in commonMain whose pattern
+    contains a lookaround or backreference is the exact construct class that was
+    quadratic-or-worse on Kotlin/Native's regex engine — see docs/AI_INSIGHTS_PIPELINE.md's
+    changelog for the original 4-11 min iOS-only parse stall, invisible to the JVM-only corpus
+    suite. Only enforced on files under a commonMain source set, mirroring how
+    check_ios_vc_theming scopes to iosMain. Deliberately does not check whether a covering
+    iosTest timing assertion already exists — reliably mapping a regex literal to test coverage
+    from text alone isn't feasible; a human prompt at commit time is enough signal."""
+    if "commonMain" not in filepath.replace("\\", "/"):
+        return []
+
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+    except Exception as e:
+        return [f"Error reading file: {str(e)}"]
+
+    errors = []
+    for idx, line in enumerate(lines):
+        if not _REGEX_CONSTRUCT_RE.search(line):
+            continue
+        if _LOOKAROUND_RE.search(line) or _BACKREF_RE.search(line):
+            errors.append(
+                f"Risky regex construct at line {idx+1}: lookaround/backreference pattern in a "
+                f"commonMain Regex(...) is the exact construct class that was quadratic-or-worse "
+                f"on Kotlin/Native (see docs/AI_INSIGHTS_PIPELINE.md changelog + "
+                f"ParserUtilsIosPerfTest) — confirm an iosTest timing assertion covers this "
+                f"pattern before assuming JVM-green is sufficient"
+            )
+    return errors
+
+
 def audit_file(filepath, workspace_dir):
     return (
         check_file_limits(filepath)
         + check_ios_vc_theming(filepath)
         + check_pushed_screen_insets(filepath, workspace_dir)
+        + check_risky_regex_patterns(filepath)
     )
 
 
