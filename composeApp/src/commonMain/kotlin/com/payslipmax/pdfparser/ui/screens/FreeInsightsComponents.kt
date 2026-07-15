@@ -126,11 +126,8 @@ fun calculateKeyFindings(state: InsightsState): List<FindingItem> {
         findings.add(FindingItem(true, "DSOP contribution adjusted"))
     }
 
-    // Missing Allowances Anomaly Check
-    val missingAnomalies = state.engineResult.anomalies.filter { it.type == "MISSING_ALLOWANCE" }
-    missingAnomalies.forEach { anomaly ->
-        findings.add(FindingItem(false, "${anomaly.field.replaceFirstChar { it.uppercase() }} missing"))
-    }
+    // Anomaly-derived findings are tier-gated: PRO auditors (incl. MISSING_ALLOWANCE) surface only in
+    // the ANOMALY_DETECTION-gated AdvancedAnomaliesCard (D6), never leaked into the free Key Findings.
 
     return findings
 }

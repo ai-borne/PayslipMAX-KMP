@@ -263,7 +263,6 @@ object AppStrings {
     const val insightsSavingsRateTarget = "Target: 20%+. You save "
     const val insightsSavingsRateSuffix = "% of your gross pay in DSOP and AGIF."
     const val executiveSummaryLabel = "Executive Summary"
-    const val criticalAlertsLabel = "Critical Alerts"
     const val changesThisMonthLabel = "Changes This Month"
     const val legendNetTakeHome = "Net Take-Home"
     const val legendDsop = "Provident Fund (DSOP)"

@@ -10,73 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
-import com.payslipmax.pdfparser.insights.Anomaly
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
-
-@Composable
-fun CriticalAlertsQueue(
-    anomalies: List<Anomaly>,
-    modifier: Modifier = Modifier,
-) {
-    if (anomalies.isEmpty()) return
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            Text(
-                text = AppStrings.criticalAlertsLabel,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            anomalies.forEach { anomaly -> CriticalAlertCard(anomaly = anomaly) }
-        }
-    }
-}
-
-@Composable
-private fun CriticalAlertCard(
-    anomaly: Anomaly,
-) {
-    val borderColor =
-        when (anomaly.type) {
-            "SALARY_LOSS", "DSOP_COMPLIANCE" -> MaterialTheme.colorScheme.error
-            else -> MaterialTheme.colorScheme.secondary
-        }
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-        border = BorderStroke(AppDimensions.BorderThin, borderColor.copy(alpha = 0.5f)),
-    ) {
-        Row(
-            modifier = Modifier.padding(AppDimensions.PaddingSmall),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text =
-                    when (anomaly.type) {
-                        "SALARY_LOSS", "DSOP_COMPLIANCE" -> "🛑"
-                        else -> "⚠️"
-                    },
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(end = AppDimensions.SpacingSmall),
-            )
-            Text(
-                text = anomaly.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-    }
-}
 
 fun calculateMomChanges(
     current: LedgerRecordEntity,

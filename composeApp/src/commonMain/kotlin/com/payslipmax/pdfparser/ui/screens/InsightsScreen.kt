@@ -195,6 +195,7 @@ private fun InsightsLazyBody(
         }
         item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
         item { DeductionsBreakdownSection(history = state.historySorted, selectedRecord = state.currentRecord) }
+        item { AdvancedAnomaliesCard(state.engineResult.anomalies, viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION), onShowUpgradeSheet) }
         item { KeyFindingsSection(state = state) }
         item { AiHighlightsSection(state = state) }
         item {

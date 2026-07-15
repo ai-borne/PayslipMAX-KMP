@@ -102,4 +102,25 @@ object InsightsStrings {
     const val wealthLockedTitle = "🔒 Wealth Optimization"
     const val wealthLockedBody = "80C/NPS headroom & DSOP corpus projections"
     const val wealthLockedCta = "Unlock Wealth Optimization"
+
+    // Advanced anomaly checks (ANOMALY_DETECTION gate, D6) — category labels + locked teaser copy.
+    // Free tier keeps SALARY_LOSS/DEDUCTION_SPIKE via the health score; these labels name the PRO checks.
+    const val anomalyLabelSalaryLoss = "Salary Loss"
+    const val anomalyLabelDeductionSpike = "Deduction Spike"
+    const val anomalyLabelMissingAllowance = "Missing Allowance"
+    const val anomalyLabelTptaEntitlement = "TPTA Entitlement"
+    const val anomalyLabelArrearsAudit = "DA Arrears"
+    const val anomalyLabelDsopCompliance = "DSOP Compliance"
+    const val anomalyLabelDsopMilestone = "DSOP Milestone"
+    const val anomalyLabelTaxProjection = "Tax Projection"
+    const val anomalyLabelRentRecoveryRisk = "Quarters / Rent Risk"
+    const val anomalyLabelDebitRecovery = "Debit Recovery"
+    const val anomalyLabelUnknown = "Financial Check"
+
+    const val advancedAnomaliesTitle = "Advanced Anomaly Checks"
+    const val advancedAnomaliesLockedTitle = "🔒 Advanced Anomaly Checks"
+    const val advancedAnomaliesLockedBody = "Detailed audit findings and recovery amounts are part of PRO."
+    const val advancedAnomaliesLockedCountSuffix = "advanced check(s) found on this payslip"
+    const val advancedAnomaliesUnlockCta = "Unlock Anomaly Detection"
+    const val advancedAnomaliesLabelSeparator = " · "
 }

@@ -72,15 +72,16 @@ class FreeInsightsLogicTest {
         assertTrue(findings.any { it.text.contains("Income Tax increased by 100%") })
     }
 
+    /** D6: MISSING_ALLOWANCE is a PRO auditor — it must never leak into the free Key Findings card. */
     @Test
-    fun testKeyFindingsMissingAllowance() {
+    fun testMissingAllowanceDoesNotLeakIntoFreeKeyFindings() {
         val curr = makeLedgerRecord()
         val prev = makeLedgerRecord("01/2026")
         val anomaly = Anomaly("MISSING_ALLOWANCE", "transportAllowance", 3600.0, "02/2026", "Transport allowance missing")
         val state = makeInsightsState(curr, prev, listOf(anomaly))
 
         val findings = calculateKeyFindings(state)
-        assertTrue(findings.any { it.text.contains("TransportAllowance missing") })
+        assertTrue(findings.none { it.text.contains("missing", ignoreCase = true) })
     }
 
     @Test
