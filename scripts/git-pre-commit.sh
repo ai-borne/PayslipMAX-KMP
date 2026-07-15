@@ -7,6 +7,17 @@ if [ -z "$staged_files" ]; then
     exit 0
 fi
 
+if command -v gitleaks >/dev/null 2>&1; then
+    echo "🔒 Scanning staged changes for secrets (gitleaks)..."
+    gitleaks protect --staged --config .gitleaks.toml
+    if [ $? -ne 0 ]; then
+        echo "❌ Commit rejected: gitleaks found a potential secret in staged changes."
+        exit 1
+    fi
+else
+    echo "⚠️  gitleaks not installed — skipping local secret scan (CI will still catch it). Install: brew install gitleaks"
+fi
+
 echo "🔍 Auditing staged Kotlin files for tech debt limits..."
 
 # Run check script in strict mode on staged files
