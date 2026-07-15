@@ -2,6 +2,7 @@
 
 HOOKS_DIR=".git/hooks"
 PRE_COMMIT_HOOK="$HOOKS_DIR/pre-commit"
+PRE_PUSH_HOOK="$HOOKS_DIR/pre-push"
 
 if [ ! -d ".git" ]; then
     echo "❌ Error: Not a git repository or not run from the root directory."
@@ -15,4 +16,12 @@ cp scripts/git-pre-commit.sh "$PRE_COMMIT_HOOK"
 chmod +x "$PRE_COMMIT_HOOK"
 
 echo "✅ Git pre-commit hook installed successfully under $PRE_COMMIT_HOOK"
+
+echo "📦 Installing Git pre-push hook..."
+
+# Copy pre-push script to git hooks directory
+cp scripts/git-pre-push.sh "$PRE_PUSH_HOOK"
+chmod +x "$PRE_PUSH_HOOK"
+
+echo "✅ Git pre-push hook installed successfully under $PRE_PUSH_HOOK"
 exit 0
