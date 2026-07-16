@@ -139,7 +139,7 @@ object AppStrings {
     const val settingsProfileSaveBtn = "Save Adjustments"
 
     // Backup & Restore Card
-    const val settingsBackupHeader = "Personal Cloud Sync & Backup"
+    const val settingsBackupHeader = "Backup & Restore"
     const val settingsBackupDesc = "Backup is locally AES-256 encrypted using your password."
     const val settingsBackupLocalBtn = "Local Backup"
     const val settingsRestoreLocalBtn = "Local Restore"
@@ -202,7 +202,7 @@ object AppStrings {
     const val settingsAiInsightsLockedTitle = "CA Level AI Report"
     const val settingsRowThemeLabel = "App Appearance"
     const val settingsRowPasscodeLabel = "App Passcode Lock"
-    const val settingsRowBackupLabel = "Secure Backup & Sync"
+    const val settingsRowBackupLabel = "Backup & Restore"
     const val settingsRowProfileLabel = "Salary & Allowance Settings"
     const val settingsStatusNotConfigured = "Not Configured"
     const val settingsStatusConfigured = "Configured"

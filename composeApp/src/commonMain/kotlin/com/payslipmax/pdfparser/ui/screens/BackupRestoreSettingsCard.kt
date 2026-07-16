@@ -21,8 +21,6 @@ fun BackupRestoreSettingsCard(
     onRestoreClick: (String, (Result<Unit>) -> Unit) -> Unit,
     onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
     onImportBackup: (ByteArray, String, (Result<Unit>) -> Unit) -> Unit,
-    onCloudBackupClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
-    onCloudRestoreClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
     canBackup: Boolean,
     onUpgradePrompt: () -> Unit,
     modifier: Modifier = Modifier,
@@ -37,7 +35,7 @@ fun BackupRestoreSettingsCard(
         }
 
     SettingsRow(
-        icon = "☁️",
+        icon = "💾",
         title = AppStrings.settingsRowBackupLabel,
         subtitle = subtitleText,
         onClick = { showSheet = true },
@@ -57,8 +55,6 @@ fun BackupRestoreSettingsCard(
             onRestoreClick = onRestoreClick,
             onExportBackup = onExportBackup,
             onImportBackup = onImportBackup,
-            onCloudBackupClick = onCloudBackupClick,
-            onCloudRestoreClick = onCloudRestoreClick,
             onDismissRequest = { showSheet = false },
         )
     }
@@ -74,8 +70,6 @@ private fun BackupRestoreBottomSheet(
     onRestoreClick: (String, (Result<Unit>) -> Unit) -> Unit,
     onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
     onImportBackup: (ByteArray, String, (Result<Unit>) -> Unit) -> Unit,
-    onCloudBackupClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
-    onCloudRestoreClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -93,8 +87,6 @@ private fun BackupRestoreBottomSheet(
             onRestoreClick = onRestoreClick,
             onExportBackup = onExportBackup,
             onImportBackup = onImportBackup,
-            onCloudBackupClick = onCloudBackupClick,
-            onCloudRestoreClick = onCloudRestoreClick,
             onCloseClick = onDismissRequest,
         )
     }
@@ -110,8 +102,6 @@ private fun BackupRestoreSheetContent(
     onRestoreClick: (String, (Result<Unit>) -> Unit) -> Unit,
     onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
     onImportBackup: (ByteArray, String, (Result<Unit>) -> Unit) -> Unit,
-    onCloudBackupClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
-    onCloudRestoreClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
     onCloseClick: () -> Unit,
 ) {
     var status by remember { mutableStateOf<BackupStatus?>(null) }
@@ -139,60 +129,8 @@ private fun BackupRestoreSheetContent(
             onImportBackup = onImportBackup,
             onStatusChange = { status = it },
         )
-        CloudSyncWrapper(
-            password = password,
-            canBackup = canBackup,
-            onLockedBackup = onLockedBackup,
-            onCloudBackupClick = onCloudBackupClick,
-            onCloudRestoreClick = onCloudRestoreClick,
-            onStatusChange = { status = it },
-        )
         status?.let { StatusMessage(status = it) }
     }
-}
-
-@Composable
-private fun CloudSyncWrapper(
-    password: String,
-    canBackup: Boolean,
-    onLockedBackup: () -> Unit,
-    onCloudBackupClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
-    onCloudRestoreClick: (String, String, String, (Result<Unit>) -> Unit) -> Unit,
-    onStatusChange: (BackupStatus) -> Unit,
-) {
-    var cloudUserId by remember { mutableStateOf("") }
-    var cloudAuthToken by remember { mutableStateOf("") }
-
-    CloudSyncSection(
-        userId = cloudUserId,
-        onUserIdChange = { cloudUserId = it },
-        authToken = cloudAuthToken,
-        onAuthTokenChange = { cloudAuthToken = it },
-        canBackup = canBackup,
-        onLockedBackup = onLockedBackup,
-        onCloudBackupClick = {
-            onCloudBackupClick(cloudUserId, cloudAuthToken, password) { result ->
-                val statusMsg =
-                    if (result.isSuccess) {
-                        com.payslipmax.pdfparser.ui.theme.CloudSyncStrings.statusCloudBackupSuccess
-                    } else {
-                        "${com.payslipmax.pdfparser.ui.theme.CloudSyncStrings.statusCloudSyncFailed}${result.exceptionOrNull()?.message}"
-                    }
-                onStatusChange(BackupStatus(statusMsg, isSuccess = result.isSuccess))
-            }
-        },
-        onCloudRestoreClick = {
-            onCloudRestoreClick(cloudUserId, cloudAuthToken, password) { result ->
-                val statusMsg =
-                    if (result.isSuccess) {
-                        com.payslipmax.pdfparser.ui.theme.CloudSyncStrings.statusCloudRestoreSuccess
-                    } else {
-                        "${com.payslipmax.pdfparser.ui.theme.CloudSyncStrings.statusCloudSyncFailed}${result.exceptionOrNull()?.message}"
-                    }
-                onStatusChange(BackupStatus(statusMsg, isSuccess = result.isSuccess))
-            }
-        },
-    )
 }
 
 @Composable

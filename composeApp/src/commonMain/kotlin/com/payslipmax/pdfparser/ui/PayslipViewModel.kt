@@ -24,7 +24,6 @@ class PayslipViewModel(
     internal val repository: PayslipRepository,
     internal val backupManager: com.payslipmax.pdfparser.backup.BackupManager,
     internal val financialIntelligenceRepository: com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository? = null,
-    internal val cloudSyncRepository: com.payslipmax.pdfparser.repository.CloudSyncRepository? = null,
     internal val gemmaBaseModelInstaller: GemmaBaseModelInstaller = provideGemmaBaseModelInstaller(),
     internal val gemmaModelStorage: GemmaModelStorageManager = GemmaModelStorageManager(),
     internal val gemmaInstallTelemetry: GemmaInstallTelemetry = provideGemmaInstallTelemetry(),

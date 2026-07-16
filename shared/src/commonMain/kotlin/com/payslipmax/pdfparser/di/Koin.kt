@@ -64,10 +64,6 @@ val sharedModule: Module =
         single {
             com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository(get(), get())
         }
-
-        single {
-            com.payslipmax.pdfparser.repository.CloudSyncRepository(get(), get())
-        }
     }
 
 /**
