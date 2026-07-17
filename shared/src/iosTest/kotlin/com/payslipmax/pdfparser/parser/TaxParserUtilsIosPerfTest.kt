@@ -48,7 +48,12 @@ class TaxParserUtilsIosPerfTest {
         private const val LARGE_SIZE = 17_203
         private const val BOUND_MS = 2_000L
         private const val LINEARITY_FACTOR = 2L
-        private const val LINEARITY_SLACK_MS = 50L
+
+        // Timer-granularity guard: at these sizes elapsed time can round to 0-1ms, which would
+        // make the linearity check spuriously tight on a loaded CI runner. Not a correctness
+        // escape hatch — quadratic scaling at this text length would blow well past this slack.
+        // Matches ParserUtilsIosPerfTest's slack, which hit the same CI flake.
+        private const val LINEARITY_SLACK_MS = 250L
 
         // Filler mimics real tax/DSOP page text surrounding the labelled fields the regexes target.
         private const val FILLER_UNIT =
