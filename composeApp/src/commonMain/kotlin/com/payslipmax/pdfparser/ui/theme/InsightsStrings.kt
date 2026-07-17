@@ -95,9 +95,7 @@ object InsightsStrings {
     const val smartInsightsFirstStatementTitle = "First Statement Uploaded"
     const val smartInsightsFirstStatementBody =
         "This is your first tracked payslip — Smart Insights will start comparing month-over-month changes from your next upload."
-    const val smartInsightsActionRentRecoveryRisk = "Draft a representation to confirm your quarters/HRA status with PCDA(O)"
     const val smartInsightsActionTaxProjection = "Review your projected annual tax liability in Tax Planner"
-    const val smartInsightsActionDebitRecovery = "Verify this recovery entry with your PAO"
     const val smartInsightsSectionTitle = "Smart Insights"
 
     // Folded free findings — the useful signal from the retired KeyFindings/AiHighlights sections,

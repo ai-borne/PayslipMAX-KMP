@@ -117,9 +117,10 @@ private fun anomalyActionLabel(type: String): String? =
         "DEDUCTION_SPIKE" -> InsightsStrings.wellnessImproveDeductionSpike
         "TPTA_ENTITLEMENT" -> InsightsStrings.wellnessImproveTptaEntitlement
         "DSOP_COMPLIANCE" -> InsightsStrings.wellnessDsopNonCompliance
-        "RENT_RECOVERY_RISK" -> InsightsStrings.smartInsightsActionRentRecoveryRisk
         "TAX_PROJECTION" -> InsightsStrings.smartInsightsActionTaxProjection
-        "DEBIT_RECOVERY" -> InsightsStrings.smartInsightsActionDebitRecovery
+        // RENT_RECOVERY_RISK / DEBIT_RECOVERY have no actionTarget below (not in
+        // FinancialIntelligenceRepository's representation-draft-eligible set, no other screen fits)
+        // so they never get an actionLabel either — a label without a clickable target is dead UI.
         else -> null
     }
 
