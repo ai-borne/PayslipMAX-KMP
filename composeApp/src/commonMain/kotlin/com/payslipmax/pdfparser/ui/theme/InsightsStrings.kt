@@ -17,16 +17,8 @@ object InsightsStrings {
     const val wellnessTitleTpta = "TPTA Entitlement Advisory"
     const val wellnessTitleDsop = "DSOP Non-Compliance"
 
-    // Adaptive Hero card
-    const val heroRecoverySectionTitle = "Recovery Opportunity"
-    const val heroRecoverySubLabel = "recoverable from PCDA"
-    const val heroRecoveryCtaLabel = "Draft Representation to PCDA(O)"
-    const val heroRecoveryMoreIssuesSuffix = "more issue(s)"
-    const val heroWealthSectionTitle = "Wealth Optimization"
-    const val heroWealthSubLabel = "tax saving available"
+    // Pay Health chip opportunity CTA
     const val heroWealthCtaLabel = "See how →"
-    const val heroWealthRegimeDisclaimer = "Old regime est. — verify with PAO if on new regime"
-    const val heroWealthRegimeNewActive = "New Tax Regime active — no further standard optimizations."
 
     // Tax Planner real numbers
     const val taxPlanningOldRegimeEst = "(old regime est.)"
@@ -43,10 +35,6 @@ object InsightsStrings {
     const val premiumToolsDraftClaimsIcon = "📋"
     const val premiumToolsTaxPlannerIcon = "📊"
     const val premiumToolsDsopIcon = "📈"
-
-    // Pro features teaser card
-    const val proTeaserAiDetail = "CA-grade AI financial audit powered by Gemini"
-    const val proTeaserToolsDetail = "Draft Claims · Tax Planner · DSOP Simulator"
 
     // Accessibility content descriptions
     const val wellnessChipExpandDesc = "Expand score drivers"

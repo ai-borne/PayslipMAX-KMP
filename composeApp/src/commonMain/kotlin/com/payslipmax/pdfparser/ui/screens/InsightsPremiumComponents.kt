@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
-import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
@@ -52,88 +50,6 @@ fun PremiumToolsSection(
                     onClick = { onNavigateTo(requireNotNull(tool.target)) },
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun ProFeaturesTeaser(
-    onUpgradeClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            ProTeaserHeader()
-            ProFeatureRow(
-                icon = AppStrings.proTeaserAiIcon,
-                title = AppStrings.settingsAiInsightsLockedTitle,
-                detail = InsightsStrings.proTeaserAiDetail,
-            )
-            ProFeatureRow(
-                icon = AppStrings.proTeaserToolsIcon,
-                title = AppStringsPremium.premiumToolsTitle,
-                detail = InsightsStrings.proTeaserToolsDetail,
-            )
-            Button(onClick = onUpgradeClick, modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = AppStrings.settingsProUpgradeBtn,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProTeaserHeader() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-    ) {
-        Text(AppStrings.proTeaserCrownIcon, style = MaterialTheme.typography.titleMedium)
-        Column {
-            Text(
-                text = AppStrings.settingsProPlanTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                text = AppStrings.settingsProPlanPrice,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
-
-@Composable
-private fun ProFeatureRow(
-    icon: String,
-    title: String,
-    detail: String,
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(icon, style = MaterialTheme.typography.bodyLarge)
-        Column {
-            Text(title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-            Text(
-                text = detail,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }
