@@ -65,3 +65,4 @@ __pycache__/
 # bundleRelease; never committed (see gemmaModelPack/src/main/assets/PLACEHOLDER_*.txt)
 gemmaModelPack/src/main/assets/*.litertlm
 
+iosApp/iosApp.xcodeproj/project.xcworkspace/contents.xcworkspacedata

@@ -2,6 +2,7 @@
 
 package com.payslipmax.pdfparser.insights.gemma
 
+import com.payslipmax.pdfparser.subscription.isDebugBuild
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
@@ -24,15 +25,27 @@ private const val GEMMA_APP_GROUP_IDENTIFIER = "group.com.payslipmax.pdfparser.g
  * Returns null both when the App Group entitlement isn't configured yet (Phase 4's Xcode-side work,
  * blocked on Apple Developer Program enrollment) and when the entitlement exists but the extension
  * hasn't finished downloading the model into it — both cases mean "not ready" to the caller.
+ *
+ * Debug builds additionally fall back to a manually-sideloaded file in the app's Documents
+ * directory (e.g. dropped in via Xcode's device file browser) when the App Group container isn't
+ * reachable — the only way to test Tier 6 on a real device before the Xcode-side extension target
+ * exists. Release builds never take this branch.
  */
 actual fun resolveInstalledGemmaModelPath(): String? {
+    val fileName = GemmaModelStorageManager().getRecommendedModelFileName()
     val containerPath =
         NSFileManager.defaultManager
             .containerURLForSecurityApplicationGroupIdentifier(GEMMA_APP_GROUP_IDENTIFIER)
             ?.path
-            ?: return null
-    val modelPath = "$containerPath/${GemmaModelStorageManager().getRecommendedModelFileName()}"
-    return modelPath.takeIf { fileExistsAt(it) }
+    if (containerPath != null) {
+        val modelPath = "$containerPath/$fileName"
+        if (fileExistsAt(modelPath)) return modelPath
+    }
+    if (isDebugBuild()) {
+        val sideloadPath = "${gemmaModelStorageDir()}/$fileName"
+        if (fileExistsAt(sideloadPath)) return sideloadPath
+    }
+    return null
 }
 
 private fun documentDirectory(): String {

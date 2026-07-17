@@ -11,6 +11,7 @@ import platform.Foundation.create
 import platform.Foundation.writeToFile
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -62,7 +63,28 @@ class GemmaModelPathsIosTest {
         // Developer Program enrollment) isn't configured in a plain XCTest host, so
         // containerURLForSecurityApplicationGroupIdentifier returns nil — this proves the
         // invariant that resolution degrades to null rather than crashing, never claiming a model
-        // is installed when the container isn't even reachable.
+        // is installed when the container isn't even reachable (and no debug sideload file is
+        // present in Documents either).
         assertNull(resolveInstalledGemmaModelPath())
+    }
+
+    @Test
+    fun resolveInstalledGemmaModelPathFindsADebugSideloadedFileInDocumentsWhenTheAppGroupIsUnreachable() {
+        // Mirrors the real-device workflow: with no App Group entitlement configured, a file
+        // manually dropped into Documents (e.g. via Xcode's device file browser) under the
+        // canonical active-slot filename must still resolve, since XCTest binaries are debug
+        // binaries (Platform.isDebugBinary == true).
+        val sideloadPath = "${gemmaModelStorageDir()}/${GemmaModelStorageManager().getRecommendedModelFileName()}"
+        val bytes = "not a real gemma model".encodeToByteArray()
+        bytes.usePinned { pinned ->
+            NSData.create(bytes = pinned.addressOf(0), length = bytes.size.toULong())
+                .writeToFile(sideloadPath, atomically = true)
+        }
+
+        try {
+            assertEquals(sideloadPath, resolveInstalledGemmaModelPath())
+        } finally {
+            NSFileManager.defaultManager.removeItemAtPath(sideloadPath, error = null)
+        }
     }
 }
