@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.logging.Logger
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -69,8 +70,13 @@ fun EncryptedPayslipEntity.toDomain(password: String = CryptoHelper.getDatabaseS
     val decryptedBytes =
         try {
             CryptoHelper.decrypt(encryptedBytes, password).getOrThrow()
-        } catch (e: Exception) {
-            CryptoHelper.decrypt(encryptedBytes, CryptoHelper.getLegacyFallbackKey()).getOrThrow()
+        } catch (primaryEx: Exception) {
+            try {
+                CryptoHelper.decrypt(encryptedBytes, CryptoHelper.getLegacyFallbackKey()).getOrThrow()
+            } catch (legacyEx: Exception) {
+                Logger.w("EncryptedPayslipEntity", "Cannot decrypt $dateStr with device key or legacy key - ${legacyEx.message}")
+                throw legacyEx
+            }
         }
     val jsonString = decryptedBytes.decodeToString()
     return Json.decodeFromString(ParsedPayslip.serializer(), jsonString)

@@ -26,7 +26,6 @@ class PayslipViewModelSettingsTest {
 
     private lateinit var fakeDao: FakePayslipDao
     private lateinit var fakeParser: FakePdfParser
-    private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
     private lateinit var viewModel: PayslipViewModel
 
@@ -35,44 +34,14 @@ class PayslipViewModelSettingsTest {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
-        fakeBackupManager = FakeBackupManager()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
-        viewModel = PayslipViewModel(repository, fakeBackupManager)
+        viewModel = PayslipViewModel(repository)
     }
 
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
     }
-
-    @Test
-    fun testBackupDatabaseSuccess() =
-        runTest {
-            fakeBackupManager.backupResult = Result.success(Unit)
-            var callbackResult: Result<Unit>? = null
-
-            viewModel.backupDatabase("pass") { callbackResult = it }
-
-            assertEquals(1, fakeBackupManager.backupCalledCount)
-            assertNotNull(callbackResult)
-            assertTrue(callbackResult!!.isSuccess)
-        }
-
-    @Test
-    fun testRestoreDatabaseSuccess() =
-        runTest {
-            fakeBackupManager.restoreResult = Result.success(Unit)
-            var callbackResult: Result<Unit>? = null
-
-            val mock = createMockPayslip("08/2024")
-            fakeDao.insertPayslip(mock.toEncryptedEntity())
-
-            viewModel.restoreDatabase("pass") { callbackResult = it }
-
-            assertEquals(1, fakeBackupManager.restoreCalledCount)
-            assertNotNull(callbackResult)
-            assertTrue(callbackResult!!.isSuccess)
-        }
 
     @Test
     fun testSettingsChanges() =
@@ -100,7 +69,7 @@ class PayslipViewModelSettingsTest {
             assertTrue(state.isLockEnabled)
             assertFalse(state.isAppLocked)
 
-            val coldViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val coldViewModel = PayslipViewModel(repository)
             runCurrent()
             assertTrue(coldViewModel.uiState.value.isLockEnabled)
             assertTrue(coldViewModel.uiState.value.isAppLocked)

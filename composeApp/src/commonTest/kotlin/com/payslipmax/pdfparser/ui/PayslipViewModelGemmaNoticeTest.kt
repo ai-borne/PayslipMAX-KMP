@@ -31,7 +31,7 @@ class PayslipViewModelGemmaNoticeTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         val repository = PayslipRepository(FakePayslipDao(), FakePdfParser(), Dispatchers.Unconfined)
-        viewModel = PayslipViewModel(repository, FakeBackupManager())
+        viewModel = PayslipViewModel(repository)
     }
 
     @AfterTest

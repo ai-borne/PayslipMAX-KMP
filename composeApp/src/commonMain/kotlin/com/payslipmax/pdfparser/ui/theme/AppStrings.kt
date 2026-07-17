@@ -140,30 +140,27 @@ object AppStrings {
 
     // Backup & Restore Card
     const val settingsBackupHeader = "Backup & Restore"
-    const val settingsBackupDesc = "Backup is locally AES-256 encrypted using your password."
-    const val settingsBackupLocalBtn = "Local Backup"
-    const val settingsRestoreLocalBtn = "Local Restore"
+    const val settingsBackupDesc = "Backup is locally AES-256 encrypted using your password. Save the file anywhere (Drive, iCloud, email) and restore it on any phone."
     const val pdfCardTapHint = "Tap to open original statement"
     const val pdfCardBadge = "PDF"
     const val pdfCardOpenCdesc = "Open"
-    const val settingsBackupCrossPlatform = "Cross-Platform Portability (iOS ⇄ Android)"
-    const val settingsBackupExportBtn = "Export Archive"
-    const val settingsBackupImportBtn = "Import Archive"
-    const val settingsBackupCancelImportBtn = "Cancel Import"
-    const val settingsBackupPasteLabel = "Paste Encrypted Backup String"
-    const val settingsBackupDecryptBtn = "Decrypt & Restore"
+    const val settingsBackupSaveBtn = "Back Up"
+    const val settingsBackupRestoreBtn = "Restore"
+    const val settingsBackupPasswordRequired = "Enter a password to protect your backup."
     const val settingsStatusBackupPro = "Restore free · Backup is PRO"
-    const val errorRestoreSanitizeFailed = "Restore completed but could not verify entitlement. Please restart the app."
+
+    // Restore-collision dialog (device already has payslips)
+    const val settingsRestoreExistingTitle = "Payslips already on this device"
+    const val settingsRestoreExistingMsg = "Replace them with the backup, or merge both together?"
+    const val settingsRestoreReplaceBtn = "Replace all"
+    const val settingsRestoreMergeBtn = "Merge"
 
     // Backup Status Messages
-    const val statusSyncSuccess = "Sync Completed!"
-    const val statusSyncFailed = "Sync Failed: "
-    const val statusRestoreSuccess = "Restore Completed!"
     const val statusRestoreFailed = "Restore Failed: "
-    const val statusCopiedSuccess = "Backup String Copied to Clipboard!"
-    const val statusExportFailed = "Export Failed: "
     const val statusRestoreComplete = "Restore Complete!"
-    const val statusInvalidFormat = "Invalid backup string format"
+    const val statusBackupFailed = "Backup Failed: "
+    const val labelPayslipsBackedUp = "payslips backed up"
+    const val statusNoPayslipsToBackup = "No payslips to back up yet."
 
     // Main Settings Screen
     const val settingsSubtitle = "Manage your profile, security, and data backups"

@@ -7,7 +7,6 @@ import com.payslipmax.pdfparser.domain.*
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
-import com.payslipmax.pdfparser.ui.FakeBackupManager
 import com.payslipmax.pdfparser.ui.FakeFinancialIntelligenceRepository
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -32,7 +31,6 @@ class HistoryScreenTabTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var fakeDao: FakePayslipDao
     private lateinit var fakeParser: FakePdfParser
-    private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
     private lateinit var financialRepository: FakeFinancialIntelligenceRepository
     private lateinit var viewModel: PayslipViewModel
@@ -63,10 +61,9 @@ class HistoryScreenTabTest {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
-        fakeBackupManager = FakeBackupManager()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
         financialRepository = FakeFinancialIntelligenceRepository(fakeDao)
-        viewModel = PayslipViewModel(repository, fakeBackupManager, financialRepository)
+        viewModel = PayslipViewModel(repository, financialRepository)
     }
 
     @AfterTest

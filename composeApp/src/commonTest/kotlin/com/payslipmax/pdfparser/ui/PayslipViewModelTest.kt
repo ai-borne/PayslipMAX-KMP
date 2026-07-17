@@ -33,7 +33,6 @@ class PayslipViewModelTest {
 
     private lateinit var fakeDao: FakePayslipDao
     private lateinit var fakeParser: FakePdfParser
-    private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
     private lateinit var viewModel: PayslipViewModel
 
@@ -42,9 +41,8 @@ class PayslipViewModelTest {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
-        fakeBackupManager = FakeBackupManager()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
-        viewModel = PayslipViewModel(repository, fakeBackupManager)
+        viewModel = PayslipViewModel(repository)
     }
 
     @AfterTest
@@ -136,7 +134,7 @@ class PayslipViewModelTest {
             fakeDao.insertPayslip(mock2.toEncryptedEntity())
 
             // Re-create ViewModel so that both items are loaded initially and the last one (mock2) is selected
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository)
             assertEquals(mock2, testViewModel.uiState.value.selectedPayslip)
 
             // Delete selected
@@ -155,7 +153,7 @@ class PayslipViewModelTest {
             fakeDao.insertPayslip(mock1.toEncryptedEntity())
             fakeDao.insertPayslip(mock2.toEncryptedEntity())
 
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository)
             assertEquals(mock2, testViewModel.uiState.value.selectedPayslip)
 
             // Delete non-selected mock1
@@ -221,7 +219,7 @@ class PayslipViewModelTest {
             fakeDao.insertPayslip(mock2.toEncryptedEntity())
             fakeDao.insertPayslip(mock3.toEncryptedEntity())
 
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository)
             val years = testViewModel.getAvailableYears()
 
             assertEquals(2, years.size)
@@ -239,7 +237,7 @@ class PayslipViewModelTest {
             fakeDao.insertPayslip(mock2.toEncryptedEntity())
             fakeDao.insertPayslip(mock3.toEncryptedEntity())
 
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository)
             val months2024 = testViewModel.getMonthsForYear(2024)
 
             assertEquals(2, months2024.size)
@@ -259,7 +257,7 @@ class PayslipViewModelTest {
             fakeDao.insertPayslip(mock1.toEncryptedEntity())
             fakeDao.insertPayslip(mock2.toEncryptedEntity())
 
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository)
             assertEquals(mock2, testViewModel.uiState.value.selectedPayslip)
 
             testViewModel.selectByYearMonth(2023, 8)

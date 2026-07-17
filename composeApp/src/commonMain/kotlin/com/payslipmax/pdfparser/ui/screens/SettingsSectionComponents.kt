@@ -139,16 +139,17 @@ fun DataManagementSection(
     password: String,
     onPasswordChange: (String) -> Unit,
     onUpgradePrompt: () -> Unit,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
 ) {
     SettingsCategoryHeader(title = "Data Management")
     SettingsCategoryCard {
         BackupRestoreSettingsCard(
             password = password,
             onPasswordChange = onPasswordChange,
-            onBackupClick = { pw, onComplete -> viewModel.backupDatabase(pw, onComplete) },
-            onRestoreClick = { pw, onComplete -> viewModel.restoreDatabase(pw, onComplete) },
+            payslipCount = uiState.payslips.size,
             onExportBackup = { pw, onComplete -> viewModel.exportBackup(pw, onComplete) },
-            onImportBackup = { bytes, pw, onComplete -> viewModel.importBackup(bytes, pw, onComplete) },
+            onRestore = { bytes, pw, mode, onComplete -> viewModel.importBackup(bytes, pw, mode, onComplete) },
+            onPickBackup = onPickBackup,
             canBackup = viewModel.rememberHasAccess(com.payslipmax.pdfparser.subscription.FeatureGate.BACKUP_RESTORE),
             onUpgradePrompt = onUpgradePrompt,
         )

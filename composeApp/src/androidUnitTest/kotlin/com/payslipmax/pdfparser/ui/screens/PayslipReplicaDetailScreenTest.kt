@@ -14,7 +14,6 @@ import com.payslipmax.pdfparser.domain.PayslipSummary
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
-import com.payslipmax.pdfparser.ui.FakeBackupManager
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.selectHistoryDetailPayslip
 import com.payslipmax.pdfparser.ui.startEditingSession
@@ -46,7 +45,6 @@ class PayslipReplicaDetailScreenTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var fakeDao: FakePayslipDao
     private lateinit var fakeParser: FakePdfParser
-    private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
     private lateinit var viewModel: PayslipViewModel
 
@@ -72,10 +70,9 @@ class PayslipReplicaDetailScreenTest {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
-        fakeBackupManager = FakeBackupManager()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
         runBlocking { fakeDao.insertPayslip(mockPayslip().toEncryptedEntity()) }
-        viewModel = PayslipViewModel(repository, fakeBackupManager)
+        viewModel = PayslipViewModel(repository)
         testDispatcher.scheduler.runCurrent()
         viewModel.selectHistoryDetailPayslip(testDateStr)
     }

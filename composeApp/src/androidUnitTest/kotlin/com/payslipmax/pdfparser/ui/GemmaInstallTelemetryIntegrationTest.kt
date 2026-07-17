@@ -62,7 +62,6 @@ class FakeTelemetry : GemmaInstallTelemetry {
 class GemmaInstallTelemetryIntegrationTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var fakeDao: FakePayslipDao
-    private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
     private lateinit var fakeInstaller: FakeGemmaBaseModelInstaller
     private lateinit var fakeTelemetry: FakeTelemetry
@@ -71,7 +70,6 @@ class GemmaInstallTelemetryIntegrationTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakePayslipDao()
-        fakeBackupManager = FakeBackupManager()
         repository = PayslipRepository(fakeDao, FakePdfParser(), Dispatchers.Unconfined)
         fakeInstaller = FakeGemmaBaseModelInstaller()
         fakeTelemetry = FakeTelemetry()
@@ -85,7 +83,6 @@ class GemmaInstallTelemetryIntegrationTest {
     private fun createViewModel() =
         PayslipViewModel(
             repository = repository,
-            backupManager = fakeBackupManager,
             gemmaBaseModelInstaller = fakeInstaller,
             gemmaInstallTelemetry = fakeTelemetry,
         )

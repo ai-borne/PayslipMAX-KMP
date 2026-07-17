@@ -48,7 +48,7 @@ class PayslipViewModelCorrectionTest {
                 ),
             )
         repository = PayslipRepository(FakePayslipDao(), fakeParser, Dispatchers.Unconfined)
-        viewModel = PayslipViewModel(repository, FakeBackupManager())
+        viewModel = PayslipViewModel(repository)
     }
 
     @AfterTest

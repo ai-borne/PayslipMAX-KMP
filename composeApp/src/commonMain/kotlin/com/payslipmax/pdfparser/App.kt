@@ -87,6 +87,7 @@ fun App(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
     navState: AppNavState = rememberSaveable(saver = AppNavStateSaver) { AppNavState() },
     nativeDetailNavigator: ((Screen) -> Unit)? = null,
 ) {
@@ -110,6 +111,7 @@ fun App(
                 viewModel = viewModel,
                 onPickPdf = onPickPdf,
                 onOpenPdf = onOpenPdf,
+                onPickBackup = onPickBackup,
                 nativeDetailNavigator = nativeDetailNavigator,
             )
         }
@@ -124,6 +126,7 @@ private fun MainScaffold(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     nativeDetailNavigator: ((Screen) -> Unit)?,
 ) {
     // On iOS details are hosted as native VCs covering this tree, so the root scaffold keeps
@@ -155,6 +158,7 @@ private fun MainScaffold(
                     viewModel = viewModel,
                     onPickPdf = onPickPdf,
                     onOpenPdf = onOpenPdf,
+                    onPickBackup = onPickBackup,
                     nativeDetailNavigator = nativeDetailNavigator,
                 )
             }
@@ -168,6 +172,7 @@ private fun ScreenContent(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     nativeDetailNavigator: ((Screen) -> Unit)?,
 ) {
     val activeDetail = navState.activeDetail
@@ -200,7 +205,7 @@ private fun ScreenContent(
                     },
                 )
             Screen.Insights -> InsightsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
-            Screen.Settings -> SettingsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
+            Screen.Settings -> SettingsScreen(viewModel = viewModel, onNavigateTo = onNavigate, onPickBackup = onPickBackup)
             else ->
                 DashboardScreen(
                     viewModel = viewModel,

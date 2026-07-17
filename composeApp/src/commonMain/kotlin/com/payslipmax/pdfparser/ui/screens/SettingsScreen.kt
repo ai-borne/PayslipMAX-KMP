@@ -17,6 +17,7 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 fun SettingsScreen(
     viewModel: PayslipViewModel,
     onNavigateTo: (Screen) -> Unit,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var password by remember { mutableStateOf("") }
@@ -40,6 +41,7 @@ fun SettingsScreen(
             }
         },
         onNavigateTo = onNavigateTo,
+        onPickBackup = onPickBackup,
         modifier = modifier,
     )
 
@@ -61,6 +63,7 @@ private fun SettingsContent(
     devModeEnabled: Boolean,
     onHeaderClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -83,6 +86,7 @@ private fun SettingsContent(
             onUpgradePrompt = onUpgradePrompt,
             onNavigateTo = onNavigateTo,
             devModeEnabled = devModeEnabled,
+            onPickBackup = onPickBackup,
         )
     }
 }
@@ -119,6 +123,7 @@ private fun SecondarySettingsGroup(
     onUpgradePrompt: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
     devModeEnabled: Boolean,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
 ) {
     // 5. Data Management
     DataManagementSection(
@@ -127,6 +132,7 @@ private fun SecondarySettingsGroup(
         password = password,
         onPasswordChange = onPasswordChange,
         onUpgradePrompt = onUpgradePrompt,
+        onPickBackup = onPickBackup,
     )
 
     // 6. Help & Support

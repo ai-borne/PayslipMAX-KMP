@@ -11,6 +11,7 @@ import org.koin.compose.koinInject
 
 class MainActivity : ComponentActivity() {
     private var filePickCallback: ((ByteArray, String) -> Unit)? = null
+    private var backupPickCallback: ((ByteArray) -> Unit)? = null
 
     private val pickPdfLauncher =
         registerForActivityResult(
@@ -21,6 +22,20 @@ class MainActivity : ComponentActivity() {
                 val filename = getFileName(uri) ?: "payslip.pdf"
                 if (bytes != null) {
                     filePickCallback?.invoke(bytes, filename)
+                }
+            }
+        }
+
+    // Backup archives (.pcda) aren't a recognized document type, so the picker opens on "*/*"
+    // rather than a MIME filter that would hide them.
+    private val pickBackupLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.GetContent(),
+        ) { uri: Uri? ->
+            uri?.let {
+                val bytes = readBytes(uri)
+                if (bytes != null) {
+                    backupPickCallback?.invoke(bytes)
                 }
             }
         }
@@ -50,6 +65,10 @@ class MainActivity : ComponentActivity() {
                 },
                 onOpenPdf = { bytes, filename ->
                     openPdf(bytes, filename)
+                },
+                onPickBackup = { callback ->
+                    backupPickCallback = callback
+                    pickBackupLauncher.launch("*/*")
                 },
             )
         }

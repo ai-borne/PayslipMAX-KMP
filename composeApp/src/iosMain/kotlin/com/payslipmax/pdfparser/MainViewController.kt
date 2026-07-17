@@ -51,6 +51,7 @@ private fun ensureKoin() {
 class IosNavHost(
     private val onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     private val onOpenPdf: (ByteArray, String) -> Unit,
+    private val onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     pushScreen: (screenName: String) -> Unit,
     requestPop: () -> Unit,
 ) {
@@ -80,6 +81,7 @@ class IosNavHost(
                 viewModel = viewModel,
                 onPickPdf = onPickPdf,
                 onOpenPdf = onOpenPdf,
+                onPickBackup = onPickBackup,
                 navState = navState,
                 nativeDetailNavigator = { screen -> bridge.navigateToDetail(screen) },
             )
@@ -166,9 +168,10 @@ class IosNavHost(
 fun createNavHost(
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (ByteArray, String) -> Unit,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     pushScreen: (screenName: String) -> Unit,
     requestPop: () -> Unit,
 ): IosNavHost {
     ensureKoin()
-    return IosNavHost(onPickPdf, onOpenPdf, pushScreen, requestPop)
+    return IosNavHost(onPickPdf, onOpenPdf, onPickBackup, pushScreen, requestPop)
 }

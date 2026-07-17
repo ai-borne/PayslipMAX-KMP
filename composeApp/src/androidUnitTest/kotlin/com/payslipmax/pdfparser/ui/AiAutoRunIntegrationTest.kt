@@ -31,7 +31,6 @@ import kotlin.test.assertTrue
 class AiAutoRunIntegrationTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var fakeDao: FakePayslipDao
-    private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
     private lateinit var fakeFinancialRepo: FakeFinancialIntelligenceRepository
 
@@ -41,7 +40,6 @@ class AiAutoRunIntegrationTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakePayslipDao()
-        fakeBackupManager = FakeBackupManager()
         repository = PayslipRepository(fakeDao, FakePdfParser(), Dispatchers.Unconfined)
         fakeFinancialRepo = FakeFinancialIntelligenceRepository(fakeDao = fakeDao)
     }
@@ -51,7 +49,7 @@ class AiAutoRunIntegrationTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = PayslipViewModel(repository, fakeBackupManager, fakeFinancialRepo)
+    private fun createViewModel() = PayslipViewModel(repository, fakeFinancialRepo)
 
     // ── Premium ON + no cache → auto-run fires ────────────────────────────────
 

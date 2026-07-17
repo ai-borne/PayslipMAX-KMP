@@ -29,7 +29,6 @@ class PayslipViewModelHistoryTest {
 
     private lateinit var fakeDao: FakePayslipDao
     private lateinit var fakeParser: FakePdfParser
-    private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
     private lateinit var viewModel: PayslipViewModel
 
@@ -38,9 +37,8 @@ class PayslipViewModelHistoryTest {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
-        fakeBackupManager = FakeBackupManager()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
-        viewModel = PayslipViewModel(repository, fakeBackupManager)
+        viewModel = PayslipViewModel(repository)
     }
 
     @AfterTest
@@ -54,7 +52,7 @@ class PayslipViewModelHistoryTest {
             fakeDao.insertPayslip(createMockPayslip("08/2023").toEncryptedEntity())
             fakeDao.insertPayslip(createMockPayslip("09/2024").toEncryptedEntity())
 
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository)
 
             assertEquals(setOf(2024), testViewModel.uiState.value.expandedHistoryYears)
         }
@@ -65,7 +63,7 @@ class PayslipViewModelHistoryTest {
             fakeDao.insertPayslip(createMockPayslip("08/2023").toEncryptedEntity())
             fakeDao.insertPayslip(createMockPayslip("09/2024").toEncryptedEntity())
 
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository)
 
             testViewModel.toggleHistoryYearExpanded(2023)
             assertEquals(setOf(2024, 2023), testViewModel.uiState.value.expandedHistoryYears)
@@ -80,7 +78,7 @@ class PayslipViewModelHistoryTest {
             fakeDao.insertPayslip(createMockPayslip("08/2023").toEncryptedEntity())
             fakeDao.insertPayslip(createMockPayslip("09/2024").toEncryptedEntity())
 
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository)
             testViewModel.toggleHistoryYearExpanded(2023)
             assertEquals(setOf(2024, 2023), testViewModel.uiState.value.expandedHistoryYears)
 
@@ -94,7 +92,7 @@ class PayslipViewModelHistoryTest {
         runTest {
             fakeDao.insertPayslip(createMockPayslip("08/2023").toEncryptedEntity())
             fakeDao.insertPayslip(createMockPayslip("09/2024").toEncryptedEntity())
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository)
             testViewModel.toggleHistoryYearExpanded(2023)
             val expandedBefore = testViewModel.uiState.value.expandedHistoryYears
 
@@ -110,7 +108,7 @@ class PayslipViewModelHistoryTest {
     fun testSelectHistoryDetailPayslipSetsIdWithoutTouchingSelectedPayslip() =
         runTest {
             fakeDao.insertPayslip(createMockPayslip("08/2023").toEncryptedEntity())
-            val testViewModel = PayslipViewModel(repository, fakeBackupManager)
+            val testViewModel = PayslipViewModel(repository)
             val selectedBefore = testViewModel.uiState.value.selectedPayslip
 
             testViewModel.selectHistoryDetailPayslip("08/2023")

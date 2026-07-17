@@ -34,10 +34,6 @@ val sharedModule: Module =
             PayslipRepository(get(), get())
         }
 
-        single<com.payslipmax.pdfparser.backup.BackupManager> {
-            com.payslipmax.pdfparser.backup.PlatformBackupManager(get())
-        }
-
         single {
             io.ktor.client.HttpClient {
                 install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {

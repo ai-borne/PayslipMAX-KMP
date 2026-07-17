@@ -158,6 +158,32 @@ class PayslipRepositoryTest {
         }
 
     @Test
+    fun testOneUndecryptablePayslipDoesNotWipeOthers() =
+        runTest {
+            // A valid, decryptable payslip.
+            fakeParser.result = Result.success(createMockPayslip("08/2024"))
+            repository.importPayslip(byteArrayOf(1, 2, 3), "test-password", "08-2024.pdf")
+
+            // A row whose ciphertext cannot be decrypted with this device's key or the legacy
+            // fallback key - e.g. written by a different device's Keystore key, or corrupted.
+            fakeDao.insertPayslip(
+                EncryptedPayslipEntity(
+                    dateStr = "09/2024",
+                    year = 2024,
+                    monthNum = 9,
+                    monthName = "September",
+                    ciphertext = "deadbeef",
+                ),
+            )
+
+            // The corrupted row is skipped, not fatal to the whole read - and it must not trigger
+            // any destructive self-heal of the rest of the table.
+            val payslips = repository.getAllPayslips().first()
+            assertEquals(1, payslips.size)
+            assertEquals("08/2024", payslips.first().dateStr)
+        }
+
+    @Test
     fun testSeedMockData() =
         runTest {
             repository.seedMockData()
@@ -240,48 +266,4 @@ class PayslipRepositoryTest {
         assertFalse(useLocalAi)
         assertTrue(isTelemetryEnabled)
     }
-
-    @Test
-    fun testUniversalBackupAndRestore() =
-        runTest {
-            // 1. Setup initial state
-            val mockPayslip = createMockPayslip("08/2024")
-            fakeParser.result = Result.success(mockPayslip)
-            repository.importPayslip(byteArrayOf(1, 2, 3), "test-password", "08-2024.pdf")
-
-            val settings =
-                AppSettingsEntity(
-                    isPremiumEnabled = true,
-                    appTheme = "light",
-                )
-            repository.saveSettings(settings)
-
-            // 2. Export backup
-            val exportResult = repository.exportUniversalBackup("backup-pwd")
-            assertTrue(exportResult.isSuccess)
-            val backupBytes = exportResult.getOrThrow()
-
-            // 3. Wreak havoc / clear database
-            repository.clearAll()
-            repository.clearSettings()
-            assertTrue(repository.getAllPayslips().first().isEmpty())
-            assertNull(repository.getSettings())
-
-            // 4. Import backup
-            val importResult = repository.importUniversalBackup(backupBytes, "backup-pwd")
-            assertTrue(importResult.isSuccess)
-
-            // 5. Verify restored state
-            val restoredPayslips = repository.getAllPayslips().first()
-            assertEquals(1, restoredPayslips.size)
-            assertEquals("08/2024", restoredPayslips.first().dateStr)
-
-            val restoredSettings = repository.getSettings()
-            assertNotNull(restoredSettings)
-            // Entitlement never travels inside a backup (D3): the device had none at import time
-            // (settings were cleared in step 3), so it stays free even though the backup was premium.
-            assertFalse(restoredSettings.isPremiumEnabled)
-            // Non-entitlement settings still round-trip.
-            assertEquals("light", restoredSettings.appTheme)
-        }
 }

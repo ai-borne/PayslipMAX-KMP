@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.domain.*
+import com.payslipmax.pdfparser.logging.Logger
 import com.payslipmax.pdfparser.parser.PdfParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -33,23 +34,19 @@ class PayslipRepository(
             payslipDao.getAllPayslips(),
             payslipDao.getAllCorrections(),
         ) { entities, corrections ->
-            try {
-                val correctionsByDate = corrections.associateBy { it.dateStr }
-                entities.map { entity ->
+            val correctionsByDate = corrections.associateBy { it.dateStr }
+            // One row's decrypt failure (e.g. ciphertext written by a different device's Keystore
+            // key) must not take down every other payslip: skip and log the bad row, keep the rest.
+            entities.mapNotNull { entity ->
+                try {
                     val parsed = entity.toDomain()
-                    // Merge user corrections on read so the stored parse is never mutated (SSOT).
                     correctionsByDate[entity.dateStr]
                         ?.let { parsed.applyCorrections(it.toCorrectionList()) }
                         ?: parsed
+                } catch (e: Exception) {
+                    Logger.e("PayslipRepository", "Skipping undecryptable payslip ${entity.dateStr}", e)
+                    null
                 }
-            } catch (e: Exception) {
-                // If decryption fails completely, clear database to recover self-healing style
-                try {
-                    clearAll()
-                } catch (dbEx: Exception) {
-                    // Ignore database delete errors
-                }
-                emptyList()
             }
         }
     }
@@ -187,6 +184,9 @@ class PayslipRepository(
 
     suspend fun clearSettings() = withContext(dispatcher) { payslipDao.clearSettings() }
 
+    /** Number of decryptable payslips currently stored — what a backup will actually contain. */
+    suspend fun getStoredPayslipCount(): Int = withContext(dispatcher) { getAllPayslips().first().size }
+
     /**
      * Exports all app data (payslips, PDFs, settings) as an encrypted JSON archive.
      */
@@ -198,9 +198,17 @@ class PayslipRepository(
                 val settings = payslipDao.getSettings()
 
                 val deviceKey = CryptoHelper.getDatabaseSecretKey()
+                // Skip any row that can't be decrypted (e.g. a stale/legacy-key or corrupt row) rather
+                // than failing the whole backup — matches the read path (getAllPayslips), so a backup
+                // contains exactly the payslips the user can actually see.
                 val exportedPayslips =
-                    payslips.map { entity ->
-                        entity.toDomain(deviceKey).toEncryptedEntity(password)
+                    payslips.mapNotNull { entity ->
+                        try {
+                            entity.toDomain(deviceKey).toEncryptedEntity(password)
+                        } catch (e: Exception) {
+                            Logger.e("PayslipRepository", "Skipping undecryptable payslip ${entity.dateStr} during backup", e)
+                            null
+                        }
                     }
 
                 val backup =
@@ -226,6 +234,7 @@ class PayslipRepository(
     suspend fun importUniversalBackup(
         backupBytes: ByteArray,
         password: String,
+        mode: RestoreMode = RestoreMode.REPLACE,
     ): Result<Unit> =
         withContext(dispatcher) {
             try {
@@ -236,18 +245,23 @@ class PayslipRepository(
                     )
                 }
 
-                val jsonBytes = decryptResult.getOrThrow()
-                val jsonStr = jsonBytes.decodeToString()
-
+                val jsonStr = decryptResult.getOrThrow().decodeToString()
                 val backup = Json.decodeFromString(PortableBackup.serializer(), jsonStr)
 
-                // Capture this device's own entitlement before the swap so a restored backup can
-                // never grant (or revoke) PRO — entitlement must never travel inside a backup file.
-                val deviceEntitlement = payslipDao.getSettings()?.isPremiumEnabled ?: false
-
-                // Restore to Room DB
-                payslipDao.clearAll()
-                payslipDao.clearSettings()
+                // REPLACE wipes existing payslips/settings so the device becomes an exact copy of the
+                // backup; MERGE keeps the device's existing payslips (and its own settings) and layers
+                // the backup on top, overwriting only same-date payslips.
+                if (mode == RestoreMode.REPLACE) {
+                    // Capture this device's own entitlement before the swap so a restored backup can
+                    // never grant (or revoke) PRO — entitlement must never travel inside a backup file.
+                    val deviceEntitlement = payslipDao.getSettings()?.isPremiumEnabled ?: false
+                    payslipDao.clearAll()
+                    payslipDao.clearSettings()
+                    // Always write settings with the *device's* entitlement, never the backup's, so a
+                    // shared/premium backup restored onto a free device leaves it free (and vice versa).
+                    val restoredSettings = backup.settings ?: AppSettingsEntity()
+                    payslipDao.insertSettings(restoredSettings.copy(isPremiumEnabled = deviceEntitlement))
+                }
 
                 val deviceKey = CryptoHelper.getDatabaseSecretKey()
                 val databasePayslips =
@@ -266,10 +280,6 @@ class PayslipRepository(
                 backup.pdfs.forEach { pdf ->
                     payslipDao.insertPayslipPdf(pdf)
                 }
-                // Always write settings with the *device's* entitlement, never the backup's, so a
-                // shared/premium backup restored onto a free device leaves it free (and vice versa).
-                val restoredSettings = backup.settings ?: AppSettingsEntity()
-                payslipDao.insertSettings(restoredSettings.copy(isPremiumEnabled = deviceEntitlement))
 
                 Result.success(Unit)
             } catch (e: Exception) {

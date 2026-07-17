@@ -11,7 +11,6 @@ import com.payslipmax.pdfparser.domain.PayslipSummary
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
-import com.payslipmax.pdfparser.ui.FakeBackupManager
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,7 +32,6 @@ class DashboardScreenUiTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var fakeDao: FakePayslipDao
     private lateinit var fakeParser: FakePdfParser
-    private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
     private lateinit var viewModel: PayslipViewModel
 
@@ -42,9 +40,8 @@ class DashboardScreenUiTest {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
-        fakeBackupManager = FakeBackupManager()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
-        viewModel = PayslipViewModel(repository, fakeBackupManager)
+        viewModel = PayslipViewModel(repository)
     }
 
     @AfterTest

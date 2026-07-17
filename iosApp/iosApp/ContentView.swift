@@ -77,6 +77,19 @@ struct ComposeView: UIViewControllerRepresentable {
                     }
                 }
             },
+            onPickBackup: { onResult in
+                DispatchQueue.main.async {
+                    // Backup archives (.pcda) have no registered UTType, so open on generic data/item.
+                    let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.data, .item])
+                    let delegate = BackupPickerDelegate(onResult: { bytes in
+                        _ = onResult(bytes)
+                    })
+
+                    objc_setAssociatedObject(picker, &AssociatedKeys.backupDelegate, delegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                    picker.delegate = delegate
+                    topViewController()?.present(picker, animated: true)
+                }
+            },
             pushScreen: { [weak coordinator] name in coordinator?.push(screenName: name) },
             requestPop: { [weak coordinator] in coordinator?.pop() }
         )
@@ -138,6 +151,7 @@ final class NavCoordinator: NSObject, UINavigationControllerDelegate, UIGestureR
 private enum AssociatedKeys {
     static var delegate: UInt8 = 0
     static var dataSource: UInt8 = 1
+    static var backupDelegate: UInt8 = 2
 }
 
 private func topViewController() -> UIViewController? {
@@ -184,6 +198,36 @@ class DocumentPickerDelegate: NSObject, UIDocumentPickerDelegate {
             onResult(kotlinArray, filename)
         } catch {
             print("Error reading PDF file: \(error)")
+        }
+    }
+
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        // Handle cancellation if needed
+    }
+}
+
+/// Reads a picked encrypted backup archive (.pcda) and hands its raw bytes back to Kotlin.
+class BackupPickerDelegate: NSObject, UIDocumentPickerDelegate {
+    let onResult: (KotlinByteArray) -> Void
+
+    init(onResult: @escaping (KotlinByteArray) -> Void) {
+        self.onResult = onResult
+    }
+
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first else { return }
+        guard url.startAccessingSecurityScopedResource() else { return }
+        defer { url.stopAccessingSecurityScopedResource() }
+
+        do {
+            let data = try Data(contentsOf: url)
+            let kotlinArray = KotlinByteArray(size: Int32(data.count))
+            for i in 0..<data.count {
+                kotlinArray.set(index: Int32(i), value: Int8(bitPattern: data[i]))
+            }
+            onResult(kotlinArray)
+        } catch {
+            print("Error reading backup file: \(error)")
         }
     }
 

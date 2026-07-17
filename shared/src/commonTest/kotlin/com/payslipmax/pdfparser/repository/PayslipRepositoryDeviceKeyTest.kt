@@ -162,8 +162,14 @@ class PayslipRepositoryDeviceKeyTest {
         }
 
     @Test
-    fun testGracefulRecoveryOnUndecryptableData() =
+    fun testUndecryptablePayslipIsSkippedNotWiped() =
         runTest {
+            // Regression guard: getAllPayslips() used to wipe the *entire* table
+            // (repository.clearAll()) the moment a single row failed to decrypt - e.g. a row
+            // written by a different device's Keystore key after a whole-file "Local Restore".
+            // That silently destroyed every other real payslip alongside the one bad row. The
+            // undecryptable row must now be skipped from the returned list, and the underlying
+            // data must be left untouched so it isn't lost.
             val fakeDao = FakePayslipDao()
             val fakeParser = FakePdfParser()
             val repository = PayslipRepository(fakeDao, fakeParser, kotlinx.coroutines.Dispatchers.Unconfined)
@@ -173,7 +179,11 @@ class PayslipRepositoryDeviceKeyTest {
             fakeDao.insertPayslip(entity)
 
             val list = repository.getAllPayslips().first()
-            assertTrue(list.isEmpty(), "List should be empty due to graceful recovery")
-            assertTrue(fakeDao.getAllPayslips().first().isEmpty(), "Database should have been cleared")
+            assertTrue(list.isEmpty(), "The undecryptable row should be skipped from the visible list")
+            assertEquals(
+                1,
+                fakeDao.getAllPayslips().first().size,
+                "The undecryptable row must NOT be deleted - it may become readable later (e.g. after a key fix) and must not take other payslips down with it",
+            )
         }
 }

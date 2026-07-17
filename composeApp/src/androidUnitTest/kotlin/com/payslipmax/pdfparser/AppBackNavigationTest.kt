@@ -22,7 +22,6 @@ import com.payslipmax.pdfparser.domain.PayslipSummary
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
-import com.payslipmax.pdfparser.ui.FakeBackupManager
 import com.payslipmax.pdfparser.ui.FakeFinancialIntelligenceRepository
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.setPremiumEnabled
@@ -63,7 +62,6 @@ class AppBackNavigationTest {
         viewModel =
             PayslipViewModel(
                 repository,
-                FakeBackupManager(),
                 FakeFinancialIntelligenceRepository(fakeDao),
             )
     }

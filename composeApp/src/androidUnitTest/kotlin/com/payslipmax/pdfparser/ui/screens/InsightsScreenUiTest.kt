@@ -7,7 +7,6 @@ import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.subscription.DevOverride
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
-import com.payslipmax.pdfparser.ui.FakeBackupManager
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.setDevOverride
 import com.payslipmax.pdfparser.ui.setPremiumEnabled
@@ -34,7 +33,6 @@ class InsightsScreenUiTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var fakeDao: FakePayslipDao
     private lateinit var fakeParser: FakePdfParser
-    private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
     private lateinit var viewModel: PayslipViewModel
 
@@ -64,9 +62,8 @@ class InsightsScreenUiTest {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
-        fakeBackupManager = FakeBackupManager()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
-        viewModel = PayslipViewModel(repository, fakeBackupManager)
+        viewModel = PayslipViewModel(repository)
         // Debug builds default the entitlement override to FORCE_PRO; drive the real flag path so
         // these tests exercise production free-vs-premium gating rather than the dev bypass.
         viewModel.setDevOverride(DevOverride.FOLLOW_FLAG)

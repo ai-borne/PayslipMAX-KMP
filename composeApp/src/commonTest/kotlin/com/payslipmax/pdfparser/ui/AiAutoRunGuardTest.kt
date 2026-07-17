@@ -39,14 +39,12 @@ import kotlin.test.assertTrue
 class AiAutoRunGuardTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var fakeDao: FakePayslipDao
-    private lateinit var fakeBackupManager: FakeBackupManager
     private lateinit var repository: PayslipRepository
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakePayslipDao()
-        fakeBackupManager = FakeBackupManager()
         repository = PayslipRepository(fakeDao, FakePdfParser(), Dispatchers.Unconfined)
     }
 
@@ -60,7 +58,7 @@ class AiAutoRunGuardTest {
     @Test
     fun testAutoRunNotFiredWhenPremiumOff() =
         runTest {
-            val vm = PayslipViewModel(repository, fakeBackupManager)
+            val vm = PayslipViewModel(repository)
             fakeDao.insertPayslip(createMockPayslip("08/2024").toEncryptedEntity())
             runCurrent()
 
@@ -74,7 +72,7 @@ class AiAutoRunGuardTest {
     @Test
     fun testAutoRunNotFiredWhenNoFinancialRepo() =
         runTest {
-            val vm = PayslipViewModel(repository, fakeBackupManager, financialIntelligenceRepository = null)
+            val vm = PayslipViewModel(repository, financialIntelligenceRepository = null)
             fakeDao.insertPayslip(createMockPayslip("08/2024").toEncryptedEntity())
             runCurrent()
 
