@@ -71,36 +71,15 @@ object InsightsStrings {
     // Improve path prefix (SSOT for the "→" arrow used in driver rows)
     const val wellnessImprovePathPrefix = "→ "
 
-    // Pay breakdown chart (stacked Net/DSOP/Tax/Other across the trailing window)
-    const val sixMonthBreakdownTitle = "6-Month Pay Breakdown"
-    const val monthBreakdownTitleSuffix = "-Month Pay Breakdown"
-    const val dateRangeSeparator = " – "
-
     // AI summary truncation limit
     const val aiSummaryMaxLength = 200
 
     // Refactor Strings
-    const val keyFindingsTitle = "Key Findings"
-    const val aiHighlightsTitle = "AI Highlights"
-    const val premiumIntelligenceTitle = "Premium Intelligence"
     const val premiumIntelligencePrice = "₹99 / Year"
-    const val estimatedOpportunityLabel = "Estimated Opportunity:"
-    const val potentialTaxSavingsTitle = "Potential Tax Savings Found"
-    const val potentialRecoveryOpportunityTitle = "Recovery Opportunity Found"
-    const val unlockFullRecommendationLabel = "Unlock full recommendation"
-    const val unlockFullRepresentationsLabel = "Unlock full PCDA(O) representations"
 
     // Premium teaser defaults & activated status
-    const val premiumTeaserDefaultTitle = "Premium Financial Analysis Found"
-    const val premiumTeaserDefaultOpportunity = "Complete Financial Toolkit"
-    const val premiumTeaserDefaultInsight = "Detailed projections, anomaly audits, and claims generators ready."
     const val premiumTeaserDefaultButton = "Unlock Premium Intelligence"
     const val premiumActivatedSuffix = " (Activated)"
-
-    // Wealth Optimization card locked/teaser state (WEALTH_OPTIMIZATION gate)
-    const val wealthLockedTitle = "🔒 Wealth Optimization"
-    const val wealthLockedBody = "80C/NPS headroom & DSOP corpus projections"
-    const val wealthLockedCta = "Unlock Wealth Optimization"
 
     // Advanced anomaly checks (ANOMALY_DETECTION gate, D6) — category labels + locked teaser copy.
     // Free tier keeps SALARY_LOSS/DEDUCTION_SPIKE via the health score; these labels name the PRO checks.
@@ -179,4 +158,6 @@ object InsightsStrings {
     const val premiumReportTeaserBody = "CA-level AI audit, tax-saving opportunities and recovery drafts — all in one place."
     const val premiumReportViewAllToolsLabel = "View all premium tools"
     const val premiumReportHideToolsLabel = "Hide premium tools"
+    const val premiumReportToolsExpandDesc = "Expand premium tools"
+    const val premiumReportToolsCollapseDesc = "Collapse premium tools"
 }

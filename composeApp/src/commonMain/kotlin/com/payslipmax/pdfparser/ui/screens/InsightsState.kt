@@ -17,7 +17,6 @@ data class InsightsState(
     val engineResult: EngineResult,
     val scoreDelta: Int?,
     val optimizationResult: OptimizationResult,
-    val momChanges: List<MoMChange>,
     val previousMonthLabel: String?,
 )
 
@@ -45,7 +44,6 @@ fun rememberInsightsState(
             previousScore?.let { engineResult.healthScore - it }
         }
     val optimizationResult = remember(selected) { WealthOptimizationEngine.analyze(selected) }
-    val momChanges = remember(currentRecord, previousRecord) { calculateMomChanges(currentRecord, previousRecord) }
     val monthLabel = remember(previousRecord) { previousMonthLabel(previousRecord) }
     return remember(
         currentRecord,
@@ -54,7 +52,6 @@ fun rememberInsightsState(
         engineResult,
         scoreDelta,
         optimizationResult,
-        momChanges,
         monthLabel,
     ) {
         InsightsState(
@@ -64,7 +61,6 @@ fun rememberInsightsState(
             engineResult = engineResult,
             scoreDelta = scoreDelta,
             optimizationResult = optimizationResult,
-            momChanges = momChanges,
             previousMonthLabel = monthLabel,
         )
     }

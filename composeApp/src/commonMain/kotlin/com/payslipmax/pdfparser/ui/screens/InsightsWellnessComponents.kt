@@ -5,17 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,7 +27,9 @@ import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.math.abs
 
-// ── Top bar: month selector + Pay Health pill ────────────────────────────────
+// ── Top bar: month selector ──────────────────────────────────────────────────
+// Pay Health now surfaces only as the expandable chip inside MonthlySnapshot (D-approved: single
+// surface for the score) — the top-bar pill was removed in the Phase 4 redesign wiring.
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,9 +37,6 @@ fun InsightsTopBar(
     payslips: List<ParsedPayslip>,
     selected: ParsedPayslip,
     onSelectPayslip: (ParsedPayslip) -> Unit,
-    healthScore: Int,
-    wellnessExpanded: Boolean,
-    onWellnessExpandClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -55,56 +49,15 @@ fun InsightsTopBar(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = AppDimensions.PaddingMedium, vertical = AppDimensions.SpacingSmall),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             MonthSelectorDropdown(
                 payslips = payslips,
                 selected = selected,
                 onSelectPayslip = onSelectPayslip,
-                modifier = Modifier.weight(1f),
-            )
-            PayHealthPill(
-                score = healthScore,
-                expanded = wellnessExpanded,
-                onClick = onWellnessExpandClick,
             )
         }
     }
-}
-
-@Composable
-private fun PayHealthPill(
-    score: Int,
-    expanded: Boolean,
-    onClick: () -> Unit,
-) {
-    val status = statusFor(score)
-    val color = statusColor(status)
-    FilterChip(
-        selected = true,
-        onClick = onClick,
-        label = {
-            Text(
-                text = "${InsightsStrings.wellnessChipLabel}: $score%",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-            )
-        },
-        trailingIcon = {
-            Icon(
-                imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                contentDescription =
-                    if (expanded) InsightsStrings.wellnessChipCollapseDesc else InsightsStrings.wellnessChipExpandDesc,
-            )
-        },
-        colors =
-            FilterChipDefaults.filterChipColors(
-                selectedContainerColor = color.copy(alpha = 0.15f),
-                selectedLabelColor = color,
-                selectedTrailingIconColor = color,
-            ),
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -155,7 +108,7 @@ private fun MonthSelectorDropdown(
     }
 }
 
-// ── Delta formatting (shared by HealthKpiCard) ───────────────────────────────
+// ── Delta formatting (shared by MonthlySnapshot's Pay Health chip) ──────────
 
 fun getTrendText(
     delta: Int?,
@@ -170,7 +123,7 @@ fun getTrendText(
     }
 }
 
-// ── Wellness driver row (reused by HealthKpiCard breakdown) ─────────────────
+// ── Wellness driver row (reused by MonthlySnapshot's Pay Health chip breakdown) ─
 
 @Composable
 fun WellnessDriverRow(driver: WellnessDriver) {

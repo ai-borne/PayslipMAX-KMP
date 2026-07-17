@@ -58,7 +58,6 @@ class SmartInsightsBuilderTest {
                 dsopGapMonthly = 0.0,
                 dsopCorpusUpliftAtRetirement = 0.0,
             ),
-        momChanges = emptyList(),
         previousMonthLabel = "January",
     )
 

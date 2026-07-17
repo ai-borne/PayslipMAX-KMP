@@ -44,7 +44,6 @@ class RecommendedActionsLogicTest {
                 dsopGapMonthly = dsopGapMonthly,
                 dsopCorpusUpliftAtRetirement = 0.0,
             ),
-        momChanges = emptyList(),
         previousMonthLabel = "January",
     )
 

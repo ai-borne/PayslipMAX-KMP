@@ -24,7 +24,6 @@ import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
-import com.payslipmax.pdfparser.ui.clearAiInsights
 import com.payslipmax.pdfparser.ui.components.TransparencyDialog
 import com.payslipmax.pdfparser.ui.generateAiInsights
 import com.payslipmax.pdfparser.ui.rememberHasAccess
@@ -138,14 +137,12 @@ private fun InsightsContent(
     val ledgerRecords by viewModel.ledgerRecords.collectAsState()
     val state = rememberInsightsState(selected, ledgerRecords)
     var wellnessExpanded by remember { mutableStateOf(false) }
+    var toolsExpanded by remember { mutableStateOf(false) }
     Column(modifier = modifier.fillMaxSize()) {
         InsightsTopBar(
             payslips = uiState.payslips,
             selected = selected,
             onSelectPayslip = { viewModel.selectPayslip(it) },
-            healthScore = state.engineResult.healthScore,
-            wellnessExpanded = wellnessExpanded,
-            onWellnessExpandClick = { wellnessExpanded = !wellnessExpanded },
         )
         InsightsLazyBody(
             state = state,
@@ -153,6 +150,8 @@ private fun InsightsContent(
             viewModel = viewModel,
             wellnessExpanded = wellnessExpanded,
             onWellnessExpandClick = { wellnessExpanded = !wellnessExpanded },
+            toolsExpanded = toolsExpanded,
+            onToolsExpandClick = { toolsExpanded = !toolsExpanded },
             onShowUpgradeSheet = onShowUpgradeSheet,
             onShowTransparency = onShowTransparency,
             onViewInsightsClick = onViewInsightsClick,
@@ -169,103 +168,47 @@ private fun InsightsLazyBody(
     viewModel: PayslipViewModel,
     wellnessExpanded: Boolean,
     onWellnessExpandClick: () -> Unit,
+    toolsExpanded: Boolean,
+    onToolsExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
     onViewInsightsClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val hasTaxPlanner = viewModel.rememberHasAccess(FeatureGate.TAX_PLANNER)
     val hasPremiumIntelligence = viewModel.rememberHasAccess(FeatureGate.PREMIUM_INTELLIGENCE)
     val hasWealthOptimization = viewModel.rememberHasAccess(FeatureGate.WEALTH_OPTIMIZATION)
+    val hasAnomalyDetection = viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION)
+    val smartInsights = remember(state) { buildSmartInsights(state) }
     LazyColumn(
         modifier = modifier.background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
-        item {
-            InsightsHealthKpiCardItem(
-                state = state,
-                hasTaxPlanner = hasTaxPlanner,
-                wellnessExpanded = wellnessExpanded,
-                onWellnessExpandClick = onWellnessExpandClick,
-                onShowUpgradeSheet = onShowUpgradeSheet,
-                onNavigateTo = onNavigateTo,
-            )
-        }
-        item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
-        item { DeductionsBreakdownSection(history = state.historySorted, selectedRecord = state.currentRecord) }
-        item { AdvancedAnomaliesCard(state.engineResult.anomalies, viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION), onShowUpgradeSheet) }
-        item { KeyFindingsSection(state = state) }
-        item { AiHighlightsSection(state = state) }
-        item {
-            InsightsPremiumIntelligenceItem(
-                state = state,
-                uiState = uiState,
-                hasPremiumIntelligence = hasPremiumIntelligence,
-                hasWealthOptimization = hasWealthOptimization,
-                viewModel = viewModel,
-                onShowUpgradeSheet = onShowUpgradeSheet,
-                onShowTransparency = onShowTransparency,
-                onViewInsightsClick = onViewInsightsClick,
-                onNavigateTo = onNavigateTo,
-            )
-        }
+        insightsPrimaryItems(
+            state = state,
+            smartInsights = smartInsights,
+            wellnessExpanded = wellnessExpanded,
+            onWellnessExpandClick = onWellnessExpandClick,
+            hasWealthOptimization = hasWealthOptimization,
+            onShowUpgradeSheet = onShowUpgradeSheet,
+            onNavigateTo = onNavigateTo,
+        )
+        insightsActionItems(
+            state = state,
+            uiState = uiState,
+            viewModel = viewModel,
+            smartInsights = smartInsights,
+            hasAnomalyDetection = hasAnomalyDetection,
+            hasPremiumIntelligence = hasPremiumIntelligence,
+            toolsExpanded = toolsExpanded,
+            onToolsExpandClick = onToolsExpandClick,
+            onShowUpgradeSheet = onShowUpgradeSheet,
+            onShowTransparency = onShowTransparency,
+            onViewInsightsClick = onViewInsightsClick,
+            onNavigateTo = onNavigateTo,
+        )
     }
-}
-
-@Composable
-private fun InsightsHealthKpiCardItem(
-    state: InsightsState,
-    hasTaxPlanner: Boolean,
-    wellnessExpanded: Boolean,
-    onWellnessExpandClick: () -> Unit,
-    onShowUpgradeSheet: () -> Unit,
-    onNavigateTo: (Screen) -> Unit,
-) {
-    HealthKpiCard(
-        score = state.engineResult.healthScore,
-        delta = state.scoreDelta,
-        previousMonthLabel = state.previousMonthLabel,
-        expanded = wellnessExpanded,
-        onExpandClick = onWellnessExpandClick,
-        drivers = breakdownWellnessDrivers(state.engineResult),
-        opportunityAmount = state.optimizationResult.totalPotentialTaxSaving,
-        onSeeHowClick = {
-            if (hasTaxPlanner) onNavigateTo(Screen.TaxPlanning) else onShowUpgradeSheet()
-        },
-    )
-}
-
-@Composable
-private fun InsightsPremiumIntelligenceItem(
-    state: InsightsState,
-    uiState: PayslipUiState,
-    hasPremiumIntelligence: Boolean,
-    hasWealthOptimization: Boolean,
-    viewModel: PayslipViewModel,
-    onShowUpgradeSheet: () -> Unit,
-    onShowTransparency: () -> Unit,
-    onViewInsightsClick: () -> Unit,
-    onNavigateTo: (Screen) -> Unit,
-) {
-    PremiumIntelligenceCard(
-        isPremiumEnabled = hasPremiumIntelligence,
-        hasWealthOptimization = hasWealthOptimization,
-        state = state,
-        onUpgradeClick = onShowUpgradeSheet,
-        onNavigateTo = onNavigateTo,
-        aiSectionContent = {
-            GeminiAiInsightsSection(
-                aiInsights = uiState.aiInsights,
-                isAiLoading = uiState.isAiLoading,
-                aiError = uiState.aiError,
-                onGenerateClick = onShowTransparency,
-                onViewInsightsClick = onViewInsightsClick,
-                onClearClick = { viewModel.clearAiInsights() },
-            )
-        },
-    )
 }
 
 @Composable

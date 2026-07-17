@@ -121,7 +121,7 @@ class InsightsScreenUiTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun freeUserSeesProTeaserAtBottom_notInlineLockedCards() =
+    fun freeUserSeesPremiumReportTeaserAtBottom_notInlineLockedCards() =
         runComposeUiTest {
             runBlocking {
                 fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
@@ -133,15 +133,17 @@ class InsightsScreenUiTest {
 
             // Inline locked card removed for free users — its unique CTA must not exist
             onNodeWithText(AppStringsPremium.aiAuditUnlockBtn).assertDoesNotExist()
-            // ProFeaturesTeaser is at scroll bottom — swipe to compose it, then assert
+            // PremiumReportCard's teaser is at scroll bottom (last item) — swipe to compose it, then assert
             onRoot().performTouchInput { swipeUp() }
             mainClock.advanceTimeBy(300)
-            onNodeWithText("Unlock full PCDA(O) representations").assertExists()
+            onNodeWithText(InsightsStrings.premiumReportTeaserBody).assertExists()
         }
 
+    /** Pay Health is now a single surface (D-approved): the expandable chip in [MonthlySnapshot] — the
+     *  top-bar pill was removed in the Phase 4 redesign wiring, so exactly one toggle exists. */
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun healthKpiCardRendersAndExpandsOnTap() =
+    fun payHealthChipRendersAndExpandsOnTap() =
         runComposeUiTest {
             runBlocking {
                 fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
@@ -151,19 +153,18 @@ class InsightsScreenUiTest {
             testDispatcher.scheduler.runCurrent()
             mainClock.advanceTimeBy(300)
 
-            onNodeWithText(InsightsStrings.wellnessChipLabel).assertIsDisplayed()
-            // Both the top-bar pill and the KPI card expose the same expand affordance.
-            onAllNodesWithContentDescription(InsightsStrings.wellnessChipExpandDesc).assertCountEquals(2)
+            onNodeWithText(InsightsStrings.wellnessChipLabel, substring = true).assertIsDisplayed()
+            onNodeWithContentDescription(InsightsStrings.wellnessChipExpandDesc).assertExists()
 
-            onNodeWithText(InsightsStrings.wellnessChipLabel).performClick()
+            onNodeWithContentDescription(InsightsStrings.wellnessChipExpandDesc).performClick()
             mainClock.advanceTimeBy(300)
 
-            onAllNodesWithContentDescription(InsightsStrings.wellnessChipCollapseDesc).assertCountEquals(2)
+            onNodeWithContentDescription(InsightsStrings.wellnessChipCollapseDesc).assertExists()
         }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun topBarHealthPillTogglesSameKpiCardAsTheCardItself() =
+    fun newBodySectionsRenderInApprovedOrder() =
         runComposeUiTest {
             runBlocking {
                 fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
@@ -173,12 +174,11 @@ class InsightsScreenUiTest {
             testDispatcher.scheduler.runCurrent()
             mainClock.advanceTimeBy(300)
 
-            // The top-bar pill exposes the same expand affordance as the KPI card below it.
-            onAllNodesWithContentDescription(InsightsStrings.wellnessChipExpandDesc)[0].performClick()
-            mainClock.advanceTimeBy(300)
-
-            onAllNodesWithContentDescription(InsightsStrings.wellnessChipCollapseDesc)
-                .assertCountEquals(2)
+            // MonthlySnapshot net-pay hero + Smart Insights are above the fold, in that order.
+            // (PayTrendChart needs LedgerRecordEntity history, which this fake-DAO harness never
+            // populates — that windowing logic is locked by PayTrendChartLogicTest instead.)
+            onNodeWithText(InsightsStrings.snapshotNetPayLabel).assertIsDisplayed()
+            onNodeWithText(InsightsStrings.smartInsightsSectionTitle).assertIsDisplayed()
         }
 
     @OptIn(ExperimentalTestApi::class)
@@ -194,8 +194,8 @@ class InsightsScreenUiTest {
             testDispatcher.scheduler.advanceUntilIdle()
             mainClock.advanceTimeBy(300)
 
-            // ProFeaturesTeaser must not appear for premium users
-            onNodeWithText("Unlock full PCDA(O) representations").assertDoesNotExist()
+            // The free-tier teaser body must not appear for premium users
+            onNodeWithText(InsightsStrings.premiumReportTeaserBody).assertDoesNotExist()
 
             // Scroll to compose the section in LazyColumn
             onNode(hasScrollAction()).performScrollToNode(hasText(AppStrings.geminiAiAnalyzeBtn))

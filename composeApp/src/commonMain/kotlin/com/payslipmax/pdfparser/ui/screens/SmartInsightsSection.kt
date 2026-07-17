@@ -6,21 +6,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
-/** Renders [buildSmartInsights] as an ordered stack of [InsightCard]s — the redesign's primary signal surface. */
+/**
+ * Renders [buildSmartInsights] output (precomputed by the caller, once, so [RecommendedActions] can
+ * dedupe against the same list) as an ordered stack of [InsightCard]s — the redesign's primary signal surface.
+ */
 @Composable
 fun SmartInsightsSection(
-    state: InsightsState,
+    insights: List<InsightUiModel>,
     onActionClick: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val insights = remember(state) { buildSmartInsights(state) }
     if (insights.isEmpty()) return
     Column(
         modifier = modifier.fillMaxWidth(),

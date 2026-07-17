@@ -68,12 +68,6 @@ object AppStringsPremium {
     const val taxPlanningNoProjections = "No YTD Tax Projections available for this month."
     const val taxPlanningCurrentYtdContribution = "Current YTD Contribution: ₹"
 
-    // Executive Summary row labels
-    const val execSummaryNetSalary = "Net Salary"
-    const val execSummaryGrossPay = "Gross Pay"
-    const val execSummaryIncomeTax = "Income Tax"
-    const val execSummaryDsop = "DSOP Subscription"
-
     // PRO Features Catalog (Phase 3) — benefit-only copy, no prices (D8)
     const val proCatalogTitle = "PRO Features"
     const val proCatalogSubtitle = "Everything included with PayslipMax Pro"

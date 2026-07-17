@@ -136,7 +136,7 @@ private fun PremiumToolsExpandHeader(
         Icon(
             imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
             contentDescription =
-                if (expanded) InsightsStrings.wellnessChipCollapseDesc else InsightsStrings.wellnessChipExpandDesc,
+                if (expanded) InsightsStrings.premiumReportToolsCollapseDesc else InsightsStrings.premiumReportToolsExpandDesc,
             tint = MaterialTheme.colorScheme.primary,
         )
     }
