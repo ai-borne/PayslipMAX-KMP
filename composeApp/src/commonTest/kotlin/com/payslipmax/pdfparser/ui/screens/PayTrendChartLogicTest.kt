@@ -34,7 +34,7 @@ class PayTrendChartLogicTest {
     private val twelveMonths = (1..12).map { record(year = 2025, monthNum = it) }
 
     @Test
-    fun `window ends at the selected month, not the latest`() {
+    fun `window ends at the selected month not the latest`() {
         val selected = twelveMonths.first { it.monthNum == 8 }
         val points = buildPayTrendPoints(twelveMonths, selected)
         assertEquals(6, points.size)
@@ -49,7 +49,7 @@ class PayTrendChartLogicTest {
     }
 
     @Test
-    fun `each point carries the record's net pay and income tax, not swapped`() {
+    fun `each point carries the record's net pay and income tax not swapped`() {
         val selected = record(year = 2025, monthNum = 5, netPay = 82_000.0, incomeTax = 12_000.0)
         val point = buildPayTrendPoints(listOf(selected), selected).single()
         assertEquals(82_000.0, point.netPay)

@@ -70,7 +70,7 @@ class SmartInsightsBuilderTest {
     }
 
     @Test
-    fun `anomaly cards are ordered by the prioritization engine score, highest first`() {
+    fun `anomaly cards are ordered by the prioritization engine score highest first`() {
         // SALARY_LOSS (importance 9) must outrank DSOP_MILESTONE (importance 6), regardless of input order.
         val insights = buildSmartInsights(state(anomalies = listOf(anomaly("DSOP_MILESTONE"), anomaly("SALARY_LOSS"))))
         assertEquals(
@@ -80,7 +80,7 @@ class SmartInsightsBuilderTest {
     }
 
     @Test
-    fun `each anomaly carries its Phase-1 SSOT severity, not a re-derived one`() {
+    fun `each anomaly carries its Phase-1 SSOT severity not a re-derived one`() {
         val insights = buildSmartInsights(state(anomalies = listOf(anomaly("SALARY_LOSS"), anomaly("DSOP_MILESTONE"))))
         val bySeverity = insights.associate { InsightPrioritizationOrderProbe.typeOf(it) to it.severity }
         assertEquals(InsightSeverity.IMPORTANT, bySeverity.getValue("SALARY_LOSS"))
@@ -101,7 +101,7 @@ class SmartInsightsBuilderTest {
     }
 
     @Test
-    fun `an anomaly the engine never emits (eg rent-recovery suppressed by active HRA) produces no card`() {
+    fun `an anomaly the engine never emits - eg rent-recovery suppressed by active HRA - produces no card`() {
         // The auditor itself is responsible for the licenseFee/HRA gating; the builder is a pure
         // pass-through, so an anomalies list without RENT_RECOVERY_RISK must not synthesize one.
         val insights = buildSmartInsights(state(anomalies = listOf(anomaly("SALARY_LOSS"))))
@@ -173,7 +173,7 @@ class SmartInsightsBuilderTest {
     }
 
     @Test
-    fun `free-finding cards are appended after anomaly and opportunity cards, not interleaved`() {
+    fun `free-finding cards are appended after anomaly and opportunity cards not interleaved`() {
         val opportunity = Opportunity(id = "80c_dsop", title = "80C Headroom", unusedAmount = 50_000.0, estTaxSaved = 10_000.0, action = "Increase DSOP")
         val current = record(incomeTax = 12_000.0, dsopSubscription = 10_000.0)
         val insights =
