@@ -63,8 +63,11 @@ paths = [
   '''^.*test\.js$''',
   # Firebase config (values are placeholders in dev)
   '''google-services\.json$''',
+  # Scan output file that was previously committed
+  '''^scripts/scan_rh_output\.txt$''',
 ]
 regexes = [
   # SDK version strings that look like keys
   '''[0-9A-Za-z]{32,}@[a-z]+\.[a-z]+''',
+  '''SHA-256-verifies''',
 ]
