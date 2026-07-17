@@ -7,13 +7,13 @@
   border: 1px solid var(--border-light);
   border-radius: 20px;
   padding: 1.5rem;
-  box-shadow: 0 8px 32px 0 rgb(0 0 0 / 0.37);
+  box-shadow: var(--shadow-card);
   transition: var(--transition-smooth);
 }
 
 .glass-card:hover {
   border-color: rgb(255 255 255 / 0.12);
-  box-shadow: 0 12px 40px 0 rgb(0 0 0 / 0.5);
+  box-shadow: var(--shadow-card-hover);
   transform: translateY(-2px);
 }
 

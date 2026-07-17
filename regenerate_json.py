@@ -3,7 +3,7 @@ import json
 import re
 import pypdf
 
-pdf_dir = "/Users/sunil/Desktop/Pay Slip Elements"
+pdf_dir = "/Users/test/Desktop/Pay Slip Elements"
 password = "535d04"
 
 month_map = {
@@ -804,14 +804,14 @@ for y in years:
             print(f"Error parsing {filename}: {e}")
 
 # Write to root folder
-with open("/Users/sunil/Downloads/PDFParser/payslips_data.json", "w") as f:
+with open("/Users/test/Downloads/PDFParser/payslips_data.json", "w") as f:
     json.dump(raw_list, f, indent=2)
 
-with open("/Users/sunil/Downloads/PDFParser/payslips_data_standardized.json", "w") as f:
+with open("/Users/test/Downloads/PDFParser/payslips_data_standardized.json", "w") as f:
     json.dump(std_list, f, indent=2)
 
 # Write to web prototype folder
-with open("/Users/sunil/Downloads/PDFParser/web-prototype/payslips_data_standardized.json", "w") as f:
+with open("/Users/test/Downloads/PDFParser/web-prototype/payslips_data_standardized.json", "w") as f:
     json.dump(std_list, f, indent=2)
 
 print("\nDone! Regenerated files successfully.")

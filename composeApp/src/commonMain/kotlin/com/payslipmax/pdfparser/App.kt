@@ -1,0 +1,292 @@
+package com.payslipmax.pdfparser
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
+import com.payslipmax.pdfparser.nav.AppNavState
+import com.payslipmax.pdfparser.ui.*
+import com.payslipmax.pdfparser.ui.screens.BaseModelDownloadBanner
+import com.payslipmax.pdfparser.ui.screens.DashboardScreen
+import com.payslipmax.pdfparser.ui.screens.HistoryScreen
+import com.payslipmax.pdfparser.ui.screens.InsightsScreen
+import com.payslipmax.pdfparser.ui.screens.LockScreen
+import com.payslipmax.pdfparser.ui.screens.SettingsScreen
+import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
+import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
+
+enum class Screen {
+    Dashboard,
+    History,
+    Insights,
+    Settings,
+    Representation,
+    TaxPlanning,
+    RetirementPlanning,
+    RetirementCalculators,
+    HelpLegal,
+    FAQ,
+    PrivacyPolicy,
+    PayslipReplica,
+    ProFeatures,
+}
+
+/** The four bottom-tab roots; the remaining [Screen] values are pushed detail screens. */
+internal val Screen.isTabRoot: Boolean
+    get() = this == Screen.Dashboard || this == Screen.History || this == Screen.Insights || this == Screen.Settings
+
+/**
+ * Persists [AppNavState] across process death via a [Screen] name list: tab root first, then
+ * the pushed detail stack bottom-to-top (decision 9). Restoration is crash-guarded and
+ * truncates from the first invalid entry onward — if a saved constant was renamed or removed,
+ * or a detail name turns up in the tab slot, everything from that point on is discarded rather
+ * than reconstructing a stack ordering the user never actually created.
+ */
+internal val AppNavStateSaver: Saver<AppNavState, Any> =
+    listSaver(
+        save = { listOf(it.currentTab.name) + it.detailStack.map(Screen::name) },
+        restore = { saved ->
+            AppNavState(
+                currentTab = restoreScreen(saved.getOrNull(0))?.takeIf(Screen::isTabRoot) ?: Screen.Dashboard,
+                initialDetailStack =
+                    saved.drop(1)
+                        .map(::restoreScreen)
+                        .takeWhile { it != null && !it.isTabRoot }
+                        .filterNotNull(),
+            )
+        },
+    )
+
+private fun restoreScreen(name: String?): Screen? =
+    name?.let { runCatching { Screen.valueOf(it) }.getOrNull() }
+
+/**
+ * @param navState hoisted so iOS can share one instance between the root Compose tree and its
+ *   [com.payslipmax.pdfparser.nav.NavBridge]; Android uses the default `rememberSaveable` instance.
+ * @param nativeDetailNavigator when non-null (iOS), a detail navigation request is routed to the
+ *   native `UINavigationController` instead of being rendered inline, and the root tree keeps
+ *   showing tab content + bottom bar (the pushed native VC covers it). Null on Android, where
+ *   details render inline via [AppNavState.push].
+ */
+@Composable
+fun App(
+    viewModel: PayslipViewModel,
+    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
+    onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
+    navState: AppNavState = rememberSaveable(saver = AppNavStateSaver) { AppNavState() },
+    nativeDetailNavigator: ((Screen) -> Unit)? = null,
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) {
+        if (uiState.isLockEnabled && uiState.isAppLocked) {
+            // No BackHandler is composed here, so system back falls through to the OS default
+            // (backgrounding the app) — locked content can never be revealed via back (decision 5).
+            LockScreen(
+                onUnlock = { pin -> viewModel.verifyPin(pin) },
+                onPickPdf = onPickPdf,
+                onResetPin = { bytes, pwd, name, onResult ->
+                    viewModel.resetPinWithPdf(bytes, pwd, name, onResult)
+                },
+            )
+        } else {
+            MainScaffold(
+                navState = navState,
+                uiState = uiState,
+                viewModel = viewModel,
+                onPickPdf = onPickPdf,
+                onOpenPdf = onOpenPdf,
+                onPickBackup = onPickBackup,
+                nativeDetailNavigator = nativeDetailNavigator,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun MainScaffold(
+    navState: AppNavState,
+    uiState: PayslipUiState,
+    viewModel: PayslipViewModel,
+    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
+    onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    nativeDetailNavigator: ((Screen) -> Unit)?,
+) {
+    // On iOS details are hosted as native VCs covering this tree, so the root scaffold keeps
+    // showing tab content + bottom bar and never handles back itself (native nav owns it).
+    val hostDetailsNatively = nativeDetailNavigator != null
+    Scaffold(
+        bottomBar = {
+            // Detail screens are pushed on top and hide the tab bar (decision 8) — but on iOS the
+            // native VC covers the whole root tree, so the bar stays here (hidden behind it).
+            if (hostDetailsNatively || navState.activeDetail == null) {
+                BottomBar(
+                    currentScreen = navState.currentTab,
+                    onNavigate = { navState.switchTab(it) },
+                )
+            }
+        },
+    ) { paddingValues ->
+        // System back pops a pushed detail; at a tab root it stays disabled so back exits.
+        // Never enabled on iOS — the native UINavigationController handles back there.
+        BackHandler(enabled = !hostDetailsNatively && navState.activeDetail != null) { navState.pop() }
+        // Scaffold already applies the safe-area inset via paddingValues here; consume it so a
+        // screen's own detailScreenSafeArea() resolves to ~0 on this path (no double padding) while
+        // still applying on a standalone iOS detail VC, which has no ancestor to consume it.
+        Column(modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues)) {
+            BaseModelDownloadBanner(uiState = uiState)
+            Box(modifier = Modifier.weight(1f)) {
+                ScreenContent(
+                    navState = navState,
+                    viewModel = viewModel,
+                    onPickPdf = onPickPdf,
+                    onOpenPdf = onOpenPdf,
+                    onPickBackup = onPickBackup,
+                    nativeDetailNavigator = nativeDetailNavigator,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScreenContent(
+    navState: AppNavState,
+    viewModel: PayslipViewModel,
+    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
+    onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    nativeDetailNavigator: ((Screen) -> Unit)?,
+) {
+    val activeDetail = navState.activeDetail
+    if (activeDetail != null && nativeDetailNavigator == null) {
+        // A pushed detail can itself open a further detail (e.g. the PRO catalog → Tax/DSOP screens):
+        // tab roots switch tabs, detail screens push on top (SSOT via isTabRoot).
+        val onNavigateFromDetail: (Screen) -> Unit = { if (it.isTabRoot) navState.switchTab(it) else navState.push(it) }
+        DetailContent(
+            detail = activeDetail,
+            viewModel = viewModel,
+            onBack = { navState.pop() },
+            onOpenPdf = onOpenPdf,
+            onNavigateTo = onNavigateFromDetail,
+        )
+    } else {
+        // Route by destination: tab roots switch tabs; detail screens push natively on iOS
+        // (nativeDetailNavigator) or render inline on Android (SSOT via isTabRoot).
+        val onNavigate: (Screen) -> Unit = {
+            if (it.isTabRoot) navState.switchTab(it) else nativeDetailNavigator?.invoke(it) ?: navState.push(it)
+        }
+        when (navState.currentTab) {
+            Screen.History ->
+                HistoryScreen(
+                    viewModel = viewModel,
+                    onOpenPdf = onOpenPdf,
+                    onNavigateToInsights = { onNavigate(Screen.Insights) },
+                    onOpenPayslipDetail = { payslip ->
+                        viewModel.selectHistoryDetailPayslip(payslip.dateStr)
+                        onNavigate(Screen.PayslipReplica)
+                    },
+                )
+            Screen.Insights -> InsightsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
+            Screen.Settings -> SettingsScreen(viewModel = viewModel, onNavigateTo = onNavigate, onPickBackup = onPickBackup)
+            else ->
+                DashboardScreen(
+                    viewModel = viewModel,
+                    onPickPdfTrigger = { password -> onPickPdf { bytes, name -> viewModel.importPayslip(bytes, password, name) } },
+                )
+        }
+    }
+}
+
+@Composable
+private fun DetailContent(
+    detail: Screen,
+    viewModel: PayslipViewModel,
+    onBack: () -> Unit,
+    onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onNavigateTo: (Screen) -> Unit,
+) {
+    when (detail) {
+        Screen.ProFeatures ->
+            com.payslipmax.pdfparser.ui.screens.ProFeaturesScreen(viewModel = viewModel, onNavigateTo = onNavigateTo, onBack = onBack)
+        Screen.Representation ->
+            com.payslipmax.pdfparser.ui.screens.RepresentationScreen(viewModel = viewModel, onBack = onBack)
+        Screen.TaxPlanning ->
+            com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
+        Screen.RetirementPlanning ->
+            com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
+        Screen.RetirementCalculators ->
+            com.payslipmax.pdfparser.ui.screens.RetirementCalculatorsScreen(viewModel = viewModel, onBack = onBack)
+        Screen.FAQ ->
+            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
+        Screen.PrivacyPolicy ->
+            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.PrivacyPolicy, onBack = onBack)
+        Screen.PayslipReplica ->
+            com.payslipmax.pdfparser.ui.screens.PayslipReplicaDetailScreen(
+                viewModel = viewModel,
+                onBack = onBack,
+                onOpenOriginal = { payslip ->
+                    viewModel.getPayslipPdf(payslip.dateStr) { bytes ->
+                        if (bytes != null) onOpenPdf(bytes, payslip.file)
+                    }
+                },
+            )
+        Screen.HelpLegal ->
+            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+        // Tab roots are structurally unreachable here: onNavigate() routes them via switchTab(),
+        // never push(), and AppNavStateSaver.restore() filters activeDetail to !isTabRoot. Handled
+        // only so this `when` stays exhaustive against future Screen cases.
+        Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings ->
+            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+    }
+}
+
+@Composable
+private fun BottomBar(
+    currentScreen: Screen,
+    onNavigate: (Screen) -> Unit,
+) {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+        NavigationBarItem(
+            selected = currentScreen == Screen.Dashboard,
+            onClick = { onNavigate(Screen.Dashboard) },
+            label = { Text(AppStrings.navigationHome) },
+            icon = { Icon(Icons.Default.Home, contentDescription = null) },
+        )
+        NavigationBarItem(
+            selected = currentScreen == Screen.History,
+            onClick = { onNavigate(Screen.History) },
+            label = { Text(AppStrings.navigationHistory) },
+            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
+        )
+        NavigationBarItem(
+            selected = currentScreen == Screen.Insights,
+            onClick = { onNavigate(Screen.Insights) },
+            label = { Text(AppStrings.navigationInsights) },
+            icon = { Icon(Icons.Default.Info, contentDescription = null) },
+        )
+        NavigationBarItem(
+            selected = currentScreen == Screen.Settings,
+            onClick = { onNavigate(Screen.Settings) },
+            label = { Text(AppStrings.navigationSettings) },
+            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
+        )
+    }
+}

@@ -1,4 +1,4 @@
-sunil@Sunils-MacBook-Air-2 PDFParser % adb logcat -s System.out
+test@tests-MacBook-Air-2 PDFParser % adb logcat -s System.out
 
 --------- beginning of main
 07-02 15:50:26.897  7500  7553 I System.out: === STAGE 0: RAW PDF EXTRACTION (ANDROID PDFBox) ===
@@ -267,7 +267,7 @@ sunil@Sunils-MacBook-Air-2 PDFParser % adb logcat -s System.out
 07-02 15:50:26.898  7500  7553 I System.out: font=N/A
 07-02 15:50:26.898  7500  7553 I System.out: size=12.0
 07-02 15:50:26.898  7500  7553 I System.out: TOKEN #29
-07-02 15:50:26.898  7500  7553 I System.out: text=Sunil
+07-02 15:50:26.898  7500  7553 I System.out: text=test
 07-02 15:50:26.898  7500  7553 I System.out: page=1
 07-02 15:50:26.898  7500  7553 I System.out: x=81.008
 07-02 15:50:26.898  7500  7553 I System.out: y=150.0
@@ -285,7 +285,7 @@ sunil@Sunils-MacBook-Air-2 PDFParser % adb logcat -s System.out
 07-02 15:50:26.898  7500  7553 I System.out: font=N/A
 07-02 15:50:26.898  7500  7553 I System.out: size=12.0
 07-02 15:50:26.898  7500  7553 I System.out: TOKEN #31
-07-02 15:50:26.898  7500  7553 I System.out: text=Pawar
+07-02 15:50:26.898  7500  7553 I System.out: text=Officer
 07-02 15:50:26.898  7500  7553 I System.out: page=1
 07-02 15:50:26.898  7500  7553 I System.out: x=157.69998
 07-02 15:50:26.898  7500  7553 I System.out: y=150.0
@@ -712,7 +712,7 @@ sunil@Sunils-MacBook-Air-2 PDFParser % adb logcat -s System.out
 07-02 15:50:26.908  7500  7553 I System.out: TOKEN #324
 07-02 15:50:26.913  7500  7553 I System.out: [DEBUG] [PlatformPdfParser] Gemma model binary detected (1346559040 bytes). Initializing GemmaEngine...
 07-02 15:50:26.917  7500  7553 I System.out: [DEBUG] [PlatformPdfParser] GemmaEngine initialized successfully! isInitialized=true
-07-02 15:50:26.933  7500  7553 I System.out: [DEBUG] [ParserUtils] officerName before split: 'Sunil Suresh Pawar A'
-07-02 15:50:26.933  7500  7553 I System.out: [DEBUG] [ParserUtils] officerName after split: 'Sunil Suresh Pawar A'
+07-02 15:50:26.933  7500  7553 I System.out: [DEBUG] [ParserUtils] officerName before split: 'Officer Officer Officer'
+07-02 15:50:26.933  7500  7553 I System.out: [DEBUG] [ParserUtils] officerName after split: 'Officer Officer Officer'
 07-02 15:50:27.025  7500  7553 I System.out: [DEBUG] [SharedParsingPipeline] filename: payslip.pdf, gross: 271739.0, net: 175307.0, grammar: PCDA_MODERN_GRID
 07-02 15:50:27.025  7500  7553 I System.out: [DEBUG] [PlatformPdfParser] Finished GrammarAwareParser.parse. Success: true

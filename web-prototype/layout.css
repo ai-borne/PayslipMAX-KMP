@@ -106,7 +106,7 @@ header {
 
 .explorer-section {
   display: grid;
-  grid-template-columns: 1.2fr 1.8fr;
+  grid-template-columns: 1.8fr 1.2fr;
   gap: 1.5rem;
 }
 

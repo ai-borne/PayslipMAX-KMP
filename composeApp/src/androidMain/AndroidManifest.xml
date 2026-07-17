@@ -4,6 +4,7 @@
     <application
         android:name=".PayslipApplication"
         android:allowBackup="false"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@android:drawable/sym_def_app_icon"
         android:label="PCDA Portal"
         android:roundIcon="@android:drawable/sym_def_app_icon"

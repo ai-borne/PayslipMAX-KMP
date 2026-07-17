@@ -54,10 +54,10 @@ classDiagram
 ## 2. Kotlin Interface Definition
 
 ```kotlin
-package com.ssbmax.pdfparser.insights
+package com.payslipmax.pdfparser.insights
 
-import com.ssbmax.pdfparser.database.LedgerRecordEntity
-import com.ssbmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.database.LedgerRecordEntity
+import com.payslipmax.pdfparser.domain.ParsedPayslip
 import kotlinx.serialization.Serializable
 
 /**

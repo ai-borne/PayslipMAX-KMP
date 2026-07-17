@@ -2,7 +2,7 @@ import os
 import re
 import pypdf
 
-pdf_dir = "/Users/sunil/Desktop/Pay Slip Elements"
+pdf_dir = "/Users/test/Desktop/Pay Slip Elements"
 password = "535d04"
 
 # Load current mappings from regenerate_json

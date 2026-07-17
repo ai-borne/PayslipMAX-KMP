@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
@@ -8,10 +10,8 @@ plugins {
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
@@ -56,15 +56,19 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.pdfbox.android)
             implementation(libs.ktor.client.okhttp)
-            implementation(libs.mediapipe.tasks.genai)
-            // Firebase Auth — Android only; used by AuthTokenProvider.android.kt
+            implementation(libs.litertlm.android)
             implementation(libs.firebase.auth.ktx)
+            implementation(libs.firebase.analytics)
+            implementation(libs.firebase.crashlytics)
+            // Play Asset Delivery — Tier 6 base model on-demand install (AndroidGemmaBaseModelInstaller)
+            implementation(libs.play.asset.delivery.ktx)
         }
 
         val androidUnitTest by getting {
             dependencies {
                 implementation("org.json:json:20240303")
                 implementation(libs.mockk)
+                implementation("org.robolectric:robolectric:4.12.2")
             }
         }
 
@@ -90,6 +94,7 @@ android {
     }
     testOptions {
         unitTests.isReturnDefaultValues = true
+        unitTests.isIncludeAndroidResources = true
     }
 }
 

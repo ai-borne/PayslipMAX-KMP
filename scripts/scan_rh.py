@@ -2,7 +2,7 @@ import os
 import re
 import pypdf
 
-pdf_dir = "/Users/sunil/Desktop/Pay Slip Elements"
+pdf_dir = "/Users/test/Desktop/Pay Slip Elements"
 password = "535d04"
 
 # Mappings from regenerate_json
@@ -77,7 +77,7 @@ for root_dir, dirs, files in os.walk(pdf_dir):
             print(f"Error reading {filename}: {e}")
 
 # Write to output file
-output_path = "/Users/sunil/Downloads/PDFParser/scripts/scan_rh_output.txt"
+output_path = "/Users/test/Downloads/PDFParser/scripts/scan_rh_output.txt"
 with open(output_path, "w") as f:
     f.write("=== RH LINES FOUND ===\n")
     for rhl in sorted(rh_lines):

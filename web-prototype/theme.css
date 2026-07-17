@@ -23,6 +23,8 @@
   --font-body: 'Plus Jakarta Sans', sans-serif;
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --blur-amount: 16px;
+  --shadow-card: 0 8px 32px 0 rgb(0 0 0 / 0.37);
+  --shadow-card-hover: 0 12px 40px 0 rgb(0 0 0 / 0.5);
 }
 
 @media (prefers-color-scheme: light) {
@@ -43,6 +45,8 @@
     --text-primary: #1f2937;
     --text-secondary: #4b5563;
     --text-muted: #9ca3af;
+    --shadow-card: 0 8px 32px 0 rgb(0 0 0 / 0.06);
+    --shadow-card-hover: 0 12px 40px 0 rgb(0 0 0 / 0.1);
   }
 }
 

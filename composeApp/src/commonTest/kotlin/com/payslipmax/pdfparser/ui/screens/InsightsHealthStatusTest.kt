@@ -1,0 +1,63 @@
+package com.payslipmax.pdfparser.ui.screens
+
+import com.payslipmax.pdfparser.ui.theme.AppColors
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+class InsightsHealthStatusTest {
+    @Test
+    fun fairAndNeedsAttentionUseDistinctColors() {
+        assertTrue(AppColors.Warning != AppColors.Caution)
+    }
+
+    @Test
+    fun testScore100IsExcellent() {
+        assertEquals(HealthStatus.EXCELLENT, statusFor(100))
+    }
+
+    @Test
+    fun testScore90IsExcellent() {
+        assertEquals(HealthStatus.EXCELLENT, statusFor(90))
+    }
+
+    @Test
+    fun testScore89IsHealthy() {
+        assertEquals(HealthStatus.HEALTHY, statusFor(89))
+    }
+
+    @Test
+    fun testScore75IsHealthy() {
+        assertEquals(HealthStatus.HEALTHY, statusFor(75))
+    }
+
+    @Test
+    fun testScore74IsFair() {
+        assertEquals(HealthStatus.FAIR, statusFor(74))
+    }
+
+    @Test
+    fun testScore60IsFair() {
+        assertEquals(HealthStatus.FAIR, statusFor(60))
+    }
+
+    @Test
+    fun testScore59IsNeedsAttention() {
+        assertEquals(HealthStatus.NEEDS_ATTENTION, statusFor(59))
+    }
+
+    @Test
+    fun testScore40IsNeedsAttention() {
+        assertEquals(HealthStatus.NEEDS_ATTENTION, statusFor(40))
+    }
+
+    @Test
+    fun testScore39IsCritical() {
+        assertEquals(HealthStatus.CRITICAL, statusFor(39))
+    }
+
+    @Test
+    fun testScore0IsCritical() {
+        assertEquals(HealthStatus.CRITICAL, statusFor(0))
+    }
+}

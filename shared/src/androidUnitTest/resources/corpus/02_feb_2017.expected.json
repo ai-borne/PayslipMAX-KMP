@@ -1,0 +1,83 @@
+{
+  "id": "02_feb_2017",
+  "filename": "02 Feb 2017.pdf",
+  "year": 2017,
+  "monthNum": 2,
+  "officer": {
+    "name": "Officer Officer Officer",
+    "accountNo": "16/000/000000X",
+    "pan": "AR*****90G"
+  },
+  "summary": {
+    "grossPay": 94221.0,
+    "totalDeductions": 21149.0,
+    "netRemittance": 73072.0
+  },
+  "earnings": {
+    "basicPay": 31590.0,
+    "dearnessAllowance": 49619.0,
+    "militaryServicePay": 6000.0,
+    "transportAllowance": 3712.0,
+    "transportAllowanceDa": 0.0,
+    "dressAllowance": 600.0,
+    "rationMoney": 0.0,
+    "specialForcesPay": 0.0,
+    "fieldAllowance": 0.0,
+    "childrenEducationAllowance": 0.0,
+    "houseRentAllowance": 0.0,
+    "riskHardshipAllowance": 0.0,
+    "nonPracticingAllowance": 0.0,
+    "adjBasicPay": 0.0,
+    "adjDa": 0.0,
+    "adjMsp": 0.0,
+    "adjTpta": 0.0,
+    "arrearsCea": 0.0,
+    "arrearsDa": 0.0,
+    "arrearsRation": 0.0,
+    "arrearsSpecialForces": 0.0,
+    "arrearsTpta": 0.0,
+    "arrearsTptaDa": 0.0,
+    "arrearsHra": 0.0,
+    "arrearsRiskHardship": 0.0,
+    "adjPayAndAllce": 2700.0,
+    "adjFieldAllowance": 0.0,
+    "medicalAllowance": 0.0,
+    "adjTicketRecovery": 0.0,
+    "miscEarnings": 0.0
+  },
+  "deductions": {
+    "dsopSubscription": 2255.0,
+    "agif": 5000.0,
+    "incomeTax": 12168.0,
+    "educationCess": 531.0,
+    "licenseFee": 748.0,
+    "furnitureRent": 327.0,
+    "waterCharges": 0.0,
+    "electricityCharges": 0.0,
+    "barrackDamage": 0.0,
+    "ticketRecovery": 0.0,
+    "recFieldAllowance": 0.0,
+    "recSpecialForces": 0.0,
+    "recoveryOfDebits": 0.0,
+    "aobf": 120.0,
+    "agifLoanRecovery": 0.0,
+    "miscDeductions": 0.0
+  },
+  "taxAndSavings": {
+    "grossSalaryYtd": 1208514.0,
+    "totalTaxableIncome": 1168867.0,
+    "standardDeduction": 0.0,
+    "netTaxableIncome": 1080587.0,
+    "totalTaxPayable": 149176.0,
+    "taxDeductedYtd": 149176.0,
+    "cessDeductedYtd": 4475.0,
+    "dsopFund": {
+      "openingBalance": 139290.0,
+      "subscriptionYtd": 24585.0,
+      "refundYtd": 0.0,
+      "miscAdjYtd": 0.0,
+      "withdrawalYtd": 0.0,
+      "closingBalance": 163875.0
+    }
+  }
+}

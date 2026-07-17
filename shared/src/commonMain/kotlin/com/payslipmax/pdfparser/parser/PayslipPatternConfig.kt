@@ -1,0 +1,288 @@
+package com.payslipmax.pdfparser.parser
+
+object PayslipPatternConfig {
+    val monthMap =
+        mapOf(
+            "january" to 1, "jan" to 1,
+            "february" to 2, "feb" to 2,
+            "march" to 3, "mar" to 3,
+            "april" to 4, "apr" to 4,
+            "may" to 5,
+            "june" to 6, "jun" to 6,
+            "july" to 7, "jul" to 7,
+            "august" to 8, "aug" to 8,
+            "september" to 9, "sep" to 9, "sept" to 9,
+            "october" to 10, "oct" to 10,
+            "november" to 11, "nov" to 11,
+            "december" to 12, "dec" to 12,
+        )
+
+    val hindiTransliterations =
+        listOf(
+            "kuula", "kula", "uula", "Aaya", "kTaOtI", "laona", "dona", "ivavarNa", "raiSa", "laoKa",
+            "inavala", "p`oiYat", "Qana", "rxaa", "p`Qaana", "inayaM~k", "Af,sar", "puNao",
+            "ka", "kI", "ivavarNaI", "sqaayaI", "Kata", "saM#yaa", "laoKaI", "Aiga`ma", "?Na",
+        )
+
+    val blocklist =
+        setOf(
+            "gross pay", "total credit", "total debit", "total deductions", "net remittance", "remittance", "remitance", "remitancer",
+            "gross salary", "total taxable income", "net taxable income", "standard deduction", "tax payable",
+            "tax deducted", "cess deducted", "page", "note", "date", "cda", "pan", "account", "name", "rank",
+            "january", "jan", "february", "feb", "march", "mar", "april", "apr", "may", "june", "jun",
+            "july", "jul", "august", "aug", "september", "sep", "october", "oct", "november", "nov", "december", "dec",
+            "amount", "description", "credit", "debit", "earnings", "deductions",
+            "bank code", "bank a/c no", "a/c no", "ifsc", "ifsc code", "bank account",
+            "prosperous new year",
+        )
+
+    /**
+     * Whole-label *prefix* blocklist, for header/statement-title boilerplate whose trailing text varies
+     * (the printed month/year) so it can never be captured by [blocklist]'s exact-match check. Checked
+     * via `normalized.startsWith(prefix)` in [TokenTableClassifier], same guard, minimum added generality.
+     */
+    val blocklistPrefixes =
+        setOf(
+            "statement of account for",
+        )
+
+    val strictlyMandatoryCredits = setOf("basicPay", "dearnessAllowance", "militaryServicePay")
+    val strictlyMandatoryDebits = setOf("agif", "dsopSubscription")
+
+    val sentenceWords =
+        setOf(
+            "the", "in", "with", "and", "will", "be", "is", "as", "has", "have", "been",
+            "this", "that", "which", "ensuing", "provisions", "conformity", "interim", "budget",
+            "recovery", "units", "formations", "connected", "manual", "transmission", "hard",
+            "copies", "cease", "effect", "network", "accept", "officers",
+        )
+
+    val invalidEntireKeys =
+        setOf(
+            "to", "from", "for", "of", "on", "at", "by", "or", "no", "amt", "units", "bill",
+            "recovery", "inst", "instal", "dated", "order", "pt", "ii", "part", "note", "date", "page",
+        )
+
+    val creditKeysMapping =
+        mapOf(
+            "Basic Pay" to "basicPay",
+            "BPAY" to "basicPay",
+            "BPAY (12A)" to "basicPay",
+            "B.PAY" to "basicPay",
+            "B PAY" to "basicPay",
+            "Gr. Pay" to "basicPay",
+            "A/o HRA" to "arrearsHra",
+            "DA" to "dearnessAllowance",
+            "D.A." to "dearnessAllowance",
+            "D.A" to "dearnessAllowance",
+            "Dearness Allowance" to "dearnessAllowance",
+            "MSP" to "militaryServicePay",
+            "M.S.P." to "militaryServicePay",
+            "M.S.P" to "militaryServicePay",
+            "Military Service Pay" to "militaryServicePay",
+            "Tpt Allc" to "transportAllowance",
+            "TPTA" to "transportAllowance",
+            "TRAN1" to "transportAllowance",
+            "TRAN-1" to "transportAllowance",
+            "TPTADA" to "transportAllowanceDa",
+            "Tpt DA" to "transportAllowanceDa",
+            "DRESALW" to "dressAllowance",
+            "A/o DressAllowance" to "dressAllowance",
+            "RSHNA" to "rationMoney",
+            "RMONEYAllce-RA" to "rationMoney",
+            "RA" to "rationMoney",
+            "SpCmd Pay" to "specialForcesPay",
+            "SPCDO" to "specialForcesPay",
+            "SC" to "specialForcesPay",
+            "FD" to "fieldAllowance",
+            "CEA" to "childrenEducationAllowance",
+            "C E A(NT)" to "childrenEducationAllowance",
+            "C E A (T)" to "childrenEducationAllowance",
+            "C E A" to "childrenEducationAllowance",
+            "ARR-CEA" to "arrearsCea",
+            "ARR-DA" to "arrearsDa",
+            "ARR-RSHNA" to "arrearsRation",
+            "ARR-SPCDO" to "arrearsSpecialForces",
+            "ARR-TPTA" to "arrearsTpta",
+            "ARR-TPTADA" to "arrearsTptaDa",
+            "ARR-HH32" to "arrearsHra",
+            "A/o BPAY-" to "adjBasicPay",
+            "A/o DA-" to "adjDa",
+            "A/o MSP-" to "adjMsp",
+            "A/o TRAN-1" to "adjTpta",
+            "A/o TRAN-2" to "adjTpta",
+            "A/o Pay & Allce" to "adjPayAndAllce",
+            "A/o FIELD-R1" to "adjFieldAllowance",
+            "ETKT-ref" to "adjTicketRecovery",
+            "MEDICAL" to "medicalAllowance",
+            "Adhoc Payt" to "adjPayAndAllce",
+            "Reimb Med" to "medicalAllowance",
+            "A/o RMONEYAllce-RA" to "arrearsRation",
+            "Op Cr Bal" to "openingCreditBalance",
+            "Cl. Dr. Bal." to "closingDebitBalance",
+            "Clos Bal(-)" to "closingDebitBalance",
+            "RH11" to "riskHardshipAllowance",
+            "RH12" to "riskHardshipAllowance",
+            "RH13" to "riskHardshipAllowance",
+            "RH21" to "riskHardshipAllowance",
+            "RH22" to "riskHardshipAllowance",
+            "RH23" to "riskHardshipAllowance",
+            "RH31" to "riskHardshipAllowance",
+            "RH32" to "riskHardshipAllowance",
+            "RH33" to "riskHardshipAllowance",
+            "ARR-RH11" to "arrearsRiskHardship",
+            "ARR-RH12" to "arrearsRiskHardship",
+            "ARR-RH13" to "arrearsRiskHardship",
+            "ARR-RH21" to "arrearsRiskHardship",
+            "ARR-RH22" to "arrearsRiskHardship",
+            "ARR-RH23" to "arrearsRiskHardship",
+            "ARR-RH31" to "arrearsRiskHardship",
+            "ARR-RH32" to "arrearsRiskHardship",
+            "ARR-RH33" to "arrearsRiskHardship",
+            "HH11" to "houseRentAllowance",
+            "HH12" to "houseRentAllowance",
+            "HH13" to "houseRentAllowance",
+            "HH21" to "houseRentAllowance",
+            "HH22" to "houseRentAllowance",
+            "HH23" to "houseRentAllowance",
+            "HH31" to "houseRentAllowance",
+            "HH32" to "houseRentAllowance",
+            "HH33" to "houseRentAllowance",
+            "HRA" to "houseRentAllowance",
+            "ARR-HH11" to "arrearsHra",
+            "ARR-HH12" to "arrearsHra",
+            "ARR-HH13" to "arrearsHra",
+            "ARR-HH21" to "arrearsHra",
+            "ARR-HH22" to "arrearsHra",
+            "ARR-HH23" to "arrearsHra",
+            "ARR-HH31" to "arrearsHra",
+            "ARR-HH33" to "arrearsHra",
+            "ARR-HRA" to "arrearsHra",
+            "NPA" to "nonPracticingAllowance",
+            "SICHA" to "riskHardshipAllowance",
+            "ARR-SICHA" to "arrearsRiskHardship",
+            "Gr Pay" to "basicPay",
+            "Grade Pay" to "basicPay",
+            "D.A." to "dearnessAllowance",
+            "Tpt. Allc" to "transportAllowance",
+            "K.M.A" to "dressAllowance",
+            "M.S.P." to "militaryServicePay",
+            "A/o DA" to "arrearsDa",
+            "A/o BPAY" to "adjBasicPay",
+            "A/o MSP" to "adjMsp",
+            "Outfit Alc" to "dressAllowance",
+            "Outfit Allowance" to "dressAllowance",
+            "TA/DA Cheq" to "adjPayAndAllce",
+            "Arrs P & A" to "adjPayAndAllce",
+            "Arr P & A" to "adjPayAndAllce",
+            "Instr Allce" to "adjPayAndAllce",
+            "Instr Allowance" to "adjPayAndAllce",
+            "Of / Drs Alc" to "dressAllowance",
+            "HA/UCA All" to "riskHardshipAllowance",
+            "SCCI Allce" to "riskHardshipAllowance",
+            "LTC Encash" to "adjPayAndAllce",
+            "Ref.L Fee" to "adjPayAndAllce",
+            "Ref.Furn." to "adjPayAndAllce",
+        )
+
+    val debitKeysMapping =
+        mapOf(
+            "DSOPF Subn" to "dsopSubscription",
+            "DSOPF" to "dsopSubscription",
+            "DSOP" to "dsopSubscription",
+            "D.S.O.P.F." to "dsopSubscription",
+            "D.S.O.P.F" to "dsopSubscription",
+            "DSOP Subn" to "dsopSubscription",
+            "AGIF" to "agif",
+            "A.G.I.F." to "agif",
+            "A.G.I.F" to "agif",
+            "AGIF Subn" to "agif",
+            "AGIF Subscription" to "agif",
+            "Incm Tax" to "incomeTax",
+            "Income Tax" to "incomeTax",
+            "ITAX" to "incomeTax",
+            "Inc Tax" to "incomeTax",
+            "Incm. Tax" to "incomeTax",
+            "I Tax" to "incomeTax",
+            "Educ Cess" to "educationCess",
+            "E Cess" to "educationCess",
+            "EHCESS" to "educationCess",
+            "L Fee" to "licenseFee",
+            "LF" to "licenseFee",
+            "Dr L Fee" to "licenseFee",
+            "Dr. L. fee" to "licenseFee",
+            "1.  Recovery of LF  from" to "licenseFee",
+            "2.  Recovery of LF  from" to "licenseFee",
+            "3.  Recovery of LF  from" to "licenseFee",
+            "4.  Recovery of LF  from" to "licenseFee",
+            "Fur" to "furnitureRent",
+            "FUR" to "furnitureRent",
+            "Dr Furn." to "furnitureRent",
+            "Dr. fur" to "furnitureRent",
+            "2.  Recovery of FUR  from" to "furnitureRent",
+            "3.  Recovery of FUR  from" to "furnitureRent",
+            "4.  Recovery of FUR  from" to "furnitureRent",
+            "5.  Recovery of FUR  from" to "furnitureRent",
+            "Water" to "waterCharges",
+            "WATER" to "waterCharges",
+            "Dr Water" to "waterCharges",
+            "Elec" to "electricityCharges",
+            "Dr Elec." to "electricityCharges",
+            "Barrack Damage" to "barrackDamage",
+            "Dr Barrack Damage" to "barrackDamage",
+            "ETKT" to "ticketRecovery",
+            "R/o Etkt" to "ticketRecovery",
+            "Rec CIA-FD" to "recFieldAllowance",
+            "Dr CIA-FD" to "recFieldAllowance",
+            "Rec PARA-SC" to "recSpecialForces",
+            "Dr PARA-SC" to "recSpecialForces",
+            "Rec INSTR-" to "recoveryOfDebits",
+            "Dr INSTR-" to "recoveryOfDebits",
+            "Op Dr Bal" to "openingDebitBalance",
+            "Cl. Cr. Bal." to "closingCreditBalance",
+            "Clos Bal(+)" to "closingCreditBalance",
+            "OP Bal(-)" to "openingDebitBalance",
+            "R/o Of /Drs" to "recoveryOfDebits",
+            "R/o P & A" to "recoveryOfDebits",
+            "AOBF" to "aobf",
+            "AGIF-CAR" to "agifLoanRecovery",
+            "AGIF-MCA" to "agifLoanRecovery",
+            "Educ. Cess" to "educationCess",
+            "Furn." to "furnitureRent",
+            "Recv P & A" to "recoveryOfDebits",
+            "CC to bankers" to "recoveryOfDebits",
+        )
+
+    val monthNames =
+        listOf(
+            "", "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December",
+        )
+
+    /**
+     * Debit standardized keys that are ledger carry-over balances, not real deductions. When such a
+     * key surfaces in the credit column it must be routed to the deductions map (so the ledger
+     * resolver can pull it out), never folded into pay adjustments. SSOT for the cross-column routing
+     * shared by the legacy string path and the Phase 4 [ReconciliationSolver].
+     */
+    val ledgerDebitKeys = setOf("openingDebitBalance", "closingCreditBalance")
+
+    /**
+     * Debit standardized keys that, when they appear in the *credit* column, are credit reversals of a
+     * prior deduction (e.g. a refunded licence fee) and therefore become a pay adjustment.
+     */
+    val creditReversalDebitKeys =
+        setOf("licenseFee", "furnitureRent", "waterCharges", "electricityCharges", "barrackDamage", "ticketRecovery")
+
+    /**
+     * Maps a credit standardized key found in the *debit* column (a recovery of a previously paid
+     * allowance) to the deductions key that records that recovery. Mirrors the legacy routing in the
+     * string path so both pipelines book recoveries identically.
+     */
+    fun recoveryTargetFor(creditStandardKey: String): String =
+        when (creditStandardKey) {
+            "fieldAllowance" -> "recFieldAllowance"
+            "specialForcesPay" -> "recSpecialForces"
+            else -> "recoveryOfDebits"
+        }
+}
