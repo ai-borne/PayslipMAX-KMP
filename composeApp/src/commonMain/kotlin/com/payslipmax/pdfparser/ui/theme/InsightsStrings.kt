@@ -131,4 +131,52 @@ object InsightsStrings {
     const val smartInsightsActionRentRecoveryRisk = "Draft a representation to confirm your quarters/HRA status with PCDA(O)"
     const val smartInsightsActionTaxProjection = "Review your projected annual tax liability in Tax Planner"
     const val smartInsightsActionDebitRecovery = "Verify this recovery entry with your PAO"
+    const val smartInsightsSectionTitle = "Smart Insights"
+
+    // Folded free findings — the useful signal from the retired KeyFindings/AiHighlights sections,
+    // surfaced as low-priority INFO cards in Smart Insights instead of being deleted outright.
+    const val freeFindingLargestDeductionTitle = "Largest Deduction"
+    const val freeFindingLargestDeductionTax = "Income Tax is your largest deduction this month"
+    const val freeFindingLargestDeductionDsop = "DSOP Subscription is your largest deduction this month"
+    const val freeFindingComponentChangeTitle = "Biggest Pay Component Change"
+    const val freeFindingComponentBasic = "Basic Pay"
+    const val freeFindingComponentDa = "Dearness Allowance"
+    const val freeFindingComponentTpta = "Transport Allowance"
+    const val freeFindingComponentHra = "House Rent Allowance"
+    const val freeFindingIncreasedSuffix = "increased compared to last month"
+    const val freeFindingDecreasedSuffix = "decreased compared to last month"
+
+    // Severity chip labels (InsightCard) — short, scannable badges over the full enum name.
+    const val severityLabelInfo = "Info"
+    const val severityLabelWarning = "Watch"
+    const val severityLabelImportant = "Alert"
+    const val severityLabelOpportunity = "Opportunity"
+
+    // Monthly Snapshot (net-pay hero + metrics + Pay Health chip)
+    const val snapshotNetPayLabel = "Net Pay"
+    const val snapshotGrossPayLabel = "Gross Pay"
+    const val snapshotDeductionsLabel = "Deductions"
+    const val snapshotTaxLabel = "Income Tax"
+
+    // Pay Trend chart (net-pay + tax lines, tappable month rows)
+    const val payTrendChartTitle = "Pay Trend"
+    const val payTrendLegendNetPay = "Net Pay"
+    const val payTrendLegendTax = "Income Tax"
+
+    // Recommended Actions (contextual CTAs not already surfaced by a Smart Insights card)
+    const val recommendedActionsTitle = "Recommended For You"
+    const val recommendedActionTaxPlannerTitle = "Tax Saving Opportunity"
+    const val recommendedActionTaxPlannerDesc = "See your 80C/NPS headroom and estimated tax savings"
+    const val recommendedActionClaimGeneratorTitle = "Draft a Representation"
+    const val recommendedActionClaimGeneratorDesc = "One or more findings on this payslip qualify for a PCDA(O) claim"
+    const val recommendedActionDsopSimulatorTitle = "Grow Your DSOP Corpus"
+    const val recommendedActionDsopSimulatorDesc = "You have monthly DSOP headroom — simulate the retirement impact"
+    const val recommendedActionRetirementCalcTitle = "Plan Your Retirement"
+    const val recommendedActionRetirementCalcDesc = "Estimate pension, gratuity, commutation & leave encashment"
+
+    // Premium Report (compact AI audit entry + expandable premium tools list)
+    const val premiumReportTitle = "Premium Report"
+    const val premiumReportTeaserBody = "CA-level AI audit, tax-saving opportunities and recovery drafts — all in one place."
+    const val premiumReportViewAllToolsLabel = "View all premium tools"
+    const val premiumReportHideToolsLabel = "Hide premium tools"
 }

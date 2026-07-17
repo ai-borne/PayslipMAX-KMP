@@ -18,13 +18,19 @@ import kotlin.test.assertTrue
  * wired to this builder yet (Phase 4), so these are the only tests protecting its behavior for now.
  */
 class SmartInsightsBuilderTest {
+    /** No deduction data and identical earnings component values by default, so [buildFreeFindingCards]
+     *  stays empty and doesn't leak an extra trailing card into tests that aren't about free findings. */
     private fun record(
         dateStr: String = "02/2026",
         netPay: Double = 100_000.0,
+        dsopSubscription: Double = 0.0,
+        incomeTax: Double = 0.0,
+        basicPay: Double = 50_000.0,
+        dearnessAllowance: Double = 0.0,
     ) = LedgerRecordEntity(
-        dateStr = dateStr, year = 2026, monthNum = 2, basicPay = 50_000.0, dearnessAllowance = 0.0,
+        dateStr = dateStr, year = 2026, monthNum = 2, basicPay = basicPay, dearnessAllowance = dearnessAllowance,
         militaryServicePay = 0.0, transportAllowance = 0.0, transportAllowanceDa = 0.0, houseRentAllowance = 0.0,
-        grossPay = 120_000.0, dsopSubscription = 10_000.0, incomeTax = 10_000.0, netPay = netPay,
+        grossPay = 120_000.0, dsopSubscription = dsopSubscription, incomeTax = incomeTax, netPay = netPay,
     )
 
     private fun anomaly(
@@ -36,8 +42,9 @@ class SmartInsightsBuilderTest {
         anomalies: List<Anomaly> = emptyList(),
         opportunities: List<Opportunity> = emptyList(),
         previousRecord: LedgerRecordEntity? = record(dateStr = "01/2026"),
+        currentRecord: LedgerRecordEntity = record(),
     ) = InsightsState(
-        currentRecord = record(),
+        currentRecord = currentRecord,
         previousRecord = previousRecord,
         historySorted = emptyList(),
         engineResult = EngineResult(healthScore = 80, anomalies = anomalies, monthlySavingRate = 8.0, taxRatio = 8.0),
@@ -118,6 +125,65 @@ class SmartInsightsBuilderTest {
         val insights = buildSmartInsights(state(anomalies = listOf(anomaly("SALARY_LOSS")), opportunities = listOf(opportunity)))
         assertEquals(InsightSeverity.IMPORTANT, insights.first().severity)
         assertEquals(InsightSeverity.OPPORTUNITY, insights.last().severity)
+    }
+
+    // ── Folded free findings (approved decision: fold the useful KeyFindings/AiHighlights signals
+    // into Smart Insights as INFO cards, rather than deleting them outright in Phase 4). ──
+
+    @Test
+    fun `no deduction data yields no largest-deduction free-finding card`() {
+        val insights = buildSmartInsights(state())
+        assertTrue(insights.none { it.title == InsightsStrings.freeFindingLargestDeductionTitle })
+    }
+
+    @Test
+    fun `income tax at or above DSOP surfaces income tax as the largest deduction`() {
+        val current = record(incomeTax = 12_000.0, dsopSubscription = 10_000.0)
+        val insights = buildSmartInsights(state(currentRecord = current))
+        val card = insights.single { it.title == InsightsStrings.freeFindingLargestDeductionTitle }
+        assertEquals(InsightSeverity.INFO, card.severity)
+        assertEquals(InsightsStrings.freeFindingLargestDeductionTax, card.explanation)
+        assertEquals(formatCurrency(12_000.0), card.amountLabel)
+    }
+
+    @Test
+    fun `DSOP above income tax surfaces DSOP as the largest deduction`() {
+        val current = record(incomeTax = 5_000.0, dsopSubscription = 15_000.0)
+        val insights = buildSmartInsights(state(currentRecord = current))
+        val card = insights.single { it.title == InsightsStrings.freeFindingLargestDeductionTitle }
+        assertEquals(InsightsStrings.freeFindingLargestDeductionDsop, card.explanation)
+        assertEquals(formatCurrency(15_000.0), card.amountLabel)
+    }
+
+    @Test
+    fun `a material MoM component change surfaces the biggest-change free-finding card`() {
+        val current = record(basicPay = 55_000.0, dearnessAllowance = 0.0)
+        val previous = record(dateStr = "01/2026", basicPay = 50_000.0, dearnessAllowance = 0.0)
+        val insights = buildSmartInsights(state(currentRecord = current, previousRecord = previous))
+        val card = insights.single { it.title == InsightsStrings.freeFindingComponentChangeTitle }
+        assertEquals(InsightSeverity.INFO, card.severity)
+        assertEquals(formatCurrency(5_000.0), card.amountLabel)
+    }
+
+    @Test
+    fun `a below-threshold component change yields no biggest-change free-finding card`() {
+        val current = record(basicPay = 50_005.0)
+        val previous = record(dateStr = "01/2026", basicPay = 50_000.0)
+        val insights = buildSmartInsights(state(currentRecord = current, previousRecord = previous))
+        assertTrue(insights.none { it.title == InsightsStrings.freeFindingComponentChangeTitle })
+    }
+
+    @Test
+    fun `free-finding cards are appended after anomaly and opportunity cards, not interleaved`() {
+        val opportunity = Opportunity(id = "80c_dsop", title = "80C Headroom", unusedAmount = 50_000.0, estTaxSaved = 10_000.0, action = "Increase DSOP")
+        val current = record(incomeTax = 12_000.0, dsopSubscription = 10_000.0)
+        val insights =
+            buildSmartInsights(
+                state(currentRecord = current, anomalies = listOf(anomaly("SALARY_LOSS")), opportunities = listOf(opportunity)),
+            )
+        assertEquals(InsightSeverity.IMPORTANT, insights[0].severity)
+        assertEquals(InsightSeverity.OPPORTUNITY, insights[1].severity)
+        assertEquals(InsightsStrings.freeFindingLargestDeductionTitle, insights[2].title)
     }
 
     /** Anomaly type isn't on [InsightUiModel] itself (by design — it's a display model), so tests recover it from the title label SSOT. */
