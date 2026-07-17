@@ -5,8 +5,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
@@ -34,6 +37,8 @@ fun BackupRestoreHeader(onCloseClick: () -> Unit) {
     }
 }
 
+const val BackupRestorePasswordFieldTestTag = "backup_restore_password_field"
+
 @Composable
 fun BackupRestorePasswordField(
     password: String,
@@ -41,11 +46,17 @@ fun BackupRestorePasswordField(
     modifier: Modifier = Modifier,
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
+    var fieldValue by remember(password) {
+        mutableStateOf(TextFieldValue(text = password, selection = TextRange(password.length)))
+    }
     OutlinedTextField(
-        value = password,
-        onValueChange = onPasswordChange,
+        value = fieldValue,
+        onValueChange = {
+            fieldValue = it.copy(selection = TextRange(it.text.length))
+            onPasswordChange(it.text)
+        },
         label = { Text(AppStrings.labelPassword) },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().testTag(BackupRestorePasswordFieldTestTag),
         singleLine = true,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {

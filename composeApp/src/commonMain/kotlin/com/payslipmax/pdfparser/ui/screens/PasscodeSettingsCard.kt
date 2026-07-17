@@ -4,7 +4,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+
+const val PasscodePinFieldTestTag = "passcode_pin_field"
 
 @Composable
 fun PasscodeSettingsCard(
@@ -64,16 +69,22 @@ private fun PasscodeInputDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    var fieldValue by remember(pinText) {
+        mutableStateOf(TextFieldValue(text = pinText, selection = TextRange(pinText.length)))
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(AppStrings.settingsSetPasscodeTitle) },
         text = {
             OutlinedTextField(
-                value = pinText,
-                onValueChange = onPinChange,
+                value = fieldValue,
+                onValueChange = {
+                    fieldValue = it.copy(selection = TextRange(it.text.length))
+                    onPinChange(it.text)
+                },
                 label = { Text(AppStrings.settingsSetPasscodeLabel) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(PasscodePinFieldTestTag),
             )
         },
         confirmButton = {

@@ -6,10 +6,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import com.payslipmax.pdfparser.repository.ReparseSummary
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+
+const val ReparsePasswordFieldTestTag = "reparse_password_field"
 
 @Composable
 fun ReparseAllCard(
@@ -84,16 +89,22 @@ private fun ReparseDialogContent(
     isRunning: Boolean,
     status: BackupStatus?,
 ) {
+    var fieldValue by remember(password) {
+        mutableStateOf(TextFieldValue(text = password, selection = TextRange(password.length)))
+    }
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
         Text(AppStrings.settingsReparseDialogBody, style = MaterialTheme.typography.bodySmall)
         OutlinedTextField(
-            value = password,
-            onValueChange = onPasswordChange,
+            value = fieldValue,
+            onValueChange = {
+                fieldValue = it.copy(selection = TextRange(it.text.length))
+                onPasswordChange(it.text)
+            },
             label = { Text(AppStrings.settingsReparsePasswordLabel) },
             singleLine = true,
             enabled = !isRunning,
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(ReparsePasswordFieldTestTag),
         )
         if (isRunning) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
