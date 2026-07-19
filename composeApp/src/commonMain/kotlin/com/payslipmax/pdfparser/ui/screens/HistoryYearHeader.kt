@@ -145,8 +145,9 @@ fun LazyListScope.historyYearGroup(
     onPayslipClick: (ParsedPayslip) -> Unit,
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
+    trendMap: Map<String, TrendInfo>? = null,
 ) {
-    item(key = year) {
+    item(key = "header_$year", contentType = "history_year_header") {
         HistoryYearHeader(
             year = year,
             payslips = yearPayslips,
@@ -156,8 +157,9 @@ fun LazyListScope.historyYearGroup(
     }
     if (isExpanded) {
         items(
-            items = yearPayslips.sortedByDescending { it.monthNum },
+            items = yearPayslips,
             key = { it.dateStr },
+            contentType = { "history_card" },
         ) { payslip ->
             HistoryCard(
                 payslip = payslip,
@@ -168,6 +170,7 @@ fun LazyListScope.historyYearGroup(
                 HistoryCardContent(
                     payslip = payslip,
                     allPayslips = allPayslips,
+                    trendMap = trendMap,
                 )
             }
         }
@@ -187,9 +190,13 @@ fun HistoryLazyList(
     initialScrollOffset: Int,
     onScrollPositionChanged: (Int, Int) -> Unit,
 ) {
+    val trendMap = remember(payslips) { precomputeTrends(payslips) }
     val grouped =
         remember(payslips) {
-            payslips.groupBy { it.year }.toList().sortedByDescending { it.first }
+            payslips.groupBy { it.year }
+                .mapValues { (_, list) -> list.sortedByDescending { it.monthNum } }
+                .toList()
+                .sortedByDescending { it.first }
         }
     val sortedLedger =
         remember(ledgerRecords) {
@@ -208,20 +215,47 @@ fun HistoryLazyList(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
         modifier = Modifier.fillMaxSize(),
     ) {
-        if (sortedLedger.isNotEmpty()) {
-            item { HistoricalLedgerCard(ledgerRecords = sortedLedger) }
+        historyLazyListContent(
+            sortedLedger = sortedLedger,
+            grouped = grouped,
+            payslips = payslips,
+            expandedYears = expandedYears,
+            onToggleYear = onToggleYear,
+            onPayslipClick = onPayslipClick,
+            onLongPress = onLongPress,
+            onSwipeDelete = onSwipeDelete,
+            trendMap = trendMap,
+        )
+    }
+}
+
+private fun LazyListScope.historyLazyListContent(
+    sortedLedger: List<LedgerRecordEntity>,
+    grouped: List<Pair<Int, List<ParsedPayslip>>>,
+    payslips: List<ParsedPayslip>,
+    expandedYears: Set<Int>,
+    onToggleYear: (Int) -> Unit,
+    onPayslipClick: (ParsedPayslip) -> Unit,
+    onLongPress: (ParsedPayslip) -> Unit,
+    onSwipeDelete: (ParsedPayslip) -> Unit,
+    trendMap: Map<String, TrendInfo>,
+) {
+    if (sortedLedger.isNotEmpty()) {
+        item(key = "historical_ledger", contentType = "historical_ledger") {
+            HistoricalLedgerCard(ledgerRecords = sortedLedger)
         }
-        grouped.forEach { (year, yearPayslips) ->
-            historyYearGroup(
-                year = year,
-                yearPayslips = yearPayslips,
-                allPayslips = payslips,
-                isExpanded = expandedYears.contains(year),
-                onToggleExpand = { onToggleYear(year) },
-                onPayslipClick = onPayslipClick,
-                onLongPress = onLongPress,
-                onSwipeDelete = onSwipeDelete,
-            )
-        }
+    }
+    grouped.forEach { (year, yearPayslips) ->
+        historyYearGroup(
+            year = year,
+            yearPayslips = yearPayslips,
+            allPayslips = payslips,
+            isExpanded = expandedYears.contains(year),
+            onToggleExpand = { onToggleYear(year) },
+            onPayslipClick = onPayslipClick,
+            onLongPress = onLongPress,
+            onSwipeDelete = onSwipeDelete,
+            trendMap = trendMap,
+        )
     }
 }

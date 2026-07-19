@@ -22,7 +22,7 @@ fun LazyListScope.insightsPrimaryItems(
     onShowUpgradeSheet: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
 ) {
-    item {
+    item(key = "monthly_snapshot", contentType = "monthly_snapshot") {
         MonthlySnapshot(
             state = state,
             wellnessExpanded = wellnessExpanded,
@@ -31,7 +31,7 @@ fun LazyListScope.insightsPrimaryItems(
             onSeeHowClick = { if (hasWealthOptimization) onNavigateTo(Screen.TaxPlanning) else onShowUpgradeSheet() },
         )
     }
-    item {
+    item(key = "smart_insights", contentType = "smart_insights") {
         SmartInsightsSection(
             insights = smartInsights,
             hasAccess = hasAccess,
@@ -39,5 +39,5 @@ fun LazyListScope.insightsPrimaryItems(
             onUpgradeClick = onShowUpgradeSheet,
         )
     }
-    item { PayTrendChart(history = state.historySorted, selected = state.currentRecord) }
+    item(key = "pay_trend_chart", contentType = "pay_trend_chart") { PayTrendChart(history = state.historySorted, selected = state.currentRecord) }
 }

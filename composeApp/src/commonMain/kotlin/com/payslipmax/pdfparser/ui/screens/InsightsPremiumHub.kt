@@ -90,11 +90,11 @@ fun LazyListScope.insightsPremiumItems(
     onNavigateTo: (Screen) -> Unit,
 ) {
     if (!isPremium) {
-        item { LockedPremiumHubCard(state = state, smartInsights = smartInsights, onUpgradeClick = onShowUpgradeSheet) }
+        item(key = "locked_premium_hub", contentType = "locked_premium_hub") { LockedPremiumHubCard(state = state, smartInsights = smartInsights, onUpgradeClick = onShowUpgradeSheet) }
         return
     }
-    item { AdvancedAnomaliesCard(anomalies = state.engineResult.anomalies, hasAnomalyDetection = hasAnomalyDetection) }
-    item {
+    item(key = "advanced_anomalies", contentType = "advanced_anomalies") { AdvancedAnomaliesCard(anomalies = state.engineResult.anomalies, hasAnomalyDetection = hasAnomalyDetection) }
+    item(key = "premium_report", contentType = "premium_report") {
         PremiumReportCard(
             toolsExpanded = toolsExpanded,
             onToolsExpandClick = onToolsExpandClick,

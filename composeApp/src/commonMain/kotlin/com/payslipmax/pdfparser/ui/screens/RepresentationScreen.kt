@@ -145,7 +145,7 @@ private fun RepresentationList(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
-        items(items = drafts, key = { it.id }) { draft ->
+        items(items = drafts, key = { it.id }, contentType = { "representation_draft" }) { draft ->
             RepresentationCardItem(draft = draft, onSelect = onSelect, onExportPdf = onExportPdf)
         }
     }
