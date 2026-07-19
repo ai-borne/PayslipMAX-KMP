@@ -30,6 +30,20 @@ data class FyTaxLedgerSummary(
 )
 
 object TaxLedgerAggregator {
+    fun formatIndianCurrency(amount: Double): String {
+        val rounded = kotlin.math.round(amount).toLong()
+        val isNegative = rounded < 0
+        val absStr = kotlin.math.abs(rounded).toString()
+        if (absStr.length <= 3) {
+            return (if (isNegative) "-" else "") + absStr
+        }
+        val lastThree = absStr.takeLast(3)
+        val remaining = absStr.dropLast(3)
+        val formattedRemaining = remaining.reversed().chunked(2).joinToString(",").reversed()
+        val result = "$formattedRemaining,$lastThree"
+        return if (isNegative) "-$result" else result
+    }
+
     fun computeFinancialYear(
         year: Int,
         monthNum: Int,

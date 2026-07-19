@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.insights.Opportunity
+import com.payslipmax.pdfparser.insights.TaxLedgerAggregator
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
@@ -44,8 +45,9 @@ fun TaxActionableChecklistCard(
                     )
                     if (opp.estTaxSaved > 0) {
                         Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
+                        val formattedSaved = TaxLedgerAggregator.formatIndianCurrency(opp.estTaxSaved)
                         Text(
-                            text = "${InsightsStrings.taxPlanningEstTaxSaved}${opp.estTaxSaved.toInt()}",
+                            text = "${InsightsStrings.taxPlanningEstTaxSaved}$formattedSaved",
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary,

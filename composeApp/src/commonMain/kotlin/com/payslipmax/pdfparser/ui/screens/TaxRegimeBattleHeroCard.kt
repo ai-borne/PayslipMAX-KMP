@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.insights.RegimeComparisonResult
 import com.payslipmax.pdfparser.insights.RegimeTaxDetail
+import com.payslipmax.pdfparser.insights.TaxLedgerAggregator
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 
@@ -54,8 +55,9 @@ fun TaxRegimeBattleHeroCard(
             }
 
             if (comparison.breakEvenDeduction > 0) {
+                val formattedBreakEven = TaxLedgerAggregator.formatIndianCurrency(comparison.breakEvenDeduction)
                 Text(
-                    text = "${AppStringsPremium.taxPlanningBreakEvenText}${comparison.breakEvenDeduction.toInt()}",
+                    text = "${AppStringsPremium.taxPlanningBreakEvenText}$formattedBreakEven",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -124,16 +126,18 @@ private fun RegimeOptionAmounts(
     isWinner: Boolean,
     savings: Double,
 ) {
+    val formattedTax = TaxLedgerAggregator.formatIndianCurrency(totalTax)
     Text(
-        text = "₹${totalTax.toInt()}",
+        text = "₹$formattedTax",
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
         color = if (isWinner) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
     )
 
     if (savings > 0) {
+        val formattedSavings = TaxLedgerAggregator.formatIndianCurrency(savings)
         Text(
-            text = "${AppStringsPremium.taxPlanningWinnerSavingsBadge}${savings.toInt()}",
+            text = "${AppStringsPremium.taxPlanningWinnerSavingsBadge}$formattedSavings",
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,

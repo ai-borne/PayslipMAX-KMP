@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.insights.TaxLedgerAggregator
 import com.payslipmax.pdfparser.insights.TdsRunwayResult
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
@@ -44,17 +45,21 @@ fun TaxTdsRunwayProgressCard(
 private fun TdsRunwayMetricsAndProgress(
     tdsRunway: TdsRunwayResult,
 ) {
+    val ytdText = TaxLedgerAggregator.formatIndianCurrency(tdsRunway.ytdTdsDeducted)
+    val remText = TaxLedgerAggregator.formatIndianCurrency(tdsRunway.remainingTaxPayable)
+    val projText = TaxLedgerAggregator.formatIndianCurrency(tdsRunway.projectedMonthlyTds)
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
-            text = "${AppStringsPremium.taxPlanningTdsPaidYtd}${tdsRunway.ytdTdsDeducted.toInt()}",
+            text = "${AppStringsPremium.taxPlanningTdsPaidYtd}$ytdText",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
-            text = "${AppStringsPremium.taxPlanningTdsRemaining}${tdsRunway.remainingTaxPayable.toInt()}",
+            text = "${AppStringsPremium.taxPlanningTdsRemaining}$remText",
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
@@ -79,7 +84,7 @@ private fun TdsRunwayMetricsAndProgress(
     )
 
     Text(
-        text = "${AppStringsPremium.taxPlanningMonthlyTdsRunway}${tdsRunway.projectedMonthlyTds.toInt()}/mo (${tdsRunway.remainingMonths} mos remaining)",
+        text = "${AppStringsPremium.taxPlanningMonthlyTdsRunway}$projText/mo (${tdsRunway.remainingMonths} mos remaining)",
         style = MaterialTheme.typography.bodyMedium,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface,
@@ -91,6 +96,8 @@ private fun TdsSpikeAlertBanner(
     currentTds: Double,
     projectedTds: Double,
 ) {
+    val curText = TaxLedgerAggregator.formatIndianCurrency(currentTds)
+    val projText = TaxLedgerAggregator.formatIndianCurrency(projectedTds)
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadiusSmall),
@@ -105,7 +112,7 @@ private fun TdsSpikeAlertBanner(
                 color = MaterialTheme.colorScheme.error,
             )
             Text(
-                text = "${AppStringsPremium.taxPlanningTdsSpikeAlertDesc}₹${currentTds.toInt()} to ₹${projectedTds.toInt()} per month in remaining FY!",
+                text = "${AppStringsPremium.taxPlanningTdsSpikeAlertDesc}₹$curText to ₹$projText per month in remaining FY!",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onErrorContainer,
             )

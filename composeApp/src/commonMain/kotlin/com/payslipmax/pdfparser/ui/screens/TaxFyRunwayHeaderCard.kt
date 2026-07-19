@@ -39,8 +39,9 @@ fun TaxFyRunwayHeaderCard(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
+                val monthLabel = if (fySummary.parsedMonthCount == 1) "Month" else "Months"
                 Text(
-                    text = "🟢 ${fySummary.parsedMonthCount}${AppStringsPremium.taxPlanningMonthsParsedSuffix}",
+                    text = "🟢 ${fySummary.parsedMonthCount} $monthLabel Parsed (Projected)",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
                 )

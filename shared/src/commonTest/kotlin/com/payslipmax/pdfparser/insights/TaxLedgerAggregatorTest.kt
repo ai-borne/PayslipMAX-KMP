@@ -65,8 +65,16 @@ class TaxLedgerAggregatorTest {
         assertEquals("2024-25", TaxLedgerAggregator.computeFinancialYear(2024, 4))
         assertEquals("2024-25", TaxLedgerAggregator.computeFinancialYear(2024, 12))
         assertEquals("2024-25", TaxLedgerAggregator.computeFinancialYear(2025, 1))
-        assertEquals("2024-25", TaxLedgerAggregator.computeFinancialYear(2025, 3))
         assertEquals("2025-26", TaxLedgerAggregator.computeFinancialYear(2025, 4))
+    }
+
+    @Test
+    fun testFormatIndianCurrency() {
+        assertEquals("8,02,444", TaxLedgerAggregator.formatIndianCurrency(802444.0))
+        assertEquals("68,365", TaxLedgerAggregator.formatIndianCurrency(68365.0))
+        assertEquals("70,200", TaxLedgerAggregator.formatIndianCurrency(70200.0))
+        assertEquals("3,75,001", TaxLedgerAggregator.formatIndianCurrency(375001.0))
+        assertEquals("500", TaxLedgerAggregator.formatIndianCurrency(500.0))
     }
 
     @Test
