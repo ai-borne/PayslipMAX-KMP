@@ -153,6 +153,7 @@ class InsightsPremiumHubTest {
             }
 
             onNodeWithText(InsightsStrings.premiumHubCta).performScrollTo().performClick()
+            waitForIdle()
 
             assertEquals(true, clicked)
         }

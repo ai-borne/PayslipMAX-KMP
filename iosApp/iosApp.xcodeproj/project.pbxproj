@@ -17,6 +17,7 @@
 		AA01000000000000000000B2 /* GemmaInferenceBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01000000000000000000B1 /* GemmaInferenceBridge.swift */; };
 		B7C4F6137AC8345E71E92063 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1359B5E3E79A6103CB63C864 /* FirebaseAnalytics */; };
 		C87B4FA04BDA1DA04158D48E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */; };
+		D87B4FA04BDA1DA04158D48F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B55143988C4C8F291BE72E9B /* PrivacyInfo.xcprivacy */; };
 		CA0100000000000000000002 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = CA0100000000000000000001 /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		B55143988C4C8F291BE72E9B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AA01000000000000000000B1 /* GemmaInferenceBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GemmaInferenceBridge.swift; sourceTree = "<group>"; };
 		AB3632DC29227652001CCB65 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -91,6 +93,7 @@
 				AA01000000000000000000B1 /* GemmaInferenceBridge.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 				A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */,
+				B55143988C4C8F291BE72E9B /* PrivacyInfo.xcprivacy */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -176,6 +179,7 @@
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				C87B4FA04BDA1DA04158D48E /* GoogleService-Info.plist in Resources */,
+				D87B4FA04BDA1DA04158D48F /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
