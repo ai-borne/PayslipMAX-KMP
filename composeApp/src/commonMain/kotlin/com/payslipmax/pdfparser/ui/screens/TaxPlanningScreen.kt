@@ -81,7 +81,13 @@ private fun TaxPlanningContent(
             TaxTdsRunwayProgressCard(tdsRunway = tds)
         }
 
+        optimizationResult.exemptionBreakdown?.let { exemptions ->
+            TaxExemptionBreakdownCard(exemptionBreakdown = exemptions)
+        }
+
         TaxActionableChecklistCard(opportunities = optimizationResult.opportunities)
+
+        TaxEducativeTipsCard()
     }
 }
 

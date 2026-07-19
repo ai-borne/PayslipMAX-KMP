@@ -65,6 +65,19 @@ object AppStringsPremium {
     const val taxPlanningHraLabel = "Sec 10(13A) HRA Exemption"
     const val taxPlanningFieldLabel = "Sec 10(14) Field Allowance Exemption"
 
+    const val taxPlanningExemptionsCardTitle = "Defence Exemptions & Deductions"
+    const val taxPlanningExemptionsTotalLabel = "Total Old Regime Deductions: ₹"
+
+    const val taxPlanningTipsCardTitle = "💡 Tax Planning Tips & Best Practices"
+    const val taxPlanningTip1Title = "Sec 10(14) Field Allowance Exemption"
+    const val taxPlanningTip1Desc = "Field Area, High Altitude, and Special Duty allowances are tax-exempt under Section 10(14). Ensure PCDA excludes them from taxable income."
+    const val taxPlanningTip2Title = "Automatic Sec 80C via DSOP + AGIF"
+    const val taxPlanningTip2Desc = "Your monthly DSOP subscription and AGIF deductions automatically qualify for Sec 80C (up to ₹1.5 Lakhs limit). No extra ELSS is required if already capped."
+    const val taxPlanningTip3Title = "New Tax Regime Zero Tax Threshold"
+    const val taxPlanningTip3Desc = "Under the New Tax Regime, taxable income up to ₹7 Lakhs (FY 24-25) or ₹12 Lakhs (FY 25-26) has ZERO tax liability after Sec 87A rebate."
+    const val taxPlanningTip4Title = "PCDA Declaration Deadline"
+    const val taxPlanningTip4Desc = "Submit your tax regime selection to PCDA before December to avoid sudden high TDS deductions in January to March."
+
     const val retirementTitle = "Retirement Wealth Projection"
     const val retirementSubtitle = "DSOP contribution & compound wealth estimates"
     const val retirementProjectionDisclaimer = "Note: Compounding projections are estimated using a standard interest rate of 7.1% per annum. Actual rates may vary."
