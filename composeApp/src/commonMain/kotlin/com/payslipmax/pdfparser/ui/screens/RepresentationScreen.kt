@@ -191,33 +191,43 @@ private fun RepresentationActionsRow(
     modifier: Modifier = Modifier,
 ) {
     val copyToClipboard = rememberClipboardCopier()
-    Row(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
-        Button(
-            onClick = { onSelect(draft) },
-            modifier = Modifier.weight(1f),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
-            Text(AppStringsPremium.representationEditBtn)
+            Button(
+                onClick = { onSelect(draft) },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(AppStringsPremium.representationEditBtn)
+            }
+            OutlinedButton(
+                onClick = { onExportPdf(draft) },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(AppStringsPremium.representationExportPdfBtn)
+            }
         }
-        OutlinedButton(
-            onClick = { copyToClipboard(draft.bodyText) },
-            modifier = Modifier.weight(1f),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
-            Text(AppStringsPremium.representationCopyBtn)
-        }
-        OutlinedButton(
-            onClick = { shareText(draft.bodyText, draft.subject) },
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(AppStringsPremium.representationShareBtn)
-        }
-        OutlinedButton(
-            onClick = { onExportPdf(draft) },
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(AppStringsPremium.representationExportPdfBtn)
+            OutlinedButton(
+                onClick = { copyToClipboard(draft.bodyText) },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(AppStringsPremium.representationCopyBtn)
+            }
+            OutlinedButton(
+                onClick = { shareText(draft.bodyText, draft.subject) },
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(AppStringsPremium.representationShareBtn)
+            }
         }
     }
 }

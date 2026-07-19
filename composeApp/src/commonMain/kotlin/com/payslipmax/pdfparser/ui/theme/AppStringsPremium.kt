@@ -9,7 +9,7 @@ object AppStringsPremium {
     const val aiAuditUnlockBtn = "Unlock AI CA Audit"
 
     // Premium Features Screens Strings
-    const val representationTitle = "Official Representations"
+    const val representationTitle = "Claim Generator"
     const val representationSubtitle = "Pay & allowance dispute letters"
     const val representationDraftsEmpty = "No salary discrepancies or missing allowances detected. Representation drafts will appear here if the local audit engine flags any issues."
     const val representationCopyBtn = "Copy"
@@ -43,6 +43,27 @@ object AppStringsPremium {
     const val taxPlanningGrossYtd = "YTD Gross Salary"
     const val taxPlanningTaxable = "Net Taxable Income"
     const val taxPlanningITax = "Estimated Tax Liability"
+
+    // Modern Tax Planner Strings
+    const val taxPlanningFyStatusPrefix = "Financial Year "
+    const val taxPlanningMonthsParsedSuffix = " Months Parsed (Projected)"
+    const val taxPlanningRegimeBattleTitle = "Old vs. New Tax Regime Comparison"
+    const val taxPlanningOldRegimeLabel = "Old Tax Regime"
+    const val taxPlanningNewRegimeLabel = "New Tax Regime"
+    const val taxPlanningWinnerSavingsBadge = "Saves ₹"
+    const val taxPlanningWinnerRegimeRecommended = "Recommended for lowest tax liability"
+    const val taxPlanningBreakEvenText = "Min Old Regime Deductions Needed: ₹"
+    const val taxPlanningTdsRunwayTitle = "Annual Tax Liability & TDS Runway"
+    const val taxPlanningTdsPaidYtd = "TDS Deducted YTD: ₹"
+    const val taxPlanningTdsRemaining = "Remaining FY Tax: ₹"
+    const val taxPlanningMonthlyTdsRunway = "Projected Monthly TDS: ₹"
+    const val taxPlanningTdsSpikeAlertTitle = "⚡ High TDS Spike Warning"
+    const val taxPlanningTdsSpikeAlertDesc = "Your monthly tax deduction will jump from ₹"
+    const val taxPlanningExemptionsTitle = "Tax Deductions & Sec 10 Exemptions"
+    const val taxPlanning80CLabel = "Sec 80C (DSOP + AGIF)"
+    const val taxPlanning80CCD1BLabel = "Sec 80CCD(1B) NPS"
+    const val taxPlanningHraLabel = "Sec 10(13A) HRA Exemption"
+    const val taxPlanningFieldLabel = "Sec 10(14) Field Allowance Exemption"
 
     const val retirementTitle = "Retirement Wealth Projection"
     const val retirementSubtitle = "DSOP contribution & compound wealth estimates"

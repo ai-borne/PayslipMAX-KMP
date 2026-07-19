@@ -21,6 +21,10 @@ data class OptimizationResult(
     val opportunities: List<Opportunity>,
     val dsopGapMonthly: Double,
     val dsopCorpusUpliftAtRetirement: Double,
+    val fySummary: FyTaxLedgerSummary? = null,
+    val regimeComparison: RegimeComparisonResult? = null,
+    val exemptionBreakdown: TaxExemptionBreakdown? = null,
+    val tdsRunway: TdsRunwayResult? = null,
 )
 
 object WealthOptimizationEngine {
@@ -32,45 +36,100 @@ object WealthOptimizationEngine {
         payslip: ParsedPayslip,
         yearsToRetirement: Int = DEFAULT_YEARS_TO_RETIREMENT,
     ): OptimizationResult {
-        val dsopMonthly = payslip.deductions.dsopSubscription
-        val agifMonthly = payslip.deductions.agif
-        val grossPay = payslip.summary.grossPay
-        val netTaxableIncome = payslip.taxAndSavings?.netTaxableIncome ?: 0.0
-        val dsopClosingBalance = payslip.taxAndSavings?.dsopFund?.closingBalance ?: 0.0
+        return analyzeLedger(listOf(payslip), payslip, null, yearsToRetirement)
+    }
 
-        val regime = payslip.taxAndSavings?.taxRegime ?: TaxRegime.OLD
-        val marginalRate = deriveMarginalRate(netTaxableIncome, regime)
+    fun analyzeLedger(
+        payslips: List<ParsedPayslip>,
+        selectedPayslip: ParsedPayslip? = null,
+        targetFy: String? = null,
+        yearsToRetirement: Int = DEFAULT_YEARS_TO_RETIREMENT,
+    ): OptimizationResult {
+        val activePayslip = selectedPayslip ?: payslips.lastOrNull() ?: return createFallbackResult()
+
+        val fySummary = TaxLedgerAggregator.aggregateFy(payslips, targetFy)
+        val exemptions = DefenceTaxExemptionEngine.extractExemptions(fySummary)
+        val regimeComp =
+            DualRegimeEngine.compareRegimes(
+                grossIncome = fySummary.projectedAnnualGross,
+                oldRegimeDeductions = exemptions.totalOldRegimeDeductions,
+                fy = fySummary.financialYear,
+            )
+
+        val activeRegime = activePayslip.taxAndSavings?.taxRegime ?: TaxRegime.OLD
+        val activeTax = if (activeRegime == TaxRegime.NEW) regimeComp.newRegime.totalTaxPayable else regimeComp.oldRegime.totalTaxPayable
+        val marginalRate =
+            deriveMarginalRate(
+                netTaxableIncome = if (activeRegime == TaxRegime.NEW) regimeComp.newRegime.netTaxableIncome else regimeComp.oldRegime.netTaxableIncome,
+                regime = activeRegime,
+            )
+
+        val latestMonthlyTds = activePayslip.deductions.incomeTax
+        val tdsRunway =
+            TdsRunwayEngine.computeTdsRunway(
+                ytdTdsDeducted = fySummary.ytdTaxDeducted,
+                parsedMonthCount = fySummary.parsedMonthCount,
+                totalAnnualTaxLiability = activeTax,
+                currentMonthlyTds = latestMonthlyTds,
+            )
 
         val opportunities =
-            if (regime == TaxRegime.NEW) {
-                emptyList()
-            } else {
-                val annual80CUsed = (dsopMonthly + agifMonthly) * 12.0
-                val annual80CHeadroom = maxOf(0.0, LIMIT_80C - annual80CUsed)
-                buildOpportunities(annual80CHeadroom, marginalRate)
+            buildList {
+                if (regimeComp.winnerRegime != activeRegime.name && regimeComp.annualSavings > 0) {
+                    add(
+                        Opportunity(
+                            id = "switch_regime",
+                            title = "Switch to ${regimeComp.winnerRegime} Regime",
+                            unusedAmount = 0.0,
+                            estTaxSaved = regimeComp.annualSavings,
+                            action = "Declare ${regimeComp.winnerRegime} Tax Regime to PCDA to save ₹${regimeComp.annualSavings.toInt()}/year.",
+                        ),
+                    )
+                }
+                if (exemptions.sec80C.headroom > 0.0) {
+                    val monthlyIncrease = (exemptions.sec80C.headroom / 12.0).toInt()
+                    add(
+                        Opportunity(
+                            id = "80c_dsop",
+                            title = "80C: Increase DSOP Subscription",
+                            unusedAmount = exemptions.sec80C.headroom,
+                            estTaxSaved = exemptions.sec80C.headroom * marginalRate,
+                            action = "Increase DSOP by ₹$monthlyIncrease/month to use full ₹1.5L limit.",
+                        ),
+                    )
+                }
+                if (exemptions.sec80CCD1B.headroom > 0.0) {
+                    add(
+                        Opportunity(
+                            id = "80ccd_nps",
+                            title = "80CCD(1B): NPS Additional Contribution",
+                            unusedAmount = exemptions.sec80CCD1B.headroom,
+                            estTaxSaved = exemptions.sec80CCD1B.headroom * marginalRate,
+                            action = "Invest ₹${exemptions.sec80CCD1B.headroom.toInt()}/year in NPS for extra tax deduction.",
+                        ),
+                    )
+                }
             }
 
-        val dsopGapMonthly =
-            if (regime == TaxRegime.NEW) {
-                0.0
-            } else {
-                val annual80CUsed = (dsopMonthly + agifMonthly) * 12.0
-                val annual80CHeadroom = maxOf(0.0, LIMIT_80C - annual80CUsed)
-                computeDsopGap(dsopMonthly, grossPay, annual80CHeadroom)
-            }
-        val corpusUplift = computeCorpusUplift(dsopMonthly, dsopGapMonthly, dsopClosingBalance, yearsToRetirement)
+        val dsopMonthly = activePayslip.deductions.dsopSubscription
+        val dsopGapMonthly = computeDsopGap(dsopMonthly, activePayslip.summary.grossPay, exemptions.sec80C.headroom)
+        val closingBalance = activePayslip.taxAndSavings?.dsopFund?.closingBalance ?: 0.0
+        val corpusUplift = computeCorpusUplift(dsopMonthly, dsopGapMonthly, closingBalance, yearsToRetirement)
 
         return OptimizationResult(
             totalPotentialTaxSaving = opportunities.sumOf { it.estTaxSaved },
             marginalRatePct = marginalRate,
-            regimeAssumed = regime.name,
+            regimeAssumed = activeRegime.name,
             opportunities = opportunities,
             dsopGapMonthly = dsopGapMonthly,
             dsopCorpusUpliftAtRetirement = corpusUplift,
+            fySummary = fySummary,
+            regimeComparison = regimeComp,
+            exemptionBreakdown = exemptions,
+            tdsRunway = tdsRunway,
         )
     }
 
-    // Regime-specific slabs (FY 2024-25 / FY 2025-26); used to estimate marginal rate.
     fun deriveMarginalRate(
         netTaxableIncome: Double,
         regime: TaxRegime = TaxRegime.OLD,
@@ -93,34 +152,6 @@ object WealthOptimizationEngine {
             }
         }
 
-    private fun buildOpportunities(
-        annual80CHeadroom: Double,
-        marginalRate: Double,
-    ): List<Opportunity> =
-        buildList {
-            if (annual80CHeadroom > 0.0) {
-                val monthlyIncrease = (annual80CHeadroom / 12.0).toInt()
-                add(
-                    Opportunity(
-                        id = "80c_dsop",
-                        title = "80C: Increase DSOP Subscription",
-                        unusedAmount = annual80CHeadroom,
-                        estTaxSaved = annual80CHeadroom * marginalRate,
-                        action = "Increase DSOP by ₹$monthlyIncrease/month to use full ₹1.5L limit (old regime est.)",
-                    ),
-                )
-            }
-            add(
-                Opportunity(
-                    id = "80ccd_nps",
-                    title = "80CCD(1B): NPS Additional Contribution",
-                    unusedAmount = NPS_80CCD1B,
-                    estTaxSaved = NPS_80CCD1B * marginalRate,
-                    action = "Invest ₹50,000/year in NPS (verify not already used elsewhere; old regime est.)",
-                ),
-            )
-        }
-
     private fun computeDsopGap(
         dsopMonthly: Double,
         grossPay: Double,
@@ -141,5 +172,16 @@ object WealthOptimizationEngine {
         val current = ProjectionMath.calculateProjection(closingBalance, dsopMonthly, years)
         val enhanced = ProjectionMath.calculateProjection(closingBalance, dsopMonthly + dsopGapMonthly, years)
         return enhanced.projectedBalance - current.projectedBalance
+    }
+
+    private fun createFallbackResult(): OptimizationResult {
+        return OptimizationResult(
+            totalPotentialTaxSaving = 0.0,
+            marginalRatePct = 0.0,
+            regimeAssumed = "OLD",
+            opportunities = emptyList(),
+            dsopGapMonthly = 0.0,
+            dsopCorpusUpliftAtRetirement = 0.0,
+        )
     }
 }
