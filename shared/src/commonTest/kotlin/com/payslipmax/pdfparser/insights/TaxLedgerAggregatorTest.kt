@@ -22,6 +22,8 @@ class TaxLedgerAggregatorTest {
         dsop: Double = 10000.0,
         agif: Double = 5000.0,
         fieldAllowance: Double = 4200.0,
+        riskHardshipAllowance: Double = 0.0,
+        rawEarnings: Map<String, Double> = emptyMap(),
         hra: Double = 8000.0,
     ): ParsedPayslip {
         val monthStr = if (monthNum < 10) "0$monthNum" else "$monthNum"
@@ -37,6 +39,7 @@ class TaxLedgerAggregatorTest {
                     basicPay = basicPay,
                     dearnessAllowance = da,
                     fieldAllowance = fieldAllowance,
+                    riskHardshipAllowance = riskHardshipAllowance,
                     houseRentAllowance = hra,
                 ),
             deductions =
@@ -57,6 +60,7 @@ class TaxLedgerAggregatorTest {
                     grossSalaryYtd = grossPay,
                     taxDeductedYtd = incomeTax,
                 ),
+            rawEarnings = rawEarnings,
         )
     }
 
@@ -75,6 +79,15 @@ class TaxLedgerAggregatorTest {
         assertEquals("70,200", TaxLedgerAggregator.formatIndianCurrency(70200.0))
         assertEquals("3,75,001", TaxLedgerAggregator.formatIndianCurrency(375001.0))
         assertEquals("500", TaxLedgerAggregator.formatIndianCurrency(500.0))
+    }
+
+    @Test
+    fun testExtractFieldOrRhaAllowance() {
+        val p1 = createPayslip(2024, 4, fieldAllowance = 0.0, riskHardshipAllowance = 6000.0)
+        assertEquals(6000.0, TaxLedgerAggregator.extractFieldOrRhaAllowance(p1))
+
+        val p2 = createPayslip(2024, 4, fieldAllowance = 0.0, riskHardshipAllowance = 0.0, rawEarnings = mapOf("RHA" to 4200.0))
+        assertEquals(4200.0, TaxLedgerAggregator.extractFieldOrRhaAllowance(p2))
     }
 
     @Test

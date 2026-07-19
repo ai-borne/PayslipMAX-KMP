@@ -44,6 +44,20 @@ object TaxLedgerAggregator {
         return if (isNegative) "-$result" else result
     }
 
+    fun extractFieldOrRhaAllowance(payslip: ParsedPayslip): Double {
+        var total = payslip.earnings.fieldAllowance + payslip.earnings.riskHardshipAllowance + payslip.earnings.adjFieldAllowance
+        if (total <= 0.0 && payslip.rawEarnings.isNotEmpty()) {
+            val rhaKeywords = listOf("RHA", "RISK", "FIELD", "HARDSHIP")
+            for ((key, value) in payslip.rawEarnings) {
+                val upper = key.uppercase()
+                if (rhaKeywords.any { upper.contains(it) }) {
+                    total += value
+                }
+            }
+        }
+        return total
+    }
+
     fun computeFinancialYear(
         year: Int,
         monthNum: Int,
@@ -95,7 +109,7 @@ object TaxLedgerAggregator {
         val ytdTax = fyPayslips.sumOf { it.deductions.incomeTax }
         val ytdDsop = fyPayslips.sumOf { it.deductions.dsopSubscription }
         val ytdAgif = fyPayslips.sumOf { it.deductions.agif }
-        val ytdField = fyPayslips.sumOf { it.earnings.fieldAllowance }
+        val ytdField = fyPayslips.sumOf { extractFieldOrRhaAllowance(it) }
         val ytdHra = fyPayslips.sumOf { it.earnings.houseRentAllowance }
         val ytdBasic = fyPayslips.sumOf { it.earnings.basicPay }
         val ytdDa = fyPayslips.sumOf { it.earnings.dearnessAllowance }
