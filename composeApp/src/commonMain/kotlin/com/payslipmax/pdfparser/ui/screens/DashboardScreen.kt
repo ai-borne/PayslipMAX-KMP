@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -20,6 +21,7 @@ import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.clearError
+import com.payslipmax.pdfparser.ui.saveDashboardScrollPosition
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlin.math.round
@@ -146,13 +148,14 @@ private fun PopulatedDashboard(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val scrollState = rememberDashboardScrollState(uiState, viewModel)
 
     Column(
         modifier =
             modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(AppDimensions.PaddingMedium),
     ) {
         selected?.let { payslip ->
@@ -183,6 +186,18 @@ private fun PopulatedDashboard(
 
         Spacer(modifier = Modifier.height(AppDimensions.FabClearanceHeight))
     }
+}
+
+@Composable
+private fun rememberDashboardScrollState(
+    uiState: PayslipUiState,
+    viewModel: PayslipViewModel,
+): ScrollState {
+    val scrollState = rememberScrollState(uiState.dashboardScrollValue)
+    DisposableEffect(Unit) {
+        onDispose { viewModel.saveDashboardScrollPosition(scrollState.value) }
+    }
+    return scrollState
 }
 
 @Composable
