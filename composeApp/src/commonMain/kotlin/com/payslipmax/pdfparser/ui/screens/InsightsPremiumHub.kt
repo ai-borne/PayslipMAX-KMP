@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -17,6 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.Screen
+import com.payslipmax.pdfparser.ui.PayslipUiState
+import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.clearAiInsights
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
@@ -59,6 +64,52 @@ fun LockedPremiumHubCard(
                 Text(text = InsightsStrings.premiumHubCta, fontWeight = FontWeight.Bold)
             }
         }
+    }
+}
+
+/**
+ * Wires the consolidated PRO surface into the Insights body (Phase 2): a locked free-tier user sees
+ * only [LockedPremiumHubCard]; a PRO user sees the shell dissolve into first-class cards — unlocked
+ * [AdvancedAnomaliesCard] findings (self-hides when none) + [PremiumReportCard] with its AI section and
+ * tools drawer defaulted open (drawer is home). Called directly from `InsightsScreen`'s `LazyColumn`,
+ * replacing what used to be three separately-gated cards (a standalone `RecommendedActions` card, an
+ * `AdvancedAnomaliesCard` with its own lock branch, and a `PremiumReportCard` teaser/active split).
+ */
+fun LazyListScope.insightsPremiumItems(
+    state: InsightsState,
+    uiState: PayslipUiState,
+    viewModel: PayslipViewModel,
+    smartInsights: List<InsightUiModel>,
+    isPremium: Boolean,
+    hasAnomalyDetection: Boolean,
+    toolsExpanded: Boolean,
+    onToolsExpandClick: () -> Unit,
+    onShowUpgradeSheet: () -> Unit,
+    onShowTransparency: () -> Unit,
+    onViewInsightsClick: () -> Unit,
+    onNavigateTo: (Screen) -> Unit,
+) {
+    if (!isPremium) {
+        item { LockedPremiumHubCard(state = state, smartInsights = smartInsights, onUpgradeClick = onShowUpgradeSheet) }
+        return
+    }
+    item { AdvancedAnomaliesCard(anomalies = state.engineResult.anomalies, hasAnomalyDetection = hasAnomalyDetection) }
+    item {
+        PremiumReportCard(
+            toolsExpanded = toolsExpanded,
+            onToolsExpandClick = onToolsExpandClick,
+            onNavigateTo = onNavigateTo,
+            aiSectionContent = {
+                GeminiAiInsightsSection(
+                    aiInsights = uiState.aiInsights,
+                    isAiLoading = uiState.isAiLoading,
+                    aiError = uiState.aiError,
+                    onGenerateClick = onShowTransparency,
+                    onViewInsightsClick = onViewInsightsClick,
+                    onClearClick = { viewModel.clearAiInsights() },
+                )
+            },
+        )
     }
 }
 

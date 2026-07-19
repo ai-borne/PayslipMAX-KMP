@@ -66,7 +66,6 @@ object InsightsStrings {
     const val premiumIntelligencePrice = "₹99 / Year"
 
     // Premium teaser defaults & activated status
-    const val premiumTeaserDefaultButton = "Unlock Premium Intelligence"
     const val premiumActivatedSuffix = " (Activated)"
 
     // Advanced anomaly checks (ANOMALY_DETECTION gate, D6) — category labels + locked teaser copy.
@@ -84,10 +83,7 @@ object InsightsStrings {
     const val anomalyLabelUnknown = "Financial Check"
 
     const val advancedAnomaliesTitle = "Advanced Anomaly Checks"
-    const val advancedAnomaliesLockedTitle = "🔒 Advanced Anomaly Checks"
-    const val advancedAnomaliesLockedBody = "Detailed audit findings and recovery amounts are part of PRO."
     const val advancedAnomaliesLockedCountSuffix = "advanced check(s) found on this payslip"
-    const val advancedAnomaliesUnlockCta = "Unlock Anomaly Detection"
     const val advancedAnomaliesLabelSeparator = " · "
 
     // Smart Insights (redesign) — first-statement fallback + action copy for anomaly types that have
@@ -129,7 +125,6 @@ object InsightsStrings {
     const val payTrendLegendTax = "Income Tax"
 
     // Recommended Actions (contextual CTAs not already surfaced by a Smart Insights card)
-    const val recommendedActionsTitle = "Recommended For You"
     const val recommendedActionTaxPlannerTitle = "Tax Saving Opportunity"
     const val recommendedActionTaxPlannerDesc = "See your 80C/NPS headroom and estimated tax savings"
     const val recommendedActionClaimGeneratorTitle = "Draft a Representation"
@@ -141,7 +136,6 @@ object InsightsStrings {
 
     // Premium Report (compact AI audit entry + expandable premium tools list)
     const val premiumReportTitle = "Premium Report"
-    const val premiumReportTeaserBody = "CA-level AI audit, tax-saving opportunities and recovery drafts — all in one place."
     const val premiumReportViewAllToolsLabel = "View all premium tools"
     const val premiumReportHideToolsLabel = "Hide premium tools"
     const val premiumReportToolsExpandDesc = "Expand premium tools"

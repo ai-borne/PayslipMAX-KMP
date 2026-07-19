@@ -5,11 +5,20 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.test.AfterTest
 import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class UploadWidgetTest {
+    @AfterTest
+    fun tearDown() {
+        try {
+            org.koin.core.context.stopKoin()
+        } catch (_: Exception) {
+        }
+    }
+
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun passwordVisibilityTogglesOnIconClick() =

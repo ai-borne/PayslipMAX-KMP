@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -31,22 +30,17 @@ import com.payslipmax.pdfparser.ui.theme.InsightsStrings
  * collapsed/expandable full premium-tools list (reuses [PremiumToolsSection] so all four paid entry
  * points — Tax Planner, DSOP Simulator, Claim Generator, Retirement Calculators — stay reachable).
  * Wealth-optimization figures live in [MonthlySnapshot]'s Pay Health chip, so this card no longer
- * duplicates them.
+ * duplicates them. Only ever reached from the PRO-dissolve path (Insights PRO consolidation, Phase 2)
+ * — the free-tier teaser now lives in [LockedPremiumHubCard].
  */
 @Composable
 fun PremiumReportCard(
-    isPremiumEnabled: Boolean,
     toolsExpanded: Boolean,
     onToolsExpandClick: () -> Unit,
-    onUpgradeClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
     aiSectionContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (!isPremiumEnabled) {
-        PremiumReportTeaser(onUpgradeClick = onUpgradeClick, modifier = modifier)
-        return
-    }
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
@@ -67,51 +61,6 @@ fun PremiumReportCard(
             PremiumToolsExpandHeader(expanded = toolsExpanded, onClick = onToolsExpandClick)
             if (toolsExpanded) {
                 PremiumToolsSection(onNavigateTo = onNavigateTo)
-            }
-        }
-    }
-}
-
-@Composable
-private fun PremiumReportTeaser(
-    onUpgradeClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "${AppStrings.proTeaserCrownIcon} ${InsightsStrings.premiumReportTitle}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                Text(
-                    text = InsightsStrings.premiumIntelligencePrice,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.secondary,
-                )
-            }
-            Text(
-                text = InsightsStrings.premiumReportTeaserBody,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Button(onClick = onUpgradeClick, modifier = Modifier.fillMaxWidth()) {
-                Text(text = InsightsStrings.premiumTeaserDefaultButton, fontWeight = FontWeight.Bold)
             }
         }
     }

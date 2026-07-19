@@ -138,7 +138,6 @@ private fun InsightsContent(
     val ledgerRecords by viewModel.ledgerRecords.collectAsState()
     val state = rememberInsightsState(selected, ledgerRecords)
     var wellnessExpanded by remember { mutableStateOf(false) }
-    var toolsExpanded by remember { mutableStateOf(false) }
     Column(modifier = modifier.fillMaxSize()) {
         InsightsTopBar(
             payslips = uiState.payslips,
@@ -151,8 +150,6 @@ private fun InsightsContent(
             viewModel = viewModel,
             wellnessExpanded = wellnessExpanded,
             onWellnessExpandClick = { wellnessExpanded = !wellnessExpanded },
-            toolsExpanded = toolsExpanded,
-            onToolsExpandClick = { toolsExpanded = !toolsExpanded },
             onShowUpgradeSheet = onShowUpgradeSheet,
             onShowTransparency = onShowTransparency,
             onViewInsightsClick = onViewInsightsClick,
@@ -169,8 +166,6 @@ private fun InsightsLazyBody(
     viewModel: PayslipViewModel,
     wellnessExpanded: Boolean,
     onWellnessExpandClick: () -> Unit,
-    toolsExpanded: Boolean,
-    onToolsExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
     onShowTransparency: () -> Unit,
     onViewInsightsClick: () -> Unit,
@@ -181,6 +176,8 @@ private fun InsightsLazyBody(
     val hasWealthOptimization = viewModel.rememberHasAccess(FeatureGate.WEALTH_OPTIMIZATION)
     val hasAnomalyDetection = viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION)
     val smartInsights = remember(state) { buildSmartInsights(state) }
+    // Tools drawer defaults open for PRO ("drawer is home") but stays collapsible either way.
+    var toolsExpanded by remember(hasPremiumIntelligence) { mutableStateOf(hasPremiumIntelligence) }
     LazyColumn(
         modifier = modifier.background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(AppDimensions.PaddingMedium),
@@ -196,15 +193,15 @@ private fun InsightsLazyBody(
             onShowUpgradeSheet = onShowUpgradeSheet,
             onNavigateTo = onNavigateTo,
         )
-        insightsActionItems(
+        insightsPremiumItems(
             state = state,
             uiState = uiState,
             viewModel = viewModel,
             smartInsights = smartInsights,
+            isPremium = hasPremiumIntelligence,
             hasAnomalyDetection = hasAnomalyDetection,
-            hasPremiumIntelligence = hasPremiumIntelligence,
             toolsExpanded = toolsExpanded,
-            onToolsExpandClick = onToolsExpandClick,
+            onToolsExpandClick = { toolsExpanded = !toolsExpanded },
             onShowUpgradeSheet = onShowUpgradeSheet,
             onShowTransparency = onShowTransparency,
             onViewInsightsClick = onViewInsightsClick,

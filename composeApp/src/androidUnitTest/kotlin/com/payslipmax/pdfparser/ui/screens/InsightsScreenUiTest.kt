@@ -121,7 +121,7 @@ class InsightsScreenUiTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun freeUserSeesPremiumReportTeaserAtBottom_notInlineLockedCards() =
+    fun freeUserSeesLockedHubNotScatteredTeasers() =
         runComposeUiTest {
             runBlocking {
                 fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
@@ -133,10 +133,13 @@ class InsightsScreenUiTest {
 
             // Inline locked card removed for free users — its unique CTA must not exist
             onNodeWithText(AppStringsPremium.aiAuditUnlockBtn).assertDoesNotExist()
-            // PremiumReportCard's teaser is at scroll bottom (last item) — swipe to compose it, then assert
+            // The three scattered PRO teasers (Recommended Actions / locked anomalies / premium report
+            // teaser) are gone — only the one consolidated hub card remains, at scroll bottom.
+            onNodeWithText("Recommended For You").assertDoesNotExist()
             onRoot().performTouchInput { swipeUp() }
             mainClock.advanceTimeBy(300)
-            onNodeWithText(InsightsStrings.premiumReportTeaserBody).assertExists()
+            onNodeWithText(InsightsStrings.premiumHubTitle, substring = true).assertExists()
+            onNodeWithText(InsightsStrings.premiumHubCta).assertExists()
         }
 
     /** Pay Health is now a single surface (D-approved): the expandable chip in [MonthlySnapshot] — the
@@ -194,8 +197,8 @@ class InsightsScreenUiTest {
             testDispatcher.scheduler.advanceUntilIdle()
             mainClock.advanceTimeBy(300)
 
-            // The free-tier teaser body must not appear for premium users
-            onNodeWithText(InsightsStrings.premiumReportTeaserBody).assertDoesNotExist()
+            // The locked hub is a free-tier-only surface — the PRO shell dissolves, no wrapper card.
+            onNodeWithText(InsightsStrings.premiumHubTitle, substring = true).assertDoesNotExist()
 
             // Scroll to compose the section in LazyColumn
             onNode(hasScrollAction()).performScrollToNode(hasText(AppStrings.geminiAiAnalyzeBtn))
@@ -203,5 +206,34 @@ class InsightsScreenUiTest {
 
             // CA report active card must be present (its generate CTA is the positive signal)
             onNodeWithText(AppStrings.geminiAiAnalyzeBtn).assertExists()
+        }
+
+    /** Insights PRO consolidation, Phase 2: for PRO users the hub dissolves into first-class cards —
+     *  the AI report, an always-reachable tools drawer (no tap needed, "drawer is home"), and anomaly
+     *  findings — with no separate "Recommended For You" strip and no feature listed twice. */
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun premiumUserSeesToolsDrawerExpandedByDefaultWithNoDuplicateRecommendations() =
+        runComposeUiTest {
+            runBlocking {
+                fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
+            }
+            viewModel.setPremiumEnabled(true)
+            testDispatcher.scheduler.advanceUntilIdle()
+            setContent { InsightsScreen(viewModel = viewModel, onNavigateTo = {}) }
+            testDispatcher.scheduler.advanceUntilIdle()
+            mainClock.advanceTimeBy(300)
+
+            // No standalone "Recommended For You" strip — the four tools it used to surface are the
+            // same four the drawer already lists (the approved dedup: the drawer is home).
+            onNodeWithText("Recommended For You").assertDoesNotExist()
+
+            // Drawer defaults to expanded for PRO — a tool title is reachable with no "View all" tap.
+            onNode(hasScrollAction()).performScrollToNode(hasText(AppStringsPremium.proCatalogRetCalcTitle))
+            onNodeWithText(AppStringsPremium.proCatalogRetCalcTitle).assertIsDisplayed()
+
+            // Retirement (Tax Planner / DSOP / Claim / Retirement were the RecommendedActions <->
+            // drawer duplicates) now appears exactly once, in the drawer.
+            onAllNodesWithText("Retirement", substring = true).assertCountEquals(1)
         }
 }
