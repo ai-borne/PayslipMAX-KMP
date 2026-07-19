@@ -1,4 +1,11 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+// SSOT for the app's marketing version: shared by this Gradle build and iosApp/Configuration/Config.xcconfig.
+val appVersionName =
+    Properties().apply {
+        load(rootProject.file("version.properties").inputStream())
+    }.getProperty("MARKETING_VERSION")
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -86,6 +93,7 @@ kotlin {
                 implementation("org.robolectric:robolectric:4.12.2")
                 implementation("androidx.compose.ui:ui-test-junit4:1.9.4")
                 implementation("androidx.compose.ui:ui-test-manifest:1.9.4")
+                implementation(libs.mockk)
             }
         }
     }
@@ -99,7 +107,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = appVersionName
     }
     // On-demand asset pack carrying the Tier 6 Gemma base model (Play Asset Delivery).
     assetPacks += listOf(":gemmaModelPack")
@@ -127,6 +135,7 @@ android {
 // Firebase BOM: pins firebase-crashlytics version (must be in legacy block, not KMP sourceSet)
 dependencies {
     add("androidMainImplementation", platform(libs.firebase.bom))
+    testImplementation(libs.mockk)
 }
 
 // A release bundle must never ship the placeholder that stands in for the real Gemma model in
