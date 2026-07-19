@@ -146,4 +146,11 @@ object InsightsStrings {
     const val premiumReportHideToolsLabel = "Hide premium tools"
     const val premiumReportToolsExpandDesc = "Expand premium tools"
     const val premiumReportToolsCollapseDesc = "Collapse premium tools"
+
+    // Locked PRO hub (consolidates the Recommended Actions / Advanced Anomalies / Premium Report
+    // teasers into one card for free users — see docs/plans "Insights tab" consolidation)
+    const val premiumHubTitle = "Unlock PayslipMax PRO"
+    const val premiumHubCta = "Unlock Everything"
+    const val premiumHubBundleIntro = "One subscription unlocks:"
+    const val premiumHubMostRelevantPrefix = "★ Most relevant for you: "
 }

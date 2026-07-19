@@ -136,3 +136,11 @@ fun gateForScreen(screen: Screen): FeatureGate? = proFeatureCatalog().firstOrNul
  */
 fun quickAccessTools(): List<ProFeatureMeta> =
     proFeatureCatalog().filter { it.target != null && it.availability == ProFeatureAvailability.AVAILABLE }
+
+/**
+ * The bundle bullets shown on the locked PRO hub card — every shippable feature, coming-soon rows
+ * excluded so the hub never promises something not yet live. Derived (not hand-maintained) so a new
+ * [FeatureGate] automatically appears here once catalogued, with no separate list to fall out of sync.
+ */
+fun premiumBundleHighlights(): List<ProFeatureMeta> =
+    proFeatureCatalog().filter { it.availability == ProFeatureAvailability.AVAILABLE }

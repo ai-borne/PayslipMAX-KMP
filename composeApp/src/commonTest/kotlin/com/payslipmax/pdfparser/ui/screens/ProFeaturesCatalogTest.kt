@@ -81,4 +81,25 @@ class ProFeaturesCatalogTest {
         assertTrue(FeatureGate.CLAIM_GENERATOR in quick)
         assertTrue(FeatureGate.RETIREMENT_CALCULATORS in quick)
     }
+
+    @Test
+    fun premiumBundleHighlightsIncludesEveryAvailableGateAndStaysInSyncWithTheCatalog() {
+        // Regression guard: the locked PRO hub's bundle bullets must derive from the catalog, not a
+        // hand-maintained list — a newly catalogued gate must appear here automatically.
+        val bundle = premiumBundleHighlights()
+        assertEquals(
+            proFeatureCatalog().filter { it.availability == ProFeatureAvailability.AVAILABLE }.map { it.gate },
+            bundle.map { it.gate },
+        )
+        // Unlike quickAccessTools, gates with no dedicated screen (e.g. the ANOMALY_DETECTION and
+        // WEALTH_OPTIMIZATION in-tab features) still belong in the bundle pitch.
+        assertTrue(bundle.any { it.target == null })
+    }
+
+    @Test
+    fun premiumBundleHighlightsExcludesComingSoonEntries() {
+        for (meta in premiumBundleHighlights()) {
+            assertEquals(ProFeatureAvailability.AVAILABLE, meta.availability)
+        }
+    }
 }
