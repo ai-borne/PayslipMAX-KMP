@@ -31,6 +31,8 @@ data class PayslipUiState(
     val lastKnownHistoryYear: Int? = null,
     val historyScrollIndex: Int = 0,
     val historyScrollOffset: Int = 0,
+    val insightsScrollIndex: Int = 0,
+    val insightsScrollOffset: Int = 0,
     val isEditModeActive: Boolean = false,
     val draftCorrections: Map<String, SingleCorrection> = emptyMap(),
     val historyDetailPayslipId: String? = null,

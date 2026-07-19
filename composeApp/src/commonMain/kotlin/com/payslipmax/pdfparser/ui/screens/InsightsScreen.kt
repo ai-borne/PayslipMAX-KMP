@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +31,7 @@ import com.payslipmax.pdfparser.ui.components.TransparencyDialog
 import com.payslipmax.pdfparser.ui.generateAiInsights
 import com.payslipmax.pdfparser.ui.hasAccess
 import com.payslipmax.pdfparser.ui.rememberHasAccess
+import com.payslipmax.pdfparser.ui.saveInsightsScrollPosition
 import com.payslipmax.pdfparser.ui.setPremiumEnabled
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -172,13 +176,13 @@ private fun InsightsLazyBody(
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val hasPremiumIntelligence = viewModel.rememberHasAccess(FeatureGate.PREMIUM_INTELLIGENCE)
-    val hasWealthOptimization = viewModel.rememberHasAccess(FeatureGate.WEALTH_OPTIMIZATION)
-    val hasAnomalyDetection = viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION)
+    val access = rememberInsightsFeatureAccess(viewModel)
     val smartInsights = remember(state) { buildSmartInsights(state) }
     // Tools drawer defaults open for PRO ("drawer is home") but stays collapsible either way.
-    var toolsExpanded by remember(hasPremiumIntelligence) { mutableStateOf(hasPremiumIntelligence) }
+    var toolsExpanded by remember(access.hasPremiumIntelligence) { mutableStateOf(access.hasPremiumIntelligence) }
+    val listState = rememberInsightsListState(uiState, viewModel)
     LazyColumn(
+        state = listState,
         modifier = modifier.background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
@@ -188,7 +192,7 @@ private fun InsightsLazyBody(
             smartInsights = smartInsights,
             wellnessExpanded = wellnessExpanded,
             onWellnessExpandClick = onWellnessExpandClick,
-            hasWealthOptimization = hasWealthOptimization,
+            hasWealthOptimization = access.hasWealthOptimization,
             hasAccess = { gate -> viewModel.hasAccess(gate) },
             onShowUpgradeSheet = onShowUpgradeSheet,
             onNavigateTo = onNavigateTo,
@@ -198,8 +202,8 @@ private fun InsightsLazyBody(
             uiState = uiState,
             viewModel = viewModel,
             smartInsights = smartInsights,
-            isPremium = hasPremiumIntelligence,
-            hasAnomalyDetection = hasAnomalyDetection,
+            isPremium = access.hasPremiumIntelligence,
+            hasAnomalyDetection = access.hasAnomalyDetection,
             toolsExpanded = toolsExpanded,
             onToolsExpandClick = { toolsExpanded = !toolsExpanded },
             onShowUpgradeSheet = onShowUpgradeSheet,
@@ -208,6 +212,34 @@ private fun InsightsLazyBody(
             onNavigateTo = onNavigateTo,
         )
     }
+}
+
+private data class InsightsFeatureAccess(
+    val hasPremiumIntelligence: Boolean,
+    val hasWealthOptimization: Boolean,
+    val hasAnomalyDetection: Boolean,
+)
+
+@Composable
+private fun rememberInsightsFeatureAccess(viewModel: PayslipViewModel): InsightsFeatureAccess =
+    InsightsFeatureAccess(
+        hasPremiumIntelligence = viewModel.rememberHasAccess(FeatureGate.PREMIUM_INTELLIGENCE),
+        hasWealthOptimization = viewModel.rememberHasAccess(FeatureGate.WEALTH_OPTIMIZATION),
+        hasAnomalyDetection = viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION),
+    )
+
+@Composable
+private fun rememberInsightsListState(
+    uiState: PayslipUiState,
+    viewModel: PayslipViewModel,
+): LazyListState {
+    val listState = rememberLazyListState(uiState.insightsScrollIndex, uiState.insightsScrollOffset)
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.saveInsightsScrollPosition(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset)
+        }
+    }
+    return listState
 }
 
 @Composable
