@@ -26,6 +26,7 @@ import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.TransparencyDialog
 import com.payslipmax.pdfparser.ui.generateAiInsights
+import com.payslipmax.pdfparser.ui.hasAccess
 import com.payslipmax.pdfparser.ui.rememberHasAccess
 import com.payslipmax.pdfparser.ui.setPremiumEnabled
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
@@ -191,6 +192,7 @@ private fun InsightsLazyBody(
             wellnessExpanded = wellnessExpanded,
             onWellnessExpandClick = onWellnessExpandClick,
             hasWealthOptimization = hasWealthOptimization,
+            hasAccess = { gate -> viewModel.hasAccess(gate) },
             onShowUpgradeSheet = onShowUpgradeSheet,
             onNavigateTo = onNavigateTo,
         )

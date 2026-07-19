@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.insights.InsightSeverity
+import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import com.payslipmax.pdfparser.ui.theme.severityColor
@@ -40,11 +41,18 @@ fun severityLabel(severity: InsightSeverity): String =
         InsightSeverity.OPPORTUNITY -> InsightsStrings.severityLabelOpportunity
     }
 
-/** Single Smart Insights card: a severity-colored stripe, a chip + title, explanation, optional amount and action. */
+/**
+ * Single Smart Insights card: a severity-colored stripe, a chip + title, explanation, optional amount
+ * and action. [hasAccess] gates the action button itself — a card whose [InsightUiModel.gate] is set
+ * must never call [onActionClick] for a user who lacks that entitlement (it opens [onUpgradeClick]
+ * instead), mirroring the check [RecommendedActions] already does at its own click site.
+ */
 @Composable
 fun InsightCard(
     insight: InsightUiModel,
+    hasAccess: (FeatureGate) -> Boolean,
     onActionClick: (Screen) -> Unit,
+    onUpgradeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val color = severityColor(insight.severity)
@@ -66,7 +74,12 @@ fun InsightCard(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                InsightCardFooter(insight = insight, onActionClick = onActionClick)
+                InsightCardFooter(
+                    insight = insight,
+                    hasAccess = hasAccess,
+                    onActionClick = onActionClick,
+                    onUpgradeClick = onUpgradeClick,
+                )
             }
         }
     }
@@ -114,7 +127,9 @@ private fun SeverityChip(
 @Composable
 private fun InsightCardFooter(
     insight: InsightUiModel,
+    hasAccess: (FeatureGate) -> Boolean,
     onActionClick: (Screen) -> Unit,
+    onUpgradeClick: () -> Unit,
 ) {
     if (insight.amountLabel == null && insight.actionLabel == null) return
     Row(
@@ -128,8 +143,9 @@ private fun InsightCardFooter(
             Spacer(modifier = Modifier)
         }
         val target = insight.actionTarget
+        val gate = insight.gate
         if (insight.actionLabel != null && target != null) {
-            TextButton(onClick = { onActionClick(target) }) {
+            TextButton(onClick = { if (gate == null || hasAccess(gate)) onActionClick(target) else onUpgradeClick() }) {
                 Text(text = insight.actionLabel, fontWeight = FontWeight.Bold)
             }
         }

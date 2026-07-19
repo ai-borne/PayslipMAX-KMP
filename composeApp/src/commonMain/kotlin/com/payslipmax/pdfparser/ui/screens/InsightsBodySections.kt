@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import com.payslipmax.pdfparser.Screen
+import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.clearAiInsights
@@ -22,6 +23,7 @@ fun LazyListScope.insightsPrimaryItems(
     wellnessExpanded: Boolean,
     onWellnessExpandClick: () -> Unit,
     hasWealthOptimization: Boolean,
+    hasAccess: (FeatureGate) -> Boolean,
     onShowUpgradeSheet: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
 ) {
@@ -34,7 +36,14 @@ fun LazyListScope.insightsPrimaryItems(
             onSeeHowClick = { if (hasWealthOptimization) onNavigateTo(Screen.TaxPlanning) else onShowUpgradeSheet() },
         )
     }
-    item { SmartInsightsSection(insights = smartInsights, onActionClick = onNavigateTo) }
+    item {
+        SmartInsightsSection(
+            insights = smartInsights,
+            hasAccess = hasAccess,
+            onActionClick = onNavigateTo,
+            onUpgradeClick = onShowUpgradeSheet,
+        )
+    }
     item { PayTrendChart(history = state.historySorted, selected = state.currentRecord) }
 }
 

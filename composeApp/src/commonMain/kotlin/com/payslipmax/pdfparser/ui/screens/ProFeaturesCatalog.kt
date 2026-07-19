@@ -123,6 +123,14 @@ fun featureMeta(gate: FeatureGate): ProFeatureMeta =
 fun proFeatureCatalog(): List<ProFeatureMeta> = FeatureGate.values().map(::featureMeta)
 
 /**
+ * Reverse lookup of [proFeatureCatalog]: the [FeatureGate] protecting a dedicated screen, or `null` if
+ * the screen isn't a catalog navigation target (free, or reached only from an in-tab card). The single
+ * source every Screen-emitting UI model (Smart Insights, Recommended Actions) resolves its `gate`
+ * against, so a producer can never hardcode a gate that drifts from what the catalog actually protects.
+ */
+fun gateForScreen(screen: Screen): FeatureGate? = proFeatureCatalog().firstOrNull { it.target == screen }?.gate
+
+/**
  * The catalog subset with a standalone screen — the Insights tab's quick-access cards. Derived
  * (not hand-maintained) so a gate that ships a [ProFeatureMeta.target] can never be forgotten there.
  */

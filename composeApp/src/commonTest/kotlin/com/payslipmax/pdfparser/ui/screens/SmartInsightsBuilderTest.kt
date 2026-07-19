@@ -7,6 +7,7 @@ import com.payslipmax.pdfparser.insights.EngineResult
 import com.payslipmax.pdfparser.insights.InsightSeverity
 import com.payslipmax.pdfparser.insights.Opportunity
 import com.payslipmax.pdfparser.insights.OptimizationResult
+import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -91,6 +92,7 @@ class SmartInsightsBuilderTest {
     fun `an anomaly type with no mapped remediation flow gets no action target`() {
         val card = buildSmartInsights(state(anomalies = listOf(anomaly("DSOP_MILESTONE")))).single()
         assertNull(card.actionTarget)
+        assertNull(card.gate)
     }
 
     @Test
@@ -98,6 +100,23 @@ class SmartInsightsBuilderTest {
         val card = buildSmartInsights(state(anomalies = listOf(anomaly("SALARY_LOSS")))).single()
         assertEquals(Screen.Representation, card.actionTarget)
         assertEquals(InsightsStrings.wellnessImproveSalaryLoss, card.actionLabel)
+        assertEquals(FeatureGate.CLAIM_GENERATOR, card.gate)
+    }
+
+    @Test
+    fun `a DSOP-compliance anomaly routes to the DSOP simulator behind its gate`() {
+        // Regression guard: this is one of the three anomaly-driven Smart Insights targets that could
+        // reach a PRO screen with no FeatureGate attached before InsightUiModel carried one.
+        val card = buildSmartInsights(state(anomalies = listOf(anomaly("DSOP_COMPLIANCE")))).single()
+        assertEquals(Screen.RetirementPlanning, card.actionTarget)
+        assertEquals(FeatureGate.DSOP_SIMULATOR, card.gate)
+    }
+
+    @Test
+    fun `a tax-projection anomaly routes to the Tax Planner behind its gate`() {
+        val card = buildSmartInsights(state(anomalies = listOf(anomaly("TAX_PROJECTION")))).single()
+        assertEquals(Screen.TaxPlanning, card.actionTarget)
+        assertEquals(FeatureGate.TAX_PLANNER, card.gate)
     }
 
     @Test
@@ -116,6 +135,7 @@ class SmartInsightsBuilderTest {
         assertEquals(Screen.TaxPlanning, card.actionTarget)
         assertEquals("Increase DSOP", card.actionLabel)
         assertEquals(formatCurrency(10_000.0), card.amountLabel)
+        assertEquals(FeatureGate.TAX_PLANNER, card.gate)
     }
 
     @Test

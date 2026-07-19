@@ -90,15 +90,18 @@ private fun biggestComponentChangeCard(
     )
 }
 
-private fun Anomaly.toInsightUiModel(): InsightUiModel =
-    InsightUiModel(
+private fun Anomaly.toInsightUiModel(): InsightUiModel {
+    val target = anomalyActionTarget(type)
+    return InsightUiModel(
         title = anomalyCategoryLabel(type),
         explanation = description,
         severity = AnomalySeverityMapper.severityOf(type),
         amountLabel = if (amount > 0.0) formatCurrency(amount) else null,
         actionLabel = anomalyActionLabel(type),
-        actionTarget = anomalyActionTarget(type),
+        actionTarget = target,
+        gate = target?.let(::gateForScreen),
     )
+}
 
 private fun Opportunity.toInsightUiModel(): InsightUiModel =
     InsightUiModel(
@@ -108,6 +111,7 @@ private fun Opportunity.toInsightUiModel(): InsightUiModel =
         amountLabel = if (estTaxSaved > 0.0) formatCurrency(estTaxSaved) else null,
         actionLabel = action,
         actionTarget = Screen.TaxPlanning,
+        gate = gateForScreen(Screen.TaxPlanning),
     )
 
 private fun anomalyActionLabel(type: String): String? =
