@@ -6,10 +6,7 @@ object AppStringsPremium {
 
     // AI CA Audit card (Phase 5)
     const val aiAuditAnalyzingDesc = "Analyzing your payslip with Gemini AI…"
-    const val aiAuditSummaryLabel = "Summary"
-    const val aiAuditTeaserBullets = "Detect PCDA errors & recoverable amounts\nPersonalised tax-saving strategy (old regime)\nInvestment guidance from your AI CA"
     const val aiAuditUnlockBtn = "Unlock AI CA Audit"
-    const val aiAuditPremiumBadge = "Premium"
 
     // Premium Features Screens Strings
     const val representationTitle = "Official Representations"
@@ -49,10 +46,6 @@ object AppStringsPremium {
 
     const val retirementTitle = "Retirement Wealth Projection"
     const val retirementSubtitle = "DSOP contribution & compound wealth estimates"
-    const val retirementCompounding = "Compounding Growth Projections"
-    const val retirementBalance = "Projected DSOP Balance"
-    const val retirementContributions = "Total Principal Contributions"
-    const val retirementInterest = "Total Interest Earned"
     const val retirementProjectionDisclaimer = "Note: Compounding projections are estimated using a standard interest rate of 7.1% per annum. Actual rates may vary."
     const val premiumToolsTitle = "Premium Financial Tools"
     const val premiumToolsTaxPlanner = "Tax Planner"
@@ -63,10 +56,8 @@ object AppStringsPremium {
     const val representationEditDraftTitle = "Edit Draft:"
 
     const val retirementNoBalance = "Import a payslip with DSOP ledger balance to simulate growth."
-    const val retirementCurrentBalance = "Current DSOP Balance"
     const val taxPlanningSavingsProjections = "Section 80C & 80D Tax Savings Projections"
     const val taxPlanningNoProjections = "No YTD Tax Projections available for this month."
-    const val taxPlanningCurrentYtdContribution = "Current YTD Contribution: ₹"
 
     // PRO Features Catalog (Phase 3) — benefit-only copy, no prices (D8)
     const val proCatalogTitle = "PRO Features"

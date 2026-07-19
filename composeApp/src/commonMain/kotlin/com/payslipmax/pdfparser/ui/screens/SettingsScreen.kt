@@ -150,5 +150,5 @@ private fun SecondarySettingsGroup(
     DeveloperSandboxSection(devModeEnabled = devModeEnabled, viewModel = viewModel)
 
     // Version Footer
-    VersionFooter(onNavigateTo = onNavigateTo)
+    VersionFooter()
 }
