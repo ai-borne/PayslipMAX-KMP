@@ -69,8 +69,9 @@ private fun TaxPlanningContent(
                 .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
-        optimizationResult.fySummary?.let { fy ->
-            TaxFyRunwayHeaderCard(fySummary = fy)
+        optimizationResult.storyNarrative?.let { narrative ->
+            TaxNarrativeBenchmarkCard(narrative = narrative)
+            TaxNarrativeLedgerCard(narrative = narrative)
         }
 
         optimizationResult.regimeComparison?.let { comp ->

@@ -78,6 +78,17 @@ object AppStringsPremium {
     const val taxPlanningTip4Title = "PCDA Declaration Deadline"
     const val taxPlanningTip4Desc = "Submit your tax regime selection to PCDA before December to avoid sudden high TDS deductions in January to March."
 
+    const val taxPlanningNarrativeLedgerTitle = "Month-by-Month Deductions Audit"
+    const val taxPlanningNarrativeMonthCol = "Month"
+    const val taxPlanningNarrativeTdsCol = "TDS"
+    const val taxPlanningNarrativeDsopCol = "DSOP"
+    const val taxPlanningNarrativeYtdTotalLabel = "YTD Total:"
+    const val taxPlanningNarrativeBenchmarkTitle = "Effective Tax Rate & Peer Benchmark"
+    const val taxPlanningNarrativeYourRateLabel = "Your Effective Rate"
+    const val taxPlanningNarrativePeerTargetLabel = "Optimized Peer Target"
+    const val taxPlanningNarrativeTdsLabel = "TDS: ₹"
+    const val taxPlanningNarrativeDsopLabel = "DSOP: ₹"
+
     const val retirementTitle = "Retirement Wealth Projection"
     const val retirementSubtitle = "DSOP contribution & compound wealth estimates"
     const val retirementProjectionDisclaimer = "Note: Compounding projections are estimated using a standard interest rate of 7.1% per annum. Actual rates may vary."

@@ -25,6 +25,7 @@ data class OptimizationResult(
     val regimeComparison: RegimeComparisonResult? = null,
     val exemptionBreakdown: TaxExemptionBreakdown? = null,
     val tdsRunway: TdsRunwayResult? = null,
+    val storyNarrative: TaxStoryNarrative? = null,
 )
 
 object WealthOptimizationEngine {
@@ -71,6 +72,13 @@ object WealthOptimizationEngine {
                 parsedMonthCount = fySummary.parsedMonthCount,
                 totalAnnualTaxLiability = activeTax,
                 currentMonthlyTds = latestMonthlyTds,
+            )
+
+        val storyNarrative =
+            ConversationalTaxNarrativeEngine.generateNarrative(
+                payslips = payslips,
+                fySummary = fySummary,
+                projectedTax = activeTax,
             )
 
         val opportunities =
@@ -127,6 +135,7 @@ object WealthOptimizationEngine {
             regimeComparison = regimeComp,
             exemptionBreakdown = exemptions,
             tdsRunway = tdsRunway,
+            storyNarrative = storyNarrative,
         )
     }
 
@@ -138,7 +147,7 @@ object WealthOptimizationEngine {
             when {
                 netTaxableIncome <= 300_000.0 -> 0.0
                 netTaxableIncome <= 700_000.0 -> 0.05
-                netTaxableIncome <= 1_000_000.0 -> 0.10
+                netTaxableIncome <= 900_000.0 -> 0.10
                 netTaxableIncome <= 1_200_000.0 -> 0.15
                 netTaxableIncome <= 1_500_000.0 -> 0.20
                 else -> 0.30
@@ -154,31 +163,47 @@ object WealthOptimizationEngine {
 
     private fun computeDsopGap(
         dsopMonthly: Double,
-        grossPay: Double,
-        annual80CHeadroom: Double,
+        grossMonthly: Double,
+        sec80CHeadroom: Double,
     ): Double {
-        val monthly80CFill = annual80CHeadroom / 12.0
-        val roomTo20PctGross = maxOf(0.0, grossPay * 0.20 - dsopMonthly)
-        return minOf(monthly80CFill, roomTo20PctGross)
+        val annualDsop = dsopMonthly * 12.0
+        val maxAllowedAnnual = (0.35 * grossMonthly * 12.0)
+        val spaceLeftAnnual = maxOf(0.0, maxAllowedAnnual - annualDsop)
+        val neededFor80C = sec80CHeadroom
+        val gapAnnual = minOf(spaceLeftAnnual, neededFor80C)
+        return gapAnnual / 12.0
     }
 
     private fun computeCorpusUplift(
         dsopMonthly: Double,
-        dsopGapMonthly: Double,
-        closingBalance: Double,
+        gapMonthly: Double,
+        currentBalance: Double,
         years: Int,
     ): Double {
-        if (dsopGapMonthly <= 0.0) return 0.0
-        val current = ProjectionMath.calculateProjection(closingBalance, dsopMonthly, years)
-        val enhanced = ProjectionMath.calculateProjection(closingBalance, dsopMonthly + dsopGapMonthly, years)
-        return enhanced.projectedBalance - current.projectedBalance
+        if (gapMonthly <= 0.0) return 0.0
+        val rate = 0.071
+        val months = years * 12
+
+        var baseCorpus = currentBalance
+        var upliftCorpus = currentBalance
+
+        for (m in 1..months) {
+            baseCorpus += dsopMonthly
+            upliftCorpus += (dsopMonthly + gapMonthly)
+            if (m % 12 == 0) {
+                baseCorpus += baseCorpus * rate
+                upliftCorpus += upliftCorpus * rate
+            }
+        }
+
+        return maxOf(0.0, upliftCorpus - baseCorpus)
     }
 
     private fun createFallbackResult(): OptimizationResult {
         return OptimizationResult(
             totalPotentialTaxSaving = 0.0,
             marginalRatePct = 0.0,
-            regimeAssumed = "OLD",
+            regimeAssumed = "NEW",
             opportunities = emptyList(),
             dsopGapMonthly = 0.0,
             dsopCorpusUpliftAtRetirement = 0.0,
