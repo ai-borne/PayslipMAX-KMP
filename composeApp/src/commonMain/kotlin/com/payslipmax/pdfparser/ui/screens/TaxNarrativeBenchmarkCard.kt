@@ -20,12 +20,12 @@ fun TaxNarrativeBenchmarkCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
     ) {
         Column(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             BenchmarkHeaderRow(parsedMonthCount = narrative.parsedMonthCount)
 
@@ -35,7 +35,7 @@ fun TaxNarrativeBenchmarkCard(
                 color = MaterialTheme.colorScheme.onSurface,
             )
 
-            BenchmarkComparisonRow(
+            RateComparisonBoxRow(
                 yourRate = narrative.effectiveTaxRatePct,
                 peerBenchmark = narrative.peerBenchmarkRatePct,
             )
@@ -61,7 +61,9 @@ private fun BenchmarkHeaderRow(parsedMonthCount: Int) {
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.weight(1f, fill = false),
         )
+        Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
         Surface(
             shape = RoundedCornerShape(AppDimensions.CornerRadiusSmall),
             color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -78,23 +80,23 @@ private fun BenchmarkHeaderRow(parsedMonthCount: Int) {
 }
 
 @Composable
-private fun BenchmarkComparisonRow(
+private fun RateComparisonBoxRow(
     yourRate: Double,
     peerBenchmark: Double,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
-        BenchmarkBadgeBox(
-            label = AppStringsPremium.taxPlanningNarrativeYourRateLabel,
-            rateText = "$yourRate%",
+        RateMetricCard(
+            title = AppStringsPremium.taxPlanningNarrativeYourRateLabel,
+            ratePct = yourRate,
             isHighlight = false,
             modifier = Modifier.weight(1f),
         )
-        BenchmarkBadgeBox(
-            label = AppStringsPremium.taxPlanningBestAchievableRateLabel,
-            rateText = "$peerBenchmark%",
+        RateMetricCard(
+            title = AppStringsPremium.taxPlanningBestAchievableRateLabel,
+            ratePct = peerBenchmark,
             isHighlight = true,
             modifier = Modifier.weight(1f),
         )
@@ -102,45 +104,51 @@ private fun BenchmarkComparisonRow(
 }
 
 @Composable
-private fun BenchmarkBadgeBox(
-    label: String,
-    rateText: String,
+private fun RateMetricCard(
+    title: String,
+    ratePct: Double,
     isHighlight: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val containerColor =
+        if (isHighlight) {
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        }
+    val borderColor =
+        if (isHighlight) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+        }
+    val valueColor =
+        if (isHighlight) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        }
+
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(AppDimensions.CornerRadiusSmall),
-        colors =
-            CardDefaults.cardColors(
-                containerColor =
-                    if (isHighlight) {
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
-                    } else {
-                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                    },
-            ),
-        border =
-            if (isHighlight) {
-                BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary)
-            } else {
-                null
-            },
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        border = BorderStroke(AppDimensions.BorderThin, borderColor),
     ) {
         Column(
             modifier = Modifier.padding(AppDimensions.PaddingSmall),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = label,
+                text = title,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = rateText,
+                text = "$ratePct%",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold,
-                color = if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
+                color = valueColor,
             )
         }
     }

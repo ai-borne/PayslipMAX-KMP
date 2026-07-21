@@ -66,10 +66,11 @@ object ConversationalTaxNarrativeEngine {
         val effectiveRate = if (totalGross > 0) (projectedTax / totalGross) * 100.0 else 0.0
         val formattedRate = ((effectiveRate * 10).toInt()) / 10.0
 
+        val maxPossibleDeductions = fySummary.ytdDsop + 50000.0 + 253500.0 + 50000.0
         val optResult =
             DualRegimeEngine.compareRegimes(
                 grossIncome = totalGross,
-                oldRegimeDeductions = fySummary.ytdDsop + 50000.0 + 253500.0,
+                oldRegimeDeductions = maxPossibleDeductions,
                 fy = activeFy,
             )
         val minTax = minOf(optResult.oldRegime.totalTaxPayable, optResult.newRegime.totalTaxPayable)
