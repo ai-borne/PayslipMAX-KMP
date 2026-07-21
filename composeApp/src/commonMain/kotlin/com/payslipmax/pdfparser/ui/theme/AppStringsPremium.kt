@@ -85,9 +85,14 @@ object AppStringsPremium {
     const val taxPlanningNarrativeYtdTotalLabel = "YTD Total:"
     const val taxPlanningNarrativeBenchmarkTitle = "Effective Tax Rate & Peer Benchmark"
     const val taxPlanningNarrativeYourRateLabel = "Your Effective Rate"
-    const val taxPlanningNarrativePeerTargetLabel = "Optimized Peer Target"
+    const val taxPlanningNarrativePeerTargetLabel = "Optimal Effective Rate"
     const val taxPlanningNarrativeTdsLabel = "TDS: ₹"
     const val taxPlanningNarrativeDsopLabel = "DSOP: ₹"
+
+    const val taxPlanningConfidenceHigh = "🟢 High Confidence"
+    const val taxPlanningConfidenceModerate = "🟡 Moderate Confidence"
+    const val taxPlanningConfidencePreliminary = "🔴 Preliminary Estimate"
+    const val taxPlanningRuleVersionFooter = "🛡️ Tax Engine: CBDT Rules FY 2025-26 (AY 2026-27) · Version 2026.1 (Verified 01 Jul 2026) · 100% Offline Secured"
 
     const val retirementTitle = "Retirement Wealth Projection"
     const val retirementSubtitle = "DSOP contribution & compound wealth estimates"

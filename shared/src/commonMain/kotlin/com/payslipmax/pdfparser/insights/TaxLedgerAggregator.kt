@@ -58,6 +58,18 @@ object TaxLedgerAggregator {
         return total
     }
 
+    fun extractNonRecurringArrears(payslip: ParsedPayslip): Double {
+        var arrearsSum = 0.0
+        val arrearsKeywords = listOf("ARREAR", "BACKPAY", "LTC", "ENCASH")
+        for ((key, value) in payslip.rawEarnings) {
+            val upper = key.uppercase()
+            if (arrearsKeywords.any { upper.contains(it) }) {
+                arrearsSum += value
+            }
+        }
+        return arrearsSum
+    }
+
     fun computeFinancialYear(
         year: Int,
         monthNum: Int,
@@ -106,6 +118,10 @@ object TaxLedgerAggregator {
         val multiplier = if (count > 0) 12.0 / count else 1.0
 
         val ytdGross = fyPayslips.sumOf { it.summary.grossPay }
+        val ytdArrears = fyPayslips.sumOf { extractNonRecurringArrears(it) }
+        val ytdRegularGross = maxOf(0.0, ytdGross - ytdArrears)
+        val projectedGross = (ytdRegularGross * multiplier) + ytdArrears
+
         val ytdTax = fyPayslips.sumOf { it.deductions.incomeTax }
         val ytdDsop = fyPayslips.sumOf { it.deductions.dsopSubscription }
         val ytdAgif = fyPayslips.sumOf { it.deductions.agif }
@@ -131,7 +147,7 @@ object TaxLedgerAggregator {
             ytdHra = ytdHra,
             ytdBasicPay = ytdBasic,
             ytdDa = ytdDa,
-            projectedAnnualGross = ytdGross * multiplier,
+            projectedAnnualGross = projectedGross,
             projectedAnnualTaxDeducted = ytdTax * multiplier,
             projectedAnnualDsop = ytdDsop * multiplier,
             projectedAnnualAgif = ytdAgif * multiplier,
@@ -150,12 +166,25 @@ object TaxLedgerAggregator {
             financialYear = fy,
             assessmentYear = computeAssessmentYear(fy),
             parsedMonthCount = 0,
-            ytdGross = 0.0, ytdTaxDeducted = 0.0, ytdDsop = 0.0, ytdAgif = 0.0,
-            ytdFieldAllowance = 0.0, ytdHra = 0.0, ytdBasicPay = 0.0, ytdDa = 0.0,
-            projectedAnnualGross = 0.0, projectedAnnualTaxDeducted = 0.0, projectedAnnualDsop = 0.0,
-            projectedAnnualAgif = 0.0, projectedAnnualFieldAllowance = 0.0, projectedAnnualHra = 0.0,
-            projectedAnnualBasicPay = 0.0, projectedAnnualDa = 0.0,
-            missingMonthNums = (1..12).toList(), latestBasicPay = 0.0, latestDa = 0.0,
+            ytdGross = 0.0,
+            ytdTaxDeducted = 0.0,
+            ytdDsop = 0.0,
+            ytdAgif = 0.0,
+            ytdFieldAllowance = 0.0,
+            ytdHra = 0.0,
+            ytdBasicPay = 0.0,
+            ytdDa = 0.0,
+            projectedAnnualGross = 0.0,
+            projectedAnnualTaxDeducted = 0.0,
+            projectedAnnualDsop = 0.0,
+            projectedAnnualAgif = 0.0,
+            projectedAnnualFieldAllowance = 0.0,
+            projectedAnnualHra = 0.0,
+            projectedAnnualBasicPay = 0.0,
+            projectedAnnualDa = 0.0,
+            missingMonthNums = (1..12).toList(),
+            latestBasicPay = 0.0,
+            latestDa = 0.0,
         )
     }
 }

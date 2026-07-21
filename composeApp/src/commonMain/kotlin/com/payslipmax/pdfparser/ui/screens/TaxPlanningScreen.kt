@@ -89,7 +89,19 @@ private fun TaxPlanningContent(
         TaxActionableChecklistCard(opportunities = optimizationResult.opportunities)
 
         TaxEducativeTipsCard()
+
+        TaxRuleVersionFooter()
     }
+}
+
+@Composable
+private fun TaxRuleVersionFooter() {
+    Text(
+        text = AppStringsPremium.taxPlanningRuleVersionFooter,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+        modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.PaddingSmall),
+    )
 }
 
 @Composable
