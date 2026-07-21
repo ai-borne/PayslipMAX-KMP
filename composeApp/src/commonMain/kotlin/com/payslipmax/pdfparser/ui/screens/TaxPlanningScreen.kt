@@ -1,21 +1,18 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.insights.OptimizationResult
 import com.payslipmax.pdfparser.insights.WealthOptimizationEngine
+import com.payslipmax.pdfparser.tax.TaxRuleKnowledgeBase
 import com.payslipmax.pdfparser.ui.PayslipViewModel
-import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
-import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 
@@ -25,34 +22,61 @@ fun TaxPlanningScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val selected = uiState.selectedPayslip
-    val payslipList = uiState.payslips
-
-    val result =
-        remember(selected, payslipList) {
-            selected?.let { WealthOptimizationEngine.analyzeLedger(payslipList, selected) }
+    val uiState = viewModel.uiState.collectAsState().value
+    val optimizationResult =
+        remember(uiState.payslips, uiState.selectedPayslip) {
+            if (uiState.payslips.isNotEmpty()) {
+                WealthOptimizationEngine.analyzeLedger(uiState.payslips, uiState.selectedPayslip)
+            } else {
+                null
+            }
         }
+    TaxPlanningScreen(
+        optimizationResult = optimizationResult,
+        onNavigateBack = onBack,
+        modifier = modifier,
+    )
+}
 
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .detailScreenSafeArea()
-                .padding(AppDimensions.PaddingMedium),
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-    ) {
-        ScreenBackHeader(
-            title = AppStringsPremium.taxPlanningTitle,
-            subtitle = AppStringsPremium.taxPlanningSubtitle,
-            onBack = onBack,
-        )
-
-        if (result != null) {
-            TaxPlanningContent(optimizationResult = result)
-        } else {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TaxPlanningScreen(
+    optimizationResult: OptimizationResult?,
+    onNavigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text(
+                            text = AppStringsPremium.taxPlanningTitle,
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                        Text(
+                            text = AppStringsPremium.taxPlanningSubtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Text("←", style = MaterialTheme.typography.titleLarge)
+                    }
+                },
+            )
+        },
+    ) { innerPadding ->
+        if (optimizationResult == null) {
             TaxPlanningEmptyState()
+        } else {
+            TaxPlanningContent(
+                optimizationResult = optimizationResult,
+                modifier = Modifier.padding(innerPadding),
+            )
         }
     }
 }
@@ -62,11 +86,10 @@ private fun TaxPlanningContent(
     optimizationResult: OptimizationResult,
     modifier: Modifier = Modifier,
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+        modifier = modifier.fillMaxSize().verticalScroll(scrollState).padding(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         optimizationResult.storyNarrative?.let { narrative ->
@@ -90,14 +113,19 @@ private fun TaxPlanningContent(
 
         TaxEducativeTipsCard()
 
-        TaxRuleVersionFooter()
+        TaxRuleVersionFooter(financialYear = optimizationResult.fySummary?.financialYear ?: "2026-27")
     }
 }
 
 @Composable
-private fun TaxRuleVersionFooter() {
+private fun TaxRuleVersionFooter(
+    financialYear: String,
+) {
+    val rules = TaxRuleKnowledgeBase.getRulesForFy(financialYear)
+    val footerText = "🛡️ Tax Engine: CBDT Rules FY ${rules.financialYear} (AY ${rules.assessmentYear}) · Version 2026.1 (Verified ${rules.lastVerifiedDate}) · 100% Offline Secured"
+
     Text(
-        text = AppStringsPremium.taxPlanningRuleVersionFooter,
+        text = footerText,
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
         modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.PaddingSmall),

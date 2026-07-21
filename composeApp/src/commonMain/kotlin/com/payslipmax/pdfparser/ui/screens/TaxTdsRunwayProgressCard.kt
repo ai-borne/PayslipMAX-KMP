@@ -49,9 +49,9 @@ private fun TdsRunwayMetricsAndProgress(
     val remText = TaxLedgerAggregator.formatIndianCurrency(tdsRunway.remainingTaxPayable)
     val projText = TaxLedgerAggregator.formatIndianCurrency(tdsRunway.projectedMonthlyTds)
 
-    Row(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
     ) {
         Text(
             text = "${AppStringsPremium.taxPlanningTdsPaidYtd}$ytdText",
@@ -75,10 +75,7 @@ private fun TdsRunwayMetricsAndProgress(
 
     LinearProgressIndicator(
         progress = { progress },
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(AppDimensions.SpacingSmall),
+        modifier = Modifier.fillMaxWidth().height(AppDimensions.SpacingTiny),
         color = MaterialTheme.colorScheme.primary,
         trackColor = MaterialTheme.colorScheme.surfaceVariant,
     )
@@ -86,7 +83,7 @@ private fun TdsRunwayMetricsAndProgress(
     Text(
         text = "${AppStringsPremium.taxPlanningMonthlyTdsRunway}$projText/mo (${tdsRunway.remainingMonths} mos remaining)",
         style = MaterialTheme.typography.bodyMedium,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSurface,
     )
 }
@@ -96,23 +93,27 @@ private fun TdsSpikeAlertBanner(
     currentTds: Double,
     projectedTds: Double,
 ) {
-    val curText = TaxLedgerAggregator.formatIndianCurrency(currentTds)
+    val currText = TaxLedgerAggregator.formatIndianCurrency(currentTds)
     val projText = TaxLedgerAggregator.formatIndianCurrency(projectedTds)
-    Surface(
+
+    Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadiusSmall),
-        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.error),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.error.copy(alpha = 0.4f)),
     ) {
-        Column(modifier = Modifier.padding(AppDimensions.PaddingSmall)) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.PaddingSmall),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
+        ) {
             Text(
                 text = AppStringsPremium.taxPlanningTdsSpikeAlertTitle,
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.error,
             )
             Text(
-                text = "${AppStringsPremium.taxPlanningTdsSpikeAlertDesc}₹$curText to ₹$projText per month in remaining FY!",
+                text = "${AppStringsPremium.taxPlanningTdsSpikeAlertDesc}$currText to $projText per month in remaining FY!",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onErrorContainer,
             )

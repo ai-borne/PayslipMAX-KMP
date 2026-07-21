@@ -136,4 +136,8 @@ object AppStringsPremium {
     const val proCatalogRetCalcTitle = "Retirement Calculators"
     const val proCatalogRetCalcDesc = "Estimate pension, gratuity, commutation & leave encashment"
     const val proCatalogRetCalcIcon = "🧮"
+
+    const val taxPlanningPreliminaryEstimatePrefix = "Preliminary estimate · "
+    const val taxPlanningOfMonthsSuffix = " of 12"
+    const val taxPlanningBestAchievableRateLabel = "Best Achievable Rate"
 }

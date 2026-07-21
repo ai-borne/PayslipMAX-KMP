@@ -27,12 +27,7 @@ fun TaxNarrativeBenchmarkCard(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
-            Text(
-                text = AppStringsPremium.taxPlanningNarrativeBenchmarkTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
+            BenchmarkHeaderRow(parsedMonthCount = narrative.parsedMonthCount)
 
             Text(
                 text = narrative.effectiveTaxRateMessage,
@@ -46,9 +41,37 @@ fun TaxNarrativeBenchmarkCard(
             )
 
             Text(
-                text = "💡 Defence officers in your rank reduce their tax rate to ${narrative.peerBenchmarkRatePct}% using Sec 80CCD(1B) NPS + DSOP capping + Sec 10(14) field area exemptions.",
+                text = "💡 Best achievable rate for your income tier is ${narrative.peerBenchmarkRatePct}% after Sec 80CCD(1B) NPS + DSOP + Sec 10(14) field exemptions.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun BenchmarkHeaderRow(parsedMonthCount: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = AppStringsPremium.taxPlanningNarrativeBenchmarkTitle,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Surface(
+            shape = RoundedCornerShape(AppDimensions.CornerRadiusSmall),
+            color = MaterialTheme.colorScheme.tertiaryContainer,
+        ) {
+            Text(
+                text = "${AppStringsPremium.taxPlanningPreliminaryEstimatePrefix}$parsedMonthCount${AppStringsPremium.taxPlanningOfMonthsSuffix}",
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                modifier = Modifier.padding(horizontal = AppDimensions.PaddingSmall, vertical = AppDimensions.SpacingTiny),
             )
         }
     }
@@ -70,7 +93,7 @@ private fun BenchmarkComparisonRow(
             modifier = Modifier.weight(1f),
         )
         BenchmarkBadgeBox(
-            label = AppStringsPremium.taxPlanningNarrativePeerTargetLabel,
+            label = AppStringsPremium.taxPlanningBestAchievableRateLabel,
             rateText = "$peerBenchmark%",
             isHighlight = true,
             modifier = Modifier.weight(1f),
@@ -85,11 +108,24 @@ private fun BenchmarkBadgeBox(
     isHighlight: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
+    Card(
         modifier = modifier,
         shape = RoundedCornerShape(AppDimensions.CornerRadiusSmall),
-        color = if (isHighlight) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        border = BorderStroke(AppDimensions.BorderThin, if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    if (isHighlight) {
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    },
+            ),
+        border =
+            if (isHighlight) {
+                BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary)
+            } else {
+                null
+            },
     ) {
         Column(
             modifier = Modifier.padding(AppDimensions.PaddingSmall),
@@ -103,7 +139,7 @@ private fun BenchmarkBadgeBox(
             Text(
                 text = rateText,
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.ExtraBold,
                 color = if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             )
         }

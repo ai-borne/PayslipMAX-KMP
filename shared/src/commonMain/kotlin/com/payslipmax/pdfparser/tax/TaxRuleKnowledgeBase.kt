@@ -96,9 +96,22 @@ object TaxRuleKnowledgeBase {
                     newRegimeSlabs = NEW_REGIME_DEFAULT_SLABS,
                     defenceSection10Rules = DEFAULT_DEFENCE_SECTION_10,
                 ),
+            "2026-27" to
+                TaxYearRules(
+                    financialYear = "2026-27",
+                    assessmentYear = "2027-28",
+                    version = 20260201,
+                    lastVerifiedDate = "2026-02-01",
+                    sourceAuthority = "Rules FY 2026-27 (AY 2027-28) · Offline",
+                    standardDeductionOld = 50000.0,
+                    standardDeductionNew = 75000.0,
+                    oldRegimeSlabs = OLD_REGIME_DEFAULT_SLABS,
+                    newRegimeSlabs = NEW_REGIME_DEFAULT_SLABS,
+                    defenceSection10Rules = DEFAULT_DEFENCE_SECTION_10,
+                ),
         )
 
     fun getRulesForFy(fy: String): TaxYearRules {
-        return RULES_MAP[fy] ?: RULES_MAP["2025-26"]!!
+        return RULES_MAP[fy] ?: RULES_MAP["2026-27"]!!
     }
 }

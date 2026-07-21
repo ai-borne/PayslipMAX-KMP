@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.insights
 
+import com.payslipmax.pdfparser.tax.TaxRuleKnowledgeBase
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -27,18 +28,18 @@ data class RegimeComparisonResult(
 
 object DualRegimeEngine {
     private const val CESS_RATE = 0.04
-    private const val STD_DED_OLD = 50_000.0
-    private const val STD_DED_NEW_FY24 = 50_000.0
-    private const val STD_DED_NEW_FY25 = 75_000.0
 
     fun calculateOldRegimeTax(
         grossIncome: Double,
         deductionsAndExemptions: Double = 0.0,
+        fy: String = "2026-27",
     ): RegimeTaxDetail {
-        val totalDeductions = STD_DED_OLD + deductionsAndExemptions
+        val rules = TaxRuleKnowledgeBase.getRulesForFy(fy)
+        val stdDed = rules.standardDeductionOld
+        val totalDeductions = stdDed + deductionsAndExemptions
         val netTaxable = maxOf(0.0, grossIncome - totalDeductions)
         val rawTax = computeOldSlabTax(netTaxable)
-        val baseTax = applyOldRebate(netTaxable, rawTax)
+        val baseTax = applyOldRebate(netTaxable, rawTax, rules.sec87ARebateMaxIncomeOld)
         val cess = baseTax * CESS_RATE
         val totalTax = baseTax + cess
         val effectiveRate = if (grossIncome > 0) (totalTax / grossIncome) * 100.0 else 0.0
@@ -46,7 +47,7 @@ object DualRegimeEngine {
         return RegimeTaxDetail(
             regimeName = "OLD",
             grossIncome = grossIncome,
-            standardDeduction = STD_DED_OLD,
+            standardDeduction = stdDed,
             totalDeductionsAndExemptions = totalDeductions,
             netTaxableIncome = netTaxable,
             baseTax = baseTax,
@@ -58,14 +59,14 @@ object DualRegimeEngine {
 
     fun calculateNewRegimeTax(
         grossIncome: Double,
-        fy: String = "2024-25",
+        fy: String = "2026-27",
     ): RegimeTaxDetail {
-        val stdDed = if (fy == "2025-26") STD_DED_NEW_FY25 else STD_DED_NEW_FY24
+        val rules = TaxRuleKnowledgeBase.getRulesForFy(fy)
+        val stdDed = rules.standardDeductionNew
         val netTaxable = maxOf(0.0, grossIncome - stdDed)
-        val isFy2526 = (fy == "2025-26")
 
-        val rawTax = if (isFy2526) computeNewSlabTaxFy2526(netTaxable) else computeNewSlabTaxFy2425(netTaxable)
-        val baseTax = if (isFy2526) applyNewRebateFy2526(netTaxable, rawTax) else applyNewRebateFy2425(netTaxable, rawTax)
+        val rawTax = computeNewSlabTax(netTaxable)
+        val baseTax = applyNewRebate(netTaxable, rawTax, rules.sec87ARebateMaxIncomeNew)
         val cess = baseTax * CESS_RATE
         val totalTax = baseTax + cess
         val effectiveRate = if (grossIncome > 0) (totalTax / grossIncome) * 100.0 else 0.0
@@ -86,14 +87,14 @@ object DualRegimeEngine {
     fun compareRegimes(
         grossIncome: Double,
         oldRegimeDeductions: Double,
-        fy: String = "2024-25",
+        fy: String = "2026-27",
     ): RegimeComparisonResult {
-        val oldDetail = calculateOldRegimeTax(grossIncome, oldRegimeDeductions)
+        val oldDetail = calculateOldRegimeTax(grossIncome, oldRegimeDeductions, fy)
         val newDetail = calculateNewRegimeTax(grossIncome, fy)
 
-        val winner = if (oldDetail.totalTaxPayable <= newDetail.totalTaxPayable) "OLD" else "NEW"
+        val winner = if (newDetail.totalTaxPayable <= oldDetail.totalTaxPayable) "NEW" else "OLD"
         val savings = kotlin.math.abs(oldDetail.totalTaxPayable - newDetail.totalTaxPayable)
-        val breakEven = computeBreakEvenDeduction(grossIncome, newDetail.totalTaxPayable)
+        val breakEven = computeBreakEvenDeduction(grossIncome, fy)
 
         return RegimeComparisonResult(
             financialYear = fy,
@@ -107,78 +108,80 @@ object DualRegimeEngine {
 
     private fun computeOldSlabTax(income: Double): Double {
         var tax = 0.0
-        if (income > 10_00_000) tax += (income - 10_00_000) * 0.30
-        if (income > 5_00_000) tax += minOf(5_00_000.0, income - 5_00_000) * 0.20
-        if (income > 2_50_000) tax += minOf(2_50_000.0, income - 2_50_000) * 0.05
+        if (income > 250_000.0) {
+            tax += (minOf(income, 500_000.0) - 250_000.0) * 0.05
+        }
+        if (income > 500_000.0) {
+            tax += (minOf(income, 1_000_000.0) - 500_000.0) * 0.20
+        }
+        if (income > 1_000_000.0) {
+            tax += (income - 1_000_000.0) * 0.30
+        }
+        return tax
+    }
+
+    private fun computeNewSlabTax(income: Double): Double {
+        var tax = 0.0
+        if (income > 300_000.0) {
+            tax += (minOf(income, 700_000.0) - 300_000.0) * 0.05
+        }
+        if (income > 700_000.0) {
+            tax += (minOf(income, 1_000_000.0) - 700_000.0) * 0.10
+        }
+        if (income > 1_000_000.0) {
+            tax += (minOf(income, 1_200_000.0) - 1_000_000.0) * 0.15
+        }
+        if (income > 1_200_000.0) {
+            tax += (minOf(income, 1_500_000.0) - 1_200_000.0) * 0.20
+        }
+        if (income > 1_500_000.0) {
+            tax += (income - 1_500_000.0) * 0.30
+        }
         return tax
     }
 
     private fun applyOldRebate(
         income: Double,
         tax: Double,
+        maxRebateIncome: Double,
     ): Double {
-        if (income <= 5_00_000) {
-            val rebate = minOf(12_500.0, tax)
-            return maxOf(0.0, tax - rebate)
+        if (income <= maxRebateIncome) {
+            return maxOf(0.0, tax - 12_500.0)
         }
         return tax
     }
 
-    private fun computeNewSlabTaxFy2425(income: Double): Double {
-        var tax = 0.0
-        if (income > 15_00_000) tax += (income - 15_00_000) * 0.30
-        if (income > 12_00_000) tax += minOf(3_00_000.0, income - 12_00_000) * 0.20
-        if (income > 9_00_000) tax += minOf(3_00_000.0, income - 9_00_000) * 0.15
-        if (income > 6_00_000) tax += minOf(3_00_000.0, income - 6_00_000) * 0.10
-        if (income > 3_00_000) tax += minOf(3_00_000.0, income - 3_00_000) * 0.05
-        return tax
-    }
-
-    private fun applyNewRebateFy2425(
+    private fun applyNewRebate(
         income: Double,
         tax: Double,
+        maxRebateIncome: Double,
     ): Double {
-        if (income <= 7_00_000) return 0.0
-        val excess = income - 7_00_000
-        if (tax > excess) return excess
-        return tax
-    }
-
-    private fun computeNewSlabTaxFy2526(income: Double): Double {
-        var tax = 0.0
-        if (income > 20_00_000) tax += (income - 20_00_000) * 0.30
-        if (income > 16_00_000) tax += minOf(4_00_000.0, income - 16_00_000) * 0.20
-        if (income > 12_00_000) tax += minOf(4_00_000.0, income - 12_00_000) * 0.15
-        if (income > 8_00_000) tax += minOf(4_00_000.0, income - 8_00_000) * 0.10
-        if (income > 4_00_000) tax += minOf(4_00_000.0, income - 4_00_000) * 0.05
-        return tax
-    }
-
-    private fun applyNewRebateFy2526(
-        income: Double,
-        tax: Double,
-    ): Double {
-        if (income <= 12_00_000) return 0.0
-        val excess = income - 12_00_000
-        if (tax > excess) return excess
+        if (income <= maxRebateIncome) {
+            return 0.0
+        }
+        val diff = income - maxRebateIncome
+        if (tax > diff) {
+            return diff
+        }
         return tax
     }
 
     private fun computeBreakEvenDeduction(
         gross: Double,
-        targetTax: Double,
+        fy: String,
     ): Double {
+        val newTax = calculateNewRegimeTax(gross, fy).totalTaxPayable
         var low = 0.0
         var high = gross
-        for (i in 0..20) {
+        for (i in 1..25) {
             val mid = (low + high) / 2.0
-            val oldTax = calculateOldRegimeTax(gross, mid).totalTaxPayable
-            if (oldTax > targetTax) {
+            val oldTax = calculateOldRegimeTax(gross, mid, fy).totalTaxPayable
+            if (oldTax > newTax) {
                 low = mid
             } else {
                 high = mid
             }
         }
-        return high
+        return (low + high) / 2.0
     }
 }

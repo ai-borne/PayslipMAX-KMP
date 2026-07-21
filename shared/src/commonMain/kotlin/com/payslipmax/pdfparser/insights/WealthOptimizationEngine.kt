@@ -29,8 +29,6 @@ data class OptimizationResult(
 )
 
 object WealthOptimizationEngine {
-    private const val LIMIT_80C = 150_000.0
-    private const val NPS_80CCD1B = 50_000.0
     private const val DEFAULT_YEARS_TO_RETIREMENT = 20
 
     fun analyze(
@@ -47,7 +45,6 @@ object WealthOptimizationEngine {
         yearsToRetirement: Int = DEFAULT_YEARS_TO_RETIREMENT,
     ): OptimizationResult {
         val activePayslip = selectedPayslip ?: payslips.lastOrNull() ?: return createFallbackResult()
-
         val fySummary = TaxLedgerAggregator.aggregateFy(payslips, targetFy)
         val exemptions = DefenceTaxExemptionEngine.extractExemptions(fySummary)
         val regimeComp =
@@ -65,13 +62,12 @@ object WealthOptimizationEngine {
                 regime = activeRegime,
             )
 
-        val latestMonthlyTds = activePayslip.deductions.incomeTax
         val tdsRunway =
             TdsRunwayEngine.computeTdsRunway(
                 ytdTdsDeducted = fySummary.ytdTaxDeducted,
                 parsedMonthCount = fySummary.parsedMonthCount,
                 totalAnnualTaxLiability = activeTax,
-                currentMonthlyTds = latestMonthlyTds,
+                currentMonthlyTds = activePayslip.deductions.incomeTax,
             )
 
         val storyNarrative =
@@ -139,6 +135,25 @@ object WealthOptimizationEngine {
         )
     }
 
+    fun buildTaxPlannerResult(
+        grossSalary: Double,
+        tdsYtd: Double,
+        dsopYtd: Double,
+        fieldAllowanceExemption: Double = 0.0,
+        monthsAvailable: Int = 1,
+        monthNum: Int = 4,
+        year: Int = 2026,
+    ): TaxPlannerResult =
+        TaxPlannerResultBuilder.buildTaxPlannerResult(
+            grossSalary = grossSalary,
+            tdsYtd = tdsYtd,
+            dsopYtd = dsopYtd,
+            fieldAllowanceExemption = fieldAllowanceExemption,
+            monthsAvailable = monthsAvailable,
+            monthNum = monthNum,
+            year = year,
+        )
+
     fun deriveMarginalRate(
         netTaxableIncome: Double,
         regime: TaxRegime = TaxRegime.OLD,
@@ -169,8 +184,7 @@ object WealthOptimizationEngine {
         val annualDsop = dsopMonthly * 12.0
         val maxAllowedAnnual = (0.35 * grossMonthly * 12.0)
         val spaceLeftAnnual = maxOf(0.0, maxAllowedAnnual - annualDsop)
-        val neededFor80C = sec80CHeadroom
-        val gapAnnual = minOf(spaceLeftAnnual, neededFor80C)
+        val gapAnnual = minOf(spaceLeftAnnual, sec80CHeadroom)
         return gapAnnual / 12.0
     }
 
@@ -183,7 +197,6 @@ object WealthOptimizationEngine {
         if (gapMonthly <= 0.0) return 0.0
         val rate = 0.071
         val months = years * 12
-
         var baseCorpus = currentBalance
         var upliftCorpus = currentBalance
 
@@ -195,7 +208,6 @@ object WealthOptimizationEngine {
                 upliftCorpus += upliftCorpus * rate
             }
         }
-
         return maxOf(0.0, upliftCorpus - baseCorpus)
     }
 

@@ -30,8 +30,6 @@ data class TaxStoryNarrative(
 )
 
 object ConversationalTaxNarrativeEngine {
-    private const val PEER_BENCHMARK_TARGET_PCT = 8.2
-
     fun generateNarrative(
         payslips: List<ParsedPayslip>,
         fySummary: FyTaxLedgerSummary,
@@ -68,7 +66,19 @@ object ConversationalTaxNarrativeEngine {
         val effectiveRate = if (totalGross > 0) (projectedTax / totalGross) * 100.0 else 0.0
         val formattedRate = ((effectiveRate * 10).toInt()) / 10.0
 
-        val rateMsg = "You are paying ₹${TaxLedgerAggregator.formatIndianCurrency(projectedTax)} in tax out of ₹${TaxLedgerAggregator.formatIndianCurrency(totalGross)} total salary ($formattedRate% of income)."
+        val optResult =
+            DualRegimeEngine.compareRegimes(
+                grossIncome = totalGross,
+                oldRegimeDeductions = fySummary.ytdDsop + 50000.0 + 253500.0,
+                fy = activeFy,
+            )
+        val minTax = minOf(optResult.oldRegime.totalTaxPayable, optResult.newRegime.totalTaxPayable)
+        val bestAchievableRate = if (totalGross > 0) (minTax / totalGross) * 100.0 else 0.0
+        val formattedBestRate = ((bestAchievableRate * 10).toInt()) / 10.0
+
+        val grossText = TaxLedgerAggregator.formatIndianCurrency(totalGross)
+        val taxText = TaxLedgerAggregator.formatIndianCurrency(projectedTax)
+        val narrativeMsg = "You are paying $taxText in tax out of $grossText total salary ($formattedRate% of income)."
 
         return TaxStoryNarrative(
             financialYear = fySummary.financialYear,
@@ -79,11 +89,11 @@ object ConversationalTaxNarrativeEngine {
             monthlyLedgerList = ledgerList,
             totalTdsYtd = fySummary.ytdTaxDeducted,
             totalDsopYtd = fySummary.ytdDsop,
-            projectedGross = fySummary.projectedAnnualGross,
+            projectedGross = totalGross,
             projectedTax = projectedTax,
             effectiveTaxRatePct = formattedRate,
-            peerBenchmarkRatePct = PEER_BENCHMARK_TARGET_PCT,
-            effectiveTaxRateMessage = rateMsg,
+            peerBenchmarkRatePct = formattedBestRate,
+            effectiveTaxRateMessage = narrativeMsg,
         )
     }
 }
