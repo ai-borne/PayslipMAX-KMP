@@ -47,6 +47,17 @@ object AppStringsPremium {
     const val retHeroMonthlyPayoutLabel = "Net Monthly Pension (with DR)"
     const val retHeroDay1CorpusLabel = "Total Day-1 Liquid Corpus"
     const val retDay1CorpusTitle = "Day-1 Lump Sum Payout Breakdown"
+
+    // CA Tax Audit & Commutation Advisory Strings
+    const val retCaTaxAuditTitle = "CA Tax Audit & Income Tax Exemptions"
+    const val retCaTaxAuditSubtitle = "Defence pension tax classification under Income Tax Act"
+    const val retCaTaxFreeCorpusLabel = "Day-1 Tax-Free Corpus (Sec 10)"
+    const val retCaTaxableMonthlyLabel = "Taxable Monthly Flow (Sec 17 Salaries)"
+    const val retCaTaxExemptNotes = "100% Tax-Exempt u/s 10: DSOP, Gratuity, Commutation & Leave Encashment"
+    const val retCaVerdictTitle = "CA Commutation Reinvestment Verdict"
+    const val retCaVerdictRecommend = "Recommendation: Commute 50% if you can reinvest the lump sum above "
+    const val retCaVerdictRoiSuffix = "% p.a. post-tax."
+    const val retCaRestorationNotice = "PCDA automatically restores full monthly pension after 15 years (180 payments)."
     const val retMonthlyPensionTitle = "Monthly Cashflow & Dearness Relief (DR)"
     const val retCommutationSimulatorTitle = "Commutation Decision Simulator"
     const val retCommutationBreakEvenLabel = "Required Reinvestment Yield: "

@@ -37,5 +37,10 @@ class RetirementPlannerResultBuilderTest {
         assertEquals(72750.0, result.basicPension) // (130000 + 15500)/2
         assertEquals(4500000.0, result.dsopBalance)
         assertTrue(result.totalDay1Corpus > 4500000.0)
+        assertEquals("JOHN DOE", result.officerName)
+        assertEquals("COLONEL", result.officerRank)
+        assertEquals(result.totalDay1Corpus, result.taxFreeCorpus)
+        assertEquals(result.netMonthlyPensionCommuted50, result.taxableMonthlyPension)
+        assertTrue(result.commutationBreakEvenRoi > 0.0)
     }
 }

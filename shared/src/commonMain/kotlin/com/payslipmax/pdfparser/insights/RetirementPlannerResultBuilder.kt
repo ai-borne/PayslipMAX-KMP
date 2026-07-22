@@ -28,6 +28,11 @@ data class RetirementPlannerResult(
     val ageNextBirthday: Int,
     val commutationScenarios: List<RetirementCalculatorEngine.CommutationScenario>,
     val isPmr: Boolean = false,
+    val officerName: String? = null,
+    val officerRank: String? = null,
+    val taxFreeCorpus: Double = 0.0,
+    val taxableMonthlyPension: Double = 0.0,
+    val commutationBreakEvenRoi: Double = 0.0,
 )
 
 object RetirementPlannerResultBuilder {
@@ -42,13 +47,15 @@ object RetirementPlannerResultBuilder {
         val basic = payslip?.earnings?.basicPay ?: 100000.0
         val msp = payslip?.earnings?.militaryServicePay ?: 15500.0
         val da = payslip?.earnings?.dearnessAllowance ?: 50000.0
-        val rank = payslip?.officer?.name
+        val rawOfficerName = payslip?.officer?.name
+
+        val (rank, name) = parseRankAndName(rawOfficerName)
 
         val daPercentage = if (basic > 0.0) (da / basic) * 100.0 else 50.0
 
         val ageNextBirthday =
             overrideAgeNextBirthday
-                ?: RetirementYearResolver.estimateAgeNextBirthday(basic, rank)
+                ?: RetirementYearResolver.estimateAgeNextBirthday(basic, rawOfficerName)
 
         val qualifyingYears =
             overrideQualifyingYears
@@ -80,12 +87,12 @@ object RetirementPlannerResultBuilder {
         val gratuity = RetirementCalculatorEngine.retirementGratuity(basic, da, qualifyingYears, msp)
         val leaveEncashment = RetirementCalculatorEngine.leaveEncashment(basic, da, leaveDays)
 
-        // Estimated AGIF maturity (assumes ₹10L accumulated if unparsed)
         val agifMaturity = RetirementCalculatorEngine.calculateAgifMaturity(1_000_000.0)
-
         val totalDay1Corpus = dsopBalance + gratuity + leaveEncashment + agifMaturity + commutedLumpSum50
 
         val scenarios = RetirementCalculatorEngine.calculateCommutationMatrix(basicPension, ageNextBirthday, daPercentage)
+        val surrenderedMonthly = fullMonthly - commuted50Monthly
+        val breakEvenRoi = if (commutedLumpSum50 > 0.0) (surrenderedMonthly * 12.0 / commutedLumpSum50) * 100.0 else 0.0
 
         return RetirementPlannerResult(
             confidenceLevel = confidence,
@@ -107,6 +114,21 @@ object RetirementPlannerResultBuilder {
             ageNextBirthday = ageNextBirthday,
             commutationScenarios = scenarios,
             isPmr = isPmr,
+            officerName = name,
+            officerRank = rank,
+            taxFreeCorpus = totalDay1Corpus,
+            taxableMonthlyPension = commuted50Monthly,
+            commutationBreakEvenRoi = breakEvenRoi,
         )
+    }
+
+    private fun parseRankAndName(raw: String?): Pair<String?, String?> {
+        if (raw.isNullOrBlank()) return null to null
+        val tokens = raw.trim().split("\\s+".toRegex())
+        return if (tokens.size > 1) {
+            tokens.first() to tokens.drop(1).joinToString(" ")
+        } else {
+            null to tokens.first()
+        }
     }
 }

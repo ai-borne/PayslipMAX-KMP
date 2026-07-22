@@ -124,7 +124,9 @@ private fun RetinementCalculatorsContent(
         onDsopBalanceChange = onDsopBalanceChange,
     )
     RetirementHeroSummaryCard(result = result)
+    CaTaxAuditCard(result = result)
     RetirementDay1CorpusCard(result = result)
+    CommutationAdvisorCard(result = result)
     CommutationSimulatorCard(scenarios = result.commutationScenarios)
     PensionTaxabilityCard()
     SparshAndResettlementCard()
