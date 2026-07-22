@@ -28,6 +28,8 @@ fun RetCalcInputsSection(
     onAgeNextBirthdayChange: (String) -> Unit,
     leaveDays: String,
     onLeaveDaysChange: (String) -> Unit,
+    dsopBalance: String = "",
+    onDsopBalanceChange: (String) -> Unit = {},
 ) {
     Text(
         text = AppStringsPremium.retCalcInputsTitle,
@@ -38,6 +40,9 @@ fun RetCalcInputsSection(
     LabeledNumberField(AppStringsPremium.retCalcQualifyingYearsLabel, qualifyingYears, onQualifyingYearsChange)
     LabeledNumberField(AppStringsPremium.retCalcAgeNextBirthdayLabel, ageNextBirthday, onAgeNextBirthdayChange)
     LabeledNumberField(AppStringsPremium.retCalcLeaveDaysLabel, leaveDays, onLeaveDaysChange)
+    if (dsopBalance.isNotEmpty()) {
+        LabeledNumberField("DSOP Closing Balance (₹)", dsopBalance, onDsopBalanceChange)
+    }
 }
 
 @Composable
@@ -68,10 +73,10 @@ fun RetCalcResultsSection(
     val pension = RetirementCalculatorEngine.retiringPension(basicPay, militaryServicePay)
     ResultCard(AppStringsPremium.retCalcPensionTitle, formatCurrency(pension), AppStringsPremium.retCalcPensionNote)
 
-    val gratuity = RetirementCalculatorEngine.retirementGratuity(basicPay, dearnessAllowance, qualifyingYears)
+    val gratuity = RetirementCalculatorEngine.retirementGratuity(basicPay, dearnessAllowance, qualifyingYears, militaryServicePay)
     ResultCard(AppStringsPremium.retCalcGratuityTitle, formatCurrency(gratuity), AppStringsPremium.retCalcGratuityNote)
 
-    CommutationResultCard(pension = pension, ageNextBirthday = ageNextBirthday)
+    CommutationResultCard(pension = pension, ageNextBirthday = ageNextBirthday, basicPay = basicPay, dearnessAllowance = dearnessAllowance)
 
     val leave = RetirementCalculatorEngine.leaveEncashment(basicPay, dearnessAllowance, leaveDays)
     ResultCard(AppStringsPremium.retCalcLeaveTitle, formatCurrency(leave), AppStringsPremium.retCalcLeaveNote)
@@ -81,6 +86,8 @@ fun RetCalcResultsSection(
 private fun CommutationResultCard(
     pension: Double,
     ageNextBirthday: Int?,
+    basicPay: Double = 0.0,
+    dearnessAllowance: Double = 0.0,
 ) {
     val factor = ageNextBirthday?.let { RetirementCalculatorEngine.commutationFactor(it) }
     if (factor == null) {
@@ -89,10 +96,12 @@ private fun CommutationResultCard(
     }
     val lumpSum = RetirementCalculatorEngine.commutedLumpSum(pension, RetirementCalculatorEngine.MAX_COMMUTE_FRACTION, factor)
     val residual = RetirementCalculatorEngine.residualPension(pension, RetirementCalculatorEngine.MAX_COMMUTE_FRACTION)
+    val daPct = if (basicPay > 0.0) (dearnessAllowance / basicPay) * 100.0 else 50.0
+    val netMonthlyWithDr = RetirementCalculatorEngine.calculateNetMonthlyPension(pension, 0.50, daPct)
     ResultCard(
         title = AppStringsPremium.retCalcCommutationTitle,
         value = formatCurrency(lumpSum),
-        note = AppStringsPremium.retCalcCommutationResidualPrefix + formatCurrency(residual),
+        note = AppStringsPremium.retCalcCommutationResidualPrefix + formatCurrency(residual) + " · Net Monthly Payout (with DR): " + formatCurrency(netMonthlyWithDr),
     )
 }
 
