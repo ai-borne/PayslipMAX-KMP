@@ -37,11 +37,31 @@ fun RetCalcInputsSection(
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary,
     )
-    LabeledNumberField(AppStringsPremium.retCalcQualifyingYearsLabel, qualifyingYears, onQualifyingYearsChange)
-    LabeledNumberField(AppStringsPremium.retCalcAgeNextBirthdayLabel, ageNextBirthday, onAgeNextBirthdayChange)
-    LabeledNumberField(AppStringsPremium.retCalcLeaveDaysLabel, leaveDays, onLeaveDaysChange)
+    LabeledNumberField(
+        label = AppStringsPremium.retCalcQualifyingYearsLabel,
+        value = qualifyingYears,
+        onValueChange = onQualifyingYearsChange,
+        supportingText = AppStringsPremium.retCalcQualifyingYearsHint,
+    )
+    LabeledNumberField(
+        label = AppStringsPremium.retCalcAgeNextBirthdayLabel,
+        value = ageNextBirthday,
+        onValueChange = onAgeNextBirthdayChange,
+        supportingText = AppStringsPremium.retCalcAgeHint,
+    )
+    LabeledNumberField(
+        label = AppStringsPremium.retCalcLeaveDaysLabel,
+        value = leaveDays,
+        onValueChange = onLeaveDaysChange,
+        supportingText = AppStringsPremium.retCalcLeaveHint,
+    )
     if (dsopBalance.isNotEmpty()) {
-        LabeledNumberField("DSOP Closing Balance (₹)", dsopBalance, onDsopBalanceChange)
+        LabeledNumberField(
+            label = "DSOP Closing Balance (₹)",
+            value = dsopBalance,
+            onValueChange = onDsopBalanceChange,
+            supportingText = AppStringsPremium.retCalcDsopHint,
+        )
     }
 }
 
@@ -50,11 +70,13 @@ private fun LabeledNumberField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
+    supportingText: String? = null,
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = { input -> onValueChange(input.filter { it.isDigit() || it == '.' }) },
         label = { Text(label) },
+        supportingText = supportingText?.let { { Text(it) } },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = Modifier.fillMaxWidth(),
