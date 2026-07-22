@@ -71,7 +71,8 @@ fun RetCalcResultsSection(
     leaveDays: Int,
 ) {
     val pension = RetirementCalculatorEngine.retiringPension(basicPay, militaryServicePay)
-    ResultCard(AppStringsPremium.retCalcPensionTitle, formatCurrency(pension), AppStringsPremium.retCalcPensionNote)
+    val dynamicPensionNote = "50% of [Basic (₹${formatCurrency(basicPay)}) + MSP (₹${formatCurrency(militaryServicePay)})]"
+    ResultCard(AppStringsPremium.retCalcPensionTitle, formatCurrency(pension), dynamicPensionNote)
 
     val gratuity = RetirementCalculatorEngine.retirementGratuity(basicPay, dearnessAllowance, qualifyingYears, militaryServicePay)
     ResultCard(AppStringsPremium.retCalcGratuityTitle, formatCurrency(gratuity), AppStringsPremium.retCalcGratuityNote)
