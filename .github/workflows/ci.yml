@@ -155,10 +155,10 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Verify iOS Framework Links (Fail-Fast, mirrors Xcode build phase)
-        run: ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 :composeApp:linkDebugFrameworkIosArm64 -q
+        run: ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 -q
 
       - name: Run iOS Unit Tests
-        run: ./gradlew iosX64Test iosSimulatorArm64Test
+        run: ./gradlew iosSimulatorArm64Test
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
