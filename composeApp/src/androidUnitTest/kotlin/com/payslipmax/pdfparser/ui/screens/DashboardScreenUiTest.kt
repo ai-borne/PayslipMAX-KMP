@@ -47,7 +47,10 @@ class DashboardScreenUiTest {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
-        org.koin.core.context.stopKoin()
+        try {
+            org.koin.core.context.stopKoin()
+        } catch (_: Exception) {
+        }
     }
 
     @OptIn(ExperimentalTestApi::class)
