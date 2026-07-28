@@ -45,16 +45,9 @@ fun HistoryYearHeader(
     val stats = remember(payslips) { calculateYearlyStats(payslips) }
     val rotationState by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f)
 
-    Card(
-        modifier = modifier.fillMaxWidth().clickable { onToggleExpand() },
-        shape = CardDefaults.elevatedShape,
-        colors =
-            CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-            ),
-    ) {
+    FlatBorderedCard(modifier = modifier.clickable { onToggleExpand() }) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(AppDimensions.PaddingMedium),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {

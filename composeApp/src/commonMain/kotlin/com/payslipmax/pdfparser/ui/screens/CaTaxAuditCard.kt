@@ -1,8 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,21 +14,11 @@ fun CaTaxAuditCard(
     result: RetirementPlannerResult,
     modifier: Modifier = Modifier,
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-        ) {
-            CaTaxAuditHeader()
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-            CaTaxAuditCorpusSection(taxFreeCorpus = result.taxFreeCorpus)
-            CaTaxAuditMonthlySection(taxableMonthly = result.taxableMonthlyPension)
-        }
+    FlatBorderedCard(modifier = modifier, tint = CardTint.Accent) {
+        CaTaxAuditHeader()
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        CaTaxAuditCorpusSection(taxFreeCorpus = result.taxFreeCorpus)
+        CaTaxAuditMonthlySection(taxableMonthly = result.taxableMonthlyPension)
     }
 }
 

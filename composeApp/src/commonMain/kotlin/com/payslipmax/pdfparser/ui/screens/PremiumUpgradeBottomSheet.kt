@@ -61,7 +61,7 @@ private fun UpgradeHeaderSection() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
     ) {
-        Text("👑", fontSize = AppDimensions.FontSizeEmojiMedium)
+        Text(AppStrings.proTeaserCrownIcon, fontSize = AppDimensions.FontSizeEmojiMedium)
         Text(
             text = AppStrings.settingsProPlanTitle,
             style = MaterialTheme.typography.headlineSmall,

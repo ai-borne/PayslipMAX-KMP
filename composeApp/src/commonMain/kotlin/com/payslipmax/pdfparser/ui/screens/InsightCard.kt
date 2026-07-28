@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,12 +26,70 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.insights.InsightSeverity
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import com.payslipmax.pdfparser.ui.theme.severityColor
+
+/**
+ * Canonical border tint for [FlatBorderedCard] — collapses the ad-hoc border-alpha values (0.08–0.3)
+ * that had drifted across the hand-rolled Insights/Retirement/Tax cards into two deliberate looks.
+ * [Neutral] matches a plain informational card; [Accent] matches a premium/highlighted card and pairs
+ * with a primary-tinted header text (cards with a genuinely filled background, e.g.
+ * [RetirementHeroSummaryCard], intentionally don't use this primitive — see their own file).
+ */
+enum class CardTint { Neutral, Accent }
+
+/** The border tint [FlatBorderedCard] and [FlatBorderedCardShape] resolve for a given [CardTint]. */
+@Composable
+fun flatBorderedCardBorderColor(tint: CardTint): Color =
+    when (tint) {
+        CardTint.Neutral -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+        CardTint.Accent -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+    }
+
+/**
+ * The bare `Card` shape/color/border trio behind [FlatBorderedCard], exposed for composables (e.g.
+ * [HistoryCard]) whose content already manages its own padding/scroll/gesture handling and shouldn't
+ * be wrapped in a second padded `Column`.
+ */
+@Composable
+fun FlatBorderedCardShape(
+    modifier: Modifier = Modifier,
+    tint: CardTint = CardTint.Neutral,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AppDimensions.CornerRadius),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(AppDimensions.BorderThin, flatBorderedCardBorderColor(tint)),
+        content = content,
+    )
+}
+
+/**
+ * The flat-bordered `Card` shape shared by most Insights/Retirement/Tax cards, canonizing the
+ * convention that already dominated before this was extracted into one composable.
+ */
+@Composable
+fun FlatBorderedCard(
+    modifier: Modifier = Modifier,
+    tint: CardTint = CardTint.Neutral,
+    contentSpacing: Dp = AppDimensions.SpacingMedium,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    FlatBorderedCardShape(modifier = modifier, tint = tint) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(contentSpacing),
+            content = content,
+        )
+    }
+}
 
 /** Short badge text for [InsightSeverity], shown in the [InsightCard] chip. */
 fun severityLabel(severity: InsightSeverity): String =

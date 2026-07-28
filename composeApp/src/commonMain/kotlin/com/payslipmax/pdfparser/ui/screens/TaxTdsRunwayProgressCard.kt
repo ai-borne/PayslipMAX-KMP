@@ -17,26 +17,16 @@ fun TaxTdsRunwayProgressCard(
     tdsRunway: TdsRunwayResult,
     modifier: Modifier = Modifier,
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            Text(
-                text = AppStringsPremium.taxPlanningTdsRunwayTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            TdsRunwayMetricsAndProgress(tdsRunway = tdsRunway)
-            if (tdsRunway.hasTdsSpikeWarning) {
-                TdsSpikeAlertBanner(currentTds = tdsRunway.currentMonthlyTds, projectedTds = tdsRunway.projectedMonthlyTds)
-            }
+    FlatBorderedCard(modifier = modifier, contentSpacing = AppDimensions.SpacingSmall) {
+        Text(
+            text = AppStringsPremium.taxPlanningTdsRunwayTitle,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        TdsRunwayMetricsAndProgress(tdsRunway = tdsRunway)
+        if (tdsRunway.hasTdsSpikeWarning) {
+            TdsSpikeAlertBanner(currentTds = tdsRunway.currentMonthlyTds, projectedTds = tdsRunway.projectedMonthlyTds)
         }
     }
 }

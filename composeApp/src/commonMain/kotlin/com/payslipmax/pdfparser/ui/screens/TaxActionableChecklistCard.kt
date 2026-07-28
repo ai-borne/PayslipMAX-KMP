@@ -1,8 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,13 +22,10 @@ fun TaxActionableChecklistCard(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
         opportunities.forEach { opp ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(AppDimensions.CornerRadius),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
-            ) {
-                Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
+            FlatBorderedCard {
+                // Single child: the outer FlatBorderedCard's inter-child spacing never applies, so
+                // this inner Column's manual Spacers control gaps exactly as before extraction.
+                Column {
                     Text(
                         text = opp.title,
                         style = MaterialTheme.typography.titleMedium,

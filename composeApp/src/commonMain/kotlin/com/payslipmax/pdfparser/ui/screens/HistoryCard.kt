@@ -1,10 +1,10 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
@@ -40,19 +40,14 @@ fun HistoryCard(
             scope.launch { dismissState.reset() }
         },
         backgroundContent = { SwipeDismissBackground() },
-        modifier = modifier.clip(CardDefaults.shape),
+        modifier = modifier.clip(RoundedCornerShape(AppDimensions.CornerRadius)),
     ) {
-        Card(
+        FlatBorderedCardShape(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .combinedClickable(
-                        onClick = onViewReplica,
-                        onLongClick = onLongPress,
-                    ),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-            border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
-            elevation = CardDefaults.cardElevation(defaultElevation = AppDimensions.BorderThin),
+                Modifier.combinedClickable(
+                    onClick = onViewReplica,
+                    onLongClick = onLongPress,
+                ),
         ) {
             content()
         }

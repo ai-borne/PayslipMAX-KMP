@@ -18,7 +18,7 @@ fun OfflineStatusPill(
 ) {
     val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     Surface(
-        shape = RoundedCornerShape(AppDimensions.SpacingMedium),
+        shape = RoundedCornerShape(percent = 50),
         color =
             if (isDark) {
                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)

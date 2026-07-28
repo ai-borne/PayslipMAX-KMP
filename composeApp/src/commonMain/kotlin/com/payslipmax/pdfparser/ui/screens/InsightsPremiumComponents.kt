@@ -1,6 +1,5 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,33 +26,28 @@ fun PremiumToolsSection(
     modifier: Modifier = Modifier,
 ) {
     val tools = quickAccessTools()
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-        ) {
-            Text(
-                text = AppStringsPremium.premiumToolsTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+    FlatBorderedCard(modifier = modifier, tint = CardTint.Accent) {
+        Text(
+            text = AppStringsPremium.premiumToolsTitle,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        tools.forEach { tool ->
+            PremiumToolCard(
+                spec = tool,
+                // Non-null by construction: quickAccessTools() filters out entries with a null target.
+                onClick = { onNavigateTo(requireNotNull(tool.target)) },
             )
-            tools.forEach { tool ->
-                PremiumToolCard(
-                    spec = tool,
-                    // Non-null by construction: quickAccessTools() filters out entries with a null target.
-                    onClick = { onNavigateTo(requireNotNull(tool.target)) },
-                )
-            }
         }
     }
 }
 
+/**
+ * Intentionally NOT migrated to [FlatBorderedCard]: this nested tool row has a genuinely filled
+ * [MaterialTheme.colorScheme.primaryContainer] background (not just border-alpha drift), a distinct
+ * visual identity from the plain flat-bordered cards — see [FlatBorderedCard]'s doc comment.
+ */
 @Composable
 private fun PremiumToolCard(
     spec: ProFeatureMeta,

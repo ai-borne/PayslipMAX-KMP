@@ -146,7 +146,7 @@ private fun TrendBadge(trend: TrendInfo) {
     val color = if (trend.isIncrease) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
     val arrow = if (trend.isIncrease) "↑" else "↓"
     Surface(
-        shape = RoundedCornerShape(AppDimensions.IconSizeHuge),
+        shape = RoundedCornerShape(percent = 50),
         color = color.copy(alpha = 0.12f),
         border = BorderStroke(AppDimensions.BorderThin, color.copy(alpha = 0.4f)),
     ) {
@@ -187,7 +187,7 @@ private fun CompositionSparkbar(payslip: ParsedPayslip) {
             Modifier
                 .fillMaxWidth()
                 .height(AppDimensions.SpacingSix)
-                .clip(RoundedCornerShape(AppDimensions.SpacingTwo))
+                .clip(RoundedCornerShape(AppDimensions.CornerRadiusSmall))
                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
     ) {
         if (netPct > 0f) Box(modifier = Modifier.fillMaxHeight().weight(netPct).background(MaterialTheme.colorScheme.secondary))

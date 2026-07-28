@@ -17,35 +17,25 @@ fun TaxNarrativeBenchmarkCard(
     narrative: TaxStoryNarrative,
     modifier: Modifier = Modifier,
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-        ) {
-            BenchmarkHeaderRow(parsedMonthCount = narrative.parsedMonthCount)
+    FlatBorderedCard(modifier = modifier) {
+        BenchmarkHeaderRow(parsedMonthCount = narrative.parsedMonthCount)
 
-            Text(
-                text = narrative.effectiveTaxRateMessage,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+        Text(
+            text = narrative.effectiveTaxRateMessage,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
 
-            RateComparisonBoxRow(
-                yourRate = narrative.effectiveTaxRatePct,
-                peerBenchmark = narrative.peerBenchmarkRatePct,
-            )
+        RateComparisonBoxRow(
+            yourRate = narrative.effectiveTaxRatePct,
+            peerBenchmark = narrative.peerBenchmarkRatePct,
+        )
 
-            Text(
-                text = "💡 Best achievable rate for your income tier is ${narrative.peerBenchmarkRatePct}% after Sec 80CCD(1B) NPS + DSOP + Sec 10(14) field exemptions.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        Text(
+            text = "💡 Best achievable rate for your income tier is ${narrative.peerBenchmarkRatePct}% after Sec 80CCD(1B) NPS + DSOP + Sec 10(14) field exemptions.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

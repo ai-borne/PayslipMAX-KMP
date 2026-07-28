@@ -1,8 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,29 +15,19 @@ fun RetirementDay1CorpusCard(
     result: RetirementPlannerResult,
     modifier: Modifier = Modifier,
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.outlineVariant),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-        ) {
-            Text(
-                text = AppStringsPremium.retDay1CorpusTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+    FlatBorderedCard(modifier = modifier) {
+        Text(
+            text = AppStringsPremium.retDay1CorpusTitle,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
 
-            CorpusRow("DSOP Fund Balance", result.dsopBalance, "Tax-Free Final Balance")
-            CorpusRow("Retirement Gratuity", result.retirementGratuity, PensionRuleKnowledgeBase.TaxExemptions.GRATUITY_SECTION)
-            CorpusRow("Leave Encashment (300 Days)", result.leaveEncashment, PensionRuleKnowledgeBase.TaxExemptions.LEAVE_ENCASHMENT_SECTION)
-            CorpusRow("AGIF Maturity Payout", result.agifMaturity, AppStringsPremium.retAgifNote)
-            CorpusRow("Commuted Lump Sum (50%)", result.commutedLumpSum50, PensionRuleKnowledgeBase.TaxExemptions.COMMUTATION_SECTION)
-        }
+        CorpusRow("DSOP Fund Balance", result.dsopBalance, "Tax-Free Final Balance")
+        CorpusRow("Retirement Gratuity", result.retirementGratuity, PensionRuleKnowledgeBase.TaxExemptions.GRATUITY_SECTION)
+        CorpusRow("Leave Encashment (300 Days)", result.leaveEncashment, PensionRuleKnowledgeBase.TaxExemptions.LEAVE_ENCASHMENT_SECTION)
+        CorpusRow("AGIF Maturity Payout", result.agifMaturity, AppStringsPremium.retAgifNote)
+        CorpusRow("Commuted Lump Sum (50%)", result.commutedLumpSum50, PensionRuleKnowledgeBase.TaxExemptions.COMMUTATION_SECTION)
     }
 }
 

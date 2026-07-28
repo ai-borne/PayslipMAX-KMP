@@ -31,6 +31,7 @@ import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
 import com.payslipmax.pdfparser.ui.rememberHasAccess
 import com.payslipmax.pdfparser.ui.setPremiumEnabled
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 
 /** How a catalog row reacts to the user's entitlement — drives its trailing widget and click action. */
@@ -179,7 +180,7 @@ private fun ProFeatureTrailing(mode: RowMode) {
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
-        RowMode.LOCKED -> Text("🔒", style = MaterialTheme.typography.titleMedium)
+        RowMode.LOCKED -> Text(AppStrings.proLockIcon, style = MaterialTheme.typography.titleMedium)
         RowMode.COMING_SOON ->
             Text(
                 text = AppStringsPremium.proCatalogComingSoonLabel,

@@ -18,42 +18,32 @@ fun TaxNarrativeLedgerCard(
     narrative: TaxStoryNarrative,
     modifier: Modifier = Modifier,
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            Text(
-                text = narrative.coverageHeader,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+    FlatBorderedCard(modifier = modifier, contentSpacing = AppDimensions.SpacingSmall) {
+        Text(
+            text = narrative.coverageHeader,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
 
-            narrative.missingMonthNudge?.let { nudge ->
-                MissingMonthNudgeBanner(nudgeText = nudge)
-            }
-
-            HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-
-            Text(
-                text = AppStringsPremium.taxPlanningNarrativeLedgerTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.secondary,
-            )
-
-            MonthlyLedgerTable(items = narrative.monthlyLedgerList)
-
-            HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-
-            LedgerTotalsFooter(totalTds = narrative.totalTdsYtd, totalDsop = narrative.totalDsopYtd)
+        narrative.missingMonthNudge?.let { nudge ->
+            MissingMonthNudgeBanner(nudgeText = nudge)
         }
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+
+        Text(
+            text = AppStringsPremium.taxPlanningNarrativeLedgerTitle,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+
+        MonthlyLedgerTable(items = narrative.monthlyLedgerList)
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
+
+        LedgerTotalsFooter(totalTds = narrative.totalTdsYtd, totalDsop = narrative.totalDsopYtd)
     }
 }
 

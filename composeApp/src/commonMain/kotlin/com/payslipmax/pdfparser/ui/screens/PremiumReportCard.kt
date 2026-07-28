@@ -1,18 +1,12 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
-import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
@@ -41,27 +34,17 @@ fun PremiumReportCard(
     aiSectionContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-        ) {
-            Text(
-                text = "${AppStrings.proTeaserCrownIcon} ${InsightsStrings.premiumReportTitle}${InsightsStrings.premiumActivatedSuffix}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            aiSectionContent()
-            PremiumToolsExpandHeader(expanded = toolsExpanded, onClick = onToolsExpandClick)
-            if (toolsExpanded) {
-                PremiumToolsSection(onNavigateTo = onNavigateTo)
-            }
+    FlatBorderedCard(modifier = modifier, tint = CardTint.Accent) {
+        Text(
+            text = "${AppStrings.proTeaserCrownIcon} ${InsightsStrings.premiumReportTitle}${InsightsStrings.premiumActivatedSuffix}",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        aiSectionContent()
+        PremiumToolsExpandHeader(expanded = toolsExpanded, onClick = onToolsExpandClick)
+        if (toolsExpanded) {
+            PremiumToolsSection(onNavigateTo = onNavigateTo)
         }
     }
 }

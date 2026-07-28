@@ -19,49 +19,39 @@ fun TaxRegimeBattleHeroCard(
     comparison: RegimeComparisonResult,
     modifier: Modifier = Modifier,
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+    FlatBorderedCard(modifier = modifier, tint = CardTint.Accent, contentSpacing = AppDimensions.SpacingSmall) {
+        Text(
+            text = AppStringsPremium.taxPlanningRegimeBattleTitle,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
-            Text(
-                text = AppStringsPremium.taxPlanningRegimeBattleTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+            RegimeOptionBox(
+                detail = comparison.oldRegime,
+                isWinner = comparison.winnerRegime == "OLD",
+                savings = if (comparison.winnerRegime == "OLD") comparison.annualSavings else 0.0,
+                modifier = Modifier.weight(1f),
             )
+            RegimeOptionBox(
+                detail = comparison.newRegime,
+                isWinner = comparison.winnerRegime == "NEW",
+                savings = if (comparison.winnerRegime == "NEW") comparison.annualSavings else 0.0,
+                modifier = Modifier.weight(1f),
+            )
+        }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-            ) {
-                RegimeOptionBox(
-                    detail = comparison.oldRegime,
-                    isWinner = comparison.winnerRegime == "OLD",
-                    savings = if (comparison.winnerRegime == "OLD") comparison.annualSavings else 0.0,
-                    modifier = Modifier.weight(1f),
-                )
-                RegimeOptionBox(
-                    detail = comparison.newRegime,
-                    isWinner = comparison.winnerRegime == "NEW",
-                    savings = if (comparison.winnerRegime == "NEW") comparison.annualSavings else 0.0,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-
-            if (comparison.breakEvenDeduction > 0) {
-                val formattedBreakEven = TaxLedgerAggregator.formatIndianCurrency(comparison.breakEvenDeduction)
-                Text(
-                    text = "${AppStringsPremium.taxPlanningBreakEvenText}$formattedBreakEven",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+        if (comparison.breakEvenDeduction > 0) {
+            val formattedBreakEven = TaxLedgerAggregator.formatIndianCurrency(comparison.breakEvenDeduction)
+            Text(
+                text = "${AppStringsPremium.taxPlanningBreakEvenText}$formattedBreakEven",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

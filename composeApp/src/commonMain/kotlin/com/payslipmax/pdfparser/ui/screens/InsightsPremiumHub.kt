@@ -1,16 +1,11 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,23 +41,13 @@ fun LockedPremiumHubCard(
         }
     val mostRelevant = remember(state, smartInsights) { buildRecommendedActions(state, smartInsights).firstOrNull() }
 
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-        ) {
-            PremiumHubHeader()
-            PremiumHubBundleList()
-            if (anomalyDisplay.lockedCount > 0) PremiumHubAnomalyHook(anomalyDisplay)
-            if (mostRelevant != null) PremiumHubMostRelevant(mostRelevant)
-            Button(onClick = onUpgradeClick, modifier = Modifier.fillMaxWidth()) {
-                Text(text = InsightsStrings.premiumHubCta, fontWeight = FontWeight.Bold)
-            }
+    FlatBorderedCard(modifier = modifier, tint = CardTint.Accent) {
+        PremiumHubHeader()
+        PremiumHubBundleList()
+        if (anomalyDisplay.lockedCount > 0) PremiumHubAnomalyHook(anomalyDisplay)
+        if (mostRelevant != null) PremiumHubMostRelevant(mostRelevant)
+        Button(onClick = onUpgradeClick, modifier = Modifier.fillMaxWidth()) {
+            Text(text = InsightsStrings.premiumHubCta, fontWeight = FontWeight.Bold)
         }
     }
 }
