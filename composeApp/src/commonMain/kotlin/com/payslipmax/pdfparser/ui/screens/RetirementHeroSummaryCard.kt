@@ -28,7 +28,7 @@ fun RetirementHeroSummaryCard(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
-            HeroHeader(confidenceLevel = result.confidenceLevel, rank = result.officerRank, name = result.officerName)
+            HeroHeader(confidenceLevel = result.confidenceLevel)
             HorizontalDivider(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
             HeroMonthlySection(
                 netMonthlyPension = result.netMonthlyPensionCommuted50,
@@ -44,15 +44,8 @@ fun RetirementHeroSummaryCard(
 @Composable
 private fun HeroHeader(
     confidenceLevel: DataConfidenceLevel,
-    rank: String? = null,
-    name: String? = null,
 ) {
-    val titleText =
-        if (!rank.isNullOrBlank() || !name.isNullOrBlank()) {
-            "${listOfNotNull(rank, name).joinToString(" ")} — Summary"
-        } else {
-            AppStringsPremium.retHeroTitle
-        }
+    val titleText = AppStringsPremium.retHeroTitle
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
