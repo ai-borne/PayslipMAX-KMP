@@ -111,7 +111,12 @@ object TaxRuleKnowledgeBase {
                 ),
         )
 
+    private const val DEFAULT_FALLBACK_FY = "2026-27"
+
     fun getRulesForFy(fy: String): TaxYearRules {
-        return RULES_MAP[fy] ?: RULES_MAP["2026-27"]!!
+        return RULES_MAP[fy]
+            ?: RULES_MAP[DEFAULT_FALLBACK_FY]
+            ?: RULES_MAP.values.firstOrNull()
+            ?: error("TaxRuleKnowledgeBase initialization error: no tax rules available")
     }
 }

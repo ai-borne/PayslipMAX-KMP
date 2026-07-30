@@ -38,5 +38,6 @@ class TaxRuleKnowledgeBaseTest {
         val rules = TaxRuleKnowledgeBase.getRulesForFy("2099-100")
         assertNotNull(rules)
         assertEquals(75000.0, rules.standardDeductionNew)
+        assertTrue(rules.financialYear.isNotEmpty(), "Fallback rules should contain a non-empty financial year")
     }
 }

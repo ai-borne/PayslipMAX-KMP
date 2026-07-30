@@ -161,12 +161,15 @@ actual object CryptoHelper {
             }
 
         if (ctx == null || isTest) {
-            if (memoryFallbackKey == null) {
-                val bytes = ByteArray(32)
-                java.security.SecureRandom().nextBytes(bytes)
-                memoryFallbackKey = bytes.joinToString("") { "%02x".format(it) }
-            }
-            return memoryFallbackKey!!
+            val key =
+                memoryFallbackKey ?: run {
+                    val bytes = ByteArray(32)
+                    java.security.SecureRandom().nextBytes(bytes)
+                    val generated = bytes.joinToString("") { "%02x".format(it) }
+                    memoryFallbackKey = generated
+                    generated
+                }
+            return key
         }
 
         val prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -204,10 +207,8 @@ actual object CryptoHelper {
             editor.apply()
         } catch (e: Exception) {
             // If keystore fails, cache in memoryFallbackKey and return it to ensure consistency in this process
-            if (memoryFallbackKey == null) {
-                memoryFallbackKey = rawKey.joinToString("") { "%02x".format(it) }
-            }
-            return memoryFallbackKey!!
+            val fallback = memoryFallbackKey ?: rawKey.joinToString("") { "%02x".format(it) }.also { memoryFallbackKey = it }
+            return fallback
         }
 
         return rawKey.joinToString("") { "%02x".format(it) }

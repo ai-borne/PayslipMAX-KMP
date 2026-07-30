@@ -189,28 +189,30 @@ actual object CryptoHelper {
         CFRelease(query)
         result?.let { return it }
 
-        if (memoryFallbackKey == null) {
-            val newKey =
-                ByteArray(32).apply {
-                    usePinned { SecRandomCopyBytes(kSecRandomDefault, 32.toULong(), it.addressOf(0).reinterpret<UByteVar>()) }
-                }
-            val nsData = newKey.toNSData()
-            val addQuery =
-                CFDictionaryCreateMutable(null, 0, null, null).apply {
-                    CFDictionarySetValue(this, kSecClass, kSecClassGenericPassword)
-                    CFDictionarySetValue(this, kSecAttrService, KEYCHAIN_SERVICE.toCFString())
-                    CFDictionarySetValue(this, kSecAttrAccount, KEYCHAIN_ACCOUNT.toCFString())
-                    val nsDataRef = CFBridgingRetain(nsData)
-                    CFDictionarySetValue(this, kSecValueData, nsDataRef)
-                    CFRelease(nsDataRef)
-                }
-            val addStatus = SecItemAdd(addQuery, null)
-            CFRelease(addQuery)
-            val hexKey = newKey.toHex()
-            if (addStatus != errSecSuccess) memoryFallbackKey = hexKey
-            return hexKey
+        val existingFallback = memoryFallbackKey
+        if (existingFallback != null) {
+            return existingFallback
         }
-        return memoryFallbackKey!!
+
+        val newKey =
+            ByteArray(32).apply {
+                usePinned { SecRandomCopyBytes(kSecRandomDefault, 32.toULong(), it.addressOf(0).reinterpret<UByteVar>()) }
+            }
+        val nsData = newKey.toNSData()
+        val addQuery =
+            CFDictionaryCreateMutable(null, 0, null, null).apply {
+                CFDictionarySetValue(this, kSecClass, kSecClassGenericPassword)
+                CFDictionarySetValue(this, kSecAttrService, KEYCHAIN_SERVICE.toCFString())
+                CFDictionarySetValue(this, kSecAttrAccount, KEYCHAIN_ACCOUNT.toCFString())
+                val nsDataRef = CFBridgingRetain(nsData)
+                CFDictionarySetValue(this, kSecValueData, nsDataRef)
+                CFRelease(nsDataRef)
+            }
+        val addStatus = SecItemAdd(addQuery, null)
+        CFRelease(addQuery)
+        val hexKey = newKey.toHex()
+        if (addStatus != errSecSuccess) memoryFallbackKey = hexKey
+        return hexKey
     }
 
     actual fun getCurrentTimeMillis(): Long = (NSDate().timeIntervalSince1970 * 1000.0).toLong()

@@ -34,7 +34,7 @@ fun TaxPlanningScreen(
                 null
             }
         }
-    TaxPlanningScreen(
+    TaxPlanningContentScreen(
         optimizationResult = optimizationResult,
         onNavigateBack = onBack,
         modifier = modifier,
@@ -42,7 +42,7 @@ fun TaxPlanningScreen(
 }
 
 @Composable
-fun TaxPlanningScreen(
+fun TaxPlanningContentScreen(
     optimizationResult: OptimizationResult?,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
