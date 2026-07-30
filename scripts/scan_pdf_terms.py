@@ -3,7 +3,7 @@ import re
 import pypdf
 
 pdf_dir = "/Users/test/Desktop/Pay Slip Elements"
-password = "535d04"
+password = os.environ.get("PDF_DECRYPTION_PASSWORD", "535d04")
 
 # Load current mappings from regenerate_json
 credit_keys_mapping = {
