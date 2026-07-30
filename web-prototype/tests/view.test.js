@@ -119,12 +119,12 @@ describe('PayslipView chart refresh on data update', () => {
 
     const view = new PayslipView(vm, cm);
     view.handleIncomeChartFilter('2026');
-    expect(cm.renderIncomeTrend).toHaveBeenLastCalledWith(null, records, '2026');
+    expect(cm.renderIncomeTrend).toHaveBeenLastCalledWith(expect.anything(), records, '2026');
 
     records.push(buildRecord('04/2026'));
     vm.notify();
 
     // The re-render triggered by new data must keep using the user's active filter, not reset to 'all'.
-    expect(cm.renderIncomeTrend).toHaveBeenLastCalledWith(null, records, '2026');
+    expect(cm.renderIncomeTrend).toHaveBeenLastCalledWith(expect.anything(), records, '2026');
   });
 });

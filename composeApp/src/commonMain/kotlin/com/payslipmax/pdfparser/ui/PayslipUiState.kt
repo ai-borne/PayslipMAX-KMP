@@ -1,10 +1,12 @@
 package com.payslipmax.pdfparser.ui
 
 import com.payslipmax.pdfparser.domain.*
+import com.payslipmax.pdfparser.insights.OptimizationResult
 
 data class PayslipUiState(
     val payslips: List<ParsedPayslip> = emptyList(),
     val selectedPayslip: ParsedPayslip? = null,
+    val taxOptimizationResult: OptimizationResult? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
     val importError: String? = null,

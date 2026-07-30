@@ -81,7 +81,13 @@ class PayslipViewModelTest {
             val state = viewModel.uiState.value
             assertEquals(1, state.payslips.size)
             assertEquals(mockPayslip, state.selectedPayslip)
+            assertNotNull(state.taxOptimizationResult)
         }
+
+    @Test
+    fun testTaxOptimizationResultNullWhenEmpty() {
+        assertNull(viewModel.uiState.value.taxOptimizationResult)
+    }
 
     @Test
     fun testSelectPayslip() {

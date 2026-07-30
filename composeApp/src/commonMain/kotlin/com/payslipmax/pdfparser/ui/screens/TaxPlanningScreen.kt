@@ -7,11 +7,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.insights.OptimizationResult
-import com.payslipmax.pdfparser.insights.WealthOptimizationEngine
 import com.payslipmax.pdfparser.tax.TaxRuleKnowledgeBase
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
@@ -26,16 +24,8 @@ fun TaxPlanningScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState = viewModel.uiState.collectAsState().value
-    val optimizationResult =
-        remember(uiState.payslips, uiState.selectedPayslip) {
-            if (uiState.payslips.isNotEmpty()) {
-                WealthOptimizationEngine.analyzeLedger(uiState.payslips, uiState.selectedPayslip)
-            } else {
-                null
-            }
-        }
     TaxPlanningContentScreen(
-        optimizationResult = optimizationResult,
+        optimizationResult = uiState.taxOptimizationResult,
         onNavigateBack = onBack,
         modifier = modifier,
     )
