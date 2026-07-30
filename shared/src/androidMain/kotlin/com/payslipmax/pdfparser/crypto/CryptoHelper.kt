@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.crypto
 
 import android.content.Context
+import android.content.SharedPreferences
 import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -191,6 +192,10 @@ actual object CryptoHelper {
             }
         }
 
+        return generateAndPersistDatabaseKey(prefs)
+    }
+
+    private fun generateAndPersistDatabaseKey(prefs: SharedPreferences): String {
         val rawKey = ByteArray(32)
         java.security.SecureRandom().nextBytes(rawKey)
 
