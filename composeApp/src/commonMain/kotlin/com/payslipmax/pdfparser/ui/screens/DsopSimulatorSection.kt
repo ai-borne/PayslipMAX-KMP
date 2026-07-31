@@ -76,7 +76,7 @@ private fun DsopSimulatorContent(
         }
 
         Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
-        ProjectionGrid(initialBalance, monthlyContribution.toDouble())
+        ProjectionStack(initialBalance, monthlyContribution.toDouble())
 
         Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
         DsopAssetComparisonCard(initialBalance, monthlyContribution.toDouble())
@@ -165,7 +165,7 @@ private fun TaxSafeTooltip() {
 }
 
 @Composable
-private fun ProjectionGrid(
+private fun ProjectionStack(
     initialBalance: Double,
     monthly: Double,
 ) {
@@ -175,49 +175,49 @@ private fun ProjectionGrid(
     val calculated15 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 15).projectedBalance }
 
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            ProjectionCard(AppStrings.dsopSimulator1Year, calculated1, Modifier.weight(1f))
-            ProjectionCard(AppStrings.dsopSimulator5Years, calculated5, Modifier.weight(1f))
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            ProjectionCard(AppStrings.dsopSimulator10Years, calculated10, Modifier.weight(1f))
-            ProjectionCard(AppStrings.dsopSimulator15Years, calculated15, Modifier.weight(1f))
-        }
+        ProjectionCard(AppStrings.dsopSimulator1Year, AppStrings.dsopProjectionSubtext1Year, calculated1)
+        ProjectionCard(AppStrings.dsopSimulator5Years, AppStrings.dsopProjectionSubtext5Years, calculated5)
+        ProjectionCard(AppStrings.dsopSimulator10Years, AppStrings.dsopProjectionSubtext10Years, calculated10)
+        ProjectionCard(AppStrings.dsopSimulator15Years, AppStrings.dsopProjectionSubtext15Years, calculated15)
     }
 }
 
 @Composable
 private fun ProjectionCard(
     label: String,
+    subtext: String,
     value: Double,
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.03f)),
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
     ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.SpacingSmall),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+        Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = "₹${formatShortAmount(value)}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
             Spacer(modifier = Modifier.height(AppDimensions.SpacingTwo))
             Text(
-                text = "₹${formatShortAmount(value)}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                text = subtext,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

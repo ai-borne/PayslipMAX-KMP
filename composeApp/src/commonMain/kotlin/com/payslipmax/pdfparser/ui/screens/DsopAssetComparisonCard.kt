@@ -131,7 +131,7 @@ fun DsopAssetComparisonCard(
 
             projections.forEach { item ->
                 AssetRowItem(item = item, maxNet = maxNet)
-                Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
+                Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
             }
 
             Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
@@ -172,10 +172,10 @@ private fun AssetRowItem(
                 color = if (item.isTaxFree) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             )
         }
-        Spacer(modifier = Modifier.height(AppDimensions.SpacingTwo))
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingSix))
         LinearProgressIndicator(
             progress = { fraction },
-            modifier = Modifier.fillMaxWidth().height(AppDimensions.SpacingSmall),
+            modifier = Modifier.fillMaxWidth().height(AppDimensions.SpacingSix),
             color = if (item.isTaxFree) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f),
             trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
         )
