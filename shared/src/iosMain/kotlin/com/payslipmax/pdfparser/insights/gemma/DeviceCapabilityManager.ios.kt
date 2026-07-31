@@ -48,4 +48,13 @@ actual class DeviceCapabilityManager actual constructor() {
             10000L
         }
     }
+
+    actual companion object {
+        actual fun isRamSufficientForGemma(
+            totalRamMb: Long,
+            requiredRamMb: Long,
+        ): Boolean {
+            return totalRamMb >= requiredRamMb
+        }
+    }
 }

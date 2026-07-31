@@ -61,6 +61,15 @@ object AppStrings {
     const val uploadDismiss = "Dismiss"
     const val uploadSuccess = "Payslip Imported Successfully!"
 
+    // Pre-Flight Validation Errors
+    const val errorUnrecognizedPdf = "Unrecognised PDF. Please upload soft copy of PCDAO Payslip in PDF Format"
+    const val errorEncryptedPdfTitle = "Password-Protected PDF"
+    const val errorEncryptedPdfDesc = "This PDF requires a password to open. Please unlock the file before importing or use Edit Mode to enter data."
+    const val errorZeroTokensTitle = "Scanned / Empty PDF"
+    const val errorZeroTokensDesc = "No readable text was found in this PDF. It may be a scanned image or photo. You can enter details manually via Edit Mode."
+    const val errorUnrecognizedFormatTitle = "Unrecognized Format"
+    const val errorUnrecognizedFormatDesc = "This document does not match a PCDA(O) payslip layout. You can still use Edit Mode to manually add your figures."
+
     // Dashboard - Officer Info Bar
     const val cdaInfoLabel = "CDA A/C"
     const val panInfoLabel = "PAN"

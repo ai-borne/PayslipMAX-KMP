@@ -50,7 +50,16 @@ actual class DeviceCapabilityManager actual constructor() {
             val availableBytes = stat.availableBlocksLong * stat.blockSizeLong
             availableBytes / (1024 * 1024)
         } catch (e: Throwable) {
-            10000L // Default safe fallback for tests/emulators
+            10000L
+        }
+    }
+
+    actual companion object {
+        actual fun isRamSufficientForGemma(
+            totalRamMb: Long,
+            requiredRamMb: Long,
+        ): Boolean {
+            return totalRamMb >= requiredRamMb
         }
     }
 }

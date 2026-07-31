@@ -13,6 +13,7 @@ import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.telemetry.GemmaInstallTelemetry
 import com.payslipmax.pdfparser.telemetry.provideGemmaInstallTelemetry
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -207,6 +208,7 @@ class PayslipViewModel(
                             state.payslips
                         }
                     state.copy(
+                        payslips = updatedPayslips,
                         selectedPayslip = parsed,
                         taxOptimizationResult = computeTaxOptimization(updatedPayslips, parsed),
                         isLoading = false,
@@ -217,9 +219,23 @@ class PayslipViewModel(
                     loadCachedAiInsights(parsed.dateStr)
                 }
             } else {
+                val rawMessage = result.exceptionOrNull()?.message ?: ""
+                val friendlyError =
+                    when {
+                        rawMessage.contains("UNRECOGNIZED_GRAMMAR") || rawMessage.contains("PdfPreFlightValidationFailed") ->
+                            AppStrings.errorUnrecognizedPdf
+                        rawMessage.contains("PASSWORD_PROTECTED") ->
+                            AppStrings.errorEncryptedPdfDesc
+                        rawMessage.contains("NO_TEXT_TOKENS") ->
+                            AppStrings.errorZeroTokensDesc
+                        rawMessage.isNotBlank() && !rawMessage.contains("Exception") && !rawMessage.contains(":") ->
+                            rawMessage
+                        else ->
+                            AppStrings.errorUnrecognizedPdf
+                    }
                 _uiState.update { state ->
                     state.copy(
-                        importError = result.exceptionOrNull()?.message ?: "Decryption or parsing failed",
+                        importError = friendlyError,
                         isLoading = false,
                     )
                 }
