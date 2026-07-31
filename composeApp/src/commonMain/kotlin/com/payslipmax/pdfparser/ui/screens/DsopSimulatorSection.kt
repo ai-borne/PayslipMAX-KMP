@@ -22,9 +22,13 @@ fun DsopSimulatorSection(
     initialContribution: Double,
     modifier: Modifier = Modifier,
 ) {
-    var monthlyContribution by remember { mutableStateOf(initialContribution.coerceIn(6000.0, 100000.0).toFloat()) }
-    val annualContribution = monthlyContribution * 12
-    val exceedsLimit = annualContribution > 500000f
+    val initialRounded =
+        remember(initialContribution) {
+            val rounded = kotlin.math.round(initialContribution / 1000.0) * 1000.0
+            rounded.coerceIn(6000.0, 100000.0).toFloat()
+        }
+    var monthlyContribution by remember(initialRounded) { mutableStateOf(initialRounded) }
+    val exceedsLimit = monthlyContribution * 12 > 500000f
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -32,35 +36,50 @@ fun DsopSimulatorSection(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
     ) {
-        Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
-            Text(
-                text = AppStrings.dsopSimulatorTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
+        DsopSimulatorContent(
+            initialBalance = initialBalance,
+            monthlyContribution = monthlyContribution,
+            onContributionChange = { monthlyContribution = it },
+            exceedsLimit = exceedsLimit,
+        )
+    }
+}
 
-            DsopSliderControls(
-                monthlyContribution = monthlyContribution,
-                onValueChange = { monthlyContribution = it },
-                exceedsLimit = exceedsLimit,
-            )
+@Composable
+private fun DsopSimulatorContent(
+    initialBalance: Double,
+    monthlyContribution: Float,
+    onContributionChange: (Float) -> Unit,
+    exceedsLimit: Boolean,
+) {
+    Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
+        Text(
+            text = AppStrings.dsopSimulatorTitle,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
 
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
+        DsopSliderControls(
+            monthlyContribution = monthlyContribution,
+            onValueChange = onContributionChange,
+            exceedsLimit = exceedsLimit,
+        )
 
-            if (exceedsLimit) {
-                TaxWarningTooltip()
-            } else {
-                TaxSafeTooltip()
-            }
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
 
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
-            ProjectionGrid(initialBalance, monthlyContribution.toDouble())
-
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
-            DsopAssetComparisonCard(initialBalance, monthlyContribution.toDouble())
+        if (exceedsLimit) {
+            TaxWarningTooltip()
+        } else {
+            TaxSafeTooltip()
         }
+
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
+        ProjectionGrid(initialBalance, monthlyContribution.toDouble())
+
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
+        DsopAssetComparisonCard(initialBalance, monthlyContribution.toDouble())
     }
 }
 
@@ -89,9 +108,12 @@ private fun DsopSliderControls(
 
     Slider(
         value = monthlyContribution,
-        onValueChange = onValueChange,
+        onValueChange = { raw ->
+            val rounded = (kotlin.math.round(raw / 1000.0) * 1000.0).toFloat().coerceIn(6000f, 100000f)
+            onValueChange(rounded)
+        },
         valueRange = 6000f..100000f,
-        steps = 94,
+        steps = 93,
         colors =
             SliderDefaults.colors(
                 thumbColor = if (exceedsLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
