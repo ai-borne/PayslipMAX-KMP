@@ -113,6 +113,15 @@ class SmartInsightsBuilderTest {
     }
 
     @Test
+    fun `DSOP compliance action label distinguishes between mandatory shortfall and tax-free cap optimization`() {
+        val cardShortfall = buildSmartInsights(state(anomalies = listOf(anomaly("DSOP_COMPLIANCE", amount = 1000.0)))).single()
+        assertEquals(InsightsStrings.wellnessDsopNonCompliance, cardShortfall.actionLabel)
+
+        val cardOptimize = buildSmartInsights(state(anomalies = listOf(anomaly("DSOP_COMPLIANCE", amount = 0.0)))).single()
+        assertEquals(InsightsStrings.wellnessDsopOptimizeCap, cardOptimize.actionLabel)
+    }
+
+    @Test
     fun `a tax-projection anomaly routes to the Tax Planner behind its gate`() {
         val card = buildSmartInsights(state(anomalies = listOf(anomaly("TAX_PROJECTION")))).single()
         assertEquals(Screen.TaxPlanning, card.actionTarget)

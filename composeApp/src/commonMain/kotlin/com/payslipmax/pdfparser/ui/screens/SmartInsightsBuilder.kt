@@ -97,7 +97,7 @@ private fun Anomaly.toInsightUiModel(): InsightUiModel {
         explanation = description,
         severity = AnomalySeverityMapper.severityOf(type),
         amountLabel = if (amount > 0.0) formatCurrency(amount) else null,
-        actionLabel = anomalyActionLabel(type),
+        actionLabel = anomalyActionLabel(type, amount),
         actionTarget = target,
         gate = target?.let(::gateForScreen),
     )
@@ -114,13 +114,16 @@ private fun Opportunity.toInsightUiModel(): InsightUiModel =
         gate = gateForScreen(Screen.TaxPlanning),
     )
 
-private fun anomalyActionLabel(type: String): String? =
+private fun anomalyActionLabel(
+    type: String,
+    amount: Double = 0.0,
+): String? =
     when (type) {
         "MISSING_ALLOWANCE" -> InsightsStrings.wellnessImproveMissingAllowance
         "SALARY_LOSS" -> InsightsStrings.wellnessImproveSalaryLoss
         "DEDUCTION_SPIKE" -> InsightsStrings.wellnessImproveDeductionSpike
         "TPTA_ENTITLEMENT" -> InsightsStrings.wellnessImproveTptaEntitlement
-        "DSOP_COMPLIANCE" -> InsightsStrings.wellnessDsopNonCompliance
+        "DSOP_COMPLIANCE" -> if (amount > 0.0) InsightsStrings.wellnessDsopNonCompliance else InsightsStrings.wellnessDsopOptimizeCap
         "TAX_PROJECTION" -> InsightsStrings.smartInsightsActionTaxProjection
         // RENT_RECOVERY_RISK / DEBIT_RECOVERY have no actionTarget below (not in
         // FinancialIntelligenceRepository's representation-draft-eligible set, no other screen fits)

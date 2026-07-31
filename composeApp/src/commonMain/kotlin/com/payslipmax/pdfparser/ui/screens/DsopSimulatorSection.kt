@@ -56,7 +56,10 @@ fun DsopSimulatorSection(
             }
 
             Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
-            ProjectionRow(initialBalance, monthlyContribution.toDouble())
+            ProjectionGrid(initialBalance, monthlyContribution.toDouble())
+
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
+            DsopAssetComparisonCard(initialBalance, monthlyContribution.toDouble())
         }
     }
 }
@@ -140,21 +143,30 @@ private fun TaxSafeTooltip() {
 }
 
 @Composable
-private fun ProjectionRow(
+private fun ProjectionGrid(
     initialBalance: Double,
     monthly: Double,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-    ) {
-        val calculated5 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 5).projectedBalance }
-        val calculated10 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 10).projectedBalance }
-        val calculated15 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 15).projectedBalance }
+    val calculated1 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 1).projectedBalance }
+    val calculated5 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 5).projectedBalance }
+    val calculated10 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 10).projectedBalance }
+    val calculated15 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 15).projectedBalance }
 
-        ProjectionCard(AppStrings.dsopSimulator5Years, calculated5, Modifier.weight(1f))
-        ProjectionCard(AppStrings.dsopSimulator10Years, calculated10, Modifier.weight(1f))
-        ProjectionCard(AppStrings.dsopSimulator15Years, calculated15, Modifier.weight(1f))
+    Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+        ) {
+            ProjectionCard(AppStrings.dsopSimulator1Year, calculated1, Modifier.weight(1f))
+            ProjectionCard(AppStrings.dsopSimulator5Years, calculated5, Modifier.weight(1f))
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+        ) {
+            ProjectionCard(AppStrings.dsopSimulator10Years, calculated10, Modifier.weight(1f))
+            ProjectionCard(AppStrings.dsopSimulator15Years, calculated15, Modifier.weight(1f))
+        }
     }
 }
 

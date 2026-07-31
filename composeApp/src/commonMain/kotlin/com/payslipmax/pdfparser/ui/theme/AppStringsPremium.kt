@@ -71,7 +71,7 @@ object AppStringsPremium {
     const val retSparshTitle = "SPARSH & PCDA(O) Transition Directory"
     const val retSparshHelpline = "PCDA(O) Pune Helpline: 9309781033 · SPARSH Toll Free: 1800-180-5325"
 
-    const val taxPlanningTitle = "Tax Optimization Planner"
+    const val taxPlanningTitle = "Tax Planner"
     const val taxPlanningSubtitle = "Form 16 projections & tax-saving suggestions"
     const val taxPlanningGrossYtd = "YTD Gross Salary"
     const val taxPlanningTaxable = "Net Taxable Income"
@@ -127,7 +127,7 @@ object AppStringsPremium {
     const val taxPlanningConfidencePreliminary = "🔴 Preliminary Estimate"
     const val taxPlanningRuleVersionFooter = "🛡️ Tax Engine: CBDT Rules FY 2025-26 (AY 2026-27) · Version 2026.1 (Verified 01 Jul 2026) · 100% Offline Secured"
 
-    const val retirementTitle = "Retirement Wealth Projection"
+    const val retirementTitle = "DSOP Simulator"
     const val retirementSubtitle = "DSOP contribution & compound wealth estimates"
     const val retirementProjectionDisclaimer = "Note: Compounding projections are estimated using a standard interest rate of 7.1% per annum. Actual rates may vary."
     const val premiumToolsTitle = "Premium Financial Tools"

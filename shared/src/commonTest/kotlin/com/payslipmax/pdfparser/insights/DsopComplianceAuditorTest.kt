@@ -58,4 +58,17 @@ class DsopComplianceAuditorTest {
         assertEquals(45000.0, milestone.amount)
         assertTrue(milestone.description.contains("Tax-free annual interest"))
     }
+
+    @Test
+    fun testUnchangedDsopSubscriptionAlertWording() {
+        val current = createMockPayslip(dsop = 15000.0)
+        val history = List(18) { createMockPayslip(dsop = 15000.0) }
+        val auditor = DsopComplianceAuditor()
+        val result = auditor.audit(current, null, history)
+
+        val complianceAnomaly = result.find { it.type == "DSOP_COMPLIANCE" }
+        assertTrue(complianceAnomaly != null)
+        assertEquals(0.0, complianceAnomaly.amount)
+        assertTrue(complianceAnomaly.description.contains("₹41,666/mo (₹5 Lakhs/yr)"))
+    }
 }
