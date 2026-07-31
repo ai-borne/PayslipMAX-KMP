@@ -22,6 +22,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -79,9 +80,6 @@ fun PayslipReplicaScreen(
             MetadataSection(payslip = payslip)
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
-            PdfDocumentCard(payslip = payslip, onViewPdfClick = onViewPdfClick)
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-
             LedgerSection(
                 payslip = payslip,
                 onItemClick = { code, desc -> activeGlossaryItem = code to desc },
@@ -94,6 +92,12 @@ fun PayslipReplicaScreen(
 
             Spacer(modifier = Modifier.height(AppDimensions.SpacingHuge))
             FooterSection()
+
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+
+            PdfDocumentCard(payslip = payslip, onViewPdfClick = onViewPdfClick)
         }
 
         if (isEditModeActive) {
