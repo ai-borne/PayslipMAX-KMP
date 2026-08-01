@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.payslipmax.pdfparser.domain.EntryCategory
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.SingleCorrection
@@ -59,6 +58,7 @@ fun PayslipReplicaScreen(
     onDeleteDraft: (fieldKey: String, codeHead: String, category: EntryCategory, originalAmount: Double?) -> Unit = { _, _, _, _ -> },
     onSaveSession: () -> Unit = {},
     onCancelSession: () -> Unit = {},
+    onShareClick: () -> Unit = {},
 ) {
     var activeGlossaryItem by remember { mutableStateOf<Pair<String, String>?>(null) }
 
@@ -71,12 +71,12 @@ fun PayslipReplicaScreen(
                     .detailScreenSafeArea()
                     .verticalScroll(rememberScrollState())
                     .padding(AppDimensions.PaddingMedium)
-                    .padding(bottom = if (isEditModeActive) 80.dp else 0.dp),
+                    .padding(bottom = if (isEditModeActive) AppDimensions.FabClearanceHeight else AppDimensions.BottomDockClearanceHeight),
         ) {
             ReplicaHeader(onBackClick, isEditModeActive, onStartEditing, onCancelSession)
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
-            MetadataSection(payslip = payslip, onViewPdfClick = onViewPdfClick)
+            MetadataSection(payslip = payslip)
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
             LedgerSection(
@@ -95,6 +95,11 @@ fun PayslipReplicaScreen(
 
         if (isEditModeActive) {
             BottomConfirmationBanner(draftCorrections.size, onCancelSession, onSaveSession)
+        } else {
+            ReplicaActionDock(
+                onViewPdfClick = { onViewPdfClick(payslip.dateStr) },
+                onShareClick = onShareClick,
+            )
         }
 
         activeGlossaryItem?.let { (code, desc) ->
@@ -131,36 +136,21 @@ private fun ReplicaHeader(
 }
 
 @Composable
-private fun MetadataSection(
-    payslip: ParsedPayslip,
-    onViewPdfClick: (String) -> Unit,
-) {
+private fun MetadataSection(payslip: ParsedPayslip) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
+            Text(
+                text = "${AppStrings.replicaOfficerPrefix}${payslip.officer.name}",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+            )
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "${AppStrings.replicaOfficerPrefix}${payslip.officer.name}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.weight(1f),
-                )
-                PdfSourceChip(
-                    fileName = payslip.file,
-                    onClick = { onViewPdfClick(payslip.dateStr) },
-                )
-            }
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingTiny),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(text = "${AppStrings.replicaCdaPrefix}${payslip.officer.accountNo}", style = MaterialTheme.typography.bodyMedium)
