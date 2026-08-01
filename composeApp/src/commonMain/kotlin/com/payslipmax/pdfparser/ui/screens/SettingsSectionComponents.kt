@@ -66,8 +66,8 @@ fun SecuritySection(
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         SettingsRow(
             icon = "🛡️",
-            title = "Local Encryption Status",
-            subtitle = "100% Offline & Encrypted",
+            title = AppStrings.settingsSecurityEncryptionStatusLabel,
+            subtitle = AppStrings.settingsSecurityEncryptionStatusSubtitle,
         )
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         SettingsRow(
@@ -140,7 +140,7 @@ fun DataManagementSection(
     onUpgradePrompt: () -> Unit,
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
 ) {
-    SettingsCategoryHeader(title = "Data Management")
+    SettingsCategoryHeader(title = AppStrings.settingsDataManagementHeader)
     SettingsCategoryCard {
         BackupRestoreSettingsCard(
             password = password,

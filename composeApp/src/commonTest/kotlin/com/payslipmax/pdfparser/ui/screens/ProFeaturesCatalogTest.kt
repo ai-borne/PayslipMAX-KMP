@@ -49,6 +49,18 @@ class ProFeaturesCatalogTest {
     }
 
     @Test
+    fun backupRestoreIsAvailableAndCataloguedAsInTabFeature() {
+        // FeatureGate.BACKUP_RESTORE is catalogued as an available feature operating in-settings (target == null)
+        val meta = featureMeta(FeatureGate.BACKUP_RESTORE)
+        assertEquals(ProFeatureAvailability.AVAILABLE, meta.availability)
+        assertNull(meta.target)
+        assertTrue(meta.icon.isNotBlank())
+        assertTrue(meta.title.isNotBlank())
+        assertTrue(meta.description.isNotBlank())
+        assertTrue(premiumBundleHighlights().any { it.gate == FeatureGate.BACKUP_RESTORE })
+    }
+
+    @Test
     fun availableGatesWithDedicatedScreensPointAtThem() {
         assertEquals(Screen.TaxPlanning, featureMeta(FeatureGate.TAX_PLANNER).target)
         assertEquals(Screen.RetirementPlanning, featureMeta(FeatureGate.DSOP_SIMULATOR).target)

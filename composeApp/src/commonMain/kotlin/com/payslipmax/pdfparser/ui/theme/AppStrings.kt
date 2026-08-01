@@ -153,6 +153,10 @@ object AppStrings {
     const val statusNoPayslipsToBackup = "No payslips to back up yet."
 
     // Main Settings Screen
+    const val settingsDataManagementHeader = "Data Management"
+    const val settingsSecurityEncryptionStatusLabel = "Local Encryption Status"
+    const val settingsSecurityEncryptionStatusSubtitle = "100% Offline & Encrypted"
+    const val proBadgeTag = "PRO"
     const val settingsSubtitle = "Manage your profile, security, and data backups"
     const val settingsOfflineFirst = "Offline-First"
     const val settingsOfflineSecureTitle = "100% Offline & Secure"
