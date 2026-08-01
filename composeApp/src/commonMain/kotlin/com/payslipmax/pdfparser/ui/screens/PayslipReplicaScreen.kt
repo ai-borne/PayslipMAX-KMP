@@ -22,7 +22,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -77,7 +76,7 @@ fun PayslipReplicaScreen(
             ReplicaHeader(onBackClick, isEditModeActive, onStartEditing, onCancelSession)
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
-            MetadataSection(payslip = payslip)
+            MetadataSection(payslip = payslip, onViewPdfClick = onViewPdfClick)
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
             LedgerSection(
@@ -92,12 +91,6 @@ fun PayslipReplicaScreen(
 
             Spacer(modifier = Modifier.height(AppDimensions.SpacingHuge))
             FooterSection()
-
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-
-            PdfDocumentCard(payslip = payslip, onViewPdfClick = onViewPdfClick)
         }
 
         if (isEditModeActive) {
@@ -138,21 +131,36 @@ private fun ReplicaHeader(
 }
 
 @Composable
-private fun MetadataSection(payslip: ParsedPayslip) {
+private fun MetadataSection(
+    payslip: ParsedPayslip,
+    onViewPdfClick: (String) -> Unit,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
-            Text(
-                text = "${AppStrings.replicaOfficerPrefix}${payslip.officer.name}",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingTiny),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "${AppStrings.replicaOfficerPrefix}${payslip.officer.name}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f),
+                )
+                PdfSourceChip(
+                    fileName = payslip.file,
+                    onClick = { onViewPdfClick(payslip.dateStr) },
+                )
+            }
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(text = "${AppStrings.replicaCdaPrefix}${payslip.officer.accountNo}", style = MaterialTheme.typography.bodyMedium)
