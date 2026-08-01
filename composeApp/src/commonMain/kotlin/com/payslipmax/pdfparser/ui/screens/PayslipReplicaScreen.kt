@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.payslipmax.pdfparser.domain.EntryCategory
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.SingleCorrection
@@ -71,7 +72,7 @@ fun PayslipReplicaScreen(
                     .detailScreenSafeArea()
                     .verticalScroll(rememberScrollState())
                     .padding(AppDimensions.PaddingMedium)
-                    .padding(bottom = if (isEditModeActive) AppDimensions.FabClearanceHeight else AppDimensions.BottomDockClearanceHeight),
+                    .padding(bottom = if (isEditModeActive) AppDimensions.FabClearanceHeight else 0.dp),
         ) {
             ReplicaHeader(onBackClick, isEditModeActive, onStartEditing, onCancelSession)
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
@@ -91,15 +92,17 @@ fun PayslipReplicaScreen(
 
             Spacer(modifier = Modifier.height(AppDimensions.SpacingHuge))
             FooterSection()
+
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+            StatementSourceFooterCard(
+                payslip = payslip,
+                onViewPdfClick = onViewPdfClick,
+                onShareClick = onShareClick,
+            )
         }
 
         if (isEditModeActive) {
             BottomConfirmationBanner(draftCorrections.size, onCancelSession, onSaveSession)
-        } else {
-            ReplicaActionDock(
-                onViewPdfClick = { onViewPdfClick(payslip.dateStr) },
-                onShareClick = onShareClick,
-            )
         }
 
         activeGlossaryItem?.let { (code, desc) ->
