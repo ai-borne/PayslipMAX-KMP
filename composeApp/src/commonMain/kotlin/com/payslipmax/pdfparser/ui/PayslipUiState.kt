@@ -40,4 +40,5 @@ data class PayslipUiState(
     val isEditModeActive: Boolean = false,
     val draftCorrections: Map<String, SingleCorrection> = emptyMap(),
     val historyDetailPayslipId: String? = null,
+    val appIntegrityStatus: AppIntegrityStatus = AppIntegrityStatus.Valid,
 )

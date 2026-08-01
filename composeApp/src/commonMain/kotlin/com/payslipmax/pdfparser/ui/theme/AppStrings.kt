@@ -284,4 +284,10 @@ object AppStrings {
     const val correctionSessionActivePrefix = "Draft Session Active"
     const val correctionSessionDiscard = "Discard"
     const val correctionSessionApply = "Apply"
+
+    // Anti-Sideload & Security
+    const val sideloadBlockedTitle = "Security Violation: Untrusted Installation"
+    const val sideloadBlockedMessage = "This application build was installed from an unverified third-party source or has been modified. To protect your financial data and security, please install the official application from the Google Play Store."
+    const val sideloadGetOfficialAppButton = "Get Official App"
+    const val playStoreUrl = "https://play.google.com/store/apps/details?id=com.payslipmax.pdfparser"
 }
