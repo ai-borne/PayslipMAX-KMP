@@ -59,7 +59,6 @@ fun PayslipReplicaScreen(
     onDeleteDraft: (fieldKey: String, codeHead: String, category: EntryCategory, originalAmount: Double?) -> Unit = { _, _, _, _ -> },
     onSaveSession: () -> Unit = {},
     onCancelSession: () -> Unit = {},
-    onShareClick: () -> Unit = {},
 ) {
     var activeGlossaryItem by remember { mutableStateOf<Pair<String, String>?>(null) }
 
@@ -72,12 +71,15 @@ fun PayslipReplicaScreen(
                     .detailScreenSafeArea()
                     .verticalScroll(rememberScrollState())
                     .padding(AppDimensions.PaddingMedium)
-                    .padding(bottom = if (isEditModeActive) AppDimensions.FabClearanceHeight else 0.dp),
+                    .padding(bottom = if (isEditModeActive) 80.dp else 0.dp),
         ) {
             ReplicaHeader(onBackClick, isEditModeActive, onStartEditing, onCancelSession)
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
             MetadataSection(payslip = payslip)
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+
+            PdfDocumentCard(payslip = payslip, onViewPdfClick = onViewPdfClick)
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
             LedgerSection(
@@ -92,13 +94,6 @@ fun PayslipReplicaScreen(
 
             Spacer(modifier = Modifier.height(AppDimensions.SpacingHuge))
             FooterSection()
-
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-            StatementSourceFooterCard(
-                payslip = payslip,
-                onViewPdfClick = onViewPdfClick,
-                onShareClick = onShareClick,
-            )
         }
 
         if (isEditModeActive) {

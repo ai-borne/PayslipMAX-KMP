@@ -128,8 +128,6 @@ object AppDimensions {
 
     /** Default M3 FAB (56dp) + its edge margin (16dp) + breathing room (8dp) so scrolled content clears it. */
     val FabClearanceHeight = 80.dp
-    val TouchTargetMinHeight = 48.dp
-    val BottomDockClearanceHeight = 88.dp
 
     val TextSizeTiny = 9.sp
     val TextSizeSmall = 11.sp

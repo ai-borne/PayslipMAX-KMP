@@ -57,7 +57,7 @@ private fun findGrossSalaryMatch(text: String): MatchResult? {
         val validMatch =
             matches.firstOrNull { match ->
                 val group = match.groups[1] ?: return@firstOrNull false
-                val idx = match.range.first + match.value.indexOf(group.value)
+                val idx = group.range.first
                 idx == 0 || text[idx - 1] != '/'
             }
         if (validMatch != null) return validMatch
