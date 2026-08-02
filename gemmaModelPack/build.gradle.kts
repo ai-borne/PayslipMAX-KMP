@@ -1,3 +1,10 @@
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.TaskAction
 import java.security.MessageDigest
 
 plugins {
@@ -16,36 +23,25 @@ assetPack {
 // installed pack's assetsPath() at runtime.
 private val gemmaModelFileName = "gemma-active.litertlm"
 
-// Known-good SHA-256 of the Tier 6 Gemma base model (gemma3-1b-it-int4.litertlm). The fetch task
-// refuses to package any source file whose hash doesn't match this, so a corrupted or wrong-version
-// local copy can never silently ship in a release build.
-private val expectedGemmaModelSha256 = "1325ae366d31950f137c9c357b9fa89448b176d76998180c08ceaca78bba98be"
-
 private val gemmaModelAssetsDir = layout.projectDirectory.dir("src/main/assets")
-private val gemmaModelTargetFile = gemmaModelAssetsDir.file(gemmaModelFileName).asFile
 private val gemmaModelPlaceholderFile = gemmaModelAssetsDir.file("PLACEHOLDER_MODEL_NOT_YET_ACQUIRED.txt").asFile
 
-/**
- * Populates src/main/assets/ with the real Tier 6 Gemma base model before a release bundle is
- * packaged. Never committed to git (see root .gitignore) — this task is the only thing that ever
- * writes the real binary here, and only after verifying its SHA-256. Point it at a local copy via
- * `-PgemmaModelSourcePath=/path/to/gemma-model.litertlm` or the `GEMMA_MODEL_SOURCE_PATH` env var;
- * a proper release pipeline would instead fetch this from wherever the model is archived (e.g. the
- * original Hugging Face source), but no such fetch step exists yet — see the Phase 3 handoff.
- */
-tasks.register("fetchGemmaModelForRelease") {
-    group = "build"
-    description = "Verifies and copies the real Gemma base model into src/main/assets before bundleRelease."
+abstract class FetchGemmaModelTask : DefaultTask() {
+    @get:Input
+    @get:Optional
+    abstract val modelSourcePath: Property<String>
 
-    outputs.file(gemmaModelTargetFile)
-    outputs.upToDateWhen {
-        gemmaModelTargetFile.exists() && sha256Of(gemmaModelTargetFile) == expectedGemmaModelSha256
-    }
+    @get:OutputFile
+    abstract val targetModelFile: RegularFileProperty
 
-    doLast {
+    @get:OutputFile
+    @get:Optional
+    abstract val placeholderFile: RegularFileProperty
+
+    @TaskAction
+    fun fetch() {
         val sourcePath =
-            (project.findProperty("gemmaModelSourcePath") as String?)
-                ?: System.getenv("GEMMA_MODEL_SOURCE_PATH")
+            modelSourcePath.orNull
                 ?: error(
                     "No Gemma model source configured. Pass -PgemmaModelSourcePath=/path/to/gemma-model.litertlm " +
                         "or set the GEMMA_MODEL_SOURCE_PATH environment variable before running a release bundle.",
@@ -53,28 +49,43 @@ tasks.register("fetchGemmaModelForRelease") {
         val sourceFile = File(sourcePath)
         check(sourceFile.exists()) { "Gemma model source file not found at $sourcePath" }
 
+        val expectedSha256 = "1325ae366d31950f137c9c357b9fa89448b176d76998180c08ceaca78bba98be"
         val actualSha256 = sha256Of(sourceFile)
-        check(actualSha256 == expectedGemmaModelSha256) {
-            "Gemma model checksum mismatch: expected $expectedGemmaModelSha256 but " +
+        check(actualSha256 == expectedSha256) {
+            "Gemma model checksum mismatch: expected $expectedSha256 but " +
                 "$sourcePath hashed to $actualSha256 — refusing to package a corrupted/wrong-version model."
         }
 
-        sourceFile.copyTo(gemmaModelTargetFile, overwrite = true)
-        if (gemmaModelPlaceholderFile.exists()) {
-            gemmaModelPlaceholderFile.delete()
+        val targetFile = targetModelFile.get().asFile
+        sourceFile.copyTo(targetFile, overwrite = true)
+        val placeholder = placeholderFile.orNull?.asFile
+        if (placeholder != null && placeholder.exists()) {
+            placeholder.delete()
         }
-        logger.lifecycle("Gemma model verified (sha256=$actualSha256) and copied to $gemmaModelTargetFile")
+        logger.lifecycle("Gemma model verified (sha256=$actualSha256) and copied to $targetFile")
+    }
+
+    private fun sha256Of(file: File): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        file.inputStream().use { input ->
+            val buffer = ByteArray(64 * 1024)
+            var read: Int
+            while (input.read(buffer).also { read = it } > 0) {
+                digest.update(buffer, 0, read)
+            }
+        }
+        return digest.digest().joinToString("") { "%02x".format(it) }
     }
 }
 
-private fun sha256Of(file: File): String {
-    val digest = MessageDigest.getInstance("SHA-256")
-    file.inputStream().use { input ->
-        val buffer = ByteArray(64 * 1024)
-        var read: Int
-        while (input.read(buffer).also { read = it } > 0) {
-            digest.update(buffer, 0, read)
-        }
-    }
-    return digest.digest().joinToString("") { "%02x".format(it) }
+val gemmaModelSourceProvider =
+    providers.gradleProperty("gemmaModelSourcePath")
+        .orElse(providers.environmentVariable("GEMMA_MODEL_SOURCE_PATH"))
+
+tasks.register<FetchGemmaModelTask>("fetchGemmaModelForRelease") {
+    group = "build"
+    description = "Verifies and copies the real Gemma base model into src/main/assets before bundleRelease."
+    modelSourcePath.set(gemmaModelSourceProvider)
+    targetModelFile.set(gemmaModelAssetsDir.file(gemmaModelFileName))
+    placeholderFile.set(gemmaModelPlaceholderFile)
 }
