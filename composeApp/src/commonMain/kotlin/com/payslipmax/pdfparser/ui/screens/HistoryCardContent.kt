@@ -18,7 +18,7 @@ import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 
-internal data class TrendInfo(
+data class TrendInfo(
     val percentageChange: Double,
     val isIncrease: Boolean,
     val isZero: Boolean,
@@ -44,6 +44,29 @@ internal fun calculateTrend(
         isIncrease = diff > 0.0,
         isZero = diff == 0.0,
     )
+}
+
+internal fun precomputeTrends(allPayslips: List<ParsedPayslip>): Map<String, TrendInfo> {
+    if (allPayslips.size <= 1) return emptyMap()
+    val sorted = allPayslips.sortedWith(compareBy<ParsedPayslip> { it.year }.thenBy { it.monthNum })
+    val map = HashMap<String, TrendInfo>(sorted.size)
+    for (i in 1 until sorted.size) {
+        val current = sorted[i]
+        val previous = sorted[i - 1]
+        val prevNet = previous.summary.netRemittance
+        val currNet = current.summary.netRemittance
+        if (prevNet > 0.0) {
+            val diff = currNet - prevNet
+            val pct = (diff / prevNet) * 100.0
+            map[current.dateStr] =
+                TrendInfo(
+                    percentageChange = pct,
+                    isIncrease = diff > 0.0,
+                    isZero = diff == 0.0,
+                )
+        }
+    }
+    return map
 }
 
 internal fun formatPercentage(value: Double): String {
@@ -74,8 +97,12 @@ fun HistoryCardContent(
     payslip: ParsedPayslip,
     allPayslips: List<ParsedPayslip>,
     modifier: Modifier = Modifier,
+    trendMap: Map<String, TrendInfo>? = null,
 ) {
-    val trend = remember(payslip, allPayslips) { calculateTrend(payslip, allPayslips) }
+    val trend =
+        remember(payslip, allPayslips, trendMap) {
+            trendMap?.get(payslip.dateStr) ?: calculateTrend(payslip, allPayslips)
+        }
 
     Column(
         modifier =
@@ -119,7 +146,7 @@ private fun TrendBadge(trend: TrendInfo) {
     val color = if (trend.isIncrease) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
     val arrow = if (trend.isIncrease) "↑" else "↓"
     Surface(
-        shape = RoundedCornerShape(AppDimensions.IconSizeHuge),
+        shape = RoundedCornerShape(percent = 50),
         color = color.copy(alpha = 0.12f),
         border = BorderStroke(AppDimensions.BorderThin, color.copy(alpha = 0.4f)),
     ) {
@@ -160,7 +187,7 @@ private fun CompositionSparkbar(payslip: ParsedPayslip) {
             Modifier
                 .fillMaxWidth()
                 .height(AppDimensions.SpacingSix)
-                .clip(RoundedCornerShape(AppDimensions.SpacingTwo))
+                .clip(RoundedCornerShape(AppDimensions.CornerRadiusSmall))
                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
     ) {
         if (netPct > 0f) Box(modifier = Modifier.fillMaxHeight().weight(netPct).background(MaterialTheme.colorScheme.secondary))

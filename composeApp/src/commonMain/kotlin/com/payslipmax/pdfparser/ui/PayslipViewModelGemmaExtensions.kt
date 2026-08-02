@@ -67,3 +67,59 @@ private fun PayslipUiState.applyInstallState(installState: BaseModelInstallState
         is BaseModelInstallState.Failed ->
             copy(isDownloadingModel = false, modelDownloadError = installState.message)
     }
+
+internal fun PayslipViewModel.checkGemmaSupport() {
+    try {
+        val capManager = com.payslipmax.pdfparser.insights.gemma.DeviceCapabilityManager()
+        val status = capManager.checkGemmaSupport()
+        val (supported, reason) =
+            when (status) {
+                is com.payslipmax.pdfparser.insights.gemma.GemmaSupportStatus.Supported -> true to null
+                is com.payslipmax.pdfparser.insights.gemma.GemmaSupportStatus.InsufficientRam -> false to "Requires device with 4GB RAM"
+                is com.payslipmax.pdfparser.insights.gemma.GemmaSupportStatus.InsufficientStorage -> false to "Requires 1.5GB free storage"
+                is com.payslipmax.pdfparser.insights.gemma.GemmaSupportStatus.UnsupportedArchitecture -> false to status.reason
+            }
+        _uiState.update { it.copy(isGemmaSupported = supported, gemmaSupportReason = reason) }
+    } catch (e: Throwable) {
+        _uiState.update { it.copy(isGemmaSupported = true, gemmaSupportReason = null) }
+    }
+}
+
+internal fun PayslipViewModel.observeSettings() {
+    var isFirstSettingsLoad = true
+    var previousPremiumEnabled = false
+    viewModelScope.launch {
+        repository.getSettingsFlow().collect { settings ->
+            val isPremium = settings?.isPremiumEnabled ?: false
+            val isTelemetry = settings?.isTelemetryEnabled ?: true
+            gemmaInstallTelemetry.setTelemetryEnabled(isTelemetry)
+            _uiState.update { state ->
+                val isLocked =
+                    if (isFirstSettingsLoad) {
+                        isFirstSettingsLoad = false
+                        settings?.isLockEnabled ?: false
+                    } else {
+                        state.isAppLocked && (settings?.isLockEnabled ?: false)
+                    }
+                state.copy(
+                    isPremiumEnabled = isPremium,
+                    appTheme = settings?.appTheme ?: "system",
+                    isLockEnabled = settings?.isLockEnabled ?: false,
+                    appPinHash = settings?.appPinHash ?: "",
+                    profileName = settings?.profileName ?: "",
+                    profileCdaNumber = settings?.profileCdaNumber ?: "",
+                    profilePanNumber = settings?.profilePanNumber ?: "",
+                    isAppLocked = isLocked,
+                    useLocalAi = settings?.useLocalAi ?: false,
+                    isTelemetryEnabled = isTelemetry,
+                )
+            }
+            if (isPremium && !previousPremiumEnabled) {
+                _uiState.value.selectedPayslip?.let { payslip ->
+                    loadCachedAiInsights(payslip.dateStr)
+                }
+            }
+            previousPremiumEnabled = isPremium
+        }
+    }
+}

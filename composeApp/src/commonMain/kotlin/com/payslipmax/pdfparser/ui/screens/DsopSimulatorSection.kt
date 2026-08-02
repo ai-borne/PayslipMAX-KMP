@@ -22,9 +22,13 @@ fun DsopSimulatorSection(
     initialContribution: Double,
     modifier: Modifier = Modifier,
 ) {
-    var monthlyContribution by remember { mutableStateOf(initialContribution.coerceIn(6000.0, 100000.0).toFloat()) }
-    val annualContribution = monthlyContribution * 12
-    val exceedsLimit = annualContribution > 500000f
+    val initialRounded =
+        remember(initialContribution) {
+            val rounded = kotlin.math.round(initialContribution / 1000.0) * 1000.0
+            rounded.coerceIn(6000.0, 100000.0).toFloat()
+        }
+    var monthlyContribution by remember(initialRounded) { mutableStateOf(initialRounded) }
+    val exceedsLimit = monthlyContribution * 12 > 500000f
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -32,32 +36,50 @@ fun DsopSimulatorSection(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
     ) {
-        Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
-            Text(
-                text = AppStrings.dsopSimulatorTitle,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
+        DsopSimulatorContent(
+            initialBalance = initialBalance,
+            monthlyContribution = monthlyContribution,
+            onContributionChange = { monthlyContribution = it },
+            exceedsLimit = exceedsLimit,
+        )
+    }
+}
 
-            DsopSliderControls(
-                monthlyContribution = monthlyContribution,
-                onValueChange = { monthlyContribution = it },
-                exceedsLimit = exceedsLimit,
-            )
+@Composable
+private fun DsopSimulatorContent(
+    initialBalance: Double,
+    monthlyContribution: Float,
+    onContributionChange: (Float) -> Unit,
+    exceedsLimit: Boolean,
+) {
+    Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
+        Text(
+            text = AppStrings.dsopSimulatorTitle,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
 
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
+        DsopSliderControls(
+            monthlyContribution = monthlyContribution,
+            onValueChange = onContributionChange,
+            exceedsLimit = exceedsLimit,
+        )
 
-            if (exceedsLimit) {
-                TaxWarningTooltip()
-            } else {
-                TaxSafeTooltip()
-            }
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
 
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
-            ProjectionRow(initialBalance, monthlyContribution.toDouble())
+        if (exceedsLimit) {
+            TaxWarningTooltip()
+        } else {
+            TaxSafeTooltip()
         }
+
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
+        ProjectionStack(initialBalance, monthlyContribution.toDouble())
+
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
+        DsopAssetComparisonCard(initialBalance, monthlyContribution.toDouble())
     }
 }
 
@@ -86,9 +108,12 @@ private fun DsopSliderControls(
 
     Slider(
         value = monthlyContribution,
-        onValueChange = onValueChange,
+        onValueChange = { raw ->
+            val rounded = (kotlin.math.round(raw / 1000.0) * 1000.0).toFloat().coerceIn(6000f, 100000f)
+            onValueChange(rounded)
+        },
         valueRange = 6000f..100000f,
-        steps = 94,
+        steps = 93,
         colors =
             SliderDefaults.colors(
                 thumbColor = if (exceedsLimit) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
@@ -140,50 +165,59 @@ private fun TaxSafeTooltip() {
 }
 
 @Composable
-private fun ProjectionRow(
+private fun ProjectionStack(
     initialBalance: Double,
     monthly: Double,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-    ) {
-        val calculated5 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 5).projectedBalance }
-        val calculated10 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 10).projectedBalance }
-        val calculated15 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 15).projectedBalance }
+    val calculated1 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 1).projectedBalance }
+    val calculated5 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 5).projectedBalance }
+    val calculated10 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 10).projectedBalance }
+    val calculated15 = remember(initialBalance, monthly) { ProjectionMath.calculateProjection(initialBalance, monthly, 15).projectedBalance }
 
-        ProjectionCard(AppStrings.dsopSimulator5Years, calculated5, Modifier.weight(1f))
-        ProjectionCard(AppStrings.dsopSimulator10Years, calculated10, Modifier.weight(1f))
-        ProjectionCard(AppStrings.dsopSimulator15Years, calculated15, Modifier.weight(1f))
+    Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
+        ProjectionCard(AppStrings.dsopSimulator1Year, AppStrings.dsopProjectionSubtext1Year, calculated1)
+        ProjectionCard(AppStrings.dsopSimulator5Years, AppStrings.dsopProjectionSubtext5Years, calculated5)
+        ProjectionCard(AppStrings.dsopSimulator10Years, AppStrings.dsopProjectionSubtext10Years, calculated10)
+        ProjectionCard(AppStrings.dsopSimulator15Years, AppStrings.dsopProjectionSubtext15Years, calculated15)
     }
 }
 
 @Composable
 private fun ProjectionCard(
     label: String,
+    subtext: String,
     value: Double,
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.03f)),
         border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)),
     ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.SpacingSmall),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+        Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = "₹${formatShortAmount(value)}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
             Spacer(modifier = Modifier.height(AppDimensions.SpacingTwo))
             Text(
-                text = "₹${formatShortAmount(value)}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
+                text = subtext,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

@@ -47,7 +47,10 @@ class DashboardScreenUiTest {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
-        org.koin.core.context.stopKoin()
+        try {
+            org.koin.core.context.stopKoin()
+        } catch (_: Exception) {
+        }
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -166,5 +169,38 @@ class DashboardScreenUiTest {
             assert(cardBottom <= fabTop) {
                 "Expected allocation card bottom ($cardBottom) to be above the FAB top ($fabTop), but it overlaps"
             }
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testMonthDropdownDisplaysMonthNameWhenPayslipSelected() =
+        runComposeUiTest {
+            val payslip =
+                ParsedPayslip(
+                    file = "test.pdf",
+                    year = 2017,
+                    monthNum = 3,
+                    monthName = "March",
+                    dateStr = "03/2017",
+                    officer = Officer("Test Officer", "00/000/000000X", "AA****00A"),
+                    earnings = Earnings(basicPay = 31590.0),
+                    deductions = Deductions(incomeTax = 5000.0),
+                    ledgerBalances = LedgerBalances(),
+                    summary = PayslipSummary(grossPay = 111508.0, totalDeductions = 25944.0, netRemittance = 85564.0),
+                    taxAndSavings = null,
+                )
+            runBlocking { fakeDao.insertPayslip(payslip.toEncryptedEntity()) }
+            testDispatcher.scheduler.runCurrent()
+
+            setContent {
+                DashboardScreen(
+                    viewModel = viewModel,
+                    onPickPdfTrigger = {},
+                )
+            }
+            testDispatcher.scheduler.runCurrent()
+
+            onNodeWithText("March").assertExists()
+            onNodeWithText("2017").assertExists()
         }
 }

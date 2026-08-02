@@ -9,6 +9,25 @@ import kotlin.test.assertTrue
 
 class HistoryCardContentTest {
     @Test
+    fun testPrecomputeTrends() {
+        val july = createMockPayslip("07/2024", netRemittance = 100000.0)
+        val august = createMockPayslip("08/2024", netRemittance = 105000.0)
+        val september = createMockPayslip("09/2024", netRemittance = 94500.0)
+
+        val trendMap = precomputeTrends(listOf(july, august, september))
+        assertEquals(2, trendMap.size)
+        val augustTrend = trendMap["08/2024"]
+        assertNotNull(augustTrend)
+        assertTrue(augustTrend.isIncrease)
+        assertEquals(5.0, augustTrend.percentageChange)
+
+        val septemberTrend = trendMap["09/2024"]
+        assertNotNull(septemberTrend)
+        assertTrue(!septemberTrend.isIncrease)
+        assertEquals(-10.0, septemberTrend.percentageChange)
+    }
+
+    @Test
     fun testCalculateTrendIncrease() {
         val july = createMockPayslip("07/2024", netRemittance = 100000.0)
         val august = createMockPayslip("08/2024", netRemittance = 105000.0)

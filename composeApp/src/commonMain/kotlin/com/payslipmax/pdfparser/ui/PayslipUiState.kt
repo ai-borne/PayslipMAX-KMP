@@ -1,10 +1,12 @@
 package com.payslipmax.pdfparser.ui
 
 import com.payslipmax.pdfparser.domain.*
+import com.payslipmax.pdfparser.insights.OptimizationResult
 
 data class PayslipUiState(
     val payslips: List<ParsedPayslip> = emptyList(),
     val selectedPayslip: ParsedPayslip? = null,
+    val taxOptimizationResult: OptimizationResult? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
     val importError: String? = null,
@@ -31,7 +33,12 @@ data class PayslipUiState(
     val lastKnownHistoryYear: Int? = null,
     val historyScrollIndex: Int = 0,
     val historyScrollOffset: Int = 0,
+    val insightsScrollIndex: Int = 0,
+    val insightsScrollOffset: Int = 0,
+    val dashboardScrollValue: Int = 0,
+    val settingsScrollValue: Int = 0,
     val isEditModeActive: Boolean = false,
     val draftCorrections: Map<String, SingleCorrection> = emptyMap(),
     val historyDetailPayslipId: String? = null,
+    val appIntegrityStatus: AppIntegrityStatus = AppIntegrityStatus.Valid,
 )

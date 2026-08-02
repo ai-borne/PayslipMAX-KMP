@@ -1,3 +1,14 @@
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.api.tasks.TaskAction
+
 plugins {
     // Gradle plugins setup
     alias(libs.plugins.androidApplication) apply false
@@ -29,18 +40,22 @@ subprojects {
     }
 }
 
-tasks.register("checkFileSizes") {
-    group = "verification"
-    description = "Enforces that all Kotlin source files are under 300 lines of code."
+abstract class CheckFileSizesTask : DefaultTask() {
+    @get:InputFiles
+    @get:SkipWhenEmpty
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val sourceFiles: ConfigurableFileCollection
 
-    doLast {
+    @get:Internal
+    abstract val rootDirectory: DirectoryProperty
+
+    @TaskAction
+    fun check() {
         val maxLines = 300
         val violations = mutableListOf<String>()
+        val projectDir = rootDirectory.get().asFile
 
-        fileTree(projectDir) {
-            include("**/src/**/*.kt")
-            exclude("**/build/**")
-        }.forEach { file ->
+        sourceFiles.forEach { file ->
             val lines = file.readLines()
             if (lines.size > maxLines) {
                 violations.add("${file.relativeTo(projectDir)}: ${lines.size} lines (max: $maxLines)")
@@ -53,4 +68,16 @@ tasks.register("checkFileSizes") {
             )
         }
     }
+}
+
+tasks.register<CheckFileSizesTask>("checkFileSizes") {
+    group = "verification"
+    description = "Enforces that all Kotlin source files are under 300 lines of code."
+    rootDirectory.set(project.layout.projectDirectory)
+    sourceFiles.from(
+        project.fileTree(project.layout.projectDirectory) {
+            include("**/src/**/*.kt")
+            exclude("**/build/**")
+        },
+    )
 }

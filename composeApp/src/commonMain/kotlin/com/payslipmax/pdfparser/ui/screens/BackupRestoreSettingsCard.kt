@@ -37,6 +37,7 @@ fun BackupRestoreSettingsCard(
         icon = "💾",
         title = AppStrings.settingsRowBackupLabel,
         subtitle = subtitleText,
+        badge = AppStrings.proBadgeTag,
         onClick = { showSheet = true },
         modifier = modifier,
     )

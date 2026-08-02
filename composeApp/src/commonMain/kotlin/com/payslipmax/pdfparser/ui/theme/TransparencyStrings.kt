@@ -7,7 +7,6 @@ object TransparencyStrings {
     const val transparencyLabelSanitized = "Scrubbed ToSend Data"
     const val transparencyDisclaimer = "I verify that no private identity markers are leaving my device."
     const val transparencyActionApprove = "Approve & Analyze"
-    const val labelOfficerName = "Name: "
     const val labelCdaAccount = "CDA A/C: "
     const val labelPanNumber = "PAN: "
     const val labelFilename = "File: "

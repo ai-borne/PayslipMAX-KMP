@@ -52,4 +52,35 @@ class TaxParserUtilsTest {
         assertEquals(TaxRegime.NEW, result.taxRegime)
         assertEquals(75000.0, result.standardDeduction)
     }
+
+    @Test
+    fun testGrossSalaryWithEmbeddedDateDoesNotExtractDatePart() {
+        val text =
+            """
+            Gross Salary upto 31/03/2024 852000
+            Total Taxable Income 742000
+            Standard Deduction 50000
+            Net Taxable Income 692000
+            Total Tax Payable 78000
+            """.trimIndent()
+
+        val result = parseTaxAndSavings(text, null, "")
+        assertNotNull(result)
+        assertEquals(852000.0, result.grossSalaryYtd)
+        assertEquals(742000.0, result.totalTaxableIncome)
+    }
+
+    @Test
+    fun testSlashPrecededNumbersIgnoredAsSalary() {
+        val text =
+            """
+            Ref/12345/67890
+            Gross Salary 950000
+            Total Taxable Income 850000
+            """.trimIndent()
+
+        val result = parseTaxAndSavings(text, null, "")
+        assertNotNull(result)
+        assertEquals(950000.0, result.grossSalaryYtd)
+    }
 }

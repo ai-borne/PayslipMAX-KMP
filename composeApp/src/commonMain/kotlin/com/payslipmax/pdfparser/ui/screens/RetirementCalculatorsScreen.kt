@@ -1,16 +1,10 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,6 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.insights.RetirementCalculatorEngine
+import com.payslipmax.pdfparser.insights.RetirementPlannerResult
+import com.payslipmax.pdfparser.insights.RetirementPlannerResultBuilder
+import com.payslipmax.pdfparser.insights.RetirementYearResolver
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
@@ -59,13 +57,57 @@ fun RetirementCalculatorsScreen(
 @Composable
 private fun RetirementCalculatorsBody(payslip: ParsedPayslip) {
     val basic = payslip.earnings.basicPay
-    val msp = payslip.earnings.militaryServicePay
-    val da = payslip.earnings.dearnessAllowance
+    val initialDsop = payslip.taxAndSavings?.dsopFund?.closingBalance ?: 0.0
 
-    var qualifyingYears by remember { mutableStateOf("") }
-    var ageNextBirthday by remember { mutableStateOf("") }
-    var leaveDays by remember { mutableStateOf("") }
+    var qualifyingYears by remember(payslip) {
+        mutableStateOf(RetirementYearResolver.DEFAULT_QUALIFYING_YEARS_FULL_PENSION.toInt().toString())
+    }
+    var ageNextBirthday by remember(payslip) {
+        mutableStateOf(RetirementYearResolver.estimateAgeNextBirthday(basic, payslip.officer.name).toString())
+    }
+    var leaveDays by remember(payslip) {
+        mutableStateOf(RetirementCalculatorEngine.LEAVE_MAX_DAYS.toString())
+    }
+    var dsopBalance by remember(payslip) {
+        mutableStateOf(if (initialDsop > 0.0) initialDsop.toLong().toString() else "")
+    }
 
+    val result =
+        remember(payslip, qualifyingYears, ageNextBirthday, leaveDays, dsopBalance) {
+            RetirementPlannerResultBuilder.build(
+                payslip = payslip,
+                overrideQualifyingYears = qualifyingYears.toDoubleOrNull(),
+                overrideAgeNextBirthday = ageNextBirthday.toIntOrNull(),
+                overrideLeaveDays = leaveDays.toIntOrNull(),
+                overrideDsopBalance = dsopBalance.toDoubleOrNull(),
+            )
+        }
+
+    RetinementCalculatorsContent(
+        qualifyingYears = qualifyingYears,
+        onQualifyingYearsChange = { qualifyingYears = it },
+        ageNextBirthday = ageNextBirthday,
+        onAgeNextBirthdayChange = { ageNextBirthday = it },
+        leaveDays = leaveDays,
+        onLeaveDaysChange = { leaveDays = it },
+        dsopBalance = dsopBalance,
+        onDsopBalanceChange = { dsopBalance = it },
+        result = result,
+    )
+}
+
+@Composable
+private fun RetinementCalculatorsContent(
+    qualifyingYears: String,
+    onQualifyingYearsChange: (String) -> Unit,
+    ageNextBirthday: String,
+    onAgeNextBirthdayChange: (String) -> Unit,
+    leaveDays: String,
+    onLeaveDaysChange: (String) -> Unit,
+    dsopBalance: String,
+    onDsopBalanceChange: (String) -> Unit,
+    result: RetirementPlannerResult,
+) {
     Text(
         text = AppStringsPremium.retCalcBasisLabel,
         style = MaterialTheme.typography.bodySmall,
@@ -73,20 +115,21 @@ private fun RetirementCalculatorsBody(payslip: ParsedPayslip) {
     )
     RetCalcInputsSection(
         qualifyingYears = qualifyingYears,
-        onQualifyingYearsChange = { qualifyingYears = it },
+        onQualifyingYearsChange = onQualifyingYearsChange,
         ageNextBirthday = ageNextBirthday,
-        onAgeNextBirthdayChange = { ageNextBirthday = it },
+        onAgeNextBirthdayChange = onAgeNextBirthdayChange,
         leaveDays = leaveDays,
-        onLeaveDaysChange = { leaveDays = it },
+        onLeaveDaysChange = onLeaveDaysChange,
+        dsopBalance = dsopBalance,
+        onDsopBalanceChange = onDsopBalanceChange,
     )
-    RetCalcResultsSection(
-        basicPay = basic,
-        militaryServicePay = msp,
-        dearnessAllowance = da,
-        qualifyingYears = qualifyingYears.toDoubleOrNull() ?: 0.0,
-        ageNextBirthday = ageNextBirthday.toIntOrNull(),
-        leaveDays = leaveDays.toIntOrNull() ?: 0,
-    )
+    RetirementHeroSummaryCard(result = result)
+    CaTaxAuditCard(result = result)
+    RetirementDay1CorpusCard(result = result)
+    CommutationAdvisorCard(result = result)
+    CommutationSimulatorCard(scenarios = result.commutationScenarios)
+    PensionTaxabilityCard()
+    SparshAndResettlementCard()
     Text(
         text = AppStringsPremium.retCalcDisclaimer,
         style = MaterialTheme.typography.bodySmall,

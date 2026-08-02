@@ -1,50 +1,21 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import com.payslipmax.pdfparser.domain.TaxAndSavings
 import com.payslipmax.pdfparser.insights.OptimizationResult
-import com.payslipmax.pdfparser.insights.WealthOptimizationEngine
+import com.payslipmax.pdfparser.tax.TaxRuleKnowledgeBase
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
-import com.payslipmax.pdfparser.ui.theme.InsightsStrings
-
-data class TaxOptViewItem(
-    val title: String,
-    val action: String,
-    val unusedAmount: Double,
-    val estTaxSaved: Double,
-    val regimeLabel: String,
-)
-
-fun buildTaxOptViewItems(optimizationResult: OptimizationResult): List<TaxOptViewItem> =
-    optimizationResult.opportunities.map { opp ->
-        TaxOptViewItem(
-            title = opp.title,
-            action = opp.action,
-            unusedAmount = opp.unusedAmount,
-            estTaxSaved = opp.estTaxSaved,
-            regimeLabel =
-                if (optimizationResult.regimeAssumed == "NEW") {
-                    InsightsStrings.taxPlanningNewRegimeEst
-                } else {
-                    InsightsStrings.taxPlanningOldRegimeEst
-                },
-        )
-    }
 
 @Composable
 fun TaxPlanningScreen(
@@ -52,10 +23,21 @@ fun TaxPlanningScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val selected = uiState.selectedPayslip
-    val tax = selected?.taxAndSavings
-    val optimizationResult = remember(selected) { selected?.let { WealthOptimizationEngine.analyze(it) } }
+    val uiState = viewModel.uiState.collectAsState().value
+    TaxPlanningContentScreen(
+        optimizationResult = uiState.taxOptimizationResult,
+        onNavigateBack = onBack,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun TaxPlanningContentScreen(
+    optimizationResult: OptimizationResult?,
+    onNavigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val scrollState = rememberScrollState()
 
     Column(
         modifier =
@@ -63,159 +45,71 @@ fun TaxPlanningScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .detailScreenSafeArea()
-                .padding(AppDimensions.PaddingMedium),
+                .padding(AppDimensions.PaddingMedium)
+                .then(if (optimizationResult != null) Modifier.verticalScroll(scrollState) else Modifier),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
-        ScreenBackHeader(title = AppStringsPremium.taxPlanningTitle, subtitle = AppStringsPremium.taxPlanningSubtitle, onBack = onBack)
-        if (tax != null && optimizationResult != null) {
-            TaxSummaryCard(tax = tax)
-            TaxOpportunitiesHeader(isNewRegime = optimizationResult.regimeAssumed == "NEW")
-            TaxOptimizationsList(optimizationResult = optimizationResult)
+        ScreenBackHeader(title = AppStringsPremium.taxPlanningTitle, subtitle = AppStringsPremium.taxPlanningSubtitle, onBack = onNavigateBack)
+        if (optimizationResult == null) {
+            TaxPlanningEmptyState()
         } else {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = AppStringsPremium.taxPlanningNoProjections,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            TaxPlanningContent(optimizationResult = optimizationResult)
         }
     }
 }
 
 @Composable
-private fun TaxOpportunitiesHeader(
-    isNewRegime: Boolean,
-    modifier: Modifier = Modifier,
+private fun TaxPlanningContent(
+    optimizationResult: OptimizationResult,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
-    ) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
+        optimizationResult.storyNarrative?.let { narrative ->
+            TaxNarrativeBenchmarkCard(narrative = narrative)
+            TaxNarrativeLedgerCard(narrative = narrative)
+        }
+
+        optimizationResult.regimeComparison?.let { comp ->
+            TaxRegimeBattleHeroCard(comparison = comp)
+        }
+
+        optimizationResult.tdsRunway?.let { tds ->
+            TaxTdsRunwayProgressCard(tdsRunway = tds)
+        }
+
+        optimizationResult.exemptionBreakdown?.let { exemptions ->
+            TaxExemptionBreakdownCard(exemptionBreakdown = exemptions)
+        }
+
+        TaxActionableChecklistCard(opportunities = optimizationResult.opportunities)
+
+        TaxEducativeTipsCard()
+
+        TaxRuleVersionFooter(financialYear = optimizationResult.fySummary?.financialYear ?: "2026-27")
+    }
+}
+
+@Composable
+private fun TaxRuleVersionFooter(
+    financialYear: String,
+) {
+    val rules = TaxRuleKnowledgeBase.getRulesForFy(financialYear)
+    val footerText = "🛡️ Tax Engine: CBDT Rules FY ${rules.financialYear} (AY ${rules.assessmentYear}) · Version 2026.1 (Verified ${rules.lastVerifiedDate}) · 100% Offline Secured"
+
+    Text(
+        text = footerText,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+        modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.PaddingSmall),
+    )
+}
+
+@Composable
+private fun TaxPlanningEmptyState() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(
-            text = AppStringsPremium.taxPlanningSavingsProjections,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-        Text(
-            text =
-                if (isNewRegime) {
-                    InsightsStrings.taxPlanningRegimeDisclaimerNew
-                } else {
-                    InsightsStrings.taxPlanningRegimeDisclaimer
-                },
-            style = MaterialTheme.typography.bodySmall,
+            text = AppStringsPremium.taxPlanningNoProjections,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-    }
-}
-
-@Composable
-private fun TaxSummaryCard(
-    tax: TaxAndSavings,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-    ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-        ) {
-            TaxMetricsRow(label = AppStringsPremium.taxPlanningGrossYtd, value = tax.grossSalaryYtd)
-            TaxMetricsRow(label = AppStringsPremium.taxPlanningTaxable, value = tax.netTaxableIncome)
-            HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
-            TaxMetricsRow(label = AppStringsPremium.taxPlanningITax, value = tax.totalTaxPayable, isHighlight = true)
-        }
-    }
-}
-
-@Composable
-private fun TaxMetricsRow(
-    label: String,
-    value: Double,
-    isHighlight: Boolean = false,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = label,
-            style = if (isHighlight) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium,
-            fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Normal,
-            color = if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            text = "₹${value.toInt()}",
-            style = if (isHighlight) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold,
-            color = if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-        )
-    }
-}
-
-@Composable
-private fun TaxOptimizationsList(
-    optimizationResult: OptimizationResult,
-    modifier: Modifier = Modifier,
-) {
-    val items = remember(optimizationResult) { buildTaxOptViewItems(optimizationResult) }
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-    ) {
-        items.forEach { item -> TaxOptCard(item = item) }
-    }
-}
-
-@Composable
-private fun TaxOptCard(
-    item: TaxOptViewItem,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)),
-    ) {
-        Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
-            Text(
-                text = item.title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.secondary,
-            )
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
-            Text(
-                text = item.action,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = "${InsightsStrings.taxPlanningHeadroom}${item.unusedAmount.toInt()}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = "${InsightsStrings.taxPlanningEstTaxSaved}${item.estTaxSaved.toInt()} ${item.regimeLabel}",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            }
-        }
     }
 }

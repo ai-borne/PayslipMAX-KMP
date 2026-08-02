@@ -18,7 +18,7 @@ fun OfflineStatusPill(
 ) {
     val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     Surface(
-        shape = RoundedCornerShape(AppDimensions.SpacingMedium),
+        shape = RoundedCornerShape(percent = 50),
         color =
             if (isDark) {
                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
@@ -127,6 +127,7 @@ fun SettingsRow(
     icon: String,
     title: String,
     subtitle: String? = null,
+    badge: String? = null,
     titleColor: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurface,
     onClick: (() -> Unit)? = null,
     trailingContent: @Composable (() -> Unit)? = null,
@@ -148,12 +149,7 @@ fun SettingsRow(
         ) {
             Text(icon, fontSize = AppDimensions.TextSizeExtraLarge, modifier = Modifier.padding(end = AppDimensions.SpacingMedium))
             Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
-                    color = titleColor,
-                )
+                SettingsRowTitleBox(title = title, titleColor = titleColor, badge = badge)
                 if (subtitle != null) {
                     Text(
                         text = subtitle,
@@ -163,10 +159,56 @@ fun SettingsRow(
                 }
             }
         }
-        if (trailingContent != null) {
-            trailingContent()
-        } else if (onClick != null) {
-            Text("➔", fontSize = AppDimensions.TextSizeLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        SettingsRowTrailingContent(onClick = onClick, trailingContent = trailingContent)
+    }
+}
+
+@Composable
+private fun SettingsRowTitleBox(
+    title: String,
+    titleColor: androidx.compose.ui.graphics.Color,
+    badge: String?,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            color = titleColor,
+        )
+        if (badge != null) {
+            ProBadgePill(text = badge)
         }
+    }
+}
+
+@Composable
+private fun ProBadgePill(text: String) {
+    Surface(
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(percent = 50),
+        color = MaterialTheme.colorScheme.primaryContainer,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.padding(horizontal = AppDimensions.SpacingSmall, vertical = AppDimensions.SpacingTiny),
+        )
+    }
+}
+
+@Composable
+private fun SettingsRowTrailingContent(
+    onClick: (() -> Unit)?,
+    trailingContent: @Composable (() -> Unit)?,
+) {
+    if (trailingContent != null) {
+        trailingContent()
+    } else if (onClick != null) {
+        Text("➔", fontSize = AppDimensions.TextSizeLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

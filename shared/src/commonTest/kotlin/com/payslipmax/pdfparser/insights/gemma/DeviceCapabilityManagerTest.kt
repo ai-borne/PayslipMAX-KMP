@@ -1,34 +1,28 @@
 package com.payslipmax.pdfparser.insights.gemma
 
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DeviceCapabilityManagerTest {
     @Test
-    fun testDeviceCapabilitySupportedWithTrivialRequirements() {
-        val manager = DeviceCapabilityManager()
-        val status = manager.checkGemmaSupport(requiredRamMb = 1L, requiredStorageMb = 1L)
-        assertEquals(GemmaSupportStatus.Supported, status)
+    fun testLowRamDevice_bypassesLocalGemma100PercentOffline() {
+        val lowRamMb = 3000L // 3GB RAM
+        val canRun = DeviceCapabilityManager.isRamSufficientForGemma(lowRamMb)
+        assertFalse(canRun)
     }
 
     @Test
-    fun testDeviceCapabilityInsufficientRamWithImpossibleRequirement() {
-        val manager = DeviceCapabilityManager()
-        val status = manager.checkGemmaSupport(requiredRamMb = Long.MAX_VALUE, requiredStorageMb = 1L)
-        assertTrue(status is GemmaSupportStatus.InsufficientRam)
+    fun testHighRamDevice_enablesLocalGemma() {
+        val highRamMb = 6000L // 6GB RAM
+        val canRun = DeviceCapabilityManager.isRamSufficientForGemma(highRamMb)
+        assertTrue(canRun)
     }
 
     @Test
-    fun testMockEngineStateTransitions() {
-        val config = GemmaEngineConfig(modelPath = "test/path/gemma.task")
-        val mockEngine = MockGemmaEngine(config)
-        assertTrue(mockEngine.isInitialized)
-        assertFalse(mockEngine.isClosed)
-
-        mockEngine.close()
-        assertTrue(mockEngine.isClosed)
-        assertFalse(mockEngine.isInitialized)
+    fun testBoundaryRamDevice_enablesLocalGemmaAt4Gb() {
+        val boundaryRamMb = 4096L // 4GB RAM
+        val canRun = DeviceCapabilityManager.isRamSufficientForGemma(boundaryRamMb)
+        assertTrue(canRun)
     }
 }

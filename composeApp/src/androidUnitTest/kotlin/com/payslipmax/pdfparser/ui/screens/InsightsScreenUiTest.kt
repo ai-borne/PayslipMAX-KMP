@@ -121,7 +121,7 @@ class InsightsScreenUiTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun freeUserSeesProTeaserAtBottom_notInlineLockedCards() =
+    fun freeUserSeesLockedHubNotScatteredTeasers() =
         runComposeUiTest {
             runBlocking {
                 fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
@@ -133,15 +133,20 @@ class InsightsScreenUiTest {
 
             // Inline locked card removed for free users — its unique CTA must not exist
             onNodeWithText(AppStringsPremium.aiAuditUnlockBtn).assertDoesNotExist()
-            // ProFeaturesTeaser is at scroll bottom — swipe to compose it, then assert
+            // The three scattered PRO teasers (Recommended Actions / locked anomalies / premium report
+            // teaser) are gone — only the one consolidated hub card remains, at scroll bottom.
+            onNodeWithText("Recommended For You").assertDoesNotExist()
             onRoot().performTouchInput { swipeUp() }
             mainClock.advanceTimeBy(300)
-            onNodeWithText("Unlock full PCDA(O) representations").assertExists()
+            onNodeWithText(InsightsStrings.premiumHubTitle, substring = true).assertExists()
+            onNodeWithText(InsightsStrings.premiumHubCta).assertExists()
         }
 
+    /** Pay Health is now a single surface (D-approved): the expandable chip in [MonthlySnapshot] — the
+     *  top-bar pill was removed in the Phase 4 redesign wiring, so exactly one toggle exists. */
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun healthKpiCardRendersAndExpandsOnTap() =
+    fun payHealthChipRendersAndExpandsOnTap() =
         runComposeUiTest {
             runBlocking {
                 fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
@@ -151,19 +156,18 @@ class InsightsScreenUiTest {
             testDispatcher.scheduler.runCurrent()
             mainClock.advanceTimeBy(300)
 
-            onNodeWithText(InsightsStrings.wellnessChipLabel).assertIsDisplayed()
-            // Both the top-bar pill and the KPI card expose the same expand affordance.
-            onAllNodesWithContentDescription(InsightsStrings.wellnessChipExpandDesc).assertCountEquals(2)
+            onNodeWithText(InsightsStrings.wellnessChipLabel, substring = true).assertIsDisplayed()
+            onNodeWithContentDescription(InsightsStrings.wellnessChipExpandDesc).assertExists()
 
-            onNodeWithText(InsightsStrings.wellnessChipLabel).performClick()
+            onNodeWithContentDescription(InsightsStrings.wellnessChipExpandDesc).performClick()
             mainClock.advanceTimeBy(300)
 
-            onAllNodesWithContentDescription(InsightsStrings.wellnessChipCollapseDesc).assertCountEquals(2)
+            onNodeWithContentDescription(InsightsStrings.wellnessChipCollapseDesc).assertExists()
         }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun topBarHealthPillTogglesSameKpiCardAsTheCardItself() =
+    fun newBodySectionsRenderInApprovedOrder() =
         runComposeUiTest {
             runBlocking {
                 fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
@@ -173,12 +177,11 @@ class InsightsScreenUiTest {
             testDispatcher.scheduler.runCurrent()
             mainClock.advanceTimeBy(300)
 
-            // The top-bar pill exposes the same expand affordance as the KPI card below it.
-            onAllNodesWithContentDescription(InsightsStrings.wellnessChipExpandDesc)[0].performClick()
-            mainClock.advanceTimeBy(300)
-
-            onAllNodesWithContentDescription(InsightsStrings.wellnessChipCollapseDesc)
-                .assertCountEquals(2)
+            // MonthlySnapshot net-pay hero + Smart Insights are above the fold, in that order.
+            // (PayTrendChart needs LedgerRecordEntity history, which this fake-DAO harness never
+            // populates — that windowing logic is locked by PayTrendChartLogicTest instead.)
+            onNodeWithText(InsightsStrings.snapshotNetPayLabel).assertIsDisplayed()
+            onNodeWithText(InsightsStrings.smartInsightsSectionTitle).assertIsDisplayed()
         }
 
     @OptIn(ExperimentalTestApi::class)
@@ -194,8 +197,8 @@ class InsightsScreenUiTest {
             testDispatcher.scheduler.advanceUntilIdle()
             mainClock.advanceTimeBy(300)
 
-            // ProFeaturesTeaser must not appear for premium users
-            onNodeWithText("Unlock full PCDA(O) representations").assertDoesNotExist()
+            // The locked hub is a free-tier-only surface — the PRO shell dissolves, no wrapper card.
+            onNodeWithText(InsightsStrings.premiumHubTitle, substring = true).assertDoesNotExist()
 
             // Scroll to compose the section in LazyColumn
             onNode(hasScrollAction()).performScrollToNode(hasText(AppStrings.geminiAiAnalyzeBtn))
@@ -203,5 +206,34 @@ class InsightsScreenUiTest {
 
             // CA report active card must be present (its generate CTA is the positive signal)
             onNodeWithText(AppStrings.geminiAiAnalyzeBtn).assertExists()
+        }
+
+    /** Insights PRO consolidation, Phase 2: for PRO users the hub dissolves into first-class cards —
+     *  the AI report, an always-reachable tools drawer (no tap needed, "drawer is home"), and anomaly
+     *  findings — with no separate "Recommended For You" strip and no feature listed twice. */
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun premiumUserSeesToolsDrawerExpandedByDefaultWithNoDuplicateRecommendations() =
+        runComposeUiTest {
+            runBlocking {
+                fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
+            }
+            viewModel.setPremiumEnabled(true)
+            testDispatcher.scheduler.advanceUntilIdle()
+            setContent { InsightsScreen(viewModel = viewModel, onNavigateTo = {}) }
+            testDispatcher.scheduler.advanceUntilIdle()
+            mainClock.advanceTimeBy(300)
+
+            // No standalone "Recommended For You" strip — the four tools it used to surface are the
+            // same four the drawer already lists (the approved dedup: the drawer is home).
+            onNodeWithText("Recommended For You").assertDoesNotExist()
+
+            // Drawer defaults to expanded for PRO — a tool title is reachable with no "View all" tap.
+            onNode(hasScrollAction()).performScrollToNode(hasText(AppStringsPremium.proCatalogRetCalcTitle))
+            onNodeWithText(AppStringsPremium.proCatalogRetCalcTitle).assertIsDisplayed()
+
+            // Retirement (Tax Planner / DSOP / Claim / Retirement were the RecommendedActions <->
+            // drawer duplicates) now appears exactly once, in the drawer.
+            onAllNodesWithText("Retirement", substring = true).assertCountEquals(1)
         }
 }

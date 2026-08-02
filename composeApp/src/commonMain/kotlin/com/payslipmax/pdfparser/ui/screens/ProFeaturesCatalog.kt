@@ -123,8 +123,24 @@ fun featureMeta(gate: FeatureGate): ProFeatureMeta =
 fun proFeatureCatalog(): List<ProFeatureMeta> = FeatureGate.values().map(::featureMeta)
 
 /**
+ * Reverse lookup of [proFeatureCatalog]: the [FeatureGate] protecting a dedicated screen, or `null` if
+ * the screen isn't a catalog navigation target (free, or reached only from an in-tab card). The single
+ * source every Screen-emitting UI model (Smart Insights, Recommended Actions) resolves its `gate`
+ * against, so a producer can never hardcode a gate that drifts from what the catalog actually protects.
+ */
+fun gateForScreen(screen: Screen): FeatureGate? = proFeatureCatalog().firstOrNull { it.target == screen }?.gate
+
+/**
  * The catalog subset with a standalone screen — the Insights tab's quick-access cards. Derived
  * (not hand-maintained) so a gate that ships a [ProFeatureMeta.target] can never be forgotten there.
  */
 fun quickAccessTools(): List<ProFeatureMeta> =
     proFeatureCatalog().filter { it.target != null && it.availability == ProFeatureAvailability.AVAILABLE }
+
+/**
+ * The bundle bullets shown on the locked PRO hub card — every shippable feature, coming-soon rows
+ * excluded so the hub never promises something not yet live. Derived (not hand-maintained) so a new
+ * [FeatureGate] automatically appears here once catalogued, with no separate list to fall out of sync.
+ */
+fun premiumBundleHighlights(): List<ProFeatureMeta> =
+    proFeatureCatalog().filter { it.availability == ProFeatureAvailability.AVAILABLE }

@@ -44,6 +44,10 @@ class SharedParsingPipeline(
     ): Result<Pair<ParsedPayslip, GrammarDiagnosticReport>> {
         return try {
             debugCollector?.recordStage1(tokenized)
+            val preFlight = com.payslipmax.pdfparser.parser.validation.PdfPreFlightValidator.validate(tokenized)
+            if (preFlight is com.payslipmax.pdfparser.parser.validation.PdfPreFlightResult.Invalid) {
+                return Result.failure(IllegalArgumentException("PdfPreFlightValidationFailed: ${preFlight.reason}"))
+            }
             val initialContext = createInitialContext(tokenized, filename)
             val (descriptor, report) = registry.detectAndSelect(tokenized)
 

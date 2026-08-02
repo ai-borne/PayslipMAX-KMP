@@ -1,3 +1,6 @@
+// SSOT for the app's marketing version: shared with composeApp/build.gradle.kts (Android versionName).
+#include "../../version.properties"
+
 TEAM_ID=QMMDZ9Y4UF
 BUNDLE_ID=com.payslipmax.pdfparser
-APP_NAME=PDFParser
+APP_NAME=PayslipMax

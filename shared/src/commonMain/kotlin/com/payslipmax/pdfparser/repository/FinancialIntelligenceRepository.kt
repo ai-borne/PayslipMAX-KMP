@@ -269,11 +269,5 @@ open class FinancialIntelligenceRepository(
         }
     }
 
-    private fun mapAnomalyTypeToSeverity(type: String): String {
-        return when (type) {
-            "SALARY_LOSS", "DSOP_COMPLIANCE", "RENT_RECOVERY_RISK", "DEBIT_RECOVERY" -> "CRITICAL"
-            "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "DEDUCTION_SPIKE", "TAX_PROJECTION" -> "WARNING"
-            else -> "INFO"
-        }
-    }
+    private fun mapAnomalyTypeToSeverity(type: String): String = AnomalySeverityMapper.severityOf(type).toPersistedString()
 }

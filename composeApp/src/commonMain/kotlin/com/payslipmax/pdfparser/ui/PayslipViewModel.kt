@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.insights.NetworkErrorMapper
+import com.payslipmax.pdfparser.insights.WealthOptimizationEngine
 import com.payslipmax.pdfparser.insights.gemma.GemmaBaseModelInstaller
 import com.payslipmax.pdfparser.insights.gemma.GemmaModelStorageManager
 import com.payslipmax.pdfparser.insights.gemma.provideGemmaBaseModelInstaller
@@ -12,6 +13,7 @@ import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.telemetry.GemmaInstallTelemetry
 import com.payslipmax.pdfparser.telemetry.provideGemmaInstallTelemetry
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +28,7 @@ class PayslipViewModel(
     internal val gemmaBaseModelInstaller: GemmaBaseModelInstaller = provideGemmaBaseModelInstaller(),
     internal val gemmaModelStorage: GemmaModelStorageManager = GemmaModelStorageManager(),
     internal val gemmaInstallTelemetry: GemmaInstallTelemetry = provideGemmaInstallTelemetry(),
+    internal val appIntegrityChecker: com.payslipmax.pdfparser.domain.AppIntegrityChecker = com.payslipmax.pdfparser.domain.provideAppIntegrityChecker(),
 ) : ViewModel() {
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
@@ -51,27 +54,11 @@ class PayslipViewModel(
         financialIntelligenceRepository?.getAllAiInsightReports()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())
 
     init {
+        verifyAppIntegrity()
         checkGemmaSupport()
         observePayslips()
         observeSettings()
         installGemmaBaseModel()
-    }
-
-    private fun checkGemmaSupport() {
-        try {
-            val capManager = com.payslipmax.pdfparser.insights.gemma.DeviceCapabilityManager()
-            val status = capManager.checkGemmaSupport()
-            val (supported, reason) =
-                when (status) {
-                    is com.payslipmax.pdfparser.insights.gemma.GemmaSupportStatus.Supported -> true to null
-                    is com.payslipmax.pdfparser.insights.gemma.GemmaSupportStatus.InsufficientRam -> false to "Requires device with 4GB RAM"
-                    is com.payslipmax.pdfparser.insights.gemma.GemmaSupportStatus.InsufficientStorage -> false to "Requires 1.5GB free storage"
-                    is com.payslipmax.pdfparser.insights.gemma.GemmaSupportStatus.UnsupportedArchitecture -> false to status.reason
-                }
-            _uiState.update { it.copy(isGemmaSupported = supported, gemmaSupportReason = reason) }
-        } catch (e: Throwable) {
-            _uiState.update { it.copy(isGemmaSupported = true, gemmaSupportReason = null) }
-        }
     }
 
     internal fun observePayslips() {
@@ -91,6 +78,7 @@ class PayslipViewModel(
                         state.copy(
                             payslips = list,
                             selectedPayslip = nextSelected,
+                            taxOptimizationResult = computeTaxOptimization(list, nextSelected),
                             isLoading = false,
                             expandedHistoryYears = expandedYears,
                             lastKnownHistoryYear = latestYear ?: state.lastKnownHistoryYear,
@@ -113,10 +101,24 @@ class PayslipViewModel(
 
     private fun onPayslipSelected(payslip: ParsedPayslip?) {
         if (payslip == null) {
-            _uiState.update { it.copy(selectedPayslip = null, aiInsights = null, aiError = null) }
+            _uiState.update {
+                it.copy(
+                    selectedPayslip = null,
+                    taxOptimizationResult = computeTaxOptimization(it.payslips, null),
+                    aiInsights = null,
+                    aiError = null,
+                )
+            }
             return
         }
-        _uiState.update { it.copy(selectedPayslip = payslip, aiInsights = null, aiError = null) }
+        _uiState.update {
+            it.copy(
+                selectedPayslip = payslip,
+                taxOptimizationResult = computeTaxOptimization(it.payslips, payslip),
+                aiInsights = null,
+                aiError = null,
+            )
+        }
         loadCachedAiInsights(payslip.dateStr)
     }
 
@@ -201,8 +203,16 @@ class PayslipViewModel(
                     financialIntelligenceRepository?.processPayslipAndRunAnalysis(parsed)
                 }
                 _uiState.update { state ->
+                    val updatedPayslips =
+                        if (parsed != null && state.payslips.none { it.dateStr == parsed.dateStr }) {
+                            state.payslips + parsed
+                        } else {
+                            state.payslips
+                        }
                     state.copy(
+                        payslips = updatedPayslips,
                         selectedPayslip = parsed,
+                        taxOptimizationResult = computeTaxOptimization(updatedPayslips, parsed),
                         isLoading = false,
                         importSuccess = true,
                     )
@@ -211,9 +221,23 @@ class PayslipViewModel(
                     loadCachedAiInsights(parsed.dateStr)
                 }
             } else {
+                val rawMessage = result.exceptionOrNull()?.message ?: ""
+                val friendlyError =
+                    when {
+                        rawMessage.contains("UNRECOGNIZED_GRAMMAR") || rawMessage.contains("PdfPreFlightValidationFailed") ->
+                            AppStrings.errorUnrecognizedPdf
+                        rawMessage.contains("PASSWORD_PROTECTED") ->
+                            AppStrings.errorEncryptedPdfDesc
+                        rawMessage.contains("NO_TEXT_TOKENS") ->
+                            AppStrings.errorZeroTokensDesc
+                        rawMessage.isNotBlank() && !rawMessage.contains("Exception") && !rawMessage.contains(":") ->
+                            rawMessage
+                        else ->
+                            AppStrings.errorUnrecognizedPdf
+                    }
                 _uiState.update { state ->
                     state.copy(
-                        importError = result.exceptionOrNull()?.message ?: "Decryption or parsing failed",
+                        importError = friendlyError,
                         isLoading = false,
                     )
                 }
@@ -232,7 +256,11 @@ class PayslipViewModel(
                     } else {
                         state.selectedPayslip
                     }
-                state.copy(selectedPayslip = nextSelected)
+                state.copy(
+                    payslips = remaining,
+                    selectedPayslip = nextSelected,
+                    taxOptimizationResult = computeTaxOptimization(remaining, nextSelected),
+                )
             }
             val next = _uiState.value.selectedPayslip
             if (next != null) {
@@ -253,42 +281,14 @@ class PayslipViewModel(
         }
     }
 
-    private fun observeSettings() {
-        var isFirstSettingsLoad = true
-        var previousPremiumEnabled = false
-        viewModelScope.launch {
-            repository.getSettingsFlow().collect { settings ->
-                val isPremium = settings?.isPremiumEnabled ?: false
-                val isTelemetry = settings?.isTelemetryEnabled ?: true
-                gemmaInstallTelemetry.setTelemetryEnabled(isTelemetry)
-                _uiState.update { state ->
-                    val isLocked =
-                        if (isFirstSettingsLoad) {
-                            isFirstSettingsLoad = false
-                            settings?.isLockEnabled ?: false
-                        } else {
-                            state.isAppLocked && (settings?.isLockEnabled ?: false)
-                        }
-                    state.copy(
-                        isPremiumEnabled = isPremium,
-                        appTheme = settings?.appTheme ?: "system",
-                        isLockEnabled = settings?.isLockEnabled ?: false,
-                        appPinHash = settings?.appPinHash ?: "",
-                        profileName = settings?.profileName ?: "",
-                        profileCdaNumber = settings?.profileCdaNumber ?: "",
-                        profilePanNumber = settings?.profilePanNumber ?: "",
-                        isAppLocked = isLocked,
-                        useLocalAi = settings?.useLocalAi ?: false,
-                        isTelemetryEnabled = isTelemetry,
-                    )
-                }
-                if (isPremium && !previousPremiumEnabled) {
-                    _uiState.value.selectedPayslip?.let { payslip ->
-                        loadCachedAiInsights(payslip.dateStr)
-                    }
-                }
-                previousPremiumEnabled = isPremium
-            }
+    private fun computeTaxOptimization(
+        payslips: List<ParsedPayslip>,
+        selectedPayslip: ParsedPayslip?,
+    ): com.payslipmax.pdfparser.insights.OptimizationResult? {
+        return if (payslips.isNotEmpty()) {
+            WealthOptimizationEngine.analyzeLedger(payslips, selectedPayslip)
+        } else {
+            null
         }
     }
 }

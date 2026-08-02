@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,10 +27,11 @@ import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
-import com.payslipmax.pdfparser.ui.clearAiInsights
 import com.payslipmax.pdfparser.ui.components.TransparencyDialog
 import com.payslipmax.pdfparser.ui.generateAiInsights
+import com.payslipmax.pdfparser.ui.hasAccess
 import com.payslipmax.pdfparser.ui.rememberHasAccess
+import com.payslipmax.pdfparser.ui.saveInsightsScrollPosition
 import com.payslipmax.pdfparser.ui.setPremiumEnabled
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -143,9 +147,6 @@ private fun InsightsContent(
             payslips = uiState.payslips,
             selected = selected,
             onSelectPayslip = { viewModel.selectPayslip(it) },
-            healthScore = state.engineResult.healthScore,
-            wellnessExpanded = wellnessExpanded,
-            onWellnessExpandClick = { wellnessExpanded = !wellnessExpanded },
         )
         InsightsLazyBody(
             state = state,
@@ -175,97 +176,70 @@ private fun InsightsLazyBody(
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val hasTaxPlanner = viewModel.rememberHasAccess(FeatureGate.TAX_PLANNER)
-    val hasPremiumIntelligence = viewModel.rememberHasAccess(FeatureGate.PREMIUM_INTELLIGENCE)
-    val hasWealthOptimization = viewModel.rememberHasAccess(FeatureGate.WEALTH_OPTIMIZATION)
+    val access = rememberInsightsFeatureAccess(viewModel)
+    val smartInsights = remember(state) { buildSmartInsights(state) }
+    // Tools drawer defaults open for PRO ("drawer is home") but stays collapsible either way.
+    var toolsExpanded by remember(access.hasPremiumIntelligence) { mutableStateOf(access.hasPremiumIntelligence) }
+    val listState = rememberInsightsListState(uiState, viewModel)
     LazyColumn(
+        state = listState,
         modifier = modifier.background(MaterialTheme.colorScheme.background),
         contentPadding = PaddingValues(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
     ) {
-        item {
-            InsightsHealthKpiCardItem(
-                state = state,
-                hasTaxPlanner = hasTaxPlanner,
-                wellnessExpanded = wellnessExpanded,
-                onWellnessExpandClick = onWellnessExpandClick,
-                onShowUpgradeSheet = onShowUpgradeSheet,
-                onNavigateTo = onNavigateTo,
-            )
-        }
-        item { ExecutiveSummaryCard(current = state.currentRecord, previous = state.previousRecord) }
-        item { DeductionsBreakdownSection(history = state.historySorted, selectedRecord = state.currentRecord) }
-        item { AdvancedAnomaliesCard(state.engineResult.anomalies, viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION), onShowUpgradeSheet) }
-        item { KeyFindingsSection(state = state) }
-        item { AiHighlightsSection(state = state) }
-        item {
-            InsightsPremiumIntelligenceItem(
-                state = state,
-                uiState = uiState,
-                hasPremiumIntelligence = hasPremiumIntelligence,
-                hasWealthOptimization = hasWealthOptimization,
-                viewModel = viewModel,
-                onShowUpgradeSheet = onShowUpgradeSheet,
-                onShowTransparency = onShowTransparency,
-                onViewInsightsClick = onViewInsightsClick,
-                onNavigateTo = onNavigateTo,
-            )
-        }
+        insightsPrimaryItems(
+            state = state,
+            smartInsights = smartInsights,
+            wellnessExpanded = wellnessExpanded,
+            onWellnessExpandClick = onWellnessExpandClick,
+            hasWealthOptimization = access.hasWealthOptimization,
+            hasAccess = { gate -> viewModel.hasAccess(gate) },
+            onShowUpgradeSheet = onShowUpgradeSheet,
+            onNavigateTo = onNavigateTo,
+        )
+        insightsPremiumItems(
+            state = state,
+            uiState = uiState,
+            viewModel = viewModel,
+            smartInsights = smartInsights,
+            isPremium = access.hasPremiumIntelligence,
+            hasAnomalyDetection = access.hasAnomalyDetection,
+            toolsExpanded = toolsExpanded,
+            onToolsExpandClick = { toolsExpanded = !toolsExpanded },
+            onShowUpgradeSheet = onShowUpgradeSheet,
+            onShowTransparency = onShowTransparency,
+            onViewInsightsClick = onViewInsightsClick,
+            onNavigateTo = onNavigateTo,
+        )
     }
 }
 
-@Composable
-private fun InsightsHealthKpiCardItem(
-    state: InsightsState,
-    hasTaxPlanner: Boolean,
-    wellnessExpanded: Boolean,
-    onWellnessExpandClick: () -> Unit,
-    onShowUpgradeSheet: () -> Unit,
-    onNavigateTo: (Screen) -> Unit,
-) {
-    HealthKpiCard(
-        score = state.engineResult.healthScore,
-        delta = state.scoreDelta,
-        previousMonthLabel = state.previousMonthLabel,
-        expanded = wellnessExpanded,
-        onExpandClick = onWellnessExpandClick,
-        drivers = breakdownWellnessDrivers(state.engineResult),
-        opportunityAmount = state.optimizationResult.totalPotentialTaxSaving,
-        onSeeHowClick = {
-            if (hasTaxPlanner) onNavigateTo(Screen.TaxPlanning) else onShowUpgradeSheet()
-        },
-    )
-}
+private data class InsightsFeatureAccess(
+    val hasPremiumIntelligence: Boolean,
+    val hasWealthOptimization: Boolean,
+    val hasAnomalyDetection: Boolean,
+)
 
 @Composable
-private fun InsightsPremiumIntelligenceItem(
-    state: InsightsState,
-    uiState: PayslipUiState,
-    hasPremiumIntelligence: Boolean,
-    hasWealthOptimization: Boolean,
-    viewModel: PayslipViewModel,
-    onShowUpgradeSheet: () -> Unit,
-    onShowTransparency: () -> Unit,
-    onViewInsightsClick: () -> Unit,
-    onNavigateTo: (Screen) -> Unit,
-) {
-    PremiumIntelligenceCard(
-        isPremiumEnabled = hasPremiumIntelligence,
-        hasWealthOptimization = hasWealthOptimization,
-        state = state,
-        onUpgradeClick = onShowUpgradeSheet,
-        onNavigateTo = onNavigateTo,
-        aiSectionContent = {
-            GeminiAiInsightsSection(
-                aiInsights = uiState.aiInsights,
-                isAiLoading = uiState.isAiLoading,
-                aiError = uiState.aiError,
-                onGenerateClick = onShowTransparency,
-                onViewInsightsClick = onViewInsightsClick,
-                onClearClick = { viewModel.clearAiInsights() },
-            )
-        },
+private fun rememberInsightsFeatureAccess(viewModel: PayslipViewModel): InsightsFeatureAccess =
+    InsightsFeatureAccess(
+        hasPremiumIntelligence = viewModel.rememberHasAccess(FeatureGate.PREMIUM_INTELLIGENCE),
+        hasWealthOptimization = viewModel.rememberHasAccess(FeatureGate.WEALTH_OPTIMIZATION),
+        hasAnomalyDetection = viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION),
     )
+
+@Composable
+private fun rememberInsightsListState(
+    uiState: PayslipUiState,
+    viewModel: PayslipViewModel,
+): LazyListState {
+    val listState = rememberLazyListState(uiState.insightsScrollIndex, uiState.insightsScrollOffset)
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.saveInsightsScrollPosition(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset)
+        }
+    }
+    return listState
 }
 
 @Composable

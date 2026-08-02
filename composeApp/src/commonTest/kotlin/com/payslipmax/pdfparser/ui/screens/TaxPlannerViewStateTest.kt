@@ -30,12 +30,12 @@ class TaxPlannerViewStateTest {
 
     @Test
     fun testEmptyOpportunitiesReturnsEmptyList() {
-        assertTrue(buildTaxOptViewItems(makeOptResult()).isEmpty())
+        assertTrue(makeOptResult().opportunities.isEmpty())
     }
 
     @Test
     fun testSingleOpportunityMappedCorrectly() {
-        val item = buildTaxOptViewItems(makeOptResult(opp("80c_dsop", "80C: DSOP", 60_000.0, 12_000.0))).single()
+        val item = makeOptResult(opp("80c_dsop", "80C: DSOP", 60_000.0, 12_000.0)).opportunities.single()
         assertEquals("80C: DSOP", item.title)
         assertEquals(60_000.0, item.unusedAmount)
         assertEquals(12_000.0, item.estTaxSaved)
@@ -44,48 +44,40 @@ class TaxPlannerViewStateTest {
     @Test
     fun testMultipleOpportunitiesPreserveOrder() {
         val items =
-            buildTaxOptViewItems(
-                makeOptResult(
-                    opp("80c_dsop", "80C: DSOP", 60_000.0, 12_000.0),
-                    opp("80ccd_nps", "NPS 80CCD(1B)", 50_000.0, 10_000.0),
-                ),
-            )
+            makeOptResult(
+                opp("80c_dsop", "80C: DSOP", 60_000.0, 12_000.0),
+                opp("80ccd_nps", "NPS 80CCD(1B)", 50_000.0, 10_000.0),
+            ).opportunities
         assertEquals(2, items.size)
         assertEquals("80C: DSOP", items[0].title)
         assertEquals("NPS 80CCD(1B)", items[1].title)
     }
 
     @Test
-    fun testRegimeLabelContainsOldRegime() {
-        val item = buildTaxOptViewItems(makeOptResult(opp("80c_dsop", "80C", 60_000.0, 12_000.0))).single()
-        assertTrue(item.regimeLabel.contains("old regime", ignoreCase = true))
-    }
+    fun testRegimeAssumedValue() {
+        val oldRes = makeOptResult(regime = "OLD")
+        assertEquals("OLD", oldRes.regimeAssumed)
 
-    @Test
-    fun testRegimeLabelContainsNewRegime() {
-        val item = buildTaxOptViewItems(makeOptResult(opp("80c_dsop", "80C", 60_000.0, 12_000.0), regime = "NEW")).single()
-        assertTrue(item.regimeLabel.contains("new regime", ignoreCase = true))
+        val newRes = makeOptResult(regime = "NEW")
+        assertEquals("NEW", newRes.regimeAssumed)
     }
 
     @Test
     fun testActionMappedFromOpportunity() {
-        val item = buildTaxOptViewItems(makeOptResult(opp("80c_dsop", "80C", 60_000.0, 12_000.0))).single()
+        val item = makeOptResult(opp("80c_dsop", "80C", 60_000.0, 12_000.0)).opportunities.single()
         assertEquals("Do: 80c_dsop", item.action)
     }
 
     @Test
     fun testEstTaxSavedAndUnusedAmountMappedCorrectly() {
-        val item = buildTaxOptViewItems(makeOptResult(opp("80ccd_nps", "NPS", 50_000.0, 15_000.0))).single()
+        val item = makeOptResult(opp("80ccd_nps", "NPS", 50_000.0, 15_000.0)).opportunities.single()
         assertEquals(50_000.0, item.unusedAmount)
         assertEquals(15_000.0, item.estTaxSaved)
     }
 
     @Test
     fun testZeroTaxSavedWhenMarginalRateIsZero() {
-        val item =
-            buildTaxOptViewItems(
-                makeOptResult(opp("80c_dsop", "80C", 100_000.0, 0.0)),
-            ).single()
+        val item = makeOptResult(opp("80c_dsop", "80C", 100_000.0, 0.0)).opportunities.single()
         assertEquals(0.0, item.estTaxSaved)
     }
 }

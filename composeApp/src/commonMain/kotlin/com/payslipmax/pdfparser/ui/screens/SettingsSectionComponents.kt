@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
@@ -67,8 +66,8 @@ fun SecuritySection(
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         SettingsRow(
             icon = "🛡️",
-            title = "Local Encryption Status",
-            subtitle = "100% Offline & Encrypted",
+            title = AppStrings.settingsSecurityEncryptionStatusLabel,
+            subtitle = AppStrings.settingsSecurityEncryptionStatusSubtitle,
         )
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         SettingsRow(
@@ -141,7 +140,7 @@ fun DataManagementSection(
     onUpgradePrompt: () -> Unit,
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
 ) {
-    SettingsCategoryHeader(title = "Data Management")
+    SettingsCategoryHeader(title = AppStrings.settingsDataManagementHeader)
     SettingsCategoryCard {
         BackupRestoreSettingsCard(
             password = password,
@@ -238,7 +237,6 @@ fun SettingsHeader(
 
 @Composable
 fun VersionFooter(
-    onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -254,29 +252,5 @@ fun VersionFooter(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
         )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = AppStrings.settingsHelpPrivacyTitle,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable { onNavigateTo(Screen.PrivacyPolicy) },
-            )
-            Text(
-                text = "•",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            )
-            Text(
-                text = AppStrings.settingsHelpAiTitle,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-                textDecoration = TextDecoration.Underline,
-                modifier = Modifier.clickable { onNavigateTo(Screen.PrivacyPolicy) },
-            )
-        }
     }
 }

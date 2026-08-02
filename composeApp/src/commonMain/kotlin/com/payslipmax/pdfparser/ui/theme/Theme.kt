@@ -9,6 +9,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.payslipmax.pdfparser.insights.InsightSeverity
 
 // Color Tokens (Harmonious Premium Dark & Light Palettes)
 private val DarkColorPrimary = Color(0xFF3B82F6) // Premium Blue
@@ -71,6 +72,21 @@ object AppColors {
     /** Distinct from [Warning]/[Caution] — marks a value inferred by the on-device Gemma fallback, not a solver warning. */
     val AiInferred = Color(0xFF8B5CF6)
 }
+
+/**
+ * Single color mapping for [InsightSeverity], so no Smart Insights card hardcodes a color. INFO/
+ * IMPORTANT/OPPORTUNITY resolve through [MaterialTheme.colorScheme] (theme-aware, already used
+ * everywhere else); WARNING reuses the existing fixed [AppColors.Warning] amber rather than adding a
+ * second, possibly-drifting amber constant.
+ */
+@Composable
+fun severityColor(severity: InsightSeverity): Color =
+    when (severity) {
+        InsightSeverity.INFO -> MaterialTheme.colorScheme.primary
+        InsightSeverity.WARNING -> AppColors.Warning
+        InsightSeverity.IMPORTANT -> MaterialTheme.colorScheme.error
+        InsightSeverity.OPPORTUNITY -> MaterialTheme.colorScheme.secondary
+    }
 
 object AppDimensions {
     val PaddingSmall = 8.dp

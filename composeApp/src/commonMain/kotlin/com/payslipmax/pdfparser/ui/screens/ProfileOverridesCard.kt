@@ -12,6 +12,21 @@ import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 
+fun formatProfileSubtitle(
+    profileName: String,
+    profileCda: String,
+): String {
+    return if (profileName.isNotBlank()) {
+        if (profileCda.isNotBlank()) {
+            "$profileName • CDA: $profileCda"
+        } else {
+            profileName
+        }
+    } else {
+        AppStrings.settingsProfileRowSubtitleUnconfigured
+    }
+}
+
 @Composable
 fun ProfileOverridesCard(
     viewModel: PayslipViewModel,
@@ -21,12 +36,7 @@ fun ProfileOverridesCard(
     modifier: Modifier = Modifier,
 ) {
     var showSheet by remember { mutableStateOf(false) }
-    val subtitleText =
-        if (profileName.isNotBlank()) {
-            profileName
-        } else {
-            AppStrings.settingsStatusNotConfigured
-        }
+    val subtitleText = formatProfileSubtitle(profileName, profileCda)
 
     SettingsRow(
         icon = "👤",
@@ -90,6 +100,44 @@ private fun ProfileSheetHeader() {
 }
 
 @Composable
+private fun ProfileInfoBanner() {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            ),
+    ) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
+        ) {
+            Text(
+                text = AppStrings.settingsProfileInfoBannerHeader,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = AppStrings.settingsProfileInfoBannerBullet1,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = AppStrings.settingsProfileInfoBannerBullet2,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = AppStrings.settingsProfileInfoBannerBullet3,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
 private fun ProfileOverridesSheetContent(
     profileName: String,
     profileCda: String,
@@ -117,6 +165,7 @@ private fun ProfileOverridesSheetContent(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         ProfileSheetHeader()
+        ProfileInfoBanner()
         ProfileInputFields(
             name = name,
             onNameChange = { name = it },

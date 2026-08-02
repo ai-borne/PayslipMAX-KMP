@@ -81,7 +81,13 @@ class PayslipViewModelTest {
             val state = viewModel.uiState.value
             assertEquals(1, state.payslips.size)
             assertEquals(mockPayslip, state.selectedPayslip)
+            assertNotNull(state.taxOptimizationResult)
         }
+
+    @Test
+    fun testTaxOptimizationResultNullWhenEmpty() {
+        assertNull(viewModel.uiState.value.taxOptimizationResult)
+    }
 
     @Test
     fun testSelectPayslip() {
@@ -278,17 +284,7 @@ class PayslipViewModelTest {
                 deductions = Deductions(10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0),
                 ledgerBalances = LedgerBalances(0.0, 0.0, 0.0, 0.0),
                 summary = PayslipSummary(100.0, 80.0, 20.0),
-                taxAndSavings =
-                    TaxAndSavings(
-                        grossSalaryYtd = 1000.0,
-                        totalTaxableIncome = 900.0,
-                        standardDeduction = 50.0,
-                        netTaxableIncome = 850.0,
-                        totalTaxPayable = 100.0,
-                        taxDeductedYtd = 80.0,
-                        cessDeductedYtd = 20.0,
-                        dsopFund = DsopFund(100.0, 10.0, 0.0, 0.0, 0.0, 110.0),
-                    ),
+                taxAndSavings = TaxAndSavings(1000.0, 900.0, 50.0, 850.0, 100.0, 80.0, 20.0, DsopFund(100.0, 10.0, 0.0, 0.0, 0.0, 110.0)),
             )
         }
 }

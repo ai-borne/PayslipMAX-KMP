@@ -66,12 +66,17 @@ private fun SettingsContent(
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val scrollState = rememberScrollState(uiState.settingsScrollValue)
+    DisposableEffect(Unit) {
+        onDispose { viewModel.saveSettingsScrollPosition(scrollState.value) }
+    }
+
     Column(
         modifier =
             modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(AppDimensions.PaddingMedium),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
@@ -145,5 +150,5 @@ private fun SecondarySettingsGroup(
     DeveloperSandboxSection(devModeEnabled = devModeEnabled, viewModel = viewModel)
 
     // Version Footer
-    VersionFooter(onNavigateTo = onNavigateTo)
+    VersionFooter()
 }

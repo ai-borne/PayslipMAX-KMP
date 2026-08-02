@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -23,19 +22,19 @@ import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
 /**
- * PRO advanced-anomaly surface (ANOMALY_DETECTION gate, D6). When unlocked, shows each high-value
- * auditor finding in full; when locked, shows only the check categories + count with an upgrade CTA
- * (no amounts, no descriptions leak). Renders nothing when there are no PRO anomalies.
+ * PRO advanced-anomaly surface (ANOMALY_DETECTION gate, D6) — unlocked findings only. The locked
+ * teaser (category/count, no amounts) now lives solely in [LockedPremiumHubCard]; this card is only
+ * ever reached from the PRO-dissolve path (Insights PRO consolidation, Phase 2). Renders nothing when
+ * there are no PRO anomalies to show.
  */
 @Composable
 fun AdvancedAnomaliesCard(
     anomalies: List<Anomaly>,
     hasAnomalyDetection: Boolean,
-    onUpgradeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val display = remember(anomalies, hasAnomalyDetection) { partitionAdvancedAnomalies(anomalies, hasAnomalyDetection) }
-    if (!display.hasContent) return
+    val unlocked = remember(anomalies, hasAnomalyDetection) { partitionAdvancedAnomalies(anomalies, hasAnomalyDetection).unlocked }
+    if (unlocked.isEmpty()) return
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -48,16 +47,12 @@ fun AdvancedAnomaliesCard(
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
             Text(
-                text = if (display.isLocked) InsightsStrings.advancedAnomaliesLockedTitle else InsightsStrings.advancedAnomaliesTitle,
+                text = InsightsStrings.advancedAnomaliesTitle,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
-            if (display.isLocked) {
-                LockedAnomaliesTeaser(display = display, onUpgradeClick = onUpgradeClick)
-            } else {
-                display.unlocked.forEach { AnomalyDetailRow(anomaly = it) }
-            }
+            unlocked.forEach { AnomalyDetailRow(anomaly = it) }
         }
     }
 }
@@ -85,38 +80,5 @@ private fun AnomalyDetailRow(anomaly: Anomaly) {
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
-    }
-}
-
-@Composable
-private fun LockedAnomaliesTeaser(
-    display: AdvancedAnomalyDisplay,
-    onUpgradeClick: () -> Unit,
-) {
-    Text(
-        text = "${display.lockedCount} ${InsightsStrings.advancedAnomaliesLockedCountSuffix}",
-        style = MaterialTheme.typography.bodyMedium,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Text(
-        text = display.lockedLabels.joinToString(InsightsStrings.advancedAnomaliesLabelSeparator),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Text(
-        text = InsightsStrings.advancedAnomaliesLockedBody,
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Button(
-        onClick = onUpgradeClick,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Text(
-            text = InsightsStrings.advancedAnomaliesUnlockCta,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold,
-        )
     }
 }

@@ -116,19 +116,61 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         }
     }
 
-    private fun extractTexts(document: PDDocument): ExtractedPayslipTexts {
-        // Find the table page index containing BPAY or Basic Pay
-        var tablePageIdx = 0
+    private fun findTablePageIdx(document: PDDocument): Int {
         for (i in 0 until document.numberOfPages) {
             val singlePageStripper = PDFTextStripper()
             singlePageStripper.startPage = i + 1
             singlePageStripper.endPage = i + 1
             val text = singlePageStripper.getText(document) ?: ""
             if (text.lowercase().contains("bpay") || text.lowercase().contains("basic pay")) {
-                tablePageIdx = i
-                break
+                return i
             }
         }
+        return 0
+    }
+
+    private fun extractTaxAndDsopTexts(document: PDDocument): Pair<String, String> {
+        var taxText = ""
+        var dsopText = ""
+        for (i in 0 until document.numberOfPages) {
+            val pageStripper = PDFTextStripper()
+            pageStripper.startPage = i + 1
+            pageStripper.endPage = i + 1
+            val pageText = pageStripper.getText(document) ?: ""
+            val pageTextLower = pageText.lowercase()
+
+            if (taxText.isEmpty() && (
+                    pageTextLower.contains("standard deduction") ||
+                        pageTextLower.contains("taxable income") ||
+                        pageTextLower.contains("tax payable") ||
+                        pageTextLower.contains("income tax deducted")
+                )
+            ) {
+                Logger.d("PlatformPdfParser", "Dynamically found Tax details on page: ${i + 1}")
+                taxText = pageText
+            }
+
+            if (dsopText.isEmpty() && (
+                    pageTextLower.contains("dsop fund") ||
+                        (
+                            pageTextLower.contains("opening balance") &&
+                                pageTextLower.contains("closing balance") &&
+                                pageTextLower.contains("subscription")
+                        )
+                )
+            ) {
+                Logger.d("PlatformPdfParser", "Dynamically found DSOP details on page: ${i + 1}")
+                dsopText = pageText
+            }
+        }
+        if (dsopText.isEmpty()) {
+            dsopText = taxText
+        }
+        return Pair(taxText, dsopText)
+    }
+
+    private fun extractTexts(document: PDDocument): ExtractedPayslipTexts {
+        val tablePageIdx = findTablePageIdx(document)
 
         // Extract coordinates from table page
         val layoutScanner = LayoutScanner()
@@ -194,42 +236,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         Logger.d("PlatformPdfParser", "Finished left column row extraction:\n$leftText")
         Logger.d("PlatformPdfParser", "Finished middle column row extraction:\n$middleText")
 
-        var taxText = ""
-        var dsopText = ""
-        for (i in 0 until document.numberOfPages) {
-            val pageStripper = PDFTextStripper()
-            pageStripper.startPage = i + 1
-            pageStripper.endPage = i + 1
-            val pageText = pageStripper.getText(document) ?: ""
-            val pageTextLower = pageText.lowercase()
-
-            if (taxText.isEmpty() && (
-                    pageTextLower.contains("standard deduction") ||
-                        pageTextLower.contains("taxable income") ||
-                        pageTextLower.contains("tax payable") ||
-                        pageTextLower.contains("income tax deducted")
-                )
-            ) {
-                Logger.d("PlatformPdfParser", "Dynamically found Tax details on page: ${i + 1}")
-                taxText = pageText
-            }
-
-            if (dsopText.isEmpty() && (
-                    pageTextLower.contains("dsop fund") ||
-                        (
-                            pageTextLower.contains("opening balance") &&
-                                pageTextLower.contains("closing balance") &&
-                                pageTextLower.contains("subscription")
-                        )
-                )
-            ) {
-                Logger.d("PlatformPdfParser", "Dynamically found DSOP details on page: ${i + 1}")
-                dsopText = pageText
-            }
-        }
-        if (dsopText.isEmpty()) {
-            dsopText = taxText
-        }
+        val (taxText, dsopText) = extractTaxAndDsopTexts(document)
 
         return ExtractedPayslipTexts(
             leftColumnText = leftText,

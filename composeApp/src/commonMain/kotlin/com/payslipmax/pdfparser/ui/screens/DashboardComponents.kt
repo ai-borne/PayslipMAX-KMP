@@ -96,12 +96,9 @@ internal fun YearMonthPickerRow(
                 years = years,
                 selectedYear = selectedYear,
                 onYearSelected = { year ->
-                    selectedYear = year
-                    val monthsInYear = viewModel.getMonthsForYear(year)
-                    val latestMonth = monthsInYear.firstOrNull()
-                    if (latestMonth != null) {
-                        selectedMonthNum = latestMonth.monthNum
-                        viewModel.selectByYearMonth(year, latestMonth.monthNum)
+                    selectYearInPicker(year, viewModel) { y, m ->
+                        selectedYear = y
+                        selectedMonthNum = m
                     }
                 },
                 modifier = Modifier.weight(1f),
@@ -109,6 +106,7 @@ internal fun YearMonthPickerRow(
             MonthDropdown(
                 months = monthsForYear,
                 selectedMonthNum = selectedMonthNum,
+                fallbackMonthName = if (selected?.year == selectedYear) selected.monthName else "",
                 onMonthSelected = { monthNum ->
                     selectedMonthNum = monthNum
                     viewModel.selectByYearMonth(selectedYear, monthNum)
@@ -116,6 +114,19 @@ internal fun YearMonthPickerRow(
                 modifier = Modifier.weight(1f),
             )
         }
+    }
+}
+
+private fun selectYearInPicker(
+    year: Int,
+    viewModel: PayslipViewModel,
+    onUpdated: (selectedYear: Int, selectedMonthNum: Int) -> Unit,
+) {
+    val monthsInYear = viewModel.getMonthsForYear(year)
+    val latestMonth = monthsInYear.firstOrNull()
+    if (latestMonth != null) {
+        onUpdated(year, latestMonth.monthNum)
+        viewModel.selectByYearMonth(year, latestMonth.monthNum)
     }
 }
 
@@ -164,11 +175,14 @@ private fun YearDropdown(
 private fun MonthDropdown(
     months: List<ParsedPayslip>,
     selectedMonthNum: Int,
+    fallbackMonthName: String = "",
     onMonthSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val displayName = months.find { it.monthNum == selectedMonthNum }?.monthName ?: ""
+    val displayName =
+        months.find { it.monthNum == selectedMonthNum }?.monthName
+            ?: if (fallbackMonthName.isNotBlank()) fallbackMonthName else ""
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
