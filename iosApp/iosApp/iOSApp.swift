@@ -91,10 +91,27 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct iOSApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @Environment(\.scenePhase) var scenePhase
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .overlay {
+                    if scenePhase != .active {
+                        ZStack {
+                            Color(UIColor.systemBackground)
+                                .ignoresSafeArea()
+                            VStack(spacing: 12) {
+                                Image(systemName: "lock.shield.fill")
+                                    .font(.system(size: 44))
+                                    .foregroundColor(.accentColor)
+                                Text("PayslipMax Protected")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                            }
+                        }
+                    }
+                }
         }
     }
 }
