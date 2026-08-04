@@ -7,11 +7,9 @@ Keep this file at 200 lines or below.
 
 PayslipMax: an offline-first Kotlin Multiplatform (Android + iOS) app that parses Indian Army PCDA(O)
 payslip PDFs into structured salary data and generates wealth/error-detection insights. Everything runs
-on-device; no PII leaves the device except optional cloud AI inference. Three independent sub-projects
-live in this repo:
+on-device; no PII ever leaves the device. Two independent sub-projects live in this repo:
 
 - **`shared/` + `composeApp/` + `iosApp/`** — the KMP app (Kotlin Multiplatform + Compose Multiplatform). This is the primary codebase.
-- **`functions/`** — Firebase Cloud Functions backend (Node/Jest), for cloud AI proxying.
 - **`web-prototype/`** — a standalone Vite/vanilla-JS prototype (separate lint/test toolchain, not part of the KMP build).
 
 **The parser/AI-insights architecture is documented in full at `docs/AI_INSIGHTS_PIPELINE.md` — read it
@@ -53,13 +51,6 @@ framework link check. All must pass for a commit to go through. `scripts/git-pre
 same script) is the exhaustive counterpart run on every push: the full Android + common gate (both build
 variants, full corpus regression, lint), the full iOS unit test suite, and a gitleaks scan over the pushed
 commit range.
-
-### Firebase Functions (`functions/`)
-
-```bash
-cd functions && npm test    # jest --coverage --verbose
-cd functions && npm run lint
-```
 
 ### Web prototype (`web-prototype/`)
 
