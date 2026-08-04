@@ -69,6 +69,8 @@ kotlin {
                 implementation("org.json:json:20240303")
                 implementation(libs.mockk)
                 implementation("org.robolectric:robolectric:4.12.2")
+                implementation("androidx.test:core:1.6.1")
+                implementation(libs.androidx.room.testing)
             }
         }
 
@@ -95,6 +97,12 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
         unitTests.isIncludeAndroidResources = true
+    }
+    sourceSets {
+        // Room's MigrationTestHelper loads each version's exported schema JSON as a test asset.
+        getByName("test") {
+            assets.srcDirs("$projectDir/schemas")
+        }
     }
 }
 

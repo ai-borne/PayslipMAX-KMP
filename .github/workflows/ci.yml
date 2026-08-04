@@ -100,6 +100,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup JDK 17
         uses: actions/setup-java@v4
@@ -115,6 +117,9 @@ jobs:
 
       - name: Audit Tech Debt Limits and Regressions
         run: python3 scripts/check_tech_debt_limits.py
+
+      - name: Check Room Schema Immutability
+        run: python3 scripts/check_schema_immutability.py
 
       - name: Run Lint, Code Style & Tests (Android + Common)
         run: ./gradlew check -x iosX64Test -x iosSimulatorArm64Test
