@@ -1,0 +1,29 @@
+### Action Step 1.1: Register Google Play Developer Account
+1. **Go to**: [Google Play Console Signup](https://play.google.com/console/signup).
+2. **Sign in** with your primary Google account.
+3. **Select Account Type**:
+   - **Personal**: Easiest to register. *(Note: Google requires new personal developer accounts to run a 14-day closed test with 20 testers before publishing publicly to production).*
+   - **Organization**: Recommended if you have a registered company (requires a D-U-N-S number).
+4. **Pay Fee**: $25 USD (one-time payment).
+5. **Identity Verification**: Submit a photo of your Government ID (Passport / Driver's License) when prompted by Google Pay. Account approval usually takes 24–48 hours.
+
+---
+
+### Action Step 1.2: Enroll in Apple Developer Program
+1. **Download the app**: On your Mac or iPhone, open the **App Store** and download the **Apple Developer** app *(this is the fastest enrolment method)*.
+2. **Open Apple Developer app** -> tap **Account** -> **Enroll Now**.
+3. **Sign in** with your Apple ID (ensure Two-Factor Authentication is enabled).
+4. **Select Account Type**:
+   - **Individual**: Your personal legal name will be displayed as the app developer on the App Store.
+   - **Organization**: Displays your company name (requires D-U-N-S number).
+5. **Pay Membership**: $99 USD/year.
+6. **Identity Verification**: Verify your legal name, phone number, and photo ID. Enrollment is typically approved within 24–48 hours.
+
+---
+
+### While your accounts are being approved:
+We can get all the technical app build requirements and graphics ready right here on your machine!
+
+Would you like to start preparing:
+- **Option A**: App Store Screenshots & Graphics (Icons, feature graphics, promotional material)?
+- **Option B**: Code Signing & App Build Bundles (Keystore setup for Android, `.aab` bundle generation)?

@@ -68,6 +68,7 @@ kotlin {
             implementation(libs.firebase.crashlytics)
             implementation(libs.firebase.analytics)
             // Play Asset Delivery — MainActivity wires the AssetPackManager confirmation-dialog hook
+            implementation(libs.play.asset.delivery)
             implementation(libs.play.asset.delivery.ktx)
             // asset-delivery-ktx transitively pulls androidx.fragment:fragment:1.1.0, too old for
             // registerForActivityResult (lint: InvalidFragmentVersionForActivityResult) — force it

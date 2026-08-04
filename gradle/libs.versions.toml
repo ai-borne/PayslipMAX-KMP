@@ -19,7 +19,7 @@ kotlinx-serialization = "1.7.3"
 ktor = "2.3.12"
 firebase-bom = "33.7.0"
 litertlm-android = "0.13.1"
-play-asset-delivery = "2.3.0"
+play-asset-delivery = "2.2.2"
 
 [libraries]
 litertlm-android = { module = "com.google.ai.edge.litertlm:litertlm-android", version.ref = "litertlm-android" }
@@ -54,6 +54,7 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 
 # Play Asset Delivery — Tier 6 base model on-demand install (gemmaModelPack)
+play-asset-delivery = { module = "com.google.android.play:asset-delivery", version.ref = "play-asset-delivery" }
 play-asset-delivery-ktx = { module = "com.google.android.play:asset-delivery-ktx", version.ref = "play-asset-delivery" }
 
 # Compose Material Icons — standalone artifact (see compose-material-icons version note)
