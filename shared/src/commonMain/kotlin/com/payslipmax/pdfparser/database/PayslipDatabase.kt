@@ -19,14 +19,15 @@ import androidx.room.migration.AutoMigrationSpec
         FinancialInsightEntity::class,
         RepresentationDraftEntity::class,
     ],
-    version = 10,
+    version = 11,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = PayslipDatabase.DeleteGeminiApiKeySpec::class),
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),
         AutoMigration(from = 8, to = 9),
-        AutoMigration(from = 9, to = 10, spec = PayslipDatabase.DeleteAiInsightReportsTableSpec::class),
+        AutoMigration(from = 9, to = 10),
+        AutoMigration(from = 10, to = 11, spec = PayslipDatabase.DeleteAiInsightReportsTableSpec::class),
     ],
 )
 @ConstructedBy(PayslipDatabaseConstructor::class)
@@ -42,7 +43,7 @@ abstract class PayslipDatabase : RoomDatabase() {
     class DeleteGeminiApiKeySpec : AutoMigrationSpec
 
     /**
-     * AutoMigration spec for v9→v10:
+     * AutoMigration spec for v10→v11:
      * Explicitly marks `ai_insight_reports` table as deleted.
      */
     @DeleteTable(tableName = "ai_insight_reports")

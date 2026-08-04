@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.asStateFlow
 enum class FeatureGate {
     PREMIUM_INTELLIGENCE,
     WEALTH_OPTIMIZATION,
-    AI_AUDIT,
     TAX_PLANNER,
     DSOP_SIMULATOR,
     ANOMALY_DETECTION,

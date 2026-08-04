@@ -54,15 +54,6 @@ fun featureMeta(gate: FeatureGate): ProFeatureMeta =
                 target = null,
                 availability = ProFeatureAvailability.AVAILABLE,
             )
-        FeatureGate.AI_AUDIT ->
-            ProFeatureMeta(
-                gate = gate,
-                icon = AppStringsPremium.proCatalogAiAuditIcon,
-                title = AppStringsPremium.proCatalogAiAuditTitle,
-                description = AppStringsPremium.proCatalogAiAuditDesc,
-                target = null,
-                availability = ProFeatureAvailability.AVAILABLE,
-            )
         FeatureGate.TAX_PLANNER ->
             ProFeatureMeta(
                 gate = gate,
