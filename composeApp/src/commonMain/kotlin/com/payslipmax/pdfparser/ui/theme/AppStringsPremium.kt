@@ -1,13 +1,6 @@
 package com.payslipmax.pdfparser.ui.theme
 
 object AppStringsPremium {
-    const val geminiAiAnalyzeDesc = "Generate professional tax saving suggestions, investment recommendations, and error audits using Gemini."
-    const val geminiAiViewReportBtn = "View Full Audit Report"
-
-    // AI CA Audit card (Phase 5)
-    const val aiAuditAnalyzingDesc = "Analyzing your payslip with Gemini AI…"
-    const val aiAuditUnlockBtn = "Unlock AI CA Audit"
-
     // Premium Features Screens Strings
     const val representationTitle = "Claim Generator"
     const val representationSubtitle = "Pay & allowance dispute letters"

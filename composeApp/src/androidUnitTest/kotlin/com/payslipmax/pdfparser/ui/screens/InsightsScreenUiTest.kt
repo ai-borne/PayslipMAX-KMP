@@ -130,8 +130,8 @@ class InsightsScreenUiTest {
             testDispatcher.scheduler.runCurrent()
             mainClock.advanceTimeBy(300)
 
-            // Inline locked card removed for free users — its unique CTA must not exist
-            onNodeWithText(AppStringsPremium.aiAuditUnlockBtn).assertDoesNotExist()
+            // Inline locked AI card removed — its old unlock CTA must not appear
+            onNodeWithText("Unlock AI CA Audit").assertDoesNotExist()
             // The three scattered PRO teasers (Recommended Actions / locked anomalies / premium report
             // teaser) are gone — only the one consolidated hub card remains, at scroll bottom.
             onNodeWithText("Recommended For You").assertDoesNotExist()
