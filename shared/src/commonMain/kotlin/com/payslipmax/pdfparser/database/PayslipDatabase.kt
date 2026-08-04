@@ -4,6 +4,7 @@ import androidx.room.AutoMigration
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.DeleteColumn
+import androidx.room.DeleteTable
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.migration.AutoMigrationSpec
@@ -17,7 +18,6 @@ import androidx.room.migration.AutoMigrationSpec
         LedgerRecordEntity::class,
         FinancialInsightEntity::class,
         RepresentationDraftEntity::class,
-        AiInsightReportEntity::class,
     ],
     version = 10,
     exportSchema = true,
@@ -26,7 +26,7 @@ import androidx.room.migration.AutoMigrationSpec
         AutoMigration(from = 6, to = 7),
         AutoMigration(from = 7, to = 8),
         AutoMigration(from = 8, to = 9),
-        AutoMigration(from = 9, to = 10),
+        AutoMigration(from = 9, to = 10, spec = PayslipDatabase.DeleteAiInsightReportsTableSpec::class),
     ],
 )
 @ConstructedBy(PayslipDatabaseConstructor::class)
@@ -40,6 +40,13 @@ abstract class PayslipDatabase : RoomDatabase() {
      */
     @DeleteColumn(tableName = "app_settings", columnName = "geminiApiKey")
     class DeleteGeminiApiKeySpec : AutoMigrationSpec
+
+    /**
+     * AutoMigration spec for v9→v10:
+     * Explicitly marks `ai_insight_reports` table as deleted.
+     */
+    @DeleteTable(tableName = "ai_insight_reports")
+    class DeleteAiInsightReportsTableSpec : AutoMigrationSpec
 }
 
 // expect object constructor required for Room KMP database instantiation

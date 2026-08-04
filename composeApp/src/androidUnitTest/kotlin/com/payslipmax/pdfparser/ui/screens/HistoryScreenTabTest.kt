@@ -1,7 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.ui.test.*
-import com.payslipmax.pdfparser.database.AiInsightReportEntity
 import com.payslipmax.pdfparser.database.toEncryptedEntity
 import com.payslipmax.pdfparser.domain.*
 import com.payslipmax.pdfparser.repository.PayslipRepository
@@ -9,7 +8,6 @@ import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.FakeFinancialIntelligenceRepository
 import com.payslipmax.pdfparser.ui.PayslipViewModel
-import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -24,6 +22,10 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+/**
+ * Verifies History screen renders payslip statements and responds correctly to user interactions.
+ * AI Reports tab removed — history now shows statements only.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
@@ -75,77 +77,24 @@ class HistoryScreenTabTest {
         }
     }
 
+    /**
+     * Verifies the history screen renders without crash when payslip list is empty.
+     */
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun testTabSelectorRendersCorrectly() =
+    fun testEmptyHistoryScreenRendersWithoutCrash() =
         runComposeUiTest {
             testDispatcher.scheduler.runCurrent()
             setContent {
                 HistoryScreen(viewModel = viewModel, onOpenPdf = { _, _ -> }, onNavigateToInsights = {})
             }
-            onNodeWithText(AppStrings.historyTabStatements).assertExists()
-            onNodeWithText(AppStrings.historyTabAiReports).assertExists()
+            waitForIdle()
+            // Empty state — no crash, composable renders.
         }
 
-    @OptIn(ExperimentalTestApi::class)
-    @Test
-    fun testEmptySavedAiReportsState() =
-        runComposeUiTest {
-            testDispatcher.scheduler.runCurrent()
-            setContent {
-                HistoryScreen(viewModel = viewModel, onOpenPdf = { _, _ -> }, onNavigateToInsights = {})
-            }
-            // Navigate to AI Reports tab
-            onNodeWithText(AppStrings.historyTabAiReports).performClick()
-            testDispatcher.scheduler.runCurrent()
-            mainClock.advanceTimeBy(100)
-
-            onNodeWithText(AppStrings.historyEmptyAiReports).assertExists()
-        }
-
-    @OptIn(ExperimentalTestApi::class)
-    @Test
-    fun testSavedAiReportsListAndBottomSheetOpen() =
-        runComposeUiTest {
-            runBlocking {
-                fakeDao.insertAiInsightReport(
-                    AiInsightReportEntity(
-                        id = "report_1",
-                        payslipMonth = "02/2026",
-                        generatedDate = 1718919600000L,
-                        reportJSON = "This is a **Premium Narrative** report for Feb 2026",
-                        reportVersion = "1.0",
-                    ),
-                )
-            }
-            testDispatcher.scheduler.runCurrent()
-            setContent {
-                HistoryScreen(viewModel = viewModel, onOpenPdf = { _, _ -> }, onNavigateToInsights = {})
-            }
-
-            // Switch to AI Reports tab
-            onNodeWithText(AppStrings.historyTabAiReports).performClick()
-            testDispatcher.scheduler.runCurrent()
-            mainClock.advanceTimeBy(100)
-
-            // Month text for report: "February 2026"
-            onNodeWithText("February 2026").assertIsDisplayed()
-            onNodeWithText("Premium Intelligence Narrative").assertIsDisplayed()
-
-            // Tap the report to open bottom sheet
-            onNodeWithText("February 2026").performClick()
-            testDispatcher.scheduler.runCurrent()
-            mainClock.advanceTimeBy(300)
-
-            // Verify bottom sheet title
-            onNodeWithText(AppStrings.settingsAiInsightsLockedTitle).assertIsDisplayed()
-            // Verify content is parsed
-            onNodeWithText("This is a Premium Narrative report for Feb 2026", substring = true).assertIsDisplayed()
-
-            // Verify there is no refresh/regenerate button (onRegenerateClick is null)
-            onNodeWithText("🔄").assertDoesNotExist()
-        }
-
+    /**
+     * Verifies tapping a payslip row fires onOpenPayslipDetail with the correct payslip.
+     */
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun testTapPayslipRowInvokesOnOpenPayslipDetail() =
@@ -165,8 +114,7 @@ class HistoryScreenTabTest {
             }
             testDispatcher.scheduler.runCurrent()
 
-            // The most recent payslip's year auto-expands on load (observePayslips), so the row
-            // is reachable without any extra expand click.
+            // Most recent payslip's year auto-expands on load, so the row is directly accessible.
             onNodeWithText("August").performClick()
             waitForIdle()
 

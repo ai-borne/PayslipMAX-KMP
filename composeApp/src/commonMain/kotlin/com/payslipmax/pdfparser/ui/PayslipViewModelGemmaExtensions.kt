@@ -114,11 +114,6 @@ internal fun PayslipViewModel.observeSettings() {
                     isTelemetryEnabled = isTelemetry,
                 )
             }
-            if (isPremium && !previousPremiumEnabled) {
-                _uiState.value.selectedPayslip?.let { payslip ->
-                    loadCachedAiInsights(payslip.dateStr)
-                }
-            }
             previousPremiumEnabled = isPremium
         }
     }

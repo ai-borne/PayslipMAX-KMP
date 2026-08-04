@@ -1,7 +1,6 @@
 package com.payslipmax.pdfparser.ui
 
 import androidx.lifecycle.viewModelScope
-import com.payslipmax.pdfparser.domain.ParsedPayslip
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -28,20 +27,6 @@ fun PayslipViewModel.clearAllData() {
             _uiState.update { it.copy(isLoading = false, error = "Failed to clear data: ${e.message}") }
         }
     }
-}
-
-fun PayslipViewModel.generateAiInsights(payslip: ParsedPayslip) {
-    if (financialIntelligenceRepository == null) {
-        _uiState.update {
-            it.copy(aiError = "AI insights service is unavailable. Please restart the app.")
-        }
-        return
-    }
-    launchAiGeneration(payslip)
-}
-
-fun PayslipViewModel.clearAiInsights() {
-    _uiState.update { it.copy(aiInsights = null, aiError = null) }
 }
 
 fun PayslipViewModel.exportBackup(

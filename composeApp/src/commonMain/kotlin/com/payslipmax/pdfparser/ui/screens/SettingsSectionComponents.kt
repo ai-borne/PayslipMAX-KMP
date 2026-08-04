@@ -14,7 +14,6 @@ import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
-import com.payslipmax.pdfparser.ui.theme.GemmaModelStrings
 
 @Composable
 fun ProfileSection(
@@ -95,40 +94,7 @@ fun PreferencesSection(
             currentTheme = uiState.appTheme,
             onThemeSelect = { viewModel.setAppTheme(it) },
         )
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-        LocalGemmaAiSettingRow(viewModel, uiState)
     }
-}
-
-/**
- * This row now controls only *which source* [FinancialIntelligenceRepository] reads narrative
- * insights from (local Gemma vs. cloud Gemini) — free for everyone, no premium gate. The Tier 6
- * base model's own download progress/errors are surfaced separately by [BaseModelDownloadBanner],
- * which is unconditional and independent of this toggle.
- */
-@Composable
-private fun LocalGemmaAiSettingRow(
-    viewModel: PayslipViewModel,
-    uiState: PayslipUiState,
-) {
-    val subtitle =
-        if (uiState.isGemmaSupported) {
-            GemmaModelStrings.gemmaAiSettingRowSubtitleSupported
-        } else {
-            uiState.gemmaSupportReason ?: GemmaModelStrings.gemmaAiSettingRowSubtitleUnsupported
-        }
-    SettingsRow(
-        icon = "🤖",
-        title = GemmaModelStrings.gemmaAiSettingRowTitle,
-        subtitle = subtitle,
-        trailingContent = {
-            Switch(
-                checked = uiState.useLocalAi && uiState.isGemmaSupported,
-                onCheckedChange = { if (uiState.isGemmaSupported) viewModel.setLocalAiEnabled(it) },
-                enabled = uiState.isGemmaSupported,
-            )
-        },
-    )
 }
 
 @Composable

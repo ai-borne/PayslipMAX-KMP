@@ -10,7 +10,6 @@ import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.setDevOverride
 import com.payslipmax.pdfparser.ui.setPremiumEnabled
-import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import kotlinx.coroutines.Dispatchers
@@ -186,7 +185,7 @@ class InsightsScreenUiTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun premiumUserSeesCaReportInlineNotTeaser() =
+    fun premiumUserSeesPremiumReportCardNotLockedHub() =
         runComposeUiTest {
             runBlocking {
                 fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
@@ -200,12 +199,10 @@ class InsightsScreenUiTest {
             // The locked hub is a free-tier-only surface — the PRO shell dissolves, no wrapper card.
             onNodeWithText(InsightsStrings.premiumHubTitle, substring = true).assertDoesNotExist()
 
-            // Scroll to compose the section in LazyColumn
-            onNode(hasScrollAction()).performScrollToNode(hasText(AppStrings.geminiAiAnalyzeBtn))
+            // Premium report card title must be visible for PRO users.
+            onNode(hasScrollAction()).performScrollToNode(hasText(InsightsStrings.premiumReportTitle, substring = true))
             mainClock.advanceTimeBy(300)
-
-            // CA report active card must be present (its generate CTA is the positive signal)
-            onNodeWithText(AppStrings.geminiAiAnalyzeBtn).assertExists()
+            onNodeWithText(InsightsStrings.premiumReportTitle, substring = true).assertExists()
         }
 
     /** Insights PRO consolidation, Phase 2: for PRO users the hub dissolves into first-class cards —

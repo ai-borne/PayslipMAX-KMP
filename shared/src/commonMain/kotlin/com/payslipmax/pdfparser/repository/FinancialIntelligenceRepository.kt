@@ -1,6 +1,5 @@
 package com.payslipmax.pdfparser.repository
 
-import com.payslipmax.pdfparser.auth.AuthTokenProvider
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.domain.ParsedPayslip
@@ -12,8 +11,6 @@ import kotlinx.coroutines.withContext
 
 open class FinancialIntelligenceRepository(
     private val payslipDao: PayslipDao,
-    private val geminiProxyService: GeminiProxyService,
-    private val authTokenProvider: AuthTokenProvider = AuthTokenProvider(),
     private val dispatcher: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.Default,
 ) {
     /**
@@ -83,11 +80,6 @@ open class FinancialIntelligenceRepository(
             // 1. Save Ledger Record
             payslipDao.insertLedgerRecord(currentRecord)
 
-            // Invalidate cached AI insights for this month if any exist to ensure prompt updates
-            payslipDao.getFinancialInsightsByMonth(dateStr)
-                .filter { it.category == "NARRATIVE" }
-                .forEach { payslipDao.deleteFinancialInsight(it.id) }
-
             // 2. Fetch history for analysis
             val history = payslipDao.getAllLedgerRecords().firstOrNull() ?: emptyList()
             val previousRecord =
@@ -139,91 +131,6 @@ open class FinancialIntelligenceRepository(
 
             engineResult
         }
-
-    /**
-     * Calls Gemini via proxy or local Gemma provider based on settings, and saves the response.
-     * Auth token is fetched internally from [AuthTokenProvider] — callers
-     * do not need to know about Firebase Auth.
-     */
-    open suspend fun generateNarrativeInsights(
-        payslip: ParsedPayslip,
-        engineResult: EngineResult,
-    ): Result<String> =
-        withContext(dispatcher) {
-            val authToken = authTokenProvider.getIdToken()
-            val history = payslipDao.getAllLedgerRecords().firstOrNull() ?: emptyList()
-            val sanitizedPayslip = RedactionSanitizer.redact(payslip)
-
-            val settings = payslipDao.getSettings() ?: AppSettingsEntity()
-            val useLocalAi = settings.useLocalAi
-
-            val cloudProvider = GeminiCloudProvider(geminiProxyService)
-            val manager =
-                AIProviderManager(
-                    cloudProvider = cloudProvider,
-                    localProvider = LocalGemmaProvider(),
-                    useLocalAi = useLocalAi,
-                )
-
-            val payload =
-                PromptPayload(
-                    currentMonthRawText = "",
-                    sanitizedJsonData = "",
-                    historicalSummaryText = "",
-                    anomaliesCount = engineResult.anomalies.size,
-                    sanitizedPayslip = sanitizedPayslip,
-                    engineResult = engineResult,
-                    history = history,
-                    authToken = authToken,
-                )
-
-            val result = manager.generateInsights(payload)
-
-            if (result.isSuccess) {
-                val narrative = result.getOrThrow()
-                val insight =
-                    FinancialInsightEntity(
-                        id = CryptoHelper.sha256("${payslip.dateStr}-NARRATIVE"),
-                        monthStr = payslip.dateStr,
-                        category = "NARRATIVE",
-                        title = "Monthly Financial Audit & Advice",
-                        contentMarkdown = narrative,
-                        severity = "INFO",
-                        createdAt = CryptoHelper.getCurrentTimeMillis(),
-                    )
-                payslipDao.insertFinancialInsight(insight)
-
-                val report =
-                    AiInsightReportEntity(
-                        id = CryptoHelper.sha256("${payslip.dateStr}-AI_REPORT"),
-                        payslipMonth = payslip.dateStr,
-                        generatedDate = CryptoHelper.getCurrentTimeMillis(),
-                        reportJSON = narrative,
-                        reportVersion = "1.0.0",
-                    )
-                payslipDao.insertAiInsightReport(report)
-            }
-
-            result
-        }
-
-    /**
-     * Retrieves the cached AI narrative report from local database if it exists.
-     */
-    open suspend fun getCachedAiInsights(monthStr: String): String? =
-        withContext(dispatcher) {
-            payslipDao.getAiInsightReportByMonth(monthStr)?.reportJSON
-                ?: payslipDao.getFinancialInsightsByMonth(monthStr)
-                    .firstOrNull { it.category == "NARRATIVE" }
-                    ?.contentMarkdown
-        }
-
-    /**
-     * Retrieves all cached AI narrative reports.
-     */
-    fun getAllAiInsightReports(): Flow<List<AiInsightReportEntity>> {
-        return payslipDao.getAllAiInsightReports()
-    }
 
     private fun ParsedPayslip.toLedgerRecordEntity(): LedgerRecordEntity {
         return LedgerRecordEntity(

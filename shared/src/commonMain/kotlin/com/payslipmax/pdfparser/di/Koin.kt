@@ -54,11 +54,7 @@ val sharedModule: Module =
         }
 
         single {
-            com.payslipmax.pdfparser.insights.GeminiProxyService(get())
-        }
-
-        single {
-            com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository(get(), get())
+            com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository(get())
         }
     }
 

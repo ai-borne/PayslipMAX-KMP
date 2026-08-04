@@ -14,9 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
-import com.payslipmax.pdfparser.ui.PayslipUiState
-import com.payslipmax.pdfparser.ui.PayslipViewModel
-import com.payslipmax.pdfparser.ui.clearAiInsights
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
@@ -62,16 +59,12 @@ fun LockedPremiumHubCard(
  */
 fun LazyListScope.insightsPremiumItems(
     state: InsightsState,
-    uiState: PayslipUiState,
-    viewModel: PayslipViewModel,
     smartInsights: List<InsightUiModel>,
     isPremium: Boolean,
     hasAnomalyDetection: Boolean,
     toolsExpanded: Boolean,
     onToolsExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
-    onShowTransparency: () -> Unit,
-    onViewInsightsClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
 ) {
     if (!isPremium) {
@@ -84,16 +77,6 @@ fun LazyListScope.insightsPremiumItems(
             toolsExpanded = toolsExpanded,
             onToolsExpandClick = onToolsExpandClick,
             onNavigateTo = onNavigateTo,
-            aiSectionContent = {
-                GeminiAiInsightsSection(
-                    aiInsights = uiState.aiInsights,
-                    isAiLoading = uiState.isAiLoading,
-                    aiError = uiState.aiError,
-                    onGenerateClick = onShowTransparency,
-                    onViewInsightsClick = onViewInsightsClick,
-                    onClearClick = { viewModel.clearAiInsights() },
-                )
-            },
         )
     }
 }

@@ -31,7 +31,6 @@ fun PremiumReportCard(
     toolsExpanded: Boolean,
     onToolsExpandClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
-    aiSectionContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     FlatBorderedCard(modifier = modifier, tint = CardTint.Accent) {
@@ -41,7 +40,6 @@ fun PremiumReportCard(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
         )
-        aiSectionContent()
         PremiumToolsExpandHeader(expanded = toolsExpanded, onClick = onToolsExpandClick)
         if (toolsExpanded) {
             PremiumToolsSection(onNavigateTo = onNavigateTo)

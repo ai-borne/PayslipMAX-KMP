@@ -27,8 +27,6 @@ import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
-import com.payslipmax.pdfparser.ui.components.TransparencyDialog
-import com.payslipmax.pdfparser.ui.generateAiInsights
 import com.payslipmax.pdfparser.ui.hasAccess
 import com.payslipmax.pdfparser.ui.rememberHasAccess
 import com.payslipmax.pdfparser.ui.saveInsightsScrollPosition
@@ -59,71 +57,33 @@ fun InsightsScreen(
     }
 
     var showUpgradeSheet by remember { mutableStateOf(false) }
-    var showTransparencyDialog by remember { mutableStateOf(false) }
-    var showInsightsSheet by remember { mutableStateOf(false) }
 
     InsightsContent(
         viewModel = viewModel,
         uiState = uiState,
         selected = selected,
         onShowUpgradeSheet = { showUpgradeSheet = true },
-        onShowTransparency = { showTransparencyDialog = true },
-        onViewInsightsClick = { showInsightsSheet = true },
         onNavigateTo = onNavigateTo,
         modifier = modifier,
     )
 
     InsightsOverlayDialogs(
         showUpgradeSheet = showUpgradeSheet,
-        showTransparencyDialog = showTransparencyDialog,
-        showInsightsSheet = showInsightsSheet,
-        aiInsights = uiState.aiInsights,
-        selected = selected,
         viewModel = viewModel,
         onDismissUpgrade = { showUpgradeSheet = false },
-        onDismissTransparency = { showTransparencyDialog = false },
-        onDismissInsights = { showInsightsSheet = false },
     )
 }
 
 @Composable
 private fun InsightsOverlayDialogs(
     showUpgradeSheet: Boolean,
-    showTransparencyDialog: Boolean,
-    showInsightsSheet: Boolean,
-    aiInsights: String?,
-    selected: ParsedPayslip,
     viewModel: PayslipViewModel,
     onDismissUpgrade: () -> Unit,
-    onDismissTransparency: () -> Unit,
-    onDismissInsights: () -> Unit,
 ) {
     if (showUpgradeSheet) {
         PremiumUpgradeBottomSheet(
             onDismissRequest = onDismissUpgrade,
             onUnlockClick = { viewModel.setPremiumEnabled(true) },
-        )
-    }
-
-    if (showTransparencyDialog) {
-        TransparencyDialog(
-            payslip = selected,
-            onConfirm = {
-                onDismissTransparency()
-                viewModel.generateAiInsights(selected)
-            },
-            onDismiss = onDismissTransparency,
-        )
-    }
-
-    if (showInsightsSheet && aiInsights != null) {
-        AiInsightsBottomSheet(
-            aiInsights = aiInsights,
-            onDismissRequest = onDismissInsights,
-            onRegenerateClick = {
-                onDismissInsights()
-                viewModel.generateAiInsights(selected)
-            },
         )
     }
 }
@@ -134,8 +94,6 @@ private fun InsightsContent(
     uiState: PayslipUiState,
     selected: ParsedPayslip,
     onShowUpgradeSheet: () -> Unit,
-    onShowTransparency: () -> Unit,
-    onViewInsightsClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -155,8 +113,6 @@ private fun InsightsContent(
             wellnessExpanded = wellnessExpanded,
             onWellnessExpandClick = { wellnessExpanded = !wellnessExpanded },
             onShowUpgradeSheet = onShowUpgradeSheet,
-            onShowTransparency = onShowTransparency,
-            onViewInsightsClick = onViewInsightsClick,
             onNavigateTo = onNavigateTo,
             modifier = Modifier.weight(1f),
         )
@@ -171,14 +127,11 @@ private fun InsightsLazyBody(
     wellnessExpanded: Boolean,
     onWellnessExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
-    onShowTransparency: () -> Unit,
-    onViewInsightsClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val access = rememberInsightsFeatureAccess(viewModel)
     val smartInsights = remember(state) { buildSmartInsights(state) }
-    // Tools drawer defaults open for PRO ("drawer is home") but stays collapsible either way.
     var toolsExpanded by remember(access.hasPremiumIntelligence) { mutableStateOf(access.hasPremiumIntelligence) }
     val listState = rememberInsightsListState(uiState, viewModel)
     LazyColumn(
@@ -199,16 +152,12 @@ private fun InsightsLazyBody(
         )
         insightsPremiumItems(
             state = state,
-            uiState = uiState,
-            viewModel = viewModel,
             smartInsights = smartInsights,
             isPremium = access.hasPremiumIntelligence,
             hasAnomalyDetection = access.hasAnomalyDetection,
             toolsExpanded = toolsExpanded,
             onToolsExpandClick = { toolsExpanded = !toolsExpanded },
             onShowUpgradeSheet = onShowUpgradeSheet,
-            onShowTransparency = onShowTransparency,
-            onViewInsightsClick = onViewInsightsClick,
             onNavigateTo = onNavigateTo,
         )
     }
