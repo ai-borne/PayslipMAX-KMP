@@ -1,0 +1,44 @@
+Here is a step-by-step guide to setting up the Apple Developer account now under your wife's identity with your business email, and how to seamlessly manage and transfer it to your Apple ID later:
+
+---
+
+### Step 1: Prepare the Apple ID & Business Email
+1. **Set the Email:** Go to [appleid.apple.com](https://appleid.apple.com) for the Apple ID you are using (your wife's account) and update the primary email address to your **Business Email ID** (or add your business email as an alias).
+2. **Turn on 2FA:** Ensure **Two-Factor Authentication (2FA)** is turned on for this Apple ID (Apple requires 2FA for developer registration).
+
+---
+
+### Step 2: Register via the Apple Developer App on iPhone (Fastest Method)
+Apple processes registrations much faster when done through their official iOS app rather than the web browser:
+
+1. On an iPhone/iPad, log into the App Store / Device using that Apple ID.
+2. Download the **[Apple Developer App](https://apps.apple.com/app/apple-developer/id640199958)** from the App Store.
+3. Open the app, go to the **Account** tab, and tap **Enroll Now**.
+4. **Identity Verification:** Apple will request a photo ID (Passport, Aadhaar, or Driver's License) and a quick selfie check. 
+   > **Important:** The photo ID **must match your wife's legal name** on the Apple ID account.
+5. Select **Individual** (or Organization if you already have a D-U-N-S number for your business).
+6. Pay the $99/year fee via Apple Pay or In-App Purchase.
+
+---
+
+### Step 3: Grant Yourself Full Control Immediately (Admin Access)
+Once the developer account is approved (usually within 1–24 hours):
+
+1. Log into **[App Store Connect](https://appstoreconnect.apple.com)** with the registered Apple ID.
+2. Go to **Users and Access** > tap the **`+`** icon.
+3. Add **your personal Apple ID email address**.
+4. Assign yourself the **Admin** role (and check *Access to Certificates, Identifiers & Profiles*).
+5. Accept the email invite on your personal Apple ID.
+
+> **Result:** You can now log into Xcode, App Store Connect, build certificates, and upload TestFlight builds using **your own Apple ID** every day, without needing your wife's device or credentials!
+
+---
+
+### Step 4: Transfer Ownership Later (When Ready)
+
+When you are ready to shift full account ownership to your own ID in the future, you have two options depending on your setup:
+
+* **Option A (If transferring Account Holder role within the same team):**
+  In App Store Connect under **Users and Access**, click on your wife's account > **Transfer Account Holder Role** > select your Apple ID. Once accepted, your Apple ID becomes the legal Account Holder.
+* **Option B (If creating a brand new separate Developer Account for yourself later):**
+  Apple supports **App Transfer** in App Store Connect. You can transfer published apps to a new developer account in a few clicks without losing reviews, ratings, or user downloads.

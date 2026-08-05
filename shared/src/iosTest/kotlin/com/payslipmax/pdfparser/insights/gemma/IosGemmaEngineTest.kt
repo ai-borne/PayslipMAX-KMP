@@ -58,7 +58,7 @@ class IosGemmaEngineTest {
             GemmaEngine.inferenceDelegate = null
             val config = GemmaEngineConfig(modelPath = tempModelPath)
             val engine = GemmaEngine(config)
-            assertTrue(engine.isInitialized, "the file exists, so isInitialized must be true")
+            assertFalse(engine.isInitialized, "isInitialized must be false when no inferenceDelegate is registered")
             val result = engine.generateResponse("Test prompt")
             assertTrue(result.isFailure, "generateResponse must fail when no inference runtime is wired")
             engine.close()

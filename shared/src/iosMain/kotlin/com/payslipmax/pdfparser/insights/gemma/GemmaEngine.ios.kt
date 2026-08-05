@@ -16,7 +16,7 @@ import kotlin.coroutines.suspendCoroutine
 @OptIn(ExperimentalForeignApi::class)
 actual class GemmaEngine actual constructor(private val config: GemmaEngineConfig) {
     actual val isInitialized: Boolean
-        get() = config.modelPath.isNotEmpty() && isFileExists(config.modelPath)
+        get() = inferenceDelegate != null && config.modelPath.isNotEmpty() && isFileExists(config.modelPath)
 
     actual suspend fun generateResponse(prompt: String): Result<String> {
         val delegate =
