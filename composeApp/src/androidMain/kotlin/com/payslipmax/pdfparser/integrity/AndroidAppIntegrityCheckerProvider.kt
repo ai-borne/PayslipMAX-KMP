@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.domain
 
 import com.payslipmax.pdfparser.crypto.ContextHolder
 import com.payslipmax.pdfparser.integrity.AndroidAppIntegrityChecker
+import com.payslipmax.pdfparser.shared.BuildConfig
 
 actual fun provideAppIntegrityChecker(): AppIntegrityChecker {
     val context =
@@ -10,6 +11,6 @@ actual fun provideAppIntegrityChecker(): AppIntegrityChecker {
         }
     return AndroidAppIntegrityChecker(
         context = context,
-        isDebug = true,
+        isDebug = BuildConfig.DEBUG,
     )
 }
