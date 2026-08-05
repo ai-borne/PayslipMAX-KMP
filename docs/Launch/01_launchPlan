@@ -21,6 +21,20 @@
 
 ---
 
+### Non-Code / External Launch Prerequisites (Pending Developer Account Approval)
+While all code is release-ready, the following operational steps are required once your Google Play Developer Account and Apple Developer Program enrolments are active:
+
+1. **Xcode Background Assets Target & Entitlements (iOS)**
+   - Create the BADownloaderExtension target in Xcode.
+   - Enable the group.com.payslipmax.pdfparser.gemma App Group entitlement on both the main app and extension target (requires active Apple Developer signing profile).
+   - Add model download URL keys to Info.plist.
+2. **In-App Purchase Product Configuration**
+   - Create subscription IDs (pro_monthly, pro_yearly) in Google Play Console and App Store Connect to link to the implemented native billing engines.
+3. **Google Play 14-Day / 20-Tester Policy**
+   - Complete Google Play's mandatory 14-day closed testing requirement with 20 opted-in testers before production publishing (applicable to new personal developer accounts).
+
+---
+
 ### While your accounts are being approved:
 We can get all the technical app build requirements and graphics ready right here on your machine!
 
