@@ -42,14 +42,20 @@ final class GemmaBackgroundAssetsBridge {
     /// Reports download progress (bytesDownloaded, totalBytes) to KMP.
     func reportProgress(bytesDownloaded: Int64, totalBytes: Int64) {
         DispatchQueue.main.async {
-            IosGemmaBaseModelInstaller.companion.progressReporter?(bytesDownloaded, totalBytes)
+            IosGemmaBaseModelInstaller.companion.progressReporter?(
+                KotlinLong(value: bytesDownloaded),
+                KotlinLong(value: totalBytes)
+            )
         }
     }
 
     /// Reports download completion status to KMP.
     func reportCompletion(success: Bool, errorMessage: String? = nil) {
         DispatchQueue.main.async {
-            IosGemmaBaseModelInstaller.companion.completionReporter?(success, errorMessage)
+            IosGemmaBaseModelInstaller.companion.completionReporter?(
+                KotlinBoolean(bool: success),
+                errorMessage
+            )
         }
     }
 
