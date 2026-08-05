@@ -11,7 +11,7 @@ class AppStringsPremiumSettingsTest {
 
     @Test
     fun subscribedNoteMatchesExpectedCopy() {
-        assertEquals("Subscribed (Next billing: Oct 2026)", AppStrings.settingsProPlanSubscribedNote)
+        assertEquals("Subscribed (Auto-Renewing Subscription Active)", AppStrings.settingsProPlanSubscribedNote)
     }
 
     @Test

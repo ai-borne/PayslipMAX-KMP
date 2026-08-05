@@ -28,8 +28,8 @@ import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
+import com.payslipmax.pdfparser.ui.launchPurchaseFlow
 import com.payslipmax.pdfparser.ui.rememberHasAccess
-import com.payslipmax.pdfparser.ui.setPremiumEnabled
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
@@ -101,7 +101,7 @@ fun ProFeaturesScreen(
     if (showUpgradeSheet) {
         PremiumUpgradeBottomSheet(
             onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { viewModel.setPremiumEnabled(true) },
+            onUnlockClick = { viewModel.launchPurchaseFlow() },
         )
     }
 }

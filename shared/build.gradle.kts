@@ -63,6 +63,8 @@ kotlin {
             // Play Asset Delivery — Tier 6 base model on-demand install (AndroidGemmaBaseModelInstaller)
             implementation(libs.play.asset.delivery)
             implementation(libs.play.asset.delivery.ktx)
+            // Play Billing
+            implementation(libs.play.billing.ktx)
         }
 
         val androidUnitTest by getting {

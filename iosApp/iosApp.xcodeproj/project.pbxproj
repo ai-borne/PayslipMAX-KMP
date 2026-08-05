@@ -15,6 +15,8 @@
 		445C052442747365B7CB2124 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 617043448F4869026C2F0BB4 /* FirebaseAuth */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		AA01000000000000000000B2 /* GemmaInferenceBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01000000000000000000B1 /* GemmaInferenceBridge.swift */; };
+		BB01000000000000000000B2 /* StoreKitBillingBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB01000000000000000000B1 /* StoreKitBillingBridge.swift */; };
+		CC01000000000000000000C2 /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = CC01000000000000000000C1 /* Products.storekit */; };
 		B7C4F6137AC8345E71E92063 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1359B5E3E79A6103CB63C864 /* FirebaseAnalytics */; };
 		C87B4FA04BDA1DA04158D48E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */; };
 		CA0100000000000000000002 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = CA0100000000000000000001 /* FirebaseCrashlytics */; };
@@ -30,6 +32,8 @@
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AA01000000000000000000B1 /* GemmaInferenceBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GemmaInferenceBridge.swift; sourceTree = "<group>"; };
+		BB01000000000000000000B1 /* StoreKitBillingBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitBillingBridge.swift; sourceTree = "<group>"; };
+		CC01000000000000000000C1 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		AB3632DC29227652001CCB65 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		B55143988C4C8F291BE72E9B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -91,6 +95,8 @@
 				7555FF8C242A565B00829871 /* Info.plist */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				AA01000000000000000000B1 /* GemmaInferenceBridge.swift */,
+				BB01000000000000000000B1 /* StoreKitBillingBridge.swift */,
+				CC01000000000000000000C1 /* Products.storekit */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 				A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */,
 				B55143988C4C8F291BE72E9B /* PrivacyInfo.xcprivacy */,
@@ -180,6 +186,7 @@
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				C87B4FA04BDA1DA04158D48E /* GoogleService-Info.plist in Resources */,
 				D87B4FA04BDA1DA04158D48F /* PrivacyInfo.xcprivacy in Resources */,
+				CC01000000000000000000C2 /* Products.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +222,7 @@
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				AA01000000000000000000B2 /* GemmaInferenceBridge.swift in Sources */,
+				BB01000000000000000000B2 /* StoreKitBillingBridge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,7 +284,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -336,7 +344,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -360,7 +368,7 @@
 					"$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -392,7 +400,7 @@
 					"$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

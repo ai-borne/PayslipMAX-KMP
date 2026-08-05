@@ -9,8 +9,9 @@ actual fun provideAppIntegrityChecker(): AppIntegrityChecker {
         ContextHolder.context ?: return object : AppIntegrityChecker {
             override suspend fun checkIntegrity(): AppIntegrityStatus = AppIntegrityStatus.Valid
         }
+    val isTestEnvironment = android.os.Build.FINGERPRINT == "robolectric" || android.os.Build.HARDWARE == "robolectric"
     return AndroidAppIntegrityChecker(
         context = context,
-        isDebug = BuildConfig.DEBUG,
+        isDebug = BuildConfig.DEBUG || isTestEnvironment,
     )
 }

@@ -84,6 +84,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // GemmaEngine.ios.kt fails loudly until this delegate is registered.
         GemmaInferenceBridge.register()
 
+        // Bridge StoreKit 2 IAP billing flow to KMP.
+        StoreKitBillingBridge.register()
+
         return true
     }
 }

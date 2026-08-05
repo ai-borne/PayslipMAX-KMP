@@ -117,7 +117,7 @@ object AppStrings {
     const val settingsProPlanBillingNote = "Yearly Auto-Renewing Subscription"
     const val settingsProPlanActive = "Pro Plan Activated"
     const val settingsProPlanUpgradeTitle = "Upgrade to PayslipMax Pro"
-    const val settingsProPlanSubscribedNote = "Subscribed (Next billing: Oct 2026)"
+    const val settingsProPlanSubscribedNote = "Subscribed (Auto-Renewing Subscription Active)"
     const val settingsProPlanUpgradeSubtitle = "Unlock Advanced Insights & Cloud Backup (₹99 / Year)"
     const val settingsDeleteAll = "Reset App & Clear Data"
     const val settingsDeleteConfirm = "Are you sure you want to wipe all local database records? This action is permanent."

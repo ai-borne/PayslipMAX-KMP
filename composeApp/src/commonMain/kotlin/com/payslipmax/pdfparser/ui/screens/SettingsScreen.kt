@@ -48,7 +48,7 @@ fun SettingsScreen(
     if (showUpgradeSheet) {
         PremiumUpgradeBottomSheet(
             onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { viewModel.setPremiumEnabled(true) },
+            onUnlockClick = { viewModel.launchPurchaseFlow() },
         )
     }
 }

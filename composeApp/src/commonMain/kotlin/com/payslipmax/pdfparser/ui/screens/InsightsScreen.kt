@@ -28,9 +28,9 @@ import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.hasAccess
+import com.payslipmax.pdfparser.ui.launchPurchaseFlow
 import com.payslipmax.pdfparser.ui.rememberHasAccess
 import com.payslipmax.pdfparser.ui.saveInsightsScrollPosition
-import com.payslipmax.pdfparser.ui.setPremiumEnabled
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 
@@ -83,7 +83,7 @@ private fun InsightsOverlayDialogs(
     if (showUpgradeSheet) {
         PremiumUpgradeBottomSheet(
             onDismissRequest = onDismissUpgrade,
-            onUnlockClick = { viewModel.setPremiumEnabled(true) },
+            onUnlockClick = { viewModel.launchPurchaseFlow() },
         )
     }
 }

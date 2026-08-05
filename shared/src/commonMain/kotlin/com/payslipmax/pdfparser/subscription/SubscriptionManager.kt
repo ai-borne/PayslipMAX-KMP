@@ -1,5 +1,7 @@
 package com.payslipmax.pdfparser.subscription
 
+import com.payslipmax.pdfparser.billing.BillingManager
+import com.payslipmax.pdfparser.billing.SubscriptionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,6 +48,7 @@ interface SubscriptionService {
 class SubscriptionManager(
     private val isPremiumEnabledProvider: () -> Boolean,
     private val isDebugBuildProvider: () -> Boolean = { isDebugBuild() },
+    private val billingManager: BillingManager? = null,
 ) : SubscriptionService {
     private val _devOverride =
         MutableStateFlow(
@@ -68,6 +71,7 @@ class SubscriptionManager(
                 DevOverride.FOLLOW_FLAG -> Unit
             }
         }
-        return isPremiumEnabledProvider()
+        val isBillingActive = billingManager?.subscriptionState?.value is SubscriptionState.Active
+        return isBillingActive || isPremiumEnabledProvider()
     }
 }
