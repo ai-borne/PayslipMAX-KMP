@@ -16,6 +16,7 @@
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		AA01000000000000000000B2 /* GemmaInferenceBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01000000000000000000B1 /* GemmaInferenceBridge.swift */; };
 		BB01000000000000000000B2 /* StoreKitBillingBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB01000000000000000000B1 /* StoreKitBillingBridge.swift */; };
+		DD01000000000000000000B2 /* GemmaBackgroundAssetsBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD01000000000000000000B1 /* GemmaBackgroundAssetsBridge.swift */; };
 		CC01000000000000000000C2 /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = CC01000000000000000000C1 /* Products.storekit */; };
 		B7C4F6137AC8345E71E92063 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1359B5E3E79A6103CB63C864 /* FirebaseAnalytics */; };
 		C87B4FA04BDA1DA04158D48E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */; };
@@ -33,6 +34,7 @@
 		A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AA01000000000000000000B1 /* GemmaInferenceBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GemmaInferenceBridge.swift; sourceTree = "<group>"; };
 		BB01000000000000000000B1 /* StoreKitBillingBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitBillingBridge.swift; sourceTree = "<group>"; };
+		DD01000000000000000000B1 /* GemmaBackgroundAssetsBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GemmaBackgroundAssetsBridge.swift; sourceTree = "<group>"; };
 		CC01000000000000000000C1 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		AB3632DC29227652001CCB65 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		B55143988C4C8F291BE72E9B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				AA01000000000000000000B1 /* GemmaInferenceBridge.swift */,
 				BB01000000000000000000B1 /* StoreKitBillingBridge.swift */,
+				DD01000000000000000000B1 /* GemmaBackgroundAssetsBridge.swift */,
 				CC01000000000000000000C1 /* Products.storekit */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
 				A55143988C4C8F291BE72E9A /* GoogleService-Info.plist */,
@@ -223,6 +226,7 @@
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				AA01000000000000000000B2 /* GemmaInferenceBridge.swift in Sources */,
 				BB01000000000000000000B2 /* StoreKitBillingBridge.swift in Sources */,
+				DD01000000000000000000B2 /* GemmaBackgroundAssetsBridge.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
