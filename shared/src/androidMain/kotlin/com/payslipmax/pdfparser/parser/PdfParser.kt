@@ -20,14 +20,11 @@ data class ExtractedPayslipTexts(
 )
 
 actual class PlatformPdfParser actual constructor() : PdfParser {
-    actual override fun decryptAndParse(
+    actual override suspend fun decryptAndParse(
         pdfBytes: ByteArray,
         password: String,
         filename: String,
     ): Result<ParsedPayslip> {
-        // Token IR is the primary path. Grid reconstruction, row pairing, classification and the
-        // arithmetic confidence solver all live in common code (GrammarAwareParser), so Android and
-        // iOS share one device-independent engine instead of diverging column crops.
         return extractTokens(pdfBytes, password, filename).mapCatching { tokenized ->
             Logger.d("PlatformPdfParser", "Starting GrammarAwareParser.parse...")
             val gemmaEngine =
@@ -47,8 +44,6 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     Logger.e("PlatformPdfParser", "Failed to initialize GemmaEngine", e)
                     null
                 }
-            // Same GemmaEngine instance backs both Tier 6 fallback and the Tier 6 diagnostic pass —
-            // GemmaEngine opens a fresh stateless Conversation per call, so this is free of extra model-load cost.
             val fallbackExtractor = gemmaEngine?.let { GemmaFallbackExtractor(gemmaEngine = it) }
             val diagnosticExtractor = gemmaEngine?.let { GemmaDiagnosticExtractor(gemmaEngine = it) }
             val parseResult =
@@ -63,22 +58,23 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         }
     }
 
-    actual override fun extractTokens(
+    actual override suspend fun extractTokens(
         pdfBytes: ByteArray,
         password: String,
         filename: String,
-    ): Result<TokenizedPayslip> {
-        return try {
-            initResourceLoader()
-            ByteArrayInputStream(pdfBytes).use { inputStream ->
-                PDDocument.load(inputStream, password).use { document ->
-                    Result.success(extractTokenized(document))
+    ): Result<TokenizedPayslip> =
+        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+            try {
+                initResourceLoader()
+                ByteArrayInputStream(pdfBytes).use { inputStream ->
+                    PDDocument.load(inputStream, password).use { document ->
+                        Result.success(extractTokenized(document))
+                    }
                 }
+            } catch (e: Throwable) {
+                Result.failure(e)
             }
-        } catch (e: Throwable) {
-            Result.failure(e)
         }
-    }
 
     /**
      * Decrypts a payslip PDF and runs only the platform text-extraction stage (no parsing).

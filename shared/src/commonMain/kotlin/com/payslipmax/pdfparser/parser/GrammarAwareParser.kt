@@ -18,7 +18,7 @@ object GrammarAwareParser {
         }
     private val pipeline = SharedParsingPipeline(registry)
 
-    fun parse(
+    suspend fun parse(
         tokenized: TokenizedPayslip,
         filename: String,
         fallbackExtractor: GemmaFallbackExtractor? = null,
@@ -28,7 +28,7 @@ object GrammarAwareParser {
         return parseWithDiagnostics(tokenized, filename, fallbackExtractor, diagnosticExtractor, debugCollector).map { it.first }
     }
 
-    fun parseWithDiagnostics(
+    suspend fun parseWithDiagnostics(
         tokenized: TokenizedPayslip,
         filename: String,
         fallbackExtractor: GemmaFallbackExtractor? = null,

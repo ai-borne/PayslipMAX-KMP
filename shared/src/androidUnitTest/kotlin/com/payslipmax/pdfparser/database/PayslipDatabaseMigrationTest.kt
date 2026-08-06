@@ -6,6 +6,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 private const val TEST_DB = "migration-test.db"
 
@@ -17,6 +18,7 @@ private const val TEST_DB = "migration-test.db"
  * version skipped migration entirely and failed Room's identity-hash validation on open.
  */
 @RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE)
 class PayslipDatabaseMigrationTest {
     @get:Rule
     val helper: MigrationTestHelper =

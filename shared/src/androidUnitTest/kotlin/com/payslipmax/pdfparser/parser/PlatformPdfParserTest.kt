@@ -61,7 +61,7 @@ class PlatformPdfParserTest {
                 val pdfFiles = yearDir.listFiles { _, name -> name.endsWith(".pdf", ignoreCase = true) }?.sortedBy { it.name } ?: emptyList()
                 for (file in pdfFiles) {
                     totalFiles++
-                    val result = parser.decryptAndParse(file.readBytes(), password, file.name)
+                    val result = kotlinx.coroutines.runBlocking { parser.decryptAndParse(file.readBytes(), password, file.name) }
                     if (result.isFailure) {
                         errors.add("❌ ${file.name} - Failed to parse: ${result.exceptionOrNull()?.message}")
                         continue

@@ -6,6 +6,7 @@ import com.payslipmax.pdfparser.parser.GemmaDiagnosticExtractor
 import com.payslipmax.pdfparser.parser.GrammarAwareParser
 import com.payslipmax.pdfparser.parser.PositionedToken
 import com.payslipmax.pdfparser.parser.TokenizedPayslip
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -62,56 +63,60 @@ class SharedParsingPipelineDiagnosticTest {
     }
 
     @Test
-    fun testDiagnosticStaysNullWhenSchemaValid() {
-        val mockEngine = MockGemmaEngine(config = testConfig)
-        mockEngine.mockResponse = """{"fieldKey": "basicPay", "reason": "would fire if the extractor were wrongly invoked"}"""
-        val diagnosticExtractor = GemmaDiagnosticExtractor(mockEngine = mockEngine)
+    fun testDiagnosticStaysNullWhenSchemaValid() =
+        runTest {
+            val mockEngine = MockGemmaEngine(config = testConfig)
+            mockEngine.mockResponse = """{"fieldKey": "basicPay", "reason": "would fire if the extractor were wrongly invoked"}"""
+            val diagnosticExtractor = GemmaDiagnosticExtractor(mockEngine = mockEngine)
 
-        val result = GrammarAwareParser.parse(reconciledTokenized(), "01 Jan 2024.pdf", diagnosticExtractor = diagnosticExtractor)
+            val result = GrammarAwareParser.parse(reconciledTokenized(), "01 Jan 2024.pdf", diagnosticExtractor = diagnosticExtractor)
 
-        val payslip = result.getOrThrow()
-        assertNull(
-            payslip.diagnosticSuggestion,
-            "Tier 6 diagnostic must only fire on schema-validation failure; a reconciled payslip must never invoke it",
-        )
-    }
-
-    @Test
-    fun testDiagnosticSuggestionPopulatedOnSchemaMismatch() {
-        val mockEngine = MockGemmaEngine(config = testConfig)
-        mockEngine.mockResponse = """{"fieldKey": "basicPay", "reason": "Gross pay residual of ~128370 suggests basicPay was under-extracted"}"""
-        val diagnosticExtractor = GemmaDiagnosticExtractor(mockEngine = mockEngine)
-
-        val result = GrammarAwareParser.parse(mismatchedTokenized(), "01 Jan 2024.pdf", diagnosticExtractor = diagnosticExtractor)
-
-        val payslip = result.getOrThrow()
-        assertTrue(payslip.needsReview)
-        assertEquals("basicPay", payslip.diagnosticSuggestion?.fieldKey)
-        assertEquals(
-            "Gross pay residual of ~128370 suggests basicPay was under-extracted",
-            payslip.diagnosticSuggestion?.reason,
-        )
-    }
+            val payslip = result.getOrThrow()
+            assertNull(
+                payslip.diagnosticSuggestion,
+                "Tier 6 diagnostic must only fire on schema-validation failure; a reconciled payslip must never invoke it",
+            )
+        }
 
     @Test
-    fun testDiagnosticStaysNullWhenNoExtractorProvided() {
-        val result = GrammarAwareParser.parse(mismatchedTokenized(), "01 Jan 2024.pdf")
+    fun testDiagnosticSuggestionPopulatedOnSchemaMismatch() =
+        runTest {
+            val mockEngine = MockGemmaEngine(config = testConfig)
+            mockEngine.mockResponse = """{"fieldKey": "basicPay", "reason": "Gross pay residual of ~128370 suggests basicPay was under-extracted"}"""
+            val diagnosticExtractor = GemmaDiagnosticExtractor(mockEngine = mockEngine)
 
-        val payslip = result.getOrThrow()
-        assertTrue(payslip.needsReview, "the parse itself must still succeed and flag review, even with no Tier 6 diagnostic available")
-        assertNull(payslip.diagnosticSuggestion, "no model present must never block or fail the parse")
-    }
+            val result = GrammarAwareParser.parse(mismatchedTokenized(), "01 Jan 2024.pdf", diagnosticExtractor = diagnosticExtractor)
+
+            val payslip = result.getOrThrow()
+            assertTrue(payslip.needsReview)
+            assertEquals("basicPay", payslip.diagnosticSuggestion?.fieldKey)
+            assertEquals(
+                "Gross pay residual of ~128370 suggests basicPay was under-extracted",
+                payslip.diagnosticSuggestion?.reason,
+            )
+        }
 
     @Test
-    fun testDiagnosticSuggestionNullWhenGemmaCallFailsOnMismatch() {
-        val mockEngine = MockGemmaEngine(config = testConfig, shouldFail = true)
-        val diagnosticExtractor = GemmaDiagnosticExtractor(mockEngine = mockEngine)
+    fun testDiagnosticStaysNullWhenNoExtractorProvided() =
+        runTest {
+            val result = GrammarAwareParser.parse(mismatchedTokenized(), "01 Jan 2024.pdf")
 
-        val result = GrammarAwareParser.parse(mismatchedTokenized(), "01 Jan 2024.pdf", diagnosticExtractor = diagnosticExtractor)
+            val payslip = result.getOrThrow()
+            assertTrue(payslip.needsReview, "the parse itself must still succeed and flag review, even with no Tier 6 diagnostic available")
+            assertNull(payslip.diagnosticSuggestion, "no model present must never block or fail the parse")
+        }
 
-        val payslip = result.getOrThrow()
-        assertTrue(payslip.needsReview, "a failed diagnostic call must not affect the rest of the parsed payslip")
-        assertNull(payslip.diagnosticSuggestion)
-        assertEquals(140500.0, payslip.earnings.basicPay, "the geometry-solved fields must be untouched by the diagnostic failure")
-    }
+    @Test
+    fun testDiagnosticSuggestionNullWhenGemmaCallFailsOnMismatch() =
+        runTest {
+            val mockEngine = MockGemmaEngine(config = testConfig, shouldFail = true)
+            val diagnosticExtractor = GemmaDiagnosticExtractor(mockEngine = mockEngine)
+
+            val result = GrammarAwareParser.parse(mismatchedTokenized(), "01 Jan 2024.pdf", diagnosticExtractor = diagnosticExtractor)
+
+            val payslip = result.getOrThrow()
+            assertTrue(payslip.needsReview, "a failed diagnostic call must not affect the rest of the parsed payslip")
+            assertNull(payslip.diagnosticSuggestion)
+            assertEquals(140500.0, payslip.earnings.basicPay, "the geometry-solved fields must be untouched by the diagnostic failure")
+        }
 }

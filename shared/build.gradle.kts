@@ -72,6 +72,7 @@ kotlin {
                 implementation("org.json:json:20240303")
                 implementation(libs.mockk)
                 implementation("org.robolectric:robolectric:4.12.2")
+                implementation("org.xerial:sqlite-jdbc:3.45.1.0")
                 implementation("androidx.test:core:1.6.1")
                 implementation(libs.androidx.room.testing)
             }

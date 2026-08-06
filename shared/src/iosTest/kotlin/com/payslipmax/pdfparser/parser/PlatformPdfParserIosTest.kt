@@ -88,7 +88,7 @@ class PlatformPdfParserIosTest {
                 }
 
                 val bytes = data.toByteArray()
-                val result = parser.decryptAndParse(bytes, password, fileName)
+                val result = kotlinx.coroutines.runBlocking { parser.decryptAndParse(bytes, password, fileName) }
 
                 if (result.isFailure) {
                     val ex = result.exceptionOrNull()

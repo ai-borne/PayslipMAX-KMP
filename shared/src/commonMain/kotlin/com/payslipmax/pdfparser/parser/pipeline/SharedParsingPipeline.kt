@@ -35,7 +35,7 @@ import com.payslipmax.pdfparser.parser.registry.GrammarRegistry
 class SharedParsingPipeline(
     private val registry: GrammarRegistry,
 ) {
-    fun parse(
+    suspend fun parse(
         tokenized: TokenizedPayslip,
         filename: String,
         fallbackExtractor: GemmaFallbackExtractor? = null,
@@ -107,7 +107,7 @@ class SharedParsingPipeline(
             ?: parseOfficer(context.cleanedFullText, context.monthNum, context.year)
     }
 
-    private fun executeTableReconciliation(
+    private suspend fun executeTableReconciliation(
         descriptor: GrammarDescriptor?,
         context: PipelineContext,
         fallbackExtractor: GemmaFallbackExtractor?,
@@ -149,7 +149,7 @@ class SharedParsingPipeline(
         return parseTaxAndSavings(taxText, dsopText, context.cleanedFullText)
     }
 
-    private fun assembleAndValidate(
+    private suspend fun assembleAndValidate(
         context: PipelineContext,
         officer: Officer,
         solved: SolvedTable,
@@ -198,24 +198,22 @@ class SharedParsingPipeline(
         )
     }
 
-    private fun runDiagnostic(
+    private suspend fun runDiagnostic(
         diagnosticExtractor: GemmaDiagnosticExtractor,
         solved: SolvedTable,
         context: PipelineContext,
         schemaValidation: SchemaValidationResult,
     ): DiagnosticSuggestion? {
         return try {
-            kotlinx.coroutines.runBlocking {
-                diagnosticExtractor.suggestDiagnostic(
-                    earnings = solved.earningsMap,
-                    deductions = solved.deductionsMap,
-                    grossPay = context.grossPay,
-                    totalDeductions = context.totalDeductions,
-                    netRemittance = context.netRemittance,
-                    residual = maxOf(schemaValidation.grossMismatch, schemaValidation.deductionsMismatch, schemaValidation.netResidual),
-                )
-            }
-        } catch (e: Exception) {
+            diagnosticExtractor.suggestDiagnostic(
+                earnings = solved.earningsMap,
+                deductions = solved.deductionsMap,
+                grossPay = context.grossPay,
+                totalDeductions = context.totalDeductions,
+                netRemittance = context.netRemittance,
+                residual = maxOf(schemaValidation.grossMismatch, schemaValidation.deductionsMismatch, schemaValidation.netResidual),
+            )
+        } catch (e: Throwable) {
             null
         }
     }

@@ -79,7 +79,7 @@ class PhantomFreeCorpusInvariantTest {
                     fullText = input.fullText,
                 )
 
-            val parsed = GrammarAwareParser.parse(tokenized, input.filename).getOrNull()
+            val parsed = kotlinx.coroutines.runBlocking { GrammarAwareParser.parse(tokenized, input.filename) }.getOrNull()
             val reasons = mutableListOf<String>()
             if (parsed == null) {
                 reasons += "parse failed"
