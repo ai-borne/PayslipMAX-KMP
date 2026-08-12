@@ -30,6 +30,7 @@ fun TaxPlanningScreen(
     val uiState = viewModel.uiState.collectAsState().value
     TaxPlanningContentScreen(
         optimizationResult = uiState.taxOptimizationResult,
+        activePayslipLabel = uiState.selectedPayslip?.let { "${it.monthName} ${it.year}" },
         onNavigateBack = onBack,
         modifier = modifier,
     )
@@ -39,6 +40,7 @@ fun TaxPlanningScreen(
 fun TaxPlanningContentScreen(
     optimizationResult: OptimizationResult?,
     onNavigateBack: () -> Unit,
+    activePayslipLabel: String? = null,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
@@ -57,6 +59,7 @@ fun TaxPlanningContentScreen(
         if (optimizationResult == null) {
             TaxPlanningEmptyState()
         } else {
+            activePayslipLabel?.let { TaxDataAsOfBanner(activePayslipLabel = it) }
             TaxPlanningContent(optimizationResult = optimizationResult)
         }
     }

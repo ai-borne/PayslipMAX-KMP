@@ -9,6 +9,10 @@ object AppStringsTaxPlanner {
     const val rupeeSymbol = "₹"
     const val bestBadge = "★ Best"
 
+    // Data-as-of banner (Phase 8, U2): the screen previously had no on-screen indicator of which
+    // month's payslip is active, silently inheriting whatever the Dashboard's month-picker last set.
+    const val dataAsOfPrefix = "Data as of: "
+
     // Hero verdict card (replaces the deleted Peer Benchmark card, D15)
     const val heroTitle = "Your Tax Verdict"
     const val heroLiabilityLabel = "Best Achievable Annual Liability"
