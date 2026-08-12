@@ -33,17 +33,20 @@ class WealthOptimizationEngineAuditTest {
         assertEquals("Low", result.dataCoverage.confidenceLabel)
         assertEquals(1, result.dataCoverage.monthsAvailable)
 
-        // Verify New Regime tax uses ₹75,000 std deduction -> ₹7,84,244
-        assertEquals(784244.0, kotlin.math.round(result.newRegime.totalTax))
+        // Phase 1 (D1/D2/D6 fix): New Regime now uses the correct FY2025-26+ slabs, not the stale
+        // FY2023-24-vintage copy this test used to pin. Verify New Regime tax uses ₹75,000 std
+        // deduction -> ₹6,69,844 (was wrongly ₹7,84,244).
+        assertEquals(669844.0, kotlin.math.round(result.newRegime.totalTax))
 
-        // Verify Old Regime tax -> ₹7,93,552
+        // Verify Old Regime tax -> ₹7,93,552 (unaffected -- old regime slabs were already correct)
         assertEquals(793552.0, kotlin.math.round(result.oldRegime.totalTax))
 
         // Verify Winner Regime is NEW
         assertEquals("NEW", result.recommendation.bestRegime)
 
-        // Verify Effective Tax Rate is ~21.7% under New Regime (never hardcoded 8.2%)
+        // Verify Effective Tax Rate is ~18.5% under New Regime (never hardcoded 8.2%; the pre-Phase-1
+        // stale slabs inflated this to ~21.7% -- the corrected FY2025-26+ slabs bring it down).
         assertNotEquals(8.2, result.newRegime.effectiveRate)
-        assertTrue(result.newRegime.effectiveRate > 20.0)
+        assertTrue(result.newRegime.effectiveRate > 15.0)
     }
 }

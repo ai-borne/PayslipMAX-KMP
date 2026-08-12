@@ -60,6 +60,7 @@ object WealthOptimizationEngine {
             deriveMarginalRate(
                 netTaxableIncome = if (activeRegime == TaxRegime.NEW) regimeComp.newRegime.netTaxableIncome else regimeComp.oldRegime.netTaxableIncome,
                 regime = activeRegime,
+                fy = fySummary.financialYear,
             )
 
         val tdsRunway =
@@ -154,27 +155,12 @@ object WealthOptimizationEngine {
             year = year,
         )
 
+    /** Delegates to [DualRegimeEngine.marginalRate] -- no hardcoded slab copy here (D2). */
     fun deriveMarginalRate(
         netTaxableIncome: Double,
         regime: TaxRegime = TaxRegime.OLD,
-    ): Double =
-        if (regime == TaxRegime.NEW) {
-            when {
-                netTaxableIncome <= 300_000.0 -> 0.0
-                netTaxableIncome <= 700_000.0 -> 0.05
-                netTaxableIncome <= 900_000.0 -> 0.10
-                netTaxableIncome <= 1_200_000.0 -> 0.15
-                netTaxableIncome <= 1_500_000.0 -> 0.20
-                else -> 0.30
-            }
-        } else {
-            when {
-                netTaxableIncome <= 250_000.0 -> 0.0
-                netTaxableIncome <= 500_000.0 -> 0.05
-                netTaxableIncome <= 1_000_000.0 -> 0.20
-                else -> 0.30
-            }
-        }
+        fy: String = "2026-27",
+    ): Double = DualRegimeEngine.marginalRate(netTaxableIncome, regime, fy)
 
     private fun computeDsopGap(
         dsopMonthly: Double,

@@ -1,5 +1,9 @@
 package com.payslipmax.pdfparser.insights
 
+import com.payslipmax.pdfparser.domain.TaxRegime
+import com.payslipmax.pdfparser.tax.RebateCalculator
+import com.payslipmax.pdfparser.tax.SlabTaxCalculator
+import com.payslipmax.pdfparser.tax.SurchargeCalculator
 import com.payslipmax.pdfparser.tax.TaxRuleKnowledgeBase
 import kotlinx.serialization.Serializable
 
@@ -11,6 +15,7 @@ data class RegimeTaxDetail(
     val totalDeductionsAndExemptions: Double,
     val netTaxableIncome: Double,
     val baseTax: Double,
+    val surcharge: Double,
     val cess: Double,
     val totalTaxPayable: Double,
     val effectiveTaxRatePct: Double,
@@ -26,6 +31,11 @@ data class RegimeComparisonResult(
     val breakEvenDeduction: Double,
 )
 
+/**
+ * Orchestrates old/new regime tax computation from the FY-versioned rule pack (SSOT:
+ * [TaxRuleKnowledgeBase] and the `tax.rules` slab tables). Contains no hardcoded slabs, rebate
+ * thresholds, or surcharge rates of its own (D2) -- every number here is looked up or delegated.
+ */
 object DualRegimeEngine {
     private const val CESS_RATE = 0.04
 
@@ -38,23 +48,13 @@ object DualRegimeEngine {
         val stdDed = rules.standardDeductionOld
         val totalDeductions = stdDed + deductionsAndExemptions
         val netTaxable = maxOf(0.0, grossIncome - totalDeductions)
-        val rawTax = computeOldSlabTax(netTaxable)
-        val baseTax = applyOldRebate(netTaxable, rawTax, rules.sec87ARebateMaxIncomeOld)
-        val cess = baseTax * CESS_RATE
-        val totalTax = baseTax + cess
-        val effectiveRate = if (grossIncome > 0) (totalTax / grossIncome) * 100.0 else 0.0
 
-        return RegimeTaxDetail(
-            regimeName = "OLD",
-            grossIncome = grossIncome,
-            standardDeduction = stdDed,
-            totalDeductionsAndExemptions = totalDeductions,
-            netTaxableIncome = netTaxable,
-            baseTax = baseTax,
-            cess = cess,
-            totalTaxPayable = totalTax,
-            effectiveTaxRatePct = effectiveRate,
-        )
+        val rawTax = SlabTaxCalculator.computeTax(netTaxable, rules.oldRegimeSlabs)
+        val baseTax =
+            RebateCalculator.applyOldRegimeRebate(netTaxable, rawTax, rules.sec87ARebateMaxIncomeOld, rules.sec87ARebateCapOld)
+        val surcharge = SurchargeCalculator.computeSurcharge(netTaxable, baseTax, rules.oldRegimeSlabs, isNewRegime = false)
+
+        return buildDetail("OLD", grossIncome, stdDed, totalDeductions, netTaxable, baseTax, surcharge)
     }
 
     fun calculateNewRegimeTax(
@@ -65,23 +65,12 @@ object DualRegimeEngine {
         val stdDed = rules.standardDeductionNew
         val netTaxable = maxOf(0.0, grossIncome - stdDed)
 
-        val rawTax = computeNewSlabTax(netTaxable)
-        val baseTax = applyNewRebate(netTaxable, rawTax, rules.sec87ARebateMaxIncomeNew)
-        val cess = baseTax * CESS_RATE
-        val totalTax = baseTax + cess
-        val effectiveRate = if (grossIncome > 0) (totalTax / grossIncome) * 100.0 else 0.0
+        val rawTax = SlabTaxCalculator.computeTax(netTaxable, rules.newRegimeSlabs)
+        val baseTax =
+            RebateCalculator.applyNewRegimeRebate(netTaxable, rawTax, rules.sec87ARebateMaxIncomeNew, rules.sec87ARebateCapNew)
+        val surcharge = SurchargeCalculator.computeSurcharge(netTaxable, baseTax, rules.newRegimeSlabs, isNewRegime = true)
 
-        return RegimeTaxDetail(
-            regimeName = "NEW",
-            grossIncome = grossIncome,
-            standardDeduction = stdDed,
-            totalDeductionsAndExemptions = stdDed,
-            netTaxableIncome = netTaxable,
-            baseTax = baseTax,
-            cess = cess,
-            totalTaxPayable = totalTax,
-            effectiveTaxRatePct = effectiveRate,
-        )
+        return buildDetail("NEW", grossIncome, stdDed, stdDed, netTaxable, baseTax, surcharge)
     }
 
     fun compareRegimes(
@@ -106,64 +95,42 @@ object DualRegimeEngine {
         )
     }
 
-    private fun computeOldSlabTax(income: Double): Double {
-        var tax = 0.0
-        if (income > 250_000.0) {
-            tax += (minOf(income, 500_000.0) - 250_000.0) * 0.05
-        }
-        if (income > 500_000.0) {
-            tax += (minOf(income, 1_000_000.0) - 500_000.0) * 0.20
-        }
-        if (income > 1_000_000.0) {
-            tax += (income - 1_000_000.0) * 0.30
-        }
-        return tax
-    }
-
-    private fun computeNewSlabTax(income: Double): Double {
-        var tax = 0.0
-        if (income > 300_000.0) {
-            tax += (minOf(income, 700_000.0) - 300_000.0) * 0.05
-        }
-        if (income > 700_000.0) {
-            tax += (minOf(income, 1_000_000.0) - 700_000.0) * 0.10
-        }
-        if (income > 1_000_000.0) {
-            tax += (minOf(income, 1_200_000.0) - 1_000_000.0) * 0.15
-        }
-        if (income > 1_200_000.0) {
-            tax += (minOf(income, 1_500_000.0) - 1_200_000.0) * 0.20
-        }
-        if (income > 1_500_000.0) {
-            tax += (income - 1_500_000.0) * 0.30
-        }
-        return tax
-    }
-
-    private fun applyOldRebate(
-        income: Double,
-        tax: Double,
-        maxRebateIncome: Double,
+    /** Marginal rate for the given net taxable income under [regime]'s slabs for [fy] (D2: no hardcoded copy). */
+    fun marginalRate(
+        netTaxableIncome: Double,
+        regime: TaxRegime,
+        fy: String,
     ): Double {
-        if (income <= maxRebateIncome) {
-            return maxOf(0.0, tax - 12_500.0)
-        }
-        return tax
+        val rules = TaxRuleKnowledgeBase.getRulesForFy(fy)
+        val slabs = if (regime == TaxRegime.NEW) rules.newRegimeSlabs else rules.oldRegimeSlabs
+        return SlabTaxCalculator.marginalRate(netTaxableIncome, slabs)
     }
 
-    private fun applyNewRebate(
-        income: Double,
-        tax: Double,
-        maxRebateIncome: Double,
-    ): Double {
-        if (income <= maxRebateIncome) {
-            return 0.0
-        }
-        val diff = income - maxRebateIncome
-        if (tax > diff) {
-            return diff
-        }
-        return tax
+    private fun buildDetail(
+        regimeName: String,
+        grossIncome: Double,
+        standardDeduction: Double,
+        totalDeductions: Double,
+        netTaxable: Double,
+        baseTax: Double,
+        surcharge: Double,
+    ): RegimeTaxDetail {
+        val cess = (baseTax + surcharge) * CESS_RATE
+        val totalTax = baseTax + surcharge + cess
+        val effectiveRate = if (grossIncome > 0) (totalTax / grossIncome) * 100.0 else 0.0
+
+        return RegimeTaxDetail(
+            regimeName = regimeName,
+            grossIncome = grossIncome,
+            standardDeduction = standardDeduction,
+            totalDeductionsAndExemptions = totalDeductions,
+            netTaxableIncome = netTaxable,
+            baseTax = baseTax,
+            surcharge = surcharge,
+            cess = cess,
+            totalTaxPayable = totalTax,
+            effectiveTaxRatePct = effectiveRate,
+        )
     }
 
     private fun computeBreakEvenDeduction(

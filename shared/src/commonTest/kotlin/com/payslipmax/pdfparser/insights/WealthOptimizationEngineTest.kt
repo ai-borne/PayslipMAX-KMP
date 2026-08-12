@@ -63,12 +63,15 @@ class WealthOptimizationEngineTest {
 
     @Test
     fun testNewRegimeMarginalRates() {
-        assertEquals(0.0, WealthOptimizationEngine.deriveMarginalRate(250_000.0, TaxRegime.NEW))
-        assertEquals(0.05, WealthOptimizationEngine.deriveMarginalRate(500_000.0, TaxRegime.NEW))
-        assertEquals(0.10, WealthOptimizationEngine.deriveMarginalRate(800_000.0, TaxRegime.NEW))
-        assertEquals(0.15, WealthOptimizationEngine.deriveMarginalRate(1_100_000.0, TaxRegime.NEW))
-        assertEquals(0.20, WealthOptimizationEngine.deriveMarginalRate(1_300_000.0, TaxRegime.NEW))
-        assertEquals(0.30, WealthOptimizationEngine.deriveMarginalRate(1_600_000.0, TaxRegime.NEW))
+        // Phase 1 (D1/D2/D6 fix): FY2025-26+ slabs (4/8/12/16/20/24L), not the stale FY2023-24-vintage
+        // thresholds (3/7/9/12/15L) this test used to pin -- default fy is "2026-27".
+        assertEquals(0.0, WealthOptimizationEngine.deriveMarginalRate(200_000.0, TaxRegime.NEW))
+        assertEquals(0.05, WealthOptimizationEngine.deriveMarginalRate(600_000.0, TaxRegime.NEW))
+        assertEquals(0.10, WealthOptimizationEngine.deriveMarginalRate(1_000_000.0, TaxRegime.NEW))
+        assertEquals(0.15, WealthOptimizationEngine.deriveMarginalRate(1_400_000.0, TaxRegime.NEW))
+        assertEquals(0.20, WealthOptimizationEngine.deriveMarginalRate(1_800_000.0, TaxRegime.NEW))
+        assertEquals(0.25, WealthOptimizationEngine.deriveMarginalRate(2_200_000.0, TaxRegime.NEW))
+        assertEquals(0.30, WealthOptimizationEngine.deriveMarginalRate(3_000_000.0, TaxRegime.NEW))
     }
 
     @Test
