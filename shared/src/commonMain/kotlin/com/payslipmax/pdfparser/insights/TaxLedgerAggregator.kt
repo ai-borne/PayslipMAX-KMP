@@ -18,6 +18,14 @@ data class FyTaxLedgerSummary(
     val monthsElapsedInFy: Int,
     val ytdGross: Double,
     val ytdTaxDeducted: Double,
+    /**
+     * One-off retrospective back-pay YTD (D4), added back verbatim rather than annualised --
+     * kept on the summary (not just a local in [buildFySummary]) so Phase 5's arrears-transparency
+     * insight can disclose the exact figure already used to build [projectedAnnualGross].
+     */
+    val ytdArrears: Double,
+    /** Refunds/reimbursements YTD (D5), dropped entirely from [projectedAnnualGross]. */
+    val ytdReimbursements: Double,
     val ytdDsop: Double,
     val ytdAgif: Double,
     val ytdFieldAllowance: Double,
@@ -215,6 +223,8 @@ object TaxLedgerAggregator {
             monthsElapsedInFy = monthsElapsed,
             ytdGross = ytdGross,
             ytdTaxDeducted = ytdTax,
+            ytdArrears = ytdArrears,
+            ytdReimbursements = ytdReimbursements,
             ytdDsop = ytdDsop,
             ytdAgif = ytdAgif,
             ytdFieldAllowance = ytdField,
@@ -245,6 +255,8 @@ object TaxLedgerAggregator {
             monthsElapsedInFy = 1,
             ytdGross = 0.0,
             ytdTaxDeducted = 0.0,
+            ytdArrears = 0.0,
+            ytdReimbursements = 0.0,
             ytdDsop = 0.0,
             ytdAgif = 0.0,
             ytdFieldAllowance = 0.0,

@@ -24,6 +24,8 @@ class DefenceTaxExemptionEngineTest {
             monthsElapsedInFy = 12,
             ytdGross = 0.0,
             ytdTaxDeducted = 0.0,
+            ytdArrears = 0.0,
+            ytdReimbursements = 0.0,
             ytdDsop = dsop,
             ytdAgif = agif,
             ytdFieldAllowance = fieldAllowance,

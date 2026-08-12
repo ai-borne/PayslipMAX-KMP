@@ -26,6 +26,14 @@ data class OptimizationResult(
     val exemptionBreakdown: TaxExemptionBreakdown? = null,
     val tdsRunway: TdsRunwayResult? = null,
     val storyNarrative: TaxStoryNarrative? = null,
+    /** Phase 5 (ADR-3): null only when PCDA's own `totalTaxPayable` is unavailable (D3 guard). */
+    val taxTrackReconciliation: TaxTrackReconciliation? = null,
+    val belatedReturnTrapWarning: String? = null,
+    val dsopWasteInsight: DsopWasteInsight? = null,
+    val arrearsTransparency: ArrearsTransparencyInsight? = null,
+    val midYearRegimeChange: MidYearRegimeChangeInsight? = null,
+    /** Phase 5 (ADR-4): null when the active regime is already the cheaper one. */
+    val regimeDecisionPlan: RegimeDecisionPlan? = null,
 )
 
 object WealthOptimizationEngine {
@@ -89,16 +97,37 @@ object WealthOptimizationEngine {
                 projectedTax = activeTax,
             )
 
+        // Phase 5 (ADR-3/ADR-4): two-track reconciliation and its corollaries, all derived from the
+        // regime-neutral `regimeComp` already computed above -- no new tax computation introduced.
+        val regimeDecisionPlan = RegimeDecisionPlanner.buildRegimeDecisionPlan(regimeComp, activeRegime)
+        val taxTrackReconciliation = TwoTrackReconciliationEngine.reconcile(fySummary, regimeComp, activePayslip)
+        val belatedReturnWarning = TwoTrackReconciliationEngine.belatedReturnTrapWarning(regimeComp)
+        val dsopWaste = TwoTrackReconciliationEngine.dsopWasteInsight(fySummary, activeRegime, regimeComp)
+        val arrearsInsight = TwoTrackReconciliationEngine.arrearsTransparency(fySummary)
+        val midYearRegimeChange = RegimeDecisionPlanner.detectMidYearRegimeChange(payslips, fySummary.financialYear)
+
         val opportunities =
             buildList {
-                if (regimeComp.winnerRegime != activeRegime.name && regimeComp.annualSavings > 0) {
+                // ADR-4: the PCDA intimation carries no tax-saving of its own (it only redirects future
+                // withholding) -- only the ITR election actually delivers `annualSavings`, so summing
+                // `estTaxSaved` across both entries can never double-count the same rupee figure.
+                regimeDecisionPlan?.let { plan ->
                     add(
                         Opportunity(
-                            id = "switch_regime",
-                            title = "Switch to ${regimeComp.winnerRegime} Regime",
+                            id = plan.pcdaIntimationDecision.id,
+                            title = plan.pcdaIntimationDecision.title,
+                            unusedAmount = 0.0,
+                            estTaxSaved = 0.0,
+                            action = plan.pcdaIntimationDecision.action,
+                        ),
+                    )
+                    add(
+                        Opportunity(
+                            id = plan.itrElectionDecision.id,
+                            title = plan.itrElectionDecision.title,
                             unusedAmount = 0.0,
                             estTaxSaved = regimeComp.annualSavings,
-                            action = "Declare ${regimeComp.winnerRegime} Tax Regime to PCDA to save ₹${regimeComp.annualSavings.toInt()}/year.",
+                            action = plan.itrElectionDecision.action,
                         ),
                     )
                 }
@@ -146,6 +175,12 @@ object WealthOptimizationEngine {
             exemptionBreakdown = exemptions,
             tdsRunway = tdsRunway,
             storyNarrative = storyNarrative,
+            taxTrackReconciliation = taxTrackReconciliation,
+            belatedReturnTrapWarning = belatedReturnWarning,
+            dsopWasteInsight = dsopWaste,
+            arrearsTransparency = arrearsInsight,
+            midYearRegimeChange = midYearRegimeChange,
+            regimeDecisionPlan = regimeDecisionPlan,
         )
     }
 
