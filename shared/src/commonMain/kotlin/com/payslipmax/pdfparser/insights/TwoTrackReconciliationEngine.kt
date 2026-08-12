@@ -15,6 +15,18 @@ object TwoTrackReconciliationEngine {
     private const val RECONCILIATION_THRESHOLD = 50.0
 
     /**
+     * U1 (domain-layer instance): string-templating a [TaxRegime] enum directly stringifies to its
+     * bare `.name` ("NEW"/"OLD"). This module can't reach composeApp's `AppStringsPremium` copy SSOT
+     * (shared has no UI-layer dependency), so the full label is spelled out here in the same way this
+     * file's own [belatedReturnTrapWarning] already writes "Old Tax Regime" as a literal.
+     */
+    private fun TaxRegime.regimeLabel(): String =
+        when (this) {
+            TaxRegime.OLD -> "Old Tax Regime"
+            TaxRegime.NEW -> "New Tax Regime"
+        }
+
+    /**
      * Null when PCDA's own `totalTaxPayable` is unavailable (D3's guard leaves it `null` on genuine
      * implausibility) -- reconciling against a fabricated TDS figure would be exactly the bug D3 fixed.
      */
@@ -40,14 +52,16 @@ object TwoTrackReconciliationEngine {
 
         val pcdaText = TaxLedgerAggregator.formatIndianCurrency(pcdaAnnual)
         val deltaText = TaxLedgerAggregator.formatIndianCurrency(kotlin.math.abs(delta))
+        val tdsRegimeLabel = tdsRegime.regimeLabel()
+        val liabilityRegimeLabel = liabilityRegime.regimeLabel()
         val message =
             when (type) {
                 ReconciliationType.MATCHED ->
-                    "PCDA's withholding already matches your best achievable liability under the $liabilityRegime Regime."
+                    "PCDA's withholding already matches your best achievable liability under the $liabilityRegimeLabel."
                 ReconciliationType.REFUND_EXPECTED ->
-                    "PCDA will deduct ₹$pcdaText under $tdsRegime; filing under $liabilityRegime recovers ₹$deltaText."
+                    "PCDA will deduct ₹$pcdaText under the $tdsRegimeLabel; filing under the $liabilityRegimeLabel recovers ₹$deltaText."
                 ReconciliationType.TOP_UP_DUE ->
-                    "PCDA will deduct ₹$pcdaText under $tdsRegime; you will owe an additional ₹$deltaText at filing under $liabilityRegime."
+                    "PCDA will deduct ₹$pcdaText under the $tdsRegimeLabel; you will owe an additional ₹$deltaText at filing under the $liabilityRegimeLabel."
             }
 
         return TaxTrackReconciliation(

@@ -10,6 +10,7 @@ import com.payslipmax.pdfparser.domain.TaxAndSavings
 import com.payslipmax.pdfparser.domain.TaxRegime
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -112,6 +113,12 @@ class TwoTrackReconciliationEngineTest {
         assertEquals(100_000.0, result.deltaAmount, 0.01)
         assertEquals(TaxRegime.OLD, result.liabilityTrackRegime)
         assertTrue(result.message.contains("recovers"))
+        // U1 (domain-layer instance): string-templating a TaxRegime enum defaults to its bare .name
+        // ("NEW"/"OLD") -- the generated sentence must always spell out the full regime label instead.
+        assertTrue(result.message.contains("New Tax Regime"))
+        assertTrue(result.message.contains("Old Tax Regime"))
+        assertFalse(result.message.contains(Regex("""\bNEW\b""")))
+        assertFalse(result.message.contains(Regex("""\bOLD\b""")))
     }
 
     @Test
@@ -123,6 +130,8 @@ class TwoTrackReconciliationEngineTest {
         assertEquals(ReconciliationType.TOP_UP_DUE, result.reconciliationType)
         assertEquals(-100_000.0, result.deltaAmount, 0.01)
         assertTrue(result.message.contains("owe an additional"))
+        assertTrue(result.message.contains("New Tax Regime"))
+        assertFalse(result.message.contains(Regex("""\bNEW\b""")))
     }
 
     @Test
@@ -132,6 +141,8 @@ class TwoTrackReconciliationEngineTest {
 
         assertNotNull(result)
         assertEquals(ReconciliationType.MATCHED, result.reconciliationType)
+        assertTrue(result.message.contains("New Tax Regime"))
+        assertFalse(result.message.contains(Regex("""\bNEW\b""")))
     }
 
     @Test
