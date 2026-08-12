@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -10,12 +11,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.insights.OptimizationResult
+import com.payslipmax.pdfparser.insights.TaxRulesUnavailableInfo
 import com.payslipmax.pdfparser.tax.TaxRuleKnowledgeBase
+import com.payslipmax.pdfparser.tax.TaxRuleResolution
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
+import com.payslipmax.pdfparser.ui.theme.AppStringsTaxPlanner
 
 @Composable
 fun TaxPlanningScreen(
@@ -73,6 +77,13 @@ private fun TaxPlanningContent(
 private fun TaxPlanningVerdictSection(
     optimizationResult: OptimizationResult,
 ) {
+    // ADR-2 (Phase 7): the active FY has no resolvable rule pack -- degrade visibly instead of
+    // silently rendering regime/liability cards computed off the nearest known FY's numbers.
+    optimizationResult.taxRulesUnavailable?.let { unavailable ->
+        TaxRulesUnavailableBanner(info = unavailable)
+        return
+    }
+
     optimizationResult.fySummary?.let { fySummary ->
         TaxFyRunwayHeaderCard(fySummary = fySummary)
     }
@@ -131,17 +142,75 @@ private fun TaxPlanningDetailSection(
 
     TaxActionableChecklistCard(opportunities = optimizationResult.opportunities)
 
-    TaxEducativeTipsCard()
+    if (optimizationResult.opportunities.isNotEmpty()) {
+        TaxAdviceDisclaimer()
+    }
+
+    TaxEducativeTipsCard(activeRegime = optimizationResult.regimeAssumed)
 
     TaxRuleVersionFooter(financialYear = optimizationResult.fySummary?.financialYear ?: "2026-27")
+}
+
+/** ADR-2 (Phase 7): shown at the top of the screen instead of every regime/liability card when the
+ * active FY has no resolvable rule pack -- never a silently-wrong number for the wrong year. */
+@Composable
+private fun TaxRulesUnavailableBanner(
+    info: TaxRulesUnavailableInfo,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(AppDimensions.CornerRadius),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+    ) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+        ) {
+            Text(
+                text = AppStringsTaxPlanner.rulesUnavailableTitle + info.requestedFy,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+            Text(
+                text =
+                    AppStringsTaxPlanner.rulesUnavailableBodyPrefix + info.nearestKnownFy +
+                        AppStringsTaxPlanner.rulesUnavailableBodySuffix,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+            )
+        }
+    }
+}
+
+/** Phase 7: paid feature now recommends executable financial actions (regime switching) -- shown
+ * only alongside an actual actionable opportunity, not on an empty checklist. */
+@Composable
+private fun TaxAdviceDisclaimer() {
+    Text(
+        text = AppStringsTaxPlanner.adviceDisclaimer,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+        modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.PaddingSmall),
+    )
 }
 
 @Composable
 private fun TaxRuleVersionFooter(
     financialYear: String,
 ) {
-    val rules = TaxRuleKnowledgeBase.getRulesForFy(financialYear)
-    val footerText = "🛡️ Tax Engine: CBDT Rules FY ${rules.financialYear} (AY ${rules.assessmentYear}) · Version 2026.1 (Verified ${rules.lastVerifiedDate}) · 100% Offline Secured"
+    val footerText =
+        when (val resolution = TaxRuleKnowledgeBase.resolve(financialYear)) {
+            is TaxRuleResolution.OutOfRange ->
+                AppStringsTaxPlanner.rulesUnavailableTitle + resolution.requestedFy
+            is TaxRuleResolution.Resolved -> {
+                val rules = resolution.rules
+                AppStringsTaxPlanner.ruleFooterPrefix + rules.financialYear +
+                    AppStringsTaxPlanner.ruleFooterAySeparator + rules.assessmentYear +
+                    AppStringsTaxPlanner.ruleFooterVersionSeparator + rules.version +
+                    AppStringsTaxPlanner.ruleFooterVerifiedSeparator + rules.lastVerifiedDate +
+                    AppStringsTaxPlanner.ruleFooterSuffix
+            }
+        }
 
     Text(
         text = footerText,

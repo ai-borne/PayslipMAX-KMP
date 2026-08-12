@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.insights
 import kotlin.math.round
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
 class DualRegimeEngineAuditTest {
     @Test
@@ -10,12 +11,13 @@ class DualRegimeEngineAuditTest {
         val gross = 3621936.0
         val oldDeductions = 403500.0
 
-        val result =
+        val outcome =
             DualRegimeEngine.compareRegimes(
                 grossIncome = gross,
                 oldRegimeDeductions = oldDeductions,
                 fy = "2026-27",
             )
+        val result = (outcome as? RegimeComparisonOutcome.Available)?.result ?: fail("Expected resolvable rules for FY 2026-27")
 
         // Phase 1 (D1/D2/D6 fix): New Regime now uses the correct FY2025-26+ slabs (4/8/12/16/20/24L),
         // not the stale FY2023-24-vintage (3/7/10/12/15L) hardcoded copy this test used to pin.

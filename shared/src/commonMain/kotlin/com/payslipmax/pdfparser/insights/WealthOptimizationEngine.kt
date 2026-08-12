@@ -14,6 +14,14 @@ data class Opportunity(
     val action: String,
 )
 
+/** ADR-2 fail-loud state: the active FY has no resolvable rule pack, so no regime/liability figures
+ * were computed rather than silently substituting the nearest known FY's numbers. */
+@Serializable
+data class TaxRulesUnavailableInfo(
+    val requestedFy: String,
+    val nearestKnownFy: String,
+)
+
 @Serializable
 data class OptimizationResult(
     val totalPotentialTaxSaving: Double,
@@ -39,6 +47,9 @@ data class OptimizationResult(
     val pcdaOfficialComputation: TaxAndSavings? = null,
     /** Phase 6: current net pay adjusted by the TDS-runway delta -- null if the active payslip has no PCDA tax page. */
     val projectedNextMonthNetPay: Double? = null,
+    /** ADR-2 (Phase 7): non-null only when [fySummary]'s FY has no resolvable rule pack -- every other
+     * regime/liability field above is left at its default in that case rather than computed wrong. */
+    val taxRulesUnavailable: TaxRulesUnavailableInfo? = null,
 )
 
 object WealthOptimizationEngine {
@@ -66,23 +77,44 @@ object WealthOptimizationEngine {
         // computed as if they had zero deductions, breaking the switch-regime savings math (D9).
         val oldRegimeExemptions = DefenceTaxExemptionEngine.extractExemptions(fySummary)
         val regimeComp =
-            DualRegimeEngine.compareRegimes(
-                grossIncome = fySummary.projectedAnnualGross,
-                oldRegimeDeductions = oldRegimeExemptions.totalOldRegimeDeductions,
-                fy = fySummary.financialYear,
-            )
+            when (
+                val outcome =
+                    DualRegimeEngine.compareRegimes(
+                        grossIncome = fySummary.projectedAnnualGross,
+                        oldRegimeDeductions = oldRegimeExemptions.totalOldRegimeDeductions,
+                        fy = fySummary.financialYear,
+                    )
+            ) {
+                // ADR-2: the FY has no resolvable rule pack -- degrade visibly (fySummary + an explicit
+                // "rules unavailable" marker) rather than computing every downstream figure off a
+                // silently-substituted nearest FY's numbers.
+                is RegimeComparisonOutcome.RulesUnavailable ->
+                    return OptimizationResult(
+                        totalPotentialTaxSaving = 0.0,
+                        marginalRatePct = 0.0,
+                        regimeAssumed = activeRegime.name,
+                        opportunities = emptyList(),
+                        dsopGapMonthly = 0.0,
+                        dsopCorpusUpliftAtRetirement = 0.0,
+                        fySummary = fySummary,
+                        taxRulesUnavailable = TaxRulesUnavailableInfo(outcome.requestedFy, outcome.nearestKnownFy),
+                    )
+                is RegimeComparisonOutcome.Available -> outcome.result
+            }
 
         // Regime-conditional (D10): zeroed with an explicit reason under NEW, since old-regime-only
         // sections genuinely don't reduce this user's actual tax bill right now.
         val exemptions = DefenceTaxExemptionEngine.extractExemptions(fySummary, activeRegime = activeRegime)
 
         val activeTax = if (activeRegime == TaxRegime.NEW) regimeComp.newRegime.totalTaxPayable else regimeComp.oldRegime.totalTaxPayable
+        // fySummary.financialYear already produced a resolved regimeComp above, so this FY is
+        // guaranteed resolvable (ADR-2) -- the null branch is unreachable here.
         val marginalRate =
             deriveMarginalRate(
                 netTaxableIncome = if (activeRegime == TaxRegime.NEW) regimeComp.newRegime.netTaxableIncome else regimeComp.oldRegime.netTaxableIncome,
                 regime = activeRegime,
                 fy = fySummary.financialYear,
-            )
+            ) ?: 0.0
 
         val tdsRunway =
             TdsRunwayEngine.computeTdsRunway(
@@ -200,31 +232,13 @@ object WealthOptimizationEngine {
         )
     }
 
-    fun buildTaxPlannerResult(
-        grossSalary: Double,
-        tdsYtd: Double,
-        dsopYtd: Double,
-        fieldAllowanceExemption: Double = 0.0,
-        monthsAvailable: Int = 1,
-        monthNum: Int = 4,
-        year: Int = 2026,
-    ): TaxPlannerResult =
-        TaxPlannerResultBuilder.buildTaxPlannerResult(
-            grossSalary = grossSalary,
-            tdsYtd = tdsYtd,
-            dsopYtd = dsopYtd,
-            fieldAllowanceExemption = fieldAllowanceExemption,
-            monthsAvailable = monthsAvailable,
-            monthNum = monthNum,
-            year = year,
-        )
-
-    /** Delegates to [DualRegimeEngine.marginalRate] -- no hardcoded slab copy here (D2). */
+    /** Delegates to [DualRegimeEngine.marginalRate] -- no hardcoded slab copy here (D2). Null when
+     * [fy] has no resolvable rule pack (ADR-2). */
     fun deriveMarginalRate(
         netTaxableIncome: Double,
         regime: TaxRegime = TaxRegime.OLD,
         fy: String = "2026-27",
-    ): Double = DualRegimeEngine.marginalRate(netTaxableIncome, regime, fy)
+    ): Double? = DualRegimeEngine.marginalRate(netTaxableIncome, regime, fy)
 
     private fun computeDsopGap(
         dsopMonthly: Double,

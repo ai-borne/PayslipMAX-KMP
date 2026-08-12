@@ -5,6 +5,8 @@ import com.payslipmax.pdfparser.tax.RebateCalculator
 import com.payslipmax.pdfparser.tax.SlabTaxCalculator
 import com.payslipmax.pdfparser.tax.SurchargeCalculator
 import com.payslipmax.pdfparser.tax.TaxRuleKnowledgeBase
+import com.payslipmax.pdfparser.tax.TaxRuleResolution
+import com.payslipmax.pdfparser.tax.TaxYearRules
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -32,9 +34,38 @@ data class RegimeComparisonResult(
 )
 
 /**
+ * ADR-2: every entry point below that depends on an FY's rule pack returns one of these instead of
+ * silently substituting the nearest known FY's numbers for an FY the rule pack doesn't cover.
+ */
+sealed class RegimeTaxOutcome {
+    data class Available(
+        val detail: RegimeTaxDetail,
+    ) : RegimeTaxOutcome()
+
+    data class RulesUnavailable(
+        val requestedFy: String,
+        val nearestKnownFy: String,
+    ) : RegimeTaxOutcome()
+}
+
+sealed class RegimeComparisonOutcome {
+    data class Available(
+        val result: RegimeComparisonResult,
+    ) : RegimeComparisonOutcome()
+
+    data class RulesUnavailable(
+        val requestedFy: String,
+        val nearestKnownFy: String,
+    ) : RegimeComparisonOutcome()
+}
+
+/**
  * Orchestrates old/new regime tax computation from the FY-versioned rule pack (SSOT:
  * [TaxRuleKnowledgeBase] and the `tax.rules` slab tables). Contains no hardcoded slabs, rebate
  * thresholds, or surcharge rates of its own (D2) -- every number here is looked up or delegated.
+ * Every public entry point resolves its FY via [TaxRuleKnowledgeBase.resolve] (ADR-2), never the
+ * silently-falls-back-to-nearest-FY `getRulesForFy` -- callers must handle an unresolvable FY
+ * explicitly instead of receiving a wrong number for the wrong year.
  */
 object DualRegimeEngine {
     private const val CESS_RATE = 0.04
@@ -43,8 +74,75 @@ object DualRegimeEngine {
         grossIncome: Double,
         deductionsAndExemptions: Double = 0.0,
         fy: String = "2026-27",
+    ): RegimeTaxOutcome =
+        withResolvedRules(fy) { rules -> oldRegimeDetail(grossIncome, deductionsAndExemptions, rules) }
+
+    fun calculateNewRegimeTax(
+        grossIncome: Double,
+        fy: String = "2026-27",
+    ): RegimeTaxOutcome = withResolvedRules(fy) { rules -> newRegimeDetail(grossIncome, rules) }
+
+    fun compareRegimes(
+        grossIncome: Double,
+        oldRegimeDeductions: Double,
+        fy: String = "2026-27",
+    ): RegimeComparisonOutcome =
+        when (val resolution = TaxRuleKnowledgeBase.resolve(fy)) {
+            is TaxRuleResolution.OutOfRange ->
+                RegimeComparisonOutcome.RulesUnavailable(resolution.requestedFy, resolution.nearestKnownFy)
+            is TaxRuleResolution.Resolved -> {
+                val rules = resolution.rules
+                val oldDetail = oldRegimeDetail(grossIncome, oldRegimeDeductions, rules)
+                val newDetail = newRegimeDetail(grossIncome, rules)
+                val winner = if (newDetail.totalTaxPayable <= oldDetail.totalTaxPayable) "NEW" else "OLD"
+                val savings = kotlin.math.abs(oldDetail.totalTaxPayable - newDetail.totalTaxPayable)
+                val breakEven = computeBreakEvenDeduction(grossIncome, newDetail.totalTaxPayable, rules)
+
+                RegimeComparisonOutcome.Available(
+                    RegimeComparisonResult(
+                        financialYear = fy,
+                        oldRegime = oldDetail,
+                        newRegime = newDetail,
+                        winnerRegime = winner,
+                        annualSavings = savings,
+                        breakEvenDeduction = breakEven,
+                    ),
+                )
+            }
+        }
+
+    /**
+     * Marginal rate for [netTaxableIncome] under [regime]'s slabs for [fy] (D2: no hardcoded copy).
+     * Null when [fy] has no resolvable rule pack (ADR-2) -- never a silently-wrong nearest-FY rate.
+     */
+    fun marginalRate(
+        netTaxableIncome: Double,
+        regime: TaxRegime,
+        fy: String,
+    ): Double? =
+        when (val resolution = TaxRuleKnowledgeBase.resolve(fy)) {
+            is TaxRuleResolution.OutOfRange -> null
+            is TaxRuleResolution.Resolved -> {
+                val slabs = if (regime == TaxRegime.NEW) resolution.rules.newRegimeSlabs else resolution.rules.oldRegimeSlabs
+                SlabTaxCalculator.marginalRate(netTaxableIncome, slabs)
+            }
+        }
+
+    private inline fun withResolvedRules(
+        fy: String,
+        compute: (TaxYearRules) -> RegimeTaxDetail,
+    ): RegimeTaxOutcome =
+        when (val resolution = TaxRuleKnowledgeBase.resolve(fy)) {
+            is TaxRuleResolution.OutOfRange ->
+                RegimeTaxOutcome.RulesUnavailable(resolution.requestedFy, resolution.nearestKnownFy)
+            is TaxRuleResolution.Resolved -> RegimeTaxOutcome.Available(compute(resolution.rules))
+        }
+
+    private fun oldRegimeDetail(
+        grossIncome: Double,
+        deductionsAndExemptions: Double,
+        rules: TaxYearRules,
     ): RegimeTaxDetail {
-        val rules = TaxRuleKnowledgeBase.getRulesForFy(fy)
         val stdDed = rules.standardDeductionOld
         val totalDeductions = stdDed + deductionsAndExemptions
         val netTaxable = maxOf(0.0, grossIncome - totalDeductions)
@@ -57,11 +155,10 @@ object DualRegimeEngine {
         return buildDetail("OLD", grossIncome, stdDed, totalDeductions, netTaxable, baseTax, surcharge)
     }
 
-    fun calculateNewRegimeTax(
+    private fun newRegimeDetail(
         grossIncome: Double,
-        fy: String = "2026-27",
+        rules: TaxYearRules,
     ): RegimeTaxDetail {
-        val rules = TaxRuleKnowledgeBase.getRulesForFy(fy)
         val stdDed = rules.standardDeductionNew
         val netTaxable = maxOf(0.0, grossIncome - stdDed)
 
@@ -71,39 +168,6 @@ object DualRegimeEngine {
         val surcharge = SurchargeCalculator.computeSurcharge(netTaxable, baseTax, rules.newRegimeSlabs, isNewRegime = true)
 
         return buildDetail("NEW", grossIncome, stdDed, stdDed, netTaxable, baseTax, surcharge)
-    }
-
-    fun compareRegimes(
-        grossIncome: Double,
-        oldRegimeDeductions: Double,
-        fy: String = "2026-27",
-    ): RegimeComparisonResult {
-        val oldDetail = calculateOldRegimeTax(grossIncome, oldRegimeDeductions, fy)
-        val newDetail = calculateNewRegimeTax(grossIncome, fy)
-
-        val winner = if (newDetail.totalTaxPayable <= oldDetail.totalTaxPayable) "NEW" else "OLD"
-        val savings = kotlin.math.abs(oldDetail.totalTaxPayable - newDetail.totalTaxPayable)
-        val breakEven = computeBreakEvenDeduction(grossIncome, fy)
-
-        return RegimeComparisonResult(
-            financialYear = fy,
-            oldRegime = oldDetail,
-            newRegime = newDetail,
-            winnerRegime = winner,
-            annualSavings = savings,
-            breakEvenDeduction = breakEven,
-        )
-    }
-
-    /** Marginal rate for the given net taxable income under [regime]'s slabs for [fy] (D2: no hardcoded copy). */
-    fun marginalRate(
-        netTaxableIncome: Double,
-        regime: TaxRegime,
-        fy: String,
-    ): Double {
-        val rules = TaxRuleKnowledgeBase.getRulesForFy(fy)
-        val slabs = if (regime == TaxRegime.NEW) rules.newRegimeSlabs else rules.oldRegimeSlabs
-        return SlabTaxCalculator.marginalRate(netTaxableIncome, slabs)
     }
 
     private fun buildDetail(
@@ -135,14 +199,14 @@ object DualRegimeEngine {
 
     private fun computeBreakEvenDeduction(
         gross: Double,
-        fy: String,
+        newTax: Double,
+        rules: TaxYearRules,
     ): Double {
-        val newTax = calculateNewRegimeTax(gross, fy).totalTaxPayable
         var low = 0.0
         var high = gross
         for (i in 1..25) {
             val mid = (low + high) / 2.0
-            val oldTax = calculateOldRegimeTax(gross, mid, fy).totalTaxPayable
+            val oldTax = oldRegimeDetail(gross, mid, rules).totalTaxPayable
             if (oldTax > newTax) {
                 low = mid
             } else {

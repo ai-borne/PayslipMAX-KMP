@@ -99,15 +99,20 @@ object AppStringsPremium {
     const val taxPlanningFieldCapConservativeAssumptionNote =
         "Field allowance cap assumed conservatively — the specific Rule 2BB category couldn't be identified from this payslip"
 
+    // D13: tips 1 and 2 are regime-conditional (Sec 10(14) field caps and Sec 80C both stop applying
+    // under the New Regime) -- TaxEducativeTipsCard picks the Old/New variant by active regime rather
+    // than showing one regime's rules to every user.
     const val taxPlanningTipsCardTitle = "💡 Tax Planning Tips & Best Practices"
     const val taxPlanningTip1Title = "Sec 10(14) Field Allowance Exemption"
-    const val taxPlanningTip1Desc = "Field Area, High Altitude, and Special Duty allowances are tax-exempt under Section 10(14). Ensure PCDA excludes them from taxable income."
-    const val taxPlanningTip2Title = "Automatic Sec 80C via DSOP + AGIF"
-    const val taxPlanningTip2Desc = "Your monthly DSOP subscription and AGIF deductions automatically qualify for Sec 80C (up to ₹1.5 Lakhs limit). No extra ELSS is required if already capped."
+    const val taxPlanningTip1DescOld = "Field Area, High Altitude, and Special Duty allowances are exempt under Section 10(14), Rule 2BB — capped per notified category (e.g. up to ₹50,400/yr for Highly Active Field Area), not the full amount received."
+    const val taxPlanningTip1DescNew = "Section 10(14) field and special-duty allowance exemptions are not available under the New Tax Regime — these allowances are fully taxable while you remain on New Regime."
+    const val taxPlanningTip2Title = "Sec 80C via DSOP + AGIF"
+    const val taxPlanningTip2DescOld = "Your monthly DSOP subscription and AGIF deductions count toward Sec 80C, up to the ₹1.5 Lakh annual limit — not automatic beyond that cap; any headroom needs additional 80C investment."
+    const val taxPlanningTip2DescNew = "Section 80C does not exist under the New Tax Regime — your DSOP and AGIF contributions currently earn ₹0 tax benefit from them."
     const val taxPlanningTip3Title = "New Tax Regime Zero Tax Threshold"
     const val taxPlanningTip3Desc = "Under the New Tax Regime, taxable income up to ₹7 Lakhs (FY 24-25) or ₹12 Lakhs (FY 25-26) has ZERO tax liability after Sec 87A rebate."
-    const val taxPlanningTip4Title = "PCDA Declaration Deadline"
-    const val taxPlanningTip4Desc = "Submit your tax regime selection to PCDA before December to avoid sudden high TDS deductions in January to March."
+    const val taxPlanningTip4Title = "Regime Intimation Timing"
+    const val taxPlanningTip4Desc = "The PCDA(O) regime-switch utility is available year-round, not only before December — intimating early avoids a bunched, higher TDS in the Jan–Mar quarter of the FY."
 
     const val taxPlanningNarrativeLedgerTitle = "Month-by-Month Deductions Audit"
     const val taxPlanningNarrativeMonthCol = "Month"

@@ -87,12 +87,14 @@ object TwoTrackReconciliationEngine {
 
         val totalContribution = fySummary.projectedAnnualDsop + fySummary.projectedAnnualAgif
         val capped = minOf(DefenceTaxExemptionEngine.LIMIT_80C, totalContribution)
+        // oldRegimeComparison.financialYear already produced a resolved comparison above, so this FY
+        // is guaranteed resolvable (ADR-2) -- the null branch is unreachable here.
         val oldRegimeMarginalRate =
             DualRegimeEngine.marginalRate(
                 netTaxableIncome = oldRegimeComparison.oldRegime.netTaxableIncome,
                 regime = TaxRegime.OLD,
                 fy = oldRegimeComparison.financialYear,
-            )
+            ) ?: 0.0
         val forgone = capped * oldRegimeMarginalRate
 
         val contributionText = TaxLedgerAggregator.formatIndianCurrency(totalContribution)

@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.tax
 
 import com.payslipmax.pdfparser.domain.TaxRegime
 import com.payslipmax.pdfparser.insights.DualRegimeEngine
+import com.payslipmax.pdfparser.insights.RegimeTaxOutcome
 import com.payslipmax.pdfparser.insights.TaxLedgerAggregator
 import com.payslipmax.pdfparser.parser.corpus.CorpusFixtures
 import org.junit.Test
@@ -107,13 +108,25 @@ class PcdaTaxParityTest {
         regime: TaxRegime,
         fy: String,
     ): Double {
+        // ADR-2: getRulesForFy is intentionally retained here (the one named legacy caller) purely to
+        // read standardDeductionNew/Old for backing out a synthetic gross -- the actual tax computation
+        // below still goes through the resolve()-based DualRegimeEngine, so this test carries no
+        // silent-wrong-FY risk of its own.
         val rules = TaxRuleKnowledgeBase.getRulesForFy(fy)
-        return if (regime == TaxRegime.NEW) {
-            val gross = netTaxableIncome + rules.standardDeductionNew
-            DualRegimeEngine.calculateNewRegimeTax(gross, fy).baseTax
-        } else {
-            val gross = netTaxableIncome + rules.standardDeductionOld
-            DualRegimeEngine.calculateOldRegimeTax(gross, 0.0, fy).baseTax
+        val outcome =
+            if (regime == TaxRegime.NEW) {
+                val gross = netTaxableIncome + rules.standardDeductionNew
+                DualRegimeEngine.calculateNewRegimeTax(gross, fy)
+            } else {
+                val gross = netTaxableIncome + rules.standardDeductionOld
+                DualRegimeEngine.calculateOldRegimeTax(gross, 0.0, fy)
+            }
+        // Golden harness only ever drives FYs present in the committed corpus, all of which are known
+        // to TaxRuleKnowledgeBase -- an OutOfRange result here is a test-data bug, not a case to degrade.
+        return when (outcome) {
+            is RegimeTaxOutcome.Available -> outcome.detail.baseTax
+            is RegimeTaxOutcome.RulesUnavailable ->
+                error("PcdaTaxParityTest: FY $fy unexpectedly unresolvable (nearest known: ${outcome.nearestKnownFy})")
         }
     }
 

@@ -61,4 +61,22 @@ object AppStringsTaxPlanner {
 
     // Narrative ledger card
     const val nudgeBannerPrefix = "💡 "
+
+    // Rule pack footer (Phase 7, D17): version/verified-date sourced from TaxRuleKnowledgeBase, never
+    // a hardcoded "Version 2026.1" disconnected from the rule pack that actually computed the numbers.
+    const val ruleFooterPrefix = "🛡️ Tax Engine: CBDT Rules FY "
+    const val ruleFooterAySeparator = " (AY "
+    const val ruleFooterVersionSeparator = ") · Version "
+    const val ruleFooterVerifiedSeparator = " (Verified "
+    const val ruleFooterSuffix = ") · 100% Offline Secured"
+
+    // ADR-2 fail-loud UI state: shown instead of every regime/liability card when the active FY has no
+    // resolvable rule pack, rather than silently computing off the nearest known FY's numbers.
+    const val rulesUnavailableTitle = "⚠️ Tax rules unavailable for FY "
+    const val rulesUnavailableBodyPrefix = "We don't have a verified rule pack for this financial year yet. The nearest year we do have rules for is "
+    const val rulesUnavailableBodySuffix = "."
+
+    // Advice disclaimer (Phase 7): appropriate once the screen recommends executable financial actions.
+    const val adviceDisclaimer =
+        "This is an estimate, not tax or financial advice. Verify your figures and any regime switch with PCDA(O) or a Chartered Accountant before acting."
 }
