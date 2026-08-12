@@ -74,7 +74,10 @@ object WealthOptimizationEngine {
         val tdsRunway =
             TdsRunwayEngine.computeTdsRunway(
                 ytdTdsDeducted = fySummary.ytdTaxDeducted,
-                parsedMonthCount = fySummary.parsedMonthCount,
+                // D11/D12: "months so far" for the runway must be the FY-calendar position, not the
+                // upload count, or a gap before the latest payslip makes the remaining-months split wrong
+                // and can manufacture a false spike.
+                parsedMonthCount = fySummary.monthsElapsedInFy,
                 totalAnnualTaxLiability = activeTax,
                 currentMonthlyTds = activePayslip.deductions.incomeTax,
             )

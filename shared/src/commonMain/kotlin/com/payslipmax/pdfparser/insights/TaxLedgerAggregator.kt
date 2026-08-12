@@ -8,6 +8,14 @@ data class FyTaxLedgerSummary(
     val financialYear: String,
     val assessmentYear: String,
     val parsedMonthCount: Int,
+    /**
+     * The latest parsed payslip's calendar position within [financialYear] (Apr = 1 ... Mar = 12) --
+     * the correct basis for the run-rate multiplier and for "months remaining in the FY" (D11/Phase 3).
+     * Deliberately distinct from [parsedMonthCount] (how many months the user has actually uploaded,
+     * which can be fewer when there are gaps) -- conflating the two understates the projection whenever
+     * a month is missing before the latest upload.
+     */
+    val monthsElapsedInFy: Int,
     val ytdGross: Double,
     val ytdTaxDeducted: Double,
     val ytdDsop: Double,
@@ -80,17 +88,48 @@ object TaxLedgerAggregator {
 
     private val riskHardshipKeywords = listOf("RHA", "RISK", "HARDSHIP", "SICHA")
 
+    /**
+     * D4 fix: PCDA codes retrospective back-pay as `ARR-*` (e.g. `ARR-DA`, `ARR-RH11`), which
+     * [PayslipPatternConfig.creditKeysMapping] resolves into **structured** `arrears*` fields on
+     * [com.payslipmax.pdfparser.domain.Earnings] at parse time -- they never reach [ParsedPayslip.rawEarnings].
+     * The old implementation matched an English keyword list ("ARREAR"/"BACKPAY") against `rawEarnings`
+     * only, so it always summed to zero for every real payslip. Read the structured fields directly (SSOT:
+     * they *are* the parsed model, not a second keyword list), then fall back to the `ARR-` prefix -- the
+     * one convention PCDA's own codes already use -- for any code not yet in the mapping.
+     */
     fun extractNonRecurringArrears(payslip: ParsedPayslip): Double {
-        var arrearsSum = 0.0
-        val arrearsKeywords = listOf("ARREAR", "BACKPAY", "LTC", "ENCASH")
+        val e = payslip.earnings
+        var sum =
+            e.arrearsCea + e.arrearsDa + e.arrearsRation + e.arrearsSpecialForces +
+                e.arrearsTpta + e.arrearsTptaDa + e.arrearsHra + e.arrearsRiskHardship
         for ((key, value) in payslip.rawEarnings) {
-            val upper = key.uppercase()
-            if (arrearsKeywords.any { upper.contains(it) }) {
-                arrearsSum += value
+            if (key.uppercase().startsWith("ARR-")) {
+                sum += value
             }
         }
-        return arrearsSum
+        return sum
     }
+
+    /**
+     * D5 fix: [PayslipPatternConfig.creditKeysMapping] maps refund/reimbursement-style one-off codes
+     * ("ETKT-ref" ticket reimbursement, "Ref.L Fee"/"Ref.Furn." deduction refunds, "LTC Encash",
+     * "Adhoc Payt") into `adjTicketRecovery`/`adjPayAndAllce`. Unlike arrears, these are not taxable
+     * back-pay to annualise or add back -- they are excluded from the taxable projection entirely (the
+     * ETKT credit already nets against its own `ticketRecovery` deduction; the others are non-recurring
+     * refunds of money the officer already paid). Falls back to the raw `ETKT` code for unmapped credits.
+     */
+    fun extractReimbursements(payslip: ParsedPayslip): Double {
+        var sum = payslip.earnings.adjTicketRecovery + payslip.earnings.adjPayAndAllce
+        for ((key, value) in payslip.rawEarnings) {
+            if (key.uppercase().startsWith("ETKT")) {
+                sum += value
+            }
+        }
+        return sum
+    }
+
+    /** Apr = 1 ... Mar = 12 -- the FY-relative calendar position used for the run-rate multiplier (D11). */
+    fun monthPositionInFy(monthNum: Int): Int = if (monthNum >= 4) monthNum - 3 else monthNum + 9
 
     fun computeFinancialYear(
         year: Int,
@@ -137,14 +176,27 @@ object TaxLedgerAggregator {
         fyPayslips: List<ParsedPayslip>,
     ): FyTaxLedgerSummary {
         val count = fyPayslips.size
-        val multiplier = if (count > 0) 12.0 / count else 1.0
+        val latest = fyPayslips.last()
+
+        // D11: the multiplier must reflect how far into the FY the latest payslip actually is, not how
+        // many months were uploaded -- a user who skipped a month but has a July payslip is 4 months into
+        // the FY, not 3, and annualising off the smaller count understates the projection.
+        val monthsElapsed = monthPositionInFy(latest.monthNum)
+        val multiplier = IncomeProjectionPolicy.annualMultiplier(monthsElapsed)
 
         val ytdGross = fyPayslips.sumOf { it.summary.grossPay }
         val ytdArrears = fyPayslips.sumOf { extractNonRecurringArrears(it) }
-        val ytdRegularGross = maxOf(0.0, ytdGross - ytdArrears)
-        val projectedGross = (ytdRegularGross * multiplier) + ytdArrears
+        val ytdReimbursements = fyPayslips.sumOf { extractReimbursements(it) }
+        val projectedGross = IncomeProjectionPolicy.projectAnnualGross(ytdGross, ytdArrears, ytdReimbursements, monthsElapsed)
 
-        val ytdTax = fyPayslips.sumOf { it.deductions.incomeTax }
+        // D11: PCDA's own YTD counters on the latest payslip are the ground truth for tax-paid-so-far
+        // (and, unlike the old code, include cess) -- summing each parsed payslip's single-month `ITAX`
+        // line both misses cess and undercounts whenever a month wasn't uploaded. Fall back to the summed
+        // ledger only when PCDA's own figure is unavailable (e.g. a synthetic/test payslip).
+        val pcdaYtdTax = (latest.taxAndSavings?.taxDeductedYtd ?: 0.0) + (latest.taxAndSavings?.cessDeductedYtd ?: 0.0)
+        val ledgerYtdTax = fyPayslips.sumOf { it.deductions.incomeTax + it.deductions.educationCess }
+        val ytdTax = if (pcdaYtdTax > 0.0) pcdaYtdTax else ledgerYtdTax
+
         val ytdDsop = fyPayslips.sumOf { it.deductions.dsopSubscription }
         val ytdAgif = fyPayslips.sumOf { it.deductions.agif }
         val ytdField = fyPayslips.sumOf { extractFieldAreaAllowance(it) }
@@ -156,12 +208,11 @@ object TaxLedgerAggregator {
         val presentMonths = fyPayslips.map { it.monthNum }.toSet()
         val missingMonths = (1..12).filter { m -> !presentMonths.contains(m) }
 
-        val latest = fyPayslips.last()
-
         return FyTaxLedgerSummary(
             financialYear = activeFy,
             assessmentYear = computeAssessmentYear(activeFy),
             parsedMonthCount = count,
+            monthsElapsedInFy = monthsElapsed,
             ytdGross = ytdGross,
             ytdTaxDeducted = ytdTax,
             ytdDsop = ytdDsop,
@@ -191,6 +242,7 @@ object TaxLedgerAggregator {
             financialYear = fy,
             assessmentYear = computeAssessmentYear(fy),
             parsedMonthCount = 0,
+            monthsElapsedInFy = 1,
             ytdGross = 0.0,
             ytdTaxDeducted = 0.0,
             ytdDsop = 0.0,

@@ -21,6 +21,7 @@ class DefenceTaxExemptionEngineTest {
             financialYear = "2026-27",
             assessmentYear = "2027-28",
             parsedMonthCount = 12,
+            monthsElapsedInFy = 12,
             ytdGross = 0.0,
             ytdTaxDeducted = 0.0,
             ytdDsop = dsop,

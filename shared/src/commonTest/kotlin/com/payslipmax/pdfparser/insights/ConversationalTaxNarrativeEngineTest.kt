@@ -32,7 +32,11 @@ class ConversationalTaxNarrativeEngineTest {
             deductions = Deductions(incomeTax = incomeTax, dsopSubscription = dsop),
             ledgerBalances = LedgerBalances(),
             summary = PayslipSummary(grossPay = grossPay, totalDeductions = incomeTax + dsop, netRemittance = grossPay - (incomeTax + dsop)),
-            taxAndSavings = TaxAndSavings(grossSalaryYtd = grossPay, taxDeductedYtd = incomeTax),
+            // taxDeductedYtd deliberately left at its 0.0 default: this fixture doesn't model PCDA's own
+            // running YTD counter, so `TaxLedgerAggregator` should fall back to summing each month's
+            // `incomeTax` (D11) -- setting it per-payslip would (wrongly) be read as PCDA's own cumulative
+            // figure and short-circuit the sum this test exists to verify.
+            taxAndSavings = TaxAndSavings(grossSalaryYtd = grossPay),
         )
     }
 

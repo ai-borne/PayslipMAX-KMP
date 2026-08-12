@@ -151,4 +151,76 @@ class WealthOptimizationEngineTest {
         val result = WealthOptimizationEngine.analyze(payslip)
         assertEquals("OLD", result.regimeAssumed)
     }
+
+    @Test
+    fun testApr2026EndToEndAcceptance() {
+        // docs/Plan/04_TaxPlannerGoldStandard.md Phase 3 acceptance, driven through the full
+        // WealthOptimizationEngine pipeline (not just IncomeProjectionPolicy in isolation): total tax
+        // ~6,29,025 vs PCDA's own 6,27,975 (within 0.2%), and the false "+32%" spike warning (D12) must
+        // disappear as a consequence of the corrected inputs, not by suppressing the check.
+        val payslip =
+            ParsedPayslip(
+                file = "04_apr_2026.pdf",
+                year = 2026,
+                monthNum = 4,
+                monthName = "April",
+                dateStr = "04/2026",
+                officer = Officer("Officer", "16/000/000000X", "AR*****90G"),
+                earnings =
+                    Earnings(
+                        basicPay = 149000.0,
+                        dearnessAllowance = 98700.0,
+                        militaryServicePay = 15500.0,
+                        transportAllowance = 3600.0,
+                        transportAllowanceDa = 2160.0,
+                        riskHardshipAllowance = 21125.0,
+                        arrearsDa = 9870.0,
+                        arrearsTptaDa = 216.0,
+                        adjPayAndAllce = 1657.0,
+                    ),
+                deductions =
+                    Deductions(
+                        dsopSubscription = 40000.0,
+                        agif = 12500.0,
+                        incomeTax = 50425.0,
+                        educationCess = 2017.0,
+                        ticketRecovery = 3056.0,
+                    ),
+                ledgerBalances = LedgerBalances(),
+                summary = PayslipSummary(grossPay = 301828.0, totalDeductions = 107998.0, netRemittance = 193830.0),
+                taxAndSavings =
+                    TaxAndSavings(
+                        grossSalaryYtd = 586894.0,
+                        totalTaxableIncome = 3487744.0,
+                        standardDeduction = 75000.0,
+                        netTaxableIncome = 3412740.0,
+                        totalTaxPayable = 603822.0,
+                        taxDeductedYtd = 99567.0,
+                        cessDeductedYtd = 3983.0,
+                        taxRegime = TaxRegime.NEW,
+                    ),
+            )
+
+        val result = WealthOptimizationEngine.analyzeLedger(listOf(payslip), payslip, "2026-27")
+
+        val totalTax = result.regimeComparison?.newRegime?.totalTaxPayable ?: 0.0
+        assertEquals(629025.07, totalTax, 1.0)
+        assertTrue(kotlin.math.abs(totalTax - 627975.0) / 627975.0 < 0.002, "Expected within 0.2% of PCDA's 6,27,975, got $totalTax")
+        assertTrue(result.tdsRunway?.hasTdsSpikeWarning == false, "D12: corrected inputs must not produce a false spike warning")
+    }
+
+    @Test
+    fun testTdsRunwayUsesFyCalendarPositionNotUploadCountForRemainingMonths() {
+        // D11/D12: with a gap (April uploaded, May missing, June present), the June payslip is 3 months
+        // into the FY. The runway must split the remaining tax over 12-3=9 months, not 12-2(uploaded)=10 --
+        // wiring `parsedMonthCount` here instead of `monthsElapsedInFy` would manufacture a false spike.
+        val payslips =
+            listOf(
+                createPayslip().copy(monthNum = 4, dateStr = "04/2025"),
+                createPayslip().copy(monthNum = 6, dateStr = "06/2025"),
+            )
+        val result = WealthOptimizationEngine.analyzeLedger(payslips, targetFy = "2025-26")
+        assertEquals(3, result.fySummary?.monthsElapsedInFy)
+        assertEquals(9, result.tdsRunway?.remainingMonths)
+    }
 }
