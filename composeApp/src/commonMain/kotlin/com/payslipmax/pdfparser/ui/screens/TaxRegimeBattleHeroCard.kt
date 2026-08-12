@@ -46,10 +46,38 @@ fun TaxRegimeBattleHeroCard(
         }
 
         if (comparison.breakEvenDeduction > 0) {
-            val formattedBreakEven = TaxLedgerAggregator.formatIndianCurrency(comparison.breakEvenDeduction)
+            BreakEvenDeductionGap(comparison = comparison)
+        }
+    }
+}
+
+/**
+ * D9: the break-even figure and the user's actual (capped) old-regime deductions are rendered
+ * together from the same [comparison] so they can never diverge into two disconnected numbers again.
+ */
+@Composable
+private fun BreakEvenDeductionGap(
+    comparison: RegimeComparisonResult,
+) {
+    val currentDeductions = comparison.oldRegime.totalDeductionsAndExemptions - comparison.oldRegime.standardDeduction
+    val gap = maxOf(0.0, comparison.breakEvenDeduction - currentDeductions)
+
+    Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny)) {
+        Text(
+            text = "${AppStringsPremium.taxPlanningBreakEvenText}${TaxLedgerAggregator.formatIndianCurrency(comparison.breakEvenDeduction)}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = "${AppStringsPremium.taxPlanningCurrentDeductionsText}${TaxLedgerAggregator.formatIndianCurrency(currentDeductions)}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (gap > 0) {
             Text(
-                text = "${AppStringsPremium.taxPlanningBreakEvenText}$formattedBreakEven",
+                text = "${AppStringsPremium.taxPlanningDeductionGapText}${TaxLedgerAggregator.formatIndianCurrency(gap)}",
                 style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

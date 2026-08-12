@@ -101,6 +101,31 @@ class WealthOptimizationEngineTest {
     }
 
     @Test
+    fun testNewRegimeUserGetsNoOldRegimeSectionOpportunities() {
+        // D10: 80C/80CCD(1B) advice does not apply under NEW (Section 115BAC) even though headroom
+        // would otherwise be positive -- gating must be on the active regime, not headroom alone.
+        val payslip = createPayslip(dsopMonthly = 2_000.0, agifMonthly = 2_000.0, taxRegime = TaxRegime.NEW)
+        val result = WealthOptimizationEngine.analyze(payslip)
+        assertNull(result.opportunities.find { it.id == "80c_dsop" }, "80C opportunity must not be offered under NEW regime")
+        assertNull(result.opportunities.find { it.id == "80ccd_nps" }, "80CCD(1B) opportunity must not be offered under NEW regime")
+    }
+
+    @Test
+    fun testNewRegimeExemptionBreakdownIsGatedButRegimeComparisonStaysCapped() {
+        // D9: the OLD-regime hypothetical inside regimeComparison must still use the full capped
+        // deductions (not the NEW-regime-gated, zeroed display breakdown) -- otherwise a NEW-regime
+        // user's "switch to OLD" savings figure would be computed off zero deductions.
+        val payslip = createPayslip(dsopMonthly = 8_000.0, agifMonthly = 5_000.0, taxRegime = TaxRegime.NEW)
+        val result = WealthOptimizationEngine.analyze(payslip)
+
+        assertEquals(0.0, result.exemptionBreakdown?.totalOldRegimeDeductions)
+        val oldRegimeDeductionsUsedInComparison =
+            (result.regimeComparison?.oldRegime?.totalDeductionsAndExemptions ?: 0.0) -
+                (result.regimeComparison?.oldRegime?.standardDeduction ?: 0.0)
+        assertTrue(oldRegimeDeductionsUsedInComparison > 0.0, "OLD-regime comparison must still see the capped, un-gated deductions")
+    }
+
+    @Test
     fun testRegimeIsDefaultOld() {
         val result = WealthOptimizationEngine.analyze(createPayslip())
         assertEquals("OLD", result.regimeAssumed)

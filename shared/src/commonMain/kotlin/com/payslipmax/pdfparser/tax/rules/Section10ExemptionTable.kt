@@ -4,8 +4,8 @@ import com.payslipmax.pdfparser.tax.Section10Rule
 
 /**
  * Section 10(14)/Rule 2BB monthly exemption caps for defence allowances. Relocated out of
- * TaxRuleKnowledgeBase (Phase 1 file split); wiring these caps into DefenceTaxExemptionEngine is
- * Phase 2 (D8) -- this file only holds the data.
+ * TaxRuleKnowledgeBase (Phase 1 file split); wired into [com.payslipmax.pdfparser.insights.Section10CapPolicy]
+ * (D8) -- this file only holds the data.
  */
 object Section10ExemptionTable {
     val DEFAULT_DEFENCE_SECTION_10 =

@@ -82,12 +82,23 @@ class TaxLedgerAggregatorTest {
     }
 
     @Test
-    fun testExtractFieldOrRhaAllowance() {
+    fun testExtractRiskHardshipAllowanceKeepsSeparateFromField() {
+        // D8: RH/field buckets must stay separate so each can be capped against its own Rule 2BB
+        // category (Section10CapPolicy) -- a merged total "cannot be category-correct".
         val p1 = createPayslip(2024, 4, fieldAllowance = 0.0, riskHardshipAllowance = 6000.0)
-        assertEquals(6000.0, TaxLedgerAggregator.extractFieldOrRhaAllowance(p1))
+        assertEquals(6000.0, TaxLedgerAggregator.extractRiskHardshipAllowance(p1))
+        assertEquals(0.0, TaxLedgerAggregator.extractFieldAreaAllowance(p1))
 
         val p2 = createPayslip(2024, 4, fieldAllowance = 0.0, riskHardshipAllowance = 0.0, rawEarnings = mapOf("RHA" to 4200.0))
-        assertEquals(4200.0, TaxLedgerAggregator.extractFieldOrRhaAllowance(p2))
+        assertEquals(4200.0, TaxLedgerAggregator.extractRiskHardshipAllowance(p2))
+        assertEquals(0.0, TaxLedgerAggregator.extractFieldAreaAllowance(p2))
+    }
+
+    @Test
+    fun testExtractFieldAreaAllowanceFallsBackToRawFieldKeyword() {
+        val p = createPayslip(2024, 4, fieldAllowance = 0.0, riskHardshipAllowance = 0.0, rawEarnings = mapOf("FIELD ALLC" to 2700.0))
+        assertEquals(2700.0, TaxLedgerAggregator.extractFieldAreaAllowance(p))
+        assertEquals(0.0, TaxLedgerAggregator.extractRiskHardshipAllowance(p))
     }
 
     @Test

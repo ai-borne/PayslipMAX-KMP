@@ -46,15 +46,23 @@ object WealthOptimizationEngine {
     ): OptimizationResult {
         val activePayslip = selectedPayslip ?: payslips.lastOrNull() ?: return createFallbackResult()
         val fySummary = TaxLedgerAggregator.aggregateFy(payslips, targetFy)
-        val exemptions = DefenceTaxExemptionEngine.extractExemptions(fySummary)
+        val activeRegime = activePayslip.taxAndSavings?.taxRegime ?: TaxRegime.OLD
+
+        // Regime-neutral (always-OLD-hypothetical), capped exemptions (D8) -- this MUST NOT be the
+        // regime-gated `exemptions` below, or an active-NEW user's old-regime comparison would be
+        // computed as if they had zero deductions, breaking the switch-regime savings math (D9).
+        val oldRegimeExemptions = DefenceTaxExemptionEngine.extractExemptions(fySummary)
         val regimeComp =
             DualRegimeEngine.compareRegimes(
                 grossIncome = fySummary.projectedAnnualGross,
-                oldRegimeDeductions = exemptions.totalOldRegimeDeductions,
+                oldRegimeDeductions = oldRegimeExemptions.totalOldRegimeDeductions,
                 fy = fySummary.financialYear,
             )
 
-        val activeRegime = activePayslip.taxAndSavings?.taxRegime ?: TaxRegime.OLD
+        // Regime-conditional (D10): zeroed with an explicit reason under NEW, since old-regime-only
+        // sections genuinely don't reduce this user's actual tax bill right now.
+        val exemptions = DefenceTaxExemptionEngine.extractExemptions(fySummary, activeRegime = activeRegime)
+
         val activeTax = if (activeRegime == TaxRegime.NEW) regimeComp.newRegime.totalTaxPayable else regimeComp.oldRegime.totalTaxPayable
         val marginalRate =
             deriveMarginalRate(
@@ -117,7 +125,9 @@ object WealthOptimizationEngine {
             }
 
         val dsopMonthly = activePayslip.deductions.dsopSubscription
-        val dsopGapMonthly = computeDsopGap(dsopMonthly, activePayslip.summary.grossPay, exemptions.sec80C.headroom)
+        // Retirement-corpus room, not a tax-saving claim -- stays regime-neutral (uses the uncapped
+        // headroom, not the NEW-regime-gated `exemptions`).
+        val dsopGapMonthly = computeDsopGap(dsopMonthly, activePayslip.summary.grossPay, oldRegimeExemptions.sec80C.headroom)
         val closingBalance = activePayslip.taxAndSavings?.dsopFund?.closingBalance ?: 0.0
         val corpusUplift = computeCorpusUplift(dsopMonthly, dsopGapMonthly, closingBalance, yearsToRetirement)
 

@@ -62,4 +62,20 @@ class DualRegimeEngineTest {
         assertTrue(result.winnerRegime == "NEW" || result.winnerRegime == "OLD")
         assertTrue(result.breakEvenDeduction > 0.0)
     }
+
+    @Test
+    fun testWinnerRegimeFlipsOnlyAtBreakEven() {
+        // Phase 2 (D9): once capped (not uncapped) deductions feed this comparison, the recommendation
+        // must flip exactly at breakEvenDeduction -- never before it, on the strength of a coincidentally
+        // large but disallowed exemption.
+        val gross = 2000000.0
+        val fy = "2026-27"
+        val breakEven = DualRegimeEngine.compareRegimes(gross, 0.0, fy).breakEvenDeduction
+
+        val belowBreakEven = DualRegimeEngine.compareRegimes(gross, breakEven - 10000.0, fy)
+        assertEquals("NEW", belowBreakEven.winnerRegime)
+
+        val atOrAboveBreakEven = DualRegimeEngine.compareRegimes(gross, breakEven + 10000.0, fy)
+        assertEquals("OLD", atOrAboveBreakEven.winnerRegime)
+    }
 }

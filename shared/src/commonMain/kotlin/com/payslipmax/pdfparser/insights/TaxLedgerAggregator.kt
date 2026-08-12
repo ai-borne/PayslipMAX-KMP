@@ -13,6 +13,7 @@ data class FyTaxLedgerSummary(
     val ytdDsop: Double,
     val ytdAgif: Double,
     val ytdFieldAllowance: Double,
+    val ytdRiskHardshipAllowance: Double,
     val ytdHra: Double,
     val ytdBasicPay: Double,
     val ytdDa: Double,
@@ -21,6 +22,7 @@ data class FyTaxLedgerSummary(
     val projectedAnnualDsop: Double,
     val projectedAnnualAgif: Double,
     val projectedAnnualFieldAllowance: Double,
+    val projectedAnnualRiskHardshipAllowance: Double,
     val projectedAnnualHra: Double,
     val projectedAnnualBasicPay: Double,
     val projectedAnnualDa: Double,
@@ -44,19 +46,39 @@ object TaxLedgerAggregator {
         return if (isNegative) "-$result" else result
     }
 
-    fun extractFieldOrRhaAllowance(payslip: ParsedPayslip): Double {
-        var total = payslip.earnings.fieldAllowance + payslip.earnings.riskHardshipAllowance + payslip.earnings.adjFieldAllowance
+    /**
+     * The generic Field Area allowance bucket (PCDA code "FD"), kept separate from
+     * [extractRiskHardshipAllowance] so each can be capped against its own Rule 2BB category
+     * (D8 -- see [Section10CapPolicy]; a merged total "cannot be category-correct").
+     */
+    fun extractFieldAreaAllowance(payslip: ParsedPayslip): Double {
+        var total = payslip.earnings.fieldAllowance + payslip.earnings.adjFieldAllowance
         if (total <= 0.0 && payslip.rawEarnings.isNotEmpty()) {
-            val rhaKeywords = listOf("RHA", "RISK", "FIELD", "HARDSHIP")
             for ((key, value) in payslip.rawEarnings) {
                 val upper = key.uppercase()
-                if (rhaKeywords.any { upper.contains(it) }) {
+                if (upper.contains("FIELD") && riskHardshipKeywords.none { upper.contains(it) }) {
                     total += value
                 }
             }
         }
         return total
     }
+
+    /** RH11-RH33 / SICHA -- all collapse into the structured `riskHardshipAllowance` bucket at parse time. */
+    fun extractRiskHardshipAllowance(payslip: ParsedPayslip): Double {
+        var total = payslip.earnings.riskHardshipAllowance
+        if (total <= 0.0 && payslip.rawEarnings.isNotEmpty()) {
+            for ((key, value) in payslip.rawEarnings) {
+                val upper = key.uppercase()
+                if (riskHardshipKeywords.any { upper.contains(it) }) {
+                    total += value
+                }
+            }
+        }
+        return total
+    }
+
+    private val riskHardshipKeywords = listOf("RHA", "RISK", "HARDSHIP", "SICHA")
 
     fun extractNonRecurringArrears(payslip: ParsedPayslip): Double {
         var arrearsSum = 0.0
@@ -125,7 +147,8 @@ object TaxLedgerAggregator {
         val ytdTax = fyPayslips.sumOf { it.deductions.incomeTax }
         val ytdDsop = fyPayslips.sumOf { it.deductions.dsopSubscription }
         val ytdAgif = fyPayslips.sumOf { it.deductions.agif }
-        val ytdField = fyPayslips.sumOf { extractFieldOrRhaAllowance(it) }
+        val ytdField = fyPayslips.sumOf { extractFieldAreaAllowance(it) }
+        val ytdRiskHardship = fyPayslips.sumOf { extractRiskHardshipAllowance(it) }
         val ytdHra = fyPayslips.sumOf { it.earnings.houseRentAllowance }
         val ytdBasic = fyPayslips.sumOf { it.earnings.basicPay }
         val ytdDa = fyPayslips.sumOf { it.earnings.dearnessAllowance }
@@ -144,6 +167,7 @@ object TaxLedgerAggregator {
             ytdDsop = ytdDsop,
             ytdAgif = ytdAgif,
             ytdFieldAllowance = ytdField,
+            ytdRiskHardshipAllowance = ytdRiskHardship,
             ytdHra = ytdHra,
             ytdBasicPay = ytdBasic,
             ytdDa = ytdDa,
@@ -152,6 +176,7 @@ object TaxLedgerAggregator {
             projectedAnnualDsop = ytdDsop * multiplier,
             projectedAnnualAgif = ytdAgif * multiplier,
             projectedAnnualFieldAllowance = ytdField * multiplier,
+            projectedAnnualRiskHardshipAllowance = ytdRiskHardship * multiplier,
             projectedAnnualHra = ytdHra * multiplier,
             projectedAnnualBasicPay = ytdBasic * multiplier,
             projectedAnnualDa = ytdDa * multiplier,
@@ -171,6 +196,7 @@ object TaxLedgerAggregator {
             ytdDsop = 0.0,
             ytdAgif = 0.0,
             ytdFieldAllowance = 0.0,
+            ytdRiskHardshipAllowance = 0.0,
             ytdHra = 0.0,
             ytdBasicPay = 0.0,
             ytdDa = 0.0,
@@ -179,6 +205,7 @@ object TaxLedgerAggregator {
             projectedAnnualDsop = 0.0,
             projectedAnnualAgif = 0.0,
             projectedAnnualFieldAllowance = 0.0,
+            projectedAnnualRiskHardshipAllowance = 0.0,
             projectedAnnualHra = 0.0,
             projectedAnnualBasicPay = 0.0,
             projectedAnnualDa = 0.0,

@@ -79,6 +79,8 @@ object AppStringsPremium {
     const val taxPlanningWinnerSavingsBadge = "Saves ₹"
     const val taxPlanningWinnerRegimeRecommended = "Recommended for lowest tax liability"
     const val taxPlanningBreakEvenText = "Min Old Regime Deductions Needed: ₹"
+    const val taxPlanningCurrentDeductionsText = "Your Current Old Regime Deductions: ₹"
+    const val taxPlanningDeductionGapText = "Gap To Switch-Worthy: ₹"
     const val taxPlanningTdsRunwayTitle = "Annual Tax Liability & TDS Runway"
     const val taxPlanningTdsPaidYtd = "TDS Deducted YTD: ₹"
     const val taxPlanningTdsRemaining = "Remaining FY Tax: ₹"
@@ -93,6 +95,10 @@ object AppStringsPremium {
 
     const val taxPlanningExemptionsCardTitle = "Defence Exemptions & Deductions"
     const val taxPlanningExemptionsTotalLabel = "Total Old Regime Deductions: ₹"
+    const val taxPlanningExemptionsUnavailableNewRegimeNote =
+        "Not available under your active New Tax Regime (Section 115BAC) — shown as ₹0, not omitted"
+    const val taxPlanningFieldCapConservativeAssumptionNote =
+        "Field allowance cap assumed conservatively — the specific Rule 2BB category couldn't be identified from this payslip"
 
     const val taxPlanningTipsCardTitle = "💡 Tax Planning Tips & Best Practices"
     const val taxPlanningTip1Title = "Sec 10(14) Field Allowance Exemption"
