@@ -100,10 +100,12 @@ object ConversationalTaxNarrativeEngine {
 
     /**
      * Phase 8 (U3): reuses numbers and sentences the engine already computed elsewhere -- no new tax
-     * math, no re-derivation of any figure. [reconciliation]/[dsopWasteInsight]/[midYearRegimeChange]
-     * are checked in that priority order because DSOP waste and a mid-year change are the more
-     * actionable, specific findings; a merely-diverging TDS/liability reconciliation is the fallback
-     * flag when neither of those fires.
+     * math, no re-derivation of any figure. Priority order for the single flag line, most urgent
+     * first: a [reconciliation] top-up-due (money you will actually owe at filing that isn't being
+     * withheld now -- the one thing that can genuinely surprise someone) outranks everything else;
+     * [dsopWasteInsight] is a real but lower-stakes forgone optimization; [midYearRegimeChange] is
+     * procedural. A real evidence-base case (Apr 2026) had a ₹4,52,957 top-up-due silently losing to a
+     * ₹45,000/yr DSOP note under the old ordering -- the bigger, more urgent fact must win.
      */
     fun buildBluf(
         regimeComparison: RegimeComparisonResult,
@@ -130,6 +132,7 @@ object ConversationalTaxNarrativeEngine {
 
         val actionLine =
             when {
+                reconciliation != null && reconciliation.reconciliationType == ReconciliationType.TOP_UP_DUE -> reconciliation.message
                 dsopWasteInsight != null -> dsopWasteInsight.message
                 midYearRegimeChange?.detected == true ->
                     midYearRegimeChange.message

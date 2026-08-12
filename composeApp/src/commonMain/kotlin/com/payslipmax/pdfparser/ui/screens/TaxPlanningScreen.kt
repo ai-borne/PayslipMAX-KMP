@@ -141,10 +141,14 @@ private fun TaxPlanningBlufSummary(
 
 /**
  * U3 (Phase 8): one single disclosure for everything a reader only needs "if you want to verify the
- * math" -- PCDA's own page-4 figures, the month-by-month breakdown, and the full Old-vs-New
- * comparison. Deliberately one combined section rather than three separate chevrons (which cluttered
- * the screen and buried the BLUF summary under repeated disclosure affordances); each card's content
- * is unchanged, only where it lives moved from always-visible to one tap away.
+ * math" or that duplicates/elaborates on what the BLUF/verdict/reconciliation cards above already
+ * said in plain language -- PCDA's own page-4 figures, the month-by-month breakdown, the full
+ * Old-vs-New comparison, the section-code-level exemption ledger, the TDS runway progress bar
+ * (Next Month's TDS is already on the verdict hero), the DSOP-waste finding (already the BLUF flag
+ * line when it fires -- showing it twice was pure duplication), and the generic tax-planning tips.
+ * Deliberately one combined section rather than one chevron per card (which cluttered the screen and
+ * buried the BLUF summary under repeated disclosure affordances); each card's content is unchanged,
+ * only where it lives moved from always-visible to one tap away.
  */
 @Composable
 private fun TaxPlanningFullCalculationSection(
@@ -153,7 +157,10 @@ private fun TaxPlanningFullCalculationSection(
     val hasDetail =
         optimizationResult.pcdaOfficialComputation != null ||
             optimizationResult.storyNarrative != null ||
-            optimizationResult.regimeComparison != null
+            optimizationResult.regimeComparison != null ||
+            optimizationResult.tdsRunway != null ||
+            optimizationResult.exemptionBreakdown != null ||
+            optimizationResult.dsopWasteInsight != null
     if (!hasDetail) return
 
     ExpandableDetailSection(
@@ -169,33 +176,29 @@ private fun TaxPlanningFullCalculationSection(
         optimizationResult.regimeComparison?.let { comp ->
             TaxRegimeBattleHeroCard(comparison = comp)
         }
+        optimizationResult.tdsRunway?.let { tds ->
+            TaxTdsRunwayProgressCard(tdsRunway = tds)
+        }
+        optimizationResult.exemptionBreakdown?.let { exemptions ->
+            TaxExemptionBreakdownCard(exemptionBreakdown = exemptions)
+        }
+        optimizationResult.dsopWasteInsight?.let { dsopWaste ->
+            TaxDsopWasteInsightCard(insight = dsopWaste)
+        }
+        TaxEducativeTipsCard(activeRegime = optimizationResult.regimeAssumed)
     }
 }
 
-/** The supporting detail: month-by-month audit, regime breakdown, runway, deductions, and actions. */
+/** The supporting detail that stays above the fold: concrete actions to take, and the trust footer. */
 @Composable
 private fun TaxPlanningDetailSection(
     optimizationResult: OptimizationResult,
 ) {
-    optimizationResult.tdsRunway?.let { tds ->
-        TaxTdsRunwayProgressCard(tdsRunway = tds)
-    }
-
-    optimizationResult.exemptionBreakdown?.let { exemptions ->
-        TaxExemptionBreakdownCard(exemptionBreakdown = exemptions)
-    }
-
-    optimizationResult.dsopWasteInsight?.let { dsopWaste ->
-        TaxDsopWasteInsightCard(insight = dsopWaste)
-    }
-
     TaxActionableChecklistCard(opportunities = optimizationResult.opportunities)
 
     if (optimizationResult.opportunities.isNotEmpty()) {
         TaxAdviceDisclaimer()
     }
-
-    TaxEducativeTipsCard(activeRegime = optimizationResult.regimeAssumed)
 
     TaxRuleVersionFooter(financialYear = optimizationResult.fySummary?.financialYear ?: "2026-27")
 }

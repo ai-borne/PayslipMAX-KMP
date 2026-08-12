@@ -178,6 +178,34 @@ class ConversationalTaxNarrativeEngineTest {
         assertEquals(diverging.message, bluf.actionLine)
     }
 
+    // A TOP_UP_DUE gap is what will actually be owed at filing -- a materially bigger and more urgent
+    // fact than a DSOP optimization opportunity, so it must win the single flag line when both fire.
+    // Real evidence-base case: a ₹4,52,957 top-up was being silently dropped in favour of a ₹45,000/yr
+    // DSOP-waste note before this ordering was fixed.
+    @Test
+    fun buildBlufPrioritizesReconciliationTopUpOverDsopWasteWhenBothFire() {
+        val diverging = matchedReconciliation().copy(reconciliationType = ReconciliationType.TOP_UP_DUE, message = "You will owe extra under the New Tax Regime.")
+        val dsopWaste =
+            DsopWasteInsight(
+                annualDsop = 480_000.0,
+                annualAgif = 150_000.0,
+                cappedContribution = 150_000.0,
+                taxBenefitForgoneAnnual = 45_000.0,
+                message = "Your DSOP + AGIF earns ₹0 benefit under the New Tax Regime.",
+            )
+        val bluf =
+            ConversationalTaxNarrativeEngine.buildBluf(
+                regimeComparison = regimeComparison(),
+                reconciliation = diverging,
+                dsopWasteInsight = dsopWaste,
+                midYearRegimeChange = null,
+                parsedMonthCount = 6,
+            )
+
+        assertEquals(true, bluf.isActionRequired)
+        assertEquals(diverging.message, bluf.actionLine)
+    }
+
     @Test
     fun buildBlufFlagsAndSurfacesDsopWasteMessageWhenPresent() {
         val dsopWaste =

@@ -41,7 +41,7 @@ fun TaxLiabilityVerdictHeroCard(
         LiabilityVerdictAmount(totalTax = winningDetail.totalTaxPayable, parsedMonthCount = parsedMonthCount)
 
         Text(
-            text = "${AppStringsTaxPlanner.heroRegimeWinnerPrefix}$regimeLabel${AppStringsTaxPlanner.heroRegimeWinnerSuffix}",
+            text = "$regimeLabel${AppStringsTaxPlanner.heroRegimeWinnerSuffix}",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.primary,

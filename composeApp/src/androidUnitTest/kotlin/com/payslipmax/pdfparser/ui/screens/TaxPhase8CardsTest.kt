@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import com.payslipmax.pdfparser.domain.TaxAndSavings
+import com.payslipmax.pdfparser.insights.DsopWasteInsight
 import com.payslipmax.pdfparser.insights.OptimizationResult
 import com.payslipmax.pdfparser.insights.RegimeComparisonResult
 import com.payslipmax.pdfparser.insights.RegimeTaxDetail
@@ -186,5 +187,34 @@ class TaxPhase8CardsTest {
             onNodeWithText(AppStringsTaxPlanner.expandFullCalculationLabel).performClick()
 
             onNodeWithText(AppStringsTaxPlanner.pcdaCardTitle).assertExists()
+        }
+
+    // Regression guard for the duplicate-DSOP-card bug: when the DSOP-waste finding fires, its
+    // message is already the BLUF flag line -- the full TaxDsopWasteInsightCard must not also render
+    // as a second, always-visible copy of the same finding.
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun dsopWasteCardOnlyAppearsInsideFullCalculationSectionNotAsADuplicateAboveTheFold() =
+        runComposeUiTest {
+            val dsopWaste =
+                DsopWasteInsight(
+                    annualDsop = 480_000.0,
+                    annualAgif = 150_000.0,
+                    cappedContribution = 150_000.0,
+                    taxBenefitForgoneAnnual = 45_000.0,
+                    message = "Your DSOP + AGIF earns ₹0 benefit under the New Tax Regime.",
+                )
+            setContent {
+                TaxPlanningContentScreen(
+                    optimizationResult = fullCalculationOptimizationResult().copy(dsopWasteInsight = dsopWaste),
+                    onNavigateBack = {},
+                )
+            }
+
+            onNodeWithText(AppStringsTaxPlanner.dsopWasteCardTitle).assertDoesNotExist()
+
+            onNodeWithText(AppStringsTaxPlanner.expandFullCalculationLabel).performClick()
+
+            onAllNodesWithText(AppStringsTaxPlanner.dsopWasteCardTitle).assertCountEquals(1)
         }
 }

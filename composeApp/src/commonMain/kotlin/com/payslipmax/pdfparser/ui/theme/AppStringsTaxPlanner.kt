@@ -24,7 +24,6 @@ object AppStringsTaxPlanner {
     // Hero verdict card (replaces the deleted Peer Benchmark card, D15)
     const val heroTitle = "Your Tax Verdict"
     const val heroLiabilityLabel = "Best Achievable Annual Liability"
-    const val heroRegimeWinnerPrefix = "Regime "
     const val heroRegimeWinnerSuffix = " wins"
     const val heroNextMonthTdsLabel = "Next Month's TDS ≈ ₹"
     const val heroNextMonthNetPayLabel = "Next Month's Net Pay ≈ ₹"
@@ -58,7 +57,7 @@ object AppStringsTaxPlanner {
     const val arrearsTransparencyTitle = "Arrears Transparency"
 
     // DSOP-waste insight card
-    const val dsopWasteCardTitle = "DSOP + AGIF: Zero Benefit Under New Regime"
+    const val dsopWasteCardTitle = "DSOP + AGIF: Zero Benefit Under New Tax Regime"
 
     // TDS runway spike banner
     const val tdsSpikeToLabel = " to ₹"

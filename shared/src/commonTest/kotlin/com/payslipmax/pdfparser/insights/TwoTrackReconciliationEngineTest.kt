@@ -172,6 +172,11 @@ class TwoTrackReconciliationEngineTest {
         assertNotNull(underNew)
         assertEquals(150_000.0, underNew.cappedContribution, 0.01) // capped at LIMIT_80C
         assertTrue(underNew.taxBenefitForgoneAnnual > 0.0)
+        // Consistency with the "New Tax Regime"/"Old Tax Regime" full labels used everywhere else on
+        // screen -- "New Regime"/"Old Regime" (missing "Tax") reads as a different, unrelated term to
+        // someone with no tax background.
+        assertTrue(underNew.message.contains("New Tax Regime"))
+        assertTrue(underNew.message.contains("Old Tax Regime"))
 
         val underOld = TwoTrackReconciliationEngine.dsopWasteInsight(summary, TaxRegime.OLD, comparison)
         assertNull(underOld)

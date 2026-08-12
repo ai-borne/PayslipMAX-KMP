@@ -114,8 +114,8 @@ object TwoTrackReconciliationEngine {
         val contributionText = TaxLedgerAggregator.formatIndianCurrency(totalContribution)
         val forgoneText = TaxLedgerAggregator.formatIndianCurrency(forgone)
         val message =
-            "Your ₹$contributionText/yr DSOP + AGIF contribution earns ₹0 tax benefit under the New Regime -- " +
-                "under the Old Regime it would have saved ₹$forgoneText/yr."
+            "Your ₹$contributionText/yr DSOP + AGIF contribution earns ₹0 tax benefit under the New Tax Regime -- " +
+                "under the Old Tax Regime it would have saved ₹$forgoneText/yr."
 
         return DsopWasteInsight(
             annualDsop = fySummary.projectedAnnualDsop,
