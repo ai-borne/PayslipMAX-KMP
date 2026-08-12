@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.insights.FyTaxLedgerSummary
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
+import com.payslipmax.pdfparser.ui.theme.AppStringsTaxPlanner
 
 @Composable
 fun TaxFyRunwayHeaderCard(
@@ -39,11 +40,23 @@ fun TaxFyRunwayHeaderCard(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
-                val monthLabel = if (fySummary.parsedMonthCount == 1) "Month" else "Months"
+                val monthSuffix = if (fySummary.parsedMonthCount == 1) AppStringsTaxPlanner.fyMonthSingular else AppStringsTaxPlanner.fyMonthPlural
                 Text(
-                    text = "🟢 ${fySummary.parsedMonthCount} $monthLabel Parsed (Projected)",
+                    text = "${AppStringsTaxPlanner.fyMonthsParsedPrefix}${fySummary.parsedMonthCount}$monthSuffix",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary,
+                )
+            }
+            Surface(
+                shape = RoundedCornerShape(AppDimensions.CornerRadiusSmall),
+                color = MaterialTheme.colorScheme.tertiaryContainer,
+            ) {
+                Text(
+                    text = "${AppStringsPremium.taxPlanningPreliminaryEstimatePrefix}${fySummary.parsedMonthCount}${AppStringsPremium.taxPlanningOfMonthsSuffix}",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    modifier = Modifier.padding(horizontal = AppDimensions.PaddingSmall, vertical = AppDimensions.SpacingTiny),
                 )
             }
         }

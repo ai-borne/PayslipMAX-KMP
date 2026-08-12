@@ -11,6 +11,7 @@ import com.payslipmax.pdfparser.insights.TaxLedgerAggregator
 import com.payslipmax.pdfparser.insights.TdsRunwayResult
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
+import com.payslipmax.pdfparser.ui.theme.AppStringsTaxPlanner
 
 @Composable
 fun TaxTdsRunwayProgressCard(
@@ -71,7 +72,9 @@ private fun TdsRunwayMetricsAndProgress(
     )
 
     Text(
-        text = "${AppStringsPremium.taxPlanningMonthlyTdsRunway}$projText/mo (${tdsRunway.remainingMonths} mos remaining)",
+        text =
+            "${AppStringsPremium.taxPlanningMonthlyTdsRunway}$projText" +
+                "${AppStringsTaxPlanner.tdsPerMonthSuffix}${tdsRunway.remainingMonths}${AppStringsTaxPlanner.tdsMonthsRemainingSuffix}",
         style = MaterialTheme.typography.bodyMedium,
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSurface,
@@ -103,7 +106,9 @@ private fun TdsSpikeAlertBanner(
                 color = MaterialTheme.colorScheme.error,
             )
             Text(
-                text = "${AppStringsPremium.taxPlanningTdsSpikeAlertDesc}$currText to $projText per month in remaining FY!",
+                text =
+                    "${AppStringsPremium.taxPlanningTdsSpikeAlertDesc}$currText" +
+                        "${AppStringsTaxPlanner.tdsSpikeToLabel}$projText${AppStringsTaxPlanner.tdsSpikeSuffix}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onErrorContainer,
             )

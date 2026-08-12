@@ -13,6 +13,7 @@ import com.payslipmax.pdfparser.insights.RegimeTaxDetail
 import com.payslipmax.pdfparser.insights.TaxLedgerAggregator
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
+import com.payslipmax.pdfparser.ui.theme.AppStringsTaxPlanner
 
 @Composable
 fun TaxRegimeBattleHeroCard(
@@ -106,7 +107,7 @@ private fun RegimeOptionBox(
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
         ) {
             RegimeOptionHeader(regimeName = detail.regimeName, isWinner = isWinner)
-            RegimeOptionAmounts(totalTax = detail.totalTaxPayable, isWinner = isWinner, savings = savings)
+            RegimeOptionAmounts(detail = detail, isWinner = isWinner, savings = savings)
         }
     }
 }
@@ -129,7 +130,7 @@ private fun RegimeOptionHeader(
         )
         if (isWinner) {
             Text(
-                text = "★ Best",
+                text = AppStringsTaxPlanner.bestBadge,
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -138,18 +139,37 @@ private fun RegimeOptionHeader(
     }
 }
 
+/** D17/D14: base tax, surcharge and cess are now shown explicitly, not folded silently into the total. */
 @Composable
 private fun RegimeOptionAmounts(
-    totalTax: Double,
+    detail: RegimeTaxDetail,
     isWinner: Boolean,
     savings: Double,
 ) {
-    val formattedTax = TaxLedgerAggregator.formatIndianCurrency(totalTax)
+    val formattedTax = TaxLedgerAggregator.formatIndianCurrency(detail.totalTaxPayable)
     Text(
-        text = "₹$formattedTax",
+        text = "${AppStringsTaxPlanner.rupeeSymbol}$formattedTax",
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.Bold,
         color = if (isWinner) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+    )
+
+    Text(
+        text = "${AppStringsTaxPlanner.regimeBaseTaxLabel}${TaxLedgerAggregator.formatIndianCurrency(detail.baseTax)}",
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    if (detail.surcharge > 0) {
+        Text(
+            text = "${AppStringsTaxPlanner.regimeSurchargeLabel}${TaxLedgerAggregator.formatIndianCurrency(detail.surcharge)}",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    Text(
+        text = "${AppStringsTaxPlanner.regimeCessLabel}${TaxLedgerAggregator.formatIndianCurrency(detail.cess)}",
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 
     if (savings > 0) {

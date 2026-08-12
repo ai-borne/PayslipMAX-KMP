@@ -167,4 +167,35 @@ class WealthOptimizationEngineTwoTrackTest {
         assertTrue(result.midYearRegimeChange!!.detected)
         assertEquals(6, result.midYearRegimeChange!!.changeMonthNum)
     }
+
+    @Test
+    fun testPcdaOfficialComputationMirrorsActivePayslipVerbatim() {
+        val taxAndSavings = TaxAndSavings(netTaxableIncome = 800_000.0, totalTaxPayable = 700_000.0, taxRegime = TaxRegime.NEW)
+        val payslip = createPayslip(taxRegime = TaxRegime.NEW).copy(taxAndSavings = taxAndSavings)
+        val result = WealthOptimizationEngine.analyze(payslip)
+
+        assertEquals(taxAndSavings, result.pcdaOfficialComputation)
+    }
+
+    @Test
+    fun testProjectedNextMonthNetPayNullWhenPcdaTotalTaxPayableUnavailable() {
+        val payslip = createPayslip().copy(taxAndSavings = TaxAndSavings(netTaxableIncome = 800_000.0, totalTaxPayable = null))
+        val result = WealthOptimizationEngine.analyze(payslip)
+        assertNull(result.projectedNextMonthNetPay)
+    }
+
+    @Test
+    fun testProjectedNextMonthNetPayShiftsByTdsRunwayDelta() {
+        val payslip =
+            createPayslip(taxRegime = TaxRegime.OLD).copy(
+                taxAndSavings = TaxAndSavings(netTaxableIncome = 800_000.0, totalTaxPayable = 90_000.0, taxRegime = TaxRegime.OLD),
+            )
+        val result = WealthOptimizationEngine.analyze(payslip)
+
+        val tdsRunway = result.tdsRunway
+        assertNotNull(tdsRunway)
+        assertNotNull(result.projectedNextMonthNetPay)
+        val expected = maxOf(0.0, payslip.summary.netRemittance - (tdsRunway.projectedMonthlyTds - tdsRunway.currentMonthlyTds))
+        assertEquals(expected, result.projectedNextMonthNetPay!!, 1.0)
+    }
 }

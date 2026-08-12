@@ -10,6 +10,7 @@ import com.payslipmax.pdfparser.insights.TaxExemptionBreakdown
 import com.payslipmax.pdfparser.insights.TaxLedgerAggregator
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
+import com.payslipmax.pdfparser.ui.theme.AppStringsTaxPlanner
 
 @Composable
 fun TaxExemptionBreakdownCard(
@@ -91,7 +92,7 @@ private fun ExemptionRowItem(
         )
         val amountText = TaxLedgerAggregator.formatIndianCurrency(amount)
         Text(
-            text = "₹$amountText",
+            text = "${AppStringsTaxPlanner.rupeeSymbol}$amountText",
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface,

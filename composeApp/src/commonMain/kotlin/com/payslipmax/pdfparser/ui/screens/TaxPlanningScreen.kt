@@ -63,29 +63,77 @@ private fun TaxPlanningContent(
     optimizationResult: OptimizationResult,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
-        optimizationResult.storyNarrative?.let { narrative ->
-            TaxNarrativeBenchmarkCard(narrative = narrative)
-            TaxNarrativeLedgerCard(narrative = narrative)
-        }
-
-        optimizationResult.regimeComparison?.let { comp ->
-            TaxRegimeBattleHeroCard(comparison = comp)
-        }
-
-        optimizationResult.tdsRunway?.let { tds ->
-            TaxTdsRunwayProgressCard(tdsRunway = tds)
-        }
-
-        optimizationResult.exemptionBreakdown?.let { exemptions ->
-            TaxExemptionBreakdownCard(exemptionBreakdown = exemptions)
-        }
-
-        TaxActionableChecklistCard(opportunities = optimizationResult.opportunities)
-
-        TaxEducativeTipsCard()
-
-        TaxRuleVersionFooter(financialYear = optimizationResult.fySummary?.financialYear ?: "2026-27")
+        TaxPlanningVerdictSection(optimizationResult)
+        TaxPlanningDetailSection(optimizationResult)
     }
+}
+
+/** Answers the screen's opening questions: coverage, verdict, PCDA's own figures, and the reconciliation. */
+@Composable
+private fun TaxPlanningVerdictSection(
+    optimizationResult: OptimizationResult,
+) {
+    optimizationResult.fySummary?.let { fySummary ->
+        TaxFyRunwayHeaderCard(fySummary = fySummary)
+    }
+
+    // D15: the deleted Peer Benchmark card is replaced by a verdict hero -- liability, winning
+    // regime, and next month's TDS/net pay, the three things this screen owes an opening answer to.
+    optimizationResult.regimeComparison?.let { comp ->
+        TaxLiabilityVerdictHeroCard(
+            regimeComparison = comp,
+            tdsRunway = optimizationResult.tdsRunway,
+            projectedNextMonthNetPay = optimizationResult.projectedNextMonthNetPay,
+            parsedMonthCount = optimizationResult.fySummary?.parsedMonthCount ?: 1,
+        )
+    }
+
+    optimizationResult.pcdaOfficialComputation?.let { pcda ->
+        TaxPcdaOfficialComputationCard(taxAndSavings = pcda)
+    }
+
+    // ADR-3/ADR-4 (Phase 5 domain, wired into UI here): TDS-vs-liability reconciliation and its
+    // corollaries -- null only when PCDA's own totalTaxPayable is unavailable (D3 guard).
+    optimizationResult.taxTrackReconciliation?.let { reconciliation ->
+        TaxReconciliationDeltaCard(
+            reconciliation = reconciliation,
+            belatedReturnTrapWarning = optimizationResult.belatedReturnTrapWarning,
+            midYearRegimeChange = optimizationResult.midYearRegimeChange,
+            arrearsTransparency = optimizationResult.arrearsTransparency,
+        )
+    }
+}
+
+/** The supporting detail: month-by-month audit, regime breakdown, runway, deductions, and actions. */
+@Composable
+private fun TaxPlanningDetailSection(
+    optimizationResult: OptimizationResult,
+) {
+    optimizationResult.storyNarrative?.let { narrative ->
+        TaxNarrativeLedgerCard(narrative = narrative)
+    }
+
+    optimizationResult.regimeComparison?.let { comp ->
+        TaxRegimeBattleHeroCard(comparison = comp)
+    }
+
+    optimizationResult.tdsRunway?.let { tds ->
+        TaxTdsRunwayProgressCard(tdsRunway = tds)
+    }
+
+    optimizationResult.exemptionBreakdown?.let { exemptions ->
+        TaxExemptionBreakdownCard(exemptionBreakdown = exemptions)
+    }
+
+    optimizationResult.dsopWasteInsight?.let { dsopWaste ->
+        TaxDsopWasteInsightCard(insight = dsopWaste)
+    }
+
+    TaxActionableChecklistCard(opportunities = optimizationResult.opportunities)
+
+    TaxEducativeTipsCard()
+
+    TaxRuleVersionFooter(financialYear = optimizationResult.fySummary?.financialYear ?: "2026-27")
 }
 
 @Composable

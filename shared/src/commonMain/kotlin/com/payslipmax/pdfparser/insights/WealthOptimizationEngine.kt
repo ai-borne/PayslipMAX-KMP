@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.insights
 
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.TaxAndSavings
 import com.payslipmax.pdfparser.domain.TaxRegime
 import kotlinx.serialization.Serializable
 
@@ -34,6 +35,10 @@ data class OptimizationResult(
     val midYearRegimeChange: MidYearRegimeChangeInsight? = null,
     /** Phase 5 (ADR-4): null when the active regime is already the cheaper one. */
     val regimeDecisionPlan: RegimeDecisionPlan? = null,
+    /** Phase 6: PCDA's own page-4 figures, mirrored verbatim -- never recomputed for display. */
+    val pcdaOfficialComputation: TaxAndSavings? = null,
+    /** Phase 6: current net pay adjusted by the TDS-runway delta -- null if the active payslip has no PCDA tax page. */
+    val projectedNextMonthNetPay: Double? = null,
 )
 
 object WealthOptimizationEngine {
@@ -156,6 +161,15 @@ object WealthOptimizationEngine {
                 }
             }
 
+        // Phase 6: next month's take-home, estimated by shifting the current month's net pay by the
+        // same TDS-runway delta already computed above -- no second projection engine introduced.
+        val projectedNextMonthNetPay =
+            if (activePayslip.taxAndSavings?.totalTaxPayable != null) {
+                maxOf(0.0, activePayslip.summary.netRemittance - (tdsRunway.projectedMonthlyTds - tdsRunway.currentMonthlyTds))
+            } else {
+                null
+            }
+
         val dsopMonthly = activePayslip.deductions.dsopSubscription
         // Retirement-corpus room, not a tax-saving claim -- stays regime-neutral (uses the uncapped
         // headroom, not the NEW-regime-gated `exemptions`).
@@ -181,6 +195,8 @@ object WealthOptimizationEngine {
             arrearsTransparency = arrearsInsight,
             midYearRegimeChange = midYearRegimeChange,
             regimeDecisionPlan = regimeDecisionPlan,
+            pcdaOfficialComputation = activePayslip.taxAndSavings,
+            projectedNextMonthNetPay = projectedNextMonthNetPay,
         )
     }
 

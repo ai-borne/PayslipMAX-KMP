@@ -10,6 +10,7 @@ import com.payslipmax.pdfparser.domain.TaxAndSavings
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ConversationalTaxNarrativeEngineTest {
@@ -58,8 +59,28 @@ class ConversationalTaxNarrativeEngineTest {
         assertEquals(1, narrative.monthlyLedgerList.size)
         assertEquals(12500.0, narrative.monthlyLedgerList[0].tdsDeducted)
         assertEquals(15000.0, narrative.monthlyLedgerList[0].dsopContribution)
-        assertNotNull(narrative.missingMonthNudge)
+        // D17: a single April payslip has zero *elapsed* months still missing -- the other 11 months of
+        // the FY haven't been issued yet, so nudging "upload remaining 11 months" was never satisfiable.
+        assertNull(narrative.missingMonthNudge)
         assertTrue(narrative.effectiveTaxRatePct > 0.0)
+    }
+
+    @Test
+    fun testNarrativeGenerationWithGapProducesActionableNudge() {
+        // April present, May skipped, June uploaded -- May is elapsed (position 2 <= monthsElapsedInFy 3)
+        // and genuinely missing, so this is the one case where the nudge is both true and actionable.
+        val payslips = listOf(createPayslip(2025, 4, "April 2025"), createPayslip(2025, 6, "June 2025"))
+        val summary = TaxLedgerAggregator.aggregateFy(payslips, "2025-26")
+
+        val narrative =
+            ConversationalTaxNarrativeEngine.generateNarrative(
+                payslips = payslips,
+                fySummary = summary,
+                projectedTax = 215400.0,
+            )
+
+        assertNotNull(narrative.missingMonthNudge)
+        assertTrue(narrative.missingMonthNudge!!.contains("1"))
     }
 
     @Test

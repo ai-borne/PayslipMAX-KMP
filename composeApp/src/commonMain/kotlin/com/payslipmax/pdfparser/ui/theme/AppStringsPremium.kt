@@ -72,7 +72,6 @@ object AppStringsPremium {
 
     // Modern Tax Planner Strings
     const val taxPlanningFyStatusPrefix = "Financial Year "
-    const val taxPlanningMonthsParsedSuffix = " Months Parsed (Projected)"
     const val taxPlanningRegimeBattleTitle = "Old vs. New Tax Regime Comparison"
     const val taxPlanningOldRegimeLabel = "Old Tax Regime"
     const val taxPlanningNewRegimeLabel = "New Tax Regime"
@@ -115,9 +114,6 @@ object AppStringsPremium {
     const val taxPlanningNarrativeTdsCol = "TDS"
     const val taxPlanningNarrativeDsopCol = "DSOP"
     const val taxPlanningNarrativeYtdTotalLabel = "YTD Total:"
-    const val taxPlanningNarrativeBenchmarkTitle = "Effective Tax Rate & Peer Benchmark"
-    const val taxPlanningNarrativeYourRateLabel = "Your Effective Rate"
-    const val taxPlanningNarrativePeerTargetLabel = "Optimal Effective Rate"
     const val taxPlanningNarrativeTdsLabel = "TDS: ₹"
     const val taxPlanningNarrativeDsopLabel = "DSOP: ₹"
 
@@ -168,7 +164,6 @@ object AppStringsPremium {
 
     const val taxPlanningPreliminaryEstimatePrefix = "Preliminary estimate · "
     const val taxPlanningOfMonthsSuffix = " of 12"
-    const val taxPlanningBestAchievableRateLabel = "Best Achievable Rate"
 
     const val retCommutationSubtitle = "Compare Lump Sum Advance vs. Monthly Pension. Commuted portion is restored after 15 years."
     const val retCommutationLumpSumLabel = "Lump Sum"

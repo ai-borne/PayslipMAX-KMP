@@ -55,9 +55,15 @@ object ConversationalTaxNarrativeEngine {
         val monthWord = if (count == 1) "month" else "months"
         val coverageHeader = "In Assessment Year ${fySummary.assessmentYear} (FY ${fySummary.financialYear}), we have $count $monthWord of payslips available."
 
+        // D17: `missingMonthNums` includes months later in the FY that haven't been issued yet -- those
+        // can never be "uploaded", so only months already elapsed but not yet parsed are actionable.
+        // A March payslip with April/May still missing is not a defect; a July payslip missing May is.
+        val actionableMissingCount =
+            fySummary.missingMonthNums.count { TaxLedgerAggregator.monthPositionInFy(it) <= fySummary.monthsElapsedInFy }
         val missingNudge =
-            if (fySummary.missingMonthNums.isNotEmpty()) {
-                "Upload remaining ${fySummary.missingMonthNums.size} month payslips to make your projection 100% accurate."
+            if (actionableMissingCount > 0) {
+                val monthNoun = if (actionableMissingCount == 1) "payslip" else "payslips"
+                "Upload $actionableMissingCount more $monthNoun from earlier this FY to sharpen your projection."
             } else {
                 null
             }
