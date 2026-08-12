@@ -60,8 +60,7 @@ fun TaxPlanningContentScreen(
         if (optimizationResult == null) {
             TaxPlanningEmptyState()
         } else {
-            activePayslipLabel?.let { TaxDataAsOfBanner(activePayslipLabel = it) }
-            TaxPlanningContent(optimizationResult = optimizationResult)
+            TaxPlanningContent(optimizationResult = optimizationResult, activePayslipLabel = activePayslipLabel)
         }
     }
 }
@@ -69,9 +68,10 @@ fun TaxPlanningContentScreen(
 @Composable
 private fun TaxPlanningContent(
     optimizationResult: OptimizationResult,
+    activePayslipLabel: String?,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
-        TaxPlanningVerdictSection(optimizationResult)
+        TaxPlanningVerdictSection(optimizationResult, activePayslipLabel)
         TaxPlanningDetailSection(optimizationResult)
     }
 }
@@ -80,6 +80,7 @@ private fun TaxPlanningContent(
 @Composable
 private fun TaxPlanningVerdictSection(
     optimizationResult: OptimizationResult,
+    activePayslipLabel: String?,
 ) {
     // ADR-2 (Phase 7): the active FY has no resolvable rule pack -- degrade visibly instead of
     // silently rendering regime/liability cards computed off the nearest known FY's numbers.
@@ -88,8 +89,11 @@ private fun TaxPlanningVerdictSection(
         return
     }
 
+    // U2/U3 (Phase 8): "which month is this" and "which FY is this" now read as one status block --
+    // previously a separate standalone line above this card, which pushed the card's own title/badge
+    // Row past the available width and truncated both.
     optimizationResult.fySummary?.let { fySummary ->
-        TaxFyRunwayHeaderCard(fySummary = fySummary)
+        TaxFyRunwayHeaderCard(fySummary = fySummary, activePayslipLabel = activePayslipLabel)
     }
 
     TaxPlanningBlufSummary(optimizationResult)
