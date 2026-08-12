@@ -69,7 +69,13 @@ object WealthOptimizationEngine {
         yearsToRetirement: Int = DEFAULT_YEARS_TO_RETIREMENT,
     ): OptimizationResult {
         val activePayslip = selectedPayslip ?: payslips.lastOrNull() ?: return createFallbackResult()
-        val fySummary = TaxLedgerAggregator.aggregateFy(payslips, targetFy)
+        // The production call site (PayslipViewModel) never passes targetFy explicitly -- without this
+        // fallback, aggregateFy() would derive the FY from payslips.last() (whichever payslip was
+        // parsed most recently) instead of the FY the user actually selected, silently pinning every
+        // FY-level figure (verdict, liability, reconciliation) to the wrong year whenever the selected
+        // month differs from the latest upload.
+        val resolvedTargetFy = targetFy ?: TaxLedgerAggregator.computeFinancialYear(activePayslip.year, activePayslip.monthNum)
+        val fySummary = TaxLedgerAggregator.aggregateFy(payslips, resolvedTargetFy)
         val activeRegime = activePayslip.taxAndSavings?.taxRegime ?: TaxRegime.OLD
 
         // Regime-neutral (always-OLD-hypothetical), capped exemptions (D8) -- this MUST NOT be the

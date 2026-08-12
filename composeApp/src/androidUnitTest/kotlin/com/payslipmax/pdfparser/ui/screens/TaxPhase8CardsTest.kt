@@ -6,9 +6,11 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.runComposeUiTest
 import com.payslipmax.pdfparser.domain.TaxAndSavings
 import com.payslipmax.pdfparser.insights.DsopWasteInsight
+import com.payslipmax.pdfparser.insights.FyTaxLedgerSummary
 import com.payslipmax.pdfparser.insights.OptimizationResult
 import com.payslipmax.pdfparser.insights.RegimeComparisonResult
 import com.payslipmax.pdfparser.insights.RegimeTaxDetail
@@ -20,6 +22,37 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.Test
 
+private fun minimalFySummary() =
+    FyTaxLedgerSummary(
+        financialYear = "2026-27",
+        assessmentYear = "2027-28",
+        parsedMonthCount = 1,
+        monthsElapsedInFy = 1,
+        ytdGross = 0.0,
+        ytdTaxDeducted = 0.0,
+        ytdArrears = 0.0,
+        ytdReimbursements = 0.0,
+        ytdDsop = 0.0,
+        ytdAgif = 0.0,
+        ytdFieldAllowance = 0.0,
+        ytdRiskHardshipAllowance = 0.0,
+        ytdHra = 0.0,
+        ytdBasicPay = 0.0,
+        ytdDa = 0.0,
+        projectedAnnualGross = 0.0,
+        projectedAnnualTaxDeducted = 0.0,
+        projectedAnnualDsop = 0.0,
+        projectedAnnualAgif = 0.0,
+        projectedAnnualFieldAllowance = 0.0,
+        projectedAnnualRiskHardshipAllowance = 0.0,
+        projectedAnnualHra = 0.0,
+        projectedAnnualBasicPay = 0.0,
+        projectedAnnualDa = 0.0,
+        missingMonthNums = emptyList(),
+        latestBasicPay = 0.0,
+        latestDa = 0.0,
+    )
+
 private fun minimalOptimizationResult() =
     OptimizationResult(
         totalPotentialTaxSaving = 0.0,
@@ -28,6 +61,7 @@ private fun minimalOptimizationResult() =
         opportunities = emptyList(),
         dsopGapMonthly = 0.0,
         dsopCorpusUpliftAtRetirement = 0.0,
+        fySummary = minimalFySummary(),
     )
 
 private fun regimeDetail(totalTax: Double) =
@@ -184,7 +218,7 @@ class TaxPhase8CardsTest {
             onAllNodesWithText(AppStringsTaxPlanner.expandFullCalculationLabel).assertCountEquals(1)
             onNodeWithText(AppStringsTaxPlanner.pcdaCardTitle).assertDoesNotExist()
 
-            onNodeWithText(AppStringsTaxPlanner.expandFullCalculationLabel).performClick()
+            onNodeWithText(AppStringsTaxPlanner.expandFullCalculationLabel).performScrollTo().performClick()
 
             onNodeWithText(AppStringsTaxPlanner.pcdaCardTitle).assertExists()
         }
@@ -213,7 +247,7 @@ class TaxPhase8CardsTest {
 
             onNodeWithText(AppStringsTaxPlanner.dsopWasteCardTitle).assertDoesNotExist()
 
-            onNodeWithText(AppStringsTaxPlanner.expandFullCalculationLabel).performClick()
+            onNodeWithText(AppStringsTaxPlanner.expandFullCalculationLabel).performScrollTo().performClick()
 
             onAllNodesWithText(AppStringsTaxPlanner.dsopWasteCardTitle).assertCountEquals(1)
         }

@@ -223,4 +223,22 @@ class WealthOptimizationEngineTest {
         assertEquals(3, result.fySummary?.monthsElapsedInFy)
         assertEquals(9, result.tdsRunway?.remainingMonths)
     }
+
+    // Live-device finding: switching the selected month on the Insights/Dashboard month-picker to a
+    // payslip in an EARLIER financial year updated the active payslip's own printed TDS figure, but
+    // the FY-level summary/verdict/liability stayed pinned to the FY of whichever payslip was parsed
+    // most recently -- because the production call site (PayslipViewModel.computeTaxOptimization) never
+    // passes targetFy, so aggregateFy() fell back to payslips.last()'s FY instead of the FY the user
+    // actually selected.
+    @Test
+    fun testAnalyzeLedgerDerivesFySummaryFromSelectedPayslipNotFromLatestUploadedPayslip() {
+        val januaryPayslip = createPayslip().copy(year = 2026, monthNum = 1, monthName = "January", dateStr = "01/2026")
+        val aprilPayslip = createPayslip().copy(year = 2026, monthNum = 4, monthName = "April", dateStr = "04/2026")
+        // April was parsed later and sorts last, but January is the one the user actually selected.
+        val payslips = listOf(januaryPayslip, aprilPayslip)
+
+        val result = WealthOptimizationEngine.analyzeLedger(payslips, selectedPayslip = januaryPayslip)
+
+        assertEquals("2025-26", result.fySummary?.financialYear, "January 2026 belongs to FY 2025-26, not the latest-uploaded payslip's FY 2026-27")
+    }
 }
