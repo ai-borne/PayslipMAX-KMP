@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.insights
 
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.TaxRegime
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,6 +11,18 @@ data class MonthlyLedgerItem(
     val monthNum: Int,
     val tdsDeducted: Double,
     val dsopContribution: Double,
+)
+
+/**
+ * Phase 8 (U3): the one-glance "Bottom Line Up Front" summary -- a plain-language liability sentence
+ * plus a single "nothing to do" / "here's the one thing that needs attention" line, so the reader
+ * doesn't have to synthesize that verdict themselves out of several cards' worth of numbers.
+ */
+@Serializable
+data class TaxBlufSummary(
+    val headline: String,
+    val actionLine: String,
+    val isActionRequired: Boolean,
 )
 
 @Serializable
@@ -83,5 +96,52 @@ object ConversationalTaxNarrativeEngine {
             projectedTax = projectedTax,
             effectiveTaxRatePct = formattedRate,
         )
+    }
+
+    /**
+     * Phase 8 (U3): reuses numbers and sentences the engine already computed elsewhere -- no new tax
+     * math, no re-derivation of any figure. [reconciliation]/[dsopWasteInsight]/[midYearRegimeChange]
+     * are checked in that priority order because DSOP waste and a mid-year change are the more
+     * actionable, specific findings; a merely-diverging TDS/liability reconciliation is the fallback
+     * flag when neither of those fires.
+     */
+    fun buildBluf(
+        regimeComparison: RegimeComparisonResult,
+        reconciliation: TaxTrackReconciliation?,
+        dsopWasteInsight: DsopWasteInsight?,
+        midYearRegimeChange: MidYearRegimeChangeInsight?,
+        parsedMonthCount: Int,
+    ): TaxBlufSummary {
+        val isNewWinner = regimeComparison.winnerRegime == TaxRegime.NEW.name
+        val winningDetail = if (isNewWinner) regimeComparison.newRegime else regimeComparison.oldRegime
+        val totalTax = winningDetail.totalTaxPayable
+
+        val amountPhrase =
+            if (parsedMonthCount in 1 until TaxLedgerAggregator.LOW_COVERAGE_MONTHS) {
+                val lower = TaxLedgerAggregator.roundToNearestThousand(totalTax * (1.0 - TaxLedgerAggregator.LOW_COVERAGE_BAND))
+                val upper = TaxLedgerAggregator.roundToNearestThousand(totalTax * (1.0 + TaxLedgerAggregator.LOW_COVERAGE_BAND))
+                "between ₹${TaxLedgerAggregator.formatIndianCurrency(lower)} and ₹${TaxLedgerAggregator.formatIndianCurrency(upper)}"
+            } else {
+                "about ₹${TaxLedgerAggregator.formatIndianCurrency(TaxLedgerAggregator.roundToNearestThousand(totalTax))}"
+            }
+        val headline =
+            "Your total tax for this financial year will be $amountPhrase -- that's what you'll actually owe " +
+                "when you file, not just what's being deducted from your pay each month (TDS)."
+
+        val actionLine =
+            when {
+                dsopWasteInsight != null -> dsopWasteInsight.message
+                midYearRegimeChange?.detected == true ->
+                    midYearRegimeChange.message
+                        ?: "Your tax regime changed partway through this financial year -- see the details below."
+                reconciliation != null && reconciliation.reconciliationType != ReconciliationType.MATCHED -> reconciliation.message
+                else -> "Nothing needs your attention right now -- you're already on the tax regime that costs you the least."
+            }
+        val isActionRequired =
+            dsopWasteInsight != null ||
+                midYearRegimeChange?.detected == true ||
+                (reconciliation != null && reconciliation.reconciliationType != ReconciliationType.MATCHED)
+
+        return TaxBlufSummary(headline = headline, actionLine = actionLine, isActionRequired = isActionRequired)
     }
 }

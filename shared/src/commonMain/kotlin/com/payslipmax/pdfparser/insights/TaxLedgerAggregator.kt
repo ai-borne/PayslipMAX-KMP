@@ -48,6 +48,17 @@ data class FyTaxLedgerSummary(
 )
 
 object TaxLedgerAggregator {
+    /**
+     * Precision (D17/Phase 8): below this many parsed months, a projection isn't rupee-exact --
+     * callers should show a range (see [LOW_COVERAGE_BAND]) rather than a false-precision point.
+     * Shared here (not left private in one card) because both the composeApp verdict hero card and
+     * [ConversationalTaxNarrativeEngine.buildBluf]'s headline apply the identical rule.
+     */
+    const val LOW_COVERAGE_MONTHS = 3
+    const val LOW_COVERAGE_BAND = 0.08
+
+    fun roundToNearestThousand(amount: Double): Double = kotlin.math.round(amount / 1000.0) * 1000.0
+
     fun formatIndianCurrency(amount: Double): String {
         val rounded = kotlin.math.round(amount).toLong()
         val isNegative = rounded < 0

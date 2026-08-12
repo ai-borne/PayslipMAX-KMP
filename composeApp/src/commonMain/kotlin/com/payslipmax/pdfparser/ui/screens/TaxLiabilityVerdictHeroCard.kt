@@ -90,10 +90,10 @@ private fun LiabilityVerdictAmount(
     totalTax: Double,
     parsedMonthCount: Int,
 ) {
-    val rounded = roundToNearestThousand(totalTax)
-    if (parsedMonthCount in 1 until LOW_COVERAGE_MONTHS) {
-        val lower = roundToNearestThousand(totalTax * (1.0 - LOW_COVERAGE_BAND))
-        val upper = roundToNearestThousand(totalTax * (1.0 + LOW_COVERAGE_BAND))
+    val rounded = TaxLedgerAggregator.roundToNearestThousand(totalTax)
+    if (parsedMonthCount in 1 until TaxLedgerAggregator.LOW_COVERAGE_MONTHS) {
+        val lower = TaxLedgerAggregator.roundToNearestThousand(totalTax * (1.0 - TaxLedgerAggregator.LOW_COVERAGE_BAND))
+        val upper = TaxLedgerAggregator.roundToNearestThousand(totalTax * (1.0 + TaxLedgerAggregator.LOW_COVERAGE_BAND))
         Text(
             text =
                 "${AppStringsTaxPlanner.rupeeSymbol}${TaxLedgerAggregator.formatIndianCurrency(lower)}" +
@@ -121,8 +121,3 @@ private fun LiabilityVerdictAmount(
         )
     }
 }
-
-private const val LOW_COVERAGE_MONTHS = 3
-private const val LOW_COVERAGE_BAND = 0.08
-
-private fun roundToNearestThousand(amount: Double): Double = kotlin.math.round(amount / 1000.0) * 1000.0

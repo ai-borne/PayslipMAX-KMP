@@ -106,4 +106,121 @@ class ConversationalTaxNarrativeEngineTest {
         assertEquals(50000.0, narrative.totalTdsYtd)
         assertEquals(60000.0, narrative.totalDsopYtd)
     }
+
+    // --- buildBluf (Phase 8, U3) -------------------------------------------------------------
+
+    private fun regimeDetail(totalTax: Double) =
+        RegimeTaxDetail(
+            regimeName = "NEW",
+            grossIncome = 4_000_000.0,
+            standardDeduction = 75_000.0,
+            totalDeductionsAndExemptions = 75_000.0,
+            netTaxableIncome = 3_500_000.0,
+            baseTax = totalTax,
+            surcharge = 0.0,
+            cess = 0.0,
+            totalTaxPayable = totalTax,
+            effectiveTaxRatePct = 18.0,
+        )
+
+    private fun regimeComparison(winner: String = "NEW") =
+        RegimeComparisonResult(
+            financialYear = "2026-27",
+            oldRegime = regimeDetail(793_552.0),
+            newRegime = regimeDetail(629_025.0),
+            winnerRegime = winner,
+            annualSavings = 164_527.0,
+            breakEvenDeduction = 0.0,
+        )
+
+    private fun matchedReconciliation() =
+        TaxTrackReconciliation(
+            financialYear = "2026-27",
+            tdsTrackAnnual = 629_025.0,
+            tdsTrackRegime = com.payslipmax.pdfparser.domain.TaxRegime.NEW,
+            liabilityTrackAnnual = 629_025.0,
+            liabilityTrackRegime = com.payslipmax.pdfparser.domain.TaxRegime.NEW,
+            deltaAmount = 0.0,
+            reconciliationType = ReconciliationType.MATCHED,
+            message = "PCDA's withholding already matches your best achievable liability under the New Tax Regime.",
+        )
+
+    @Test
+    fun buildBlufSaysNoActionNeededWhenNothingDiverges() {
+        val bluf =
+            ConversationalTaxNarrativeEngine.buildBluf(
+                regimeComparison = regimeComparison(),
+                reconciliation = matchedReconciliation(),
+                dsopWasteInsight = null,
+                midYearRegimeChange = null,
+                parsedMonthCount = 6,
+            )
+
+        assertEquals(false, bluf.isActionRequired)
+        assertTrue(bluf.headline.contains("about ₹6,29,000"))
+        // TDS is jargon this screen must gloss the first time it appears, per Phase 8's plain-language scope.
+        assertTrue(bluf.headline.contains("(TDS)"))
+    }
+
+    @Test
+    fun buildBlufFlagsAndSurfacesReconciliationMessageWhenTracksDiverge() {
+        val diverging = matchedReconciliation().copy(reconciliationType = ReconciliationType.TOP_UP_DUE, message = "You will owe extra under the New Tax Regime.")
+        val bluf =
+            ConversationalTaxNarrativeEngine.buildBluf(
+                regimeComparison = regimeComparison(),
+                reconciliation = diverging,
+                dsopWasteInsight = null,
+                midYearRegimeChange = null,
+                parsedMonthCount = 6,
+            )
+
+        assertEquals(true, bluf.isActionRequired)
+        assertEquals(diverging.message, bluf.actionLine)
+    }
+
+    @Test
+    fun buildBlufFlagsAndSurfacesDsopWasteMessageWhenPresent() {
+        val dsopWaste =
+            DsopWasteInsight(
+                annualDsop = 480_000.0,
+                annualAgif = 150_000.0,
+                cappedContribution = 150_000.0,
+                taxBenefitForgoneAnnual = 45_000.0,
+                message = "Your DSOP + AGIF earns ₹0 benefit under the New Tax Regime.",
+            )
+        val bluf =
+            ConversationalTaxNarrativeEngine.buildBluf(
+                regimeComparison = regimeComparison(),
+                reconciliation = matchedReconciliation(),
+                dsopWasteInsight = dsopWaste,
+                midYearRegimeChange = null,
+                parsedMonthCount = 6,
+            )
+
+        assertEquals(true, bluf.isActionRequired)
+        assertEquals(dsopWaste.message, bluf.actionLine)
+    }
+
+    @Test
+    fun buildBlufShowsRangeBelowLowCoverageThresholdAndPointAtOrAboveIt() {
+        val lowCoverage =
+            ConversationalTaxNarrativeEngine.buildBluf(
+                regimeComparison = regimeComparison(),
+                reconciliation = matchedReconciliation(),
+                dsopWasteInsight = null,
+                midYearRegimeChange = null,
+                parsedMonthCount = 1,
+            )
+        assertTrue(lowCoverage.headline.contains("between ₹"))
+
+        val fullCoverage =
+            ConversationalTaxNarrativeEngine.buildBluf(
+                regimeComparison = regimeComparison(),
+                reconciliation = matchedReconciliation(),
+                dsopWasteInsight = null,
+                midYearRegimeChange = null,
+                parsedMonthCount = TaxLedgerAggregator.LOW_COVERAGE_MONTHS,
+            )
+        assertTrue(fullCoverage.headline.contains("about ₹"))
+    }
 }

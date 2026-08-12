@@ -13,6 +13,14 @@ object AppStringsTaxPlanner {
     // month's payslip is active, silently inheriting whatever the Dashboard's month-picker last set.
     const val dataAsOfPrefix = "Data as of: "
 
+    // Expandable detail section (Phase 8, U3): full-detail cards stay fully present, just collapsed
+    // behind one combined disclosure so they don't compete with the BLUF summary for the reader's
+    // first glance. One section, not one per card -- three separate chevrons cluttered the screen.
+    const val expandableSectionChevronContentDescription = "Toggle section"
+    const val expandFullCalculationLabel = "See full calculation"
+    const val expandFullCalculationSubtitle =
+        "PCDA's own page-4 figures, month-by-month breakdown, and Old vs New Tax Regime side-by-side -- only if you want to verify the math."
+
     // Hero verdict card (replaces the deleted Peer Benchmark card, D15)
     const val heroTitle = "Your Tax Verdict"
     const val heroLiabilityLabel = "Best Achievable Annual Liability"

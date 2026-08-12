@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.payslipmax.pdfparser.insights.ConversationalTaxNarrativeEngine
 import com.payslipmax.pdfparser.insights.OptimizationResult
 import com.payslipmax.pdfparser.insights.TaxRulesUnavailableInfo
 import com.payslipmax.pdfparser.tax.TaxRuleKnowledgeBase
@@ -91,6 +92,8 @@ private fun TaxPlanningVerdictSection(
         TaxFyRunwayHeaderCard(fySummary = fySummary)
     }
 
+    TaxPlanningBlufSummary(optimizationResult)
+
     // D15: the deleted Peer Benchmark card is replaced by a verdict hero -- liability, winning
     // regime, and next month's TDS/net pay, the three things this screen owes an opening answer to.
     optimizationResult.regimeComparison?.let { comp ->
@@ -100,10 +103,6 @@ private fun TaxPlanningVerdictSection(
             projectedNextMonthNetPay = optimizationResult.projectedNextMonthNetPay,
             parsedMonthCount = optimizationResult.fySummary?.parsedMonthCount ?: 1,
         )
-    }
-
-    optimizationResult.pcdaOfficialComputation?.let { pcda ->
-        TaxPcdaOfficialComputationCard(taxAndSavings = pcda)
     }
 
     // ADR-3/ADR-4 (Phase 5 domain, wired into UI here): TDS-vs-liability reconciliation and its
@@ -116,6 +115,61 @@ private fun TaxPlanningVerdictSection(
             arrearsTransparency = optimizationResult.arrearsTransparency,
         )
     }
+
+    TaxPlanningFullCalculationSection(optimizationResult)
+}
+
+/** U3 (Phase 8): the one plain-language sentence + no-action/flag line a reader owes an answer to
+ * before any card requires them to synthesize it out of several numbers themselves. */
+@Composable
+private fun TaxPlanningBlufSummary(
+    optimizationResult: OptimizationResult,
+) {
+    optimizationResult.regimeComparison?.let { comp ->
+        TaxBlufSummaryCard(
+            bluf =
+                ConversationalTaxNarrativeEngine.buildBluf(
+                    regimeComparison = comp,
+                    reconciliation = optimizationResult.taxTrackReconciliation,
+                    dsopWasteInsight = optimizationResult.dsopWasteInsight,
+                    midYearRegimeChange = optimizationResult.midYearRegimeChange,
+                    parsedMonthCount = optimizationResult.fySummary?.parsedMonthCount ?: 1,
+                ),
+        )
+    }
+}
+
+/**
+ * U3 (Phase 8): one single disclosure for everything a reader only needs "if you want to verify the
+ * math" -- PCDA's own page-4 figures, the month-by-month breakdown, and the full Old-vs-New
+ * comparison. Deliberately one combined section rather than three separate chevrons (which cluttered
+ * the screen and buried the BLUF summary under repeated disclosure affordances); each card's content
+ * is unchanged, only where it lives moved from always-visible to one tap away.
+ */
+@Composable
+private fun TaxPlanningFullCalculationSection(
+    optimizationResult: OptimizationResult,
+) {
+    val hasDetail =
+        optimizationResult.pcdaOfficialComputation != null ||
+            optimizationResult.storyNarrative != null ||
+            optimizationResult.regimeComparison != null
+    if (!hasDetail) return
+
+    ExpandableDetailSection(
+        title = AppStringsTaxPlanner.expandFullCalculationLabel,
+        subtitle = AppStringsTaxPlanner.expandFullCalculationSubtitle,
+    ) {
+        optimizationResult.pcdaOfficialComputation?.let { pcda ->
+            TaxPcdaOfficialComputationCard(taxAndSavings = pcda)
+        }
+        optimizationResult.storyNarrative?.let { narrative ->
+            TaxNarrativeLedgerCard(narrative = narrative)
+        }
+        optimizationResult.regimeComparison?.let { comp ->
+            TaxRegimeBattleHeroCard(comparison = comp)
+        }
+    }
 }
 
 /** The supporting detail: month-by-month audit, regime breakdown, runway, deductions, and actions. */
@@ -123,14 +177,6 @@ private fun TaxPlanningVerdictSection(
 private fun TaxPlanningDetailSection(
     optimizationResult: OptimizationResult,
 ) {
-    optimizationResult.storyNarrative?.let { narrative ->
-        TaxNarrativeLedgerCard(narrative = narrative)
-    }
-
-    optimizationResult.regimeComparison?.let { comp ->
-        TaxRegimeBattleHeroCard(comparison = comp)
-    }
-
     optimizationResult.tdsRunway?.let { tds ->
         TaxTdsRunwayProgressCard(tdsRunway = tds)
     }
