@@ -7,11 +7,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.domain.TaxRegime
 import com.payslipmax.pdfparser.insights.ArrearsTransparencyInsight
 import com.payslipmax.pdfparser.insights.MidYearRegimeChangeInsight
 import com.payslipmax.pdfparser.insights.TaxLedgerAggregator
 import com.payslipmax.pdfparser.insights.TaxTrackReconciliation
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.AppStringsTaxPlanner
 
 /**
@@ -41,13 +43,13 @@ fun TaxReconciliationDeltaCard(
             TrackFigure(
                 label = AppStringsTaxPlanner.reconciliationTdsTrackLabel,
                 amount = reconciliation.tdsTrackAnnual,
-                regime = reconciliation.tdsTrackRegime.name,
+                regime = reconciliation.tdsTrackRegime.displayLabel(),
                 modifier = Modifier.weight(1f),
             )
             TrackFigure(
                 label = AppStringsTaxPlanner.reconciliationLiabilityTrackLabel,
                 amount = reconciliation.liabilityTrackAnnual,
-                regime = reconciliation.liabilityTrackRegime.name,
+                regime = reconciliation.liabilityTrackRegime.displayLabel(),
                 modifier = Modifier.weight(1f),
             )
         }
@@ -72,6 +74,13 @@ fun TaxReconciliationDeltaCard(
         }
     }
 }
+
+/** U1: never render the raw enum name -- route through the same SSOT label every other regime badge uses. */
+private fun TaxRegime.displayLabel(): String =
+    when (this) {
+        TaxRegime.NEW -> AppStringsPremium.taxPlanningNewRegimeLabel
+        TaxRegime.OLD -> AppStringsPremium.taxPlanningOldRegimeLabel
+    }
 
 @Composable
 private fun TrackFigure(

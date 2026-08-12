@@ -117,6 +117,11 @@ class TaxPhase6CardsTest {
             onNodeWithText(reconciliation.message).assertExists()
             onNodeWithText("Old Regime is unavailable in a belated return.").assertExists()
             onNodeWithText("₹10,086 of arrears was added back verbatim.").assertExists()
+            // U1: regime badges must render the full SSOT label, never the raw TaxRegime enum name.
+            onNodeWithText("New Tax Regime").assertExists()
+            onNodeWithText("Old Tax Regime").assertExists()
+            onNodeWithText("NEW", substring = false).assertDoesNotExist()
+            onNodeWithText("OLD", substring = false).assertDoesNotExist()
         }
 
     @OptIn(ExperimentalTestApi::class)
