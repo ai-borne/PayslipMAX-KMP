@@ -130,7 +130,7 @@ data class TaxAndSavings(
     val totalTaxableIncome: Double = 0.0,
     val standardDeduction: Double = 0.0,
     val netTaxableIncome: Double = 0.0,
-    val totalTaxPayable: Double = 0.0,
+    val totalTaxPayable: Double? = null,
     val taxDeductedYtd: Double = 0.0,
     val cessDeductedYtd: Double = 0.0,
     val dsopFund: DsopFund? = null,

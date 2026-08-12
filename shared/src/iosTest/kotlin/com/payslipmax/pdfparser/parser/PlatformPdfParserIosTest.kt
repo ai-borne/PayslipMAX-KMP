@@ -205,7 +205,7 @@ class PlatformPdfParserIosTest {
             assertEquals((expTax.objectForKey("total_taxable_income") as? Number)?.toDouble() ?: 0.0, actTax.totalTaxableIncome, 1.0, "$filename: totalTaxableIncome mismatch")
             assertEquals((expTax.objectForKey("standard_deduction") as? Number)?.toDouble() ?: 0.0, actTax.standardDeduction, 1.0, "$filename: standardDeduction mismatch")
             assertEquals((expTax.objectForKey("net_taxable_income") as? Number)?.toDouble() ?: 0.0, actTax.netTaxableIncome, 1.0, "$filename: netTaxableIncome mismatch")
-            assertEquals((expTax.objectForKey("total_tax_payable") as? Number)?.toDouble() ?: 0.0, actTax.totalTaxPayable, 1.0, "$filename: totalTaxPayable mismatch")
+            assertEquals((expTax.objectForKey("total_tax_payable") as? Number)?.toDouble() ?: 0.0, actTax.totalTaxPayable ?: 0.0, 1.0, "$filename: totalTaxPayable mismatch")
             assertEquals((expTax.objectForKey("tax_deducted_ytd") as? Number)?.toDouble() ?: 0.0, actTax.taxDeductedYtd, 1.0, "$filename: taxDeductedYtd mismatch")
             assertEquals((expTax.objectForKey("cess_deducted_ytd") as? Number)?.toDouble() ?: 0.0, actTax.cessDeductedYtd, 1.0, "$filename: cessDeductedYtd mismatch")
 
