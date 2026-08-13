@@ -9,6 +9,7 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.ProductDetailsResponseListener
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
@@ -154,13 +155,16 @@ class AndroidBillingManager(
                         .build(),
                 )
             val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
-            billingClient.queryProductDetailsAsync(params) { billingResult, productDetailsList ->
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    continuation.resume(productDetailsList.firstOrNull())
-                } else {
-                    continuation.resume(null)
-                }
-            }
+            billingClient.queryProductDetailsAsync(
+                params,
+                ProductDetailsResponseListener { billingResult, queryProductDetailsResult ->
+                    if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                        continuation.resume(queryProductDetailsResult.productDetailsList.firstOrNull())
+                    } else {
+                        continuation.resume(null)
+                    }
+                },
+            )
         }
 
     private fun acknowledgeIfNeeded(purchase: Purchase) {

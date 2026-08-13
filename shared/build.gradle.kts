@@ -1,3 +1,4 @@
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -34,6 +35,14 @@ kotlin {
         }
     }
 
+    sourceSets.all {
+        if (name.startsWith("ios")) {
+            languageSettings {
+                optIn("kotlinx.cinterop.ExperimentalForeignApi")
+            }
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
@@ -44,6 +53,13 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+            // Amazon Appstore support pulls in amazon-appstore-sdk, which ships an
+            // AndroidManifest-registered BroadcastReceiver with pre-verifier bytecode that
+            // crashes Robolectric's Application bootstrap (java.lang.VerifyError) on every
+            // composeApp unit test. This app ships on Play Store + App Store only.
+            implementation(project.dependencies.create(libs.revenuecat.purchases.kmp.core.get()) as ExternalModuleDependency) {
+                exclude(group = "com.revenuecat.purchases", module = "purchases-store-amazon")
+            }
         }
 
         commonTest.dependencies {

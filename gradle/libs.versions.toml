@@ -21,6 +21,7 @@ firebase-bom = "33.7.0"
 litertlm-android = "0.13.1"
 play-asset-delivery = "2.2.2"
 play-billing = "7.1.1"
+purchases-kmp = "2.10.2+17.55.1"
 
 [libraries]
 litertlm-android = { module = "com.google.ai.edge.litertlm:litertlm-android", version.ref = "litertlm-android" }
@@ -60,6 +61,9 @@ play-asset-delivery-ktx = { module = "com.google.android.play:asset-delivery-ktx
 
 # Google Play Billing
 play-billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "play-billing" }
+
+# RevenueCat KMP — cross-platform billing (replaces hand-rolled Play Billing/StoreKit, Phase 3)
+revenuecat-purchases-kmp-core = { module = "com.revenuecat.purchases:purchases-kmp-core", version.ref = "purchases-kmp" }
 
 # Compose Material Icons — standalone artifact (see compose-material-icons version note)
 compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-material-icons" }
