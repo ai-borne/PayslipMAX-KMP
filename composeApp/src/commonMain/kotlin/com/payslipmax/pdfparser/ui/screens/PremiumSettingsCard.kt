@@ -81,7 +81,7 @@ private fun PremiumCardContent(isPremiumEnabled: Boolean) {
             modifier = Modifier.weight(1f).padding(end = AppDimensions.SpacingSmall),
         ) {
             Text(
-                text = AppStrings.proTeaserCrownIcon,
+                text = AppStrings.premiumTeaserCrownIcon,
                 fontSize = AppDimensions.TextSizeHuge,
                 modifier = Modifier.padding(end = AppDimensions.SpacingMedium),
             )
@@ -101,7 +101,7 @@ private fun PremiumCardContent(isPremiumEnabled: Boolean) {
 private fun PremiumTextDetails(isPremiumEnabled: Boolean) {
     Column {
         Text(
-            text = if (isPremiumEnabled) AppStrings.settingsProPlanActive else AppStrings.settingsProPlanUpgradeTitle,
+            text = if (isPremiumEnabled) AppStrings.settingsPremiumPlanActive else AppStrings.settingsPremiumPlanUpgradeTitle,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = if (isPremiumEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
@@ -110,9 +110,9 @@ private fun PremiumTextDetails(isPremiumEnabled: Boolean) {
         Text(
             text =
                 if (isPremiumEnabled) {
-                    AppStrings.settingsProPlanSubscribedNote
+                    AppStrings.settingsPremiumPlanSubscribedNote
                 } else {
-                    AppStrings.settingsProPlanUpgradeSubtitle
+                    AppStrings.settingsPremiumPlanUpgradeSubtitle
                 },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

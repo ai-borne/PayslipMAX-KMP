@@ -6,21 +6,21 @@ import kotlin.test.assertEquals
 
 class BackupRestoreSettingsCardTest {
     @Test
-    fun subtitleForFreeUserIndicatesRestoreFreeAndBackupIsPro() {
+    fun subtitleForFreeUserIndicatesRestoreFreeAndBackupIsPremium() {
         val canBackup = false
-        val subtitleText = if (canBackup) AppStrings.settingsStatusConfigured else AppStrings.settingsStatusBackupPro
-        assertEquals(AppStrings.settingsStatusBackupPro, subtitleText)
+        val subtitleText = if (canBackup) AppStrings.settingsStatusConfigured else AppStrings.settingsStatusBackupPremium
+        assertEquals(AppStrings.settingsStatusBackupPremium, subtitleText)
     }
 
     @Test
-    fun subtitleForProUserIndicatesConfigured() {
+    fun subtitleForPremiumUserIndicatesConfigured() {
         val canBackup = true
-        val subtitleText = if (canBackup) AppStrings.settingsStatusConfigured else AppStrings.settingsStatusBackupPro
+        val subtitleText = if (canBackup) AppStrings.settingsStatusConfigured else AppStrings.settingsStatusBackupPremium
         assertEquals(AppStrings.settingsStatusConfigured, subtitleText)
     }
 
     @Test
-    fun proBadgeTagIsNonBlank() {
-        assertEquals("PRO", AppStrings.proBadgeTag)
+    fun premiumBadgeTagIsNonBlank() {
+        assertEquals("PREMIUM", AppStrings.premiumBadgeTag)
     }
 }

@@ -70,7 +70,7 @@ object InsightsStrings {
     const val premiumActivatedSuffix = " (Activated)"
 
     // Advanced anomaly checks (ANOMALY_DETECTION gate, D6) — category labels + locked teaser copy.
-    // Free tier keeps SALARY_LOSS/DEDUCTION_SPIKE via the health score; these labels name the PRO checks.
+    // Free tier keeps SALARY_LOSS/DEDUCTION_SPIKE via the health score; these labels name the Premium checks.
     const val anomalyLabelSalaryLoss = "Salary Loss"
     const val anomalyLabelDeductionSpike = "Deduction Spike"
     const val anomalyLabelMissingAllowance = "Missing Allowance"
@@ -142,9 +142,9 @@ object InsightsStrings {
     const val premiumReportToolsExpandDesc = "Expand premium tools"
     const val premiumReportToolsCollapseDesc = "Collapse premium tools"
 
-    // Locked PRO hub (consolidates the Recommended Actions / Advanced Anomalies / Premium Report
+    // Locked Premium hub (consolidates the Recommended Actions / Advanced Anomalies / Premium Report
     // teasers into one card for free users — see docs/plans "Insights tab" consolidation)
-    const val premiumHubTitle = "Unlock PayslipMax PRO"
+    const val premiumHubTitle = "Unlock PayslipMax Premium"
     const val premiumHubCta = "Unlock Everything"
     const val premiumHubBundleIntro = "One subscription unlocks:"
     const val premiumHubMostRelevantPrefix = "★ Most relevant for you: "

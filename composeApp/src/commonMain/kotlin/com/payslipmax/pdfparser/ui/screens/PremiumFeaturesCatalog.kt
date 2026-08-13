@@ -6,132 +6,132 @@ import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
 /**
- * Whether a catalogued PRO feature is shippable today ([AVAILABLE]) or a roadmap placeholder
+ * Whether a catalogued Premium feature is shippable today ([AVAILABLE]) or a roadmap placeholder
  * ([COMING_SOON]). Coming-soon rows are visible but never navigate and never open the upgrade sheet.
  * (No gate is coming-soon at present — `CLAIM_GENERATOR` went [AVAILABLE] in Phase 4d.)
  */
-enum class ProFeatureAvailability { AVAILABLE, COMING_SOON }
+enum class PremiumFeatureAvailability { AVAILABLE, COMING_SOON }
 
 /**
- * Display metadata for one [FeatureGate] row in the PRO Features catalog.
+ * Display metadata for one [FeatureGate] row in the Premium Features catalog.
  *
  * [target] is the detail [Screen] an unlocked, available feature opens, or `null` when the feature
  * lives inside an existing tab (Insights/Settings) rather than a standalone screen — such rows show
  * an "Included" status when unlocked instead of an Open button.
  */
-data class ProFeatureMeta(
+data class PremiumFeatureMeta(
     val gate: FeatureGate,
     val icon: String,
     val title: String,
     val description: String,
     val target: Screen?,
-    val availability: ProFeatureAvailability,
+    val availability: PremiumFeatureAvailability,
 )
 
 /**
- * Pure, exhaustive [FeatureGate] → [ProFeatureMeta] mapping — the SSOT the catalog screen renders.
+ * Pure, exhaustive [FeatureGate] → [PremiumFeatureMeta] mapping — the SSOT the catalog screen renders.
  * The `when` is exhaustive, so a newly added [FeatureGate] fails to compile until it is catalogued
  * here (stronger than the runtime `values()` loop the test also asserts). No prices appear anywhere
  * (D8); all copy is sourced from [AppStringsPremium]/[InsightsStrings].
  */
-fun featureMeta(gate: FeatureGate): ProFeatureMeta =
+fun featureMeta(gate: FeatureGate): PremiumFeatureMeta =
     when (gate) {
         FeatureGate.PREMIUM_INTELLIGENCE ->
-            ProFeatureMeta(
+            PremiumFeatureMeta(
                 gate = gate,
-                icon = AppStringsPremium.proCatalogPremiumIntelligenceIcon,
-                title = AppStringsPremium.proCatalogPremiumIntelligenceTitle,
-                description = AppStringsPremium.proCatalogPremiumIntelligenceDesc,
+                icon = AppStringsPremium.premiumCatalogPremiumIntelligenceIcon,
+                title = AppStringsPremium.premiumCatalogPremiumIntelligenceTitle,
+                description = AppStringsPremium.premiumCatalogPremiumIntelligenceDesc,
                 target = null,
-                availability = ProFeatureAvailability.AVAILABLE,
+                availability = PremiumFeatureAvailability.AVAILABLE,
             )
         FeatureGate.WEALTH_OPTIMIZATION ->
-            ProFeatureMeta(
+            PremiumFeatureMeta(
                 gate = gate,
-                icon = AppStringsPremium.proCatalogWealthIcon,
-                title = AppStringsPremium.proCatalogWealthTitle,
-                description = AppStringsPremium.proCatalogWealthDesc,
+                icon = AppStringsPremium.premiumCatalogWealthIcon,
+                title = AppStringsPremium.premiumCatalogWealthTitle,
+                description = AppStringsPremium.premiumCatalogWealthDesc,
                 target = null,
-                availability = ProFeatureAvailability.AVAILABLE,
+                availability = PremiumFeatureAvailability.AVAILABLE,
             )
         FeatureGate.TAX_PLANNER ->
-            ProFeatureMeta(
+            PremiumFeatureMeta(
                 gate = gate,
                 icon = InsightsStrings.premiumToolsTaxPlannerIcon,
                 title = AppStringsPremium.premiumToolsTaxPlanner,
                 description = InsightsStrings.premiumToolsTaxPlannerValueProp,
                 target = Screen.TaxPlanning,
-                availability = ProFeatureAvailability.AVAILABLE,
+                availability = PremiumFeatureAvailability.AVAILABLE,
             )
         FeatureGate.DSOP_SIMULATOR ->
-            ProFeatureMeta(
+            PremiumFeatureMeta(
                 gate = gate,
                 icon = InsightsStrings.premiumToolsDsopIcon,
                 title = AppStringsPremium.premiumToolsDsopSimulator,
                 description = InsightsStrings.premiumToolsDsopValueProp,
                 target = Screen.RetirementPlanning,
-                availability = ProFeatureAvailability.AVAILABLE,
+                availability = PremiumFeatureAvailability.AVAILABLE,
             )
         FeatureGate.ANOMALY_DETECTION ->
-            ProFeatureMeta(
+            PremiumFeatureMeta(
                 gate = gate,
-                icon = AppStringsPremium.proCatalogAnomalyIcon,
-                title = AppStringsPremium.proCatalogAnomalyTitle,
-                description = AppStringsPremium.proCatalogAnomalyDesc,
+                icon = AppStringsPremium.premiumCatalogAnomalyIcon,
+                title = AppStringsPremium.premiumCatalogAnomalyTitle,
+                description = AppStringsPremium.premiumCatalogAnomalyDesc,
                 target = null,
-                availability = ProFeatureAvailability.AVAILABLE,
+                availability = PremiumFeatureAvailability.AVAILABLE,
             )
         FeatureGate.CLAIM_GENERATOR ->
-            ProFeatureMeta(
+            PremiumFeatureMeta(
                 gate = gate,
                 icon = InsightsStrings.premiumToolsDraftClaimsIcon,
-                title = AppStringsPremium.proCatalogClaimTitle,
-                description = AppStringsPremium.proCatalogClaimDesc,
+                title = AppStringsPremium.premiumCatalogClaimTitle,
+                description = AppStringsPremium.premiumCatalogClaimDesc,
                 target = Screen.Representation,
-                availability = ProFeatureAvailability.AVAILABLE,
+                availability = PremiumFeatureAvailability.AVAILABLE,
             )
         FeatureGate.RETIREMENT_CALCULATORS ->
-            ProFeatureMeta(
+            PremiumFeatureMeta(
                 gate = gate,
-                icon = AppStringsPremium.proCatalogRetCalcIcon,
-                title = AppStringsPremium.proCatalogRetCalcTitle,
-                description = AppStringsPremium.proCatalogRetCalcDesc,
+                icon = AppStringsPremium.premiumCatalogRetCalcIcon,
+                title = AppStringsPremium.premiumCatalogRetCalcTitle,
+                description = AppStringsPremium.premiumCatalogRetCalcDesc,
                 target = Screen.RetirementCalculators,
-                availability = ProFeatureAvailability.AVAILABLE,
+                availability = PremiumFeatureAvailability.AVAILABLE,
             )
         FeatureGate.BACKUP_RESTORE ->
-            ProFeatureMeta(
+            PremiumFeatureMeta(
                 gate = gate,
-                icon = AppStringsPremium.proCatalogBackupIcon,
-                title = AppStringsPremium.proCatalogBackupTitle,
-                description = AppStringsPremium.proCatalogBackupDesc,
+                icon = AppStringsPremium.premiumCatalogBackupIcon,
+                title = AppStringsPremium.premiumCatalogBackupTitle,
+                description = AppStringsPremium.premiumCatalogBackupDesc,
                 target = null,
-                availability = ProFeatureAvailability.AVAILABLE,
+                availability = PremiumFeatureAvailability.AVAILABLE,
             )
     }
 
 /** The full catalog in [FeatureGate] declaration order — one row per gate, none forgotten. */
-fun proFeatureCatalog(): List<ProFeatureMeta> = FeatureGate.values().map(::featureMeta)
+fun premiumFeatureCatalog(): List<PremiumFeatureMeta> = FeatureGate.values().map(::featureMeta)
 
 /**
- * Reverse lookup of [proFeatureCatalog]: the [FeatureGate] protecting a dedicated screen, or `null` if
+ * Reverse lookup of [premiumFeatureCatalog]: the [FeatureGate] protecting a dedicated screen, or `null` if
  * the screen isn't a catalog navigation target (free, or reached only from an in-tab card). The single
  * source every Screen-emitting UI model (Smart Insights, Recommended Actions) resolves its `gate`
  * against, so a producer can never hardcode a gate that drifts from what the catalog actually protects.
  */
-fun gateForScreen(screen: Screen): FeatureGate? = proFeatureCatalog().firstOrNull { it.target == screen }?.gate
+fun gateForScreen(screen: Screen): FeatureGate? = premiumFeatureCatalog().firstOrNull { it.target == screen }?.gate
 
 /**
  * The catalog subset with a standalone screen — the Insights tab's quick-access cards. Derived
- * (not hand-maintained) so a gate that ships a [ProFeatureMeta.target] can never be forgotten there.
+ * (not hand-maintained) so a gate that ships a [PremiumFeatureMeta.target] can never be forgotten there.
  */
-fun quickAccessTools(): List<ProFeatureMeta> =
-    proFeatureCatalog().filter { it.target != null && it.availability == ProFeatureAvailability.AVAILABLE }
+fun quickAccessTools(): List<PremiumFeatureMeta> =
+    premiumFeatureCatalog().filter { it.target != null && it.availability == PremiumFeatureAvailability.AVAILABLE }
 
 /**
- * The bundle bullets shown on the locked PRO hub card — every shippable feature, coming-soon rows
+ * The bundle bullets shown on the locked Premium hub card — every shippable feature, coming-soon rows
  * excluded so the hub never promises something not yet live. Derived (not hand-maintained) so a new
  * [FeatureGate] automatically appears here once catalogued, with no separate list to fall out of sync.
  */
-fun premiumBundleHighlights(): List<ProFeatureMeta> =
-    proFeatureCatalog().filter { it.availability == ProFeatureAvailability.AVAILABLE }
+fun premiumBundleHighlights(): List<PremiumFeatureMeta> =
+    premiumFeatureCatalog().filter { it.availability == PremiumFeatureAvailability.AVAILABLE }

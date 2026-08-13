@@ -44,9 +44,9 @@ fun PremiumSection(
     SettingsCategoryCard {
         SettingsRow(
             icon = "✨",
-            title = AppStringsPremium.proCatalogTitle,
-            subtitle = AppStringsPremium.proCatalogSettingsEntrySubtitle,
-            onClick = { onNavigateTo(Screen.ProFeatures) },
+            title = AppStringsPremium.premiumCatalogTitle,
+            subtitle = AppStringsPremium.premiumCatalogSettingsEntrySubtitle,
+            onClick = { onNavigateTo(Screen.PremiumFeatures) },
         )
     }
 }

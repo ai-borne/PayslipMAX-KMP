@@ -50,7 +50,7 @@ fun PremiumToolsSection(
  */
 @Composable
 private fun PremiumToolCard(
-    spec: ProFeatureMeta,
+    spec: PremiumFeatureMeta,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

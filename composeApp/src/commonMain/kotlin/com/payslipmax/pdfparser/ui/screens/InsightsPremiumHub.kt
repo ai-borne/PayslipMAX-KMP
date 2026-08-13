@@ -19,7 +19,7 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
 /**
- * The free-tier "mother" PRO card (Insights PRO consolidation, Phase 1): replaces the three scattered
+ * The free-tier "mother" Premium card (Insights Premium consolidation, Phase 1): replaces the three scattered
  * teasers — [RecommendedActions], [AdvancedAnomaliesCard]'s locked branch, [PremiumReportCard]'s
  * teaser — with one hub. Each teaser's signal survives as a section here: the catalog bundle
  * ([premiumBundleHighlights]), the locked anomaly count/labels ([partitionAdvancedAnomalies], never
@@ -50,8 +50,8 @@ fun LockedPremiumHubCard(
 }
 
 /**
- * Wires the consolidated PRO surface into the Insights body (Phase 2): a locked free-tier user sees
- * only [LockedPremiumHubCard]; a PRO user sees the shell dissolve into first-class cards — unlocked
+ * Wires the consolidated Premium surface into the Insights body (Phase 2): a locked free-tier user sees
+ * only [LockedPremiumHubCard]; a Premium user sees the shell dissolve into first-class cards — unlocked
  * [AdvancedAnomaliesCard] findings (self-hides when none) + [PremiumReportCard] with its AI section and
  * tools drawer defaulted open (drawer is home). Called directly from `InsightsScreen`'s `LazyColumn`,
  * replacing what used to be three separately-gated cards (a standalone `RecommendedActions` card, an
@@ -89,7 +89,7 @@ private fun PremiumHubHeader() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "${AppStrings.proTeaserCrownIcon} ${InsightsStrings.premiumHubTitle}",
+            text = "${AppStrings.premiumTeaserCrownIcon} ${InsightsStrings.premiumHubTitle}",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,

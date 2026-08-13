@@ -187,11 +187,11 @@ class AppBackNavigationTest {
         composeRule.onNodeWithText(AppStrings.navigationHome).assertIsDisplayed()
     }
 
-    // --- Phase 2: chained detail push (Settings -> ProFeatures -> TaxPlanning) must unwind one
+    // --- Phase 2: chained detail push (Settings -> PremiumFeatures -> TaxPlanning) must unwind one
     // level per back-press, not skip straight to the tab root (the reported regression) ---
 
     @Test
-    fun backFromChainedProFeaturesDetailReturnsToProFeaturesNotSettings() {
+    fun backFromChainedPremiumFeaturesDetailReturnsToPremiumFeaturesNotSettings() {
         // Drive the real premium flag rather than relying on the debug-only FORCE_PRO override
         // (which the release unit test variant never applies), so Tax Planner is OPENABLE here
         // regardless of build type.
@@ -206,17 +206,17 @@ class AppBackNavigationTest {
 
         composeRule.onAllNodesWithText(AppStrings.navigationSettings).onFirst().performClick()
         composeRule.waitForIdle()
-        composeRule.onNodeWithText(AppStringsPremium.proCatalogTitle).performScrollTo().performClick()
+        composeRule.onNodeWithText(AppStringsPremium.premiumCatalogTitle).performScrollTo().performClick()
         composeRule.waitForIdle()
         composeRule.onNodeWithText(AppStringsPremium.premiumToolsTaxPlanner).performScrollTo().performClick()
         composeRule.waitForIdle()
 
-        // On Tax Optimization Planner; back once must land on ProFeatures, not Settings.
+        // On Tax Optimization Planner; back once must land on PremiumFeatures, not Settings.
         composeRule.onNodeWithText(AppStringsPremium.taxPlanningTitle).assertIsDisplayed()
         pressBack()
         composeRule.waitForIdle()
         assertFalse(composeRule.activity.isFinishing)
-        composeRule.onNodeWithText(AppStringsPremium.proCatalogSubtitle).assertIsDisplayed()
+        composeRule.onNodeWithText(AppStringsPremium.premiumCatalogSubtitle).assertIsDisplayed()
         composeRule.onNodeWithText(AppStrings.navigationHome).assertDoesNotExist()
 
         // Second back returns to the Settings tab root.

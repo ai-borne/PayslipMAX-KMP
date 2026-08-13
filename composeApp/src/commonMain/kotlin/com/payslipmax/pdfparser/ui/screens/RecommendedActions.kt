@@ -56,7 +56,7 @@ private fun candidateRecommendedActions(state: InsightsState): List<RecommendedA
             add(
                 RecommendedActionUiModel(
                     gate = FeatureGate.RETIREMENT_CALCULATORS,
-                    icon = AppStringsPremium.proCatalogRetCalcIcon,
+                    icon = AppStringsPremium.premiumCatalogRetCalcIcon,
                     title = InsightsStrings.recommendedActionRetirementCalcTitle,
                     description = InsightsStrings.recommendedActionRetirementCalcDesc,
                     actionLabel = InsightsStrings.premiumToolsOpenLabel,

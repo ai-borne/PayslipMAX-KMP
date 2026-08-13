@@ -11,7 +11,7 @@ import com.payslipmax.pdfparser.Screen
  *
  * A current tab root ([currentTab], one of the four [Screen] bottom-tab destinations) owns an
  * unbounded stack of pushed detail screens ([detailStack], top = [activeDetail]). A single detail
- * can itself open a further detail — e.g. [Screen.ProFeatures] chaining into
+ * can itself open a further detail — e.g. [Screen.PremiumFeatures] chaining into
  * [Screen.TaxPlanning] — so a flat single-slot model is not sufficient: it would silently drop
  * intermediate screens on back-navigation. Because switching tabs resets the whole pushed stack
  * (decision 3 in the back-navigation plan), there is no need to remember per-tab depth.

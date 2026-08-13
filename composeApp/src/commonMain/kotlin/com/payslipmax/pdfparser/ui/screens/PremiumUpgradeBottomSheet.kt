@@ -61,15 +61,15 @@ private fun UpgradeHeaderSection() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
     ) {
-        Text(AppStrings.proTeaserCrownIcon, fontSize = AppDimensions.FontSizeEmojiMedium)
+        Text(AppStrings.premiumTeaserCrownIcon, fontSize = AppDimensions.FontSizeEmojiMedium)
         Text(
-            text = AppStrings.settingsProPlanTitle,
+            text = AppStrings.settingsPremiumPlanTitle,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
         )
         Text(
-            text = AppStrings.settingsProPlanDesc,
+            text = AppStrings.settingsPremiumPlanDesc,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -85,22 +85,22 @@ private fun UpgradeBenefitsSection() {
         horizontalAlignment = Alignment.Start,
     ) {
         Text(
-            text = AppStrings.settingsProPlanBullet1,
+            text = AppStrings.settingsPremiumPlanBullet1,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
         )
         Text(
-            text = AppStrings.settingsProPlanBullet2,
+            text = AppStrings.settingsPremiumPlanBullet2,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
         )
         Text(
-            text = AppStrings.settingsProPlanBullet3,
+            text = AppStrings.settingsPremiumPlanBullet3,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
         )
         Text(
-            text = AppStrings.settingsProPlanBullet4,
+            text = AppStrings.settingsPremiumPlanBullet4,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
         )
@@ -114,13 +114,13 @@ private fun UpgradePricingSection() {
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTwo),
     ) {
         Text(
-            text = AppStrings.settingsProPlanPrice,
+            text = AppStrings.settingsPremiumPlanPrice,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Black,
             color = MaterialTheme.colorScheme.onSurface,
         )
         Text(
-            text = AppStrings.settingsProPlanBillingNote,
+            text = AppStrings.settingsPremiumPlanBillingNote,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -140,7 +140,7 @@ private fun UpgradeActionsSection(
             onClick = onUnlockClick,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(AppStrings.settingsProUpgradeBtn)
+            Text(AppStrings.settingsPremiumUpgradeBtn)
         }
         TextButton(
             onClick = onCloseClick,

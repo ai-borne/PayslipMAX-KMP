@@ -27,19 +27,19 @@ class AppNavStateSaverTest {
 
     @Test
     fun saverRoundTripsChainedDetailStack() {
-        // Two-level chain (Settings -> ProFeatures -> TaxPlanning): a process-death restore must
-        // bring back the whole stack, not just the top, so a subsequent pop lands on ProFeatures.
+        // Two-level chain (Settings -> PremiumFeatures -> TaxPlanning): a process-death restore must
+        // bring back the whole stack, not just the top, so a subsequent pop lands on PremiumFeatures.
         val state =
             AppNavState(
                 currentTab = Screen.Settings,
-                initialDetailStack = listOf(Screen.ProFeatures, Screen.TaxPlanning),
+                initialDetailStack = listOf(Screen.PremiumFeatures, Screen.TaxPlanning),
             )
         val saved = with(AppNavStateSaver) { SaverScope { true }.save(state) }
         val restored = AppNavStateSaver.restore(saved!!)!!
         assertEquals(Screen.Settings, restored.currentTab)
         assertEquals(Screen.TaxPlanning, restored.activeDetail)
         assertTrue(restored.pop())
-        assertEquals(Screen.ProFeatures, restored.activeDetail)
+        assertEquals(Screen.PremiumFeatures, restored.activeDetail)
     }
 
     @Test
@@ -49,10 +49,10 @@ class AppNavStateSaverTest {
         // ones — that would reconstruct an ordering the user never actually created.
         val restored =
             AppNavStateSaver.restore(
-                listOf(Screen.Settings.name, Screen.ProFeatures.name, "DeletedScreen", Screen.TaxPlanning.name),
+                listOf(Screen.Settings.name, Screen.PremiumFeatures.name, "DeletedScreen", Screen.TaxPlanning.name),
             )!!
         assertEquals(Screen.Settings, restored.currentTab)
-        assertEquals(Screen.ProFeatures, restored.activeDetail)
+        assertEquals(Screen.PremiumFeatures, restored.activeDetail)
         assertTrue(restored.pop())
         assertTrue(restored.canExitApp)
     }

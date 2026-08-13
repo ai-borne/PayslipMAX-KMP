@@ -8,6 +8,6 @@ class RepresentationStringsTest {
     @Test
     fun representationTitleMatchesClaimGeneratorSSOT() {
         assertEquals("Claim Generator", AppStringsPremium.representationTitle)
-        assertEquals(AppStringsPremium.proCatalogClaimTitle, AppStringsPremium.representationTitle)
+        assertEquals(AppStringsPremium.premiumCatalogClaimTitle, AppStringsPremium.representationTitle)
     }
 }

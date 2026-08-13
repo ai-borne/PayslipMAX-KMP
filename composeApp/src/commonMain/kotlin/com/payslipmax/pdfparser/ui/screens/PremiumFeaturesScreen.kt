@@ -44,30 +44,30 @@ internal enum class RowMode { OPENABLE, INCLUDED, LOCKED, COMING_SOON }
  * Kept `internal` (not `private`) so the D4 invariant is regression-tested, not just verified by eye.
  */
 internal fun rowMode(
-    meta: ProFeatureMeta,
+    meta: PremiumFeatureMeta,
     hasAccess: Boolean,
 ): RowMode =
     when {
-        meta.availability == ProFeatureAvailability.COMING_SOON -> RowMode.COMING_SOON
+        meta.availability == PremiumFeatureAvailability.COMING_SOON -> RowMode.COMING_SOON
         !hasAccess -> RowMode.LOCKED
         meta.target != null -> RowMode.OPENABLE
         else -> RowMode.INCLUDED
     }
 
 /**
- * The PRO Features catalog: one row per [com.payslipmax.pdfparser.subscription.FeatureGate], driven by
- * the pure [proFeatureCatalog] SSOT. Unlocked features with a screen open it; locked features always
+ * The Premium Features catalog: one row per [com.payslipmax.pdfparser.subscription.FeatureGate], driven by
+ * the pure [premiumFeatureCatalog] SSOT. Unlocked features with a screen open it; locked features always
  * render (teaser, D4) and open [PremiumUpgradeBottomSheet] on tap; coming-soon rows are inert.
  */
 @Composable
-fun ProFeaturesScreen(
+fun PremiumFeaturesScreen(
     viewModel: PayslipViewModel,
     onNavigateTo: (Screen) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showUpgradeSheet by remember { mutableStateOf(false) }
-    val catalog = remember { proFeatureCatalog() }
+    val catalog = remember { premiumFeatureCatalog() }
 
     Column(
         modifier =
@@ -79,8 +79,8 @@ fun ProFeaturesScreen(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         ScreenBackHeader(
-            title = AppStringsPremium.proCatalogTitle,
-            subtitle = AppStringsPremium.proCatalogSubtitle,
+            title = AppStringsPremium.premiumCatalogTitle,
+            subtitle = AppStringsPremium.premiumCatalogSubtitle,
             onBack = onBack,
         )
         Column(
@@ -88,7 +88,7 @@ fun ProFeaturesScreen(
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
             catalog.forEach { meta ->
-                ProFeatureRow(
+                PremiumFeatureRow(
                     meta = meta,
                     hasAccess = viewModel.rememberHasAccess(meta.gate),
                     onOpen = { meta.target?.let(onNavigateTo) },
@@ -107,8 +107,8 @@ fun ProFeaturesScreen(
 }
 
 @Composable
-private fun ProFeatureRow(
-    meta: ProFeatureMeta,
+private fun PremiumFeatureRow(
+    meta: PremiumFeatureMeta,
     hasAccess: Boolean,
     onOpen: () -> Unit,
     onUpgrade: () -> Unit,
@@ -133,15 +133,15 @@ private fun ProFeatureRow(
             horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             Text(meta.icon, style = MaterialTheme.typography.titleLarge)
-            ProFeatureText(meta = meta, dimmed = dimmed, modifier = Modifier.weight(1f))
-            ProFeatureTrailing(mode = mode)
+            PremiumFeatureText(meta = meta, dimmed = dimmed, modifier = Modifier.weight(1f))
+            PremiumFeatureTrailing(mode = mode)
         }
     }
 }
 
 @Composable
-private fun ProFeatureText(
-    meta: ProFeatureMeta,
+private fun PremiumFeatureText(
+    meta: PremiumFeatureMeta,
     dimmed: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -165,7 +165,7 @@ private fun ProFeatureText(
 }
 
 @Composable
-private fun ProFeatureTrailing(mode: RowMode) {
+private fun PremiumFeatureTrailing(mode: RowMode) {
     when (mode) {
         RowMode.OPENABLE ->
             Text(
@@ -175,15 +175,15 @@ private fun ProFeatureTrailing(mode: RowMode) {
             )
         RowMode.INCLUDED ->
             Text(
-                text = "✓ ${AppStringsPremium.proCatalogIncludedLabel}",
+                text = "✓ ${AppStringsPremium.premiumCatalogIncludedLabel}",
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
-        RowMode.LOCKED -> Text(AppStrings.proLockIcon, style = MaterialTheme.typography.titleMedium)
+        RowMode.LOCKED -> Text(AppStrings.premiumLockIcon, style = MaterialTheme.typography.titleMedium)
         RowMode.COMING_SOON ->
             Text(
-                text = AppStringsPremium.proCatalogComingSoonLabel,
+                text = AppStringsPremium.premiumCatalogComingSoonLabel,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

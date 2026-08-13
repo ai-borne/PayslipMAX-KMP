@@ -6,21 +6,21 @@ import kotlin.test.assertEquals
 class AppStringsPremiumSettingsTest {
     @Test
     fun upgradeTitleMatchesExpectedCopy() {
-        assertEquals("Upgrade to PayslipMax Pro", AppStrings.settingsProPlanUpgradeTitle)
+        assertEquals("Upgrade to PayslipMax Premium", AppStrings.settingsPremiumPlanUpgradeTitle)
     }
 
     @Test
     fun subscribedNoteMatchesExpectedCopy() {
-        assertEquals("Subscribed (Auto-Renewing Subscription Active)", AppStrings.settingsProPlanSubscribedNote)
+        assertEquals("Subscribed (Auto-Renewing Subscription Active)", AppStrings.settingsPremiumPlanSubscribedNote)
     }
 
     @Test
     fun upgradeSubtitleMatchesExpectedCopy() {
-        assertEquals("Unlock Advanced Insights & Cloud Backup (₹99 / Year)", AppStrings.settingsProPlanUpgradeSubtitle)
+        assertEquals("Unlock Advanced Insights & Cloud Backup (₹99 / Year)", AppStrings.settingsPremiumPlanUpgradeSubtitle)
     }
 
     @Test
     fun lockIconMatchesExpectedGlyph() {
-        assertEquals("🔒", AppStrings.proLockIcon)
+        assertEquals("🔒", AppStrings.premiumLockIcon)
     }
 }

@@ -23,7 +23,7 @@ import com.payslipmax.pdfparser.ui.theme.InsightsStrings
  * collapsed/expandable full premium-tools list (reuses [PremiumToolsSection] so all four paid entry
  * points — Tax Planner, DSOP Simulator, Claim Generator, Retirement Calculators — stay reachable).
  * Wealth-optimization figures live in [MonthlySnapshot]'s Pay Health chip, so this card no longer
- * duplicates them. Only ever reached from the PRO-dissolve path (Insights PRO consolidation, Phase 2)
+ * duplicates them. Only ever reached from the Premium-dissolve path (Insights Premium consolidation, Phase 2)
  * — the free-tier teaser now lives in [LockedPremiumHubCard].
  */
 @Composable
@@ -35,7 +35,7 @@ fun PremiumReportCard(
 ) {
     FlatBorderedCard(modifier = modifier, tint = CardTint.Accent) {
         Text(
-            text = "${AppStrings.proTeaserCrownIcon} ${InsightsStrings.premiumReportTitle}${InsightsStrings.premiumActivatedSuffix}",
+            text = "${AppStrings.premiumTeaserCrownIcon} ${InsightsStrings.premiumReportTitle}${InsightsStrings.premiumActivatedSuffix}",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,

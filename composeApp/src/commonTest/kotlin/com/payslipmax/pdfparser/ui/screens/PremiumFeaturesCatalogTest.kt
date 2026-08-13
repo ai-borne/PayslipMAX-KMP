@@ -8,14 +8,14 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
- * Guards the pure PRO Features catalog SSOT. The `FeatureGate.values()` loop is the key intent: a new
+ * Guards the pure Premium Features catalog SSOT. The `FeatureGate.values()` loop is the key intent: a new
  * gate that ships without catalog metadata (or without a deliberate coming-soon/availability decision)
  * must fail here rather than silently vanishing from the catalog screen.
  */
-class ProFeaturesCatalogTest {
+class PremiumFeaturesCatalogTest {
     @Test
     fun everyFeatureGateHasExactlyOneCatalogEntry() {
-        val catalog = proFeatureCatalog()
+        val catalog = premiumFeatureCatalog()
         assertEquals(FeatureGate.values().size, catalog.size, "catalog must cover every FeatureGate")
         assertEquals(FeatureGate.values().toList(), catalog.map { it.gate }, "catalog order follows FeatureGate order")
     }
@@ -34,7 +34,7 @@ class ProFeaturesCatalogTest {
     @Test
     fun noCatalogCopyLeaksAPrice() {
         // D8: benefit-only copy until billing lands — no ₹ / "rs" pricing in any catalog string.
-        for (meta in proFeatureCatalog()) {
+        for (meta in premiumFeatureCatalog()) {
             val copy = "${meta.title} ${meta.description}"
             assertTrue('₹' !in copy, "${meta.gate} copy must not contain a price")
         }
@@ -44,7 +44,7 @@ class ProFeaturesCatalogTest {
     fun claimGeneratorIsAvailableAndOpensRepresentation() {
         // Phase 4d: the PDF claim generator shipped, so its catalog row is live and navigable.
         val meta = featureMeta(FeatureGate.CLAIM_GENERATOR)
-        assertEquals(ProFeatureAvailability.AVAILABLE, meta.availability)
+        assertEquals(PremiumFeatureAvailability.AVAILABLE, meta.availability)
         assertEquals(Screen.Representation, meta.target)
     }
 
@@ -52,7 +52,7 @@ class ProFeaturesCatalogTest {
     fun backupRestoreIsAvailableAndCataloguedAsInTabFeature() {
         // FeatureGate.BACKUP_RESTORE is catalogued as an available feature operating in-settings (target == null)
         val meta = featureMeta(FeatureGate.BACKUP_RESTORE)
-        assertEquals(ProFeatureAvailability.AVAILABLE, meta.availability)
+        assertEquals(PremiumFeatureAvailability.AVAILABLE, meta.availability)
         assertNull(meta.target)
         assertTrue(meta.icon.isNotBlank())
         assertTrue(meta.title.isNotBlank())
@@ -70,8 +70,8 @@ class ProFeaturesCatalogTest {
 
     @Test
     fun comingSoonEntriesNeverCarryANavigationTarget() {
-        for (meta in proFeatureCatalog()) {
-            if (meta.availability == ProFeatureAvailability.COMING_SOON) {
+        for (meta in premiumFeatureCatalog()) {
+            if (meta.availability == PremiumFeatureAvailability.COMING_SOON) {
                 assertNull(meta.target, "${meta.gate} is coming-soon and must not be navigable")
             }
         }
@@ -83,8 +83,8 @@ class ProFeaturesCatalogTest {
         // list — RETIREMENT_CALCULATORS shipped a dedicated screen but was forgotten from a hardcoded list.
         val quick = quickAccessTools().map { it.gate }.toSet()
         assertEquals(
-            proFeatureCatalog()
-                .filter { it.target != null && it.availability == ProFeatureAvailability.AVAILABLE }
+            premiumFeatureCatalog()
+                .filter { it.target != null && it.availability == PremiumFeatureAvailability.AVAILABLE }
                 .map { it.gate }.toSet(),
             quick,
         )
@@ -96,11 +96,11 @@ class ProFeaturesCatalogTest {
 
     @Test
     fun premiumBundleHighlightsIncludesEveryAvailableGateAndStaysInSyncWithTheCatalog() {
-        // Regression guard: the locked PRO hub's bundle bullets must derive from the catalog, not a
+        // Regression guard: the locked Premium hub's bundle bullets must derive from the catalog, not a
         // hand-maintained list — a newly catalogued gate must appear here automatically.
         val bundle = premiumBundleHighlights()
         assertEquals(
-            proFeatureCatalog().filter { it.availability == ProFeatureAvailability.AVAILABLE }.map { it.gate },
+            premiumFeatureCatalog().filter { it.availability == PremiumFeatureAvailability.AVAILABLE }.map { it.gate },
             bundle.map { it.gate },
         )
         // Unlike quickAccessTools, gates with no dedicated screen (e.g. the ANOMALY_DETECTION and
@@ -111,7 +111,7 @@ class ProFeaturesCatalogTest {
     @Test
     fun premiumBundleHighlightsExcludesComingSoonEntries() {
         for (meta in premiumBundleHighlights()) {
-            assertEquals(ProFeatureAvailability.AVAILABLE, meta.availability)
+            assertEquals(PremiumFeatureAvailability.AVAILABLE, meta.availability)
         }
     }
 }

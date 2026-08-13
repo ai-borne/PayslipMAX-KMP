@@ -58,6 +58,6 @@ fun DeveloperOverrideSection(viewModel: PayslipViewModel) {
 private fun devOverrideLabel(option: DevOverride): String =
     when (option) {
         DevOverride.FOLLOW_FLAG -> AppStrings.settingsDevOverrideFollowFlag
-        DevOverride.FORCE_PRO -> AppStrings.settingsDevOverrideForcePro
+        DevOverride.FORCE_PRO -> AppStrings.settingsDevOverrideForcePremium
         DevOverride.FORCE_FREE -> AppStrings.settingsDevOverrideForceFree
     }

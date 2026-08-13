@@ -20,7 +20,7 @@ class AppNavStateTest {
             Screen.FAQ,
             Screen.PrivacyPolicy,
             Screen.PayslipReplica,
-            Screen.ProFeatures,
+            Screen.PremiumFeatures,
         )
 
     @Test
@@ -62,7 +62,7 @@ class AppNavStateTest {
         // clear the whole stack, not just its top.
         for (target in tabRoots) {
             val nav = AppNavState(currentTab = Screen.Dashboard)
-            nav.push(Screen.ProFeatures)
+            nav.push(Screen.PremiumFeatures)
             nav.push(Screen.RetirementPlanning)
             assertEquals(Screen.RetirementPlanning, nav.activeDetail)
 
@@ -75,15 +75,15 @@ class AppNavStateTest {
 
     @Test
     fun doublePushThenSinglePopReturnsToFirstDetail() {
-        // Reproduces the reported bug: Settings -> ProFeatures -> TaxPlanning must unwind one
+        // Reproduces the reported bug: Settings -> PremiumFeatures -> TaxPlanning must unwind one
         // level at a time, landing back on the catalog rather than skipping straight to the tab.
         val nav = AppNavState(currentTab = Screen.Settings)
-        nav.push(Screen.ProFeatures)
+        nav.push(Screen.PremiumFeatures)
         nav.push(Screen.TaxPlanning)
         assertEquals(Screen.TaxPlanning, nav.activeDetail)
 
         assertTrue(nav.pop())
-        assertEquals(Screen.ProFeatures, nav.activeDetail)
+        assertEquals(Screen.PremiumFeatures, nav.activeDetail)
         assertFalse(nav.canExitApp)
 
         assertTrue(nav.pop())

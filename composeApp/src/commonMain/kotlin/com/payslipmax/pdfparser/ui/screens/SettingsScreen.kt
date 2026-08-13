@@ -109,7 +109,7 @@ private fun PrimarySettingsGroup(
     // Profile Section
     ProfileSection(viewModel = viewModel, uiState = uiState)
 
-    // PayslipMax Pro Section
+    // PayslipMax Premium Section
     PremiumSection(viewModel = viewModel, uiState = uiState, onUpgradePrompt = onUpgradePrompt, onNavigateTo = onNavigateTo)
 
     // 2. Security & Privacy

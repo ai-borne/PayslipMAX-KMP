@@ -31,13 +31,13 @@ fun BackupRestoreSettingsCard(
 ) {
     var showSheet by remember { mutableStateOf(false) }
     // Restore is free (D3), so the sheet always opens; backup *creation* inside it is gated.
-    val subtitleText = if (canBackup) AppStrings.settingsStatusConfigured else AppStrings.settingsStatusBackupPro
+    val subtitleText = if (canBackup) AppStrings.settingsStatusConfigured else AppStrings.settingsStatusBackupPremium
 
     SettingsRow(
         icon = "💾",
         title = AppStrings.settingsRowBackupLabel,
         subtitle = subtitleText,
-        badge = AppStrings.proBadgeTag,
+        badge = AppStrings.premiumBadgeTag,
         onClick = { showSheet = true },
         modifier = modifier,
     )
