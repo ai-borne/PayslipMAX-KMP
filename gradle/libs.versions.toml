@@ -21,7 +21,7 @@ firebase-bom = "33.7.0"
 litertlm-android = "0.13.1"
 play-asset-delivery = "2.2.2"
 play-billing = "7.1.1"
-purchases-kmp = "2.10.2+17.55.1"
+purchases-kmp = "3.5.0"
 
 [libraries]
 litertlm-android = { module = "com.google.ai.edge.litertlm:litertlm-android", version.ref = "litertlm-android" }

@@ -87,9 +87,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Bridge iOS Background Assets model delivery progress/completion to KMP.
         GemmaBackgroundAssetsBridge.register()
 
-        // Bridge StoreKit 2 IAP billing flow to KMP.
-        StoreKitBillingBridge.register()
-
         return true
     }
 }
