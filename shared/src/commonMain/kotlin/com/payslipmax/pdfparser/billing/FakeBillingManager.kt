@@ -16,6 +16,7 @@ class FakeBillingManager(
     var shouldPurchaseSucceed: Boolean = true
     var shouldRestoreSucceed: Boolean = true
     var mockErrorMessage: String = "Purchase failed"
+    var fakeFormattedPrice: String? = null
 
     override suspend fun launchBillingFlow(): PurchaseResult {
         return if (shouldPurchaseSucceed) {
@@ -34,6 +35,8 @@ class FakeBillingManager(
             PurchaseResult.Error(mockErrorMessage)
         }
     }
+
+    override suspend fun getFormattedPrice(): String? = fakeFormattedPrice
 
     fun setSubscriptionState(state: SubscriptionState) {
         _subscriptionState.value = state

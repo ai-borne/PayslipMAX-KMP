@@ -113,12 +113,20 @@ object AppStrings {
     const val premiumLockIcon = "🔒"
     const val aiRegenerateIcon = "🔄"
     const val settingsPremiumPlanDesc = "Unlock personalization & CA-grade tax advice"
-    const val settingsPremiumPlanPrice = "₹99 / Year"
+
+    // Static fallback shown until PayslipViewModel.premiumPriceState resolves the live store price.
+    const val settingsPremiumPlanPrice = "₹199 / Year"
     const val settingsPremiumPlanBillingNote = "Yearly Auto-Renewing Subscription"
     const val settingsPremiumPlanActive = "Premium Plan Activated"
     const val settingsPremiumPlanUpgradeTitle = "Upgrade to PayslipMax Premium"
     const val settingsPremiumPlanSubscribedNote = "Subscribed (Auto-Renewing Subscription Active)"
-    const val settingsPremiumPlanUpgradeSubtitle = "Unlock Advanced Insights & Cloud Backup (₹99 / Year)"
+
+    // Composed with the live/fallback price at the call site, e.g. "$settingsPremiumPlanUpgradeSubtitlePrefix (₹199 / Year)".
+    const val settingsPremiumPlanUpgradeSubtitlePrefix = "Unlock Advanced Insights & Cloud Backup"
+    const val settingsRestorePurchasesTitle = "Restore Purchases"
+    const val settingsRestorePurchasesSubtitle = "Recover your Premium subscription on this device"
+    const val statusRestorePurchasesSuccess = "Purchases restored"
+    const val statusRestorePurchasesFailed = "Restore failed: "
     const val settingsDeleteAll = "Reset App & Clear Data"
     const val settingsDeleteConfirm = "Are you sure you want to wipe all local database records? This action is permanent."
     const val settingsDangerZoneDesc = "Wipe all local database statements, cached PDFs, and passcode configuration."

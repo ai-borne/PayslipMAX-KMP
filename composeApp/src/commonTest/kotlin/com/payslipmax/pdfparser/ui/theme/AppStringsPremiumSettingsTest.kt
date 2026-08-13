@@ -15,8 +15,13 @@ class AppStringsPremiumSettingsTest {
     }
 
     @Test
-    fun upgradeSubtitleMatchesExpectedCopy() {
-        assertEquals("Unlock Advanced Insights & Cloud Backup (₹99 / Year)", AppStrings.settingsPremiumPlanUpgradeSubtitle)
+    fun upgradeSubtitlePrefixMatchesExpectedCopy() {
+        assertEquals("Unlock Advanced Insights & Cloud Backup", AppStrings.settingsPremiumPlanUpgradeSubtitlePrefix)
+    }
+
+    @Test
+    fun premiumPlanPriceFallbackMatchesPricingDecision() {
+        assertEquals("₹199 / Year", AppStrings.settingsPremiumPlanPrice)
     }
 
     @Test

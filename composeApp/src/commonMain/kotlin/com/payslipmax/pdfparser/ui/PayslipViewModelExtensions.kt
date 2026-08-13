@@ -72,6 +72,16 @@ fun PayslipViewModel.launchPurchaseFlow(onResult: ((com.payslipmax.pdfparser.bil
     }
 }
 
+fun PayslipViewModel.restorePurchases(onResult: ((com.payslipmax.pdfparser.billing.PurchaseResult) -> Unit)? = null) {
+    viewModelScope.launch {
+        val result = billingManager.restorePurchases()
+        if (result is com.payslipmax.pdfparser.billing.PurchaseResult.Success) {
+            setPremiumEnabled(true)
+        }
+        onResult?.invoke(result)
+    }
+}
+
 fun PayslipViewModel.setAppTheme(theme: String) {
     viewModelScope.launch {
         val current = repository.getSettings() ?: com.payslipmax.pdfparser.database.AppSettingsEntity()

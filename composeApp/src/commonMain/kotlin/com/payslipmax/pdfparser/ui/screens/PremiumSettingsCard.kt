@@ -16,6 +16,7 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 fun PremiumSettingsCard(
     isPremiumEnabled: Boolean,
     onUpgradePrompt: () -> Unit,
+    price: String = AppStrings.settingsPremiumPlanPrice,
     modifier: Modifier = Modifier,
 ) {
     val isDark = androidx.compose.foundation.isSystemInDarkTheme()
@@ -35,7 +36,7 @@ fun PremiumSettingsCard(
         colors = CardDefaults.cardColors(containerColor = containerColor),
         border = BorderStroke(AppDimensions.BorderThin, borderColor),
     ) {
-        PremiumCardContent(isPremiumEnabled = isPremiumEnabled)
+        PremiumCardContent(isPremiumEnabled = isPremiumEnabled, price = price)
     }
 }
 
@@ -67,7 +68,10 @@ private fun getPremiumCardBorderColor(isPremiumEnabled: Boolean) =
     }
 
 @Composable
-private fun PremiumCardContent(isPremiumEnabled: Boolean) {
+private fun PremiumCardContent(
+    isPremiumEnabled: Boolean,
+    price: String,
+) {
     Row(
         modifier =
             Modifier
@@ -85,7 +89,7 @@ private fun PremiumCardContent(isPremiumEnabled: Boolean) {
                 fontSize = AppDimensions.TextSizeHuge,
                 modifier = Modifier.padding(end = AppDimensions.SpacingMedium),
             )
-            PremiumTextDetails(isPremiumEnabled = isPremiumEnabled)
+            PremiumTextDetails(isPremiumEnabled = isPremiumEnabled, price = price)
         }
         if (!isPremiumEnabled) {
             Text(
@@ -98,7 +102,10 @@ private fun PremiumCardContent(isPremiumEnabled: Boolean) {
 }
 
 @Composable
-private fun PremiumTextDetails(isPremiumEnabled: Boolean) {
+private fun PremiumTextDetails(
+    isPremiumEnabled: Boolean,
+    price: String,
+) {
     Column {
         Text(
             text = if (isPremiumEnabled) AppStrings.settingsPremiumPlanActive else AppStrings.settingsPremiumPlanUpgradeTitle,
@@ -112,7 +119,7 @@ private fun PremiumTextDetails(isPremiumEnabled: Boolean) {
                 if (isPremiumEnabled) {
                     AppStrings.settingsPremiumPlanSubscribedNote
                 } else {
-                    AppStrings.settingsPremiumPlanUpgradeSubtitle
+                    "${AppStrings.settingsPremiumPlanUpgradeSubtitlePrefix} ($price)"
                 },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

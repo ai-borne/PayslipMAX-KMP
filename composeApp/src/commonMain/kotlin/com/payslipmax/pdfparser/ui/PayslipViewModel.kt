@@ -49,12 +49,25 @@ class PayslipViewModel(
     val representationDrafts: StateFlow<List<com.payslipmax.pdfparser.database.RepresentationDraftEntity>> =
         financialIntelligenceRepository?.getAllRepresentationDrafts()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())
 
+    // SSOT for the Premium yearly price shown across the upgrade sheet, settings card, and Insights
+    // hub. Starts at the static AppStrings fallback and is replaced by the live store price once
+    // RevenueCat resolves it (never blocks first paint on a network round-trip).
+    internal val _premiumPriceState = MutableStateFlow(AppStrings.settingsPremiumPlanPrice)
+    val premiumPriceState: StateFlow<String> = _premiumPriceState.asStateFlow()
+
     init {
         verifyAppIntegrity()
         checkGemmaSupport()
         observePayslips()
         observeSettings()
         installGemmaBaseModel()
+        loadPremiumPrice()
+    }
+
+    private fun loadPremiumPrice() {
+        viewModelScope.launch {
+            billingManager.getFormattedPrice()?.let { _premiumPriceState.value = it }
+        }
     }
 
     internal fun observePayslips() {

@@ -64,7 +64,8 @@ object InsightsStrings {
     const val aiSummaryMaxLength = 200
 
     // Refactor Strings
-    const val premiumIntelligencePrice = "₹99 / Year"
+    // Static fallback shown until PayslipViewModel.premiumPriceState resolves the live store price.
+    const val premiumIntelligencePrice = "₹199 / Year"
 
     // Premium teaser defaults & activated status
     const val premiumActivatedSuffix = " (Activated)"

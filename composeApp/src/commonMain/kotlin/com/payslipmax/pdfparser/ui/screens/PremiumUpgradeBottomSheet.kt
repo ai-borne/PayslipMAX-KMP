@@ -16,6 +16,7 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 fun PremiumUpgradeBottomSheet(
     onDismissRequest: () -> Unit,
     onUnlockClick: () -> Unit,
+    price: String = AppStrings.settingsPremiumPlanPrice,
     modifier: Modifier = Modifier,
 ) {
     ModalBottomSheet(
@@ -24,6 +25,7 @@ fun PremiumUpgradeBottomSheet(
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
         UpgradeSheetContent(
+            price = price,
             onUnlockClick = {
                 onUnlockClick()
                 onDismissRequest()
@@ -35,6 +37,7 @@ fun PremiumUpgradeBottomSheet(
 
 @Composable
 private fun UpgradeSheetContent(
+    price: String,
     onUnlockClick: () -> Unit,
     onCloseClick: () -> Unit,
 ) {
@@ -50,7 +53,7 @@ private fun UpgradeSheetContent(
     ) {
         UpgradeHeaderSection()
         UpgradeBenefitsSection()
-        UpgradePricingSection()
+        UpgradePricingSection(price = price)
         UpgradeActionsSection(onUnlockClick = onUnlockClick, onCloseClick = onCloseClick)
     }
 }
@@ -108,13 +111,13 @@ private fun UpgradeBenefitsSection() {
 }
 
 @Composable
-private fun UpgradePricingSection() {
+private fun UpgradePricingSection(price: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTwo),
     ) {
         Text(
-            text = AppStrings.settingsPremiumPlanPrice,
+            text = price,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Black,
             color = MaterialTheme.colorScheme.onSurface,

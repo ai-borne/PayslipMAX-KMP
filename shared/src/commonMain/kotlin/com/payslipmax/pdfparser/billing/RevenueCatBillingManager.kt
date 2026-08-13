@@ -87,6 +87,8 @@ class RevenueCatBillingManager : BillingManager {
             )
         }
 
+    override suspend fun getFormattedPrice(): String? = resolveYearlyPackage()?.storeProduct?.price?.formatted
+
     private suspend fun resolveYearlyPackage(): Package? =
         suspendCoroutine { continuation ->
             Purchases.sharedInstance.getOfferings(

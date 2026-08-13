@@ -46,9 +46,11 @@ fun SettingsScreen(
     )
 
     if (showUpgradeSheet) {
+        val premiumPrice by viewModel.premiumPriceState.collectAsState()
         PremiumUpgradeBottomSheet(
             onDismissRequest = { showUpgradeSheet = false },
             onUnlockClick = { viewModel.launchPurchaseFlow() },
+            price = premiumPrice,
         )
     }
 }

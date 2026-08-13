@@ -30,6 +30,7 @@ fun LockedPremiumHubCard(
     state: InsightsState,
     smartInsights: List<InsightUiModel>,
     onUpgradeClick: () -> Unit,
+    price: String = InsightsStrings.premiumIntelligencePrice,
     modifier: Modifier = Modifier,
 ) {
     val anomalyDisplay =
@@ -39,7 +40,7 @@ fun LockedPremiumHubCard(
     val mostRelevant = remember(state, smartInsights) { buildRecommendedActions(state, smartInsights).firstOrNull() }
 
     FlatBorderedCard(modifier = modifier, tint = CardTint.Accent) {
-        PremiumHubHeader()
+        PremiumHubHeader(price = price)
         PremiumHubBundleList()
         if (anomalyDisplay.lockedCount > 0) PremiumHubAnomalyHook(anomalyDisplay)
         if (mostRelevant != null) PremiumHubMostRelevant(mostRelevant)
@@ -66,9 +67,12 @@ fun LazyListScope.insightsPremiumItems(
     onToolsExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
+    price: String = InsightsStrings.premiumIntelligencePrice,
 ) {
     if (!isPremium) {
-        item(key = "locked_premium_hub", contentType = "locked_premium_hub") { LockedPremiumHubCard(state = state, smartInsights = smartInsights, onUpgradeClick = onShowUpgradeSheet) }
+        item(key = "locked_premium_hub", contentType = "locked_premium_hub") {
+            LockedPremiumHubCard(state = state, smartInsights = smartInsights, onUpgradeClick = onShowUpgradeSheet, price = price)
+        }
         return
     }
     item(key = "advanced_anomalies", contentType = "advanced_anomalies") { AdvancedAnomaliesCard(anomalies = state.engineResult.anomalies, hasAnomalyDetection = hasAnomalyDetection) }
@@ -82,7 +86,7 @@ fun LazyListScope.insightsPremiumItems(
 }
 
 @Composable
-private fun PremiumHubHeader() {
+private fun PremiumHubHeader(price: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -95,7 +99,7 @@ private fun PremiumHubHeader() {
             color = MaterialTheme.colorScheme.primary,
         )
         Text(
-            text = InsightsStrings.premiumIntelligencePrice,
+            text = price,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.secondary,

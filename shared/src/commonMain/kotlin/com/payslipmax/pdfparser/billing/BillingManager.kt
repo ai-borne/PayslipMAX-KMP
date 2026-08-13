@@ -11,4 +11,7 @@ interface BillingManager {
     suspend fun launchBillingFlow(): PurchaseResult
 
     suspend fun restorePurchases(): PurchaseResult
+
+    /** Live, store-formatted price for the yearly package (e.g. "₹199 / year"), or null if unavailable. */
+    suspend fun getFormattedPrice(): String?
 }

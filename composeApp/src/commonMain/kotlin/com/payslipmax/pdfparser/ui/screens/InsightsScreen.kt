@@ -81,9 +81,11 @@ private fun InsightsOverlayDialogs(
     onDismissUpgrade: () -> Unit,
 ) {
     if (showUpgradeSheet) {
+        val premiumPrice by viewModel.premiumPriceState.collectAsState()
         PremiumUpgradeBottomSheet(
             onDismissRequest = onDismissUpgrade,
             onUnlockClick = { viewModel.launchPurchaseFlow() },
+            price = premiumPrice,
         )
     }
 }
@@ -131,6 +133,7 @@ private fun InsightsLazyBody(
     modifier: Modifier = Modifier,
 ) {
     val access = rememberInsightsFeatureAccess(viewModel)
+    val premiumPrice by viewModel.premiumPriceState.collectAsState()
     val smartInsights = remember(state) { buildSmartInsights(state) }
     var toolsExpanded by remember(access.hasPremiumIntelligence) { mutableStateOf(access.hasPremiumIntelligence) }
     val listState = rememberInsightsListState(uiState, viewModel)
@@ -159,6 +162,7 @@ private fun InsightsLazyBody(
             onToolsExpandClick = { toolsExpanded = !toolsExpanded },
             onShowUpgradeSheet = onShowUpgradeSheet,
             onNavigateTo = onNavigateTo,
+            price = premiumPrice,
         )
     }
 }
