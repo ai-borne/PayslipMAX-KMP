@@ -1,9 +1,9 @@
 [versions]
 agp = "8.13.2"
 mockk = "1.13.12"
-kotlin = "2.2.21"
-ksp = "2.2.21-2.0.5"
-compose-multiplatform = "1.9.3"
+kotlin = "2.3.20"
+ksp = "2.3.11"
+compose-multiplatform = "1.10.3"
 # Material Icons were unbundled from Compose Multiplatform in 1.8.0; JetBrains' documented
 # migration is to depend on the final standalone icons artifact (1.7.3), which stays ABI-stable
 # alongside newer Compose (compose-ui resolves up to compose-multiplatform's version).
