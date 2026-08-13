@@ -127,6 +127,7 @@ object AppStrings {
     const val settingsRestorePurchasesSubtitle = "Recover your Premium subscription on this device"
     const val statusRestorePurchasesSuccess = "Purchases restored"
     const val statusRestorePurchasesFailed = "Restore failed: "
+    const val statusPurchaseFailed = "Purchase failed: "
     const val settingsDeleteAll = "Reset App & Clear Data"
     const val settingsDeleteConfirm = "Are you sure you want to wipe all local database records? This action is permanent."
     const val settingsDangerZoneDesc = "Wipe all local database statements, cached PDFs, and passcode configuration."

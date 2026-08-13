@@ -84,7 +84,7 @@ private fun InsightsOverlayDialogs(
         val premiumPrice by viewModel.premiumPriceState.collectAsState()
         PremiumUpgradeBottomSheet(
             onDismissRequest = onDismissUpgrade,
-            onUnlockClick = { viewModel.launchPurchaseFlow() },
+            onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
             price = premiumPrice,
         )
     }

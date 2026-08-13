@@ -61,7 +61,7 @@ fun RepresentationScreen(
         val premiumPrice by viewModel.premiumPriceState.collectAsState()
         PremiumUpgradeBottomSheet(
             onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { viewModel.launchPurchaseFlow() },
+            onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
             price = premiumPrice,
         )
     }

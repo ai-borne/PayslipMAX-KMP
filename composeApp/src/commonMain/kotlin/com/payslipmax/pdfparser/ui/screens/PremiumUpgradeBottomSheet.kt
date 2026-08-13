@@ -5,20 +5,44 @@ package com.payslipmax.pdfparser.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import com.payslipmax.pdfparser.billing.PurchaseResult
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+
+/** What the upgrade sheet should do once a [PurchaseResult] comes back — pure, unit-testable without Compose. */
+internal sealed interface PurchaseSheetOutcome {
+    data object Dismiss : PurchaseSheetOutcome
+
+    data object StayOpen : PurchaseSheetOutcome
+
+    data class ShowError(val message: String) : PurchaseSheetOutcome
+}
+
+internal fun purchaseSheetOutcome(result: PurchaseResult): PurchaseSheetOutcome =
+    when (result) {
+        is PurchaseResult.Success -> PurchaseSheetOutcome.Dismiss
+        is PurchaseResult.UserCancelled, is PurchaseResult.Pending -> PurchaseSheetOutcome.StayOpen
+        is PurchaseResult.Error -> PurchaseSheetOutcome.ShowError("${AppStrings.statusPurchaseFailed}${result.message}")
+    }
 
 @Composable
 fun PremiumUpgradeBottomSheet(
     onDismissRequest: () -> Unit,
-    onUnlockClick: () -> Unit,
+    onUnlockClick: (onResult: (PurchaseResult) -> Unit) -> Unit,
     price: String = AppStrings.settingsPremiumPlanPrice,
     modifier: Modifier = Modifier,
 ) {
+    var isPurchasing by remember { mutableStateOf(false) }
+    var purchaseError by remember { mutableStateOf<String?>(null) }
+
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
@@ -26,9 +50,19 @@ fun PremiumUpgradeBottomSheet(
     ) {
         UpgradeSheetContent(
             price = price,
+            isPurchasing = isPurchasing,
+            purchaseError = purchaseError,
             onUnlockClick = {
-                onUnlockClick()
-                onDismissRequest()
+                isPurchasing = true
+                purchaseError = null
+                onUnlockClick { result ->
+                    isPurchasing = false
+                    when (val outcome = purchaseSheetOutcome(result)) {
+                        is PurchaseSheetOutcome.Dismiss -> onDismissRequest()
+                        is PurchaseSheetOutcome.StayOpen -> Unit
+                        is PurchaseSheetOutcome.ShowError -> purchaseError = outcome.message
+                    }
+                }
             },
             onCloseClick = onDismissRequest,
         )
@@ -38,6 +72,8 @@ fun PremiumUpgradeBottomSheet(
 @Composable
 private fun UpgradeSheetContent(
     price: String,
+    isPurchasing: Boolean,
+    purchaseError: String?,
     onUnlockClick: () -> Unit,
     onCloseClick: () -> Unit,
 ) {
@@ -54,7 +90,12 @@ private fun UpgradeSheetContent(
         UpgradeHeaderSection()
         UpgradeBenefitsSection()
         UpgradePricingSection(price = price)
-        UpgradeActionsSection(onUnlockClick = onUnlockClick, onCloseClick = onCloseClick)
+        UpgradeActionsSection(
+            isPurchasing = isPurchasing,
+            onUnlockClick = onUnlockClick,
+            onCloseClick = onCloseClick,
+        )
+        purchaseError?.let { StatusMessage(status = BackupStatus(it, isSuccess = false)) }
     }
 }
 
@@ -132,6 +173,7 @@ private fun UpgradePricingSection(price: String) {
 
 @Composable
 private fun UpgradeActionsSection(
+    isPurchasing: Boolean,
     onUnlockClick: () -> Unit,
     onCloseClick: () -> Unit,
 ) {
@@ -141,12 +183,21 @@ private fun UpgradeActionsSection(
     ) {
         Button(
             onClick = onUnlockClick,
+            enabled = !isPurchasing,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text(AppStrings.settingsPremiumUpgradeBtn)
+            if (isPurchasing) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(AppDimensions.IconSizeMedium),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                )
+            } else {
+                Text(AppStrings.settingsPremiumUpgradeBtn)
+            }
         }
         TextButton(
             onClick = onCloseClick,
+            enabled = !isPurchasing,
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(AppStrings.btnCancel)
