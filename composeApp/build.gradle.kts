@@ -34,6 +34,18 @@ kotlin {
             binaryOption("bundleId", "com.payslipmax.pdfparser")
             export(project(":shared"))
         }
+        iosTarget.binaries.all {
+            val isSimulator = iosTarget.name.contains("Simulator") || iosTarget.name.endsWith("X64")
+            val platform = if (isSimulator) "iphonesimulator" else "iphoneos"
+            val sdk = if (isSimulator) "iPhoneSimulator" else "iPhoneOS"
+            linkerOpts(
+                "-L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$platform",
+                "-L/Applications/Xcode.app/Contents/Developer/Platforms/$sdk.platform/Developer/SDKs/$sdk.sdk/usr/lib/swift",
+                "-lswift_Concurrency",
+                "-lswiftCore",
+                "-lswiftFoundation",
+            )
+        }
         iosTarget.compilations.all {
             compileTaskProvider.configure {
                 compilerOptions {
