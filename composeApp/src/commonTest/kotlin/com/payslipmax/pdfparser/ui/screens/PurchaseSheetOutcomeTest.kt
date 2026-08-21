@@ -13,7 +13,10 @@ import kotlin.test.assertEquals
 class PurchaseSheetOutcomeTest {
     @Test
     fun successDismissesTheSheet() {
-        assertEquals(PurchaseSheetOutcome.Dismiss, purchaseSheetOutcome(PurchaseResult.Success()))
+        assertEquals(
+            PurchaseSheetOutcome.Success(com.payslipmax.pdfparser.ui.theme.AppStrings.statusPurchaseSuccess),
+            purchaseSheetOutcome(PurchaseResult.Success()),
+        )
     }
 
     @Test

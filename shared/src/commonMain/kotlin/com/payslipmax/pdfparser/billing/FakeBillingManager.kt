@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * In-memory mock implementation of [BillingManager] for unit testing and debug sandbox simulation.
  */
 class FakeBillingManager(
-    initialState: SubscriptionState = SubscriptionState.Inactive,
+    initialState: SubscriptionState = SubscriptionState.Unknown,
 ) : BillingManager {
     private val _subscriptionState = MutableStateFlow<SubscriptionState>(initialState)
     override val subscriptionState: StateFlow<SubscriptionState> = _subscriptionState.asStateFlow()

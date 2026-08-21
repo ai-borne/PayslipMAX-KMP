@@ -7,14 +7,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
-import com.payslipmax.pdfparser.billing.PurchaseResult
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -43,7 +41,6 @@ fun PremiumSection(
     onNavigateTo: (Screen) -> Unit,
 ) {
     val premiumPrice by viewModel.premiumPriceState.collectAsState()
-    var restoreStatus by remember { mutableStateOf<BackupStatus?>(null) }
 
     PremiumSettingsCard(
         isPremiumEnabled = uiState.isPremiumEnabled,
@@ -57,23 +54,6 @@ fun PremiumSection(
             subtitle = AppStringsPremium.premiumCatalogSettingsEntrySubtitle,
             onClick = { onNavigateTo(Screen.PremiumFeatures) },
         )
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-        SettingsRow(
-            icon = "♻️",
-            title = AppStrings.settingsRestorePurchasesTitle,
-            subtitle = AppStrings.settingsRestorePurchasesSubtitle,
-            onClick = {
-                viewModel.restorePurchases { result ->
-                    restoreStatus =
-                        when (result) {
-                            is PurchaseResult.Success -> BackupStatus(AppStrings.statusRestorePurchasesSuccess, isSuccess = true)
-                            is PurchaseResult.UserCancelled, is PurchaseResult.Pending -> null
-                            is PurchaseResult.Error -> BackupStatus("${AppStrings.statusRestorePurchasesFailed}${result.message}", isSuccess = false)
-                        }
-                }
-            },
-        )
-        restoreStatus?.let { StatusMessage(status = it) }
     }
 }
 

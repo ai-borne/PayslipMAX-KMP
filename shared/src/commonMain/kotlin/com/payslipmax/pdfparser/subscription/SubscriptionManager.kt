@@ -71,7 +71,10 @@ class SubscriptionManager(
                 DevOverride.FOLLOW_FLAG -> Unit
             }
         }
-        val isBillingActive = billingManager?.subscriptionState?.value is SubscriptionState.Active
-        return isBillingActive || isPremiumEnabledProvider()
+        return when (val state = billingManager?.subscriptionState?.value) {
+            is SubscriptionState.Active -> true
+            is SubscriptionState.Inactive -> false
+            is SubscriptionState.Unknown, null -> isPremiumEnabledProvider()
+        }
     }
 }

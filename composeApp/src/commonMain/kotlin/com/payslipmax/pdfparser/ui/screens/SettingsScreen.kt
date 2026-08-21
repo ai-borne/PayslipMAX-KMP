@@ -50,6 +50,11 @@ fun SettingsScreen(
         PremiumUpgradeBottomSheet(
             onDismissRequest = { showUpgradeSheet = false },
             onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
+            onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
+            onPrivacyClick = {
+                showUpgradeSheet = false
+                onNavigateTo(Screen.PrivacyPolicy)
+            },
             price = premiumPrice,
         )
     }

@@ -1,9 +1,13 @@
 package com.payslipmax.pdfparser.ui.screens
 
+import kotlin.math.abs
+
 fun formatCurrency(amount: Double): String {
-    val longVal = amount.toLong()
-    val str = longVal.toString()
-    if (str.length <= 3) return "₹$str"
+    val isNegative = amount < 0.0
+    val absVal = abs(amount.toLong())
+    val sign = if (isNegative && absVal != 0L) "-" else ""
+    val str = absVal.toString()
+    if (str.length <= 3) return "$sign₹$str"
     val lastThree = str.substring(str.length - 3)
     val remaining = str.substring(0, str.length - 3)
     val builder = StringBuilder()
@@ -18,5 +22,5 @@ fun formatCurrency(amount: Double): String {
             i -= 1
         }
     }
-    return "₹$builder,$lastThree"
+    return "$sign₹$builder,$lastThree"
 }

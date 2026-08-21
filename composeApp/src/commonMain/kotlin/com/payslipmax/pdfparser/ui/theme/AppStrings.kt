@@ -127,7 +127,11 @@ object AppStrings {
     const val settingsRestorePurchasesSubtitle = "Recover your Premium subscription on this device"
     const val statusRestorePurchasesSuccess = "Purchases restored"
     const val statusRestorePurchasesFailed = "Restore failed: "
+    const val statusPurchaseSuccess = "Premium activated!"
     const val statusPurchaseFailed = "Purchase failed: "
+
+    const val settingsTermsOfUse = "Terms of Use"
+    const val legalSeparator = " · "
     const val settingsDeleteAll = "Reset App & Clear Data"
     const val settingsDeleteConfirm = "Are you sure you want to wipe all local database records? This action is permanent."
     const val settingsDangerZoneDesc = "Wipe all local database statements, cached PDFs, and passcode configuration."
@@ -135,14 +139,10 @@ object AppStrings {
     const val settingsDeleteConfirmBtn = "Delete Everything"
     const val btnCancel = "Cancel"
     const val btnBack = "Back"
-
-    // Passcode Setup Dialog
     const val settingsSetPasscodeTitle = "Set 4-Digit Passcode"
     const val settingsSetPasscodeLabel = "Enter 4-Digit PIN"
     const val settingsSetPasscodeConfirmBtn = "Enable Lock"
     const val settingsProfileSaveBtn = "Save Adjustments"
-
-    // Backup & Restore Card
     const val settingsBackupHeader = "Backup & Restore"
     const val settingsBackupDesc = "Backup is locally AES-256 encrypted using your password. Save the file anywhere (Drive, iCloud, email) and restore it on any phone."
     const val pdfCardTapHint = "Tap to open original statement"
@@ -152,21 +152,15 @@ object AppStrings {
     const val settingsBackupRestoreBtn = "Restore"
     const val settingsBackupPasswordRequired = "Enter a password to protect your backup."
     const val settingsStatusBackupPremium = "Restore free · Backup is PREMIUM"
-
-    // Restore-collision dialog (device already has payslips)
     const val settingsRestoreExistingTitle = "Payslips already on this device"
     const val settingsRestoreExistingMsg = "Replace them with the backup, or merge both together?"
     const val settingsRestoreReplaceBtn = "Replace all"
     const val settingsRestoreMergeBtn = "Merge"
-
-    // Backup Status Messages
     const val statusRestoreFailed = "Restore Failed: "
     const val statusRestoreComplete = "Restore Complete!"
     const val statusBackupFailed = "Backup Failed: "
     const val labelPayslipsBackedUp = "payslips backed up"
     const val statusNoPayslipsToBackup = "No payslips to back up yet."
-
-    // Main Settings Screen
     const val settingsDataManagementHeader = "Data Management"
     const val settingsSecurityEncryptionStatusLabel = "Local Encryption Status"
     const val settingsSecurityEncryptionStatusSubtitle = "100% Offline & Encrypted"
@@ -176,21 +170,15 @@ object AppStrings {
     const val settingsOfflineSecureTitle = "100% Offline & Secure"
     const val settingsOfflineSecureDesc = "All payslip decryption and parsing happens locally on your device. Your data never leaves your control."
     const val settingsAiPoweredByProxy = "AI insights powered by Gemini"
-
-    // Developer Premium override (debug builds only)
     const val settingsDevOverrideTitle = "Developer · Premium Override"
     const val settingsDevOverrideDesc = "Debug-only entitlement override. Not present in release builds."
     const val settingsDevOverrideFollowFlag = "Follow Flag"
     const val settingsDevOverrideForcePremium = "Force Premium"
     const val settingsDevOverrideForceFree = "Force Free"
-
-    // Sandbox / Testing
     const val settingsStagingTitle = "Staging & Testing Sandbox"
     const val settingsStagingDesc = "Load simulated Army Officer records (2022-2025) to evaluate the analytical tools immediately."
     const val settingsStagingSeedBtn = "Seed Staging Data"
     const val settingsStagingClearBtn = "Clear All"
-
-    // Help & Legal Docs
     const val settingsHelpDocsHeader = "Help & Legal"
     const val settingsHelpFaqTitle = "Frequently Asked Questions (FAQ)"
     const val settingsHelpPrivacyTitle = "Privacy Policy"

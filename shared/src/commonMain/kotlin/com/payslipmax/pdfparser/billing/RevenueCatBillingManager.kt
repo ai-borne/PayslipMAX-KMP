@@ -1,8 +1,12 @@
 package com.payslipmax.pdfparser.billing
 
 import com.revenuecat.purchases.kmp.Purchases
+import com.revenuecat.purchases.kmp.PurchasesDelegate
 import com.revenuecat.purchases.kmp.models.CustomerInfo
 import com.revenuecat.purchases.kmp.models.Package
+import com.revenuecat.purchases.kmp.models.PurchasesError
+import com.revenuecat.purchases.kmp.models.StoreProduct
+import com.revenuecat.purchases.kmp.models.StoreTransaction
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,14 +38,32 @@ fun mapCustomerInfoToSubscriptionState(
  * RevenueCat KMP implementation of [BillingManager]. Assumes [Purchases] has already been
  * configured with the app's API key (see the platform `provideBillingManager()` actuals).
  */
-class RevenueCatBillingManager : BillingManager {
+class RevenueCatBillingManager : BillingManager, PurchasesDelegate {
     private val _subscriptionState = MutableStateFlow<SubscriptionState>(SubscriptionState.Unknown)
     override val subscriptionState: StateFlow<SubscriptionState> = _subscriptionState.asStateFlow()
 
     init {
+        Purchases.sharedInstance.delegate = this
         Purchases.sharedInstance.getCustomerInfo(
             onError = { _subscriptionState.value = SubscriptionState.Unknown },
             onSuccess = { info -> _subscriptionState.value = mapCustomerInfoToSubscriptionState(info) },
+        )
+    }
+
+    override fun onCustomerInfoUpdated(customerInfo: CustomerInfo) {
+        _subscriptionState.value = mapCustomerInfoToSubscriptionState(customerInfo)
+    }
+
+    override fun onPurchasePromoProduct(
+        product: StoreProduct,
+        startPurchase: (
+            onError: (error: PurchasesError, userCancelled: Boolean) -> Unit,
+            onSuccess: (storeTransaction: StoreTransaction, customerInfo: CustomerInfo) -> Unit,
+        ) -> Unit,
+    ) {
+        startPurchase(
+            { _, _ -> },
+            { _, info -> _subscriptionState.value = mapCustomerInfoToSubscriptionState(info) },
         )
     }
 

@@ -62,6 +62,7 @@ fun RepresentationScreen(
         PremiumUpgradeBottomSheet(
             onDismissRequest = { showUpgradeSheet = false },
             onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
+            onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
             price = premiumPrice,
         )
     }

@@ -58,7 +58,23 @@ fun PayslipViewModel.importBackup(
 fun PayslipViewModel.setPremiumEnabled(enabled: Boolean) {
     viewModelScope.launch {
         val current = repository.getSettings() ?: com.payslipmax.pdfparser.database.AppSettingsEntity()
-        repository.saveSettings(current.copy(isPremiumEnabled = enabled))
+        if (current.isPremiumEnabled != enabled) {
+            repository.saveSettings(current.copy(isPremiumEnabled = enabled))
+        }
+    }
+}
+
+fun PayslipViewModel.observeSubscriptionLifecycle() {
+    viewModelScope.launch {
+        billingManager.subscriptionState.collect { state ->
+            when (state) {
+                is com.payslipmax.pdfparser.billing.SubscriptionState.Active -> setPremiumEnabled(true)
+                is com.payslipmax.pdfparser.billing.SubscriptionState.Inactive -> setPremiumEnabled(false)
+                is com.payslipmax.pdfparser.billing.SubscriptionState.Unknown -> {
+                    // Offline or cold startup: preserve existing Room DB cache
+                }
+            }
+        }
     }
 }
 

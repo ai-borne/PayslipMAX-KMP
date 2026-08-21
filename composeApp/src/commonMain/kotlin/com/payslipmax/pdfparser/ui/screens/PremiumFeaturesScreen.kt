@@ -31,6 +31,7 @@ import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
 import com.payslipmax.pdfparser.ui.launchPurchaseFlow
 import com.payslipmax.pdfparser.ui.rememberHasAccess
+import com.payslipmax.pdfparser.ui.restorePurchases
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
@@ -104,6 +105,7 @@ fun PremiumFeaturesScreen(
         PremiumUpgradeBottomSheet(
             onDismissRequest = { showUpgradeSheet = false },
             onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
+            onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
             price = premiumPrice,
         )
     }

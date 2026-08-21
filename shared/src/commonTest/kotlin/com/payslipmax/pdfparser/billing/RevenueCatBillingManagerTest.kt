@@ -91,6 +91,48 @@ class RevenueCatBillingManagerTest {
     }
 
     @Test
+    fun mapsToActive_duringAppleGracePeriodOrBillingRetry() {
+        val info =
+            customerInfo(
+                mapOf(
+                    REVENUECAT_ENTITLEMENT_ID to
+                        entitlementInfo(
+                            REVENUECAT_ENTITLEMENT_ID,
+                            isActive = true,
+                            willRenew = true,
+                            expirationDateMillis = 999999L,
+                        ),
+                ),
+            )
+
+        val state = mapCustomerInfoToSubscriptionState(info)
+        assertTrue(state is SubscriptionState.Active)
+        assertEquals(999999L, state.expirationTimestampMs)
+        assertTrue(state.autoRenewing)
+    }
+
+    @Test
+    fun mapsToActive_whenUserCancelledAutoRenewalButPeriodStillActive() {
+        val info =
+            customerInfo(
+                mapOf(
+                    REVENUECAT_ENTITLEMENT_ID to
+                        entitlementInfo(
+                            REVENUECAT_ENTITLEMENT_ID,
+                            isActive = true,
+                            willRenew = false,
+                            expirationDateMillis = 888888L,
+                        ),
+                ),
+            )
+
+        val state = mapCustomerInfoToSubscriptionState(info)
+        assertTrue(state is SubscriptionState.Active)
+        assertEquals(888888L, state.expirationTimestampMs)
+        kotlin.test.assertFalse(state.autoRenewing)
+    }
+
+    @Test
     fun ignoresOtherEntitlements_whenEntitlementIdDoesNotMatch() {
         val info =
             customerInfo(

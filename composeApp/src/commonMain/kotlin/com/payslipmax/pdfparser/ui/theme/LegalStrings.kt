@@ -37,4 +37,8 @@ A: We collect anonymous telemetry regarding the Gemma AI model installation stat
 3. On-Device Option: You can toggle "Use Local Gemma AI Model" to process insights 100% offline on-device without any network transmission."""
 
     const val settingsHelpDisclaimerContent = """This analytical tool is for reference purposes only. It is not an official app of the PCDA, Ministry of Defence, or the Indian Army. It does not replace professional advice from chartered accountants or official audit statements."""
+
+    const val settingsTermsOfUse = "Terms of Use"
+    const val termsOfUseUrl = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+    const val privacyPolicyUrl = "https://pcdaopune.gov.in"
 }

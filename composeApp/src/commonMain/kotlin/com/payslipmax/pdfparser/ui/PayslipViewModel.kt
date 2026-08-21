@@ -60,6 +60,7 @@ class PayslipViewModel(
         checkGemmaSupport()
         observePayslips()
         observeSettings()
+        observeSubscriptionLifecycle()
         installGemmaBaseModel()
         loadPremiumPrice()
     }
