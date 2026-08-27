@@ -8,7 +8,7 @@ private var cachedBillingManager: BillingManager? = null
 
 actual fun provideBillingManager(): BillingManager {
     val bundleId = NSBundle.mainBundle.bundleIdentifier
-    if (bundleId == null || !bundleId.startsWith("com.payslipmax")) {
+    if (bundleId == null || (!bundleId.startsWith("in.aiborne") && !bundleId.startsWith("com.payslipmax"))) {
         return FakeBillingManager()
     }
     cachedBillingManager?.let { return it }

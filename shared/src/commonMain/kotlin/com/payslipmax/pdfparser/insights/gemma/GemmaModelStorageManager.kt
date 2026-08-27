@@ -38,7 +38,12 @@ class GemmaModelStorageManager(
         if (filePath.isEmpty()) {
             return GemmaModelInfo(filePath = "", isReady = false)
         }
-        val fullPath = fullPath(filePath)
+        val fullPath =
+            if (filePath.startsWith("/") || (filePath.length > 2 && filePath[1] == ':')) {
+                filePath
+            } else {
+                fullPath(filePath)
+            }
         // LiteRT-LM replaced the MediaPipe `.task` container; gating on `.litertlm` is what keeps
         // isReady from silently staying false forever (which would loop the install trigger endlessly).
         val isReady = isDeviceSupported() && filePath.endsWith(".litertlm") && fileOps.exists(fullPath)

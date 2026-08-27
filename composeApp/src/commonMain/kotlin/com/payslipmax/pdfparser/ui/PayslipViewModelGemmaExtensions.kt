@@ -47,7 +47,13 @@ internal fun PayslipViewModel.installGemmaBaseModel() {
         }
     }
     viewModelScope.launch {
-        val alreadyReady = gemmaModelStorage.verifyModelFile(gemmaModelStorage.getRecommendedModelFileName()).isReady
+        val installedPath = com.payslipmax.pdfparser.insights.gemma.resolveInstalledGemmaModelPath()
+        val alreadyReady =
+            if (installedPath != null) {
+                gemmaModelStorage.verifyModelFile(installedPath).isReady
+            } else {
+                gemmaModelStorage.verifyModelFile(gemmaModelStorage.getRecommendedModelFileName()).isReady
+            }
         if (!alreadyReady) {
             gemmaBaseModelInstaller.install()
         }

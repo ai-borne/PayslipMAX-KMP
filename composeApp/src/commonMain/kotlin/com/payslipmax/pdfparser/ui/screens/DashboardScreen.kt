@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.SalaryCountdownCalculator
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.clearError
@@ -72,37 +73,45 @@ private fun EmptyDashboardPlaceholder(modifier: Modifier = Modifier) {
             modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .padding(AppDimensions.PaddingLarge),
+                .padding(AppDimensions.PaddingMedium),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
     ) {
-        Text(
-            text = "📄",
-            fontSize = AppDimensions.FontSizeEmoji,
-            modifier = Modifier.padding(bottom = AppDimensions.SpacingLarge),
-        )
-        Text(
-            text = AppStrings.dashboardEmptyStateTitle,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
-        Text(
-            text = AppStrings.dashboardEmptyStateDesc,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = AppDimensions.PaddingLarge),
-        )
-        Spacer(modifier = Modifier.height(AppDimensions.SpacingHuge))
-        Text(
-            text = AppStrings.dashboardEmptyStateLabel,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.SemiBold,
-        )
+        val countdown = remember { SalaryCountdownCalculator.getCurrentCountdown() }
+        SalaryCountdownRibbon(countdown = countdown)
+
+        Column(
+            modifier = Modifier.weight(1f).padding(AppDimensions.PaddingLarge),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = "📄",
+                fontSize = AppDimensions.FontSizeEmoji,
+                modifier = Modifier.padding(bottom = AppDimensions.SpacingLarge),
+            )
+            Text(
+                text = AppStrings.dashboardEmptyStateTitle,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
+            Text(
+                text = AppStrings.dashboardEmptyStateDesc,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = AppDimensions.PaddingLarge),
+            )
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingHuge))
+            Text(
+                text = AppStrings.dashboardEmptyStateLabel,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
     }
 }
 
@@ -158,6 +167,10 @@ private fun PopulatedDashboard(
                 .verticalScroll(scrollState)
                 .padding(AppDimensions.PaddingMedium),
     ) {
+        val countdown = remember { SalaryCountdownCalculator.getCurrentCountdown() }
+        SalaryCountdownRibbon(countdown = countdown)
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingMedium))
+
         selected?.let { payslip ->
             OfficerInfoBar(
                 payslip = payslip,
