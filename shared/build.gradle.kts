@@ -17,12 +17,17 @@ kotlin {
     }
 
     // iOS targets
+    val isMac = System.getProperty("os.name").orEmpty().contains("Mac", ignoreCase = true)
     val xcodeDeveloperDir =
         providers.environmentVariable("DEVELOPER_DIR")
             .orElse(
-                providers.exec {
-                    commandLine("xcode-select", "-p")
-                }.standardOutput.asText.map { it.trim() },
+                if (isMac && file("/usr/bin/xcode-select").exists()) {
+                    providers.exec {
+                        commandLine("xcode-select", "-p")
+                    }.standardOutput.asText.map { it.trim() }
+                } else {
+                    providers.provider { "/Applications/Xcode.app/Contents/Developer" }
+                },
             )
             .orElse("/Applications/Xcode.app/Contents/Developer")
             .get()
