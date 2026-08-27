@@ -26,16 +26,23 @@ Q: Does the app collect any telemetry or usage data?
 A: We collect anonymous telemetry regarding the Gemma AI model installation status (downloading progress, success, and failure) to troubleshoot and improve installation reliability. No personal or financial data is ever collected. You can disable telemetry at any time in Settings."""
 
     const val settingsHelpPrivacyContent = """PayslipMax is committed to protecting your privacy through a strict 100% offline-first architecture:
-1. Empowering PCDA(O) Officers: We provide rich financial, tax, and salary intelligence without compromising confidentiality.
+1. Empowering PCDA(O) Users: We provide rich financial, tax, and salary intelligence without compromising confidentiality.
+
 2. Zero Server Uploads: We do not collect, upload, monitor, or monetize your personal or financial data on external servers or cloud databases.
+
 3. 100% On-Device Processing: PDF decryption, parsing, ledger calculation, and insights generation run exclusively locally on your device.
+
 4. Secure Backup Encryption: If you configure Secure Backup & Sync, your archive is encrypted on-device via AES-256 before saving. We cannot decrypt or view your backup.
+
 5. Full Data Ownership: You retain complete ownership of your data and can permanently erase all local records instantly using "Reset App & Clear Data".
+
 6. Anonymous Telemetry: Optional, non-PII diagnostic events regarding Gemma model installation can be toggled on/off under Settings."""
 
     const val settingsHelpAiContent = """To preserve military-grade confidentiality, the app enforces the following AI Privacy Promise:
 1. 100% On-Device Local Processing: AI financial insights, rule calculations, and projections run entirely offline on your phone using local algorithms and the sideloaded on-device Gemma AI model.
+
 2. Zero Network Data Transmission: Your payslip information, salary details, and personal identifiers are never transmitted across the network or shared with external AI cloud APIs.
+
 3. Complete Confidentiality: Your financial data remains strictly under your control within your device's secured application sandbox."""
 
     const val settingsHelpDisclaimerContent = """This analytical tool is for reference and productivity purposes only. It is not an official app of the PCDA, Ministry of Defence, or the Indian Army. It does not replace professional advice from chartered accountants or official audit statements."""
