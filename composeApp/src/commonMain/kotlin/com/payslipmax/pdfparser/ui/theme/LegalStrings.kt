@@ -2,7 +2,7 @@ package com.payslipmax.pdfparser.ui.theme
 
 object LegalStrings {
     const val settingsHelpFaqContent = """Q: What is the primary purpose of PayslipMax?
-A: PayslipMax is engineered specifically to empower PCDA(O) Pune defence officers with deep financial, salary, and tax insights—including month-on-month trend analytics, DSOP projections, and allowances breakdowns—that are otherwise not easily available through raw, fragmented monthly PDF statements.
+A: PayslipMax is engineered specifically to empower PCDA(O) Pune users with deep financial, salary, and tax insights—including month-on-month trend analytics, DSOP projections, and allowances breakdowns—that are otherwise not easily available through raw, fragmented monthly PDF statements.
 
 Q: How is my payslip decrypted and parsed?
 A: All decryption and parsing run 100% offline on your device using local sandboxed PDF libraries. Your PDF password is never uploaded to any server, transmitted over the internet, or stored in plaintext.
