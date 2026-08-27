@@ -31,6 +31,10 @@ abstract class FetchGemmaModelTask : DefaultTask() {
     @get:Optional
     abstract val modelSourcePath: Property<String>
 
+    @get:Input
+    @get:Optional
+    abstract val allowPlaceholderModel: Property<Boolean>
+
     @get:OutputFile
     abstract val targetModelFile: RegularFileProperty
 
@@ -40,12 +44,24 @@ abstract class FetchGemmaModelTask : DefaultTask() {
 
     @TaskAction
     fun fetch() {
-        val sourcePath =
-            modelSourcePath.orNull
-                ?: error(
-                    "No Gemma model source configured. Pass -PgemmaModelSourcePath=/path/to/gemma-model.litertlm " +
-                        "or set the GEMMA_MODEL_SOURCE_PATH environment variable before running a release bundle.",
+        val sourcePath = modelSourcePath.orNull
+        if (sourcePath.isNullOrBlank()) {
+            if (allowPlaceholderModel.getOrElse(false)) {
+                logger.warn(
+                    "⚠️ [WARNING] No Gemma model source provided, but allowPlaceholderGemmaModel=true. " +
+                        "Packaging lightweight placeholder for testing.",
                 )
+                val targetFile = targetModelFile.get().asFile
+                if (!targetFile.exists()) {
+                    targetFile.writeText("PLACEHOLDER_MODEL_FOR_INTERNAL_TESTING")
+                }
+                return
+            }
+            error(
+                "No Gemma model source configured. Pass -PgemmaModelSourcePath=/path/to/gemma-model.litertlm " +
+                    "or set the GEMMA_MODEL_SOURCE_PATH environment variable (or pass -PallowPlaceholderGemmaModel=true for test builds).",
+            )
+        }
         val sourceFile = File(sourcePath)
         check(sourceFile.exists()) { "Gemma model source file not found at $sourcePath" }
 
@@ -82,10 +98,16 @@ val gemmaModelSourceProvider =
     providers.gradleProperty("gemmaModelSourcePath")
         .orElse(providers.environmentVariable("GEMMA_MODEL_SOURCE_PATH"))
 
+val allowPlaceholderProvider =
+    providers.gradleProperty("allowPlaceholderGemmaModel")
+        .map { it.toBoolean() }
+        .orElse(false)
+
 tasks.register<FetchGemmaModelTask>("fetchGemmaModelForRelease") {
     group = "build"
     description = "Verifies and copies the real Gemma base model into src/main/assets before bundleRelease."
     modelSourcePath.set(gemmaModelSourceProvider)
+    allowPlaceholderModel.set(allowPlaceholderProvider)
     targetModelFile.set(gemmaModelAssetsDir.file(gemmaModelFileName))
     placeholderFile.set(gemmaModelPlaceholderFile)
 }
