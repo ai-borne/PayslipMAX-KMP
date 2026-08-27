@@ -41,6 +41,31 @@ fun PremiumSettingsCard(
 }
 
 @Composable
+fun PremiumSettingsCardContentRow(
+    isPremiumEnabled: Boolean,
+    onUpgradePrompt: () -> Unit,
+    price: String = AppStrings.settingsPremiumPlanPrice,
+    modifier: Modifier = Modifier,
+) {
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val containerColor = getPremiumCardContainerColor(isPremiumEnabled, isDark)
+
+    Surface(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable {
+                    if (!isPremiumEnabled) {
+                        onUpgradePrompt()
+                    }
+                },
+        color = containerColor,
+    ) {
+        PremiumCardContent(isPremiumEnabled = isPremiumEnabled, price = price)
+    }
+}
+
+@Composable
 private fun getPremiumCardContainerColor(
     isPremiumEnabled: Boolean,
     isDark: Boolean,

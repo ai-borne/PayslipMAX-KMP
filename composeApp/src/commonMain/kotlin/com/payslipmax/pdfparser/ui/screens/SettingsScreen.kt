@@ -112,12 +112,12 @@ private fun PrimarySettingsGroup(
 ) {
     // 1. Account & Subscription
     SettingsCategoryHeader(title = AppStrings.settingsAccountSubscriptionHeader)
-
-    // Profile Section
-    ProfileSection(viewModel = viewModel, uiState = uiState)
-
-    // PayslipMax Premium Section
-    PremiumSection(viewModel = viewModel, uiState = uiState, onUpgradePrompt = onUpgradePrompt, onNavigateTo = onNavigateTo)
+    AccountSubscriptionSection(
+        viewModel = viewModel,
+        uiState = uiState,
+        onUpgradePrompt = onUpgradePrompt,
+        onNavigateTo = onNavigateTo,
+    )
 
     // 2. Security & Privacy
     SecuritySection(viewModel = viewModel, uiState = uiState)

@@ -19,6 +19,38 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 
 @Composable
+fun AccountSubscriptionSection(
+    viewModel: PayslipViewModel,
+    uiState: PayslipUiState,
+    onUpgradePrompt: () -> Unit,
+    onNavigateTo: (Screen) -> Unit,
+) {
+    val premiumPrice by viewModel.premiumPriceState.collectAsState()
+
+    SettingsCategoryCard {
+        ProfileOverridesCard(
+            viewModel = viewModel,
+            profileName = uiState.profileName,
+            profileCda = uiState.profileCdaNumber,
+            profilePan = uiState.profilePanNumber,
+        )
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        PremiumSettingsCardContentRow(
+            isPremiumEnabled = uiState.isPremiumEnabled,
+            onUpgradePrompt = onUpgradePrompt,
+            price = premiumPrice,
+        )
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        SettingsRow(
+            icon = "✨",
+            title = AppStringsPremium.premiumCatalogTitle,
+            subtitle = AppStringsPremium.premiumCatalogSettingsEntrySubtitle,
+            onClick = { onNavigateTo(Screen.PremiumFeatures) },
+        )
+    }
+}
+
+@Composable
 fun ProfileSection(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,
