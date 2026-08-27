@@ -26,6 +26,7 @@ Q8: Does the app collect any telemetry or usage data?
 A8: We collect anonymous telemetry regarding the Gemma AI model installation status (downloading progress, success, and failure) to troubleshoot and improve installation reliability. No personal or financial data is ever collected. You can disable telemetry at any time in Settings."""
 
     const val settingsHelpPrivacyContent = """PayslipMax is committed to protecting your privacy through a strict 100% offline-first architecture:
+
 1. Empowering PCDA(O) Users: We provide rich financial, tax, and salary intelligence without compromising confidentiality.
 
 2. Zero Server Uploads: We do not collect, upload, monitor, or monetize your personal or financial data on external servers or cloud databases.
@@ -39,6 +40,7 @@ A8: We collect anonymous telemetry regarding the Gemma AI model installation sta
 6. Anonymous Telemetry: Optional, non-PII diagnostic events regarding Gemma model installation can be toggled on/off under Settings."""
 
     const val settingsHelpAiContent = """To preserve military-grade confidentiality, the app enforces the following AI Privacy Promise:
+    
 1. 100% On-Device Local Processing: AI financial insights, rule calculations, and projections run entirely offline on your phone using local algorithms and the sideloaded on-device Gemma AI model.
 
 2. Zero Network Data Transmission: Your payslip information, salary details, and personal identifiers are never transmitted across the network or shared with external AI cloud APIs.
