@@ -165,7 +165,7 @@ android {
         applicationId = "in.aiborne.payslipmax"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
+        versionCode = 2
         versionName = appVersionName
     }
     // On-demand asset pack carrying the Tier 6 Gemma base model (Play Asset Delivery).
