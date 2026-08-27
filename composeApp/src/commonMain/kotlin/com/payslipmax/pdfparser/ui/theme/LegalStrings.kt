@@ -11,9 +11,7 @@ Q: Where is my personal and financial data stored?
 A: Your data is saved in a secure, local Room database inside the app's private sandbox directory on your device. Zero cloud uploads are performed.
 
 Q: How does the AI Insights feature work?
-A: You can choose between two privacy-preserving AI modes in Settings:
-1. Local Gemma AI: Runs 100% offline directly on your device. Your data never leaves your phone.
-2. Cloud Gemini AI: Anonymizes all data beforehand by stripping out Name, CDA Account Number, PAN, and all PII. Only numeric financial rows are processed.
+A: The AI Insights feature uses an on-device Local Gemma AI model that runs 100% offline directly on your device. Your salary figures and payslip data never leave your phone.
 
 Q: How does Secure Backup & Sync work?
 A: Backups are fully encrypted client-side using AES-256 with a key derived from your password. Only you can decrypt the backup, ensuring cross-platform sync (iOS & Android) remains 100% private.
@@ -36,9 +34,9 @@ A: We collect anonymous telemetry regarding the Gemma AI model installation stat
 6. Anonymous Telemetry: Optional, non-PII diagnostic events regarding Gemma model installation can be toggled on/off under Settings."""
 
     const val settingsHelpAiContent = """To preserve military-grade confidentiality, the app enforces the following AI Privacy Promise:
-1. 100% Offline Local AI: With the on-device Gemma AI model, all financial insights and computations run entirely on your phone with zero network transmission.
-2. Complete PII Stripping: If using cloud AI options, the app automatically redacts your Name, CDA Account Number, PAN, and any personal identifiers.
-3. Numeric-Only Processing: Only anonymous, numeric financial fields (Basic Pay, allowances, deductions) are processed to generate tax and savings insights."""
+1. 100% On-Device Local Processing: AI financial insights, rule calculations, and projections run entirely offline on your phone using local algorithms and the sideloaded on-device Gemma AI model.
+2. Zero Network Data Transmission: Your payslip information, salary details, and personal identifiers are never transmitted across the network or shared with external AI cloud APIs.
+3. Complete Confidentiality: Your financial data remains strictly under your control within your device's secured application sandbox."""
 
     const val settingsHelpDisclaimerContent = """This analytical tool is for reference and productivity purposes only. It is not an official app of the PCDA, Ministry of Defence, or the Indian Army. It does not replace professional advice from chartered accountants or official audit statements."""
 
