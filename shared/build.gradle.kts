@@ -17,6 +17,16 @@ kotlin {
     }
 
     // iOS targets
+    val xcodeDeveloperDir =
+        providers.environmentVariable("DEVELOPER_DIR")
+            .orElse(
+                providers.exec {
+                    commandLine("xcode-select", "-p")
+                }.standardOutput.asText.map { it.trim() },
+            )
+            .orElse("/Applications/Xcode.app/Contents/Developer")
+            .get()
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -31,8 +41,8 @@ kotlin {
             val platform = if (isSimulator) "iphonesimulator" else "iphoneos"
             val sdk = if (isSimulator) "iPhoneSimulator" else "iPhoneOS"
             linkerOpts(
-                "-L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$platform",
-                "-L/Applications/Xcode.app/Contents/Developer/Platforms/$sdk.platform/Developer/SDKs/$sdk.sdk/usr/lib/swift",
+                "-L$xcodeDeveloperDir/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$platform",
+                "-L$xcodeDeveloperDir/Platforms/$sdk.platform/Developer/SDKs/$sdk.sdk/usr/lib/swift",
                 "-lswift_Concurrency",
                 "-lswiftCore",
                 "-lswiftFoundation",
