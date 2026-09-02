@@ -87,7 +87,7 @@ class IosTokenCaptureTest {
                     errors += "$filename: could not read file"
                     continue
                 }
-                val tokenResult = parser.extractTokens(data.toByteArray(), password, filename)
+                val tokenResult = kotlinx.coroutines.runBlocking { parser.extractTokens(data.toByteArray(), password, filename) }
                 if (tokenResult.isFailure) {
                     errors += "$filename: extractTokens failed — ${tokenResult.exceptionOrNull()?.message}"
                     continue

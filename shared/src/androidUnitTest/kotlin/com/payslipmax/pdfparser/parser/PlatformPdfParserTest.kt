@@ -61,7 +61,7 @@ class PlatformPdfParserTest {
                 val pdfFiles = yearDir.listFiles { _, name -> name.endsWith(".pdf", ignoreCase = true) }?.sortedBy { it.name } ?: emptyList()
                 for (file in pdfFiles) {
                     totalFiles++
-                    val result = parser.decryptAndParse(file.readBytes(), password, file.name)
+                    val result = kotlinx.coroutines.runBlocking { parser.decryptAndParse(file.readBytes(), password, file.name) }
                     if (result.isFailure) {
                         errors.add("❌ ${file.name} - Failed to parse: ${result.exceptionOrNull()?.message}")
                         continue
@@ -178,7 +178,7 @@ class PlatformPdfParserTest {
         assertEquals(expTax.optDouble("total_taxable_income", 0.0), actTax.totalTaxableIncome, 1.0, "$filename: totalTaxableIncome mismatch")
         assertEquals(expTax.optDouble("standard_deduction", 0.0), actTax.standardDeduction, 1.0, "$filename: standardDeduction mismatch")
         assertEquals(expTax.optDouble("net_taxable_income", 0.0), actTax.netTaxableIncome, 1.0, "$filename: netTaxableIncome mismatch")
-        assertEquals(expTax.optDouble("total_tax_payable", 0.0), actTax.totalTaxPayable, 1.0, "$filename: totalTaxPayable mismatch")
+        assertEquals(expTax.optDouble("total_tax_payable", 0.0), actTax.totalTaxPayable ?: 0.0, 1.0, "$filename: totalTaxPayable mismatch")
         assertEquals(expTax.optDouble("tax_deducted_ytd", 0.0), actTax.taxDeductedYtd, 1.0, "$filename: taxDeductedYtd mismatch")
         assertEquals(expTax.optDouble("cess_deducted_ytd", 0.0), actTax.cessDeductedYtd, 1.0, "$filename: cessDeductedYtd mismatch")
 

@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.insights
 
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.TaxRegime
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,6 +11,18 @@ data class MonthlyLedgerItem(
     val monthNum: Int,
     val tdsDeducted: Double,
     val dsopContribution: Double,
+)
+
+/**
+ * Phase 8 (U3): the one-glance "Bottom Line Up Front" summary -- a plain-language liability sentence
+ * plus a single "nothing to do" / "here's the one thing that needs attention" line, so the reader
+ * doesn't have to synthesize that verdict themselves out of several cards' worth of numbers.
+ */
+@Serializable
+data class TaxBlufSummary(
+    val headline: String,
+    val actionLine: String,
+    val isActionRequired: Boolean,
 )
 
 @Serializable
@@ -25,8 +38,6 @@ data class TaxStoryNarrative(
     val projectedGross: Double,
     val projectedTax: Double,
     val effectiveTaxRatePct: Double,
-    val peerBenchmarkRatePct: Double,
-    val effectiveTaxRateMessage: String,
 )
 
 object ConversationalTaxNarrativeEngine {
@@ -55,9 +66,15 @@ object ConversationalTaxNarrativeEngine {
         val monthWord = if (count == 1) "month" else "months"
         val coverageHeader = "In Assessment Year ${fySummary.assessmentYear} (FY ${fySummary.financialYear}), we have $count $monthWord of payslips available."
 
+        // D17: `missingMonthNums` includes months later in the FY that haven't been issued yet -- those
+        // can never be "uploaded", so only months already elapsed but not yet parsed are actionable.
+        // A March payslip with April/May still missing is not a defect; a July payslip missing May is.
+        val actionableMissingCount =
+            fySummary.missingMonthNums.count { TaxLedgerAggregator.monthPositionInFy(it) <= fySummary.monthsElapsedInFy }
         val missingNudge =
-            if (fySummary.missingMonthNums.isNotEmpty()) {
-                "Upload remaining ${fySummary.missingMonthNums.size} month payslips to make your projection 100% accurate."
+            if (actionableMissingCount > 0) {
+                val monthNoun = if (actionableMissingCount == 1) "payslip" else "payslips"
+                "Upload $actionableMissingCount more $monthNoun from earlier this FY to sharpen your projection."
             } else {
                 null
             }
@@ -65,21 +82,6 @@ object ConversationalTaxNarrativeEngine {
         val totalGross = fySummary.projectedAnnualGross
         val effectiveRate = if (totalGross > 0) (projectedTax / totalGross) * 100.0 else 0.0
         val formattedRate = ((effectiveRate * 10).toInt()) / 10.0
-
-        val maxPossibleDeductions = fySummary.ytdDsop + 50000.0 + 253500.0 + 50000.0
-        val optResult =
-            DualRegimeEngine.compareRegimes(
-                grossIncome = totalGross,
-                oldRegimeDeductions = maxPossibleDeductions,
-                fy = activeFy,
-            )
-        val minTax = minOf(optResult.oldRegime.totalTaxPayable, optResult.newRegime.totalTaxPayable)
-        val bestAchievableRate = if (totalGross > 0) (minTax / totalGross) * 100.0 else 0.0
-        val formattedBestRate = ((bestAchievableRate * 10).toInt()) / 10.0
-
-        val grossText = TaxLedgerAggregator.formatIndianCurrency(totalGross)
-        val taxText = TaxLedgerAggregator.formatIndianCurrency(projectedTax)
-        val narrativeMsg = "You are paying $taxText in tax out of $grossText total salary ($formattedRate% of income)."
 
         return TaxStoryNarrative(
             financialYear = fySummary.financialYear,
@@ -93,8 +95,56 @@ object ConversationalTaxNarrativeEngine {
             projectedGross = totalGross,
             projectedTax = projectedTax,
             effectiveTaxRatePct = formattedRate,
-            peerBenchmarkRatePct = formattedBestRate,
-            effectiveTaxRateMessage = narrativeMsg,
         )
+    }
+
+    /**
+     * Phase 8 (U3): reuses numbers and sentences the engine already computed elsewhere -- no new tax
+     * math, no re-derivation of any figure. Priority order for the single flag line, most urgent
+     * first: a [reconciliation] top-up-due (money you will actually owe at filing that isn't being
+     * withheld now -- the one thing that can genuinely surprise someone) outranks everything else;
+     * [dsopWasteInsight] is a real but lower-stakes forgone optimization; [midYearRegimeChange] is
+     * procedural. A real evidence-base case (Apr 2026) had a ₹4,52,957 top-up-due silently losing to a
+     * ₹45,000/yr DSOP note under the old ordering -- the bigger, more urgent fact must win.
+     */
+    fun buildBluf(
+        regimeComparison: RegimeComparisonResult,
+        reconciliation: TaxTrackReconciliation?,
+        dsopWasteInsight: DsopWasteInsight?,
+        midYearRegimeChange: MidYearRegimeChangeInsight?,
+        parsedMonthCount: Int,
+    ): TaxBlufSummary {
+        val isNewWinner = regimeComparison.winnerRegime == TaxRegime.NEW.name
+        val winningDetail = if (isNewWinner) regimeComparison.newRegime else regimeComparison.oldRegime
+        val totalTax = winningDetail.totalTaxPayable
+
+        val amountPhrase =
+            if (parsedMonthCount in 1 until TaxLedgerAggregator.LOW_COVERAGE_MONTHS) {
+                val lower = TaxLedgerAggregator.roundToNearestThousand(totalTax * (1.0 - TaxLedgerAggregator.LOW_COVERAGE_BAND))
+                val upper = TaxLedgerAggregator.roundToNearestThousand(totalTax * (1.0 + TaxLedgerAggregator.LOW_COVERAGE_BAND))
+                "between ₹${TaxLedgerAggregator.formatIndianCurrency(lower)} and ₹${TaxLedgerAggregator.formatIndianCurrency(upper)}"
+            } else {
+                "about ₹${TaxLedgerAggregator.formatIndianCurrency(TaxLedgerAggregator.roundToNearestThousand(totalTax))}"
+            }
+        val headline =
+            "Your total tax for this financial year will be $amountPhrase -- that's what you'll actually owe " +
+                "when you file, not just what's being deducted from your pay each month (TDS)."
+
+        val actionLine =
+            when {
+                reconciliation != null && reconciliation.reconciliationType == ReconciliationType.TOP_UP_DUE -> reconciliation.message
+                dsopWasteInsight != null -> dsopWasteInsight.message
+                midYearRegimeChange?.detected == true ->
+                    midYearRegimeChange.message
+                        ?: "Your tax regime changed partway through this financial year -- see the details below."
+                reconciliation != null && reconciliation.reconciliationType != ReconciliationType.MATCHED -> reconciliation.message
+                else -> "Nothing needs your attention right now -- you're already on the tax regime that costs you the least."
+            }
+        val isActionRequired =
+            dsopWasteInsight != null ||
+                midYearRegimeChange?.detected == true ||
+                (reconciliation != null && reconciliation.reconciliationType != ReconciliationType.MATCHED)
+
+        return TaxBlufSummary(headline = headline, actionLine = actionLine, isActionRequired = isActionRequired)
     }
 }

@@ -42,7 +42,7 @@ enum class Screen {
     FAQ,
     PrivacyPolicy,
     PayslipReplica,
-    ProFeatures,
+    PremiumFeatures,
 }
 
 /** The four bottom-tab roots; the remaining [Screen] values are pushed detail screens. */
@@ -183,7 +183,7 @@ private fun ScreenContent(
 ) {
     val activeDetail = navState.activeDetail
     if (activeDetail != null && nativeDetailNavigator == null) {
-        // A pushed detail can itself open a further detail (e.g. the PRO catalog → Tax/DSOP screens):
+        // A pushed detail can itself open a further detail (e.g. the Premium catalog → Tax/DSOP screens):
         // tab roots switch tabs, detail screens push on top (SSOT via isTabRoot).
         val onNavigateFromDetail: (Screen) -> Unit = { if (it.isTabRoot) navState.switchTab(it) else navState.push(it) }
         DetailContent(
@@ -230,8 +230,8 @@ private fun DetailContent(
     onNavigateTo: (Screen) -> Unit,
 ) {
     when (detail) {
-        Screen.ProFeatures ->
-            com.payslipmax.pdfparser.ui.screens.ProFeaturesScreen(viewModel = viewModel, onNavigateTo = onNavigateTo, onBack = onBack)
+        Screen.PremiumFeatures ->
+            com.payslipmax.pdfparser.ui.screens.PremiumFeaturesScreen(viewModel = viewModel, onNavigateTo = onNavigateTo, onBack = onBack)
         Screen.Representation ->
             com.payslipmax.pdfparser.ui.screens.RepresentationScreen(viewModel = viewModel, onBack = onBack)
         Screen.TaxPlanning ->

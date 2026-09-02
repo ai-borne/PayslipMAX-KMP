@@ -2,8 +2,9 @@
 
 # Get list of staged Kotlin files
 staged_files=$(git diff --cached --name-only --diff-filter=d | grep '\.kt$')
+staged_schema_files=$(git diff --cached --name-only --diff-filter=d | grep 'shared/schemas/')
 
-if [ -z "$staged_files" ]; then
+if [ -z "$staged_files" ] && [ -z "$staged_schema_files" ]; then
     exit 0
 fi
 
@@ -18,14 +19,25 @@ else
     echo "⚠️  gitleaks not installed — skipping local secret scan (CI will still catch it). Install: brew install gitleaks"
 fi
 
-echo "🔍 Auditing staged Kotlin files for tech debt limits..."
+if [ -n "$staged_files" ]; then
+    echo "🔍 Auditing staged Kotlin files for tech debt limits..."
 
-# Run check script in strict mode on staged files
-python3 scripts/check_tech_debt_limits.py --strict $staged_files
+    # Run check script in strict mode on staged files
+    python3 scripts/check_tech_debt_limits.py --strict $staged_files
 
-if [ $? -ne 0 ]; then
-    echo "❌ Commit rejected due to tech debt limits or design system regressions."
-    exit 1
+    if [ $? -ne 0 ]; then
+        echo "❌ Commit rejected due to tech debt limits or design system regressions."
+        exit 1
+    fi
+fi
+
+if [ -n "$staged_schema_files" ]; then
+    echo "🔐 Checking Room schema immutability..."
+    python3 scripts/check_schema_immutability.py
+    if [ $? -ne 0 ]; then
+        echo "❌ Commit rejected: a shipped Room schema JSON was modified or deleted."
+        exit 1
+    fi
 fi
 
 echo "🧹 Running ktlint across all modules (mirrors CI)..."

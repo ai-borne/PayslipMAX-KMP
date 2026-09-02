@@ -26,38 +26,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install Gitleaks CLI
+        # Uses the free OSS CLI directly rather than gitleaks/gitleaks-action, which now requires a
+        # paid GITLEAKS_LICENSE secret for organization repos. Mirrors the local pre-commit/pre-push
+        # hooks (scripts/git-pre-commit.sh, scripts/git-pre-push.sh), which already use the CLI.
+        run: |
+          GITLEAKS_VERSION=$(curl -sSf https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep -Po '"tag_name": "v\K[^"]*')
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" -o gitleaks.tar.gz
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo mv gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
       - name: Run Gitleaks Secret Scan
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_CONFIG: .gitleaks.toml
-
-  functions-ci:
-    name: ☁️ Firebase Functions CI
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: functions
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'npm'
-          cache-dependency-path: functions/package-lock.json
-
-      - name: Install Dependencies
-        # Gracefully skips if functions/ is not yet scaffolded (Phase 0)
-        run: '[ -f package.json ] && npm ci || echo "functions/ not yet scaffolded — skipping"'
-
-      - name: Run Dependency Audit
-        run: '[ -f package.json ] && npm audit --audit-level=high || true'
-
-      - name: Run Jest Unit Tests
-        run: '[ -f package.json ] && npm test || echo "No tests yet — Phase 1 pending"'
+        run: gitleaks detect --source . --config .gitleaks.toml --redact --verbose
 
   web-prototype-ci:
     name: 🌐 Web Prototype CI
@@ -100,6 +81,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup JDK 17
         uses: actions/setup-java@v4
@@ -115,6 +98,9 @@ jobs:
 
       - name: Audit Tech Debt Limits and Regressions
         run: python3 scripts/check_tech_debt_limits.py
+
+      - name: Check Room Schema Immutability
+        run: python3 scripts/check_schema_immutability.py
 
       - name: Run Lint, Code Style & Tests (Android + Common)
         run: ./gradlew check -x iosX64Test -x iosSimulatorArm64Test

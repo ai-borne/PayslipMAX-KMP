@@ -2596,7 +2596,7 @@
       "total_taxable_income": 1018932.0,
       "standard_deduction": 0.0,
       "net_taxable_income": 868932.0,
-      "total_tax_payable": 26733,
+      "total_tax_payable": 98786,
       "tax_deducted_ytd": 8230.0,
       "cess_deducted_ytd": 250.0,
       "dsop_fund": {
@@ -3946,7 +3946,7 @@
       "total_taxable_income": 1480320.0,
       "standard_deduction": 0.0,
       "net_taxable_income": 1330320.0,
-      "total_tax_payable": 38976,
+      "total_tax_payable": 211596,
       "tax_deducted_ytd": 17630.0,
       "cess_deducted_ytd": 530.0,
       "dsop_fund": {
@@ -5026,7 +5026,7 @@
       "total_taxable_income": 1718689.0,
       "standard_deduction": 40000.0,
       "net_taxable_income": 1528689.0,
-      "total_tax_payable": 40432,
+      "total_tax_payable": 271107,
       "tax_deducted_ytd": 59170.0,
       "cess_deducted_ytd": 900.0,
       "dsop_fund": {
@@ -6106,7 +6106,7 @@
       "total_taxable_income": 2070900.0,
       "standard_deduction": 50000.0,
       "net_taxable_income": 1870900.0,
-      "total_tax_payable": 51772,
+      "total_tax_payable": 373770,
       "tax_deducted_ytd": 31150.0,
       "cess_deducted_ytd": 1250.0,
       "dsop_fund": {
@@ -6196,7 +6196,7 @@
       "total_taxable_income": 2070900.0,
       "standard_deduction": 50000.0,
       "net_taxable_income": 1866740.0,
-      "total_tax_payable": 103545,
+      "total_tax_payable": 372522,
       "tax_deducted_ytd": 62180.0,
       "cess_deducted_ytd": 2490.0,
       "dsop_fund": {
@@ -7186,7 +7186,7 @@
       "total_taxable_income": 2122848.0,
       "standard_deduction": 50000.0,
       "net_taxable_income": 1922848.0,
-      "total_tax_payable": 53071,
+      "total_tax_payable": 389354,
       "tax_deducted_ytd": 32450.0,
       "cess_deducted_ytd": 1300.0,
       "dsop_fund": {
@@ -7276,7 +7276,7 @@
       "total_taxable_income": 2116188.0,
       "standard_deduction": 50000.0,
       "net_taxable_income": 1916188.0,
-      "total_tax_payable": 104144,
+      "total_tax_payable": 387356,
       "tax_deducted_ytd": 64710.0,
       "cess_deducted_ytd": 2590.0,
       "dsop_fund": {
@@ -9346,7 +9346,7 @@
       "total_taxable_income": 2875080.0,
       "standard_deduction": 50000.0,
       "net_taxable_income": 2825352.0,
-      "total_tax_payable": 71959,
+      "total_tax_payable": 547605,
       "tax_deducted_ytd": 45630.0,
       "cess_deducted_ytd": 1830.0,
       "dsop_fund": {
@@ -9436,7 +9436,7 @@
       "total_taxable_income": 2993777.0,
       "standard_deduction": 50000.0,
       "net_taxable_income": 2944185.0,
-      "total_tax_payable": 160826,
+      "total_tax_payable": 583255,
       "tax_deducted_ytd": 94510.0,
       "cess_deducted_ytd": 3790.0,
       "dsop_fund": {
@@ -10426,7 +10426,7 @@
       "total_taxable_income": 2992233.0,
       "standard_deduction": 50000.0,
       "net_taxable_income": 2942230.0,
-      "total_tax_payable": 107650,
+      "total_tax_payable": 582669,
       "tax_deducted_ytd": 48555.0,
       "cess_deducted_ytd": 1942.0,
       "dsop_fund": {
@@ -11506,7 +11506,7 @@
       "total_taxable_income": 3260868.0,
       "standard_deduction": 75000.0,
       "net_taxable_income": 3185870.0,
-      "total_tax_payable": 81522,
+      "total_tax_payable": 535761,
       "tax_deducted_ytd": 44646.0,
       "cess_deducted_ytd": 1786.0,
       "dsop_fund": {
@@ -12586,7 +12586,7 @@
       "total_taxable_income": 3440676.0,
       "standard_deduction": 75000.0,
       "net_taxable_income": 3365680.0,
-      "total_tax_payable": 86017,
+      "total_tax_payable": 589704,
       "tax_deducted_ytd": 49142.0,
       "cess_deducted_ytd": 1966.0,
       "dsop_fund": {
@@ -12676,7 +12676,7 @@
       "total_taxable_income": 3487744.0,
       "standard_deduction": 75000.0,
       "net_taxable_income": 3412740.0,
-      "total_tax_payable": 176068,
+      "total_tax_payable": 603822,
       "tax_deducted_ytd": 99567.0,
       "cess_deducted_ytd": 3983.0,
       "dsop_fund": {

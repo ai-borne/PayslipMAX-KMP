@@ -138,6 +138,8 @@ object AppDimensions {
     val TextSizeHuge = 24.sp
     val FontSizeEmoji = 64.sp
     val FontSizeEmojiMedium = 48.sp
+    val ProgressTrackHeight = 6.dp
+    val ProgressCornerRadius = 3.dp
 }
 
 // Typography Tokens

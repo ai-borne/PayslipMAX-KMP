@@ -83,4 +83,51 @@ class TaxParserUtilsTest {
         assertNotNull(result)
         assertEquals(950000.0, result.grossSalaryYtd)
     }
+
+    // D3 (docs/Plan/04_TaxPlannerGoldStandard.md): a single-month grossSalaryYtd at the start/end of the
+    // FY used to make totalTaxPayable > grossSalaryYtd look "implausible" and get replaced with a
+    // fabricated round(grossSalaryYtd * 0.30) — corrupting real PCDA figures on every high-income
+    // April/March payslip. This is exactly the April 2026 evidence-base shape: one month's gross,
+    // full-year tax payable.
+    @Test
+    fun testTotalTaxPayableExceedingSingleMonthGrossIsKeptVerbatim() {
+        val text =
+            """
+            INCOME TAX DETAILS
+            (New Tax Regime)
+            1. Gross Salary 586894
+            Total Taxable Income 3487744
+            Standard Deduction 75000
+            Net Taxable Income 3412740
+            Total Tax Payable 603822
+            Income Tax Deducted 99567
+            Ed. Cess Deducted 3983
+            """.trimIndent()
+
+        val result = parseTaxAndSavings(text, null, "")
+        assertNotNull(result)
+        assertEquals(603822.0, result.totalTaxPayable)
+    }
+
+    // A totalTaxPayable exceeding totalTaxableIncome itself (not just the unreliable grossSalaryYtd
+    // field) is genuinely implausible -- tax can never exceed the income it's computed on. The guard
+    // must leave the field unavailable rather than fabricate a replacement value.
+    @Test
+    fun testTotalTaxPayableExceedingTaxableIncomeIsMarkedUnavailable() {
+        val text =
+            """
+            INCOME TAX DETAILS
+            1. Gross Salary 1500000
+            Total Taxable Income 1400000
+            Standard Deduction 50000
+            Net Taxable Income 1350000
+            Total Tax Payable 9999999
+            Income Tax Deducted 200000
+            Ed. Cess Deducted 8000
+            """.trimIndent()
+
+        val result = parseTaxAndSavings(text, null, "")
+        assertNotNull(result)
+        assertEquals(null, result.totalTaxPayable)
+    }
 }

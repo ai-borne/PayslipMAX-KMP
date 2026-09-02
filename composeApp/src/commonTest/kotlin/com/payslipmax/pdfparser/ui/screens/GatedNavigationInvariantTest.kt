@@ -11,10 +11,10 @@ import kotlin.test.assertTrue
 
 /**
  * Cross-producer regression guard for the Smart Insights paywall bypass: `InsightUiModel` could carry
- * an `actionTarget` pointing at a PRO screen with no `FeatureGate` attached, while `RecommendedActionUiModel`
- * (and `ProFeatureMeta`) always did — so the click site that forgot to check ended up being the free door in.
+ * an `actionTarget` pointing at a Premium screen with no `FeatureGate` attached, while `RecommendedActionUiModel`
+ * (and `PremiumFeatureMeta`) always did — so the click site that forgot to check ended up being the free door in.
  *
- * [gateForScreen] (the PRO catalog's reverse lookup) is the single source of truth for which gate
+ * [gateForScreen] (the Premium catalog's reverse lookup) is the single source of truth for which gate
  * protects which screen. Every model that can drive `onNavigateTo(Screen)` must agree with it — this
  * test walks the real output of both current producers rather than re-asserting hardcoded per-type
  * expectations, so it also catches a *third* producer added later without a gate.
@@ -69,7 +69,7 @@ class GatedNavigationInvariantTest {
             assertEquals(
                 gateForScreen(card.actionTarget!!),
                 card.gate,
-                "\"${card.title}\" -> ${card.actionTarget} must carry the PRO catalog's gate for that screen",
+                "\"${card.title}\" -> ${card.actionTarget} must carry the Premium catalog's gate for that screen",
             )
         }
     }
@@ -88,7 +88,7 @@ class GatedNavigationInvariantTest {
             assertEquals(
                 gateForScreen(action.target),
                 action.gate,
-                "\"${action.title}\" -> ${action.target} must carry the PRO catalog's gate for that screen",
+                "\"${action.title}\" -> ${action.target} must carry the Premium catalog's gate for that screen",
             )
         }
     }

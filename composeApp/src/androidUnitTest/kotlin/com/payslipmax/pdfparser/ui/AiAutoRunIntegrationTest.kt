@@ -1,12 +1,18 @@
 package com.payslipmax.pdfparser.ui
 
 import com.payslipmax.pdfparser.database.toEncryptedEntity
+import com.payslipmax.pdfparser.domain.Deductions
+import com.payslipmax.pdfparser.domain.Earnings
+import com.payslipmax.pdfparser.domain.LedgerBalances
+import com.payslipmax.pdfparser.domain.Officer
+import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.PayslipSummary
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.subscription.DevOverride
+import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.subscription.isDebugBuild
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
-import io.ktor.client.network.sockets.SocketTimeoutException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -20,12 +26,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
- * Integration tests for the AI auto-run guard using [FakeFinancialIntelligenceRepository]
- * (no real HTTP). Verifies the full condition-check → trigger → state-update chain.
+ * Integration tests verifying the deterministic offline intelligence engine integration with
+ * the ViewModel. Cloud Gemini / AI auto-run removed; tests now cover offline premium gate
+ * and payslip selection flow.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class AiAutoRunIntegrationTest {
@@ -33,8 +39,6 @@ class AiAutoRunIntegrationTest {
     private lateinit var fakeDao: FakePayslipDao
     private lateinit var repository: PayslipRepository
     private lateinit var fakeFinancialRepo: FakeFinancialIntelligenceRepository
-
-    private val helper = AiAutoRunGuardTest()
 
     @BeforeTest
     fun setUp() {
@@ -51,154 +55,95 @@ class AiAutoRunIntegrationTest {
 
     private fun createViewModel() = PayslipViewModel(repository, fakeFinancialRepo)
 
-    // ── Premium ON + no cache → auto-run fires ────────────────────────────────
+    private fun buildPayslip(dateStr: String): ParsedPayslip {
+        val parts = dateStr.split("/")
+        val month = parts[0].toInt()
+        val year = parts[1].toInt()
+        return ParsedPayslip(
+            file = "payslip_$dateStr.pdf",
+            year = year,
+            monthNum = month,
+            monthName = "Month_$month",
+            dateStr = dateStr,
+            officer = Officer("Name", "Acc", "PAN"),
+            earnings = Earnings(basicPay = 100.0),
+            deductions = Deductions(),
+            ledgerBalances = LedgerBalances(),
+            summary = PayslipSummary(100.0, 80.0, 20.0),
+            taxAndSavings = null,
+        )
+    }
+
+    // ── Premium flag ON → isPremiumEnabled reflects it ────────────────────────
 
     @Test
-    fun testAutoRunFiresWhenPremiumOnAndNoCache() =
+    fun testPremiumFlagOnReflectedInUiState() =
         runTest {
             val vm = createViewModel()
-            fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
+            fakeDao.insertPayslip(buildPayslip("08/2024").toEncryptedEntity())
             advanceUntilIdle()
 
             vm.setPremiumEnabled(true)
             advanceUntilIdle()
 
             assertTrue(vm.uiState.value.isPremiumEnabled)
-            assertFalse(vm.uiState.value.isAiLoading)
-            assertNotNull(vm.uiState.value.aiInsights)
-            assertEquals("Fake AI narrative", vm.uiState.value.aiInsights)
-            assertEquals(1, fakeFinancialRepo.generateCallCount)
         }
 
-    // ── Cache exists → no auto-run ────────────────────────────────────────────
+    // ── Premium flag OFF → isPremiumEnabled is false ──────────────────────────
 
     @Test
-    fun testAutoRunNotFiredWhenCacheExists() =
+    fun testPremiumFlagOffReflectedInUiState() =
         runTest {
-            fakeFinancialRepo.cachedInsightsByMonth["08/2024"] = "Cached insights"
             val vm = createViewModel()
-            fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
+            vm.setPremiumEnabled(false)
             advanceUntilIdle()
 
-            vm.setPremiumEnabled(true)
-            advanceUntilIdle()
-
-            assertTrue(vm.uiState.value.isPremiumEnabled)
-            assertEquals("Cached insights", vm.uiState.value.aiInsights)
-            assertEquals(0, fakeFinancialRepo.generateCallCount)
+            assertFalse(vm.uiState.value.isPremiumEnabled)
         }
 
-    // ── Month switch to uncached month → auto-run fires ───────────────────────
+    // ── Payslip loads → selectedPayslip is set ────────────────────────────────
 
     @Test
-    fun testAutoRunFiresOnMonthSwitchWithNoCache() =
+    fun testSelectedPayslipSetAfterLoad() =
         runTest {
             val vm = createViewModel()
-            val payslip1 = helper.createMockPayslip("07/2024")
-            val payslip2 = helper.createMockPayslip("08/2024")
+            fakeDao.insertPayslip(buildPayslip("08/2024").toEncryptedEntity())
+            advanceUntilIdle()
+
+            assertNotNull(vm.uiState.value.selectedPayslip)
+            assertEquals("08/2024", vm.uiState.value.selectedPayslip?.dateStr)
+        }
+
+    // ── Month switch updates selectedPayslip ──────────────────────────────────
+
+    @Test
+    fun testMonthSwitchUpdatesSelectedPayslip() =
+        runTest {
+            val vm = createViewModel()
+            val payslip1 = buildPayslip("07/2024")
+            val payslip2 = buildPayslip("08/2024")
             fakeDao.insertPayslip(payslip1.toEncryptedEntity())
             fakeDao.insertPayslip(payslip2.toEncryptedEntity())
             advanceUntilIdle()
 
-            vm.setPremiumEnabled(true)
-            advanceUntilIdle()
-
-            // Switch to older month — no cache for it
-            vm.clearAiInsights()
             vm.selectPayslip(payslip1)
             advanceUntilIdle()
 
-            assertNotNull(vm.uiState.value.aiInsights)
             assertEquals("07/2024", vm.uiState.value.selectedPayslip?.dateStr)
         }
 
-    // ── Auto-run keys off hasAccess(AI_AUDIT), not the raw premium flag ───────
+    // ── DevOverride.FORCE_FREE overrides premium gate (debug builds only) ─────
 
     @Test
-    fun testAutoRunSuppressedByForceFreeOverrideDespitePremiumFlagOn() =
+    fun testForceFreeSuppressesPremiumAccess() =
         runTest {
-            // The override is debug-only; in release it is inert and the raw-flag/hasAccess paths
-            // coincide (already covered by PayslipViewModelSubscriptionTest).
             if (!isDebugBuild()) return@runTest
 
             val vm = createViewModel()
             vm.setDevOverride(DevOverride.FORCE_FREE)
             vm.setPremiumEnabled(true)
             advanceUntilIdle()
-            fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
-            advanceUntilIdle()
 
-            // Flag is ON, but the gate says FREE → auto-run must not fire.
-            assertTrue(vm.uiState.value.isPremiumEnabled)
-            assertEquals(0, fakeFinancialRepo.generateCallCount)
-            assertNull(vm.uiState.value.aiInsights)
-            assertFalse(vm.uiState.value.isAiLoading)
-        }
-
-    // ── AI generation fails → aiError is set, not a crash ────────────────────
-
-    @Test
-    fun testAutoRunSetsAiErrorOnFailure() =
-        runTest {
-            fakeFinancialRepo.narrativeResult = Result.failure(Exception("Gemini error"))
-            val vm = createViewModel()
-            fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
-            advanceUntilIdle()
-
-            vm.setPremiumEnabled(true)
-            advanceUntilIdle()
-
-            assertTrue(vm.uiState.value.isPremiumEnabled)
-            assertNull(vm.uiState.value.aiInsights)
-            assertFalse(vm.uiState.value.isAiLoading)
-            assertEquals(
-                "Unable to generate AI insights due to a connection issue. Please check your network and try again.",
-                vm.uiState.value.aiError,
-            )
-        }
-
-    @Test
-    fun testAutoRunSetsFriendlyTimeoutErrorOnSocketTimeout() =
-        runTest {
-            fakeFinancialRepo.narrativeResult = Result.failure(SocketTimeoutException("timeout"))
-            val vm = createViewModel()
-            fakeDao.insertPayslip(helper.createMockPayslip("08/2024").toEncryptedEntity())
-            advanceUntilIdle()
-
-            vm.setPremiumEnabled(true)
-            advanceUntilIdle()
-
-            assertTrue(vm.uiState.value.isPremiumEnabled)
-            assertNull(vm.uiState.value.aiInsights)
-            assertFalse(vm.uiState.value.isAiLoading)
-            assertEquals(
-                "The server is taking too long to respond. Please check your internet connection and try again.",
-                vm.uiState.value.aiError,
-            )
-        }
-
-    // ── Same month re-select → no double-run (cache guard) ───────────────────
-
-    @Test
-    fun testAutoRunDoesNotDoubleFireForSameMonth() =
-        runTest {
-            val vm = createViewModel()
-            val payslip = helper.createMockPayslip("08/2024")
-            fakeDao.insertPayslip(payslip.toEncryptedEntity())
-            advanceUntilIdle()
-
-            vm.setPremiumEnabled(true)
-            advanceUntilIdle()
-
-            // First run completed — cache is now populated inside fakeFinancialRepo
-            assertEquals(1, fakeFinancialRepo.generateCallCount)
-            assertNotNull(vm.uiState.value.aiInsights)
-
-            // Re-select the same payslip
-            vm.selectPayslip(payslip)
-            advanceUntilIdle()
-
-            // Generate must NOT have been called again (cache hit)
-            assertEquals(1, fakeFinancialRepo.generateCallCount)
+            assertFalse(vm.hasAccess(FeatureGate.PREMIUM_INTELLIGENCE))
         }
 }

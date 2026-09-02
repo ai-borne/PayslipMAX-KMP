@@ -46,9 +46,16 @@ fun SettingsScreen(
     )
 
     if (showUpgradeSheet) {
+        val premiumPrice by viewModel.premiumPriceState.collectAsState()
         PremiumUpgradeBottomSheet(
             onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { viewModel.setPremiumEnabled(true) },
+            onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
+            onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
+            onPrivacyClick = {
+                showUpgradeSheet = false
+                onNavigateTo(Screen.PrivacyPolicy)
+            },
+            price = premiumPrice,
         )
     }
 }
@@ -105,12 +112,12 @@ private fun PrimarySettingsGroup(
 ) {
     // 1. Account & Subscription
     SettingsCategoryHeader(title = AppStrings.settingsAccountSubscriptionHeader)
-
-    // Profile Section
-    ProfileSection(viewModel = viewModel, uiState = uiState)
-
-    // PayslipMax Pro Section
-    PremiumSection(viewModel = viewModel, uiState = uiState, onUpgradePrompt = onUpgradePrompt, onNavigateTo = onNavigateTo)
+    AccountSubscriptionSection(
+        viewModel = viewModel,
+        uiState = uiState,
+        onUpgradePrompt = onUpgradePrompt,
+        onNavigateTo = onNavigateTo,
+    )
 
     // 2. Security & Privacy
     SecuritySection(viewModel = viewModel, uiState = uiState)

@@ -5,7 +5,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -14,7 +17,38 @@ import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
-import com.payslipmax.pdfparser.ui.theme.GemmaModelStrings
+
+@Composable
+fun AccountSubscriptionSection(
+    viewModel: PayslipViewModel,
+    uiState: PayslipUiState,
+    onUpgradePrompt: () -> Unit,
+    onNavigateTo: (Screen) -> Unit,
+) {
+    val premiumPrice by viewModel.premiumPriceState.collectAsState()
+
+    SettingsCategoryCard {
+        ProfileOverridesCard(
+            viewModel = viewModel,
+            profileName = uiState.profileName,
+            profileCda = uiState.profileCdaNumber,
+            profilePan = uiState.profilePanNumber,
+        )
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        PremiumSettingsCardContentRow(
+            isPremiumEnabled = uiState.isPremiumEnabled,
+            onUpgradePrompt = onUpgradePrompt,
+            price = premiumPrice,
+        )
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        SettingsRow(
+            icon = "✨",
+            title = AppStringsPremium.premiumCatalogTitle,
+            subtitle = AppStringsPremium.premiumCatalogSettingsEntrySubtitle,
+            onClick = { onNavigateTo(Screen.PremiumFeatures) },
+        )
+    }
+}
 
 @Composable
 fun ProfileSection(
@@ -38,16 +72,19 @@ fun PremiumSection(
     onUpgradePrompt: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
 ) {
+    val premiumPrice by viewModel.premiumPriceState.collectAsState()
+
     PremiumSettingsCard(
         isPremiumEnabled = uiState.isPremiumEnabled,
         onUpgradePrompt = onUpgradePrompt,
+        price = premiumPrice,
     )
     SettingsCategoryCard {
         SettingsRow(
             icon = "✨",
-            title = AppStringsPremium.proCatalogTitle,
-            subtitle = AppStringsPremium.proCatalogSettingsEntrySubtitle,
-            onClick = { onNavigateTo(Screen.ProFeatures) },
+            title = AppStringsPremium.premiumCatalogTitle,
+            subtitle = AppStringsPremium.premiumCatalogSettingsEntrySubtitle,
+            onClick = { onNavigateTo(Screen.PremiumFeatures) },
         )
     }
 }
@@ -95,40 +132,7 @@ fun PreferencesSection(
             currentTheme = uiState.appTheme,
             onThemeSelect = { viewModel.setAppTheme(it) },
         )
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-        LocalGemmaAiSettingRow(viewModel, uiState)
     }
-}
-
-/**
- * This row now controls only *which source* [FinancialIntelligenceRepository] reads narrative
- * insights from (local Gemma vs. cloud Gemini) — free for everyone, no premium gate. The Tier 6
- * base model's own download progress/errors are surfaced separately by [BaseModelDownloadBanner],
- * which is unconditional and independent of this toggle.
- */
-@Composable
-private fun LocalGemmaAiSettingRow(
-    viewModel: PayslipViewModel,
-    uiState: PayslipUiState,
-) {
-    val subtitle =
-        if (uiState.isGemmaSupported) {
-            GemmaModelStrings.gemmaAiSettingRowSubtitleSupported
-        } else {
-            uiState.gemmaSupportReason ?: GemmaModelStrings.gemmaAiSettingRowSubtitleUnsupported
-        }
-    SettingsRow(
-        icon = "🤖",
-        title = GemmaModelStrings.gemmaAiSettingRowTitle,
-        subtitle = subtitle,
-        trailingContent = {
-            Switch(
-                checked = uiState.useLocalAi && uiState.isGemmaSupported,
-                onCheckedChange = { if (uiState.isGemmaSupported) viewModel.setLocalAiEnabled(it) },
-                enabled = uiState.isGemmaSupported,
-            )
-        },
-    )
 }
 
 @Composable

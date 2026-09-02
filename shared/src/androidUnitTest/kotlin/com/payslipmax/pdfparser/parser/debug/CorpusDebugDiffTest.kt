@@ -24,7 +24,7 @@ class CorpusDebugDiffTest {
             )
 
         val androidCollector = ParserDebugCollector(platform = "Android (PDFBox)", filename = input.filename)
-        val androidResult = GrammarAwareParser.parse(androidTokenized, input.filename, debugCollector = androidCollector)
+        val androidResult = kotlinx.coroutines.runBlocking { GrammarAwareParser.parse(androidTokenized, input.filename, debugCollector = androidCollector) }
         assertTrue(androidResult.isSuccess, "Android parse should succeed for $id")
         val androidArtifact = androidCollector.buildArtifact()
 
@@ -39,7 +39,7 @@ class CorpusDebugDiffTest {
             )
 
         val iosCollector = ParserDebugCollector(platform = "iOS (PDFKit)", filename = input.filename)
-        val iosResult = GrammarAwareParser.parse(iosTokenized, input.filename, debugCollector = iosCollector)
+        val iosResult = kotlinx.coroutines.runBlocking { GrammarAwareParser.parse(iosTokenized, input.filename, debugCollector = iosCollector) }
         val iosArtifact = iosCollector.buildArtifact()
 
         val diffReport = ParserDiffEngine.compare(androidArtifact, iosArtifact)
@@ -85,7 +85,7 @@ class CorpusDebugDiffTest {
             )
 
         val androidCollector = ParserDebugCollector(platform = "Android (PDFBox)", filename = input.filename)
-        val androidResult = GrammarAwareParser.parse(androidTokenized, input.filename, debugCollector = androidCollector)
+        val androidResult = kotlinx.coroutines.runBlocking { GrammarAwareParser.parse(androidTokenized, input.filename, debugCollector = androidCollector) }
         assertTrue(androidResult.isSuccess, "Android parse should succeed for $id")
         val androidArtifact = androidCollector.buildArtifact()
 
@@ -99,7 +99,7 @@ class CorpusDebugDiffTest {
             )
 
         val iosCollector = ParserDebugCollector(platform = "iOS (PDFKit)", filename = input.filename)
-        val iosResult = GrammarAwareParser.parse(iosTokenized, input.filename, debugCollector = iosCollector)
+        val iosResult = kotlinx.coroutines.runBlocking { GrammarAwareParser.parse(iosTokenized, input.filename, debugCollector = iosCollector) }
         val iosArtifact = iosCollector.buildArtifact()
 
         val diffReport = ParserDiffEngine.compare(androidArtifact, iosArtifact)

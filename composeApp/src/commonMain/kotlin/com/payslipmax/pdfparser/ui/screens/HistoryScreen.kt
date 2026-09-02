@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.payslipmax.pdfparser.database.AiInsightReportEntity
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
 import com.payslipmax.pdfparser.domain.*
 import com.payslipmax.pdfparser.ui.*
@@ -19,19 +18,15 @@ fun HistoryScreen(
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val aiReports by viewModel.aiInsightReports.collectAsState()
     val ledgerRecords by viewModel.ledgerRecords.collectAsState()
     var activeActionPayslip by remember { mutableStateOf<ParsedPayslip?>(null) }
     var pendingDeletePayslip by remember { mutableStateOf<ParsedPayslip?>(null) }
-    var selectedAiReport by remember { mutableStateOf<AiInsightReportEntity?>(null) }
 
     HistoryContent(
         uiState = uiState,
-        aiReports = aiReports,
         ledgerRecords = ledgerRecords,
         activeActionPayslip = activeActionPayslip,
         pendingDeletePayslip = pendingDeletePayslip,
-        selectedAiReport = selectedAiReport,
         onSelectDetail = onOpenPayslipDetail,
         onOpenOriginal = { payslip ->
             viewModel.getPayslipPdf(payslip.dateStr) { bytes ->
@@ -40,7 +35,6 @@ fun HistoryScreen(
         },
         onLongPress = { activeActionPayslip = it },
         onSwipeDelete = { pendingDeletePayslip = it },
-        onAiReportClick = { selectedAiReport = it },
         onSharePayslip = onSharePayslip,
         onDismissAction = { activeActionPayslip = null },
         onDeleteRequest = {
@@ -52,7 +46,6 @@ fun HistoryScreen(
             pendingDeletePayslip = null
         },
         onDismissDelete = { pendingDeletePayslip = null },
-        onDismissAiReport = { selectedAiReport = null },
         viewModel = viewModel,
         onNavigateToInsights = onNavigateToInsights,
         modifier = modifier,
@@ -62,22 +55,18 @@ fun HistoryScreen(
 @Composable
 private fun HistoryMainView(
     uiState: PayslipUiState,
-    aiReports: List<AiInsightReportEntity>,
     ledgerRecords: List<LedgerRecordEntity>,
     activeActionPayslip: ParsedPayslip?,
     pendingDeletePayslip: ParsedPayslip?,
-    selectedAiReport: AiInsightReportEntity?,
     onSelectDetail: (ParsedPayslip) -> Unit,
     onOpenOriginal: (ParsedPayslip) -> Unit,
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
-    onAiReportClick: (AiInsightReportEntity) -> Unit,
     onSharePayslip: (ParsedPayslip) -> Unit,
     onDismissAction: () -> Unit,
     onDeleteRequest: () -> Unit,
     onConfirmDelete: (ParsedPayslip) -> Unit,
     onDismissDelete: () -> Unit,
-    onDismissAiReport: () -> Unit,
     onNavigateToInsights: () -> Unit,
     expandedYears: Set<Int>,
     onToggleYear: (Int) -> Unit,
@@ -87,62 +76,72 @@ private fun HistoryMainView(
     modifier: Modifier = Modifier,
 ) {
     HistoryListContainer(
-        payslips = uiState.payslips, aiReports = aiReports, ledgerRecords = ledgerRecords,
-        isLoading = uiState.isLoading, onPayslipClick = onSelectDetail, onLongPress = onLongPress,
-        onSwipeDelete = onSwipeDelete, onAiReportClick = onAiReportClick,
-        onNavigateToInsights = onNavigateToInsights, expandedYears = expandedYears,
-        onToggleYear = onToggleYear, initialScrollIndex = initialScrollIndex,
-        initialScrollOffset = initialScrollOffset, onScrollPositionChanged = onScrollPositionChanged,
+        payslips = uiState.payslips,
+        ledgerRecords = ledgerRecords,
+        isLoading = uiState.isLoading,
+        onPayslipClick = onSelectDetail,
+        onLongPress = onLongPress,
+        onSwipeDelete = onSwipeDelete,
+        onNavigateToInsights = onNavigateToInsights,
+        expandedYears = expandedYears,
+        onToggleYear = onToggleYear,
+        initialScrollIndex = initialScrollIndex,
+        initialScrollOffset = initialScrollOffset,
+        onScrollPositionChanged = onScrollPositionChanged,
         modifier = modifier,
     )
     HistoryOverlays(
-        activeActionPayslip = activeActionPayslip, pendingDeletePayslip = pendingDeletePayslip,
-        selectedAiReport = selectedAiReport, onDismissAction = onDismissAction,
+        activeActionPayslip = activeActionPayslip,
+        pendingDeletePayslip = pendingDeletePayslip,
+        onDismissAction = onDismissAction,
         onViewReplica = { activeActionPayslip?.let(onSelectDetail) },
         onViewOriginal = { activeActionPayslip?.let(onOpenOriginal) },
         onShareSummary = { activeActionPayslip?.let(onSharePayslip) },
         onDeleteRequest = onDeleteRequest,
         onConfirmDelete = { pendingDeletePayslip?.let(onConfirmDelete) },
         onDismissDelete = onDismissDelete,
-        onDismissAiReport = onDismissAiReport,
     )
 }
 
 @Composable
 private fun HistoryContent(
     uiState: PayslipUiState,
-    aiReports: List<AiInsightReportEntity>,
     ledgerRecords: List<LedgerRecordEntity>,
     activeActionPayslip: ParsedPayslip?,
     pendingDeletePayslip: ParsedPayslip?,
-    selectedAiReport: AiInsightReportEntity?,
     onSelectDetail: (ParsedPayslip) -> Unit,
     onOpenOriginal: (ParsedPayslip) -> Unit,
     onLongPress: (ParsedPayslip) -> Unit,
     onSwipeDelete: (ParsedPayslip) -> Unit,
-    onAiReportClick: (AiInsightReportEntity) -> Unit,
     onSharePayslip: (ParsedPayslip) -> Unit,
     onDismissAction: () -> Unit,
     onDeleteRequest: () -> Unit,
     onConfirmDelete: (ParsedPayslip) -> Unit,
     onDismissDelete: () -> Unit,
-    onDismissAiReport: () -> Unit,
     viewModel: PayslipViewModel,
     onNavigateToInsights: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     HistoryMainView(
-        uiState = uiState, aiReports = aiReports, ledgerRecords = ledgerRecords,
-        activeActionPayslip = activeActionPayslip, pendingDeletePayslip = pendingDeletePayslip,
-        selectedAiReport = selectedAiReport, onSelectDetail = onSelectDetail,
-        onOpenOriginal = onOpenOriginal, onLongPress = onLongPress,
-        onSwipeDelete = onSwipeDelete, onAiReportClick = onAiReportClick,
-        onSharePayslip = onSharePayslip, onDismissAction = onDismissAction,
-        onDeleteRequest = onDeleteRequest, onConfirmDelete = onConfirmDelete,
-        onDismissDelete = onDismissDelete, onDismissAiReport = onDismissAiReport,
-        onNavigateToInsights = onNavigateToInsights, expandedYears = uiState.expandedHistoryYears,
-        onToggleYear = viewModel::toggleHistoryYearExpanded, initialScrollIndex = uiState.historyScrollIndex,
-        initialScrollOffset = uiState.historyScrollOffset, onScrollPositionChanged = viewModel::saveHistoryScrollPosition,
+        uiState = uiState,
+        ledgerRecords = ledgerRecords,
+        activeActionPayslip = activeActionPayslip,
+        pendingDeletePayslip = pendingDeletePayslip,
+        onSelectDetail = onSelectDetail,
+        onOpenOriginal = onOpenOriginal,
+        onLongPress = onLongPress,
+        onSwipeDelete = onSwipeDelete,
+        onSharePayslip = onSharePayslip,
+        onDismissAction = onDismissAction,
+        onDeleteRequest = onDeleteRequest,
+        onConfirmDelete = onConfirmDelete,
+        onDismissDelete = onDismissDelete,
+        onNavigateToInsights = onNavigateToInsights,
+        expandedYears = uiState.expandedHistoryYears,
+        onToggleYear = viewModel::toggleHistoryYearExpanded,
+        initialScrollIndex = uiState.historyScrollIndex,
+        initialScrollOffset = uiState.historyScrollOffset,
+        onScrollPositionChanged = viewModel::saveHistoryScrollPosition,
         modifier = modifier,
     )
 }
@@ -151,7 +150,6 @@ private fun HistoryContent(
 private fun HistoryOverlays(
     activeActionPayslip: ParsedPayslip?,
     pendingDeletePayslip: ParsedPayslip?,
-    selectedAiReport: AiInsightReportEntity?,
     onDismissAction: () -> Unit,
     onViewReplica: () -> Unit,
     onViewOriginal: () -> Unit,
@@ -159,7 +157,6 @@ private fun HistoryOverlays(
     onDeleteRequest: () -> Unit,
     onConfirmDelete: () -> Unit,
     onDismissDelete: () -> Unit,
-    onDismissAiReport: () -> Unit,
 ) {
     activeActionPayslip?.let { payslip ->
         HistoryActionBottomSheet(
@@ -176,14 +173,6 @@ private fun HistoryOverlays(
         HistoryDeleteConfirmationDialog(
             onConfirm = onConfirmDelete,
             onDismiss = onDismissDelete,
-        )
-    }
-
-    selectedAiReport?.let { report ->
-        AiInsightsBottomSheet(
-            aiInsights = report.reportJSON,
-            onDismissRequest = onDismissAiReport,
-            onRegenerateClick = null,
         )
     }
 }

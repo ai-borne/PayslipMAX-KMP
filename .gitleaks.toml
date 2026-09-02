@@ -1,5 +1,6 @@
 # .gitleaks.toml — Custom Secret Scanning Rules for PayslipMax
-# Runs in CI via gitleaks/gitleaks-action@v2
+# Runs in CI via the gitleaks CLI (.github/workflows/ci.yml) and locally via
+# scripts/git-pre-commit.sh / scripts/git-pre-push.sh.
 # Detects API keys, Firebase secrets, and crypto material before they reach source control.
 
 title = "PayslipMax Gitleaks Config"

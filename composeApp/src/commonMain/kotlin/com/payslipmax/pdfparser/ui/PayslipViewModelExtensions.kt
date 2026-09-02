@@ -1,7 +1,6 @@
 package com.payslipmax.pdfparser.ui
 
 import androidx.lifecycle.viewModelScope
-import com.payslipmax.pdfparser.domain.ParsedPayslip
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -28,20 +27,6 @@ fun PayslipViewModel.clearAllData() {
             _uiState.update { it.copy(isLoading = false, error = "Failed to clear data: ${e.message}") }
         }
     }
-}
-
-fun PayslipViewModel.generateAiInsights(payslip: ParsedPayslip) {
-    if (financialIntelligenceRepository == null) {
-        _uiState.update {
-            it.copy(aiError = "AI insights service is unavailable. Please restart the app.")
-        }
-        return
-    }
-    launchAiGeneration(payslip)
-}
-
-fun PayslipViewModel.clearAiInsights() {
-    _uiState.update { it.copy(aiInsights = null, aiError = null) }
 }
 
 fun PayslipViewModel.exportBackup(
@@ -73,7 +58,43 @@ fun PayslipViewModel.importBackup(
 fun PayslipViewModel.setPremiumEnabled(enabled: Boolean) {
     viewModelScope.launch {
         val current = repository.getSettings() ?: com.payslipmax.pdfparser.database.AppSettingsEntity()
-        repository.saveSettings(current.copy(isPremiumEnabled = enabled))
+        if (current.isPremiumEnabled != enabled) {
+            repository.saveSettings(current.copy(isPremiumEnabled = enabled))
+        }
+    }
+}
+
+fun PayslipViewModel.observeSubscriptionLifecycle() {
+    viewModelScope.launch {
+        billingManager.subscriptionState.collect { state ->
+            when (state) {
+                is com.payslipmax.pdfparser.billing.SubscriptionState.Active -> setPremiumEnabled(true)
+                is com.payslipmax.pdfparser.billing.SubscriptionState.Inactive -> setPremiumEnabled(false)
+                is com.payslipmax.pdfparser.billing.SubscriptionState.Unknown -> {
+                    // Offline or cold startup: preserve existing Room DB cache
+                }
+            }
+        }
+    }
+}
+
+fun PayslipViewModel.launchPurchaseFlow(onResult: ((com.payslipmax.pdfparser.billing.PurchaseResult) -> Unit)? = null) {
+    viewModelScope.launch {
+        val result = billingManager.launchBillingFlow()
+        if (result is com.payslipmax.pdfparser.billing.PurchaseResult.Success) {
+            setPremiumEnabled(true)
+        }
+        onResult?.invoke(result)
+    }
+}
+
+fun PayslipViewModel.restorePurchases(onResult: ((com.payslipmax.pdfparser.billing.PurchaseResult) -> Unit)? = null) {
+    viewModelScope.launch {
+        val result = billingManager.restorePurchases()
+        if (result is com.payslipmax.pdfparser.billing.PurchaseResult.Success) {
+            setPremiumEnabled(true)
+        }
+        onResult?.invoke(result)
     }
 }
 

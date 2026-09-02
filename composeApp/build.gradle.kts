@@ -23,6 +23,21 @@ kotlin {
         }
     }
 
+    val isMac = System.getProperty("os.name").orEmpty().contains("Mac", ignoreCase = true)
+    val xcodeDeveloperDir =
+        providers.environmentVariable("DEVELOPER_DIR")
+            .orElse(
+                if (isMac && file("/usr/bin/xcode-select").exists()) {
+                    providers.exec {
+                        commandLine("xcode-select", "-p")
+                    }.standardOutput.asText.map { it.trim() }
+                } else {
+                    providers.provider { "/Applications/Xcode.app/Contents/Developer" }
+                },
+            )
+            .orElse("/Applications/Xcode.app/Contents/Developer")
+            .get()
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -31,8 +46,20 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "composeApp"
             isStatic = true
-            binaryOption("bundleId", "com.payslipmax.pdfparser")
+            binaryOption("bundleId", "in.aiborne.payslipmax")
             export(project(":shared"))
+        }
+        iosTarget.binaries.all {
+            val isSimulator = iosTarget.name.contains("Simulator") || iosTarget.name.endsWith("X64")
+            val platform = if (isSimulator) "iphonesimulator" else "iphoneos"
+            val sdk = if (isSimulator) "iPhoneSimulator" else "iPhoneOS"
+            linkerOpts(
+                "-L$xcodeDeveloperDir/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$platform",
+                "-L$xcodeDeveloperDir/Platforms/$sdk.platform/Developer/SDKs/$sdk.sdk/usr/lib/swift",
+                "-lswift_Concurrency",
+                "-lswiftCore",
+                "-lswiftFoundation",
+            )
         }
         iosTarget.compilations.all {
             compileTaskProvider.configure {
@@ -68,6 +95,7 @@ kotlin {
             implementation(libs.firebase.crashlytics)
             implementation(libs.firebase.analytics)
             // Play Asset Delivery — MainActivity wires the AssetPackManager confirmation-dialog hook
+            implementation(libs.play.asset.delivery)
             implementation(libs.play.asset.delivery.ktx)
             // asset-delivery-ktx transitively pulls androidx.fragment:fragment:1.1.0, too old for
             // registerForActivityResult (lint: InvalidFragmentVersionForActivityResult) — force it
@@ -98,21 +126,80 @@ kotlin {
     }
 }
 
+// Resolve release signing credentials from keystore.properties, Gradle properties, or environment variables
+val keystorePropertiesFile =
+    rootProject.file("keystore.properties").takeIf { it.exists() }
+        ?: project.file("keystore.properties").takeIf { it.exists() }
+val keystoreProperties =
+    Properties().apply {
+        if (keystorePropertiesFile != null) {
+            keystorePropertiesFile.inputStream().use { load(it) }
+        }
+    }
+
+fun getSigningProperty(
+    key: String,
+    envKey: String,
+): String? =
+    keystoreProperties.getProperty(key)
+        ?: providers.gradleProperty(key).orNull
+        ?: providers.gradleProperty(envKey).orNull
+        ?: providers.environmentVariable(envKey).orNull
+        ?: providers.environmentVariable(key).orNull
+
+val releaseKeystorePath = getSigningProperty("KEYSTORE_PATH", "RELEASE_KEYSTORE_PATH")
+val releaseKeystorePassword = getSigningProperty("KEYSTORE_PASSWORD", "RELEASE_KEYSTORE_PASSWORD")
+val releaseKeyAlias = getSigningProperty("KEY_ALIAS", "RELEASE_KEY_ALIAS")
+val releaseKeyPassword = getSigningProperty("KEY_PASSWORD", "RELEASE_KEY_PASSWORD")
+
+val isReleaseSigningConfigured =
+    !releaseKeystorePath.isNullOrBlank() &&
+        !releaseKeystorePassword.isNullOrBlank() &&
+        !releaseKeyAlias.isNullOrBlank() &&
+        !releaseKeyPassword.isNullOrBlank()
+
 android {
     namespace = "com.payslipmax.pdfparser"
     compileSdk = 35
     defaultConfig {
-        applicationId = "com.payslipmax.pdfparser"
+        applicationId = "in.aiborne.payslipmax"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
+        versionCode = 4
         versionName = appVersionName
     }
     // On-demand asset pack carrying the Tier 6 Gemma base model (Play Asset Delivery).
     assetPacks += listOf(":gemmaModelPack")
+
+    signingConfigs {
+        if (isReleaseSigningConfigured) {
+            create("release") {
+                val storePath = releaseKeystorePath!!
+                val resolvedStoreFile =
+                    if (File(storePath).isAbsolute) {
+                        File(storePath)
+                    } else {
+                        rootProject.file(storePath)
+                    }
+                storeFile = resolvedStoreFile
+                storePassword = releaseKeystorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+            if (isReleaseSigningConfigured) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
     packaging {

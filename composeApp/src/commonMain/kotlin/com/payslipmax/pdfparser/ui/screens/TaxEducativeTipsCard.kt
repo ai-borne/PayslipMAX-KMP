@@ -12,8 +12,10 @@ import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 
 @Composable
 fun TaxEducativeTipsCard(
+    activeRegime: String,
     modifier: Modifier = Modifier,
 ) {
+    val isNewRegime = activeRegime == "NEW"
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
@@ -33,11 +35,11 @@ fun TaxEducativeTipsCard(
 
             TaxTipItem(
                 title = AppStringsPremium.taxPlanningTip1Title,
-                description = AppStringsPremium.taxPlanningTip1Desc,
+                description = if (isNewRegime) AppStringsPremium.taxPlanningTip1DescNew else AppStringsPremium.taxPlanningTip1DescOld,
             )
             TaxTipItem(
                 title = AppStringsPremium.taxPlanningTip2Title,
-                description = AppStringsPremium.taxPlanningTip2Desc,
+                description = if (isNewRegime) AppStringsPremium.taxPlanningTip2DescNew else AppStringsPremium.taxPlanningTip2DescOld,
             )
             TaxTipItem(
                 title = AppStringsPremium.taxPlanningTip3Title,

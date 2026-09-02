@@ -2,5 +2,5 @@
 #include "../../version.properties"
 
 TEAM_ID=QMMDZ9Y4UF
-BUNDLE_ID=com.payslipmax.pdfparser
+BUNDLE_ID=in.aiborne.payslipmax
 APP_NAME=PayslipMax

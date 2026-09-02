@@ -9,7 +9,7 @@ interface PdfParser {
      * @param password The decryption password (e.g. "535d04").
      * @return A Result containing the ParsedPayslip or an exception on failure.
      */
-    fun decryptAndParse(
+    suspend fun decryptAndParse(
         pdfBytes: ByteArray,
         password: String,
         filename: String = "payslip.pdf",
@@ -21,7 +21,7 @@ interface PdfParser {
      * reconstruction and reconciliation lives in common, device-independent code.
      * @return A Result containing the [TokenizedPayslip] or an exception on failure.
      */
-    fun extractTokens(
+    suspend fun extractTokens(
         pdfBytes: ByteArray,
         password: String,
         filename: String = "payslip.pdf",
@@ -29,13 +29,13 @@ interface PdfParser {
 }
 
 expect class PlatformPdfParser() : PdfParser {
-    override fun decryptAndParse(
+    override suspend fun decryptAndParse(
         pdfBytes: ByteArray,
         password: String,
         filename: String,
     ): Result<ParsedPayslip>
 
-    override fun extractTokens(
+    override suspend fun extractTokens(
         pdfBytes: ByteArray,
         password: String,
         filename: String,

@@ -125,23 +125,4 @@ interface PayslipDao {
 
     @Query("DELETE FROM representation_drafts")
     suspend fun clearAllRepresentationDrafts()
-
-    // AiInsightReport queries
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAiInsightReport(report: AiInsightReportEntity)
-
-    @Query("SELECT * FROM ai_insight_reports WHERE payslipMonth = :monthStr LIMIT 1")
-    suspend fun getAiInsightReportByMonth(monthStr: String): AiInsightReportEntity?
-
-    @Query("SELECT * FROM ai_insight_reports ORDER BY generatedDate DESC")
-    fun getAllAiInsightReports(): Flow<List<AiInsightReportEntity>>
-
-    @Query("DELETE FROM ai_insight_reports WHERE id = :id")
-    suspend fun deleteAiInsightReport(id: String)
-
-    @Query("DELETE FROM ai_insight_reports WHERE payslipMonth = :monthStr")
-    suspend fun deleteAiInsightReportByMonth(monthStr: String)
-
-    @Query("DELETE FROM ai_insight_reports")
-    suspend fun clearAllAiInsightReports()
 }

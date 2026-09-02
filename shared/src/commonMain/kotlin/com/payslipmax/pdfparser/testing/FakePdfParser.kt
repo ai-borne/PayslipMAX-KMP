@@ -11,7 +11,7 @@ class FakePdfParser : PdfParser {
     /** Optional per-filename override of [result], for tests needing different outcomes per call. */
     var resultsByFilename: Map<String, Result<ParsedPayslip>> = emptyMap()
 
-    override fun decryptAndParse(
+    override suspend fun decryptAndParse(
         pdfBytes: ByteArray,
         password: String,
         filename: String,
@@ -19,7 +19,7 @@ class FakePdfParser : PdfParser {
         return resultsByFilename[filename] ?: result
     }
 
-    override fun extractTokens(
+    override suspend fun extractTokens(
         pdfBytes: ByteArray,
         password: String,
         filename: String,

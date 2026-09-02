@@ -12,6 +12,7 @@ import com.payslipmax.pdfparser.insights.TaxLedgerAggregator
 import com.payslipmax.pdfparser.insights.TaxStoryNarrative
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
+import com.payslipmax.pdfparser.ui.theme.AppStringsTaxPlanner
 
 @Composable
 fun TaxNarrativeLedgerCard(
@@ -60,7 +61,7 @@ private fun MissingMonthNudgeBanner(nudgeText: String) {
             horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
             Text(
-                text = "💡 $nudgeText",
+                text = "${AppStringsTaxPlanner.nudgeBannerPrefix}$nudgeText",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onTertiaryContainer,
             )
@@ -79,8 +80,8 @@ private fun MonthlyLedgerTable(items: List<MonthlyLedgerItem>) {
         items.forEach { item ->
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(text = item.monthName, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1.2f), color = MaterialTheme.colorScheme.onSurface)
-                Text(text = "₹${TaxLedgerAggregator.formatIndianCurrency(item.tdsDeducted)}", style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface)
-                Text(text = "₹${TaxLedgerAggregator.formatIndianCurrency(item.dsopContribution)}", style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface)
+                Text(text = "${AppStringsTaxPlanner.rupeeSymbol}${TaxLedgerAggregator.formatIndianCurrency(item.tdsDeducted)}", style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface)
+                Text(text = "${AppStringsTaxPlanner.rupeeSymbol}${TaxLedgerAggregator.formatIndianCurrency(item.dsopContribution)}", style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.onSurface)
             }
         }
     }

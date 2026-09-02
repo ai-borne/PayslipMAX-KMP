@@ -550,6 +550,44 @@ graph TD
 - `LocalGemmaProvider` — on-device (placeholder → upgraded to dynamic `AiInsightReport` JSON construction).
 - `AIProviderManager` — selects provider; toggleable via Settings (`useLocalAi` preference, DB schema v7).
 
+### Tax Planner: Two-Track Model (ADR-3/ADR-4)
+
+Full plan and per-phase changelog: `docs/Plan/04_TaxPlannerGoldStandard.md`. Summary of the architecture
+that shipped, for readers who land here first:
+
+`DualRegimeEngine` (SSOT for slabs/rebate/surcharge/cess — no hardcoded copy exists elsewhere, D2) computes
+old- and new-regime liability from the FY-versioned `TaxRuleKnowledgeBase` (`tax/rules/*` slab tables,
+FY 2015-16 → FY 2026-27). Two tracks are surfaced side by side rather than one blended number (ADR-3):
+
+| Track | Source of truth | Answers |
+|---|---|---|
+| **TDS track** | PCDA's own printed page-4 `totalTaxPayable`, parsed verbatim (`TaxAndSavings`) | "What will actually be deducted from my pay?" |
+| **Liability track** | `DualRegimeEngine`, current law for that FY | "What will I finally owe when I file?" |
+
+`TwoTrackReconciliationEngine.reconcile` classifies the delta between the two tracks as
+`REFUND_EXPECTED`/`TOP_UP_DUE`/`MATCHED` — PCDA is not assumed correct (it can lag a Finance Act by months;
+see the plan's §1.3), so blind anchoring on PCDA would import PCDA's own error into the headline number.
+`RegimeDecisionPlanner` splits the old single "switch regime" opportunity into the two decisions ADR-4
+identified as having different reversibility: the **PCDA(O) intimation** (changes future TDS, irreversible
+mid-year per CBDT Circular 4/2023) and the **ITR election** under Section 139(1) (the figure that finally
+counts, reversible independent of what PCDA was told — except Old Regime is unavailable in a belated
+return, `belatedReturnTrapWarning`). Both funnel into `WealthOptimizationEngine.analyzeLedger` →
+`OptimizationResult`, rendered by one card per concept in `ui/screens/Tax*.kt` (`TaxPlanningScreen.kt` stays
+an assembler; see D18/Rule 4 — every string lives in `AppStringsTaxPlanner`, zero literal `₹` in composables,
+enforced by `TaxScreensNoLiteralCurrencyTest`).
+
+**ADR-2 (fail-loud rule resolution).** `TaxRuleKnowledgeBase.resolve(fy)` returns a sealed
+`TaxRuleResolution` (`Resolved`/`OutOfRange`) rather than ever silently substituting another FY's numbers.
+Every production call site that used to reach the nearest-FY-fallback `getRulesForFy` — `DualRegimeEngine`'s
+`calculateOldRegimeTax`/`calculateNewRegimeTax`/`compareRegimes`/`marginalRate`, and `TaxPlanningScreen`'s
+rule-pack footer — now resolves explicitly and returns/propagates an outcome type
+(`RegimeTaxOutcome`/`RegimeComparisonOutcome`, `Double?` for the marginal rate) up through
+`WealthOptimizationEngine.OptimizationResult.taxRulesUnavailable` to a dedicated
+"tax rules unavailable for FY X" banner, replacing every regime/liability card instead of rendering
+numbers computed off the wrong year. `getRulesForFy` itself remains only as a convenience wrapper for the
+golden-harness test (`PcdaTaxParityTest`, which only ever drives FYs already present in the committed
+corpus) and the small test suite that exercises it directly.
+
 ---
 
 ## 9. Key File Reference
@@ -718,6 +756,7 @@ Selected fixes with enough context to explain *why* the current design looks the
   - *E2E Validation (Phase 6)*: Instrumented E2E UI verification run via `connectedAndroidTest` on the connected ADB device/emulator, verifying full integration.
 - **Phantom-numbers sprint: killed pin-code/year ledger leaks (Phases 0–4).** Root cause: `tableTokens` captures the *entire* table page (header address/statement-year block, footer increment-date/disclaimer) with no learned vertical body, and a bare integer was unconditionally a valid amount — so a pin code or year aligning near a column x-band could read as a phantom line item. Governing principle throughout: keep-and-flag by default; only remove a candidate when geometry or arithmetic *proves* it phantom, since a false-negative (dropping real pay) is categorically worse than a recoverable phantom. **Phase 0** added the assertion surface (`PhantomFreeCorpusInvariantTest` D1 "no phantom-shaped raw entry" / D3 "reconciles or flagged") run over the all corpus plus a new `apr_14` fixture (the only committed source with a full address/pin-code block), with a documented quarantine for the 10 real leaks found. **Phase 1** (`VerticalBandFilter.kt`, new file) learned the table body's top bound from the first cleanly-matched mandatory key (BPAY) and its bottom bound from the printed Gross Pay/Total Deductions row (falling back to last-clean-match + median row height) — this alone closed 9 of the 10 quarantined leaks, which turned out to be a "Details of Transactions" narrative note bleeding into the raw channel below the totals row, not the originally-hypothesized header/footer pin-year leak (that was already being dropped by the existing column-band acceptance radius). **Phase 2** (`RawLabelNoiseFilter.isDatePlaceOnlyNoise`) added a narrow label-shape backstop for unmatched candidates built entirely from administrative-filler stopwords, guarded to never fire on a real, if terse, labelled allowance (verified against the `TPTADA=1908/2088` landmine). **Phase 3** (`PhantomReconciler.kt`, new file) closed the residual case — `01_jan_18`'s two raw deductions had real alphabetic labels that no shape-based rule could safely remove, but their sum (`1915 + 22314 = 24229`) exactly matched that fixture's deduction-side overshoot vs the printed total — via bounded subset-sum over the small raw channel only (never the trusted structured maps), reusing `SchemaValidator.TOLERANCE`. Also exposed `ReconciledTotals.trueGross`/`trueDeductions` as SSOT fields instead of recomputing the ledger-adjustment formula a second time in `ReconciliationSolver`. **Phase 4** emptied the quarantine (already zero after Phase 3) and ran the full verification gate. **Verification:** 140-fixture corpus regression + `PhantomFreeCorpusInvariantTest` green, `ktlintCheck` clean, `iosSimulatorArm64Test` green (parity + Native perf gate, no new regex hot path — this sprint is pure arithmetic/geometry), tech-debt audit clean on all touched files. See the plan's own Phase 0–4 write-up for full detail; **out of scope, tracked separately:** page-2 earnings spill-over (a false-negative — missing real pay — with a distinct root cause; see [§12](#12-things-to-do)).
 - **Gemma model install telemetry & opt-out controls (Phases 1–4).** Declared `firebase-analytics` and `firebase-crashlytics` dependencies in the common and platform modules. Created `GemmaInstallTelemetry` interface and `BaseGemmaInstallTelemetry` implementing event throttling (0%, 25%, 50%, 75%, 100%), success, and failure logging, with automatic respect for the user's opt-out preference. Added `AndroidGemmaInstallTelemetry` mapping to Firebase Analytics/Crashlytics (avoiding native stubs crash during local JVM unit tests via early null return on analytics availability), and `IosGemmaInstallTelemetry` wrapping a native Swift-registrable delegate callback (`SwiftGemmaInstallTelemetry` registered in iOS `AppDelegate`). Wired the install telemetry stream in `PayslipViewModel` / `installGemmaBaseModel`. Added `isTelemetryEnabled` field in Room `AppSettingsEntity` database schema (bumped Room schema version to `10` with autoMigration) and updated `PayslipUiState` / settings screens to present an anonymous telemetry opt-out switch in the Security & Privacy Settings UI, fully supported by robust JVM unit/integration tests (`GemmaInstallTelemetryIntegrationTest`).
+- **Tax Planner "Gold Standard" rebuild, Phase 7 (final phase; full plan/changelog in `docs/Plan/04_TaxPlannerGoldStandard.md`).** Preceding phases (0–6) took the engine from a 24.9%-overstated, FY2023-24-vintage tax computation to a slab-driven, FY-versioned SSOT reproducing PCDA to within 0.2%, added the two-track TDS/liability model (see the new subsection above), and rebuilt the UI around it. Phase 7 closed out the remaining defects: **D16** — deleted the dead parallel `TaxPlannerResult`/`TaxPlannerResultBuilder`/`WealthOptimizationEngine.buildTaxPlannerResult` path together with the one test that exercised it (`WealthOptimizationEngineAuditTest`) — the plan's own text named `TaxPlannerViewStateTest.kt` for deletion, but that file had since been repurposed to test the live `OptimizationResult` path and was correctly left alone, a deviation flagged rather than silently actioned. **D13** — tips 1 and 2 (§10(14) field-allowance caps, §80C via DSOP+AGIF) were flatly wrong for a New-Regime user (neither section applies), so `TaxEducativeTipsCard` now takes the active regime and selects an Old/New copy variant per tip; tip 4's false "submit before December" deadline was rewritten to the true year-round-utility framing. **D17** — the footer's hardcoded `"Version 2026.1"`, disconnected from the rule pack that actually computed the numbers on screen, now reads `rules.version`/`rules.lastVerifiedDate` straight from `TaxRuleKnowledgeBase`. **ADR-2 wiring** — see the new subsection above; this was the one item explicitly deferred out of Phase 4 rather than fixed as a drive-by, and is now threaded end-to-end. **New**: an advice disclaimer (verify with PCDA(O)/a CA before switching regime), shown alongside actionable checklist items now that the screen recommends executable financial moves. **Tech debt found and removed in the same pass**: `ConversationalTaxNarrativeEngine`'s "peer benchmark" rate/message computation (a second, redundant `DualRegimeEngine.compareRegimes` call plus four magic numbers) was orphaned by Phase 6's deletion of the card that consumed it — confirmed zero remaining references anywhere (UI or tests) and removed outright, which also reduced the ADR-2 wiring surface by one call site. **Verification**: full `./gradlew check` (both variants), `ktlintCheck`, `check_tech_debt_limits.py --strict` (0 violations), and `linkDebugFrameworkIosSimulatorArm64` all green; `PcdaTaxParityTest` unaffected (drives `DualRegimeEngine` off known corpus FYs only, migrated to unwrap the new outcome types).
 
 ---
 

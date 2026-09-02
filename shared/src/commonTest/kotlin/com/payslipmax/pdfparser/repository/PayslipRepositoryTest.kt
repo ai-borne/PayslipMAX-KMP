@@ -104,14 +104,12 @@ class PayslipRepositoryTest {
             // Insert records directly via fakeDao
             fakeDao.insertLedgerRecord(LedgerRecordEntity(dateStr = "05/2024", year = 2024, monthNum = 5, basicPay = 10000.0, dearnessAllowance = 1000.0, militaryServicePay = 1000.0, transportAllowance = 100.0, transportAllowanceDa = 10.0, houseRentAllowance = 500.0, grossPay = 15000.0, dsopSubscription = 1000.0, incomeTax = 1000.0, netPay = 13000.0))
             fakeDao.insertFinancialInsight(FinancialInsightEntity("id1", "05/2024", "NARRATIVE", "Title", "Markdown", "INFO", 1234567890L))
-            fakeDao.insertAiInsightReport(AiInsightReportEntity("id3", "05/2024", 1234567890L, "Narrative report", "1.0"))
 
             // Assert inserted
             assertNotNull(repository.getPayslipByDate("05/2024"))
             assertNotNull(repository.getPayslipPdf("05/2024"))
             assertEquals(1, fakeDao.getAllLedgerRecords().first().size)
             assertEquals(1, fakeDao.getAllFinancialInsights().first().size)
-            assertEquals(1, fakeDao.getAllAiInsightReports().first().size)
 
             // Delete
             repository.deletePayslip("05/2024")
@@ -121,7 +119,6 @@ class PayslipRepositoryTest {
             assertNull(repository.getPayslipPdf("05/2024"))
             assertTrue(fakeDao.getAllLedgerRecords().first().isEmpty())
             assertTrue(fakeDao.getAllFinancialInsights().first().isEmpty())
-            assertTrue(fakeDao.getAllAiInsightReports().first().isEmpty())
         }
 
     @Test
@@ -135,7 +132,6 @@ class PayslipRepositoryTest {
             fakeDao.insertLedgerRecord(LedgerRecordEntity(dateStr = "01/2024", year = 2024, monthNum = 1, basicPay = 10000.0, dearnessAllowance = 1000.0, militaryServicePay = 1000.0, transportAllowance = 100.0, transportAllowanceDa = 10.0, houseRentAllowance = 500.0, grossPay = 15000.0, dsopSubscription = 1000.0, incomeTax = 1000.0, netPay = 13000.0))
             fakeDao.insertFinancialInsight(FinancialInsightEntity("id1", "01/2024", "NARRATIVE", "Title", "Markdown", "INFO", 1234567890L))
             fakeDao.insertRepresentationDraft(RepresentationDraftEntity("id2", "01/2024", "MISSING_HRA", "PCDA_O_PUNE", "Subject", "Body", 1234567890L))
-            fakeDao.insertAiInsightReport(AiInsightReportEntity("id3", "01/2024", 1234567890L, "Narrative report", "1.0"))
 
             // Verify they exist in DAO
             assertEquals(1, repository.getAllPayslips().first().size)
@@ -143,7 +139,6 @@ class PayslipRepositoryTest {
             assertEquals(1, fakeDao.getAllLedgerRecords().first().size)
             assertEquals(1, fakeDao.getAllFinancialInsights().first().size)
             assertEquals(1, fakeDao.getAllRepresentationDrafts().first().size)
-            assertEquals(1, fakeDao.getAllAiInsightReports().first().size)
 
             // Clear all
             repository.clearAll()
@@ -154,7 +149,6 @@ class PayslipRepositoryTest {
             assertTrue(fakeDao.getAllLedgerRecords().first().isEmpty())
             assertTrue(fakeDao.getAllFinancialInsights().first().isEmpty())
             assertTrue(fakeDao.getAllRepresentationDrafts().first().isEmpty())
-            assertTrue(fakeDao.getAllAiInsightReports().first().isEmpty())
         }
 
     @Test

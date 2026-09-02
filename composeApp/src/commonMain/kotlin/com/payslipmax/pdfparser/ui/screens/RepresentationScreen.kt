@@ -58,9 +58,12 @@ fun RepresentationScreen(
     LaunchedEffect(selectedDraft) { onUnsavedStateChanged(selectedDraft != null) }
 
     if (showUpgradeSheet) {
+        val premiumPrice by viewModel.premiumPriceState.collectAsState()
         PremiumUpgradeBottomSheet(
             onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { viewModel.setPremiumEnabled(true) },
+            onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
+            onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
+            price = premiumPrice,
         )
     }
 

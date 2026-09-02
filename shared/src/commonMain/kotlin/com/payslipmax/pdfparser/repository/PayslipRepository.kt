@@ -153,7 +153,6 @@ class PayslipRepository(
             payslipDao.deleteCorrection(dateStr)
             payslipDao.deletePayslipPdf(dateStr)
             payslipDao.deleteLedgerRecord(dateStr)
-            payslipDao.deleteAiInsightReportByMonth(dateStr)
             payslipDao.deleteFinancialInsightsByMonth(dateStr)
         }
 
@@ -167,7 +166,6 @@ class PayslipRepository(
             payslipDao.clearAllLedgerRecords()
             payslipDao.clearAllFinancialInsights()
             payslipDao.clearAllRepresentationDrafts()
-            payslipDao.clearAllAiInsightReports()
             payslipDao.clearAllPdfs()
         }
 

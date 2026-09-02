@@ -16,6 +16,7 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 fun PremiumSettingsCard(
     isPremiumEnabled: Boolean,
     onUpgradePrompt: () -> Unit,
+    price: String = AppStrings.settingsPremiumPlanPrice,
     modifier: Modifier = Modifier,
 ) {
     val isDark = androidx.compose.foundation.isSystemInDarkTheme()
@@ -35,7 +36,32 @@ fun PremiumSettingsCard(
         colors = CardDefaults.cardColors(containerColor = containerColor),
         border = BorderStroke(AppDimensions.BorderThin, borderColor),
     ) {
-        PremiumCardContent(isPremiumEnabled = isPremiumEnabled)
+        PremiumCardContent(isPremiumEnabled = isPremiumEnabled, price = price)
+    }
+}
+
+@Composable
+fun PremiumSettingsCardContentRow(
+    isPremiumEnabled: Boolean,
+    onUpgradePrompt: () -> Unit,
+    price: String = AppStrings.settingsPremiumPlanPrice,
+    modifier: Modifier = Modifier,
+) {
+    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
+    val containerColor = getPremiumCardContainerColor(isPremiumEnabled, isDark)
+
+    Surface(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable {
+                    if (!isPremiumEnabled) {
+                        onUpgradePrompt()
+                    }
+                },
+        color = containerColor,
+    ) {
+        PremiumCardContent(isPremiumEnabled = isPremiumEnabled, price = price)
     }
 }
 
@@ -67,7 +93,10 @@ private fun getPremiumCardBorderColor(isPremiumEnabled: Boolean) =
     }
 
 @Composable
-private fun PremiumCardContent(isPremiumEnabled: Boolean) {
+private fun PremiumCardContent(
+    isPremiumEnabled: Boolean,
+    price: String,
+) {
     Row(
         modifier =
             Modifier
@@ -81,11 +110,11 @@ private fun PremiumCardContent(isPremiumEnabled: Boolean) {
             modifier = Modifier.weight(1f).padding(end = AppDimensions.SpacingSmall),
         ) {
             Text(
-                text = AppStrings.proTeaserCrownIcon,
+                text = AppStrings.premiumTeaserCrownIcon,
                 fontSize = AppDimensions.TextSizeHuge,
                 modifier = Modifier.padding(end = AppDimensions.SpacingMedium),
             )
-            PremiumTextDetails(isPremiumEnabled = isPremiumEnabled)
+            PremiumTextDetails(isPremiumEnabled = isPremiumEnabled, price = price)
         }
         if (!isPremiumEnabled) {
             Text(
@@ -98,10 +127,13 @@ private fun PremiumCardContent(isPremiumEnabled: Boolean) {
 }
 
 @Composable
-private fun PremiumTextDetails(isPremiumEnabled: Boolean) {
+private fun PremiumTextDetails(
+    isPremiumEnabled: Boolean,
+    price: String,
+) {
     Column {
         Text(
-            text = if (isPremiumEnabled) AppStrings.settingsProPlanActive else AppStrings.settingsProPlanUpgradeTitle,
+            text = if (isPremiumEnabled) AppStrings.settingsPremiumPlanActive else AppStrings.settingsPremiumPlanUpgradeTitle,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = if (isPremiumEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
@@ -110,9 +142,9 @@ private fun PremiumTextDetails(isPremiumEnabled: Boolean) {
         Text(
             text =
                 if (isPremiumEnabled) {
-                    AppStrings.settingsProPlanSubscribedNote
+                    AppStrings.settingsPremiumPlanSubscribedNote
                 } else {
-                    AppStrings.settingsProPlanUpgradeSubtitle
+                    "${AppStrings.settingsPremiumPlanUpgradeSubtitlePrefix} ($price)"
                 },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

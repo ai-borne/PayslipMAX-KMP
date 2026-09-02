@@ -1,0 +1,97 @@
+Listed directory PDFParser
+Searched for "class .*Parser|fun parse|class .*Extractor|PDFParser|PdfParser"
+Listed directory parser
+Listed directory detection
+Listed directory pipeline
+Listed directory parser
+Listed directory parser
+Viewed SharedParsingPipeline.kt:1-227
+Viewed PdfParser.kt:1-250
+Viewed IosTokenExtractor.kt:1-67
+Viewed SpatialTextExtractor.kt:1-100
+Viewed AndroidTokenExtractor.kt:1-67
+Viewed ReconciliationEngine.kt:1-185
+Viewed ReconciliationSolver.kt:1-223
+Viewed ParserUtils.kt:1-150
+Searched for "findKeyedNumber"
+Viewed WholeWordScanner.kt:1-69
+Viewed TokenTableClassifier.kt:1-264
+Viewed GrammarAwareParser.kt:1-41
+Viewed GemmaFallbackExtractor.kt:1-39
+Searched for "applyGemmaFallback"
+Viewed GemmaFallbackMerger.kt:1-50
+Ran command: `./gradlew test`
+Viewed StatementPeriodExtractor.kt:1-40
+
+Based on a comprehensive codebase audit of the PDF parser across `commonMain`, `androidMain`, and `iosMain`, **yes, there are several critical vulnerabilities and real-world failure points that should be improved** before launching to production.
+
+Below is the detailed breakdown of findings from the audit, followed by a proposed phase-wise plan.
+
+---
+
+## 🔍 Deep Codebase Audit Findings
+
+### 1. 🚨 Critical ANR & Threading Risk: Synchronous `runBlocking` Calls
+* **Files**: [SharedParsingPipeline.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/pipeline/SharedParsingPipeline.kt#L208-L219) & [GemmaFallbackMerger.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/GemmaFallbackMerger.kt#L12-L14)
+* **Issue**: Both `applyGemmaFallback` and `runDiagnostic` invoke `kotlinx.coroutines.runBlocking { ... }` inside synchronous parser execution (`SharedParsingPipeline.parse`).
+* **Real-World Impact**: When `decryptAndParse` is called on the UI thread (e.g. when a user picks a PDF file), running model inference via `runBlocking` will freeze the application thread. On Android, this triggers **ANR (Application Not Responding)** dialogs; on iOS Kotlin/Native, calling `runBlocking` during native C++ interop (LiteRT-LM) can trigger thread deadlocks or crashes.
+
+---
+
+### 2. ⚠️ High Data Loss Risk: Single-Page Table Token Truncation
+* **Files**: [AndroidTokenExtractor.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/androidMain/kotlin/com/payslipmax/pdfparser/parser/AndroidTokenExtractor.kt#L28) & [IosTokenExtractor.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/parser/IosTokenExtractor.kt#L31)
+* **Issue**: The platform token extractors identify a single table page index (`tableIdx = i`) and extract tokens **only for that single page** (`scanPageTokens(document, tableIdx)`).
+* **Real-World Impact**: If an officer has a multi-page payslip (e.g., prolonged leave, back pay adjustments, tax annexures, or longer payslips spanning 2–3 pages), **all earnings and deductions on page 2 or page 3 are completely ignored and dropped**.
+
+---
+
+### 3. 💣 Uncaught `Throwable` Crashes (OOM / Native PDF Library Errors)
+* **Files**: [SharedParsingPipeline.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/pipeline/SharedParsingPipeline.kt#L71) & [PlatformPdfParser.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/androidMain/kotlin/com/payslipmax/pdfparser/parser/PdfParser.kt#L114)
+* **Issue**: `SharedParsingPipeline.parse` catches `e: Exception`.
+* **Real-World Impact**: Memory spikes during PDFBox parsing on Android or PDFKit rendering on iOS can throw `OutOfMemoryError` or `java.lang.Error` / native errors. Catching `Exception` instead of `Throwable` allows `OutOfMemoryError` or `UnsatisfiedLinkError` to crash the app process directly instead of being safely caught in a `Result.failure`.
+
+---
+
+### 4. 🛠️ OCR Noise & Devnagari Font Mapping Resiliency
+* **Files**: [ParserUtils.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/ParserUtils.kt#L14) & [WholeWordScanner.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/WholeWordScanner.kt#L10)
+* **Issue**: `negateHindiTransliterations` uses exact whole-word string replacement.
+* **Real-World Impact**: Real-world PDF text streams (especially PCDA / armed forces payslips rendered with custom Devnagari font maps) often yield irregular spacing (e.g., `kuula  Aaya` with multiple spaces or non-breaking space `\u00A0` characters). When exact match fails, untransliterated noise leaks into `rawEarnings`/`rawDeductions`, polluting parsed results.
+
+---
+
+### 5. 📏 Rigid Column Band Separation Thresholds
+* **Files**: [TokenTableClassifier.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/TokenTableClassifier.kt#L170-L171)
+* **Issue**: `SINGLE_COLUMN_BAND_THRESHOLD` is hardcoded to `20f`, and `DEFAULT_ACCEPT_RADIUS` is `30f`.
+* **Real-World Impact**: For PDFs rendered with scaled viewports, unusual page sizes, or low-DPI token bounding boxes, valid credit/debit entries lying just outside `30f` are misclassified as "stranded" or dropped completely.
+
+---
+
+## 📋 Recommended Phase-Wise Action Plan
+
+Per project guidelines ([boundaries.md](file:///.agents/rules/boundaries.md)), all plans must be phase-wise, follow TDD, and adhere to MVVM/SOLID/DRY and the 300-line limit:
+
+```mermaid
+graph TD
+    A[Phase 1: Threading & Exception Safety] --> B[Phase 2: Multi-Page Table Token Support]
+    B --> C[Phase 3: Robust OCR & Hindi Noise Sanitization]
+    C --> D[Phase 4: Dynamic Band Thresholding]
+```
+
+### Phase 1: Threading & Exception Safety (Immediate Priority)
+- Convert synchronous `runBlocking` calls in [SharedParsingPipeline.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/pipeline/SharedParsingPipeline.kt) and [GemmaFallbackMerger.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/GemmaFallbackMerger.kt) to proper coroutine `suspend` functions using `withContext(Dispatchers.Default)`.
+- Replace `catch (e: Exception)` with `catch (e: Throwable)` across top-level pipeline facades to prevent OOM / native engine hard-crashes.
+- **TDD Plan**: Write async unit tests asserting failure handling when exceptions/errors are thrown.
+
+### Phase 2: Multi-Page Table Token Support
+- Update [AndroidTokenExtractor.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/androidMain/kotlin/com/payslipmax/pdfparser/parser/AndroidTokenExtractor.kt) and [IosTokenExtractor.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/parser/IosTokenExtractor.kt) to aggregate table tokens across all consecutive table pages instead of stopping at the first table page.
+- **TDD Plan**: Create multi-page synthetic test fixtures in `commonTest` verifying that line items from page 2 and page 3 are parsed into earnings/deductions maps.
+
+### Phase 3: Robust OCR & Hindi Noise Sanitization
+- Enhance `negateHindiTransliterations` in [ParserUtils.kt](file:///Users/sunil/Downloads/PDFParser/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/ParserUtils.kt) to handle whitespace normalization (`\s+`, non-breaking space `\u00A0`) and font artifact stripping before matching.
+- **TDD Plan**: Add edge-case test cases in `ParserUtilsTest` covering whitespace-corrupted Devnagari strings.
+
+---
+
+### How would you like to proceed?
+1. **Start with Phase 1 (Threading & Exception Safety)**: Refactor `SharedParsingPipeline` and `GemmaFallbackMerger` to `suspend` and add tests.
+2. **Review/Customize the Plan**: Focus on a specific failure mode first.

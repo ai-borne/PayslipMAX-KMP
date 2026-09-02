@@ -8,7 +8,6 @@ import javax.crypto.spec.SecretKeySpec
 
 actual object CryptoHelper {
     private const val ALGORITHM = "AES/GCM/NoPadding"
-    private const val AES_KEY_SIZE = 32 // 256 bits
     private const val IV_SIZE = 12 // 96 bits for GCM
     private const val TAG_SIZE_BITS = 128
     private const val SALT_SIZE = 16

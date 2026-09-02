@@ -6,8 +6,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import com.payslipmax.pdfparser.insights.gemma.AndroidGemmaBaseModelInstaller
+import com.payslipmax.pdfparser.subscription.isDebugBuild
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import org.koin.compose.koinInject
+
+/**
+ * Shipped builds always block screenshots/screen-recording (every screen can show real salary/PII
+ * data); debug builds skip it so `adb screencap` isn't blind during development/verification. A pure
+ * function so this policy is testable independent of which BuildConfig variant Robolectric compiles
+ * against (always `debug` for JVM unit tests, regardless of what's actually being verified).
+ */
+internal fun shouldApplyFlagSecure(isDebug: Boolean): Boolean = !isDebug
 
 class MainActivity : ComponentActivity() {
     private var filePickCallback: ((ByteArray, String) -> Unit)? = null
@@ -52,6 +61,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (shouldApplyFlagSecure(isDebugBuild())) {
+            window.setFlags(
+                android.view.WindowManager.LayoutParams.FLAG_SECURE,
+                android.view.WindowManager.LayoutParams.FLAG_SECURE,
+            )
+        }
         AndroidGemmaBaseModelInstaller.confirmationHandler = { assetPackManager ->
             assetPackManager.showConfirmationDialog(gemmaConfirmationLauncher)
         }

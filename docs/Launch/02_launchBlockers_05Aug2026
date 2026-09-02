@@ -1,0 +1,53 @@
+## Launch Blockers (Code-Derived)
+
+---
+
+### 🟠 P1 — iOS feature dead on production devices
+
+---
+
+#### 4. iOS Gemma model delivery: `GemmaBackgroundAssetsBridge.swift` does not exist
+**Files:** [GemmaBaseModelInstaller.ios.kt:15-20](file:///Users/sunil/Downloads/PDFParser/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/insights/gemma/GemmaBaseModelInstaller.ios.kt#L15-L20), [GemmaModelPaths.ios.kt:25-26](file:///Users/sunil/Downloads/PDFParser/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/insights/gemma/GemmaModelPaths.ios.kt#L25-L26)
+
+The Kotlin side (`IosGemmaBaseModelInstaller`) is complete and wired to `progressReporter`/`completionReporter` companion slots. But the Swift file that is supposed to call those slots — `GemmaBackgroundAssetsBridge.swift` — **does not exist** in the `iosApp/iosApp/` directory. The App Group entitlement and Background Assets extension Xcode target also haven't been created. On a real non-debug device, Tier 6 (on-device AI) **will always stay in `NotStarted` state** for iOS users.
+
+Whether we should undertake #1 right now depends on your **Apple Developer Program membership status**:
+
+### Scenario A: You ALREADY have an active Apple Developer Account
+**Yes, we should do it now.**
+We can:
+1. Write `GemmaBackgroundAssetsBridge.swift` and connect it to `AppDelegate`.
+2. Open Xcode, add the **Background Assets Extension** target, enable the **App Group entitlement**, and configure `Info.plist`.
+3. Build and test on a physical device / TestFlight.
+
+---
+
+### Scenario B: You DO NOT YET have an active Apple Developer Account
+**We can write the Swift bridge code, but we cannot finish the Xcode configuration.**
+* **Why?** Xcode will reject enabling **App Group entitlements** and signing the **Background Assets Extension** target without an active Apple Developer account provisioning profile.
+* **Recommendation:** 
+  - We can draft `GemmaBackgroundAssetsBridge.swift` now so the code side is 100% ready.
+  - We hold on creating the Xcode target and entitlements until your Apple Developer account registration is complete.
+
+---
+
+What remains when you enroll in the Apple Developer Program:
+
+- Open the project in Xcode (iosApp/iosApp.xcodeproj).
+- Create the Background Assets Extension target (BADownloaderExtension).
+- Enable the App Group entitlement (group.com.payslipmax.pdfparser.gemma) on both the main app and extension target.
+- Add the required download URL keys to Info.plist.
+
+⏳ What is PENDING (Xcode Target & Signing)
+- The remaining work cannot be completed in code alone until your Apple Developer Account enrollment is active:
+    - Background Assets Target: Adding the BADownloaderExtension target in Xcode.
+    - App Group Entitlement: Enabling group.com.payslipmax.pdfparser.gemma on the app target (requires Apple Developer signing certificate).
+    - Info.plist Keys: Adding the model download URL keys.
+
+---
+
+### Summary Table
+
+| # | Platform | Severity | Issue |
+|---|----------|----------|-------|
+| 4 | iOS | 🟠 P1 | `GemmaBackgroundAssetsBridge.swift` + Xcode Background Assets extension target don't exist — Tier 6 stays `NotStarted` forever on iOS |

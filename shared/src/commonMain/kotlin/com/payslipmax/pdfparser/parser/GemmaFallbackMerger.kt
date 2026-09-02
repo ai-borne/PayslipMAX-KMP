@@ -3,15 +3,12 @@ package com.payslipmax.pdfparser.parser
 import com.payslipmax.pdfparser.domain.ConfidenceThresholds
 import com.payslipmax.pdfparser.domain.FieldSource
 
-internal fun applyGemmaFallback(
+internal suspend fun applyGemmaFallback(
     solved: SolvedTable,
     extractor: GemmaFallbackExtractor,
 ): SolvedTable {
     return try {
-        val extractions =
-            kotlinx.coroutines.runBlocking {
-                extractor.extractFallback(solved.rawEarnings, solved.rawDeductions)
-            }
+        val extractions = extractor.extractFallback(solved.rawEarnings, solved.rawDeductions)
         if (extractions.earnings.isEmpty() && extractions.deductions.isEmpty()) return solved
 
         val mergedEarnings = solved.earningsMap.toMutableMap()

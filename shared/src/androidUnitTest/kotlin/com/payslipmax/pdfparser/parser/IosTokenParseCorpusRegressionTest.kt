@@ -39,7 +39,7 @@ class IosTokenParseCorpusRegressionTest {
                     fullText = input.fullText,
                 )
 
-            val result = GrammarAwareParser.parse(tokenized, input.filename)
+            val result = kotlinx.coroutines.runBlocking { GrammarAwareParser.parse(tokenized, input.filename) }
             val parsed = result.getOrNull()
             val expected = CorpusFixtures.loadExpected(id)
             val mismatches =

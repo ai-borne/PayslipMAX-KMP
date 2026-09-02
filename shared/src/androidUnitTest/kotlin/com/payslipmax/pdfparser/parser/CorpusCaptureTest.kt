@@ -102,7 +102,7 @@ class CorpusCaptureTest {
         val scrubbed = CorpusScrubber.scrub(texts, monthNum, year)
 
         val tokenizedReal =
-            parser.extractTokens(pdf.readBytes(), password).getOrElse {
+            kotlinx.coroutines.runBlocking { parser.extractTokens(pdf.readBytes(), password) }.getOrElse {
                 mismatches += "$id: TOKEN EXTRACTION FAILED: ${it.message}"
                 return
             }
@@ -115,8 +115,8 @@ class CorpusCaptureTest {
                 fullText = scrubbed.fullText,
             )
 
-        val parsedReal = GrammarAwareParser.parse(tokenizedReal, pdf.name).getOrNull()
-        val parsedScrubbed = GrammarAwareParser.parse(tokenizedScrubbed, pdf.name).getOrNull()
+        val parsedReal = kotlinx.coroutines.runBlocking { GrammarAwareParser.parse(tokenizedReal, pdf.name) }.getOrNull()
+        val parsedScrubbed = kotlinx.coroutines.runBlocking { GrammarAwareParser.parse(tokenizedScrubbed, pdf.name) }.getOrNull()
 
         if (parsedReal != null && parsedScrubbed != null && parsedReal.earnings != parsedScrubbed.earnings) {
             scrubChangedNumbers += id

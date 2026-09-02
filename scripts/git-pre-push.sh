@@ -2,9 +2,9 @@
 
 # Exhaustive safety net, run once per push (not per commit): full Android+common matrix (both
 # build variants, full corpus regression, lint, ktlint, checkFileSizes), the full iOS unit test
-# suite (incl. ParserUtilsIosPerfTest's Native timing assertions), and a gitleaks scan over the
-# actual commit range being pushed. No staged-file gating — by push time the cost of a full run
-# is worth paying once, unlike pre-commit's fast/scoped checks.
+# suite (incl. ParserUtilsIosPerfTest's Native timing assertions), a Room schema immutability
+# check, and a gitleaks scan over the actual commit range being pushed. No staged-file gating —
+# by push time the cost of a full run is worth paying once, unlike pre-commit's fast/scoped checks.
 #
 # git invokes this with no args; it supplies "<local ref> <local sha1> <remote ref> <remote sha1>"
 # lines on stdin, one per ref being pushed.
@@ -15,7 +15,7 @@ start_time=$(date +%s)
 echo "🚦 Running exhaustive pre-push checks..."
 
 echo ""
-echo "1/3 🤖 Full Android + common gate (./gradlew check -x iosX64Test -x iosSimulatorArm64Test)..."
+echo "1/4 🤖 Full Android + common gate (./gradlew check -x iosX64Test -x iosSimulatorArm64Test)..."
 stage_start=$(date +%s)
 ./gradlew check -x iosX64Test -x iosSimulatorArm64Test -q 2>&1
 if [ $? -ne 0 ]; then
@@ -25,7 +25,7 @@ fi
 echo "   ✅ done in $(($(date +%s) - stage_start))s"
 
 echo ""
-echo "2/3 🍎 Full iOS unit test suite (./gradlew iosX64Test iosSimulatorArm64Test)..."
+echo "2/4 🍎 Full iOS unit test suite (./gradlew iosX64Test iosSimulatorArm64Test)..."
 stage_start=$(date +%s)
 ./gradlew iosX64Test iosSimulatorArm64Test -q 2>&1
 if [ $? -ne 0 ]; then
@@ -35,7 +35,17 @@ fi
 echo "   ✅ done in $(($(date +%s) - stage_start))s"
 
 echo ""
-echo "3/3 🔒 Scanning pushed commit range for secrets (gitleaks)..."
+echo "3/4 🔐 Checking Room schema immutability..."
+stage_start=$(date +%s)
+python3 scripts/check_schema_immutability.py
+if [ $? -ne 0 ]; then
+    echo "❌ Push rejected: a shipped Room schema JSON was modified or deleted."
+    exit 1
+fi
+echo "   ✅ done in $(($(date +%s) - stage_start))s"
+
+echo ""
+echo "4/4 🔒 Scanning pushed commit range for secrets (gitleaks)..."
 stage_start=$(date +%s)
 if command -v gitleaks >/dev/null 2>&1; then
     while read -r local_ref local_sha remote_ref remote_sha; do

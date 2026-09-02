@@ -1,3 +1,4 @@
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -16,6 +17,21 @@ kotlin {
     }
 
     // iOS targets
+    val isMac = System.getProperty("os.name").orEmpty().contains("Mac", ignoreCase = true)
+    val xcodeDeveloperDir =
+        providers.environmentVariable("DEVELOPER_DIR")
+            .orElse(
+                if (isMac && file("/usr/bin/xcode-select").exists()) {
+                    providers.exec {
+                        commandLine("xcode-select", "-p")
+                    }.standardOutput.asText.map { it.trim() }
+                } else {
+                    providers.provider { "/Applications/Xcode.app/Contents/Developer" }
+                },
+            )
+            .orElse("/Applications/Xcode.app/Contents/Developer")
+            .get()
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -25,11 +41,31 @@ kotlin {
             baseName = "shared"
             isStatic = true
         }
+        iosTarget.binaries.all {
+            val isSimulator = iosTarget.name.contains("Simulator") || iosTarget.name.endsWith("X64")
+            val platform = if (isSimulator) "iphonesimulator" else "iphoneos"
+            val sdk = if (isSimulator) "iPhoneSimulator" else "iPhoneOS"
+            linkerOpts(
+                "-L$xcodeDeveloperDir/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$platform",
+                "-L$xcodeDeveloperDir/Platforms/$sdk.platform/Developer/SDKs/$sdk.sdk/usr/lib/swift",
+                "-lswift_Concurrency",
+                "-lswiftCore",
+                "-lswiftFoundation",
+            )
+        }
         iosTarget.compilations.all {
             compileTaskProvider.configure {
                 compilerOptions {
                     freeCompilerArgs.add("-Xexpect-actual-classes")
                 }
+            }
+        }
+    }
+
+    sourceSets.all {
+        if (name.startsWith("ios")) {
+            languageSettings {
+                optIn("kotlinx.cinterop.ExperimentalForeignApi")
             }
         }
     }
@@ -44,6 +80,13 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
+            // Amazon Appstore support pulls in amazon-appstore-sdk, which ships an
+            // AndroidManifest-registered BroadcastReceiver with pre-verifier bytecode that
+            // crashes Robolectric's Application bootstrap (java.lang.VerifyError) on every
+            // composeApp unit test. This app ships on Play Store + App Store only.
+            implementation(project.dependencies.create(libs.revenuecat.purchases.kmp.core.get()) as ExternalModuleDependency) {
+                exclude(group = "com.revenuecat.purchases", module = "purchases-store-amazon")
+            }
         }
 
         commonTest.dependencies {
@@ -61,7 +104,10 @@ kotlin {
             implementation(libs.firebase.analytics)
             implementation(libs.firebase.crashlytics)
             // Play Asset Delivery — Tier 6 base model on-demand install (AndroidGemmaBaseModelInstaller)
+            implementation(libs.play.asset.delivery)
             implementation(libs.play.asset.delivery.ktx)
+            // Play Billing
+            implementation(libs.play.billing.ktx)
         }
 
         val androidUnitTest by getting {
@@ -69,6 +115,9 @@ kotlin {
                 implementation("org.json:json:20240303")
                 implementation(libs.mockk)
                 implementation("org.robolectric:robolectric:4.12.2")
+                implementation("org.xerial:sqlite-jdbc:3.45.1.0")
+                implementation("androidx.test:core:1.6.1")
+                implementation(libs.androidx.room.testing)
             }
         }
 
@@ -95,6 +144,12 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
         unitTests.isIncludeAndroidResources = true
+    }
+    sourceSets {
+        // Room's MigrationTestHelper loads each version's exported schema JSON as a test asset.
+        getByName("test") {
+            assets.srcDirs("$projectDir/schemas")
+        }
     }
 }
 

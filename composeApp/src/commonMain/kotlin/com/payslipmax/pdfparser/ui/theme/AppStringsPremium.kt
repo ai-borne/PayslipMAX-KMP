@@ -1,13 +1,6 @@
 package com.payslipmax.pdfparser.ui.theme
 
 object AppStringsPremium {
-    const val geminiAiAnalyzeDesc = "Generate professional tax saving suggestions, investment recommendations, and error audits using Gemini."
-    const val geminiAiViewReportBtn = "View Full Audit Report"
-
-    // AI CA Audit card (Phase 5)
-    const val aiAuditAnalyzingDesc = "Analyzing your payslip with Gemini AI…"
-    const val aiAuditUnlockBtn = "Unlock AI CA Audit"
-
     // Premium Features Screens Strings
     const val representationTitle = "Claim Generator"
     const val representationSubtitle = "Pay & allowance dispute letters"
@@ -79,13 +72,14 @@ object AppStringsPremium {
 
     // Modern Tax Planner Strings
     const val taxPlanningFyStatusPrefix = "Financial Year "
-    const val taxPlanningMonthsParsedSuffix = " Months Parsed (Projected)"
     const val taxPlanningRegimeBattleTitle = "Old vs. New Tax Regime Comparison"
     const val taxPlanningOldRegimeLabel = "Old Tax Regime"
     const val taxPlanningNewRegimeLabel = "New Tax Regime"
     const val taxPlanningWinnerSavingsBadge = "Saves ₹"
     const val taxPlanningWinnerRegimeRecommended = "Recommended for lowest tax liability"
     const val taxPlanningBreakEvenText = "Min Old Regime Deductions Needed: ₹"
+    const val taxPlanningCurrentDeductionsText = "Your Current Old Regime Deductions: ₹"
+    const val taxPlanningDeductionGapText = "Gap To Switch-Worthy: ₹"
     const val taxPlanningTdsRunwayTitle = "Annual Tax Liability & TDS Runway"
     const val taxPlanningTdsPaidYtd = "TDS Deducted YTD: ₹"
     const val taxPlanningTdsRemaining = "Remaining FY Tax: ₹"
@@ -100,25 +94,31 @@ object AppStringsPremium {
 
     const val taxPlanningExemptionsCardTitle = "Defence Exemptions & Deductions"
     const val taxPlanningExemptionsTotalLabel = "Total Old Regime Deductions: ₹"
+    const val taxPlanningExemptionsUnavailableNewRegimeNote =
+        "Not available under your active New Tax Regime (Section 115BAC) — shown as ₹0, not omitted"
+    const val taxPlanningFieldCapConservativeAssumptionNote =
+        "Field allowance cap assumed conservatively — the specific Rule 2BB category couldn't be identified from this payslip"
 
+    // D13: tips 1 and 2 are regime-conditional (Sec 10(14) field caps and Sec 80C both stop applying
+    // under the New Regime) -- TaxEducativeTipsCard picks the Old/New variant by active regime rather
+    // than showing one regime's rules to every user.
     const val taxPlanningTipsCardTitle = "💡 Tax Planning Tips & Best Practices"
     const val taxPlanningTip1Title = "Sec 10(14) Field Allowance Exemption"
-    const val taxPlanningTip1Desc = "Field Area, High Altitude, and Special Duty allowances are tax-exempt under Section 10(14). Ensure PCDA excludes them from taxable income."
-    const val taxPlanningTip2Title = "Automatic Sec 80C via DSOP + AGIF"
-    const val taxPlanningTip2Desc = "Your monthly DSOP subscription and AGIF deductions automatically qualify for Sec 80C (up to ₹1.5 Lakhs limit). No extra ELSS is required if already capped."
+    const val taxPlanningTip1DescOld = "Field Area, High Altitude, and Special Duty allowances are exempt under Section 10(14), Rule 2BB — capped per notified category (e.g. up to ₹50,400/yr for Highly Active Field Area), not the full amount received."
+    const val taxPlanningTip1DescNew = "Section 10(14) field and special-duty allowance exemptions are not available under the New Tax Regime — these allowances are fully taxable while you remain on New Regime."
+    const val taxPlanningTip2Title = "Sec 80C via DSOP + AGIF"
+    const val taxPlanningTip2DescOld = "Your monthly DSOP subscription and AGIF deductions count toward Sec 80C, up to the ₹1.5 Lakh annual limit — not automatic beyond that cap; any headroom needs additional 80C investment."
+    const val taxPlanningTip2DescNew = "Section 80C does not exist under the New Tax Regime — your DSOP and AGIF contributions currently earn ₹0 tax benefit from them."
     const val taxPlanningTip3Title = "New Tax Regime Zero Tax Threshold"
     const val taxPlanningTip3Desc = "Under the New Tax Regime, taxable income up to ₹7 Lakhs (FY 24-25) or ₹12 Lakhs (FY 25-26) has ZERO tax liability after Sec 87A rebate."
-    const val taxPlanningTip4Title = "PCDA Declaration Deadline"
-    const val taxPlanningTip4Desc = "Submit your tax regime selection to PCDA before December to avoid sudden high TDS deductions in January to March."
+    const val taxPlanningTip4Title = "Regime Intimation Timing"
+    const val taxPlanningTip4Desc = "The PCDA(O) regime-switch utility is available year-round, not only before December — intimating early avoids a bunched, higher TDS in the Jan–Mar quarter of the FY."
 
     const val taxPlanningNarrativeLedgerTitle = "Month-by-Month Deductions Audit"
     const val taxPlanningNarrativeMonthCol = "Month"
     const val taxPlanningNarrativeTdsCol = "TDS"
     const val taxPlanningNarrativeDsopCol = "DSOP"
     const val taxPlanningNarrativeYtdTotalLabel = "YTD Total:"
-    const val taxPlanningNarrativeBenchmarkTitle = "Effective Tax Rate & Peer Benchmark"
-    const val taxPlanningNarrativeYourRateLabel = "Your Effective Rate"
-    const val taxPlanningNarrativePeerTargetLabel = "Optimal Effective Rate"
     const val taxPlanningNarrativeTdsLabel = "TDS: ₹"
     const val taxPlanningNarrativeDsopLabel = "DSOP: ₹"
 
@@ -142,37 +142,33 @@ object AppStringsPremium {
     const val taxPlanningSavingsProjections = "Section 80C & 80D Tax Savings Projections"
     const val taxPlanningNoProjections = "No YTD Tax Projections available for this month."
 
-    // PRO Features Catalog (Phase 3) — benefit-only copy, no prices (D8)
-    const val proCatalogTitle = "PRO Features"
-    const val proCatalogSubtitle = "Everything included with PayslipMax Pro"
-    const val proCatalogIncludedLabel = "Included"
-    const val proCatalogComingSoonLabel = "Coming soon"
-    const val proCatalogSettingsEntrySubtitle = "See everything Pro unlocks"
+    // Premium Features Catalog (Phase 3) — benefit-only copy, no prices (D8)
+    const val premiumCatalogTitle = "Premium Features"
+    const val premiumCatalogSubtitle = "Everything included with PayslipMax Premium"
+    const val premiumCatalogIncludedLabel = "Included"
+    const val premiumCatalogComingSoonLabel = "Coming soon"
+    const val premiumCatalogSettingsEntrySubtitle = "See everything Premium unlocks"
 
-    const val proCatalogPremiumIntelligenceTitle = "Premium Intelligence"
-    const val proCatalogPremiumIntelligenceDesc = "Full recovery opportunities, tax savings and CA-level audit in one view"
-    const val proCatalogPremiumIntelligenceIcon = "👑"
-    const val proCatalogWealthTitle = "Wealth Optimization"
-    const val proCatalogWealthDesc = "80C/NPS headroom and DSOP corpus growth projections"
-    const val proCatalogWealthIcon = "💰"
-    const val proCatalogAiAuditTitle = "AI CA Audit"
-    const val proCatalogAiAuditDesc = "On-device AI reviews your payslip for PCDA errors and savings"
-    const val proCatalogAiAuditIcon = "🤖"
-    const val proCatalogAnomalyTitle = "Advanced Anomaly Detection"
-    const val proCatalogAnomalyDesc = "DSOP compliance, arrears, entitlement and recovery-risk audits"
-    const val proCatalogAnomalyIcon = "🔍"
-    const val proCatalogClaimTitle = "Claim Generator"
-    const val proCatalogClaimDesc = "Generate official PCDA(O) representation PDFs"
-    const val proCatalogBackupTitle = "Encrypted Backup"
-    const val proCatalogBackupDesc = "Create AES-256 encrypted backups of your payslip data"
-    const val proCatalogBackupIcon = "🔐"
-    const val proCatalogRetCalcTitle = "Retirement Calculators"
-    const val proCatalogRetCalcDesc = "Estimate pension, gratuity, commutation & leave encashment"
-    const val proCatalogRetCalcIcon = "🧮"
+    const val premiumCatalogPremiumIntelligenceTitle = "Premium Intelligence"
+    const val premiumCatalogPremiumIntelligenceDesc = "Full recovery opportunities, tax savings and CA-level audit in one view"
+    const val premiumCatalogPremiumIntelligenceIcon = "👑"
+    const val premiumCatalogWealthTitle = "Wealth Optimization"
+    const val premiumCatalogWealthDesc = "80C/NPS headroom and DSOP corpus growth projections"
+    const val premiumCatalogWealthIcon = "💰"
+    const val premiumCatalogAnomalyTitle = "Advanced Anomaly Detection"
+    const val premiumCatalogAnomalyDesc = "DSOP compliance, arrears, entitlement and recovery-risk audits"
+    const val premiumCatalogAnomalyIcon = "🔍"
+    const val premiumCatalogClaimTitle = "Claim Generator"
+    const val premiumCatalogClaimDesc = "Generate official PCDA(O) representation PDFs"
+    const val premiumCatalogBackupTitle = "Encrypted Backup"
+    const val premiumCatalogBackupDesc = "Create AES-256 encrypted backups of your payslip data"
+    const val premiumCatalogBackupIcon = "🔐"
+    const val premiumCatalogRetCalcTitle = "Retirement Calculators"
+    const val premiumCatalogRetCalcDesc = "Estimate pension, gratuity, commutation & leave encashment"
+    const val premiumCatalogRetCalcIcon = "🧮"
 
     const val taxPlanningPreliminaryEstimatePrefix = "Preliminary estimate · "
     const val taxPlanningOfMonthsSuffix = " of 12"
-    const val taxPlanningBestAchievableRateLabel = "Best Achievable Rate"
 
     const val retCommutationSubtitle = "Compare Lump Sum Advance vs. Monthly Pension. Commuted portion is restored after 15 years."
     const val retCommutationLumpSumLabel = "Lump Sum"

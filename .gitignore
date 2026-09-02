@@ -16,6 +16,7 @@ kotlin-daemon-embeddable-*.jar
 
 # Local configuration
 local.properties
+keystore.properties
 .DS_Store
 
 # Android Studio / Android builds
@@ -23,7 +24,10 @@ local.properties
 capture/
 *.apk
 *.aar
+*.aab
 *.ap_
+*.keystore
+*.jks
 
 # Node / JS / Python environment
 node_modules/

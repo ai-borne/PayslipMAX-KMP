@@ -4,71 +4,34 @@ import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.domain.*
 import com.payslipmax.pdfparser.insights.*
 import com.payslipmax.pdfparser.testing.*
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.headersOf
-import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.Json
 import kotlin.test.*
 
 class FinancialIntelligenceRepositoryTest {
     private lateinit var fakeDao: FakePayslipDao
+    private lateinit var repository: FinancialIntelligenceRepository
 
     @BeforeTest
     fun setUp() {
         fakeDao = FakePayslipDao()
-    }
-
-    private fun createRepositoryWithMockEngine(
-        respondJson: String,
-        status: HttpStatusCode = HttpStatusCode.OK,
-    ): FinancialIntelligenceRepository {
-        val mockEngine =
-            MockEngine { _ ->
-                respond(
-                    content = respondJson,
-                    status = status,
-                    headers = headersOf("Content-Type", ContentType.Application.Json.toString()),
-                )
-            }
-
-        val client =
-            HttpClient(mockEngine) {
-                install(ContentNegotiation) {
-                    json(
-                        Json {
-                            ignoreUnknownKeys = true
-                            prettyPrint = true
-                            isLenient = true
-                        },
-                    )
-                }
-            }
-
-        val geminiProxyService = GeminiProxyService(client)
-        return FinancialIntelligenceRepository(
-            payslipDao = fakeDao,
-            geminiProxyService = geminiProxyService,
-            dispatcher = kotlinx.coroutines.Dispatchers.Unconfined,
-        )
+        repository =
+            FinancialIntelligenceRepository(
+                payslipDao = fakeDao,
+                dispatcher = Dispatchers.Unconfined,
+            )
     }
 
     @Test
     fun testProcessPayslipAndRunAnalysisInsertsLedgerRecord() =
         runTest {
-            val repo = createRepositoryWithMockEngine("""{"success":true,"narrative":"Mock Narrative"}""")
             val mockPayslip = createMockPayslip("05/2026", basicPay = 60000.0, dsop = 5000.0)
 
-            val result = repo.processPayslipAndRunAnalysis(mockPayslip)
+            val result = repository.processPayslipAndRunAnalysis(mockPayslip)
 
             assertNotNull(result)
-            val ledgerRecords = repo.getAllLedgerRecords().first()
+            val ledgerRecords = repository.getAllLedgerRecords().first()
             assertEquals(1, ledgerRecords.size)
             assertEquals("05/2026", ledgerRecords.first().dateStr)
             assertEquals(60000.0, ledgerRecords.first().basicPay)
@@ -77,155 +40,29 @@ class FinancialIntelligenceRepositoryTest {
     @Test
     fun testProcessPayslipGeneratesRepresentationDraftAndInsightsForMissingTPTA() =
         runTest {
-            val repo = createRepositoryWithMockEngine("""{"success":true,"narrative":"Mock Narrative"}""")
             // Basic pay >= 56100 but TPTA is 0.0 -> TPTA_ENTITLEMENT anomaly
             val mockPayslip = createMockPayslip("05/2026", basicPay = 60000.0, tpta = 0.0)
 
-            val result = repo.processPayslipAndRunAnalysis(mockPayslip)
+            val result = repository.processPayslipAndRunAnalysis(mockPayslip)
 
             // Verify anomaly was detected
             val hasTptaAnomaly = result.anomalies.any { it.type == "TPTA_ENTITLEMENT" }
             assertTrue(hasTptaAnomaly)
 
             // Verify insight was inserted
-            val insights = repo.getAllFinancialInsights().first()
+            val insights = repository.getAllFinancialInsights().first()
             assertTrue(insights.any { it.category == "ALLOWANCE" && it.title == "TPTA Entitlement Advisory" })
 
             // Verify representation draft was generated
-            val drafts = repo.getAllRepresentationDrafts().first()
+            val drafts = repository.getAllRepresentationDrafts().first()
             assertEquals(1, drafts.size)
             assertEquals("TPTA_ENTITLEMENT", drafts.first().disputeType)
             assertTrue(drafts.first().subject.contains("Transport Allowance (TPTA)"))
         }
 
     @Test
-    fun testGenerateNarrativeInsightsSuccess() =
-        runTest {
-            val responsePayload =
-                """
-                {
-                    "success": true,
-                    "narrative": "Detailed financial recommendations based on your payslip data."
-                }
-                """.trimIndent()
-            val repo = createRepositoryWithMockEngine(responsePayload)
-            val mockPayslip = createMockPayslip("05/2026")
-            val engineResult = EngineResult(healthScore = 90, anomalies = emptyList(), monthlySavingRate = 10.0, taxRatio = 5.0)
-
-            val result = repo.generateNarrativeInsights(mockPayslip, engineResult)
-
-            assertTrue(result.isSuccess)
-            assertEquals("Detailed financial recommendations based on your payslip data.", result.getOrNull())
-
-            // Verify narrative insight is stored in database
-            val insights = repo.getAllFinancialInsights().first()
-            val narrativeInsight = insights.firstOrNull { it.category == "NARRATIVE" }
-            assertNotNull(narrativeInsight)
-            assertEquals("Detailed financial recommendations based on your payslip data.", narrativeInsight.contentMarkdown)
-        }
-
-    @Test
-    fun testGenerateNarrativeInsightsFailureResponse() =
-        runTest {
-            val responsePayload =
-                """
-                {
-                    "success": false,
-                    "error": "Rate limit exceeded"
-                }
-                """.trimIndent()
-            val repo = createRepositoryWithMockEngine(responsePayload)
-            val mockPayslip = createMockPayslip("05/2026")
-            val engineResult = EngineResult(healthScore = 95, anomalies = emptyList(), monthlySavingRate = 12.0, taxRatio = 4.0)
-
-            val result = repo.generateNarrativeInsights(mockPayslip, engineResult)
-
-            assertTrue(result.isFailure)
-            assertTrue(result.exceptionOrNull()?.message?.contains("Rate limit exceeded") == true)
-        }
-
-    private fun createMockPayslip(
-        dateStr: String,
-        basicPay: Double = 50000.0,
-        dsop: Double = 3000.0,
-        tpta: Double = 3600.0,
-    ): ParsedPayslip {
-        val split = dateStr.split("/")
-        val month = split[0].toInt()
-        val year = split[1].toInt()
-        return ParsedPayslip(
-            file = "payslip_$dateStr.pdf",
-            year = year,
-            monthNum = month,
-            monthName = "Month_$month",
-            dateStr = dateStr,
-            officer = Officer("Name", "Acc", "PAN"),
-            earnings =
-                Earnings(
-                    basicPay = basicPay,
-                    dearnessAllowance = 10000.0,
-                    militaryServicePay = 15500.0,
-                    transportAllowance = tpta,
-                    transportAllowanceDa = 1000.0,
-                    houseRentAllowance = 12000.0,
-                ),
-            deductions =
-                Deductions(
-                    dsopSubscription = dsop,
-                    agif = 5000.0,
-                    incomeTax = 4000.0,
-                ),
-            ledgerBalances = LedgerBalances(0.0, 0.0, 0.0, 0.0),
-            summary = PayslipSummary(102100.0, 14000.0, 88100.0),
-            taxAndSavings = null,
-        )
-    }
-
-    @Test
-    fun testGenerateNarrativeInsightsRedactsPiiBeforeSend() =
-        runTest {
-            var capturedPayslip: ParsedPayslip? = null
-            val capturingService =
-                object : GeminiProxyService(
-                    HttpClient(MockEngine { respond("", HttpStatusCode.OK, headersOf()) }),
-                ) {
-                    override suspend fun getNarrativeInsights(
-                        sanitizedPayslip: ParsedPayslip,
-                        engineResult: EngineResult,
-                        history: List<com.payslipmax.pdfparser.database.LedgerRecordEntity>,
-                        authToken: String?,
-                    ): Result<String> {
-                        capturedPayslip = sanitizedPayslip
-                        return Result.success("redaction verified")
-                    }
-                }
-            val repo =
-                FinancialIntelligenceRepository(
-                    payslipDao = fakeDao,
-                    geminiProxyService = capturingService,
-                    dispatcher = kotlinx.coroutines.Dispatchers.Unconfined,
-                )
-            val payslipWithPii =
-                createMockPayslip("05/2026").copy(
-                    file = "private/john_doe/payslip.pdf",
-                    officer = Officer(name = "JohnDoe", accountNo = "9876543210", pan = "PIITEST1234X"),
-                )
-            val engineResult = EngineResult(80, emptyList(), 10.0, 4.0)
-
-            repo.generateNarrativeInsights(payslipWithPii, engineResult)
-
-            val captured = capturedPayslip
-            assertNotNull(captured, "Service must be called with sanitized payslip")
-            assertEquals("payslip.pdf", captured.file, "File path must be redacted")
-            assertEquals("[OFFICER_NAME_REDACTED]", captured.officer.name, "Name must be redacted")
-            assertEquals("[ACCOUNT_NO_REDACTED]", captured.officer.accountNo, "Account must be redacted")
-            assertEquals("[PAN_REDACTED]", captured.officer.pan, "PAN must be redacted")
-        }
-
-    @Test
     fun testInsertAndGetAndDeleteRepresentationDraft() =
         runTest {
-            val repo = createRepositoryWithMockEngine("""{"success":true,"narrative":"Mock Narrative"}""")
             val draft =
                 RepresentationDraftEntity(
                     id = "draft123",
@@ -238,17 +75,39 @@ class FinancialIntelligenceRepositoryTest {
                 )
 
             // Insert
-            repo.insertRepresentationDraft(draft)
+            repository.insertRepresentationDraft(draft)
 
             // Get
-            val retrieved = repo.getRepresentationDraftById("draft123")
+            val retrieved = repository.getRepresentationDraftById("draft123")
             assertNotNull(retrieved)
             assertEquals("draft123", retrieved.id)
             assertEquals("05/2026", retrieved.disputeMonth)
 
             // Delete
-            repo.deleteRepresentationDraft("draft123")
-            val retrievedAfterDelete = repo.getRepresentationDraftById("draft123")
+            repository.deleteRepresentationDraft("draft123")
+            val retrievedAfterDelete = repository.getRepresentationDraftById("draft123")
             assertNull(retrievedAfterDelete)
         }
+
+    private fun createMockPayslip(
+        dateStr: String,
+        basicPay: Double = 56100.0,
+        tpta: Double = 3600.0,
+        dsop: Double = 5000.0,
+    ): ParsedPayslip {
+        val (monthNum, year) = dateStr.split("/").let { it[0].toInt() to it[1].toInt() }
+        return ParsedPayslip(
+            file = "payslip.pdf",
+            year = year,
+            monthNum = monthNum,
+            monthName = "May",
+            dateStr = dateStr,
+            officer = Officer(name = "Test Officer", accountNo = "12345", pan = "ABCDE1234F"),
+            earnings = Earnings(basicPay = basicPay, transportAllowance = tpta),
+            deductions = Deductions(dsopSubscription = dsop),
+            ledgerBalances = LedgerBalances(),
+            summary = PayslipSummary(grossPay = basicPay + tpta, totalDeductions = dsop, netRemittance = basicPay + tpta - dsop),
+            taxAndSavings = null,
+        )
+    }
 }

@@ -18,9 +18,9 @@ internal val REPRESENTATION_DRAFT_TYPES = setOf("SALARY_LOSS", "MISSING_ALLOWANC
 
 /**
  * Pure builder: [InsightsState] engine output -> ordered [InsightUiModel] cards for the redesigned
- * Smart Insights section. Not wired to the screen yet (Phase 4) — this is presentation logic only,
- * with no I/O and no engine re-computation (anomaly gating/suppression is already the auditors'
- * responsibility; this function is a pass-through + severity/copy mapping).
+ * Smart Insights section. Wired to [InsightsScreen] via [SmartInsightsSection] — this is presentation
+ * logic only, with no I/O and no engine re-computation (anomaly gating/suppression is already the
+ * auditors' responsibility; this function is a pass-through + severity/copy mapping).
  */
 fun buildSmartInsights(state: InsightsState): List<InsightUiModel> {
     if (state.previousRecord == null) {

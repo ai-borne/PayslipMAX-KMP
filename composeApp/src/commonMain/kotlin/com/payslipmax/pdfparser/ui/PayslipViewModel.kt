@@ -3,14 +3,11 @@ package com.payslipmax.pdfparser.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.payslipmax.pdfparser.domain.ParsedPayslip
-import com.payslipmax.pdfparser.insights.NetworkErrorMapper
 import com.payslipmax.pdfparser.insights.WealthOptimizationEngine
 import com.payslipmax.pdfparser.insights.gemma.GemmaBaseModelInstaller
 import com.payslipmax.pdfparser.insights.gemma.GemmaModelStorageManager
 import com.payslipmax.pdfparser.insights.gemma.provideGemmaBaseModelInstaller
-import com.payslipmax.pdfparser.logging.Logger
 import com.payslipmax.pdfparser.repository.PayslipRepository
-import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.telemetry.GemmaInstallTelemetry
 import com.payslipmax.pdfparser.telemetry.provideGemmaInstallTelemetry
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -29,6 +26,7 @@ class PayslipViewModel(
     internal val gemmaModelStorage: GemmaModelStorageManager = GemmaModelStorageManager(),
     internal val gemmaInstallTelemetry: GemmaInstallTelemetry = provideGemmaInstallTelemetry(),
     internal val appIntegrityChecker: com.payslipmax.pdfparser.domain.AppIntegrityChecker = com.payslipmax.pdfparser.domain.provideAppIntegrityChecker(),
+    internal val billingManager: com.payslipmax.pdfparser.billing.BillingManager = com.payslipmax.pdfparser.billing.provideBillingManager(),
 ) : ViewModel() {
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
@@ -39,6 +37,7 @@ class PayslipViewModel(
     val subscriptionManager =
         com.payslipmax.pdfparser.subscription.SubscriptionManager(
             isPremiumEnabledProvider = { _uiState.value.isPremiumEnabled },
+            billingManager = billingManager,
         )
 
     val ledgerRecords: StateFlow<List<com.payslipmax.pdfparser.database.LedgerRecordEntity>> =
@@ -50,15 +49,26 @@ class PayslipViewModel(
     val representationDrafts: StateFlow<List<com.payslipmax.pdfparser.database.RepresentationDraftEntity>> =
         financialIntelligenceRepository?.getAllRepresentationDrafts()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())
 
-    val aiInsightReports: StateFlow<List<com.payslipmax.pdfparser.database.AiInsightReportEntity>> =
-        financialIntelligenceRepository?.getAllAiInsightReports()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())
+    // SSOT for the Premium yearly price shown across the upgrade sheet, settings card, and Insights
+    // hub. Starts at the static AppStrings fallback and is replaced by the live store price once
+    // RevenueCat resolves it (never blocks first paint on a network round-trip).
+    internal val _premiumPriceState = MutableStateFlow(AppStrings.settingsPremiumPlanPrice)
+    val premiumPriceState: StateFlow<String> = _premiumPriceState.asStateFlow()
 
     init {
         verifyAppIntegrity()
         checkGemmaSupport()
         observePayslips()
         observeSettings()
+        observeSubscriptionLifecycle()
         installGemmaBaseModel()
+        loadPremiumPrice()
+    }
+
+    private fun loadPremiumPrice() {
+        viewModelScope.launch {
+            billingManager.getFormattedPrice()?.let { _premiumPriceState.value = it }
+        }
     }
 
     internal fun observePayslips() {
@@ -84,9 +94,6 @@ class PayslipViewModel(
                             lastKnownHistoryYear = latestYear ?: state.lastKnownHistoryYear,
                         )
                     }
-                    if (nextSelected != null) {
-                        loadCachedAiInsights(nextSelected.dateStr)
-                    }
                 }
             } catch (e: Exception) {
                 _uiState.update {
@@ -105,8 +112,6 @@ class PayslipViewModel(
                 it.copy(
                     selectedPayslip = null,
                     taxOptimizationResult = computeTaxOptimization(it.payslips, null),
-                    aiInsights = null,
-                    aiError = null,
                 )
             }
             return
@@ -115,64 +120,7 @@ class PayslipViewModel(
             it.copy(
                 selectedPayslip = payslip,
                 taxOptimizationResult = computeTaxOptimization(it.payslips, payslip),
-                aiInsights = null,
-                aiError = null,
             )
-        }
-        loadCachedAiInsights(payslip.dateStr)
-    }
-
-    internal fun loadCachedAiInsights(dateStr: String) {
-        viewModelScope.launch {
-            val repo = financialIntelligenceRepository ?: return@launch
-            val cached = repo.getCachedAiInsights(dateStr)
-            // AI auto-run is an AI_AUDIT-gated behaviour — route it through the SSOT gate (honours the
-            // debug DevOverride too), not the raw premium flag.
-            val hasAiAudit = subscriptionManager.hasAccess(FeatureGate.AI_AUDIT)
-            var autoRunPayslip: ParsedPayslip? = null
-            _uiState.update { state ->
-                if (state.selectedPayslip?.dateStr == dateStr) {
-                    if (hasAiAudit && cached == null && !state.isAiLoading) {
-                        autoRunPayslip = state.selectedPayslip
-                    }
-                    state.copy(aiInsights = cached, aiError = null)
-                } else {
-                    state
-                }
-            }
-            autoRunPayslip?.let { launchAiGeneration(it) }
-        }
-    }
-
-    internal fun launchAiGeneration(payslip: ParsedPayslip) {
-        val repo = financialIntelligenceRepository ?: return
-        viewModelScope.launch {
-            _uiState.update { it.copy(isAiLoading = true, aiError = null, aiInsights = null) }
-            try {
-                val engineResult = repo.processPayslipAndRunAnalysis(payslip)
-                val result = repo.generateNarrativeInsights(payslip, engineResult)
-                if (result.isSuccess) {
-                    _uiState.update { it.copy(aiInsights = result.getOrThrow(), isAiLoading = false) }
-                } else {
-                    _uiState.update {
-                        val ex = result.exceptionOrNull()
-                        val mappedError =
-                            if (ex != null) {
-                                Logger.e("PayslipViewModel", "generateNarrativeInsights failed", ex)
-                                NetworkErrorMapper.getUserFriendlyMessage(ex)
-                            } else {
-                                "Failed to generate narrative insights"
-                            }
-                        it.copy(
-                            aiError = mappedError,
-                            isAiLoading = false,
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                Logger.e("PayslipViewModel", "launchAiGeneration failed", e)
-                _uiState.update { it.copy(aiError = NetworkErrorMapper.getUserFriendlyMessage(e), isAiLoading = false) }
-            }
         }
     }
 
@@ -217,9 +165,6 @@ class PayslipViewModel(
                         importSuccess = true,
                     )
                 }
-                if (parsed != null) {
-                    loadCachedAiInsights(parsed.dateStr)
-                }
             } else {
                 val rawMessage = result.exceptionOrNull()?.message ?: ""
                 val friendlyError =
@@ -261,12 +206,6 @@ class PayslipViewModel(
                     selectedPayslip = nextSelected,
                     taxOptimizationResult = computeTaxOptimization(remaining, nextSelected),
                 )
-            }
-            val next = _uiState.value.selectedPayslip
-            if (next != null) {
-                loadCachedAiInsights(next.dateStr)
-            } else {
-                _uiState.update { it.copy(aiInsights = null, aiError = null) }
             }
         }
     }

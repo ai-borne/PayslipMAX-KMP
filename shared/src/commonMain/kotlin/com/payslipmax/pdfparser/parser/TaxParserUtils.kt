@@ -95,12 +95,18 @@ private fun buildTaxAndSavings(
     dsopFund: DsopFund?,
 ): TaxAndSavings {
     val grossSalaryYtd = grossSalMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
-    val totalTaxPayableRaw = taxPayableMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
+    val totalTaxableIncome = taxableIncMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0
+    val totalTaxPayableRaw = taxPayableMatch?.groupValues?.get(1)?.toDoubleOrNull()
+    // Tax can never legitimately exceed the taxable income it's computed on. grossSalaryYtd is unusable
+    // as a sanity bound: it prints as a single month's figure (not cumulative YTD) in March and April
+    // fixtures, which used to make this guard fabricate a fake 30%-of-gross value on every high-income
+    // April/March payslip (D3, docs/Plan/04_TaxPlannerGoldStandard.md). On genuine implausibility, leave
+    // the field unavailable rather than fabricate a number.
     val totalTaxPayable =
-        if (grossSalaryYtd > 0.0 && totalTaxPayableRaw > grossSalaryYtd) {
-            kotlin.math.round(grossSalaryYtd * 0.30)
-        } else {
-            totalTaxPayableRaw
+        when {
+            totalTaxPayableRaw == null -> null
+            totalTaxableIncome > 0.0 && totalTaxPayableRaw > totalTaxableIncome -> null
+            else -> totalTaxPayableRaw
         }
 
     val isNewRegime = taxText.contains("New Tax Regime", ignoreCase = true)
@@ -108,7 +114,7 @@ private fun buildTaxAndSavings(
 
     return TaxAndSavings(
         grossSalaryYtd = grossSalaryYtd,
-        totalTaxableIncome = taxableIncMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
+        totalTaxableIncome = totalTaxableIncome,
         standardDeduction = stdDedMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
         netTaxableIncome = netTaxableMatch?.groupValues?.get(1)?.toDoubleOrNull() ?: 0.0,
         totalTaxPayable = totalTaxPayable,

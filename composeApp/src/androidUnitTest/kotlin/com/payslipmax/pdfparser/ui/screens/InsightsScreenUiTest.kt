@@ -10,7 +10,6 @@ import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.setDevOverride
 import com.payslipmax.pdfparser.ui.setPremiumEnabled
-import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import kotlinx.coroutines.Dispatchers
@@ -131,9 +130,9 @@ class InsightsScreenUiTest {
             testDispatcher.scheduler.runCurrent()
             mainClock.advanceTimeBy(300)
 
-            // Inline locked card removed for free users — its unique CTA must not exist
-            onNodeWithText(AppStringsPremium.aiAuditUnlockBtn).assertDoesNotExist()
-            // The three scattered PRO teasers (Recommended Actions / locked anomalies / premium report
+            // Inline locked AI card removed — its old unlock CTA must not appear
+            onNodeWithText("Unlock AI CA Audit").assertDoesNotExist()
+            // The three scattered Premium teasers (Recommended Actions / locked anomalies / premium report
             // teaser) are gone — only the one consolidated hub card remains, at scroll bottom.
             onNodeWithText("Recommended For You").assertDoesNotExist()
             onRoot().performTouchInput { swipeUp() }
@@ -186,7 +185,7 @@ class InsightsScreenUiTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun premiumUserSeesCaReportInlineNotTeaser() =
+    fun premiumUserSeesPremiumReportCardNotLockedHub() =
         runComposeUiTest {
             runBlocking {
                 fakeDao.insertPayslip(buildPayslip(2026, 4, "April").toEncryptedEntity())
@@ -197,18 +196,16 @@ class InsightsScreenUiTest {
             testDispatcher.scheduler.advanceUntilIdle()
             mainClock.advanceTimeBy(300)
 
-            // The locked hub is a free-tier-only surface — the PRO shell dissolves, no wrapper card.
+            // The locked hub is a free-tier-only surface — the Premium shell dissolves, no wrapper card.
             onNodeWithText(InsightsStrings.premiumHubTitle, substring = true).assertDoesNotExist()
 
-            // Scroll to compose the section in LazyColumn
-            onNode(hasScrollAction()).performScrollToNode(hasText(AppStrings.geminiAiAnalyzeBtn))
+            // Premium report card title must be visible for Premium users.
+            onNode(hasScrollAction()).performScrollToNode(hasText(InsightsStrings.premiumReportTitle, substring = true))
             mainClock.advanceTimeBy(300)
-
-            // CA report active card must be present (its generate CTA is the positive signal)
-            onNodeWithText(AppStrings.geminiAiAnalyzeBtn).assertExists()
+            onNodeWithText(InsightsStrings.premiumReportTitle, substring = true).assertExists()
         }
 
-    /** Insights PRO consolidation, Phase 2: for PRO users the hub dissolves into first-class cards —
+    /** Insights Premium consolidation, Phase 2: for Premium users the hub dissolves into first-class cards —
      *  the AI report, an always-reachable tools drawer (no tap needed, "drawer is home"), and anomaly
      *  findings — with no separate "Recommended For You" strip and no feature listed twice. */
     @OptIn(ExperimentalTestApi::class)
@@ -228,9 +225,9 @@ class InsightsScreenUiTest {
             // same four the drawer already lists (the approved dedup: the drawer is home).
             onNodeWithText("Recommended For You").assertDoesNotExist()
 
-            // Drawer defaults to expanded for PRO — a tool title is reachable with no "View all" tap.
-            onNode(hasScrollAction()).performScrollToNode(hasText(AppStringsPremium.proCatalogRetCalcTitle))
-            onNodeWithText(AppStringsPremium.proCatalogRetCalcTitle).assertIsDisplayed()
+            // Drawer defaults to expanded for Premium — a tool title is reachable with no "View all" tap.
+            onNode(hasScrollAction()).performScrollToNode(hasText(AppStringsPremium.premiumCatalogRetCalcTitle))
+            onNodeWithText(AppStringsPremium.premiumCatalogRetCalcTitle).assertIsDisplayed()
 
             // Retirement (Tax Planner / DSOP / Claim / Retirement were the RecommendedActions <->
             // drawer duplicates) now appears exactly once, in the drawer.

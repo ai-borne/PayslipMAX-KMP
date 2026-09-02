@@ -39,9 +39,6 @@ data class Grid(
  * [RowPairing] turns rows into (label, amount) pairs and [TokenTableClassifier] assigns credit/debit.
  */
 object GridReconstructor {
-    /** Fallback used when token heights are unavailable; mirrors the legacy ±3f y-clustering. */
-    private const val MIN_TOLERANCE = 3f
-
     fun reconstruct(
         tokens: List<PositionedToken>,
         debugCollector: com.payslipmax.pdfparser.parser.debug.ParserDebugCollector? = null,
@@ -64,50 +61,5 @@ object GridReconstructor {
         debugCollector?.recordStage2(grid)
 
         return grid
-    }
-
-    /** Groups tokens whose vertical centers fall within [tolerance] of the row's running center. */
-    private fun clusterRows(
-        tokens: List<PositionedToken>,
-        tolerance: Float,
-    ): List<List<PositionedToken>> {
-        val sorted = tokens.sortedBy { it.centerY }
-        val rows = mutableListOf<MutableList<PositionedToken>>()
-        var refCenter = Float.NaN
-        for (token in sorted) {
-            if (rows.isEmpty() || token.centerY - refCenter > tolerance) {
-                rows.add(mutableListOf(token))
-                refCenter = token.centerY
-            } else {
-                rows.last().add(token)
-            }
-        }
-        return rows
-    }
-
-    /** Within one row, joins tokens into cells, breaking when the horizontal gap exceeds [cellGap]. */
-    private fun buildRow(
-        rowTokens: List<PositionedToken>,
-        cellGap: Float,
-    ): GridRow {
-        val sorted = rowTokens.sortedBy { it.x }
-        val cells = mutableListOf<MutableList<PositionedToken>>()
-        var prevRight = Float.NaN
-        for (token in sorted) {
-            if (cells.isEmpty() || token.x - prevRight > cellGap) {
-                cells.add(mutableListOf(token))
-            } else {
-                cells.last().add(token)
-            }
-            prevRight = maxOf(if (prevRight.isNaN()) token.right else prevRight, token.right)
-        }
-        return GridRow(cells.map { GridCell(it) })
-    }
-
-    private fun medianOf(values: List<Float>): Float {
-        if (values.isEmpty()) return 0f
-        val sorted = values.sorted()
-        val mid = sorted.size / 2
-        return if (sorted.size % 2 == 1) sorted[mid] else (sorted[mid - 1] + sorted[mid]) / 2f
     }
 }

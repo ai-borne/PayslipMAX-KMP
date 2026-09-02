@@ -1,11 +1,9 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.domain.ParsedPayslip
@@ -210,32 +208,6 @@ private fun MonthDropdown(
                     },
                 )
             }
-        }
-    }
-}
-
-@Composable
-internal fun EmptyStateScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(AppDimensions.SpacingDouble),
-        ) {
-            Text(
-                text = AppStrings.dashboardEmptyStateTitle,
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
-            Text(
-                text = AppStrings.dashboardEmptyStateDescSandbox,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-            )
         }
     }
 }

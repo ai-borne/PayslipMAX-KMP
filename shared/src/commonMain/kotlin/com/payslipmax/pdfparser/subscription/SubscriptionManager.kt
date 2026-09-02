@@ -1,5 +1,7 @@
 package com.payslipmax.pdfparser.subscription
 
+import com.payslipmax.pdfparser.billing.BillingManager
+import com.payslipmax.pdfparser.billing.SubscriptionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -7,7 +9,6 @@ import kotlinx.coroutines.flow.asStateFlow
 enum class FeatureGate {
     PREMIUM_INTELLIGENCE,
     WEALTH_OPTIMIZATION,
-    AI_AUDIT,
     TAX_PLANNER,
     DSOP_SIMULATOR,
     ANOMALY_DETECTION,
@@ -47,6 +48,7 @@ interface SubscriptionService {
 class SubscriptionManager(
     private val isPremiumEnabledProvider: () -> Boolean,
     private val isDebugBuildProvider: () -> Boolean = { isDebugBuild() },
+    private val billingManager: BillingManager? = null,
 ) : SubscriptionService {
     private val _devOverride =
         MutableStateFlow(
@@ -69,6 +71,10 @@ class SubscriptionManager(
                 DevOverride.FOLLOW_FLAG -> Unit
             }
         }
-        return isPremiumEnabledProvider()
+        return when (val state = billingManager?.subscriptionState?.value) {
+            is SubscriptionState.Active -> true
+            is SubscriptionState.Inactive -> false
+            is SubscriptionState.Unknown, null -> isPremiumEnabledProvider()
+        }
     }
 }

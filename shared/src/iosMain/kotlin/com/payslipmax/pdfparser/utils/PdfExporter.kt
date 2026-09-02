@@ -9,12 +9,9 @@ import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.writeToFile
 import platform.UIKit.NSFontAttributeName
-import platform.UIKit.UIActivityViewController
-import platform.UIKit.UIApplication
 import platform.UIKit.UIFont
 import platform.UIKit.UIGraphicsPDFRenderer
 import platform.UIKit.UIGraphicsPDFRendererContext
-import platform.UIKit.UIWindow
 import platform.UIKit.drawAtPoint
 import platform.UIKit.sizeWithAttributes
 
@@ -35,7 +32,7 @@ actual fun sharePdf(
 
     val path = NSTemporaryDirectory() + fileName
     data.writeToFile(path, atomically = true)
-    presentShare(NSURL.fileURLWithPath(path))
+    presentIosShare(listOf(NSURL.fileURLWithPath(path)))
 }
 
 @OptIn(ExperimentalForeignApi::class)
@@ -67,12 +64,3 @@ private fun measureWidth(
     text: String,
     attrs: Map<Any?, Any?>,
 ): Double = (text as NSString).sizeWithAttributes(attrs).useContents { width }
-
-private fun presentShare(url: NSURL) {
-    val keyWindow =
-        UIApplication.sharedApplication.keyWindow
-            ?: UIApplication.sharedApplication.windows.firstOrNull() as? UIWindow
-    val root = keyWindow?.rootViewController ?: return
-    val activity = UIActivityViewController(activityItems = listOf(url), applicationActivities = null)
-    root.presentViewController(activity, animated = true, completion = null)
-}

@@ -14,15 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
-import com.payslipmax.pdfparser.ui.PayslipUiState
-import com.payslipmax.pdfparser.ui.PayslipViewModel
-import com.payslipmax.pdfparser.ui.clearAiInsights
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
 /**
- * The free-tier "mother" PRO card (Insights PRO consolidation, Phase 1): replaces the three scattered
+ * The free-tier "mother" Premium card (Insights Premium consolidation, Phase 1): replaces the three scattered
  * teasers — [RecommendedActions], [AdvancedAnomaliesCard]'s locked branch, [PremiumReportCard]'s
  * teaser — with one hub. Each teaser's signal survives as a section here: the catalog bundle
  * ([premiumBundleHighlights]), the locked anomaly count/labels ([partitionAdvancedAnomalies], never
@@ -33,6 +30,7 @@ fun LockedPremiumHubCard(
     state: InsightsState,
     smartInsights: List<InsightUiModel>,
     onUpgradeClick: () -> Unit,
+    price: String = InsightsStrings.premiumIntelligencePrice,
     modifier: Modifier = Modifier,
 ) {
     val anomalyDisplay =
@@ -42,7 +40,7 @@ fun LockedPremiumHubCard(
     val mostRelevant = remember(state, smartInsights) { buildRecommendedActions(state, smartInsights).firstOrNull() }
 
     FlatBorderedCard(modifier = modifier, tint = CardTint.Accent) {
-        PremiumHubHeader()
+        PremiumHubHeader(price = price)
         PremiumHubBundleList()
         if (anomalyDisplay.lockedCount > 0) PremiumHubAnomalyHook(anomalyDisplay)
         if (mostRelevant != null) PremiumHubMostRelevant(mostRelevant)
@@ -53,8 +51,8 @@ fun LockedPremiumHubCard(
 }
 
 /**
- * Wires the consolidated PRO surface into the Insights body (Phase 2): a locked free-tier user sees
- * only [LockedPremiumHubCard]; a PRO user sees the shell dissolve into first-class cards — unlocked
+ * Wires the consolidated Premium surface into the Insights body (Phase 2): a locked free-tier user sees
+ * only [LockedPremiumHubCard]; a Premium user sees the shell dissolve into first-class cards — unlocked
  * [AdvancedAnomaliesCard] findings (self-hides when none) + [PremiumReportCard] with its AI section and
  * tools drawer defaulted open (drawer is home). Called directly from `InsightsScreen`'s `LazyColumn`,
  * replacing what used to be three separately-gated cards (a standalone `RecommendedActions` card, an
@@ -62,20 +60,19 @@ fun LockedPremiumHubCard(
  */
 fun LazyListScope.insightsPremiumItems(
     state: InsightsState,
-    uiState: PayslipUiState,
-    viewModel: PayslipViewModel,
     smartInsights: List<InsightUiModel>,
     isPremium: Boolean,
     hasAnomalyDetection: Boolean,
     toolsExpanded: Boolean,
     onToolsExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
-    onShowTransparency: () -> Unit,
-    onViewInsightsClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
+    price: String = InsightsStrings.premiumIntelligencePrice,
 ) {
     if (!isPremium) {
-        item(key = "locked_premium_hub", contentType = "locked_premium_hub") { LockedPremiumHubCard(state = state, smartInsights = smartInsights, onUpgradeClick = onShowUpgradeSheet) }
+        item(key = "locked_premium_hub", contentType = "locked_premium_hub") {
+            LockedPremiumHubCard(state = state, smartInsights = smartInsights, onUpgradeClick = onShowUpgradeSheet, price = price)
+        }
         return
     }
     item(key = "advanced_anomalies", contentType = "advanced_anomalies") { AdvancedAnomaliesCard(anomalies = state.engineResult.anomalies, hasAnomalyDetection = hasAnomalyDetection) }
@@ -84,35 +81,25 @@ fun LazyListScope.insightsPremiumItems(
             toolsExpanded = toolsExpanded,
             onToolsExpandClick = onToolsExpandClick,
             onNavigateTo = onNavigateTo,
-            aiSectionContent = {
-                GeminiAiInsightsSection(
-                    aiInsights = uiState.aiInsights,
-                    isAiLoading = uiState.isAiLoading,
-                    aiError = uiState.aiError,
-                    onGenerateClick = onShowTransparency,
-                    onViewInsightsClick = onViewInsightsClick,
-                    onClearClick = { viewModel.clearAiInsights() },
-                )
-            },
         )
     }
 }
 
 @Composable
-private fun PremiumHubHeader() {
+private fun PremiumHubHeader(price: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "${AppStrings.proTeaserCrownIcon} ${InsightsStrings.premiumHubTitle}",
+            text = "${AppStrings.premiumTeaserCrownIcon} ${InsightsStrings.premiumHubTitle}",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
         )
         Text(
-            text = InsightsStrings.premiumIntelligencePrice,
+            text = price,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.secondary,

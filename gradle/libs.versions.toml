@@ -1,9 +1,9 @@
 [versions]
 agp = "8.13.2"
 mockk = "1.13.12"
-kotlin = "2.2.21"
-ksp = "2.2.21-2.0.5"
-compose-multiplatform = "1.9.3"
+kotlin = "2.3.20"
+ksp = "2.3.11"
+compose-multiplatform = "1.10.3"
 # Material Icons were unbundled from Compose Multiplatform in 1.8.0; JetBrains' documented
 # migration is to depend on the final standalone icons artifact (1.7.3), which stays ABI-stable
 # alongside newer Compose (compose-ui resolves up to compose-multiplatform's version).
@@ -19,7 +19,9 @@ kotlinx-serialization = "1.7.3"
 ktor = "2.3.12"
 firebase-bom = "33.7.0"
 litertlm-android = "0.13.1"
-play-asset-delivery = "2.3.0"
+play-asset-delivery = "2.2.2"
+play-billing = "7.1.1"
+purchases-kmp = "3.5.0"
 
 [libraries]
 litertlm-android = { module = "com.google.ai.edge.litertlm:litertlm-android", version.ref = "litertlm-android" }
@@ -34,6 +36,7 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 # Room KMP dependencies
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
 
 # Koin Dependency Injection for KMP
@@ -53,7 +56,14 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 
 # Play Asset Delivery — Tier 6 base model on-demand install (gemmaModelPack)
+play-asset-delivery = { module = "com.google.android.play:asset-delivery", version.ref = "play-asset-delivery" }
 play-asset-delivery-ktx = { module = "com.google.android.play:asset-delivery-ktx", version.ref = "play-asset-delivery" }
+
+# Google Play Billing
+play-billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "play-billing" }
+
+# RevenueCat KMP — cross-platform billing (replaces hand-rolled Play Billing/StoreKit, Phase 3)
+revenuecat-purchases-kmp-core = { module = "com.revenuecat.purchases:purchases-kmp-core", version.ref = "purchases-kmp" }
 
 # Compose Material Icons — standalone artifact (see compose-material-icons version note)
 compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-material-icons" }
