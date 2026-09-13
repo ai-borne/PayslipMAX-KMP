@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
+import com.payslipmax.pdfparser.domain.WellnessDriver
+import com.payslipmax.pdfparser.domain.breakdownWellnessDrivers
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.math.abs

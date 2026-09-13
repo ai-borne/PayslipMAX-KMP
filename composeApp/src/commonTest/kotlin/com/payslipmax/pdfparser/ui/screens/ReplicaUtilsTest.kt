@@ -160,7 +160,7 @@ class ReplicaUtilsTest {
     @Test
     fun `a Gemma-recovered field is shown exactly once and flagged low-confidence`() {
         // Post-fix shape of applyGemmaFallback's output: the recovered field lives only in the
-        // structured map (rawDeductions no longer carries it, see PayslipTokenParserGemmaTest), tagged
+        // structured map (rawDeductions no longer carries it, see GrammarAwareParserGemmaTest), tagged
         // GEMMA_FALLBACK at the fixed confidence floor.
         val payslip =
             ParsedPayslip(

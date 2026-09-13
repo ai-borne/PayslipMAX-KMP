@@ -27,4 +27,18 @@ object ProjectionMath {
         val totalInterest = balance - initialBalance - contributions
         return ProjectionResult(years, contributions, totalInterest, balance)
     }
+
+    fun calculateCompoundValue(
+        initialBalance: Double,
+        monthlyContribution: Double,
+        years: Int,
+        annualRate: Double,
+    ): Double {
+        var balance = initialBalance
+        repeat(years) {
+            val annualDeposit = monthlyContribution * 12
+            balance = (balance + annualDeposit) * (1.0 + annualRate)
+        }
+        return balance
+    }
 }

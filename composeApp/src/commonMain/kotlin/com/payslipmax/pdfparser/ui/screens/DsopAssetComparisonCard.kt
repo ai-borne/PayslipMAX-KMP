@@ -29,22 +29,22 @@ internal fun calculateAssetProjections(
 ): List<AssetProjectionResult> {
     val dsopResult = ProjectionMath.calculateProjection(initialBalance, monthlyContribution, years).projectedBalance
 
-    val equityGross = calculateCompoundValue(initialBalance, monthlyContribution, years, 0.12)
+    val equityGross = ProjectionMath.calculateCompoundValue(initialBalance, monthlyContribution, years, 0.12)
     val equityInvested = initialBalance + (monthlyContribution * 12 * years)
     val equityGains = (equityGross - equityInvested).coerceAtLeast(0.0)
     val equityTaxableGains = (equityGains - 125000.0).coerceAtLeast(0.0)
     val equityTax = equityTaxableGains * 0.125
     val equityNet = equityGross - equityTax
 
-    val goldGross = calculateCompoundValue(initialBalance, monthlyContribution, years, 0.095)
+    val goldGross = ProjectionMath.calculateCompoundValue(initialBalance, monthlyContribution, years, 0.095)
     val goldInvested = initialBalance + (monthlyContribution * 12 * years)
     val goldGains = (goldGross - goldInvested).coerceAtLeast(0.0)
     val goldTax = goldGains * 0.125
     val goldNet = goldGross - goldTax
 
-    val fdGross = calculateCompoundValue(initialBalance, monthlyContribution, years, 0.07)
+    val fdGross = ProjectionMath.calculateCompoundValue(initialBalance, monthlyContribution, years, 0.07)
     val fdNetRate = 0.07 * (1.0 - 0.30)
-    val fdNet = calculateCompoundValue(initialBalance, monthlyContribution, years, fdNetRate)
+    val fdNet = ProjectionMath.calculateCompoundValue(initialBalance, monthlyContribution, years, fdNetRate)
 
     return listOf(
         AssetProjectionResult(
@@ -80,20 +80,6 @@ internal fun calculateAssetProjections(
             isTaxFree = false,
         ),
     )
-}
-
-internal fun calculateCompoundValue(
-    initialBalance: Double,
-    monthlyContribution: Double,
-    years: Int,
-    annualRate: Double,
-): Double {
-    var balance = initialBalance
-    repeat(years) {
-        val annualDeposit = monthlyContribution * 12
-        balance = (balance + annualDeposit) * (1.0 + annualRate)
-    }
-    return balance
 }
 
 @Composable

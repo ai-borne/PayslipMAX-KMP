@@ -43,4 +43,12 @@ class ProjectionMathTest {
         val high = ProjectionMath.calculateProjection(0.0, 10_000.0, 10)
         assertTrue(high.projectedBalance > low.projectedBalance)
     }
+
+    @Test
+    fun compoundValueCalculationGrowsWithPositiveRate() {
+        val valZeroRate = ProjectionMath.calculateCompoundValue(initialBalance = 100_000.0, monthlyContribution = 10_000.0, years = 5, annualRate = 0.0)
+        val valPosRate = ProjectionMath.calculateCompoundValue(initialBalance = 100_000.0, monthlyContribution = 10_000.0, years = 5, annualRate = 0.071)
+        assertEquals(700_000.0, valZeroRate, 0.01)
+        assertTrue(valPosRate > valZeroRate)
+    }
 }

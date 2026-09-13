@@ -1,4 +1,4 @@
-package com.payslipmax.pdfparser.ui.screens
+package com.payslipmax.pdfparser.domain
 
 import com.payslipmax.pdfparser.insights.Anomaly
 import com.payslipmax.pdfparser.insights.EngineResult

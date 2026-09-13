@@ -11,7 +11,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-class PayslipTokenParserGemmaTest {
+class GrammarAwareParserGemmaTest {
     private val testConfig = GemmaEngineConfig(modelPath = "models/gemma3-1b.task")
 
     @Test

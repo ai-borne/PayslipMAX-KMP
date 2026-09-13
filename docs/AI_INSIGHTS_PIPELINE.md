@@ -467,7 +467,7 @@ The 52-fixture corpus starts at Jan 2022; `CorpusCaptureTest` defaults `minYear`
 
 ## 6. Legacy String Path (Removed)
 
-`PayslipTextParser`, `DynamicSpatialParser`, and the dead `PayslipTokenParser` entry point have all been **deleted from the codebase** (July 2026, three commits: `365153b` dropped the legacy text-fixture regression suite, `8c175b9` removed `PayslipTokenParser` and migrated its tests to `GrammarAwareParser`, `0821fab` removed the remaining legacy parsing paths and cleaned up the `ParserUtils` regex hangs they depended on). `GrammarAwareParser` is now the only production entry point on both platforms, with no secondary string path left to keep in sync. `PayslipTokenParserGemmaTest.kt` still carries the old name but now exercises `GrammarAwareParser` directly (pending rename — tracked in the tech-debt backlog).
+`PayslipTextParser`, `DynamicSpatialParser`, and the dead `PayslipTokenParser` entry point have all been **deleted from the codebase** (July 2026, three commits: `365153b` dropped the legacy text-fixture regression suite, `8c175b9` removed `PayslipTokenParser` and migrated its tests to `GrammarAwareParser`, `0821fab` removed the remaining legacy parsing paths and cleaned up the `ParserUtils` regex hangs they depended on). `GrammarAwareParser` is now the only production entry point on both platforms, with no secondary string path left to keep in sync. `PayslipTokenParserGemmaTest.kt` was renamed to `GrammarAwareParserGemmaTest.kt` (13 Sep 2026) to reflect that it exercises `GrammarAwareParser` directly.
 
 **Deleted in Phase 4** (predates the full removal above):
 - `DynamicSpatialParser.applyHistoricalOverrides()` — per-month fudge factors gone.
