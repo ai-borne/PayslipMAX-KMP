@@ -432,6 +432,105 @@ untouched and the paywall stays dark until Phase 8.
 **Exit criteria**: `v1.2` in App Review with monetization live, full test suite green, sandbox
 evidence attached.
 
+**Phase Summary** (verification complete 2026-09-13; submission pending — see "Remaining" below):
+monetization is live in code and the entire purchase pipe is verified on-device with the real flag
+flipped for the first time.
+
+**The one production line** (`bc25900`): `FREE_LAUNCH_MODE_IOS = false`. `FREE_LAUNCH_MODE_ANDROID`
+stays `true`, untouched. Shipped as TestFlight `1.2 (5)`, then `1.2 (6)` after the fix below. Both
+landed at their declared build numbers with no Xcode auto-increment — the Phase 7 `CFBundleVersion`
+fix holding across real archives, which Phase 7 could only assert from `xcodebuild -showBuildSettings`.
+
+**Exit-criteria evidence (all on-device, all screenshotted).** Every check below was run with the
+`DevOverride` at `FOLLOW_FLAG`, so `hasAccess` fell through to `billingManager.subscriptionState` —
+this is the first phase in which any of it is real evidence rather than a flag echo:
+
+1. **Gate-level unlocking, both directions** — Phase 7's headline gap, now closed. Locked: the
+   Settings card reads "Upgrade to PayslipMax Premium" and premium tools are shut. Unlocked: the
+   same card reads "Premium Plan Activated · Subscribed (Auto-Renewing Subscription Active)" and
+   Tax Planner / DSOP Simulator / Claim Generator / Retirement Calculators all open. Verified on
+   **two independent Apple IDs**. The chain was traced in code, not inferred: RevenueCat entitlement
+   → `subscriptionState.Active` → `setPremiumEnabled(true)` (`PayslipViewModelExtensions.kt:70`) →
+   Room → `uiState.isPremiumEnabled`.
+2. **The Settings premium card renders at all** — suppressed in every prior build by
+   `if (!isFreeLaunchModePlatform())` (`SettingsSectionComponents.kt:39`). Confirmed in both states.
+3. **Cancel mid-purchase** — untestable in Phase 7 and now closed: dismissing Apple's auth prompt
+   mid-flow leaves the sheet open, the spinner clears on its own, nothing unlocks, no hang.
+4. **Purchase → immediate unlock** — Apple's "You're all set", then the Settings card flipping to
+   activated **without an app restart**. This is RevenueCat's #3 rejection cause, directly disproven.
+5. **Restore shows its confirmation for ~1.5s before the sheet closes** — the Phase 7 debt fix
+   verified by eye. There is deliberately no automated coverage (a real `ModalBottomSheet` spans
+   three Robolectric windows and the assertion cannot find the message node); only the pure
+   `dismissDelayMsFor()` rule is unit-tested, so on-device was the only possible verification.
+6. **Price reads ₹999** — confirmed on an Indian-storefront account, and Apple's own TestFlight
+   purchase sheet charged "₹ 999 per year" on **both** accounts.
+
+**The price-display investigation (the substantive work of this phase).** On one of the two Indian
+accounts the in-app paywall rendered `$9.99` while Apple's purchase sheet charged `₹ 999`. This was
+chased to ground rather than waved off, because every user of this app is on an Indian storefront:
+
+- Ruled out in our code: `getFormattedPrice()` returns `storeProduct.price.formatted`
+  (`RevenueCatBillingManager.kt:137-142`) verbatim — there is no currency logic anywhere in the app.
+- Ruled out in RevenueCat (checked live on the dashboard): the App Store product carries no
+  RevenueCat-side price at all, and the Test Store product is USD **79.99**, not 9.99 — so the app
+  was not accidentally resolving the test product. The sandbox transaction for that very purchase is
+  recorded as **India, $10.45 USD-normalised** — i.e. ₹999. RevenueCat's server had it right.
+- `$9.99` is exactly **our own configured USA price point** in ASC, so StoreKit itself handed the app
+  a US-storefront product while billing the Indian account correctly.
+- **Root cause: a known TestFlight sandbox limitation**, not a defect — StoreKit product metadata
+  can default to USD in beta builds while the payment sheet uses the real localised price. It is
+  reported by other developers with this exact symptom (RevenueCat community: "TestFlight iOS 18.5
+  UI shows USD but purchase sheet shows INR") and resolves on production release. That it appeared
+  on one Indian account and not the other, on the identical binary, is the instability itself.
+
+**Tech debt incurred and resolved this phase:** one, found by the investigation above and fixed in
+`caf6fe4`. `loadPremiumPrice()` was private and called **once**, from the ViewModel's `init`, so a
+price read at cold start was frozen for the whole session — a failed or early fetch could never
+recover. It is now the public `refreshPremiumPrice()`, fired again from a `LaunchedEffect` as
+`PremiumUpgradeBottomSheet` opens (the point at which a quoted price becomes a commitment), wired at
+all four paywall call sites via a new `onPresented` parameter. A fetch returning `null` now leaves
+the last known price in place rather than blanking it, so a transient offerings failure while the
+sheet is open cannot disable Unlock mid-decision. Two tests cover it, both carrying the TestFlight
+observation in a comment so the *why* survives:
+`refreshPremiumPrice_rereads_the_store_so_a_late_storefront_replaces_the_startup_price` and
+`refreshPremiumPrice_keeps_the_last_known_price_when_the_store_returns_nothing`.
+
+**Recorded honestly: this fix did not resolve the `$9.99` symptom.** It was written while the
+one-shot-`init` read was still the leading hypothesis; the account still showed `$9.99` after it
+shipped in `1.2 (6)`. It is kept because a price read once and never re-read is a genuine latent
+bug and the tests are sound — but it earns no credit for the currency behaviour, whose cause is the
+sandbox limitation above.
+
+**Tech debt carried forward (recorded, not silently dropped):**
+
+- **RevenueCat's App Store Connect API key slot is still empty** (product Store Status "Could not
+  check"). Demonstrated harmless to purchasing across two accounts and two builds; needs a manual
+  `.p8` upload by the user.
+- **No regression test for the `Info.plist` `CFBundleVersion` fix** — `iosApp` has no test target.
+  Now at least empirically confirmed twice: builds 5 and 6 both uploaded at their declared numbers.
+- **`DeveloperOverrideSection`'s segmented control overflows** — the "Force Premium" label renders
+  in a raised box over its neighbours. Debug/TestFlight-only UI that never ships to production; left
+  alone deliberately so as not to invalidate the build already under test.
+
+**Build/test status:** the full gate was run for real on `caf6fe4`, not assumed:
+`./gradlew check -x iosX64Test -x iosSimulatorArm64Test`, `iosX64Test iosSimulatorArm64Test`,
+`ktlintCheck`, the tech-debt audit on all seven touched files, and the iOS framework link check all
+green. The exhaustive pre-push gate (both variants, full corpus regression, full iOS suite, Room
+schema immutability, gitleaks over the pushed range) passed on the push of `caf6fe4`.
+
+**Live App Store Connect state, re-verified this phase via fastlane rather than trusted from memory:**
+`v1.1.1`/`v1.1.0`/`v1.0` all `READY_FOR_SALE` (nothing in review); subscription
+`payslipmax_yearly_premium` **READY_TO_SUBMIT** with the group localisation (`en-US`, "PayslipMax
+Premium") that Phase 7 flagged as the blocker now present; prices IND ₹999.00 (proceeds ₹719.62),
+USA $9.99, GBR £9.99, `startDate=current`, `preserved=false`.
+
+**Remaining before this phase can be called closed:** the `v1.2` version does not yet exist in App
+Store Connect and must be created, with build `1.2 (6)` attached and the subscription bundled into
+the same submission (ASC blocks standalone submission of a first-ever subscription). App Review
+notes are drafted, including the explicit caveat that Phase 7's sandbox screenshots show ₹199 and
+predate the deliberate price change — a reviewer comparing a ₹999 product against ₹199 screenshots
+would otherwise ask. **If App Review rejects, loop back to Phase 7, not forward to Phase 9.**
+
 ---
 
 ## Phase 9 — Distribution

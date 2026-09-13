@@ -5,7 +5,7 @@
 Section 4/5 (Step 4 / "Phase 2") with a platform-decoupled sequencing decision, and reflects the
 current state after [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md).
 
-## 0. Current state (2026-09-12)
+## 0. Current state (2026-09-13)
 
 - **iOS**: `v1.1.1` cleared App Review (`READY_FOR_SALE`) on 2026-09-12. Per
   [08_ios_monetization_phaseplan.md](08_ios_monetization_phaseplan.md) Phase 1 (committed `8059f04`
@@ -52,7 +52,25 @@ current state after [06_closed_testing_progress_log.md](06_closed_testing_progre
   into Phase 8: RevenueCat's separate *App Store Connect API* key slot is empty ("Store Status:
   Could not check") — now shown empirically **not** to block on-device purchasing — and the ASC
   subscription **group** still has no localization, which is required before submission. Full detail
-  in doc 08's Phase 7 Phase Summary.
+  in doc 08's Phase 7 Phase Summary. **Phase 8 (flip the real flag + submit) is verified but not yet
+  submitted, as of 2026-09-13.** `FREE_LAUNCH_MODE_IOS` is now `false` (`bc25900`) — iOS monetization
+  is live in code from `v1.2`, Android untouched at `true`. Both Phase 7 gaps are closed on-device
+  via TestFlight `1.2 (5)`/`1.2 (6)`: gate-level unlocking verified in **both** directions on two
+  independent Apple IDs (the Settings premium card, suppressed until this flag flipped, now renders
+  in both states), and cancel-mid-purchase degrades gracefully with no hang. Purchase unlocks the
+  gated features with no app restart, Restore shows its confirmation for ~1.5s before the sheet
+  closes, and the paywall reads ₹999 with Apple charging ₹999. One account rendered `$9.99` in-app
+  while Apple billed ₹999; this was chased to ground and is a **known TestFlight sandbox limitation**
+  (StoreKit product metadata defaulting to USD in beta builds), not a defect — ruled out in our code,
+  and ruled out on the RevenueCat dashboard, which recorded that transaction as India/₹999. It
+  resolves on production release. En route it exposed one real latent bug, fixed in `caf6fe4`: the
+  store price was read once in the ViewModel's `init` and never again, so an early or failed read was
+  frozen for the session; it is now re-read whenever the paywall is presented. The ASC subscription
+  **group localization** that Phase 7 flagged as a submission blocker now exists (`en-US`, "PayslipMax
+  Premium"), and the subscription is `READY_TO_SUBMIT` at ₹999/yr (raised from ₹199 before submission).
+  Still open: RevenueCat's App Store Connect API key slot is empty (harmless to purchasing, proven
+  across two accounts), and `v1.2` itself has yet to be created in ASC with build `1.2 (6)` attached
+  and the subscription bundled in. Full detail in doc 08's Phase 8 Phase Summary.
 - **Android**: Closed testing, `9 (1.0.0)` live on Internal testing (not yet promoted), `8 (1.0.0)`
   is the live Closed testing release, mandatory 14-day window running against v8. Still free by
   policy requirement, not choice.
