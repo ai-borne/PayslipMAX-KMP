@@ -524,12 +524,40 @@ schema immutability, gitleaks over the pushed range) passed on the push of `caf6
 Premium") that Phase 7 flagged as the blocker now present; prices IND ₹999.00 (proceeds ₹719.62),
 USA $9.99, GBR £9.99, `startDate=current`, `preserved=false`.
 
-**Remaining before this phase can be called closed:** the `v1.2` version does not yet exist in App
-Store Connect and must be created, with build `1.2 (6)` attached and the subscription bundled into
-the same submission (ASC blocks standalone submission of a first-ever subscription). App Review
-notes are drafted, including the explicit caveat that Phase 7's sandbox screenshots show ₹199 and
-predate the deliberate price change — a reviewer comparing a ₹999 product against ₹199 screenshots
-would otherwise ask. **If App Review rejects, loop back to Phase 7, not forward to Phase 9.**
+**Submission closeout (2026-09-13).** Before submitting, two stale-₹199 artifacts from the earlier
+price point were found and fixed on the live subscription (not just in screenshots evidence):
+
+- The subscription's **App Review screenshot** (uploaded in Phase 2) still showed the old
+  hardcoded-fallback paywall — literally `"₹199 / Year"`, the exact fallback string Phase 7's debt
+  fix later deleted from the app. Replaced with a fresh on-device TestFlight capture reading
+  `"₹ 999"`. Editing it required removing the subscription from its (already-`READY_TO_SUBMIT`)
+  draft submission first — ASC makes Review Information read-only while an item sits in a draft
+  submission — then re-adding it afterward; it returned to `READY_TO_SUBMIT` unchanged.
+- The subscription's **Review Notes** text itself also hardcoded `"(₹199/year)"` in prose, a second
+  independent mismatch the doc's earlier caveat-in-review-notes plan hadn't anticipated. Corrected
+  to `₹999/year` in the same edit pass.
+- Also verified live (no fix needed): the app's License Agreement is Apple's Standard License
+  Agreement, and both `Privacy Policy URL` (`https://www.ai-borne.in/privacy-policy`) and
+  `Support URL` (`https://www.ai-borne.in/support`) resolve to real, current, functioning pages —
+  closing out the Guideline 3.1.2 metadata risk raised before submission.
+
+**`v1.2` created and submitted to App Review (2026-09-13).** Build `1.2 (6)` attached. Hit one
+ASC-specific snag not documented anywhere: adding the subscription alone to the version's draft
+submission left it blocked with *"New subscription groups must be submitted with an auto-renewable
+subscription from within that group"* — a first-ever subscription group must be added to the same
+draft submission **as its own separate item**, not just its subscription. Fixed by opening the
+group's own page (`.../subscription-groups/22378910`) and using its own "Add for Review" control to
+attach the group itself to the same draft submission, bringing "Items Ready to Submit" from 2 to 3
+(iOS App 1.2, the subscription, and the group). Submitted; confirmed independently via both the ASC
+UI and the `review_status`/`subscription_status` fastlane lanes: `v1.2` and
+`payslipmax_yearly_premium` both show **`WAITING_FOR_REVIEW`**, group status "Waiting for Review".
+
+**Exit criteria met: `v1.2` is in App Review with monetization live, full test suite green (this
+session and the prior one), sandbox evidence attached with the price-change caveat noted in the
+submitted review notes.** Phase 8 is complete.
+
+**If App Review rejects, loop back to Phase 7, not forward to Phase 9.** Next session should check
+`fastlane ios review_status` for the outcome before doing anything else.
 
 ---
 

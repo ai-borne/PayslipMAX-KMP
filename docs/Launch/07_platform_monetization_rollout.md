@@ -68,9 +68,13 @@ current state after [06_closed_testing_progress_log.md](06_closed_testing_progre
   frozen for the session; it is now re-read whenever the paywall is presented. The ASC subscription
   **group localization** that Phase 7 flagged as a submission blocker now exists (`en-US`, "PayslipMax
   Premium"), and the subscription is `READY_TO_SUBMIT` at ₹999/yr (raised from ₹199 before submission).
-  Still open: RevenueCat's App Store Connect API key slot is empty (harmless to purchasing, proven
-  across two accounts), and `v1.2` itself has yet to be created in ASC with build `1.2 (6)` attached
-  and the subscription bundled in. Full detail in doc 08's Phase 8 Phase Summary.
+  Two stale ₹199 artifacts on the subscription itself (its App Review screenshot and its Review Notes
+  text) were found and corrected before submission — both independent of the app-side price display
+  bug. **Phase 8 is COMPLETE as of 2026-09-13: `v1.2` (build `1.2 (6)`) is submitted to App Review**,
+  confirmed via both the ASC UI and the `review_status`/`subscription_status` fastlane lanes —
+  `v1.2` and `payslipmax_yearly_premium` both `WAITING_FOR_REVIEW`. Still open (non-blocking):
+  RevenueCat's App Store Connect API key slot is empty (harmless to purchasing, proven across two
+  accounts). Full detail in doc 08's Phase 8 Phase Summary.
 - **Android**: Closed testing, `9 (1.0.0)` live on Internal testing (not yet promoted), `8 (1.0.0)`
   is the live Closed testing release, mandatory 14-day window running against v8. Still free by
   policy requirement, not choice.
