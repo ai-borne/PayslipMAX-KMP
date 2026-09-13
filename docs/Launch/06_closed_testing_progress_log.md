@@ -225,12 +225,41 @@ window. Remaining sprints (B: `FLAG_SECURE` re-enable + file-size splits; C: pag
 parsing fix; D: architecture/test-seam cleanup) are intentionally deferred to whatever release follows
 the 1.2 (iOS)/V10 (Android) review outcomes, per `docs/Plan/11_techDebt_10sep2026`.
 
+### 3. Tech debt Sprint D — architecture & test-seam cleanup (2026-09-13, complete, unreleased)
+Per `docs/Plan/11_techDebt_10sep2026`. No user-visible behavior change; all items verified via
+`:shared:testDebugUnitTest`, `:composeApp:testDebugUnitTest`, `ktlintCheck`, and
+`:composeApp:linkDebugFrameworkIosSimulatorArm64`.
+
+- Moved `FakePayslipDao`/`FakePdfParser` into a new `:shared-test-fixtures` module — these were
+  `public` classes previously exported into `shared.framework`'s distributed iOS interface despite
+  being test-only. Reduces the shipped binary's public surface.
+- Fixed two MVVM leaks: `calculateAssetProjections`'s compound-growth math moved from
+  `DsopAssetComparisonCard.kt` into `shared`'s `ProjectionMath.kt`; `breakdownWellnessDrivers`
+  scoring moved out of `ui/screens` into composeApp's `domain/` package.
+- Deleted unwired `ZeroPiiReportExporter.kt` (zero call sites) and its test.
+- Corrected stale documentation: `CLAUDE.md`/`AI_INSIGHTS_PIPELINE.md` no longer describe already-deleted
+  parsers (`PayslipTextParser`, `DynamicSpatialParser`, `PayslipTokenParser`) as present, and the ODR
+  (On-Demand Resources) Gemma-delivery description now matches the shipped mechanism instead of the
+  superseded Background Assets plan.
+- Renamed `PayslipTokenParserGemmaTest` → `GrammarAwareParserGemmaTest` to match what it actually tests.
+- Fixed `GemmaOnDemandResourceBridge.swift`: Gemma model download progress was rescaling
+  `fractionCompleted` against a fabricated `total: Int64 = 1000` instead of reporting real bytes; now
+  reads `completedUnitCount`/`totalUnitCount` straight off the same `NSProgress`. No behavior change to
+  the on-screen progress bar (the Kotlin side only ever consumed the derived fraction). Verified via
+  `:composeApp:linkDebugFrameworkIosSimulatorArm64` and an `xcodebuild` simulator build of the `iosApp`
+  scheme (both green). **Real-device ODR download verification not yet done — deferred to the next App
+  Review submission cycle.**
+
+**Status:** Committed on `release/ios-1.0.0-v6`, unreleased. Remaining Sprint D item (R8 findings #5-7
+Koin/native/LiteRT keep-rule scoping, tracked jointly with the R8 rollout plan above) is intentionally
+deferred, not silently dropped.
+
 ### Net effect on the eventual versionCode 11 release
-When versionCode 11 actually ships, it will carry **both** streams above (R8 Phase 10-11 rule cleanup
-+ Sprint A dead-code purge) plus whatever Phase 12 device verification and version bump work happens
-at that time. Update this section into a dated `### versionCode 11 —` entry (matching the format used
-for versionCode 4-10 above) once that build is actually uploaded — don't let it stay in this
-"preparation" form past the point it ships.
+When versionCode 11 actually ships, it will carry **all three** streams above (R8 Phase 10-11 rule
+cleanup, Sprint A dead-code purge, Sprint D architecture/test-seam cleanup) plus whatever Phase 12
+device verification and version bump work happens at that time. Update this section into a dated
+`### versionCode 11 —` entry (matching the format used for versionCode 4-10 above) once that build is
+actually uploaded — don't let it stay in this "preparation" form past the point it ships.
 
 ## What still needs to happen before the Day-14 final submission
 

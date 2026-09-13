@@ -34,11 +34,10 @@ final class GemmaOnDemandResourceBridge {
         let request = NSBundleResourceRequest(tags: [Self.tag])
         activeRequest = request
 
-        progressObservation = request.progress.observe(\.fractionCompleted) { progress, _ in
-            let fraction = progress.fractionCompleted
-            let total: Int64 = 1000
-            let done = Int64(fraction * Double(total))
-            self.reportProgress(bytesDownloaded: done, totalBytes: total)
+        progressObservation = request.progress.observe(\.completedUnitCount) { progress, _ in
+            // totalUnitCount can be 0/-1 briefly before the download size is known — skip until real.
+            guard progress.totalUnitCount > 0 else { return }
+            self.reportProgress(bytesDownloaded: progress.completedUnitCount, totalBytes: progress.totalUnitCount)
         }
 
         request.beginAccessingResources { [weak self] error in
