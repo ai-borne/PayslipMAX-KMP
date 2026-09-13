@@ -4,33 +4,35 @@
 
 ---
 
-### Sprint B — Safety & Boundary Hardening
-When: Before your next release goes out (fold into the release after 1.2/V10 clear review/testing). These touch production behavior, so they need a proper build + test pass, not a quick edit.
+### Sprint B — Boundary Hardening
+When: Before your next release goes out (fold into the release after 1.2/V10 clear review/testing).
 
-- [x] Fix the ColumnBoundaryDetector.kt comment/code mismatch (comment says 40pt merge gap, code uses 85pt) — decide which is correct and align them. **Done 13 Sep 2026**: kept the 85pt runtime behavior (field-tested via the 52-fixture corpus regression; real PCDA columns separate by ~140pt+ per `TokenTableClassifier.SINGLE_COLUMN_BAND_THRESHOLD`, so 85pt correctly sits below that without over-merging), extracted it into a named `COLUMN_MERGE_GAP_PT` constant, and fixed the stale "40pt" comment. Verified via `:shared:testDebugUnitTest` (full corpus regression + detector tests) — BUILD SUCCESSFUL.
+- [x] Fix the ColumnBoundaryDetector.kt comment/code mismatch (comment says 40pt merge gap, code uses 85pt) — **Done 13 Sep 2026** (commit `4ea625e`): kept the 85pt runtime behavior, extracted `COLUMN_MERGE_GAP_PT = 85f`, aligned comment. Verified via `:shared:testDebugUnitTest`.
 
-### Sprint C — Fix the Real Parsing Bug
-When: Top priority for your next development cycle, once 1.2/V10 outcomes are known. This is a correctness bug affecting real users' numbers, not just cleanup — but it needs proper corpus-fixture testing before it ships, so it shouldn't be rushed into a build already sitting in review.
-
-- Fix AndroidTokenExtractor.kt and IosTokenExtractor.kt so they pick up earnings/deduction table rows that spill onto page 2 (currently only the first table page is scanned — about 10% of payslips with heavy arrears/allowances lose rows silently)
-- Add corpus fixtures covering a 2-page table spillover case to TokenParseCorpusRegressionTest so this can't silently regress again
+*Ignored per user direction:*
+- *`FLAG_SECURE` in `MainActivity.kt` (leaves screenshots enabled during testing)*
+- *300-line limit "Red Zone" splits (handled opportunistically only)*
 
 ---
 
-### Sprint D — Cleanup & Architecture Tidying
+### Sprint C — Parsing Bug (Ignored)
+- *Ignored per user direction (multi-page table continuation row drop and fixtures shelved).*
 
-When: Whenever you have spare time — not urgent, do a few items at a time as convenient.
+---
 
-- Move FakePayslipDao.kt / FakePdfParser.kt out of commonMain into test-only source sets (they currently ship inside the real app binary)
-- Move calculateAssetProjections (in DsopAssetComparisonCard.kt) out of the UI file into a domain engine (e.g. ProjectionMath.kt) — it currently does tax math directly in a Compose file
-- Move breakdownWellnessDrivers scoring logic (in InsightsWellnessLogic.kt) out of the UI layer
-- Wire ZeroPiiReportExporter to a debug/settings button so a scrubbed diagnostic bundle is actually reachable in-app
-- Split the remaining 280s-line files opportunistically whenever you're already editing them: App.kt, AppStrings.kt, WealthOptimizationEngine.kt, LedgerCorrectionDialog.kt, TaxLedgerAggregator.kt, PayslipViewModelTest.kt, GrammarRegistryTest.kt, PayslipPatternConfig.kt, TaxPlanningScreen.kt, Charts.kt, PayslipRepository.kt, RepresentationScreen.kt, SettingsSectionComponents.kt
-- Consolidate the 10 scattered string files (AppStringsPremium.kt, AppStringsSupport.kt, etc.) into a cleaner sub-catalog scheme — not urgent, they exist because of the 300-line rule, not carelessness
-- Fix stale doc mentions of deleted parsers (PayslipTextParser, DynamicSpatialParser, PayslipTokenParser) in CLAUDE.md and AI_INSIGHTS_PIPELINE.md
-- Update AI_INSIGHTS_PIPELINE.md to describe the actual ODR (On-Demand Resources) delivery mechanism instead of the old "blocked on Background Assets" note
-- Rename PayslipTokenParserGemmaTest.kt to reflect that it actually tests GrammarAwareParser
-- Prune the redundant/overly-broad R8 keep rules in proguard-rules.pro (Koin annotations rule, unscoped native keep, broad LiteRT-LM package keep)
+### Sprint D — Architecture, Test Seams & Cleanup
+When: Target for upcoming cleanup cycles.
+
+- [ ] Move `FakePayslipDao.kt` / `FakePdfParser.kt` out of `commonMain` into a test-fixtures structure (removes test mocks from shipping production binary).
+- [ ] Move `calculateAssetProjections` (in `DsopAssetComparisonCard.kt`) out of the UI file into domain engine `ProjectionMath.kt` (MVVM leak).
+- [ ] Move `breakdownWellnessDrivers` scoring logic (in `InsightsWellnessLogic.kt`) out of the UI layer into domain (MVVM leak).
+- [ ] **Remove from Code**: Delete `ZeroPiiReportExporter.kt` and `ZeroPiiReportExporterTest.kt` completely (unwired diagnostic exporter is no longer required).
+- [ ] Replace synthetic 1000-byte progress reporting in `GemmaOnDemandResourceBridge.swift` with genuine progress/fraction reporting.
+- [x] Fix stale doc mentions of deleted parsers (`PayslipTextParser`, `DynamicSpatialParser`, `PayslipTokenParser`) in `CLAUDE.md` and `AI_INSIGHTS_PIPELINE.md`. **Done 13 Sep 2026**: confirmed via `git log` that all three were deleted (commits `365153b`/`8c175b9`/`0821fab`) but both docs still described them as present/dead-but-compiled; corrected `CLAUDE.md`'s architecture bullet and rewrote `AI_INSIGHTS_PIPELINE.md` §6 plus its stale SWOT/backlog/key-file-reference mentions to reflect the deletion (historical changelog entries left untouched — they're accurate for the point in time they describe).
+- [x] Update `AI_INSIGHTS_PIPELINE.md` to describe actual ODR (On-Demand Resources) delivery mechanism instead of the old Background Assets note. **Done 13 Sep 2026**: doc still described the unbuilt/blocked Background Assets plan as current; `git log`/code (`GemmaOnDemandResourceBridge.swift`, commit `9fa3347`) showed it was already replaced by Apple On-Demand Resources and verified end-to-end on a physical device. Rewrote the executive summary, Stage 6 description, SWOT threat, and Things-To-Do items; added the missing changelog entry for the switch.
+- [ ] Rename `PayslipTokenParserGemmaTest.kt` to reflect that it tests `GrammarAwareParser` fallback.
+- [ ] Prune redundant/overly-broad R8 keep rules in `composeApp/proguard-rules.pro` (Koin annotations rule, unscoped native keep, broad LiteRT-LM package keep).
+- [ ] Consolidate the 9 scattered string files in `composeApp/src/commonMain/.../ui/theme/` into structured sub-catalogs.
 
 ---
 
