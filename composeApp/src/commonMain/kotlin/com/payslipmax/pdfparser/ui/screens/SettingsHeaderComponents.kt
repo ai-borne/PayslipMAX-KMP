@@ -45,52 +45,6 @@ fun OfflineStatusPill(
 }
 
 @Composable
-fun PrivacyCard(
-    modifier: Modifier = Modifier,
-) {
-    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors =
-            CardDefaults.cardColors(
-                containerColor =
-                    if (isDark) {
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
-                    } else {
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
-                    },
-            ),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
-    ) {
-        Row(
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = "🛡️",
-                fontSize = AppDimensions.TextSizeHuge,
-                modifier = Modifier.padding(end = AppDimensions.SpacingMedium),
-            )
-            Column {
-                Text(
-                    text = AppStrings.settingsOfflineSecureTitle,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-                Spacer(modifier = Modifier.height(AppDimensions.SpacingTwo))
-                Text(
-                    text = AppStrings.settingsOfflineSecureDesc,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-    }
-}
-
-@Composable
 fun SettingsCategoryHeader(
     title: String,
     modifier: Modifier = Modifier,

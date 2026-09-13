@@ -171,8 +171,6 @@ object AppStrings {
     const val premiumBadgeTag = "PREMIUM"
     const val settingsSubtitle = "Manage your profile, security, and data backups"
     const val settingsOfflineFirst = "Offline-First"
-    const val settingsOfflineSecureTitle = "100% Offline & Secure"
-    const val settingsOfflineSecureDesc = "All payslip decryption and parsing happens locally on your device. Your data never leaves your control."
     const val settingsAiPoweredByProxy = "AI insights powered by on-device Gemma"
     const val settingsDevOverrideTitle = "Developer · Premium Override"
     const val settingsDevOverrideDesc = "Debug/TestFlight-only entitlement override. Not present in App Store production builds."

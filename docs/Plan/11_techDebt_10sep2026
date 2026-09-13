@@ -1,0 +1,60 @@
+## Tech Debt Checklist — by Sprint
+
+### Sprint A — Dead Code Purge
+When: Do this now. Zero risk — nothing calls this code, so deleting it can't break anything in review or testing.
+
+- Delete FinancialInsights.kt (FinancialInsightsGenerator, FinancialInsight)
+- Delete AIProviderManager.kt
+- Delete AIInsightProvider.kt
+- Delete LocalGemmaProvider.kt
+- Delete AiInsightReport.kt
+- Delete TaxRecommendationEngine.kt (has the discredited "submit before December" advice)
+- Delete ConfidenceScoringEngine.kt
+- Delete TransparencyDialog.kt + TransparencyStrings.kt
+- Delete RetCalcResultsSection / CommutationResultCard (in RetirementCalculatorsComponents.kt)
+- Delete PrivacyCard (in SettingsHeaderComponents.kt)
+- Delete ProfileSection / PremiumSection (in SettingsSectionComponents.kt)
+- Delete RuntimeTokenDiffLogger.kt
+- Delete GemmaBenchmarkHarness.kt (only used by a mock-only test)
+- Delete the now-orphaned tests: AIProviderManagerTest, LocalGemmaProviderTest, LocalGemmaProviderEngineTest, TaxRecommendationEngineTest, ConfidenceScoringEngineTest, TransparencyDialogTest, AiInsightReportTest, GemmaBenchmarkTest
+
+---
+
+### Sprint B — Safety & Boundary Hardening
+When: Before your next release goes out (fold into the release after 1.2/V10 clear review/testing). These touch production behavior, so they need a proper build + test pass, not a quick edit.
+
+- Re-enable FLAG_SECURE in MainActivity.kt for release builds (!isDebug) — right now screenshots of salary/PAN data are unprotected
+- Split reconcileTotals in ReconciliationEngine.kt (89 lines → under 50)
+- Split LedgerSection.kt (298 lines — 2 lines from breaking the commit hook)
+- Split TaxLedgerAggregatorTest.kt (298 lines — same)
+- Fix the ColumnBoundaryDetector.kt comment/code mismatch (comment says 40pt merge gap, code uses 85pt) — decide which is correct and align them
+
+### Sprint C — Fix the Real Parsing Bug
+When: Top priority for your next development cycle, once 1.2/V10 outcomes are known. This is a correctness bug affecting real users' numbers, not just cleanup — but it needs proper corpus-fixture testing before it ships, so it shouldn't be rushed into a build already sitting in review.
+
+- Fix AndroidTokenExtractor.kt and IosTokenExtractor.kt so they pick up earnings/deduction table rows that spill onto page 2 (currently only the first table page is scanned — about 10% of payslips with heavy arrears/allowances lose rows silently)
+- Add corpus fixtures covering a 2-page table spillover case to TokenParseCorpusRegressionTest so this can't silently regress again
+
+---
+
+### Sprint D — Cleanup & Architecture Tidying
+
+When: Whenever you have spare time — not urgent, do a few items at a time as convenient.
+
+- Move FakePayslipDao.kt / FakePdfParser.kt out of commonMain into test-only source sets (they currently ship inside the real app binary)
+- Move calculateAssetProjections (in DsopAssetComparisonCard.kt) out of the UI file into a domain engine (e.g. ProjectionMath.kt) — it currently does tax math directly in a Compose file
+- Move breakdownWellnessDrivers scoring logic (in InsightsWellnessLogic.kt) out of the UI layer
+- Wire ZeroPiiReportExporter to a debug/settings button so a scrubbed diagnostic bundle is actually reachable in-app
+- Split the remaining 280s-line files opportunistically whenever you're already editing them: App.kt, AppStrings.kt, WealthOptimizationEngine.kt, LedgerCorrectionDialog.kt, TaxLedgerAggregator.kt, PayslipViewModelTest.kt, GrammarRegistryTest.kt, PayslipPatternConfig.kt, TaxPlanningScreen.kt, Charts.kt, PayslipRepository.kt, RepresentationScreen.kt, SettingsSectionComponents.kt
+- Consolidate the 10 scattered string files (AppStringsPremium.kt, AppStringsSupport.kt, etc.) into a cleaner sub-catalog scheme — not urgent, they exist because of the 300-line rule, not carelessness
+- Fix stale doc mentions of deleted parsers (PayslipTextParser, DynamicSpatialParser, PayslipTokenParser) in CLAUDE.md and AI_INSIGHTS_PIPELINE.md
+- Update AI_INSIGHTS_PIPELINE.md to describe the actual ODR (On-Demand Resources) delivery mechanism instead of the old "blocked on Background Assets" note
+- Rename PayslipTokenParserGemmaTest.kt to reflect that it actually tests GrammarAwareParser
+- Prune the redundant/overly-broad R8 keep rules in proguard-rules.pro (Koin annotations rule, unscoped native keep, broad LiteRT-LM package keep)
+
+---
+
+### Not on any sprint — already decided, leave alone
+- Legacy/Modern strategy-set duplication — CLAUDE.md already documents this as intentional, not new debt
+- Pre-scrub PII in git history — already a known, deliberately deferred decision
+- Gemma model-fetch script requiring a local binary — developer-experience only, no user impact

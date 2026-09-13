@@ -54,47 +54,6 @@ fun AccountSubscriptionSection(
 }
 
 @Composable
-fun ProfileSection(
-    viewModel: PayslipViewModel,
-    uiState: PayslipUiState,
-) {
-    SettingsCategoryCard {
-        ProfileOverridesCard(
-            viewModel = viewModel,
-            profileName = uiState.profileName,
-            profileCda = uiState.profileCdaNumber,
-            profilePan = uiState.profilePanNumber,
-        )
-    }
-}
-
-@Composable
-fun PremiumSection(
-    viewModel: PayslipViewModel,
-    uiState: PayslipUiState,
-    onUpgradePrompt: () -> Unit,
-    onNavigateTo: (Screen) -> Unit,
-) {
-    val premiumPrice by viewModel.premiumPriceState.collectAsState()
-
-    if (!isFreeLaunchModePlatform()) {
-        PremiumSettingsCard(
-            isPremiumEnabled = uiState.isPremiumEnabled,
-            onUpgradePrompt = onUpgradePrompt,
-            price = premiumPrice,
-        )
-    }
-    SettingsCategoryCard {
-        SettingsRow(
-            icon = "✨",
-            title = AppStringsPremium.premiumCatalogTitleDisplay,
-            subtitle = AppStringsPremium.premiumCatalogSettingsEntrySubtitleDisplay,
-            onClick = { onNavigateTo(Screen.PremiumFeatures) },
-        )
-    }
-}
-
-@Composable
 fun SecuritySection(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,

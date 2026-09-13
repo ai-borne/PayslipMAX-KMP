@@ -169,6 +169,69 @@ this build** — the R8 keep-rule rollout plan
 ([06_R8_Serialization_Crashlytics_Rollout_Plan.md](../Plan/06_R8_Serialization_Crashlytics_Rollout_Plan.md))
 Phase 10/11 work has not started yet and is now retargeted at **versionCode 11**.
 
+## Preparation for versionCode 11 (in progress — nothing below is released yet)
+
+Two independent workstreams are queued for whatever build ships as versionCode 11. Neither has
+shipped; both are tracked here as they land so the eventual release entry can cite dated evidence
+instead of being reconstructed from memory.
+
+### 1. R8 Phase 10-11 — serialization + Crashlytics keep-rule cleanup (2026-09-11, paused)
+Per `docs/Plan/06_R8_Serialization_Crashlytics_Rollout_Plan.md`, continuing the Phase 1-8 R8 hardening
+that shipped in versionCode 8:
+
+- **Phase 9 (baseline capture, no commit):** `versionCode 10` release build archived as the
+  pre-change baseline; on-device parse/persist and forced-crash symbolication both confirmed clean.
+- **Phase 10 (`0b985c9`):** removed 4 redundant `kotlinx.serialization` keep-rule blocks from
+  `composeApp/proguard-rules.pro`. `check` + `assembleRelease` both green.
+- **Phase 11 (`1834c67`):** removed the redundant Firebase Crashlytics keep rule. `assembleRelease`
+  green.
+- **Measured size impact:** APK 70,508,186 → 70,442,383 bytes (~65.8 KB smaller, ~0.09% — modest and
+  expected; these were narrow rules already covered functionally by library-consumer rules, not
+  blanket keeps).
+- Findings #5-#7 (Koin annotation scope, global native-methods keep, LiteRT wildcard keep) remain
+  **explicitly deferred** — higher regression risk, needs a dedicated native/JNI-focused pass.
+
+**Status:** Phase 10 and 11 are committed and build-verified, but their **on-device verification is
+deliberately deferred to Phase 12** (the actual versionCode 11 shipping artifact) rather than burning
+a versionCode on a non-shipping intermediate build — Play won't allow a second Internal-testing upload
+at an already-consumed versionCode. **Paused after Phase 11 by user decision (2026-09-11), to resume
+around 2026-09-14/15** — re-read the rollout plan doc's current state before continuing at Phase 12.
+
+### 2. Tech debt Sprint A — dead code purge (2026-09-13, complete, unreleased)
+A full tech-debt audit (`docs/Plan/11_techDebt_10sep2026`) was cross-checked file-by-file against the
+live codebase (existence, reference counts, exact line numbers) before any action was taken — every
+finding verified accurate. Findings were sequenced into 4 sprints; Sprint A (zero production callers,
+zero behavior risk) was executed immediately rather than deferred to a release window:
+
+- Removed 12 dead production files: the orphaned cloud/hybrid AI narrative cluster
+  (`FinancialInsights.kt`, `AIProviderManager.kt`, `AIInsightProvider.kt`, `LocalGemmaProvider.kt`,
+  `AiInsightReport.kt`), the superseded tax/scoring engines (`TaxRecommendationEngine.kt` —
+  containing the discredited "submit before December" advice — and `ConfidenceScoringEngine.kt`),
+  the never-invoked `TransparencyDialog.kt`/`TransparencyStrings.kt`, and two unreferenced debug/test
+  utilities living in production `commonMain` (`RuntimeTokenDiffLogger.kt`, `GemmaBenchmarkHarness.kt`).
+- Removed 8 test files that existed solely to test the above dead code.
+- Trimmed 3 dead composables out of otherwise-live files: `RetCalcResultsSection`/
+  `CommutationResultCard` (`RetirementCalculatorsComponents.kt`), `PrivacyCard`
+  (`SettingsHeaderComponents.kt`), `ProfileSection`/`PremiumSection` (`SettingsSectionComponents.kt`)
+  — plus 2 `AppStrings.kt` entries that became orphaned once `PrivacyCard` was removed.
+- **Net: 1,648 lines removed across 23 files.** No production callers existed for any of it
+  (confirmed by direct grep cross-reference, not just the audit's say-so).
+- **Verified:** `./gradlew check -x iosX64Test -x iosSimulatorArm64Test` (full Android + common build,
+  lint, `checkFileSizes`, and all `shared`/`composeApp` unit tests) passed clean after the purge.
+
+**Status:** Committed on `release/ios-1.0.0-v6`. Pure subtraction of unreachable code — no functional
+or UI change for any tester, so it carries no risk to the current versionCode 10 Closed testing
+window. Remaining sprints (B: `FLAG_SECURE` re-enable + file-size splits; C: page-2 table-spillover
+parsing fix; D: architecture/test-seam cleanup) are intentionally deferred to whatever release follows
+the 1.2 (iOS)/V10 (Android) review outcomes, per `docs/Plan/11_techDebt_10sep2026`.
+
+### Net effect on the eventual versionCode 11 release
+When versionCode 11 actually ships, it will carry **both** streams above (R8 Phase 10-11 rule cleanup
++ Sprint A dead-code purge) plus whatever Phase 12 device verification and version bump work happens
+at that time. Update this section into a dated `### versionCode 11 —` entry (matching the format used
+for versionCode 4-10 above) once that build is actually uploaded — don't let it stay in this
+"preparation" form past the point it ships.
+
 ## What still needs to happen before the Day-14 final submission
 
 1. ~~Upload versionCode 8 AAB to Closed Testing.~~ Done 2026-09-09.
