@@ -15,6 +15,10 @@ data class ColumnBand(
 object ColumnBoundaryDetector {
     private const val ALIGNMENT_TOLERANCE = 8f
 
+    // Real PCDA distinct columns sit ~140pt+ apart (see TokenTableClassifier.SINGLE_COLUMN_BAND_THRESHOLD);
+    // this stays comfortably below that so it absorbs intra-column jitter without merging real columns.
+    private const val COLUMN_MERGE_GAP_PT = 85f
+
     fun discoverColumnBands(rows: List<DetectedRow>): List<ColumnBand> {
         val allTokens = rows.flatMap { it.tokens }
         if (allTokens.isEmpty()) return emptyList()
@@ -46,14 +50,14 @@ object ColumnBoundaryDetector {
             }
         }
 
-        // Merge raw peaks that belong to the same functional column region (< 40pt gap)
+        // Merge raw peaks that belong to the same functional column region (< COLUMN_MERGE_GAP_PT gap)
         val mergedPeaks = mutableListOf<Float>()
         for (p in rawPeaks.sorted()) {
             if (mergedPeaks.isEmpty()) {
                 mergedPeaks.add(p)
             } else {
                 val last = mergedPeaks.last()
-                if (p - last < 85f) {
+                if (p - last < COLUMN_MERGE_GAP_PT) {
                     // keep earlier alignment anchor for column start
                 } else {
                     mergedPeaks.add(p)
