@@ -234,18 +234,15 @@ for versionCode 4-10 above) once that build is actually uploaded — don't let i
 
 ## What still needs to happen before the Day-14 final submission
 
-1. ~~Upload versionCode 8 AAB to Closed Testing.~~ Done 2026-09-09.
-2. Keep 12+ testers active through the full 14-day mandatory window (Play Console currently shows
+1. Keep 12+ testers active through the full 14-day mandatory window (Play Console currently shows
    25/25 opted in via the third-party panel, but Google's own 14-day counter is what governs
    production eligibility — confirm which counter is authoritative before submission). Note that
    pushing versionCode 8 mid-window is expected/normal — the mandatory-testing clock is track-based,
    not tied to a single release version — but reconfirm this in Play Console's own "Testing" tab
    rather than assuming it.
-3. Once Day 14 completes, collect the 3 pending crash/ANR reports referenced above (currently 0/3
+2. Once Day 14 completes, collect the 3 pending crash/ANR reports referenced above (currently 0/3
    ready) — the final submission report should either show these as clean or document what was
    fixed in response to them.
-4. ~~Do a real-crash Crashlytics symbolication check on this specific build.~~ Done 2026-09-09,
-   22:20 — verified clean/readable. See status snapshot above.
-5. Draft the final "why this app should be published" report citing this file's dated release
+3. Draft the final "why this app should be published" report citing this file's dated release
    history as evidence of iterative fixing (crash reporting → bug fixes → completeness fix →
    binary hardening), rather than reconstructing the narrative from git log at the last minute.
