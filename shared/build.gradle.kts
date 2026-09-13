@@ -93,6 +93,7 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.ktor.client.mock)
+            implementation(project(":shared-test-fixtures"))
         }
 
         androidMain.dependencies {

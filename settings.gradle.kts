@@ -26,5 +26,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "PDFParser"
 include(":shared")
+include(":shared-test-fixtures")
 include(":composeApp")
 include(":gemmaModelPack")

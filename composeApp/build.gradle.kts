@@ -114,6 +114,7 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
+            implementation(project(":shared-test-fixtures"))
         }
 
         val androidUnitTest by getting {
