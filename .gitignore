@@ -86,3 +86,10 @@ iosApp/fastlane/screenshots/
 iosApp/fastlane/test_output/
 iosApp/fastlane/README.md
 *.p8
+
+# fastlane — Google Play Console API credentials, never committed
+# (the service-account .json key itself lives outside the repo entirely, at ~/.play_console/)
+composeApp/fastlane/.env
+composeApp/fastlane/report.xml
+composeApp/fastlane/README.md
+*.play_console*.json

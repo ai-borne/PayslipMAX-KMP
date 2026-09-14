@@ -51,5 +51,5 @@ A8: We collect anonymous telemetry regarding the Gemma AI model installation sta
 
     const val settingsTermsOfUse = "Terms of Use"
     const val termsOfUseUrl = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
-    const val privacyPolicyUrl = "https://ai-borne.in/support"
+    const val privacyPolicyUrl = "https://www.ai-borne.in/privacy-policy"
 }

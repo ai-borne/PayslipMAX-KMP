@@ -559,6 +559,28 @@ submitted review notes.** Phase 8 is complete.
 **If App Review rejects, loop back to Phase 7, not forward to Phase 9.** Next session should check
 `fastlane ios review_status` for the outcome before doing anything else.
 
+**`v1.2 (6)` REJECTED (2026-09-14) — Guideline 3.1.2, metadata only, not a Phase 7 gating issue.**
+Apple: the App Store product page had no functional Terms of Use (EULA) link. Fixed without a new
+build via a new fastlane lane, `add_eula_link_to_description` (`iosApp/fastlane/Fastfile`), which
+appended the standard Apple EULA link
+(`https://www.apple.com/legal/internet-services/itunes/dev/stdeula/`) to the App Description
+through the ASC API; verified live both via `fastlane ios app_description` and directly in the ASC
+UI. Resubmitted via "Update Review" on the App Version item — all 3 items (`iOS App 1.2`,
+`PayslipMax Premium`, `PayslipMax Yearly Premium`) show **Waiting for Review** as of 2026-09-14.
+
+**Separately found and fixed while investigating this rejection (does NOT require resubmission,
+queued for the *next* build instead):** `LegalStrings.privacyPolicyUrl`
+(`composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/theme/LegalStrings.kt`) was wired to
+the Support URL (`https://ai-borne.in/support`) instead of the actual Privacy Policy page — the
+in-app "Privacy Policy" link in the purchase sheet's legal footer (`UpgradeLegalFooter`, rendered
+inside `PremiumUpgradeBottomSheet`) was silently opening the wrong page. Fixed to
+`https://www.ai-borne.in/privacy-policy`, with a regression test (`LegalStringsTest.kt`) guarding
+against it recurring. This is a `commonMain` fix, live for both iOS and Android once built. Not
+part of `1.2 (6)`'s binary (fixed in the working tree after that build was already submitted) — it
+needs to ship in the **next** iOS build (`1.2 (7)` or whatever version follows), not this
+resubmission, since Apple's 3.1.2 rejection was metadata-only and this fix doesn't change any
+metadata a reviewer checks.
+
 ---
 
 ## Phase 9 — Distribution
