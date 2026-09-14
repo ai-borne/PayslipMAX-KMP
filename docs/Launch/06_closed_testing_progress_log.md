@@ -369,3 +369,17 @@ Internal to Closed testing whenever convenient — no remaining gate blocks it.
 3. Draft the final "why this app should be published" report citing this file's dated release
    history as evidence of iterative fixing (crash reporting → bug fixes → completeness fix →
    binary hardening), rather than reconstructing the narrative from git log at the last minute.
+
+## Known gap to close before `FREE_LAUNCH_MODE` is ever disabled
+
+- **RevenueCat has no products/offerings configured for the Play Store API key.** Surfaced
+  2026-09-14 via logcat on the real versionCode 11 Internal-testing install: `[Purchases] ERROR:
+  ConfigurationError — you have configured the SDK with a Play Store API key, but there are no Play
+  Store products registered in the RevenueCat dashboard for your offerings.` Not a code bug — it's a
+  RevenueCat-dashboard configuration task (create the subscription products in Play Console, then
+  register/attach them as offerings in the RevenueCat dashboard). Currently harmless because
+  `LaunchFlags.FREE_LAUNCH_MODE` bypasses the paywall entirely (see the versionCode 7 entry above),
+  so no tester can reach the purchase path. **Must be fixed before `FREE_LAUNCH_MODE` is turned off**
+  — otherwise `RevenueCatBillingManager` will have nothing to sell and any real purchase attempt will
+  fail the same way. Also blocks ever running the sandbox-purchase verification check referenced in
+  the versionCode 11 entry above, since there's nothing purchasable to test against yet.
