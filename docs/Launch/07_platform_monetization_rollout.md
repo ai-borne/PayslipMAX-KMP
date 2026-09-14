@@ -147,7 +147,7 @@ here calls for that.
 No dependency on Android or BillDesk. Sequence:
 
 1. **App Store Connect** — create the auto-renewable subscription (`payslipmax_yearly_premium`,
-   ₹199/yr), attach review screenshot; confirm the Paid Applications Agreement is active.
+   ₹999/yr), attach review screenshot; confirm the Paid Applications Agreement is active.
 2. **RevenueCat dashboard** — add the Apple App Store app under Project Settings > Apps, link the
    App Store Connect API key/shared secret, then attach the Apple product ID to the `premium`
    entitlement and `yearly` package in the Product Catalog.
