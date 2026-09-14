@@ -65,9 +65,17 @@ internal fun PayslipViewModel.installGemmaBaseModel() {
  * invoking Play Core's cellular consent flow or re-requesting fetch).
  */
 fun PayslipViewModel.resumeModelDownload() {
+    _uiState.update { it.copy(isModelBannerDismissed = false) }
     viewModelScope.launch {
         gemmaBaseModelInstaller.install()
     }
+}
+
+/**
+ * Dismisses the offline model download banner for the current session.
+ */
+fun PayslipViewModel.dismissModelBanner() {
+    _uiState.update { it.copy(isModelBannerDismissed = true) }
 }
 
 private fun PayslipUiState.applyInstallState(installState: BaseModelInstallState): PayslipUiState =

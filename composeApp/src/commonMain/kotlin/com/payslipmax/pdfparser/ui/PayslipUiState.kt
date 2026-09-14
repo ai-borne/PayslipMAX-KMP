@@ -28,6 +28,7 @@ data class PayslipUiState(
     val isWaitingForWifi: Boolean = false,
     val modelDownloadProgress: Float = 0f,
     val modelDownloadError: String? = null,
+    val isModelBannerDismissed: Boolean = false,
     val expandedHistoryYears: Set<Int> = emptySet(),
     val lastKnownHistoryYear: Int? = null,
     val historyScrollIndex: Int = 0,

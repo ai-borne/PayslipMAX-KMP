@@ -127,4 +127,29 @@ class PayslipViewModelGemmaDownloadTest {
 
             assertTrue(fakeInstaller.installCalled, "resumeModelDownload must invoke installer.install()")
         }
+
+    @Test
+    fun dismissModelBannerSetsDismissedFlag() =
+        runTest {
+            assertFalse(viewModel.uiState.value.isModelBannerDismissed)
+
+            viewModel.dismissModelBanner()
+            advanceUntilIdle()
+
+            assertTrue(viewModel.uiState.value.isModelBannerDismissed)
+        }
+
+    @Test
+    fun resumeModelDownloadResetsDismissedFlag() =
+        runTest {
+            viewModel.dismissModelBanner()
+            advanceUntilIdle()
+            assertTrue(viewModel.uiState.value.isModelBannerDismissed)
+
+            viewModel.resumeModelDownload()
+            advanceUntilIdle()
+
+            assertFalse(viewModel.uiState.value.isModelBannerDismissed)
+            assertTrue(fakeInstaller.installCalled)
+        }
 }
