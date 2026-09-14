@@ -170,7 +170,15 @@ Cannot skip the free production window (Section 1). What *can* happen now, durin
 closed-testing days, without touching the unverified merchant profile:
 
 1. **Play Console** — create the subscription product/base plan under Monetize > Subscriptions now;
-   it can exist in draft/active state before the merchant profile is verified.
+   it can exist in draft/active state before the merchant profile is verified. Reusable fastlane
+   tooling for the Play Console API already exists at `composeApp/fastlane/` (mirroring
+   `iosApp/fastlane/`'s ASC tooling) — `listing_status` reads the current store listing per locale
+   (this app's only listed locale is `en-IN`, not `en-US`) and `add_terms_disclosure_to_listing`
+   appends a subscription auto-renewal/terms disclosure line, idempotently. Auth via a
+   least-privilege service account key at `~/.play_console/payslipmax-fastlane-supply.json`
+   (read-only app info + "Manage store presence" only — no release/financial/order permissions).
+   See [08_ios_monetization_phaseplan.md](08_ios_monetization_phaseplan.md)'s 2026-09-14 entry for
+   the incident that produced this tooling.
 2. **RevenueCat dashboard** — attach the Google product ID to the `premium` entitlement / `yearly`
    package (the `PayslipMax (Play Store)` app already exists in RevenueCat per doc 05 Section 4).
 3. **Test the purchase flow now** using Play Console **license testers** — this uses Google's

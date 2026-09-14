@@ -254,12 +254,45 @@ Per `docs/Plan/11_techDebt_10sep2026`. No user-visible behavior change; all item
 Koin/native/LiteRT keep-rule scoping, tracked jointly with the R8 rollout plan above) is intentionally
 deferred, not silently dropped.
 
+### 4. Crashlytics false-positive crash fixes — SignInHubActivity / ProxyBillingActivity (2026-09-14, complete, unreleased)
+Two Crashlytics issues on versionCode 10 were investigated and root-caused to Google's own libraries
+being launched by automated test infrastructure (Play pre-launch report / Test Lab-style crawler) with
+no intent extras — not real user crashes. All events on both issues show device "OnePlus8Pro" + CPU
+X86_64 (physically impossible — a real OnePlus 8 Pro is ARM64-only) + OS "Unknown (11)".
+
+- **`SignInHubActivity`** (`play-services-auth:20.7.0`, transitive via `firebase-auth-ktx` →
+  `credentials-play-services-auth`): app has zero Google Sign-In code paths (Firebase Anonymous Auth
+  only). Fixed via `tools:node="remove"` in `composeApp/src/androidMain/AndroidManifest.xml`
+  (`5488b8f`), paired with `tools:ignore="MissingClass"` for an unrelated AGP lint false positive
+  (lint can't resolve library-internal classes referenced only via a removal stanza, even though the
+  class is genuinely on the classpath). Merged manifest confirmed free of the activity; full `check`
+  gate green; debug APK installs and launches cleanly on an emulator with Firebase Anonymous Auth SDK
+  components initializing normally.
+- **`ProxyBillingActivity`** (`com.android.billingclient:billing:8.3.0`, transitive via RevenueCat
+  KMP's `purchases:10.16.1`): real purchases always route through `RevenueCatBillingManager` with a
+  valid `BUY_INTENT`. Unlike the Sign-In activity, this one is **load-bearing** — it can't be removed
+  from the manifest without risking real purchase flows, since RevenueCat's own dependency requires it
+  unconditionally regardless of any app-level dependency. The app's redundant direct
+  `play-billing-ktx:7.1.1` dependency was still removed (`7c0a1d4`) as SSOT/tech-debt cleanup — one
+  fewer duplicate Play Billing version in the dependency graph — but the activity correctly remains in
+  the manifest by design. Both Crashlytics issues (`add2187eac1b73536c614996b0cea686`,
+  `dae7cb84b3499727c650a64570d882a8`) were annotated with this evidence and closed.
+- **Outstanding (not silently skipped):** PDF-import-flow smoke test and a live Firebase Anonymous
+  Auth trigger (both need a real device/file from a human, not available in this environment); a
+  sandbox purchase smoke test (needs an emulator/device with a signed-in test Google account — the
+  available emulator had none). None of these block the fix landing; all are lower-risk, unrelated-path
+  checks tracked as follow-ups, not correctness gates on the manifest/dependency changes themselves.
+
+**Status:** Committed on `release/ios-1.0.0-v6`, unreleased. Android-only; zero iOS-side changes
+(confirmed via `git diff --stat` against `iosApp/`, `shared/src/iosMain`, `shared/src/iosTest`).
+
 ### Net effect on the eventual versionCode 11 release
-When versionCode 11 actually ships, it will carry **all three** streams above (R8 Phase 10-11 rule
-cleanup, Sprint A dead-code purge, Sprint D architecture/test-seam cleanup) plus whatever Phase 12
-device verification and version bump work happens at that time. Update this section into a dated
-`### versionCode 11 —` entry (matching the format used for versionCode 4-10 above) once that build is
-actually uploaded — don't let it stay in this "preparation" form past the point it ships.
+When versionCode 11 actually ships, it will carry **all four** streams above (R8 Phase 10-11 rule
+cleanup, Sprint A dead-code purge, Sprint D architecture/test-seam cleanup, and the Crashlytics
+false-positive fixes) plus whatever Phase 12 device verification and version bump work happens at that
+time. Update this section into a dated `### versionCode 11 —` entry (matching the format used for
+versionCode 4-10 above) once that build is actually uploaded — don't let it stay in this "preparation"
+form past the point it ships.
 
 ## What still needs to happen before the Day-14 final submission
 
