@@ -1,6 +1,6 @@
 """Master orchestrator for PCDA(O) Data Factory.
 
-Executes all 5 extractors and the rules sanitizer to generate the 6 verified JSON data packs in scripts/pcdao_factory/output/.
+Executes all 8 extractors and the rules sanitizer to generate the 9 verified JSON data packs in scripts/pcdao_factory/output/.
 """
 
 import json
@@ -15,8 +15,11 @@ sys.path.insert(0, SCRIPT_DIR)
 
 from extractors.allowances_extractor import extract_allowances_data
 from extractors.pay_matrix_extractor import extract_pay_matrix_data
+from extractors.promotion_workflow_extractor import extract_promotion_and_workflow_data
 from extractors.risk_hardship_extractor import extract_risk_hardship_data
 from extractors.rules_sanitizer import ingest_and_sanitize_all_rules
+from extractors.service_conditions_extractor import extract_service_conditions_data
+from extractors.special_compensatory_extractor import extract_special_compensatory_data
 from extractors.transport_allowance_extractor import extract_transport_allowance_data
 from extractors.travel_tada_extractor import extract_travel_tada_data
 
@@ -44,13 +47,16 @@ def run_pipeline() -> None:
     tasks = [
         ("1. Pay Matrix 7th CPC", "pay_matrix_7th_cpc.json", extract_pay_matrix_data),
         ("2. Transport Allowance", "transport_allowance_rates.json", extract_transport_allowance_data),
-        ("3. Risk & Hardship", "risk_hardship_rates.json", extract_risk_hardship_data),
+        ("3. Risk & Hardship Matrix", "risk_hardship_rates.json", extract_risk_hardship_data),
         ("4. Allowances & Additions", "allowances_and_additions.json", extract_allowances_data),
         ("5. Travel TA/DA Entitlements", "travel_tada_rates.json", extract_travel_tada_data),
         ("6. Canonical Codex Rules (378)", "canonical_pcdao_rules.json", lambda: {
             "total_rules": len(ingest_and_sanitize_all_rules()),
             "rules": ingest_and_sanitize_all_rules()
-        })
+        }),
+        ("7. Special Compensatory & Operational", "special_compensatory_allowances.json", extract_special_compensatory_data),
+        ("8. Service Conditions, Funds & Schemes", "service_conditions_and_funds.json", extract_service_conditions_data),
+        ("9. Promotion Pay Fixation & Workflows", "promotion_and_pcdao_workflows.json", extract_promotion_and_workflow_data)
     ]
 
     for label, fname, func in tasks:
@@ -67,7 +73,7 @@ def run_pipeline() -> None:
 
     total_time = time.time() - start_time
     print("\n" + "=" * 70)
-    print(f"  All 6 Data Packs successfully generated in {total_time:.2f}s")
+    print(f"  All 9 Data Packs successfully generated in {total_time:.2f}s")
     print("=" * 70)
 
 
