@@ -29,37 +29,30 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         Logger.w("PlatformPdfParser", "Starting decryptAndParse for $safeName (bytes: ${pdfBytes.size})")
         return extractTokens(pdfBytes, password, filename).mapCatching { tokenized ->
             Logger.w("PlatformPdfParser", "Extracted ${tokenized.tableTokens.size} tokens. Starting GrammarAwareParser.parse...")
-            val gemmaEngine =
-                try {
-                    val modelPath = com.payslipmax.pdfparser.insights.gemma.resolveInstalledGemmaModelPath()
-                    if (modelPath != null) {
-                        Logger.d("PlatformPdfParser", "Gemma model asset pack installed. Initializing GemmaEngine...")
-                        val config = com.payslipmax.pdfparser.insights.gemma.GemmaEngineConfig(modelPath = modelPath)
-                        val engine = GemmaEngine(config)
-                        Logger.d("PlatformPdfParser", "GemmaEngine initialized successfully! isInitialized=${engine.isInitialized}")
-                        engine
-                    } else {
-                        Logger.d("PlatformPdfParser", "Gemma model asset pack not yet installed.")
-                        null
-                    }
-                } catch (e: Throwable) {
-                    Logger.e("PlatformPdfParser", "Failed to initialize GemmaEngine", e)
-                    null
-                }
-            val fallbackExtractor = gemmaEngine?.let { GemmaFallbackExtractor(gemmaEngine = it) }
-            val diagnosticExtractor = gemmaEngine?.let { GemmaDiagnosticExtractor(gemmaEngine = it) }
+            val gemmaEngine = buildGemmaEngine()
             val parseResult =
                 GrammarAwareParser.parse(
                     tokenized,
                     filename,
-                    fallbackExtractor = fallbackExtractor,
-                    diagnosticExtractor = diagnosticExtractor,
+                    fallbackExtractor = gemmaEngine?.let { GemmaFallbackExtractor(gemmaEngine = it) },
+                    diagnosticExtractor = gemmaEngine?.let { GemmaDiagnosticExtractor(gemmaEngine = it) },
                 )
             Logger.w("PlatformPdfParser", "Finished GrammarAwareParser.parse. Success: ${parseResult.isSuccess}")
             parseResult.getOrThrow()
         }.onFailure { err ->
             val safeName = com.payslipmax.pdfparser.telemetry.TelemetrySanitizer.sanitizeFilename(filename)
             Logger.e("PlatformPdfParser", "decryptAndParse failed for $safeName", err)
+        }
+    }
+
+    private fun buildGemmaEngine(): GemmaEngine? {
+        return try {
+            val modelPath = com.payslipmax.pdfparser.insights.gemma.resolveInstalledGemmaModelPath() ?: return null
+            val config = com.payslipmax.pdfparser.insights.gemma.GemmaEngineConfig(modelPath = modelPath)
+            GemmaEngine(config)
+        } catch (e: Throwable) {
+            Logger.e("PlatformPdfParser", "Failed to build GemmaEngine", e)
+            null
         }
     }
 

@@ -1,10 +1,8 @@
 package com.payslipmax.pdfparser.insights.gemma
 
-import com.google.ai.edge.litertlm.Backend
 import com.google.ai.edge.litertlm.Content
 import com.google.ai.edge.litertlm.ConversationConfig
 import com.google.ai.edge.litertlm.Engine
-import com.google.ai.edge.litertlm.EngineConfig
 import com.google.ai.edge.litertlm.SamplerConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,43 +17,16 @@ import java.io.File
  * external shape (`modelPath`/`maxTokens`/`temperature`/`topK`) is unchanged (Open/Closed).
  */
 actual class GemmaEngine actual constructor(private val config: GemmaEngineConfig) {
-    private var engine: Engine? = null
-
     actual val isInitialized: Boolean
-        get() = engine != null || (config.modelPath.isNotEmpty() && File(config.modelPath).exists())
-
-    init {
-        initEngine()
-    }
-
-    private fun initEngine() {
-        if (config.modelPath.isEmpty()) return
-        if (!File(config.modelPath).exists()) return
-
-        try {
-            val engineConfig =
-                EngineConfig(
-                    modelPath = config.modelPath,
-                    backend = Backend.CPU(),
-                    maxNumTokens = config.maxTokens,
-                )
-            engine =
-                Engine(engineConfig).apply {
-                    // Heavy native load; already off the main thread (the parser runs on a worker).
-                    initialize()
-                }
-        } catch (e: Throwable) {
-            // Graceful fallback for unit tests and unlinked native libs.
-            engine = null
-        }
-    }
+        get() = config.modelPath.isNotEmpty() && File(config.modelPath).exists()
 
     actual suspend fun generateResponse(prompt: String): Result<String> =
         withContext(Dispatchers.IO) {
             if (config.modelPath.isEmpty()) {
                 return@withContext Result.failure(IllegalStateException("Model path is empty"))
             }
-            val instance = engine
+
+            val instance = LiteRtEngineStore.getOrInitialize(config.modelPath, config.maxTokens)
             if (instance != null) {
                 return@withContext try {
                     // A fresh, stateless conversation per prompt — Tier 6 extraction has no
@@ -84,6 +55,7 @@ actual class GemmaEngine actual constructor(private val config: GemmaEngineConfi
                     Result.failure(e)
                 }
             }
+
             if (File(config.modelPath).exists()) {
                 Result.success("Android LiteRT-LM Gemma runtime ready at ${config.modelPath}")
             } else {
@@ -92,18 +64,17 @@ actual class GemmaEngine actual constructor(private val config: GemmaEngineConfi
         }
 
     actual fun close() {
-        try {
-            engine?.close()
-        } catch (e: Throwable) {
-            // Resource cleanup safety
-        } finally {
-            engine = null
-        }
+        // The shared LiteRtEngineStore owns the Engine lifecycle across prompts.
+        // Cache eviction is managed via clearCache() or OS memory trim events.
     }
 
-    private companion object {
-        // Nucleus-sampling default; not part of GemmaEngineConfig's external contract, so it stays
-        // an internal sampler detail rather than widening the shared config surface.
-        const val DEFAULT_TOP_P = 0.95
+    companion object {
+        private const val DEFAULT_TOP_P = 0.95
+
+        fun clearCache(modelPath: String? = null) {
+            LiteRtEngineStore.clear(modelPath)
+        }
+
+        fun isCached(modelPath: String): Boolean = LiteRtEngineStore.isCached(modelPath)
     }
 }
