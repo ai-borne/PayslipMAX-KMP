@@ -165,13 +165,16 @@ the signature mismatch, restored to the real Play-delivered v10 afterward — de
   `com.payslipmax.pdfparser.telemetry.TestCrash_androidKt$triggerBackgroundTestCrash$1.invokeSuspend`
   — not obfuscated (`r8-map-id-...`) garbage, and is explicitly tagged by Crashlytics as
   "regressed... in version 1.0.0 (11)", confirming the mapping upload matched this exact build.
-- **Phase 10 check (two-grammar-era parse/persist) — NOT DONE, genuinely deferred.** The sideload
-  wiped local app data, and importing a real PDF through the file picker needs a human with an
-  actual payslip file — this environment has no such file and no way to drive the system file
-  picker blindly. **This is the same class of gap the closed-testing progress log already flags as
-  "Outstanding" for the bundled Sign-In/purchase checks — not silently skipped, but not verified
-  either.** Someone with device access and a real (or corpus) PDF needs to run this before
-  promoting past Internal testing.
+- **Phase 10 check (two-grammar-era parse/persist) — ✅ PASSED (2026-09-14, on the real Play-delivered
+  versionCode 11 install).** User imported payslips spanning two-plus grammar eras on the physical
+  Pixel 9. Independently confirmed via screenshot: the History screen renders Jan-April 2026 with
+  correct gross/DSOP/tax breakdowns, and `adb logcat` shows zero `SerializationException`,
+  `ClassNotFoundException`, or `FATAL EXCEPTION` across the session. Both Phase 10 and Phase 11 exit
+  criteria are now met on the shipping artifact.
+
+**Phase 12 is now fully complete.** Both device-verification checks (Phase 10 parse/persist, Phase 11
+crash symbolication) have passed on the exact versionCode 11 artifact that's live on Internal
+testing.
 
 ---
 

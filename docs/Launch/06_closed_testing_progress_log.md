@@ -339,14 +339,21 @@ not a sideload):**
   sandbox-purchase check (flagged as outstanding in stream 4 above) cannot meaningfully pass until
   products/offerings are configured on RevenueCat's side regardless of app code.
 
-**Still outstanding (not silently skipped):** the two-grammar-era PDF parse/persist check (R8 Phase
-10) — local app data was wiped during the Phase 12 sideload/restore cycle, and importing a real
-payslip needs a human at the file picker. Firebase Anonymous Auth live-trigger and the sandbox
-purchase check (stream 4) remain outstanding for the same "needs a human with real
-credentials/file" reason, compounded by the RevenueCat gap above for the purchase check
-specifically.
+**Two-grammar-era parse/persist check — ✅ PASSED (2026-09-14).** User imported payslips spanning
+two-plus grammar eras on the physical Pixel 9. Independently confirmed: the History screen renders
+Jan-April 2026 with correct gross/DSOP/tax breakdowns, and `adb logcat` shows zero
+`SerializationException`/`ClassNotFoundException`/`FATAL EXCEPTION` across the session. R8 Phase 10's
+exit criteria are met on the shipping artifact.
 
-**Decision:** hold promotion to Closed testing until the parse/persist check is done on this device.
+**Still outstanding (not silently skipped):** Firebase Anonymous Auth live-trigger and the sandbox
+purchase check (stream 4) — both need a human with real credentials/a signed-in test account, and
+the purchase check specifically can't pass yet regardless, due to the RevenueCat offerings-config
+gap noted above. Neither blocks promotion: Anonymous Auth already initializes silently in the
+background (confirmed no auth-related errors in any logcat capture so far), and the purchase path is
+unreachable by real testers while `FREE_LAUNCH_MODE` is active.
+
+**Decision:** with the parse/persist check now passed, versionCode 11 is clear to promote from
+Internal to Closed testing whenever convenient — no remaining gate blocks it.
 
 ## What still needs to happen before the Day-14 final submission
 
