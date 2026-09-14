@@ -14,16 +14,13 @@ Closed testing track, so each release's status line below states which track it'
   testing (177 countries/regions), superseding versionCode 10. Rather than promoting versionCode 11 as-is,
   v12 packages all of v11's R8/Crashlytics/dead-code hardening together with the user-facing Offline AI
   banner redesign (Option A capsule) in a single unified Closed testing release.
-- **Internal testing track:** `11 (1.0.0)` — versionCode 11, released 2026-09-14 17:50, confirmed
-  installed on the physical Pixel 9 (`dumpsys package` shows `versionCode=11`,
-  `installerPackageName=com.android.vending`). Both the forced-crash symbolication and the
-  two-grammar-era parse/persist check passed clean on this build (see the versionCode 11 entry below).
-- **Prior state (versionCode 10 on Closed, superseded on Internal):** uploaded and confirmed
-  installed on the physical Pixel 9 test device via the Closed testing opt-in link on 2026-09-11
-  (`dumpsys package` showed `versionCode=10`, `installerPackageName=com.android.vending`). This
-  build skipped straight from 8 → 10 on the Closed track — versionCode 9 was released to
-  **Internal testing only** and never promoted to Closed testing (superseded by 10 before
-  promotion happened, then itself superseded on Internal by 11); see the versionCode 9 entry below.
+- **Internal testing track:** `11 (1.0.0)` — released 2026-09-14 17:50, confirmed installed on the
+  physical Pixel 9 (`dumpsys package` shows `versionCode=11`, `installerPackageName=com.android.vending`).
+  Both the forced-crash symbolication and the two-grammar-era parse/persist check passed clean on this
+  build (see the versionCode 11 entry below).
+- **Prior Closed track state:** `10 (1.0.0)` — uploaded and confirmed installed on the physical Pixel 9
+  test device via the Closed testing opt-in link on 2026-09-11 (`dumpsys package` showed `versionCode=10`,
+  `installerPackageName=com.android.vending`). Closed testing went directly 8 → 10 (v9 was Internal-only).
 - **Testers:** 25/25 opted in (third-party tester panel, "Private Testing Pro" plan) as of the v8
   upload; reconfirm current opted-in count against the v10 release in Play Console's own
   "Testing" tab rather than assuming it's unchanged.
@@ -37,43 +34,6 @@ Closed testing track, so each release's status line below states which track it'
   (`adb shell pm clear com.android.vending`, needed separately because the Play Store app itself
   was also serving a stale listing), then reinstalling via the opt-in link. Confirmed post-fix:
   `versionCode=10`, `installerPackageName=com.android.vending`.
-- **Pre-upload verification done:** before uploading, the exact `composeApp-release.aab` was
-  validated with `bundletool` (manifest dump confirmed versionCode 8 / versionName 1.0.0 /
-  targetSdk 36, structural `validate` passed clean) and jarsigner-verified against the release
-  keystore. It was then smoke-tested end-to-end by sideloading the built APK splits (installer
-  spoofed to `com.android.vending` to pass `AppIntegrityChecker`) on both the Android emulator and
-  a physical Pixel 9 — Dashboard/History/Insights/Settings all navigated cleanly, Crashlytics
-  initialized, `FREE_LAUNCH_MODE` confirmed live ("Everything Included", no paywall), and no
-  `FATAL EXCEPTION`/`ClassNotFoundException`/`NoSuchMethodError` appeared in logcat on either
-  device — direct evidence the R8 Phase 2–8 keep-rule removals didn't break Koin/Room/Compose at
-  runtime. The Pixel 9 was returned to its real Play-delivered v7 install afterward (uninstalled
-  the sideload; reinstalled from Play Store) so the tester enrollment on that device stayed clean.
-- **Play Console's own bundle diff (v8 vs v7), confirmed post-upload:** DEX size 14.7 MB → 12.8 MB
-  (‑13%), download size 22.6 MB → 22 MB, optimisation 46% → 53%, obfuscation 47% → 54%, shrinking
-  46% → 53%, and "Resource shrinking optimised" newly present in the R8 config — concrete
-  confirmation the keep-rule cleanup had the intended effect. Permission list (12 permissions)
-  verified identical to v7 — zero permission-surface drift from this release.
-- **Crashlytics symbolication verified on v8, 2026-09-09 22:20:** the Phase 7 Companion-object
-  keep-rule rescoping (`847edb1`) was the one v8 change with a real risk of silently breaking
-  crash-report readability without breaking the app itself, so it hadn't been checked as part of
-  the pre-upload smoke test. Verified directly on the physical Pixel 9 (same device as the
-  pre-upload smoke test, running the live Play-delivered `1.0.0 (8)` build): unlocked the hidden
-  Developer Sandbox (Settings header tapped 7×) and fired the built-in
-  "Background Thread Crash (IO/Default)" trigger (`TestCrash.android.kt`,
-  `triggerBackgroundTestCrash()`, added in `8248dfc`) via ADB. The resulting Crashlytics issue
-  shows a fully readable stack trace —
-  `com.payslipmax.pdfparser.telemetry.TestCrash_androidKt$triggerBackgroundTestCrash$1.invokeSuspend
-  (TestCrash.android.kt:13)` — real package, class, file, and line number, not obfuscated
-  (`a.b.c`-style) garbage. **Conclusion: v8's R8 keep-rule changes do not break Crashlytics
-  symbolication; crash reports on this build can be trusted as-is.**
-- **One unrelated Crashlytics issue explained, not a real crash:** a single
-  `RemoteServiceException$CrashedByAdbException` ("shell-induced crash") appeared on v8 at
-  2026-09-09 18:53:28, ~1 hour before the Play Console submission (19:49). This is not a real user
-  crash — it's the expected side effect of the pre-upload sideload/uninstall/reinstall smoke-test
-  sequence documented above (installing the split APKs then uninstalling and reinstalling the
-  Play-delivered version via ADB), which Android's `ActivityThread` reports as this exact exception
-  when a bound background service is disrupted mid-command. Muted/closed in Crashlytics so it
-  doesn't skew the 14-day crash-free metrics or the final submission report.
 
 ## Release history and what each build actually changed
 
@@ -130,8 +90,46 @@ automatically instead of only at release time. One real regression (`eb38acd`, t
 typo) was caught and fixed during this hardening pass before it could ship — worth calling out
 explicitly in the final report as evidence of the testing rigor, not just as a fixed bug.
 
-**Status:** uploaded and published. See the status snapshot above for pre-upload verification
-detail and the Play Console bundle-diff numbers confirming the shrink actually worked.
+**Status:** Uploaded and published to the Closed testing track.
+
+#### Pre-upload and on-device verification (versionCode 8):
+- **Pre-upload verification done:** before uploading, the exact `composeApp-release.aab` was
+  validated with `bundletool` (manifest dump confirmed versionCode 8 / versionName 1.0.0 /
+  targetSdk 36, structural `validate` passed clean) and jarsigner-verified against the release
+  keystore. It was then smoke-tested end-to-end by sideloading the built APK splits (installer
+  spoofed to `com.android.vending` to pass `AppIntegrityChecker`) on both the Android emulator and
+  a physical Pixel 9 — Dashboard/History/Insights/Settings all navigated cleanly, Crashlytics
+  initialized, `FREE_LAUNCH_MODE` confirmed live ("Everything Included", no paywall), and no
+  `FATAL EXCEPTION`/`ClassNotFoundException`/`NoSuchMethodError` appeared in logcat on either
+  device — direct evidence the R8 Phase 2–8 keep-rule removals didn't break Koin/Room/Compose at
+  runtime. The Pixel 9 was returned to its real Play-delivered v7 install afterward (uninstalled
+  the sideload; reinstalled from Play Store) so the tester enrollment on that device stayed clean.
+- **Play Console's own bundle diff (v8 vs v7), confirmed post-upload:** DEX size 14.7 MB → 12.8 MB
+  (‑13%), download size 22.6 MB → 22 MB, optimisation 46% → 53%, obfuscation 47% → 54%, shrinking
+  46% → 53%, and "Resource shrinking optimised" newly present in the R8 config — concrete
+  confirmation the keep-rule cleanup had the intended effect. Permission list (12 permissions)
+  verified identical to v7 — zero permission-surface drift from this release.
+- **Crashlytics symbolication verified on v8, 2026-09-09 22:20:** the Phase 7 Companion-object
+  keep-rule rescoping (`847edb1`) was the one v8 change with a real risk of silently breaking
+  crash-report readability without breaking the app itself, so it hadn't been checked as part of
+  the pre-upload smoke test. Verified directly on the physical Pixel 9 (same device as the
+  pre-upload smoke test, running the live Play-delivered `1.0.0 (8)` build): unlocked the hidden
+  Developer Sandbox (Settings header tapped 7×) and fired the built-in
+  "Background Thread Crash (IO/Default)" trigger (`TestCrash.android.kt`,
+  `triggerBackgroundTestCrash()`, added in `8248dfc`) via ADB. The resulting Crashlytics issue
+  shows a fully readable stack trace —
+  `com.payslipmax.pdfparser.telemetry.TestCrash_androidKt$triggerBackgroundTestCrash$1.invokeSuspend
+  (TestCrash.android.kt:13)` — real package, class, file, and line number, not obfuscated
+  (`a.b.c`-style) garbage. **Conclusion: v8's R8 keep-rule changes do not break Crashlytics
+  symbolication; crash reports on this build can be trusted as-is.**
+- **One unrelated Crashlytics issue explained, not a real crash:** a single
+  `RemoteServiceException$CrashedByAdbException` ("shell-induced crash") appeared on v8 at
+  2026-09-09 18:53:28, ~1 hour before the Play Console submission (19:49). This is not a real user
+  crash — it's the expected side effect of the pre-upload sideload/uninstall/reinstall smoke-test
+  sequence documented above (installing the split APKs then uninstalling and reinstalling the
+  Play-delivered version via ADB), which Android's `ActivityThread` reports as this exact exception
+  when a bound background service is disrupted mid-command. Muted/closed in Crashlytics so it
+  doesn't skew the 14-day crash-free metrics or the final submission report.
 
 ### versionCode 9 — released to Internal testing 2026-09-10 20:46, awaiting promotion to Closed testing
 Commits: `bd0f2c4` (History screen ledger toggle affordance), `c80768f` (Digital Replica edit button label).
@@ -187,7 +185,7 @@ Full detail on each stream below; see also
 [06_R8_Serialization_Crashlytics_Rollout_Plan.md](../Plan/06_R8_Serialization_Crashlytics_Rollout_Plan.md)
 Phase 12 for the R8-specific verification record.
 
-#### 1. R8 Phase 10-11 — serialization + Crashlytics keep-rule cleanup (2026-09-11, paused)
+#### 1. R8 Phase 10-11 — serialization + Crashlytics keep-rule cleanup (complete)
 Per `docs/Plan/06_R8_Serialization_Crashlytics_Rollout_Plan.md`, continuing the Phase 1-8 R8 hardening
 that shipped in versionCode 8:
 
@@ -203,22 +201,18 @@ that shipped in versionCode 8:
 - Findings #5-#7 (Koin annotation scope, global native-methods keep, LiteRT wildcard keep) remain
   **explicitly deferred** — higher regression risk, needs a dedicated native/JNI-focused pass.
 
-**Status:** Phase 10 and 11 are committed and build-verified, but their **on-device verification is
-deliberately deferred to Phase 12** (the actual versionCode 11 shipping artifact) rather than burning
-a versionCode on a non-shipping intermediate build — Play won't allow a second Internal-testing upload
-at an already-consumed versionCode. **Paused after Phase 11 by user decision (2026-09-11), to resume
-around 2026-09-14/15** — re-read the rollout plan doc's current state before continuing at Phase 12.
+**Status:** Phase 10 and 11 committed, build-verified, and fully verified on-device via versionCode 11
+(Phase 12 execution).
+- **Phase 11 (Crashlytics symbolication):** Passed during initial Phase 12 verification. The forced
+  background-thread test crash produced a fully readable Crashlytics issue
+  (`TestCrash_androidKt$triggerBackgroundTestCrash$1.invokeSuspend`), tagged by Crashlytics as
+  regressed in "version 1.0.0 (11)".
+- **Phase 10 (Serialization parse/persist):** Passed during the Play-delivered versionCode 11 session
+  on the physical Pixel 9 (see verification record under Internal-testing verification below). Import
+  of payslips spanning multiple grammar eras parsed cleanly, displayed accurately in History, and
+  persisted across app restarts with zero `SerializationException`.
 
-**Phase 12 executed (2026-09-14):** `versionCode` bumped to 11 (`836920a`); `assembleRelease` green
-(70,442,187 bytes, matching the Phase 9-11 baseline — no size drift). Sideloaded on the Pixel 9
-(installer spoofed to `com.android.vending`, device restored to the clean Play-delivered v10
-afterward). **Phase 11's crash-symbolication check passed**: the forced background-thread test crash
-produced a fully readable Crashlytics issue
-(`TestCrash_androidKt$triggerBackgroundTestCrash$1.invokeSuspend`), tagged by Crashlytics itself as
-regressed in "version 1.0.0 (11)". **Phase 10's two-grammar-era parse/persist check is still
-outstanding** — the sideload wipes local data and importing a real PDF needs a human at the file
-picker with an actual payslip; not automatable in this environment. See
-[06_R8_Serialization_Crashlytics_Rollout_Plan.md](../Plan/06_R8_Serialization_Crashlytics_Rollout_Plan.md)
+See [06_R8_Serialization_Crashlytics_Rollout_Plan.md](../Plan/06_R8_Serialization_Crashlytics_Rollout_Plan.md)
 Phase 12 for full detail.
 
 #### 2. Tech debt Sprint A — dead code purge (2026-09-13, complete)
