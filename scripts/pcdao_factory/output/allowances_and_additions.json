@@ -1,0 +1,143 @@
+{
+  "category": "Additions to Pay & Educational Allowances",
+  "commission": "7th Central Pay Commission",
+  "source_documents": [
+    "Handbook_Pay_and_Allowances_2023.pdf (pp. 68-73, 105-129, 225-235)",
+    "PCDA O Pune All Frequently Asked Questons Dec 2025.pdf (pp. 15-20)"
+  ],
+  "gallantry_awards": {
+    "authority": "MoD letter No. 7(62)/2014-D(AG) dated 04 Dec 2017",
+    "tax_exemption": "100% exempted from Income Tax under AO 46/79",
+    "awards": [
+      {
+        "decoration": "Param Vir Chakra (PVC)",
+        "monthly_rate": 20000,
+        "rank_independent": true
+      },
+      {
+        "decoration": "Ashoka Chakra (AC)",
+        "monthly_rate": 12000,
+        "rank_independent": true
+      },
+      {
+        "decoration": "MahaVir Chakra (MVC)",
+        "monthly_rate": 10000,
+        "rank_independent": true
+      },
+      {
+        "decoration": "Kirti Chakra (KC)",
+        "monthly_rate": 9000,
+        "rank_independent": true
+      },
+      {
+        "decoration": "Vir Chakra (VrC)",
+        "monthly_rate": 7000,
+        "rank_independent": true
+      },
+      {
+        "decoration": "Shaurya Chakra (SC)",
+        "monthly_rate": 6000,
+        "rank_independent": true
+      },
+      {
+        "decoration": "Sena Medal (Gallantry only)",
+        "monthly_rate": 2000,
+        "rank_independent": true
+      },
+      {
+        "decoration": "Asadharan Suraksha Seva Praman Patra (ASSPP)",
+        "monthly_rate": 6000,
+        "effective_from": "2019-08-27"
+      }
+    ],
+    "bar_rule": "Each bar to the decoration carries the same amount of monetary allowance as admissible to original award.",
+    "survivorship_rules": "On recipient's death, allowance continues to widow lawfully married until her death. If bachelor, paid to father/mother."
+  },
+  "specialized_allowances": {
+    "flying_allowance": {
+      "rate_monthly": 25000,
+      "escalated_rate_at_50_da": 31250,
+      "eligible_personnel": "Officers of Army Aviation Corps and qualified pilots",
+      "escalation_trigger": "Increases by 25% each time DA rises by 50%",
+      "authority": "MoD letter No. 1(16)/2017/D(Pay/Services) dated 18 Sept 2017"
+    },
+    "special_forces_allowance": {
+      "rate_monthly": 25000,
+      "escalated_rate_at_50_da": 31250,
+      "eligible_personnel": "Serving in Para (Special Forces) Battalions",
+      "escalation_trigger": "Increases by 25% each time DA rises by 50%",
+      "authority": "MoD letter No. B/36389/AG/PS3(b)/82/S/D(Pay/Services) dated 18 Sept 2017"
+    },
+    "qualification_allowance_aviation": {
+      "master_aviation_instructor": 1125,
+      "senior_aviation_instructor_class_1": 900,
+      "senior_aviation_instructor_class_2": 630,
+      "aviators_master_green_card": 900,
+      "aviators_green_card": 630,
+      "escalation_trigger": "Increases by 25% each time DA rises by 50%"
+    },
+    "technical_allowance": {
+      "tier_1_monthly": 3000,
+      "tier_2_monthly": 4500,
+      "description": "Technically qualified officers in accordance with SAI 5/S/76"
+    },
+    "ration_money_allowance": {
+      "description": "RMA in lieu of free rations in peace or field concessional areas",
+      "regulation": "Rule 174(B) DSR Pay and Allowances (Officers)",
+      "own_arrangements": "Admissible in exceptional circumstances with prior approval of Local Station Commander"
+    }
+  },
+  "house_rent_allowance": {
+    "definition_of_basic_pay": "Pay drawn in prescribed Level in Pay Matrix only; excludes NPA, MSP, and special pay.",
+    "slabs": {
+      "base_rates_at_launch": {
+        "X": 24,
+        "Y": 16,
+        "Z": 8
+      },
+      "revised_rates_when_da_crosses_25": {
+        "X": 27,
+        "Y": 18,
+        "Z": 9
+      },
+      "revised_rates_when_da_crosses_50": {
+        "X": 30,
+        "Y": 20,
+        "Z": 10
+      }
+    },
+    "minimum_floor_amounts": {
+      "X_class_city_min": 5400,
+      "Y_class_city_min": 3600,
+      "Z_class_city_min": 1800
+    },
+    "selected_place_of_residence": {
+      "rule": "Admissible at SPR or Home Town rate when posted to concessional/field/afloat areas",
+      "license_fee": "Charged at married accommodation rate for reserved accommodation occupied at duty station"
+    },
+    "nac_dispensation": "Dispensation of condition of furnishing No Accommodation Certificate (NAC) for admissibility of HRA"
+  },
+  "children_education_allowance": {
+    "cea_annual_rate": 33750,
+    "cea_pre_50_da_rate": 27000,
+    "hostel_subsidy_annual_rate": 101250,
+    "hostel_subsidy_pre_50_da_rate": 81000,
+    "effective_date": "2024-04-01",
+    "divyang_child_multiplier": 2.0,
+    "divyang_cea_annual_rate": 67500,
+    "max_children": 2,
+    "children_exception": "Two eldest surviving children; exception if second childbirth results in twins/multiples",
+    "classes_prior_to_class_1": 3,
+    "classes_prior_effective_year": "2023-2024",
+    "occurrence_codes": {
+      "normal_cea": "RIMBCEA",
+      "twin_children": "RIMBCEAT",
+      "divyang_child": "RIMBCEAD"
+    },
+    "mandatory_evidence": [
+      "School Bonafide Certificate / Self-Declaration for CEA",
+      "Hostel fee receipt showing lodging and boarding for Hostel Subsidy",
+      "Disability certificate (>= 40%) for Divyang CEA"
+    ]
+  }
+}
