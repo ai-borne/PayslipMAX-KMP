@@ -8,21 +8,18 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
- * Tests the visibility and message resolution rules for [BaseModelDownloadBanner] to ensure:
- * 1. Waiting for Wi-Fi displays clean informational copy rather than a fatal error alert.
- * 2. Active downloading shows download title with percentage.
+ * Tests visibility, dismissal, and copy resolution rules for [BaseModelDownloadBanner]:
+ * 1. Waiting for Wi-Fi displays clean informational copy.
+ * 2. Active downloading shows progress percentage without jargon.
  * 3. Harmless developer sideload errors (Error -15) are ignored.
- * 4. Actual fatal errors are formatted properly.
+ * 4. Actual download errors display gentle paused state without raw stack traces.
+ * 5. Dismissal flag hides the banner across all states.
  */
 class BaseModelDownloadBannerTest {
     @Test
     fun bannerIsVisibleWhenWaitingForWifi() {
         val state = PayslipUiState(isWaitingForWifi = true)
-        val isFatalError = state.modelDownloadError != null && !state.modelDownloadError.contains("-15")
-        val isVisible = state.isDownloadingModel || state.isWaitingForWifi || isFatalError
-
-        assertTrue(isVisible, "Banner should be visible when waiting for Wi-Fi")
-        assertFalse(isFatalError, "Waiting for Wi-Fi is not a fatal error")
+        assertTrue(isModelBannerVisible(state), "Banner should be visible when waiting for Wi-Fi")
     }
 
     @Test
@@ -31,33 +28,55 @@ class BaseModelDownloadBannerTest {
             PayslipUiState(
                 modelDownloadError = "Local AI model requires Google Play installation (Error -15: Unrecognized install)",
             )
-        val isFatalError = state.modelDownloadError != null && !state.modelDownloadError.contains("-15")
-        val isVisible = state.isDownloadingModel || state.isWaitingForWifi || isFatalError
-
-        assertFalse(isVisible, "Banner should suppress -15 error on non-Play sideloads")
+        assertFalse(isModelBannerVisible(state), "Banner should suppress -15 error on non-Play sideloads")
     }
 
     @Test
-    fun bannerIsVisibleOnGenuineFatalError() {
+    fun bannerIsVisibleOnGenuineError() {
         val state = PayslipUiState(modelDownloadError = "No space left on device")
-        val isFatalError = state.modelDownloadError != null && !state.modelDownloadError.contains("-15")
-        val isVisible = state.isDownloadingModel || state.isWaitingForWifi || isFatalError
+        assertTrue(isModelBannerVisible(state), "Banner should be visible on genuine error")
+    }
 
-        assertTrue(isVisible)
-        assertTrue(isFatalError)
+    @Test
+    fun bannerIsHiddenWhenDismissedAcrossAllStates() {
+        val downloading = PayslipUiState(isDownloadingModel = true, isModelBannerDismissed = true)
+        assertFalse(isModelBannerVisible(downloading), "Banner must hide when dismissed during download")
+
+        val waiting = PayslipUiState(isWaitingForWifi = true, isModelBannerDismissed = true)
+        assertFalse(isModelBannerVisible(waiting), "Banner must hide when dismissed while waiting for Wi-Fi")
+
+        val error = PayslipUiState(modelDownloadError = "Network timeout", isModelBannerDismissed = true)
+        assertFalse(isModelBannerVisible(error), "Banner must hide when dismissed during error")
     }
 
     @Test
     fun resolveTitleForWaitingForWifi() {
         val state = PayslipUiState(isWaitingForWifi = true)
-        val title = if (state.isWaitingForWifi) GemmaModelStrings.gemmaModelWaitingForWifiTitle else ""
+        val title = resolveBannerTitle(state, hasError = false)
         assertEquals(GemmaModelStrings.gemmaModelWaitingForWifiTitle, title)
     }
 
     @Test
     fun resolveTitleForActiveDownloadingWithProgress() {
         val state = PayslipUiState(isDownloadingModel = true, modelDownloadProgress = 0.65f)
-        val title = "${GemmaModelStrings.gemmaModelDownloadingTitle} (${(state.modelDownloadProgress * 100).toInt()}%)"
+        val title = resolveBannerTitle(state, hasError = false)
         assertEquals("${GemmaModelStrings.gemmaModelDownloadingTitle} (65%)", title)
+    }
+
+    @Test
+    fun resolveTitleForPausedError() {
+        val state = PayslipUiState(modelDownloadError = "Network connection failed")
+        val title = resolveBannerTitle(state, hasError = true)
+        assertEquals(GemmaModelStrings.gemmaModelPausedTitle, title)
+    }
+
+    @Test
+    fun resolveSubtitleForPausedErrorNeverShowsRawTechnicalException() {
+        val rawError = "java.io.IOException: SSL handshake aborted: failure in SSL library, cert expired"
+        val state = PayslipUiState(modelDownloadError = rawError)
+        val subtitle = resolveBannerSubtitle(state, hasError = true)
+
+        assertEquals(GemmaModelStrings.gemmaModelPausedSubtitle, subtitle)
+        assertFalse(subtitle.contains("java.io.IOException"), "Must never expose technical raw stack trace to user")
     }
 }

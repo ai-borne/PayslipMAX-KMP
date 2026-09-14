@@ -4,13 +4,13 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.ButtonDefaults
@@ -18,46 +18,41 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GemmaModelStrings
 
 /**
- * Modern, non-blocking Material 3 banner for Tier 6 Gemma model background installation.
- * Conforms to Android & Google Play Asset Delivery guidelines:
- * - When waiting for Wi-Fi on cellular, informs the user without alarming red errors and offers a
- *   direct [onResumeDownload] action button to confirm cellular data download via Play Core.
- * - When actively downloading, shows real-time progress.
- * - Hides harmless developer sideload errors (Error -15) so debug APKs remain clean.
+ * Modern, slim, non-blocking capsule banner for Tier 6 Gemma model background installation.
+ * Conforms to Android & iOS guidelines:
+ * - Gentle, non-alarming palette (surfaceVariant / secondaryContainer, never error red).
+ * - Compact height with single-row layout and integrated progress indicator.
+ * - Dismissible via [onDismiss] so users have full agency without stopping background download.
+ * - Hides harmless developer sideload errors (Error -15).
  */
 @Composable
 fun BaseModelDownloadBanner(
     uiState: PayslipUiState,
     modifier: Modifier = Modifier,
     onResumeDownload: () -> Unit = {},
+    onDismiss: () -> Unit = {},
 ) {
-    val isFatalError = uiState.modelDownloadError != null && !uiState.modelDownloadError.contains("-15")
-    val isVisible = uiState.isDownloadingModel || uiState.isWaitingForWifi || isFatalError
-    if (!isVisible) return
+    if (!isModelBannerVisible(uiState)) return
 
+    val hasError = uiState.modelDownloadError != null && !uiState.modelDownloadError.contains("-15")
+    val isPausedOrError = uiState.isWaitingForWifi || hasError
     val containerColor =
-        when {
-            isFatalError -> MaterialTheme.colorScheme.errorContainer
-            uiState.isWaitingForWifi -> MaterialTheme.colorScheme.secondaryContainer
-            else -> MaterialTheme.colorScheme.surfaceVariant
-        }
+        if (isPausedOrError) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant
     val contentColor =
-        when {
-            isFatalError -> MaterialTheme.colorScheme.onErrorContainer
-            uiState.isWaitingForWifi -> MaterialTheme.colorScheme.onSecondaryContainer
-            else -> MaterialTheme.colorScheme.onSurfaceVariant
-        }
+        if (isPausedOrError) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
 
     Card(
         modifier = modifier.fillMaxWidth().padding(horizontal = AppDimensions.PaddingMedium, vertical = AppDimensions.SpacingTiny),
@@ -65,90 +60,133 @@ fun BaseModelDownloadBanner(
         colors = CardDefaults.cardColors(containerColor = containerColor, contentColor = contentColor),
         border = BorderStroke(AppDimensions.BorderThin, contentColor.copy(alpha = 0.12f)),
     ) {
-        Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
+        Column(modifier = Modifier.padding(horizontal = AppDimensions.PaddingMedium, vertical = AppDimensions.SpacingSmall)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Icon(
-                    imageVector = if (isFatalError) Icons.Outlined.Info else Icons.Outlined.Refresh,
-                    contentDescription = null,
-                    modifier = Modifier.size(AppDimensions.IconSizeMedium),
-                    tint = contentColor,
-                )
-                Text(
-                    text = resolveBannerTitle(uiState, isFatalError),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = contentColor,
-                    modifier = Modifier.weight(1f),
+                BannerHeader(uiState = uiState, hasError = hasError, contentColor = contentColor, modifier = Modifier.weight(1f))
+                BannerActions(
+                    uiState = uiState,
+                    hasError = hasError,
+                    contentColor = contentColor,
+                    onResumeDownload = onResumeDownload,
+                    onDismiss = onDismiss,
                 )
             }
-
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
-
-            Text(
-                text = resolveBannerSubtitle(uiState, isFatalError),
-                style = MaterialTheme.typography.bodySmall,
-                color = contentColor.copy(alpha = 0.85f),
-            )
-
             if (uiState.isDownloadingModel) {
                 LinearProgressIndicator(
                     progress = { uiState.modelDownloadProgress },
-                    modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingSmall),
+                    modifier = Modifier.fillMaxWidth().height(AppDimensions.SpacingTiny).padding(top = AppDimensions.SpacingTiny),
                 )
             }
+        }
+    }
+}
 
-            if (uiState.isWaitingForWifi || isFatalError) {
-                Spacer(modifier = Modifier.height(AppDimensions.SpacingSmall))
-                FilledTonalButton(
-                    onClick = onResumeDownload,
-                    colors =
-                        ButtonDefaults.filledTonalButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
-                    modifier = Modifier.align(Alignment.End),
-                ) {
-                    Text(
-                        text =
-                            if (uiState.isWaitingForWifi) {
-                                GemmaModelStrings.gemmaModelDownloadCellularAction
-                            } else {
-                                GemmaModelStrings.gemmaModelRetryAction
-                            },
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                }
-            }
-
+@Composable
+private fun BannerHeader(
+    uiState: PayslipUiState,
+    hasError: Boolean,
+    contentColor: Color,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+        modifier = modifier,
+    ) {
+        Icon(
+            imageVector = if (uiState.isWaitingForWifi || hasError) Icons.Outlined.Info else Icons.Outlined.Refresh,
+            contentDescription = null,
+            modifier = Modifier.size(AppDimensions.IconSizeMedium),
+            tint = contentColor,
+        )
+        Column {
             Text(
-                text = "${GemmaModelStrings.gemmaLicenseNoticeTitle}: ${GemmaModelStrings.gemmaTermsOfUseNotice}",
-                style = MaterialTheme.typography.labelSmall,
-                color = contentColor.copy(alpha = 0.6f),
-                modifier = Modifier.padding(top = AppDimensions.SpacingTiny),
+                text = resolveBannerTitle(uiState, hasError),
+                style = MaterialTheme.typography.labelLarge,
+                color = contentColor,
+            )
+            Text(
+                text = resolveBannerSubtitle(uiState, hasError),
+                style = MaterialTheme.typography.bodySmall,
+                color = contentColor.copy(alpha = 0.8f),
             )
         }
     }
 }
 
-private fun resolveBannerTitle(
+@Composable
+private fun BannerActions(
     uiState: PayslipUiState,
-    isFatalError: Boolean,
+    hasError: Boolean,
+    contentColor: Color,
+    onResumeDownload: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
+    ) {
+        if (uiState.isWaitingForWifi || hasError) {
+            FilledTonalButton(
+                onClick = onResumeDownload,
+                colors =
+                    ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                modifier = Modifier.height(AppDimensions.SpacingDouble),
+            ) {
+                Text(
+                    text =
+                        if (uiState.isWaitingForWifi) {
+                            GemmaModelStrings.gemmaModelDownloadCellularAction
+                        } else {
+                            GemmaModelStrings.gemmaModelRetryAction
+                        },
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+        }
+        IconButton(
+            onClick = onDismiss,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = GemmaModelStrings.gemmaModelDismissAction,
+                modifier = Modifier.size(AppDimensions.IconSizeSmall),
+                tint = contentColor.copy(alpha = 0.7f),
+            )
+        }
+    }
+}
+
+internal fun isModelBannerVisible(uiState: PayslipUiState): Boolean {
+    val hasError = uiState.modelDownloadError != null && !uiState.modelDownloadError.contains("-15")
+    return !uiState.isModelBannerDismissed && (uiState.isDownloadingModel || uiState.isWaitingForWifi || hasError)
+}
+
+internal fun resolveBannerTitle(
+    uiState: PayslipUiState,
+    hasError: Boolean,
 ): String =
     when {
-        isFatalError -> GemmaModelStrings.gemmaModelDownloadErrorTitle
+        hasError -> GemmaModelStrings.gemmaModelPausedTitle
         uiState.isWaitingForWifi -> GemmaModelStrings.gemmaModelWaitingForWifiTitle
-        uiState.modelDownloadProgress > 0f -> "${GemmaModelStrings.gemmaModelDownloadingTitle} (${(uiState.modelDownloadProgress * 100).toInt()}%)"
+        uiState.modelDownloadProgress > 0f ->
+            "${GemmaModelStrings.gemmaModelDownloadingTitle} (${(uiState.modelDownloadProgress * 100).toInt()}%)"
         else -> GemmaModelStrings.gemmaModelDownloadingTitle
     }
 
-private fun resolveBannerSubtitle(
+internal fun resolveBannerSubtitle(
     uiState: PayslipUiState,
-    isFatalError: Boolean,
+    hasError: Boolean,
 ): String =
     when {
-        isFatalError -> uiState.modelDownloadError.orEmpty()
+        hasError -> GemmaModelStrings.gemmaModelPausedSubtitle
         uiState.isWaitingForWifi -> GemmaModelStrings.gemmaModelWaitingForWifiSubtitle
         else -> GemmaModelStrings.gemmaModelDownloadBannerMessage
     }

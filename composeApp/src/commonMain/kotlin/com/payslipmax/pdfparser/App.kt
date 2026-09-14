@@ -158,7 +158,11 @@ private fun MainScaffold(
         // screen's own detailScreenSafeArea() resolves to ~0 on this path (no double padding) while
         // still applying on a standalone iOS detail VC, which has no ancestor to consume it.
         Column(modifier = Modifier.padding(paddingValues).consumeWindowInsets(paddingValues)) {
-            BaseModelDownloadBanner(uiState = uiState, onResumeDownload = { viewModel.resumeModelDownload() })
+            BaseModelDownloadBanner(
+                uiState = uiState,
+                onResumeDownload = { viewModel.resumeModelDownload() },
+                onDismiss = { viewModel.dismissModelBanner() },
+            )
             Box(modifier = Modifier.weight(1f)) {
                 ScreenContent(
                     navState = navState,
