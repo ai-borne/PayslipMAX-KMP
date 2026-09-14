@@ -8,16 +8,20 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-11, post-upload, device-verified)
+## Status snapshot (as of 2026-09-14, post-upload, device-verified)
 
-- **Track:** Closed testing (Alpha), 177 countries/regions.
-- **Live release:** `10 (1.0.0)` — versionCode 10, uploaded and confirmed installed on the physical
-  Pixel 9 test device via the Closed testing opt-in link on 2026-09-11 (`dumpsys package` shows
-  `versionCode=10`, `installerPackageName=com.android.vending`). This build skipped straight from
-  8 → 10 on this track — versionCode 9 was released to **Internal testing only** and never
-  promoted to Closed testing (superseded by 10 before promotion happened); see the versionCode 9
-  entry below.
-- **versionCode 9** remains live on Internal testing only, unchanged.
+- **Closed testing track:** still on `10 (1.0.0)` — versionCode 10, 177 countries/regions. Not yet
+  promoted to versionCode 11 (see below); the two-grammar-era parse/persist check should complete
+  first per the staged-rollout decision recorded in the versionCode 11 entry below.
+- **Internal testing track:** `11 (1.0.0)` — versionCode 11, released 2026-09-14 17:50, confirmed
+  installed on the physical Pixel 9 (`dumpsys package` shows `versionCode=11`,
+  `installerPackageName=com.android.vending`). See the versionCode 11 entry below for full detail.
+- **Prior state (versionCode 10 on Closed, superseded on Internal):** uploaded and confirmed
+  installed on the physical Pixel 9 test device via the Closed testing opt-in link on 2026-09-11
+  (`dumpsys package` showed `versionCode=10`, `installerPackageName=com.android.vending`). This
+  build skipped straight from 8 → 10 on the Closed track — versionCode 9 was released to
+  **Internal testing only** and never promoted to Closed testing (superseded by 10 before
+  promotion happened, then itself superseded on Internal by 11); see the versionCode 9 entry below.
 - **Testers:** 25/25 opted in (third-party tester panel, "Private Testing Pro" plan) as of the v8
   upload; reconfirm current opted-in count against the v10 release in Play Console's own
   "Testing" tab rather than assuming it's unchanged.
@@ -169,13 +173,19 @@ this build** — the R8 keep-rule rollout plan
 ([06_R8_Serialization_Crashlytics_Rollout_Plan.md](../Plan/06_R8_Serialization_Crashlytics_Rollout_Plan.md))
 Phase 10/11 work has not started yet and is now retargeted at **versionCode 11**.
 
-## Preparation for versionCode 11 (in progress — nothing below is released yet)
+### versionCode 11 — released to Internal testing 2026-09-14 17:50 — R8 hardening + tech-debt cleanup
+Carries four independent streams, all committed on `release/ios-1.0.0-v6` ahead of this release:
 
-Two independent workstreams are queued for whatever build ships as versionCode 11. Neither has
-shipped; both are tracked here as they land so the eventual release entry can cite dated evidence
-instead of being reconstructed from memory.
+1. R8 Phase 10-11 (serialization + Crashlytics keep-rule cleanup)
+2. Tech debt Sprint A (dead-code purge)
+3. Tech debt Sprint D (architecture/test-seam cleanup)
+4. Crashlytics false-positive fixes (SignInHubActivity / ProxyBillingActivity)
 
-### 1. R8 Phase 10-11 — serialization + Crashlytics keep-rule cleanup (2026-09-11, paused)
+Full detail on each stream below; see also
+[06_R8_Serialization_Crashlytics_Rollout_Plan.md](../Plan/06_R8_Serialization_Crashlytics_Rollout_Plan.md)
+Phase 12 for the R8-specific verification record.
+
+#### 1. R8 Phase 10-11 — serialization + Crashlytics keep-rule cleanup (2026-09-11, paused)
 Per `docs/Plan/06_R8_Serialization_Crashlytics_Rollout_Plan.md`, continuing the Phase 1-8 R8 hardening
 that shipped in versionCode 8:
 
@@ -209,7 +219,7 @@ picker with an actual payslip; not automatable in this environment. See
 [06_R8_Serialization_Crashlytics_Rollout_Plan.md](../Plan/06_R8_Serialization_Crashlytics_Rollout_Plan.md)
 Phase 12 for full detail.
 
-### 2. Tech debt Sprint A — dead code purge (2026-09-13, complete, unreleased)
+#### 2. Tech debt Sprint A — dead code purge (2026-09-13, complete)
 A full tech-debt audit (`docs/Plan/11_techDebt_10sep2026`) was cross-checked file-by-file against the
 live codebase (existence, reference counts, exact line numbers) before any action was taken — every
 finding verified accurate. Findings were sequenced into 4 sprints; Sprint A (zero production callers,
@@ -237,7 +247,7 @@ window. Remaining sprints (B: `FLAG_SECURE` re-enable + file-size splits; C: pag
 parsing fix; D: architecture/test-seam cleanup) are intentionally deferred to whatever release follows
 the 1.2 (iOS)/V10 (Android) review outcomes, per `docs/Plan/11_techDebt_10sep2026`.
 
-### 3. Tech debt Sprint D — architecture & test-seam cleanup (2026-09-13, complete, unreleased)
+#### 3. Tech debt Sprint D — architecture & test-seam cleanup (2026-09-13, complete)
 Per `docs/Plan/11_techDebt_10sep2026`. No user-visible behavior change; all items verified via
 `:shared:testDebugUnitTest`, `:composeApp:testDebugUnitTest`, `ktlintCheck`, and
 `:composeApp:linkDebugFrameworkIosSimulatorArm64`.
@@ -266,7 +276,7 @@ Per `docs/Plan/11_techDebt_10sep2026`. No user-visible behavior change; all item
 Koin/native/LiteRT keep-rule scoping, tracked jointly with the R8 rollout plan above) is intentionally
 deferred, not silently dropped.
 
-### 4. Crashlytics false-positive crash fixes — SignInHubActivity / ProxyBillingActivity (2026-09-14, complete, unreleased)
+#### 4. Crashlytics false-positive crash fixes — SignInHubActivity / ProxyBillingActivity (2026-09-14, complete)
 Two Crashlytics issues on versionCode 10 were investigated and root-caused to Google's own libraries
 being launched by automated test infrastructure (Play pre-launch report / Test Lab-style crawler) with
 no intent extras — not real user crashes. All events on both issues show device "OnePlus8Pro" + CPU
@@ -295,16 +305,48 @@ X86_64 (physically impossible — a real OnePlus 8 Pro is ARM64-only) + OS "Unkn
   available emulator had none). None of these block the fix landing; all are lower-risk, unrelated-path
   checks tracked as follow-ups, not correctness gates on the manifest/dependency changes themselves.
 
-**Status:** Committed on `release/ios-1.0.0-v6`, unreleased. Android-only; zero iOS-side changes
+**Status:** Committed on `release/ios-1.0.0-v6`. Android-only; zero iOS-side changes
 (confirmed via `git diff --stat` against `iosApp/`, `shared/src/iosMain`, `shared/src/iosTest`).
 
-### Net effect on the eventual versionCode 11 release
-When versionCode 11 actually ships, it will carry **all four** streams above (R8 Phase 10-11 rule
-cleanup, Sprint A dead-code purge, Sprint D architecture/test-seam cleanup, and the Crashlytics
-false-positive fixes) plus whatever Phase 12 device verification and version bump work happens at that
-time. Update this section into a dated `### versionCode 11 —` entry (matching the format used for
-versionCode 4-10 above) once that build is actually uploaded — don't let it stay in this "preparation"
-form past the point it ships.
+#### Upload and Internal-testing verification (2026-09-14)
+
+**Play Store propagation snag (resolved):** the Play Console release page confirmed versionCode 11
+"Available to internal testers" at 17:50, but the Pixel 9's Play Store app served a stale listing —
+tapping the opt-in link at 17:52 installed versionCode 10 again (`dumpsys package` confirmed
+`versionCode=10`, `installerPackageName=com.android.vending`). Fixed the same way as the v10 snag:
+`adb shell pm clear com.android.vending` to drop the stale cached listing, then reopened the Play
+Store app page — it then correctly showed an "Update" button with the v11 release notes ("no new
+features or UI changes — internal hardening update"). Tapping Update installed
+`versionCode=11, installerPackageName=com.android.vending` at 17:57:08, confirmed via `dumpsys
+package`.
+
+**Post-install logcat verification, 2026-09-14 17:57 (versionCode 11, real Play-delivered install,
+not a sideload):**
+- No `FATAL EXCEPTION`, no ANR, no `ClassNotFoundException`/`NoSuchMethodError`. App process stable
+  through launch and idle.
+- **Gemma offline-AI asset pack downloaded correctly via real Play Asset Delivery** ("Downloading
+  Offline AI Model (15%)") — the first time this path has been observed working on this build; the
+  earlier Phase 12 sideload could only show `PACK_UNAVAILABLE` since sideloads can't fetch
+  Play-delivered asset packs. Positive signal that the Play Asset Delivery / ODR wiring
+  (Sprint D, `GemmaOnDemandResourceBridge` area) is intact end-to-end for Android.
+- **Non-fatal, pre-existing, not a v11 regression:** `No package ID 6b found for resource ID
+  0x6b0b0013` — a resource-lookup warning from a third-party SDK or asset pack, no visible effect.
+- **Non-fatal, real gap to close before `FREE_LAUNCH_MODE` is ever disabled:** RevenueCat logged
+  `ConfigurationError` — "you have configured the SDK with a Play Store API key, but there are no
+  Play Store products registered in the RevenueCat dashboard for your offerings." This is a
+  RevenueCat-dashboard configuration gap, not a code regression from the Sprint A billing-dependency
+  dedup (`7c0a1d4`) or the `ProxyBillingActivity` manifest decision — but it does mean the deferred
+  sandbox-purchase check (flagged as outstanding in stream 4 above) cannot meaningfully pass until
+  products/offerings are configured on RevenueCat's side regardless of app code.
+
+**Still outstanding (not silently skipped):** the two-grammar-era PDF parse/persist check (R8 Phase
+10) — local app data was wiped during the Phase 12 sideload/restore cycle, and importing a real
+payslip needs a human at the file picker. Firebase Anonymous Auth live-trigger and the sandbox
+purchase check (stream 4) remain outstanding for the same "needs a human with real
+credentials/file" reason, compounded by the RevenueCat gap above for the purchase check
+specifically.
+
+**Decision:** hold promotion to Closed testing until the parse/persist check is done on this device.
 
 ## What still needs to happen before the Day-14 final submission
 
