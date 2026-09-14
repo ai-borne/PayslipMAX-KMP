@@ -152,4 +152,38 @@ class PayslipViewModelGemmaDownloadTest {
             assertFalse(viewModel.uiState.value.isModelBannerDismissed)
             assertTrue(fakeInstaller.installCalled)
         }
+
+    @Test
+    fun simulateGemmaDownloadFailureUpdatesState() =
+        runTest {
+            viewModel.dismissModelBanner()
+            advanceUntilIdle()
+            assertTrue(viewModel.uiState.value.isModelBannerDismissed)
+
+            viewModel.simulateGemmaDownloadFailure("Network error")
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertEquals("Network error", state.modelDownloadError)
+            assertFalse(state.isDownloadingModel)
+            assertFalse(state.isWaitingForWifi)
+            assertFalse(state.isModelBannerDismissed)
+        }
+
+    @Test
+    fun simulateGemmaWaitingForWifiUpdatesState() =
+        runTest {
+            viewModel.dismissModelBanner()
+            advanceUntilIdle()
+            assertTrue(viewModel.uiState.value.isModelBannerDismissed)
+
+            viewModel.simulateGemmaWaitingForWifi()
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value
+            assertTrue(state.isWaitingForWifi)
+            assertFalse(state.isDownloadingModel)
+            assertNull(state.modelDownloadError)
+            assertFalse(state.isModelBannerDismissed)
+        }
 }

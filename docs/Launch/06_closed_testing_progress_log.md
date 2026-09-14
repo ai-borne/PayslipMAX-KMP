@@ -353,7 +353,7 @@ versionCode 11 directly as-is, the Offline AI banner redesign (Option A capsule)
 to resolve the jarring red error state and visual footprint. Both the v11 binary hardening and the v12
 UI polish are packaged together into **versionCode 12** to be pushed directly to Closed testing.
 
-### versionCode 12 — prepared for Closed testing 2026-09-14 — Offline AI banner redesign (Option A capsule) + Legal centralization
+### versionCode 12 — Under preparation for Closed testing 2026-09-14 — Offline AI banner redesign (Option A capsule) + Legal centralization
 Carries the complete visual and architectural overhaul of the Tier 6 Gemma background installation UX, directly resolving usability feedback observed during live device testing on versionCode 10 & 11:
 
 Commits:

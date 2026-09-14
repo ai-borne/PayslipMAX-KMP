@@ -78,6 +78,34 @@ fun PayslipViewModel.dismissModelBanner() {
     _uiState.update { it.copy(isModelBannerDismissed = true) }
 }
 
+/**
+ * Developer Sandbox helper to simulate an offline model download failure.
+ */
+fun PayslipViewModel.simulateGemmaDownloadFailure(errorMessage: String = "Asset pack download failed (error code 1)") {
+    _uiState.update {
+        it.copy(
+            isDownloadingModel = false,
+            isWaitingForWifi = false,
+            modelDownloadError = errorMessage,
+            isModelBannerDismissed = false,
+        )
+    }
+}
+
+/**
+ * Developer Sandbox helper to simulate offline model download paused waiting for Wi-Fi.
+ */
+fun PayslipViewModel.simulateGemmaWaitingForWifi() {
+    _uiState.update {
+        it.copy(
+            isDownloadingModel = false,
+            isWaitingForWifi = true,
+            modelDownloadError = null,
+            isModelBannerDismissed = false,
+        )
+    }
+}
+
 private fun PayslipUiState.applyInstallState(installState: BaseModelInstallState): PayslipUiState =
     when (installState) {
         is BaseModelInstallState.NotStarted ->

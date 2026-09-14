@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.clearAllData
 import com.payslipmax.pdfparser.ui.seedMockData
+import com.payslipmax.pdfparser.ui.simulateGemmaDownloadFailure
+import com.payslipmax.pdfparser.ui.simulateGemmaWaitingForWifi
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 
 @Composable
@@ -26,6 +28,8 @@ fun DeveloperSandboxSection(
                         filename = "unrecognized_military_statement.pdf",
                     )
                 },
+                onSimulateAiFailureClick = { viewModel.simulateGemmaDownloadFailure() },
+                onSimulateAiWaitingForWifiClick = { viewModel.simulateGemmaWaitingForWifi() },
             )
         }
     }

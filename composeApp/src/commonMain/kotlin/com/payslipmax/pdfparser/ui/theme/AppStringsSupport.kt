@@ -7,4 +7,6 @@ object AppStringsSupport {
     const val installationIdPrefix = "Installation ID: "
     const val settingsStagingBackgroundCrashBtn = "Background Thread Crash (IO/Default)"
     const val settingsStagingSimulateParserFailureBtn = "Simulate PDF Parse Failure (Non-Fatal)"
+    const val settingsStagingSimulateAiFailureBtn = "Simulate Offline AI Download Failure"
+    const val settingsStagingSimulateAiWaitingForWifiBtn = "Simulate Offline AI Waiting For Wi-Fi"
 }
