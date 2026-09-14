@@ -154,6 +154,25 @@ checks pass on this exact artifact.
 **Phase Handoff**: tech debt = none; build green; both verifications repeated and passing on the
 shipping artifact.
 
+**Result (2026-09-14)**: `versionCode` bumped to 11 (`836920a`); `:composeApp:assembleRelease` green
+(70,442,187-byte APK, matching the Phase 9-11 measured size, confirming no drift). Sideloaded onto
+the physical Pixel 9 (installer spoofed to `com.android.vending`, existing v10 uninstalled first for
+the signature mismatch, restored to the real Play-delivered v10 afterward — device left clean).
+
+- **Phase 11 check (crash symbolication) — ✅ PASSED.** Fired the Developer Sandbox's "Background
+  Thread Crash (IO/Default)" trigger. Crashlytics issue `fb358c61fc9f50dc53b69babeee934f3` shows a
+  fully readable title —
+  `com.payslipmax.pdfparser.telemetry.TestCrash_androidKt$triggerBackgroundTestCrash$1.invokeSuspend`
+  — not obfuscated (`r8-map-id-...`) garbage, and is explicitly tagged by Crashlytics as
+  "regressed... in version 1.0.0 (11)", confirming the mapping upload matched this exact build.
+- **Phase 10 check (two-grammar-era parse/persist) — NOT DONE, genuinely deferred.** The sideload
+  wiped local app data, and importing a real PDF through the file picker needs a human with an
+  actual payslip file — this environment has no such file and no way to drive the system file
+  picker blindly. **This is the same class of gap the closed-testing progress log already flags as
+  "Outstanding" for the bundled Sign-In/purchase checks — not silently skipped, but not verified
+  either.** Someone with device access and a real (or corpus) PDF needs to run this before
+  promoting past Internal testing.
+
 ---
 
 ## Phase 13 — Staged rollout to closed testing (no repo commit)

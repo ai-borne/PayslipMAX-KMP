@@ -197,6 +197,18 @@ a versionCode on a non-shipping intermediate build — Play won't allow a second
 at an already-consumed versionCode. **Paused after Phase 11 by user decision (2026-09-11), to resume
 around 2026-09-14/15** — re-read the rollout plan doc's current state before continuing at Phase 12.
 
+**Phase 12 executed (2026-09-14):** `versionCode` bumped to 11 (`836920a`); `assembleRelease` green
+(70,442,187 bytes, matching the Phase 9-11 baseline — no size drift). Sideloaded on the Pixel 9
+(installer spoofed to `com.android.vending`, device restored to the clean Play-delivered v10
+afterward). **Phase 11's crash-symbolication check passed**: the forced background-thread test crash
+produced a fully readable Crashlytics issue
+(`TestCrash_androidKt$triggerBackgroundTestCrash$1.invokeSuspend`), tagged by Crashlytics itself as
+regressed in "version 1.0.0 (11)". **Phase 10's two-grammar-era parse/persist check is still
+outstanding** — the sideload wipes local data and importing a real PDF needs a human at the file
+picker with an actual payslip; not automatable in this environment. See
+[06_R8_Serialization_Crashlytics_Rollout_Plan.md](../Plan/06_R8_Serialization_Crashlytics_Rollout_Plan.md)
+Phase 12 for full detail.
+
 ### 2. Tech debt Sprint A — dead code purge (2026-09-13, complete, unreleased)
 A full tech-debt audit (`docs/Plan/11_techDebt_10sep2026`) was cross-checked file-by-file against the
 live codebase (existence, reference counts, exact line numbers) before any action was taken — every
