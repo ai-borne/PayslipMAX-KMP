@@ -49,6 +49,10 @@ A8: We collect anonymous telemetry regarding the Gemma AI model installation sta
 
     const val settingsHelpDisclaimerContent = """This analytical tool is for reference and productivity purposes only. It is not an official app of the PCDA, Ministry of Defence, or the Indian Army. It does not replace professional advice from chartered accountants or official audit statements."""
 
+    const val settingsHelpGemmaLicenseTitle = "Gemma Model License & Terms"
+    const val settingsHelpGemmaLicenseContent =
+        "The optional on-device offline intelligence model uses Gemma technology from Google. Gemma is provided under and subject to the Gemma Terms of Use found at ai.google.dev/gemma/terms."
+
     const val settingsTermsOfUse = "Terms of Use"
     const val termsOfUseUrl = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
     const val privacyPolicyUrl = "https://www.ai-borne.in/privacy-policy"

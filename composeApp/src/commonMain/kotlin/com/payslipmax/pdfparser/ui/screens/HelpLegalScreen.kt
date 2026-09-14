@@ -74,6 +74,11 @@ private fun PrivacyContent() {
         title = AppStrings.settingsHelpAiTitle,
         content = LegalStrings.settingsHelpAiContent,
     )
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+    DocSection(
+        title = LegalStrings.settingsHelpGemmaLicenseTitle,
+        content = LegalStrings.settingsHelpGemmaLicenseContent,
+    )
 }
 
 @Composable
