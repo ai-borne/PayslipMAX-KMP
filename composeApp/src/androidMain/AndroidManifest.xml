@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:name=".PayslipApplication"
@@ -26,6 +27,18 @@
             android:name="androidx.activity.ComponentActivity"
             android:exported="false"
             android:theme="@android:style/Theme.Material.NoActionBar" />
+
+        <!-- Not used: app has no Google Sign-In code path (Firebase Anonymous Auth only).
+             This activity is pulled in transitively via firebase-auth-ktx -> credentials-play-services-auth
+             and was misattributed as a real crash surface (Crashlytics issue add2187eac1b73536c614996b0cea686 —
+             root-caused to Play pre-launch/Test Lab crawler infra, not real users). Removed from the merged
+             manifest to eliminate the surface entirely. tools:ignore="MissingClass" suppresses a lint false
+             positive: the class is genuinely resolved on the classpath (confirmed via dependencies task) but
+             lint's MissingClass check can't see library-internal classes referenced only via node="remove". -->
+        <activity
+            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+            tools:node="remove"
+            tools:ignore="MissingClass" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
