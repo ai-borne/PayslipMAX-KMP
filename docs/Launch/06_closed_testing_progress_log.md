@@ -8,14 +8,16 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-14, post-upload, device-verified)
+## Status snapshot (as of 2026-09-14, post-v11 verification, preparing v12)
 
-- **Closed testing track:** still on `10 (1.0.0)` — versionCode 10, 177 countries/regions. Not yet
-  promoted to versionCode 11 (see below); the two-grammar-era parse/persist check should complete
-  first per the staged-rollout decision recorded in the versionCode 11 entry below.
+- **Closed testing track:** moving to `12 (1.0.0)` — versionCode 12 prepared to push directly to Closed
+  testing (177 countries/regions), superseding versionCode 10. Rather than promoting versionCode 11 as-is,
+  v12 packages all of v11's R8/Crashlytics/dead-code hardening together with the user-facing Offline AI
+  banner redesign (Option A capsule) in a single unified Closed testing release.
 - **Internal testing track:** `11 (1.0.0)` — versionCode 11, released 2026-09-14 17:50, confirmed
   installed on the physical Pixel 9 (`dumpsys package` shows `versionCode=11`,
-  `installerPackageName=com.android.vending`). See the versionCode 11 entry below for full detail.
+  `installerPackageName=com.android.vending`). Both the forced-crash symbolication and the
+  two-grammar-era parse/persist check passed clean on this build (see the versionCode 11 entry below).
 - **Prior state (versionCode 10 on Closed, superseded on Internal):** uploaded and confirmed
   installed on the physical Pixel 9 test device via the Closed testing opt-in link on 2026-09-11
   (`dumpsys package` showed `versionCode=10`, `installerPackageName=com.android.vending`). This
@@ -352,8 +354,27 @@ gap noted above. Neither blocks promotion: Anonymous Auth already initializes si
 background (confirmed no auth-related errors in any logcat capture so far), and the purchase path is
 unreachable by real testers while `FREE_LAUNCH_MODE` is active.
 
-**Decision:** with the parse/persist check now passed, versionCode 11 is clear to promote from
-Internal to Closed testing whenever convenient — no remaining gate blocks it.
+**Decision:** with the parse/persist check now passed on the Pixel 9 test device, instead of promoting
+versionCode 11 directly as-is, the Offline AI banner redesign (Option A capsule) was executed immediately
+to resolve the jarring red error state and visual footprint. Both the v11 binary hardening and the v12
+UI polish are packaged together into **versionCode 12** to be pushed directly to Closed testing.
+
+### versionCode 12 — prepared for Closed testing 2026-09-14 — Offline AI banner redesign (Option A capsule) + Legal centralization
+Carries the complete visual and architectural overhaul of the Tier 6 Gemma background installation UX, directly resolving usability feedback observed during live device testing on versionCode 10 & 11:
+
+Commits:
+- `bedd1d1` — `feat(ui): phase 1 - modernize gemma strings and centralize legal disclosure`: replaced technical developer jargon (*"Offline AI Model (~529MB)"*, *">3.5GB RAM get the most accurate parsing"*, raw stack traces) with friendly, human copy (*"Setting up Smart Features"*, *"Downloading offline helper in background for enhanced privacy."*, *"Smart Features Setup Paused"*). Centralized Google Gemma Terms of Use attribution into `LegalStrings` and `HelpLegalScreen`.
+- `bc838e2` — `feat(ui): phase 2 - add model banner dismissal and reset state to viewmodel with tdd`: added `isModelBannerDismissed: Boolean = false` to `PayslipUiState` (SSOT) and `dismissModelBanner()` to `PayslipViewModel`, with unit test coverage in `PayslipViewModelGemmaDownloadTest`. Resuming/retrying the download resets dismissal to keep progress visible.
+- `956b855` — `feat(ui): phase 3 - redesign gemma model banner into a slim dismissible capsule`: refactored `BaseModelDownloadBanner` into a sleek, compact capsule (~48dp height) with a subtle progress bar (4dp), gentle non-red palette (`surfaceVariant` / `secondaryContainer`), inline [Resume]/[Retry] actions, and an explicit dismiss (`✕`) icon button. Tested via `BaseModelDownloadBannerTest`.
+
+**What this means in plain terms:**
+- **Eliminated the ugly red banner:** When the background download paused (e.g. waiting for Wi-Fi) or encountered transient network errors, the previous UI showed a harsh, bright red `errorContainer` banner across the top of the dashboard displaying raw system exception strings. Normal testers felt alarmed, assuming the core payslip parser or database had broken. The new design uses a gentle, integrated slate/secondary palette with reassuring guidance: *"Smart Features Setup Paused · Will resume automatically on Wi-Fi, or tap to retry."*
+- **Reclaimed ~20% of screen real estate:** The old card was 4-5 lines tall, pushing key financial metrics (Net Pay, Basic Pay, DSOP balance) below the fold. The new design is a slim, single-row capsule (~48dp) that sits quietly above the content.
+- **Tester agency (✕ dismissible):** Testers can tap the `✕` button to hide the banner for the session. The background download worker continues uninterrupted; testers are never held hostage by persistent cards.
+- **Legal clutter removed from home flow:** The required Google Gemma terms URL disclaimer was moved from the transient dashboard card to its proper home under **Settings → Help & Legal → Privacy & AI**, keeping the primary dashboard clean.
+- **Architecture & SSOT integrity:** The banner logic is 100% shared Compose Multiplatform in `composeApp/src/commonMain`, ensuring identical presentation on Android and iOS. Enforced strict adherence to project rules: all files <= 300 lines (`BaseModelDownloadBanner.kt` is 195 lines, `App.kt` is 299 lines), all functions <= 50 lines (decomposed into `BannerHeader` and `BannerActions`), zero hardcoded dimension literals (`AppDimensions` used throughout).
+
+**Status:** Built and verified locally (clean `ktlint`, all unit tests passing, `check_tech_debt_limits.py` green with 0 violations across 289 files). Prepared to bump `versionCode = 12` in `composeApp/build.gradle.kts` and assemble release AAB for the **Closed testing track** (superseding v10 directly on Closed testing and carrying all v11 hardening).
 
 ## What still needs to happen before the Day-14 final submission
 
