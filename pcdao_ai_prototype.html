@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PayslipMax AI — Military Financial Intelligence Engine (PCDA-O Moat)</title>
+  <title>PayslipMax AI — Military Financial Intelligence Engine & Cockpit (PCDA-O Moat)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg-primary: #0a0e17;
       --bg-secondary: #111827;
-      --bg-card: rgba(17, 24, 39, 0.75);
-      --bg-card-hover: rgba(31, 41, 55, 0.85);
+      --bg-card: rgba(17, 24, 39, 0.78);
+      --bg-card-hover: rgba(31, 41, 55, 0.88);
       --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-focus: rgba(99, 102, 241, 0.4);
+      --border-focus: rgba(99, 102, 241, 0.45);
       --text-primary: #f9fafb;
       --text-secondary: #9ca3af;
       --text-muted: #6b7280;
@@ -51,7 +51,7 @@
 
     /* Navigation Ribbon */
     .top-ribbon {
-      background: rgba(10, 14, 23, 0.85);
+      background: rgba(10, 14, 23, 0.88);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-subtle);
@@ -62,6 +62,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .breadcrumbs {
@@ -112,38 +114,79 @@
 
     /* Container */
     .container {
-      max-width: 1240px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 24px 20px;
     }
 
+    /* Persona Selector Bar */
+    .persona-bar {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    .persona-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .persona-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .persona-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .persona-pill:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    .persona-pill.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(79, 70, 229, 0.4));
+      border-color: #818cf8;
+      color: #fff;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.35);
+    }
+
     /* Header & Moat Formula Banner */
     .hero-banner {
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.95) 100%);
       border: 1px solid var(--border-subtle);
       border-radius: 18px;
-      padding: 28px 32px;
-      margin-bottom: 28px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
       position: relative;
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     }
-    .hero-banner::before {
-      content: '';
-      position: absolute;
-      top: -40px;
-      right: -40px;
-      width: 220px;
-      height: 220px;
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
     .hero-title {
-      font-size: 1.75rem;
+      font-size: 1.65rem;
       font-weight: 800;
       letter-spacing: -0.02em;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -155,27 +198,28 @@
     }
     .hero-subtitle {
       color: var(--text-secondary);
-      font-size: 0.95rem;
-      max-width: 800px;
-      margin-bottom: 20px;
+      font-size: 0.9rem;
+      max-width: 860px;
+      margin-bottom: 16px;
+      line-height: 1.4;
     }
 
     /* Mathematical Formula Strip */
     .formula-strip {
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(0, 0, 0, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 14px 20px;
+      border-radius: 10px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
       flex-wrap: wrap;
       font-family: var(--font-mono);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
     .formula-tag {
-      padding: 4px 10px;
-      border-radius: 6px;
+      padding: 3px 8px;
+      border-radius: 5px;
       font-weight: 600;
     }
     .tag-x { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
@@ -183,26 +227,25 @@
     .tag-y1 { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
     .tag-z { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
 
-    /* Dashboard Layout: Left = Facts X & Controls Y+1, Right = Output Z */
+    /* Dashboard Layout */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 460px 1fr;
-      gap: 28px;
+      grid-template-columns: 480px 1fr;
+      gap: 24px;
     }
-
-    @media (max-width: 1024px) {
+    @media (max-width: 1080px) {
       .dashboard-grid { grid-template-columns: 1fr; }
     }
 
-    /* Cards */
+    /* Glass Cards */
     .glass-card {
       background: var(--bg-card);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--border-subtle);
       border-radius: 16px;
-      padding: 22px;
-      margin-bottom: 24px;
+      padding: 20px;
+      margin-bottom: 20px;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .glass-card:hover {
@@ -212,19 +255,19 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
     .card-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       display: flex;
       align-items: center;
       gap: 8px;
     }
     .card-badge {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-family: var(--font-mono);
       padding: 2px 8px;
       border-radius: 6px;
@@ -236,70 +279,85 @@
     .payslip-summary-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 14px;
+      gap: 10px;
+      margin-bottom: 12px;
     }
     .stat-box {
       background: rgba(0, 0, 0, 0.25);
       border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      padding: 10px 14px;
+      border-radius: 8px;
+      padding: 8px 12px;
     }
     .stat-label {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
     .stat-value {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 700;
       font-family: var(--font-mono);
-      color: #e2e8f0;
+      color: var(--text-primary);
     }
     .stat-highlight {
-      color: #60a5fa;
+      color: #93c5fd;
     }
 
     .alert-strip {
-      background: rgba(239, 68, 68, 0.12);
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
       border-radius: 8px;
       padding: 10px 12px;
+      font-size: 0.75rem;
+      color: #fcd34d;
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      font-size: 0.8rem;
-      color: #fca5a5;
+      line-height: 1.4;
     }
-    .alert-strip .alert-icon { font-size: 1rem; }
 
-    /* Section Y+1: Quick Tap Situational Matrix */
-    .tile-group {
-      margin-bottom: 20px;
-    }
-    .tile-group-title {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-secondary);
-      font-weight: 700;
-      margin-bottom: 10px;
+    /* Category Tabs in Situational Matrix */
+    .matrix-tabs {
       display: flex;
-      align-items: center;
       gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
-    .tile-options {
+    .matrix-tab {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .matrix-tab:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .matrix-tab.active {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: #818cf8;
+      color: #c7d2fe;
+    }
+
+    /* Tiles Grid */
+    .tiles-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 10px;
     }
-    .tile-options.full-width {
+    .tiles-grid.full-width {
       grid-template-columns: 1fr;
     }
     .tap-tile {
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.35);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 10px;
       padding: 10px 12px;
@@ -329,9 +387,14 @@
       color: #818cf8;
       font-weight: 800;
     }
+    .tap-tile.hazard {
+      border-color: #ef4444 !important;
+      background: rgba(239, 68, 68, 0.15) !important;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.3) !important;
+    }
     .tile-name {
-      font-size: 0.85rem;
-      font-weight: 600;
+      font-size: 0.82rem;
+      font-weight: 700;
       color: #f3f4f6;
       display: flex;
       align-items: center;
@@ -342,13 +405,20 @@
       color: var(--text-muted);
       line-height: 1.3;
     }
+    .tile-value-preview {
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      color: #34d399;
+      font-weight: 600;
+      margin-top: 2px;
+    }
 
     /* Section Z: Top Impact Summary */
     .impact-summary-strip {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-bottom: 24px;
+      gap: 12px;
+      margin-bottom: 20px;
     }
     @media (max-width: 640px) {
       .impact-summary-strip { grid-template-columns: 1fr; }
@@ -356,25 +426,23 @@
     .impact-card {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      padding: 16px 18px;
-      position: relative;
-      overflow: hidden;
+      border-radius: 12px;
+      padding: 14px 16px;
     }
     .impact-card.positive {
       border-color: rgba(16, 185, 129, 0.3);
-      background: linear-gradient(145deg, rgba(16, 185, 129, 0.08) 0%, rgba(17, 24, 39, 0.8) 100%);
+      background: linear-gradient(145deg, rgba(16, 185, 129, 0.08) 0%, rgba(17, 24, 39, 0.85) 100%);
     }
     .impact-card.hazard {
       border-color: rgba(239, 68, 68, 0.3);
-      background: linear-gradient(145deg, rgba(239, 68, 68, 0.08) 0%, rgba(17, 24, 39, 0.8) 100%);
+      background: linear-gradient(145deg, rgba(239, 68, 68, 0.08) 0%, rgba(17, 24, 39, 0.85) 100%);
     }
     .impact-card.alert {
       border-color: rgba(245, 158, 11, 0.3);
-      background: linear-gradient(145deg, rgba(245, 158, 11, 0.08) 0%, rgba(17, 24, 39, 0.8) 100%);
+      background: linear-gradient(145deg, rgba(245, 158, 11, 0.08) 0%, rgba(17, 24, 39, 0.85) 100%);
     }
     .impact-title {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--text-secondary);
@@ -384,24 +452,92 @@
       gap: 6px;
     }
     .impact-val {
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       font-weight: 800;
       font-family: var(--font-mono);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
     .val-green { color: #34d399; }
     .val-red { color: #f87171; }
     .val-amber { color: #fbbf24; }
     .impact-sub {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
     }
 
-    /* Intelligence Findings List */
+    /* Pay Fixation Optimizer Interactive Card */
+    .fixation-card {
+      background: linear-gradient(145deg, rgba(99, 102, 241, 0.1) 0%, rgba(15, 23, 42, 0.85) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .fixation-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .fixation-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #c7d2fe;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .fixation-compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .fix-option-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px;
+      position: relative;
+    }
+    .fix-option-box.winner {
+      border-color: #34d399;
+      background: rgba(16, 185, 129, 0.1);
+    }
+    .winner-badge {
+      position: absolute;
+      top: -9px;
+      right: 10px;
+      background: #10b981;
+      color: #022c22;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 1px 8px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+    }
+    .fix-opt-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .fix-opt-val {
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      margin-bottom: 2px;
+    }
+    .fix-opt-desc {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    /* Findings Feed */
     .filter-tabs {
       display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
+      gap: 6px;
+      margin-bottom: 14px;
       overflow-x: auto;
       padding-bottom: 4px;
     }
@@ -409,9 +545,9 @@
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.08);
       color: var(--text-secondary);
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 9999px;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -431,117 +567,107 @@
     .findings-container {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
-
     .finding-card {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      padding: 18px 20px;
-      transition: transform 0.2s ease, border-color 0.2s ease;
-      position: relative;
+      border-radius: 12px;
+      padding: 16px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
     }
     .finding-card:hover {
-      border-color: rgba(255, 255, 255, 0.18);
-      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: translateY(-1px);
     }
     .finding-top {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .finding-headline {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .finding-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #f3f4f6;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      margin-bottom: 8px;
     }
     .finding-tag {
-      display: inline-block;
-      font-size: 0.68rem;
-      font-weight: 600;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
       padding: 2px 6px;
       border-radius: 4px;
       font-family: var(--font-mono);
+      margin-bottom: 4px;
+      display: inline-block;
     }
-    .tag-entitlement { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .tag-hazard { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-    .tag-audit { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-    .tag-shield { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .tag-entitlement { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .tag-hazard { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    .tag-deadline { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .tag-shield { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
 
-    .delta-badge {
+    .finding-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #f3f4f6;
+    }
+    .finding-delta {
       font-size: 1.1rem;
       font-weight: 800;
       font-family: var(--font-mono);
-      white-space: nowrap;
+      text-align: right;
     }
-    .badge-plus { color: #34d399; }
-    .badge-minus { color: #f87171; }
-    .badge-neutral { color: #fbbf24; }
+    .delta-plus { color: #34d399; }
+    .delta-minus { color: #f87171; }
+    .delta-alert { color: #fbbf24; }
 
     .finding-body {
+      font-size: 0.8rem;
       color: #cbd5e1;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      line-height: 1.45;
     }
-
-    .finding-meta-row {
-      background: rgba(0, 0, 0, 0.25);
-      border-radius: 8px;
+    .diff-table {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
       padding: 8px 12px;
+      margin-bottom: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .diff-col-title {
+      color: var(--text-muted);
+      font-size: 0.65rem;
+    }
+    .diff-col-val {
+      font-weight: 700;
+    }
+    .finding-foot {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.75rem;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .meta-rule {
+      font-size: 0.72rem;
       color: var(--text-muted);
-      font-family: var(--font-mono);
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .meta-rule strong { color: #94a3b8; }
-    
-    .btn-action-sm {
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.35);
-      color: #a5b4fc;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.15s ease;
-    }
-    .btn-action-sm:hover {
-      background: #4f46e5;
-      color: #fff;
+    .finding-authority {
+      color: #94a3b8;
+      font-style: italic;
     }
 
-    /* Modal / Official Representation Viewer */
+    /* Modal */
     .modal-backdrop {
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(8px);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 200;
+      z-index: 1000;
       padding: 20px;
     }
     .modal-backdrop.open { display: flex; }
@@ -550,21 +676,21 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 16px;
       width: 100%;
-      max-width: 800px;
+      max-width: 860px;
       max-height: 90vh;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
     }
     .modal-head {
-      padding: 16px 22px;
+      padding: 16px 20px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     .modal-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -579,48 +705,48 @@
       line-height: 1;
     }
     .close-btn:hover { color: #fff; }
-
     .modal-body {
-      padding: 22px;
+      padding: 20px;
       overflow-y: auto;
       font-family: var(--font-mono);
-      font-size: 0.85rem;
-      line-height: 1.6;
+      font-size: 0.8rem;
+      line-height: 1.55;
       background: #020617;
       color: #e2e8f0;
       white-space: pre-wrap;
     }
     .modal-foot {
-      padding: 14px 22px;
+      padding: 14px 20px;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
     }
     .btn-primary {
       background: linear-gradient(135deg, #4f46e5, #6366f1);
       color: #fff;
       border: none;
-      padding: 8px 18px;
+      padding: 8px 16px;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      transition: opacity 0.2s ease;
     }
-    .btn-primary:hover {
-      background: linear-gradient(135deg, #4338ca, #4f46e5);
-    }
+    .btn-primary:hover { opacity: 0.9; }
     .btn-secondary {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.12);
       color: #cbd5e1;
-      padding: 8px 16px;
+      padding: 8px 14px;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       cursor: pointer;
     }
     .btn-secondary:hover {
@@ -636,37 +762,61 @@
     <div class="breadcrumbs">
       <span>Insights</span>
       <span class="separator">/</span>
-      <span>Premium Features</span>
+      <span>Premium Financial Tools</span>
       <span class="separator">/</span>
-      <span class="crumb-active">✨ PayslipMax AI</span>
+      <span class="crumb-active">✨ PayslipMax AI Moat</span>
     </div>
     <div class="status-badge">
       <span class="status-dot"></span>
-      <span>100% Offline Engine • Pune PCDA Ready</span>
+      <span>100% Offline Engine • 378 PCDA Rules Active</span>
     </div>
   </header>
 
   <div class="container">
 
-    <!-- Hero Banner -->
+    <!-- Officer Persona Switcher Bar -->
+    <section class="persona-bar">
+      <div class="persona-title">
+        <span>🎖️ Switch Test Persona:</span>
+      </div>
+      <div class="persona-pills">
+        <button class="persona-pill active" id="btn-p1" onclick="switchPersona('p1')">
+          <span>Col. Rathore</span>
+          <span style="font-size: 0.7rem; color: #94a3b8;">(Field to Peace UA)</span>
+        </button>
+        <button class="persona-pill" id="btn-p2" onclick="switchPersona('p2')">
+          <span>Capt. Batra</span>
+          <span style="font-size: 0.7rem; color: #94a3b8;">(Promotion Rule 10/11)</span>
+        </button>
+        <button class="persona-pill" id="btn-p3" onclick="switchPersona('p3')">
+          <span>Maj. Anand</span>
+          <span style="font-size: 0.7rem; color: #94a3b8;">(Siachen + Hostel CEA)</span>
+        </button>
+        <button class="persona-pill" id="btn-p4" onclick="switchPersona('p4')">
+          <span>Lt. Col. Sharma</span>
+          <span style="font-size: 0.7rem; color: #94a3b8;">(Retiring + DSOP Cap)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Hero Banner with Formula Strip -->
     <section class="hero-banner">
       <h1 class="hero-title">
-        <span class="sparkle-icon">✨</span> PayslipMax AI : The Moat Intelligence Engine
+        <span class="sparkle-icon">✨</span> PayslipMax AI : PCDA(O) Intelligence Cockpit
       </h1>
       <p class="hero-subtitle">
-        PCDA(O) is an accounting ledger, not an advisory. By passing parsed salary facts through our canonical military knowledge factory and your current situational factors, we calculate exact statutory entitlements, alert you of recovery hazards, and draft 1-tap official representations.
+        PCDA(O) is an accounting ledger, not an advisory. By synthesizing parsed salary facts against 9 canonical military data packs and situational factors, we calculate exact statutory entitlements, alert you of recovery hazards, and draft 1-tap official representations.
       </p>
 
-      <!-- Formula Strip -->
       <div class="formula-strip">
         <span>MOAT EQUATION:</span>
         <span class="formula-tag tag-x">Data X (Parsed Payslip)</span>
         <span>⊗</span>
-        <span class="formula-tag tag-y">Data Y (378 PCDA Rules)</span>
+        <span class="formula-tag tag-y">Data Y (378 Rules)</span>
         <span>*</span>
         <span class="formula-tag tag-y1">Data (Y + 1) (Situational Context)</span>
         <span>=</span>
-        <span class="formula-tag tag-z">Data Z (Actionable Financial Moat)</span>
+        <span class="formula-tag tag-z">Data Z (Actionable Moat)</span>
       </div>
     </section>
 
@@ -676,144 +826,184 @@
       <!-- LEFT COLUMN: Data X & Data Y+1 -->
       <aside>
 
-        <!-- DATA X: Actual Parsed Payslip -->
+        <!-- DATA X: Actual Parsed Payslip Facts -->
         <div class="glass-card">
           <div class="card-header">
             <h2 class="card-title">
               <span>📄 Data X : Parsed Payslip</span>
             </h2>
-            <span class="card-badge">04/2026 STATEMENT</span>
+            <span class="card-badge" id="x-statement-date">04/2026 STATEMENT</span>
           </div>
-
-          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">
-            Live data extracted from <code style="color: #93c5fd;">/Users/sunil/Desktop/04 Apr 2026 PDF Payslip.pdf</code>
-          </p>
 
           <div class="payslip-summary-grid">
             <div class="stat-box">
-              <div class="stat-label">Rank / Pay Level</div>
-              <div class="stat-value stat-highlight">Level 12A (Col)</div>
+              <div class="stat-label">Officer / Rank</div>
+              <div class="stat-value stat-highlight" id="x-rank-name">Col. R. S. Rathore</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Pay Level & Stage</div>
+              <div class="stat-value" id="x-level-stage">Level 12A, Cell 7</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">Basic Pay (BPAY)</div>
-              <div class="stat-value">₹1,49,000</div>
+              <div class="stat-value" id="x-bpay">₹1,49,000</div>
             </div>
             <div class="stat-box">
-              <div class="stat-label">DA (60.0% Rate)</div>
-              <div class="stat-value">₹98,700</div>
+              <div class="stat-label">DA Rate Active</div>
+              <div class="stat-value" id="x-da-rate">60.0% (₹89,400)</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">MSP</div>
-              <div class="stat-value">₹15,500</div>
+              <div class="stat-value" id="x-msp">₹15,500</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">Risk & Hardship</div>
-              <div class="stat-value" style="color: #fbbf24;">RH12: ₹21,125</div>
+              <div class="stat-value" style="color: #fbbf24;" id="x-rh-drawn">RH12: ₹21,125</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">Transport (TPTA)</div>
-              <div class="stat-value">₹3,600 + DA</div>
+              <div class="stat-value" id="x-tpta-drawn">₹3,600 + DA</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">DSOP Monthly</div>
-              <div class="stat-value">₹40,000</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">Net Remitted</div>
-              <div class="stat-value" style="color: #34d399;">₹1,93,830</div>
+              <div class="stat-value" id="x-dsop-monthly">₹40,000</div>
             </div>
           </div>
 
-          <!-- Alert from Payslip DO2 page -->
-          <div class="alert-strip">
-            <div class="alert-icon">⚠️</div>
-            <div>
+          <!-- Alert Strip for Part II Order rejection -->
+          <div class="alert-strip" id="x-alert-strip">
+            <span style="font-size: 1.1rem;">⚠️</span>
+            <div id="x-alert-text">
               <strong>PCDA Rejection Detected:</strong> DO2 No. 381 dated 2026-03-28 was rejected. Fresh Part-II Order required from unit!
             </div>
           </div>
         </div>
 
-        <!-- DATA Y+1: Quick-Tap Situational Matrix -->
+        <!-- DATA Y+1: Situational Tile Matrix (Tabs + Interactive Tiles) -->
         <div class="glass-card">
           <div class="card-header">
             <h2 class="card-title">
               <span>🎛️ Data (Y + 1) : Situational Matrix</span>
             </h2>
-            <span class="card-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">QUICK-TAP TILES</span>
+            <span class="card-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc;">ACTIVE CONTEXT</span>
           </div>
 
-          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 14px;">
-            Tap your current military payment factors below to dynamically synthesize against the 378 canonical PCDA rules:
-          </p>
+          <!-- Category Tabs -->
+          <div class="matrix-tabs">
+            <button class="matrix-tab active" id="mtab-posting" onclick="selectMatrixCategory('posting')">📍 Posting</button>
+            <button class="matrix-tab" id="mtab-housing" onclick="selectMatrixCategory('housing')">🏡 Housing</button>
+            <button class="matrix-tab" id="mtab-cea" onclick="selectMatrixCategory('cea')">🎒 Children (CEA)</button>
+            <button class="matrix-tab" id="mtab-career" onclick="selectMatrixCategory('career')">⭐ Promotion</button>
+            <button class="matrix-tab" id="mtab-funds" onclick="selectMatrixCategory('funds')">🛡️ Funds & LTC</button>
+          </div>
 
-          <!-- Group 1: Posting Station -->
-          <div class="tile-group">
-            <div class="tile-group-title">📍 Posting & Location Factor</div>
-            <div class="tile-options">
-              <div class="tap-tile" id="tile-post-field" onclick="setPosting('field')">
-                <div class="tile-name">🏔️ HAFAA Field</div>
-                <div class="tile-desc">Serving in Highly Active Field Area</div>
-              </div>
-              <div class="tap-tile active" id="tile-post-peace-high" onclick="setPosting('peace-high')">
-                <div class="tile-name">🏙️ Peace (Pune/UA)</div>
-                <div class="tile-desc">Higher Rate City (20 UA Cities)</div>
-              </div>
+          <!-- Tab Content: Posting -->
+          <div id="mcat-posting" class="tiles-grid">
+            <div class="tap-tile" id="tile-post-field" onclick="toggleTile('postField')">
+              <div class="tile-name">🏔️ HAFAA Field Area</div>
+              <div class="tile-desc">Serving in Highly Active Field Area</div>
+              <div class="tile-value-preview">₹16,900/mo</div>
+            </div>
+            <div class="tap-tile active" id="tile-post-peace-high" onclick="toggleTile('postPeaceHigh')">
+              <div class="tile-name">🏙️ Peace (Pune UA)</div>
+              <div class="tile-desc">Higher Rate City (20 UA Cities)</div>
+              <div class="tile-value-preview">₹7,200 + DA</div>
+            </div>
+            <div class="tap-tile" id="tile-post-siachen" onclick="toggleTile('postSiachen')">
+              <div class="tile-name">❄️ Siachen Glacier</div>
+              <div class="tile-desc">RH-MAX deployment zone</div>
+              <div class="tile-value-preview">₹42,500 + 25% = ₹53,125</div>
+            </div>
+            <div class="tap-tile" id="tile-post-sda" onclick="toggleTile('postSda')">
+              <div class="tile-name">🌿 North-East SDA</div>
+              <div class="tile-desc">Special Duty Allowance (10%)</div>
+              <div class="tile-value-preview">10% of BPAY</div>
             </div>
           </div>
 
-          <!-- Group 2: Family Accommodation & SPR -->
-          <div class="tile-group">
-            <div class="tile-group-title">🏡 Family & Residence Factor</div>
-            <div class="tile-options">
-              <div class="tap-tile" id="tile-fam-mq" onclick="setFamilyRes('mq')">
-                <div class="tile-name">🏢 Govt Quarters</div>
-                <div class="tile-desc">Living in Married Accomm</div>
-              </div>
-              <div class="tap-tile active" id="tile-fam-spr" onclick="setFamilyRes('spr')">
-                <div class="tile-name">📍 Family at SPR</div>
-                <div class="tile-desc">Selected Place of Residence (Y-City)</div>
-              </div>
+          <!-- Tab Content: Housing -->
+          <div id="mcat-housing" class="tiles-grid" style="display: none;">
+            <div class="tap-tile" id="tile-house-mq" onclick="toggleTile('houseMq')">
+              <div class="tile-name">🏢 Govt Married Accomm</div>
+              <div class="tile-desc">License Fee deducted, no HRA</div>
+              <div class="tile-value-preview">Standard License Fee</div>
+            </div>
+            <div class="tap-tile active" id="tile-house-spr" onclick="toggleTile('houseSpr')">
+              <div class="tile-name">📍 Family at SPR (Jaipur)</div>
+              <div class="tile-desc">Selected Place of Residence (Y-City)</div>
+              <div class="tile-value-preview">20% HRA (Escalated)</div>
+            </div>
+            <div class="tap-tile" id="tile-house-nac" onclick="toggleTile('houseNac')">
+              <div class="tile-name">📜 Living Out on NAC</div>
+              <div class="tile-desc">Non-Availability Certificate issued</div>
+              <div class="tile-value-preview">Full Station HRA</div>
+            </div>
+            <div class="tap-tile" id="tile-house-conveyance" onclick="toggleTile('houseConveyance')">
+              <div class="tile-name">🚗 Govt Conveyance Provided</div>
+              <div class="tile-desc">Pool car / unit transport allocated</div>
+              <div class="tile-value-preview" style="color: #f87171;">Bars TPTA Claim</div>
             </div>
           </div>
 
-          <!-- Group 3: Children Education -->
-          <div class="tile-group">
-            <div class="tile-group-title">🎒 Children Education (CEA) Factor</div>
-            <div class="tile-options">
-              <div class="tap-tile" id="tile-kids-0" onclick="setChildren(0)">
-                <div class="tile-name">0 Children</div>
-                <div class="tile-desc">No schooling claims</div>
-              </div>
-              <div class="tap-tile active" id="tile-kids-2" onclick="setChildren(2)">
-                <div class="tile-name">2 Children</div>
-                <div class="tile-desc">Class I to XII schooling</div>
-              </div>
+          <!-- Tab Content: Children CEA -->
+          <div id="mcat-cea" class="tiles-grid" style="display: none;">
+            <div class="tap-tile" id="tile-cea-0" onclick="toggleTile('cea0')">
+              <div class="tile-name">0 School Children</div>
+              <div class="tile-desc">No education claims active</div>
+              <div class="tile-value-preview">₹0</div>
+            </div>
+            <div class="tap-tile" id="tile-cea-1" onclick="toggleTile('cea1')">
+              <div class="tile-name">🎒 1 Child in Day School</div>
+              <div class="tile-desc">Class Nursery to XII</div>
+              <div class="tile-value-preview">₹33,750/year</div>
+            </div>
+            <div class="tap-tile active" id="tile-cea-2" onclick="toggleTile('cea2')">
+              <div class="tile-name">🎒 2 Children in Day School</div>
+              <div class="tile-desc">Standard 2-child entitlement</div>
+              <div class="tile-value-preview">₹67,500/year</div>
+            </div>
+            <div class="tap-tile" id="tile-cea-hostel" onclick="toggleTile('ceaHostel')">
+              <div class="tile-name">🏫 Children in Boarding/Hostel</div>
+              <div class="tile-desc">Hostel Subsidy (Escalated 25%)</div>
+              <div class="tile-value-preview">₹1,01,250/child/yr</div>
             </div>
           </div>
 
-          <!-- Group 4: Leave & Encashment -->
-          <div class="tile-group">
-            <div class="tile-group-title">🏖️ Leave & LTC Factor</div>
-            <div class="tile-options">
-              <div class="tap-tile" id="tile-leave-none" onclick="setLeave(false)">
-                <div class="tile-name">No Leave Claim</div>
-                <div class="tile-desc">Regular duty month</div>
-              </div>
-              <div class="tap-tile active" id="tile-leave-ltc" onclick="setLeave(true)">
-                <div class="tile-name">🎫 Availed LTC</div>
-                <div class="tile-desc">10-day encashment eligible</div>
-              </div>
+          <!-- Tab Content: Career & Promotion -->
+          <div id="mcat-career" class="tiles-grid" style="display: none;">
+            <div class="tap-tile" id="tile-promo-active" onclick="toggleTile('promoActive')">
+              <div class="tile-name">⭐ Substantive Promotion Due</div>
+              <div class="tile-desc">Triggers Rule 10/11 Fixation</div>
+              <div class="tile-value-preview">Option 1 vs Option 2</div>
+            </div>
+            <div class="tap-tile" id="tile-career-retire" onclick="toggleTile('retireNear')">
+              <div class="tile-name">⏳ Retiring in &lt; 3 Months</div>
+              <div class="tile-desc">Superannuation / Release</div>
+              <div class="tile-value-preview" style="color: #fbbf24;">DSOP Stoppage Alarm</div>
+            </div>
+            <div class="tap-tile" id="tile-career-dni" onclick="toggleTile('dniJuly')">
+              <div class="tile-name">📅 Annual Increment: 1 July</div>
+              <div class="tile-desc">Scheduled DNI cycle</div>
+              <div class="tile-value-preview">Next Increment</div>
             </div>
           </div>
 
-          <!-- Group 5: Fund Pacing -->
-          <div class="tile-group">
-            <div class="tile-group-title">🛡️ DSOP & Service Horizon</div>
-            <div class="tile-options full-width">
-              <div class="tap-tile active" id="tile-dsop-high" onclick="toggleDsop()">
-                <div class="tile-name">📈 High DSOP Pacing (₹40,000/mo)</div>
-                <div class="tile-desc">Approaching ₹5,00,000 tax-exempt interest cap (Sec 10(11))</div>
-              </div>
+          <!-- Tab Content: Funds & LTC -->
+          <div id="mcat-funds" class="tiles-grid" style="display: none;">
+            <div class="tap-tile active" id="tile-funds-ltc" onclick="toggleTile('availedLtc')">
+              <div class="tile-name">🎫 Availed LTC Concession</div>
+              <div class="tile-desc">10-day leave encashment eligible</div>
+              <div class="tile-value-preview">10 Days Pay + DA</div>
+            </div>
+            <div class="tap-tile active" id="tile-funds-dsop-high" onclick="toggleTile('dsopHigh')">
+              <div class="tile-name">📈 DSOP &gt; ₹5 Lakh Annual</div>
+              <div class="tile-desc">Sec 10(11) tax-exempt limit</div>
+              <div class="tile-value-preview" style="color: #c084fc;">Tax Drag Alert</div>
+            </div>
+            <div class="tap-tile" id="tile-funds-ctg" onclick="toggleTile('transferCtg')">
+              <div class="tile-name">🧳 Permanent Transfer (CTG)</div>
+              <div class="tile-desc">Composite Transfer Grant</div>
+              <div class="tile-value-preview">80% of Basic Pay</div>
             </div>
           </div>
 
@@ -821,7 +1011,7 @@
 
       </aside>
 
-      <!-- RIGHT COLUMN: Output Data Z (The Moat) -->
+      <!-- RIGHT COLUMN: Output Data Z (The Actionable Moat) -->
       <section>
 
         <!-- Top Impact Counters -->
@@ -844,10 +1034,46 @@
 
           <div class="impact-card alert">
             <div class="impact-title">
-              <span>🚨 Critical Deadlines</span>
+              <span>🚨 Critical Alarms</span>
             </div>
             <div class="impact-val val-amber" id="counter-deadlines">2 Alarms</div>
-            <div class="impact-sub">Rejected DO2 & time-bar cutoff</div>
+            <div class="impact-sub">DO2 rejection & time-bar cutoff</div>
+          </div>
+        </div>
+
+        <!-- Interactive Pay Fixation Optimizer Card (Visible when Promotion is active) -->
+        <div class="fixation-card" id="fixation-optimizer-card" style="display: none;">
+          <div class="fixation-head">
+            <div class="fixation-title">
+              <span>⭐ Rule 10 & 11 Army Pay Rules 2017 : Pay Fixation Optimizer</span>
+            </div>
+            <span class="card-badge" style="background: rgba(99, 102, 241, 0.2); color: #c7d2fe;">30-DAY STATUTORY ELECTION</span>
+          </div>
+
+          <p style="font-size: 0.78rem; color: #cbd5e1; margin-bottom: 12px;">
+            Promoted from <strong id="fix-from-level">Level 10 (Capt)</strong> to <strong id="fix-to-level">Level 11 (Maj)</strong>. Rule 11 requires you to elect your fixation option in writing within 1 month:
+          </p>
+
+          <div class="fixation-compare-grid">
+            <!-- Option 1 Box -->
+            <div class="fix-option-box" id="box-opt1">
+              <div class="fix-opt-name">Option 1: Fix on Promotion Date</div>
+              <div class="fix-opt-val" id="val-opt1-pay">₹71,500/mo</div>
+              <div class="fix-opt-desc">Immediate placement at higher stage with 1 promotional increment. 36-month total: <strong id="val-opt1-36mo">₹26,64,000</strong>.</div>
+            </div>
+
+            <!-- Option 2 Box -->
+            <div class="fix-option-box winner" id="box-opt2">
+              <span class="winner-badge">★ RECOMMENDED (+₹62,800)</span>
+              <div class="fix-opt-name">Option 2: Fix from DNI (1 July)</div>
+              <div class="fix-opt-val" style="color: #34d399;" id="val-opt2-pay">₹73,600/mo</div>
+              <div class="fix-opt-desc">Earn annual increment first, then 2 increments into Level 11. 36-month total: <strong id="val-opt2-36mo">₹27,26,800</strong>.</div>
+            </div>
+          </div>
+
+          <div style="font-size: 0.72rem; color: #fbbf24; display: flex; align-items: center; gap: 6px;">
+            <span>⚠️</span>
+            <span><strong>Urgent:</strong> If option is not submitted to PCDA(O) within 30 days, Option 1 is applied by default, causing lifetime pay loss!</span>
           </div>
         </div>
 
@@ -864,16 +1090,16 @@
 
           <!-- Filter Tabs -->
           <div class="filter-tabs">
-            <button class="filter-btn active" onclick="filterFindings('all')">All Findings (<span id="count-all">5</span>)</button>
-            <button class="filter-btn" onclick="filterFindings('entitlement')">💰 Entitlements (<span id="count-ent">3</span>)</button>
-            <button class="filter-btn" onclick="filterFindings('hazard')">⚠️ Recovery Hazards (<span id="count-haz">1</span>)</button>
-            <button class="filter-btn" onclick="filterFindings('audit')">🚨 Deadlines & DO2 (<span id="count-aud">1</span>)</button>
-            <button class="filter-btn" onclick="filterFindings('shield')">🛡️ Tax Shield (<span id="count-shi">1</span>)</button>
+            <button class="filter-btn active" onclick="filterFindings('all')">All (<span id="count-all">0</span>)</button>
+            <button class="filter-btn" onclick="filterFindings('entitlement')">💰 Entitlements (<span id="count-ent">0</span>)</button>
+            <button class="filter-btn" onclick="filterFindings('hazard')">⚠️ Hazards (<span id="count-haz">0</span>)</button>
+            <button class="filter-btn" onclick="filterFindings('deadline')">🚨 Alarms & DO2 (<span id="count-dea">0</span>)</button>
+            <button class="filter-btn" onclick="filterFindings('shield')">🛡️ Tax Shield (<span id="count-shi">0</span>)</button>
           </div>
 
           <!-- Dynamic Findings Container -->
           <div class="findings-container" id="findings-list">
-            <!-- Dynamically populated by JS -->
+            <!-- Dynamically populated by JS engine -->
           </div>
 
         </div>
@@ -889,7 +1115,7 @@
     <div class="modal-window">
       <div class="modal-head">
         <div class="modal-title">
-          <span>📜 Official PCDA(O) Pune Representation</span>
+          <span>📜 Official PCDA(O) Pune Representation Letter</span>
         </div>
         <button class="close-btn" onclick="closeLetter()">&times;</button>
       </div>
@@ -897,9 +1123,10 @@
         <!-- Letter text populated by JS -->
       </div>
       <div class="modal-foot">
-        <span style="font-size: 0.78rem; color: var(--text-muted);">
-          100% Offline Generation • Cites MoD & 7th CPC Authorities
-        </span>
+        <label style="font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; cursor: pointer;">
+          <input type="checkbox" id="chk-mask-pii" onchange="renderLetter()" />
+          <span>Mask Sensitive PII (Safe for Sharing)</span>
+        </label>
         <div style="display: flex; gap: 10px;">
           <button class="btn-secondary" onclick="copyLetterText()">📋 Copy Text</button>
           <button class="btn-primary" onclick="window.print()">🖨️ Print / Save PDF</button>
@@ -910,381 +1137,569 @@
 
   <!-- Engine Script -->
   <script>
-    // State Store
-    const state = {
-      // Data X (Parsed from payslip)
-      rankLevel: "12A",
-      rankName: "Colonel",
-      bpay: 149000,
-      daRate: 0.60,
-      daAmount: 98700,
-      msp: 15500,
-      rhDrawn: 21125, // RH12 (HAFAA)
-      tptaDrawn: 3600,
-      tptadaDrawn: 2160,
-      dsopMonthly: 40000,
-      rejectedDo2: "381",
-      rejectedDo2Date: "2026-03-28",
-
-      // Data Y+1 (Situational Tiles)
-      posting: "peace-high", // "field", "peace-high", "peace-other"
-      familyRes: "spr",      // "mq", "spr", "hired"
-      children: 2,           // 0, 1, 2
-      availedLtc: true,      // boolean
-      highDsop: true,        // boolean
-      monthsInPeace: 2       // for hazard calculation
+    // 4 Distinct Military Personas
+    const personas = {
+      p1: {
+        id: "p1",
+        name: "R. S. Rathore",
+        rank: "Colonel",
+        serviceNum: "IC-67890X",
+        cdaAcc: "01/142/987654",
+        ledgerSection: "Section L-1 (Colonels & Brigadiers)",
+        level: "12A",
+        cell: 7,
+        bpay: 149000,
+        daRate: 0.60,
+        msp: 15500,
+        rhDrawn: 21125, // HAFAA
+        tptaDrawn: 3600,
+        tptadaDrawn: 2160,
+        dsopMonthly: 40000,
+        rejectedDo2: "381",
+        rejectedDo2Date: "2026-03-28",
+        activeTiles: {
+          postPeaceHigh: true,
+          houseSpr: true,
+          cea2: true,
+          availedLtc: true,
+          dsopHigh: true
+        }
+      },
+      p2: {
+        id: "p2",
+        name: "Vikram Batra",
+        rank: "Major (Recently Promoted)",
+        serviceNum: "IC-72345A",
+        cdaAcc: "01/118/456123",
+        ledgerSection: "Section R (Regimental Officers)",
+        level: "10",
+        cell: 8,
+        bpay: 69000,
+        daRate: 0.50,
+        msp: 15500,
+        rhDrawn: 0,
+        tptaDrawn: 7200,
+        tptadaDrawn: 3600,
+        dsopMonthly: 25000,
+        rejectedDo2: null,
+        activeTiles: {
+          postPeaceHigh: true,
+          promoActive: true,
+          dniJuly: true,
+          houseMq: true,
+          cea1: true
+        }
+      },
+      p3: {
+        id: "p3",
+        name: "Samar Anand",
+        rank: "Major",
+        serviceNum: "IC-69812M",
+        cdaAcc: "01/118/889900",
+        ledgerSection: "Section R (Regimental Officers)",
+        level: "11",
+        cell: 6,
+        bpay: 85300,
+        daRate: 0.60,
+        msp: 15500,
+        rhDrawn: 42500, // Siachen
+        tptaDrawn: 0,
+        tptadaDrawn: 0,
+        dsopMonthly: 30000,
+        rejectedDo2: null,
+        activeTiles: {
+          postSiachen: true,
+          houseSpr: true,
+          ceaHostel: true,
+          availedLtc: true
+        }
+      },
+      p4: {
+        id: "p4",
+        name: "Arvind Sharma",
+        rank: "Lt. Colonel",
+        serviceNum: "IC-61234K",
+        cdaAcc: "01/135/112233",
+        ledgerSection: "Section L-2 (Field Officers)",
+        level: "12A",
+        cell: 5,
+        bpay: 140400,
+        daRate: 0.60,
+        msp: 15500,
+        rhDrawn: 0,
+        tptaDrawn: 7200,
+        tptadaDrawn: 4320,
+        dsopMonthly: 50000, // Exceeds 5L cap
+        rejectedDo2: null,
+        activeTiles: {
+          postPeaceHigh: true,
+          retireNear: true,
+          dsopHigh: true,
+          houseMq: true
+        }
+      }
     };
 
-    // Situational Tile Handlers
-    function setPosting(val) {
-      state.posting = val;
-      document.getElementById('tile-post-field').classList.toggle('active', val === 'field');
-      document.getElementById('tile-post-peace-high').classList.toggle('active', val === 'peace-high');
+    // Active State
+    let currentPersona = personas.p1;
+    let activeCategory = 'posting';
+    let currentFindings = [];
+    let currentFilter = 'all';
+
+    function switchPersona(pKey) {
+      currentPersona = JSON.parse(JSON.stringify(personas[pKey]));
+      document.querySelectorAll('.persona-pill').forEach(el => el.classList.remove('active'));
+      document.getElementById('btn-' + pKey).classList.add('active');
+      syncUiWithPersona();
       recompute();
     }
 
-    function setFamilyRes(val) {
-      state.familyRes = val;
-      document.getElementById('tile-fam-mq').classList.toggle('active', val === 'mq');
-      document.getElementById('tile-fam-spr').classList.toggle('active', val === 'spr');
+    function syncUiWithPersona() {
+      // Update Data X display
+      document.getElementById('x-rank-name').textContent = currentPersona.name + " (" + currentPersona.rank + ")";
+      document.getElementById('x-level-stage').textContent = "Level " + currentPersona.level + ", Cell " + currentPersona.cell;
+      document.getElementById('x-bpay').textContent = "₹" + currentPersona.bpay.toLocaleString('en-IN');
+      document.getElementById('x-da-rate').textContent = (currentPersona.daRate * 100).toFixed(1) + "% (₹" + Math.round(currentPersona.bpay * currentPersona.daRate).toLocaleString('en-IN') + ")";
+      document.getElementById('x-msp').textContent = "₹" + currentPersona.msp.toLocaleString('en-IN');
+      document.getElementById('x-rh-drawn').textContent = currentPersona.rhDrawn > 0 ? ("₹" + currentPersona.rhDrawn.toLocaleString('en-IN')) : "Nil";
+      document.getElementById('x-tpta-drawn').textContent = currentPersona.tptaDrawn > 0 ? ("₹" + currentPersona.tptaDrawn.toLocaleString('en-IN') + " + DA") : "Nil";
+      document.getElementById('x-dsop-monthly').textContent = "₹" + currentPersona.dsopMonthly.toLocaleString('en-IN');
+
+      // DO2 Alert strip
+      const alertStrip = document.getElementById('x-alert-strip');
+      if (currentPersona.rejectedDo2) {
+        alertStrip.style.display = 'flex';
+        document.getElementById('x-alert-text').innerHTML = `<strong>PCDA Rejection Detected:</strong> DO2 No. ${currentPersona.rejectedDo2} was rejected. Fresh Part-II Order required!`;
+      } else {
+        alertStrip.style.display = 'none';
+      }
+
+      // Sync active tiles
+      const tileIds = [
+        'postField', 'postPeaceHigh', 'postSiachen', 'postSda',
+        'houseMq', 'houseSpr', 'houseNac', 'houseConveyance',
+        'cea0', 'cea1', 'cea2', 'ceaHostel',
+        'promoActive', 'retireNear', 'dniJuly',
+        'availedLtc', 'dsopHigh', 'transferCtg'
+      ];
+      tileIds.forEach(id => {
+        const el = getTileElement(id);
+        if (el) {
+          el.classList.toggle('active', !!currentPersona.activeTiles[id]);
+        }
+      });
+    }
+
+    function getTileElement(key) {
+      const map = {
+        postField: 'tile-post-field',
+        postPeaceHigh: 'tile-post-peace-high',
+        postSiachen: 'tile-post-siachen',
+        postSda: 'tile-post-sda',
+        houseMq: 'tile-house-mq',
+        houseSpr: 'tile-house-spr',
+        houseNac: 'tile-house-nac',
+        houseConveyance: 'tile-house-conveyance',
+        cea0: 'tile-cea-0',
+        cea1: 'tile-cea-1',
+        cea2: 'tile-cea-2',
+        ceaHostel: 'tile-cea-hostel',
+        promoActive: 'tile-promo-active',
+        retireNear: 'tile-career-retire',
+        dniJuly: 'tile-career-dni',
+        availedLtc: 'tile-funds-ltc',
+        dsopHigh: 'tile-funds-dsop-high',
+        transferCtg: 'tile-funds-ctg'
+      };
+      return document.getElementById(map[key]);
+    }
+
+    function toggleTile(key) {
+      currentPersona.activeTiles[key] = !currentPersona.activeTiles[key];
+      const el = getTileElement(key);
+      if (el) el.classList.toggle('active', !!currentPersona.activeTiles[key]);
       recompute();
     }
 
-    function setChildren(num) {
-      state.children = num;
-      document.getElementById('tile-kids-0').classList.toggle('active', num === 0);
-      document.getElementById('tile-kids-2').classList.toggle('active', num === 2);
-      recompute();
+    function selectMatrixCategory(cat) {
+      activeCategory = cat;
+      const cats = ['posting', 'housing', 'cea', 'career', 'funds'];
+      cats.forEach(c => {
+        document.getElementById('mtab-' + c).classList.toggle('active', c === cat);
+        document.getElementById('mcat-' + c).style.display = (c === cat) ? 'grid' : 'none';
+      });
     }
 
-    function setLeave(val) {
-      state.availedLtc = val;
-      document.getElementById('tile-leave-none').classList.toggle('active', !val);
-      document.getElementById('tile-leave-ltc').classList.toggle('active', val);
-      recompute();
-    }
-
-    function toggleDsop() {
-      state.highDsop = !state.highDsop;
-      document.getElementById('tile-dsop-high').classList.toggle('active', state.highDsop);
-      recompute();
-    }
-
-    // Core Reconciler Engine: Z = X ⊗ [Y * (Y+1)]
+    // Core Calculation & Audit Reconciler Engine
     function recompute() {
       const findings = [];
       let totalUnclaimed = 0;
       let totalHazard = 0;
       let activeDeadlines = 0;
+      const t = currentPersona.activeTiles;
+      const da = currentPersona.daRate;
+      const bpay = currentPersona.bpay;
 
-      // 1. TPTA Underpayment or Collision
-      if (state.posting === 'peace-high') {
-        // Entitled to Higher Rate City (Level 12A = Rs. 7,200 + 60% DA = Rs. 11,520)
-        const entitledTpta = 7200;
-        const entitledDa = 7200 * state.daRate;
-        const entitledTotal = entitledTpta + entitledDa;
-        const drawnTotal = state.tptaDrawn + state.tptadaDrawn; // 3600 + 2160 = 5760
-        const monthlyDelta = entitledTotal - drawnTotal; // 5760/mo
-        const annualDelta = monthlyDelta * 12; // 69,120
-
-        totalUnclaimed += annualDelta;
+      // 1. Mutual Exclusion Check: Field Area + Peace TPTA
+      if (t.postField && t.postPeaceHigh) {
+        const principal = (7200 * (1 + da)) * 6; // 6 months
+        const penal = principal * 0.18;
+        const total = principal + penal;
+        totalHazard += total;
         findings.push({
-          id: 'tpta-higher',
-          category: 'entitlement',
-          tag: 'UNDERPAYMENT DETECTED',
-          title: 'Transport Allowance (TPTA) Underpaid by ₹5,760/month',
-          delta: `+₹${annualDelta.toLocaleString('en-IN')}/yr`,
-          deltaType: 'plus',
-          body: `You are posted in a Higher Rate UA City (e.g. Pune/Delhi), where Level 12A officers are entitled to <strong>₹7,200 + 60% DA (₹11,520/mo)</strong>. Your April 2026 payslip credits only 'Other Places' rate of <strong>₹3,600 + DA (₹5,760/mo)</strong>. PCDA(O) is short-crediting you by ₹5,760 every single month!`,
-          authority: 'MoD Letter No. 1(25)/2017/D(Pay/Services) dt 18/08/2017 (Appendix A)',
-          actionName: 'Draft TPTA Arrear Claim',
-          actionHandler: 'openLetterForTpta'
+          category: 'hazard',
+          tag: 'CRITICAL RECOVERY HAZARD',
+          title: 'TPTA Drawn Concurrently with Field Deployment',
+          delta: `-₹${Math.round(total).toLocaleString('en-IN')}`,
+          deltaClass: 'delta-minus',
+          body: `Government conveyance is provided in field deployments. Drawing Pune Higher Rate TPTA while serving in HAFAA triggers an immediate audit objection with <strong>Principal (₹${Math.round(principal).toLocaleString('en-IN')}) + 18% Penal Interest (₹${Math.round(penal).toLocaleString('en-IN')})</strong>.`,
+          diff: { entitled: '₹0 (Inadmissible)', credited: '₹11,520/mo', due: `-₹${Math.round(total).toLocaleString('en-IN')}` },
+          authority: 'GoI MoD Order 12630/Tpt.A/Mov C/246/D(Mov)/17; Para 4'
         });
       }
 
-      // 2. Recovery Hazard: Field Allowance drawn while in Peace
-      if (state.posting === 'peace-high' || state.posting === 'peace-other') {
-        if (state.rhDrawn > 0) {
-          const overpayment = state.rhDrawn * state.monthsInPeace;
-          totalHazard += overpayment;
+      // 2. TPTA Underpayment in Higher Rate City
+      if (t.postPeaceHigh && !t.postField && currentPersona.tptaDrawn < 7200) {
+        const entitledMonthly = 7200 * (1 + da);
+        const creditedMonthly = currentPersona.tptaDrawn * (1 + da);
+        const diffAnnual = (entitledMonthly - creditedMonthly) * 12;
+        totalUnclaimed += diffAnnual;
+        findings.push({
+          category: 'entitlement',
+          tag: 'STATUTORY UNDERPAYMENT',
+          title: 'Transport Allowance (TPTA) Underpaid (Higher Rate City)',
+          delta: `+₹${Math.round(diffAnnual).toLocaleString('en-IN')}/yr`,
+          deltaClass: 'delta-plus',
+          body: `You are serving in a Higher Rate Urban Agglomeration (e.g. Pune/UA). Level 12A officers are entitled to <strong>₹7,200 + ${da*100}% DA = ₹${Math.round(entitledMonthly).toLocaleString('en-IN')}/mo</strong>. Your payslip credits 'Other Places' rate of only ₹${Math.round(creditedMonthly).toLocaleString('en-IN')}/mo.`,
+          diff: { entitled: `₹${Math.round(entitledMonthly).toLocaleString('en-IN')}/mo`, credited: `₹${Math.round(creditedMonthly).toLocaleString('en-IN')}/mo`, due: `+₹${Math.round(diffAnnual).toLocaleString('en-IN')}/yr` },
+          authority: 'MoD Letter No. 1(25)/2017/D(Pay/Services) Appendix A (20 UA Cities)'
+        });
+      }
+
+      // 3. Siachen Glacier Allowance (RH-MAX)
+      if (t.postSiachen) {
+        const siachenEscalated = 42500 * (da >= 0.5 ? 1.25 : 1.0);
+        const diff = siachenEscalated * 12;
+        totalUnclaimed += diff;
+        findings.push({
+          category: 'entitlement',
+          tag: 'OPERATIONAL ENTITLEMENT',
+          title: 'Siachen Glacier Allowance (RH-MAX) with 25% DA Escalation',
+          delta: `+₹${Math.round(diff).toLocaleString('en-IN')}/yr`,
+          deltaClass: 'delta-plus',
+          body: `Officers serving in Siachen Glacier are entitled to RH-MAX at <strong>₹42,500/mo</strong>. Because DA is currently ${da*100}% (>= 50%), the 25% escalation clause increases entitlement to <strong>₹${Math.round(siachenEscalated).toLocaleString('en-IN')}/month</strong>.`,
+          diff: { entitled: `₹${Math.round(siachenEscalated).toLocaleString('en-IN')}/mo`, credited: '₹0 (Pending Part II)', due: `+₹${Math.round(diff).toLocaleString('en-IN')}/yr` },
+          authority: 'MoD Letter No. 1(16)/2017/D(Pay/Services) dated 18.09.2017'
+        });
+      }
+
+      // 4. Family at SPR HRA (Y-City: 20%)
+      if (t.houseSpr) {
+        const hraRate = (da >= 0.5) ? 0.20 : 0.16;
+        const monthlyHra = bpay * hraRate;
+        const annualHra = monthlyHra * 12;
+        totalUnclaimed += annualHra;
+        activeDeadlines += 1;
+        findings.push({
+          category: 'entitlement',
+          tag: 'FAMILY ACCOMMODATION DUE',
+          title: `Selected Place of Residence (SPR) HRA (${hraRate*100}% Rate)`,
+          delta: `+₹${Math.round(annualHra).toLocaleString('en-IN')}/yr`,
+          deltaClass: 'delta-plus',
+          body: `Family residing at Selected Place of Residence (Jaipur / Y-City) qualifies for <strong>${hraRate*100}% HRA = ₹${Math.round(monthlyHra).toLocaleString('en-IN')}/mo</strong>. Statutory warning: SPR declaration must be submitted within 60 days of deployment!`,
+          diff: { entitled: `₹${Math.round(monthlyHra).toLocaleString('en-IN')}/mo`, credited: '₹0', due: `+₹${Math.round(annualHra).toLocaleString('en-IN')}/yr` },
+          authority: 'Handbook of Pay & Allowances 2023, Chapter 10, Para 5'
+        });
+      }
+
+      // 5. Children Education Allowance (Day School vs Hostel)
+      const ceaRate = (da >= 0.5) ? 33750 : 27000;
+      const hostelRate = (da >= 0.5) ? 101250 : 81000;
+
+      if (t.ceaHostel) {
+        const totalHostel = hostelRate * 2;
+        totalUnclaimed += totalHostel;
+        findings.push({
+          category: 'entitlement',
+          tag: 'EDUCATIONAL SUBSIDY',
+          title: 'Hostel Subsidy for 2 Children (Escalated Rate)',
+          delta: `+₹${Math.round(totalHostel).toLocaleString('en-IN')}/yr`,
+          deltaClass: 'delta-plus',
+          body: `Children residing in boarding schools/hostels qualify for Hostel Subsidy of <strong>₹${Math.round(hostelRate).toLocaleString('en-IN')}/child/yr</strong> (escalated by 25% due to DA >= 50%). Total for 2 children = <strong>₹${Math.round(totalHostel).toLocaleString('en-IN')}</strong>.`,
+          diff: { entitled: `₹${Math.round(totalHostel).toLocaleString('en-IN')}`, credited: '₹0', due: `+₹${Math.round(totalHostel).toLocaleString('en-IN')}` },
+          authority: 'DoPT OM No. A-27012/02/2017-Estt.(AL) dated 16/17 July 2018'
+        });
+      } else if (t.cea2) {
+        const totalCea = ceaRate * 2;
+        totalUnclaimed += totalCea;
+        findings.push({
+          category: 'entitlement',
+          tag: 'EDUCATIONAL ENTITLEMENT',
+          title: 'Children Education Allowance (CEA) for 2 Children',
+          delta: `+₹${Math.round(totalCea).toLocaleString('en-IN')}/yr`,
+          deltaClass: 'delta-plus',
+          body: `Annual reimbursement for 2 schooling children (Class Nursery to XII) at statutory escalated rate of <strong>₹${Math.round(ceaRate).toLocaleString('en-IN')}/child/year</strong>.`,
+          diff: { entitled: `₹${Math.round(totalCea).toLocaleString('en-IN')}`, credited: '₹0', due: `+₹${Math.round(totalCea).toLocaleString('en-IN')}` },
+          authority: 'DoPT OM No. A-27012/02/2017-Estt.(AL)'
+        });
+      }
+
+      // 6. LTC Encashment
+      if (t.availedLtc) {
+        const ltcEncashment = ((bpay + currentPersona.msp) * (1 + da) / 30) * 10;
+        totalUnclaimed += ltcEncashment;
+        findings.push({
+          category: 'entitlement',
+          tag: 'LEAVE CONCESSION',
+          title: '10 Days Leave Encashment on LTC',
+          delta: `+₹${Math.round(ltcEncashment).toLocaleString('en-IN')}`,
+          deltaClass: 'delta-plus',
+          body: `Under LTC regulations, officers are entitled to encash 10 days Annual Leave at full (Basic Pay + MSP + DA) / 30. Claim must be submitted within 30 days of return journey!`,
+          diff: { entitled: `₹${Math.round(ltcEncashment).toLocaleString('en-IN')}`, credited: '₹0', due: `+₹${Math.round(ltcEncashment).toLocaleString('en-IN')}` },
+          authority: 'Rule 38(A) Travel Regulations & 7th CPC Orders'
+        });
+      }
+
+      // 7. DSOP Section 10(11) Tax Drag & Pre-Retirement Stoppage
+      if (t.dsopHigh) {
+        const annualDsop = currentPersona.dsopMonthly * 12;
+        const excess = Math.max(0, annualDsop - 500000);
+        if (excess > 0) {
+          const taxableInterest = excess * 0.071; // 7.1% GPF rate
+          const taxDrag = taxableInterest * 0.312; // 30% + cess
           findings.push({
-            id: 'rh-hazard',
-            category: 'hazard',
-            tag: 'CRITICAL RECOVERY HAZARD',
-            title: 'Unauthorized RH12 (HAFAA) Credit in Peace Station',
-            delta: `-₹${overpayment.toLocaleString('en-IN')}`,
-            deltaType: 'minus',
-            body: `Your payslip is still crediting <strong>RH12 (₹21,125)</strong> despite your posting out to a peace station ${state.monthsInPeace} months ago. PCDA(O) Ledger Section has not adjusted the SOS Part-II Order. Overdrawn amount of ₹${overpayment.toLocaleString('en-IN')} will be recovered summarily with <strong>18% penal interest</strong> if unaddressed!`,
-            authority: 'Special Army Order (SAO) 3/S/98 & PCDA Circular 541',
-            actionName: 'Stop Allowance & Avoid Penal Interest',
-            actionHandler: 'openLetterForRhStop'
+            category: 'shield',
+            tag: 'TAX DRAG EXPOSURE',
+            title: 'DSOP Subscription Exceeds ₹5 Lakh Statutory Limit',
+            delta: `₹${Math.round(taxDrag).toLocaleString('en-IN')} Tax/yr`,
+            deltaClass: 'delta-alert',
+            body: `Your annual DSOP subscription of <strong>₹${annualDsop.toLocaleString('en-IN')}</strong> exceeds the ₹5,00,000 threshold under Section 10(11) of the Income Tax Act. Interest earned on the excess ₹${excess.toLocaleString('en-IN')} is taxable as Income from Other Sources!`,
+            diff: { entitled: '₹5,00,000 Cap', credited: `₹${annualDsop.toLocaleString('en-IN')}/yr`, due: `₹${Math.round(taxableInterest).toLocaleString('en-IN')} Taxable Interest` },
+            authority: 'Income Tax Act 1961 Section 10(11)/10(12); CBDT Circular'
           });
         }
       }
 
-      // 3. SPR HRA Entitlement (Family at Selected Place of Residence)
-      if (state.familyRes === 'spr') {
-        // Jaipur / Y-Class city = 20% of BPAY (since DA >= 50%)
-        const hraRate = 0.20;
-        const monthlyHra = state.bpay * hraRate; // 149000 * 0.20 = 29,800
-        const annualHra = monthlyHra * 12; // 3,57,600
-        totalUnclaimed += annualHra;
-
+      if (t.retireNear) {
+        activeDeadlines += 1;
         findings.push({
-          id: 'spr-hra',
+          category: 'deadline',
+          tag: 'STATUTORY STOPPAGE ALARM',
+          title: 'Mandatory DSOP Deduction Stoppage (3 Months Prior to Retirement)',
+          delta: 'ACTION REQUIRED',
+          deltaClass: 'delta-alert',
+          body: `Under Rule 14 of the DSOP Fund Rules, subscriptions must stop <strong>3 months before retirement</strong>. Continuing deductions delays your final PCDA(O) settlement by 6–12 months. Immediate Part II Order submission required!`,
+          diff: { entitled: 'Nil Subscription', credited: `₹${currentPersona.dsopMonthly.toLocaleString('en-IN')}/mo`, due: 'Publish Stop DO2' },
+          authority: 'Rule 14 DSOP Fund Rules (1933 / revised 2017)'
+        });
+      }
+
+      // 8. Part II Rejection Alert
+      if (currentPersona.rejectedDo2) {
+        activeDeadlines += 1;
+        findings.push({
+          category: 'deadline',
+          tag: 'PCDA PUNE REJECTION',
+          title: `Rejected DO2 No. ${currentPersona.rejectedDo2} (Occurrence Omitted)`,
+          delta: 'RE-SUBMIT DO2',
+          deltaClass: 'delta-alert',
+          body: `PCDA(O) rejected Part II Order No. ${currentPersona.rejectedDo2} dated ${currentPersona.rejectedDo2Date}. Your allowance credit is blocked until Unit Adjutant publishes a corrective DO2 using Occurrence Code PROMM/INCR.`,
+          diff: { entitled: 'Allowance Credit', credited: 'Blocked (Code 381)', due: 'Corrective Part II Order' },
+          authority: 'PCDA(O) Pune Standing Orders, Section R-Section Audit Desk'
+        });
+      }
+
+      // Pay Fixation Optimizer Display
+      const fixCard = document.getElementById('fixation-optimizer-card');
+      if (t.promoActive) {
+        fixCard.style.display = 'block';
+        document.getElementById('fix-from-level').textContent = "Level 10 (Capt, Stage 8)";
+        document.getElementById('fix-to-level').textContent = "Level 11 (Maj)";
+        document.getElementById('val-opt1-pay').textContent = "₹71,500/mo";
+        document.getElementById('val-opt2-pay').textContent = "₹73,600/mo";
+        document.getElementById('val-opt1-36mo').textContent = "₹26,64,000";
+        document.getElementById('val-opt2-36mo').textContent = "₹27,26,800";
+        totalUnclaimed += 62800;
+        findings.push({
           category: 'entitlement',
-          tag: 'UNCLAIMED STATUTORY DUE',
-          title: 'Family at SPR: Unclaimed HRA of ₹29,800/month',
-          delta: `+₹${annualHra.toLocaleString('en-IN')}/yr`,
-          deltaType: 'plus',
-          body: `With your family residing at Selected Place of Residence (SPR - Class Y City), you are entitled to draw HRA on your Basic Pay (20% of ₹1,49,000 = <strong>₹29,800/mo</strong>) without needing an NAC. Your April payslip shows <strong>HRA = ₹0</strong>. Total unclaimed benefit is ₹3,57,600 annually!`,
-          authority: 'MoD Letter No. 10(3)/2017/D(Q&C) dt 07/03/2019 & Rule 1206 P&A Regs',
-          actionName: 'Draft SPR HRA Claim',
-          actionHandler: 'openLetterForSprHra'
+          tag: 'PROMOTION OPTIMIZER',
+          title: 'Pay Fixation Rule 11: Option 2 Yields +₹62,800 Advantage',
+          delta: '+₹62,800',
+          deltaClass: 'delta-plus',
+          body: `Because your promotion occurs within 4 months of your Date of Next Increment (1 July), electing <strong>Option 2 (Fixation from DNI)</strong> yields <strong>₹62,800 more</strong> over 36 months than Option 1. Exercise option within 30 days!`,
+          diff: { entitled: '₹27,26,800 (Option 2)', credited: '₹26,64,000 (Option 1 Default)', due: '+₹62,800 Net Delta' },
+          authority: 'Rule 10 & 11 Army Officers Pay Rules 2017; SRO 12(E)'
         });
+      } else {
+        fixCard.style.display = 'none';
       }
 
-      // 4. Children Education Allowance (CEA)
-      if (state.children > 0) {
-        // CEA rate post 50% DA = 33,750 per child
-        const ceaPerChild = 33750;
-        const totalCea = ceaPerChild * state.children;
-        totalUnclaimed += totalCea;
+      // Update KPIs
+      document.getElementById('counter-unclaimed').textContent = "₹" + Math.round(totalUnclaimed).toLocaleString('en-IN');
+      document.getElementById('counter-hazard').textContent = totalHazard > 0 ? ("₹" + Math.round(totalHazard).toLocaleString('en-IN')) : "₹0";
+      document.getElementById('counter-deadlines').textContent = activeDeadlines + " Alarms";
 
-        findings.push({
-          id: 'cea-claim',
-          category: 'entitlement',
-          tag: 'ANNUAL REIMBURSEMENT',
-          title: `Children Education Allowance: ₹${totalCea.toLocaleString('en-IN')} Pending`,
-          delta: `+₹${totalCea.toLocaleString('en-IN')}`,
-          deltaType: 'plus',
-          body: `Post-50% DA escalation, CEA rate is <strong>₹33,750 per child/year</strong> (elevated from ₹27,000). For your ${state.children} school-going child(ren), you are entitled to claim <strong>₹${totalCea.toLocaleString('en-IN')}</strong>. No CEA credit appears in April 2026. Occurrence code to publish: <code>RIMBCEA</code>.`,
-          authority: 'DoPT OM No. A-27012/01/2023-Pers.Policy(Allowance) dt 25/04/2024',
-          actionName: 'Generate CEA Claim Form',
-          actionHandler: 'openLetterForCea'
-        });
-      }
-
-      // 5. LTC Leave Encashment (10 Days)
-      if (state.availedLtc) {
-        // Formula: (BPAY + DA) / 30 * 10
-        const bpayWithDa = state.bpay + (state.bpay * state.daRate); // 149000 + 89400 = 238400
-        const encashment = Math.round((bpayWithDa / 30) * 10); // 79,467
-        totalUnclaimed += encashment;
-
-        findings.push({
-          id: 'ltc-encash',
-          category: 'entitlement',
-          tag: 'ONE-TIME CASH BENEFIT',
-          title: 'LTC 10-Day Leave Encashment Ready to Claim',
-          delta: `+₹${encashment.toLocaleString('en-IN')}`,
-          deltaType: 'plus',
-          body: `Since you availed an LTC journey, you are entitled to encash <strong>10 days of Annual Leave</strong>. Calculation: (Basic Pay ₹1,49,000 + DA 60%) ÷ 30 × 10 = <strong>₹${encashment.toLocaleString('en-IN')}</strong>. Note: LTC travel claim must be submitted within 30 days to avoid time-bar!`,
-          authority: 'Rule 38 Central Civil Services (Leave) Rules & AO 42/2012',
-          actionName: 'Generate Leave Encashment Bill',
-          actionHandler: 'openLetterForLeave'
-        });
-      }
-
-      // 6. Rejected DO2 Alert (Direct from Data X)
-      activeDeadlines += 1;
-      findings.push({
-        id: 'rejected-do2',
-        category: 'audit',
-        tag: 'IMMEDIATE ACTION REQUIRED',
-        title: `PCDA Rejection: DO2 No. ${state.rejectedDo2} Rejected`,
-        delta: 'ACTION DUE',
-        deltaType: 'neutral',
-        body: `PCDA(O) has rejected Part-II Order No. <strong>${state.rejectedDo2}</strong> dated ${state.rejectedDo2Date}. Any casualty notified therein has been frozen in your IRLA. You must intimate your Unit Adjutant to issue a revised Part-II Order with the correct Occurrence Code and casualty dates before the next monthly accounts freeze.`,
-        authority: 'PCDA(O) Pune Standing Operating Procedure (SOP) Chap 4',
-        actionName: 'Draft DO2 Rectification Note',
-        actionHandler: 'openLetterForDo2'
-      });
-
-      // 7. DSOP Tax Shield
-      if (state.highDsop) {
-        const annualDsop = state.dsopMonthly * 12; // 4,80,000
-        const headroom = 500000 - annualDsop; // 20,000
-
-        findings.push({
-          id: 'dsop-shield',
-          category: 'shield',
-          tag: 'STATUTORY TAX SHIELD',
-          title: 'DSOP Annual Cap Advisory: ₹20,000 Headroom Left',
-          delta: `₹${annualDsop.toLocaleString('en-IN')} / ₹5L`,
-          deltaType: 'neutral',
-          body: `Your monthly DSOP subscription of <strong>₹40,000</strong> projects an annual contribution of <strong>₹4,80,000</strong>. Under Section 10(11) of the Income Tax Act, interest on annual contributions exceeding <strong>₹5,00,000</strong> is fully taxable at your highest slab (30%+). Avoid depositing arrears or voluntary sums exceeding ₹20,000 this financial year.`,
-          authority: 'CBDT Notification No. 95/2021 / Section 10(11) IT Act',
-          actionName: 'Simulate DSOP Pacing',
-          actionHandler: 'openLetterForDsop'
-        });
-      }
-
-      // Render Counters
-      document.getElementById('counter-unclaimed').textContent = `₹${totalUnclaimed.toLocaleString('en-IN')}`;
-      document.getElementById('counter-hazard').textContent = `₹${totalHazard.toLocaleString('en-IN')}`;
-      document.getElementById('counter-deadlines').textContent = `${activeDeadlines + 1} Alarms`;
-
-      // Render Counts
-      document.getElementById('count-all').textContent = findings.length;
-      document.getElementById('count-ent').textContent = findings.filter(f => f.category === 'entitlement').length;
-      document.getElementById('count-haz').textContent = findings.filter(f => f.category === 'hazard').length;
-      document.getElementById('count-aud').textContent = findings.filter(f => f.category === 'audit').length;
-      document.getElementById('count-shi').textContent = findings.filter(f => f.category === 'shield').length;
-
-      // Render Findings Cards
-      renderFindings(findings);
+      currentFindings = findings;
+      renderFindingsList();
     }
-
-    let currentFilter = 'all';
-    let currentFindings = [];
 
     function filterFindings(cat) {
       currentFilter = cat;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
-      recompute();
+      renderFindingsList();
     }
 
-    function renderFindings(findings) {
-      currentFindings = findings;
+    function renderFindingsList() {
       const listEl = document.getElementById('findings-list');
       listEl.innerHTML = '';
 
-      const filtered = currentFilter === 'all' ? findings : findings.filter(f => f.category === currentFilter);
+      const counts = { all: currentFindings.length, entitlement: 0, hazard: 0, deadline: 0, shield: 0 };
+      currentFindings.forEach(f => {
+        if (counts[f.category] !== undefined) counts[f.category]++;
+      });
+
+      document.getElementById('count-all').textContent = counts.all;
+      document.getElementById('count-ent').textContent = counts.entitlement;
+      document.getElementById('count-haz').textContent = counts.hazard;
+      document.getElementById('count-dea').textContent = counts.deadline;
+      document.getElementById('count-shi').textContent = counts.shield;
+
+      const filtered = currentFilter === 'all' ? currentFindings : currentFindings.filter(f => f.category === currentFilter);
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">No discrepancies in this category. All statutory rules verified clean.</div>';
+        return;
+      }
 
       filtered.forEach(item => {
-        let tagClass = 'tag-entitlement';
-        if (item.category === 'hazard') tagClass = 'tag-hazard';
-        if (item.category === 'audit') tagClass = 'tag-audit';
-        if (item.category === 'shield') tagClass = 'tag-shield';
-
-        let badgeClass = 'badge-plus';
-        if (item.deltaType === 'minus') badgeClass = 'badge-minus';
-        if (item.deltaType === 'neutral') badgeClass = 'badge-neutral';
-
         const card = document.createElement('div');
         card.className = 'finding-card';
         card.innerHTML = `
           <div class="finding-top">
-            <div class="finding-headline">
-              <span class="finding-tag ${tagClass}">${item.tag}</span>
-              <h3 class="finding-title">${item.title}</h3>
+            <div>
+              <span class="finding-tag tag-${item.category}">${item.tag}</span>
+              <div class="finding-title">${item.title}</div>
             </div>
-            <div class="delta-badge ${badgeClass}">${item.delta}</div>
+            <div class="finding-delta ${item.deltaClass}">${item.delta}</div>
           </div>
-          <p class="finding-body">${item.body}</p>
-          <div class="finding-meta-row">
-            <div class="meta-rule">
-              <strong>Authority:</strong> ${item.authority}
+          <div class="finding-body">${item.body}</div>
+          <div class="diff-table">
+            <div>
+              <div class="diff-col-title">ENTITLED</div>
+              <div class="diff-col-val" style="color: #34d399;">${item.diff.entitled}</div>
             </div>
-            <button class="btn-action-sm" onclick="${item.actionHandler}()">
-              <span>📝 ${item.actionName}</span>
-            </button>
+            <div>
+              <div class="diff-col-title">CREDITED</div>
+              <div class="diff-col-val" style="color: #94a3b8;">${item.diff.credited}</div>
+            </div>
+            <div>
+              <div class="diff-col-title">NET STATUTORY GAP</div>
+              <div class="diff-col-val" style="color: #60a5fa;">${item.diff.due}</div>
+            </div>
+          </div>
+          <div class="finding-foot">
+            <span class="finding-authority">Authority: ${item.authority}</span>
+            <button class="btn-secondary" style="padding: 4px 10px; font-size: 0.7rem;" onclick="openMasterLetter()">Add to Representation</button>
           </div>
         `;
         listEl.appendChild(card);
       });
     }
 
-    // Letter Generation Functions
+    // Modal Representation Generator
     function openMasterLetter() {
-      const letter = `
-CONFIDENTIAL & OFFICIAL
-To:
-The Principal Controller of Defence Accounts (Officers),
-Golibar Maidan, Pune - 411001
-
-FROM:
-IC-XXXXXXP Colonel [Officer Name]
-Unit: 14 RAJPUT / Station HQ Pune
-CDA Account No: 12/345/678901A (Ledger Section L-2)
-Date: 15 September 2026
-
-SUBJECT: COMPREHENSIVE FINANCIAL RECONCILIATION & ARREARS CLAIM — STATEMENT OF ACCOUNT 04/2026
-
-Sir / Madam,
-
-1. On careful audit of my Statement of Account for the month of April 2026 (04/2026), the following statutory discrepancies, underpayments, and ledger adjustments have been identified as per governing 7th CPC regulations:
-
-========================================================================================
-SL  ENTITLEMENT DISCREPANCY          DRAWN (APR 26)    ENTITLED       MONTHLY ARREARS DUE
-========================================================================================
-1.  Transport Allowance (TPTA UA)    Rs. 5,760         Rs. 11,520     +Rs. 5,760 / month
-    [MoD Letter dt 18/08/2017 - Pune Higher Rate City Level 12A]
-
-2.  SPR House Rent Allowance (HRA)   Rs. 0             Rs. 29,800     +Rs. 29,800 / month
-    [MoD Letter dt 07/03/2019 - 20% of BPAY Rs. 1,49,000 for Jaipur Class Y]
-
-3.  Children Education Allowance     Rs. 0             Rs. 67,500     +Rs. 67,500 (Annual)
-    [DoPT OM dt 25/04/2024 - Rs. 33,750 x 2 School Children, Code: RIMBCEA]
-
-4.  LTC 10-Day Leave Encashment      Rs. 0             Rs. 79,467     +Rs. 79,467 (Lump sum)
-    [(BPAY Rs. 1,49,000 + DA 60%) / 30 x 10 days - AO 42/2012]
-----------------------------------------------------------------------------------------
-NET ARREARS DUE FOR IMMEDIATE CREDIT:                                +Rs. 1,82,527 + monthly
-========================================================================================
-
-2. VOLUNTARY SURRENDER / STOPPAGE OF RH12:
-In addition to the above, please note that having moved out of Field on permanent posting, credit of RH12 (Rs. 21,125 p.m.) may kindly be stopped effective date of SOS, to prevent inadvertent debit accumulation.
-
-3. REJECTED PART-II ORDER RECTIFICATION:
-With reference to DO2 No. 381 dated 2026-03-28 rejected in April 2026 account, a revised DO2 has been re-submitted by the Unit Adjutant under Occurrence Code [X]. Kindly link and adjust.
-
-It is requested that the above entitlements may kindly be verified from the attached documentary evidence and arrears credited to my IRLA at the earliest.
-
-Yours faithfully,
-
-(IC-XXXXXXP Colonel [Officer Name])
-Enclosures:
-1. Posting Order & Station Arrival Report (Pune UA)
-2. SPR Declaration Certificate & Family Residence Proof
-3. School Bonafide Certificates (2 Children)
-4. LTC Journey Tickets & Boarding Passes
-      `.trim();
-
-      document.getElementById('letter-text').textContent = letter;
+      renderLetter();
       document.getElementById('letter-modal').classList.add('open');
-    }
-
-    function openLetterForTpta() {
-      openMasterLetter();
-    }
-    function openLetterForRhStop() {
-      openMasterLetter();
-    }
-    function openLetterForSprHra() {
-      openMasterLetter();
-    }
-    function openLetterForCea() {
-      openMasterLetter();
-    }
-    function openLetterForLeave() {
-      openMasterLetter();
-    }
-    function openLetterForDo2() {
-      openMasterLetter();
-    }
-    function openLetterForDsop() {
-      openMasterLetter();
     }
 
     function closeLetter() {
       document.getElementById('letter-modal').classList.remove('open');
     }
 
-    function copyLetterText() {
-      const txt = document.getElementById('letter-text').textContent;
-      navigator.clipboard.writeText(txt).then(() => {
-        alert('Official representation letter copied to clipboard!');
+    function renderLetter() {
+      const isMasked = document.getElementById('chk-mask-pii').checked;
+      const p = currentPersona;
+      const name = isMasked ? p.name.charAt(0) + ". *******" : p.name;
+      const sNum = isMasked ? p.serviceNum.slice(0, 4) + "***" : p.serviceNum;
+      const cda = isMasked ? p.cdaAcc.slice(0, 5) + "******" : p.cdaAcc;
+
+      const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+
+      let lines = [];
+      lines.push("CONFIDENTIAL & OFFICIAL MILITARY CORRESPONDENCE");
+      lines.push("--------------------------------------------------------------------------------");
+      lines.push("To,");
+      lines.push("The Principal Controller of Defence Accounts (Officers),");
+      lines.push("Golibar Maidan, Pune - 411 001 (Maharashtra)");
+      lines.push("");
+      lines.push(`ATTENTION: ${p.ledgerSection}`);
+      lines.push("SUBJECT  : FORMAL REPRESENTATION REGARDING DISCREPANCY IN RUNNING LEDGER ACCOUNT (IRLA)");
+      lines.push(`CDA A/C  : ${cda}`);
+      lines.push(`OFFICER  : ${p.rank} ${name} (${sNum})`);
+      lines.push(`DATE     : ${dateStr}`);
+      lines.push("--------------------------------------------------------------------------------");
+      lines.push("");
+      lines.push("Sir / Madam,");
+      lines.push("");
+      lines.push("1. I have the honour to draw your kind attention to my Individual Running Ledger Account (IRLA)");
+      lines.push(`   under CDA Account No. ${cda}. Upon audit synthesis against the canonical orders of the`);
+      lines.push("   7th Central Pay Commission and Ministry of Defence regulations, the following statutory dues");
+      lines.push("   remain omitted / under-credited to my account:");
+      lines.push("");
+      lines.push(sprintf("%-4s | %-36s | %-12s | %-12s | %-12s", "SR.", "DISCREPANCY LINE ITEM", "ENTITLED", "CREDITED", "NET DUE"));
+      lines.push("-".repeat(84));
+
+      let idx = 1;
+      let totalDue = 0;
+      currentFindings.filter(f => f.category === 'entitlement').forEach(f => {
+        lines.push(sprintf("%-4d | %-36s | %-12s | %-12s | %-12s", idx++, f.title.slice(0, 36), f.diff.entitled, f.diff.credited, f.diff.due));
+      });
+
+      lines.push("-".repeat(84));
+      lines.push("");
+      lines.push("2. STATUTORY AUTHORITY & REFERENCES:");
+      currentFindings.filter(f => f.category === 'entitlement').forEach(f => {
+        lines.push(`   - ${f.title}: ${f.authority}`);
+      });
+
+      lines.push("");
+      lines.push("3. PRAYER:");
+      lines.push("   In light of the documentary references cited above, it is respectfully requested that");
+      lines.push("   the statutory dues be credited to my IRLA at the earliest convenience, and an amended");
+      lines.push("   Statement of Account (SOA) be issued.");
+      lines.push("");
+      lines.push("Thanking you,");
+      lines.push("");
+      lines.push("Yours faithfully,");
+      lines.push("");
+      lines.push(`(${name})`);
+      lines.push(`${p.rank}, Indian Army`);
+      lines.push("--------------------------------------------------------------------------------");
+
+      document.getElementById('letter-text').textContent = lines.join('\n');
+    }
+
+    function sprintf(fmt, ...args) {
+      let i = 0;
+      return fmt.replace(/%(-)?(\d+)?([sdf])/g, (match, left, width, type) => {
+        let val = String(args[i++]);
+        if (!width) return val;
+        let pad = Number(width) - val.length;
+        if (pad <= 0) return val;
+        return left ? val + " ".repeat(pad) : " ".repeat(pad) + val;
       });
     }
 
-    // Initialize on load
-    window.addEventListener('DOMContentLoaded', () => {
-      recompute();
-    });
-  </script>
+    function copyLetterText() {
+      const txt = document.getElementById('letter-text').textContent;
+      navigator.clipboard.writeText(txt).then(() => {
+        alert("PCDA(O) Representation letter copied to clipboard!");
+      });
+    }
 
+    // Initial Startup
+    switchPersona('p1');
+  </script>
 </body>
 </html>
