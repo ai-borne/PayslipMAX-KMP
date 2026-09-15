@@ -34,10 +34,8 @@ final class GemmaOnDemandResourceBridge {
         let request = NSBundleResourceRequest(tags: [Self.tag])
         activeRequest = request
 
-        progressObservation = request.progress.observe(\.completedUnitCount) { progress, _ in
-            // totalUnitCount can be 0/-1 briefly before the download size is known — skip until real.
-            guard progress.totalUnitCount > 0 else { return }
-            self.reportProgress(bytesDownloaded: progress.completedUnitCount, totalBytes: progress.totalUnitCount)
+        progressObservation = Self.observeDownloadProgress(request.progress) { [weak self] bytesDownloaded, totalBytes in
+            self?.reportProgress(bytesDownloaded: bytesDownloaded, totalBytes: totalBytes)
         }
 
         request.beginAccessingResources { [weak self] error in
@@ -50,6 +48,27 @@ final class GemmaOnDemandResourceBridge {
                     self?.reportCompletion(success: true)
                 }
             }
+        }
+    }
+
+    /// Extracted for testability (see `GemmaOnDemandResourceBridgeProgressTests`) — this is the
+    /// exact logic that regressed in commit `b518cb4` (shipped in iOS v1.2.1). The ~584MB GemmaModel
+    /// ODR fetch starts with `request.progress` indeterminate (totalUnitCount == -1) because the
+    /// resource size isn't known yet, and only becomes determinate once ODR reports it. The broken
+    /// code checked `totalUnitCount > 0` once at observation setup time and skipped installing any
+    /// observer at all when it was still indeterminate at that instant — permanently missing the
+    /// later transition to determinate, leaving the UI stuck at "not started" for the whole
+    /// download. Always observe fractionCompleted unconditionally instead: Foundation only starts
+    /// reporting meaningful values for it once the progress is determinate, but the observation
+    /// stays installed across that transition, matching the last known-working (v1.2) behavior.
+    static func observeDownloadProgress(
+        _ progress: Progress,
+        onProgress: @escaping (Int64, Int64) -> Void
+    ) -> NSKeyValueObservation {
+        progress.observe(\.fractionCompleted) { progress, _ in
+            let total: Int64 = 1000
+            let done = Int64(progress.fractionCompleted * Double(total))
+            onProgress(done, total)
         }
     }
 
