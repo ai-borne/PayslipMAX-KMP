@@ -5,79 +5,17 @@
 Section 4/5 (Step 4 / "Phase 2") with a platform-decoupled sequencing decision, and reflects the
 current state after [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md).
 
-## 0. Current state (2026-09-13)
+## 0. Current state (2026-09-15)
 
-- **iOS**: `v1.1.1` cleared App Review (`READY_FOR_SALE`) on 2026-09-12. Per
-  [08_ios_monetization_phaseplan.md](08_ios_monetization_phaseplan.md) Phase 1 (committed `8059f04`
-  on `release/ios-1.0.0-v6`), `LaunchFlags.FREE_LAUNCH_MODE` is now split into
-  `FREE_LAUNCH_MODE_IOS`/`FREE_LAUNCH_MODE_ANDROID` per Section 2 below — both still `true`, no
-  observable behavior change yet. Phase 2 (App Store Connect subscription product) is complete as
-  of 2026-09-12: `payslipmax_yearly_premium` (₹199/yr, 1 Year Upfront) exists in ASC with
-  metadata/screenshot/review notes filled in, status "Ready for Review" — it will go out bundled
-  with the `v1.2` submission in Phase 8. Phase 3 (RevenueCat dashboard wiring) is complete as of
-  2026-09-12: the Apple App Store app entry now exists in RevenueCat, `payslipmax_yearly_premium` is
-  created as a product attached to the `PayslipMax Premium` entitlement and wired into the `default`
-  offering's `$rc_annual` package, and the real production RevenueCat SDK key
-  (`appl_NgEonbkizWMfsjfyaFCuTgBLWGx`) has been retrieved and is held, uncommitted, for Phase 4. Real
-  install count: 1 in the last 60 days (via the fastlane/App Store Connect API tooling added in
-  Phase 0), confirming the free-to-paid conversion exposure is still minimal. Phase 4 (real
-  RevenueCat API key shipped in code) is complete as of 2026-09-12:
-  `RevenueCatApiKey.ios.kt` now returns the real production key, `FREE_LAUNCH_MODE_IOS` remains
-  `true` (paywall still dark for real users), and a regression test guards against ever re-shipping
-  the sandbox `test_...` key. Phase 5 (paywall wiring verification) is complete as of 2026-09-12:
-  the existing paywall (`PremiumFeaturesScreen.kt`) confirmed sourcing real product/price data from
-  RevenueCat's SDK, not a mock. Found and fixed a real gap: `RevenueCatBillingManager`'s
-  entitlement-ID constant was `"premium"`, but the dashboard's actual entitlement identifier is
-  `"PayslipMax Premium"` (with the space) — a real purchase would never have resolved to `Active`
-  under the old constant. Fixed surgically; `FREE_LAUNCH_MODE_IOS` still `true`. Phase 6
-  (grandfather clause) required no work — it is a recorded decision (**no** grandfathering), not an
-  implementation task. **Phase 7 (sandbox purchase verification) is COMPLETE (2026-09-12)**: a
-  TestFlight-only paywall override shipped (`4a74192`, `isTestFlightBuild()` + widened `DevOverride`
-  eligibility, `FREE_LAUNCH_MODE_IOS` untouched at `true`). The first sandbox purchase failed with
-  "Package yearly unavailable" — the code looked up the RevenueCat package by the literal id
-  `"yearly"`, but the dashboard package's identifier is `$rc_annual` (`"yearly"` is the Test Store
-  *product* inside it), fixed in `e5ae1f2` via the SDK's typed `Offering.annual` accessor. On
-  TestFlight `1.1.2 (3)` the whole pipe then verified end to end on-device: live StoreKit price,
-  purchase completed (Apple shows the subscription active, renewing 13 Sep 2026), entitlement
-  `PayslipMax Premium` confirmed **Active** on the RevenueCat dashboard server-side, restore working
-  on a fresh install, and both offline failure paths degrading gracefully with no crash or hang.
-  Two sub-criteria are explicitly **not** verified: cancel-mid-purchase (blocked once subscribed),
-  and gate-level unlocking, which is unverifiable by construction while `FREE_LAUNCH_MODE_IOS` is
-  `true` — `hasAccess` short-circuits in both override positions and the one `isPremiumEnabled`-bound
-  card is suppressed by the same flag, so **no in-app UI exposes entitlement state until Phase 8
-  flips it**. Tech debt found and fixed en route: `Info.plist` hardcoded `CFBundleVersion` to the
-  literal `2`, making `CURRENT_PROJECT_VERSION` dead (`8d2a18f`), and `resolveYearlyPackage()`
-  collapsed three distinct failure modes into one opaque error while the hardcoded price fallback
-  made a dead product look like a healthy paywall (`e693581`, diagnostics only). Two open gaps carry
-  into Phase 8: RevenueCat's separate *App Store Connect API* key slot is empty ("Store Status:
-  Could not check") — now shown empirically **not** to block on-device purchasing — and the ASC
-  subscription **group** still has no localization, which is required before submission. Full detail
-  in doc 08's Phase 7 Phase Summary. **Phase 8 (flip the real flag + submit) is verified but not yet
-  submitted, as of 2026-09-13.** `FREE_LAUNCH_MODE_IOS` is now `false` (`bc25900`) — iOS monetization
-  is live in code from `v1.2`, Android untouched at `true`. Both Phase 7 gaps are closed on-device
-  via TestFlight `1.2 (5)`/`1.2 (6)`: gate-level unlocking verified in **both** directions on two
-  independent Apple IDs (the Settings premium card, suppressed until this flag flipped, now renders
-  in both states), and cancel-mid-purchase degrades gracefully with no hang. Purchase unlocks the
-  gated features with no app restart, Restore shows its confirmation for ~1.5s before the sheet
-  closes, and the paywall reads ₹999 with Apple charging ₹999. One account rendered `$9.99` in-app
-  while Apple billed ₹999; this was chased to ground and is a **known TestFlight sandbox limitation**
-  (StoreKit product metadata defaulting to USD in beta builds), not a defect — ruled out in our code,
-  and ruled out on the RevenueCat dashboard, which recorded that transaction as India/₹999. It
-  resolves on production release. En route it exposed one real latent bug, fixed in `caf6fe4`: the
-  store price was read once in the ViewModel's `init` and never again, so an early or failed read was
-  frozen for the session; it is now re-read whenever the paywall is presented. The ASC subscription
-  **group localization** that Phase 7 flagged as a submission blocker now exists (`en-US`, "PayslipMax
-  Premium"), and the subscription is `READY_TO_SUBMIT` at ₹999/yr (raised from ₹199 before submission).
-  Two stale ₹199 artifacts on the subscription itself (its App Review screenshot and its Review Notes
-  text) were found and corrected before submission — both independent of the app-side price display
-  bug. **Phase 8 is COMPLETE as of 2026-09-13: `v1.2` (build `1.2 (6)`) is submitted to App Review**,
-  confirmed via both the ASC UI and the `review_status`/`subscription_status` fastlane lanes —
-  `v1.2` and `payslipmax_yearly_premium` both `WAITING_FOR_REVIEW`. Still open (non-blocking):
-  RevenueCat's App Store Connect API key slot is empty (harmless to purchasing, proven across two
-  accounts). Full detail in doc 08's Phase 8 Phase Summary.
-- **Android**: Closed testing, `9 (1.0.0)` live on Internal testing (not yet promoted), `8 (1.0.0)`
+- **iOS**: `v1.2` (build `1.2 (6)`), auto-renewable subscription `payslipmax_yearly_premium`
+  (₹999/yr), and subscription group `PayslipMax Yearly Premium` are **Approved** and **Released**
+  on the iOS App Store (`READY_FOR_SALE`). Monetization is live in production: `FREE_LAUNCH_MODE_IOS`
+  is `false` (`bc25900`), paywall UI is active, end-to-end purchasing via RevenueCat is operational,
+  and terms/EULA metadata compliant. Full execution history in
+  [08_ios_monetization_phaseplan.md](08_ios_monetization_phaseplan.md).
+- **Android**: Closed testing, `11 (1.0.0)` live on Internal testing (not yet promoted), `8 (1.0.0)`
   is the live Closed testing release, mandatory 14-day window running against v8. Still free by
-  policy requirement, not choice.
+  policy requirement, pending production launch and BillDesk merchant KYC.
 
 ## 1. Core decision: decouple the two platforms' monetization timing
 

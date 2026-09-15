@@ -568,6 +568,10 @@ through the ASC API; verified live both via `fastlane ios app_description` and d
 UI. Resubmitted via "Update Review" on the App Version item — all 3 items (`iOS App 1.2`,
 `PayslipMax Premium`, `PayslipMax Yearly Premium`) show **Waiting for Review** as of 2026-09-14.
 
+**`v1.2 (6)` APPROVED (2026-09-15):** All 3 submission items (`iOS App 1.2 (6)`, subscription
+`PayslipMax Premium`, and subscription group `PayslipMax Yearly Premium`) cleared App Review with
+status **Approved** / **Review Completed**.
+
 **Separately found and fixed while investigating this rejection (does NOT require resubmission,
 queued for the *next* build instead):** `LegalStrings.privacyPolicyUrl`
 (`composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/theme/LegalStrings.kt`) was wired to
@@ -598,6 +602,12 @@ metadata a reviewer checks.
 
 **Exit criteria**: `v1.2` live in production, first real transactions confirmed successful in
 RevenueCat dashboard, no elevated crash rate attributable to the billing path.
+
+**Phase Summary** (completed 2026-09-15): `v1.2 (6)` is released to the iOS App Store (`READY_FOR_SALE`)
+alongside auto-renewable subscription `payslipmax_yearly_premium` (₹999/yr) and subscription group
+`PayslipMax Yearly Premium`. Monetization is live in production with `FREE_LAUNCH_MODE_IOS = false`.
+Monitoring phase active (Crashlytics + RevenueCat dashboard telemetry). Outstanding items queued for
+the next maintenance build (`1.2 (7)`): in-app `privacyPolicyUrl` destination fix in `LegalStrings.kt`.
 
 ---
 
