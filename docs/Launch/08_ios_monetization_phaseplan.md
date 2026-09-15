@@ -606,8 +606,14 @@ RevenueCat dashboard, no elevated crash rate attributable to the billing path.
 **Phase Summary** (completed 2026-09-15): `v1.2 (6)` is released to the iOS App Store (`READY_FOR_SALE`)
 alongside auto-renewable subscription `payslipmax_yearly_premium` (₹999/yr) and subscription group
 `PayslipMax Yearly Premium`. Monetization is live in production with `FREE_LAUNCH_MODE_IOS = false`.
-Monitoring phase active (Crashlytics + RevenueCat dashboard telemetry). Outstanding items queued for
-the next maintenance build (`1.2 (7)`): in-app `privacyPolicyUrl` destination fix in `LegalStrings.kt`.
+Monitoring phase active (Crashlytics + RevenueCat dashboard telemetry).
+
+**v1.2.1 (build 2) — Gemma ODR regression fix** (2026-09-15): Gemma offline-model download-banner
+regression discovered in v1.2.1 (build 1) TestFlight testing (broken progress observer). Fixed and
+verified on real device with unit test regression guard. Build 2 queued for TestFlight re-upload.
+
+Outstanding items queued for the next maintenance build (`1.2 (7)` or later): in-app `privacyPolicyUrl`
+destination fix in `LegalStrings.kt`.
 
 ---
 
