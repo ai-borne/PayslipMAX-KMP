@@ -25,19 +25,28 @@ runtime transition — is currently unguarded in the other three files.
 Each item: extract the risky logic into a pure/testable unit (matching the
 `observeDownloadProgress` pattern already used for the ODR fix), then write an `XCTest` for it.
 
-- [ ] `NavCoordinator.gestureRecognizerShouldBegin` (ContentView.swift) — edge-swipe-back gate;
+- [x] `NavCoordinator.gestureRecognizerShouldBegin` (ContentView.swift) — edge-swipe-back gate;
       verify it blocks when `hasActiveUnsavedSubState()` is true and when stack depth is 1
-- [ ] `NavCoordinator.navigationController(_:didShow:)` — verify `onNativePopObserved()` fires only
+      (`NavCoordinatorTests.swift`; logic extracted to `NavCoordinator.shouldAllowInteractivePop`)
+- [x] `NavCoordinator.navigationController(_:didShow:)` — verify `onNativePopObserved()` fires only
       when the stack returns to depth 1, not on push
-- [ ] `DocumentPickerDelegate` / `BackupPickerDelegate` byte-array marshaling — verify `Data` →
+      (`NavCoordinatorTests.swift`; logic extracted to `NavCoordinator.shouldNotifyNativePop`)
+- [x] `DocumentPickerDelegate` / `BackupPickerDelegate` byte-array marshaling — verify `Data` →
       `KotlinByteArray` round-trips correctly (off-by-one/sign errors in the `Int8`/`UInt8` cast are
       easy to introduce silently)
-- [ ] `AppDelegate` `AuthTokenProvider` retry-on-`17999` branch (iOSApp.swift) — verify retry fires
+      (`DataKotlinByteArrayTests.swift`; duplicated loop in both delegates deduped into
+      `Data.toKotlinByteArray()`)
+- [x] `AppDelegate` `AuthTokenProvider` retry-on-`17999` branch (iOSApp.swift) — verify retry fires
       only on that specific error code, and completion is called exactly once on both success and
       exhausted-retry paths
-- [ ] `GemmaInferenceBridge.engine(for:)` cache behavior — verify a second call with the same
+      (`AuthTokenFetcherTests.swift`; logic extracted to `AuthTokenFetcher.fetchIdToken`, generic
+      over a `UserType` so Firebase's `User`/`Auth` aren't needed in the test)
+- [x] `GemmaInferenceBridge.engine(for:)` cache behavior — verify a second call with the same
       `modelPath` returns the cached engine without re-initializing
-- [ ] Replace `PayslipMaxTests.swift` template boilerplate once the above land (delete `testExample`/
+      (`GemmaInferenceBridgeCacheTests.swift`; cache/get-or-create logic extracted to generic
+      `KeyedCache`/`LoadOrCreateCache.loadOrCreate`, tested with a cheap stand-in value instead of a
+      real ~500MB `Engine`)
+- [x] Replace `PayslipMaxTests.swift` template boilerplate once the above land (delete `testExample`/
       `testPerformanceExample`, keep the file as the home for whichever of the above don't get their
       own file)
 
@@ -48,7 +57,7 @@ Each item: extract the risky logic into a pure/testable unit (matching the
 2. Each checked item needs the extraction-for-testability step done first, mirroring
    `GemmaOnDemandResourceBridge.observeDownloadProgress` — don't test through `UIViewControllerRepresentable`
    or `AppDelegate.application(_:didFinishLaunchingWithOptions:)` directly.
-3. No CI gate for `PayslipMaxTests` currently exists — once coverage is non-trivial, add
-   `xcodebuild test -scheme PayslipMax -destination 'platform=iOS Simulator,name=...'` to
-   `scripts/git-pre-push.sh` alongside the existing iOS unit test run.
+3. ~~No CI gate for `PayslipMaxTests` currently exists~~ — done: `scripts/git-pre-push.sh` step 3/5
+   runs `xcodebuild test -scheme iosApp -only-testing:PayslipMaxTests` against a dynamically-picked
+   available iPhone simulator.
 4. Vendored code (`iosApp/Vendor/LiteRTLM/`) is out of scope — third-party, not maintained here.

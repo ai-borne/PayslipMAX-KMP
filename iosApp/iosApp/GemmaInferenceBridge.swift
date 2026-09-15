@@ -12,24 +12,44 @@ import composeApp
 /// model on every Tier 6 call would be prohibitively slow. LiteRT-LM is session-based, so each prompt
 /// runs through a fresh, stateless `Conversation` (Tier 6 extraction has no multi-turn history — history
 /// must never bleed between payslips).
-/// Actor-isolated cache of loaded `Engine`s, keyed by model path. Actors are the Swift 6-mandated
-/// async-safe replacement for locking a mutable dictionary across `await` boundaries.
-private actor EngineStore {
-    private var engines: [String: Engine] = [:]
+/// Actor-isolated cache keyed by an arbitrary `Hashable` key. Actors are the Swift 6-mandated
+/// async-safe replacement for locking a mutable dictionary across `await` boundaries. Generic (not
+/// `Engine`-specific) so `loadOrCreate`'s caching behavior is testable without loading a real model.
+actor KeyedCache<Key: Hashable, Value> {
+    private var values: [Key: Value] = [:]
 
-    func engine(for modelPath: String) -> Engine? {
-        engines[modelPath]
+    func value(for key: Key) -> Value? {
+        values[key]
     }
 
-    func store(_ engine: Engine, for modelPath: String) {
-        engines[modelPath] = engine
+    func store(_ value: Value, for key: Key) {
+        values[key] = value
+    }
+}
+
+enum LoadOrCreateCache {
+    /// Returns the cached value for `key` if present; otherwise runs `create()` once, caches the
+    /// result, and returns it. Extracted for testability (see `GemmaInferenceBridgeCacheTests`) —
+    /// verifies `create` runs at most once per key, which is what keeps the ~500MB Gemma model load
+    /// off the hot path for every Tier 6 call after the first.
+    static func loadOrCreate<Key: Hashable, Value>(
+        key: Key,
+        cache: KeyedCache<Key, Value>,
+        create: () async throws -> Value
+    ) async throws -> Value {
+        if let cached = await cache.value(for: key) {
+            return cached
+        }
+        let value = try await create()
+        await cache.store(value, for: key)
+        return value
     }
 }
 
 final class GemmaInferenceBridge {
     static let shared = GemmaInferenceBridge()
 
-    private let store = EngineStore()
+    private let store = KeyedCache<String, Engine>()
 
     private init() {}
 
@@ -69,20 +89,16 @@ final class GemmaInferenceBridge {
     /// benign, rare race for Tier 6 (invoked at most once per parse) where the last writer simply
     /// wins the cache slot.
     private func engine(for modelPath: String) async throws -> Engine {
-        if let cached = await store.engine(for: modelPath) {
-            return cached
+        try await LoadOrCreateCache.loadOrCreate(key: modelPath, cache: store) {
+            let engineConfig = try EngineConfig(
+                modelPath: modelPath,
+                backend: .cpu(),
+                maxNumTokens: 512,
+                cacheDir: NSTemporaryDirectory()
+            )
+            let engine = Engine(engineConfig: engineConfig)
+            try await engine.initialize()
+            return engine
         }
-
-        let engineConfig = try EngineConfig(
-            modelPath: modelPath,
-            backend: .cpu(),
-            maxNumTokens: 512,
-            cacheDir: NSTemporaryDirectory()
-        )
-        let engine = Engine(engineConfig: engineConfig)
-        try await engine.initialize()
-
-        await store.store(engine, for: modelPath)
-        return engine
     }
 }

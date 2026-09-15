@@ -133,9 +133,16 @@ final class NavCoordinator: NSObject, UINavigationControllerDelegate, UIGestureR
     // return to a single-VC stack means a detail was popped/swiped away — sync AppNavState. On a
     // push (count == 2) we skip, avoiding a feedback loop back into the native stack.
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        if navigationController.viewControllers.count == 1 {
+        if Self.shouldNotifyNativePop(stackDepth: navigationController.viewControllers.count) {
             navHost?.onNativePopObserved()
         }
+    }
+
+    /// Extracted for testability (see `NavCoordinatorTests`) — a stack back at depth 1 means a
+    /// detail was popped/swiped away; depth 2 (a push) must not notify, or it would feed back into
+    /// the native stack Kotlin just asked us to push onto.
+    static func shouldNotifyNativePop(stackDepth: Int) -> Bool {
+        stackDepth == 1
     }
 
     // Only allow the interactive pop gesture when there is something to pop back to, and never
@@ -143,8 +150,17 @@ final class NavCoordinator: NSObject, UINavigationControllerDelegate, UIGestureR
     // BackHandler, so without this gate it would silently discard drafts/corrections instead of
     // running the two-step cancel-then-exit path (Phase 5).
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard (navController?.viewControllers.count ?? 0) > 1 else { return false }
-        return !(navHost?.hasActiveUnsavedSubState() ?? false)
+        Self.shouldAllowInteractivePop(
+            stackDepth: navController?.viewControllers.count ?? 0,
+            hasActiveUnsavedSubState: navHost?.hasActiveUnsavedSubState() ?? false
+        )
+    }
+
+    /// Extracted for testability (see `NavCoordinatorTests`) — pure decision logic behind the
+    /// edge-swipe-back gate, independent of `UINavigationController`/`IosNavHost`.
+    static func shouldAllowInteractivePop(stackDepth: Int, hasActiveUnsavedSubState: Bool) -> Bool {
+        guard stackDepth > 1 else { return false }
+        return !hasActiveUnsavedSubState
     }
 }
 
@@ -171,6 +187,19 @@ private func topViewController() -> UIViewController? {
     return topVC
 }
 
+extension Data {
+    /// Converts to Kotlin's `ByteArray` bridging type for handoff to shared/composeApp APIs.
+    /// Kotlin bytes are signed (`Int8`), Swift's are unsigned (`UInt8`) — reinterpreting the bit
+    /// pattern (rather than clamping/truncating) is what makes this a lossless round-trip.
+    func toKotlinByteArray() -> KotlinByteArray {
+        let kotlinArray = KotlinByteArray(size: Int32(count))
+        for (i, byte) in enumerated() {
+            kotlinArray.set(index: Int32(i), value: Int8(bitPattern: byte))
+        }
+        return kotlinArray
+    }
+}
+
 class DocumentPickerDelegate: NSObject, UIDocumentPickerDelegate {
     let onResult: (KotlinByteArray, String) -> Void
 
@@ -180,22 +209,15 @@ class DocumentPickerDelegate: NSObject, UIDocumentPickerDelegate {
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let url = urls.first else { return }
-        
+
         // Start accessing security-scoped resource
         guard url.startAccessingSecurityScopedResource() else { return }
         defer { url.stopAccessingSecurityScopedResource() }
-        
+
         do {
             let data = try Data(contentsOf: url)
             let filename = url.lastPathComponent
-            
-            // Convert Swift Data to KotlinByteArray
-            let kotlinArray = KotlinByteArray(size: Int32(data.count))
-            for i in 0..<data.count {
-                kotlinArray.set(index: Int32(i), value: Int8(bitPattern: data[i]))
-            }
-            
-            onResult(kotlinArray, filename)
+            onResult(data.toKotlinByteArray(), filename)
         } catch {
             print("Error reading PDF file: \(error)")
         }
@@ -221,11 +243,7 @@ class BackupPickerDelegate: NSObject, UIDocumentPickerDelegate {
 
         do {
             let data = try Data(contentsOf: url)
-            let kotlinArray = KotlinByteArray(size: Int32(data.count))
-            for i in 0..<data.count {
-                kotlinArray.set(index: Int32(i), value: Int8(bitPattern: data[i]))
-            }
-            onResult(kotlinArray)
+            onResult(data.toKotlinByteArray())
         } catch {
             print("Error reading backup file: \(error)")
         }
