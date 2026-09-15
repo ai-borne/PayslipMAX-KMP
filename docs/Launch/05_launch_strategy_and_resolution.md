@@ -1,8 +1,16 @@
-# Launch Strategy & Monetization Unblocking (v1.0 to v1.1)
+# ⚠️ ARCHIVED — Launch Strategy & Monetization Unblocking (v1.0 to v1.1)
 
-**Date**: September 7, 2026  
-**Document**: Launch Action Plan & Resolution Strategy  
-**Status**: Active / Execution in Progress  
+**Date**: September 7, 2026 (archived 2026-09-15)  
+**Document**: Historical strategy record; execution has moved to active logs below.
+
+> This document is a pre-execution strategy sketch. For current status and execution logs, see:
+> - **[06_closed_testing_progress_log.md](06_closed_testing_progress_log.md)** — Android detailed execution log
+> - **[07_platform_monetization_rollout.md](07_platform_monetization_rollout.md)** — Current platform-independent status
+> - **[08_ios_monetization_phaseplan.md](08_ios_monetization_phaseplan.md)** — iOS phase-by-phase execution (complete through Phase 9)
+
+---
+
+## Original Strategy (archived below)  
 
 ---
 

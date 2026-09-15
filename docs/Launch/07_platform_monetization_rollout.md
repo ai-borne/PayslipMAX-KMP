@@ -13,9 +13,10 @@ current state after [06_closed_testing_progress_log.md](06_closed_testing_progre
   is `false` (`bc25900`), paywall UI is active, end-to-end purchasing via RevenueCat is operational,
   and terms/EULA metadata compliant. Full execution history in
   [08_ios_monetization_phaseplan.md](08_ios_monetization_phaseplan.md).
-- **Android**: Closed testing, `11 (1.0.0)` live on Internal testing (not yet promoted), `8 (1.0.0)`
-  is the live Closed testing release, mandatory 14-day window running against v8. Still free by
-  policy requirement, pending production launch and BillDesk merchant KYC.
+- **Android**: `10 (1.0.0)` live on Closed testing (mandatory 14-day window running); `11 (1.0.0)`
+  promoted to Internal testing since 2026-09-14; `12 (1.0.0)` prepared for Closed testing promotion
+  (scheduled 2026-09-16/17). Still free by policy requirement, pending production launch and
+  BillDesk merchant KYC.
 
 ## 1. Core decision: decouple the two platforms' monetization timing
 
