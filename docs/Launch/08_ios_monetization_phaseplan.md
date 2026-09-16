@@ -612,6 +612,12 @@ Monitoring phase active (Crashlytics + RevenueCat dashboard telemetry).
 regression discovered in v1.2.1 (build 1) TestFlight testing (broken progress observer). Fixed and
 verified on real device with unit test regression guard. Build 2 queued for TestFlight re-upload.
 
+**v1.2.1 (build 3) — Universal Backup & Restore Cross-Platform Interoperability** (2026-09-16):
+Standardized cryptographic SSOT strictly on PBKDF2-HMAC-SHA256, resolved iOS PRF and UTF-8 byte-length
+discrepancies, registered `.pcda` under `UTExportedTypeDeclarations` and `CFBundleDocumentTypes` for
+Gmail and Files attachment support, added backup password UX guidance hint, and added automated test suites.
+Build 3 queued for TestFlight upload alongside Android v12 (1.0.0).
+
 Outstanding items queued for the next maintenance build (`1.2 (7)` or later): in-app `privacyPolicyUrl`
 destination fix in `LegalStrings.kt`.
 
