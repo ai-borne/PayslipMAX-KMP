@@ -55,7 +55,9 @@ fun BackupRestorePasswordField(
             fieldValue = it.copy(selection = TextRange(it.text.length))
             onPasswordChange(it.text)
         },
-        label = { Text(AppStrings.labelPassword) },
+        label = { Text(AppStrings.settingsBackupPasswordLabel) },
+        placeholder = { Text(AppStrings.settingsBackupPasswordPlaceholder) },
+        supportingText = { Text(AppStrings.settingsBackupPasswordHint) },
         modifier = modifier.fillMaxWidth().testTag(BackupRestorePasswordFieldTestTag),
         singleLine = true,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),

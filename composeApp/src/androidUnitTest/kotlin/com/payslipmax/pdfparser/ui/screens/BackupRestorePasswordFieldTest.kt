@@ -2,11 +2,15 @@ package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.text.TextRange
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -34,7 +38,48 @@ class BackupRestorePasswordFieldTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun selectionStaysPinnedToEndAfterMidStringEdit() =
+    fun supportingTextDisplaysGuidanceAndWarning() =
+        runComposeUiTest {
+            setContent {
+                BackupRestorePasswordField(
+                    password = "",
+                    onPasswordChange = {},
+                )
+            }
+
+            onNodeWithText(AppStrings.settingsBackupPasswordLabel).assertIsDisplayed()
+            onNodeWithText(AppStrings.settingsBackupPasswordHint).assertIsDisplayed()
+
+            // In Material3 OutlinedTextField, placeholder is shown when the field is focused and empty
+            val field = onNodeWithTag(BackupRestorePasswordFieldTestTag)
+            field.performClick()
+            onNodeWithText(AppStrings.settingsBackupPasswordPlaceholder).assertIsDisplayed()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun fieldAcceptsAlphanumericAndSpecialSymbols() =
+        runComposeUiTest {
+            var password = ""
+            setContent {
+                BackupRestorePasswordField(
+                    password = password,
+                    onPasswordChange = { password = it },
+                )
+            }
+
+            val field = onNodeWithTag(BackupRestorePasswordFieldTestTag)
+            val testInput = "P@ssw0rd!#$ 123"
+            field.performTextInput(testInput)
+
+            assertEquals(testInput, password)
+            val selection = field.fetchSemanticsNode().config[SemanticsProperties.TextSelectionRange]
+            assertEquals(TextRange(password.length), selection)
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun selectionPinningPreservedWithSupportingText() =
         runComposeUiTest {
             var password = ""
             setContent {
