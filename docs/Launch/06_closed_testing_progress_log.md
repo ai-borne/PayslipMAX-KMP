@@ -8,20 +8,17 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-16, post-v11 verification, preparing v12)
+## Status snapshot (as of 2026-09-16, v12 on Closed testing)
 
-- **Closed testing track:** moving to `12 (1.0.0)` — versionCode 12 prepared to push directly to Closed
-  testing (177 countries/regions), superseding versionCode 10. Rather than promoting versionCode 11 as-is,
-  v12 packages all of v11's R8/Crashlytics/dead-code hardening together with the user-facing Offline AI
-  banner redesign (Option A capsule), Gemma LiteRT engine caching (native OOM fix), and Universal Backup &
-  Restore cross-platform interoperability & Password UX guidance.
-- **Internal testing track:** `12 (1.0.0)` — released 2026-09-16, carrying the Gemma banner capsule
-  redesign, LiteRT engine caching (native OOM fix), and Universal Backup & Restore interoperability & Password UX.
-  Active on internal testing, undergoing device verification on Pixel 9 before Closed testing promotion.
-  (Supersedes versionCode 11).
-- **Prior Closed track state:** `10 (1.0.0)` — uploaded and confirmed installed on the physical Pixel 9
-  test device via the Closed testing opt-in link on 2026-09-11 (`dumpsys package` showed `versionCode=10`,
-  `installerPackageName=com.android.vending`). Closed testing went directly 8 → 10 (v9 was Internal-only).
+- **Closed testing track:** `12 (1.0.0)` — promoted directly from Internal testing on 2026-09-16 (177
+  countries/regions), superseding versionCode 10. Rather than promoting versionCode 11 as-is, v12 packages
+  all of v11's R8/Crashlytics/dead-code hardening together with the user-facing Offline AI banner redesign
+  (Option A capsule), Gemma LiteRT engine caching (native OOM fix), and Universal Backup & Restore
+  cross-platform interoperability & Password UX guidance.
+- **Internal testing track:** `12 (1.0.0)` — released 2026-09-16, verified cleanly on physical Pixel 9,
+  then promoted to Closed testing. (Supersedes versionCode 11).
+- **Prior Closed track state:** `10 (1.0.0)` — uploaded 2026-09-11 (`dumpsys package` showed `versionCode=10`,
+  `installerPackageName=com.android.vending`), now superseded by v12. Closed testing went 8 → 10 → 12.
 - **Testers:** 25/25 opted in (third-party tester panel, "Private Testing Pro" plan) as of the v8
   upload; reconfirm current opted-in count against the v10 release in Play Console's own
   "Testing" tab rather than assuming it's unchanged.
@@ -354,7 +351,7 @@ versionCode 11 directly as-is, the Offline AI banner redesign (Option A capsule)
 to resolve the jarring red error state and visual footprint. Both the v11 binary hardening and the v12
 UI polish are packaged together into **versionCode 12** to be pushed directly to Closed testing.
 
-### versionCode 12 — Under preparation for Closed testing 2026-09-16 — Offline AI banner redesign + Gemma LiteRT Caching (OOM Fix) + Universal Backup/Restore Interoperability & Password UX
+### versionCode 12 — Promoted to Closed testing 2026-09-16 — Offline AI banner redesign + Gemma LiteRT Caching (OOM Fix) + Universal Backup/Restore Interoperability & Password UX
 Carries the visual overhaul of the Tier 6 Gemma background installation UX, resolves a critical native OOM kernel kill during multi-document parsing, unifies Universal Backup & Restore cryptographic SSOT strictly on PBKDF2-HMAC-SHA256, and adds password guidance UX hints:
 
 Commits:
@@ -395,7 +392,7 @@ Commits:
 - **Contextual Password UX & zero-knowledge safety:** When creating or restoring backups, users now receive clear, actionable guidance that letters, numbers, and symbols are supported, along with a prominent warning that forgotten passwords cannot be recovered by the developer or support.
 - **Architecture & SSOT integrity:** The banner logic is 100% shared Compose Multiplatform in `composeApp/src/commonMain`, while native LiteRT inference on Android now maintains architectural parity with iOS's cached engine store. Enforced strict adherence to project rules: all files <= 300 lines, all functions <= 50 lines.
 
-**Status:** Released to the **Internal testing** track on 2026-09-16 (`composeApp-release.aab`, versionCode 12, versionName 1.0.0). Physical Pixel 9 device cache cleared via ADB (`pm clear com.android.vending`) for clean opt-in install verification. Undergoing internal testing ahead of direct promotion to Closed testing (superseding v10).
+**Status:** Released to **Internal testing** on 2026-09-16, verified cleanly on physical Pixel 9, and promoted directly to **Closed testing** on 2026-09-16 (`composeApp-release.aab`, versionCode 12, versionName 1.0.0), superseding v10 on the 14-day mandatory track.
 
 ## What still needs to happen before the Day-14 final submission
 

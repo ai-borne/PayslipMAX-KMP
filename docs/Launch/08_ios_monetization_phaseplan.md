@@ -615,11 +615,9 @@ verified on real device with unit test regression guard. Build 2 queued for Test
 **v1.2.1 (build 3) — Universal Backup & Restore Cross-Platform Interoperability** (2026-09-16):
 Standardized cryptographic SSOT strictly on PBKDF2-HMAC-SHA256, resolved iOS PRF and UTF-8 byte-length
 discrepancies, registered `.pcda` under `UTExportedTypeDeclarations` and `CFBundleDocumentTypes` for
-Gmail and Files attachment support, added backup password UX guidance hint, and added automated test suites.
-Build 3 queued for TestFlight upload alongside Android v12 (1.0.0).
-
-Outstanding items queued for the next maintenance build (`1.2 (7)` or later): in-app `privacyPolicyUrl`
-destination fix in `LegalStrings.kt`.
+Gmail and Files attachment support, added backup password UX guidance hint, added in-app `privacyPolicyUrl`
+destination fix in `LegalStrings.kt`, explicitly declared `LSSupportsOpeningDocumentsInPlace = false`,
+and added automated test suites. Build 3 uploaded to TestFlight and submitted to App Review on 2026-09-16.
 
 ---
 
