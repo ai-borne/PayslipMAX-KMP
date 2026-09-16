@@ -55,23 +55,7 @@ actual object CryptoHelper {
             val buffer = ByteArray(dataSize)
             val tag = ByteArray(TAG_SIZE)
 
-            val cryptStatus =
-                prefixedData.usePinned { dataPinned ->
-                    buffer.usePinned { bufferPinned ->
-                        keyBytes.usePinned { keyPinned ->
-                            iv.usePinned { ivPinned ->
-                                tag.usePinned { tagPinned ->
-                                    encryptFunc(
-                                        kCCAlgorithmAES, keyPinned.addressOf(0), KEY_SIZE.toULong(),
-                                        ivPinned.addressOf(0), IV_SIZE.toULong(), null, 0UL,
-                                        dataPinned.addressOf(0), dataSize.toULong(),
-                                        bufferPinned.addressOf(0), tagPinned.addressOf(0), TAG_SIZE.toULong(),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+            val cryptStatus = executeGcmEncrypt(prefixedData, keyBytes, iv, buffer, tag)
             if (cryptStatus != kCCSuccess) return Result.failure(Exception("Encrypt status: $cryptStatus"))
             val result =
                 ByteArray(SALT_SIZE + IV_SIZE + dataSize + TAG_SIZE).apply {
@@ -86,12 +70,38 @@ actual object CryptoHelper {
         }
     }
 
+    private fun executeGcmEncrypt(
+        prefixedData: ByteArray,
+        keyBytes: ByteArray,
+        iv: ByteArray,
+        buffer: ByteArray,
+        tag: ByteArray,
+    ): Int {
+        val encryptFunc = cccryptorGCMOneshotEncrypt ?: return -1
+        val dataSize = prefixedData.size
+        return prefixedData.usePinned { dataPinned ->
+            buffer.usePinned { bufferPinned ->
+                keyBytes.usePinned { keyPinned ->
+                    iv.usePinned { ivPinned ->
+                        tag.usePinned { tagPinned ->
+                            encryptFunc(
+                                kCCAlgorithmAES, keyPinned.addressOf(0), KEY_SIZE.toULong(),
+                                ivPinned.addressOf(0), IV_SIZE.toULong(), null, 0UL,
+                                dataPinned.addressOf(0), dataSize.toULong(),
+                                bufferPinned.addressOf(0), tagPinned.addressOf(0), TAG_SIZE.toULong(),
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     actual fun decrypt(
         encryptedData: ByteArray,
         password: String,
     ): Result<ByteArray> {
         return try {
-            val decryptFunc = cccryptorGCMOneshotDecrypt ?: return Result.failure(Exception("GCM Decrypt not found"))
             val prefixSize = SALT_SIZE + IV_SIZE
             if (encryptedData.size < prefixSize + TAG_SIZE) return Result.failure(IllegalArgumentException("Invalid size"))
 
@@ -103,23 +113,7 @@ actual object CryptoHelper {
             val tag = ByteArray(TAG_SIZE).apply { encryptedData.copyInto(this, 0, prefixSize + cipherTextSize, encryptedData.size) }
             val buffer = ByteArray(cipherTextSize)
 
-            val cryptStatus =
-                cipherText.usePinned { cipherPinned ->
-                    buffer.usePinned { bufferPinned ->
-                        keyBytes.usePinned { keyPinned ->
-                            iv.usePinned { ivPinned ->
-                                tag.usePinned { tagPinned ->
-                                    decryptFunc(
-                                        kCCAlgorithmAES, keyPinned.addressOf(0), KEY_SIZE.toULong(),
-                                        ivPinned.addressOf(0), IV_SIZE.toULong(), null, 0UL,
-                                        cipherPinned.addressOf(0), cipherTextSize.toULong(),
-                                        bufferPinned.addressOf(0), tagPinned.addressOf(0), TAG_SIZE.toULong(),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+            val cryptStatus = executeGcmDecrypt(cipherText, keyBytes, iv, buffer, tag)
             if (cryptStatus != kCCSuccess) return Result.failure(Exception("Decrypt status: $cryptStatus"))
             val magic = "PCDA".encodeToByteArray()
             if (buffer.size < magic.size || !buffer.take(magic.size).toByteArray().contentEquals(magic)) {
@@ -129,6 +123,33 @@ actual object CryptoHelper {
             Result.success(finalData)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    private fun executeGcmDecrypt(
+        cipherText: ByteArray,
+        keyBytes: ByteArray,
+        iv: ByteArray,
+        buffer: ByteArray,
+        tag: ByteArray,
+    ): Int {
+        val decryptFunc = cccryptorGCMOneshotDecrypt ?: return -1
+        val cipherTextSize = cipherText.size
+        return cipherText.usePinned { cipherPinned ->
+            buffer.usePinned { bufferPinned ->
+                keyBytes.usePinned { keyPinned ->
+                    iv.usePinned { ivPinned ->
+                        tag.usePinned { tagPinned ->
+                            decryptFunc(
+                                kCCAlgorithmAES, keyPinned.addressOf(0), KEY_SIZE.toULong(),
+                                ivPinned.addressOf(0), IV_SIZE.toULong(), null, 0UL,
+                                cipherPinned.addressOf(0), cipherTextSize.toULong(),
+                                bufferPinned.addressOf(0), tagPinned.addressOf(0), TAG_SIZE.toULong(),
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -145,19 +166,22 @@ actual object CryptoHelper {
         return digest
     }
 
+    private const val CC_PRF_HMAC_ALG_SHA256: UInt = 3u
+
     actual fun pbkdf2(
         password: String,
         salt: ByteArray,
         iterations: Int,
     ): ByteArray {
         val derivedKey = ByteArray(32)
+        val passBytes = password.encodeToByteArray()
         memScoped {
             derivedKey.usePinned { derivedPinned ->
                 salt.usePinned { saltPinned ->
                     CCKeyDerivationPBKDF(
-                        kCCPBKDF2, password, password.length.toULong(),
+                        kCCPBKDF2, password, passBytes.size.toULong(),
                         saltPinned.addressOf(0).reinterpret(), salt.size.toULong(),
-                        2u, iterations.toUInt(), derivedPinned.addressOf(0).reinterpret(), 32.toULong(),
+                        CC_PRF_HMAC_ALG_SHA256, iterations.toUInt(), derivedPinned.addressOf(0).reinterpret(), 32.toULong(),
                     )
                 }
             }
