@@ -60,4 +60,14 @@ final class BackupDocumentTypeTests: XCTestCase {
         XCTAssertEqual(utType?.preferredMIMEType, "application/octet-stream")
         XCTAssertTrue(utType?.conforms(to: .data) == true, "Must conform to UTType.data")
     }
+
+    func test_openingDocumentsInPlace_isExplicitlyDisabled() {
+        let infoPlist = Bundle.main.infoDictionary
+        let supportsInPlace = infoPlist?["LSSupportsOpeningDocumentsInPlace"] as? Bool
+        XCTAssertEqual(
+            supportsInPlace,
+            false,
+            "LSSupportsOpeningDocumentsInPlace must be explicitly false so iOS stages imported .pcda files into app sandbox"
+        )
+    }
 }
