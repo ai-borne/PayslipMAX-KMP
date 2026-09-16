@@ -183,4 +183,53 @@ class PayslipPatternConfigTest {
             assertEquals("arrearsRiskHardship", mapping["ARR-$code"], "Special/climate arrears ARR-$code must resolve to arrearsRiskHardship")
         }
     }
+
+    @Test
+    fun phase3AviationTravelAndSpecializedAllowancesResolveCorrectly() {
+        val mapping = PayslipPatternConfig.creditKeysMapping
+
+        // Aviation & Airborne
+        assertEquals("riskHardshipAllowance", mapping["FLPAY"])
+        assertEquals("riskHardshipAllowance", mapping["FLYPAY"])
+        assertEquals("riskHardshipAllowance", mapping["TESTPLT"])
+        assertEquals("riskHardshipAllowance", mapping["FTE"])
+        assertEquals("specialForcesPay", mapping["PARA"])
+        assertEquals("specialForcesPay", mapping["PARES"])
+        assertEquals("specialForcesPay", mapping["PJI"])
+
+        // Travel claims (IRLA credits)
+        assertEquals("adjPayAndAllce", mapping["CTG"])
+        assertEquals("adjPayAndAllce", mapping["C.T.G."])
+        assertEquals("adjPayAndAllce", mapping["BAGGAGE"])
+        assertEquals("transportAllowance", mapping["CONVALW"])
+
+        // Specialized & Education
+        assertEquals("childrenEducationAllowance", mapping["RIMBCEAT"])
+        assertEquals("childrenEducationAllowance", mapping["RIMBCEAD"])
+        assertEquals("childrenEducationAllowance", mapping["HOSTEL"])
+        assertEquals("adjPayAndAllce", mapping["SPLALW"])
+        assertEquals("adjPayAndAllce", mapping["PGALW"])
+
+        // Disambiguation Guards
+        assertFalse(mapping.containsKey("TP"), "Bare 'TP' must be blacklisted to avoid collision with TPTA")
+        assertFalse(mapping.containsKey("BAG"), "Bare 'BAG' must be blacklisted to avoid collision with narrative text")
+    }
+
+    @Test
+    fun phase3DeductionsAndBlacklistGuardsResolveCorrectly() {
+        val mapping = PayslipPatternConfig.debitKeysMapping
+
+        // Deductions & Recoveries
+        assertEquals("aobf", mapping["AFMSOF"])
+        assertEquals("recoveryOfDebits", mapping["DLIS"])
+        assertEquals("recoveryOfDebits", mapping["HBA"])
+        assertEquals("recoveryOfDebits", mapping["PCA"])
+        assertEquals("recoveryOfDebits", mapping["COURT"])
+        assertEquals("recoveryOfDebits", mapping["MAINT"])
+
+        // Disambiguation Guards
+        assertFalse(mapping.containsKey("MCA"), "Bare 'MCA' must be blacklisted to avoid cross-domain collisions")
+        assertFalse(mapping.containsKey("TA Debit"), "'TA Debit' must remain in rawDeductions for PhantomReconciler")
+        assertFalse(mapping.containsKey("R/oEtkt"), "'R/oEtkt' must remain in rawDeductions for PhantomReconciler")
+    }
 }

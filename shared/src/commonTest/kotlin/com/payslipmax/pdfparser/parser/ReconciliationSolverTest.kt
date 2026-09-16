@@ -217,4 +217,41 @@ class ReconciliationSolverTest {
         assertEquals(1.0f, solved.fieldConfidence["fieldAllowance"])
         assertEquals(1.0f, solved.fieldConfidence["riskHardshipAllowance"])
     }
+
+    @Test
+    fun phase3AviationTravelSpecializedAndDebitsReconcileWithoutResidual() {
+        val entries =
+            listOf(
+                credit("basicPay", 150000.0),
+                credit("militaryServicePay", 15500.0),
+                credit("dearnessAllowance", 75000.0),
+                credit("riskHardshipAllowance", 25000.0),
+                credit("specialForcesPay", 10500.0),
+                credit("adjPayAndAllce", 50000.0),
+                credit("childrenEducationAllowance", 27000.0),
+                debit("dsopSubscription", 40000.0),
+                debit("agif", 10000.0),
+                debit("aobf", 200.0),
+                debit("recoveryOfDebits", 15000.0),
+            )
+        val solved = solve(entries, gross = 353000.0, deductions = 65200.0, net = 287800.0)
+
+        assertEquals(25000.0, solved.earningsMap["riskHardshipAllowance"])
+        assertEquals(10500.0, solved.earningsMap["specialForcesPay"])
+        assertEquals(50000.0, solved.earningsMap["adjPayAndAllce"])
+        assertEquals(27000.0, solved.earningsMap["childrenEducationAllowance"])
+        assertEquals(200.0, solved.deductionsMap["aobf"])
+        assertEquals(15000.0, solved.deductionsMap["recoveryOfDebits"])
+        assertEquals(0.0, solved.reconciled.miscEarnings)
+        assertEquals(0.0, solved.reconciled.miscDeductions)
+        assertTrue(solved.rawEarnings.isEmpty())
+        assertTrue(solved.rawDeductions.isEmpty())
+        assertFalse(solved.needsReview)
+        assertEquals(1.0f, solved.fieldConfidence["riskHardshipAllowance"])
+        assertEquals(1.0f, solved.fieldConfidence["specialForcesPay"])
+        assertEquals(1.0f, solved.fieldConfidence["adjPayAndAllce"])
+        assertEquals(1.0f, solved.fieldConfidence["childrenEducationAllowance"])
+        assertEquals(1.0f, solved.fieldConfidence["aobf"])
+        assertEquals(1.0f, solved.fieldConfidence["recoveryOfDebits"])
+    }
 }

@@ -161,12 +161,31 @@ object AllowancePatternMappings {
             "C E A(NT)" to "childrenEducationAllowance",
             "C E A (T)" to "childrenEducationAllowance",
             "C E A" to "childrenEducationAllowance",
+            "CONVALW" to "transportAllowance",
+            "RIMBCEAT" to "childrenEducationAllowance",
+            "RIMBCEAD" to "childrenEducationAllowance",
+            "HOSTEL" to "childrenEducationAllowance",
             "MEDICAL" to "medicalAllowance",
             "Reimb Med" to "medicalAllowance",
         )
 
     /**
-     * Arrears, ledger adjustments, and carryover credit balances.
+     * Aviation, airborne, and flight test allowances (7th CPC Risk & Hardship / Special Forces).
+     * Bare 'TP' is intentionally excluded to prevent prefix collision with TPTA.
+     */
+    val aviationAndAirborneMappings: Map<String, String> =
+        mapOf(
+            "FLPAY" to "riskHardshipAllowance",
+            "FLYPAY" to "riskHardshipAllowance",
+            "TESTPLT" to "riskHardshipAllowance",
+            "FTE" to "riskHardshipAllowance",
+            "PARA" to "specialForcesPay",
+            "PARES" to "specialForcesPay",
+            "PJI" to "specialForcesPay",
+        )
+
+    /**
+     * Arrears, ledger adjustments, travel claims, and carryover credit balances.
      */
     val adjustmentAndLedgerMappings: Map<String, String> =
         mapOf(
@@ -190,6 +209,11 @@ object AllowancePatternMappings {
             "ETKT-ref" to "adjTicketRecovery",
             "Adhoc Payt" to "adjPayAndAllce",
             "TA/DA Cheq" to "adjPayAndAllce",
+            "CTG" to "adjPayAndAllce",
+            "C.T.G." to "adjPayAndAllce",
+            "BAGGAGE" to "adjPayAndAllce",
+            "SPLALW" to "adjPayAndAllce",
+            "PGALW" to "adjPayAndAllce",
             "Arrs P & A" to "adjPayAndAllce",
             "Arr P & A" to "adjPayAndAllce",
             "Instr Allce" to "adjPayAndAllce",
@@ -224,6 +248,7 @@ object AllowancePatternMappings {
             housingMappings +
             fieldAndRiskMappings +
             generalAllowanceMappings +
+            aviationAndAirborneMappings +
             technicalMappings +
             adjustmentAndLedgerMappings
 }

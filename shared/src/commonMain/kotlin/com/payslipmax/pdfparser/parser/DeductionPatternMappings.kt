@@ -83,6 +83,12 @@ object DeductionPatternMappings {
             "Recv P & A" to "recoveryOfDebits",
             "CC to bankers" to "recoveryOfDebits",
             "AOBF" to "aobf",
+            "AFMSOF" to "aobf",
+            "DLIS" to "recoveryOfDebits",
+            "HBA" to "recoveryOfDebits",
+            "PCA" to "recoveryOfDebits",
+            "COURT" to "recoveryOfDebits",
+            "MAINT" to "recoveryOfDebits",
             "AGIF-CAR" to "agifLoanRecovery",
             "AGIF-MCA" to "agifLoanRecovery",
         )
