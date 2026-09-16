@@ -15,10 +15,10 @@ Closed testing track, so each release's status line below states which track it'
   v12 packages all of v11's R8/Crashlytics/dead-code hardening together with the user-facing Offline AI
   banner redesign (Option A capsule), Gemma LiteRT engine caching (native OOM fix), and Universal Backup &
   Restore cross-platform interoperability & Password UX guidance.
-- **Internal testing track:** `11 (1.0.0)` — released 2026-09-14 17:50, confirmed installed on the
-  physical Pixel 9 (`dumpsys package` shows `versionCode=11`, `installerPackageName=com.android.vending`).
-  Both the forced-crash symbolication and the two-grammar-era parse/persist check passed clean on this
-  build (see the versionCode 11 entry below).
+- **Internal testing track:** `12 (1.0.0)` — released 2026-09-16, carrying the Gemma banner capsule
+  redesign, LiteRT engine caching (native OOM fix), and Universal Backup & Restore interoperability & Password UX.
+  Active on internal testing, undergoing device verification on Pixel 9 before Closed testing promotion.
+  (Supersedes versionCode 11).
 - **Prior Closed track state:** `10 (1.0.0)` — uploaded and confirmed installed on the physical Pixel 9
   test device via the Closed testing opt-in link on 2026-09-11 (`dumpsys package` showed `versionCode=10`,
   `installerPackageName=com.android.vending`). Closed testing went directly 8 → 10 (v9 was Internal-only).
@@ -395,7 +395,7 @@ Commits:
 - **Contextual Password UX & zero-knowledge safety:** When creating or restoring backups, users now receive clear, actionable guidance that letters, numbers, and symbols are supported, along with a prominent warning that forgotten passwords cannot be recovered by the developer or support.
 - **Architecture & SSOT integrity:** The banner logic is 100% shared Compose Multiplatform in `composeApp/src/commonMain`, while native LiteRT inference on Android now maintains architectural parity with iOS's cached engine store. Enforced strict adherence to project rules: all files <= 300 lines, all functions <= 50 lines.
 
-**Status:** Built and verified locally (clean `ktlint`, all unit tests passing, live device testing verified on Pixel 9). Prepared to bump `versionCode = 12` in `composeApp/build.gradle.kts` and assemble release AAB for the **Closed testing track** (superseding v10 directly on Closed testing and carrying all v11 hardening).
+**Status:** Released to the **Internal testing** track on 2026-09-16 (`composeApp-release.aab`, versionCode 12, versionName 1.0.0). Physical Pixel 9 device cache cleared via ADB (`pm clear com.android.vending`) for clean opt-in install verification. Undergoing internal testing ahead of direct promotion to Closed testing (superseding v10).
 
 ## What still needs to happen before the Day-14 final submission
 

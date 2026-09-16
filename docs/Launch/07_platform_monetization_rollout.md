@@ -5,17 +5,17 @@
 Section 4/5 (Step 4 / "Phase 2") with a platform-decoupled sequencing decision, and reflects the
 current state after [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md).
 
-## 0. Current state (2026-09-15)
+## 0. Current state (2026-09-16)
 
 - **iOS**: `v1.2` (build `1.2 (6)`), auto-renewable subscription `payslipmax_yearly_premium`
-  (₹999/yr), and subscription group `PayslipMax Yearly Premium` are **Approved** and **Released**
-  on the iOS App Store (`READY_FOR_SALE`). Monetization is live in production: `FREE_LAUNCH_MODE_IOS`
-  is `false` (`bc25900`), paywall UI is active, end-to-end purchasing via RevenueCat is operational,
-  and terms/EULA metadata compliant. Full execution history in
-  [08_ios_monetization_phaseplan.md](08_ios_monetization_phaseplan.md).
-- **Android**: `10 (1.0.0)` live on Closed testing (mandatory 14-day window running); `11 (1.0.0)`
-  promoted to Internal testing since 2026-09-14; `12 (1.0.0)` prepared for Closed testing promotion
-  (scheduled 2026-09-16/17). Still free by policy requirement, pending production launch and
+  (₹999/yr), and subscription group `PayslipMax Yearly Premium` are live in production on the
+  iOS App Store (`READY_FOR_SALE`). Monetization is active (`FREE_LAUNCH_MODE_IOS = false`). Next
+  maintenance update **`v1.2.1 (3)`** is actively under **TestFlight** testing, carrying the Gemma
+  ODR fix, Universal Backup & Restore cross-platform interoperability, and document in-place safety.
+- **Android**: `10 (1.0.0)` live on Closed testing (mandatory 14-day window running); **`12 (1.0.0)`**
+  released to **Internal testing** on 2026-09-16 (carrying the Offline AI capsule redesign, LiteRT
+  native OOM fix, and Universal Backup & Restore), undergoing device testing on Pixel 9 ahead of
+  Closed testing promotion. Still free by policy requirement, pending production launch and
   BillDesk merchant KYC.
 
 ## 1. Core decision: decouple the two platforms' monetization timing
