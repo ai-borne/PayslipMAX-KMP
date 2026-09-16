@@ -79,8 +79,9 @@ struct ComposeView: UIViewControllerRepresentable {
             },
             onPickBackup: { onResult in
                 DispatchQueue.main.async {
-                    // Backup archives (.pcda) have no registered UTType, so open on generic data/item.
-                    let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.data, .item])
+                    // Registered UTType: com.payslipmax.backup (extension .pcda), with generic fallbacks.
+                    let backupType = UTType("com.payslipmax.backup") ?? .data
+                    let picker = UIDocumentPickerViewController(forOpeningContentTypes: [backupType, .data, .item])
                     let delegate = BackupPickerDelegate(onResult: { bytes in
                         _ = onResult(bytes)
                     })

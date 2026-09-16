@@ -14,12 +14,23 @@ actual fun shareText(
 }
 
 @OptIn(ExperimentalForeignApi::class)
+internal fun prepareShareFile(
+    bytes: ByteArray,
+    fileName: String,
+    baseDir: String = NSTemporaryDirectory(),
+): NSURL {
+    val cleanDir = baseDir.trimEnd('/')
+    val path = "$cleanDir/$fileName"
+    bytes.toNSData().writeToFile(path, atomically = true)
+    return NSURL.fileURLWithPath(path)
+}
+
+@OptIn(ExperimentalForeignApi::class)
 actual fun shareBytes(
     bytes: ByteArray,
     fileName: String,
     mimeType: String,
 ) {
-    val path = NSTemporaryDirectory() + fileName
-    bytes.toNSData().writeToFile(path, atomically = true)
-    presentIosShare(listOf(NSURL.fileURLWithPath(path)))
+    val fileUrl = prepareShareFile(bytes, fileName)
+    presentIosShare(listOf(fileUrl))
 }
