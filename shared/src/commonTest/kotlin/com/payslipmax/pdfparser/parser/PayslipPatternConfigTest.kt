@@ -61,4 +61,63 @@ class PayslipPatternConfigTest {
         val bpayEntries = classified.entries.filter { it.standardKey == "basicPay" }
         assertEquals(4, bpayEntries.size, "All varying BPAY (X) level tags must cleanly classify to basicPay")
     }
+
+    @Test
+    fun allowancePatternMappingsPartitionsAreValidAndComposed() {
+        val allCredits = AllowancePatternMappings.all
+        assertEquals(allCredits, PayslipPatternConfig.creditKeysMapping)
+
+        // Verify Core
+        assertEquals("basicPay", AllowancePatternMappings.corePayMappings["BPAY"])
+        assertEquals("dearnessAllowance", AllowancePatternMappings.corePayMappings["DA"])
+        assertEquals("militaryServicePay", AllowancePatternMappings.corePayMappings["MSP"])
+
+        // Verify Housing
+        assertEquals("houseRentAllowance", AllowancePatternMappings.housingMappings["HRA"])
+        assertEquals("houseRentAllowance", AllowancePatternMappings.housingMappings["HH11"])
+        assertEquals("arrearsHra", AllowancePatternMappings.housingMappings["ARR-HRA"])
+
+        // Verify Field & Risk
+        assertEquals("fieldAllowance", AllowancePatternMappings.fieldAndRiskMappings["FD"])
+        assertEquals("riskHardshipAllowance", AllowancePatternMappings.fieldAndRiskMappings["RH11"])
+        assertEquals("arrearsRiskHardship", AllowancePatternMappings.fieldAndRiskMappings["ARR-RH11"])
+
+        // Verify General Allowances
+        assertEquals("transportAllowance", AllowancePatternMappings.generalAllowanceMappings["TPTA"])
+        assertEquals("dressAllowance", AllowancePatternMappings.generalAllowanceMappings["DRESALW"])
+        assertEquals("rationMoney", AllowancePatternMappings.generalAllowanceMappings["RSHNA"])
+
+        // Verify Adjustments & Ledger
+        assertEquals("adjBasicPay", AllowancePatternMappings.adjustmentAndLedgerMappings["A/o BPAY-"])
+        assertEquals("openingCreditBalance", AllowancePatternMappings.adjustmentAndLedgerMappings["Op Cr Bal"])
+    }
+
+    @Test
+    fun deductionPatternMappingsPartitionsAreValidAndComposed() {
+        val allDebits = DeductionPatternMappings.all
+        assertEquals(allDebits, PayslipPatternConfig.debitKeysMapping)
+
+        // Verify Statutory
+        assertEquals("dsopSubscription", DeductionPatternMappings.statutoryMappings["DSOPF"])
+        assertEquals("agif", DeductionPatternMappings.statutoryMappings["AGIF"])
+        assertEquals("incomeTax", DeductionPatternMappings.statutoryMappings["Income Tax"])
+        assertEquals("educationCess", DeductionPatternMappings.statutoryMappings["Educ Cess"])
+
+        // Verify Accommodation & Utilities
+        assertEquals("licenseFee", DeductionPatternMappings.accommodationMappings["L Fee"])
+        assertEquals("furnitureRent", DeductionPatternMappings.accommodationMappings["Fur"])
+        assertEquals("waterCharges", DeductionPatternMappings.accommodationMappings["Water"])
+        assertEquals("electricityCharges", DeductionPatternMappings.accommodationMappings["Elec"])
+        assertEquals("barrackDamage", DeductionPatternMappings.accommodationMappings["Barrack Damage"])
+
+        // Verify Recoveries & Loans
+        assertEquals("ticketRecovery", DeductionPatternMappings.recoveryAndLoanMappings["ETKT"])
+        assertEquals("recFieldAllowance", DeductionPatternMappings.recoveryAndLoanMappings["Rec CIA-FD"])
+        assertEquals("recSpecialForces", DeductionPatternMappings.recoveryAndLoanMappings["Rec PARA-SC"])
+        assertEquals("agifLoanRecovery", DeductionPatternMappings.recoveryAndLoanMappings["AGIF-CAR"])
+
+        // Verify Ledger
+        assertEquals("openingDebitBalance", DeductionPatternMappings.ledgerMappings["Op Dr Bal"])
+        assertEquals("closingCreditBalance", DeductionPatternMappings.ledgerMappings["Cl. Cr. Bal."])
+    }
 }
