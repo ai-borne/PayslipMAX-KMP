@@ -148,4 +148,39 @@ class PayslipPatternConfigTest {
         // Disambiguation Guard: bare TEC is blacklisted
         assertFalse(mapping.containsKey("TEC"), "Bare 'TEC' must be blacklisted to avoid prefix collisions")
     }
+
+    @Test
+    fun phase2RiskHardshipAndFieldAllowancesResolveCorrectly() {
+        val mapping = PayslipPatternConfig.creditKeysMapping
+
+        // 7th CPC Risk & Hardship Matrix cells (R1H1 to R3H3)
+        val matrixCells =
+            listOf(
+                "R1H1", "R1H2", "R1H3",
+                "R2H1", "R2H2", "R2H3",
+                "R3H1", "R3H2", "R3H3",
+            )
+        for (cell in matrixCells) {
+            assertEquals("riskHardshipAllowance", mapping[cell], "Matrix cell $cell must resolve to riskHardshipAllowance")
+            assertEquals("arrearsRiskHardship", mapping["ARR-$cell"], "Matrix cell arrears ARR-$cell must resolve to arrearsRiskHardship")
+        }
+
+        // RHA and ARR-RHA
+        assertEquals("riskHardshipAllowance", mapping["RHA"])
+        assertEquals("arrearsRiskHardship", mapping["ARR-RHA"])
+
+        // Field Allowances and Arrears
+        val fieldCodes = listOf("HAFA", "HAFAA", "CFAA", "CMFAA")
+        for (code in fieldCodes) {
+            assertEquals("fieldAllowance", mapping[code], "Field allowance $code must resolve to fieldAllowance")
+            assertEquals("fieldAllowance", mapping["ARR-$code"], "Field allowance arrears ARR-$code must resolve to fieldAllowance")
+        }
+
+        // Special & Climate Allowances and Arrears
+        val climateCodes = listOf("HAUCA", "HUACA", "SCCIA", "SIACHEN")
+        for (code in climateCodes) {
+            assertEquals("riskHardshipAllowance", mapping[code], "Special/climate allowance $code must resolve to riskHardshipAllowance")
+            assertEquals("arrearsRiskHardship", mapping["ARR-$code"], "Special/climate arrears ARR-$code must resolve to arrearsRiskHardship")
+        }
+    }
 }

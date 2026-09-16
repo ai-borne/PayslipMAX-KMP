@@ -226,4 +226,53 @@ class ReplicaUtilsTest {
         assertEquals(0.0, creditsMismatch(payslip), "credits mismatch must be zero")
         assertTrue(credits.none { it.code == "MISC" }, "MISC must not appear when credits match gross")
     }
+
+    @Test
+    fun `risk hardship and field allowances are structured without misc or mismatch`() {
+        val payslip =
+            ParsedPayslip(
+                file = "rh_fd.pdf",
+                year = 2024,
+                monthNum = 2,
+                monthName = "February",
+                dateStr = "02/2024",
+                officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
+                earnings =
+                    Earnings(
+                        basicPay = 153500.0,
+                        fieldAllowance = 10500.0,
+                        riskHardshipAllowance = 25000.0,
+                        arrearsRiskHardship = 50000.0,
+                    ),
+                deductions = Deductions(),
+                ledgerBalances = LedgerBalances(),
+                summary = PayslipSummary(239000.0, 0.0, 239000.0),
+                taxAndSavings = null,
+                rawEarnings = emptyMap(),
+                rawDeductions = emptyMap(),
+            )
+
+        val credits = getCreditsList(payslip)
+        val rha = credits.find { it.fieldKey == "riskHardshipAllowance" }
+        val arrRha = credits.find { it.fieldKey == "arrearsRiskHardship" }
+        val fd = credits.find { it.fieldKey == "fieldAllowance" }
+
+        assertNotNull(rha, "Risk & Hardship allowance must be present in credits")
+        assertEquals(25000.0, rha.amount)
+        assertEquals("RHA", rha.code)
+        assertTrue(rha.desc.contains("Risk & Hardship"))
+
+        assertNotNull(arrRha, "Arrears of Risk & Hardship allowance must be present in credits")
+        assertEquals(50000.0, arrRha.amount)
+        assertEquals("ARR-RHA", arrRha.code)
+        assertTrue(arrRha.desc.contains("Risk & Hardship"))
+
+        assertNotNull(fd, "Field allowance must be present in credits")
+        assertEquals(10500.0, fd.amount)
+        assertEquals("FD", fd.code)
+        assertTrue(fd.desc.contains("Field Area Allowance"))
+
+        assertEquals(0.0, creditsMismatch(payslip), "credits mismatch must be zero")
+        assertTrue(credits.none { it.code == "MISC" }, "MISC must not appear when credits match gross")
+    }
 }

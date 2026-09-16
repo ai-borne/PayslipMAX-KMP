@@ -171,4 +171,50 @@ class ReconciliationSolverTest {
         assertEquals(1.0f, solved.fieldConfidence["technicalAllowance"])
         assertEquals(1.0f, solved.fieldConfidence["arrearsTechnicalAllowance"])
     }
+
+    @Test
+    fun phase2RiskHardshipMatrixReconciliationLeavesNoResidual() {
+        val entries =
+            listOf(
+                credit("basicPay", 153500.0),
+                credit("militaryServicePay", 15500.0),
+                credit("dearnessAllowance", 101400.0),
+                credit("riskHardshipAllowance", 25000.0),
+                credit("arrearsRiskHardship", 50000.0),
+                debit("dsopSubscription", 40000.0),
+                debit("agif", 10000.0),
+            )
+        val solved = solve(entries, gross = 345400.0, deductions = 50000.0, net = 295400.0)
+
+        assertEquals(25000.0, solved.earningsMap["riskHardshipAllowance"])
+        assertEquals(50000.0, solved.earningsMap["arrearsRiskHardship"])
+        assertEquals(0.0, solved.reconciled.miscEarnings)
+        assertTrue(solved.rawEarnings.isEmpty())
+        assertFalse(solved.needsReview)
+        assertEquals(1.0f, solved.fieldConfidence["riskHardshipAllowance"])
+        assertEquals(1.0f, solved.fieldConfidence["arrearsRiskHardship"])
+    }
+
+    @Test
+    fun phase2FieldAndClimateAllowancesReconciliationLeavesNoResidual() {
+        val entries =
+            listOf(
+                credit("basicPay", 120000.0),
+                credit("militaryServicePay", 15500.0),
+                credit("dearnessAllowance", 67750.0),
+                credit("fieldAllowance", 16800.0),
+                credit("riskHardshipAllowance", 42500.0),
+                debit("dsopSubscription", 30000.0),
+                debit("agif", 10000.0),
+            )
+        val solved = solve(entries, gross = 262550.0, deductions = 40000.0, net = 222550.0)
+
+        assertEquals(16800.0, solved.earningsMap["fieldAllowance"])
+        assertEquals(42500.0, solved.earningsMap["riskHardshipAllowance"])
+        assertEquals(0.0, solved.reconciled.miscEarnings)
+        assertTrue(solved.rawEarnings.isEmpty())
+        assertFalse(solved.needsReview)
+        assertEquals(1.0f, solved.fieldConfidence["fieldAllowance"])
+        assertEquals(1.0f, solved.fieldConfidence["riskHardshipAllowance"])
+    }
 }
