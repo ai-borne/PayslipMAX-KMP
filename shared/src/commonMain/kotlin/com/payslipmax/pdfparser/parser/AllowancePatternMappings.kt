@@ -56,6 +56,15 @@ object AllowancePatternMappings {
             "ARR-HH32" to "arrearsHra",
             "ARR-HH33" to "arrearsHra",
             "ARR-HRA" to "arrearsHra",
+            "HRAX" to "houseRentAllowance",
+            "HRAY" to "houseRentAllowance",
+            "HRAZ" to "houseRentAllowance",
+            "ARR-HRAX" to "arrearsHra",
+            "ARR-HRAY" to "arrearsHra",
+            "ARR-HRAZ" to "arrearsHra",
+            "REIMACCO" to "houseRentAllowance",
+            "ARR-REIMACCO" to "arrearsHra",
+            "A/o REIMACCO" to "arrearsHra",
         )
 
     /**
@@ -158,6 +167,20 @@ object AllowancePatternMappings {
         )
 
     /**
+     * Technical Allowance tier mappings (7th CPC) and arrears.
+     * Bare 'TEC' is intentionally excluded to prevent prefix collision.
+     */
+    val technicalMappings: Map<String, String> =
+        mapOf(
+            "TECI" to "technicalAllowance",
+            "TECII" to "technicalAllowance",
+            "ARR-TECI" to "arrearsTechnicalAllowance",
+            "ARR-TECII" to "arrearsTechnicalAllowance",
+            "A/o TECI" to "technicalAllowance",
+            "A/o TECII" to "technicalAllowance",
+        )
+
+    /**
      * Composite credit key mapping providing Single Source of Truth across parsing pipelines.
      */
     val all: Map<String, String> =
@@ -165,5 +188,6 @@ object AllowancePatternMappings {
             housingMappings +
             fieldAndRiskMappings +
             generalAllowanceMappings +
+            technicalMappings +
             adjustmentAndLedgerMappings
 }

@@ -92,6 +92,8 @@ private fun buildEarnings(
         adjPayAndAllce = earningsMap["adjPayAndAllce"] ?: 0.0,
         adjFieldAllowance = earningsMap["adjFieldAllowance"] ?: 0.0,
         medicalAllowance = earningsMap["medicalAllowance"] ?: 0.0,
+        technicalAllowance = earningsMap["technicalAllowance"] ?: 0.0,
+        arrearsTechnicalAllowance = earningsMap["arrearsTechnicalAllowance"] ?: 0.0,
         adjTicketRecovery = earningsMap["adjTicketRecovery"] ?: 0.0,
         miscEarnings = miscEarnings,
     )

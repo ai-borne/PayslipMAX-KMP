@@ -38,6 +38,8 @@ private val creditsDescriptions =
         "adjPayAndAllce" to "Adjustment of Pay and Allowance.",
         "adjFieldAllowance" to "Adjustment of Field Allowance.",
         "medicalAllowance" to "Medical Allowance or Reimbursement.",
+        "technicalAllowance" to com.payslipmax.pdfparser.ui.theme.AppStringsPayCodes.technicalAllowance,
+        "arrearsTechnicalAllowance" to com.payslipmax.pdfparser.ui.theme.AppStringsPayCodes.arrearsTechnicalAllowance,
         "adjTicketRecovery" to "Adjustment of ticket recovery.",
         "miscEarnings" to "Miscellaneous unmapped credits or adjustment reconciliation difference.",
     )
@@ -143,6 +145,8 @@ private fun structuredCreditLines(earnings: com.payslipmax.pdfparser.domain.Earn
         LedgerLine("ADJ P&A", earnings.adjPayAndAllce, getCreditDesc("adjPayAndAllce"), "adjPayAndAllce"),
         LedgerLine("A/o FD", earnings.adjFieldAllowance, getCreditDesc("adjFieldAllowance"), "adjFieldAllowance"),
         LedgerLine("MEDICAL", earnings.medicalAllowance, getCreditDesc("medicalAllowance"), "medicalAllowance"),
+        LedgerLine("TEC", earnings.technicalAllowance, getCreditDesc("technicalAllowance"), "technicalAllowance"),
+        LedgerLine("ARR-TEC", earnings.arrearsTechnicalAllowance, getCreditDesc("arrearsTechnicalAllowance"), "arrearsTechnicalAllowance"),
         LedgerLine("ETKT-REF", earnings.adjTicketRecovery, getCreditDesc("adjTicketRecovery"), "adjTicketRecovery"),
         LedgerLine("MISC", earnings.miscEarnings, getCreditDesc("miscEarnings"), "miscEarnings"),
     ).filter { it.amount != 0.0 }

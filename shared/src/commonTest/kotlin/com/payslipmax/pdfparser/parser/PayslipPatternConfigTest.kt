@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.parser
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class PayslipPatternConfigTest {
@@ -119,5 +120,32 @@ class PayslipPatternConfigTest {
         // Verify Ledger
         assertEquals("openingDebitBalance", DeductionPatternMappings.ledgerMappings["Op Dr Bal"])
         assertEquals("closingCreditBalance", DeductionPatternMappings.ledgerMappings["Cl. Cr. Bal."])
+    }
+
+    @Test
+    fun phase1AllowanceMappingsResolveCorrectly() {
+        val mapping = PayslipPatternConfig.creditKeysMapping
+
+        // 7th CPC Housing variations
+        assertEquals("houseRentAllowance", mapping["HRAX"])
+        assertEquals("houseRentAllowance", mapping["HRAY"])
+        assertEquals("houseRentAllowance", mapping["HRAZ"])
+        assertEquals("arrearsHra", mapping["ARR-HRAX"])
+        assertEquals("arrearsHra", mapping["ARR-HRAY"])
+        assertEquals("arrearsHra", mapping["ARR-HRAZ"])
+        assertEquals("houseRentAllowance", mapping["REIMACCO"])
+        assertEquals("arrearsHra", mapping["ARR-REIMACCO"])
+        assertEquals("arrearsHra", mapping["A/o REIMACCO"])
+
+        // Technical Allowances & Arrears
+        assertEquals("technicalAllowance", mapping["TECI"])
+        assertEquals("technicalAllowance", mapping["TECII"])
+        assertEquals("arrearsTechnicalAllowance", mapping["ARR-TECI"])
+        assertEquals("arrearsTechnicalAllowance", mapping["ARR-TECII"])
+        assertEquals("technicalAllowance", mapping["A/o TECI"])
+        assertEquals("technicalAllowance", mapping["A/o TECII"])
+
+        // Disambiguation Guard: bare TEC is blacklisted
+        assertFalse(mapping.containsKey("TEC"), "Bare 'TEC' must be blacklisted to avoid prefix collisions")
     }
 }

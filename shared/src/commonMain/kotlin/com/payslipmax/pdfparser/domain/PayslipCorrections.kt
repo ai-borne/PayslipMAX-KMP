@@ -124,6 +124,8 @@ private fun applyEarningsCorrection(
         "adjPayAndAllce" -> earnings.copy(adjPayAndAllce = value)
         "adjFieldAllowance" -> earnings.copy(adjFieldAllowance = value)
         "medicalAllowance" -> earnings.copy(medicalAllowance = value)
+        "technicalAllowance" -> earnings.copy(technicalAllowance = value)
+        "arrearsTechnicalAllowance" -> earnings.copy(arrearsTechnicalAllowance = value)
         "adjTicketRecovery" -> earnings.copy(adjTicketRecovery = value)
         "miscEarnings" -> earnings.copy(miscEarnings = value)
         else -> null

@@ -185,4 +185,45 @@ class ReplicaUtilsTest {
         assertEquals(1, debits.count { it.fieldKey == "incomeTax" }, "must appear exactly once, not double-counted from a leftover raw entry")
         assertTrue(payslip.isFieldLowConfidence("incomeTax"), "a Gemma-recovered field must be surfaced for review, not read as certain")
     }
+
+    @Test
+    fun `technical allowance and arrears are structured without misc or mismatch`() {
+        val payslip =
+            ParsedPayslip(
+                file = "tec.pdf",
+                year = 2024,
+                monthNum = 1,
+                monthName = "January",
+                dateStr = "01/2024",
+                officer = Officer("Officer Officer", "16/000/000000X", "AR*****90G"),
+                earnings =
+                    Earnings(
+                        basicPay = 144700.0,
+                        technicalAllowance = 4500.0,
+                        arrearsTechnicalAllowance = 58650.0,
+                    ),
+                deductions = Deductions(),
+                ledgerBalances = LedgerBalances(),
+                summary = PayslipSummary(207850.0, 0.0, 207850.0),
+                taxAndSavings = null,
+                rawEarnings = emptyMap(),
+                rawDeductions = emptyMap(),
+            )
+
+        val credits = getCreditsList(payslip)
+        val tec = credits.find { it.fieldKey == "technicalAllowance" }
+        val arrTec = credits.find { it.fieldKey == "arrearsTechnicalAllowance" }
+
+        assertNotNull(tec, "Technical allowance entry must be present in credits")
+        assertEquals(4500.0, tec.amount)
+        assertEquals("TEC", tec.code)
+        assertTrue(tec.desc.contains("Technical Allowance"))
+
+        assertNotNull(arrTec, "Arrears of technical allowance must be present in credits")
+        assertEquals(58650.0, arrTec.amount)
+        assertEquals("ARR-TEC", arrTec.code)
+
+        assertEquals(0.0, creditsMismatch(payslip), "credits mismatch must be zero")
+        assertTrue(credits.none { it.code == "MISC" }, "MISC must not appear when credits match gross")
+    }
 }

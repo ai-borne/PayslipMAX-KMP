@@ -119,4 +119,56 @@ class ReconciliationSolverTest {
 
         assertTrue(solved.needsReview, "missing mandatory fields must set needsReview to true to fire Gemma")
     }
+
+    @Test
+    fun screenshot1ReconciliationWithHraxAndTeciLeavesNoResidual() {
+        val entries =
+            listOf(
+                credit("basicPay", 153500.0),
+                credit("militaryServicePay", 15500.0),
+                credit("dearnessAllowance", 101400.0),
+                credit("transportAllowance", 3600.0),
+                credit("transportAllowanceDa", 2160.0),
+                credit("dressAllowance", 25000.0),
+                credit("riskHardshipAllowance", 21125.0),
+                credit("houseRentAllowance", 46050.0),
+                credit("technicalAllowance", 3000.0),
+                debit("dsopSubscription", 40000.0),
+                debit("agif", 10000.0),
+            )
+        val solved = solve(entries, gross = 371335.0, deductions = 50000.0, net = 321335.0)
+
+        assertEquals(46050.0, solved.earningsMap["houseRentAllowance"])
+        assertEquals(3000.0, solved.earningsMap["technicalAllowance"])
+        assertEquals(0.0, solved.reconciled.miscEarnings, "HRAX and TECI mapped -> zero misc residual")
+        assertTrue(solved.rawEarnings.isEmpty(), "no unmapped credits")
+        assertFalse(solved.needsReview, "clean slip does not trigger review")
+        assertEquals(1.0f, solved.fieldConfidence["houseRentAllowance"])
+        assertEquals(1.0f, solved.fieldConfidence["technicalAllowance"])
+    }
+
+    @Test
+    fun screenshot2ReconciliationWithTeciiAndArrTeciiLeavesNoResidual() {
+        val entries =
+            listOf(
+                credit("basicPay", 144700.0),
+                credit("militaryServicePay", 15500.0),
+                credit("dearnessAllowance", 75244.0),
+                credit("transportAllowance", 3600.0),
+                credit("transportAllowanceDa", 1872.0),
+                credit("technicalAllowance", 4500.0),
+                credit("arrearsTechnicalAllowance", 58650.0),
+                debit("dsopSubscription", 35000.0),
+                debit("agif", 10000.0),
+            )
+        val solved = solve(entries, gross = 304066.0, deductions = 45000.0, net = 259066.0)
+
+        assertEquals(4500.0, solved.earningsMap["technicalAllowance"])
+        assertEquals(58650.0, solved.earningsMap["arrearsTechnicalAllowance"])
+        assertEquals(0.0, solved.reconciled.miscEarnings)
+        assertTrue(solved.rawEarnings.isEmpty())
+        assertFalse(solved.needsReview)
+        assertEquals(1.0f, solved.fieldConfidence["technicalAllowance"])
+        assertEquals(1.0f, solved.fieldConfidence["arrearsTechnicalAllowance"])
+    }
 }

@@ -85,6 +85,8 @@ data class Earnings(
     val adjPayAndAllce: Double = 0.0,
     val adjFieldAllowance: Double = 0.0,
     val medicalAllowance: Double = 0.0,
+    val technicalAllowance: Double = 0.0,
+    val arrearsTechnicalAllowance: Double = 0.0,
     val adjTicketRecovery: Double = 0.0,
     val miscEarnings: Double = 0.0,
 )
