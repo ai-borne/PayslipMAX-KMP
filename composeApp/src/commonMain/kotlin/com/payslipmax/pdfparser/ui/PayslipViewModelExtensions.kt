@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.ui
 
 import androidx.lifecycle.viewModelScope
+import com.payslipmax.pdfparser.ui.screens.sanitizeProfileInputs
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -140,9 +141,10 @@ fun PayslipViewModel.updateProfileOverrides(
     cda: String,
     pan: String,
 ) {
+    val (cleanName, cleanCda, cleanPan) = sanitizeProfileInputs(name, cda, pan)
     viewModelScope.launch {
         val current = repository.getSettings() ?: com.payslipmax.pdfparser.database.AppSettingsEntity()
-        repository.saveSettings(current.copy(profileName = name, profileCdaNumber = cda, profilePanNumber = pan))
+        repository.saveSettings(current.copy(profileName = cleanName, profileCdaNumber = cleanCda, profilePanNumber = cleanPan))
     }
 }
 
@@ -195,9 +197,10 @@ fun PayslipViewModel.resetPinWithPdf(
         if (result.isSuccess) {
             val parsed = result.getOrNull()
             if (parsed != null) {
-                val expectedPan = _uiState.value.profilePanNumber
-                if (expectedPan.isNotEmpty() && parsed.officer.pan.isNotEmpty() &&
-                    !parsed.officer.pan.equals(expectedPan, ignoreCase = true)
+                val expectedPan = _uiState.value.profilePanNumber.trim()
+                val parsedPan = parsed.officer.pan.trim()
+                if (expectedPan.isNotEmpty() && parsedPan.isNotEmpty() &&
+                    !parsedPan.equals(expectedPan, ignoreCase = true)
                 ) {
                     _uiState.update { it.copy(isLoading = false) }
                     onResult(Result.failure(Exception("PDF does not match the active user profile")))

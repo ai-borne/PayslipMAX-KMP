@@ -136,8 +136,9 @@ class PayslipViewModelSettingsTest {
             ) { callbackResult = it }
             runCurrent()
 
-            assertNotNull(callbackResult)
-            assertTrue(callbackResult!!.isSuccess)
+            val result = callbackResult
+            assertNotNull(result)
+            assertTrue(result.isSuccess)
             val state = viewModel.uiState.value
             assertFalse(state.isLockEnabled)
             assertFalse(state.isAppLocked)
@@ -168,9 +169,91 @@ class PayslipViewModelSettingsTest {
             ) { callbackResult = it }
             runCurrent()
 
-            assertNotNull(callbackResult)
-            assertTrue(callbackResult!!.isFailure)
-            assertEquals("PDF does not match the active user profile", callbackResult!!.exceptionOrNull()?.message)
+            val result = callbackResult
+            assertNotNull(result)
+            assertTrue(result.isFailure)
+            assertEquals("PDF does not match the active user profile", result.exceptionOrNull()?.message)
             assertTrue(viewModel.uiState.value.isAppLocked)
+        }
+
+    @Test
+    fun testProfileOverridesSanitizationIntegration() =
+        runTest {
+            viewModel.updateProfileOverrides("  Col K. Singh  ", " cda999 ", " pan1234x ")
+            runCurrent()
+
+            val state = viewModel.uiState.value
+            assertEquals("Col K. Singh", state.profileName)
+            assertEquals("CDA999", state.profileCdaNumber)
+            assertEquals("PAN1234X", state.profilePanNumber)
+
+            val persisted = repository.getSettings()
+            assertNotNull(persisted)
+            assertEquals("Col K. Singh", persisted.profileName)
+            assertEquals("CDA999", persisted.profileCdaNumber)
+            assertEquals("PAN1234X", persisted.profilePanNumber)
+        }
+
+    @Test
+    fun testResetPinWithPdfUsingSanitizedPan() =
+        runTest {
+            viewModel.setLockEnabled(true, "1234")
+            viewModel.updateProfileOverrides("  Col K. Singh  ", " cda999 ", " pan1234x ")
+            runCurrent()
+            viewModel.lockApp()
+            runCurrent()
+            assertTrue(viewModel.uiState.value.isAppLocked)
+
+            val mockPayslip =
+                createMockPayslip("04/2026").let {
+                    it.copy(officer = it.officer.copy(pan = "PAN1234X"))
+                }
+            fakeParser.result = Result.success(mockPayslip)
+
+            var callbackResult: Result<Unit>? = null
+            viewModel.resetPinWithPdf(
+                pdfBytes = byteArrayOf(1, 2, 3),
+                password = "pass",
+                filename = "04 Apr 2026.pdf",
+            ) { callbackResult = it }
+            runCurrent()
+
+            val result = callbackResult
+            assertNotNull(result)
+            assertTrue(result.isSuccess)
+            val state = viewModel.uiState.value
+            assertFalse(state.isLockEnabled)
+            assertFalse(state.isAppLocked)
+            assertEquals("", state.appPinHash)
+        }
+
+    @Test
+    fun testResetPinWithPdfUntrimmedParsedPanMatchesSanitizedPan() =
+        runTest {
+            viewModel.setLockEnabled(true, "1234")
+            viewModel.updateProfileOverrides("Col K. Singh", "CDA999", "PAN1234X")
+            runCurrent()
+            viewModel.lockApp()
+            runCurrent()
+            assertTrue(viewModel.uiState.value.isAppLocked)
+
+            val mockPayslip =
+                createMockPayslip("04/2026").let {
+                    it.copy(officer = it.officer.copy(pan = "  pan1234x  "))
+                }
+            fakeParser.result = Result.success(mockPayslip)
+
+            var callbackResult: Result<Unit>? = null
+            viewModel.resetPinWithPdf(
+                pdfBytes = byteArrayOf(1, 2, 3),
+                password = "pass",
+                filename = "04 Apr 2026.pdf",
+            ) { callbackResult = it }
+            runCurrent()
+
+            val result = callbackResult
+            assertNotNull(result)
+            assertTrue(result.isSuccess)
+            assertFalse(viewModel.uiState.value.isAppLocked)
         }
 }
