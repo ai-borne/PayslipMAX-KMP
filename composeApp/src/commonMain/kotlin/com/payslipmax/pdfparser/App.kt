@@ -4,11 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
@@ -19,13 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import com.payslipmax.pdfparser.nav.AppNavState
 import com.payslipmax.pdfparser.ui.*
+import com.payslipmax.pdfparser.ui.components.AppBottomBar
+import com.payslipmax.pdfparser.ui.components.PayslipMaxProtectedHost
 import com.payslipmax.pdfparser.ui.screens.BaseModelDownloadBanner
 import com.payslipmax.pdfparser.ui.screens.DashboardScreen
 import com.payslipmax.pdfparser.ui.screens.HistoryScreen
 import com.payslipmax.pdfparser.ui.screens.InsightsScreen
 import com.payslipmax.pdfparser.ui.screens.LockScreen
 import com.payslipmax.pdfparser.ui.screens.SettingsScreen
-import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
 
@@ -94,32 +90,34 @@ fun App(
     val uiState by viewModel.uiState.collectAsState()
 
     PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) {
-        if (!uiState.appIntegrityStatus.isAllowedToRun) {
-            com.payslipmax.pdfparser.ui.screens.SideloadBlockedScreen(
-                reason =
-                    (uiState.appIntegrityStatus as? com.payslipmax.pdfparser.domain.AppIntegrityStatus.Sideloaded)?.reason
-                        ?: (uiState.appIntegrityStatus as? com.payslipmax.pdfparser.domain.AppIntegrityStatus.Tampered)?.reason,
-            )
-        } else if (uiState.isLockEnabled && uiState.isAppLocked) {
-            // No BackHandler is composed here, so system back falls through to the OS default
-            // (backgrounding the app) — locked content can never be revealed via back (decision 5).
-            LockScreen(
-                onUnlock = { pin -> viewModel.verifyPin(pin) },
-                onPickPdf = onPickPdf,
-                onResetPin = { bytes, pwd, name, onResult ->
-                    viewModel.resetPinWithPdf(bytes, pwd, name, onResult)
-                },
-            )
-        } else {
-            MainScaffold(
-                navState = navState,
-                uiState = uiState,
-                viewModel = viewModel,
-                onPickPdf = onPickPdf,
-                onOpenPdf = onOpenPdf,
-                onPickBackup = onPickBackup,
-                nativeDetailNavigator = nativeDetailNavigator,
-            )
+        PayslipMaxProtectedHost {
+            if (!uiState.appIntegrityStatus.isAllowedToRun) {
+                com.payslipmax.pdfparser.ui.screens.SideloadBlockedScreen(
+                    reason =
+                        (uiState.appIntegrityStatus as? com.payslipmax.pdfparser.domain.AppIntegrityStatus.Sideloaded)?.reason
+                            ?: (uiState.appIntegrityStatus as? com.payslipmax.pdfparser.domain.AppIntegrityStatus.Tampered)?.reason,
+                )
+            } else if (uiState.isLockEnabled && uiState.isAppLocked) {
+                // No BackHandler is composed here, so system back falls through to the OS default
+                // (backgrounding the app) — locked content can never be revealed via back (decision 5).
+                LockScreen(
+                    onUnlock = { pin -> viewModel.verifyPin(pin) },
+                    onPickPdf = onPickPdf,
+                    onResetPin = { bytes, pwd, name, onResult ->
+                        viewModel.resetPinWithPdf(bytes, pwd, name, onResult)
+                    },
+                )
+            } else {
+                MainScaffold(
+                    navState = navState,
+                    uiState = uiState,
+                    viewModel = viewModel,
+                    onPickPdf = onPickPdf,
+                    onOpenPdf = onOpenPdf,
+                    onPickBackup = onPickBackup,
+                    nativeDetailNavigator = nativeDetailNavigator,
+                )
+            }
         }
     }
 }
@@ -144,7 +142,7 @@ private fun MainScaffold(
             // Detail screens are pushed on top and hide the tab bar (decision 8) — but on iOS the
             // native VC covers the whole root tree, so the bar stays here (hidden behind it).
             if (hostDetailsNatively || navState.activeDetail == null) {
-                BottomBar(
+                AppBottomBar(
                     currentScreen = navState.currentTab,
                     onNavigate = { navState.switchTab(it) },
                 )
@@ -262,38 +260,5 @@ private fun DetailContent(
         // only so this `when` stays exhaustive against future Screen cases.
         Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
-    }
-}
-
-@Composable
-private fun BottomBar(
-    currentScreen: Screen,
-    onNavigate: (Screen) -> Unit,
-) {
-    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-        NavigationBarItem(
-            selected = currentScreen == Screen.Dashboard,
-            onClick = { onNavigate(Screen.Dashboard) },
-            label = { Text(AppStrings.navigationHome) },
-            icon = { Icon(Icons.Default.Home, contentDescription = null) },
-        )
-        NavigationBarItem(
-            selected = currentScreen == Screen.History,
-            onClick = { onNavigate(Screen.History) },
-            label = { Text(AppStrings.navigationHistory) },
-            icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
-        )
-        NavigationBarItem(
-            selected = currentScreen == Screen.Insights,
-            onClick = { onNavigate(Screen.Insights) },
-            label = { Text(AppStrings.navigationInsights) },
-            icon = { Icon(Icons.Default.Info, contentDescription = null) },
-        )
-        NavigationBarItem(
-            selected = currentScreen == Screen.Settings,
-            onClick = { onNavigate(Screen.Settings) },
-            label = { Text(AppStrings.navigationSettings) },
-            icon = { Icon(Icons.Default.Settings, contentDescription = null) },
-        )
     }
 }
