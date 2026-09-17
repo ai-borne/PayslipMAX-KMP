@@ -331,6 +331,32 @@ platform :ios do
     UI.success("Uploaded #{Dir.glob("#{dir}/*.png").count} screenshots for #{locale}")
   end
 
+  desc "Upload dSYMs to Firebase Crashlytics (fixes 'Missing dSYM' emails). Pass dsym_path: for a specific .xcarchive/.dSYM, or omit to auto-download the latest build's dSYMs from App Store Connect"
+  lane :upload_dsyms do |options|
+    # Crashlytics is SPM-managed (no Pods/), so the upload-symbols binary lives under the
+    # resolved package checkout in DerivedData rather than at a fixed repo-relative path.
+    binary = Dir.glob(File.expand_path("~/Library/Developer/Xcode/DerivedData/*/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols")).first
+    UI.user_error!("Could not find Firebase's upload-symbols binary under DerivedData — build the project in Xcode first to resolve SPM packages") unless binary
+
+    if options[:dsym_path]
+      upload_symbols_to_crashlytics(
+        dsym_path: options[:dsym_path],
+        gsp_path: "iosApp/GoogleService-Info.plist",
+        binary_path: binary
+      )
+    else
+      asc_api_key
+      download_dsyms(version: options[:version], build_number: options[:build_number])
+      upload_symbols_to_crashlytics(
+        dsym_path: "./*.dSYM.zip",
+        gsp_path: "iosApp/GoogleService-Info.plist",
+        binary_path: binary
+      )
+      clean_build_artifacts
+    end
+    UI.success("dSYMs uploaded to Crashlytics")
+  end
+
   desc "Show a subscription's current customer price per territory (defaults to the key ones)"
   lane :subscription_prices do |options|
     asc_api_key
