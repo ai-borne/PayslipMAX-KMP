@@ -30,6 +30,9 @@ actual object CryptoHelper {
     private const val TAG_SIZE = 16
     private var memoryFallbackKey: String? = null
 
+    @kotlin.concurrent.Volatile
+    private var cachedDatabaseKey: String? = null
+
     actual fun encrypt(
         data: ByteArray,
         password: String,
@@ -193,6 +196,13 @@ actual object CryptoHelper {
     private const val KEYCHAIN_ACCOUNT = "db_secret_key"
 
     actual fun getDatabaseSecretKey(): String {
+        cachedDatabaseKey?.let { return it }
+        val resolved = resolveDatabaseSecretKey()
+        cachedDatabaseKey = resolved
+        return resolved
+    }
+
+    private fun resolveDatabaseSecretKey(): String {
         val query =
             CFDictionaryCreateMutable(null, 0, null, null).apply {
                 CFDictionarySetValue(this, kSecClass, kSecClassGenericPassword)

@@ -125,6 +125,9 @@ actual object CryptoHelper {
     private const val IV_PREF = "encrypted_db_key_iv"
     private var memoryFallbackKey: String? = null
 
+    @Volatile
+    private var cachedDatabaseKey: String? = null
+
     private fun getOrCreateAndroidKeystoreKey(): javax.crypto.SecretKey {
         val keyStore = java.security.KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
         if (keyStore.containsAlias(KEYSTORE_ALIAS)) {
@@ -151,6 +154,16 @@ actual object CryptoHelper {
     }
 
     actual fun getDatabaseSecretKey(): String {
+        cachedDatabaseKey?.let { return it }
+        return synchronized(this) {
+            cachedDatabaseKey?.let { return it }
+            val resolved = resolveDatabaseSecretKey()
+            cachedDatabaseKey = resolved
+            resolved
+        }
+    }
+
+    private fun resolveDatabaseSecretKey(): String {
         val ctx = ContextHolder.context
         val isTest =
             try {

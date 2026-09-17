@@ -1,5 +1,9 @@
 package com.payslipmax.pdfparser.crypto
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -42,14 +46,62 @@ class CryptoHelperTest {
     }
 
     @Test
-    fun testGetDatabaseSecretKey() {
-        val key1 = CryptoHelper.getDatabaseSecretKey()
-        val key2 = CryptoHelper.getDatabaseSecretKey()
+    fun testGetDatabaseSecretKeyIsPersistentAndCached() {
+        val keys = List(10) { CryptoHelper.getDatabaseSecretKey() }
+        val firstKey = keys.first()
 
-        assertNotNull(key1)
-        assertTrue(key1.isNotEmpty(), "Database key should not be empty")
-        assertEquals(key1, key2, "Database key should be persistent across calls")
+        assertNotNull(firstKey)
+        assertTrue(firstKey.isNotEmpty(), "Database key must not be empty")
+        assertEquals(64, firstKey.length, "Database key should be a 64-character hex string")
+        assertTrue(keys.all { it == firstKey }, "Consecutive calls to getDatabaseSecretKey must return identical cached key")
     }
+
+    @Test
+    fun testEncryptDecryptConsistencyWithCachedKey() {
+        val keyBefore = CryptoHelper.getDatabaseSecretKey()
+        val sensitiveData = "Confidential Army Salary Record: ₹1,50,000"
+        val encrypted = CryptoHelper.encrypt(sensitiveData.encodeToByteArray(), keyBefore).getOrThrow()
+
+        // Simulate subsequent call retrieving from cache
+        val keyAfter = CryptoHelper.getDatabaseSecretKey()
+        assertEquals(keyBefore, keyAfter)
+
+        val decrypted = CryptoHelper.decrypt(encrypted, keyAfter).getOrThrow()
+        assertEquals(sensitiveData, decrypted.decodeToString(), "Decrypted data must match using cached key across lookups")
+    }
+
+    @Test
+    fun testFallbackBehaviorPreserved() {
+        val fallbackKey = CryptoHelper.getLegacyFallbackKey()
+        assertEquals("PCDAPayslipOfflineSecret2026!", fallbackKey, "Legacy fallback key must de-obfuscate correctly")
+
+        val data = "Legacy Military Payslip".encodeToByteArray()
+        val encryptedWithFallback = CryptoHelper.encrypt(data, fallbackKey).getOrThrow()
+
+        // Can decrypt with fallback key
+        val decrypted = CryptoHelper.decrypt(encryptedWithFallback, fallbackKey)
+        assertTrue(decrypted.isSuccess)
+        assertEquals("Legacy Military Payslip", decrypted.getOrThrow().decodeToString())
+
+        // Cannot decrypt with hardware-cached database key
+        val dbKey = CryptoHelper.getDatabaseSecretKey()
+        val decryptedWithDbKey = CryptoHelper.decrypt(encryptedWithFallback, dbKey)
+        assertTrue(decryptedWithDbKey.isFailure, "Decryption of legacy payload with database key must fail")
+    }
+
+    @Test
+    fun testConcurrentDatabaseSecretKeyAccess() =
+        runTest {
+            val deferredKeys =
+                (1..20).map {
+                    async(Dispatchers.Default) {
+                        CryptoHelper.getDatabaseSecretKey()
+                    }
+                }
+            val results = deferredKeys.awaitAll()
+            val primaryKey = results.first()
+            assertTrue(results.all { it == primaryKey }, "All concurrent calls must return the exact same cached key")
+        }
 
     @Test
     fun testEncryptDecryptCycle() {
