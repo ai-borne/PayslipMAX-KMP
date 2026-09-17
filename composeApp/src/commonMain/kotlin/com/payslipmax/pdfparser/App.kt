@@ -15,7 +15,6 @@ import androidx.compose.ui.backhandler.BackHandler
 import com.payslipmax.pdfparser.nav.AppNavState
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.components.AppBottomBar
-import com.payslipmax.pdfparser.ui.components.PayslipMaxProtectedHost
 import com.payslipmax.pdfparser.ui.screens.BaseModelDownloadBanner
 import com.payslipmax.pdfparser.ui.screens.DashboardScreen
 import com.payslipmax.pdfparser.ui.screens.HistoryScreen
@@ -90,34 +89,32 @@ fun App(
     val uiState by viewModel.uiState.collectAsState()
 
     PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) {
-        PayslipMaxProtectedHost {
-            if (!uiState.appIntegrityStatus.isAllowedToRun) {
-                com.payslipmax.pdfparser.ui.screens.SideloadBlockedScreen(
-                    reason =
-                        (uiState.appIntegrityStatus as? com.payslipmax.pdfparser.domain.AppIntegrityStatus.Sideloaded)?.reason
-                            ?: (uiState.appIntegrityStatus as? com.payslipmax.pdfparser.domain.AppIntegrityStatus.Tampered)?.reason,
-                )
-            } else if (uiState.isLockEnabled && uiState.isAppLocked) {
-                // No BackHandler is composed here, so system back falls through to the OS default
-                // (backgrounding the app) — locked content can never be revealed via back (decision 5).
-                LockScreen(
-                    onUnlock = { pin -> viewModel.verifyPin(pin) },
-                    onPickPdf = onPickPdf,
-                    onResetPin = { bytes, pwd, name, onResult ->
-                        viewModel.resetPinWithPdf(bytes, pwd, name, onResult)
-                    },
-                )
-            } else {
-                MainScaffold(
-                    navState = navState,
-                    uiState = uiState,
-                    viewModel = viewModel,
-                    onPickPdf = onPickPdf,
-                    onOpenPdf = onOpenPdf,
-                    onPickBackup = onPickBackup,
-                    nativeDetailNavigator = nativeDetailNavigator,
-                )
-            }
+        if (!uiState.appIntegrityStatus.isAllowedToRun) {
+            com.payslipmax.pdfparser.ui.screens.SideloadBlockedScreen(
+                reason =
+                    (uiState.appIntegrityStatus as? com.payslipmax.pdfparser.domain.AppIntegrityStatus.Sideloaded)?.reason
+                        ?: (uiState.appIntegrityStatus as? com.payslipmax.pdfparser.domain.AppIntegrityStatus.Tampered)?.reason,
+            )
+        } else if (uiState.isLockEnabled && uiState.isAppLocked) {
+            // No BackHandler is composed here, so system back falls through to the OS default
+            // (backgrounding the app) — locked content can never be revealed via back (decision 5).
+            LockScreen(
+                onUnlock = { pin -> viewModel.verifyPin(pin) },
+                onPickPdf = onPickPdf,
+                onResetPin = { bytes, pwd, name, onResult ->
+                    viewModel.resetPinWithPdf(bytes, pwd, name, onResult)
+                },
+            )
+        } else {
+            MainScaffold(
+                navState = navState,
+                uiState = uiState,
+                viewModel = viewModel,
+                onPickPdf = onPickPdf,
+                onOpenPdf = onOpenPdf,
+                onPickBackup = onPickBackup,
+                nativeDetailNavigator = nativeDetailNavigator,
+            )
         }
     }
 }
