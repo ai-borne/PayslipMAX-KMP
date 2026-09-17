@@ -59,6 +59,9 @@ fun PayslipReplicaScreen(
     onDeleteDraft: (fieldKey: String, codeHead: String, category: EntryCategory, originalAmount: Double?) -> Unit = { _, _, _, _ -> },
     onSaveSession: () -> Unit = {},
     onCancelSession: () -> Unit = {},
+    profileName: String = "",
+    profileCda: String = "",
+    profilePan: String = "",
 ) {
     var activeGlossaryItem by remember { mutableStateOf<Pair<String, String>?>(null) }
 
@@ -76,7 +79,12 @@ fun PayslipReplicaScreen(
             ReplicaHeader(onBackClick, isEditModeActive, onStartEditing, onCancelSession)
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
-            MetadataSection(payslip = payslip)
+            MetadataSection(
+                payslip = payslip,
+                profileName = profileName,
+                profileCda = profileCda,
+                profilePan = profilePan,
+            )
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
             PdfDocumentCard(payslip = payslip, onViewPdfClick = onViewPdfClick)
@@ -146,7 +154,13 @@ private fun ReplicaHeader(
 }
 
 @Composable
-private fun MetadataSection(payslip: ParsedPayslip) {
+private fun MetadataSection(
+    payslip: ParsedPayslip,
+    profileName: String = "",
+    profileCda: String = "",
+    profilePan: String = "",
+) {
+    val (name, cda, pan) = resolveOfficerDisplayDetails(payslip.officer, profileName, profileCda, profilePan)
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
@@ -154,7 +168,7 @@ private fun MetadataSection(payslip: ParsedPayslip) {
     ) {
         Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
             Text(
-                text = "${AppStrings.replicaOfficerPrefix}${payslip.officer.name}",
+                text = "${AppStrings.replicaOfficerPrefix}$name",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -163,8 +177,8 @@ private fun MetadataSection(payslip: ParsedPayslip) {
                 modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingTiny),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(text = "${AppStrings.replicaCdaPrefix}${payslip.officer.accountNo}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "${AppStrings.replicaPanPrefix}${payslip.officer.pan}", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "${AppStrings.replicaCdaPrefix}$cda", style = MaterialTheme.typography.bodyMedium)
+                Text(text = "${AppStrings.replicaPanPrefix}$pan", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

@@ -20,46 +20,58 @@ internal fun OfficerInfoBar(
     profileCda: String,
     profilePan: String,
 ) {
-    val displayName = if (profileName.isNotBlank()) profileName else payslip.officer.name
-    val displayCda = if (profileCda.isNotBlank()) profileCda else payslip.officer.accountNo
-    val displayPan = if (profilePan.isNotBlank()) profilePan else payslip.officer.pan
+    val (displayName, displayCda, displayPan) =
+        resolveOfficerDisplayDetails(
+            parsedOfficer = payslip.officer,
+            overrideName = profileName,
+            overrideCda = profileCda,
+            overridePan = profilePan,
+        )
+
+    val containerColor =
+        if (androidx.compose.foundation.isSystemInDarkTheme()) {
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        } else {
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.75f)
+        }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors =
-            CardDefaults.cardColors(
-                containerColor =
-                    if (androidx.compose.foundation.isSystemInDarkTheme()) {
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                    } else {
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.75f)
-                    },
-            ),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
         shape = RoundedCornerShape(AppDimensions.CornerRadius),
     ) {
-        Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
+        OfficerInfoContent(displayName, displayCda, displayPan)
+    }
+}
+
+@Composable
+private fun OfficerInfoContent(
+    displayName: String,
+    displayCda: String,
+    displayPan: String,
+) {
+    Column(modifier = Modifier.padding(AppDimensions.PaddingMedium)) {
+        Text(
+            text = displayName,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
             Text(
-                text = displayName,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+                text = "${AppStrings.cdaInfoLabel}: $displayCda",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingTiny))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = "${AppStrings.cdaInfoLabel}: $displayCda",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = "${AppStrings.panInfoLabel}: $displayPan",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            Text(
+                text = "${AppStrings.panInfoLabel}: $displayPan",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

@@ -18,6 +18,7 @@ import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.selectHistoryDetailPayslip
 import com.payslipmax.pdfparser.ui.startEditingSession
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.updateProfileOverrides
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -162,5 +163,38 @@ class PayslipReplicaDetailScreenTest {
             waitForIdle()
 
             assertTrue(backInvoked)
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testReplicaDisplaysParsedOfficerDetailsWhenNoOverrides() =
+        runComposeUiTest {
+            setContent {
+                PayslipReplicaDetailScreen(viewModel = viewModel, onBack = {})
+            }
+            testDispatcher.scheduler.runCurrent()
+            waitForIdle()
+
+            onNodeWithText("${AppStrings.replicaOfficerPrefix}Test Officer").assertIsDisplayed()
+            onNodeWithText("${AppStrings.replicaCdaPrefix}00/000/000000X").assertIsDisplayed()
+            onNodeWithText("${AppStrings.replicaPanPrefix}AA****00A").assertIsDisplayed()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testReplicaDisplaysProfileOverridesWhenConfigured() =
+        runComposeUiTest {
+            viewModel.updateProfileOverrides("Col Vikram Batra", "99999/Z", "ABCDE1234F")
+            testDispatcher.scheduler.runCurrent()
+
+            setContent {
+                PayslipReplicaDetailScreen(viewModel = viewModel, onBack = {})
+            }
+            testDispatcher.scheduler.runCurrent()
+            waitForIdle()
+
+            onNodeWithText("${AppStrings.replicaOfficerPrefix}Col Vikram Batra").assertIsDisplayed()
+            onNodeWithText("${AppStrings.replicaCdaPrefix}99999/Z").assertIsDisplayed()
+            onNodeWithText("${AppStrings.replicaPanPrefix}ABCDE1234F").assertIsDisplayed()
         }
 }

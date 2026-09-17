@@ -63,5 +63,8 @@ fun PayslipReplicaDetailScreen(
         },
         onSaveSession = { viewModel.saveEditingSession(payslip.dateStr) },
         onCancelSession = { viewModel.cancelEditingSession() },
+        profileName = uiState.profileName,
+        profileCda = uiState.profileCdaNumber,
+        profilePan = uiState.profilePanNumber,
     )
 }
