@@ -260,4 +260,18 @@ class PayslipRepositoryTest {
         assertFalse(useLocalAi)
         assertTrue(isTelemetryEnabled)
     }
+
+    @Test
+    fun testGetAllPayslipsRunsAsynchronouslyOnProvidedDispatcher() =
+        runTest {
+            val customDispatcher = kotlinx.coroutines.Dispatchers.Default
+            val customRepo = PayslipRepository(fakeDao, fakeParser, customDispatcher)
+            val mockPayslip = createMockPayslip("08/2024")
+            fakeParser.result = Result.success(mockPayslip)
+            customRepo.importPayslip(byteArrayOf(1, 2, 3), "password", "08-2024.pdf")
+
+            val emissions = customRepo.getAllPayslips().first()
+            assertEquals(1, emissions.size)
+            assertEquals("08/2024", emissions.first().dateStr)
+        }
 }

@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -29,27 +30,25 @@ class PayslipRepository(
     /**
      * Observes all parsed payslips from the local Room database.
      */
-    fun getAllPayslips(): Flow<List<ParsedPayslip>> {
-        return combine(
+    fun getAllPayslips(): Flow<List<ParsedPayslip>> =
+        combine(
             payslipDao.getAllPayslips(),
             payslipDao.getAllCorrections(),
         ) { entities, corrections ->
             val correctionsByDate = corrections.associateBy { it.dateStr }
-            // One row's decrypt failure (e.g. ciphertext written by a different device's Keystore
-            // key) must not take down every other payslip: skip and log the bad row, keep the rest.
+            val deviceKey = CryptoHelper.getDatabaseSecretKey()
             entities.mapNotNull { entity ->
                 try {
-                    val parsed = entity.toDomain()
+                    val parsed = entity.toDomain(deviceKey)
                     correctionsByDate[entity.dateStr]
-                        ?.let { parsed.applyCorrections(it.toCorrectionList()) }
+                        ?.let { parsed.applyCorrections(it.toCorrectionList(deviceKey)) }
                         ?: parsed
                 } catch (e: Exception) {
                     Logger.e("PayslipRepository", "Skipping undecryptable payslip ${entity.dateStr}", e)
                     null
                 }
             }
-        }
-    }
+        }.flowOn(dispatcher)
 
     /**
      * Decrypts a PDF payslip, parses it, and inserts it into the database.

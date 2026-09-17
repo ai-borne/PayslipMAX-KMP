@@ -2,7 +2,9 @@ package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
+import com.payslipmax.pdfparser.database.EncryptedPayslipEntity
 import com.payslipmax.pdfparser.database.hexToByteArray
+import com.payslipmax.pdfparser.database.toCorrectionEntity
 import com.payslipmax.pdfparser.database.toDomain
 import com.payslipmax.pdfparser.database.toEncryptedEntity
 import com.payslipmax.pdfparser.domain.Deductions
@@ -185,5 +187,43 @@ class PayslipRepositoryDeviceKeyTest {
                 fakeDao.getAllPayslips().first().size,
                 "The undecryptable row must NOT be deleted - it may become readable later (e.g. after a key fix) and must not take other payslips down with it",
             )
+        }
+
+    @Test
+    fun testBatchDecryptionReusesKeyWithoutBreakingFallback() =
+        runTest {
+            val fakeDao = FakePayslipDao()
+            val fakeParser = FakePdfParser()
+            val repository = PayslipRepository(fakeDao, fakeParser, kotlinx.coroutines.Dispatchers.Unconfined)
+
+            val deviceKey = CryptoHelper.getDatabaseSecretKey()
+            val legacyKey = CryptoHelper.getLegacyFallbackKey()
+
+            val normalPayslip = createMockPayslip("08/2026")
+            fakeDao.insertPayslip(normalPayslip.toEncryptedEntity(deviceKey))
+
+            val legacyPayslip = createMockPayslip("07/2026")
+            fakeDao.insertPayslip(legacyPayslip.toEncryptedEntity(legacyKey))
+            val legacyCorrection = mapOf("basicPay" to 555.0).toCorrectionEntity("07/2026", legacyKey)
+            fakeDao.insertCorrection(legacyCorrection)
+
+            val corruptEntity =
+                EncryptedPayslipEntity(
+                    dateStr = "06/2026",
+                    year = 2026,
+                    monthNum = 6,
+                    monthName = "June",
+                    ciphertext = "badcafebabe",
+                )
+            fakeDao.insertPayslip(corruptEntity)
+
+            val result = repository.getAllPayslips().first()
+
+            assertEquals(2, result.size)
+            val byDate = result.associateBy { it.dateStr }
+
+            assertTrue(byDate.containsKey("08/2026"))
+            assertTrue(byDate.containsKey("07/2026"))
+            assertEquals(555.0, byDate["07/2026"]?.earnings?.basicPay)
         }
 }

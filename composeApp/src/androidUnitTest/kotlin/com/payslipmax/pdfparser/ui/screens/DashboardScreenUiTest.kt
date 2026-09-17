@@ -40,7 +40,7 @@ class DashboardScreenUiTest {
         Dispatchers.setMain(testDispatcher)
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
-        repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
+        repository = PayslipRepository(fakeDao, fakeParser, testDispatcher)
         viewModel = PayslipViewModel(repository)
     }
 
