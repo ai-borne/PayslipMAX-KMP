@@ -88,6 +88,7 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.core.splashscreen)
             implementation(libs.kotlinx.coroutines.android)
             // Firebase Crashlytics — auto-initializes via ContentProvider; captures native-bridge
             // crashes during dev/beta. BOM (pinned in the legacy dependencies block below) aligns

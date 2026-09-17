@@ -5,10 +5,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.payslipmax.pdfparser.insights.gemma.AndroidGemmaBaseModelInstaller
 import com.payslipmax.pdfparser.subscription.isDebugBuild
+import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
-import org.koin.compose.koinInject
+import org.koin.core.context.GlobalContext
+
+// isLoading is a general busy flag, but at cold start it doubles as "first frame not ready yet".
+internal fun keepSplashOnScreen(uiState: PayslipUiState): Boolean = uiState.isLoading
 
 /**
  * Shipped builds usually block screenshots/screen-recording (FLAG_SECURE).
@@ -69,6 +74,7 @@ class MainActivity : ComponentActivity() {
         ) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             setRecentsScreenshotEnabled(false)
@@ -82,8 +88,10 @@ class MainActivity : ComponentActivity() {
         AndroidGemmaBaseModelInstaller.confirmationHandler = { assetPackManager ->
             assetPackManager.showConfirmationDialog(gemmaConfirmationLauncher)
         }
+        // PayslipViewModel is a Koin `factory`; resolve once and reuse below to keep one SSOT instance.
+        val viewModel = GlobalContext.get().get<PayslipViewModel>()
+        splashScreen.setKeepOnScreenCondition { keepSplashOnScreen(viewModel.uiState.value) }
         setContent {
-            val viewModel: PayslipViewModel = koinInject()
             App(
                 viewModel = viewModel,
                 onPickPdf = { callback ->
