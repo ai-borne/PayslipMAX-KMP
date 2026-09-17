@@ -96,6 +96,7 @@ class PayslipViewModel(
                 repository.getAllPayslips().collect { list ->
                     val nextSelected = _uiState.value.selectedPayslip ?: list.lastOrNull()
                     val latestYear = list.maxOfOrNull { it.year }
+                    val optimizationResult = computeTaxOptimization(list, nextSelected)
                     _uiState.update { state ->
                         val expandedYears =
                             if (latestYear != null && latestYear != state.lastKnownHistoryYear) {
@@ -106,7 +107,7 @@ class PayslipViewModel(
                         state.copy(
                             payslips = list,
                             selectedPayslip = nextSelected,
-                            taxOptimizationResult = computeTaxOptimization(list, nextSelected),
+                            taxOptimizationResult = optimizationResult,
                             isLoading = false,
                             expandedHistoryYears = expandedYears,
                             lastKnownHistoryYear = latestYear ?: state.lastKnownHistoryYear,
@@ -125,19 +126,11 @@ class PayslipViewModel(
     }
 
     private fun onPayslipSelected(payslip: ParsedPayslip?) {
-        if (payslip == null) {
-            _uiState.update {
-                it.copy(
-                    selectedPayslip = null,
-                    taxOptimizationResult = computeTaxOptimization(it.payslips, null),
-                )
-            }
-            return
-        }
+        val optimizationResult = computeTaxOptimization(_uiState.value.payslips, payslip)
         _uiState.update {
             it.copy(
                 selectedPayslip = payslip,
-                taxOptimizationResult = computeTaxOptimization(it.payslips, payslip),
+                taxOptimizationResult = optimizationResult,
             )
         }
     }
