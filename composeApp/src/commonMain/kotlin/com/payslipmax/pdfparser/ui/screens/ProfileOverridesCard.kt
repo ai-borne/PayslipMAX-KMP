@@ -27,6 +27,17 @@ fun formatProfileSubtitle(
     }
 }
 
+fun sanitizeProfileInputs(
+    name: String,
+    cda: String,
+    pan: String,
+): Triple<String, String, String> =
+    Triple(
+        name.trim(),
+        cda.trim().uppercase(),
+        pan.trim().uppercase(),
+    )
+
 @Composable
 fun ProfileOverridesCard(
     viewModel: PayslipViewModel,
@@ -175,7 +186,10 @@ private fun ProfileOverridesSheetContent(
             onPanChange = { pan = it },
         )
         ProfileActionsRow(
-            onSaveClick = { onSave(name, cda, pan) },
+            onSaveClick = {
+                val (cleanName, cleanCda, cleanPan) = sanitizeProfileInputs(name, cda, pan)
+                onSave(cleanName, cleanCda, cleanPan)
+            },
             onCancelClick = onCloseClick,
         )
     }
