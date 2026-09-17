@@ -8,7 +8,9 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-16, v12 on Closed testing)
+## Status snapshot (as of 2026-09-17, v13 in development)
+
+- **versionCode 13 (1.0.0)** — in development on `release/ios-1.0.0-v6`, accumulating 16 commits across 5 independent workstreams (parser paycode expansion, performance tuning, security hardening, officer profile UX, splash-screen polish) since v12 launched to Closed testing on 2026-09-16. Not yet released to any track.
 
 - **Closed testing track:** `12 (1.0.0)` — promoted directly from Internal testing on 2026-09-16 (177
   countries/regions), superseding versionCode 10. Rather than promoting versionCode 11 as-is, v12 packages
@@ -393,6 +395,48 @@ Commits:
 - **Architecture & SSOT integrity:** The banner logic is 100% shared Compose Multiplatform in `composeApp/src/commonMain`, while native LiteRT inference on Android now maintains architectural parity with iOS's cached engine store. Enforced strict adherence to project rules: all files <= 300 lines, all functions <= 50 lines.
 
 **Status:** Released to **Internal testing** on 2026-09-16, verified cleanly on physical Pixel 9, and promoted directly to **Closed testing** on 2026-09-16 (`composeApp-release.aab`, versionCode 12, versionName 1.0.0), superseding v10 on the 14-day mandatory track.
+
+### versionCode 13 — In development (16 commits, 5 workstreams)
+
+Five independent workstreams landed on `release/ios-1.0.0-v6` since v12 closed-testing launch:
+
+#### 1. Parser paycode mapping expansion (Phase 0–3)
+Reorganized and extended paycode recognition across four phases:
+
+- **Phase 0 (`8afdddc`):** Modularized allowance/deduction pattern mappings from flat `PayslipPatternConfig` into domain-partitioned `AllowancePatternMappings`/`DeductionPatternMappings`, reducing config LOC from 289 → 103. Verified composition integrity via new unit tests.
+- **Phase 1 (`760edfa`):** Resolved technical paycodes (HRAX, TECI/II, ARR-TECII) with zero-residual parsing on real examples. Updated `Earnings` domain model, `PayslipAssembler`, `AppStringsPayCodes`, and `ReplicaUtils` with structured line-item formatting. Added TDD tests replicating real screenshots.
+- **Phase 2 (`eeefcab`):** Added 7th CPC Risk & Hardship matrix and operational field allowance mappings.
+- **Phase 3 (`537d36a`):** Added aviation, travel claims, specialized grants, and clean debit categories.
+
+**Test status:** 100% unit tests passing; all files ≤ 300 LOC.
+
+#### 2. Performance optimization (Phase 1–3)
+Three-tier tuning to reduce cold-start and parsing latency:
+
+- **Phase 1 (`1c3f6b1`):** Cache database secret key in volatile memory instead of deriving on every unlock.
+- **Phase 2 (`13ac78b`):** Offload decryption pipeline to background dispatcher; reuse device key across sequential imports.
+- **Phase 3 (`8c93dc0`):** Extract tax optimization calculation outside ViewModel state-update loop (was re-computing on every UI frame).
+
+#### 3. Security hardening (Phase 1–4)
+Privacy overlay lifecycle and window-level task snapshot protection:
+
+- **Phase 1 (`6836694`):** Create `PayslipMaxProtectedOverlay` composable with SSOT `AppStrings` entry.
+- **Phase 2 (`8b9e691`):** Wire lifecycle-aware privacy overlay to Android, tied to app resume/pause.
+- **Phase 3 (`fba2a5a`):** Align iOS overlay with Android SSOT; verify on Pixel 9 device.
+- **Phase 4 (`f158c0f`):** Secure Android task snapshot via `setWindowInsecure()` gating on window-focus loss (prevents screenshot/recording while app is backgrounded).
+- **Refactor (`2b4045b`):** Remove now-redundant Compose overlay logic; consolidate all privacy protection into the native window-level layer.
+
+#### 4. Officer Profile UX & robustness (Phase 1–3)
+Settings flow sanitization and resilience:
+
+- **Phase 1 (`f93f9ae`):** Align Officer Profile resource strings with naming convention; add sanitization helpers.
+- **Phase 2 (`5f960d1`):** Wire officer profile overrides into Digital Replica display.
+- **Phase 3 (`ad4e8a1`):** Sanitize profile inputs in ViewModel; robustify PIN reset flow to handle edge cases.
+
+#### 5. Splash screen polish
+- **`11c9a00`:** Wire `androidx.core.splashscreen` with `setKeepOnScreenCondition` gated on `PayslipUiState.isLoading` to hold splash through cold-start Koin/Room initialization (no new state). Parity with iOS's static LaunchScreen storyboard.
+
+**Status:** All 16 commits verified green on `check` gate (full Android + common build, lint, all unit tests). Not yet released to any track; queued for promotion decision once integrated testing and build gate complete.
 
 ## What still needs to happen before the Day-14 final submission
 

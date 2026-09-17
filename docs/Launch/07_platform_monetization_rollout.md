@@ -10,7 +10,7 @@ current state after [06_closed_testing_progress_log.md](06_closed_testing_progre
 - **iOS**: `v1.2` (build `1.2 (6)`), auto-renewable subscription `payslipmax_yearly_premium`
   (₹999/yr), and subscription group `PayslipMax Yearly Premium` are live in production on the
   iOS App Store (`READY_FOR_SALE`). Monetization is active (`FREE_LAUNCH_MODE_IOS = false`). Next
-  maintenance update **`v1.2.1 (3)`** has been submitted from TestFlight and is actively **under App Review**,
+  maintenance update **`v1.2.1 (3)`** has been submitted from TestFlight and is actively **published**,
   carrying the Gemma ODR fix, Universal Backup & Restore cross-platform interoperability, in-app privacy
   policy link fix, and document in-place safety.
 - **Android**: **`12 (1.0.0)`** is live on **Closed testing** (promoted from Internal testing on 2026-09-16,
