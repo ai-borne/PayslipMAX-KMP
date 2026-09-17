@@ -59,6 +59,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            setRecentsScreenshotEnabled(false)
+        }
         if (shouldApplyFlagSecure(isDebugBuild())) {
             window.setFlags(
                 android.view.WindowManager.LayoutParams.FLAG_SECURE,

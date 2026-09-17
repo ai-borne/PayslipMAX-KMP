@@ -152,6 +152,31 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 }
 
+enum ProtectedOverlayGate {
+    static func shouldDisplay(scenePhase: ScenePhase) -> Bool {
+        scenePhase != .active
+    }
+}
+
+struct PayslipMaxProtectedOverlayView: View {
+    var body: some View {
+        ZStack {
+            Color(UIColor.systemBackground)
+                .ignoresSafeArea()
+            VStack(spacing: 16) {
+                Image(systemName: "lock.shield.fill")
+                    .font(.system(size: 48))
+                    .foregroundColor(.accentColor)
+                    .accessibilityLabel(AppStrings.shared.appProtectedShieldDesc)
+                Text(AppStrings.shared.appProtectedTitle)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+            }
+        }
+    }
+}
+
 @main
 struct iOSApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
@@ -161,19 +186,8 @@ struct iOSApp: App {
         WindowGroup {
             ContentView()
                 .overlay {
-                    if scenePhase != .active {
-                        ZStack {
-                            Color(UIColor.systemBackground)
-                                .ignoresSafeArea()
-                            VStack(spacing: 12) {
-                                Image(systemName: "lock.shield.fill")
-                                    .font(.system(size: 44))
-                                    .foregroundColor(.accentColor)
-                                Text("PayslipMax Protected")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                            }
-                        }
+                    if ProtectedOverlayGate.shouldDisplay(scenePhase: scenePhase) {
+                        PayslipMaxProtectedOverlayView()
                     }
                 }
         }
