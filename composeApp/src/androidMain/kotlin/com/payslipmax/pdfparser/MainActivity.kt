@@ -20,6 +20,17 @@ class MainActivity : ComponentActivity() {
     private var filePickCallback: ((ByteArray, String) -> Unit)? = null
     private var backupPickCallback: ((ByteArray) -> Unit)? = null
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (!shouldApplyFlagSecure(isDebugBuild())) {
+            if (hasFocus) {
+                window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+            } else {
+                window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+            }
+        }
+    }
+
     private val pickPdfLauncher =
         registerForActivityResult(
             ActivityResultContracts.GetContent(),

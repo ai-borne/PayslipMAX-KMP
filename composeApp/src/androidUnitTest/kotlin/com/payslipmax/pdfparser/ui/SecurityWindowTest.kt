@@ -46,4 +46,37 @@ class SecurityWindowTest {
         val isSecureSet = (flags and WindowManager.LayoutParams.FLAG_SECURE) != 0
         assertEquals(shouldApplyFlagSecure(isDebugBuild()), isSecureSet)
     }
+
+    @Test
+    fun whenWindowLosesFocus_flagSecureIsAddedToProtectRecents() {
+        val controller = Robolectric.buildActivity(MainActivity::class.java)
+        val activity = controller.get()
+        controller.create().start().resume().visible()
+
+        activity.onWindowFocusChanged(false)
+
+        val flags = activity.window.attributes.flags
+        val isSecureSet = (flags and WindowManager.LayoutParams.FLAG_SECURE) != 0
+        kotlin.test.assertTrue(
+            isSecureSet,
+            "When window loses focus (entering recents or switching apps), FLAG_SECURE must be applied to protect snapshots",
+        )
+    }
+
+    @Test
+    fun whenWindowGainsFocus_flagSecureIsClearedToAllowScreenshots() {
+        val controller = Robolectric.buildActivity(MainActivity::class.java)
+        val activity = controller.get()
+        controller.create().start().resume().visible()
+
+        activity.onWindowFocusChanged(false)
+        activity.onWindowFocusChanged(true)
+
+        val flags = activity.window.attributes.flags
+        val isSecureSet = (flags and WindowManager.LayoutParams.FLAG_SECURE) != 0
+        assertFalse(
+            isSecureSet,
+            "When window gains focus (user actively interacting), FLAG_SECURE must be cleared to allow screenshots",
+        )
+    }
 }
