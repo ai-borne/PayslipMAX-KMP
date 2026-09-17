@@ -75,4 +75,128 @@ platform :android do
     service.commit_edit(package_name, edit.id)
     UI.success("#{locale} full description updated and committed. New length: #{updated.length}")
   end
+
+  desc "Apply the day-10 closed-testing ASO relaunch: new title + rewritten full description (see docs/Launch/09_testersCommunityreport.md)"
+  lane :apply_aso_relaunch_listing do |options|
+    locale = options[:locale] || "en-IN"
+    new_title = "PayslipMax: Payslip Manager"
+    new_full_description = <<~DESC.strip
+      PayslipMax is a privacy-first, on-device salary and payslip management application designed to help PCDA(O) users to understand earnings, verify deductions, and optimize tax savings with total security.
+
+      100% ON-DEVICE PRIVACY, ZERO CLOUD UPLOADS
+      Your payslips never leave your phone. All PDF parsing, salary computations, and AI insights are performed locally on your device with zero server uploads. Nothing is sent to any server, ever.
+
+      KEY FEATURES
+
+      Smart Payslip Parsing
+      - Instantly read and parse complex PCDA(O) payslip PDFs with high accuracy.
+      - Automatically organize earnings (Basic Pay, DA, HRA, Allowances) and deductions (DSOP, Taxes, AGIF, Arrears etc).
+      - Interactive digital replica viewer to inspect and audit your original payslip layout, line by line.
+
+      In-Depth Salary Breakdown and Trends
+      - Track month-over-month income variations, net salary growth, and deduction changes over your entire service.
+      - Visual charts for earnings vs. deductions distribution, so you can see exactly where your money goes.
+      - Intelligent Anomaly Detection automatically flags a missing allowance or an unexpected deduction spike.
+
+      Intelligent Tax and Savings Calculators
+      - Compare Old vs. New Tax Regimes with accurate, updated slabs for the current financial year.
+      - Calculate income tax liabilities, standard deductions, and 80C/80D investment impacts.
+      - DSOP Wealth Simulator: project your retirement fund growth with interactive interest projections, compounding curves, and custom contribution scenarios.
+
+      Private On-Device AI Insights
+      - Contextual analysis of salary components and personalized tax optimization opportunities.
+      - Powered by on-device intelligence, with your private financial data never shared with third parties.
+
+      Security You Can Trust
+      - Secure local biometric or PIN app lock protection.
+      - No account registration or external tracking required.
+      - AES-256 encryption for all stored payslip data.
+
+      WHO PAYSLIPMAX IS FOR
+      PayslipMax is built for serving PCDA(O)-administered users who want clarity on their pay without handing financial documents to a third-party service. It is equally useful for:
+      - A user posted to a new unit who wants to quickly confirm a changed allowance or HRA slab is reflected correctly.
+      - Personnel comparing DSOP balances month over month ahead of retirement planning.
+      - Anyone deciding between the Old and New Tax Regime who wants a clear estimate based on their own payslip figures rather than generic examples.
+      - Families who track household salary trends but do not want payslip PDFs stored in email or cloud drives.
+
+      FREQUENTLY ASKED QUESTIONS
+
+      Is my payslip data uploaded anywhere?
+      No. PayslipMax parses your PDF entirely on your device. No payslip, PDF, or extracted salary figure is ever uploaded to a server.
+
+      Which payslip formats are supported?
+      PayslipMax is purpose-built for PCDA(O) payslip formats and is regularly updated as formats change across statement periods.
+
+      Which tax regimes are supported?
+      Both the Old and New Tax Regimes are supported, with slabs kept current for the applicable financial year.
+
+      Do I need an account to use the app?
+      No account or sign-in is required. Your data stays on your device, tied to your device alone.
+
+      What if the app misreads a value from my payslip?
+      You can review and correct any parsed field directly in the app; your correction is saved without altering the original parsed document.
+
+      PayslipMax Premium is an auto-renewing subscription; see Terms of Use and Privacy Policy for billing and cancellation details.
+    DESC
+
+    if new_title.length > 30
+      UI.user_error!("New title would exceed Play's 30-char limit (#{new_title.length})")
+    end
+    if new_full_description.length > 4000
+      UI.user_error!("New full description would exceed Play's 4000-char limit (#{new_full_description.length})")
+    end
+
+    service = play_service
+    edit = service.insert_edit(package_name)
+    listing = service.get_edit_listing(package_name, edit.id, locale)
+
+    updated_listing = Google::Apis::AndroidpublisherV3::Listing.new(
+      title: new_title,
+      short_description: listing.short_description,
+      full_description: new_full_description,
+      video: listing.video
+    )
+    service.update_edit_listing(package_name, edit.id, locale, updated_listing)
+    service.commit_edit(package_name, edit.id)
+    UI.success("#{locale} listing updated and committed. Title: \"#{new_title}\" (#{new_title.length} chars). Full description length: #{new_full_description.length} chars")
+  end
+
+  desc "Show how many phone screenshots are currently live for a locale (read-only, uses a throwaway edit like listing_status)"
+  lane :screenshot_status do |options|
+    locale = options[:locale] || "en-IN"
+    service = play_service
+    edit = service.insert_edit(package_name)
+    begin
+      images = service.list_edit_images(package_name, edit.id, locale, "phoneScreenshots").images || []
+      UI.message("#{locale} phoneScreenshots: #{images.count} live")
+      images.each { |img| UI.message("  #{img.id} — #{img.url}") }
+    rescue Google::Apis::ClientError => e
+      UI.important("Could not list screenshots: #{e.message}")
+    ensure
+      service.delete_edit(package_name, edit.id)
+    end
+  end
+
+  desc "Replace Play Store phone screenshots from a local folder, in filename order (Priority 2 screenshot redo — docs/Launch/09_testersCommunityreport.md)"
+  lane :upload_screenshots do |options|
+    locale = options[:locale] || "en-IN"
+    source = options[:source] or UI.user_error!("Pass source: (folder of captioned PNGs; numeric filename prefixes set display order)")
+    files = Dir.glob(File.join(source, "*.png")).sort
+    UI.user_error!("No PNGs found in #{source}") if files.empty?
+
+    service = play_service
+    edit = service.insert_edit(package_name)
+    begin
+      service.deleteall_edit_image(package_name, edit.id, locale, "phoneScreenshots")
+      files.each do |f|
+        service.upload_edit_image(package_name, edit.id, locale, "phoneScreenshots", upload_source: f, content_type: "image/png")
+        UI.message("Uploaded #{File.basename(f)}")
+      end
+      service.commit_edit(package_name, edit.id)
+      UI.success("#{files.count} phone screenshots uploaded and committed for #{locale}")
+    rescue => e
+      service.delete_edit(package_name, edit.id)
+      UI.user_error!("Screenshot upload failed, edit discarded: #{e.message}")
+    end
+  end
 end

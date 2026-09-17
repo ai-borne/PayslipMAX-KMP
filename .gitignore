@@ -87,6 +87,9 @@ iosApp/fastlane/test_output/
 iosApp/fastlane/README.md
 *.p8
 
+# Playwright MCP scratch output (e.g. composited marketing screenshots) — not source
+.playwright-mcp/
+
 # fastlane — Google Play Console API credentials, never committed
 # (the service-account .json key itself lives outside the repo entirely, at ~/.play_console/)
 composeApp/fastlane/.env

@@ -159,6 +159,70 @@ platform :ios do
     asc_request(:patch, path, body)
   end
 
+  desc "Show the full App Store listing: App Name/Subtitle (appInfo) + Keywords/Description/Promotional Text (version)"
+  lane :ios_listing_status do |options|
+    asc_api_key
+    locale = options[:locale] || "en-US"
+    app = Spaceship::ConnectAPI::App.find(CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier))
+
+    infos = asc_get("/v1/apps/#{app.id}/appInfos")["data"] || []
+    infos.each do |info|
+      UI.message("--- appInfo #{info['id']} — state: #{info['attributes']['appStoreState']} ---")
+      locs = asc_get("/v1/appInfos/#{info['id']}/appInfoLocalizations")["data"] || []
+      loc = locs.find { |l| l['attributes']['locale'] == locale }
+      if loc
+        UI.message("  App Name: #{loc['attributes']['name']}")
+        UI.message("  Subtitle: #{loc['attributes']['subtitle']}")
+      else
+        UI.important("  no #{locale} appInfoLocalization found")
+      end
+    end
+
+    version = asc_get("/v1/apps/#{app.id}/appStoreVersions?limit=3")["data"].first
+    UI.user_error!("No app store version found") unless version
+    UI.message("--- appStoreVersion #{version['attributes']['versionString']} — state: #{version['attributes']['appVersionState']} ---")
+    vlocs = asc_get("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations")["data"] || []
+    vloc = vlocs.find { |l| l['attributes']['locale'] == locale }
+    if vloc
+      UI.message("  Keywords: #{vloc['attributes']['keywords']}")
+      UI.message("  Promotional Text: #{vloc['attributes']['promotionalText']}")
+      UI.message("  Description:")
+      UI.message(vloc['attributes']['description'])
+    else
+      UI.important("  no #{locale} appStoreVersionLocalization found")
+    end
+  end
+
+  desc "Update Promotional Text on the current (live) App Store version (docs/Launch/09_testersCommunityreport.md SSOT relaunch — the one version-scoped field Apple allows editing without a new build/review)"
+  lane :update_promotional_text do |options|
+    asc_api_key
+    locale = options[:locale] || "en-US"
+    new_promo_text = "Turn your PCDA(O) payslip into clear salary, tax and DSOP insights, 100% on-device."
+    UI.user_error!("Promotional text would exceed ASC's 170-char limit (#{new_promo_text.length})") if new_promo_text.length > 170
+
+    app = Spaceship::ConnectAPI::App.find(CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier))
+    version = asc_get("/v1/apps/#{app.id}/appStoreVersions?limit=3")["data"].first
+    UI.user_error!("No app store version found") unless version
+    locs = asc_get("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations")["data"] || []
+    loc = locs.find { |l| l['attributes']['locale'] == locale }
+    UI.user_error!("No #{locale} localization found") unless loc
+
+    if loc['attributes']['promotionalText'] == new_promo_text
+      UI.important("Promotional text already up to date — no change made")
+      next
+    end
+
+    body = {
+      "data" => {
+        "type" => "appStoreVersionLocalizations",
+        "id" => loc['id'],
+        "attributes" => { "promotionalText" => new_promo_text }
+      }
+    }
+    res = asc_patch("/v1/appStoreVersionLocalizations/#{loc['id']}", body)
+    UI.success("Promotional text updated for #{locale}: #{res['data']['attributes']['promotionalText']}")
+  end
+
   desc "Show the current App Store version's Description localization (for the rejected-version EULA-link fix)"
   lane :app_description do |options|
     asc_api_key
@@ -231,6 +295,40 @@ platform :ios do
     asc_api_key
     require 'json'
     UI.message(JSON.pretty_generate(asc_get(options[:path])))
+  end
+
+  desc "Copy captioned screenshot PNGs from a source folder into fastlane/screenshots/<locale>/ (dry-run staging step before upload_screenshots — Priority 2 screenshot redo, docs/Launch/09_testersCommunityreport.md)"
+  lane :stage_screenshots do |options|
+    require 'fileutils'
+    locale = options[:locale] || "en-US"
+    source = options[:source] or UI.user_error!("Pass source: (folder of captioned PNGs; numeric filename prefixes set upload order)")
+    dest = File.join(File.dirname(__FILE__), "screenshots", locale)
+    FileUtils.mkdir_p(dest)
+    files = Dir.glob(File.join(source, "*.png")).sort
+    UI.user_error!("No PNGs found in #{source}") if files.empty?
+    files.each { |f| FileUtils.cp(f, dest) }
+    UI.success("Staged #{files.count} screenshots into #{dest}")
+    files.each { |f| UI.message("  #{File.basename(f)}") }
+  end
+
+  desc "Upload staged App Store screenshots (run stage_screenshots first; dry-run via ios_listing_status has no screenshot equivalent, so review the staged folder before running this)"
+  lane :upload_screenshots do |options|
+    asc_api_key
+    locale = options[:locale] || "en-US"
+    dir = File.join(File.dirname(__FILE__), "screenshots", locale)
+    UI.user_error!("No screenshots staged at #{dir} — run stage_screenshots first") unless Dir.exist?(dir) && Dir.glob("#{dir}/*.png").any?
+
+    deliver(
+      screenshots_path: File.join(File.dirname(__FILE__), "screenshots"),
+      skip_screenshots: false,
+      skip_metadata: true,
+      skip_binary_upload: true,
+      skip_app_version_update: true,
+      submit_for_review: false,
+      force: true,
+      use_live_version: true
+    )
+    UI.success("Uploaded #{Dir.glob("#{dir}/*.png").count} screenshots for #{locale}")
   end
 
   desc "Show a subscription's current customer price per territory (defaults to the key ones)"
