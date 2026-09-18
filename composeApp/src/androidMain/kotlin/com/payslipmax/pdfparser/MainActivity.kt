@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.payslipmax.pdfparser.insights.gemma.AndroidGemmaBaseModelInstaller
+import com.payslipmax.pdfparser.rating.ReviewActivityBridge
 import com.payslipmax.pdfparser.subscription.isDebugBuild
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
@@ -88,6 +89,7 @@ class MainActivity : ComponentActivity() {
         AndroidGemmaBaseModelInstaller.confirmationHandler = { assetPackManager ->
             assetPackManager.showConfirmationDialog(gemmaConfirmationLauncher)
         }
+        ReviewActivityBridge.activityProvider = { this }
         // PayslipViewModel is a Koin `factory`; resolve once and reuse below to keep one SSOT instance.
         val viewModel = GlobalContext.get().get<PayslipViewModel>()
         splashScreen.setKeepOnScreenCondition { keepSplashOnScreen(viewModel.uiState.value) }
