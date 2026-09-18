@@ -83,6 +83,7 @@ iosApp/fastlane/.env
 iosApp/fastlane/report.xml
 iosApp/fastlane/Preview.html
 iosApp/fastlane/screenshots/
+iosApp/fastlane/builds/
 iosApp/fastlane/test_output/
 iosApp/fastlane/README.md
 *.p8

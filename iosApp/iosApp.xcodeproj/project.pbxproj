@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		105CF80B2FF9EE0C00B6F15D /* LiteRTLM in Frameworks */ = {isa = PBXBuildFile; productRef = 105CF80A2FF9EE0C00B6F15D /* LiteRTLM */; };
-		1C81D6F669B7BB6D2FFCCEB3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = "TEMP_834FB1A8-C57C-45E2-A2C0-832D795320CE" /* FirebaseAuth */; };
+		1C81D6F669B7BB6D2FFCCEB3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = TEMP_834FB1A8-C57C-45E2-A2C0-832D795320CE /* FirebaseAuth */; };
 		445C052442747365B7CB2124 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 617043448F4869026C2F0BB4 /* FirebaseAuth */; };
 		B7C4F6137AC8345E71E92063 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1359B5E3E79A6103CB63C864 /* FirebaseAnalytics */; };
 		CA0100000000000000000002 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = CA0100000000000000000001 /* FirebaseCrashlytics */; };
@@ -30,7 +30,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		10656F663022FF7A0081D901 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		10656F663022FF7A0081D901 /* Exceptions for "iosApp" folder in "iosApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			assetTagsByRelativePath = {
 				"gemma-active.litertlm" = (
@@ -45,9 +45,41 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		10656F5A3022FF790081D901 /* iosApp */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (10656F663022FF7A0081D901 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {"GoogleService-Info.plist" = text.plist; }; explicitFolders = (); path = iosApp; sourceTree = "<group>"; };
-		10656F6830230F650081D901 /* Configuration */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Configuration; sourceTree = "<group>"; };
-		10AC9A6930596BBC00FACC55 /* PayslipMaxTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = PayslipMaxTests; sourceTree = "<group>"; };
+		10656F5A3022FF790081D901 /* iosApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				10656F663022FF7A0081D901 /* Exceptions for "iosApp" folder in "iosApp" target */,
+			);
+			explicitFileTypes = {
+				"GoogleService-Info.plist" = text.plist;
+			};
+			explicitFolders = (
+			);
+			path = iosApp;
+			sourceTree = "<group>";
+		};
+		10656F6830230F650081D901 /* Configuration */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		10AC9A6930596BBC00FACC55 /* PayslipMaxTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = PayslipMaxTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,8 +152,6 @@
 				10AC9A6930596BBC00FACC55 /* PayslipMaxTests */,
 			);
 			name = PayslipMaxTests;
-			packageProductDependencies = (
-			);
 			productName = PayslipMaxTests;
 			productReference = 10AC9A6830596BBC00FACC55 /* PayslipMaxTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -187,7 +217,7 @@
 			mainGroup = 7555FF72242A565900829871;
 			packageReferences = (
 				7C4F1707FE80007C7DCEAE3C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				105CF8092FF9EE0C00B6F15D /* XCLocalSwiftPackageReference "Vendor/LiteRTLM" */,
+				105CF8092FF9EE0C00B6F15D /* XCLocalSwiftPackageReference "LiteRTLM" */,
 			);
 			preferredProjectObjectVersion = 50;
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
@@ -469,7 +499,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = X6NQM6Z688;
 				ENABLE_PREVIEWS = YES;
@@ -485,7 +515,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.1;
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -510,7 +540,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = X6NQM6Z688;
 				ENABLE_PREVIEWS = YES;
@@ -526,7 +556,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.1;
+				MARKETING_VERSION = 1.2.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -578,7 +608,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		105CF8092FF9EE0C00B6F15D /* XCLocalSwiftPackageReference "Vendor/LiteRTLM" */ = {
+		105CF8092FF9EE0C00B6F15D /* XCLocalSwiftPackageReference "LiteRTLM" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Vendor/LiteRTLM;
 		};
@@ -615,7 +645,7 @@
 			package = 7C4F1707FE80007C7DCEAE3C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCrashlytics;
 		};
-		"TEMP_834FB1A8-C57C-45E2-A2C0-832D795320CE" /* FirebaseAuth */ = {
+		TEMP_834FB1A8-C57C-45E2-A2C0-832D795320CE /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 7C4F1707FE80007C7DCEAE3C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;

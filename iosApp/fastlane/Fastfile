@@ -331,6 +331,45 @@ platform :ios do
     UI.success("Uploaded #{Dir.glob("#{dir}/*.png").count} screenshots for #{locale}")
   end
 
+  desc "Bump build number, archive, and upload a new TestFlight build (does NOT touch marketing version — pass bump_version: '1.2.2' to also change it for a real new App Store submission)"
+  lane :build_and_upload_testflight do |options|
+    asc_api_key
+
+    xcodeproj = File.expand_path(File.join(File.dirname(__FILE__), "..", "iosApp.xcodeproj"))
+
+    # Scoped to the iosApp target only — the plain increment_build_number/increment_version_number
+    # actions shell out to `agvtool ... -all`, which stamps every target uniformly (including
+    # PayslipMaxTests) and would silently clobber the app target's own build number.
+    require 'xcodeproj'
+    project = Xcodeproj::Project.open(xcodeproj)
+    app_target = project.targets.find { |t| t.name == "iosApp" } or UI.user_error!("Target 'iosApp' not found in #{xcodeproj}")
+
+    current_build = app_target.build_configurations.first.build_settings["CURRENT_PROJECT_VERSION"].to_i
+    new_build = current_build + 1
+
+    app_target.build_configurations.each do |config|
+      config.build_settings["CURRENT_PROJECT_VERSION"] = new_build.to_s
+      config.build_settings["MARKETING_VERSION"] = options[:bump_version] if options[:bump_version]
+    end
+    project.save
+    UI.important("Building iosApp — build #{new_build}#{options[:bump_version] ? " (version #{options[:bump_version]})" : ""}")
+
+    build_app(
+      project: xcodeproj,
+      scheme: "iosApp",
+      export_method: "app-store",
+      output_directory: File.expand_path(File.join(File.dirname(__FILE__), "builds")),
+      clean: true
+    )
+
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      changelog: options[:changelog] || "Internal build — see docs/Launch/06_closed_testing_progress_log.md"
+    )
+
+    UI.success("Uploaded build #{new_build} to TestFlight")
+  end
+
   desc "Upload dSYMs to Firebase Crashlytics (fixes 'Missing dSYM' emails). Pass dsym_path: for a specific .xcarchive/.dSYM, or omit to auto-download the latest build's dSYMs from App Store Connect"
   lane :upload_dsyms do |options|
     # Crashlytics is SPM-managed (no Pods/), so the upload-symbols binary lives under the
