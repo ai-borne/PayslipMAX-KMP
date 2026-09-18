@@ -8,6 +8,8 @@ import com.payslipmax.pdfparser.domain.Officer
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.PayslipSummary
 import com.payslipmax.pdfparser.domain.TaxAndSavings
+import com.payslipmax.pdfparser.rating.RatingPromptManager
+import com.payslipmax.pdfparser.rating.RatingPromptStorage
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
@@ -176,6 +178,102 @@ class PayslipImportFlowTest {
             assertTrue(state is ImportUiState.Idle)
             assertNull(viewModel.pendingImportPdfBytes)
             assertNull(viewModel.pendingImportFilename)
+        }
+
+    private class FakeRatingPromptStorage(
+        private var cleanSuccessCount: Int = 0,
+        private var lastPromptTimestampMs: Long? = null,
+        private var hasEverPrompted: Boolean = false,
+    ) : RatingPromptStorage {
+        var saveCleanSuccessCountCalls = 0
+            private set
+
+        override fun getCleanSuccessCount(): Int = cleanSuccessCount
+
+        override fun saveCleanSuccessCount(count: Int) {
+            cleanSuccessCount = count
+            saveCleanSuccessCountCalls++
+        }
+
+        override fun getLastPromptTimestampMs(): Long? = lastPromptTimestampMs
+
+        override fun saveLastPromptTimestampMs(timestampMs: Long) {
+            lastPromptTimestampMs = timestampMs
+        }
+
+        override fun getHasEverPrompted(): Boolean = hasEverPrompted
+
+        override fun saveHasEverPrompted(hasPrompted: Boolean) {
+            hasEverPrompted = hasPrompted
+        }
+    }
+
+    @Test
+    fun maybePromptForRating_eligibleCleanNewImport_invokesReviewRequester() =
+        runTest {
+            val storage = FakeRatingPromptStorage(cleanSuccessCount = RatingPromptManager.FIRST_PROMPT_THRESHOLD - 1)
+            val testViewModel = PayslipViewModel(repository, ratingPromptManager = RatingPromptManager(storage))
+            var requestCount = 0
+            testViewModel.reviewRequester = { requestCount++ }
+            val mock = createMockPayslip("08/2024")
+            fakeParser.result = Result.success(mock)
+
+            testViewModel.onFilePicked(validPdfBytes, "payslip_aug_2024.pdf")
+            testViewModel.maybePromptForRating(mock)
+
+            assertEquals(1, requestCount)
+        }
+
+    @Test
+    fun maybePromptForRating_duplicateReimport_doesNotCallOnCleanParseSuccess() =
+        runTest {
+            val storage = FakeRatingPromptStorage()
+            val testViewModel = PayslipViewModel(repository, ratingPromptManager = RatingPromptManager(storage))
+            var requestCount = 0
+            testViewModel.reviewRequester = { requestCount++ }
+            val mock = createMockPayslip("08/2024")
+            fakeParser.result = Result.success(mock)
+
+            testViewModel.onFilePicked(validPdfBytes, "payslip_aug_2024.pdf") // new payslip
+            testViewModel.onFilePicked(validPdfBytes, "payslip_aug_2024.pdf") // duplicate re-import
+            testViewModel.maybePromptForRating(mock)
+
+            assertEquals(0, storage.saveCleanSuccessCountCalls)
+            assertEquals(0, requestCount)
+        }
+
+    @Test
+    fun maybePromptForRating_dirtyParse_doesNotCallOnCleanParseSuccess() =
+        runTest {
+            val storage = FakeRatingPromptStorage()
+            val testViewModel = PayslipViewModel(repository, ratingPromptManager = RatingPromptManager(storage))
+            var requestCount = 0
+            testViewModel.reviewRequester = { requestCount++ }
+            val dirty = createMockPayslip("08/2024").copy(needsReview = true)
+            fakeParser.result = Result.success(dirty)
+
+            testViewModel.onFilePicked(validPdfBytes, "payslip_aug_2024.pdf")
+            testViewModel.maybePromptForRating(dirty)
+
+            assertEquals(0, storage.saveCleanSuccessCountCalls)
+            assertEquals(0, requestCount)
+        }
+
+    @Test
+    fun maybePromptForRating_belowThreshold_doesNotInvokeReviewRequester() =
+        runTest {
+            val storage = FakeRatingPromptStorage(cleanSuccessCount = 0)
+            val testViewModel = PayslipViewModel(repository, ratingPromptManager = RatingPromptManager(storage))
+            var requestCount = 0
+            testViewModel.reviewRequester = { requestCount++ }
+            val mock = createMockPayslip("08/2024")
+            fakeParser.result = Result.success(mock)
+
+            testViewModel.onFilePicked(validPdfBytes, "payslip_aug_2024.pdf")
+            testViewModel.maybePromptForRating(mock)
+
+            assertEquals(0, requestCount)
+            assertEquals(1, storage.getCleanSuccessCount())
         }
 
     private fun createMockPayslip(dateStr: String) =

@@ -20,6 +20,7 @@ import com.payslipmax.pdfparser.domain.SalaryCountdownCalculator
 import com.payslipmax.pdfparser.ui.ImportUiState
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.maybePromptForRating
 import com.payslipmax.pdfparser.ui.onDismissImport
 import com.payslipmax.pdfparser.ui.onFilePicked
 import com.payslipmax.pdfparser.ui.onImportPasswordChanged
@@ -45,8 +46,11 @@ fun DashboardScreen(
     var showUploadDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.importUiState) {
-        if (uiState.importUiState is ImportUiState.Success) {
-            kotlinx.coroutines.delay(1200)
+        val importState = uiState.importUiState
+        if (importState is ImportUiState.Success) {
+            kotlinx.coroutines.delay(600)
+            viewModel.maybePromptForRating(importState.payslip)
+            kotlinx.coroutines.delay(600)
             showUploadDialog = false
             viewModel.startImport()
         }

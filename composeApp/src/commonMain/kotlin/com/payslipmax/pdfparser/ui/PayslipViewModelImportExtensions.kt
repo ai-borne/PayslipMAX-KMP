@@ -130,12 +130,9 @@ private suspend fun PayslipViewModel.handleSuccessfulImport(parsed: ParsedPaysli
     pendingImportFilename = null
     financialIntelligenceRepository?.processPayslipAndRunAnalysis(parsed)
     _uiState.update { state ->
-        val updated =
-            if (state.payslips.none { it.dateStr == parsed.dateStr }) {
-                state.payslips + parsed
-            } else {
-                state.payslips
-            }
+        val isNew = state.payslips.none { it.dateStr == parsed.dateStr }
+        lastImportWasNewPayslip = isNew
+        val updated = if (isNew) state.payslips + parsed else state.payslips
         state.copy(
             payslips = updated,
             selectedPayslip = parsed,
@@ -143,6 +140,19 @@ private suspend fun PayslipViewModel.handleSuccessfulImport(parsed: ParsedPaysli
             importSuccess = true,
             importUiState = ImportUiState.Success(parsed),
         )
+    }
+}
+
+/**
+ * Called from the UI once the import-success state has actually rendered (not synchronously from
+ * the import handler), so the native review prompt never stacks on the import dialog's own
+ * transition. Both gates run before touching [RatingPromptManager.onCleanParseSuccess] so neither a
+ * duplicate re-import nor a dirty parse ever counts toward the clean-success tally.
+ */
+internal fun PayslipViewModel.maybePromptForRating(parsed: ParsedPayslip) {
+    if (!lastImportWasNewPayslip || parsed.needsReview) return
+    if (ratingPromptManager.onCleanParseSuccess()) {
+        reviewRequester()
     }
 }
 

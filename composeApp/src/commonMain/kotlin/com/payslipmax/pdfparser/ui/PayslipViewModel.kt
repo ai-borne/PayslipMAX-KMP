@@ -7,6 +7,8 @@ import com.payslipmax.pdfparser.insights.WealthOptimizationEngine
 import com.payslipmax.pdfparser.insights.gemma.GemmaBaseModelInstaller
 import com.payslipmax.pdfparser.insights.gemma.GemmaModelStorageManager
 import com.payslipmax.pdfparser.insights.gemma.provideGemmaBaseModelInstaller
+import com.payslipmax.pdfparser.rating.RatingPromptManager
+import com.payslipmax.pdfparser.rating.requestReview
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.telemetry.GemmaInstallTelemetry
 import com.payslipmax.pdfparser.telemetry.provideGemmaInstallTelemetry
@@ -28,6 +30,8 @@ class PayslipViewModel(
     internal val appIntegrityChecker: com.payslipmax.pdfparser.domain.AppIntegrityChecker = com.payslipmax.pdfparser.domain.provideAppIntegrityChecker(),
     internal val billingManager: com.payslipmax.pdfparser.billing.BillingManager = com.payslipmax.pdfparser.billing.provideBillingManager(),
     internal val isFreeLaunchModeProvider: () -> Boolean = { com.payslipmax.pdfparser.subscription.isFreeLaunchModePlatform() },
+    internal val ratingPromptManager: RatingPromptManager = RatingPromptManager(),
+    internal var reviewRequester: () -> Unit = ::requestReview,
 ) : ViewModel() {
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
@@ -63,6 +67,11 @@ class PayslipViewModel(
     // Temporary in-memory cache for the active import session; cleared immediately on dismiss or success.
     internal var pendingImportPdfBytes: ByteArray? = null
     internal var pendingImportFilename: String? = null
+
+    // Set by handleSuccessfulImport: whether the most recent successful import added a genuinely
+    // new payslip (vs. a duplicate re-import of an existing dateStr). Gates the rating prompt so a
+    // duplicate import never counts as a fresh "positive moment".
+    internal var lastImportWasNewPayslip: Boolean = false
 
     init {
         verifyAppIntegrity()

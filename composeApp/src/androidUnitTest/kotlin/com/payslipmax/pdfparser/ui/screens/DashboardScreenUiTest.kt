@@ -8,10 +8,13 @@ import com.payslipmax.pdfparser.domain.LedgerBalances
 import com.payslipmax.pdfparser.domain.Officer
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.PayslipSummary
+import com.payslipmax.pdfparser.rating.RatingPromptManager
+import com.payslipmax.pdfparser.rating.RatingPromptStorage
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.onFilePicked
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -24,6 +27,7 @@ import org.robolectric.annotation.Config
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -203,4 +207,74 @@ class DashboardScreenUiTest {
             onNodeWithText("March").assertExists()
             onNodeWithText("2017").assertExists()
         }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testRatingPromptFiresAfterSuccessSettlesNotBefore() =
+        runComposeUiTest {
+            val storage = FakeRatingPromptStorage(cleanSuccessCount = RatingPromptManager.FIRST_PROMPT_THRESHOLD - 1)
+            val ratingViewModel = PayslipViewModel(repository, ratingPromptManager = RatingPromptManager(storage))
+            var requestCount = 0
+            ratingViewModel.reviewRequester = { requestCount++ }
+            fakeParser.result =
+                Result.success(
+                    ParsedPayslip(
+                        file = "test.pdf",
+                        year = 2026,
+                        monthNum = 4,
+                        monthName = "April",
+                        dateStr = "04/2026",
+                        officer = Officer("Test Officer", "00/000/000000X", "AA****00A"),
+                        earnings = Earnings(basicPay = 500.0),
+                        deductions = Deductions(incomeTax = 500.0),
+                        ledgerBalances = LedgerBalances(),
+                        summary = PayslipSummary(grossPay = 500.0, totalDeductions = 500.0, netRemittance = 0.0),
+                        taxAndSavings = null,
+                    ),
+                )
+            testDispatcher.scheduler.runCurrent()
+
+            setContent {
+                DashboardScreen(
+                    viewModel = ratingViewModel,
+                    onPickPdf = {},
+                )
+            }
+            testDispatcher.scheduler.runCurrent()
+
+            ratingViewModel.onFilePicked(byteArrayOf(0x25, 0x50, 0x44, 0x46), "payslip.pdf")
+            testDispatcher.scheduler.runCurrent()
+
+            // Success state is now rendered, but the settle delay hasn't elapsed yet.
+            mainClock.advanceTimeBy(300)
+            assertEquals(0, requestCount)
+
+            // Past the ~600ms settle window, the prompt fires.
+            mainClock.advanceTimeBy(500)
+            assertEquals(1, requestCount)
+        }
+
+    private class FakeRatingPromptStorage(
+        private var cleanSuccessCount: Int = 0,
+        private var lastPromptTimestampMs: Long? = null,
+        private var hasEverPrompted: Boolean = false,
+    ) : RatingPromptStorage {
+        override fun getCleanSuccessCount(): Int = cleanSuccessCount
+
+        override fun saveCleanSuccessCount(count: Int) {
+            cleanSuccessCount = count
+        }
+
+        override fun getLastPromptTimestampMs(): Long? = lastPromptTimestampMs
+
+        override fun saveLastPromptTimestampMs(timestampMs: Long) {
+            lastPromptTimestampMs = timestampMs
+        }
+
+        override fun getHasEverPrompted(): Boolean = hasEverPrompted
+
+        override fun saveHasEverPrompted(hasPrompted: Boolean) {
+            hasEverPrompted = hasPrompted
+        }
+    }
 }
