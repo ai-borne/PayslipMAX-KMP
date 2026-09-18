@@ -288,8 +288,10 @@ images are approved before committing live.
 
 ## Priority 3 — In-app features (real code work, follow normal phase-wise process)
 
-- [ ] **In-app rating prompt** — trigger after a positive moment (e.g. a successful payslip
-      parse), not on launch/cold-start.
+- [x] **In-app rating prompt** — trigger after a positive moment (e.g. a successful payslip
+      parse), not on launch/cold-start. Shipped on `release/ios-1.0.0-v6` (versionCode 13, commits
+      `9300feb`/`60815ca`/`ad486de`), verified end-to-end on a Pixel 9 — see
+      [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md) v13 workstream 6.
 - [ ] **Onboarding walkthrough for first-time users** — with a skip option and an accessible
       help/FAQ section.
 
