@@ -448,6 +448,17 @@ Play In-App Review (Android) / `SKStoreReviewController` (iOS) triggered after a
 
 **Status:** All 19 commits verified green on `check` gate (full Android + common build, lint, all unit tests). Not yet released to any track; queued for promotion decision once integrated testing and build gate complete.
 
+#### 7. Onboarding walkthrough (Priority 3, tester report) — Phase 1–4 complete, Phase 5 open
+3-slide skippable carousel (privacy/trust → on-device-AI-parsing → Get Started/FAQ link) plus a separate one-time coachmark on the Dashboard's upload FAB.
+
+- **Phase 1:** `OnboardingStorage` interface + Android (`SharedPreferences`)/iOS (`NSUserDefaults`) actuals, mirroring `RatingPromptStorage`'s shape exactly (own prefs file, snake_case keys, `ContextHolder`-based, safe `false` defaults).
+- **Phase 2:** `OnboardingManager` (`shouldShowOnboarding`/`onOnboardingCompleted`), `HorizontalPager`-based `OnboardingScreen`/`OnboardingSlides`, and a third top-level gate in `App()` (additive — sideload/lock gates untouched) with the FAQ link routed through the existing `nativeDetailNavigator?.invoke(...) ?: navState.push(...)` dispatch so it also works on iOS.
+- **Phase 3:** `OnboardingManager.shouldShowCoachmark`/`onCoachmarkDismissed`, `UploadCoachmark` (`Popup`-based, BottomEnd-anchored), wired into `DashboardScreen` via the extracted `ui/components/DashboardUploadArea.kt` (kept `DashboardScreen.kt` under the 300-line cap and its composable under 50 lines).
+- **Phase 4:** Full verification pass — `check` gate, `ktlintCheck`, `linkDebugFrameworkIosSimulatorArm64`, `iosSimulatorArm64Test`, and the tech-debt audit all green; tester-report checkbox flipped.
+- **Phase 5 (open — see the implementation plan's final phase):** manual on-device verification (cold-start carousel → Skip from every slide → FAQ link → Get Started → coachmark-once → relaunch) was not performed — no physical device or running emulator was available in the implementing session. Flagged rather than assumed; do this pass before treating the feature as fully shipped.
+
+**Status:** Phases 1–4 verified green on the `check` gate (full Android + common build, ktlint, tech-debt audit, iOS framework link, iOS simulator unit tests). Not yet verified on-device; not yet released to any track.
+
 ## What still needs to happen before the Day-14 final submission
 
 1. Keep 12+ testers active through the full 14-day mandatory window (Play Console currently shows

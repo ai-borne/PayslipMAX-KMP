@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,9 +15,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.SalaryCountdownCalculator
+import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.ui.ImportUiState
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.components.DashboardUploadArea
 import com.payslipmax.pdfparser.ui.maybePromptForRating
 import com.payslipmax.pdfparser.ui.onDismissImport
 import com.payslipmax.pdfparser.ui.onFilePicked
@@ -38,6 +38,7 @@ fun DashboardScreen(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
+    onboardingManager: OnboardingManager = OnboardingManager(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val payslips = uiState.payslips
@@ -65,6 +66,8 @@ fun DashboardScreen(
             viewModel.startImport()
             showUploadDialog = true
         },
+        showUploadDialog = showUploadDialog,
+        onboardingManager = onboardingManager,
         modifier = modifier,
     )
 
@@ -88,6 +91,8 @@ private fun DashboardContent(
     selected: ParsedPayslip?,
     viewModel: PayslipViewModel,
     onUploadClick: () -> Unit,
+    showUploadDialog: Boolean,
+    onboardingManager: OnboardingManager,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -106,25 +111,11 @@ private fun DashboardContent(
         } else {
             PopulatedDashboard(payslips, selected, viewModel, Modifier.testTag("dashboard_populated"))
         }
-        UploadFab(
-            onClick = onUploadClick,
-            modifier = Modifier.align(Alignment.BottomEnd).testTag("upload_fab"),
+        DashboardUploadArea(
+            onboardingManager = onboardingManager,
+            onUploadClick = onUploadClick,
+            coachmarkEnabled = !showUploadDialog,
         )
-    }
-}
-
-@Composable
-private fun UploadFab(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    FloatingActionButton(
-        onClick = onClick,
-        modifier = modifier.padding(AppDimensions.PaddingMedium),
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary,
-    ) {
-        Icon(Icons.Default.Add, contentDescription = "Import Payslip")
     }
 }
 

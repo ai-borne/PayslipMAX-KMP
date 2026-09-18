@@ -18,6 +18,8 @@ import com.payslipmax.pdfparser.domain.LedgerBalances
 import com.payslipmax.pdfparser.domain.Officer
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.PayslipSummary
+import com.payslipmax.pdfparser.onboarding.OnboardingManager
+import com.payslipmax.pdfparser.onboarding.OnboardingStorage
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
@@ -79,6 +81,19 @@ class AppBackNavigationTest {
             composeRule.activity.onBackPressedDispatcher.onBackPressed()
         }
 
+    // These tests exercise post-onboarding tab/detail navigation, so the gate is pre-completed.
+    private val completedOnboardingManager = OnboardingManager(AlreadyCompletedOnboardingStorage())
+
+    private class AlreadyCompletedOnboardingStorage : OnboardingStorage {
+        override fun getHasCompletedOnboarding(): Boolean = true
+
+        override fun saveHasCompletedOnboarding(completed: Boolean) {}
+
+        override fun getHasSeenUploadCoachmark(): Boolean = true
+
+        override fun saveHasSeenUploadCoachmark(seen: Boolean) {}
+    }
+
     // --- Decision 9: state survives process death via the Saver ---
     // (pure-Saver-logic round-trip tests live in AppNavStateSaverTest.kt / commonTest — no
     // Robolectric/Compose UI host needed there; kept this file within its line budget.)
@@ -88,7 +103,7 @@ class AppBackNavigationTest {
     @Test
     fun backAtTabRootExitsApp() {
         composeRule.setContent {
-            App(viewModel = viewModel, onPickPdf = { }, onOpenPdf = { _, _ -> })
+            App(viewModel = viewModel, onPickPdf = { }, onOpenPdf = { _, _ -> }, onboardingManager = completedOnboardingManager)
         }
         composeRule.waitForIdle()
         // At the Dashboard tab root there is no enabled BackHandler, so back falls through to the
@@ -104,7 +119,7 @@ class AppBackNavigationTest {
     @Test
     fun backFromPushedDetailReturnsToTabRootWithoutExiting() {
         composeRule.setContent {
-            App(viewModel = viewModel, onPickPdf = { }, onOpenPdf = { _, _ -> })
+            App(viewModel = viewModel, onPickPdf = { }, onOpenPdf = { _, _ -> }, onboardingManager = completedOnboardingManager)
         }
         composeRule.waitForIdle()
 
@@ -148,7 +163,7 @@ class AppBackNavigationTest {
         composeRule.waitForIdle()
 
         composeRule.setContent {
-            App(viewModel = viewModel, onPickPdf = { }, onOpenPdf = { _, _ -> })
+            App(viewModel = viewModel, onPickPdf = { }, onOpenPdf = { _, _ -> }, onboardingManager = completedOnboardingManager)
         }
         testDispatcher.scheduler.runCurrent()
         composeRule.waitForIdle()
@@ -198,7 +213,7 @@ class AppBackNavigationTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         composeRule.setContent {
-            App(viewModel = viewModel, onPickPdf = { }, onOpenPdf = { _, _ -> })
+            App(viewModel = viewModel, onPickPdf = { }, onOpenPdf = { _, _ -> }, onboardingManager = completedOnboardingManager)
         }
         testDispatcher.scheduler.advanceUntilIdle()
         composeRule.waitForIdle()

@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.ui.test.*
+import com.payslipmax.pdfparser.crypto.ContextHolder
 import com.payslipmax.pdfparser.database.toEncryptedEntity
 import com.payslipmax.pdfparser.domain.Deductions
 import com.payslipmax.pdfparser.domain.Earnings
@@ -8,6 +9,7 @@ import com.payslipmax.pdfparser.domain.LedgerBalances
 import com.payslipmax.pdfparser.domain.Officer
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.PayslipSummary
+import com.payslipmax.pdfparser.onboarding.AndroidOnboardingStorage
 import com.payslipmax.pdfparser.rating.RatingPromptManager
 import com.payslipmax.pdfparser.rating.RatingPromptStorage
 import com.payslipmax.pdfparser.repository.PayslipRepository
@@ -23,12 +25,15 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+// Coachmark-specific coverage (fresh vs. already-seen state) lives in
+// DashboardScreenCoachmarkUiTest.kt to keep this file within the 300-line budget.
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34]) // Run on API 34 to match local SDK compatibility
@@ -46,11 +51,16 @@ class DashboardScreenUiTest {
         fakeParser = FakePdfParser()
         repository = PayslipRepository(fakeDao, fakeParser, testDispatcher)
         viewModel = PayslipViewModel(repository)
+        // These tests aren't exercising onboarding — pre-seed the coachmark as already-seen so
+        // DashboardScreen's default OnboardingManager() doesn't render it over the assertions below.
+        ContextHolder.context = RuntimeEnvironment.getApplication()
+        AndroidOnboardingStorage().saveHasSeenUploadCoachmark(true)
     }
 
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+        ContextHolder.context = null
         try {
             org.koin.core.context.stopKoin()
         } catch (_: Exception) {

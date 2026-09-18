@@ -13,6 +13,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import com.payslipmax.pdfparser.nav.AppNavState
+import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.components.AppBottomBar
 import com.payslipmax.pdfparser.ui.screens.BaseModelDownloadBanner
@@ -20,6 +21,7 @@ import com.payslipmax.pdfparser.ui.screens.DashboardScreen
 import com.payslipmax.pdfparser.ui.screens.HistoryScreen
 import com.payslipmax.pdfparser.ui.screens.InsightsScreen
 import com.payslipmax.pdfparser.ui.screens.LockScreen
+import com.payslipmax.pdfparser.ui.screens.OnboardingScreen
 import com.payslipmax.pdfparser.ui.screens.SettingsScreen
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
@@ -85,8 +87,10 @@ fun App(
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
     navState: AppNavState = rememberSaveable(saver = AppNavStateSaver) { AppNavState() },
     nativeDetailNavigator: ((Screen) -> Unit)? = null,
+    onboardingManager: OnboardingManager = OnboardingManager(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showOnboarding by remember { mutableStateOf(onboardingManager.shouldShowOnboarding()) }
 
     PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) {
         if (!uiState.appIntegrityStatus.isAllowedToRun) {
@@ -103,6 +107,17 @@ fun App(
                 onPickPdf = onPickPdf,
                 onResetPin = { bytes, pwd, name, onResult ->
                     viewModel.resetPinWithPdf(bytes, pwd, name, onResult)
+                },
+            )
+        } else if (showOnboarding) {
+            OnboardingScreen(
+                onFinished = {
+                    showOnboarding = false
+                    onboardingManager.onOnboardingCompleted()
+                },
+                onNavigateToFaq = {
+                    showOnboarding = false
+                    nativeDetailNavigator?.invoke(Screen.FAQ) ?: navState.push(Screen.FAQ)
                 },
             )
         } else {
