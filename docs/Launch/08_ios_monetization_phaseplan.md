@@ -618,6 +618,21 @@ discrepancies, registered `.pcda` under `UTExportedTypeDeclarations` and `CFBund
 Gmail and Files attachment support, added backup password UX guidance hint, added in-app `privacyPolicyUrl`
 destination fix in `LegalStrings.kt`, explicitly declared `LSSupportsOpeningDocumentsInPlace = false`,
 and added automated test suites. Build 3 uploaded to TestFlight and submitted to App Review on 2026-09-16.
+Cleared review and shipped — `v1.2.1 (3)` is the live, `READY_FOR_SALE` production build as of this
+entry (confirmed via `fastlane ios review_status`/`testflight_builds`, 2026-09-18).
+
+**v1.2.2 (build 6, then 7) — TestFlight-only, not yet submitted** (2026-09-18): needed a new TestFlight
+build to test the accumulated changes since `1.2.1 (3)`. Apple had closed `1.2.1`'s pre-release train
+once it went `READY_FOR_SALE` (rejected a same-version re-upload attempt with "Invalid Pre-Release
+Train"), so `1.2.2` was opened as a new version instead of just bumping the build number — this also
+made it the "next real update" trigger doc 09 was waiting for, so the queued relaunch ASO copy and 8
+approved screenshots shipped into it too (see doc 09's Priority 1/2 for that detail). `iosApp/fastlane/Fastfile`
+gained `build_and_upload_testflight` (archive + sign + upload, target-scoped build-number bump via the
+`xcodeproj` gem to avoid `agvtool`'s all-targets bug), `create_app_store_version`, `apply_relaunch_aso_copy`,
+and `upload_screenshots_direct`. Build 6 shipped the ASO relaunch; build 7 added a profile-settings
+keyboard UX fix (`b44a46f`, `commonMain`, applies to both platforms). `1.2.2` sits in
+`PREPARE_FOR_SUBMISSION` — no `submit_for_review` call has been made; it is not visible on the public
+App Store. `1.2.1 (3)` remains the live production build.
 
 ---
 
