@@ -16,10 +16,11 @@ recipe so future sessions skip the cold start.
 adb devices                                # confirm a device/emulator is attached first
 ```
 
-Package name: `com.payslipmax.pdfparser`. Launch it with:
+Package name: `in.aiborne.payslipmax` (not `com.payslipmax.pdfparser` — that's the Kotlin source
+package, not the application/bundle id). Launch it with:
 
 ```bash
-adb shell monkey -p com.payslipmax.pdfparser -c android.intent.category.LAUNCHER 1
+adb shell monkey -p in.aiborne.payslipmax -c android.intent.category.LAUNCHER 1
 ```
 
 ## Driving + screenshots
@@ -77,8 +78,8 @@ which is a real (if partial) verification:
 ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64      # framework links cleanly
 xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp \
   -destination 'id=<SIM_UDID>' -derivedDataPath <dir> build     # full app builds
-xcrun simctl install <sim> <path-to-.app>                       # bundle id: com.payslipmax.pdfparser
-xcrun simctl launch <sim> com.payslipmax.pdfparser
+xcrun simctl install <sim> <path-to-.app>                       # bundle id: in.aiborne.payslipmax
+xcrun simctl launch <sim> in.aiborne.payslipmax
 xcrun simctl io <sim> screenshot out.png                        # confirms it launches, not the flow
 ```
 
