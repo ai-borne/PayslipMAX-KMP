@@ -3,11 +3,19 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -149,6 +157,17 @@ private fun ProfileInfoBanner() {
 }
 
 @Composable
+private fun scrollableSheetModifier(): Modifier {
+    return Modifier
+        .fillMaxWidth()
+        .verticalScroll(rememberScrollState())
+        .imePadding()
+        .navigationBarsPadding()
+        .padding(horizontal = AppDimensions.PaddingMedium)
+        .padding(bottom = AppDimensions.PaddingLarge)
+}
+
+@Composable
 private fun ProfileOverridesSheetContent(
     profileName: String,
     profileCda: String,
@@ -166,13 +185,11 @@ private fun ProfileOverridesSheetContent(
         pan = profilePan
     }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(horizontal = AppDimensions.PaddingMedium)
-                .padding(bottom = AppDimensions.PaddingLarge),
+        modifier = scrollableSheetModifier(),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         ProfileSheetHeader()
@@ -184,6 +201,8 @@ private fun ProfileOverridesSheetContent(
             onCdaChange = { cda = it },
             pan = pan,
             onPanChange = { pan = it },
+            onMoveFocusDown = { focusManager.moveFocus(FocusDirection.Down) },
+            onDone = { keyboardController?.hide() },
         )
         ProfileActionsRow(
             onSaveClick = {
@@ -203,6 +222,8 @@ private fun ProfileInputFields(
     onCdaChange: (String) -> Unit,
     pan: String,
     onPanChange: (String) -> Unit,
+    onMoveFocusDown: () -> Unit,
+    onDone: () -> Unit,
 ) {
     OutlinedTextField(
         value = name,
@@ -210,6 +231,8 @@ private fun ProfileInputFields(
         label = { Text(AppStrings.settingsProfileName) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(onNext = { onMoveFocusDown() }),
     )
     OutlinedTextField(
         value = cda,
@@ -217,6 +240,8 @@ private fun ProfileInputFields(
         label = { Text(AppStrings.settingsProfileCda) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        keyboardActions = KeyboardActions(onNext = { onMoveFocusDown() }),
     )
     OutlinedTextField(
         value = pan,
@@ -224,6 +249,8 @@ private fun ProfileInputFields(
         label = { Text(AppStrings.settingsProfilePan) },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { onDone() }),
     )
 }
 

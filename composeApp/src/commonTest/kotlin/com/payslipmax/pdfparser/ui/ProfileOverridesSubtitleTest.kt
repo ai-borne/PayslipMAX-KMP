@@ -28,8 +28,8 @@ class ProfileOverridesSubtitleTest {
 
     @Test
     fun testAppStringsConstantsNotHardcoded() {
-        assertEquals("Officer Profile", AppStrings.settingsRowProfileLabel)
-        assertEquals("Officer Profile Settings", AppStrings.settingsProfileHeader)
+        assertEquals("User Profile", AppStrings.settingsRowProfileLabel)
+        assertEquals("User Profile", AppStrings.settingsProfileHeader)
         assertEquals(
             "Set default identity details for dashboard and replica personalization.",
             AppStrings.settingsProfileDesc,
