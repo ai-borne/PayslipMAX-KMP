@@ -133,7 +133,7 @@ platform :ios do
     require 'uri'
     require 'json'
     uri = URI("https://api.appstoreconnect.apple.com#{path}")
-    req_class = { post: Net::HTTP::Post, patch: Net::HTTP::Patch, get: Net::HTTP::Get }.fetch(method)
+    req_class = { post: Net::HTTP::Post, patch: Net::HTTP::Patch, get: Net::HTTP::Get, delete: Net::HTTP::Delete }.fetch(method)
     req = req_class.new(uri)
     req["Authorization"] = "Bearer #{Spaceship::ConnectAPI.token.text}"
     req["Content-Type"] = "application/json"
@@ -157,6 +157,156 @@ platform :ios do
 
   def asc_patch(path, body)
     asc_request(:patch, path, body)
+  end
+
+  def asc_delete(path)
+    asc_request(:delete, path)
+  end
+
+  desc "Delete every screenshot in an appScreenshotSet (e.g. to clear stale screenshots ASC auto-copies from the previous version onto a newly created one before uploading fresh ones)"
+  lane :clear_screenshot_set do |options|
+    asc_api_key
+    set_id = options[:set_id] or UI.user_error!("Pass set_id: (an appScreenshotSets id, from asc_raw path:\"/v1/appStoreVersionLocalizations/<loc_id>/appScreenshotSets\")")
+    shots = asc_get("/v1/appScreenshotSets/#{set_id}/appScreenshots")["data"] || []
+    UI.user_error!("No screenshots found in set #{set_id}") if shots.empty?
+    shots.each do |s|
+      asc_delete("/v1/appScreenshots/#{s['id']}")
+      UI.message("Deleted #{s['attributes']['fileName']} (#{s['id']})")
+    end
+    UI.success("Cleared #{shots.count} screenshots from set #{set_id}")
+  end
+
+  desc "Open a new, editable App Store version (PREPARE_FOR_SUBMISSION) — does NOT submit for review. Needed because a TestFlight upload alone does not create an appStoreVersions object; App Name/Subtitle/Keywords/Description edits require one to exist in an editable state."
+  lane :create_app_store_version do |options|
+    asc_api_key
+    version_string = options[:version] or UI.user_error!("Pass version: e.g. '1.2.2'")
+    app = Spaceship::ConnectAPI::App.find(CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier))
+
+    existing = (asc_get("/v1/apps/#{app.id}/appStoreVersions?limit=10")["data"] || []).find { |v| v['attributes']['versionString'] == version_string }
+    if existing
+      UI.important("appStoreVersion #{version_string} already exists (state: #{existing['attributes']['appVersionState']}) — no change made")
+      next
+    end
+
+    body = {
+      "data" => {
+        "type" => "appStoreVersions",
+        "attributes" => { "platform" => "IOS", "versionString" => version_string },
+        "relationships" => { "app" => { "data" => { "type" => "apps", "id" => app.id } } }
+      }
+    }
+    res = asc_post("/v1/appStoreVersions", body)
+    UI.success("Created appStoreVersion #{version_string} (id #{res['data']['id']}, state: #{res['data']['attributes']['appVersionState']})")
+  end
+
+  desc "Dry-run diff (default) or apply (apply:true) the queued relaunch ASO copy — App Name/Subtitle/Keywords/Description — from docs/Launch/09_testersCommunityreport.md onto the current (latest) editable App Store version. Never submits for review."
+  lane :apply_relaunch_aso_copy do |options|
+    asc_api_key
+    locale = options[:locale] || "en-US"
+    apply = options[:apply] == true || options[:apply] == "true"
+
+    new_name = "PayslipMax: Payslip Manager"
+    new_subtitle = "Salary, Tax & DSOP Insights"
+    new_keywords = "payslip,salary,payslip manager,tax planner,dsop,army,payslip parser,income tax,salary tracker"
+    new_description = <<~DESC.strip
+      PayslipMax is a privacy-first, on-device salary and payslip management application designed to help PCDA(O) users to understand earnings, verify deductions, and optimize tax savings with total security.
+
+      100% ON-DEVICE PRIVACY, ZERO CLOUD UPLOADS
+      Your payslips never leave your phone. All PDF parsing, salary computations, and AI insights are performed locally on your device with zero server uploads. Nothing is sent to any server, ever.
+
+      KEY FEATURES
+
+      Smart Payslip Parsing
+      - Instantly read and parse complex PCDA(O) payslip PDFs with high accuracy.
+      - Automatically organize earnings (Basic Pay, DA, HRA, Allowances) and deductions (DSOP, Taxes, AGIF, Arrears etc).
+      - Interactive digital replica viewer to inspect and audit your original payslip layout, line by line.
+
+      In-Depth Salary Breakdown and Trends
+      - Track month-over-month income variations, net salary growth, and deduction changes over your entire service.
+      - Visual charts for earnings vs. deductions distribution, so you can see exactly where your money goes.
+      - Intelligent Anomaly Detection automatically flags a missing allowance or an unexpected deduction spike.
+
+      Intelligent Tax and Savings Calculators
+      - Compare Old vs. New Tax Regimes with accurate, updated slabs for the current financial year.
+      - Calculate income tax liabilities, standard deductions, and 80C/80D investment impacts.
+      - DSOP Wealth Simulator: project your retirement fund growth with interactive interest projections, compounding curves, and custom contribution scenarios.
+
+      Private On-Device AI Insights
+      - Contextual analysis of salary components and personalized tax optimization opportunities.
+      - Powered by on-device intelligence, with your private financial data never shared with third parties.
+
+      Security You Can Trust
+      - Secure local biometric or PIN app lock protection.
+      - No account registration or external tracking required.
+      - AES-256 encryption for all stored payslip data.
+
+      WHO PAYSLIPMAX IS FOR
+      PayslipMax is built for serving PCDA(O)-administered users who want clarity on their pay without handing financial documents to a third-party service. It is equally useful for:
+      - A user posted to a new unit who wants to quickly confirm a changed allowance or HRA slab is reflected correctly.
+      - Personnel comparing DSOP balances month over month ahead of retirement planning.
+      - Anyone deciding between the Old and New Tax Regime who wants a clear estimate based on their own payslip figures rather than generic examples.
+      - Families who track household salary trends but do not want payslip PDFs stored in email or cloud drives.
+
+      FREQUENTLY ASKED QUESTIONS
+
+      Is my payslip data uploaded anywhere?
+      No. PayslipMax parses your PDF entirely on your device. No payslip, PDF, or extracted salary figure is ever uploaded to a server.
+
+      Which payslip formats are supported?
+      PayslipMax is purpose-built for PCDA(O) payslip formats and is regularly updated as formats change across statement periods.
+
+      Which tax regimes are supported?
+      Both the Old and New Tax Regimes are supported, with slabs kept current for the applicable financial year.
+
+      Do I need an account to use the app?
+      No account or sign-in is required. Your data stays on your device, tied to your device alone.
+
+      What if the app misreads a value from my payslip?
+      You can review and correct any parsed field directly in the app; your correction is saved without altering the original parsed document.
+
+      PayslipMax Premium is an auto-renewing subscription; see Terms of Use and Privacy Policy for billing and cancellation details.
+
+      Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+    DESC
+
+    UI.user_error!("App Name exceeds 30 chars (#{new_name.length})") if new_name.length > 30
+    UI.user_error!("Subtitle exceeds 30 chars (#{new_subtitle.length})") if new_subtitle.length > 30
+    UI.user_error!("Keywords exceed 100 chars (#{new_keywords.length})") if new_keywords.length > 100
+    UI.user_error!("Description exceeds 4000 chars (#{new_description.length})") if new_description.length > 4000
+
+    app = Spaceship::ConnectAPI::App.find(CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier))
+
+    info = (asc_get("/v1/apps/#{app.id}/appInfos")["data"] || []).find { |i| i['attributes']['appStoreState'] != 'READY_FOR_SALE' } ||
+           (asc_get("/v1/apps/#{app.id}/appInfos")["data"] || []).first
+    UI.user_error!("No appInfo found") unless info
+    info_locs = asc_get("/v1/appInfos/#{info['id']}/appInfoLocalizations")["data"] || []
+    info_loc = info_locs.find { |l| l['attributes']['locale'] == locale }
+    UI.user_error!("No #{locale} appInfoLocalization found") unless info_loc
+
+    version = (asc_get("/v1/apps/#{app.id}/appStoreVersions?limit=10")["data"] || []).find { |v| v['attributes']['appVersionState'] != 'READY_FOR_SALE' && v['attributes']['appVersionState'] != 'READY_FOR_DISTRIBUTION' }
+    UI.user_error!("No editable app store version found — run create_app_store_version version:'x.y.z' first") unless version
+    version_locs = asc_get("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations")["data"] || []
+    version_loc = version_locs.find { |l| l['attributes']['locale'] == locale }
+    UI.user_error!("No #{locale} appStoreVersionLocalization found") unless version_loc
+
+    UI.message("--- Target: appInfo #{info['id']} (#{info['attributes']['appStoreState']}), appStoreVersion #{version['attributes']['versionString']} (#{version['attributes']['appVersionState']}) ---")
+    UI.message("App Name:    #{info_loc['attributes']['name'].inspect} -> #{new_name.inspect}")
+    UI.message("Subtitle:    #{info_loc['attributes']['subtitle'].inspect} -> #{new_subtitle.inspect}")
+    UI.message("Keywords:    #{version_loc['attributes']['keywords'].inspect} -> #{new_keywords.inspect}")
+    UI.message("Description: (#{version_loc['attributes']['description'].to_s.length} chars) -> (#{new_description.length} chars)")
+
+    unless apply
+      UI.important("Dry run only — pass apply:true to write these changes")
+      next
+    end
+
+    asc_patch("/v1/appInfoLocalizations/#{info_loc['id']}", {
+      "data" => { "type" => "appInfoLocalizations", "id" => info_loc['id'], "attributes" => { "name" => new_name, "subtitle" => new_subtitle } }
+    })
+    asc_patch("/v1/appStoreVersionLocalizations/#{version_loc['id']}", {
+      "data" => { "type" => "appStoreVersionLocalizations", "id" => version_loc['id'], "attributes" => { "keywords" => new_keywords, "description" => new_description } }
+    })
+    UI.success("Applied relaunch ASO copy to #{locale}")
   end
 
   desc "Show the full App Store listing: App Name/Subtitle (appInfo) + Keywords/Description/Promotional Text (version)"
@@ -311,7 +461,39 @@ platform :ios do
     files.each { |f| UI.message("  #{File.basename(f)}") }
   end
 
-  desc "Upload staged App Store screenshots (run stage_screenshots first; dry-run via ios_listing_status has no screenshot equivalent, so review the staged folder before running this)"
+  desc "Upload staged screenshots directly via Spaceship::ConnectAPI::AppScreenshot (bypasses deliver's UploadScreenshots — its folder/device-type auto-detection silently uploaded nothing against this project's flat locale folder, twice, with no error). Run stage_screenshots first."
+  lane :upload_screenshots_direct do |options|
+    asc_api_key
+    locale = options[:locale] || "en-US"
+    display_type = options[:display_type] || "APP_IPHONE_65"
+    dir = File.join(File.dirname(__FILE__), "screenshots", locale)
+    files = Dir.glob(File.join(dir, "*.png")).sort
+    UI.user_error!("No screenshots staged at #{dir} — run stage_screenshots first") if files.empty?
+
+    app = Spaceship::ConnectAPI::App.find(CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier))
+    version = (asc_get("/v1/apps/#{app.id}/appStoreVersions?limit=10")["data"] || []).find { |v| !["READY_FOR_SALE", "READY_FOR_DISTRIBUTION"].include?(v['attributes']['appVersionState']) }
+    UI.user_error!("No editable app store version found — run create_app_store_version first") unless version
+    vlocs = asc_get("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations")["data"] || []
+    vloc = vlocs.find { |l| l['attributes']['locale'] == locale }
+    UI.user_error!("No #{locale} appStoreVersionLocalization found") unless vloc
+    sets = asc_get("/v1/appStoreVersionLocalizations/#{vloc['id']}/appScreenshotSets")["data"] || []
+    set = sets.find { |s| s['attributes']['screenshotDisplayType'] == display_type }
+    UI.user_error!("No #{display_type} appScreenshotSet found for #{locale}") unless set
+
+    existing = asc_get("/v1/appScreenshotSets/#{set['id']}/appScreenshots")["data"] || []
+    if existing.any?
+      UI.important("#{existing.count} screenshots already in #{display_type} — deleting before re-upload")
+      existing.each { |s| asc_delete("/v1/appScreenshots/#{s['id']}") }
+    end
+
+    files.each do |f|
+      UI.message("Uploading #{File.basename(f)}...")
+      Spaceship::ConnectAPI::AppScreenshot.create(app_screenshot_set_id: set['id'], path: f, wait_for_processing: true)
+    end
+    UI.success("Uploaded #{files.count} screenshots to #{display_type} (#{locale}) on appStoreVersion #{version['attributes']['versionString']}")
+  end
+
+  desc "DEPRECATED — deliver's UploadScreenshots silently uploads nothing against this project's flat-locale screenshots folder (confirmed twice: logs 'success' but ASC shows 0 files). Use upload_screenshots_direct instead. Left here for reference only."
   lane :upload_screenshots do |options|
     asc_api_key
     locale = options[:locale] || "en-US"
@@ -324,6 +506,8 @@ platform :ios do
       skip_metadata: true,
       skip_binary_upload: true,
       skip_app_version_update: true,
+      run_precheck_before_submit: false,
+      overwrite_screenshots: true,
       submit_for_review: false,
       force: true,
       use_live_version: true
