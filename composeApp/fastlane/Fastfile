@@ -177,6 +177,41 @@ platform :android do
     end
   end
 
+  desc "Upload a built AAB to a Play Console track (default: internal). Pass aab: path to the bundle, track: internal|alpha|beta|production, and optionally notes: release notes text."
+  lane :upload_to_track do |options|
+    aab_path = options[:aab] or UI.user_error!("Pass aab: path to the .aab file")
+    UI.user_error!("AAB not found at #{aab_path}") unless File.exist?(aab_path)
+    track = options[:track] || "internal"
+
+    service = play_service
+    # AABs carrying the on-demand Gemma asset pack run 400MB+ — the gem's default HTTP timeouts
+    # (well under a minute) are tuned for small JSON payloads, not a bundle this large.
+    service.client_options.open_timeout_sec = 60
+    service.client_options.send_timeout_sec = 1800
+    service.client_options.read_timeout_sec = 1800
+    edit = service.insert_edit(package_name)
+    begin
+      bundle = service.upload_edit_bundle(package_name, edit.id, upload_source: aab_path, content_type: "application/octet-stream")
+      UI.message("Uploaded bundle, versionCode #{bundle.version_code}")
+
+      release = Google::Apis::AndroidpublisherV3::TrackRelease.new(
+        name: "versionCode #{bundle.version_code}",
+        status: "completed",
+        version_codes: [bundle.version_code.to_s],
+        release_notes: options[:notes] ? [Google::Apis::AndroidpublisherV3::LocalizedText.new(language: "en-US", text: options[:notes])] : nil
+      )
+      track_body = Google::Apis::AndroidpublisherV3::Track.new(track: track, releases: [release])
+      service.update_edit_track(package_name, edit.id, track, track_body)
+
+      service.commit_edit(package_name, edit.id)
+      UI.success("versionCode #{bundle.version_code} released to #{track} track")
+    rescue => e
+      service.delete_edit(package_name, edit.id)
+      detail = e.respond_to?(:body) ? " — #{e.body}" : ""
+      UI.user_error!("Upload failed, edit discarded: #{e.message}#{detail}")
+    end
+  end
+
   desc "Replace Play Store phone screenshots from a local folder, in filename order (Priority 2 screenshot redo — docs/Launch/09_testersCommunityreport.md)"
   lane :upload_screenshots do |options|
     locale = options[:locale] || "en-IN"
