@@ -2,14 +2,19 @@ package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,6 +28,7 @@ import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsOnboarding
 
 private const val ONBOARDING_PAGE_COUNT = 3
+private const val ONBOARDING_CARD_WIDTH_FRACTION = 0.9f
 
 @Composable
 fun OnboardingScreen(
@@ -32,25 +38,38 @@ fun OnboardingScreen(
 ) {
     val pagerState = rememberPagerState(pageCount = { ONBOARDING_PAGE_COUNT })
 
-    Box(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize().testTag("onboarding_pager")) { page ->
-            when (page) {
-                0 -> OnboardingSlideOne()
-                1 -> OnboardingSlideTwo()
-                else -> OnboardingSlideThree(onGetStarted = onFinished, onNavigateToFaq = onNavigateToFaq)
+    Box(
+        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(ONBOARDING_CARD_WIDTH_FRACTION).testTag("onboarding_card"),
+            shape = RoundedCornerShape(AppDimensions.CornerRadius),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        ) {
+            Column {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.End) {
+                    TextButton(onClick = onFinished, modifier = Modifier.testTag("onboarding_skip")) {
+                        Text(text = AppStringsOnboarding.onboardingSkip)
+                    }
+                }
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxWidth().height(AppDimensions.OnboardingCardPagerHeight).testTag("onboarding_pager"),
+                ) { page ->
+                    when (page) {
+                        0 -> OnboardingSlideOne()
+                        1 -> OnboardingSlideTwo()
+                        else -> OnboardingSlideThree(onGetStarted = onFinished, onNavigateToFaq = onNavigateToFaq)
+                    }
+                }
+                OnboardingPagerIndicator(
+                    pageCount = ONBOARDING_PAGE_COUNT,
+                    currentPage = pagerState.currentPage,
+                    modifier = Modifier.padding(bottom = AppDimensions.PaddingLarge),
+                )
             }
         }
-        TextButton(
-            onClick = onFinished,
-            modifier = Modifier.align(Alignment.TopEnd).padding(AppDimensions.PaddingMedium).testTag("onboarding_skip"),
-        ) {
-            Text(text = AppStringsOnboarding.onboardingSkip)
-        }
-        OnboardingPagerIndicator(
-            pageCount = ONBOARDING_PAGE_COUNT,
-            currentPage = pagerState.currentPage,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(AppDimensions.PaddingLarge),
-        )
     }
 }
 

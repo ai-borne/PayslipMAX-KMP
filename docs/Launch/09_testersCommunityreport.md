@@ -293,16 +293,18 @@ images are approved before committing live.
       `9300feb`/`60815ca`/`ad486de`), verified end-to-end on a Pixel 9 — see
       [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md) v13 workstream 6.
 - [x] **Onboarding walkthrough for first-time users** — with a skip option and an accessible
-      help/FAQ section. 3-slide skippable `HorizontalPager` carousel (privacy/trust →
-      on-device-AI-parsing → Get Started/FAQ link) plus a separate one-time coachmark on the
-      Dashboard's upload FAB, gated by a shared-module `OnboardingManager`/`OnboardingStorage` SSOT
-      (Android `SharedPreferences` / iOS `NSUserDefaults` actuals, mirroring `RatingPromptStorage`).
-      Shipped together in the commit that flips this checkbox — see that commit's diff for the exact
-      file list. Verified via the full `check` gate (Android + common build, ktlint, tech-debt audit,
-      `linkDebugFrameworkIosSimulatorArm64`, and `iosSimulatorArm64Test`) — **not yet verified on a
-      physical/emulated device** (no device was available in the session that implemented it); see
-      [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md) for the on-device
-      verification note once performed.
+      help/FAQ section. 3-slide skippable carousel (privacy/trust → on-device-AI-parsing → Get
+      Started/FAQ link), rendered as a centered pop-over `Card` dimmed over the real Dashboard
+      (not a full-screen takeover) so a first-time user gets spatial orientation, plus a separate
+      one-time coachmark on the Dashboard's upload FAB. Gated by a shared-module
+      `OnboardingManager`/`OnboardingStorage` SSOT (Android `SharedPreferences` / iOS
+      `NSUserDefaults` actuals, mirroring `RatingPromptStorage`). Shipped together in the commit
+      that flips this checkbox — see that commit's diff for the exact file list. Verified via the
+      full `check` gate (Android + common build, ktlint, tech-debt audit,
+      `linkDebugFrameworkIosSimulatorArm64`, `iosSimulatorArm64Test`) **and** manually end-to-end on
+      a physical Pixel 9 — see
+      [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md) workstream 7 for the
+      on-device verification note.
 
 Both require going through the project's normal phased build process (`AppStrings.kt` for any
 copy, `Theme.kt` for styling, 300-line file limit, tests, etc.) — not something to rush in just

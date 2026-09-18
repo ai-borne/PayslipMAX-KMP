@@ -21,7 +21,6 @@ import com.payslipmax.pdfparser.ui.screens.DashboardScreen
 import com.payslipmax.pdfparser.ui.screens.HistoryScreen
 import com.payslipmax.pdfparser.ui.screens.InsightsScreen
 import com.payslipmax.pdfparser.ui.screens.LockScreen
-import com.payslipmax.pdfparser.ui.screens.OnboardingScreen
 import com.payslipmax.pdfparser.ui.screens.SettingsScreen
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
@@ -90,7 +89,6 @@ fun App(
     onboardingManager: OnboardingManager = OnboardingManager(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var showOnboarding by remember { mutableStateOf(onboardingManager.shouldShowOnboarding()) }
 
     PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) {
         if (!uiState.appIntegrityStatus.isAllowedToRun) {
@@ -109,19 +107,8 @@ fun App(
                     viewModel.resetPinWithPdf(bytes, pwd, name, onResult)
                 },
             )
-        } else if (showOnboarding) {
-            OnboardingScreen(
-                onFinished = {
-                    showOnboarding = false
-                    onboardingManager.onOnboardingCompleted()
-                },
-                onNavigateToFaq = {
-                    showOnboarding = false
-                    nativeDetailNavigator?.invoke(Screen.FAQ) ?: navState.push(Screen.FAQ)
-                },
-            )
         } else {
-            MainScaffold(
+            MainContentWithOnboarding(
                 navState = navState,
                 uiState = uiState,
                 viewModel = viewModel,
@@ -129,6 +116,7 @@ fun App(
                 onOpenPdf = onOpenPdf,
                 onPickBackup = onPickBackup,
                 nativeDetailNavigator = nativeDetailNavigator,
+                onboardingManager = onboardingManager,
             )
         }
     }
@@ -137,7 +125,7 @@ fun App(
 @OptIn(ExperimentalComposeUiApi::class)
 @Suppress("DEPRECATION")
 @Composable
-private fun MainScaffold(
+internal fun MainScaffold(
     navState: AppNavState,
     uiState: PayslipUiState,
     viewModel: PayslipViewModel,
@@ -145,9 +133,9 @@ private fun MainScaffold(
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     nativeDetailNavigator: ((Screen) -> Unit)?,
+    suppressUploadCoachmark: Boolean = false,
 ) {
-    // On iOS details are hosted as native VCs covering this tree, so the root scaffold keeps
-    // showing tab content + bottom bar and never handles back itself (native nav owns it).
+    // On iOS details are hosted as native VCs covering this tree, so the root scaffold keeps showing tab content + bottom bar and never handles back itself (native nav owns it).
     val hostDetailsNatively = nativeDetailNavigator != null
     Scaffold(
         bottomBar = {
@@ -181,6 +169,7 @@ private fun MainScaffold(
                     onOpenPdf = onOpenPdf,
                     onPickBackup = onPickBackup,
                     nativeDetailNavigator = nativeDetailNavigator,
+                    suppressUploadCoachmark = suppressUploadCoachmark,
                 )
             }
         }
@@ -195,6 +184,7 @@ private fun ScreenContent(
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     nativeDetailNavigator: ((Screen) -> Unit)?,
+    suppressUploadCoachmark: Boolean,
 ) {
     val activeDetail = navState.activeDetail
     if (activeDetail != null && nativeDetailNavigator == null) {
@@ -227,7 +217,12 @@ private fun ScreenContent(
                 )
             Screen.Insights -> InsightsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
             Screen.Settings -> SettingsScreen(viewModel = viewModel, onNavigateTo = onNavigate, onPickBackup = onPickBackup)
-            else -> DashboardScreen(viewModel = viewModel, onPickPdf = onPickPdf)
+            else ->
+                DashboardScreen(
+                    viewModel = viewModel,
+                    onPickPdf = onPickPdf,
+                    suppressCoachmark = suppressUploadCoachmark,
+                )
         }
     }
 }

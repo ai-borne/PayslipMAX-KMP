@@ -58,7 +58,7 @@ class AppOnboardingGateTest {
     }
 
     @Test
-    fun showsOnboardingScreenBeforeMainScaffoldWhenIncomplete() =
+    fun showsOnboardingOverlayOnTopOfMainScaffoldWhenIncomplete() =
         runComposeUiTest {
             testDispatcher.scheduler.runCurrent()
 
@@ -72,12 +72,18 @@ class AppOnboardingGateTest {
             }
             testDispatcher.scheduler.runCurrent()
 
+            // The onboarding card overlays MainScaffold rather than replacing it, so the real
+            // Dashboard (and its FAB) is still composed underneath, dimly visible through the scrim.
             onNodeWithText(AppStringsOnboarding.onboardingSlide1Title).assertExists()
-            onNodeWithTag("upload_fab").assertDoesNotExist()
+            onNodeWithTag("upload_fab").assertExists()
+            // The upload coachmark must stay suppressed while the onboarding overlay is still
+            // showing, even though the FakeOnboardingStorage above reports it as not-yet-seen —
+            // otherwise both surfaces compete for attention on the very first Dashboard frame.
+            onNodeWithTag("upload_coachmark").assertDoesNotExist()
         }
 
     @Test
-    fun showsMainScaffoldDirectlyWhenOnboardingAlreadyComplete() =
+    fun hidesOnboardingOverlayWhenAlreadyComplete() =
         runComposeUiTest {
             testDispatcher.scheduler.runCurrent()
 

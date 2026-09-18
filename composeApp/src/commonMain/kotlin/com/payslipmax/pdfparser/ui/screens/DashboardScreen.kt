@@ -39,11 +39,11 @@ fun DashboardScreen(
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
     onboardingManager: OnboardingManager = OnboardingManager(),
+    suppressCoachmark: Boolean = false,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val payslips = uiState.payslips
     val selected = uiState.selectedPayslip
-
     var showUploadDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.importUiState) {
@@ -68,6 +68,7 @@ fun DashboardScreen(
         },
         showUploadDialog = showUploadDialog,
         onboardingManager = onboardingManager,
+        suppressCoachmark = suppressCoachmark,
         modifier = modifier,
     )
 
@@ -93,6 +94,7 @@ private fun DashboardContent(
     onUploadClick: () -> Unit,
     showUploadDialog: Boolean,
     onboardingManager: OnboardingManager,
+    suppressCoachmark: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -114,7 +116,7 @@ private fun DashboardContent(
         DashboardUploadArea(
             onboardingManager = onboardingManager,
             onUploadClick = onUploadClick,
-            coachmarkEnabled = !showUploadDialog,
+            coachmarkEnabled = !showUploadDialog && !suppressCoachmark,
         )
     }
 }
