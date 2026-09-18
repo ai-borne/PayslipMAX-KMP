@@ -10,7 +10,7 @@ Closed testing track, so each release's status line below states which track it'
 
 ## Status snapshot (as of 2026-09-17, v13 in development)
 
-- **versionCode 13 (1.0.0)** — in development on `release/ios-1.0.0-v6`, accumulating 16 commits across 5 independent workstreams (parser paycode expansion, performance tuning, security hardening, officer profile UX, splash-screen polish) since v12 launched to Closed testing on 2026-09-16. Not yet released to any track.
+- **versionCode 13 (1.0.0)** — in development on `release/ios-1.0.0-v6`, accumulating 19 commits across 6 independent workstreams (parser paycode expansion, performance tuning, security hardening, officer profile UX, splash-screen polish, in-app rating prompt) since v12 launched to Closed testing on 2026-09-16. Not yet released to any track.
 
 - **Closed testing track:** `12 (1.0.0)` — promoted directly from Internal testing on 2026-09-16 (177
   countries/regions), superseding versionCode 10. Rather than promoting versionCode 11 as-is, v12 packages
@@ -436,7 +436,17 @@ Settings flow sanitization and resilience:
 #### 5. Splash screen polish
 - **`11c9a00`:** Wire `androidx.core.splashscreen` with `setKeepOnScreenCondition` gated on `PayslipUiState.isLoading` to hold splash through cold-start Koin/Room initialization (no new state). Parity with iOS's static LaunchScreen storyboard.
 
-**Status:** All 16 commits verified green on `check` gate (full Android + common build, lint, all unit tests). Not yet released to any track; queued for promotion decision once integrated testing and build gate complete.
+#### 6. In-app rating prompt (Priority 3, tester report) — Phase 1–4 complete
+Play In-App Review (Android) / `SKStoreReviewController` (iOS) triggered after a clean payslip parse, not on launch. Both are OS-rendered dialogs with no custom copy.
+
+- **Phase 1 (`9300feb`):** Shared eligibility logic (`RatingPromptManager`), storage, and clock, with Android/iOS actuals.
+- **Phase 2 (`60815ca`):** `requestReview()` expect/actual, Play Core dependency, `ReviewActivityBridge` for the Activity reference.
+- **Phase 3 (`ad486de`):** ViewModel eligibility hook (gated on `needsReview == false` and a duplicate-reimport check) + UI-timed trigger via `LaunchedEffect` after the success state settles.
+- **Cadence:** 3rd clean parse triggers the first prompt; every 10 more after that; gated by both the count and a 90-day cooldown.
+- **Phase 4 (manual verification, Pixel 9, no code changes):** confirmed end-to-end — Play In-App Review sheet rendered after the threshold; re-importing the same payslip did not increment the counter (checked directly against `shared_prefs`, not inferred). `needsReview == true` non-increment is unit-test-verified only, no dirty fixture available on-device to reproduce manually.
+- Considered adding custom pre-prompt copy ("how about giving it five stars") — rejected: both Apple and Google prohibit prompting for a specific rating. Kept the OS-native dialog as-is.
+
+**Status:** All 19 commits verified green on `check` gate (full Android + common build, lint, all unit tests). Not yet released to any track; queued for promotion decision once integrated testing and build gate complete.
 
 ## What still needs to happen before the Day-14 final submission
 
