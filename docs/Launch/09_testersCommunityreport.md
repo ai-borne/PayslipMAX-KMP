@@ -156,32 +156,36 @@ with `fastlane ios update_promotional_text`):
 - Promotional Text: was `Turn your snooze-fest PCDA(O) payslips into powerful financial insights.`
   → now `Turn your PCDA(O) payslip into clear salary, tax and DSOP insights, 100% on-device.`
 
-**Queued for the next iOS version submission** (cannot be applied until then — an agent picking
-this up should check `fastlane ios ios_listing_status` first to confirm a version is in an
-editable state before attempting these):
+**Shipped 2026-09-18, to TestFlight-only `1.2.2` — not yet submitted for App Store review.** The next
+iOS build needed for TestFlight testing (`1.2.1 (3)` was already `READY_FOR_SALE`, so its pre-release
+train was closed to new builds — Apple rejected a same-version upload attempt) turned out to be the
+"next real, code-driven app update" this section said to wait for, so the queued copy below shipped
+into it rather than sitting queued further:
 - App Name: `PayslipMax` → `PayslipMax: Payslip Manager` (27/30 chars, matches Android title)
 - Subtitle: `Payslip details in your pocket` → `Salary, Tax & DSOP Insights` (27/30 chars,
   keyword-focused instead of tone-focused — the old subtitle contributed no extra indexed terms)
 - Keywords: `payslip, salary, defense payslip, tax planner, dsop, army,payslip parser, income tax`
   → `payslip,salary,payslip manager,tax planner,dsop,army,payslip parser,income tax,salary tracker`
   (93/100 chars)
-- Description: same canonical text as the Android full description above (3,517 chars, fits
+- Description: same canonical text as the Android full description above (3,605 chars live, fits
   ASC's 4,000-char limit) — includes the standard EULA link line Apple's Guideline 3.1.2 fix
-  already relies on (`add_eula_link_to_description` lane), so don't drop that line when the new
-  version's description is set.
+  already relies on, so it wasn't dropped.
 
-To action the queued items: when the next iOS version is created (see
-`08_ios_monetization_phaseplan.md` for the release cadence), extend `iosApp/fastlane/Fastfile`
-with `appInfoLocalizations` PATCH lanes for App Name/Subtitle and an `appStoreVersionLocalizations`
-PATCH lane for Keywords/Description (mirroring `add_eula_link_to_description`'s pattern), apply
-this queued copy, dry-run diff it for the user, then commit alongside that version's submission.
+**How it shipped:** `iosApp/fastlane/Fastfile` gained `create_app_store_version` (opens a new
+`PREPARE_FOR_SUBMISSION` version — does not submit for review) and `apply_relaunch_aso_copy`
+(dry-run diff by default, `apply:true` to write; PATCHes `appInfoLocalizations` for Name/Subtitle
+and `appStoreVersionLocalizations` for Keywords/Description in one lane). Dry-run diff was shown
+and confirmed before applying. `1.2.1` (`READY_FOR_SALE`) is completely untouched by this — the new
+copy lives only on the `1.2.2` version object, which stays unsubmitted until an explicit future
+`submit_for_review` action.
 
 ## Priority 2 — Screenshots
 
 - [x] Redo Play Store screenshots to be feature-focused with short captions/annotations
       (smart parsing, salary breakdown, tax insights) instead of plain screens. Flagged
       independently by both the ASO report and the feedback report. **Shipped live 2026-09-17**
-      (Android only — iOS screenshots blocked on the next editable version, see below).
+      (Android). **iOS shipped 2026-09-18** to TestFlight-only `1.2.2` (see resolution below) —
+      both platforms now done.
 
 Scope decision (2026-09-17): both platforms, in the same pass — Android via a Play Console
 screenshot upload, iOS screenshots via App Store Connect (screenshots aren't locked to an
@@ -255,6 +259,30 @@ submission, rather than opening a metadata-only version now just to ship marketi
 agent picking this up: check `fastlane ios review_status` first — if a new version is open for any
 other reason, that's the trigger to also apply this queued copy/screenshots, not a separate event.
 
+**Resolved 2026-09-18:** the next TestFlight build needed for testing (`1.2.2`) turned out to be
+exactly that "next real update" trigger — see the Priority 1 "Shipped 2026-09-18" note above for
+why `1.2.2` had to open in the first place (Apple closed `1.2.1`'s pre-release train once it went
+`READY_FOR_SALE`). `deliver`'s `upload_screenshots` lane was tried again against the newly-opened
+`1.2.2` version and **still uploaded nothing** — it logged "Successfully uploaded screenshots" both
+with and without `overwrite_screenshots: true`, but ASC showed 0 screenshots landing either time
+(root cause not fully diagnosed — `deliver`'s folder/device-type auto-detection silently no-op'd
+against this project's flat-locale `fastlane/screenshots/<locale>/*.png` layout). Also found: Apple
+auto-copies the *previous* version's screenshots onto a newly created version — `1.2.2` inherited
+1.2.1's old, uncaptioned raw screenshots (`IMG_9762.png` etc.) by default, which would have shipped
+silently if untouched.
+
+Replaced with a new lane, `upload_screenshots_direct`, calling `Spaceship::ConnectAPI::AppScreenshot.create`
+directly (the same lower-level library `deliver` itself wraps) instead of going through `deliver`'s
+uploader. Also added `clear_screenshot_set` (deletes an `appScreenshotSet`'s contents — used first
+to clear Apple's auto-copied stale screenshots) and `create_app_store_version` (see Priority 1).
+`upload_screenshots` is kept in the Fastfile marked DEPRECATED, for reference only — do not use it.
+
+Verified live: all 8 approved captioned screenshots below uploaded to the `APP_IPHONE_65` set on
+`1.2.2` and reached `COMPLETE` processing state. The `APP_IPHONE_58` set (5.5"/8-Plus-class) was
+cleared of its stale auto-copied screenshots but left empty — this project only ever composited the
+6.5" canvas, so there's nothing correctly-sized to put there yet; worth checking before any actual
+submission in case that display class is a mandatory slot.
+
 Approved screenshot set + order (light/dark alternating for variety, parsing/privacy leads):
 1. Digital Replica, light — "Every payslip line, explained"
 2. Digital Replica, dark — "Your data never leaves your device"
@@ -318,9 +346,13 @@ closed-testing-graduation form.
 - Q1 (tester recruitment) — draft answer matches reality (paid provider + PCDA(O) outreach),
   usable as-is.
 - Q4 / Q8 ("what changes did you make based on feedback") — draft **presumes** the ASO copy,
-  screenshots, rating button, and walkthrough are already shipped. Priority 1 (ASO copy) is now
-  live; **still hold off submitting until Priority 2 (screenshots) also ships** — Google can
-  cross-check claims against listing history.
+  screenshots, rating button, and walkthrough are already shipped. All four are now live on
+  Android: Priority 1 (ASO copy, 2026-09-17), Priority 2 (screenshots, 2026-09-17), Priority 3
+  (rating prompt + onboarding walkthrough, shipped in versionCode 13 → Internal testing,
+  2026-09-18 — see [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md)). The
+  gate this note used to describe is cleared; still worth promoting v13 to Closed testing and
+  letting it stabilize before submitting the questionnaire, so Google's listing-history
+  cross-check reflects the same build testers are actually on.
 
 ## Not worth acting on
 

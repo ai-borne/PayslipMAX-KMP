@@ -8,17 +8,22 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-17, v13 in development)
+## Status snapshot (as of 2026-09-18, v13 released to Internal testing)
 
-- **versionCode 13 (1.0.0)** — in development on `release/ios-1.0.0-v6`, accumulating 19 commits across 6 independent workstreams (parser paycode expansion, performance tuning, security hardening, officer profile UX, splash-screen polish, in-app rating prompt) since v12 launched to Closed testing on 2026-09-16. Not yet released to any track.
+- **versionCode 13 (1.0.0)** — released to **Internal testing** on 2026-09-18, carrying 20 commits across
+  8 workstreams (parser paycode expansion, performance tuning, security hardening, officer profile UX,
+  splash-screen polish, in-app rating prompt, onboarding walkthrough, profile-settings keyboard UX fix)
+  since v12 launched to Closed testing on 2026-09-16. Not yet verified on-device or promoted to Closed
+  testing — see the versionCode 13 section below for the full build/upload record.
 
 - **Closed testing track:** `12 (1.0.0)` — promoted directly from Internal testing on 2026-09-16 (177
   countries/regions), superseding versionCode 10. Rather than promoting versionCode 11 as-is, v12 packages
   all of v11's R8/Crashlytics/dead-code hardening together with the user-facing Offline AI banner redesign
   (Option A capsule), Gemma LiteRT engine caching (native OOM fix), and Universal Backup & Restore
-  cross-platform interoperability & Password UX guidance.
-- **Internal testing track:** `12 (1.0.0)` — released 2026-09-16, verified cleanly on physical Pixel 9,
-  then promoted to Closed testing. (Supersedes versionCode 11).
+  cross-platform interoperability & Password UX guidance. Not yet superseded by v13 — v13 needs on-device
+  verification on Internal testing first, per this doc's established promotion pattern.
+- **Internal testing track:** `13 (1.0.0)` — released 2026-09-18 (see versionCode 13 section below).
+  Supersedes versionCode 12 on this track only; v12 remains the live Closed testing release.
 - **Prior Closed track state:** `10 (1.0.0)` — uploaded 2026-09-11 (`dumpsys package` showed `versionCode=10`,
   `installerPackageName=com.android.vending`), now superseded by v12. Closed testing went 8 → 10 → 12.
 - **Testers:** 25/25 opted in (third-party tester panel, "Private Testing Pro" plan) as of the v8
@@ -396,7 +401,7 @@ Commits:
 
 **Status:** Released to **Internal testing** on 2026-09-16, verified cleanly on physical Pixel 9, and promoted directly to **Closed testing** on 2026-09-16 (`composeApp-release.aab`, versionCode 12, versionName 1.0.0), superseding v10 on the 14-day mandatory track.
 
-### versionCode 13 — In development (16 commits, 5 workstreams)
+### versionCode 13 — Released to Internal testing 2026-09-18 (20 commits, 8 workstreams)
 
 Five independent workstreams landed on `release/ios-1.0.0-v6` since v12 closed-testing launch:
 
@@ -457,7 +462,42 @@ Play In-App Review (Android) / `SKStoreReviewController` (iOS) triggered after a
 - **Phase 4:** Full verification pass — `check` gate, `ktlintCheck`, `linkDebugFrameworkIosSimulatorArm64`, `iosSimulatorArm64Test`, and the tech-debt audit all green; tester-report checkbox flipped.
 - **Phase 5:** Manual on-device verification on a connected Pixel 9 — every checklist item passed (carousel on cold-start, Skip, FAQ link + back-nav, Get Started, coachmark-once, "Got it" persists, relaunch shows neither — confirmed against the raw prefs file via `run-as`, not just visually). Two things came out of this pass and were fixed, not just noted: (1) per user feedback the carousel was redesigned from full-screen to a centered pop-over `Card` over a dimmed, still-visible Dashboard (`AppOnboardingOverlay.kt`'s `MainContentWithOnboarding`, `MainScaffold` promoted to `internal`); (2) that redesign caused the upload coachmark to render simultaneously with the onboarding card on first launch, fixed by threading a `suppressUploadCoachmark` flag down through `MainScaffold → ScreenContent → DashboardScreen → DashboardUploadArea`, with a regression assertion added to `AppOnboardingGateTest`.
 
-**Status:** All 5 phases verified green on the `check` gate (full Android + common build, ktlint, tech-debt audit, iOS framework link, iOS simulator unit tests) and manually end-to-end on a physical Pixel 9. Not yet released to any track.
+**Status:** All 5 phases verified green on the `check` gate (full Android + common build, ktlint, tech-debt audit, iOS framework link, iOS simulator unit tests) and manually end-to-end on a physical Pixel 9.
+
+#### 8. Profile settings keyboard UX fix + rename (`b44a46f`)
+Fixed during the iOS 1.2.2 TestFlight round (see `08_ios_monetization_phaseplan.md`/`09_testersCommunityreport.md`
+for that session's context) and merged onto this same branch ahead of the v13 release below:
+
+- Added vertical scroll + `imePadding()` to the profile sheet so fields stay reachable when the keyboard is open.
+- Wired keyboard actions: Name/CDA fields use `ImeAction.Next` to advance focus, PAN uses `ImeAction.Done` to dismiss.
+- Renamed "Officer Profile Settings" → "User Profile" (header + row label) via `AppStrings`.
+- `commonMain` Compose fix — applies to both platforms.
+
+#### Upload and Internal-testing release (2026-09-18)
+`versionCode` bumped 12 → 13 (`versionName` stays `1.0.0`, unchanged in `version.properties`). Build and
+upload tooling gap closed: `composeApp/fastlane/Fastfile` gained an `upload_to_track` lane (builds on the
+existing `play_service`/edit-commit pattern) so future releases don't need a manual Play Console upload.
+
+- Release AAB built via `./gradlew :composeApp:bundleRelease -PgemmaModelSourcePath=<path to gemma-active.litertlm>`
+  (the real Gemma model, not the placeholder — required for a real release build). Output: 423MB (the
+  on-demand Gemma asset pack's content ships inside the AAB even though device delivery is deferred).
+- `jarsigner -verify` confirmed correct release-keystore signature (`CN=ai-borne, OU=Engineering...`) before upload.
+- Two real bugs found and fixed getting `upload_to_track` working: (1) the OS mime-type guess for `.aab`
+  resolves to a bogus type Play's API rejects with a 400 — needs `content_type: "application/octet-stream"`
+  passed explicitly; (2) the gem's default HTTP timeouts are tuned for small JSON payloads and time out on a
+  400MB+ upload — needs generous `open_timeout_sec`/`send_timeout_sec`/`read_timeout_sec` set on the service.
+- First upload attempt failed with `403 PERMISSION_DENIED` assigning the release to a track: the Play Console
+  service account (`payslipmax-fastlane-supply@...`) had only been granted read-only app info + "Manage store
+  presence" (sufficient for the ASO/screenshot lanes, not release management). User granted **"Release apps to
+  testing tracks"** and **"Manage testing tracks and edit tester lists"** live in Play Console mid-session;
+  re-upload succeeded immediately after.
+- Full `check` gate (Android + common build, corpus regression, ktlint, `checkFileSizes`) run green before
+  building the release AAB.
+
+**Status:** `versionCode 13 (1.0.0)` released to the **Internal testing** track, 2026-09-18
+(`composeApp-release.aab`). Carries all 8 workstreams above (20 commits total). Not yet promoted to Closed
+testing — pending verification on a physical device per this doc's established pattern (see v10/v11/v12
+entries above) before promotion.
 
 ## What still needs to happen before the Day-14 final submission
 
