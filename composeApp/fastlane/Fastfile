@@ -212,6 +212,50 @@ platform :android do
     end
   end
 
+  desc "Show every Play Console track and the release(s) on it (read-only, throwaway edit). Closed testing is the `alpha` track unless a custom-named closed track exists."
+  lane :track_status do
+    service = play_service
+    edit = service.insert_edit(package_name)
+    begin
+      service.list_edit_tracks(package_name, edit.id).tracks.each do |t|
+        (t.releases || []).each do |r|
+          UI.message("#{t.track}: versionCodes #{r.version_codes.inspect} — #{r.status} (#{r.name})")
+        end
+      end
+    ensure
+      service.delete_edit(package_name, edit.id)
+    end
+  end
+
+  desc "Promote an already-uploaded versionCode to another track without re-uploading the AAB. Pass version_code:, to: (alpha = closed testing), optionally from: (default internal, used only to sanity-check the code is live there) and notes:."
+  lane :promote_release do |options|
+    code = (options[:version_code] or UI.user_error!("Pass version_code:")).to_s
+    to = options[:to] or UI.user_error!("Pass to: internal|alpha|beta|production")
+    from = options[:from] || "internal"
+
+    service = play_service
+    edit = service.insert_edit(package_name)
+    begin
+      source = service.get_edit_track(package_name, edit.id, from)
+      live = (source.releases || []).flat_map { |r| r.version_codes || [] }.map(&:to_s)
+      UI.user_error!("versionCode #{code} is not on the #{from} track (found #{live.inspect})") unless live.include?(code)
+
+      release = Google::Apis::AndroidpublisherV3::TrackRelease.new(
+        name: "versionCode #{code}",
+        status: "completed",
+        version_codes: [code],
+        release_notes: options[:notes] ? [Google::Apis::AndroidpublisherV3::LocalizedText.new(language: "en-US", text: options[:notes])] : nil
+      )
+      service.update_edit_track(package_name, edit.id, to, Google::Apis::AndroidpublisherV3::Track.new(track: to, releases: [release]))
+      service.commit_edit(package_name, edit.id)
+      UI.success("versionCode #{code} promoted from #{from} to #{to}")
+    rescue => e
+      service.delete_edit(package_name, edit.id) rescue nil
+      detail = e.respond_to?(:body) ? " — #{e.body}" : ""
+      UI.user_error!("Promotion failed, edit discarded: #{e.message}#{detail}")
+    end
+  end
+
   desc "Replace Play Store phone screenshots from a local folder, in filename order (Priority 2 screenshot redo — docs/Launch/09_testersCommunityreport.md)"
   lane :upload_screenshots do |options|
     locale = options[:locale] || "en-IN"

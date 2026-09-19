@@ -634,6 +634,26 @@ keyboard UX fix (`b44a46f`, `commonMain`, applies to both platforms). `1.2.2` si
 `PREPARE_FOR_SUBMISSION` — no `submit_for_review` call has been made; it is not visible on the public
 App Store. `1.2.1 (3)` remains the live production build.
 
+**v1.2.2 (7) submitted to App Review** (2026-09-19): `WAITING_FOR_REVIEW`. Prepared and submitted entirely via
+fastlane, two new lanes in `iosApp/fastlane/Fastfile`: `prepare_submission version:1.2.2 build:7` (attaches the
+build, sets What's New and review notes from `fastlane/release_notes/1.2.2/`; refuses a build that isn't `VALID`
+or a version that isn't editable) and `submit_for_review version:1.2.2 confirm:true` (reviewSubmissions API;
+refuses without `confirm:true`). Pre-submit state verified live: build 7 `VALID`, export compliance
+(`usesNonExemptEncryption=false`) set, 8 captioned screenshots `COMPLETE` in the `APP_IPHONE_65` set (the
+`APP_IPHONE_58` set is empty — not needed while 6.5" is supplied), editable appInfo already carried the new
+name `PayslipMax: Payslip Manager` / subtitle `Salary, Tax & DSOP Insights`, and keywords/description from the
+ASO relaunch. Gaps found and fixed before submitting: no build attached, `whatsNew` empty, and review notes
+were stale copy from 1.2.1. Release notes deliberately omit the privacy-overlay and backup work (the iOS overlay
+change was an SSOT alignment, and backup shipped in 1.2.1) so the copy claims only what is new on iOS.
+`releaseType` is `AFTER_APPROVAL`, so it auto-releases on approval. No IAP change in this version, so the
+subscription is not part of this submission. If rejected, fix and resubmit via the same two lanes.
+
+**Next steps (as of 2026-09-19):**
+1. Check `fastlane ios review_status` (from `iosApp/`) for the App Review outcome of `1.2.2 (7)`.
+2. If it is rejected, fix the issue and resubmit with the same two lanes (`prepare_submission`, then
+   `submit_for_review confirm:true`). A metadata-only rejection needs no new build; a code fix needs a new
+   TestFlight build first.
+
 ---
 
 ## Rejection-avoidance checklist (carried through every phase, source: RevenueCat's App Store

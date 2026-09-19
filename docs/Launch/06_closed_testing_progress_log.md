@@ -8,22 +8,16 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-18, v13 released to Internal testing)
+## Status snapshot (as of 2026-09-19, v13 promoted to Closed testing)
 
-- **versionCode 13 (1.0.0)** — released to **Internal testing** on 2026-09-18, carrying 20 commits across
-  8 workstreams (parser paycode expansion, performance tuning, security hardening, officer profile UX,
-  splash-screen polish, in-app rating prompt, onboarding walkthrough, profile-settings keyboard UX fix)
-  since v12 launched to Closed testing on 2026-09-16. Not yet verified on-device or promoted to Closed
-  testing — see the versionCode 13 section below for the full build/upload record.
-
-- **Closed testing track:** `12 (1.0.0)` — promoted directly from Internal testing on 2026-09-16 (177
-  countries/regions), superseding versionCode 10. Rather than promoting versionCode 11 as-is, v12 packages
-  all of v11's R8/Crashlytics/dead-code hardening together with the user-facing Offline AI banner redesign
-  (Option A capsule), Gemma LiteRT engine caching (native OOM fix), and Universal Backup & Restore
-  cross-platform interoperability & Password UX guidance. Not yet superseded by v13 — v13 needs on-device
-  verification on Internal testing first, per this doc's established promotion pattern.
-- **Internal testing track:** `13 (1.0.0)` — released 2026-09-18 (see versionCode 13 section below).
-  Supersedes versionCode 12 on this track only; v12 remains the live Closed testing release.
+- **Closed testing track (`alpha`):** `13 (1.0.0)` — promoted from Internal testing on 2026-09-19 via the new
+  `promote_release` fastlane lane (no AAB re-upload), superseding v12 (which had been live on Closed testing
+  since 2026-09-16). Carries 20 commits across 8 workstreams (see the versionCode 13 section below). **Caveat
+  recorded honestly:** this section previously said v13 should be verified on a physical device on Internal
+  testing before promotion; the promotion was made on the owner's explicit instruction without that
+  Play-delivered on-device pass being logged here. Treat the first Closed-testing install as that verification.
+- **Internal testing track:** `13 (1.0.0)` — same build, released 2026-09-18.
+- **Closed track history:** 8 → 10 → 12 → 13.
 - **Prior Closed track state:** `10 (1.0.0)` — uploaded 2026-09-11 (`dumpsys package` showed `versionCode=10`,
   `installerPackageName=com.android.vending`), now superseded by v12. Closed testing went 8 → 10 → 12.
 - **Testers:** 25/25 opted in (third-party tester panel, "Private Testing Pro" plan) as of the v8
@@ -498,6 +492,14 @@ existing `play_service`/edit-commit pattern) so future releases don't need a man
 (`composeApp-release.aab`). Carries all 8 workstreams above (20 commits total). Not yet promoted to Closed
 testing — pending verification on a physical device per this doc's established pattern (see v10/v11/v12
 entries above) before promotion.
+
+#### Promotion to Closed testing (2026-09-19)
+`fastlane android promote_release version_code:13 to:alpha from:internal notes:"..."` (`composeApp/fastlane/Fastfile`).
+The lane confirms the versionCode is live on the source track, then points the target track's release at it and
+commits; verified afterwards with the new read-only `track_status` lane (`alpha: [13]`, `internal: [13]`). Closed
+testing is the Play API's `alpha` track. Release notes shown to testers (333 chars, Play cap is 500) summarise
+the paycode expansion, faster unlock/import, privacy screen, onboarding + rating prompt and User Profile fixes.
+The 14-day mandatory-testing clock is track-based, so the v12 → v13 swap mid-window is expected (same as 8 → 10 → 12).
 
 ## What still needs to happen before the Day-14 final submission
 

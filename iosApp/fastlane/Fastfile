@@ -554,6 +554,59 @@ platform :ios do
     UI.success("Uploaded build #{new_build} to TestFlight")
   end
 
+  desc "Fill in everything an editable App Store version needs before review: attach build, What's New, review notes. Reads fastlane/release_notes/<version>/{whats_new,review_notes}.txt. Pass version:, build:. Does NOT submit."
+  lane :prepare_submission do |options|
+    asc_api_key
+    version_string = options[:version] or UI.user_error!("Pass version: e.g. '1.2.2'")
+    build_number = options[:build].to_s
+    UI.user_error!("Pass build: e.g. 7") if build_number.empty?
+    dir = File.join(__dir__, "release_notes", version_string)
+    whats_new = File.read(File.join(dir, "whats_new.txt")).strip
+    review_notes = File.read(File.join(dir, "review_notes.txt")).strip
+
+    app = Spaceship::ConnectAPI::App.find(CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier))
+    version = (asc_get("/v1/apps/#{app.id}/appStoreVersions?limit=10")["data"] || []).find { |v| v['attributes']['versionString'] == version_string }
+    UI.user_error!("No appStoreVersion #{version_string}; run create_app_store_version first") unless version
+    UI.user_error!("#{version_string} is #{version['attributes']['appVersionState']}, not editable") unless version['attributes']['appVersionState'] == "PREPARE_FOR_SUBMISSION"
+
+    builds = asc_get("/v1/builds?filter[app]=#{app.id}&filter[preReleaseVersion.version]=#{version_string}&filter[version]=#{build_number}")["data"] || []
+    UI.user_error!("Build #{version_string} (#{build_number}) not found in App Store Connect") if builds.empty?
+    UI.user_error!("Build #{build_number} is #{builds[0]['attributes']['processingState']}, not VALID") unless builds[0]['attributes']['processingState'] == "VALID"
+    asc_patch("/v1/appStoreVersions/#{version['id']}/relationships/build", { "data" => { "type" => "builds", "id" => builds[0]['id'] } })
+    UI.success("Attached build #{build_number}")
+
+    loc = asc_get("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations")["data"].find { |l| l['attributes']['locale'] == "en-US" }
+    asc_patch("/v1/appStoreVersionLocalizations/#{loc['id']}", { "data" => { "type" => "appStoreVersionLocalizations", "id" => loc['id'], "attributes" => { "whatsNew" => whats_new } } })
+    UI.success("Set What's New (#{whats_new.length} chars)")
+
+    detail = asc_get("/v1/appStoreVersions/#{version['id']}/appStoreReviewDetail")["data"]
+    asc_patch("/v1/appStoreReviewDetails/#{detail['id']}", { "data" => { "type" => "appStoreReviewDetails", "id" => detail['id'], "attributes" => { "notes" => review_notes } } })
+    UI.success("Set review notes (#{review_notes.length} chars)")
+  end
+
+  desc "Submit an editable App Store version to App Review. Pass version:. Requires confirm:true — this is outward-facing and (releaseType AFTER_APPROVAL) auto-publishes on approval."
+  lane :submit_for_review do |options|
+    asc_api_key
+    version_string = options[:version] or UI.user_error!("Pass version: e.g. '1.2.2'")
+    UI.user_error!("Refusing to submit without confirm:true") unless options[:confirm].to_s == "true"
+
+    app = Spaceship::ConnectAPI::App.find(CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier))
+    version = (asc_get("/v1/apps/#{app.id}/appStoreVersions?limit=10")["data"] || []).find { |v| v['attributes']['versionString'] == version_string }
+    UI.user_error!("No appStoreVersion #{version_string}") unless version
+    UI.user_error!("#{version_string} is #{version['attributes']['appVersionState']}, not PREPARE_FOR_SUBMISSION") unless version['attributes']['appVersionState'] == "PREPARE_FOR_SUBMISSION"
+
+    open = (asc_get("/v1/apps/#{app.id}/reviewSubmissions?filter[platform]=IOS&filter[state]=READY_FOR_REVIEW")["data"] || []).first
+    submission = open || asc_post("/v1/reviewSubmissions", { "data" => { "type" => "reviewSubmissions", "attributes" => { "platform" => "IOS" }, "relationships" => { "app" => { "data" => { "type" => "apps", "id" => app.id } } } } })["data"]
+    items = asc_get("/v1/reviewSubmissions/#{submission['id']}/items")["data"] || []
+    if items.empty?
+      asc_post("/v1/reviewSubmissionItems", { "data" => { "type" => "reviewSubmissionItems", "relationships" => {
+        "reviewSubmission" => { "data" => { "type" => "reviewSubmissions", "id" => submission['id'] } },
+        "appStoreVersion" => { "data" => { "type" => "appStoreVersions", "id" => version['id'] } } } } })
+    end
+    res = asc_patch("/v1/reviewSubmissions/#{submission['id']}", { "data" => { "type" => "reviewSubmissions", "id" => submission['id'], "attributes" => { "submitted" => true } } })
+    UI.success("Submitted #{version_string} — reviewSubmission state: #{res['data']['attributes']['state']}")
+  end
+
   desc "Upload dSYMs to Firebase Crashlytics (fixes 'Missing dSYM' emails). Pass dsym_path: for a specific .xcarchive/.dSYM, or omit to auto-download the latest build's dSYMs from App Store Connect"
   lane :upload_dsyms do |options|
     # Crashlytics is SPM-managed (no Pods/), so the upload-symbols binary lives under the

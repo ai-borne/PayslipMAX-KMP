@@ -1,0 +1,8 @@
+What's new in 1.2.2:
+
+• Wider payslip support: more PCDA(O) pay codes are now recognised, including technical, risk & hardship, aviation and travel allowances, with cleaner line-by-line breakdowns.
+• Faster: quicker unlock and quicker payslip imports.
+• A short first-run walkthrough explains how PayslipMax works, and you can skip it anytime.
+• A friendlier User Profile screen, with better keyboard handling so fields are never hidden.
+
+Everything still runs 100% on your device. Your payslips are never uploaded.

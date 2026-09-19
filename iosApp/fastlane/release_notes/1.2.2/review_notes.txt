@@ -1,0 +1,23 @@
+Dear App Review Team,
+
+This is a feature and polish update (v1.2.2, build 7) on top of the approved v1.2.1. There are no new permissions, no new data collection and no changes to the In-App Purchase.
+
+WHAT CHANGED:
+
+1. First-run onboarding: a short 3-slide, skippable walkthrough is shown once on first launch as a card over the Dashboard, followed by a one-time hint pointing at the Upload button. Skip / Get Started dismisses it permanently.
+
+2. Rating prompt: after a payslip is parsed cleanly (3rd time, then at most every 90 days) the app calls the system SKStoreReviewController. We use the standard OS-rendered dialog only and never ask for a specific rating.
+
+3. Settings: "Officer Profile Settings" is renamed "User Profile". The profile sheet now scrolls above the keyboard and uses Next/Done keyboard actions.
+
+4. Parser: recognition of additional PCDA(O) pay codes (technical, risk and hardship, aviation, travel allowances).
+
+5. Performance: faster unlock and payslip import.
+
+6. Store listing: updated name, subtitle, keywords, description and screenshots.
+
+IN-APP PURCHASE (unchanged since v1.2): the yearly auto-renewing subscription "payslipmax_yearly_premium" (INR 999 / year) is offered from Settings > Upgrade to PayslipMax Premium. Restore Purchases is on the same sheet, and Terms of Use (Apple standard EULA) and Privacy Policy links are shown in its footer and in the App Description.
+
+The app requires no login or credentials. All parsing runs locally on the device and no payslip data is transmitted anywhere. To exercise the main flow, tap the Upload button on the Dashboard and choose a PCDA(O) payslip PDF.
+
+Thank you for your time and review!
