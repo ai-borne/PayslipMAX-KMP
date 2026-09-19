@@ -648,6 +648,8 @@ change was an SSOT alignment, and backup shipped in 1.2.1) so the copy claims on
 `releaseType` is `AFTER_APPROVAL`, so it auto-releases on approval. No IAP change in this version, so the
 subscription is not part of this submission. If rejected, fix and resubmit via the same two lanes.
 
+**Status (2026-09-19 → 2026-09-20): `1.2.2 (7)` APPROVED and RELEASED** (confirmed by the owner, on-device verification complete). 1.2.2 is now `READY_FOR_SALE` on the App Store.
+
 **Next steps (as of 2026-09-19):**
 1. Check `fastlane ios review_status` (from `iosApp/`) for the App Review outcome of `1.2.2 (7)`.
 2. If it is rejected, fix the issue and resubmit with the same two lanes (`prepare_submission`, then

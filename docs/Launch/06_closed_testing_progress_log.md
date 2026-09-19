@@ -8,9 +8,10 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-19, v13 promoted to Closed testing)
+## Status snapshot (as of 2026-09-19, v13 published on Closed testing)
 
-- **Closed testing track (`alpha`):** `13 (1.0.0)` — promoted from Internal testing on 2026-09-19 via the new
+- **Closed testing track (`alpha`):** `13 (1.0.0)` — **published** (confirmed by the owner in Play Console,
+  2026-09-19); promoted from Internal testing on 2026-09-19 via the new
   `promote_release` fastlane lane (no AAB re-upload), superseding v12 (which had been live on Closed testing
   since 2026-09-16). Carries 20 commits across 8 workstreams (see the versionCode 13 section below). **Caveat
   recorded honestly:** this section previously said v13 should be verified on a physical device on Internal
@@ -489,9 +490,9 @@ existing `play_service`/edit-commit pattern) so future releases don't need a man
   building the release AAB.
 
 **Status:** `versionCode 13 (1.0.0)` released to the **Internal testing** track, 2026-09-18
-(`composeApp-release.aab`). Carries all 8 workstreams above (20 commits total). Not yet promoted to Closed
-testing — pending verification on a physical device per this doc's established pattern (see v10/v11/v12
-entries above) before promotion.
+(`composeApp-release.aab`). Carries all 8 workstreams above (20 commits total). **Promoted to Closed testing
+and published on 2026-09-19, on-device verification complete on 2026-09-19** (confirmed by the owner) — see
+"Promotion to Closed testing" below. No crashes, clean payslip imports on Pixel 9.
 
 #### Promotion to Closed testing (2026-09-19)
 `fastlane android promote_release version_code:13 to:alpha from:internal notes:"..."` (`composeApp/fastlane/Fastfile`).
