@@ -43,6 +43,29 @@ class TelemetrySanitizerTest {
     }
 
     @Test
+    fun redactAccountNumbers_redactsNineOrMoreDigitRuns() {
+        // A CDA / bank account number typed into a bug report must not leave the device.
+        val input = "My CDA account 123456789 and bank 50100123456789 are wrong"
+        val expected = "My CDA account [REDACTED_ACCOUNT] and bank [REDACTED_ACCOUNT] are wrong"
+        assertEquals(expected, TelemetrySanitizer.redactAccountNumbers(input))
+    }
+
+    @Test
+    fun redactAccountNumbers_leavesShortNumbersUntouched() {
+        // 4-digit ranks/PINs, years and 8-digit dates are useful triage context, not account numbers.
+        val input = "Rank 1234, year 2026, date 20260920, error 404"
+        assertEquals(input, TelemetrySanitizer.redactAccountNumbers(input))
+    }
+
+    @Test
+    fun sanitizeMessage_doesNotRedactAccountNumbers() {
+        // Crashlytics breadcrumbs share sanitizeMessage(); scrubbing long digit runs there would
+        // wipe legitimate timestamps and object IDs from crash logs app-wide.
+        val input = "Failed at 1758355200000 for object 123456789012"
+        assertEquals(input, TelemetrySanitizer.sanitizeMessage(input))
+    }
+
+    @Test
     fun sanitizeMetadata_filtersKeysAndSanitizesValues() {
         val input =
             mapOf(

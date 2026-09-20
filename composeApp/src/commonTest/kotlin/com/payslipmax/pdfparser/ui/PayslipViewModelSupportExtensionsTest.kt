@@ -85,6 +85,22 @@ class PayslipViewModelSupportExtensionsTest {
     }
 
     @Test
+    fun accountNumberTypedIntoTheDescriptionNeverReachesTheReport() {
+        // TelemetrySanitizer.sanitizeMessage() misses CDA account numbers; the report path must add it.
+        val report = viewModel.buildDiagnosticReport("CDA account 123456789012 is wrong", environment)
+
+        assertFalse(report.contains("123456789012"))
+        assertTrue(report.contains("[REDACTED_ACCOUNT]"))
+    }
+
+    @Test
+    fun submitBodyNeverCarriesAnAccountNumber() {
+        viewModel.submitIssueReport("acct 5010012345678", environment)
+
+        assertFalse(sent.single().body.contains("5010012345678"))
+    }
+
+    @Test
     fun blankDescriptionStillProducesADeliverableReport() {
         val report = viewModel.buildDiagnosticReport("   ", environment)
 

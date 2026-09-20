@@ -53,6 +53,10 @@ object TelemetrySanitizer {
     // Regex matching currency amounts like ₹ 1,23,456 or Rs. 50,000 or plain 5+ digit currency figures
     private val CURRENCY_REGEX = Regex("(₹|rs\\.?|inr)\\s*[0-9,]+(\\.[0-9]{2})?", RegexOption.IGNORE_CASE)
 
+    // 9+ consecutive digits: CDA / bank account numbers. Deliberately NOT part of sanitizeMessage()
+    // (crash logs legitimately carry timestamps and object IDs); bug reports opt in explicitly.
+    private val ACCOUNT_NUMBER_REGEX = Regex("[0-9]{9,}")
+
     fun isKeyAllowed(key: String): Boolean {
         val lower = key.lowercase().trim()
         if (BLOCKED_KEY_KEYWORDS.any { lower.contains(it) }) return false
@@ -74,6 +78,9 @@ object TelemetrySanitizer {
         result = result.replace(CURRENCY_REGEX, "[REDACTED_AMOUNT]")
         return result
     }
+
+    /** Extra redaction for user-typed free text (bug reports); crash telemetry must not call this. */
+    fun redactAccountNumbers(message: String): String = message.replace(ACCOUNT_NUMBER_REGEX, "[REDACTED_ACCOUNT]")
 
     fun sanitizeMetadata(metadata: Map<String, String>?): Map<String, String> {
         if (metadata == null) return emptyMap()

@@ -39,7 +39,8 @@ fun PayslipViewModel.buildDiagnosticReport(
             lastScreen = AppStringsSupport.reportIssueScreenName,
             lastOperation = AppStringsSupport.reportIssueOperationName,
         )
-    val description = TelemetrySanitizer.sanitizeMessage(userDescription).trim()
+    val description =
+        TelemetrySanitizer.redactAccountNumbers(TelemetrySanitizer.sanitizeMessage(userDescription)).trim()
     if (description.isEmpty()) return report
     return report + AppStringsSupport.reportIssueUserDescriptionHeader + "\n" + description + "\n"
 }
