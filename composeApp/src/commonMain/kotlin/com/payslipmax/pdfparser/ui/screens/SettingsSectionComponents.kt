@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -136,6 +137,13 @@ fun HelpSupportSection(
     viewModel: PayslipViewModel,
     onNavigateTo: (Screen) -> Unit,
 ) {
+    var showReportIssueDialog by remember { mutableStateOf(false) }
+    if (showReportIssueDialog) {
+        ReportIssueDialog(
+            onDismiss = { showReportIssueDialog = false },
+            onSend = { viewModel.submitIssueReport(it) },
+        )
+    }
     SettingsCategoryHeader(title = AppStrings.settingsHelpDocsHeader)
     SettingsCategoryCard {
         SettingsRow(
@@ -154,7 +162,7 @@ fun HelpSupportSection(
             icon = "🛠️",
             title = com.payslipmax.pdfparser.ui.theme.AppStringsSupport.settingsReportIssueTitle,
             subtitle = com.payslipmax.pdfparser.ui.theme.AppStringsSupport.settingsReportIssueSubtitle,
-            onClick = { viewModel.submitIssueReport("") },
+            onClick = { showReportIssueDialog = true },
         )
     }
 }

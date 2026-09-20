@@ -13,4 +13,10 @@ object AppStringsSupport {
     const val reportIssueScreenName = "Settings"
     const val reportIssueOperationName = "User Support Request"
     const val reportIssueUserDescriptionHeader = "User description:"
+    const val reportIssueDialogTitle = "Report an Issue"
+    const val reportIssueDescriptionLabel = "What went wrong?"
+    const val reportIssuePrivacyNotice =
+        "Please don't include your name, PAN, passwords, email address, or bank or account numbers. " +
+            "Anonymous device and app details are attached automatically."
+    const val reportIssueSendBtn = "Send"
 }
