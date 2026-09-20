@@ -1,0 +1,244 @@
+Listed directory PayslipMAX%20KMP
+Viewed settings.gradle.kts:1-32
+Ran command: `git status -s`
+Ran command: `git log -n 10 --oneline`
+Ran command: `./gradlew testDebugUnitTest --continue`
+Ran command: `/usr/libexec/java_home -V`
+Ran command: `echo "JAVA_HOME=$JAVA_HOME"; which java; java -version`
+Viewed gradle.properties:1-22
+Ran command: `./gradlew --stop && ./gradlew :shared:testDebugUnitTest -Dorg.gradle.java.home=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`
+Ran command: `./gradlew testDebugUnitTest --rerun-tasks -Dorg.gradle.java.home=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`
+Listed directory src
+Listed directory src
+Listed directory kotlin
+Ran command: `find shared/src/commonMain/kotlin composeApp/src/commonMain/kotlin -type f -name "*.kt"`
+Used tool: manage_task
+Viewed AppModule.kt:1-10
+Searched for "class PayslipViewModel"
+Viewed PayslipViewModel.kt:20-60
+Searched for "module {"
+Viewed Koin.kt:1-76
+Searched for "initKoin"
+Searched for "startKoin"
+Viewed PayslipApplication.kt:20-60
+Used tool: manage_task
+Listed directory iosApp
+Listed directory iosApp
+Ran command: `git ls-files iosApp/iosApp/gemma-active.litertlm`
+Used tool: manage_task
+Viewed UploadWidget.kt:1-60
+Searched for "UploadWidget"
+Listed directory gemmaModelPack
+Viewed build.gradle.kts:1-100
+Used tool: manage_task
+Listed directory web-prototype
+Searched for "pcdao_ai_prototype"
+Searched for "web-prototype"
+Used tool: manage_task
+Searched for "expect "
+Searched for "expect "
+Searched for "actual fun revenueCatApiKey"
+Searched for "provideBillingManager"
+Viewed BillingProvider.android.kt:1-27
+Viewed BillingProvider.ios.kt:1-20
+Searched for "PRODUCT_BUNDLE_IDENTIFIER"
+Viewed Config.xcconfig:1-7
+Used tool: manage_task
+Searched for "isFreeLaunchMode"
+Viewed LaunchFlags.kt:1-18
+Searched for "razorpay"
+Used tool: manage_task
+Viewed task-23.log:1-205
+Ran command: `./gradlew tasks | grep -i ios`
+Ran command: `./gradlew :composeApp:compileKotlinIosSimulatorArm64 -Dorg.gradle.java.home=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`
+Ran command: `./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64 -Dorg.gradle.java.home=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`
+Ran command: `xcodebuild -workspace iosApp/iosApp.xcworkspace -list 2>&1 || xcodebuild -project iosApp/iosApp.xcodeproj -list`
+Ran command: `find shared/src composeApp/src -name "*.kt" -exec wc -l {} + | sort -rn | head -n 35`
+Ran command: `xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO`
+Searched for "TODO"
+Searched for "TODO"
+Searched for "FIXME"
+Searched for "FIXME"
+Searched for "NotImplementedError"
+Searched for "throw "
+Used tool: manage_task
+Viewed AppNavState.kt:1-67
+Viewed App.kt:1-140
+Viewed App.kt:141-272
+Viewed NavBridge.kt:1-54
+Viewed MainViewController.kt:1-100
+Viewed MainViewController.kt:101-178
+Viewed ContentView.swift:1-100
+Used tool: manage_task
+Listed directory scripts
+Viewed check_tech_debt_limits.py:1-100
+Ran command: `python3 scripts/check_tech_debt_limits.py`
+Ran command: `python3 scripts/check_schema_immutability.py`
+Used tool: manage_task
+Viewed task-119.log:1-800
+Viewed task-119.log:1-800
+Used tool: manage_task
+Searched for "catch (_:"
+Viewed AndroidAppIntegrityChecker.kt:70-118
+Viewed AndroidAppIntegrityChecker.kt:1-70
+Searched for "provideAppIntegrityChecker"
+Viewed AndroidAppIntegrityCheckerProvider.kt:1-18
+Viewed IosAppIntegrityCheckerProvider.kt:1-8
+Searched for "EXCLUDED_ARCHS"
+Viewed Fastfile:1-100
+Ran command: `xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -destination 'generic/platform=iOS Simulator' ARCHS=arm64 ONLY_ACTIVE_ARCH=YES build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO`
+Viewed PayslipDatabase.kt:1-63
+Searched for "getDatabaseBuilder"
+Viewed PayslipDatabase.kt:1-17
+Viewed PayslipDatabase.kt:1-30
+Used tool: manage_task
+Used tool: manage_task
+Ran command: `./gradlew :composeApp:assembleRelease -Dorg.gradle.java.home=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`
+Searched for "@Deprecated"
+Searched for "@Deprecated"
+Searched for "Suppress("unused""
+Searched for "@Suppress("UNUSED")"
+Viewed requirements.txt:1-16
+Used tool: manage_task
+Viewed build.gradle.kts:1-100
+Used tool: manage_task
+Viewed build.gradle.kts:101-234
+Used tool: manage_task
+Viewed MainActivity.kt:1-100
+Used tool: manage_task
+Viewed AndroidManifest.xml:1-63
+Viewed Info.plist:1-90
+Viewed PrivacyInfo.xcprivacy:1-69
+Used tool: manage_task
+Viewed PayslipViewModelDashboardExtensions.kt:1-8
+Viewed PayslipViewModelExtensions.kt:1-100
+Viewed PayslipViewModelExtensions.kt:101-223
+Used tool: manage_task
+Viewed RevenueCatBillingManager.kt:90-158
+Viewed RevenueCatBillingManager.kt:1-50
+Used tool: manage_task
+Viewed build.gradle.kts:95-114
+Used tool: manage_task
+Viewed PayslipViewModelSupportExtensions.kt:1-61
+Searched for "actual fun shareTextViaEmail"
+Viewed ShareUtils.kt:1-69
+Viewed ShareUtils.kt:1-75
+Used tool: manage_task
+Used tool: manage_task
+Used tool: manage_task
+Ran command: `./gradlew :composeApp:bundleRelease -m -Dorg.gradle.java.home=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`
+Searched for "SubscriptionAccess"
+Searched for "subscriptionManager.hasAccess"
+Viewed SubscriptionAccess.kt:1-34
+Viewed SubscriptionManager.kt:50-98
+Searched for "isTestFlightBuild"
+Viewed PlatformDebug.kt:1-21
+Viewed DeveloperOverrideSection.kt:1-68
+Viewed DeveloperSandboxSection.kt:1-37
+Searched for "devModeEnabled"
+Viewed SettingsScreen.kt:25-55
+Searched for "triggerTestCrash"
+Viewed TestCrash.android.kt:1-16
+Listed directory screens
+Searched for "DangerZoneCard"
+Listed directory shared-test-fixtures
+Viewed AuthTokenProvider.kt:1-23
+Searched for "AuthTokenProvider"
+Searched for "getIdToken"
+Searched for "FirebaseAuth"
+Viewed iOSApp.swift:30-140
+Searched for "client.get"
+Searched for "HttpClient"
+Searched for "HttpClient"
+Searched for "NetworkErrorMapper"
+Searched for "Gemini"
+Viewed GemmaBaseModelInstaller.kt:1-35
+Viewed GemmaBaseModelInstaller.ios.kt:1-62
+Searched for "GemmaOnDemandResourceBridge"
+Viewed GemmaOnDemandResourceBridge.swift:1-93
+Ran command: `xcrun simctl list devices available | grep -i iphone`
+Ran command: `xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -destination 'id=3478CE86-26F7-4B42-B2AD-F95A88C1D0FA' test CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO`
+Viewed PdfParser.kt:1-60
+Viewed PdfParser.kt:1-60
+Used tool: manage_task
+Viewed .gitleaks.toml:1-60
+Used tool: manage_task
+Listed directory pcdao_factory
+Used tool: manage_task
+Viewed libs.versions.toml:1-96
+Used tool: manage_task
+Viewed task-330.log:1-800
+Viewed task-330.log:1-800
+Used tool: manage_task
+Used tool: manage_task
+
+An in-depth codebase audit and logic scan of the **PayslipMAX KMP** repository was performed across both Kotlin Multiplatform (`shared`, `composeApp`) and iOS native layers (`iosApp`). The findings are based entirely on active code and compilation verification.
+
+---
+
+### Audit Verification Baseline
+- **Android & KMP Unit Tests**: `./gradlew testDebugUnitTest` ran 92 tasks with **100% pass rate** across all common and Android test suites.
+- **Android Release Packaging & R8**: `./gradlew :composeApp:assembleRelease` passed in 2m 33s with full R8 code minification, resource shrinking, and Proguard optimization.
+- **iOS Unit Tests**: Xcode XCTest suite ran against iOS Simulator (`iPhone 17`) with **100% pass rate** across all test suites.
+- **Architecture Limits**: [`scripts/check_tech_debt_limits.py`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/scripts/check_tech_debt_limits.py) verified all 307 files adhere strictly to the **≤ 300 lines per file** rule (max file length is 298 lines) and **≤ 50 lines per composable** rule.
+
+---
+
+### 1. Launch Blockers & Critical Risks
+
+| Priority | Issue | Affected File(s) | Impact |
+| :--- | :--- | :--- | :--- |
+| 🚨 **HIGH** | **Developer Sandbox accessible in Production** | [`SettingsScreen.kt:36-42`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/SettingsScreen.kt#L36-L42)<br>[`DeveloperSandboxSection.kt:12-36`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/DeveloperSandboxSection.kt#L12-L36) | Unlike [`DeveloperOverrideSection.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/DeveloperOverrideSection.kt#L35-L36) (which has `if (!isDebugBuild() && !isTestFlightBuild()) return`), [`DeveloperSandboxSection`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/DeveloperSandboxSection.kt#L12) has **no build-type check**. In production, any user tapping the Settings header 7 times unlocks buttons that can wipe their database ([`clearAllData()`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/PayslipViewModelExtensions.kt#L21)), overwrite with mock data ([`seedMockData()`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/PayslipViewModelExtensions.kt#L8)), or crash the app ([`triggerTestCrash()`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/androidMain/kotlin/com/payslipmax/pdfparser/telemetry/TestCrash.android.kt#L7)). |
+| ⚠️ **MED** | **`FLAG_SECURE` disabled for Foreground App** | [`MainActivity.kt:20-38`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/androidMain/kotlin/com/payslipmax/pdfparser/MainActivity.kt#L20-L38) | [`shouldApplyFlagSecure(isDebug)`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/androidMain/kotlin/com/payslipmax/pdfparser/MainActivity.kt#L23) returns `false` unconditionally. While recents preview is protected on backgrounding, foreground screenshot / screen recording protection is disabled. |
+| ⚠️ **MED** | **`x86_64` Simulator Incompatibility on iOS** | [`iosApp.xcodeproj`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp.xcodeproj/project.pbxproj)<br>[`LiteRTLM.xcframework`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/Vendor/LiteRTLM) | `CLiteRTLM.xcframework` contains only `arm64` binaries (device & Apple Silicon simulator). Building the iOS project for generic simulator or on Intel Macs fails linking because `x86_64` is not excluded in `EXCLUDED_ARCHS`. |
+
+---
+
+### 2. Dead Code & Vestigial Architectures
+
+| Component | Files | Finding |
+| :--- | :--- | :--- |
+| **Firebase Auth & Token Bridge** | [`AuthTokenProvider.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/auth/AuthTokenProvider.kt)<br>[`AuthTokenProvider.android.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/androidMain/kotlin/com/payslipmax/pdfparser/auth/AuthTokenProvider.android.kt)<br>[`AuthTokenProvider.ios.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/auth/AuthTokenProvider.ios.kt)<br>[`iOSApp.swift:106-140`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp/iOSApp.swift#L106-L140)<br>[`AuthTokenFetcherTests.swift`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/PayslipMaxTests/AuthTokenFetcherTests.swift) | **Zero production callers**. Originally used to send Firebase JWTs to a `generateInsights` Cloud Function. The app now parses offline on-device via [`GrammarAwareParser`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/GrammarAwareParser.kt) and on-device [`GemmaEngine`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/gemma/GemmaEngine.kt). Yet Firebase anonymous auth sign-in still runs on every iOS startup and maintains unused KMP bridges. |
+| **Unused Ktor `HttpClient`** | [`Koin.kt:38-54`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt#L38-L54) | [`HttpClient`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt#L38) is registered as a Koin singleton with JSON serialization and timeout configurations, but is **never injected or used** anywhere in `shared` or `composeApp`. |
+| **Dead Network Error Handler** | [`NetworkErrorMapper.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/NetworkErrorMapper.kt) | Maps HTTP status codes to user messages. Completely unreferenced in the production codebase (only referenced in its own unit test [`NetworkErrorMapperTest.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonTest/kotlin/com/payslipmax/pdfparser/insights/NetworkErrorMapperTest.kt)). |
+| **Deprecated Upload Widget** | [`UploadWidget.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/UploadWidget.kt) | Marked `@Deprecated("Replaced by ImportPayslipDialog in com.payslipmax.pdfparser.ui.screens.importflow")`. Only referenced in [`UploadWidgetTest.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/androidUnitTest/kotlin/com/payslipmax/pdfparser/ui/screens/UploadWidgetTest.kt). |
+| **Orphaned Root Files** | [`pcdao_ai_prototype.html`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/pcdao_ai_prototype.html)<br>[`web-prototype/`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/web-prototype) | `pcdao_ai_prototype.html` (64 KB standalone HTML) is not referenced by anything. `web-prototype/` is a separate JS prototype directory with its own `node_modules` not involved in the mobile builds. |
+
+---
+
+### 3. Broken Wiring & Fragile Patterns
+
+1. **Incomplete Public `initKoin()` in [`Koin.kt:72-75`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt#L72-L75)**:
+   ```kotlin
+   fun initKoin() =
+       startKoin {
+           modules(sharedModule)
+       }
+   ```
+   This function registers only `sharedModule` and omits `appModule`. If any platform caller invokes `initKoin()`, resolving [`PayslipViewModel`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/PayslipViewModel.kt) fails with `NoBeanDefFoundException`. Fortunately, iOS [`MainViewController.kt:32-36`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/iosMain/kotlin/com/payslipmax/pdfparser/MainViewController.kt#L32-L36) defines its own internal `ensureKoin()` passing `modules(sharedModule, appModule)`. `initKoin()` is dead, misleading, and incomplete.
+
+2. **Static Callback Overwrite in [`IosGemmaBaseModelInstaller.kt:22-37`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/insights/gemma/GemmaBaseModelInstaller.ios.kt#L22-L37)**:
+   `progressReporter` and `completionReporter` are stored as `var`s on the `companion object`. In [`IosGemmaBaseModelInstaller.init`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/insights/gemma/GemmaBaseModelInstaller.ios.kt#L22), the instance assigns closures capturing its own `_state`. Since [`PayslipViewModel`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/PayslipViewModel.kt) is configured in Koin as a `factory` (creating a new instance whenever resolved), resolving a second ViewModel instance overwrites the global static listeners.
+
+---
+
+### 4. Tech Debt & Quality Items
+
+1. **Keystore Properties Configuration**:
+   [`composeApp/build.gradle.kts:132-161`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/build.gradle.kts#L132-L161) cleanly supports loading from `keystore.properties` or environment variables for CI release builds. [`keystore.properties.example`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/keystore.properties.example) is provided.
+2. **Launch Flags Separation**:
+   [`LaunchFlags.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/subscription/LaunchFlags.kt) correctly maintains:
+   - `FREE_LAUNCH_MODE_IOS = false` (StoreKit + RevenueCat live monetization).
+   - `FREE_LAUNCH_MODE_ANDROID = true` (Free launch mode on Android until BillDesk merchant onboarding finishes).
+   The abstraction in [`SubscriptionManager.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/subscription/SubscriptionManager.kt) ensures zero monetization leak between platforms.
+3. **Database Migration Safety**:
+   Both [`Android getDatabaseBuilder()`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/androidMain/kotlin/com/payslipmax/pdfparser/database/PayslipDatabase.kt#L15) and [`iOS getDatabaseBuilder()`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/database/PayslipDatabase.kt#L16) use `.fallbackToDestructiveMigration(true)` with explicit `@DeleteColumn` and `@DeleteTable` auto-migrations up to Room schema v11.
+
+---
+
+### Suggested Action Items
+
+1. **Gating Developer Sandbox**: Add `if (!isDebugBuild() && !isTestFlightBuild()) return` to [`DeveloperSandboxSection.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/DeveloperSandboxSection.kt#L16) to prevent test crashes and data wipes from ever executing in App Store / Google Play production releases.
+2. **Review `FLAG_SECURE` Policy**: Determine whether [`shouldApplyFlagSecure`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/androidMain/kotlin/com/payslipmax/pdfparser/MainActivity.kt#L23) should return `!isDebug` for store releases to block in-app screenshots of sensitive military pay data.
+3. **Retire Unused Firebase Auth & `AuthTokenProvider`**: Remove the unused anonymous sign-in from [`iOSApp.swift`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp/iOSApp.swift), remove the dead [`AuthTokenProvider`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/auth/AuthTokenProvider.kt) classes, and remove the unused `HttpClient` from [`Koin.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt#L38).
+4. **Prune Deprecated / Dead Code**: Remove [`UploadWidget.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/UploadWidget.kt), [`NetworkErrorMapper.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/NetworkErrorMapper.kt), [`initKoin()`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt#L72), and orphan prototypes.
