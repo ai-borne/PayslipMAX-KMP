@@ -149,7 +149,7 @@ private fun SecondarySettingsGroup(
     )
 
     // 6. Help & Support
-    HelpSupportSection(onNavigateTo = onNavigateTo)
+    HelpSupportSection(viewModel = viewModel, onNavigateTo = onNavigateTo)
 
     // Developer entitlement override (debug builds only; no-op in release)
     DeveloperOverrideSection(viewModel = viewModel)

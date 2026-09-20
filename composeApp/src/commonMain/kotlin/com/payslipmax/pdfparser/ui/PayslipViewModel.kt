@@ -13,6 +13,7 @@ import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.telemetry.GemmaInstallTelemetry
 import com.payslipmax.pdfparser.telemetry.provideGemmaInstallTelemetry
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.utils.shareTextViaEmail
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,6 +33,7 @@ class PayslipViewModel(
     internal val isFreeLaunchModeProvider: () -> Boolean = { com.payslipmax.pdfparser.subscription.isFreeLaunchModePlatform() },
     internal val ratingPromptManager: RatingPromptManager = RatingPromptManager(),
     internal var reviewRequester: () -> Unit = ::requestReview,
+    internal var issueReportSender: (to: String, subject: String, body: String) -> Unit = ::shareTextViaEmail,
 ) : ViewModel() {
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()

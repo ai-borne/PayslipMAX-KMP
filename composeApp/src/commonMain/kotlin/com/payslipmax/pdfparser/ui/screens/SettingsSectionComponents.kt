@@ -133,6 +133,7 @@ fun DataManagementSection(
 
 @Composable
 fun HelpSupportSection(
+    viewModel: PayslipViewModel,
     onNavigateTo: (Screen) -> Unit,
 ) {
     SettingsCategoryHeader(title = AppStrings.settingsHelpDocsHeader)
@@ -153,24 +154,7 @@ fun HelpSupportSection(
             icon = "🛠️",
             title = com.payslipmax.pdfparser.ui.theme.AppStringsSupport.settingsReportIssueTitle,
             subtitle = com.payslipmax.pdfparser.ui.theme.AppStringsSupport.settingsReportIssueSubtitle,
-            onClick = {
-                val sysInfo = com.payslipmax.pdfparser.platform.getPlatformSystemInfo()
-                val anonId = com.payslipmax.pdfparser.telemetry.InstallationIdManager().getOrCreateInstallationId()
-                val report =
-                    com.payslipmax.pdfparser.telemetry.DiagnosticReportGenerator.generateReport(
-                        appVersion = com.payslipmax.pdfparser.platform.platformAppVersion(),
-                        installationId = anonId,
-                        osVersion = sysInfo.osVersion,
-                        deviceModel = sysInfo.deviceModel,
-                        cpuArch = sysInfo.cpuArchitecture,
-                        lastScreen = "Settings",
-                        lastOperation = "User Support Request",
-                    )
-                com.payslipmax.pdfparser.utils.shareText(
-                    text = report,
-                    title = com.payslipmax.pdfparser.ui.theme.AppStringsSupport.reportIssueShareTitle,
-                )
-            },
+            onClick = { viewModel.submitIssueReport("") },
         )
     }
 }
