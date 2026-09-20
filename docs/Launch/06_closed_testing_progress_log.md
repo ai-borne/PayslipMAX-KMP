@@ -8,10 +8,10 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-20, v14 pending Internal testing)
+## Status snapshot (as of 2026-09-20, v14 on Internal testing)
 
-- **Pending:** `14 (1.0.0)` to **Internal testing** — not yet built/uploaded as of this entry (`versionCode` in
-  `composeApp/build.gradle.kts` is still 13). Carries the Report an Issue fix (see the versionCode 14 section below).
+- **Internal testing track:** `14 (1.0.0)` — **uploaded 2026-09-20** via `fastlane upload_to_track` (`versionCode` in
+  `composeApp/build.gradle.kts` bumped 13 → 14). Carries the Report an Issue fix (see the versionCode 14 section below).
   Closed testing remains on `13` until v14 is verified.
 
 - **Closed testing track (`alpha`):** `13 (1.0.0)` — **published** (confirmed by the owner in Play Console,
@@ -506,9 +506,9 @@ testing is the Play API's `alpha` track. Release notes shown to testers (333 cha
 the paycode expansion, faster unlock/import, privacy screen, onboarding + rating prompt and User Profile fixes.
 The 14-day mandatory-testing clock is track-based, so the v12 → v13 swap mid-window is expected (same as 8 → 10 → 12).
 
-### versionCode 14 — pending Internal testing (2026-09-20) — Report an Issue fix
+### versionCode 14 — on Internal testing (2026-09-20) — Report an Issue fix
 
-Not yet built or uploaded; ships with iOS `1.2.2 (8)` (`docs/Launch/08_ios_monetization_phaseplan.md`). `commonMain`, so both platforms.
+Built and uploaded to Internal testing 2026-09-20 (443 MB AAB); ships with iOS `1.2.3 (1)` (`docs/Launch/08_ios_monetization_phaseplan.md`). `commonMain`, so both platforms.
 
 - **Before:** Settings → Report an Issue fired a bare share sheet — no recipient/subject, no user description, logic in the Composable.
 - **Now:** dialog with privacy notice + description field → email to `founder@ai-borne.in`, subject `PayslipMax Support Request (v<ver>, <installation ID>)`, body = diagnostic report + sanitized description. Falls back to the generic share sheet if no mail app.

@@ -650,7 +650,10 @@ subscription is not part of this submission. If rejected, fix and resubmit via t
 
 **Status (2026-09-19 → 2026-09-20): `1.2.2 (7)` APPROVED and RELEASED** (confirmed by the owner, on-device verification complete). 1.2.2 is now `READY_FOR_SALE` on the App Store.
 
-**Status (2026-09-20): `1.2.2 (8)` pending TestFlight/internal test** — not yet built or uploaded as of this entry. Same shared
+**Status (2026-09-20): `1.2.3 (1)` on TestFlight (processing `VALID`), pending internal test** — uploaded via
+`fastlane ios build_and_upload_testflight bump_version:1.2.3`. It is `1.2.3`, not `1.2.2 (8)`: the first attempt at `1.2.2 (8)`
+was rejected by App Store Connect (`Invalid Pre-Release Train … '1.2.2' is closed for new build submissions`, 90186) because
+1.2.2 is already `READY_FOR_SALE`; a released version's train is closed, so the fix needed a new marketing version. Same shared
 Report an Issue fix as Android v14 (dialog + privacy notice → `mailto:` to `founder@ai-borne.in`, falls back to the share sheet if
 the URL can't be opened; bug-report-only redaction of PAN/amounts/account numbers/emails). Details:
 `docs/Launch/06_closed_testing_progress_log.md` (versionCode 14). iOS gate green locally (full `iosSimulatorArm64Test`, framework

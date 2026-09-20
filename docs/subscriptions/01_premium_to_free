@@ -1,0 +1,44 @@
+Your email can't be the key here. The app uses RevenueCat with anonymous user IDs and never calls `logIn` with an email or account. Entitlements are tied to the RevenueCat App User ID (`$RCAnonymousID:…`) for each install, not to your Apple or Google account. I checked `RevenueCatBillingManager.kt` for this. Neither store lets you whitelist an email for a permanent free subscription.
+
+**Best option: grant a promotional entitlement in RevenueCat (permanent, works on both platforms)**
+1. Open the app on the device, then find your App User ID. It's in RevenueCat under Customers, where you can search by a recent purchase or the "last seen" time. It's also visible if the app shows or logs `originalAppUserId`.
+2. Open that customer in RevenueCat and choose **Grant promotional entitlement**.
+3. Pick the `premium` entitlement and set the duration to **Lifetime**.
+4. Relaunch the app or pull to refresh. `onCustomerInfoUpdated` picks it up, and the paywall goes away.
+
+The catch is that the ID belongs to that install. If you reinstall or use a new device, you get a new anonymous ID and have to grant it again. To avoid that, the app would need a one-time step that calls RevenueCat `logIn` with a stable ID such as your email hash.
+
+**Store-side alternatives (these give free test purchases, not permanent access)**
+- **Google Play:** Play Console → Setup → **License testing**. Add your Gmail. Purchases are free, but test subscriptions renew on a short cycle and then expire.
+- **Apple:** App Store Connect → Users and Access → **Sandbox Testers**. TestFlight builds use the sandbox, so the purchase is free but the subscription expires quickly. You can also create **Offer Codes** in App Store Connect and redeem one for a free period.
+
+**Code option:** `PlatformDebug.kt` and the `DevOverride` mentioned in the phase plan already gate the paywall for debug and TestFlight builds. I haven't read `DevOverride` yet. If you want a permanent bypass in your own builds, I can read it and tell you whether it fits. I'd avoid a hardcoded email check in production code, because it would ship in the binary and can be spoofed.
+
+The RevenueCat grant is the least effort and needs no release. If you'd rather have the `logIn` approach so it survives reinstalls, I can scope it.
+
+---
+
+Most devs don't put an email allowlist in the app. The usual pattern has three parts.
+
+**1. Test the paid flow with store sandboxes, not real payments**
+- **Apple:** Sandbox Testers, TestFlight (its purchases are always sandbox), and StoreKit configuration files in Xcode for local testing.
+- **Google:** License testers in Play Console, plus internal or closed testing tracks.
+- Sandbox subscriptions run on compressed timelines. A one-year plan renews every few minutes and stops after a handful of renewals. That is what lets you test renewal, expiry and restore. It is deliberately not permanent.
+
+**2. Comp accounts for staff, friends and reviewers go through the entitlement layer**
+- **RevenueCat, Adapty, Superwall and similar:** these offer promotional or granted entitlements from the dashboard or REST API, and lifetime ones are common. This is what I suggested last time, and it's the standard answer when you already use one of them.
+- **Own backend:** an `entitlements` table keyed by user ID, with an `override_until` or `comped` flag that the server checks alongside the store receipt.
+- **Apple offer codes and Google promo codes:** these are the store-native way to give free access to reviewers, press or testers. They're time-limited or one-time, and they go through the real purchase path.
+
+**3. The client never decides who is premium**
+The app asks "is the entitlement active?" and knows nothing about who you are. That keeps the paywall logic single-sourced, which is your SSOT rule. Checking a hardcoded email or a `BuildConfig.IS_DEV` flag in production code is treated as an anti-pattern, for these reasons:
+- It ships in the binary, so it can be patched or spoofed.
+- It creates a code path that production never tests.
+- It tends to leak into release builds by accident.
+
+**Where this leaves you**
+- Your app has no accounts, so the RevenueCat comp is per install. Solo devs usually accept that and re-grant after a reinstall. It happens rarely, and the grant takes about ten seconds.
+- Apps that need stable comps across devices add an account or `logIn` with a stable ID. That's a real feature, and with no login and no real users yet, I wouldn't build it for one person.
+- Your existing `DevOverride` for debug and TestFlight builds is the normal "dev builds skip the paywall" mechanism. It's fine as long as it's compiled out or unreachable in production, and it looks like it already is.
+
+For you, that means a lifetime `premium` grant in RevenueCat for your install now, sandbox testers or license testers whenever you want to exercise the real purchase flow, and no email logic in the app.
