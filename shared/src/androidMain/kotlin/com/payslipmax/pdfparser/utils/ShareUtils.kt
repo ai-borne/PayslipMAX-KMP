@@ -1,9 +1,31 @@
 package com.payslipmax.pdfparser.utils
 
 import android.content.Intent
+import android.net.Uri
 import androidx.core.content.FileProvider
 import com.payslipmax.pdfparser.crypto.ContextHolder
 import java.io.File
+
+actual fun shareTextViaEmail(
+    to: String,
+    subject: String,
+    body: String,
+) {
+    val context = ContextHolder.context ?: return
+    val emailIntent =
+        Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(to))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
+        }
+    if (emailIntent.resolveActivity(context.packageManager) != null) {
+        emailIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(emailIntent)
+    } else {
+        shareText(body, subject)
+    }
+}
 
 actual fun shareText(
     text: String,

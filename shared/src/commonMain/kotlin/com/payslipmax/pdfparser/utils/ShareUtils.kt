@@ -6,6 +6,17 @@ expect fun shareText(
 )
 
 /**
+ * Opens an email compose view addressed to [to] with [subject] pre-filled and [body] as the
+ * message content. Falls back to the generic [shareText] share sheet if no mail app can handle
+ * the request, so the current behavior remains a safety net (no regression).
+ */
+expect fun shareTextViaEmail(
+    to: String,
+    subject: String,
+    body: String,
+)
+
+/**
  * Writes [bytes] to a temporary file named [fileName] and opens the platform share sheet so the
  * user can save it (Files / Drive / iCloud / email …). Used to hand off the encrypted backup
  * archive — the app never uploads anything itself; the user chooses the destination.

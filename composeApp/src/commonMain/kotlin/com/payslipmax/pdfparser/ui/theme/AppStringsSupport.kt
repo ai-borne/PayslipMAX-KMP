@@ -9,4 +9,5 @@ object AppStringsSupport {
     const val settingsStagingSimulateParserFailureBtn = "Simulate PDF Parse Failure (Non-Fatal)"
     const val settingsStagingSimulateAiFailureBtn = "Simulate Offline AI Download Failure"
     const val settingsStagingSimulateAiWaitingForWifiBtn = "Simulate Offline AI Waiting For Wi-Fi"
+    const val supportEmail = "founder@ai-borne.in"
 }
