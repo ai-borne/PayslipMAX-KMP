@@ -546,6 +546,10 @@ platform :ios do
       clean: true
     )
 
+    # App Store Connect no longer serves dSYMs (no bitcode), so push the local archive's dSYM now —
+    # it is overwritten by the next build and cannot be recovered afterwards.
+    upload_dsyms(dsym_path: lane_context[SharedValues::DSYM_OUTPUT_PATH])
+
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
       changelog: options[:changelog] || "Internal build — see docs/Launch/06_closed_testing_progress_log.md"
@@ -607,7 +611,7 @@ platform :ios do
     UI.success("Submitted #{version_string} — reviewSubmission state: #{res['data']['attributes']['state']}")
   end
 
-  desc "Upload dSYMs to Firebase Crashlytics (fixes 'Missing dSYM' emails). Pass dsym_path: for a specific .xcarchive/.dSYM, or omit to auto-download the latest build's dSYMs from App Store Connect"
+  desc "Upload dSYMs to Firebase Crashlytics (fixes 'Missing dSYM' emails). Pass dsym_path: for a specific .dSYM/.dSYM.zip (build_and_upload_testflight does this automatically). Omitting it tries App Store Connect, which no longer serves dSYMs for non-bitcode builds — prefer dsym_path."
   lane :upload_dsyms do |options|
     # Crashlytics is SPM-managed (no Pods/), so the upload-symbols binary lives under the
     # resolved package checkout in DerivedData rather than at a fixed repo-relative path.
