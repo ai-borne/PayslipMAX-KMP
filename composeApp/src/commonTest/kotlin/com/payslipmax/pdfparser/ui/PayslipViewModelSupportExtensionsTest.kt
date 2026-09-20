@@ -94,6 +94,16 @@ class PayslipViewModelSupportExtensionsTest {
     }
 
     @Test
+    fun emailAndGroupedAccountTypedIntoTheDescriptionNeverReachTheReport() {
+        val report = viewModel.buildDiagnosticReport("mail me@unit.mil, acct 1234 5678 9012", environment)
+
+        assertFalse(report.contains("me@unit.mil"))
+        assertFalse(report.contains("1234 5678 9012"))
+        assertTrue(report.contains("[REDACTED_EMAIL]"))
+        assertTrue(report.contains("[REDACTED_ACCOUNT]"))
+    }
+
+    @Test
     fun submitBodyNeverCarriesAnAccountNumber() {
         viewModel.submitIssueReport("acct 5010012345678", environment)
 

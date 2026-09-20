@@ -57,6 +57,12 @@ object TelemetrySanitizer {
     // (crash logs legitimately carry timestamps and object IDs); bug reports opt in explicitly.
     private val ACCOUNT_NUMBER_REGEX = Regex("[0-9]{9,}")
 
+    // 3+ groups of exactly 4 digits split by a space or hyphen (1234 5678 9012). Exact-4 groups keep
+    // dates/times ("2026-09-20 10 32") out of scope. Plain quantifiers only: linear on Kotlin/Native.
+    private val GROUPED_ACCOUNT_REGEX = Regex("[0-9]{4}(?:[ -][0-9]{4}){2,}")
+
+    private val EMAIL_REGEX = Regex("[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)+")
+
     fun isKeyAllowed(key: String): Boolean {
         val lower = key.lowercase().trim()
         if (BLOCKED_KEY_KEYWORDS.any { lower.contains(it) }) return false
@@ -80,7 +86,14 @@ object TelemetrySanitizer {
     }
 
     /** Extra redaction for user-typed free text (bug reports); crash telemetry must not call this. */
-    fun redactAccountNumbers(message: String): String = message.replace(ACCOUNT_NUMBER_REGEX, "[REDACTED_ACCOUNT]")
+    fun redactAccountNumbers(message: String): String =
+        message.replace(ACCOUNT_NUMBER_REGEX, "[REDACTED_ACCOUNT]").replace(GROUPED_ACCOUNT_REGEX, "[REDACTED_ACCOUNT]")
+
+    /** Same scope as [redactAccountNumbers]: free-text only, never crash telemetry. */
+    fun redactEmailAddresses(message: String): String = message.replace(EMAIL_REGEX, "[REDACTED_EMAIL]")
+
+    /** Single entry point for user-typed text: [sanitizeMessage] plus the free-text-only rules. */
+    fun sanitizeFreeText(message: String): String = redactEmailAddresses(redactAccountNumbers(sanitizeMessage(message)))
 
     fun sanitizeMetadata(metadata: Map<String, String>?): Map<String, String> {
         if (metadata == null) return emptyMap()

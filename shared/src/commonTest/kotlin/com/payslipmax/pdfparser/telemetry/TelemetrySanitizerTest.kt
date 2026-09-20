@@ -66,6 +66,42 @@ class TelemetrySanitizerTest {
     }
 
     @Test
+    fun redactAccountNumbers_redactsSpaceOrHyphenSeparatedFourDigitGroups() {
+        // Account/card numbers are often typed in 4-digit groups, which the contiguous rule misses.
+        assertEquals("acct [REDACTED_ACCOUNT] failed", TelemetrySanitizer.redactAccountNumbers("acct 1234 5678 9012 failed"))
+        assertEquals("acct [REDACTED_ACCOUNT]", TelemetrySanitizer.redactAccountNumbers("acct 1234-5678-9012-3456"))
+    }
+
+    @Test
+    fun redactAccountNumbers_leavesDatesAndTimesAlone() {
+        // Guard against over-redaction: bug reports routinely quote dates and times.
+        val input = "Failed on 2026-09-20 at 10 32 and again 20-09-2026 10 45"
+        assertEquals(input, TelemetrySanitizer.redactAccountNumbers(input))
+    }
+
+    @Test
+    fun redactEmailAddresses_redactsAddressesAndKeepsSurroundingText() {
+        assertEquals(
+            "contact [REDACTED_EMAIL] please",
+            TelemetrySanitizer.redactEmailAddresses("contact first.last+army@mail.example.co.in please"),
+        )
+        assertEquals("no address here @ all", TelemetrySanitizer.redactEmailAddresses("no address here @ all"))
+    }
+
+    @Test
+    fun sanitizeFreeText_appliesPanAmountAccountAndEmailRules() {
+        val out = TelemetrySanitizer.sanitizeFreeText("PAN ABCDE1234F; Rs. 50,000; acct 1234 5678 9012; me@x.in")
+        assertEquals("PAN [REDACTED_PAN]; [REDACTED_AMOUNT]; acct [REDACTED_ACCOUNT]; [REDACTED_EMAIL]", out)
+    }
+
+    @Test
+    fun sanitizeMessage_doesNotRedactEmailsOrGroupedDigits() {
+        // Crash telemetry path must stay untouched by the free-text rules.
+        val input = "user me@x.in code 1234 5678 9012"
+        assertEquals(input, TelemetrySanitizer.sanitizeMessage(input))
+    }
+
+    @Test
     fun sanitizeMetadata_filtersKeysAndSanitizesValues() {
         val input =
             mapOf(
