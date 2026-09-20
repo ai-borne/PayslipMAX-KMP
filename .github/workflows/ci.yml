@@ -31,7 +31,9 @@ jobs:
         # paid GITLEAKS_LICENSE secret for organization repos. Mirrors the local pre-commit/pre-push
         # hooks (scripts/git-pre-commit.sh, scripts/git-pre-push.sh), which already use the CLI.
         run: |
-          GITLEAKS_VERSION=$(curl -sSf https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep -Po '"tag_name": "v\K[^"]*')
+          # Pinned (matches the local hooks) rather than resolved via the unauthenticated GitHub API,
+          # which returns 403 when the shared runner IP is rate-limited and made this job flaky.
+          GITLEAKS_VERSION=8.30.1
           curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" -o gitleaks.tar.gz
           tar -xzf gitleaks.tar.gz gitleaks
           sudo mv gitleaks /usr/local/bin/gitleaks
