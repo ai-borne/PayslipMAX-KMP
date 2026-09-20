@@ -650,6 +650,12 @@ subscription is not part of this submission. If rejected, fix and resubmit via t
 
 **Status (2026-09-19 → 2026-09-20): `1.2.2 (7)` APPROVED and RELEASED** (confirmed by the owner, on-device verification complete). 1.2.2 is now `READY_FOR_SALE` on the App Store.
 
+**Status (2026-09-20): `1.2.2 (8)` pending TestFlight/internal test** — not yet built or uploaded as of this entry. Same shared
+Report an Issue fix as Android v14 (dialog + privacy notice → `mailto:` to `founder@ai-borne.in`, falls back to the share sheet if
+the URL can't be opened; bug-report-only redaction of PAN/amounts/account numbers/emails). Details:
+`docs/Launch/06_closed_testing_progress_log.md` (versionCode 14). iOS gate green locally (full `iosSimulatorArm64Test`, framework
+link). **Unverified on iOS:** simulator (no Mail → share-sheet fallback) and a real iPhone with Mail; `iosX64Test` on CI pending.
+
 **Next steps (as of 2026-09-19):**
 1. Check `fastlane ios review_status` (from `iosApp/`) for the App Review outcome of `1.2.2 (7)`.
 2. If it is rejected, fix the issue and resubmit with the same two lanes (`prepare_submission`, then

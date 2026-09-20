@@ -8,7 +8,11 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-19, v13 published on Closed testing)
+## Status snapshot (as of 2026-09-20, v14 pending Internal testing)
+
+- **Pending:** `14 (1.0.0)` to **Internal testing** — not yet built/uploaded as of this entry (`versionCode` in
+  `composeApp/build.gradle.kts` is still 13). Carries the Report an Issue fix (see the versionCode 14 section below).
+  Closed testing remains on `13` until v14 is verified.
 
 - **Closed testing track (`alpha`):** `13 (1.0.0)` — **published** (confirmed by the owner in Play Console,
   2026-09-19); promoted from Internal testing on 2026-09-19 via the new
@@ -501,6 +505,18 @@ commits; verified afterwards with the new read-only `track_status` lane (`alpha:
 testing is the Play API's `alpha` track. Release notes shown to testers (333 chars, Play cap is 500) summarise
 the paycode expansion, faster unlock/import, privacy screen, onboarding + rating prompt and User Profile fixes.
 The 14-day mandatory-testing clock is track-based, so the v12 → v13 swap mid-window is expected (same as 8 → 10 → 12).
+
+### versionCode 14 — pending Internal testing (2026-09-20) — Report an Issue fix
+
+Not yet built or uploaded; ships with iOS `1.2.2 (8)` (`docs/Launch/08_ios_monetization_phaseplan.md`). `commonMain`, so both platforms.
+
+- **Before:** Settings → Report an Issue fired a bare share sheet — no recipient/subject, no user description, logic in the Composable.
+- **Now:** dialog with privacy notice + description field → email to `founder@ai-borne.in`, subject `PayslipMax Support Request (v<ver>, <installation ID>)`, body = diagnostic report + sanitized description. Falls back to the generic share sheet if no mail app.
+- **Redaction (bug reports only; crash telemetry untouched):** PAN, amounts, 9+ digit runs, 4-digit groups (`1234 5678 9012`), emails. Alphanumeric CDA formats are not redacted (privacy notice only).
+- **Commits:** `cc7d0a4b`, `c299c89b`, `30ecaf84`, `aa289f39`, `4cf5ffd3`. CI: gitleaks pinned to 8.30.1 (`8bed2ce9`) after a 403 rate-limit flake.
+- **Verified:** Pixel 9 / Android 17 debug build — dialog, Gmail compose pre-filled, redaction, share-sheet fallback (Gmail disabled). Local gate green (`check`, full iOS suite, link).
+- **Not verified:** small-screen/landscape dialog layout; iOS simulator/iPhone (see doc 08); CI result on `8bed2ce9` pending at time of writing.
+- **Side effect:** the Play-installed build on the Pixel 9 was uninstalled for the debug install; it currently runs the debug build.
 
 ## What still needs to happen before the Day-14 final submission
 
