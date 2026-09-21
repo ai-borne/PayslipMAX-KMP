@@ -97,3 +97,4 @@ composeApp/fastlane/.env
 composeApp/fastlane/report.xml
 composeApp/fastlane/README.md
 *.play_console*.json
+iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/sunil.xcuserdatad/UserInterfaceState.xcuserstate
