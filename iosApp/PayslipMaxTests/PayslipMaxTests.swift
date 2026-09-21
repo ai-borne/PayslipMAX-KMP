@@ -6,6 +6,6 @@
 //  Copyright © 2026 orgName. All rights reserved.
 //
 
-// Real coverage lives in NavCoordinatorTests, DataKotlinByteArrayTests, AuthTokenFetcherTests,
+// Real coverage lives in NavCoordinatorTests, DataKotlinByteArrayTests,
 // GemmaInferenceBridgeCacheTests, and GemmaOnDemandResourceBridgeProgressTests — see
 // docs/Plan/07_iOS_Native_Test_Coverage_Gap.md.

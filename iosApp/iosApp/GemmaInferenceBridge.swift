@@ -5,8 +5,7 @@ import composeApp
 /// Bridges the shared Kotlin `GemmaEngine.inferenceDelegate` to LiteRT-LM's Swift `Engine`/`Conversation`
 /// API. Kotlin/Native cinterop cannot bind LiteRT-LM's pure-Swift package (it ships no Objective-C
 /// headers), so the shared `GemmaEngine.ios.kt` fails loudly unless this closure is registered at
-/// startup — the same "Swift-only capability behind a plain closure" pattern the Firebase Auth token
-/// provider uses.
+/// startup ("Swift-only capability behind a plain closure").
 ///
 /// One `Engine` is loaded per model path and cached across prompts: loading the ~500MB `.litertlm`
 /// model on every Tier 6 call would be prohibitively slow. LiteRT-LM is session-based, so each prompt

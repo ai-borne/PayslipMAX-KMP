@@ -91,7 +91,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             // Firebase Crashlytics — auto-initializes via ContentProvider; captures native-bridge
             // crashes during dev/beta. BOM (pinned in the legacy dependencies block below) aligns
-            // the version with the existing firebase-auth-ktx already used in :shared.
+            // the version with firebase-analytics/crashlytics already used in :shared.
             implementation(libs.firebase.crashlytics)
             implementation(libs.firebase.analytics)
             // Play Asset Delivery — MainActivity wires the AssetPackManager confirmation-dialog hook

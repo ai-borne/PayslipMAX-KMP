@@ -9,9 +9,7 @@ import kotlin.coroutines.suspendCoroutine
  * maintenance-only MediaPipe LLM Inference SDK). Kotlin/Native cinterop cannot bind LiteRT-LM's
  * pure-Swift package (it ships no Objective-C headers), so the actual model load + inference runs
  * in a Swift bridge (`GemmaInferenceBridge.swift`) registered as [inferenceDelegate] at app
- * startup. This is the same "Swift-only capability behind a plain closure" pattern
- * [com.payslipmax.pdfparser.auth.AuthTokenProvider] uses for Firebase Auth — see
- * docs/AI_INSIGHTS_PIPELINE.md.
+ * startup ("Swift-only capability behind a plain closure") — see docs/AI_INSIGHTS_PIPELINE.md.
  */
 @OptIn(ExperimentalForeignApi::class)
 actual class GemmaEngine actual constructor(private val config: GemmaEngineConfig) {

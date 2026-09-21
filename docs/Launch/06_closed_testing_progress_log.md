@@ -548,3 +548,5 @@ Built and uploaded to Internal testing 2026-09-20 (443 MB AAB); ships with iOS `
   the versionCode 11 entry above, since there's nothing purchasable to test against yet.
 
 > **Note (2026-09-21):** the Developer Sandbox used for the v8 Crashlytics symbolication check is now gated to debug/TestFlight builds. A future release-build R8 check can no longer use the 7-tap unlock; use a debug or temporary local build instead.
+
+> **Note (2026-09-21):** Firebase Anonymous Auth (`firebase-auth-ktx` / iOS `FirebaseAuth`) has been removed from the codebase; it had no production callers. Earlier entries above that mention Anonymous Auth or the `SignInHubActivity` manifest removal describe builds up to v14 and are kept as history. The `SignInHubActivity` stanza is no longer needed because the dependency that pulled it in is gone.

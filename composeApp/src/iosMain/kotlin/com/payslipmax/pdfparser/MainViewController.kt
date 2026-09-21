@@ -8,7 +8,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
-import com.payslipmax.pdfparser.auth.AuthTokenProvider
 import com.payslipmax.pdfparser.di.appModule
 import com.payslipmax.pdfparser.di.sharedModule
 import com.payslipmax.pdfparser.nav.AppNavState
@@ -26,8 +25,6 @@ import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
 import org.koin.core.context.startKoin
 import org.koin.mp.KoinPlatformTools
 import platform.UIKit.UIViewController
-
-fun getAuthTokenProvider(): AuthTokenProvider = AuthTokenProvider()
 
 private fun ensureKoin() {
     if (KoinPlatformTools.defaultContext().getOrNull() == null) {

@@ -52,7 +52,6 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 # Firebase — Auth + Crashlytics (BOM manages version alignment)
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
-firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 

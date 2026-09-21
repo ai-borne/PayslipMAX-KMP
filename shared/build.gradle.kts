@@ -96,7 +96,6 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.pdfbox.android)
             implementation(libs.litertlm.android)
-            implementation(libs.firebase.auth.ktx)
             implementation(libs.firebase.analytics)
             implementation(libs.firebase.crashlytics)
             // Play Asset Delivery — Tier 6 base model on-demand install (AndroidGemmaBaseModelInstaller)
@@ -177,7 +176,7 @@ tasks.withType<Test>().configureEach {
 // because simctl strips the SIMCTL_CHILD_ prefix before setting the child's env.
 
 // KSP: generate Room _Impl for every KMP target
-// Firebase BOM: pins firebase-auth-ktx version (must be in legacy block, not KMP sourceSet)
+// Firebase BOM: pins firebase-analytics/crashlytics versions (must be in legacy block, not KMP sourceSet)
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosX64", libs.androidx.room.compiler)
