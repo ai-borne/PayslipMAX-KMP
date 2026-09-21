@@ -1,5 +1,7 @@
 # 01. User Journey & Sequence Diagrams
 
+> **Status (2026-09-21): partly historical.** The sequence diagram that includes the Gemini Cloud Proxy describes the retired cloud-AI flow. The app no longer calls the Cloud Function proxy: the cloud AI UI was removed in `3198c982` (Aug 2026) and the Firebase Auth token gate in tech-debt 3.1. Current architecture is on-device parsing plus offline Gemma; see [`../AI_INSIGHTS_PIPELINE.md`](../AI_INSIGHTS_PIPELINE.md).
+
 This document details the end-to-end user journey in PayslipMax and outlines the sequence of component interactions.
 
 ---

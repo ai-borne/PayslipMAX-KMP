@@ -127,6 +127,6 @@ reading any single file:
 
 ### Persistence & security
 
-- Payslip data and per-field corrections are AES-256 encrypted at rest (`CryptoHelper`, Android Keystore / iOS Keychain) via Room (`EncryptedPayslipEntity`, `PayslipCorrectionEntity`, schema v9). Corrections apply on read only (`ParsedPayslip.applyCorrections`) and never mutate the original parse — this lets re-parsing overwrite only the parsed side later.
+- Payslip data and per-field corrections are AES-256 encrypted at rest (`CryptoHelper`, Android Keystore / iOS Keychain) via Room (`EncryptedPayslipEntity`, `PayslipCorrectionEntity`, schema v11). Room has **no destructive-migration fallback** — payslips exist only on-device, so every `@Database.version` bump needs an `AutoMigration`/`Migration`, enforced by `PayslipDatabaseUpgradeTest` (upgrades every exported schema in `shared/schemas/` to head). Corrections apply on read only (`ParsedPayslip.applyCorrections`) and never mutate the original parse — this lets re-parsing overwrite only the parsed side later.
 - `CorpusScrubber` strips all PII (name/account/PAN/email) before any fixture is committed; numeric values are left untouched. Never commit a real PDF, real token dump, or unscrubbed fixture.
 - Real PII from before the Phase 6 scrub commit remains in git history; a destructive history rewrite (`filter-repo`/BFG) is deferred pending explicit user decision — don't attempt it unprompted.

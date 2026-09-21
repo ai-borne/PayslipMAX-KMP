@@ -1,5 +1,7 @@
 # 03. AI Pipeline & Context Strategy
 
+> **Status (2026-09-21): partly historical.** The Gemini/Cloud Function steps (notably step 5) describe the retired cloud-AI flow. The app no longer calls the Cloud Function proxy: the cloud AI UI was removed in `3198c982` (Aug 2026) and the Firebase Auth token gate in tech-debt 3.1. Current architecture is on-device parsing plus offline Gemma; see [`../AI_INSIGHTS_PIPELINE.md`](../AI_INSIGHTS_PIPELINE.md).
+
 This document details the step-by-step AI generation pipeline and evaluates the optimal context length strategy.
 
 ---

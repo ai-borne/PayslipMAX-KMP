@@ -550,3 +550,5 @@ Built and uploaded to Internal testing 2026-09-20 (443 MB AAB); ships with iOS `
 > **Note (2026-09-21):** the Developer Sandbox used for the v8 Crashlytics symbolication check is now gated to debug/TestFlight builds. A future release-build R8 check can no longer use the 7-tap unlock; use a debug or temporary local build instead.
 
 > **Note (2026-09-21):** Firebase Anonymous Auth (`firebase-auth-ktx` / iOS `FirebaseAuth`) has been removed from the codebase; it had no production callers. Earlier entries above that mention Anonymous Auth or the `SignInHubActivity` manifest removal describe builds up to v14 and are kept as history. The `SignInHubActivity` stanza is no longer needed because the dependency that pulled it in is gone.
+
+> **Note (2026-09-21):** the Room destructive-migration fallback is removed (tech-debt 2.2). Release builds now fail loudly on an unmigratable database version instead of silently wiping payslips, so any future `@Database.version` bump must ship a migration (enforced by `PayslipDatabaseUpgradeTest`). No shipped build has a schema below v5, so upgrades from any released version are covered.

@@ -1,5 +1,7 @@
 # 06. Accrued Intelligence, Moats & Roadmap
 
+> **Status (2026-09-21): partly historical.** "Phase 1: Cloud AI (Legacy State)" and other cloud-proxy references describe the retired flow. The app no longer calls the Cloud Function proxy: the cloud AI UI was removed in `3198c982` (Aug 2026) and the Firebase Auth token gate in tech-debt 3.1. Current architecture is on-device parsing plus offline Gemma; see [`../AI_INSIGHTS_PIPELINE.md`](../AI_INSIGHTS_PIPELINE.md).
+
 This document describes how PayslipMax accumulates defensive competitive advantage and details the technical roadmap for AI scalability.
 
 ---

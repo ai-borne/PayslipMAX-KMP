@@ -1,5 +1,7 @@
 # 04. AI Provider Abstraction Layer
 
+> **Status (2026-09-21): partly historical.** The cloud provider and proxy-URL parts describe the retired cloud-AI provider. The app no longer calls the Cloud Function proxy: the cloud AI UI was removed in `3198c982` (Aug 2026) and the Firebase Auth token gate in tech-debt 3.1. Current architecture is on-device parsing plus offline Gemma; see [`../AI_INSIGHTS_PIPELINE.md`](../AI_INSIGHTS_PIPELINE.md).
+
 This document outlines the architecture designed to decouple PayslipMax's core logic from specific AI models, enabling seamless transitions from cloud APIs (Gemini) to local, on-device AI engines (Apple Core AI, Android AI Edge, Gemma).
 
 ---
