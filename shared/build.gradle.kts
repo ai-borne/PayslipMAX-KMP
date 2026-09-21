@@ -77,9 +77,6 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.koin.core)
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
             // Amazon Appstore support pulls in amazon-appstore-sdk, which ships an
             // AndroidManifest-registered BroadcastReceiver with pre-verifier bytecode that
             // crashes Robolectric's Application bootstrap (java.lang.VerifyError) on every
@@ -92,14 +89,12 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
-            implementation(libs.ktor.client.mock)
             implementation(project(":shared-test-fixtures"))
         }
 
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.pdfbox.android)
-            implementation(libs.ktor.client.okhttp)
             implementation(libs.litertlm.android)
             implementation(libs.firebase.auth.ktx)
             implementation(libs.firebase.analytics)
@@ -124,7 +119,6 @@ kotlin {
 
         iosMain.dependencies {
             // iOS native frameworks like PDFKit are imported automatically via platform libraries
-            implementation(libs.ktor.client.darwin)
         }
     }
 }

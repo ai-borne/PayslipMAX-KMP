@@ -77,8 +77,8 @@ An in-depth codebase audit and logic scan of the **PayslipMAX KMP** repository w
 - **`x86_64` iOS Simulator** — `EXCLUDED_ARCHS[sdk=iphonesimulator*] = x86_64` added to both target build configs. `xcodebuild … generic/platform=iOS Simulator` failed at the x86_64 link before the change and succeeds after. Gradle `iosX64()` targets are intentionally unchanged (they do not use the Xcode link).
 - **Dead code removed** — Koin `HttpClient` singleton, `initKoin()` (deleted rather than fixed; iOS uses `ensureKoin()`), `NetworkErrorMapper` (+ test), `UploadWidget` (+ test) and its three orphaned `AppStrings` constants.
 
-**Deferred (logged as debt by decision)**
-- **Orphaned Ktor build dependencies.** No `io.ktor` import remains in `shared/` or `composeApp/` (main or test). Still declared: `ktor-client-core`, `-content-negotiation`, `-serialization-kotlinx-json`, `-okhttp` (androidMain), `-darwin` (iosMain), `-mock` in `shared/build.gradle.kts` and `composeApp/build.gradle.kts`, plus the catalog entries in `gradle/libs.versions.toml`. Left in place by decision; remove in a later dependency-cleanup phase, then re-run the full gate and check APK/framework size.
+**Resolved after the initial Phase 1 commit**
+- **Orphaned Ktor build dependencies** removed from `shared/build.gradle.kts` and `composeApp/build.gradle.kts`, plus the `ktor*` entries in `gradle/libs.versions.toml`. No `io.ktor` import remained in any module. Full gate re-run green (check incl. corpus, iOS sim tests, iOS link, `assembleRelease`/R8); release APK ~108 KB smaller. `-dontwarn io.ktor.**` in `composeApp/proguard-rules.pro` is intentionally kept (harmless; guards against transitive references).
 
 **Consequence to remember**
 - The Android **release-build** Crashlytics/R8 symbolication check (used at `docs/Launch/06` v8 and `docs/Plan/06` Phase 11) reached the crash triggers through the Developer Sandbox 7-tap unlock. That path no longer exists in release builds. Future R8 checks must use a debug build or a temporary local build that patches the gate.
