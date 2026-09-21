@@ -19,6 +19,11 @@ class IosGemmaBaseModelInstaller : GemmaBaseModelInstaller {
     private val _state = MutableStateFlow<BaseModelInstallState>(BaseModelInstallState.NotStarted)
     override val state: StateFlow<BaseModelInstallState> = _state.asStateFlow()
 
+    // True from the moment install() hands off to the Swift bridge until it reports completion.
+    // Every trigger makes the bridge replace its NSBundleResourceRequest, and ODR may purge a
+    // resource once no live request holds it, so overlapping triggers must be collapsed here.
+    private var fetchInFlight = false
+
     init {
         progressReporter = { bytesDownloaded, totalBytes ->
             _state.value =
@@ -27,6 +32,7 @@ class IosGemmaBaseModelInstaller : GemmaBaseModelInstaller {
                 )
         }
         completionReporter = { success, errorMessage ->
+            fetchInFlight = false
             _state.value =
                 if (success) {
                     BaseModelInstallState.Installed(resolveInstalledGemmaModelPath() ?: "")
@@ -43,7 +49,12 @@ class IosGemmaBaseModelInstaller : GemmaBaseModelInstaller {
             _state.value = BaseModelInstallState.Installed(path)
             return
         }
-        installTrigger?.invoke()
+        if (fetchInFlight) return
+        // Only mark in-flight once there is a bridge to report completion, or a missing trigger
+        // would block every later retry.
+        val trigger = installTrigger ?: return
+        fetchInFlight = true
+        trigger()
     }
 
     companion object {

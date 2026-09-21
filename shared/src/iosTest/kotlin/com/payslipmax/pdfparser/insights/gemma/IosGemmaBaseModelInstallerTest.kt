@@ -13,6 +13,7 @@ class IosGemmaBaseModelInstallerTest {
         // GemmaEngine.inferenceDelegate's @AfterTest reset (IosGemmaEngineTest.kt).
         IosGemmaBaseModelInstaller.progressReporter = null
         IosGemmaBaseModelInstaller.completionReporter = null
+        IosGemmaBaseModelInstaller.installTrigger = null
     }
 
     @Test
@@ -39,6 +40,39 @@ class IosGemmaBaseModelInstallerTest {
             val installer = IosGemmaBaseModelInstaller()
             installer.install()
             assertEquals(BaseModelInstallState.NotStarted, installer.state.value)
+        }
+
+    @Test
+    fun secondInstallWhileAFetchIsInFlightDoesNotStartAnotherFetch() =
+        runTest {
+            // PayslipViewModel.init and resumeModelDownload() both call install(). Each trigger makes
+            // the Swift bridge create a new NSBundleResourceRequest and drop the previous one, and
+            // ODR can purge a resource once no live request holds it. The window matters before the
+            // first progress callback lands, when the state is still NotStarted.
+            var triggers = 0
+            IosGemmaBaseModelInstaller.installTrigger = { triggers++ }
+            val installer = IosGemmaBaseModelInstaller()
+
+            installer.install()
+            installer.install()
+
+            assertEquals(1, triggers)
+        }
+
+    @Test
+    fun installRetriesAfterAFailedFetch() =
+        runTest {
+            // The in-flight guard must not strand the user: a failed fetch is exactly when the
+            // banner's retry (resumeModelDownload) has to be able to trigger a new one.
+            var triggers = 0
+            IosGemmaBaseModelInstaller.installTrigger = { triggers++ }
+            val installer = IosGemmaBaseModelInstaller()
+
+            installer.install()
+            IosGemmaBaseModelInstaller.completionReporter?.invoke(false, "network lost")
+            installer.install()
+
+            assertEquals(2, triggers)
         }
 
     @Test
