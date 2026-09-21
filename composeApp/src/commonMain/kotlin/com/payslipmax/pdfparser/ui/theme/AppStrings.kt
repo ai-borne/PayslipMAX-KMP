@@ -53,13 +53,10 @@ object AppStrings {
     const val correctionDiagnosticHintHeading = "AI flagged this field as possibly mis-extracted:"
 
     // Upload & Decrypt
-    const val uploadHeader = "Import Encrypted Payslip"
-    const val uploadDesc = "Secure, 100% offline-first parsing engine"
     const val labelSelectPdf = "Select PDF Payslip"
     const val labelPassword = "Decryption Password"
     const val showPasswordToggle = "Show"
     const val hidePasswordToggle = "Hide"
-    const val loaderDecrypt = "Decrypting PDF using Secure Enclave..."
     const val uploadDismiss = "Dismiss"
     const val uploadSuccess = "Payslip Imported Successfully!"
 

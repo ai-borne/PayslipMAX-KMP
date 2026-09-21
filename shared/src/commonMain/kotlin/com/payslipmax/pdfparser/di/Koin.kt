@@ -5,11 +5,8 @@ import com.payslipmax.pdfparser.database.PayslipDatabase
 import com.payslipmax.pdfparser.database.getDatabaseBuilder
 import com.payslipmax.pdfparser.parser.PdfParser
 import com.payslipmax.pdfparser.repository.PayslipRepository
-import io.ktor.client.plugins.HttpTimeout
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -35,25 +32,6 @@ val sharedModule: Module =
         }
 
         single {
-            io.ktor.client.HttpClient {
-                install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
-                    json(
-                        kotlinx.serialization.json.Json {
-                            ignoreUnknownKeys = true
-                            prettyPrint = true
-                            isLenient = true
-                        },
-                    )
-                }
-                install(HttpTimeout) {
-                    requestTimeoutMillis = 60_000
-                    connectTimeoutMillis = 30_000
-                    socketTimeoutMillis = 60_000
-                }
-            }
-        }
-
-        single {
             com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository(get())
         }
 
@@ -64,12 +42,4 @@ val sharedModule: Module =
         single {
             com.payslipmax.pdfparser.telemetry.InstallationIdManager()
         }
-    }
-
-/**
- * Standard Koin initialization helper for iOS target.
- */
-fun initKoin() =
-    startKoin {
-        modules(sharedModule)
     }

@@ -212,3 +212,7 @@ Each phase is one isolated commit on `release/ios-1.0.0-v6`. A regression traced
 Phase 11 can be reverted independently (`git revert <sha>`) without touching the other, since the
 two rule removals are unrelated. A regression traced to the version bump alone (Phase 12) reverts
 cleanly without touching the rule changes.
+
+## ⚠ Note (2026-09-21): Developer Sandbox no longer reachable in release builds
+
+The Crashlytics symbolication check above fired crashes from the Developer Sandbox (Settings header ×7). `DeveloperSandboxSection` is now gated to debug/TestFlight builds (`shouldShowDeveloperSandbox`), so a release/Play build can no longer trigger it. Repeat this check with a debug build or a temporary local build. See `docs/Plan/08_TechDebt_20Sep2026`.

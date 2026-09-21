@@ -123,7 +123,7 @@ flowchart TD
 
 ### Stage 0 — User Ingestion & ViewModel Handshake
 
-1. **User Action**: Officer selects a PDF file and inputs password in `UploadWidget` or `PayslipReplicaScreen`.
+1. **User Action**: Officer selects a PDF file and inputs password in `ImportPayslipDialog` or `PayslipReplicaScreen`.
 2. **ViewModel Dispatch**: `PayslipViewModel.onUploadPayslip()` handles asynchronous state transitions (loading/error states).
 3. **Repository Execution**: Calls `FinancialIntelligenceRepository.parseAndSavePayslip(pdfBytes, password)`.
 4. **Platform Binding**: Delegates directly to platform implementations (`PlatformPdfParser.decryptAndParse()`).
@@ -488,7 +488,7 @@ The 52-fixture corpus starts at Jan 2022; `CorpusCaptureTest` defaults `minYear`
 | Auto-Backup disabled | `allowBackup="false"` in AndroidManifest — prevents restoring DB without hardware-bound key |
 | Self-healing decryption | Falls back to legacy key on `BAD_DECRYPT`; clears corrupt data rather than bricking |
 | Committed fixtures | `CorpusScrubber` strips all PII before commit; only `AR*****90G` / `16/000/000000X` placeholders remain |
-| PDF password | Removed hardcoded default from UI (`UploadWidget`, `SettingsScreen`) — field starts empty |
+| PDF password | Removed hardcoded default from UI (`ImportPayslipDialog`, `SettingsScreen`) — field starts empty |
 | Opt-in capture | System-property-gated (`-Dpayslip.localCorpus`); never writes real PII to committed resources |
 | Debug diagnostics | `ParserDebugCollector` (Stage 1–5 dumps: tokens, grid rows, column bands, field classification, reconciliation) is opt-in and never wired into the production parse call — used only from local/test tooling |
 | PII in git history | Real name/account remained in history pre-Phase 6; a leaked-artifact scrub commit removed committed PII source. Destructive `filter-repo`/BFG rewrite of full history deferred (user decision required) |
@@ -778,6 +778,7 @@ Deferred items with enough context to pick back up without re-deriving the reaso
 ### Shipped: Tier 6 diagnostic-suggestion mode (Stage 7.5) — deliberate scope note
 
 - **Diagnosis only, not correction.** `GemmaDiagnosticExtractor` (see [§2 Stage 7.5](#stage-75--tier-6-diagnostic-pass-gemmadiagnosticextractor)) surfaces the hint only — it does not change how corrections are applied. The user still uses the existing manual `LedgerCorrectionDialog` flow to act on it; nothing in this feature writes to `earnings`/`deductions`/`fieldConfidence` on its own. Any future work that *acts* on the diagnosis (e.g. one-tap apply) would be a distinct, separately-scoped decision, not an extension of this one.
+- **Dead code removed (Sep 2026 tech-debt Phase 1).** Deleted the deprecated `UploadWidget` (superseded by `ImportPayslipDialog`), the unreferenced `NetworkErrorMapper`, the unused Ktor `HttpClient` Koin singleton and the caller-less `initKoin()` (iOS uses `ensureKoin()`). `DeveloperSandboxSection` is now gated to debug/TestFlight builds via `shouldShowDeveloperSandbox`; release builds no longer expose it after the 7-tap unlock.
 
 ### Corpus backfill (in progress)
 

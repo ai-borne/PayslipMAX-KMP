@@ -68,3 +68,17 @@ An in-depth codebase audit and logic scan of the **PayslipMAX KMP** repository w
 2. **Review `FLAG_SECURE` Policy**: Determine whether [`shouldApplyFlagSecure`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/androidMain/kotlin/com/payslipmax/pdfparser/MainActivity.kt#L23) should return `!isDebug` for store releases to block in-app screenshots of sensitive military pay data.
 3. **Retire Unused Firebase Auth & `AuthTokenProvider`**: Remove the unused anonymous sign-in from [`iOSApp.swift`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp/iOSApp.swift), remove the dead [`AuthTokenProvider`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/auth/AuthTokenProvider.kt) classes, and remove the unused `HttpClient` from [`Koin.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt#L38).
 4. **Prune Deprecated / Dead Code**: Remove [`UploadWidget.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/UploadWidget.kt), [`NetworkErrorMapper.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/NetworkErrorMapper.kt), [`initKoin()`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt#L72), and orphan prototypes.
+---
+
+### Remediation Status — Phase 1 (2026-09-21)
+
+**Resolved**
+- **Developer Sandbox gate** — `DeveloperSandboxSection` now requires debug or TestFlight via `shouldShowDeveloperSandbox` (covered by `DeveloperSandboxGateTest`).
+- **`x86_64` iOS Simulator** — `EXCLUDED_ARCHS[sdk=iphonesimulator*] = x86_64` added to both target build configs. `xcodebuild … generic/platform=iOS Simulator` failed at the x86_64 link before the change and succeeds after. Gradle `iosX64()` targets are intentionally unchanged (they do not use the Xcode link).
+- **Dead code removed** — Koin `HttpClient` singleton, `initKoin()` (deleted rather than fixed; iOS uses `ensureKoin()`), `NetworkErrorMapper` (+ test), `UploadWidget` (+ test) and its three orphaned `AppStrings` constants.
+
+**Deferred (logged as debt by decision)**
+- **Orphaned Ktor build dependencies.** No `io.ktor` import remains in `shared/` or `composeApp/` (main or test). Still declared: `ktor-client-core`, `-content-negotiation`, `-serialization-kotlinx-json`, `-okhttp` (androidMain), `-darwin` (iosMain), `-mock` in `shared/build.gradle.kts` and `composeApp/build.gradle.kts`, plus the catalog entries in `gradle/libs.versions.toml`. Left in place by decision; remove in a later dependency-cleanup phase, then re-run the full gate and check APK/framework size.
+
+**Consequence to remember**
+- The Android **release-build** Crashlytics/R8 symbolication check (used at `docs/Launch/06` v8 and `docs/Plan/06` Phase 11) reached the crash triggers through the Developer Sandbox 7-tap unlock. That path no longer exists in release builds. Future R8 checks must use a debug build or a temporary local build that patches the gate.

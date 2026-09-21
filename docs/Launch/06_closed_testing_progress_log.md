@@ -546,3 +546,5 @@ Built and uploaded to Internal testing 2026-09-20 (443 MB AAB); ships with iOS `
   — otherwise `RevenueCatBillingManager` will have nothing to sell and any real purchase attempt will
   fail the same way. Also blocks ever running the sandbox-purchase verification check referenced in
   the versionCode 11 entry above, since there's nothing purchasable to test against yet.
+
+> **Note (2026-09-21):** the Developer Sandbox used for the v8 Crashlytics symbolication check is now gated to debug/TestFlight builds. A future release-build R8 check can no longer use the 7-tap unlock; use a debug or temporary local build instead.
