@@ -205,6 +205,12 @@ android {
             useLegacyPackaging = false
         }
     }
+    // Local sideloads must target only the foreground user. A bare install goes to every profile on the
+    // device; uninstalling from the main profile later leaves an orphan copy in a secondary one, and Play
+    // then refuses the internal-testing build ("another user has already installed an incompatible version").
+    installation {
+        installOptions("--user", "current")
+    }
     testOptions {
         unitTests {
             isIncludeAndroidResources = true

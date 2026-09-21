@@ -16,6 +16,13 @@ recipe so future sessions skip the cold start.
 adb devices                                # confirm a device/emulator is attached first
 ```
 
+`installDebug` targets only the foreground Android user (`installOptions("--user", "current")` in
+`composeApp/build.gradle.kts`). A bare `adb install` goes to *every* profile on the device, so use
+`adb install --user current` for manual sideloads too. Before moving a device from a local build to the
+Play internal-testing build, run `scripts/check_device_profiles.sh`: it fails if a secondary profile
+still holds a copy, which is what makes Play say "another user has already installed an incompatible
+version on this device" (profiles are Android users, not Google accounts).
+
 Package name: `in.aiborne.payslipmax` (not `com.payslipmax.pdfparser` — that's the Kotlin source
 package, not the application/bundle id). Launch it with:
 
