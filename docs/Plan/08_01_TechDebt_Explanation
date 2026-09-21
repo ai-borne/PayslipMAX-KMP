@@ -10,14 +10,13 @@ the main way each fix could go wrong. Phase 1 is done (verified on a Pixel 9, de
 | 1.1 | High | Developer Sandbox reachable in production | <1% | ✅ Done |
 | 1.2 | High | Static callbacks in iOS Gemma installer | 15–25% | Open |
 | 2.1 | Med | `FLAG_SECURE` off in foreground | 35–45% (UX) | Open, needs a policy decision |
-| 2.2 | Med | Room destructive-migration fallback | ~30% | Open |
+| 2.2 | Med | Room destructive-migration fallback | ~30% | ✅ Done |
 | 2.3 | Med | iOS `x86_64` simulator link failure | <2% | ✅ Done |
 | 2.4 | Med | Incomplete public `initKoin()` | <1% | ✅ Done (deleted, not fixed) |
-| 3.1 | Low | Firebase anonymous auth + token bridge | 5–10% | Open |
+| 3.1 | Low | Firebase anonymous auth + token bridge | 5–10% | ✅ Done |
 | 3.2 | Low | Unused Ktor `HttpClient` singleton | 0% | ✅ Done, plus Ktor build deps removed |
 | 3.3 | Low | Dead `NetworkErrorMapper` | 0% | ✅ Done |
 | 3.4 | Low | Deprecated `UploadWidget` | 0% | ✅ Done |
-| 3.5 | Low | Orphaned `pcdao_ai_prototype.html`, `web-prototype/` | 0% | Open |
 
 ---
 
@@ -54,12 +53,21 @@ the main way each fix could go wrong. Phase 1 is done (verified on a Pixel 9, de
   tools.
 - **Decision needed:** enforce it in release, or make it a Settings privacy toggle.
 
-### 2.2 Room destructive-migration fallback — Open
-- **Problem:** both `PayslipDatabase.kt` builders (androidMain, iosMain) use `.fallbackToDestructiveMigration(true)`.
-  A future schema change without a migration would silently wipe all payslips.
-- **Fix:** disable the fallback for release and enforce migration tests.
-- **Regression risk (~30%):** if disabled before every migration path is tested with `MigrationTestHelper`, a missed
-  one crashes updating users on cold launch with `IllegalStateException`.
+### 2.2 Room destructive-migration fallback — ✅ Done
+- **Problem:** both `PayslipDatabase.kt` builders used `.fallbackToDestructiveMigration(true)`, so any version Room
+  could not migrate (including an unknown or future one) was silently wiped, and payslips exist only on the device.
+- **Fix:** removed the fallback from both builders, in all build types. No shipped build ever had a schema below v5, so
+  no legacy carve-out was needed. A missed migration is now a loud launch failure instead of silent data loss.
+- **Tests (`PayslipDatabaseUpgradeTest`):** (1) a database with an unrecognised version fails with
+  `IllegalStateException` and keeps its row (red before the change, green after); (2) every exported schema version
+  upgrades to head, derived from `schemas/`, so the next bump extends it automatically; (3) a payslip row survives
+  5→11. Tests 2 and 3 already passed (the migrations existed); they now guard the chain the strict policy depends on.
+  Removing one `AutoMigration` makes both fail.
+- **Verified:** full automated gate; Pixel 9 debug build upgraded in place over a populated database (Feb–Apr 2026
+  payslips) with no crash or wipe; iOS simulator relaunch over its existing database.
+- **Debt left:** no in-app recovery if a future migration is missed (launch crash until an update ships; a
+  "restore from `.pcda` backup" path would be a separate feature). There is no native iOS migration test; iOS relies
+  on the shared `AutoMigration`s. The stale `com.ssbmax…` schema directory remains.
 
 ### 2.3 iOS `x86_64` simulator link failure — ✅ Done
 - **Problem:** `CLiteRTLM.xcframework` is arm64-only, so generic-simulator builds failed to link x86_64.
@@ -76,12 +84,18 @@ the main way each fix could go wrong. Phase 1 is done (verified on a Pixel 9, de
 
 ## Low severity
 
-### 3.1 Firebase anonymous auth and token bridge — Open
-- **Problem:** left over from the Cloud Functions era. The app is now fully on-device, yet anonymous sign-in still runs
-  on every iOS launch (`iOSApp.swift`, `AuthTokenProvider.kt`, `AuthTokenFetcherTests.swift`).
-- **Fix:** remove sign-in, the provider classes and their tests.
-- **Regression risk (5–10%):** confirm no other Firebase service (Crashlytics user mapping, Analytics, Remote Config
-  or any Firestore rules) expects an authenticated UID.
+### 3.1 Firebase anonymous auth and token bridge — ✅ Done
+- **Problem:** left over from the Cloud Functions era. `AuthTokenProvider.getIdToken()` had zero production callers, yet
+  iOS signed in anonymously on every launch (Android never did).
+- **Fix:** removed the `auth/` classes (all three source sets) and their tests, the Swift sign-in and token bridge,
+  `AuthTokenFetcherTests`, `firebase-auth-ktx`, both `FirebaseAuth` Xcode product refs, and the now-stale
+  `SignInHubActivity` manifest removal. Firebase Core, Crashlytics and Analytics are unchanged.
+- **Verified:** `check` (incl. 52-fixture corpus), iOS simulator tests, framework link, `assembleRelease`/R8,
+  `xcodebuild` build + Swift unit tests. No `firebase-auth`/`play-services-auth`/`credentials` artifact remains in the
+  release runtime classpath (only the unrelated `play-services-auth-blockstore`). Cold launch is clean on the Pixel 9
+  (debug) and the iOS simulator.
+- **Not verified:** Pixel release build on-device (needs an uninstall), and Crashlytics receiving events from the next
+  TestFlight build. After older iOS builds age out, the Anonymous provider can be disabled in the Firebase console.
 
 ### 3.2 Unused Ktor `HttpClient` — ✅ Done
 Deleted the `single { HttpClient … }` block. A follow-up (`5fded6b6`) removed the orphaned Ktor build dependencies and
@@ -93,10 +107,6 @@ Deleted with its test.
 ### 3.4 Deprecated `UploadWidget` — ✅ Done
 Deleted with its test, along with three orphaned `AppStrings` constants. Docs now point to `ImportPayslipDialog`.
 
-### 3.5 Orphaned prototypes — Open
-`pcdao_ai_prototype.html` and `web-prototype/` are outside the Gradle/Xcode graphs. Remove or archive to a branch.
-Note that CLAUDE.md still lists `web-prototype/` as a supported sub-project, so update that if it goes.
-
 ---
 
 ## Remaining work
@@ -104,12 +114,11 @@ Note that CLAUDE.md still lists `web-prototype/` as a supported sub-project, so 
 **Manual gates (not runnable from CI or this environment):**
 1. Restore the Pixel 9 to the Play build, then restore the `.pcda` backup.
 2. Import one real payslip on the Pixel 9 to exercise the parse → persist path.
-3. On the next iOS TestFlight build, check a clean launch and the sandbox after 7 taps.
+3. On the next iOS TestFlight build, check a clean launch, the sandbox after 7 taps, and that Crashlytics still receives events (auth removed).
 4. Explain the Jan/Feb difference seen after two separate backup restores (probably different backups; unverified).
 
 **Later phases, cheapest first:**
-1. **3.5 and 3.1:** dead-code and vestigial-auth cleanup (0% and 5–10% risk).
-2. **1.2:** Gemma installer lifecycle (15–25%; needs iOS verification).
-3. **2.2 and 2.1:** need a decision first (migration-test coverage, and the `FLAG_SECURE` policy).
+1. **1.2:** Gemma installer lifecycle (15–25%; needs iOS verification).
+2. **2.1:** needs a policy decision first (enforce in release, or a Settings toggle).
 
 **Optional:** a Compose UI test for the sandbox gate wiring, which is only verified on-device today.

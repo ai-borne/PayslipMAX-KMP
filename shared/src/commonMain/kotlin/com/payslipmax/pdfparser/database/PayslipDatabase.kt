@@ -58,5 +58,10 @@ expect object PayslipDatabaseConstructor : RoomDatabaseConstructor<PayslipDataba
 
 /**
  * Returns a Room database builder configured for the specific platform.
+ *
+ * Deliberately has no destructive-migration fallback: payslips live only in this database, so an
+ * unmigratable version must fail loudly rather than silently drop them. Every `@Database.version`
+ * bump therefore needs an `AutoMigration`/`Migration`; `PayslipDatabaseUpgradeTest` enforces this by
+ * upgrading every exported schema version to head.
  */
 expect fun getDatabaseBuilder(): RoomDatabase.Builder<PayslipDatabase>
