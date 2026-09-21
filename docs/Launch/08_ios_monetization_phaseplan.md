@@ -659,11 +659,30 @@ the URL can't be opened; bug-report-only redaction of PAN/amounts/account number
 `docs/Launch/06_closed_testing_progress_log.md` (versionCode 14). iOS gate green locally (full `iosSimulatorArm64Test`, framework
 link). **Unverified on iOS:** simulator (no Mail → share-sheet fallback) and a real iPhone with Mail; `iosX64Test` on CI pending.
 
-**Next steps (as of 2026-09-19):**
-1. Check `fastlane ios review_status` (from `iosApp/`) for the App Review outcome of `1.2.2 (7)`.
-2. If it is rejected, fix the issue and resubmit with the same two lanes (`prepare_submission`, then
-   `submit_for_review confirm:true`). A metadata-only rejection needs no new build; a code fix needs a new
-   TestFlight build first.
+**Queued for the next iOS build (2026-09-21) — none of it is in `1.2.3 (1)`:** the tech-debt work (`docs/Plan/08_01_TechDebt_Explanation`)
+was committed after that upload, so it ships in the next TestFlight build, not in the one already uploaded. iOS-visible changes:
+- Developer Sandbox gated to debug/TestFlight builds (`shouldShowDeveloperSandbox`); it must still appear after 7 taps on TestFlight.
+- Firebase anonymous sign-in, the token bridge and both `FirebaseAuth` Xcode product refs removed.
+- Room destructive-migration fallback removed: an unmigratable database now fails loudly instead of wiping payslips.
+- `EXCLUDED_ARCHS[sdk=iphonesimulator*] = x86_64` so generic-simulator builds link (`CLiteRTLM.xcframework` is arm64-only).
+- Gemma installer is now a Koin `single` and `install()` collapses overlapping ODR triggers (tech-debt 1.2). The Swift bridge
+  (`GemmaOnDemandResourceBridge.swift`) is unchanged.
+
+Device gates for that build (all unverified on a real iPhone; the simulator relaunch over an existing database was clean):
+1. Clean launch over the existing `1.2.3 (1)` database, i.e. the upgrade path the strict Room policy now depends on.
+2. Sandbox appears after 7 taps.
+3. Crashlytics still receives events with auth removed.
+4. Gemma model banner: fresh install progresses to Installed; background and foreground mid-download; force a failure (airplane
+   mode) and confirm the banner's retry starts a new fetch.
+
+**Next steps (as of 2026-09-21; supersedes the 2026-09-19 list, whose `1.2.2 (7)` review question is closed — it was approved and released):**
+1. Internal-test `1.2.3 (1)` (recorded above as pending) on a real iPhone with Mail: Report an Issue should open a
+   pre-filled compose sheet with the redaction applied. The simulator only exercises the share-sheet fallback.
+2. Cut the next TestFlight build (`fastlane ios build_and_upload_testflight`, from `iosApp/`) to carry the queued tech-debt
+   changes, and run the four device gates listed above.
+3. Submit the build that passes with the same two lanes (`prepare_submission`, then `submit_for_review confirm:true`). While
+   `1.2.3` is not yet `READY_FOR_SALE` its train is still open to new builds; once it is released, any further change
+   needs a new marketing version (see the 90186 rejection above). A metadata-only rejection needs no new build.
 
 ---
 

@@ -1,14 +1,15 @@
 # Tech-Debt Regression-Risk Analysis (status as of 2026-09-21)
 
 Ranks the items in [`08_TechDebt_20Sep2026`](08_TechDebt_20Sep2026) by severity, with regression chance and
-the main way each fix could go wrong. Phase 1 is done (verified on a Pixel 9, debug and release); the rest is open.
+the main way each fix could go wrong. Everything is done except 2.1, which needs a policy decision; the manual device
+gates under "Remaining work" are still open.
 
 ## Summary
 
 | # | Sev. | Item | Regression chance | Status |
 | :-: | :-: | :-- | :-: | :-- |
 | 1.1 | High | Developer Sandbox reachable in production | <1% | ✅ Done |
-| 1.2 | High | Static callbacks in iOS Gemma installer | 15–25% | Open |
+| 1.2 | High | Static callbacks in iOS Gemma installer | 15–25% est.; Swift untouched | ✅ Done (iOS device check pending) |
 | 2.1 | Med | `FLAG_SECURE` off in foreground | 35–45% (UX) | Open, needs a policy decision |
 | 2.2 | Med | Room destructive-migration fallback | ~30% | ✅ Done |
 | 2.3 | Med | iOS `x86_64` simulator link failure | <2% | ✅ Done |
@@ -32,13 +33,38 @@ the main way each fix could go wrong. Phase 1 is done (verified on a Pixel 9, de
   local build (noted in `docs/Launch/06`).
 - **Still open:** confirm on the next iOS TestFlight build that the sandbox appears after 7 taps.
 
-### 1.2 Static callbacks in iOS Gemma installer — Open
+### 1.2 Static callbacks in iOS Gemma installer — ✅ Done (iOS device check pending)
 - **Problem:** `progressReporter`/`completionReporter` are static `var`s on the `companion object` of
-  `GemmaBaseModelInstaller.ios.kt`. `PayslipViewModel` is a Koin `factory`, so each new instance overwrites the global
-  listeners and orphans the previous subscriber.
-- **Fix:** make the installer a Koin `single`, or replace the statics with a listener registry.
-- **Regression risk (15–25%):** retain cycles between Swift `NSBundleResourceRequest` and Kotlin; any change to the
-  companion API also changes `GemmaOnDemandResourceBridge.swift`, so it needs matched iOS verification.
+  `GemmaBaseModelInstaller.ios.kt`. `PayslipViewModel` is a Koin `factory`, so each new instance overwrote the global
+  listeners and orphaned the previous subscriber. In practice the ViewModel is resolved once per
+  `makeUIViewController` (iOS) or `onCreate` (Android), so this was latent rather than observed.
+- **Second bug found while reading the code:** the installer was never injected. `AppModule` called
+  `PayslipViewModel(get(), get())`, so the installer came from the default argument `provideGemmaBaseModelInstaller()`
+  and was a new instance per ViewModel. "Make it a `single`" therefore also needed a Koin registration and a third
+  `get()`. Separately, `GemmaOnDemandResourceBridge.beginFetch()` replaces its `NSBundleResourceRequest` on every
+  trigger, and `install()` runs from both ViewModel init and `resumeModelDownload()`. A double trigger could start a
+  second request and drop the first, and ODR may purge a resource once no live request holds it.
+- **Fix:** chose the Koin `single` over the listener registry, because the registry changes the companion API and so the
+  Swift bridge (where the retain-cycle risk sat). The companion slots and `GemmaOnDemandResourceBridge.swift` are
+  untouched.
+  - `AppModule`: `single<GemmaBaseModelInstaller> { provideGemmaBaseModelInstaller() }` and
+    `PayslipViewModel(get(), get(), get())`.
+  - `IosGemmaBaseModelInstaller`: a `fetchInFlight` flag makes a second `install()` a no-op until the bridge reports
+    completion. It is only set once `installTrigger` exists, so a missing bridge can never block a retry.
+- **Tests:**
+  - `GemmaInstallerDiWiringTest` (composeApp): two ViewModels resolved from `appModule` share one installer. Failed
+    before the fix, passes after.
+  - `IosGemmaBaseModelInstallerTest`: a second `install()` while a fetch is in flight does not re-trigger (red, then
+    green); `install()` after a failed fetch does trigger again (green throughout; guards against the flag stranding
+    the retry button).
+- **Verified:** ktlint, tech-debt audit, `check` (incl. 52-fixture corpus), full `iosSimulatorArm64Test`, iOS framework
+  link. `xcodebuild` was not run because no Swift or Xcode file changed.
+- **Not verified:** a real ODR download on a device. Android now shares one installer too (the registration is in
+  `commonMain`); from reading the code its lazy gateway registers its Play Core listener once per process instead of
+  once per ViewModel, but that was not run on a device.
+- **Debt left:** the statics remain, and `PayslipViewModel` keeps its `provideGemmaBaseModelInstaller()` default argument
+  (tests rely on it), so any caller that builds a ViewModel outside Koin still gets a private installer that overwrites
+  the shared reporters. A listener registry would be the fuller fix if more than one live subscriber is ever needed.
 
 ---
 
@@ -116,9 +142,10 @@ Deleted with its test, along with three orphaned `AppStrings` constants. Docs no
 2. Import one real payslip on the Pixel 9 to exercise the parse → persist path.
 3. On the next iOS TestFlight build, check a clean launch, the sandbox after 7 taps, and that Crashlytics still receives events (auth removed).
 4. Explain the Jan/Feb difference seen after two separate backup restores (probably different backups; unverified).
+5. **1.2, same TestFlight build:** on a fresh install, watch the model banner progress through to Installed; background
+   and foreground the app mid-download; force a failure (airplane mode) and confirm the banner's retry works.
 
-**Later phases, cheapest first:**
-1. **1.2:** Gemma installer lifecycle (15–25%; needs iOS verification).
-2. **2.1:** needs a policy decision first (enforce in release, or a Settings toggle).
+**Later phases:**
+1. **2.1:** needs a policy decision first (enforce in release, or a Settings toggle). It is the only open item.
 
 **Optional:** a Compose UI test for the sandbox gate wiring, which is only verified on-device today.

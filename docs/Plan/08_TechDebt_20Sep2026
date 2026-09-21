@@ -86,5 +86,8 @@ An in-depth codebase audit and logic scan of the **PayslipMAX KMP** repository w
 **Resolved in the 2.2 phase (2026-09-21)**
 - **Room destructive-migration fallback** removed from both platform builders; an unmigratable or unknown DB version now fails loudly instead of wiping payslips. Covered by `PayslipDatabaseUpgradeTest` (unknown version fails and keeps its data; every exported schema version upgrades to head; a payslip survives 5→11). See `08_01_TechDebt_Explanation` §2.2.
 
+**Resolved in the 1.2 phase (2026-09-21)**
+- **Static callbacks in the iOS Gemma installer:** the installer is now a Koin `single` in `appModule` (it was never injected, only a default argument, so every ViewModel built its own), and `IosGemmaBaseModelInstaller.install()` collapses overlapping triggers with a `fetchInFlight` flag so the Swift bridge no longer replaces its `NSBundleResourceRequest` mid-download. The companion slots and `GemmaOnDemandResourceBridge.swift` are unchanged. Covered by `GemmaInstallerDiWiringTest` and two new `IosGemmaBaseModelInstallerTest` cases. Full automated gate green; the real-device ODR check is still pending on the next TestFlight build. See `08_01_TechDebt_Explanation` §1.2.
+
 **Consequence to remember**
 - The Android **release-build** Crashlytics/R8 symbolication check (used at `docs/Launch/06` v8 and `docs/Plan/06` Phase 11) reached the crash triggers through the Developer Sandbox 7-tap unlock. That path no longer exists in release builds. Future R8 checks must use a debug build or a temporary local build that patches the gate.

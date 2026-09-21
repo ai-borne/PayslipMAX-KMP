@@ -552,3 +552,11 @@ Built and uploaded to Internal testing 2026-09-20 (443 MB AAB); ships with iOS `
 > **Note (2026-09-21):** Firebase Anonymous Auth (`firebase-auth-ktx` / iOS `FirebaseAuth`) has been removed from the codebase; it had no production callers. Earlier entries above that mention Anonymous Auth or the `SignInHubActivity` manifest removal describe builds up to v14 and are kept as history. The `SignInHubActivity` stanza is no longer needed because the dependency that pulled it in is gone.
 
 > **Note (2026-09-21):** the Room destructive-migration fallback is removed (tech-debt 2.2). Release builds now fail loudly on an unmigratable database version instead of silently wiping payslips, so any future `@Database.version` bump must ship a migration (enforced by `PayslipDatabaseUpgradeTest`). No shipped build has a schema below v5, so upgrades from any released version are covered.
+
+> **Note (2026-09-21):** the Gemma base-model installer is now one Koin-registered instance shared by every `PayslipViewModel` (tech-debt 1.2; `docs/Plan/08_01_TechDebt_Explanation` §1.2). The bug was iOS-specific (process-wide static progress/completion reporters), but the registration is in `commonMain`, so Android shares one installer too. From reading the code, Android's Play Core listener is now registered once per process instead of once per ViewModel; that was not exercised on a device.
+
+> **Note (2026-09-21): none of the tech-debt work is in versionCode 14.** The Developer Sandbox gate, Ktor and Firebase Auth removal, strict Room migrations and the installer change were all committed after v14 was built (2026-09-20), so they ship in the next build (versionCode 15 or later). Manual gates still open before promoting it (from `docs/Plan/08_01_TechDebt_Explanation`, "Remaining work"):
+> 1. The Pixel 9 runs a debug build (see the v14 side effect above). Restore it to the Play build, then restore the `.pcda` backup.
+> 2. Import one real payslip on it to exercise the parse → persist path, and confirm the app upgrades in place over the existing database now that Room no longer falls back to a wipe.
+> 3. Check the release build on-device (needs an uninstall): clean launch with Firebase Auth removed, and no Developer Sandbox after 7 or 14 taps.
+> 4. Watch the Gemma model download banner run through to Installed.
