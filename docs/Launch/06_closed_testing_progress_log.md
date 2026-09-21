@@ -537,9 +537,22 @@ Built from `50445866` plus the `versionCode` 14 → 15 bump. Nothing here is a n
 - **Release notes shown to testers:** "Internal hardening update: cleaner startup, safer database upgrades, more reliable offline AI
   model download, and new LTC / leave encashment pay code recognition. No other visible changes."
 - **Owner-reported on-device result (2026-09-21):** Pixel 9 shows **no Developer Sandbox** (the release-build half of manual gate 3 in the note
-  below). Clean-launch, parse/persist, in-place database upgrade and Gemma banner results were not reported, so those stay open.
-- **Not verified on a device yet:** the remaining manual gates in the note below. Internal testing is where they get run; do not promote to
-  Closed testing until they pass.
+  below).
+- **Verified on the Play-delivered install (2026-09-21, Pixel 9):** `dumpsys package` shows `versionCode=15`, `versionName=1.0.0`,
+  `installerPackageName=com.android.vending`, installed 17:19 (first-install time equals last-update time, so a fresh install, not an
+  upgrade), not debuggable. The app launches and shows payslip data (latest month April 2026). The restore itself was not observed; that the
+  data came from the `.pcda` backup is assumed, not checked. No logcat or Crashlytics check was made for startup errors.
+  - **Sandbox (1.1):** 7 and 14 taps on the Settings header (the `onHeaderClick` target in `SettingsScreen.kt`), via adb, show no Developer
+    Sandbox anywhere on the screen, top to bottom. There is no positive control on a release build, so this rests on the gate's unit test and the
+    earlier debug-build check.
+  - **Installed APK (pulled and inspected):** no `firebase-auth` library metadata and no `SignInHubActivity` in the manifest (only the unrelated
+    `play-services-auth-blockstore` remains); no Ktor entries or strings; the LTC / leave-encashment mapping strings `LVELTC`, `ARR-LVELTC`,
+    `LVENCASH` and `ARR-LVENCASH` are present in the dex; the only `fallbackToDestructiveMigration` strings are Room's own error text, not app code.
+    R8 obfuscates class names, so the deleted classes (`NetworkErrorMapper`, `UploadWidget`, the `auth/` classes) can't be shown absent this way;
+    they rest on the commits being ancestors of `50445866` (checked with `git merge-base --is-ancestor`).
+- **Not verified on a device yet:** parse → persist of a newly imported payslip; the Gemma model banner running through to Installed. The install
+  was fresh, so it did not exercise an in-place Room upgrade over an existing database (`PayslipDatabaseUpgradeTest`
+  covers that in CI only). Do not promote to Closed testing until these pass.
 - **Tooling gotchas hit while releasing:** (1) a first gate run failed with `mergeReleaseResources` "No such file or directory" because the
   owner's `git push` pre-push hook was running its own Gradle build in the same `build/` directory at the same time. Not a code failure;
   waited for the hook and reran green. Don't run two Gradle builds on this checkout at once. (2) `fastlane android upload_to_track`
@@ -582,8 +595,8 @@ Built from `50445866` plus the `versionCode` 14 → 15 bump. Nothing here is a n
 
 > **Note (2026-09-21):** the Gemma base-model installer is now one Koin-registered instance shared by every `PayslipViewModel` (tech-debt 1.2; `docs/Plan/08_01_TechDebt_Explanation` §1.2). The bug was iOS-specific (process-wide static progress/completion reporters), but the registration is in `commonMain`, so Android shares one installer too. From reading the code, Android's Play Core listener is now registered once per process instead of once per ViewModel; that was not exercised on a device.
 
-> **Note (2026-09-21): none of the tech-debt work is in versionCode 14.** The Developer Sandbox gate, Ktor and Firebase Auth removal, strict Room migrations and the installer change were all committed after v14 was built (2026-09-20), so they ship in the next build (versionCode 15 or later). Manual gates still open before promoting it (from `docs/Plan/08_01_TechDebt_Explanation`, "Remaining work"):
-> 1. The Pixel 9 runs a debug build (see the v14 side effect above). Restore it to the Play build, then restore the `.pcda` backup.
-> 2. Import one real payslip on it to exercise the parse → persist path, and confirm the app upgrades in place over the existing database now that Room no longer falls back to a wipe.
-> 3. Check the release build on-device (needs an uninstall): clean launch with Firebase Auth removed, and no Developer Sandbox after 7 or 14 taps.
-> 4. Watch the Gemma model download banner run through to Installed.
+> **Note (2026-09-21): none of the tech-debt work is in versionCode 14.** The Developer Sandbox gate, Ktor and Firebase Auth removal, strict Room migrations and the installer change were all committed after v14 was built (2026-09-20), so they shipped in versionCode 15 (Internal testing, 2026-09-21; release commit `5ff62394`). Manual gates before promoting it (from `docs/Plan/08_01_TechDebt_Explanation`, "Remaining work"):
+> 1. ~~The Pixel 9 runs a debug build. Restore it to the Play build, then restore the `.pcda` backup.~~ Done 2026-09-21: Play v15 installed (fresh install) and payslip data is present; the restore itself was not observed, so the `.pcda` source is assumed.
+> 2. Import one real payslip on it to exercise the parse → persist path, and confirm the app upgrades in place over the existing database now that Room no longer falls back to a wipe. **Still open** (the install was fresh).
+> 3. Check the release build on-device: clean launch with Firebase Auth removed, and no Developer Sandbox after 7 or 14 taps. **Partly done 2026-09-21** on the Play v15 install: it launches and renders data, no sandbox after 7 or 14 taps, no Firebase Auth in the APK. Startup logs / Crashlytics were not checked, so "clean" is unconfirmed.
+> 4. Watch the Gemma model download banner run through to Installed. **Still open.**

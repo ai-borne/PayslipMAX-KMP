@@ -690,7 +690,7 @@ Device gates for `1.2.3 (2)` (all still open, unverified on a real iPhone; the s
    mode) and confirm the banner's retry starts a new fetch.
 
 **Next steps (as of 2026-09-21; supersedes the 2026-09-19 list, whose `1.2.2 (7)` review question is closed — it was approved and released):**
-1. Internal-test `1.2.3 (1)` (recorded above as pending) on a real iPhone with Mail: Report an Issue should open a
+1. Internal-test `1.2.3 (2)` (`(1)` is superseded; release commit `5ff62394`) on a real iPhone with Mail: Report an Issue should open a
    pre-filled compose sheet with the redaction applied. The simulator only exercises the share-sheet fallback.
 2. ~~Cut the next TestFlight build~~ Done 2026-09-21 as `1.2.3 (2)`. Run the four device gates listed above on it.
 3. Submit the build that passes with the same two lanes (`prepare_submission`, then `submit_for_review confirm:true`). While
