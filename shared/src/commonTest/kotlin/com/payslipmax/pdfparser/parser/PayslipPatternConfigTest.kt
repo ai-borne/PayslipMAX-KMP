@@ -232,4 +232,15 @@ class PayslipPatternConfigTest {
         assertFalse(mapping.containsKey("TA Debit"), "'TA Debit' must remain in rawDeductions for PhantomReconciler")
         assertFalse(mapping.containsKey("R/oEtkt"), "'R/oEtkt' must remain in rawDeductions for PhantomReconciler")
     }
+
+    @Test
+    fun ltcAndLeaveEncashmentAllowancesResolveToAdjPayAndAllce() {
+        val mapping = PayslipPatternConfig.creditKeysMapping
+
+        assertEquals("adjPayAndAllce", mapping["LVELTC"])
+        assertEquals("adjPayAndAllce", mapping["ARR-LVELTC"])
+        assertEquals("adjPayAndAllce", mapping["A/o LVELTC"])
+        assertEquals("adjPayAndAllce", mapping["LVENCASH"])
+        assertEquals("adjPayAndAllce", mapping["ARR-LVENCASH"])
+    }
 }
