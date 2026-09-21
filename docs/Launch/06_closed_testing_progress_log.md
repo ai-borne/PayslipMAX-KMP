@@ -8,11 +8,12 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-20, v14 on Internal testing)
+## Status snapshot (as of 2026-09-21, v15 on Internal testing)
 
-- **Internal testing track:** `14 (1.0.0)` — **uploaded 2026-09-20** via `fastlane upload_to_track` (`versionCode` in
-  `composeApp/build.gradle.kts` bumped 13 → 14). Carries the Report an Issue fix (see the versionCode 14 section below).
-  Closed testing remains on `13` until v14 is verified.
+- **Internal testing track:** `15 (1.0.0)` — **uploaded 2026-09-21 17:11** via `fastlane upload_to_track` (`versionCode` in
+  `composeApp/build.gradle.kts` bumped 14 → 15; confirmed with `track_status`: `internal: [15]`). Carries the post-v14 tech-debt
+  work and the LTC / leave-encashment paycodes (see the versionCode 15 section below). Closed testing remains on `13`.
+- **Superseded on Internal testing:** `14 (1.0.0)` — uploaded 2026-09-20, Report an Issue fix (versionCode 14 section below).
 
 - **Closed testing track (`alpha`):** `13 (1.0.0)` — **published** (confirmed by the owner in Play Console,
   2026-09-19); promoted from Internal testing on 2026-09-19 via the new
@@ -517,6 +518,32 @@ Built and uploaded to Internal testing 2026-09-20 (443 MB AAB); ships with iOS `
 - **Verified:** Pixel 9 / Android 17 debug build — dialog, Gmail compose pre-filled, redaction, share-sheet fallback (Gmail disabled). Local gate green (`check`, full iOS suite, link).
 - **Not verified:** small-screen/landscape dialog layout; iOS simulator/iPhone (see doc 08); CI result on `8bed2ce9` pending at time of writing.
 - **Side effect:** the Play-installed build on the Pixel 9 was uninstalled for the debug install; it currently runs the debug build.
+
+### versionCode 15 — on Internal testing (2026-09-21) — tech-debt hardening + LTC / leave-encashment paycodes
+
+Built and uploaded to Internal testing 2026-09-21 17:11 (442 MB AAB, signed by the release keystore `CN=ai-borne`, real 557 MB Gemma
+model confirmed inside via `unzip -l`); ships with iOS `1.2.3 (2)` (`docs/Launch/08_ios_monetization_phaseplan.md`).
+Built from `50445866` plus the `versionCode` 14 → 15 bump. Nothing here is a new feature; testers should see no UI change.
+
+- **Tech debt (`docs/Plan/08_01_TechDebt_Explanation`):** Developer Sandbox gated to debug/TestFlight (`122639f6`); orphaned Ktor
+  dependencies removed (`5fded6b6`); dead Firebase anonymous auth removed (`e85f80bb`); Room destructive-migration fallback removed so
+  an unmigratable database fails loudly instead of wiping payslips (`5095a493`); one Koin-registered Gemma installer shared by every
+  `PayslipViewModel` (`ef8827fd`); iOS dSYM upload wired into the TestFlight lane (`10388851`, iOS-only).
+- **Parser:** LTC and leave-encashment paycodes added to the allowance mappings (`d4a6abb4`) with end-to-end reconciliation tests
+  (`974c36a5`). This is the one change testers can see: those lines now land in named earnings rather than raw leftovers.
+- **Gate (2026-09-21, run before building):** `./gradlew check -x iosX64Test -x iosSimulatorArm64Test` green (full corpus regression,
+  lint, ktlint, `checkFileSizes`). `iosSimulatorArm64Test` and `linkDebugFrameworkIosSimulatorArm64` reported `UP-TO-DATE`, i.e. they passed
+  on identical inputs in the same-day pre-push run rather than being re-executed. `iosX64Test` is skipped on this machine (CI only).
+- **Release notes shown to testers:** "Internal hardening update: cleaner startup, safer database upgrades, more reliable offline AI
+  model download, and new LTC / leave encashment pay code recognition. No other visible changes."
+- **Owner-reported on-device result (2026-09-21):** Pixel 9 shows **no Developer Sandbox** (the release-build half of manual gate 3 in the note
+  below). Clean-launch, parse/persist, in-place database upgrade and Gemma banner results were not reported, so those stay open.
+- **Not verified on a device yet:** the remaining manual gates in the note below. Internal testing is where they get run; do not promote to
+  Closed testing until they pass.
+- **Tooling gotchas hit while releasing:** (1) a first gate run failed with `mergeReleaseResources` "No such file or directory" because the
+  owner's `git push` pre-push hook was running its own Gradle build in the same `build/` directory at the same time. Not a code failure;
+  waited for the hook and reran green. Don't run two Gradle builds on this checkout at once. (2) `fastlane android upload_to_track`
+  resolves `aab:` relative to `composeApp/fastlane/`, so pass an absolute path (a relative one fails with "AAB not found" before anything is uploaded).
 
 ## What still needs to happen before the Day-14 final submission
 

@@ -659,8 +659,20 @@ the URL can't be opened; bug-report-only redaction of PAN/amounts/account number
 `docs/Launch/06_closed_testing_progress_log.md` (versionCode 14). iOS gate green locally (full `iosSimulatorArm64Test`, framework
 link). **Unverified on iOS:** simulator (no Mail → share-sheet fallback) and a real iPhone with Mail; `iosX64Test` on CI pending.
 
-**Queued for the next iOS build (2026-09-21) — none of it is in `1.2.3 (1)`:** the tech-debt work (`docs/Plan/08_01_TechDebt_Explanation`)
-was committed after that upload, so it ships in the next TestFlight build, not in the one already uploaded. iOS-visible changes:
+**Status (2026-09-21): `1.2.3 (2)` on TestFlight (processing `VALID`), pending the device gates below** — uploaded 17:23 via
+`fastlane ios build_and_upload_testflight` (no `bump_version`; build 1 → 2 of the still-open `1.2.3` train, confirmed via
+`testflight_builds`: `2 (1.2.3)` and `1 (1.2.3)` both `VALID`). Built from `50445866` (LTC / leave-encashment paycodes on top of the
+tech-debt list below); ships with Android versionCode 15 (`docs/Launch/06_closed_testing_progress_log.md`). Same Gradle gate as Android
+was green before archiving. **dSYM handled by the lane:** the archive's `PayslipMax.app.dSYM.zip` was uploaded to Crashlytics
+("Successfully uploaded dSYM files to Crashlytics") *before* the TestFlight upload, and its UUID `7D601080-0B36-3C4C-A9A6-71EB44B857A7`
+was checked equal to the shipped binary's (`dwarfdump --uuid` on the extracted IPA vs the dSYM). Kotlin is statically linked into that
+binary, so no separate Kotlin dSYM exists. **Gaps, recorded not fixed:** the vendor `CLiteRTLM.framework` ships no dSYM of ours, so a crash
+inside it stays unsymbolicated; and a `dwarfdump --debug-info` scan of the dSYM found no `.kt` compile units, so Kotlin frames likely
+symbolicate by symbol name only, not file:line (not confirmed against a real Kotlin crash). The Crashlytics test crash is now
+debug/TestFlight-only, so it can verify this on this build. `1.2.3 (1)` remains on TestFlight, superseded.
+
+**Shipped in `1.2.3 (2)` (2026-09-21) — none of it was in `1.2.3 (1)`:** the tech-debt work (`docs/Plan/08_01_TechDebt_Explanation`)
+was committed after the `(1)` upload. iOS-visible changes:
 - Developer Sandbox gated to debug/TestFlight builds (`shouldShowDeveloperSandbox`); it must still appear after 7 taps on TestFlight.
 - Firebase anonymous sign-in, the token bridge and both `FirebaseAuth` Xcode product refs removed.
 - Room destructive-migration fallback removed: an unmigratable database now fails loudly instead of wiping payslips.
@@ -668,9 +680,11 @@ was committed after that upload, so it ships in the next TestFlight build, not i
 - Gemma installer is now a Koin `single` and `install()` collapses overlapping ODR triggers (tech-debt 1.2). The Swift bridge
   (`GemmaOnDemandResourceBridge.swift`) is unchanged.
 
-Device gates for that build (all unverified on a real iPhone; the simulator relaunch over an existing database was clean):
+Device gates for `1.2.3 (2)` (all still open, unverified on a real iPhone; the simulator relaunch over an existing database was clean):
 1. Clean launch over the existing `1.2.3 (1)` database, i.e. the upgrade path the strict Room policy now depends on.
-2. Sandbox appears after 7 taps.
+2. Sandbox appears after 7 taps. **✅ Passed on TestFlight `1.2.3 (2)` (owner-reported, 2026-09-21).** It closes when the user leaves Settings and
+   reappears after 7 more taps: unlock state is `remember { mutableStateOf(false) }` in `SettingsScreen.kt`, per screen visit and never
+   persisted. That predates the tech-debt work (present before July 2026) and is left as is, since the section holds destructive actions.
 3. Crashlytics still receives events with auth removed.
 4. Gemma model banner: fresh install progresses to Installed; background and foreground mid-download; force a failure (airplane
    mode) and confirm the banner's retry starts a new fetch.
@@ -678,8 +692,7 @@ Device gates for that build (all unverified on a real iPhone; the simulator rela
 **Next steps (as of 2026-09-21; supersedes the 2026-09-19 list, whose `1.2.2 (7)` review question is closed — it was approved and released):**
 1. Internal-test `1.2.3 (1)` (recorded above as pending) on a real iPhone with Mail: Report an Issue should open a
    pre-filled compose sheet with the redaction applied. The simulator only exercises the share-sheet fallback.
-2. Cut the next TestFlight build (`fastlane ios build_and_upload_testflight`, from `iosApp/`) to carry the queued tech-debt
-   changes, and run the four device gates listed above.
+2. ~~Cut the next TestFlight build~~ Done 2026-09-21 as `1.2.3 (2)`. Run the four device gates listed above on it.
 3. Submit the build that passes with the same two lanes (`prepare_submission`, then `submit_for_review confirm:true`). While
    `1.2.3` is not yet `READY_FOR_SALE` its train is still open to new builds; once it is released, any further change
    needs a new marketing version (see the 90186 rejection above). A metadata-only rejection needs no new build.
