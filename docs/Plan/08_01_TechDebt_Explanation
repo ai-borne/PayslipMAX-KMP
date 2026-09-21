@@ -1,141 +1,115 @@
-Here is the prioritized analysis of the technical debt items identified in [`docs/Plan/08_TechDebt_20Sep2026`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/docs/Plan/08_TechDebt_20Sep2026), ranked from **High Severity to Low Severity**, along with their **chances and vectors of regression** if addressed.
+# Tech-Debt Regression-Risk Analysis (status as of 2026-09-21)
+
+Ranks the items in [`08_TechDebt_20Sep2026`](08_TechDebt_20Sep2026) by severity, with regression chance and
+the main way each fix could go wrong. Phase 1 is done (verified on a Pixel 9, debug and release); the rest is open.
+
+## Summary
+
+| # | Sev. | Item | Regression chance | Status |
+| :-: | :-: | :-- | :-: | :-- |
+| 1.1 | High | Developer Sandbox reachable in production | <1% | ✅ Done |
+| 1.2 | High | Static callbacks in iOS Gemma installer | 15–25% | Open |
+| 2.1 | Med | `FLAG_SECURE` off in foreground | 35–45% (UX) | Open, needs a policy decision |
+| 2.2 | Med | Room destructive-migration fallback | ~30% | Open |
+| 2.3 | Med | iOS `x86_64` simulator link failure | <2% | ✅ Done |
+| 2.4 | Med | Incomplete public `initKoin()` | <1% | ✅ Done (deleted, not fixed) |
+| 3.1 | Low | Firebase anonymous auth + token bridge | 5–10% | Open |
+| 3.2 | Low | Unused Ktor `HttpClient` singleton | 0% | ✅ Done, plus Ktor build deps removed |
+| 3.3 | Low | Dead `NetworkErrorMapper` | 0% | ✅ Done |
+| 3.4 | Low | Deprecated `UploadWidget` | 0% | ✅ Done |
+| 3.5 | Low | Orphaned `pcdao_ai_prototype.html`, `web-prototype/` | 0% | Open |
 
 ---
 
-### Summary Matrix
+## High severity
 
-| Rank | Severity | Technical Debt Item | Affected Files | Chance of Regression | Primary Regression Vector / Risk |
-| :---: | :---: | :--- | :--- | :---: | :--- |
-| **1** | 🚨 **HIGH** | **Developer Sandbox accessible in Production** | [`DeveloperSandboxSection.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/DeveloperSandboxSection.kt)<br>[`SettingsScreen.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/SettingsScreen.kt) | **Negligible (< 1%)** | None for users. Internal QA release-testing workflows must use debug/TestFlight builds. |
-| **2** | 🚨 **HIGH** | **Static Callback Overwrite in iOS Gemma Installer** | [`GemmaBaseModelInstaller.ios.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/insights/gemma/GemmaBaseModelInstaller.ios.kt)<br>[`GemmaOnDemandResourceBridge.swift`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp/GemmaOnDemandResourceBridge.swift) | **Low – Medium (15–25%)** | Swift-to-KMP event bridge race conditions, memory leaks, or deadlocks if refactored without singleton lifecycle. |
-| **3** | ⚠️ **MEDIUM** | **`FLAG_SECURE` disabled in Foreground** | [`MainActivity.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/androidMain/kotlin/com/payslipmax/pdfparser/MainActivity.kt) | **Medium (35–45%)** | **User Experience Regression**: Blocks legitimate user screenshots of payslips/insights and in-app feedback/bug report tools. |
-| **4** | ⚠️ **MEDIUM** | **Database Destructive Migration Fallback** | [`PayslipDatabase.android.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/androidMain/kotlin/com/payslipmax/pdfparser/database/PayslipDatabase.kt)<br>[`PayslipDatabase.ios.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/database/PayslipDatabase.kt) | **Medium (30%)** | Removing fallback causes immediate startup crashes (`IllegalStateException`) if any future Room schema migration is missed. |
-| **5** | ⚠️ **MEDIUM** | **`x86_64` Simulator Incompatibility on iOS** | [`iosApp.xcodeproj`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp.xcodeproj/project.pbxproj) | **Negligible (< 2%)** | None for modern Macs; completely disables Intel simulator targets (which already fail linking today). |
-| **6** | ⚠️ **MEDIUM** | **Incomplete Public `initKoin()`** | [`Koin.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt) | **Negligible (< 1%)** | Currently 0 callers; fixing modules prevents `NoBeanDefFoundException` traps for future callers. |
-| **7** | 🟢 **LOW** | **Firebase Auth & Token Bridge** | [`iOSApp.swift`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp/iOSApp.swift)<br>[`AuthTokenProvider.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/auth/AuthTokenProvider.kt) | **Low (5–10%)** | Must verify other Firebase services (Crashlytics/Remote Config) do not rely on Firebase Anonymous Auth. |
-| **8** | 🟢 **LOW** | **Unused Ktor `HttpClient` Singleton** | [`Koin.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt) | **Zero (0%)** | Zero injection sites across the codebase. |
-| **9** | 🟢 **LOW** | **Dead Network Error Handler** | [`NetworkErrorMapper.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/NetworkErrorMapper.kt) | **Zero (0%)** | Zero production callers (only referenced by its own isolated unit test). |
-| **10** | 🟢 **LOW** | **Deprecated Upload Widget** | [`UploadWidget.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/UploadWidget.kt) | **Zero (0%)** | Superseded by [`ImportPayslipDialog.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/importflow/ImportPayslipDialog.kt); only referenced in its test. |
-| **11** | 🟢 **LOW** | **Orphaned Root Prototypes** | `pcdao_ai_prototype.html`<br>`web-prototype/` | **Zero (0%)** | Completely disconnected from Gradle/Xcode build graphs. |
+### 1.1 Developer Sandbox reachable in production — ✅ Done
+- **Problem:** `DeveloperSandboxSection` had no build check, so 7 taps on the Settings header in a store build exposed
+  `clearAllData()` and `seedMockData()`.
+- **Fix:** gated on the pure function `shouldShowDeveloperSandbox(devModeEnabled, isDebug, isTestFlight)`, unit-tested
+  as a truth table (`DeveloperSandboxGateTest`).
+- **Verified:** Pixel 9 debug shows the sandbox after 7 taps; release does not (after 7 or 14 taps).
+- **Consequence:** a release-build R8/Crashlytics check can no longer use the 7-tap unlock. Use a debug or temporary
+  local build (noted in `docs/Launch/06`).
+- **Still open:** confirm on the next iOS TestFlight build that the sandbox appears after 7 taps.
 
----
-
-### Detailed Analysis by Severity
-
----
-
-#### 1. High Severity
-
-##### 1.1 Developer Sandbox Accessible in Production
-- **Location**: [`DeveloperSandboxSection.kt:12-36`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/DeveloperSandboxSection.kt#L12-L36), [`SettingsScreen.kt:36-42`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/SettingsScreen.kt#L36-L42)
-- **Why it is High Severity**: 
-  Unlike [`DeveloperOverrideSection.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/DeveloperOverrideSection.kt#L35-L36) (which has `if (!isDebugBuild() && !isTestFlightBuild()) return`), [`DeveloperSandboxSection`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/DeveloperSandboxSection.kt#L12) has **no build-type check**. In production, any user tapping the Settings header 7 times unlocks buttons that can wipe their database ([`clearAllData()`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/PayslipViewModelExtensions.kt#L21)), overwrite real records with mock data ([`seedMockData()`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/PayslipViewModelExtensions.kt#L8)), or trigger an unhandled crash.
-- **Chance of Regression**: **Negligible (< 1%)**
-  - **Remediation**: Add `if (!isDebugBuild() && !isTestFlightBuild()) return` at the top of [`DeveloperSandboxSection.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/DeveloperSandboxSection.kt#L16).
-  - **Why Regression is Low**: It purely hides a dangerous internal debug panel in production store builds without altering any business logic, data models, or normal UI screens.
-
-##### 1.2 Static Callback Overwrite in iOS Gemma Installer
-- **Location**: [`GemmaBaseModelInstaller.ios.kt:22-58`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/insights/gemma/GemmaBaseModelInstaller.ios.kt#L22-L58)
-- **Why it is High Severity**:
-  `progressReporter` and `completionReporter` are stored as static `var`s on the `companion object`. When [`PayslipViewModel`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/PayslipViewModel.kt) (registered as a `factory` in Koin) is resolved again or re-created during lifecycle changes, the newly instantiated installer overwrites the global static listeners with closures pointing to its own `_state`. Any previously active screen/subscriber gets orphaned and stops receiving download updates.
-- **Chance of Regression**: **Low – Medium (15–25%)**
-  - **Remediation**: Make `IosGemmaBaseModelInstaller` a Koin `single` (singleton) rather than re-creating it per ViewModel, or migrate static callback vars to a multi-listener flow / listener registry.
-  - **Regression Vectors**: 
-    1. Changing callback lifecycles could cause strong reference cycles / memory leaks between Swift's `NSBundleResourceRequest` and the Kotlin runtime.
-    2. Modifying the `companion object` interface impacts [`GemmaOnDemandResourceBridge.swift`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp/GemmaOnDemandResourceBridge.swift), requiring careful synchronized verification on iOS.
+### 1.2 Static callbacks in iOS Gemma installer — Open
+- **Problem:** `progressReporter`/`completionReporter` are static `var`s on the `companion object` of
+  `GemmaBaseModelInstaller.ios.kt`. `PayslipViewModel` is a Koin `factory`, so each new instance overwrites the global
+  listeners and orphans the previous subscriber.
+- **Fix:** make the installer a Koin `single`, or replace the statics with a listener registry.
+- **Regression risk (15–25%):** retain cycles between Swift `NSBundleResourceRequest` and Kotlin; any change to the
+  companion API also changes `GemmaOnDemandResourceBridge.swift`, so it needs matched iOS verification.
 
 ---
 
-#### 2. Medium Severity
+## Medium severity
 
-##### 2.1 `FLAG_SECURE` Disabled for Foreground App
-- **Location**: [`MainActivity.kt:20-38`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/androidMain/kotlin/com/payslipmax/pdfparser/MainActivity.kt#L20-L38)
-- **Why it is Medium Severity**:
-  [`shouldApplyFlagSecure(isDebug)`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/androidMain/kotlin/com/payslipmax/pdfparser/MainActivity.kt#L23) returns `false` unconditionally. While the background app switcher is protected (`setRecentsScreenshotEnabled(false)` on Android 13+), the foreground app does not block screenshots, screen recording, or mirroring of sensitive defense salary/PAN data.
-- **Chance of Regression**: **Medium (35–45% User Experience / Functional Impact)**
-  - **Remediation**: Returning `!isDebug` enables `FLAG_SECURE` for store release builds.
-  - **Regression Vectors**:
-    1. **User frustration**: Armed forces personnel frequently take screenshots of their tax/allowance breakdowns or calculation cards to share with accountants or banks; `FLAG_SECURE` renders all captured screenshots completely black.
-    2. **Support impact**: Users cannot capture screenshots of errors or edge-case slips when submitting feedback/bug reports.
-    3. **Automated testing / Accessibility**: Screen-recording tools, UI automation, and certain accessibility tools fail on secured windows.
+### 2.1 `FLAG_SECURE` off in foreground — Open
+- **Problem:** `shouldApplyFlagSecure()` in `MainActivity.kt` returns `false` unconditionally. The recents screenshot is
+  blocked (Android 13+), but the foreground app can be screenshotted, recorded or mirrored.
+- **Fix:** return `!isDebug`.
+- **Regression risk (35–45%, UX):** users screenshot allowance and tax breakdowns to share with accountants and banks,
+  and those would come out black. It also blocks bug-report screenshots and breaks screen-recording and UI-automation
+  tools.
+- **Decision needed:** enforce it in release, or make it a Settings privacy toggle.
 
-##### 2.2 Room Database Destructive Migration Fallback
-- **Location**: [`PayslipDatabase.android.kt:15`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/androidMain/kotlin/com/payslipmax/pdfparser/database/PayslipDatabase.kt#L15), [`PayslipDatabase.ios.kt:16`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/iosMain/kotlin/com/payslipmax/pdfparser/database/PayslipDatabase.kt#L16)
-- **Why it is Medium Severity**:
-  Both database builders enable `.fallbackToDestructiveMigration(true)`. If a future developer modifies an entity or schema version without providing an explicit or auto-migration path, Room will silently drop and recreate all user database tables, permanently erasing user payslips and ledger history.
-- **Chance of Regression**: **Medium (30% Operational Risk)**
-  - **Remediation**: Disable destructive migration fallback for release builds and enforce strict migration tests.
-  - **Regression Vectors**:
-    If `.fallbackToDestructiveMigration(false)` is applied before all migration paths are exhaustively verified with `MigrationTestHelper`, any missed schema change will cause an unrecoverable `IllegalStateException` crash on cold launch for updating users.
+### 2.2 Room destructive-migration fallback — Open
+- **Problem:** both `PayslipDatabase.kt` builders (androidMain, iosMain) use `.fallbackToDestructiveMigration(true)`.
+  A future schema change without a migration would silently wipe all payslips.
+- **Fix:** disable the fallback for release and enforce migration tests.
+- **Regression risk (~30%):** if disabled before every migration path is tested with `MigrationTestHelper`, a missed
+  one crashes updating users on cold launch with `IllegalStateException`.
 
-##### 2.3 `x86_64` Simulator Incompatibility on iOS
-- **Location**: [`iosApp.xcodeproj/project.pbxproj`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp.xcodeproj/project.pbxproj), [`LiteRTLM.xcframework`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/Vendor/LiteRTLM)
-- **Why it is Medium Severity**:
-  `CLiteRTLM.xcframework` contains only `arm64` binaries. Building for generic iOS Simulators or on Intel Macs fails linking because `x86_64` is not excluded under `EXCLUDED_ARCHS`.
-- **Chance of Regression**: **Negligible (< 2%)**
-  - **Remediation**: Add `x86_64` to `EXCLUDED_ARCHS[sdk=iphonesimulator*]` in the Xcode project.
-  - **Why Regression is Low**: Builds on Intel Macs already fail today. Excluding `x86_64` prevents the linker error and has zero impact on physical devices or Apple Silicon (`arm64`) simulators.
+### 2.3 iOS `x86_64` simulator link failure — ✅ Done
+- **Problem:** `CLiteRTLM.xcframework` is arm64-only, so generic-simulator builds failed to link x86_64.
+- **Fix:** `EXCLUDED_ARCHS[sdk=iphonesimulator*] = x86_64` in Debug and Release (2-line pbxproj diff).
+- **Verified:** `xcodebuild` on generic iOS Simulator failed before and succeeded after.
+- **Left alone on purpose:** Gradle `iosX64()` targets (removing them is a separate change). `iosX64Test` was not run.
 
-##### 2.4 Incomplete Public `initKoin()`
-- **Location**: [`Koin.kt:72-75`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt#L72-L75)
-- **Why it is Medium Severity**:
-  `initKoin()` only registers `sharedModule` and omits `appModule`. Invoking it causes `NoBeanDefFoundException` when resolving UI ViewModels. (The iOS app works around this via an internal `ensureKoin()` function that includes both modules).
-- **Chance of Regression**: **Negligible (< 1%)**
-  - **Remediation**: Update `initKoin()` to register `modules(sharedModule, appModule)` or mark it `@Deprecated` / remove it.
-  - **Why Regression is Low**: Currently has zero internal callers. Fixing or removing it prevents future integration bugs.
+### 2.4 Incomplete public `initKoin()` — ✅ Done
+- **Problem:** registered only `sharedModule` (no `appModule`), so any caller would hit `NoBeanDefFoundException`.
+  It had zero callers; iOS uses `ensureKoin()`.
+- **Fix:** deleted rather than repaired, so there is one init path. Zero references remain.
 
 ---
 
-#### 3. Low Severity (Dead Code, Vestigial Architectures & Housekeeping)
+## Low severity
 
-##### 3.1 Firebase Auth & Token Bridge
-- **Location**: [`AuthTokenProvider.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/auth/AuthTokenProvider.kt), [`iOSApp.swift:106-140`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp/iOSApp.swift#L106-L140), [`AuthTokenFetcherTests.swift`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/PayslipMaxTests/AuthTokenFetcherTests.swift)
-- **Why it is Low Severity**:
-  Vestigial architecture. Originally built for Cloud Functions, but the app is now 100% on-device (offline [`GrammarAwareParser`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/GrammarAwareParser.kt) and local [`GemmaEngine`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/gemma/GemmaEngine.kt)). Anonymous Firebase sign-in still executes on every iOS launch, wasting network and startup cycles.
-- **Chance of Regression**: **Low (5–10%)**
-  - **Remediation**: Remove anonymous sign-in in `iOSApp.swift`, remove `AuthTokenProvider` classes and associated unit tests.
-  - **Regression Vectors**: Need to ensure no other Firebase SDK feature (e.g., Firestore security rules, Firebase Analytics user tracking, or Crashlytics user mapping) expects an authenticated UID.
+### 3.1 Firebase anonymous auth and token bridge — Open
+- **Problem:** left over from the Cloud Functions era. The app is now fully on-device, yet anonymous sign-in still runs
+  on every iOS launch (`iOSApp.swift`, `AuthTokenProvider.kt`, `AuthTokenFetcherTests.swift`).
+- **Fix:** remove sign-in, the provider classes and their tests.
+- **Regression risk (5–10%):** confirm no other Firebase service (Crashlytics user mapping, Analytics, Remote Config
+  or any Firestore rules) expects an authenticated UID.
 
-##### 3.2 Unused Ktor `HttpClient` Singleton
-- **Location**: [`Koin.kt:38-54`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt#L38-L54)
-- **Why it is Low Severity**:
-  Allocates an unused network client with JSON serialization and timeout configurations on app startup.
-- **Chance of Regression**: **Zero (0%)**
-  - **Remediation**: Delete the `single { HttpClient(...) }` block from `Koin.kt`.
-  - **Why Regression is Low**: There are 0 injection points across `shared` and `composeApp`.
+### 3.2 Unused Ktor `HttpClient` — ✅ Done
+Deleted the `single { HttpClient … }` block. A follow-up (`5fded6b6`) removed the orphaned Ktor build dependencies and
+catalog entries (release APK ~108 KB smaller). `-dontwarn io.ktor.**` is kept on purpose.
 
-##### 3.3 Dead Network Error Handler (`NetworkErrorMapper.kt`)
-- **Location**: [`NetworkErrorMapper.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/NetworkErrorMapper.kt), [`NetworkErrorMapperTest.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonTest/kotlin/com/payslipmax/pdfparser/insights/NetworkErrorMapperTest.kt)
-- **Why it is Low Severity**: Unused helper class only referenced by its own unit test.
-- **Chance of Regression**: **Zero (0%)**
-  - **Remediation**: Delete the source file and test file.
+### 3.3 Dead `NetworkErrorMapper` — ✅ Done
+Deleted with its test.
 
-##### 3.4 Deprecated Upload Widget (`UploadWidget.kt`)
-- **Location**: [`UploadWidget.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/UploadWidget.kt), [`UploadWidgetTest.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/androidUnitTest/kotlin/com/payslipmax/pdfparser/ui/screens/UploadWidgetTest.kt)
-- **Why it is Low Severity**: Replaced by [`ImportPayslipDialog.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/importflow/ImportPayslipDialog.kt); only referenced in its unit test.
-- **Chance of Regression**: **Zero (0%)**
-  - **Remediation**: Delete the deprecated composable and its test.
+### 3.4 Deprecated `UploadWidget` — ✅ Done
+Deleted with its test, along with three orphaned `AppStrings` constants. Docs now point to `ImportPayslipDialog`.
 
-##### 3.5 Orphaned Root Prototype Files
-- **Location**: `pcdao_ai_prototype.html`, `web-prototype/`
-- **Why it is Low Severity**: Stale prototypes outside the mobile source trees.
-- **Chance of Regression**: **Zero (0%)**
-  - **Remediation**: Remove or archive to an external reference branch.
+### 3.5 Orphaned prototypes — Open
+`pcdao_ai_prototype.html` and `web-prototype/` are outside the Gradle/Xcode graphs. Remove or archive to a branch.
+Note that CLAUDE.md still lists `web-prototype/` as a supported sub-project, so update that if it goes.
 
 ---
 
-### Recommended Remediation Sequence
+## Remaining work
 
-If you wish to address these tech debts, the safest strategy is a **3-phase rollout**:
+**Manual gates (not runnable from CI or this environment):**
+1. Restore the Pixel 9 to the Play build, then restore the `.pcda` backup.
+2. Import one real payslip on the Pixel 9 to exercise the parse → persist path.
+3. On the next iOS TestFlight build, check a clean launch and the sandbox after 7 taps.
+4. Explain the Jan/Feb difference seen after two separate backup restores (probably different backups; unverified).
 
-1. **Phase 1: Zero-Risk Security & Architecture Gating** *(Zero regression chance)*
-   - Add `if (!isDebugBuild() && !isTestFlightBuild()) return` to [`DeveloperSandboxSection.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/DeveloperSandboxSection.kt).
-   - Fix [`initKoin()`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt) to include `appModule`.
-   - Add `x86_64` to `EXCLUDED_ARCHS` in [`iosApp.xcodeproj`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp.xcodeproj/project.pbxproj).
-2. **Phase 2: Dead Code & Startup Cleanup** *(Low regression chance)*
-   - Remove unused Ktor `HttpClient` from [`Koin.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/di/Koin.kt).
-   - Remove deprecated [`UploadWidget.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/UploadWidget.kt) and [`NetworkErrorMapper.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/insights/NetworkErrorMapper.kt).
-   - Prune vestigial Firebase Anonymous Auth from [`iOSApp.swift`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/iosApp/iosApp/iOSApp.swift) and [`AuthTokenProvider.kt`](file:///Users/sunil/Downloads/PayslipMAX%20KMP/shared/src/commonMain/kotlin/com/payslipmax/pdfparser/auth/AuthTokenProvider.kt).
-3. **Phase 3: Lifecycle & Policy Refactoring** *(Moderate regression chance – requires testing)*
-   - Refactor `IosGemmaBaseModelInstaller` callback wiring to use a singleton lifecycle in Koin.
-   - Decide whether `FLAG_SECURE` should be strictly enforced in release builds or made a user-configurable privacy toggle under Settings.
+**Later phases, cheapest first:**
+1. **3.5 and 3.1:** dead-code and vestigial-auth cleanup (0% and 5–10% risk).
+2. **1.2:** Gemma installer lifecycle (15–25%; needs iOS verification).
+3. **2.2 and 2.1:** need a decision first (migration-test coverage, and the `FLAG_SECURE` policy).
+
+**Optional:** a Compose UI test for the sandbox gate wiring, which is only verified on-device today.
