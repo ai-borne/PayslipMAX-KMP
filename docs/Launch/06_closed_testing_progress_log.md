@@ -8,6 +8,53 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
+## Status snapshot (as of 2026-09-24, PROMOTED TO PRODUCTION)
+
+- **versionCode 15 (1.0.0) promoted to the `production` track 2026-09-24 06:21** via
+  `fastlane android promote_release version_code:15 to:production from:alpha`, 100% rollout
+  (`status: completed`). Confirmed via `track_status`: `production: versionCodes ["15"] — completed`.
+  This is the app's **first-ever production submission**, so it is expected to go through Google's
+  standard first-production-release review (separate from the closed-testing production-access review
+  already passed) before it's actually downloadable by the public — check Play Console's Publishing
+  overview for review status; don't assume it's live yet just because the API commit succeeded.
+- **Pre-promotion validation (2026-09-24):** the service account initially lacked production-track
+  permission (`403 PERMISSION_DENIED` from a dry-run `validate_edit` call); owner granted "Release to
+  production" in Play Console mid-session; re-validated clean (no content-rating/data-safety/pricing
+  blockers) before the actual promote was run.
+- **Added `validate_production_release` lane** (`composeApp/fastlane/Fastfile`) — draft + `validate_edit`
+  + discard, never commits. Reusable for pre-flighting any future production push without risk.
+- **`FREE_LAUNCH_MODE` is still active** (paywall bypassed) — this went to production with it on, so
+  real users get the full free-launch experience by design, not a config drift. See "Known gap to
+  close before `FREE_LAUNCH_MODE` is ever disabled" below before ever turning it off.
+- **Release-notes locale bug found and fixed same session:** `upload_to_track`/`promote_release`
+  hardcoded release notes to `language: "en-US"`, but this app's only listed Play Store locale is
+  `en-IN` (confirmed via `listing_status`) — the first promote's notes would not have been shown to
+  anyone. Fixed in `composeApp/fastlane/Fastfile` (`notes_locale:` option, default `en-IN`), then the
+  production promote was re-run with the corrected locale before this was reported done. Store listing
+  itself (title/description/screenshots/172 countries) was already complete and untouched by this bug.
+- **Confirmed live in Play Console UI (2026-09-24, owner screenshots), matching the API state above:**
+  `versionCode 15` release page shows **"In review"**, 20.9 MB for new installs (correctly excludes the
+  on-demand Gemma pack), release notes correctly showing `en-IN` with the intended text. Publishing
+  overview → Submission 15: `Source: API`, 3 changes (start full rollout + the 172 countries/regions
+  bundled in as part of the first-ever production submission), **Status: In review**. Dashboard
+  checklist shows "Create and publish a release" at 4-of-5 complete — the last step, "Publish your app
+  on Google Play," completes automatically once Google's review clears; nothing further to click.
+  Submission history (13–15) all show clean sequential status with no stuck/failed entries.
+
+## Status snapshot (as of 2026-09-24, closed testing passed — confirmed via fastlane)
+
+- **Confirmed 2026-09-24 via `fastlane android track_status`:** `alpha` (Closed testing) → versionCode
+  `["15"]`, status **completed**; `internal` → versionCode `["15"]`, status **completed**. This is the
+  read-only Play Developer API check (`composeApp/fastlane/Fastfile` `track_status` lane), not a manual
+  Play Console screenshot — closed testing on v15 is confirmed done from Google's own release data.
+- **"Google review" identified, 2026-09-24 (Play Console dashboard screenshot, owner-provided):** the
+  Dashboard shows **"Congratulations! Your app has been granted Google Play production access"** —
+  this is the review that passed. It's the mandatory closed-testing production-access gate (14+ days,
+  12+ testers), not a per-release listing review. **Production itself still shows "Inactive"** — access
+  being granted only unlocks the ability to create a production release; no production release has been
+  created/published yet. That remains a separate, deliberate next step (see "What still needs to happen"
+  below), not something to do automatically off the back of this confirmation.
+
 ## Status snapshot (as of 2026-09-21, v15 on Internal testing)
 
 - **Internal testing track:** `15 (1.0.0)` — **uploaded 2026-09-21 17:11** via `fastlane upload_to_track` (`versionCode` in

@@ -353,6 +353,13 @@ closed-testing-graduation form.
   gate this note used to describe is cleared; still worth promoting v13 to Closed testing and
   letting it stabilize before submitting the questionnaire, so Google's listing-history
   cross-check reflects the same build testers are actually on.
+- **Resolved (2026-09-24):** the mandatory 14-day Closed testing window completed and Google granted
+  production access automatically — no separate manual questionnaire submission was required or
+  found in Play Console during this pass (the "Production Access Questionnaire" concept in the draft
+  above may describe an older/different Play Console flow than what this app actually went through).
+  versionCode 15 is now promoted to the production track and in Google's review — see
+  [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md), "PROMOTED TO PRODUCTION."
+  This section's action items are complete; kept here as historical record.
 
 ## Not worth acting on
 

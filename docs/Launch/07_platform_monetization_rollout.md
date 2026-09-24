@@ -13,10 +13,13 @@ current state after [06_closed_testing_progress_log.md](06_closed_testing_progre
   maintenance update **`v1.2.1 (3)`** has been submitted from TestFlight and is actively **published**,
   carrying the Gemma ODR fix, Universal Backup & Restore cross-platform interoperability, in-app privacy
   policy link fix, and document in-place safety.
-- **Android**: **`12 (1.0.0)`** is live on **Closed testing** (promoted from Internal testing on 2026-09-16,
-  superseding v10 mid-window), carrying the Offline AI capsule redesign, LiteRT native OOM fix, and
-  Universal Backup & Restore interoperability. Mandatory 14-day window continues running uninterrupted.
-  Still free by policy requirement, pending production launch and BillDesk merchant KYC.
+- **Android** (updated 2026-09-24): the mandatory 14-day Closed testing window completed and Google
+  granted production access. **`15 (1.0.0)`** has been promoted to the **production** track at 100%
+  rollout and is currently in Google's first-production-release review (see
+  [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md), "PROMOTED TO PRODUCTION").
+  Still free by policy requirement — `FREE_LAUNCH_MODE` (soon to be split into
+  `FREE_LAUNCH_MODE_ANDROID`, see Section 2) is unchanged, since the BillDesk merchant-KYC blocker
+  described below isn't resolved by production promotion alone; it needs the resulting live public URL.
 
 ## 1. Core decision: decouple the two platforms' monetization timing
 
@@ -35,6 +38,11 @@ completely different things:
     → BillDesk approves merchant profile → real-money subscriptions can process
     → ship a follow-up release with the paywall enabled
   ```
+
+  **Status (2026-09-24): the first arrow is done.** Production promotion happened (versionCode 15,
+  100% rollout, currently in Google's review — see Section 0 above). The live public URL doesn't
+  exist *yet* because the app isn't publicly downloadable until that review clears, but the chain is
+  now unblocked and moving — this is no longer a deadlock, just a queue.
 
   Android **cannot** launch to production already paid — Google Play has no verified payments
   merchant profile behind it until BillDesk clears, and BillDesk cannot verify until a live public
@@ -126,18 +134,22 @@ closed-testing days, without touching the unverified merchant profile:
 4. **Have BillDesk paperwork ready in advance** (PAN, bank account proof, video KYC scheduling) so
    it can be submitted the moment a live public URL exists — don't wait until after production
    promotion to start that conversation.
-5. Once Day 14 completes and production promotion happens (per
-   [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md) checklist): submit the
-   live URL to BillDesk immediately.
+5. **Done (2026-09-24): Day 14 completed and production promotion happened** (per
+   [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md)) — versionCode 15 is on the
+   production track, in Google's review. **Next action, once the app is publicly live:** submit the
+   live URL (`https://play.google.com/store/apps/details?id=in.aiborne.payslipmax`) to BillDesk
+   immediately — don't wait for a "convenient" moment, this is the actual unblock this whole doc has
+   been sequencing toward.
 6. Once BillDesk approves the merchant profile: flip `FREE_LAUNCH_MODE_ANDROID` to `false` and ship
    the paywall-enabled release. Android's real production users only ever see a free window for as
    long as BillDesk KYC takes — everything else is pre-staged.
 
 ## 5. Why this order doesn't create a grandfathering problem on Android
 
-Android has **zero production users today** — only closed testers. If steps in Section 4 are
-front-loaded correctly, the free-in-production window is short and BillDesk-processing-time-bound
-only. There is no large free install base to grandfather on Android by the time the paywall ships,
+Android has **zero production users today** (updated 2026-09-24: versionCode 15 is submitted to
+production but still in Google's review, so it's not yet publicly installable — this remains
+accurate for now) — only closed testers. If steps in Section 4 are front-loaded correctly, the
+free-in-production window is short and BillDesk-processing-time-bound only. There is no large free install base to grandfather on Android by the time the paywall ships,
 unlike iOS (which already has real free users from v1.0). Re-evaluate this only if the free
 production window ends up stretching for weeks — if a meaningful Android install base accumulates
 before BillDesk clears, revisit the grandfather-clause question the same way doc 05 flagged for iOS.

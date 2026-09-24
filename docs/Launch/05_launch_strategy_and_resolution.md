@@ -153,9 +153,19 @@ launch-neutral copy, same one-flag pattern as the rest of this plan:
 ## 1. Executive Summary & Current State
 
 ### Android (Google Play Console)
-- **Status**: Day 1 of mandatory 14-day Closed Testing track.
-- **Blocker Encountered**: Google Play Payments Profile requires mandatory RBI/PA-CB Merchant Identity Verification handled via **BillDesk**.
-- **The Issue**: BillDesk verification requires a **live, publicly accessible Google Play Store URL**. However, the app is currently in Closed Testing (`play.google.com/apps/testing/...`), which is restricted to authorized testers and throws an access/404 barrier to BillDesk review officers.
+- **Status (updated 2026-09-24):** the circular deadlock described below is resolved. Closed testing's
+  14-day window completed, Google granted production access, and versionCode 15 (1.0.0) was submitted
+  to the **production** track (100% rollout, `FREE_LAUNCH_MODE` still on) — currently **in Google's
+  first-production-release review**. See
+  [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md)'s "PROMOTED TO PRODUCTION"
+  section for the full record. The BillDesk merchant-KYC blocker below is now unblockable-in-progress:
+  once this review clears and the Play Store URL is live, doc 07 §4 step 5 (submit the live URL to
+  BillDesk) is the next action, not a new Play-side blocker.
+- **Original blocker (historical, now resolved):** Day 1 of mandatory 14-day Closed Testing track;
+  Google Play Payments Profile required mandatory RBI/PA-CB Merchant Identity Verification handled via
+  **BillDesk**, which in turn required a live public Play Store URL that didn't exist yet while in
+  Closed Testing (`play.google.com/apps/testing/...`, restricted to authorized testers, 404s for
+  BillDesk review officers).
 
 ### iOS (Apple App Store Connect)
 - **Status**: App version 1.0 (Build 2) **Rejected**.
@@ -282,12 +292,23 @@ whole document exists to avoid. Track Step 4 and Step 5 as the two v1.1 workstre
       through versionCode 7 (2026-09-09, 10:13) and versionCode 8 with R8 keep-rule hardening
       (2026-09-09, 20:12; full detail in
       [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md)).
-- [ ] **2.2** Maintain **12** active opted-in testers for the 14-day mandatory period (reduced from
+- [x] **2.2** Maintain **12** active opted-in testers for the 14-day mandatory period (reduced from
       20 by Google on 2024-12-11 — see Section 0). 25/25 opted in via third-party tester panel as of
-      the v8 upload; confirm Google's own Play Console day-count (Dashboard / Publishing overview)
-      is the authoritative tracker before assuming Day-14 timing.
-- [ ] **2.3** Apply for Production access as a Free application upon completion of Day 14.
-- [ ] **2.4** Google Play Production Approval & Public Release.
+      the v8 upload. Day-14 window completed — confirmed by Google's own dashboard, not inferred:
+      Play Console shows "Congratulations! Your app has been granted Google Play production access"
+      as of 2026-09-24.
+- [x] **2.3** Apply for Production access as a Free application upon completion of Day 14 — granted by
+      Google automatically once the mandatory-testing window completed (no separate application step
+      was needed); confirmed 2026-09-24 via the Play Console dashboard screenshot and independently via
+      `fastlane android track_status`.
+- [ ] **2.4** Google Play Production Approval & Public Release. **In progress as of 2026-09-24:**
+      versionCode 15 (1.0.0) promoted to the `production` track at 100% rollout
+      (`fastlane android promote_release version_code:15 to:production from:alpha`), Submission 15
+      shows **Status: In review** in Play Console's Publishing overview. Not yet checked off because
+      the app is not yet live/downloadable by the public — that happens automatically once Google's
+      first-production-release review clears (dashboard's "Publish your app on Google Play" step,
+      shown as 4-of-5 complete). See
+      [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md) for the full record.
 
 ### Step 3: Clear BillDesk KYC Verification
 - [ ] **3.1** Copy the live public Google Play URL: `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax`.

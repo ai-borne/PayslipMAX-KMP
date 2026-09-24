@@ -198,7 +198,7 @@ platform :android do
         name: "versionCode #{bundle.version_code}",
         status: "completed",
         version_codes: [bundle.version_code.to_s],
-        release_notes: options[:notes] ? [Google::Apis::AndroidpublisherV3::LocalizedText.new(language: "en-US", text: options[:notes])] : nil
+        release_notes: options[:notes] ? [Google::Apis::AndroidpublisherV3::LocalizedText.new(language: options[:notes_locale] || "en-IN", text: options[:notes])] : nil
       )
       track_body = Google::Apis::AndroidpublisherV3::Track.new(track: track, releases: [release])
       service.update_edit_track(package_name, edit.id, track, track_body)
@@ -244,7 +244,7 @@ platform :android do
         name: "versionCode #{code}",
         status: "completed",
         version_codes: [code],
-        release_notes: options[:notes] ? [Google::Apis::AndroidpublisherV3::LocalizedText.new(language: "en-US", text: options[:notes])] : nil
+        release_notes: options[:notes] ? [Google::Apis::AndroidpublisherV3::LocalizedText.new(language: options[:notes_locale] || "en-IN", text: options[:notes])] : nil
       )
       service.update_edit_track(package_name, edit.id, to, Google::Apis::AndroidpublisherV3::Track.new(track: to, releases: [release]))
       service.commit_edit(package_name, edit.id)
@@ -253,6 +253,29 @@ platform :android do
       service.delete_edit(package_name, edit.id) rescue nil
       detail = e.respond_to?(:body) ? " — #{e.body}" : ""
       UI.user_error!("Promotion failed, edit discarded: #{e.message}#{detail}")
+    end
+  end
+
+  desc "Read-only: validate (not commit) a draft production release for a versionCode, to surface missing content rating/data safety/pricing blockers before actually promoting. Pass version_code:."
+  lane :validate_production_release do |options|
+    code = (options[:version_code] or UI.user_error!("Pass version_code:")).to_s
+    service = play_service
+    edit = service.insert_edit(package_name)
+    begin
+      release = Google::Apis::AndroidpublisherV3::TrackRelease.new(
+        name: "versionCode #{code}",
+        status: "completed",
+        version_codes: [code]
+      )
+      service.update_edit_track(package_name, edit.id, "production", Google::Apis::AndroidpublisherV3::Track.new(track: "production", releases: [release]))
+      service.validate_edit(package_name, edit.id)
+      UI.success("Validation passed — no blockers found for a production release of versionCode #{code}")
+    rescue => e
+      detail = e.respond_to?(:body) ? e.body : e.message
+      UI.error("Validation failed:")
+      UI.error(detail)
+    ensure
+      service.delete_edit(package_name, edit.id)
     end
   end
 
