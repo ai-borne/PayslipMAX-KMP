@@ -155,12 +155,12 @@ launch-neutral copy, same one-flag pattern as the rest of this plan:
 ### Android (Google Play Console)
 - **Status (updated 2026-09-24):** the circular deadlock described below is resolved. Closed testing's
   14-day window completed, Google granted production access, and versionCode 15 (1.0.0) was submitted
-  to the **production** track (100% rollout, `FREE_LAUNCH_MODE` still on) — currently **in Google's
-  first-production-release review**. See
+  to the **production** track (100% rollout, `FREE_LAUNCH_MODE` still on) and is now **live on Google
+  Play** (confirmed by the owner 2026-09-24). See
   [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md)'s "PROMOTED TO PRODUCTION"
-  section for the full record. The BillDesk merchant-KYC blocker below is now unblockable-in-progress:
-  once this review clears and the Play Store URL is live, doc 07 §4 step 5 (submit the live URL to
-  BillDesk) is the next action, not a new Play-side blocker.
+  section for the full record. The BillDesk merchant-KYC blocker below is now actionable:
+  the Play Store URL is live, so doc 07 §4 step 5 (submit the live URL to BillDesk) is the **next
+  action**, not a new Play-side blocker.
 - **Original blocker (historical, now resolved):** Day 1 of mandatory 14-day Closed Testing track;
   Google Play Payments Profile required mandatory RBI/PA-CB Merchant Identity Verification handled via
   **BillDesk**, which in turn required a live public Play Store URL that didn't exist yet while in
@@ -301,17 +301,15 @@ whole document exists to avoid. Track Step 4 and Step 5 as the two v1.1 workstre
       Google automatically once the mandatory-testing window completed (no separate application step
       was needed); confirmed 2026-09-24 via the Play Console dashboard screenshot and independently via
       `fastlane android track_status`.
-- [ ] **2.4** Google Play Production Approval & Public Release. **In progress as of 2026-09-24:**
+- [x] **2.4** Google Play Production Approval & Public Release. **Done 2026-09-24 (app live, confirmed by the owner).** History:
       versionCode 15 (1.0.0) promoted to the `production` track at 100% rollout
       (`fastlane android promote_release version_code:15 to:production from:alpha`), Submission 15
-      shows **Status: In review** in Play Console's Publishing overview. Not yet checked off because
-      the app is not yet live/downloadable by the public — that happens automatically once Google's
-      first-production-release review clears (dashboard's "Publish your app on Google Play" step,
-      shown as 4-of-5 complete). See
+      shows **Status: In review** in Play Console's Publishing overview. The first-production-release review
+      has since cleared. See
       [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md) for the full record.
 
 ### Step 3: Clear BillDesk KYC Verification
-- [ ] **3.1** Copy the live public Google Play URL: `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax`.
+- [ ] **3.1** **(next action)** Copy the live public Google Play URL: `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax`.
 - [ ] **3.2** Open BillDesk verification form / respond to `onboarding@billdesk.com`.
 - [ ] **3.3** Submit live Play Store link along with PAN, bank account proof, and complete Video KYC.
 - [ ] **3.4** Receive BillDesk Merchant Approval for Google Play Payments Profile.

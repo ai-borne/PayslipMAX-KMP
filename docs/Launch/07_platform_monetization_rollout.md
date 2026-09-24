@@ -15,11 +15,11 @@ current state after [06_closed_testing_progress_log.md](06_closed_testing_progre
   policy link fix, and document in-place safety.
 - **Android** (updated 2026-09-24): the mandatory 14-day Closed testing window completed and Google
   granted production access. **`15 (1.0.0)`** has been promoted to the **production** track at 100%
-  rollout and is currently in Google's first-production-release review (see
-  [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md), "PROMOTED TO PRODUCTION").
-  Still free by policy requirement — `FREE_LAUNCH_MODE` (soon to be split into
-  `FREE_LAUNCH_MODE_ANDROID`, see Section 2) is unchanged, since the BillDesk merchant-KYC blocker
-  described below isn't resolved by production promotion alone; it needs the resulting live public URL.
+  rollout and is **live on the Google Play Store** (confirmed by the owner 2026-09-24; see
+  [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md)). The live public URL now exists,
+  so **the next action is submitting it to BillDesk for merchant KYC** (Section 4 step 5). Still free —
+  `FREE_LAUNCH_MODE_ANDROID = true` — until BillDesk approves. As of 2026-09-24 Play Console has
+  **0 subscriptions** created (checked via the Play API), so product setup is also still to do.
 
 ## 1. Core decision: decouple the two platforms' monetization timing
 
@@ -39,10 +39,9 @@ completely different things:
     → ship a follow-up release with the paywall enabled
   ```
 
-  **Status (2026-09-24): the first arrow is done.** Production promotion happened (versionCode 15,
-  100% rollout, currently in Google's review — see Section 0 above). The live public URL doesn't
-  exist *yet* because the app isn't publicly downloadable until that review clears, but the chain is
-  now unblocked and moving — this is no longer a deadlock, just a queue.
+  **Status (2026-09-24): the first two arrows are done.** Production promotion happened (versionCode 15,
+  100% rollout) and the app is live on Google Play, so the public URL exists. The chain is unblocked;
+  the next step is the BillDesk submission — this is no longer a deadlock, just a queue.
 
   Android **cannot** launch to production already paid — Google Play has no verified payments
   merchant profile behind it until BillDesk clears, and BillDesk cannot verify until a live public
@@ -136,7 +135,7 @@ closed-testing days, without touching the unverified merchant profile:
    promotion to start that conversation.
 5. **Done (2026-09-24): Day 14 completed and production promotion happened** (per
    [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md)) — versionCode 15 is on the
-   production track, in Google's review. **Next action, once the app is publicly live:** submit the
+   production track and **live on Google Play**. **Next action (now):** submit the
    live URL (`https://play.google.com/store/apps/details?id=in.aiborne.payslipmax`) to BillDesk
    immediately — don't wait for a "convenient" moment, this is the actual unblock this whole doc has
    been sequencing toward.
@@ -146,9 +145,8 @@ closed-testing days, without touching the unverified merchant profile:
 
 ## 5. Why this order doesn't create a grandfathering problem on Android
 
-Android has **zero production users today** (updated 2026-09-24: versionCode 15 is submitted to
-production but still in Google's review, so it's not yet publicly installable — this remains
-accurate for now) — only closed testers. If steps in Section 4 are front-loaded correctly, the
+Android has **zero production users today** (updated 2026-09-24: versionCode 15 just went live, so a
+small real install base starts accumulating from here) — only closed testers. If steps in Section 4 are front-loaded correctly, the
 free-in-production window is short and BillDesk-processing-time-bound only. There is no large free install base to grandfather on Android by the time the paywall ships,
 unlike iOS (which already has real free users from v1.0). Re-evaluate this only if the free
 production window ends up stretching for weeks — if a meaningful Android install base accumulates
