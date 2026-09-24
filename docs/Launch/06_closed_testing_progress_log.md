@@ -8,7 +8,11 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-24, PROMOTED TO PRODUCTION)
+## Status snapshot (as of 2026-09-24, LIVE ON THE PLAY STORE)
+
+- **The Android app is live on the Google Play Store (2026-09-24, per the owner).** Google's
+  first-production-release review of versionCode 15 (1.0.0) cleared, so the "In review" state recorded
+  below is superseded. The remaining bullets are kept as the history of how it got here.
 
 - **versionCode 15 (1.0.0) promoted to the `production` track 2026-09-24 06:21** via
   `fastlane android promote_release version_code:15 to:production from:alpha`, 100% rollout
