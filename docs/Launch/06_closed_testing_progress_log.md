@@ -37,8 +37,14 @@ listing is en-IN only (172 countries), so release notes default to `en-IN` (`not
   internal track shows "Upgrade to PayslipMax Premium (₹999.00)" with Backup & Restore locked; Restore
   Purchases flipped it to "Premium Plan Activated" and unlocked Backup. All internal testers are license
   testers, so purchases are test purchases.
-- **Pending on v16:** first-time purchase from the locked state, cancel mid-purchase, and re-locking after the
-  test subscription lapses (subscription cancelled 2026-09-26, ends 16:04 IST). See Next steps.
+- **v16 device checks (2026-09-26, Pixel 9, Play internal install):** all done. After the cancelled test subscription lapsed
+  the app re-locked ("Upgrade to PayslipMax Premium"); declining the Play sheet logged `PurchaseCancelledError`
+  (`USER_CANCELED`) and left the app responsive; a first-time purchase from the locked state unlocked Settings
+  ("Premium Plan Activated") and Backup. RevenueCat's customer timeline shows the opt-out (10:12 UTC), expiry (10:36)
+  and the new INR 999 subscription (10:38), entitlement Active.
+- **Server notifications:** Apple is applied and confirmed via the ASC API (doc 08 audit). Google shows "Connected to
+  Google" on topic `Play-Store-Notifications` (Pub/Sub Publisher granted to Google's Play notifications account, Pub/Sub
+  Admin to `payslipmax-revenuecat` on that topic). Delivery of a first event is not yet confirmed on either platform.
 
 **Tooling.**
 - Lanes (`composeApp/fastlane/Fastfile`, run from `composeApp/`): `track_status`, `listing_status`,
@@ -584,17 +590,14 @@ Flag `FREE_LAUNCH_MODE_ANDROID` false, versionCode 15 → 16 (`versionName` stay
 
 1. **BillDesk KYC (owner only):** submit `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax` with PAN,
    bank proof and video KYC. This is the only real blocker to charging money.
-2. **Finish v16 checks** once the test subscription lapses: first-time purchase from the locked state, cancel
-   mid-purchase, and the locked state returning.
-3. **Still open from v15:** import a real payslip to exercise parse → persist and an in-place Room upgrade; watch the
+2. **Still open from v15:** import a real payslip to exercise parse → persist and an in-place Room upgrade; watch the
    Gemma banner run through to Installed.
-4. **After a few days on internal:** `promote_release version_code:16 to:alpha`.
-5. **After BillDesk approves:** run `validate_production_release`, then promote v16 to production, and re-check gates
+3. **After a few days on internal:** `promote_release version_code:16 to:alpha`.
+4. **After BillDesk approves:** run `validate_production_release`, then promote v16 to production, and re-check gates
    with the flag off.
-6. **Server notifications:** Apple is connected (doc 08, 2026-09-26 audit). Google developer notifications (RevenueCat's
-   Pub/Sub topic) are still not connected. Optional cleanup: fix the stale header comment
-   in `RevenueCatApiKey.kt` (says Android ships the Test Store key; it ships a `goog_...` key).
-7. **Resolved 2026-09-26:** the 2026-09-14 RevenueCat "no Play Store products" `ConfigurationError` (seen on v11) is
+5. **Server notifications:** confirm a first event arrives (RevenueCat "Send a test" on both apps). Optional cleanup: fix the
+   stale header comment in `RevenueCatApiKey.kt` (says Android ships the Test Store key; it ships a `goog_...` key).
+6. **Resolved 2026-09-26:** the 2026-09-14 RevenueCat "no Play Store products" `ConfigurationError` (seen on v11) is
    fixed by the wiring above; re-check logcat on v16 if it recurs.
 
 > **Note (2026-09-21):** the Developer Sandbox used for the v8 Crashlytics symbolication check is now gated to debug/TestFlight builds. A future release-build R8 check can no longer use the 7-tap unlock; use a debug or temporary local build instead.

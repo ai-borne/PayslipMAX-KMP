@@ -764,3 +764,6 @@ note above had listed it as not yet verified). Fixed 2026-09-26 with RevenueCat'
 button; confirmed via `fastlane ios asc_raw` that `subscriptionStatusUrl` and `subscriptionStatusUrlForSandbox` both
 point at RevenueCat's incoming-webhook endpoint, version V2. RevenueCat's "No notifications received" label stays
 until Apple sends the first event. Not yet verified: that an event actually arrives.
+
+Google-side equivalent on Android (same day): RevenueCat's Play app shows "Connected to Google" on topic
+`Play-Store-Notifications`; delivery not yet confirmed either.
