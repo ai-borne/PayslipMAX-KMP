@@ -130,8 +130,12 @@ closed-testing days, without touching the unverified merchant profile:
    (read-only app info + "Manage store presence" only — no release/financial/order permissions).
    See [08_ios_monetization_phaseplan.md](08_ios_monetization_phaseplan.md)'s 2026-09-14 entry for
    the incident that produced this tooling.
-2. **RevenueCat dashboard** — attach the Google product ID to the `premium` entitlement / `yearly`
-   package (the `PayslipMax (Play Store)` app already exists in RevenueCat per doc 05 Section 4).
+   **Done 2026-09-26:** subscription `payslipmax_yearly_premium` / base plan `yearly`, INR 999.00.
+2. **RevenueCat dashboard** — attach the Google product ID to the `PayslipMax Premium` entitlement and
+   the `$rc_annual` package of the `default` offering (the `PayslipMax (Play Store)` app already
+   exists in RevenueCat per doc 05 Section 4). **Done 2026-09-26** (service-account credentials valid;
+   product imported, attached, added to the package). The package id is `$rc_annual`; the code
+   resolves it via `Offering.annual`, so `"yearly"` is only the product/base-plan id.
 3. **Test the purchase flow now** using Play Console **license testers** — this uses Google's
    test-purchase path and does not require the verified merchant profile, so it's safe to do
    mid-closed-testing.

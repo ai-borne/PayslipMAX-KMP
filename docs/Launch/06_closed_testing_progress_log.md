@@ -12,9 +12,21 @@ Closed testing track, so each release's status line below states which track it'
 
 - **2026-09-26: Play subscription created.** `payslipmax_yearly_premium` / base plan `yearly`
   (auto-renewing, INR 999.00, ACTIVE, 173 regions) — created and activated in Play Console with no
-  BillDesk prompt. Added read-only lane `fastlane android subscription_status`. This closes the "no
-  Play Store products" gap only on the Play side; the RevenueCat attachment is still pending.
+  BillDesk prompt. Added read-only lane `fastlane android subscription_status`.
   `FREE_LAUNCH_MODE_ANDROID` remains `true`.
+- **2026-09-26: RevenueCat wired to Google Play (dashboard-only, no app release).** Created a
+  separate GCP service account `payslipmax-revenuecat` (project `payslip-app-475e1`; roles Pub/Sub
+  Editor + Monitoring Viewer; NOT the fastlane account), enabled the Play Developer Reporting and
+  Pub/Sub APIs (Android Publisher was already on), invited it in Play Console with view app info,
+  view financial data, manage orders/subscriptions, manage store presence. RevenueCat credential
+  check: **Valid credentials** (all 3 checks). Imported `payslipmax_yearly_premium:yearly` (Published),
+  attached to the `PayslipMax Premium` entitlement, and added it to the `default` offering's
+  `$rc_annual` package alongside the existing Test Store and App Store products. The package is
+  `$rc_annual`, not `yearly` — the code resolves it via `Offering.annual`, so no code change was
+  needed. The downloaded JSON key was deleted locally after upload. Not yet done: Play license-tester
+  entry (owner), Google developer notifications topic (optional), on-device license-tester purchase
+  (needs the Android debug paywall override), BillDesk KYC (owner). Android build ships a `goog_...`
+  key; the stale "Test Store key" comment in `RevenueCatApiKey.kt` is a known doc-only discrepancy.
 
 - **The Android app is live on the Google Play Store (2026-09-24, per the owner).** Google's
   first-production-release review of versionCode 15 (1.0.0) cleared, so the "In review" state recorded

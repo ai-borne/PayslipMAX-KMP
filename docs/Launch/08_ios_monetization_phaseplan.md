@@ -712,3 +712,13 @@ rejection guidance)
 - [ ] Entitlement unlocks the gated feature synchronously on purchase success — no dead-end where
       payment succeeds but content stays locked (Phase 7) — this is RevenueCat's #3 listed rejection
       cause.
+
+---
+
+## Android mirror status (2026-09-26)
+
+This plan is iOS-only, but Android's Phase 3 equivalent (RevenueCat wiring) is now done: Play product
+imported, attached to the entitlement and the `$rc_annual` package, credentials valid (details in
+[06_closed_testing_progress_log.md](06_closed_testing_progress_log.md)). Next Android step is the
+Phase 7 equivalent: a debug/license-tester-only paywall override and an end-to-end test purchase,
+never in release builds, to rule out "package unavailable" before any paywall-enabled release.
