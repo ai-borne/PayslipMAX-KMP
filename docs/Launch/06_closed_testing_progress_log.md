@@ -42,9 +42,12 @@ listing is en-IN only (172 countries), so release notes default to `en-IN` (`not
   (`USER_CANCELED`) and left the app responsive; a first-time purchase from the locked state unlocked Settings
   ("Premium Plan Activated") and Backup. RevenueCat's customer timeline shows the opt-out (10:12 UTC), expiry (10:36)
   and the new INR 999 subscription (10:38), entitlement Active.
-- **Server notifications:** Apple is applied and confirmed via the ASC API (doc 08 audit). Google shows "Connected to
-  Google" on topic `Play-Store-Notifications` (Pub/Sub Publisher granted to Google's Play notifications account, Pub/Sub
-  Admin to `payslipmax-revenuecat` on that topic). Delivery of a first event is not yet confirmed on either platform.
+- **Server notifications:** Google is **verified end to end**: topic `Play-Store-Notifications` (Pub/Sub Publisher granted to
+  Google's Play notifications account, Pub/Sub Admin to `payslipmax-revenuecat` on that topic) **plus** Play Console →
+  Monetization setup → Real-time developer notifications enabled with that topic (RevenueCat's "Connect to Google" does
+  NOT set this; it must be done in Play Console). Play's "Send test notification" then showed RevenueCat "Last received
+  2026-09-26, 10:45 UTC". Apple is applied and confirmed via the ASC API (doc 08 audit); delivery of a first Apple event
+  is not yet confirmed.
 
 **Tooling.**
 - Lanes (`composeApp/fastlane/Fastfile`, run from `composeApp/`): `track_status`, `listing_status`,
@@ -595,7 +598,8 @@ Flag `FREE_LAUNCH_MODE_ANDROID` false, versionCode 15 → 16 (`versionName` stay
 3. **After a few days on internal:** `promote_release version_code:16 to:alpha`.
 4. **After BillDesk approves:** run `validate_production_release`, then promote v16 to production, and re-check gates
    with the flag off.
-5. **Server notifications:** confirm a first event arrives (RevenueCat "Send a test" on both apps). Optional cleanup: fix the
+5. **Apple server notification:** confirm a first event reaches RevenueCat (needs a signed-in App Store Connect session or a
+   TestFlight purchase). Optional cleanup: fix the
    stale header comment in `RevenueCatApiKey.kt` (says Android ships the Test Store key; it ships a `goog_...` key).
 6. **Resolved 2026-09-26:** the 2026-09-14 RevenueCat "no Play Store products" `ConfigurationError` (seen on v11) is
    fixed by the wiring above; re-check logcat on v16 if it recurs.

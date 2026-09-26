@@ -765,5 +765,6 @@ button; confirmed via `fastlane ios asc_raw` that `subscriptionStatusUrl` and `s
 point at RevenueCat's incoming-webhook endpoint, version V2. RevenueCat's "No notifications received" label stays
 until Apple sends the first event. Not yet verified: that an event actually arrives.
 
-Google-side equivalent on Android (same day): RevenueCat's Play app shows "Connected to Google" on topic
-`Play-Store-Notifications`; delivery not yet confirmed either.
+Google-side equivalent on Android (same day): topic `Play-Store-Notifications` connected in RevenueCat and enabled in Play
+Console (Monetization setup → Real-time developer notifications); Play's "Send test notification" reached RevenueCat
+("Last received 2026-09-26, 10:45 UTC"). The Apple delivery test is still pending.
