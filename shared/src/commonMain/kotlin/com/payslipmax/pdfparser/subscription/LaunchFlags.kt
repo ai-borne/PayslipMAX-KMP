@@ -13,5 +13,8 @@ object LaunchFlags {
     // Flipped false in Phase 8 (docs/Launch/08_ios_monetization_phaseplan.md) — iOS monetization
     // is live from v1.2: gates now follow the real RevenueCat entitlement.
     const val FREE_LAUNCH_MODE_IOS: Boolean = false
-    const val FREE_LAUNCH_MODE_ANDROID: Boolean = true
+
+    // Flipped false for versionCode 16 (internal testing only) — the paywall build; gates follow the real
+    // RevenueCat entitlement. Production/closed testing stay on versionCode 15 (flag true) until promoted.
+    const val FREE_LAUNCH_MODE_ANDROID: Boolean = false
 }

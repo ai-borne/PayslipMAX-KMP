@@ -148,7 +148,10 @@ closed-testing days, without touching the unverified merchant profile:
    live URL (`https://play.google.com/store/apps/details?id=in.aiborne.payslipmax`) to BillDesk
    immediately — don't wait for a "convenient" moment, this is the actual unblock this whole doc has
    been sequencing toward.
-6. Once BillDesk approves the merchant profile: flip `FREE_LAUNCH_MODE_ANDROID` to `false` and ship
+6. **Updated 2026-09-26:** the flag is already `false` in versionCode 16, uploaded to the internal track only
+   (closed testing and production stay on v15 until BillDesk approves). After BillDesk approves the
+   merchant profile: verify v16 on internal, promote it to closed testing, then production.
+   (Original wording:) Once BillDesk approves the merchant profile: flip `FREE_LAUNCH_MODE_ANDROID` to `false` and ship
    the paywall-enabled release. Android's real production users only ever see a free window for as
    long as BillDesk KYC takes — everything else is pre-staged.
 

@@ -10,6 +10,18 @@ Closed testing track, so each release's status line below states which track it'
 
 ## Status snapshot (as of 2026-09-26, LIVE ON THE PLAY STORE)
 
+- **2026-09-26: versionCode 16 (1.0.0) uploaded to the `internal` track only — the paywall build.**
+  `FREE_LAUNCH_MODE_ANDROID = false` (gates follow the real RevenueCat entitlement), versionCode 15 -> 16,
+  versionName unchanged (`1.0.0`). Built with `./gradlew :composeApp:bundleRelease -PgemmaModelSourcePath=...`
+  (442 MB, model SHA-256 checked by the build, `jarsigner -verify` OK, release key `CN=ai-borne`), uploaded
+  via `fastlane android upload_to_track track:internal` (notes en-IN). `track_status`: **internal [16],
+  alpha [15], production [15]**. Closed testing and the live Play Store app deliberately stay on v15 (free
+  launch) because BillDesk needs to see the app live for KYC; v16 goes to closed testing after a few days
+  of internal checks and to production only after BillDesk approves. Pre-build gate: ktlint green,
+  `:shared:testDebugUnitTest` 589/0/0, `:composeApp:testDebugUnitTest` 422/0/0 (failures/skipped 0).
+  All internal testers are license testers (owner-confirmed), so purchases are test purchases. First
+  upload attempt used a relative `aab:` path and silently did nothing (track_status showed internal still
+  [15]) — always pass an absolute path and re-check `track_status`.
 - **2026-09-26: Play subscription created.** `payslipmax_yearly_premium` / base plan `yearly`
   (auto-renewing, INR 999.00, ACTIVE, 173 regions) — created and activated in Play Console with no
   BillDesk prompt. Added read-only lane `fastlane android subscription_status`.
