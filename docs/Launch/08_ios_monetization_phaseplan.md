@@ -717,8 +717,31 @@ rejection guidance)
 
 ## Android mirror status (2026-09-26)
 
-This plan is iOS-only, but Android's Phase 3 equivalent (RevenueCat wiring) is now done: Play product
-imported, attached to the entitlement and the `$rc_annual` package, credentials valid (details in
-[06_closed_testing_progress_log.md](06_closed_testing_progress_log.md)). Next Android step is the
-Phase 7 equivalent: a debug/license-tester-only paywall override and an end-to-end test purchase,
-never in release builds, to rule out "package unavailable" before any paywall-enabled release.
+This plan is iOS-only, but Android's Phase 3 (RevenueCat wiring) and Phase 7 (test purchase) equivalents
+are done — no code change was needed, the existing debug `DevOverride` (Settings → Developer · Premium
+Override → Force Free) reaches the real paywall. Details of the wiring are in
+[06_closed_testing_progress_log.md](06_closed_testing_progress_log.md).
+
+**Verified on a Pixel 9, debug build at versionCode 15 (Play-signed build uninstalled first):**
+
+- **Product fetch** — paywall shows `₹999.00` (no hardcoded fallback exists any more; only "Pricing
+  unavailable"), so the Play product resolved through `Offering.annual` (`$rc_annual`).
+- **Purchase** — Play sheet said "Test card, always approves … You will not be charged" (license-tester
+  account); "Payment successful". A debug-signed APK *did* work with Play Billing because package and
+  versionCode match a published build — no new internal-track build was needed.
+- **Server-side entitlement** — RevenueCat customer (Sandbox data): "Started a subscription of
+  `payslipmax_yearly_premium:yearly` for INR 999 from offering default"; entitlement `PayslipMax Premium`
+  → Active (test subscriptions renew every 30 min).
+- **Restore on a fresh state** (`pm clear`) — sheet auto-dismissed, `Purchase history retrieved`, no error.
+- **Failure path (offline)** — restore returned `NetworkError` ("Error performing request"); sheet stayed
+  open, buttons re-enabled, no crash or hang. Tapping Unlock offline also did not crash or hang.
+
+**Not verified (do not record as passed):** cancel mid-purchase (subscription already active); gate-level
+unlocking (`FORCE_FREE` and `FREE_LAUNCH_MODE_ANDROID = true` both short-circuit `hasAccess`, and the
+"Everything Included" card is bound to the flag, not the entitlement); the inline offline error text
+itself (not captured in the UI dump — only the SDK log line was); Google developer notifications topic.
+
+**Gotchas:** the paywall sheet blocks `screencap` (black image) — read it via `uiautomator dump`. The Play
+purchase-verification prompt after a purchase cannot be dismissed with Back; it needs an owner choice.
+The Pixel is on wireless adb, so `svc wifi disable` drops the connection — use USB (`adb -s 4A231VDAQ0001D`).
+Carried debt: stale header comment in `RevenueCatApiKey.kt` (says Android ships the Test Store key).

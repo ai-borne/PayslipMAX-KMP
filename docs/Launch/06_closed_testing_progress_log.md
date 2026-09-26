@@ -23,9 +23,9 @@ Closed testing track, so each release's status line below states which track it'
   attached to the `PayslipMax Premium` entitlement, and added it to the `default` offering's
   `$rc_annual` package alongside the existing Test Store and App Store products. The package is
   `$rc_annual`, not `yearly` — the code resolves it via `Offering.annual`, so no code change was
-  needed. The downloaded JSON key was deleted locally after upload. Not yet done: Play license-tester
-  entry (owner), Google developer notifications topic (optional), on-device license-tester purchase
-  (needs the Android debug paywall override), BillDesk KYC (owner). Android build ships a `goog_...`
+  needed. The downloaded JSON key was deleted locally after upload. Later the same day: on-device license-tester purchase, RevenueCat entitlement, restore and offline
+  failure path all verified on the Pixel (see doc 08 "Android mirror status"). Not yet done: Google
+  developer notifications topic (optional), BillDesk KYC (owner). Android build ships a `goog_...`
   key; the stale "Test Store key" comment in `RevenueCatApiKey.kt` is a known doc-only discrepancy.
 
 - **The Android app is live on the Google Play Store (2026-09-24, per the owner).** Google's
