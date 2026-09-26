@@ -1,134 +1,53 @@
 # Internal & Closed Testing Progress Log (Android v1.0)
 
-Running record of what changed in each Play Console release — Internal testing and Closed testing
-tracks alike — kept so the 14-day-mandatory-testing final submission report (the one justifying to
-Google reviewers why the app should be approved for production) can cite concrete, dated evidence
-instead of being reconstructed from memory. Update this file at every release bump — don't batch it
-at the end. Releases typically land on Internal testing first (fast, small-panel verification) and
-are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
-Closed testing track, so each release's status line below states which track it's actually on.
+Running record of what changed in each Play Console release, with the evidence behind it (tests, on-device
+checks, track state). Update it at every release bump; don't batch. Releases land on Internal testing first,
+are promoted to Closed testing (`alpha`) once verified, then to production; each release's heading states
+which track it is on. The 14-day closed-testing gate was completed on 2026-09-24.
 
-## Status snapshot (as of 2026-09-26, LIVE ON THE PLAY STORE)
+## Current status (2026-09-26)
 
-- **2026-09-26: versionCode 16 (1.0.0) uploaded to the `internal` track only — the paywall build.**
-  `FREE_LAUNCH_MODE_ANDROID = false` (gates follow the real RevenueCat entitlement), versionCode 15 -> 16,
-  versionName unchanged (`1.0.0`). Built with `./gradlew :composeApp:bundleRelease -PgemmaModelSourcePath=...`
-  (442 MB, model SHA-256 checked by the build, `jarsigner -verify` OK, release key `CN=ai-borne`), uploaded
-  via `fastlane android upload_to_track track:internal` (notes en-IN). `track_status`: **internal [16],
-  alpha [15], production [15]**. Closed testing and the live Play Store app deliberately stay on v15 (free
-  launch) because BillDesk needs to see the app live for KYC; v16 goes to closed testing after a few days
-  of internal checks and to production only after BillDesk approves. Pre-build gate: ktlint green,
-  `:shared:testDebugUnitTest` 589/0/0, `:composeApp:testDebugUnitTest` 422/0/0 (failures/skipped 0).
-  **On-device check of v16 from the Play internal track (Pixel 9, installer `com.android.vending`, not
-  debuggable, no Developer override section):** fresh install (debug build uninstalled first) showed the
-  locked free-user state — Settings "Upgrade to PayslipMax Premium (₹999.00)", Backup & Restore labelled
-  PREMIUM; paywall showed the live ₹999.00; Unlock returned Play's "You're already subscribed to PayslipMax
-  Yearly Premium" (the earlier 30-minute test subscription was still active); **Restore Purchases** then
-  flipped Settings to "Premium Plan Activated — Subscribed (Auto-Renewing Subscription Active)" and Backup
-  lost its PREMIUM label. This closes the gate-level-unlocking gap that the debug/flag-on run could not test.
-  Still not verified: a first-time purchase from the locked state on this release build (the account was
-  already subscribed), cancel mid-purchase, and the locked state returning after the test subscription lapses.
-  All internal testers are license testers (owner-confirmed), so purchases are test purchases. First
-  upload attempt used a relative `aab:` path and silently did nothing (track_status showed internal still
-  [15]) — always pass an absolute path and re-check `track_status`.
-- **2026-09-26: Play subscription created.** `payslipmax_yearly_premium` / base plan `yearly`
-  (auto-renewing, INR 999.00, ACTIVE, 173 regions) — created and activated in Play Console with no
-  BillDesk prompt. Added read-only lane `fastlane android subscription_status`.
-  `FREE_LAUNCH_MODE_ANDROID` remains `true`.
-- **2026-09-26: RevenueCat wired to Google Play (dashboard-only, no app release).** Created a
-  separate GCP service account `payslipmax-revenuecat` (project `payslip-app-475e1`; roles Pub/Sub
-  Editor + Monitoring Viewer; NOT the fastlane account), enabled the Play Developer Reporting and
-  Pub/Sub APIs (Android Publisher was already on), invited it in Play Console with view app info,
-  view financial data, manage orders/subscriptions, manage store presence. RevenueCat credential
-  check: **Valid credentials** (all 3 checks). Imported `payslipmax_yearly_premium:yearly` (Published),
-  attached to the `PayslipMax Premium` entitlement, and added it to the `default` offering's
-  `$rc_annual` package alongside the existing Test Store and App Store products. The package is
-  `$rc_annual`, not `yearly` — the code resolves it via `Offering.annual`, so no code change was
-  needed. The downloaded JSON key was deleted locally after upload. Later the same day: on-device license-tester purchase, RevenueCat entitlement, restore and offline
-  failure path all verified on the Pixel (see doc 08 "Android mirror status"). Not yet done: Google
-  developer notifications topic (optional), BillDesk KYC (owner). Android build ships a `goog_...`
-  key; the stale "Test Store key" comment in `RevenueCatApiKey.kt` is a known doc-only discrepancy.
+| Track | versionCode | Free-launch flag | State |
+|---|---|---|---|
+| `production` | 15 (1.0.0) | on | **Live on Google Play** since 2026-09-24 |
+| `alpha` (closed testing) | 15 (1.0.0) | on | Passed the 14-day gate; production access granted 2026-09-24 |
+| `internal` | 16 (1.0.0) | **off** | Paywall build, uploaded 2026-09-26, verified on device |
 
-- **The Android app is live on the Google Play Store (2026-09-24, per the owner).** Google's
-  first-production-release review of versionCode 15 (1.0.0) cleared, so the "In review" state recorded
-  below is superseded. The remaining bullets are kept as the history of how it got here.
+Confirmed with `fastlane android track_status`. v16 stays off production and closed testing until BillDesk
+KYC clears (BillDesk needs the app live, so production stays on v15).
 
-- **versionCode 15 (1.0.0) promoted to the `production` track 2026-09-24 06:21** via
-  `fastlane android promote_release version_code:15 to:production from:alpha`, 100% rollout
-  (`status: completed`). Confirmed via `track_status`: `production: versionCodes ["15"] — completed`.
-  This is the app's **first-ever production submission**, so it is expected to go through Google's
-  standard first-production-release review (separate from the closed-testing production-access review
-  already passed) before it's actually downloadable by the public — check Play Console's Publishing
-  overview for review status; don't assume it's live yet just because the API commit succeeded.
-- **Pre-promotion validation (2026-09-24):** the service account initially lacked production-track
-  permission (`403 PERMISSION_DENIED` from a dry-run `validate_edit` call); owner granted "Release to
-  production" in Play Console mid-session; re-validated clean (no content-rating/data-safety/pricing
-  blockers) before the actual promote was run.
-- **Added `validate_production_release` lane** (`composeApp/fastlane/Fastfile`) — draft + `validate_edit`
-  + discard, never commits. Reusable for pre-flighting any future production push without risk.
-- **`FREE_LAUNCH_MODE` is still active** (paywall bypassed) — this went to production with it on, so
-  real users get the full free-launch experience by design, not a config drift. See "Known gap to
-  close before `FREE_LAUNCH_MODE` is ever disabled" below before ever turning it off.
-- **Release-notes locale bug found and fixed same session:** `upload_to_track`/`promote_release`
-  hardcoded release notes to `language: "en-US"`, but this app's only listed Play Store locale is
-  `en-IN` (confirmed via `listing_status`) — the first promote's notes would not have been shown to
-  anyone. Fixed in `composeApp/fastlane/Fastfile` (`notes_locale:` option, default `en-IN`), then the
-  production promote was re-run with the corrected locale before this was reported done. Store listing
-  itself (title/description/screenshots/172 countries) was already complete and untouched by this bug.
-- **Confirmed live in Play Console UI (2026-09-24, owner screenshots), matching the API state above:**
-  `versionCode 15` release page shows **"In review"**, 20.9 MB for new installs (correctly excludes the
-  on-demand Gemma pack), release notes correctly showing `en-IN` with the intended text. Publishing
-  overview → Submission 15: `Source: API`, 3 changes (start full rollout + the 172 countries/regions
-  bundled in as part of the first-ever production submission), **Status: In review**. Dashboard
-  checklist shows "Create and publish a release" at 4-of-5 complete — the last step, "Publish your app
-  on Google Play," completes automatically once Google's review clears; nothing further to click.
-  Submission history (13–15) all show clean sequential status with no stuck/failed entries.
+**Release path.** v15 was promoted alpha → production on 2026-09-24 (`promote_release version_code:15
+to:production from:alpha`, 100% rollout) and cleared Google's first-production-release review. The store
+listing is en-IN only (172 countries), so release notes default to `en-IN` (`notes_locale:`). A dry-run
+`validate_production_release` found no content-rating, data-safety or pricing blockers.
 
-## Status snapshot (as of 2026-09-24, closed testing passed — confirmed via fastlane)
+**Android monetization (2026-09-26).**
+- **Play subscription:** `payslipmax_yearly_premium`, base plan `yearly`, INR 999.00, active in 173 regions;
+  created with no BillDesk prompt. Whether real charging needs BillDesk first is still unconfirmed.
+- **RevenueCat:** a dedicated GCP service account `payslipmax-revenuecat` (project `payslip-app-475e1`; Pub/Sub
+  Editor + Monitoring Viewer; separate from the fastlane account) was invited in Play Console with view app
+  info, view financial data, manage orders/subscriptions and manage store presence. Credentials show *Valid*.
+  The product was imported, attached to the `PayslipMax Premium` entitlement, and added to the `default`
+  offering's `$rc_annual` package. The package id is `$rc_annual`, not `yearly`; the code resolves it via
+  `Offering.annual`, so no code change was needed. The JSON key was deleted locally after upload.
+- **Debug run (Pixel 9):** live price ₹999.00, Play test purchase (test card, no charge), RevenueCat customer
+  shows `PayslipMax Premium` Active, restore works, offline restore fails cleanly (`NetworkError`, no crash or
+  hang). Details: doc 08, "Android mirror status".
+- **v16 (internal):** `FREE_LAUNCH_MODE_ANDROID = false`, versionCode 15 → 16. Release build from the Play
+  internal track shows "Upgrade to PayslipMax Premium (₹999.00)" with Backup & Restore locked; Restore
+  Purchases flipped it to "Premium Plan Activated" and unlocked Backup. All internal testers are license
+  testers, so purchases are test purchases.
+- **Pending on v16:** first-time purchase from the locked state, cancel mid-purchase, and re-locking after the
+  test subscription lapses (subscription cancelled 2026-09-26, ends 16:04 IST). See Next steps.
 
-- **Confirmed 2026-09-24 via `fastlane android track_status`:** `alpha` (Closed testing) → versionCode
-  `["15"]`, status **completed**; `internal` → versionCode `["15"]`, status **completed**. This is the
-  read-only Play Developer API check (`composeApp/fastlane/Fastfile` `track_status` lane), not a manual
-  Play Console screenshot — closed testing on v15 is confirmed done from Google's own release data.
-- **"Google review" identified, 2026-09-24 (Play Console dashboard screenshot, owner-provided):** the
-  Dashboard shows **"Congratulations! Your app has been granted Google Play production access"** —
-  this is the review that passed. It's the mandatory closed-testing production-access gate (14+ days,
-  12+ testers), not a per-release listing review. **Production itself still shows "Inactive"** — access
-  being granted only unlocks the ability to create a production release; no production release has been
-  created/published yet. That remains a separate, deliberate next step (see "What still needs to happen"
-  below), not something to do automatically off the back of this confirmation.
-
-## Status snapshot (as of 2026-09-21, v15 on Internal testing)
-
-- **Internal testing track:** `15 (1.0.0)` — **uploaded 2026-09-21 17:11** via `fastlane upload_to_track` (`versionCode` in
-  `composeApp/build.gradle.kts` bumped 14 → 15; confirmed with `track_status`: `internal: [15]`). Carries the post-v14 tech-debt
-  work and the LTC / leave-encashment paycodes (see the versionCode 15 section below). Closed testing remains on `13`.
-- **Superseded on Internal testing:** `14 (1.0.0)` — uploaded 2026-09-20, Report an Issue fix (versionCode 14 section below).
-
-- **Closed testing track (`alpha`):** `13 (1.0.0)` — **published** (confirmed by the owner in Play Console,
-  2026-09-19); promoted from Internal testing on 2026-09-19 via the new
-  `promote_release` fastlane lane (no AAB re-upload), superseding v12 (which had been live on Closed testing
-  since 2026-09-16). Carries 20 commits across 8 workstreams (see the versionCode 13 section below). **Caveat
-  recorded honestly:** this section previously said v13 should be verified on a physical device on Internal
-  testing before promotion; the promotion was made on the owner's explicit instruction without that
-  Play-delivered on-device pass being logged here. Treat the first Closed-testing install as that verification.
-- **Internal testing track:** `13 (1.0.0)` — same build, released 2026-09-18.
-- **Closed track history:** 8 → 10 → 12 → 13.
-- **Prior Closed track state:** `10 (1.0.0)` — uploaded 2026-09-11 (`dumpsys package` showed `versionCode=10`,
-  `installerPackageName=com.android.vending`), now superseded by v12. Closed testing went 8 → 10 → 12.
-- **Testers:** 25/25 opted in (third-party tester panel, "Private Testing Pro" plan) as of the v8
-  upload; reconfirm current opted-in count against the v10 release in Play Console's own
-  "Testing" tab rather than assuming it's unchanged.
-- **Reports:** 0/3 ready as of the v8 upload; not yet rechecked for v10.
-- **Device-install snag on v10 (resolved):** the closed-testing opt-in link on the Pixel 9 initially
-  failed with "You cannot install this app because another user has already installed an
-  incompatible version on this device." Root cause: a leftover sideloaded copy of the app
-  (`versionCode=9`, `installerPackageName=null` — installed outside Play during earlier ad-hoc
-  testing) was still present, and Play's installer won't take over an app it didn't originally
-  install. Fixed by `adb uninstall in.aiborne.payslipmax` followed by a Play Store data clear
-  (`adb shell pm clear com.android.vending`, needed separately because the Play Store app itself
-  was also serving a stale listing), then reinstalling via the opt-in link. Confirmed post-fix:
-  `versionCode=10`, `installerPackageName=com.android.vending`.
+**Tooling.**
+- Lanes (`composeApp/fastlane/Fastfile`, run from `composeApp/`): `track_status`, `listing_status`,
+  `subscription_status`, `validate_production_release`, `upload_to_track`, `promote_release`.
+- Pass `aab:` as an **absolute** path and re-check `track_status`; a relative path did nothing.
+- Don't run two Gradle builds on this checkout at once, and restart a stale IDE-started daemon
+  (`./gradlew --stop`) if AGP fails with "jlink executable ... does not exist".
+- A leftover sideloaded copy blocks the Play install ("another user has already installed an incompatible
+  version"): `adb uninstall in.aiborne.payslipmax`, then `adb shell pm clear com.android.vending`.
 
 ## Release history and what each build actually changed
 
@@ -648,34 +567,34 @@ Built from `50445866` plus the `versionCode` 14 → 15 bump. Nothing here is a n
   waited for the hook and reran green. Don't run two Gradle builds on this checkout at once. (2) `fastlane android upload_to_track`
   resolves `aab:` relative to `composeApp/fastlane/`, so pass an absolute path (a relative one fails with "AAB not found" before anything is uploaded).
 
-## What still needs to happen before the Day-14 final submission
+### versionCode 16 — on Internal testing (2026-09-26) — paywall build
 
-1. Keep 12+ testers active through the full 14-day mandatory window (Play Console currently shows
-   25/25 opted in via the third-party panel, but Google's own 14-day counter is what governs
-   production eligibility — confirm which counter is authoritative before submission). Note that
-   pushing versionCode 8 mid-window is expected/normal — the mandatory-testing clock is track-based,
-   not tied to a single release version — but reconfirm this in Play Console's own "Testing" tab
-   rather than assuming it.
-2. Once Day 14 completes, collect the 3 pending crash/ANR reports referenced above (currently 0/3
-   ready) — the final submission report should either show these as clean or document what was
-   fixed in response to them.
-3. Draft the final "why this app should be published" report citing this file's dated release
-   history as evidence of iterative fixing (crash reporting → bug fixes → completeness fix →
-   binary hardening), rather than reconstructing the narrative from git log at the last minute.
+Flag `FREE_LAUNCH_MODE_ANDROID` false, versionCode 15 → 16 (`versionName` stays `1.0.0`); commit `234a8eb4`. Nothing else changed.
+- **Gate before building:** ktlint green; `:shared:testDebugUnitTest` 589 and `:composeApp:testDebugUnitTest` 422, 0 failures,
+  0 skipped.
+- **Build:** `./gradlew :composeApp:bundleRelease -PgemmaModelSourcePath=<gemma3-1b-it-int4.litertlm>`; 442 MB, model
+  SHA-256 checked by the build, `jarsigner -verify` OK (`CN=ai-borne`). Uploaded with `upload_to_track track:internal`
+  (notes en-IN). `track_status`: internal [16], alpha [15], production [15].
+- **On-device (Pixel 9, Play internal install, `installerPackageName=com.android.vending`, not debuggable, no Developer
+  override section):** locked free-user state, live ₹999.00 paywall, Play reported "already subscribed" (the earlier test
+  subscription), and Restore Purchases unlocked the gates. This closes the gate-unlocking gap the flag-on debug run
+  could not test.
 
-## Known gap to close before `FREE_LAUNCH_MODE` is ever disabled
+## Next steps
 
-- **RevenueCat has no products/offerings configured for the Play Store API key.** Surfaced
-  2026-09-14 via logcat on the real versionCode 11 Internal-testing install: `[Purchases] ERROR:
-  ConfigurationError — you have configured the SDK with a Play Store API key, but there are no Play
-  Store products registered in the RevenueCat dashboard for your offerings.` Not a code bug — it's a
-  RevenueCat-dashboard configuration task (create the subscription products in Play Console, then
-  register/attach them as offerings in the RevenueCat dashboard). Currently harmless because
-  `LaunchFlags.FREE_LAUNCH_MODE` bypasses the paywall entirely (see the versionCode 7 entry above),
-  so no tester can reach the purchase path. **Must be fixed before `FREE_LAUNCH_MODE` is turned off**
-  — otherwise `RevenueCatBillingManager` will have nothing to sell and any real purchase attempt will
-  fail the same way. Also blocks ever running the sandbox-purchase verification check referenced in
-  the versionCode 11 entry above, since there's nothing purchasable to test against yet.
+1. **BillDesk KYC (owner only):** submit `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax` with PAN,
+   bank proof and video KYC. This is the only real blocker to charging money.
+2. **Finish v16 checks** once the test subscription lapses: first-time purchase from the locked state, cancel
+   mid-purchase, and the locked state returning.
+3. **Still open from v15:** import a real payslip to exercise parse → persist and an in-place Room upgrade; watch the
+   Gemma banner run through to Installed.
+4. **After a few days on internal:** `promote_release version_code:16 to:alpha`.
+5. **After BillDesk approves:** run `validate_production_release`, then promote v16 to production, and re-check gates
+   with the flag off.
+6. **Optional cleanup:** connect the Google developer notifications topic in RevenueCat; fix the stale header comment
+   in `RevenueCatApiKey.kt` (says Android ships the Test Store key; it ships a `goog_...` key).
+7. **Resolved 2026-09-26:** the 2026-09-14 RevenueCat "no Play Store products" `ConfigurationError` (seen on v11) is
+   fixed by the wiring above; re-check logcat on v16 if it recurs.
 
 > **Note (2026-09-21):** the Developer Sandbox used for the v8 Crashlytics symbolication check is now gated to debug/TestFlight builds. A future release-build R8 check can no longer use the 7-tap unlock; use a debug or temporary local build instead.
 
