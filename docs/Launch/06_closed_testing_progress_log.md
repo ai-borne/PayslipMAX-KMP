@@ -19,6 +19,15 @@ Closed testing track, so each release's status line below states which track it'
   launch) because BillDesk needs to see the app live for KYC; v16 goes to closed testing after a few days
   of internal checks and to production only after BillDesk approves. Pre-build gate: ktlint green,
   `:shared:testDebugUnitTest` 589/0/0, `:composeApp:testDebugUnitTest` 422/0/0 (failures/skipped 0).
+  **On-device check of v16 from the Play internal track (Pixel 9, installer `com.android.vending`, not
+  debuggable, no Developer override section):** fresh install (debug build uninstalled first) showed the
+  locked free-user state — Settings "Upgrade to PayslipMax Premium (₹999.00)", Backup & Restore labelled
+  PREMIUM; paywall showed the live ₹999.00; Unlock returned Play's "You're already subscribed to PayslipMax
+  Yearly Premium" (the earlier 30-minute test subscription was still active); **Restore Purchases** then
+  flipped Settings to "Premium Plan Activated — Subscribed (Auto-Renewing Subscription Active)" and Backup
+  lost its PREMIUM label. This closes the gate-level-unlocking gap that the debug/flag-on run could not test.
+  Still not verified: a first-time purchase from the locked state on this release build (the account was
+  already subscribed), cancel mid-purchase, and the locked state returning after the test subscription lapses.
   All internal testers are license testers (owner-confirmed), so purchases are test purchases. First
   upload attempt used a relative `aab:` path and silently did nothing (track_status showed internal still
   [15]) — always pass an absolute path and re-check `track_status`.

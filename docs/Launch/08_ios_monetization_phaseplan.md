@@ -736,6 +736,10 @@ Override → Force Free) reaches the real paywall. Details of the wiring are in
 - **Failure path (offline)** — restore returned `NetworkError` ("Error performing request"); sheet stayed
   open, buttons re-enabled, no crash or hang. Tapping Unlock offline also did not crash or hang.
 
+**Update (v16 release build, flag off):** gate-level unlocking IS now verified on Android — see doc 06's
+2026-09-26 v16 entry (locked state, then entitlement restored, Settings and Backup unlocked). The list
+below is the earlier debug-run status.
+
 **Not verified (do not record as passed):** cancel mid-purchase (subscription already active); gate-level
 unlocking (`FORCE_FREE` and `FREE_LAUNCH_MODE_ANDROID = true` both short-circuit `hasAccess`, and the
 "Everything Included" card is bound to the flag, not the entitlement); the inline offline error text
