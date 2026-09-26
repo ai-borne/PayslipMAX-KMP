@@ -749,3 +749,18 @@ itself (not captured in the UI dump — only the SDK log line was); Google devel
 purchase-verification prompt after a purchase cannot be dismissed with Back; it needs an owner choice.
 The Pixel is on wireless adb, so `svc wifi disable` drops the connection — use USB (`adb -s 4A231VDAQ0001D`).
 Carried debt: stale header comment in `RevenueCatApiKey.kt` (says Android ships the Test Store key).
+
+---
+
+## iOS RevenueCat status audit (2026-09-26)
+
+Re-checked live, because it was suspected that iOS had no RevenueCat integration: it does. App Store Connect
+(`fastlane ios review_status`) shows v1.2, 1.2.1, 1.2.2 and 1.2.3 all `READY_FOR_SALE`; the RevenueCat Apple app
+(`in.aiborne.payslipmax`) shows "Valid credentials" for both the In-app purchase key and the App Store Connect
+API key (`J87P2YJ2PS`); the product is attached to `PayslipMax Premium` and the `$rc_annual` package.
+
+The one real gap was **Apple Server-to-Server notifications** (RevenueCat: "No notifications received"; the Phase 8
+note above had listed it as not yet verified). Fixed 2026-09-26 with RevenueCat's "Apply in App Store Connect"
+button; confirmed via `fastlane ios asc_raw` that `subscriptionStatusUrl` and `subscriptionStatusUrlForSandbox` both
+point at RevenueCat's incoming-webhook endpoint, version V2. RevenueCat's "No notifications received" label stays
+until Apple sends the first event. Not yet verified: that an event actually arrives.

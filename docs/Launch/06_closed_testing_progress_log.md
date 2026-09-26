@@ -591,7 +591,8 @@ Flag `FREE_LAUNCH_MODE_ANDROID` false, versionCode 15 → 16 (`versionName` stay
 4. **After a few days on internal:** `promote_release version_code:16 to:alpha`.
 5. **After BillDesk approves:** run `validate_production_release`, then promote v16 to production, and re-check gates
    with the flag off.
-6. **Optional cleanup:** connect the Google developer notifications topic in RevenueCat; fix the stale header comment
+6. **Server notifications:** Apple is connected (doc 08, 2026-09-26 audit). Google developer notifications (RevenueCat's
+   Pub/Sub topic) are still not connected. Optional cleanup: fix the stale header comment
    in `RevenueCatApiKey.kt` (says Android ships the Test Store key; it ships a `goog_...` key).
 7. **Resolved 2026-09-26:** the 2026-09-14 RevenueCat "no Play Store products" `ConfigurationError` (seen on v11) is
    fixed by the wiring above; re-check logcat on v16 if it recurs.
