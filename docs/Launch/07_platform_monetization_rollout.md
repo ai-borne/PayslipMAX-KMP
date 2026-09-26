@@ -18,8 +18,13 @@ current state after [06_closed_testing_progress_log.md](06_closed_testing_progre
   rollout and is **live on the Google Play Store** (confirmed by the owner 2026-09-24; see
   [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md)). The live public URL now exists,
   so **the next action is submitting it to BillDesk for merchant KYC** (Section 4 step 5). Still free —
-  `FREE_LAUNCH_MODE_ANDROID = true` — until BillDesk approves. As of 2026-09-24 Play Console has
-  **0 subscriptions** created (checked via the Play API), so product setup is also still to do.
+  `FREE_LAUNCH_MODE_ANDROID = true` — until BillDesk approves. **Update 2026-09-26:** the Play subscription
+  `payslipmax_yearly_premium` with base plan `yearly` (auto-renewing, INR 999.00/yr, ACTIVE) was created
+  in Play Console **without any BillDesk block** — setup and activation do not need merchant
+  verification. Real charging still presumably does (unconfirmed until BillDesk clears). Verify any time
+  with `fastlane android subscription_status` (read-only). Remaining: attach the product in RevenueCat
+  (`payslipmax_yearly_premium:yearly` → `premium` entitlement / `yearly` package), add license testers,
+  test on the Pixel with a debug paywall override.
 
 ## 1. Core decision: decouple the two platforms' monetization timing
 

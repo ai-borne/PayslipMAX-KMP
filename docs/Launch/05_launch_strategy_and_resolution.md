@@ -315,7 +315,7 @@ whole document exists to avoid. Track Step 4 and Step 5 as the two v1.1 workstre
 - [ ] **3.4** Receive BillDesk Merchant Approval for Google Play Payments Profile.
 
 ### Step 4: Configure Full RevenueCat & StoreKit Pipeline (Release 2 / v1.2)
-- [ ] **4.1** In App Store Connect > **Subscriptions**, create Auto-Renewable Subscription (`payslipmax_yearly_premium`), set ₹199/yr pricing, and attach review screenshot.
+- [ ] **4.1** In App Store Connect > **Subscriptions**, create Auto-Renewable Subscription (`payslipmax_yearly_premium`), set ₹999/yr pricing, and attach review screenshot.
 - [ ] **4.2** In App Store Connect > **Agreements, Tax, and Banking**, ensure Paid Applications Agreement is active.
 - [ ] **4.3** In Google Play Console > **Monetize > Subscriptions**, create base plan and set to **Active**.
 - [ ] **4.4** In RevenueCat Dashboard > **Apps**, add **Apple App Store** app and link App Store Connect API Key / Shared Secret.

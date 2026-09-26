@@ -227,6 +227,19 @@ platform :android do
     end
   end
 
+  desc "Show every Play subscription, its base plans' state and India price (read-only, no edit created)."
+  lane :subscription_status do
+    subs = play_service.list_monetization_subscriptions(package_name).subscriptions || []
+    UI.message("No subscriptions found") if subs.empty?
+    subs.each do |s|
+      (s.base_plans || []).each do |b|
+        inr = b.regional_configs&.find { |c| c.region_code == "IN" }&.price
+        price = inr ? "#{inr.currency_code} #{inr.units}.#{format('%02d', inr.nanos.to_i / 10_000_000)}" : "no IN price"
+        UI.message("#{s.product_id}:#{b.base_plan_id} — #{b.state}, IN #{price}, #{(b.regional_configs || []).size} regions")
+      end
+    end
+  end
+
   desc "Promote an already-uploaded versionCode to another track without re-uploading the AAB. Pass version_code:, to: (alpha = closed testing), optionally from: (default internal, used only to sanity-check the code is live there) and notes:."
   lane :promote_release do |options|
     code = (options[:version_code] or UI.user_error!("Pass version_code:")).to_s

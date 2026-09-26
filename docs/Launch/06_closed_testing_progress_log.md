@@ -8,7 +8,13 @@ at the end. Releases typically land on Internal testing first (fast, small-panel
 are promoted to Closed testing once verified; the 14-day mandatory-testing clock applies only to the
 Closed testing track, so each release's status line below states which track it's actually on.
 
-## Status snapshot (as of 2026-09-24, LIVE ON THE PLAY STORE)
+## Status snapshot (as of 2026-09-26, LIVE ON THE PLAY STORE)
+
+- **2026-09-26: Play subscription created.** `payslipmax_yearly_premium` / base plan `yearly`
+  (auto-renewing, INR 999.00, ACTIVE, 173 regions) — created and activated in Play Console with no
+  BillDesk prompt. Added read-only lane `fastlane android subscription_status`. This closes the "no
+  Play Store products" gap only on the Play side; the RevenueCat attachment is still pending.
+  `FREE_LAUNCH_MODE_ANDROID` remains `true`.
 
 - **The Android app is live on the Google Play Store (2026-09-24, per the owner).** Google's
   first-production-release review of versionCode 15 (1.0.0) cleared, so the "In review" state recorded
