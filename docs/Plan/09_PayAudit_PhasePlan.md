@@ -173,9 +173,36 @@ non-empty timeline and an increment-explained `basicPay` change), `PayAuditFindi
 `AppNavStateTest`'s exhaustive tab-root/detail-screen partition to include `Screen.PayAudit` — the guard
 did its job and caught the new case.
 
-### Phase 5 — Letter from proven findings
+### Phase 5 — Letter from proven findings — DONE (2026-09-27; open items in Phase 7)
 
-Only proven findings feed the existing `RepresentationScreen`.
+Only proven findings feed the existing `RepresentationScreen`. "Proven" is the vision statement's own
+wording (`payslips prove it, and it cites a verified authority`), made a literal instance-level check:
+`expected`, `actual` and `authority` must all be non-null on the `Anomaly`. A type in
+`REPRESENTATION_DRAFT_TYPES` whose emitted instance lacks any one of those three no longer drafts a
+letter for that instance.
+
+Delivered in `shared/.../insights/` and `shared/.../repository/`:
+
+- `Anomaly.isProven()` (`RepresentationDraftTypes.kt`): the single predicate above.
+- `FinancialIntelligenceRepository.processPayslipAndRunAnalysis` step 5 now gates draft generation on
+  `anomaly.type in REPRESENTATION_DRAFT_TYPES && anomaly.isProven()`, not type membership alone.
+- `RepresentationDraftGenerator.generateRepresentationDraft` now takes `expected`, `actual`, `authority`
+  as required (non-nullable) parameters and renders them into the letter body (amount due / amount
+  credited / shortfall, and the citing authority), closing the Phase 4 carry-over note that the letter
+  never used the evidence fields Phase 2 attached to `Anomaly`.
+
+Effect on the five Pay Audit types: `TPTA_ENTITLEMENT`, `INCREMENT_MISSED` and `MSP_SHORTFALL` always
+carry full evidence, so they draft exactly as before. `SALARY_LOSS` (a bare heuristic with no evidence
+fields at all) and `MISSING_ALLOWANCE` (has `expected`/`actual` but no cited authority yet) no longer
+auto-draft a letter — flagged as carry-over below, not silently dropped.
+
+Gate result: `./gradlew check -x iosX64Test -x iosSimulatorArm64Test`, `linkDebugFrameworkIosSimulatorArm64`,
+and `ktlintCheck` all green; tech-debt/file-size audit clean on every touched file. New tests:
+`RepresentationDraftGeneratorTest` (letter cites expected/actual/authority) and
+`FinancialIntelligenceRepositoryTest.testProcessPayslipDoesNotGenerateDraftForUnprovenSalaryLoss` (a
+detected `SALARY_LOSS` anomaly produces zero representation drafts). Existing
+`testProcessPayslipGeneratesRepresentationDraftAndInsightsForMissingTPTA` still passes unchanged (TPTA
+always proven).
 
 ### Phase 6 — Predict
 
@@ -299,6 +326,32 @@ Carried over from Phase 4 (nothing here is claimed done):
   first, with no cap — fine for the single de-identified corpus officer's history, untested for a real
   officer with a much longer service record. Deferred until real usage shows it is a problem, consistent
   with "precision over coverage" elsewhere in this plan.
+
+Carried over from Phase 5 (nothing here is claimed done):
+
+- **`SALARY_LOSS` and `MISSING_ALLOWANCE` no longer auto-draft a representation letter.** Correct under
+  the literal "proven" gate (neither type reliably cites a verified authority — `SALARY_LOSS` is a bare
+  net-pay heuristic with no evidence fields at all, `MissingAllowanceAuditor` never sets `authority`), but
+  it is a user-visible behavior change from before Phase 5: an officer who lost HRA/MSP or saw a net-pay
+  drop used to get an auto-drafted letter and now gets none. Two ways to close this, neither done here:
+  (a) add verified `PayAuthorities` citations for the HRA-drop and MSP-drop rules `MissingAllowanceAuditor`
+  already applies (its own conditions — quarters taken, Level 14+ — are structural, so a citation should
+  exist), which would make `MISSING_ALLOWANCE` provable again; or (b) decide `SALARY_LOSS` should never
+  auto-draft in the first place (it is a heuristic trust-builder, not a rule-based finding, so a lower bar
+  than the other four types may be the wrong bar entirely) and drop it from `REPRESENTATION_DRAFT_TYPES`
+  explicitly rather than leaving it in the set where it silently never fires.
+- **The two Insights-tab CTAs into `RepresentationScreen` are not scoped to "proven."**
+  `RecommendedActions.candidateRecommendedActions` and `SmartInsightsBuilder.anomalyActionTarget` still
+  show a "Draft Claims" action whenever *any* anomaly's `type` is in `REPRESENTATION_DRAFT_TYPES`,
+  regardless of whether that specific instance was proven enough to actually generate a draft (e.g. an
+  unproven `SALARY_LOSS` still surfaces the CTA). Not a new gap — `RepresentationScreen` was already a
+  global drafts inbox, not scoped to the anomaly that triggered the CTA (Phase 5 research, Q1/Q6) — but
+  Phase 5 makes the mismatch concrete: tapping the CTA can now open a list with no new draft for the
+  finding that prompted it. Left as is; scoping the CTA to "a proven anomaly of this type exists" is a
+  small, separate change if a real user reports the confusion.
+- **No Compose/UI test exercises the new gating end-to-end from `PayAuditScreen`.** Only the
+  `shared`-level repository/generator tests were added (matches the existing convention noted in the
+  Phase 4 carry-over: no Insights-tab or Pay Audit composable has a UI test).
 
 ## Deferred / dropped
 

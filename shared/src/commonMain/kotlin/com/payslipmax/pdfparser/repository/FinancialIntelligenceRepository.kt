@@ -115,15 +115,21 @@ open class FinancialIntelligenceRepository(
                 }
             payslipDao.insertFinancialInsights(deterministicInsights)
 
-            // 5. Generate Representation Drafts locally for claims discrepancies
+            // 5. Generate Representation Drafts locally for claims discrepancies that are actually proven
+            // (payslips supply both expected and actual amounts, and a verified authority is cited) —
+            // an unproven heuristic (e.g. a bare SALARY_LOSS or an uncited MISSING_ALLOWANCE) never drafts
+            // a formal complaint letter.
             engineResult.anomalies.forEach { anomaly ->
-                if (anomaly.type in REPRESENTATION_DRAFT_TYPES) {
+                if (anomaly.type in REPRESENTATION_DRAFT_TYPES && anomaly.isProven()) {
                     val draft =
                         RepresentationDraftGenerator.generateRepresentationDraft(
                             disputeMonth = dateStr,
                             disputeType = anomaly.type,
                             amount = anomaly.amount,
                             officer = payslip.officer,
+                            expected = anomaly.expected!!,
+                            actual = anomaly.actual!!,
+                            authority = anomaly.authority!!,
                         )
                     payslipDao.insertRepresentationDraft(draft)
                 }
