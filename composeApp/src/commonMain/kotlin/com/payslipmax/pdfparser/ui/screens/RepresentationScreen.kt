@@ -103,8 +103,9 @@ fun RepresentationScreen(
     }
 }
 
+/** Internal (not private) so a UI test can exercise the drafted-representation-gating path directly, without a [PayslipViewModel]. */
 @Composable
-private fun RepresentationDraftList(
+internal fun RepresentationDraftList(
     drafts: List<RepresentationDraftEntity>,
     onBack: () -> Unit,
     onSelect: (RepresentationDraftEntity) -> Unit,
