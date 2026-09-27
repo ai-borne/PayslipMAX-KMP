@@ -24,6 +24,26 @@ class NextIncrementPredictorTest {
         assertEquals(basic(9), prediction.predictedBasicPay)
         assertEquals(PayLevel.L11, prediction.level)
         assertEquals(8, prediction.currentStage)
+        // The predicted date is the latest payslip's own month, and that payslip doesn't show the raise —
+        // due exactly now with no confirmation yet counts as overdue, same as IncrementAuditor's exact
+        // "dueAgain" condition (P7-05).
+        assertEquals(true, prediction.isOverdue)
+    }
+
+    @Test
+    fun flagsOverdueWhenTheDueDateIsWellBeforeTheLatestPayslip() {
+        // Last increment Jul 2018; several more months pass at the same basic pay with no further
+        // increment event, so the Jul 2019 DNI is overdue well before the Dec 2019 latest payslip.
+        val months =
+            payAuditMonths(2018, 1, 24) { y, m ->
+                payAuditPayslip(y, m, if (y == 2018 && m < 7) basic(7) else basic(8))
+            }
+        val timeline = ServiceTimelineBuilder.build(months)
+
+        val prediction = NextIncrementPredictor.predict(timeline)!!
+
+        assertEquals(PayMonth(2019, 7), prediction.date)
+        assertEquals(true, prediction.isOverdue)
     }
 
     @Test
@@ -41,6 +61,8 @@ class NextIncrementPredictorTest {
         // Promotion month May 2019 + 6 months = Nov 2019; next cycle on/after that is 1 Jan 2020.
         assertEquals(PayMonth(2020, 1), prediction.date)
         assertEquals(PayMatrix.payAt(PayLevel.L12A, 2)!!.toDouble(), prediction.predictedBasicPay)
+        // Latest payslip is Jun 2019, well before the Jan 2020 due date — genuinely upcoming, not overdue.
+        assertEquals(false, prediction.isOverdue)
     }
 
     @Test

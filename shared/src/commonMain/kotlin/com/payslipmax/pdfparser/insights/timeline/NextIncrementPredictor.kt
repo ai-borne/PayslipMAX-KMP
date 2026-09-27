@@ -1,11 +1,18 @@
 package com.payslipmax.pdfparser.insights.timeline
 
-/** When and to how much the officer's next annual increment (DNI) is expected to move Basic Pay. */
+/**
+ * When and to how much the officer's next annual increment (DNI) is expected to move Basic Pay.
+ * [isOverdue] is true when [date] falls on or before the latest trusted timeline month — i.e. the
+ * increment should already have happened by now, the same condition [IncrementAuditor] flags as
+ * `INCREMENT_MISSED` (P7-05: without this, an already-overdue increment reads as a forward-looking "due"
+ * date instead of a late one).
+ */
 data class NextIncrementPrediction(
     val date: PayMonth,
     val predictedBasicPay: Double,
     val level: PayLevel,
     val currentStage: Int,
+    val isOverdue: Boolean,
 )
 
 /**
@@ -35,6 +42,12 @@ object NextIncrementPredictor {
             }
         val predictedPay = PayMatrix.payAt(level, stage + 1)?.toDouble() ?: return null
 
-        return NextIncrementPrediction(date = nextDate, predictedBasicPay = predictedPay, level = level, currentStage = stage)
+        return NextIncrementPrediction(
+            date = nextDate,
+            predictedBasicPay = predictedPay,
+            level = level,
+            currentStage = stage,
+            isOverdue = nextDate <= latest.month,
+        )
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.insights.DsopRoom
 import com.payslipmax.pdfparser.insights.timeline.NextIncrementPrediction
@@ -49,10 +50,12 @@ private fun NextIncrementCard(prediction: NextIncrementPrediction?) {
         if (prediction == null) {
             Text(text = PayAuditStrings.nextIncrementEmptyState, style = MaterialTheme.typography.bodyMedium)
         } else {
+            val datePrefix = if (prediction.isOverdue) PayAuditStrings.nextIncrementOverduePrefix else PayAuditStrings.nextIncrementDatePrefix
             Text(
-                text = "${PayAuditStrings.nextIncrementDatePrefix}${prediction.date.month}/${prediction.date.year}",
+                text = "$datePrefix${prediction.date.month}/${prediction.date.year}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
+                color = if (prediction.isOverdue) MaterialTheme.colorScheme.error else Color.Unspecified,
             )
             Text(
                 text = "${PayAuditStrings.nextIncrementAmountPrefix}${prediction.predictedBasicPay.toInt()}",

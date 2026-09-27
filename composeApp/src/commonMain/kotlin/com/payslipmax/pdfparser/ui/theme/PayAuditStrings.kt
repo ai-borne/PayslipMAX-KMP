@@ -34,6 +34,7 @@ object PayAuditStrings {
     const val nextIncrementTitle = "Next increment"
     const val nextIncrementEmptyState = "Upload more payslips to predict your next increment."
     const val nextIncrementDatePrefix = "Due "
+    const val nextIncrementOverduePrefix = "Overdue since "
     const val nextIncrementAmountPrefix = "Basic Pay moves to ₹"
     const val dsopRoomTitle = "DSOP room this year"
     const val dsopRoomSubscribedPrefix = "Subscribed so far: ₹"

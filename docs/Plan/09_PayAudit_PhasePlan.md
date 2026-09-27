@@ -276,10 +276,13 @@ Everything Phases 0–6 left unproven or unbuilt, kept in one place (CLAUDE.md "
   was unbounded. New tests: `returnsNullWhenThePromotionMonthIsNotAfterTheLatestTimelineMonth`,
   `returnsNullWhenThePromotionYearIsImplausiblyFarInTheFuture`
   (`PayAuditFixationCalculatorLogicTest.kt`).
-- [ ] **P7-05 — Next-increment prediction vs. already-overdue.** `NextIncrementPredictor` shows the same
-  date as a forward-looking "Next increment: Due `<date>`" even when that increment is already overdue
-  (the condition `IncrementAuditor` flags as `INCREMENT_MISSED`). Suppress the prediction card when an
-  `INCREMENT_MISSED` finding exists for the same month, or relabel it "overdue since".
+- [x] **P7-05 — Next-increment prediction vs. already-overdue** (done 2026-09-27). `NextIncrementPrediction`
+  gains `isOverdue` (true when the predicted date is on or before the officer's latest trusted timeline
+  month — the same boundary `IncrementAuditor` uses for `INCREMENT_MISSED`). `PayAuditPredictionsSection`
+  relabels the card "Overdue since `<date>`" in the error color instead of "Due `<date>`" when true. New
+  tests: `NextIncrementPredictorTest.flagsOverdueWhenTheDueDateIsWellBeforeTheLatestPayslip`, plus
+  `isOverdue` assertions added to the two existing prediction tests (boundary-exact and genuinely-upcoming
+  cases).
 - [ ] **P7-06 — DsopRoomCalculator dedup ordering.** Dedupes `history + current` by `(year, monthNum)`,
   keeping whichever appears first — silently uses a stale DSOP figure if a re-parsed/corrected entry for
   the same month is ever passed alongside the original. Not observed in practice; needs an explicit
