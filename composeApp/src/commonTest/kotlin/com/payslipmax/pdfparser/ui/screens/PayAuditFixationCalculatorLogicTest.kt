@@ -89,6 +89,38 @@ class PayAuditFixationCalculatorLogicTest {
     }
 
     @Test
+    fun returnsNullWhenThePromotionMonthIsNotAfterTheLatestTimelineMonth() {
+        val timeline = ServiceTimeline(months = listOf(month(2018, 1, PayLevel.L10, 8)), events = emptyList(), postings = emptyList())
+
+        // Same month as latest.
+        assertNull(
+            resolveFixationComparison(
+                timeline,
+                FixationCalculatorInputs(toLevel = PayLevel.L11, promotionYear = 2018, promotionMonth = 1),
+            ),
+        )
+        // Before latest.
+        assertNull(
+            resolveFixationComparison(
+                timeline,
+                FixationCalculatorInputs(toLevel = PayLevel.L11, promotionYear = 1800, promotionMonth = 1),
+            ),
+        )
+    }
+
+    @Test
+    fun returnsNullWhenThePromotionYearIsImplausiblyFarInTheFuture() {
+        val timeline = ServiceTimeline(months = listOf(month(2018, 1, PayLevel.L10, 8)), events = emptyList(), postings = emptyList())
+
+        assertNull(
+            resolveFixationComparison(
+                timeline,
+                FixationCalculatorInputs(toLevel = PayLevel.L11, promotionYear = 9999, promotionMonth = 1),
+            ),
+        )
+    }
+
+    @Test
     fun returnsNullOnAnEmptyTimeline() {
         val timeline = ServiceTimeline(months = emptyList(), events = emptyList(), postings = emptyList())
 

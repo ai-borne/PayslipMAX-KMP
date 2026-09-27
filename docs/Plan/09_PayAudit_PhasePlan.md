@@ -269,9 +269,13 @@ Everything Phases 0–6 left unproven or unbuilt, kept in one place (CLAUDE.md "
 - [x] **P7-03 — SSOT refactor for representation-draft types** (done 2026-09-27, commit `1fe03855`,
   follow-up to P7-01). `REPRESENTATION_DRAFT_TYPES` is a single `shared` constant, imported directly by
   composeApp — not two hand-synced lists as an earlier draft of this doc implied.
-- [ ] **P7-04 — Pay-fixation calculator: range-validate promotion year/month.** `resolveFixationComparison`
-  accepts any `toIntOrNull()` year/month (e.g. 1800, 9999) and produces a meaningless comparison. Add a
-  sanity bound (tied to the officer's own service span from the timeline, or a fixed plausible range).
+- [x] **P7-04 — Pay-fixation calculator: range-validate promotion year/month** (done 2026-09-27).
+  `resolveFixationComparison` now rejects a promotion month that isn't strictly after the officer's latest
+  trusted timeline month, or that's more than 30 years ahead (a full commissioned-officer career span) —
+  closing the 1800/9999 `toIntOrNull()` gap. Month was already `coerceIn(1, 12)` in the UI; only the year
+  was unbounded. New tests: `returnsNullWhenThePromotionMonthIsNotAfterTheLatestTimelineMonth`,
+  `returnsNullWhenThePromotionYearIsImplausiblyFarInTheFuture`
+  (`PayAuditFixationCalculatorLogicTest.kt`).
 - [ ] **P7-05 — Next-increment prediction vs. already-overdue.** `NextIncrementPredictor` shows the same
   date as a forward-looking "Next increment: Due `<date>`" even when that increment is already overdue
   (the condition `IncrementAuditor` flags as `INCREMENT_MISSED`). Suppress the prediction card when an
