@@ -20,12 +20,16 @@ import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.insights.Anomaly
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
+import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
 
 /**
  * PRO advanced-anomaly surface (ANOMALY_DETECTION gate, D6) — unlocked findings only. The locked
  * teaser (category/count, no amounts) now lives solely in [LockedPremiumHubCard]; this card is only
  * ever reached from the PRO-dissolve path (Insights PRO consolidation, Phase 2). Renders nothing when
- * there are no PRO anomalies to show.
+ * there are no PRO anomalies to show. Also renders [Anomaly.expected]/[Anomaly.actual]/[Anomaly.authority]
+ * when present, matching `PayAuditFindingRow` (docs/Plan/09_PayAudit_PhasePlan.md phase 7, P7-08) — this
+ * card shows the same PRO anomalies, including the Pay Audit ones, and previously showed `description`
+ * text only while the Pay Audit screen showed full evidence for the same finding.
  */
 @Composable
 fun AdvancedAnomaliesCard(
@@ -74,11 +78,29 @@ private fun AnomalyDetailRow(anomaly: Anomaly) {
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(end = AppDimensions.SpacingSmall),
             )
-            Text(
-                text = anomaly.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny)) {
+                Text(
+                    text = anomaly.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                val expected = anomaly.expected
+                val actual = anomaly.actual
+                if (expected != null && actual != null) {
+                    Text(
+                        text = "${PayAuditStrings.findingsExpectedLabel}${expected.toInt()}   ${PayAuditStrings.findingsActualLabel}${actual.toInt()}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                anomaly.authority?.let {
+                    Text(
+                        text = "${PayAuditStrings.findingsAuthorityLabel}$it",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
         }
     }
 }

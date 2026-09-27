@@ -292,9 +292,11 @@ Everything Phases 0–6 left unproven or unbuilt, kept in one place (CLAUDE.md "
   a note ("No increment found in your payslips yet — assuming a January DNI cycle...") in the error color
   above the comparison whenever `dniMonthAssumed` is true. New assertions on `dniMonthAssumed` added to the
   two existing DNI-related tests in `PayAuditFixationCalculatorLogicTest`.
-- [ ] **P7-08 — Evidence display is only half-closed.** `expected`/`actual`/`authority` render on
-  `PayAuditScreen`'s own finding rows, but `AdvancedAnomaliesCard` on the Insights tab (same PRO anomalies,
-  including Pay Audit's) still shows `description` text only. Two surfaces, inconsistent detail.
+- [x] **P7-08 — Evidence display is only half-closed** (done 2026-09-27). `AdvancedAnomaliesCard`'s
+  `AnomalyDetailRow` now also renders `expected`/`actual`/`authority` when present, reusing
+  `PayAuditStrings`' evidence labels (SSOT with `PayAuditFindingRow`) so the Insights-tab card and the Pay
+  Audit screen show the same detail for the same finding. No new test — matches the existing convention
+  that no Insights-tab composable has a UI test (P7-19).
 - [ ] **P7-09 — Insights-tab CTAs not scoped to "proven".** `RecommendedActions.candidateRecommendedActions`
   and `SmartInsightsBuilder.anomalyActionTarget` show a "Draft Claims" CTA whenever any anomaly's `type` is
   in `REPRESENTATION_DRAFT_TYPES`, regardless of whether that instance was actually proven. Scope the CTA
