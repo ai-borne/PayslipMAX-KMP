@@ -19,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import com.payslipmax.pdfparser.database.LedgerRecordEntity
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipViewModel
@@ -62,11 +61,10 @@ fun PayAuditScreen(
         if (selected == null) {
             PayAuditEmptyState()
         } else {
-            val ledgerRecords by viewModel.ledgerRecords.collectAsState()
             val hasAnomalyDetection = viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION)
             PayAuditBody(
                 selected = selected,
-                ledgerRecords = ledgerRecords,
+                payslips = uiState.payslips,
                 hasAnomalyDetection = hasAnomalyDetection,
                 onShowUpgradeSheet = { showUpgradeSheet = true },
             )
@@ -88,14 +86,14 @@ fun PayAuditScreen(
 @Composable
 private fun PayAuditBody(
     selected: ParsedPayslip,
-    ledgerRecords: List<LedgerRecordEntity>,
+    payslips: List<ParsedPayslip>,
     hasAnomalyDetection: Boolean,
     onShowUpgradeSheet: () -> Unit,
 ) {
-    val state = rememberInsightsState(selected, ledgerRecords)
+    val engineResult = rememberPayAuditEngineResult(selected, payslips)
     val findings =
-        remember(state, hasAnomalyDetection) {
-            partitionPayAuditFindings(state.engineResult.anomalies, hasAnomalyDetection)
+        remember(engineResult, hasAnomalyDetection) {
+            partitionPayAuditFindings(engineResult.anomalies, hasAnomalyDetection)
         }
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -103,8 +101,8 @@ private fun PayAuditBody(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         payAuditFindingsItems(display = findings, onUnlockClick = onShowUpgradeSheet)
-        payAuditChangesItems(changes = state.engineResult.changeExplanations)
-        payAuditTimelineItems(timeline = state.engineResult.timeline)
+        payAuditChangesItems(changes = engineResult.changeExplanations)
+        payAuditTimelineItems(timeline = engineResult.timeline)
     }
 }
 

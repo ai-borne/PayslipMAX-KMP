@@ -272,13 +272,18 @@ Carried over from Phase 4 (nothing here is claimed done):
   does not show a change row for every month-to-month transition across the full Service Timeline list
   below it — a user has to step through payslips to see each month's changes. No corpus/history-wide
   "explain every transition at once" view exists yet; build one only if a real officer needs it.
-- **The screen inherits the same thin-ledger gap as Insights (Phase 2 carry-over).** `PayAuditScreen` reads
-  `viewModel.ledgerRecords` (`LedgerRecordEntity`), which still keeps no Risk & Hardship/field allowance,
-  licence fee, arrears, or `needsReview` data in the running app. So on-device, posting/quarters
-  explanations and the arrears exemptions in `TptaEntitlementAuditor` still won't fire against real stored
-  data — the screen is correct on the corpus (full `ParsedPayslip`) but will show a thinner timeline and
-  fewer findings than the corpus tests suggest until the ledger schema gap is fixed. Same underlying issue,
-  not a new one; still blocks the Validation checkpoint.
+- **The screen inherited the same thin-ledger gap as Insights (Phase 2 carry-over) — resolved for this
+  screen only.** `PayAuditScreen` no longer reads `viewModel.ledgerRecords` (`LedgerRecordEntity`, which has
+  no Risk & Hardship/field allowance, licence fee, arrears, or `needsReview` fields to lose). It now calls
+  `DeterministicIntelligenceEngine.analyze()` directly off `PayslipUiState.payslips` — the full decrypted
+  `ParsedPayslip` history already held in memory for the History screen and month picker — via a new
+  `rememberPayAuditEngineResult` (`PayAuditState.kt`), so posting/quarters explanations and the
+  `TptaEntitlementAuditor` arrears exemptions now fire against real on-device data. The free-tier
+  `PayAuditEntryCard` on Insights was switched the same way, so its teaser count matches the screen. No Room
+  migration was needed — the full data was already in memory, just not what the engine call used. Deliberately
+  scoped to Pay Audit only: `InsightsState`/`rememberInsightsState` (Smart Insights, Advanced Anomalies,
+  MonthlySnapshot, PayTrendChart) still run on `LedgerRecordEntity` and still carry this gap — left as is to
+  avoid risking those other, already-stable surfaces. Still blocks the Validation checkpoint for those.
 - **Evidence display is only half-closed.** `expected`/`actual`/`authority` now render on the Pay Audit
   screen's own finding rows, but the older `AdvancedAnomaliesCard` on the Insights tab (which shows the
   same PRO anomalies, including the Pay Audit ones, in its own "Advanced Anomaly Checks" card) still shows

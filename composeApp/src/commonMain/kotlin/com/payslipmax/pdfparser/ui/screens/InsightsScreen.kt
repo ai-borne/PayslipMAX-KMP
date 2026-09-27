@@ -114,6 +114,7 @@ private fun InsightsContent(
         InsightsLazyBody(
             state = state,
             uiState = uiState,
+            selected = selected,
             viewModel = viewModel,
             wellnessExpanded = wellnessExpanded,
             onWellnessExpandClick = { wellnessExpanded = !wellnessExpanded },
@@ -128,6 +129,7 @@ private fun InsightsContent(
 private fun InsightsLazyBody(
     state: InsightsState,
     uiState: PayslipUiState,
+    selected: ParsedPayslip,
     viewModel: PayslipViewModel,
     wellnessExpanded: Boolean,
     onWellnessExpandClick: () -> Unit,
@@ -155,6 +157,8 @@ private fun InsightsLazyBody(
             hasAccess = { gate -> viewModel.hasAccess(gate) },
             onShowUpgradeSheet = onShowUpgradeSheet,
             onNavigateTo = onNavigateTo,
+            selected = selected,
+            payslips = uiState.payslips,
         )
         insightsPremiumItems(
             state = state,
