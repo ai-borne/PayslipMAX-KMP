@@ -16,6 +16,25 @@ internal object TptaAbsenceExplainer {
         month: PayMonth,
     ): Boolean = atPostingChange(timeline, month) || relocated(timeline, month)
 
+    /**
+     * True when [explains] says no today only because the payslips that would confirm or rule out a
+     * relocation ([relocated] needs a same-window sample on both sides) have not been imported yet — not
+     * because none exists. A finding held for this reason should stay unflagged rather than fire and never
+     * retract (P7-17, docs/Plan/09_PayAudit_PhasePlan.md): once a later payslip is imported and the same
+     * month is re-audited, [explains] settles the question for good, one way or the other.
+     */
+    fun isPendingFutureData(
+        timeline: ServiceTimeline,
+        month: PayMonth,
+    ): Boolean {
+        if (explains(timeline, month)) return false
+        val hasPriorCitySample =
+            timeline.months.any { it.tptaCity != null && it.month < month && month.index - it.month.index <= RELOCATION_WINDOW_MONTHS }
+        if (!hasPriorCitySample) return false
+        val hasFutureDataInWindow = timeline.months.any { it.month > month && it.month.index - month.index <= RELOCATION_WINDOW_MONTHS }
+        return !hasFutureDataInWindow
+    }
+
     private fun atPostingChange(
         timeline: ServiceTimeline,
         month: PayMonth,

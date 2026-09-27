@@ -14,7 +14,7 @@ import kotlin.test.assertTrue
  * history. This officer was paid correctly, so any finding from them is a false alarm that could offer a
  * complaint letter. Explaining a TPTA-free month needs the months on both sides of it, so the gate runs
  * with the full history; the last test pins what the app sees when it audits a month the moment it is
- * imported, before later payslips exist.
+ * imported, before later payslips exist (P7-17: held pending that data, not flagged).
  */
 class PayAuditCorpusPrecisionTest {
     private val history: List<ParsedPayslip> =
@@ -51,10 +51,12 @@ class PayAuditCorpusPrecisionTest {
     }
 
     @Test
-    fun auditedAtImportBeforeLaterPayslipsExistTheTransitionMonthsAreStillFlagged() {
-        // Known limitation (Phase 7): the explaining months (Jan 2020, Jun 2022, Oct 2024) are not yet stored.
+    fun auditedAtImportBeforeLaterPayslipsExistTheTransitionMonthsAreHeldNotFlagged() {
+        // Fixed by Phase 9's P7-17: TptaAbsenceExplainer.isPendingFutureData holds a finding rather than
+        // flagging it while the explaining months (Jan 2020, Jun 2022, Oct 2024) are not yet stored, since
+        // a same-window relocation can't be ruled out without them.
         val flagged = findings(TptaEntitlementAuditor(), onlyEarlierMonths = true).map { it.month }
-        assertEquals(listOf("12/2019", "05/2022", "09/2024"), flagged)
+        assertTrue(flagged.isEmpty(), "Findings that should have been held pending future data: $flagged")
     }
 
     private fun CorpusExpected.toParsedPayslip() =

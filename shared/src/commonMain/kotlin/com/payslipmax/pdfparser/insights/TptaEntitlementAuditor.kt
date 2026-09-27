@@ -9,9 +9,11 @@ import com.payslipmax.pdfparser.insights.timeline.TptaCityClass
 
 /**
  * Flags a month with no Transport Allowance for a Level 10-13A officer, unless the timeline explains it
- * (posting change or relocation). The amount due is the lowest rate the rule allows (other-places base
- * plus DA at the rate the payslips applied), so it is never overstated. Level 14+ has a different slab
- * and an official-car option, so it is not audited.
+ * (posting change or relocation), or [TptaAbsenceExplainer.isPendingFutureData] says a relocation can't be
+ * ruled out yet because the payslips that would confirm it haven't been imported (P7-17: held, not
+ * flagged, so a finding never fires only to go stale once that data arrives). The amount due is the
+ * lowest rate the rule allows (other-places base plus DA at the rate the payslips applied), so it is
+ * never overstated. Level 14+ has a different slab and an official-car option, so it is not audited.
  */
 class TptaEntitlementAuditor : TimelineAuditor {
     override fun audit(
@@ -25,6 +27,7 @@ class TptaEntitlementAuditor : TimelineAuditor {
         val level = month.level ?: return emptyList()
         if (month.month < FIRST_MONTH || level > PayLevel.L13A) return emptyList()
         if (TptaAbsenceExplainer.explains(timeline, month.month)) return emptyList()
+        if (TptaAbsenceExplainer.isPendingFutureData(timeline, month.month)) return emptyList()
 
         val daPercent = month.daPercent ?: timeline.months.lastOrNull { it.month < month.month && it.daPercent != null }?.daPercent ?: 0
         val expected = TptaCityClass.OTHER.baseRate * (1.0 + daPercent / 100.0)
