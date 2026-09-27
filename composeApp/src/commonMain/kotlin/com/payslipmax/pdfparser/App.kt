@@ -39,6 +39,7 @@ enum class Screen {
     PrivacyPolicy,
     PayslipReplica,
     PremiumFeatures,
+    PayAudit,
 }
 
 /** The four bottom-tab roots; the remaining [Screen] values are pushed detail screens. */
@@ -262,6 +263,8 @@ private fun DetailContent(
             )
         Screen.HelpLegal ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+        Screen.PayAudit ->
+            com.payslipmax.pdfparser.ui.screens.PayAuditScreen(viewModel = viewModel, onBack = onBack)
         // Tab roots are structurally unreachable here: onNavigate() routes them via switchTab(),
         // never push(), and AppNavStateSaver.restore() filters activeDetail to !isTabRoot. Handled
         // only so this `when` stays exhaustive against future Screen cases.

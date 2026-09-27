@@ -139,10 +139,39 @@ carry a reason (87.5%). The 13 gaps are pinned by month, not just counted, and a
 licence-fee amount moving while quarters stay occupied (the accommodation/rent bracket is not modeled —
 see Phase 7).
 
-### Phase 4 — Pay Audit screen
+### Phase 4 — Pay Audit screen — DONE (2026-09-27; open items in Phase 7)
 
-A timeline and findings inside Insights, under `ANOMALY_DETECTION`. Free tier: timeline and finding
-count. Premium: details.
+A dedicated `PayAuditScreen`, entered via a free-visible `PayAuditEntryCard` added to the Insights tab's
+primary items (`InsightsBodySections.kt`), gated by `ANOMALY_DETECTION` only at the findings level — the
+timeline and finding count stay free, per the phase's own split.
+
+Delivered:
+
+- `EngineResult` (`shared/.../insights/DeterministicIntelligenceEngine.kt`) now exposes the
+  `ServiceTimeline` and current-month `List<ChangeExplanation>` it already built internally each run
+  (Phase 2's "the engine builds it once per run" made real for a caller) — both `@Transient`, since
+  `EngineResult` is declared `@Serializable` but never actually encoded/decoded.
+- `PayAuditFindingTypes` (shared, SSOT): the five Pay-Audit-auditor types (`MISSING_ALLOWANCE`,
+  `TPTA_ENTITLEMENT`, `ARREARS_AUDIT`, `INCREMENT_MISSED`, `MSP_SHORTFALL`), as distinct from the other
+  PRO auditors (DSOP/tax/quarters/debit) that are not part of this screen.
+- `partitionPayAuditFindings` (composeApp): the free/premium split, mirroring
+  `partitionAdvancedAnomalies` — locked shows count + category labels only, unlocked shows full findings
+  including, for the first time anywhere in the app, the `expected`/`actual`/`authority` evidence Phase 2
+  attached to `Anomaly` (closing half of the Phase 7 "Evidence is not stored or shown" gap — see below).
+- `PayAuditScreen` + `PayAuditFindingsSection`/`PayAuditTimelineSection`/`PayAuditEntryCard` (composeApp):
+  findings (gated), "What changed this month" (the current payslip's own `ChangeExplanation`s, reason
+  != null only — an unexplained move stays a silent gap, not a "no reason" row), and the full Service
+  Timeline (all months, newest first) — the latter two always free. `Screen.PayAudit` added to the nav
+  enum and both platforms' detail dispatch (`App.kt` `DetailContent`, iOS `MainViewController.kt`).
+- `PayAuditStrings` (new, `ui/theme/`) — `AppStrings.kt` was already at 295/300 lines.
+
+Gate result: `./gradlew check -x iosX64Test -x iosSimulatorArm64Test`, `iosSimulatorArm64Test`, and
+`linkDebugFrameworkIosSimulatorArm64` all green; `ktlintCheck` and the tech-debt/file-size audit clean on
+every touched/new file. New tests: `DeterministicIntelligenceEngineTest` (EngineResult exposes a
+non-empty timeline and an increment-explained `basicPay` change), `PayAuditFindingsLogicTest` (mirrors
+`AdvancedAnomaliesLogicTest`'s locked/unlocked cases, scoped to the five Pay Audit types). Also updated
+`AppNavStateTest`'s exhaustive tab-root/detail-screen partition to include `Screen.PayAudit` — the guard
+did its job and caught the new case.
 
 ### Phase 5 — Letter from proven findings
 
@@ -227,11 +256,44 @@ Carried over from Phase 3 (nothing here is claimed done):
   corpus's Feb-Mar 2022 gap), `PayLineChangeExplainer` returns nothing for that month rather than comparing
   against the last trustworthy month further back. Same underlying data gap as Phase 1's exclusions; not
   reported as "unexplained" because there is no reliable "from" value to explain a move against.
-- **`PayLineChangeExplainer` has no consumer yet.** Deliberate, same as Phase 1's `ServiceTimeline`: Phase 4
-  wires the explanations into the Pay Audit screen's timeline view.
+- **`PayLineChangeExplainer` had no consumer — resolved in Phase 4.** `PayAuditScreen`'s "What changed this
+  month" section now calls it (via `EngineResult.changeExplanations`) for the currently selected payslip's
+  own transition. Not fully wired: it shows only that one month's changes, not every transition across the
+  whole displayed timeline (see Phase 4 carry-over below).
 - **TPTA arrears not linked to a DA rise (`arrearsTpta`) are not tracked.** Only DA-linked TPTA-DA arrears
   (`arrearsTptaDa`) are explained, mirroring `DaArrearsAuditor`'s scope; a posting-change back-payment of
   base TPTA itself has no rule and is out of scope until a real officer shows one.
+
+Carried over from Phase 4 (nothing here is claimed done):
+
+- **"What changed this month" covers one transition, not the whole timeline.** `PayAuditScreen` calls
+  `PayLineChangeExplainer` only for the currently selected payslip vs. its immediate predecessor (via
+  `EngineResult.changeExplanations`), matching how anomalies are already computed per-current-payslip. It
+  does not show a change row for every month-to-month transition across the full Service Timeline list
+  below it — a user has to step through payslips to see each month's changes. No corpus/history-wide
+  "explain every transition at once" view exists yet; build one only if a real officer needs it.
+- **The screen inherits the same thin-ledger gap as Insights (Phase 2 carry-over).** `PayAuditScreen` reads
+  `viewModel.ledgerRecords` (`LedgerRecordEntity`), which still keeps no Risk & Hardship/field allowance,
+  licence fee, arrears, or `needsReview` data in the running app. So on-device, posting/quarters
+  explanations and the arrears exemptions in `TptaEntitlementAuditor` still won't fire against real stored
+  data — the screen is correct on the corpus (full `ParsedPayslip`) but will show a thinner timeline and
+  fewer findings than the corpus tests suggest until the ledger schema gap is fixed. Same underlying issue,
+  not a new one; still blocks the Validation checkpoint.
+- **Evidence display is only half-closed.** `expected`/`actual`/`authority` now render on the Pay Audit
+  screen's own finding rows, but the older `AdvancedAnomaliesCard` on the Insights tab (which shows the
+  same PRO anomalies, including the Pay Audit ones, in its own "Advanced Anomaly Checks" card) still shows
+  `description` text only. Two surfaces for overlapping data with inconsistent detail; not reconciled here
+  — left for Phase 5 (representation drafts already read `description`) or a later Insights cleanup.
+- **No Compose UI test exercises `PayAuditScreen`/`PayAuditTimelineSection`/`PayAuditFindingsSection`.**
+  Matches the existing convention (no Insights-tab composable has a UI test either — only the pure logic
+  functions do), so not a new gap, but recorded here per CLAUDE.md's fail-loud rule: only
+  `PayAuditFindingsLogicTest` (pure partition function) and the `DeterministicIntelligenceEngine` field
+  exposure test were added; the screen itself was verified only by a green compile + `check_tech_debt_limits`,
+  not by running it on a device or simulator.
+- **The Service Timeline list has no pagination or collapsing.** All months render as a flat list, newest
+  first, with no cap — fine for the single de-identified corpus officer's history, untested for a real
+  officer with a much longer service record. Deferred until real usage shows it is a problem, consistent
+  with "precision over coverage" elsewhere in this plan.
 
 ## Deferred / dropped
 

@@ -2,8 +2,12 @@ package com.payslipmax.pdfparser.insights
 
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
 import com.payslipmax.pdfparser.domain.*
+import com.payslipmax.pdfparser.insights.timeline.ChangeExplanation
+import com.payslipmax.pdfparser.insights.timeline.PayLineChangeExplainer
+import com.payslipmax.pdfparser.insights.timeline.ServiceTimeline
 import com.payslipmax.pdfparser.insights.timeline.ServiceTimelineBuilder
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 data class Anomaly(
@@ -27,6 +31,12 @@ data class EngineResult(
     val anomalies: List<Anomaly>,
     val monthlySavingRate: Double,
     val taxRatio: Double,
+    // The ServiceTimeline the engine builds once per run (Pay Audit, docs/Plan/09_PayAudit_PhasePlan.md
+    // Phase 4) and the current month's pay-line change explanations derived from it. Neither type is
+    // itself @Serializable, and EngineResult is never actually encoded/decoded today — transient with a
+    // safe default keeps that annotation honest without forcing timeline/ChangeExplanation serializable too.
+    @Transient val timeline: ServiceTimeline = ServiceTimeline(emptyList(), emptyList(), emptyList()),
+    @Transient val changeExplanations: List<ChangeExplanation> = emptyList(),
 )
 
 object DeterministicIntelligenceEngine {
@@ -60,11 +70,12 @@ object DeterministicIntelligenceEngine {
         previous: ParsedPayslip? = null,
         history: List<ParsedPayslip> = emptyList(),
     ): EngineResult {
-        val timeline by lazy { ServiceTimelineBuilder.build(history + current) }
+        val timeline = ServiceTimelineBuilder.build(history + current)
         val anomalies =
             auditors.flatMap { auditor ->
                 if (auditor is TimelineAuditor) auditor.audit(current, previous, timeline) else auditor.audit(current, previous, history)
             }
+        val changeExplanations = PayLineChangeExplainer.explain(current, previous, timeline)
 
         val dsop = current.deductions.dsopSubscription
         val gross = current.summary.grossPay
@@ -80,6 +91,8 @@ object DeterministicIntelligenceEngine {
             anomalies = anomalies,
             monthlySavingRate = savingRate,
             taxRatio = taxRate,
+            timeline = timeline,
+            changeExplanations = changeExplanations,
         )
     }
 

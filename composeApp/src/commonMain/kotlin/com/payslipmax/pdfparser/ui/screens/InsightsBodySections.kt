@@ -1,7 +1,9 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.runtime.remember
 import com.payslipmax.pdfparser.Screen
+import com.payslipmax.pdfparser.insights.PayAuditFindingTypes
 import com.payslipmax.pdfparser.subscription.FeatureGate
 
 /**
@@ -40,4 +42,12 @@ fun LazyListScope.insightsPrimaryItems(
         )
     }
     item(key = "pay_trend_chart", contentType = "pay_trend_chart") { PayTrendChart(history = state.historySorted, selected = state.currentRecord) }
+    item(key = "pay_audit_entry", contentType = "pay_audit_entry") {
+        val findingsCount = remember(state) { state.engineResult.anomalies.count { it.type in PayAuditFindingTypes.TYPES } }
+        PayAuditEntryCard(
+            timelineMonths = state.engineResult.timeline.months.size,
+            findingsCount = findingsCount,
+            onOpen = { onNavigateTo(Screen.PayAudit) },
+        )
+    }
 }

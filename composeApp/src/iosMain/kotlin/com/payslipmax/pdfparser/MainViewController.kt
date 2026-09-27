@@ -14,6 +14,7 @@ import com.payslipmax.pdfparser.nav.AppNavState
 import com.payslipmax.pdfparser.nav.NavBridge
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.HelpLegalScreen
+import com.payslipmax.pdfparser.ui.screens.PayAuditScreen
 import com.payslipmax.pdfparser.ui.screens.PayslipReplicaDetailScreen
 import com.payslipmax.pdfparser.ui.screens.PremiumFeaturesScreen
 import com.payslipmax.pdfparser.ui.screens.RepresentationScreen
@@ -120,6 +121,7 @@ class IosNavHost(
                     )
                 }
                 Screen.HelpLegal -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+                Screen.PayAudit -> PayAuditScreen(viewModel = viewModel, onBack = onBack)
                 // Tab roots are structurally unreachable here: onNavigate() routes them via
                 // switchTab(), never push()/nativeDetailNavigator, and AppNavStateSaver.restore()
                 // filters activeDetail to !isTabRoot. Handled only so this `when` stays exhaustive

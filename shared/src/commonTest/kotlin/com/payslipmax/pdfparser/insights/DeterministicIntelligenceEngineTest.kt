@@ -1,8 +1,15 @@
 package com.payslipmax.pdfparser.insights
 
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
+import com.payslipmax.pdfparser.domain.Deductions
+import com.payslipmax.pdfparser.domain.Earnings
+import com.payslipmax.pdfparser.domain.LedgerBalances
+import com.payslipmax.pdfparser.domain.Officer
+import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.PayslipSummary
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class DeterministicIntelligenceEngineTest {
@@ -36,6 +43,39 @@ class DeterministicIntelligenceEngineTest {
             incomeTax = tax,
             netPay = net,
         )
+    }
+
+    private fun parsedPayslip(
+        year: Int,
+        month: Int,
+        basicPay: Double,
+    ) = ParsedPayslip(
+        file = "t.pdf",
+        year = year,
+        monthNum = month,
+        monthName = "",
+        dateStr = "$month/$year",
+        officer = Officer("N", "A", "P"),
+        earnings = Earnings(basicPay = basicPay),
+        deductions = Deductions(),
+        ledgerBalances = LedgerBalances(),
+        summary = PayslipSummary(0.0, 0.0, 0.0),
+        taxAndSavings = null,
+    )
+
+    /** Pay Audit (docs/Plan/09_PayAudit_PhasePlan.md Phase 4): EngineResult must expose the timeline
+     * it already builds internally, and the current month's change explanations derived from it. */
+    @Test
+    fun testEngineResultExposesTimelineAndChangeExplanations() {
+        val previous = parsedPayslip(2018, 6, 82800.0)
+        val current = parsedPayslip(2018, 7, 85300.0)
+
+        val result = DeterministicIntelligenceEngine.analyze(current, previous, listOf(previous, current))
+
+        assertTrue(result.timeline.months.isNotEmpty(), "EngineResult should expose the ServiceTimeline built for this run")
+        val basicPayChange = result.changeExplanations.find { it.field == "basicPay" }
+        assertNotNull(basicPayChange, "Should explain the basic-pay rise via the timeline-based increment rule")
+        assertTrue(basicPayChange.reason!!.contains("increment", ignoreCase = true))
     }
 
     @Test
