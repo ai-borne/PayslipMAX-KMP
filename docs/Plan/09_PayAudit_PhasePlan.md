@@ -252,174 +252,103 @@ regression and a top-stage/no-further-increment case), `PayAuditFixationCalculat
 
 ### Phase 7 — Carry-overs from earlier phases
 
-Everything Phases 0–1 left unproven or unbuilt, kept in one place (CLAUDE.md "fail loud").
+Everything Phases 0–6 left unproven or unbuilt, kept in one place (CLAUDE.md "fail loud"). Consolidated
+2026-09-27 into a single checklist, cleared one item at a time. `[x]` = done before this phase started
+(dated); `[ ]` = open, tackled in list order unless a dependency forces reordering (noted inline).
 
-- **Real-data validation of the timeline (Phase 1).** The gate ran on one officer's corpus. Never
-  exercised on real data: unplaced months from a shared matrix cell (10 vs 10B, 11 vs 12A), FIELD
-  posting spans (the corpus has no field allowance), and a Level 12A officer who starts mid-history.
-  Fold into the Validation checkpoint: report unplaced months and span counts per officer.
-- **TPTA city class for Jun–Sep 2017 (Phase 1).** Those payslips still print the pre-7th CPC TPTA (₹3,712),
-  so the class is null. Correct as is; revisit only if a real officer needs those months classified.
-- **Officer scope of the matrix (Phase 1).** Only regular-Army Levels 10–18 are ported. MNS and NCC
-  matrices are out of scope; decide whether to add them only if such users appear.
-- **Timeline has no consumer yet (Phase 1).** Deliberate: Phase 2 wires it into the auditors.
-- **Other findings/notes from Phase 0.** None outstanding; all five defects are fixed and tested.
-
-Carried over from Phase 2 (nothing here is claimed done):
-
-- **The app's stored history is too thin for the new explanations.** The engine is fed `LedgerRecordEntity`
-  rows, which keep no Risk & Hardship / field allowance, licence fee, arrears, adjustment or `needsReview`
-  data. In the app, so: the posting-change and quarters explanations never fire, the arrears/adjustment
-  exemptions in the TPTA auditor never fire, and no posting spans exist. The same gap means
-  `DaArrearsAuditor` never sees `arrearsDa` in production (pre-existing). Fix: feed the engine full
-  `ParsedPayslip` history or extend the ledger table (Room v11 to v12 needs a migration). Blocks the
-  Validation checkpoint.
-- **Findings are decided at import time.** A TPTA-free month is explained by the months around it, which
-  may not be imported yet. Audited with earlier months only, the corpus's Dec 2019, May 2022 and Sep 2024 are
-  flagged (pinned in `PayAuditCorpusPrecisionTest`). Needs a re-audit that retracts a finding once later
-  payslips explain it, or a rule that holds a finding until the next month exists. Same for an increment
-  paid late with arrears the following month.
-- **Evidence is not stored or shown.** `expected`/`actual`/`authority` live on `Anomaly`, but
-  `FinancialInsightEntity` keeps only the description text and the UI shows nothing more. Phase 4/5.
-- **Not user-confirmed.** The gate is zero false findings on one officer. "Genuine" findings need real
-  officers (Validation checkpoint).
-- **Out of scope for the increment/MSP/TPTA rules:** Level 14+ (different TPTA slab, official-car option,
-  no MSP); the first increment after a promotion (date rules INCREMENT_004, six-month rule PROMO_FIX_004);
+- [x] **P7-01 — Anomaly tier fix** (done 2026-09-27, commit `053938dd`, immediately after Phase 2, before
+  Phase 3). `IncrementAuditor`/`MspAuditor` emit their own types (`INCREMENT_MISSED`, `MSP_SHORTFALL`),
+  classified PRO in `AnomalyTierMap` — no longer piggyback on `SALARY_LOSS`'s FREE tier. Wired through
+  category/title maps, `InsightPrioritizationEngine`, `AnomalySeverityMapper`, `AdvancedAnomaliesLogic`'s
+  labels (`InsightsStrings`), and the representation-draft trigger list.
+- [x] **P7-02 — MSP authority citation fix** (done 2026-09-27, commit `053938dd`). The MSP letter citation
+  (No. 1(16)/2017/D(Pay/Services), 18-09-2017) was wrong — that letter number is dated 16-11-2017 and
+  covers Extra Work Allowance / Flight Charge Certificate Allowance, not MSP.
+  `PayAuthorities.MILITARY_SERVICE_PAY` now cites the Army Officers Pay Rules 2017 / Handbook pp. 88-93
+  instead. `scripts/pcdao_factory/output/` JSON left uncorrected (authoring reference, not shipped).
+- [x] **P7-03 — SSOT refactor for representation-draft types** (done 2026-09-27, commit `1fe03855`,
+  follow-up to P7-01). `REPRESENTATION_DRAFT_TYPES` is a single `shared` constant, imported directly by
+  composeApp — not two hand-synced lists as an earlier draft of this doc implied.
+- [ ] **P7-04 — Pay-fixation calculator: range-validate promotion year/month.** `resolveFixationComparison`
+  accepts any `toIntOrNull()` year/month (e.g. 1800, 9999) and produces a meaningless comparison. Add a
+  sanity bound (tied to the officer's own service span from the timeline, or a fixed plausible range).
+- [ ] **P7-05 — Next-increment prediction vs. already-overdue.** `NextIncrementPredictor` shows the same
+  date as a forward-looking "Next increment: Due `<date>`" even when that increment is already overdue
+  (the condition `IncrementAuditor` flags as `INCREMENT_MISSED`). Suppress the prediction card when an
+  `INCREMENT_MISSED` finding exists for the same month, or relabel it "overdue since".
+- [ ] **P7-06 — DsopRoomCalculator dedup ordering.** Dedupes `history + current` by `(year, monthNum)`,
+  keeping whichever appears first — silently uses a stale DSOP figure if a re-parsed/corrected entry for
+  the same month is ever passed alongside the original. Not observed in practice; needs an explicit
+  precedence rule (e.g. prefer `current` over `history`) plus a test.
+- [ ] **P7-07 — Calculator's silent DNI-month default.** `resolveFixationComparison` defaults to a January
+  increment cycle with no UI indication when the officer has no recorded INCREMENT event yet — reads as a
+  fact, not an assumption. Surface the assumption in the UI when it's used.
+- [ ] **P7-08 — Evidence display is only half-closed.** `expected`/`actual`/`authority` render on
+  `PayAuditScreen`'s own finding rows, but `AdvancedAnomaliesCard` on the Insights tab (same PRO anomalies,
+  including Pay Audit's) still shows `description` text only. Two surfaces, inconsistent detail.
+- [ ] **P7-09 — Insights-tab CTAs not scoped to "proven".** `RecommendedActions.candidateRecommendedActions`
+  and `SmartInsightsBuilder.anomalyActionTarget` show a "Draft Claims" CTA whenever any anomaly's `type` is
+  in `REPRESENTATION_DRAFT_TYPES`, regardless of whether that instance was actually proven. Scope the CTA
+  to "a proven anomaly of this type exists".
+- [ ] **P7-10 — `SALARY_LOSS`/`MISSING_ALLOWANCE` no longer auto-draft letters.** Correct under the literal
+  "proven" gate but a user-visible regression from pre-Phase-5 behavior. Two options, pick one: (a) add
+  verified `PayAuthorities` citations for `MissingAllowanceAuditor`'s HRA-drop/MSP-drop rules (structural,
+  so a citation should exist) to make `MISSING_ALLOWANCE` provable; or (b) explicitly drop `SALARY_LOSS`
+  from `REPRESENTATION_DRAFT_TYPES` (decide it should never auto-draft, being a bare heuristic) rather than
+  leaving it in the set where it silently never fires.
+- [ ] **P7-11 — Service Timeline list has no pagination/collapsing.** Flat list, newest first, no cap.
+  Fine for the single corpus officer; untested for a real officer with a much longer service record.
+- [ ] **P7-12 — "What changed this month" covers one transition, not the whole timeline.**
+  `PayAuditScreen` calls `PayLineChangeExplainer` only for the current payslip vs. its immediate
+  predecessor. No "explain every transition at once" view across the full Service Timeline exists.
+- [ ] **P7-13 — Transition following an untrusted month is skipped, not attempted.** If the immediately
+  preceding stored payslip is excluded from the timeline, `PayLineChangeExplainer` returns nothing rather
+  than comparing against the last trustworthy month further back.
+- [ ] **P7-14 — TPTA arrears not linked to a DA rise (`arrearsTpta`) are untracked.** Only DA-linked
+  TPTA-DA arrears (`arrearsTptaDa`) are explained; a posting-change back-payment of base TPTA has no rule.
+- [ ] **P7-15 — Licence-fee rate (accommodation/rent bracket) not modeled.** Timeline tracks quarters
+  occupancy as start/stop only; 13 of 104 tracked corpus changes are the fee amount moving while quarters
+  stay occupied. Pinned in `PayLineChangeExplanationCorpusTest`, not fixed.
+- [ ] **P7-16 — Only ten pay-line fields are explained.** ~30 other `Earnings`/`Deductions` fields (income
+  tax, DSOP subscription, CEA, NPA, dress/ration/technical allowance, non-DA arrears, `adj*` corrections)
+  have no structural rule and produce no `ChangeExplanation` at all — invisible to the coverage gate.
+- [ ] **P7-17 — Findings decided at import time; no retraction/re-audit.** A TPTA-free month is explained
+  by months around it that may not be imported yet (audited with earlier data only, corpus's Dec 2019,
+  May 2022, Sep 2024 flagged — pinned in `PayAuditCorpusPrecisionTest`). Needs a re-audit that retracts a
+  finding once later payslips explain it, or a rule that holds a finding until the next month exists.
+  Depends on **P7-18** (thin ledger) for the app path, but the retraction logic itself is engine-level.
+- [ ] **P7-18 — Stored history too thin for the new explanations (blocks Validation checkpoint).** The
+  Insights tab's `InsightsState` (Smart Insights, Advanced Anomalies, MonthlySnapshot, PayTrendChart) still
+  feeds `LedgerRecordEntity` rows, which keep no Risk & Hardship/field allowance, licence fee, arrears,
+  adjustment or `needsReview` data — so posting-change/quarters explanations and TPTA arrears exemptions
+  never fire there (Pay Audit's own screen was already fixed in Phase 4 via `rememberPayAuditEngineResult`
+  reading `PayslipUiState.payslips` directly). Fix: migrate `InsightsState` the same way, or extend the
+  ledger table (Room v11 → v12, needs an `AutoMigration`). The same gap means `DaArrearsAuditor` never sees
+  `arrearsDa` on the Insights-tab path.
+- [ ] **P7-19 — No Compose/UI test exercises any Pay Audit or Insights-tab composable.** Matches existing
+  convention (no Insights-tab composable has one either) but recorded per CLAUDE.md fail-loud: covers
+  `PayAuditScreen`, `PayAuditTimelineSection`, `PayAuditFindingsSection`, `PayAuditPredictionsSection`,
+  `PayAuditFixationCalculatorSection`, and the Phase 5 representation-gating end-to-end path. Only pure
+  logic functions and a green compile/tech-debt audit have verified these so far.
+- [ ] **P7-20 — Other auditors not rebuilt on the timeline.** `SalaryLossAuditor` (net-pay drop) and the
+  rest were never part of Phase 2's rebuild list.
+- [ ] **P7-21 — Officer scope of the matrix.** Only regular-Army Levels 10–18 are ported; MNS/NCC matrices
+  out of scope. Decide only if such users appear — no action unless triggered.
+- [ ] **P7-22 — TPTA city class null for Jun–Sep 2017.** Those payslips print pre-7th-CPC TPTA (₹3,712);
+  correct as-is. Revisit only if a real officer needs those months classified.
+- [ ] **P7-23 — Out-of-scope rules, deliberately deferred.** Level 14+ (different TPTA slab, official-car
+  option, no MSP); the first increment after a promotion (INCREMENT_004, six-month rule PROMO_FIX_004);
   leave/suspension months that switch TPTA off (TA_TRANSPORT_002/003, not visible in payslips).
-- **Tier — resolved.** `IncrementAuditor`/`MspAuditor` now emit their own types (`INCREMENT_MISSED`,
-  `MSP_SHORTFALL`), classified PRO in `AnomalyTierMap` — they no longer piggyback on `SALARY_LOSS`'s FREE
-  tier. Wired through the category/title maps, `InsightPrioritizationEngine`, `AnomalySeverityMapper`,
-  `AdvancedAnomaliesLogic`'s labels (new `InsightsStrings` entries) and both modules' representation-draft
-  trigger lists (`FinancialIntelligenceRepository` and composeApp's `REPRESENTATION_DRAFT_TYPES` — the two
-  are hand-kept in sync; `shared` cannot depend on `composeApp` for a single SSOT).
-- **Authority check — resolved, and it was wrong.** Verified the MSP letter (No. 1(16)/2017/D(Pay/Services),
-  18-09-2017) against public MoD circulars: that letter number is dated 16-11-2017 and covers Extra Work
-  Allowance / abolition of Flight Charge Certificate Allowance, not MSP — the pcdao_factory reference had
-  copied the flying-allowance citation onto the MSP record. `PayAuthorities.MILITARY_SERVICE_PAY` now cites
-  the pay matrix's own source (Army Officers Pay Rules 2017; Handbook pp. 88-93) instead, until a correct
-  implementing letter is verified. The `scripts/pcdao_factory/output/` JSON itself is left uncorrected
-  (out of scope — it is an authoring reference, not shipped) but carries the same error for
-  `flying_allowance`/`special_forces_allowance` if those are ever ported.
-- **Other auditors.** `SalaryLossAuditor` (net-pay drop) and the rest were not rebuilt on the timeline; not
-  part of Phase 2's list.
+- [ ] **P7-24 — Real-data validation of the timeline.** Never exercised on real data: unplaced months from
+  a shared matrix cell (10 vs 10B, 11 vs 12A), FIELD posting spans (corpus has none), a Level 12A officer
+  who starts mid-history. Folds into the Validation checkpoint below — needs real officer payslips.
+- [ ] **P7-25 — Validation checkpoint itself.** Run on 3–5 real officers' payslips, on their own devices.
+  Report unplaced months and span counts per officer. Blocked on **P7-18** for the Insights-tab surfaces,
+  and requires real users this app doesn't have yet (only the developer is on TestFlight as of 2026-09-18)
+  — likely stays open until real officers are on the app.
 
-Carried over from Phase 3 (nothing here is claimed done):
-
-- **Licence-fee rate is not modeled.** The timeline tracks quarters occupancy as a start/stop toggle only;
-  13 of 104 tracked corpus changes are the fee amount moving while quarters stay occupied (a different
-  accommodation/rent bracket). Pinned in `PayLineChangeExplanationCorpusTest`, not fixed — no accommodation
-  type or rent-bracket data is ported, and none is planned unless a real officer needs it explained.
-- **Only ten pay-line fields are explained.** Chosen because they are exactly what the `ServiceTimeline`
-  already models (Phases 1-2): Basic Pay, DA, DA/TPTA-DA arrears, MSP, Transport Allowance, HRA, licence
-  fee, Risk & Hardship and Field allowance. The other ~30 `Earnings`/`Deductions` fields (income tax, DSOP
-  subscription, CEA, NPA, dress/ration/technical allowance, non-DA arrears, all `adj*` corrections) have no
-  structural rule to explain a move and are not tracked at all — a changed value in one of them produces no
-  `ChangeExplanation` entry, not an unexplained one, so it stays invisible to the coverage gate. Extend the
-  tracked set only when a real officer's payslip needs one of these explained.
-- **A transition following an untrusted month is skipped, not attempted.** If the immediately preceding
-  stored payslip is excluded from the timeline (`needsReview`, zero or non-matrix basic pay — e.g. the
-  corpus's Feb-Mar 2022 gap), `PayLineChangeExplainer` returns nothing for that month rather than comparing
-  against the last trustworthy month further back. Same underlying data gap as Phase 1's exclusions; not
-  reported as "unexplained" because there is no reliable "from" value to explain a move against.
-- **`PayLineChangeExplainer` had no consumer — resolved in Phase 4.** `PayAuditScreen`'s "What changed this
-  month" section now calls it (via `EngineResult.changeExplanations`) for the currently selected payslip's
-  own transition. Not fully wired: it shows only that one month's changes, not every transition across the
-  whole displayed timeline (see Phase 4 carry-over below).
-- **TPTA arrears not linked to a DA rise (`arrearsTpta`) are not tracked.** Only DA-linked TPTA-DA arrears
-  (`arrearsTptaDa`) are explained, mirroring `DaArrearsAuditor`'s scope; a posting-change back-payment of
-  base TPTA itself has no rule and is out of scope until a real officer shows one.
-
-Carried over from Phase 4 (nothing here is claimed done):
-
-- **"What changed this month" covers one transition, not the whole timeline.** `PayAuditScreen` calls
-  `PayLineChangeExplainer` only for the currently selected payslip vs. its immediate predecessor (via
-  `EngineResult.changeExplanations`), matching how anomalies are already computed per-current-payslip. It
-  does not show a change row for every month-to-month transition across the full Service Timeline list
-  below it — a user has to step through payslips to see each month's changes. No corpus/history-wide
-  "explain every transition at once" view exists yet; build one only if a real officer needs it.
-- **The screen inherited the same thin-ledger gap as Insights (Phase 2 carry-over) — resolved for this
-  screen only.** `PayAuditScreen` no longer reads `viewModel.ledgerRecords` (`LedgerRecordEntity`, which has
-  no Risk & Hardship/field allowance, licence fee, arrears, or `needsReview` fields to lose). It now calls
-  `DeterministicIntelligenceEngine.analyze()` directly off `PayslipUiState.payslips` — the full decrypted
-  `ParsedPayslip` history already held in memory for the History screen and month picker — via a new
-  `rememberPayAuditEngineResult` (`PayAuditState.kt`), so posting/quarters explanations and the
-  `TptaEntitlementAuditor` arrears exemptions now fire against real on-device data. The free-tier
-  `PayAuditEntryCard` on Insights was switched the same way, so its teaser count matches the screen. No Room
-  migration was needed — the full data was already in memory, just not what the engine call used. Deliberately
-  scoped to Pay Audit only: `InsightsState`/`rememberInsightsState` (Smart Insights, Advanced Anomalies,
-  MonthlySnapshot, PayTrendChart) still run on `LedgerRecordEntity` and still carry this gap — left as is to
-  avoid risking those other, already-stable surfaces. Still blocks the Validation checkpoint for those.
-- **Evidence display is only half-closed.** `expected`/`actual`/`authority` now render on the Pay Audit
-  screen's own finding rows, but the older `AdvancedAnomaliesCard` on the Insights tab (which shows the
-  same PRO anomalies, including the Pay Audit ones, in its own "Advanced Anomaly Checks" card) still shows
-  `description` text only. Two surfaces for overlapping data with inconsistent detail; not reconciled here
-  — left for Phase 5 (representation drafts already read `description`) or a later Insights cleanup.
-- **No Compose UI test exercises `PayAuditScreen`/`PayAuditTimelineSection`/`PayAuditFindingsSection`.**
-  Matches the existing convention (no Insights-tab composable has a UI test either — only the pure logic
-  functions do), so not a new gap, but recorded here per CLAUDE.md's fail-loud rule: only
-  `PayAuditFindingsLogicTest` (pure partition function) and the `DeterministicIntelligenceEngine` field
-  exposure test were added; the screen itself was verified only by a green compile + `check_tech_debt_limits`,
-  not by running it on a device or simulator.
-- **The Service Timeline list has no pagination or collapsing.** All months render as a flat list, newest
-  first, with no cap — fine for the single de-identified corpus officer's history, untested for a real
-  officer with a much longer service record. Deferred until real usage shows it is a problem, consistent
-  with "precision over coverage" elsewhere in this plan.
-
-Carried over from Phase 5 (nothing here is claimed done):
-
-- **`SALARY_LOSS` and `MISSING_ALLOWANCE` no longer auto-draft a representation letter.** Correct under
-  the literal "proven" gate (neither type reliably cites a verified authority — `SALARY_LOSS` is a bare
-  net-pay heuristic with no evidence fields at all, `MissingAllowanceAuditor` never sets `authority`), but
-  it is a user-visible behavior change from before Phase 5: an officer who lost HRA/MSP or saw a net-pay
-  drop used to get an auto-drafted letter and now gets none. Two ways to close this, neither done here:
-  (a) add verified `PayAuthorities` citations for the HRA-drop and MSP-drop rules `MissingAllowanceAuditor`
-  already applies (its own conditions — quarters taken, Level 14+ — are structural, so a citation should
-  exist), which would make `MISSING_ALLOWANCE` provable again; or (b) decide `SALARY_LOSS` should never
-  auto-draft in the first place (it is a heuristic trust-builder, not a rule-based finding, so a lower bar
-  than the other four types may be the wrong bar entirely) and drop it from `REPRESENTATION_DRAFT_TYPES`
-  explicitly rather than leaving it in the set where it silently never fires.
-- **The two Insights-tab CTAs into `RepresentationScreen` are not scoped to "proven."**
-  `RecommendedActions.candidateRecommendedActions` and `SmartInsightsBuilder.anomalyActionTarget` still
-  show a "Draft Claims" action whenever *any* anomaly's `type` is in `REPRESENTATION_DRAFT_TYPES`,
-  regardless of whether that specific instance was proven enough to actually generate a draft (e.g. an
-  unproven `SALARY_LOSS` still surfaces the CTA). Not a new gap — `RepresentationScreen` was already a
-  global drafts inbox, not scoped to the anomaly that triggered the CTA (Phase 5 research, Q1/Q6) — but
-  Phase 5 makes the mismatch concrete: tapping the CTA can now open a list with no new draft for the
-  finding that prompted it. Left as is; scoping the CTA to "a proven anomaly of this type exists" is a
-  small, separate change if a real user reports the confusion.
-- **No Compose/UI test exercises the new gating end-to-end from `PayAuditScreen`.** Only the
-  `shared`-level repository/generator tests were added (matches the existing convention noted in the
-  Phase 4 carry-over: no Insights-tab or Pay Audit composable has a UI test).
-
-Carried over from Phase 6 (nothing here is claimed done):
-
-- **No Compose/UI test exercises the two new sections.** Matches the existing convention (no Insights-tab
-  or Pay Audit composable has a UI test — Phase 4/5 carry-overs); `PayAuditPredictionsSection.kt`,
-  `PayAuditFixationCalculatorSection.kt` and `PayAuditFixationCalculatorCard` were verified only by the
-  pure-logic tests (`resolveFixationComparison`, the predictors themselves) plus a green compile and
-  `check_tech_debt_limits`, not by running them on a device or simulator.
-- **The pay-fixation calculator's promotion month/year fields have no range validation.** A year like 1800
-  or 9999 is accepted by `toIntOrNull()` and produces a technically-computed but meaningless comparison —
-  there is no sanity bound tying the input to, say, the officer's own service span from the timeline.
-  `resolveFixationComparison` does refuse a target level that isn't higher than the current one (added
-  during this phase's own review), but the date fields are unguarded.
-- **The calculator's DNI-month is inferred, with a silent default.** `resolveFixationComparison` reads the
-  officer's own increment cycle (January or July) off the most recent INCREMENT event in the timeline; an
-  officer with no increment recorded yet (a very new user, or one who joined the pay matrix mid-service
-  with no observed increment) silently gets a January default with no indication in the UI that this is an
-  assumption rather than a fact read from their own payslips.
-- **`DsopRoomCalculator` assumes the first-seen entry per month is authoritative.** It dedupes
-  `history + current` by `(year, monthNum)`, keeping whichever appears first in that concatenation. If a
-  payslip for a given month is re-parsed with a corrected DSOP figure and both the original and corrected
-  entries are ever passed in together, the financial-year total could silently use the stale value. Not
-  observed in practice (the repository does not currently pass duplicate months this way) and not covered
-  by a test for that ordering assumption specifically.
-- **The next-increment prediction does not distinguish "upcoming" from "already overdue."** If the latest
-  payslip is itself already past due for an increment (the same condition `IncrementAuditor` flags as
-  `INCREMENT_MISSED`), `NextIncrementPredictor` still reports that same date as a plain "Next increment:
-  Due `<date>`" with no cross-reference to the finding — a user could read it as forward-looking when it is
-  actually already late. Fix: either suppress the prediction card when an `INCREMENT_MISSED` finding exists
-  for the same month, or label it "overdue since" instead of "due".
+Not on this list: items already fully resolved with no residual gap (Phase 0's five DA-arrears defects;
+Phase 1's timeline-has-no-consumer note, closed by Phase 2's wiring).
 
 ## Deferred / dropped
 
