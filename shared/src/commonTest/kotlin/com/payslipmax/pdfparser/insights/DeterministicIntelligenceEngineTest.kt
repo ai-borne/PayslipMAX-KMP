@@ -143,6 +143,25 @@ class DeterministicIntelligenceEngineTest {
         assertTrue(result.healthScore <= 75, "Zero DSOP contribution should severely impact the score")
     }
 
+    private fun parsedPayslipWithNetPay(
+        year: Int,
+        month: Int,
+        netRemittance: Double,
+        needsReview: Boolean = false,
+    ) = parsedPayslip(year, month, 85300.0)
+        .copy(summary = PayslipSummary(grossPay = netRemittance, totalDeductions = 0.0, netRemittance = netRemittance), needsReview = needsReview)
+
+    /** Phase 8 P7-20: plain (non-[TimelineAuditor]) auditors never fire on a needsReview parse. */
+    @Test
+    fun testPlainAuditorsDoNotFireOnANeedsReviewMonth() {
+        val previous = parsedPayslipWithNetPay(2026, 4, netRemittance = 100000.0)
+        val current = parsedPayslipWithNetPay(2026, 5, netRemittance = 90000.0, needsReview = true)
+
+        val result = DeterministicIntelligenceEngine.analyze(current, previous, emptyList())
+
+        assertTrue(result.anomalies.none { it.type == "SALARY_LOSS" }, "SALARY_LOSS should not fire on a needsReview month")
+    }
+
     @Test
     fun testTaxSpikeDeduction() {
         val previous = createBaseRecord("04/2026", tax = 5000.0)

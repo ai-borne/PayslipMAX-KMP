@@ -79,7 +79,17 @@ object DeterministicIntelligenceEngine {
         val timeline = ServiceTimelineBuilder.build(history + current)
         val anomalies =
             auditors.flatMap { auditor ->
-                if (auditor is TimelineAuditor) auditor.audit(current, previous, timeline) else auditor.audit(current, previous, history)
+                when {
+                    auditor is TimelineAuditor -> auditor.audit(current, previous, timeline)
+                    // Plain auditors were never rebuilt on the timeline (Phase 8 P7-20) and reason purely
+                    // over raw current/previous fields, so the one timeline-derived signal that applies to
+                    // all of them without a per-auditor rewrite is trust: never fire on a needsReview
+                    // parse. (Excluded pay-matrix cells are a timeline-construction detail for level/stage
+                    // resolution, not a general data-trust signal, so it's deliberately not part of this
+                    // gate.)
+                    current.needsReview || previous?.needsReview == true -> emptyList()
+                    else -> auditor.audit(current, previous, history)
+                }
             }
         val changeExplanations = PayLineChangeExplainer.explain(current, history, timeline)
         val incrementPrediction = NextIncrementPredictor.predict(timeline)
