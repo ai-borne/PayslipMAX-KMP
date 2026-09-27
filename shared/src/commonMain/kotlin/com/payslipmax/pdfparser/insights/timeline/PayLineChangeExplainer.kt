@@ -14,16 +14,24 @@ import kotlin.math.abs
 object PayLineChangeExplainer {
     private const val AMOUNT_TOLERANCE = 0.5
 
+    /**
+     * Explains [current] against the last trustworthy month before it in [timeline] — never the
+     * immediately-preceding stored payslip directly, since that payslip's own month may itself be
+     * excluded from the timeline (needsReview, zero/non-matrix basic pay). Walking back to the last
+     * trusted month (rather than skipping the transition outright) means a gap in the stored history
+     * no longer silently drops the explanation for the next trustworthy month that follows it.
+     */
     fun explain(
         current: ParsedPayslip,
-        previous: ParsedPayslip?,
+        history: List<ParsedPayslip>,
         timeline: ServiceTimeline,
     ): List<ChangeExplanation> {
-        if (previous == null || current.needsReview) return emptyList()
+        if (current.needsReview) return emptyList()
         val month = PayMonth(current.year, current.monthNum)
         val currMonth = timeline.monthAt(month) ?: return emptyList()
-        // No trustworthy previous state (excluded: needsReview, zero/non-matrix basic pay) — nothing to compare against.
-        val prevMonth = timeline.monthAt(PayMonth(previous.year, previous.monthNum)) ?: return emptyList()
+        val prevMonth = timeline.months.lastOrNull { it.month < currMonth.month } ?: return emptyList()
+        val previous =
+            history.firstOrNull { it.year == prevMonth.month.year && it.monthNum == prevMonth.month.month } ?: return emptyList()
 
         return trackedFields(previous, current)
             .filter { (_, from, to) -> abs(from - to) > AMOUNT_TOLERANCE }

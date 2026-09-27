@@ -81,7 +81,7 @@ object DeterministicIntelligenceEngine {
             auditors.flatMap { auditor ->
                 if (auditor is TimelineAuditor) auditor.audit(current, previous, timeline) else auditor.audit(current, previous, history)
             }
-        val changeExplanations = PayLineChangeExplainer.explain(current, previous, timeline)
+        val changeExplanations = PayLineChangeExplainer.explain(current, history, timeline)
         val incrementPrediction = NextIncrementPredictor.predict(timeline)
         val dsopRoom = DsopRoomCalculator.calculate(current, history)
 

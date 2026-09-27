@@ -56,7 +56,7 @@ class PayLineChangeExplainerTest {
     private fun explainLast(vararg payslips: ParsedPayslip): List<ChangeExplanation> {
         val history = payslips.toList()
         val timeline = ServiceTimelineBuilder.build(history)
-        return PayLineChangeExplainer.explain(history.last(), history[history.lastIndex - 1], timeline)
+        return PayLineChangeExplainer.explain(history.last(), history, timeline)
     }
 
     private fun List<ChangeExplanation>.reasonFor(field: String) = single { it.field == field }.reason
@@ -133,12 +133,26 @@ class PayLineChangeExplainerTest {
                 payslip(2018, 2, 85300.0, daPercent = 21.0).copy(needsReview = true),
             )
         val timeline = ServiceTimelineBuilder.build(history)
-        assertTrue(PayLineChangeExplainer.explain(history.last(), history.first(), timeline).isEmpty())
+        assertTrue(PayLineChangeExplainer.explain(history.last(), history, timeline).isEmpty())
+    }
+
+    @Test
+    fun aTransitionFollowingAnUntrustedMonthFallsBackToTheLastTrustedMonth() {
+        // Feb needs review, so it is excluded from the timeline; the Mar transition should explain
+        // against Jan (the last trusted month) instead of being skipped, and diff Mar's DA against Jan's
+        // — not against Feb's untrustworthy figures.
+        val jan = payslip(2018, 1, 85300.0, daPercent = 17.0)
+        val feb = payslip(2018, 2, 85300.0, daPercent = 17.0).copy(needsReview = true)
+        val mar = payslip(2018, 3, 85300.0, daPercent = 21.0)
+        val history = listOf(jan, feb, mar)
+        val timeline = ServiceTimelineBuilder.build(history)
+        val changes = PayLineChangeExplainer.explain(mar, history, timeline)
+        assertEquals("DA revised 17%→21%", changes.reasonFor("dearnessAllowance"))
     }
 
     @Test
     fun theFirstStoredMonthHasNoPreviousToCompareAgainst() {
         val timeline = ServiceTimelineBuilder.build(listOf(payslip(2018, 1, 85300.0)))
-        assertTrue(PayLineChangeExplainer.explain(payslip(2018, 1, 85300.0), null, timeline).isEmpty())
+        assertTrue(PayLineChangeExplainer.explain(payslip(2018, 1, 85300.0), emptyList(), timeline).isEmpty())
     }
 }
