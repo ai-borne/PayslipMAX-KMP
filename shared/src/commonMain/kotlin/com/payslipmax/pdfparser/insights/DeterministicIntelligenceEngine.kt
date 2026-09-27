@@ -3,6 +3,8 @@ package com.payslipmax.pdfparser.insights
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
 import com.payslipmax.pdfparser.domain.*
 import com.payslipmax.pdfparser.insights.timeline.ChangeExplanation
+import com.payslipmax.pdfparser.insights.timeline.NextIncrementPrediction
+import com.payslipmax.pdfparser.insights.timeline.NextIncrementPredictor
 import com.payslipmax.pdfparser.insights.timeline.PayLineChangeExplainer
 import com.payslipmax.pdfparser.insights.timeline.ServiceTimeline
 import com.payslipmax.pdfparser.insights.timeline.ServiceTimelineBuilder
@@ -37,6 +39,10 @@ data class EngineResult(
     // safe default keeps that annotation honest without forcing timeline/ChangeExplanation serializable too.
     @Transient val timeline: ServiceTimeline = ServiceTimeline(emptyList(), emptyList(), emptyList()),
     @Transient val changeExplanations: List<ChangeExplanation> = emptyList(),
+    // Predictions (Pay Audit Phase 6), both zero-input and derived from the same timeline/history the
+    // engine already built above — null when there is nothing trustworthy to predict from.
+    @Transient val incrementPrediction: NextIncrementPrediction? = null,
+    @Transient val dsopRoom: DsopRoom? = null,
 )
 
 object DeterministicIntelligenceEngine {
@@ -76,6 +82,8 @@ object DeterministicIntelligenceEngine {
                 if (auditor is TimelineAuditor) auditor.audit(current, previous, timeline) else auditor.audit(current, previous, history)
             }
         val changeExplanations = PayLineChangeExplainer.explain(current, previous, timeline)
+        val incrementPrediction = NextIncrementPredictor.predict(timeline)
+        val dsopRoom = DsopRoomCalculator.calculate(current, history)
 
         val dsop = current.deductions.dsopSubscription
         val gross = current.summary.grossPay
@@ -93,6 +101,8 @@ object DeterministicIntelligenceEngine {
             taxRatio = taxRate,
             timeline = timeline,
             changeExplanations = changeExplanations,
+            incrementPrediction = incrementPrediction,
+            dsopRoom = dsopRoom,
         )
     }
 

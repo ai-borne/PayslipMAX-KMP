@@ -78,6 +78,24 @@ class DeterministicIntelligenceEngineTest {
         assertTrue(basicPayChange.reason!!.contains("increment", ignoreCase = true))
     }
 
+    /** Pay Audit Phase 6: EngineResult must expose the next-increment prediction and DSOP room it derives
+     * from the same timeline/history it already builds internally, with no user input. */
+    @Test
+    fun testEngineResultExposesIncrementPredictionAndDsopRoom() {
+        val previous = parsedPayslip(2018, 6, 82800.0)
+        val current = parsedPayslip(2018, 7, 85300.0)
+
+        val result = DeterministicIntelligenceEngine.analyze(current, previous, listOf(previous, current))
+
+        val prediction = assertNotNull(result.incrementPrediction, "should predict the next DNI from the increment just seen")
+        assertEquals(2019, prediction.date.year)
+        assertEquals(7, prediction.date.month)
+
+        val dsopRoom = assertNotNull(result.dsopRoom, "DSOP room should always be computed, even at zero subscription")
+        assertEquals("FY 2018-19", dsopRoom.financialYearLabel)
+        assertEquals(500000.0, dsopRoom.roomLeft)
+    }
+
     @Test
     fun testCleanLedgerNoAnomalies() {
         val current = createBaseRecord("05/2026")

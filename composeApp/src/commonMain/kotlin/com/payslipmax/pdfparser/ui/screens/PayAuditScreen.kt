@@ -102,6 +102,8 @@ private fun PayAuditBody(
     ) {
         payAuditFindingsItems(display = findings, onUnlockClick = onShowUpgradeSheet)
         payAuditChangesItems(changes = engineResult.changeExplanations)
+        payAuditPredictionsItems(incrementPrediction = engineResult.incrementPrediction, dsopRoom = engineResult.dsopRoom)
+        payAuditFixationCalculatorItems(timeline = engineResult.timeline)
         payAuditTimelineItems(timeline = engineResult.timeline)
     }
 }

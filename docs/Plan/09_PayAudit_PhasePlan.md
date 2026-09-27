@@ -204,13 +204,51 @@ detected `SALARY_LOSS` anomaly produces zero representation drafts). Existing
 `testProcessPayslipGeneratesRepresentationDraftAndInsightsForMissingTPTA` still passes unchanged (TPTA
 always proven).
 
-### Phase 6 — Predict
+### Phase 6 — Predict — DONE (2026-09-27; open items in Phase 7)
 
-- next increment date and amount
-- DSOP room left under the ₹5L cap
-- the pay-fixation option calculator, with the Option 2 next-increment date fixed to 12 months after
-  re-fixation (verify against the Army Officers Pay Rules 2017; test cases from the official worked
-  example)
+Three predictions, delivered in `shared/.../insights/` and `shared/.../insights/timeline/`:
+
+- **Next increment date and amount** (`NextIncrementPredictor`): zero-input, read off the `ServiceTimeline`
+  alone. Anchored on the most recent INCREMENT or PROMOTION event — an increment recurs exactly 12 months
+  later (it is already on a 1 Jan/1 Jul cycle date); a promotion's first increment in the new level follows
+  6 months later, rounded up to the next cycle date. Returns null when the latest month is untrusted, there
+  is no prior event to anchor on, or the officer is already at the top stage of their level.
+- **DSOP room left under the ₹5L cap** (`DsopRoomCalculator`): sums `dsopSubscription` across the current
+  financial year (1 Apr-31 Mar) from the stored history, deduped by month, against the same ₹500,000 Sec
+  10(11) cap `DsopComplianceAuditor` already cites. Room left floors at zero — a subscription above the cap
+  still credits to the DSOP fund, it simply stops being tax-exempt.
+- **The pay-fixation option calculator** (`PayFixationCalculator`): Option 1 (fixed from date of promotion)
+  vs Option 2 (fixed from the officer's next DNI in the lower level), per Rule 10 & 11 of the Army Officers
+  Pay Rules 2017 (SRO 12(E), 03 May 2017). Ported from the worked reference already in
+  `scripts/pcdao_factory/test_simulation_scenarios.py::calculate_pay_fixation_36mo`, with one correction:
+  the reference rounds "N months later" up to the next 1 Jan/1 Jul cycle with a boundary bug (a date that
+  falls exactly on a cycle month is rounded a full cycle too late); the new `PayMonth.nextIncrementCycle`
+  helper fixes that. The ported worked example (Level 10 stage 8 to Level 11, promoted March, DNI July —
+  Option 1 fixes at ₹71,500, Option 2 at ₹73,600) is unaffected by the bug either way, and is
+  `PayFixationCalculatorTest`'s gate, alongside a regression test for the boundary fix itself.
+
+A shared `PayMonth.plusMonths`/`nextIncrementCycle` helper (`IncrementCycle.kt`) backs both the predictor
+and the calculator — the same "N months later, rounded to the officer's actual increment cycle" rule
+appears in three places (`IncrementAuditor`, the predictor, and both calculator options), so it is SSOT,
+not three copies.
+
+`EngineResult` gains `incrementPrediction`/`dsopRoom` (both `@Transient`, same reasoning as Phase 4's
+`timeline`/`changeExplanations`), computed once per engine run alongside everything else. `PayAuditScreen`
+gains two new sections: "What's next" (`PayAuditPredictionsSection.kt`, free, zero-input — the next
+increment and DSOP room cards) and the pay-fixation calculator (`PayAuditFixationCalculatorSection.kt`,
+free) — the one Phase 6 deliverable that inherently needs a user input, because a future promotion cannot
+be read off the timeline. `resolveFixationComparison` (`PayAuditFixationCalculatorLogic.kt`) resolves the
+officer's current level/stage and DNI cycle month from the timeline automatically, so the calculator only
+ever asks for the level being promoted to and the promotion month/year; it also refuses (returns null) a
+target level that is not actually higher than the officer's current one, since Rule 10/11 only applies to
+an upward move.
+
+Gate result: `./gradlew check -x iosX64Test -x iosSimulatorArm64Test`, `iosSimulatorArm64Test` (both
+`shared` and `composeApp`), `linkDebugFrameworkIosSimulatorArm64`, `ktlintCheck`, and the tech-debt/file-size
+audit all green on every touched/new file. New tests: `NextIncrementPredictorTest`,
+`DsopRoomCalculatorTest`, `PayFixationCalculatorTest` (the worked-example gate above, plus the boundary-fix
+regression and a top-stage/no-further-increment case), `PayAuditFixationCalculatorLogicTest`, and a
+`DeterministicIntelligenceEngineTest` case asserting both new `EngineResult` fields are populated.
 
 ### Phase 7 — Carry-overs from earlier phases
 
@@ -352,6 +390,36 @@ Carried over from Phase 5 (nothing here is claimed done):
 - **No Compose/UI test exercises the new gating end-to-end from `PayAuditScreen`.** Only the
   `shared`-level repository/generator tests were added (matches the existing convention noted in the
   Phase 4 carry-over: no Insights-tab or Pay Audit composable has a UI test).
+
+Carried over from Phase 6 (nothing here is claimed done):
+
+- **No Compose/UI test exercises the two new sections.** Matches the existing convention (no Insights-tab
+  or Pay Audit composable has a UI test — Phase 4/5 carry-overs); `PayAuditPredictionsSection.kt`,
+  `PayAuditFixationCalculatorSection.kt` and `PayAuditFixationCalculatorCard` were verified only by the
+  pure-logic tests (`resolveFixationComparison`, the predictors themselves) plus a green compile and
+  `check_tech_debt_limits`, not by running them on a device or simulator.
+- **The pay-fixation calculator's promotion month/year fields have no range validation.** A year like 1800
+  or 9999 is accepted by `toIntOrNull()` and produces a technically-computed but meaningless comparison —
+  there is no sanity bound tying the input to, say, the officer's own service span from the timeline.
+  `resolveFixationComparison` does refuse a target level that isn't higher than the current one (added
+  during this phase's own review), but the date fields are unguarded.
+- **The calculator's DNI-month is inferred, with a silent default.** `resolveFixationComparison` reads the
+  officer's own increment cycle (January or July) off the most recent INCREMENT event in the timeline; an
+  officer with no increment recorded yet (a very new user, or one who joined the pay matrix mid-service
+  with no observed increment) silently gets a January default with no indication in the UI that this is an
+  assumption rather than a fact read from their own payslips.
+- **`DsopRoomCalculator` assumes the first-seen entry per month is authoritative.** It dedupes
+  `history + current` by `(year, monthNum)`, keeping whichever appears first in that concatenation. If a
+  payslip for a given month is re-parsed with a corrected DSOP figure and both the original and corrected
+  entries are ever passed in together, the financial-year total could silently use the stale value. Not
+  observed in practice (the repository does not currently pass duplicate months this way) and not covered
+  by a test for that ordering assumption specifically.
+- **The next-increment prediction does not distinguish "upcoming" from "already overdue."** If the latest
+  payslip is itself already past due for an increment (the same condition `IncrementAuditor` flags as
+  `INCREMENT_MISSED`), `NextIncrementPredictor` still reports that same date as a plain "Next increment:
+  Due `<date>`" with no cross-reference to the finding — a user could read it as forward-looking when it is
+  actually already late. Fix: either suppress the prediction card when an `INCREMENT_MISSED` finding exists
+  for the same month, or label it "overdue since" instead of "due".
 
 ## Deferred / dropped
 
