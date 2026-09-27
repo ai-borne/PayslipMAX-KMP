@@ -7,15 +7,9 @@ import com.payslipmax.pdfparser.insights.AnomalySeverityMapper
 import com.payslipmax.pdfparser.insights.InsightPrioritizationEngine
 import com.payslipmax.pdfparser.insights.InsightSeverity
 import com.payslipmax.pdfparser.insights.Opportunity
+import com.payslipmax.pdfparser.insights.REPRESENTATION_DRAFT_TYPES
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.math.abs
-
-/** [Anomaly.type]s for which [com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository]
- *  already auto-generates a representation draft — reused here as the SSOT for which anomaly cards
- *  route to the Claim-Generator screen. Internal (not private) so [RecommendedActions] can reuse the
- *  same SSOT rather than re-deriving which anomaly types are representation-eligible. */
-internal val REPRESENTATION_DRAFT_TYPES =
-    setOf("SALARY_LOSS", "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "INCREMENT_MISSED", "MSP_SHORTFALL")
 
 /**
  * Pure builder: [InsightsState] engine output -> ordered [InsightUiModel] cards for the redesigned

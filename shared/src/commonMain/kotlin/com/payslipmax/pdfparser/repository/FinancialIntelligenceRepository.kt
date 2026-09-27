@@ -117,9 +117,7 @@ open class FinancialIntelligenceRepository(
 
             // 5. Generate Representation Drafts locally for claims discrepancies
             engineResult.anomalies.forEach { anomaly ->
-                // Kept in sync by hand with composeApp's REPRESENTATION_DRAFT_TYPES (SmartInsightsBuilder.kt);
-                // `shared` cannot depend on `composeApp` to share the SSOT directly.
-                if (anomaly.type in setOf("MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "SALARY_LOSS", "INCREMENT_MISSED", "MSP_SHORTFALL")) {
+                if (anomaly.type in REPRESENTATION_DRAFT_TYPES) {
                     val draft =
                         RepresentationDraftGenerator.generateRepresentationDraft(
                             disputeMonth = dateStr,

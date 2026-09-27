@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import com.payslipmax.pdfparser.Screen
+import com.payslipmax.pdfparser.insights.REPRESENTATION_DRAFT_TYPES
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
