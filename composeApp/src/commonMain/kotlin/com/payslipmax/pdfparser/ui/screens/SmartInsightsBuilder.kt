@@ -8,6 +8,7 @@ import com.payslipmax.pdfparser.insights.InsightPrioritizationEngine
 import com.payslipmax.pdfparser.insights.InsightSeverity
 import com.payslipmax.pdfparser.insights.Opportunity
 import com.payslipmax.pdfparser.insights.REPRESENTATION_DRAFT_TYPES
+import com.payslipmax.pdfparser.insights.isProven
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import kotlin.math.abs
 
@@ -86,13 +87,16 @@ private fun biggestComponentChangeCard(
 }
 
 private fun Anomaly.toInsightUiModel(): InsightUiModel {
-    val target = anomalyActionTarget(type)
+    val target = anomalyActionTarget(this)
     return InsightUiModel(
         title = anomalyCategoryLabel(type),
         explanation = description,
         severity = AnomalySeverityMapper.severityOf(type),
         amountLabel = if (amount > 0.0) formatCurrency(amount) else null,
-        actionLabel = anomalyActionLabel(type, amount),
+        // A label without a clickable target is dead UI (see anomalyActionLabel's own note on
+        // RENT_RECOVERY_RISK/DEBIT_RECOVERY) — same rule now also drops an unproven REPRESENTATION_DRAFT_TYPES
+        // finding's label, since P7-09 makes its target conditional on isProven().
+        actionLabel = target?.let { anomalyActionLabel(type, amount) },
         actionTarget = target,
         gate = target?.let(::gateForScreen),
     )
@@ -126,9 +130,10 @@ private fun anomalyActionLabel(
         else -> null
     }
 
-private fun anomalyActionTarget(type: String): Screen? =
-    when (type) {
-        in REPRESENTATION_DRAFT_TYPES -> Screen.Representation
+/** P7-09: the Representation CTA only fires for a proven instance, matching the "Draft Claims" letter gate. */
+private fun anomalyActionTarget(anomaly: Anomaly): Screen? =
+    when (anomaly.type) {
+        in REPRESENTATION_DRAFT_TYPES -> if (anomaly.isProven()) Screen.Representation else null
         "DSOP_COMPLIANCE" -> Screen.RetirementPlanning
         "DEDUCTION_SPIKE", "TAX_PROJECTION" -> Screen.TaxPlanning
         else -> null

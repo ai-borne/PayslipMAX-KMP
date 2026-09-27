@@ -297,10 +297,14 @@ Everything Phases 0–6 left unproven or unbuilt, kept in one place (CLAUDE.md "
   `PayAuditStrings`' evidence labels (SSOT with `PayAuditFindingRow`) so the Insights-tab card and the Pay
   Audit screen show the same detail for the same finding. No new test — matches the existing convention
   that no Insights-tab composable has a UI test (P7-19).
-- [ ] **P7-09 — Insights-tab CTAs not scoped to "proven".** `RecommendedActions.candidateRecommendedActions`
-  and `SmartInsightsBuilder.anomalyActionTarget` show a "Draft Claims" CTA whenever any anomaly's `type` is
-  in `REPRESENTATION_DRAFT_TYPES`, regardless of whether that instance was actually proven. Scope the CTA
-  to "a proven anomaly of this type exists".
+- [x] **P7-09 — Insights-tab CTAs not scoped to "proven"** (done 2026-09-27).
+  `candidateRecommendedActions` now requires `it.isProven()` alongside the type check; `anomalyActionTarget`
+  now takes the full `Anomaly` and returns `null` for an unproven `REPRESENTATION_DRAFT_TYPES` instance —
+  and `toInsightUiModel` drops the action label whenever the target is null, so an unproven finding no
+  longer shows a label with nowhere to go. Existing tests exercising an unproven `SALARY_LOSS` (never
+  proven in practice per Phase 5) updated to use a proven fixture where the old CTA behavior was the point
+  of the test; new tests added for the unproven case in both `SmartInsightsBuilderTest` and
+  `RecommendedActionsLogicTest`.
 - [ ] **P7-10 — `SALARY_LOSS`/`MISSING_ALLOWANCE` no longer auto-draft letters.** Correct under the literal
   "proven" gate but a user-visible regression from pre-Phase-5 behavior. Two options, pick one: (a) add
   verified `PayAuthorities` citations for `MissingAllowanceAuditor`'s HRA-drop/MSP-drop rules (structural,

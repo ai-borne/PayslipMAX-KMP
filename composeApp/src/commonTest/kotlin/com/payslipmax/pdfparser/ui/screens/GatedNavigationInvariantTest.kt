@@ -76,7 +76,8 @@ class GatedNavigationInvariantTest {
 
     @Test
     fun `every Recommended Action targeting a catalog screen carries the catalog's gate`() {
-        val anomaly = Anomaly("SALARY_LOSS", "field", 1000.0, "02/2026", "detail")
+        // Must be proven (P7-09) or buildRecommendedActions won't surface the Claim Generator candidate at all.
+        val anomaly = Anomaly("SALARY_LOSS", "field", 1000.0, "02/2026", "detail", 5000.0, 4000.0, "Test Authority")
         val actions =
             buildRecommendedActions(
                 state(anomalies = listOf(anomaly), opportunities = emptyList()),

@@ -72,19 +72,28 @@ class RecommendedActionsLogicTest {
         assertTrue(actions.none { it.gate == FeatureGate.TAX_PLANNER })
     }
 
+    private fun provenAnomaly() = Anomaly("SALARY_LOSS", "field", 1000.0, "02/2026", "detail", 5000.0, 4000.0, "Test Authority")
+
     @Test
-    fun `a representation-eligible anomaly surfaces a Claim Generator recommendation`() {
-        val anomaly = Anomaly("SALARY_LOSS", "field", 1000.0, "02/2026", "detail")
-        val actions = buildRecommendedActions(state(anomalies = listOf(anomaly), dsopSubscription = 0.0), shownInsights = emptyList())
+    fun `a proven representation-eligible anomaly surfaces a Claim Generator recommendation`() {
+        val actions = buildRecommendedActions(state(anomalies = listOf(provenAnomaly()), dsopSubscription = 0.0), shownInsights = emptyList())
         assertTrue(actions.any { it.gate == FeatureGate.CLAIM_GENERATOR && it.target == Screen.Representation })
     }
 
     @Test
-    fun `Claim Generator recommendation is dropped when already shown on a visible insight card`() {
+    fun `an unproven representation-eligible anomaly surfaces no Claim Generator recommendation`() {
+        // P7-09: no letter would actually be drafted for an unproven instance (Phase 5's isProven gate),
+        // so the CTA must not promise one either.
         val anomaly = Anomaly("SALARY_LOSS", "field", 1000.0, "02/2026", "detail")
+        val actions = buildRecommendedActions(state(anomalies = listOf(anomaly), dsopSubscription = 0.0), shownInsights = emptyList())
+        assertTrue(actions.none { it.gate == FeatureGate.CLAIM_GENERATOR })
+    }
+
+    @Test
+    fun `Claim Generator recommendation is dropped when already shown on a visible insight card`() {
         val actions =
             buildRecommendedActions(
-                state(anomalies = listOf(anomaly), dsopSubscription = 0.0),
+                state(anomalies = listOf(provenAnomaly()), dsopSubscription = 0.0),
                 shownInsights = listOf(insight(Screen.Representation)),
             )
         assertTrue(actions.none { it.gate == FeatureGate.CLAIM_GENERATOR })
@@ -104,10 +113,9 @@ class RecommendedActionsLogicTest {
 
     @Test
     fun `no CTA target ever appears twice across the returned list`() {
-        val anomaly = Anomaly("SALARY_LOSS", "field", 1000.0, "02/2026", "detail")
         val actions =
             buildRecommendedActions(
-                state(anomalies = listOf(anomaly), totalPotentialTaxSaving = 5_000.0, dsopGapMonthly = 2_000.0, dsopSubscription = 10_000.0),
+                state(anomalies = listOf(provenAnomaly()), totalPotentialTaxSaving = 5_000.0, dsopGapMonthly = 2_000.0, dsopSubscription = 10_000.0),
                 shownInsights = emptyList(),
             )
         assertEquals(actions.map { it.target }.distinct().size, actions.size)
