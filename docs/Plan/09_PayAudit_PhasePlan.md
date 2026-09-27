@@ -120,10 +120,24 @@ had no TPTA). Recall is covered by synthetic tests only; the corpus officer was 
 Run on 3–5 real officers' payslips, on their own devices. Continue to UI only if it finds real errors
 without false alarms.
 
-### Phase 3 — Explain every change
+### Phase 3 — Explain every change — DONE (2026-09-27; open items in Phase 7)
 
 Every month-to-month pay-line change gets a reason (e.g. "DA 55→58%, arrears for Jul–Sep").
 Gate: coverage (% of changes explained) on the corpus.
+
+Delivered in `shared/.../insights/timeline/`: `ChangeExplanation` (month, field, from, to, reason) and
+`PayLineChangeExplainer`, which explains a move in the ten pay-line fields the timeline already models —
+Basic Pay (DNI/promotion), DA and its arrears (rate revision, including "DA follows the pay-base rise" on
+an increment/promotion month where the rate itself did not change), Transport Allowance (posting change,
+relocation, or DA), HRA/licence fee (quarters taken/vacated), and Risk & Hardship/Field allowance (posting
+spans). A field with no matching rule comes back with `reason = null` rather than a guess. Both months of
+a transition must sit in the trusted `ServiceTimeline` (excluded: `needsReview`, zero or non-matrix basic
+pay) or the whole transition is skipped, not guessed from untrustworthy data.
+
+Gate result (`PayLineChangeExplanationCorpusTest`): 91 of 104 tracked month-to-month moves over the corpus
+carry a reason (87.5%). The 13 gaps are pinned by month, not just counted, and are all the same field:
+licence-fee amount moving while quarters stay occupied (the accommodation/rent bracket is not modeled —
+see Phase 7).
 
 ### Phase 4 — Pay Audit screen
 
@@ -194,6 +208,30 @@ Carried over from Phase 2 (nothing here is claimed done):
   `flying_allowance`/`special_forces_allowance` if those are ever ported.
 - **Other auditors.** `SalaryLossAuditor` (net-pay drop) and the rest were not rebuilt on the timeline; not
   part of Phase 2's list.
+
+Carried over from Phase 3 (nothing here is claimed done):
+
+- **Licence-fee rate is not modeled.** The timeline tracks quarters occupancy as a start/stop toggle only;
+  13 of 104 tracked corpus changes are the fee amount moving while quarters stay occupied (a different
+  accommodation/rent bracket). Pinned in `PayLineChangeExplanationCorpusTest`, not fixed — no accommodation
+  type or rent-bracket data is ported, and none is planned unless a real officer needs it explained.
+- **Only ten pay-line fields are explained.** Chosen because they are exactly what the `ServiceTimeline`
+  already models (Phases 1-2): Basic Pay, DA, DA/TPTA-DA arrears, MSP, Transport Allowance, HRA, licence
+  fee, Risk & Hardship and Field allowance. The other ~30 `Earnings`/`Deductions` fields (income tax, DSOP
+  subscription, CEA, NPA, dress/ration/technical allowance, non-DA arrears, all `adj*` corrections) have no
+  structural rule to explain a move and are not tracked at all — a changed value in one of them produces no
+  `ChangeExplanation` entry, not an unexplained one, so it stays invisible to the coverage gate. Extend the
+  tracked set only when a real officer's payslip needs one of these explained.
+- **A transition following an untrusted month is skipped, not attempted.** If the immediately preceding
+  stored payslip is excluded from the timeline (`needsReview`, zero or non-matrix basic pay — e.g. the
+  corpus's Feb-Mar 2022 gap), `PayLineChangeExplainer` returns nothing for that month rather than comparing
+  against the last trustworthy month further back. Same underlying data gap as Phase 1's exclusions; not
+  reported as "unexplained" because there is no reliable "from" value to explain a move against.
+- **`PayLineChangeExplainer` has no consumer yet.** Deliberate, same as Phase 1's `ServiceTimeline`: Phase 4
+  wires the explanations into the Pay Audit screen's timeline view.
+- **TPTA arrears not linked to a DA rise (`arrearsTpta`) are not tracked.** Only DA-linked TPTA-DA arrears
+  (`arrearsTptaDa`) are explained, mirroring `DaArrearsAuditor`'s scope; a posting-change back-payment of
+  base TPTA itself has no rule and is out of scope until a real officer shows one.
 
 ## Deferred / dropped
 

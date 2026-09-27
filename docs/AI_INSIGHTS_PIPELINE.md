@@ -537,6 +537,12 @@ graph TD
 
 The last four are `TimelineAuditor`s: the engine builds one `ServiceTimeline` per run (see `docs/Plan/09_PayAudit_PhasePlan.md`) and each finding carries `expected`/`actual`/`authority`.
 
+`PayLineChangeExplainer` (Pay Audit Phase 3, same package) is a sibling, not an `Anomaly`-emitting auditor:
+given a month's `ServiceTimeline` context it explains a move in ten pay-line fields (Basic Pay, DA and its
+arrears, Transport Allowance, HRA/licence fee, Risk & Hardship/Field allowance) with a `ChangeExplanation`,
+or `null` when no structural rule accounts for it. Not wired into `DeterministicIntelligenceEngine` — it
+does not affect health score or anomaly tiers; Phase 4 wires it into the Pay Audit screen.
+
 `InsightPrioritizationEngine` scores alerts on 5 dimensions, filters below 7.0, caps dashboard at top 4, uses ₹ value as tie-breaker.
 
 **Direct dependency on parser quality**: every one of these auditors reads `ParsedPayslip.earnings`/`.deductions`/`.rawEarnings` history across months. The [§3](#3-display-layer-structured--raw-merge) display bug did not corrupt the underlying `ParsedPayslip` data these auditors consume (only the UI rendering), but a genuine upstream misclassification (Stage 4/5) would silently skew `MissingAllowanceAuditor` and `SalaryLossAuditor` in particular, since both compare a field's value against its own history.
