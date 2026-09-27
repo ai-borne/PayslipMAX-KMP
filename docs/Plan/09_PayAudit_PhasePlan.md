@@ -250,11 +250,18 @@ audit all green on every touched/new file. New tests: `NextIncrementPredictorTes
 regression and a top-stage/no-further-increment case), `PayAuditFixationCalculatorLogicTest`, and a
 `DeterministicIntelligenceEngineTest` case asserting both new `EngineResult` fields are populated.
 
-### Phase 7 — Carry-overs from earlier phases
+### Phase 7 — Carry-overs from earlier phases — DONE (2026-09-27)
 
 Everything Phases 0–6 left unproven or unbuilt, kept in one place (CLAUDE.md "fail loud"). Consolidated
 2026-09-27 into a single checklist, cleared one item at a time. `[x]` = done before this phase started
 (dated); `[ ]` = open, tackled in list order unless a dependency forces reordering (noted inline).
+
+Closed 2026-09-27 with 10 of 25 items resolved (P7-01–P7-10, each in its own commit, tests/ktlint/tech-debt
+audit green on every touched file; full `./gradlew check -x iosX64Test -x iosSimulatorArm64Test` green at
+close). Per user decision, the remaining 15 items are not attempted in this phase — they are a different
+shape of work (deliberately-deferred no-ops, work blocked on real users, and substantial new
+features/architecture, not bug fixes) — and are carried into **Phase 8** below rather than left dangling
+inside a phase marked done.
 
 - [x] **P7-01 — Anomaly tier fix** (done 2026-09-27, commit `053938dd`, immediately after Phase 2, before
   Phase 3). `IncrementAuditor`/`MspAuditor` emit their own types (`INCREMENT_MISSED`, `MSP_SHORTFALL`),
@@ -316,14 +323,52 @@ Everything Phases 0–6 left unproven or unbuilt, kept in one place (CLAUDE.md "
   `RecommendedActionsLogicTest`, `GatedNavigationInvariantTest` to use `MISSING_ALLOWANCE` for the
   proven/unproven CTA cases (the type actually exercising the `isProven()` gate now), plus new tests
   confirming `SALARY_LOSS` never gets a CTA even when synthetically "proven".
+
+Not on the Phase 7 checklist: items already fully resolved with no residual gap (Phase 0's five
+DA-arrears defects; Phase 1's timeline-has-no-consumer note, closed by Phase 2's wiring).
+
+### Phase 8 — Remaining Phase 7 carry-overs
+
+The 15 items Phase 7 left open, unchanged in substance, IDs kept as `P7-NN` (they're the same items —
+renumbering would just break the cross-references already made to them). Each is tagged with why it
+wasn't attempted in Phase 7, so this phase doesn't read as a silent backlog dump:
+
+**Deliberately deferred — no action unless the trigger condition happens (not bugs):**
+
 - [ ] **P7-11 — Service Timeline list has no pagination/collapsing.** Flat list, newest first, no cap.
   Fine for the single corpus officer; untested for a real officer with a much longer service record.
+  Trigger: a real officer's timeline is unusably long.
+- [ ] **P7-21 — Officer scope of the matrix.** Only regular-Army Levels 10–18 are ported; MNS/NCC matrices
+  out of scope. Trigger: an MNS/NCC user appears.
+- [ ] **P7-22 — TPTA city class null for Jun–Sep 2017.** Those payslips print pre-7th-CPC TPTA (₹3,712);
+  correct as-is. Trigger: a real officer needs those specific months classified.
+- [ ] **P7-23 — Out-of-scope rules, deliberately deferred.** Level 14+ (different TPTA slab, official-car
+  option, no MSP); the first increment after a promotion (INCREMENT_004, six-month rule PROMO_FIX_004);
+  leave/suspension months that switch TPTA off (TA_TRANSPORT_002/003, not visible in payslips). Trigger:
+  a real officer in one of these situations.
+
+**Blocked on real users (no developer-only workaround):**
+
+- [ ] **P7-24 — Real-data validation of the timeline.** Never exercised on real data: unplaced months from
+  a shared matrix cell (10 vs 10B, 11 vs 12A), FIELD posting spans (corpus has none), a Level 12A officer
+  who starts mid-history. Folds into P7-25.
+- [ ] **P7-25 — Validation checkpoint itself.** Run on 3–5 real officers' payslips, on their own devices.
+  Report unplaced months and span counts per officer. Blocked on **P7-18** for the Insights-tab surfaces,
+  and requires real users this app doesn't have yet (only the developer is on TestFlight as of 2026-09-18).
+
+**Small/medium code fixes (similar shape to Phase 7's P7-04–P7-10, not attempted only for pacing):**
+
 - [ ] **P7-12 — "What changed this month" covers one transition, not the whole timeline.**
   `PayAuditScreen` calls `PayLineChangeExplainer` only for the current payslip vs. its immediate
   predecessor. No "explain every transition at once" view across the full Service Timeline exists.
 - [ ] **P7-13 — Transition following an untrusted month is skipped, not attempted.** If the immediately
   preceding stored payslip is excluded from the timeline, `PayLineChangeExplainer` returns nothing rather
   than comparing against the last trustworthy month further back.
+- [ ] **P7-20 — Other auditors not rebuilt on the timeline.** `SalaryLossAuditor` (net-pay drop) and the
+  rest were never part of Phase 2's rebuild list.
+
+**New feature work (new rule modeling, not bug fixes):**
+
 - [ ] **P7-14 — TPTA arrears not linked to a DA rise (`arrearsTpta`) are untracked.** Only DA-linked
   TPTA-DA arrears (`arrearsTptaDa`) are explained; a posting-change back-payment of base TPTA has no rule.
 - [ ] **P7-15 — Licence-fee rate (accommodation/rent bracket) not modeled.** Timeline tracks quarters
@@ -332,43 +377,28 @@ Everything Phases 0–6 left unproven or unbuilt, kept in one place (CLAUDE.md "
 - [ ] **P7-16 — Only ten pay-line fields are explained.** ~30 other `Earnings`/`Deductions` fields (income
   tax, DSOP subscription, CEA, NPA, dress/ration/technical allowance, non-DA arrears, `adj*` corrections)
   have no structural rule and produce no `ChangeExplanation` at all — invisible to the coverage gate.
+
+**Substantial architecture work (each its own multi-file undertaking):**
+
 - [ ] **P7-17 — Findings decided at import time; no retraction/re-audit.** A TPTA-free month is explained
   by months around it that may not be imported yet (audited with earlier data only, corpus's Dec 2019,
   May 2022, Sep 2024 flagged — pinned in `PayAuditCorpusPrecisionTest`). Needs a re-audit that retracts a
   finding once later payslips explain it, or a rule that holds a finding until the next month exists.
   Depends on **P7-18** (thin ledger) for the app path, but the retraction logic itself is engine-level.
-- [ ] **P7-18 — Stored history too thin for the new explanations (blocks Validation checkpoint).** The
-  Insights tab's `InsightsState` (Smart Insights, Advanced Anomalies, MonthlySnapshot, PayTrendChart) still
-  feeds `LedgerRecordEntity` rows, which keep no Risk & Hardship/field allowance, licence fee, arrears,
-  adjustment or `needsReview` data — so posting-change/quarters explanations and TPTA arrears exemptions
-  never fire there (Pay Audit's own screen was already fixed in Phase 4 via `rememberPayAuditEngineResult`
-  reading `PayslipUiState.payslips` directly). Fix: migrate `InsightsState` the same way, or extend the
-  ledger table (Room v11 → v12, needs an `AutoMigration`). The same gap means `DaArrearsAuditor` never sees
-  `arrearsDa` on the Insights-tab path.
+- [ ] **P7-18 — Stored history too thin for the new explanations (blocks P7-25's Validation checkpoint).**
+  The Insights tab's `InsightsState` (Smart Insights, Advanced Anomalies, MonthlySnapshot, PayTrendChart)
+  still feeds `LedgerRecordEntity` rows, which keep no Risk & Hardship/field allowance, licence fee,
+  arrears, adjustment or `needsReview` data — so posting-change/quarters explanations and TPTA arrears
+  exemptions never fire there (Pay Audit's own screen was already fixed in Phase 4 via
+  `rememberPayAuditEngineResult` reading `PayslipUiState.payslips` directly). Fix: migrate `InsightsState`
+  the same way, or extend the ledger table (Room v11 → v12, needs an `AutoMigration`). The same gap means
+  `DaArrearsAuditor` never sees `arrearsDa` on the Insights-tab path.
 - [ ] **P7-19 — No Compose/UI test exercises any Pay Audit or Insights-tab composable.** Matches existing
   convention (no Insights-tab composable has one either) but recorded per CLAUDE.md fail-loud: covers
   `PayAuditScreen`, `PayAuditTimelineSection`, `PayAuditFindingsSection`, `PayAuditPredictionsSection`,
   `PayAuditFixationCalculatorSection`, and the Phase 5 representation-gating end-to-end path. Only pure
-  logic functions and a green compile/tech-debt audit have verified these so far.
-- [ ] **P7-20 — Other auditors not rebuilt on the timeline.** `SalaryLossAuditor` (net-pay drop) and the
-  rest were never part of Phase 2's rebuild list.
-- [ ] **P7-21 — Officer scope of the matrix.** Only regular-Army Levels 10–18 are ported; MNS/NCC matrices
-  out of scope. Decide only if such users appear — no action unless triggered.
-- [ ] **P7-22 — TPTA city class null for Jun–Sep 2017.** Those payslips print pre-7th-CPC TPTA (₹3,712);
-  correct as-is. Revisit only if a real officer needs those months classified.
-- [ ] **P7-23 — Out-of-scope rules, deliberately deferred.** Level 14+ (different TPTA slab, official-car
-  option, no MSP); the first increment after a promotion (INCREMENT_004, six-month rule PROMO_FIX_004);
-  leave/suspension months that switch TPTA off (TA_TRANSPORT_002/003, not visible in payslips).
-- [ ] **P7-24 — Real-data validation of the timeline.** Never exercised on real data: unplaced months from
-  a shared matrix cell (10 vs 10B, 11 vs 12A), FIELD posting spans (corpus has none), a Level 12A officer
-  who starts mid-history. Folds into the Validation checkpoint below — needs real officer payslips.
-- [ ] **P7-25 — Validation checkpoint itself.** Run on 3–5 real officers' payslips, on their own devices.
-  Report unplaced months and span counts per officer. Blocked on **P7-18** for the Insights-tab surfaces,
-  and requires real users this app doesn't have yet (only the developer is on TestFlight as of 2026-09-18)
-  — likely stays open until real officers are on the app.
-
-Not on this list: items already fully resolved with no residual gap (Phase 0's five DA-arrears defects;
-Phase 1's timeline-has-no-consumer note, closed by Phase 2's wiring).
+  logic functions and a green compile/tech-debt audit have verified these so far. Would be the first
+  Compose UI test in the codebase — a new convention, not just a new test.
 
 ## Deferred / dropped
 
