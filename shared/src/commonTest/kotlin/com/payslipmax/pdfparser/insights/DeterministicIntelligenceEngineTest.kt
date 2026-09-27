@@ -178,6 +178,59 @@ class DeterministicIntelligenceEngineTest {
         assertTrue(result.anomalies.none { it.type == "SALARY_LOSS" }, "SALARY_LOSS should not fire on a needsReview month")
     }
 
+    /** P7-18 (docs/Plan/09_PayAudit_PhasePlan.md): the ledger-backed [LedgerRecordEntity] path now
+     * carries arrearsDa, so DaArrearsAuditor sees it on the Insights-tab path, not just PayAuditScreen's. */
+    @Test
+    fun testArrearsDaIsAuditedViaTheLedgerBackedPath() {
+        val payBase = 85300.0 + 15500.0
+        val previous =
+            LedgerRecordEntity(
+                dateStr = "07/2018", year = 2018, monthNum = 7,
+                basicPay = 85300.0, dearnessAllowance = payBase * 0.17, militaryServicePay = 15500.0,
+                transportAllowance = 3600.0, transportAllowanceDa = 0.0, houseRentAllowance = 0.0,
+                grossPay = 0.0, dsopSubscription = 0.0, incomeTax = 0.0, netPay = 0.0,
+            )
+        val current =
+            LedgerRecordEntity(
+                dateStr = "09/2018", year = 2018, monthNum = 9,
+                basicPay = 85300.0, dearnessAllowance = payBase * 0.21, militaryServicePay = 15500.0,
+                transportAllowance = 3600.0, transportAllowanceDa = 0.0, houseRentAllowance = 0.0,
+                grossPay = 0.0, dsopSubscription = 0.0, incomeTax = 0.0, netPay = 0.0,
+                arrearsDa = payBase * 0.04 * 2,
+            )
+
+        val result = DeterministicIntelligenceEngine.analyze(current, previous, listOf(previous))
+
+        val arrearsFinding = result.anomalies.find { it.field == "arrearsDa" }
+        assertNotNull(arrearsFinding, "DaArrearsAuditor should see arrearsDa read from the ledger, not just default to 0.0")
+        assertEquals("ARREARS_AUDIT", arrearsFinding.type, "Paid exactly the expected amount, so this should verify, not flag a loss")
+    }
+
+    /** P7-18: needsReview now round-trips through [LedgerRecordEntity], so Phase 8's P7-20 gate (plain
+     * auditors skip a needsReview month) actually applies on the Insights-tab path, not just a no-op. */
+    @Test
+    fun testNeedsReviewOnALedgerRecordGatesPlainAuditors() {
+        val previous =
+            LedgerRecordEntity(
+                dateStr = "04/2026", year = 2026, monthNum = 4,
+                basicPay = 85300.0, dearnessAllowance = 27000.0, militaryServicePay = 15500.0,
+                transportAllowance = 3600.0, transportAllowanceDa = 0.0, houseRentAllowance = 27000.0,
+                grossPay = 100000.0, dsopSubscription = 12000.0, incomeTax = 7200.0, netPay = 80800.0,
+            )
+        val current =
+            LedgerRecordEntity(
+                dateStr = "05/2026", year = 2026, monthNum = 5,
+                basicPay = 85300.0, dearnessAllowance = 27000.0, militaryServicePay = 15500.0,
+                transportAllowance = 3600.0, transportAllowanceDa = 0.0, houseRentAllowance = 0.0,
+                grossPay = 90000.0, dsopSubscription = 12000.0, incomeTax = 7200.0, netPay = 70800.0,
+                needsReview = true,
+            )
+
+        val result = DeterministicIntelligenceEngine.analyze(current, previous, emptyList())
+
+        assertTrue(result.anomalies.none { it.type == "SALARY_LOSS" }, "SALARY_LOSS should not fire on a needsReview ledger month")
+    }
+
     @Test
     fun testTaxSpikeDeduction() {
         val previous = createBaseRecord("04/2026", tax = 5000.0)

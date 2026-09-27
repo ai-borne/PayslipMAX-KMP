@@ -177,11 +177,20 @@ object DeterministicIntelligenceEngine {
                     transportAllowance = transportAllowance,
                     transportAllowanceDa = transportAllowanceDa,
                     houseRentAllowance = houseRentAllowance,
+                    riskHardshipAllowance = riskHardshipAllowance,
+                    fieldAllowance = fieldAllowance,
+                    arrearsDa = arrearsDa,
+                    arrearsTpta = arrearsTpta,
+                    arrearsTptaDa = arrearsTptaDa,
+                    adjTpta = adjTpta,
+                    adjMsp = adjMsp,
                 ),
             deductions =
                 Deductions(
                     dsopSubscription = dsopSubscription,
                     incomeTax = incomeTax,
+                    licenseFee = licenseFee,
+                    furnitureRent = furnitureRent,
                 ),
             ledgerBalances = LedgerBalances(),
             summary =
@@ -191,6 +200,7 @@ object DeterministicIntelligenceEngine {
                     netRemittance = netPay,
                 ),
             taxAndSavings = null,
+            needsReview = needsReview,
         )
     }
 }

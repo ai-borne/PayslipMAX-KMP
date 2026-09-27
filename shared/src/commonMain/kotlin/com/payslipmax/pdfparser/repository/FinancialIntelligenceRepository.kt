@@ -153,6 +153,16 @@ open class FinancialIntelligenceRepository(
             dsopSubscription = deductions.dsopSubscription,
             incomeTax = deductions.incomeTax,
             netPay = summary.netRemittance,
+            riskHardshipAllowance = earnings.riskHardshipAllowance,
+            fieldAllowance = earnings.fieldAllowance,
+            licenseFee = deductions.licenseFee,
+            furnitureRent = deductions.furnitureRent,
+            arrearsDa = earnings.arrearsDa,
+            arrearsTpta = earnings.arrearsTpta,
+            arrearsTptaDa = earnings.arrearsTptaDa,
+            adjTpta = earnings.adjTpta,
+            adjMsp = earnings.adjMsp,
+            needsReview = needsReview,
         )
     }
 
