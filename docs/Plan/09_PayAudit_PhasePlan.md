@@ -448,37 +448,85 @@ the gap warranted. What each scope-down left open is consolidated into Phase 10,
   and the Phase 5 representation-gating end-to-end path remain untested at the UI layer — same convention
   gap as the rest of the Insights tab, not unique to Pay Audit, carried to Phase 10.
 
-### Phase 10 — Remaining Phase 9 carry-overs
+### Phase 10 — Remaining Phase 9 carry-overs — DONE (2026-09-27)
 
 What Phase 9 left open, plus the Phase 8 items still blocked on a trigger condition (unchanged, listed here
 only for continuity since Phase 9 didn't touch them). None of these are regressions — each is either a
 documented scope-down (see Phase 9 above for why) or a pre-existing trigger-condition item.
 
-- [ ] **P7-15 — Licence-fee rate/accommodation bracket not modeled.** Unchanged since Phase 7. Trigger: a
-  verified PCDA rent-bracket table becomes available (from the user or a future authoring-reference pass).
-- [ ] **P7-17b — Held TPTA findings never resurface once the explaining data exists.** The "hold" fix
-  (Phase 9) stops a false positive from firing, but nothing re-runs `analyze()` for an already-imported
-  month when a later payslip arrives, so a genuinely-missing-TPTA month that happened to look ambiguous at
-  import time stays silently held forever, not just until resolved. Needs either a re-audit trigger on
-  each new import (re-run `analyze()` for the N months around it, reconcile against stored
-  `FinancialInsightEntity` rows) or an explicit "pending" UI state so the held finding isn't just invisible.
-  Engine-level logic (`isPendingFutureData`) already exists; this is the app-path wiring, and it depends on
-  Phase 9's P7-18 ledger fields to matter on the Insights-tab path.
-- [ ] **P7-19b — UI test coverage stops at `PayAuditFindingsSection`.** `PayAuditTimelineSection`,
-  `PayAuditPredictionsSection`, `PayAuditFixationCalculatorSection`, and the Phase 5
-  representation-gating end-to-end path (a proven finding actually reaching `RepresentationScreen`, an
-  unproven one not) have no Compose UI test yet.
+Per user decision at the start of this phase: P7-15 was researched, not attempted (see below); P7-17b was
+scoped to the simpler of its two named alternatives (explicit pending UI state, not a re-audit trigger);
+P7-19b was taken in full (all four listed gaps). Each landed in its own commit; `./gradlew check -x
+iosX64Test -x iosSimulatorArm64Test`, `linkDebugFrameworkIosSimulatorArm64`, and `ktlintCheck` all green
+after every one.
 
-Untouched, carried forward as-is per user decision at the start of Phase 8 (unchanged in substance — see
-Phase 8/Phase 7 for full text): **P7-11** (Service Timeline pagination — trigger: an unusably long real
-timeline), **P7-21** (MNS/NCC matrix scope — trigger: an MNS/NCC user), **P7-22** (TPTA city class null
-Jun–Sep 2017 — trigger: a real officer needs those months classified), **P7-23** (out-of-scope rules:
-Level 14+, first post-promotion increment, leave/suspension TPTA — trigger: a real officer in one of these
-situations), **P7-24** (real-data timeline validation — blocked on real users), **P7-25** (the validation
-checkpoint itself — blocked on real users and, per Phase 9's P7-18 note, now also worth re-checking that
-the Insights-tab needsReview gate behaves as expected once real data exists).
+- [x] **P7-15 — Licence-fee rate/accommodation bracket not modeled — researched online, dropped, not
+  modeled** (decided 2026-09-27, user call: "check online? if not, we may drop it"). A real, citable
+  circular exists — PCDA(WC) Circular No. E/II/161/R&A/Misc, dated 13.09.2022, citing MoD letter No.
+  1(1)/2014-D(Q&C) dated 01.07.2022, effective 01.07.2020, revising flat-rate licence fee for Service
+  Officers & Defence Civilians by plinth-area slab (Substandard/Unclassified accommodation charged at 75%
+  of the Standard/Classified rate for the same plinth area) — but the actual plinth-area-to-rupee slab
+  table is embedded as an image/PDF annexure ("Annexure II (a) to (c)") that couldn't be extracted as
+  verifiable text/data. Modeling only the one rate found (the top slab, ₹5,860/month) would misclassify
+  every officer not in that slab — exactly the "cites a verified authority" bar the vision statement sets,
+  not met by a partial table. Moved to **Deferred/dropped** below rather than left as an open Phase 10
+  item; unlike the trigger-condition items carried forward year over year, this one has an identified
+  concrete source (the annexure PDF) that would resolve it if the user or a future pass can supply its
+  contents.
+- [x] **P7-17b — Held TPTA findings never resurface once the explaining data exists — scoped to the
+  explicit pending UI state** (done 2026-09-27, commit `911b1623`). Of the two alternatives P7-17b named,
+  the user picked the simpler one: `Anomaly` gains `isPending`; `TptaEntitlementAuditor` now returns the
+  held finding marked `isPending = true` instead of `emptyList()`, so it is shown (with a "waiting for a
+  later payslip" note) rather than invisible. A pending finding has no `expected`/`actual`/`authority`, so
+  `isProven()` still returns false — it never drafts a representation letter, matching the vision
+  statement's own bar. The full re-audit-trigger alternative (re-running `analyze()` for nearby months on
+  each new import, reconciling against stored `FinancialInsightEntity` rows) remains unbuilt — not carried
+  forward as an open item since the user's own call was to take the simpler path, not defer the harder one.
+  `PayAuditCorpusPrecisionTest`'s held-months assertion updated from `isEmpty()` to asserting exactly the 3
+  held months (Dec 2019, May 2022, Sep 2024) are returned with `isPending = true` and `isProven() == false`.
+- [x] **P7-19b — UI test coverage stops at `PayAuditFindingsSection` — closed in full** (done 2026-09-27,
+  commit `be433aef`). All four listed gaps covered: `PayAuditTimelineSectionTest` (changes/all-changes/
+  service-timeline, 5 cases), `PayAuditPredictionsSectionTest` (next-increment incl. overdue, DSOP room, 4
+  cases), `PayAuditFixationCalculatorSectionTest` (empty state, and a resolved comparison off the card's
+  own default state — no dropdown/text-field interaction needed since the defaults already produce a valid
+  comparison against the fixture timeline, 2 cases), and `RepresentationDraftListTest` (2 cases) for the
+  Phase 5 representation-gating path's UI half — `FinancialIntelligenceRepositoryTest` already proved the
+  generation gate (proven → draft row inserted; unproven → none); this proves an inserted draft renders as
+  a card and an empty list renders the empty state, not nothing. `RepresentationDraftList` made `internal`
+  (was `private`) so the test can call it directly with plain data, matching every other tested Pay Audit
+  composable's convention instead of requiring a `PayslipViewModel`.
+
+**Tech debt found and fixed in this phase** (commit `87c17e66`, same day): P7-17b's pending note was added
+only to `PayAuditFindingRow` (Pay Audit screen), missing P7-08's own SSOT claim that
+`AdvancedAnomaliesCard`'s `AnomalyDetailRow` (Insights tab) renders the same evidence for the same finding.
+A held TPTA finding looked confirmed on the Insights tab while showing pending on the Pay Audit screen —
+caught during this phase's own review, fixed by adding the identical conditional block to
+`AnomalyDetailRow`, with a new `AdvancedAnomaliesCardTest` case.
+
+### Phase 11 — Continuity carry-overs (no new items opened this phase)
+
+Phase 10 closed all three of its own items (two done, one researched-and-dropped) — nothing from Phase 10
+itself is left open. What remains is the same set of pre-existing trigger-condition items Phase 8 and Phase
+10 each carried forward unchanged, since neither phase's scope touched them. Listed here only for
+continuity, per CLAUDE.md's "fail loud" rule — not a sign of unfinished Phase 10 work.
+
+- **P7-11** — Service Timeline pagination. Trigger: an unusably long real timeline.
+- **P7-21** — MNS/NCC pay-matrix scope. Trigger: an MNS/NCC user.
+- **P7-22** — TPTA city class null for Jun–Sep 2017. Trigger: a real officer needs those months classified.
+- **P7-23** — Out-of-scope rules (Level 14+, first post-promotion increment, leave/suspension TPTA).
+  Trigger: a real officer in one of these situations.
+- **P7-24** — Real-data timeline validation. Trigger: blocked on real users.
+- **P7-25** — The validation checkpoint itself. Trigger: blocked on real users; per Phase 9's P7-18 note,
+  also worth re-checking that the Insights-tab `needsReview` gate behaves as expected once real data
+  exists.
+
+None of these has a trigger that has fired yet. This phase does no code work unless one does.
 
 ## Deferred / dropped
 
 - **Deferred until users ask:** situational tiles / 3-tier matrix, claim/LTC/TA rules (~300 of the 378), deadline trackers.
 - **Dropped:** the "unclaimed ₹" counter, personas, the 18% penal-interest hazard (no verified authority), the prototype HTML.
+- **Dropped (Phase 10):** the licence-fee/accommodation rent-bracket rule (P7-15) — a real citing circular
+  exists (PCDA(WC) Circular No. E/II/161/R&A/Misc, 13.09.2022) but its plinth-area rate table is embedded
+  as an image annexure, not extractable text; modeling only the one rate found would misclassify most
+  officers. Revisit if the annexure's contents (or an equivalent verified table) become available.
