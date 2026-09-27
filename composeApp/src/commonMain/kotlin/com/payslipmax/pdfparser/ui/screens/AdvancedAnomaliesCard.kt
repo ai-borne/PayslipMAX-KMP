@@ -84,6 +84,13 @@ private fun AnomalyDetailRow(anomaly: Anomaly) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
+                if (anomaly.isPending) {
+                    Text(
+                        text = PayAuditStrings.findingsPendingLabel,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                    )
+                }
                 val expected = anomaly.expected
                 val actual = anomaly.actual
                 if (expected != null && actual != null) {
