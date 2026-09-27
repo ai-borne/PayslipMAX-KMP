@@ -378,47 +378,105 @@ post-promotion increment, leave/suspension TPTA — trigger: a real officer in o
 **P7-24** (real-data timeline validation — blocked on real users), **P7-25** (the validation checkpoint
 itself — blocked on real users and on Phase 9's P7-18).
 
-### Phase 9 — New rule modeling and architecture carry-overs
+### Phase 9 — New rule modeling and architecture carry-overs — DONE (2026-09-27)
 
 The 6 items Phase 8 explicitly did not attempt (new rule modeling and multi-file architecture work, not
 bug fixes — user decision at the start of Phase 8 was to give each proper design attention rather than
-rush them alongside P7-12/13/20). IDs kept as `P7-NN`, same reasoning as Phase 8.
+rush them alongside P7-12/13/20). IDs kept as `P7-NN`, same reasoning as Phase 8. Each item landed in its
+own commit, `./gradlew check -x iosX64Test -x iosSimulatorArm64Test`, `iosSimulatorArm64Test`,
+`linkDebugFrameworkIosSimulatorArm64`, and `ktlintCheck` all green after every one. Per user decision at
+the start of this phase: P7-15 was skipped outright (no verified data exists to build it on — see below),
+the other 5 were attempted and landed, each scoped down from its full ambition where the full version
+would have meant either guessing at unverified rates/authorities or a much larger architecture change than
+the gap warranted. What each scope-down left open is consolidated into Phase 10, not left dangling here.
 
 **New feature work (new rule modeling, not bug fixes):**
 
-- [ ] **P7-14 — TPTA arrears not linked to a DA rise (`arrearsTpta`) are untracked.** Only DA-linked
-  TPTA-DA arrears (`arrearsTptaDa`) are explained; a posting-change back-payment of base TPTA has no rule.
-- [ ] **P7-15 — Licence-fee rate (accommodation/rent bracket) not modeled.** Timeline tracks quarters
-  occupancy as start/stop only; 13 of 106 tracked corpus changes (Phase 8's P7-13 fix moved the
-  denominator from 104) are the fee amount moving while quarters stay occupied. Pinned in
-  `PayLineChangeExplanationCorpusTest`, not fixed.
-- [ ] **P7-16 — Only ten pay-line fields are explained.** ~30 other `Earnings`/`Deductions` fields (income
-  tax, DSOP subscription, CEA, NPA, dress/ration/technical allowance, non-DA arrears, `adj*` corrections)
-  have no structural rule and produce no `ChangeExplanation` at all — invisible to the coverage gate.
+- [x] **P7-14 — TPTA arrears not linked to a DA rise (`arrearsTpta`) are untracked** (done 2026-09-27,
+  commit `a958887c`). `PayLineChangeExplainer` now tracks `arrearsTpta` and explains it via the same
+  posting-change/relocation edge (`TptaAbsenceExplainer`) that already explains a TPTA drop, distinct from
+  `arrearsTptaDa`'s DA-rise-only rule. Corpus gate moved from 93/106 (87.7%) to 95/108 (88.0%).
+- [x] **P7-15 — Licence-fee rate (accommodation/rent bracket) not modeled — skipped, not attempted**
+  (decided 2026-09-27, user call). No rent-bracket table exists anywhere in `scripts/pcdao_factory/output/`
+  — the offline authoring reference this app's rules are ported from simply doesn't have one. Coding a rate
+  without a verified source would break the vision statement's own rule ("cites a verified authority").
+  Unchanged from Phase 8: still pinned in `PayLineChangeExplanationCorpusTest`, still open, carried to
+  Phase 10 unmodified — the trigger condition (someone supplies the real PCDA rent-bracket table) hasn't
+  changed since Phase 7 first listed this item.
+- [x] **P7-16 — Only ten pay-line fields are explained — scoped to Non-Practicing Allowance** (done
+  2026-09-27, commit `2482ce05`). Of the ~30 untracked `Earnings`/`Deductions` fields, only NPA had both a
+  citable structural rule (20% of basic pay, capped at ₹2,37,500 — GoI MoD letter dated 28-09-2017) and
+  data the timeline already carries (basic-pay INCREMENT/PROMOTION events). It's now tracked, explained
+  when a change coincides with one of those events, and left unexplained on onset/cessation since
+  medical-corps eligibility isn't modeled anywhere in the app (no guessing). Every other field on the
+  original list — CEA, dress/ration/technical allowance, special forces pay, DSOP subscription, income tax,
+  `adj*` corrections — needs data this app doesn't parse (dependents, trade qualification, officer type,
+  subscriber election) or is inherently variable by design; this is a documented scope boundary, not
+  unfinished work, so it is not carried forward. Corpus gate moved from 95/108 (88.0%) to 95/110 (86.4%): a
+  real one-month NPA credit/reversal in the corpus (Oct/Nov 2019) has no coinciding pay-base event and is
+  correctly left unexplained, pinned alongside the licence-fee gaps.
 
 **Substantial architecture work (each its own multi-file undertaking):**
 
-- [ ] **P7-17 — Findings decided at import time; no retraction/re-audit.** A TPTA-free month is explained
-  by months around it that may not be imported yet (audited with earlier data only, corpus's Dec 2019,
-  May 2022, Sep 2024 flagged — pinned in `PayAuditCorpusPrecisionTest`). Needs a re-audit that retracts a
-  finding once later payslips explain it, or a rule that holds a finding until the next month exists.
-  Depends on **P7-18** (thin ledger) for the app path, but the retraction logic itself is engine-level.
-- [ ] **P7-18 — Stored history too thin for the new explanations (blocks P7-25's Validation checkpoint).**
-  The Insights tab's `InsightsState` (Smart Insights, Advanced Anomalies, MonthlySnapshot, PayTrendChart)
-  still feeds `LedgerRecordEntity` rows, which keep no Risk & Hardship/field allowance, licence fee,
-  arrears, adjustment or `needsReview` data — so posting-change/quarters explanations and TPTA arrears
-  exemptions never fire there (Pay Audit's own screen was already fixed in Phase 4 via
-  `rememberPayAuditEngineResult` reading `PayslipUiState.payslips` directly). Fix: migrate `InsightsState`
-  the same way, or extend the ledger table (Room v11 → v12, needs an `AutoMigration`). The same gap means
-  `DaArrearsAuditor` never sees `arrearsDa` on the Insights-tab path. Also means Phase 8's P7-20 needsReview
-  gate is a no-op on the Insights-tab path today (`LedgerRecordEntity.toParsedPayslip()` never sets
-  `needsReview = true`) — worth re-checking once this item lands.
-- [ ] **P7-19 — No Compose/UI test exercises any Pay Audit or Insights-tab composable.** Matches existing
-  convention (no Insights-tab composable has one either) but recorded per CLAUDE.md fail-loud: covers
-  `PayAuditScreen`, `PayAuditTimelineSection`, `PayAuditFindingsSection`, `PayAuditPredictionsSection`,
-  `PayAuditFixationCalculatorSection`, and the Phase 5 representation-gating end-to-end path. Only pure
-  logic functions and a green compile/tech-debt audit have verified these so far. Would be the first
-  Compose UI test in the codebase — a new convention, not just a new test.
+- [x] **P7-17 — Findings decided at import time; no retraction/re-audit — the "hold" half only** (done
+  2026-09-27, commit `1816233d`). The plan named two alternatives; this phase implemented the simpler one.
+  `TptaAbsenceExplainer.isPendingFutureData` holds (doesn't flag) a TPTA-absence finding when it isn't
+  explained today only because the same-window sample that would confirm or rule out a relocation hasn't
+  been imported yet — fixing the corpus's three import-order false positives (Dec 2019, May 2022, Sep
+  2024) without needing any stored-finding reconciliation. What's still open: nothing in the app re-runs
+  `analyze()` for an already-imported month when a later one arrives, so a truly held finding never
+  surfaces once the explaining data does exist — the "re-audit that retracts/surfaces a finding" half of
+  this item is unbuilt. Carried to Phase 10.
+- [x] **P7-18 — Stored history too thin for the new explanations** (done 2026-09-27, commit `6c8b4e69`).
+  Took the Room migration path per user decision (not the "migrate `InsightsState` to read
+  `PayslipUiState.payslips` directly" alternative). `LedgerRecordEntity` schema v11→v12: added
+  `riskHardshipAllowance`, `fieldAllowance`, `licenseFee`, `furnitureRent`, `arrearsDa`, `arrearsTpta`,
+  `arrearsTptaDa`, `adjTpta`, `adjMsp`, `needsReview` — every field a Pay Audit timeline auditor
+  (`DaArrearsAuditor`, `TptaEntitlementAuditor`, `MspAuditor`, `MarriedQuartersRiskAuditor`) actually reads,
+  traced auditor-by-auditor rather than porting all ~40 `Earnings`/`Deductions` fields speculatively.
+  `AutoMigration(11, 12)` with Room-visible defaults on every new column, `PayslipDatabaseUpgradeTest`
+  green. `needsReview` now round-trips, so Phase 8's P7-20 gate stops being a no-op on the Insights-tab
+  path. `TaxLedgerAggregator`'s `adj*` fields (a tax-summary concern, separate from the Pay Audit auditors)
+  were deliberately left out — not this item's gap.
+- [x] **P7-19 — No Compose/UI test exercises any Pay Audit composable — scoped to `PayAuditFindingsSection`**
+  (done 2026-09-27, commit `ef113b54`). Correction to this item's own premise: it is not the codebase's
+  first Compose UI test — ~20 already exist (e.g. `AdvancedAnomaliesCardTest`) using Compose Multiplatform's
+  `runComposeUiTest` + Robolectric, an established pattern this test follows, not a new convention. Added
+  `PayAuditFindingsSectionTest` (3 cases: unlocked finding renders its description/evidence/authority;
+  locked display shows only the count/CTA teaser without leaking a finding's description; empty state
+  renders). `PayAuditTimelineSection`, `PayAuditPredictionsSection`, `PayAuditFixationCalculatorSection`,
+  and the Phase 5 representation-gating end-to-end path remain untested at the UI layer — same convention
+  gap as the rest of the Insights tab, not unique to Pay Audit, carried to Phase 10.
+
+### Phase 10 — Remaining Phase 9 carry-overs
+
+What Phase 9 left open, plus the Phase 8 items still blocked on a trigger condition (unchanged, listed here
+only for continuity since Phase 9 didn't touch them). None of these are regressions — each is either a
+documented scope-down (see Phase 9 above for why) or a pre-existing trigger-condition item.
+
+- [ ] **P7-15 — Licence-fee rate/accommodation bracket not modeled.** Unchanged since Phase 7. Trigger: a
+  verified PCDA rent-bracket table becomes available (from the user or a future authoring-reference pass).
+- [ ] **P7-17b — Held TPTA findings never resurface once the explaining data exists.** The "hold" fix
+  (Phase 9) stops a false positive from firing, but nothing re-runs `analyze()` for an already-imported
+  month when a later payslip arrives, so a genuinely-missing-TPTA month that happened to look ambiguous at
+  import time stays silently held forever, not just until resolved. Needs either a re-audit trigger on
+  each new import (re-run `analyze()` for the N months around it, reconcile against stored
+  `FinancialInsightEntity` rows) or an explicit "pending" UI state so the held finding isn't just invisible.
+  Engine-level logic (`isPendingFutureData`) already exists; this is the app-path wiring, and it depends on
+  Phase 9's P7-18 ledger fields to matter on the Insights-tab path.
+- [ ] **P7-19b — UI test coverage stops at `PayAuditFindingsSection`.** `PayAuditTimelineSection`,
+  `PayAuditPredictionsSection`, `PayAuditFixationCalculatorSection`, and the Phase 5
+  representation-gating end-to-end path (a proven finding actually reaching `RepresentationScreen`, an
+  unproven one not) have no Compose UI test yet.
+
+Untouched, carried forward as-is per user decision at the start of Phase 8 (unchanged in substance — see
+Phase 8/Phase 7 for full text): **P7-11** (Service Timeline pagination — trigger: an unusably long real
+timeline), **P7-21** (MNS/NCC matrix scope — trigger: an MNS/NCC user), **P7-22** (TPTA city class null
+Jun–Sep 2017 — trigger: a real officer needs those months classified), **P7-23** (out-of-scope rules:
+Level 14+, first post-promotion increment, leave/suspension TPTA — trigger: a real officer in one of these
+situations), **P7-24** (real-data timeline validation — blocked on real users), **P7-25** (the validation
+checkpoint itself — blocked on real users and, per Phase 9's P7-18 note, now also worth re-checking that
+the Insights-tab needsReview gate behaves as expected once real data exists).
 
 ## Deferred / dropped
 
