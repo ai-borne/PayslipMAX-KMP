@@ -42,8 +42,8 @@ internal object ReconciliationSolver {
     /** Raw/ambiguous line items are inherently less certain than a clean keyword match in its column. */
     private const val RAW_PENALTY = 0.8f
 
-    /** Net residual (rupees) at or above which the whole slip is flagged for review. Matches legacy. */
-    private const val NET_TOLERANCE = 2.0
+    /** Net residual (rupees) at or above which the whole slip is flagged for review (SSOT in [ConfidenceThresholds]). */
+    private const val NET_TOLERANCE = com.payslipmax.pdfparser.domain.ConfidenceThresholds.ITEM_SUM_TOLERANCE
 
     fun solve(
         table: ClassifiedTable,
