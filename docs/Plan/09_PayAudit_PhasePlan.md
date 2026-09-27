@@ -178,10 +178,20 @@ Carried over from Phase 2 (nothing here is claimed done):
 - **Out of scope for the increment/MSP/TPTA rules:** Level 14+ (different TPTA slab, official-car option,
   no MSP); the first increment after a promotion (date rules INCREMENT_004, six-month rule PROMO_FIX_004);
   leave/suspension months that switch TPTA off (TA_TRANSPORT_002/003, not visible in payslips).
-- **Tier.** Increment and MSP findings use `SALARY_LOSS`, which is in the FREE tier. Confirm that is the
-  intended tier for Pay Audit findings (Phase 4 says details are Premium).
-- **Authority check.** The MSP letter (No. 1(16)/2017/D(Pay/Services), 18-09-2017) is also the authority the
-  reference gives for flying allowance. Confirm it against the Handbook before it is shown to users.
+- **Tier — resolved.** `IncrementAuditor`/`MspAuditor` now emit their own types (`INCREMENT_MISSED`,
+  `MSP_SHORTFALL`), classified PRO in `AnomalyTierMap` — they no longer piggyback on `SALARY_LOSS`'s FREE
+  tier. Wired through the category/title maps, `InsightPrioritizationEngine`, `AnomalySeverityMapper`,
+  `AdvancedAnomaliesLogic`'s labels (new `InsightsStrings` entries) and both modules' representation-draft
+  trigger lists (`FinancialIntelligenceRepository` and composeApp's `REPRESENTATION_DRAFT_TYPES` — the two
+  are hand-kept in sync; `shared` cannot depend on `composeApp` for a single SSOT).
+- **Authority check — resolved, and it was wrong.** Verified the MSP letter (No. 1(16)/2017/D(Pay/Services),
+  18-09-2017) against public MoD circulars: that letter number is dated 16-11-2017 and covers Extra Work
+  Allowance / abolition of Flight Charge Certificate Allowance, not MSP — the pcdao_factory reference had
+  copied the flying-allowance citation onto the MSP record. `PayAuthorities.MILITARY_SERVICE_PAY` now cites
+  the pay matrix's own source (Army Officers Pay Rules 2017; Handbook pp. 88-93) instead, until a correct
+  implementing letter is verified. The `scripts/pcdao_factory/output/` JSON itself is left uncorrected
+  (out of scope — it is an authoring reference, not shipped) but carries the same error for
+  `flying_allowance`/`special_forces_allowance` if those are ever ported.
 - **Other auditors.** `SalaryLossAuditor` (net-pay drop) and the rest were not rebuilt on the timeline; not
   part of Phase 2's list.
 

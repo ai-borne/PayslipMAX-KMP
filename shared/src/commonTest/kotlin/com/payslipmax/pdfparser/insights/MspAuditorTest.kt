@@ -18,7 +18,7 @@ class MspAuditorTest {
     @Test
     fun partPaidMspIsUnderpaymentWithExpectedAndActual() {
         val finding = run(msp = 10500.0).single()
-        assertEquals("SALARY_LOSS", finding.type)
+        assertEquals("MSP_SHORTFALL", finding.type)
         assertEquals(5000.0, finding.amount)
         assertEquals(15500.0, finding.expected)
         assertEquals(10500.0, finding.actual)

@@ -25,7 +25,7 @@ class IncrementAuditorTest {
     fun aMissedIncrementTwelveMonthsAfterTheLastIsFlaggedForTheStageDifference() {
         val months = history(2019, 7) { y, m -> if (y == 2018 && m < 7) 7 else 8 }
         val finding = run(months).single()
-        assertEquals("SALARY_LOSS", finding.type)
+        assertEquals("INCREMENT_MISSED", finding.type)
         assertEquals(basic(9), finding.expected)
         assertEquals(basic(8), finding.actual)
         assertEquals(basic(9) - basic(8), finding.amount)

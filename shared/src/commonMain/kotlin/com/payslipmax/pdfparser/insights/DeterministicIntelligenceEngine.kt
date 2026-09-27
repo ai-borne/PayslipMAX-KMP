@@ -7,7 +7,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Anomaly(
-    // "SALARY_LOSS", "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "DEDUCTION_SPIKE", "DSOP_COMPLIANCE", "RENT_RECOVERY_RISK", "DEBIT_RECOVERY", "DSOP_MILESTONE", "TAX_PROJECTION"
+    // "SALARY_LOSS", "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "DEDUCTION_SPIKE", "DSOP_COMPLIANCE", "RENT_RECOVERY_RISK",
+    // "DEBIT_RECOVERY", "DSOP_MILESTONE", "TAX_PROJECTION", "ARREARS_AUDIT", "INCREMENT_MISSED", "MSP_SHORTFALL"
     val type: String,
     val field: String,
     val amount: Double,
@@ -96,6 +97,8 @@ object DeterministicIntelligenceEngine {
                 "TPTA_ENTITLEMENT" -> score -= 10
                 "RENT_RECOVERY_RISK" -> score -= 15
                 "DEBIT_RECOVERY" -> score -= 10
+                "INCREMENT_MISSED" -> score -= 15
+                "MSP_SHORTFALL" -> score -= 15
                 "DSOP_COMPLIANCE" -> {
                     if (anomaly.amount > 0.0) {
                         score -= 25

@@ -30,7 +30,7 @@ class IncrementAuditor : TimelineAuditor {
         val expected = PayMatrix.payAt(level, stage + 1)?.toDouble() ?: return emptyList()
         return listOf(
             Anomaly(
-                type = "SALARY_LOSS",
+                type = AnomalyTierMap.INCREMENT_MISSED,
                 field = "basicPay",
                 amount = expected - now.basicPay,
                 month = current.dateStr,

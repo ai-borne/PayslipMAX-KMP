@@ -24,7 +24,7 @@ class MspAuditor : TimelineAuditor {
 
         return listOf(
             Anomaly(
-                type = "SALARY_LOSS",
+                type = AnomalyTierMap.MSP_SHORTFALL,
                 field = "militaryServicePay",
                 amount = MSP_RATE - msp,
                 month = current.dateStr,

@@ -117,7 +117,9 @@ open class FinancialIntelligenceRepository(
 
             // 5. Generate Representation Drafts locally for claims discrepancies
             engineResult.anomalies.forEach { anomaly ->
-                if (anomaly.type == "MISSING_ALLOWANCE" || anomaly.type == "TPTA_ENTITLEMENT" || anomaly.type == "SALARY_LOSS") {
+                // Kept in sync by hand with composeApp's REPRESENTATION_DRAFT_TYPES (SmartInsightsBuilder.kt);
+                // `shared` cannot depend on `composeApp` to share the SSOT directly.
+                if (anomaly.type in setOf("MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "SALARY_LOSS", "INCREMENT_MISSED", "MSP_SHORTFALL")) {
                     val draft =
                         RepresentationDraftGenerator.generateRepresentationDraft(
                             disputeMonth = dateStr,
@@ -152,7 +154,7 @@ open class FinancialIntelligenceRepository(
 
     private fun mapAnomalyTypeToCategory(type: String): String {
         return when (type) {
-            "SALARY_LOSS", "DEBIT_RECOVERY" -> "SALARY_LOSS"
+            "SALARY_LOSS", "DEBIT_RECOVERY", "INCREMENT_MISSED", "MSP_SHORTFALL" -> "SALARY_LOSS"
             "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "ARREARS_AUDIT" -> "ALLOWANCE"
             "DEDUCTION_SPIKE", "RENT_RECOVERY_RISK", "TAX_PROJECTION" -> "TAX"
             "DSOP_COMPLIANCE", "DSOP_MILESTONE" -> "RETIREMENT"
@@ -172,6 +174,8 @@ open class FinancialIntelligenceRepository(
             "DSOP_MILESTONE" -> "DSOP Milestone Credited"
             "TAX_PROJECTION" -> "Income Tax Cycle Projection"
             "ARREARS_AUDIT" -> "Dearness Allowance Arrears Verified"
+            "INCREMENT_MISSED" -> "Annual Increment Not Applied"
+            "MSP_SHORTFALL" -> "Military Service Pay Shortfall"
             else -> "Financial Advisory"
         }
     }

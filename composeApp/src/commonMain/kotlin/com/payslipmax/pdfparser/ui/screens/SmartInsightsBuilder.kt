@@ -14,7 +14,8 @@ import kotlin.math.abs
  *  already auto-generates a representation draft — reused here as the SSOT for which anomaly cards
  *  route to the Claim-Generator screen. Internal (not private) so [RecommendedActions] can reuse the
  *  same SSOT rather than re-deriving which anomaly types are representation-eligible. */
-internal val REPRESENTATION_DRAFT_TYPES = setOf("SALARY_LOSS", "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT")
+internal val REPRESENTATION_DRAFT_TYPES =
+    setOf("SALARY_LOSS", "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "INCREMENT_MISSED", "MSP_SHORTFALL")
 
 /**
  * Pure builder: [InsightsState] engine output -> ordered [InsightUiModel] cards for the redesigned

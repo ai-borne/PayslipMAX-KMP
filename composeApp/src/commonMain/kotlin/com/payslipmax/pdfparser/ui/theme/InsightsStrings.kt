@@ -82,6 +82,8 @@ object InsightsStrings {
     const val anomalyLabelTaxProjection = "Tax Projection"
     const val anomalyLabelRentRecoveryRisk = "Quarters / Rent Risk"
     const val anomalyLabelDebitRecovery = "Debit Recovery"
+    const val anomalyLabelIncrementMissed = "Increment Missed"
+    const val anomalyLabelMspShortfall = "MSP Shortfall"
     const val anomalyLabelUnknown = "Financial Check"
 
     const val advancedAnomaliesTitle = "Advanced Anomaly Checks"
