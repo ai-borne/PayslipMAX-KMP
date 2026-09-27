@@ -327,53 +327,71 @@ inside a phase marked done.
 Not on the Phase 7 checklist: items already fully resolved with no residual gap (Phase 0's five
 DA-arrears defects; Phase 1's timeline-has-no-consumer note, closed by Phase 2's wiring).
 
-### Phase 8 — Remaining Phase 7 carry-overs
+### Phase 8 — Remaining Phase 7 carry-overs — DONE (2026-09-27)
 
 The 15 items Phase 7 left open, unchanged in substance, IDs kept as `P7-NN` (they're the same items —
 renumbering would just break the cross-references already made to them). Each is tagged with why it
-wasn't attempted in Phase 7, so this phase doesn't read as a silent backlog dump:
+wasn't attempted in Phase 7, so this phase doesn't read as a silent backlog dump.
 
-**Deliberately deferred — no action unless the trigger condition happens (not bugs):**
+Per user decision at the start of this phase: the 6 deliberately-deferred/blocked-on-real-users items
+below are left untouched (no code change — that's the correct behavior for a trigger-condition item, not
+a gap), and the 6 new-feature/architecture items are carried into **Phase 9** rather than rushed. Only the
+3 small/medium fixes (P7-12, P7-13, P7-20) were in scope for this phase, one commit each:
 
-- [ ] **P7-11 — Service Timeline list has no pagination/collapsing.** Flat list, newest first, no cap.
-  Fine for the single corpus officer; untested for a real officer with a much longer service record.
-  Trigger: a real officer's timeline is unusably long.
-- [ ] **P7-21 — Officer scope of the matrix.** Only regular-Army Levels 10–18 are ported; MNS/NCC matrices
-  out of scope. Trigger: an MNS/NCC user appears.
-- [ ] **P7-22 — TPTA city class null for Jun–Sep 2017.** Those payslips print pre-7th-CPC TPTA (₹3,712);
-  correct as-is. Trigger: a real officer needs those specific months classified.
-- [ ] **P7-23 — Out-of-scope rules, deliberately deferred.** Level 14+ (different TPTA slab, official-car
-  option, no MSP); the first increment after a promotion (INCREMENT_004, six-month rule PROMO_FIX_004);
-  leave/suspension months that switch TPTA off (TA_TRANSPORT_002/003, not visible in payslips). Trigger:
-  a real officer in one of these situations.
+- [x] **P7-13 — Transition following an untrusted month is skipped, not attempted** (done 2026-09-27,
+  commit `9b644dc1`). `PayLineChangeExplainer.explain` no longer takes a single `previous` payslip — it
+  takes the full `history` and always walks back to the last trustworthy month in the `ServiceTimeline`
+  for both the amount diff and the reasoning context, rather than comparing against (or skipping because
+  of) the literal immediately-preceding stored payslip. Corpus gate numbers moved (104→106 tracked
+  changes, 93/106 explained, 87.7%) because a previously-skipped transition is now attempted; the 13
+  pinned licence-fee gaps are unchanged.
+- [x] **P7-20 — Other auditors not rebuilt on the timeline** (done 2026-09-27, commit `e88c6c14`). Scoped
+  down from a full per-auditor rebuild (explicit user decision, 6 separate domain rewrites was too much
+  for this item): `DeterministicIntelligenceEngine` now skips any plain (non-`TimelineAuditor`) auditor —
+  `SalaryLossAuditor`, `DaArrearsAuditor`, `MarriedQuartersRiskAuditor`, `UnexpectedDebitAuditor`,
+  `DsopComplianceAuditor`, `TaxProjectionAuditor` — when `current`/`previous` is `needsReview`, closing the
+  false-positive-on-untrusted-data gap. Deliberately *not* gated on pay-matrix-cell membership (the
+  broader "trusted timeline month" concept `ServiceTimelineBuilder` itself uses): that's a
+  timeline-construction detail for level/stage resolution, not a general data-trust signal, and gating on
+  it broke unrelated tests using synthetic non-matrix basic pay. The full per-auditor rebuild onto
+  `ServiceTimeline` fields (matching TPTA/Increment/MSP in Phase 2) remains open — folded into Phase 9's
+  new-feature-shaped work rather than left as a dangling half-open item here.
+- [x] **P7-12 — "What changed this month" covers one transition, not the whole timeline** (done
+  2026-09-27, commit `1f3b9b91`, after P7-13 so it could reuse the fixed trusted-month logic).
+  `PayLineChangeExplainer.explainAll` walks every consecutive pair of stored months. `EngineResult` gains
+  `allChangeExplanations` (the full-history list; `changeExplanations` keeps its current-month meaning
+  unchanged). `PayAuditScreen` gains an "Every change explained" section below "What changed this month",
+  excluding the current month to avoid duplicate `LazyColumn` keys/rows with the section above it. The
+  corpus test's manual pairwise loop now calls the same production function (DRY).
 
-**Blocked on real users (no developer-only workaround):**
+Gate result: `./gradlew check -x iosX64Test -x iosSimulatorArm64Test`, `iosSimulatorArm64Test`, and
+`linkDebugFrameworkIosSimulatorArm64` all green; `ktlintCheck` and the tech-debt/file-size audit clean on
+every touched file, after each of the three commits individually. No tech debt incurred: each item's fix
+was scoped down (not stubbed) where the full version was out of scope, and every scope-down is documented
+above and carried forward explicitly rather than silently dropped.
 
-- [ ] **P7-24 — Real-data validation of the timeline.** Never exercised on real data: unplaced months from
-  a shared matrix cell (10 vs 10B, 11 vs 12A), FIELD posting spans (corpus has none), a Level 12A officer
-  who starts mid-history. Folds into P7-25.
-- [ ] **P7-25 — Validation checkpoint itself.** Run on 3–5 real officers' payslips, on their own devices.
-  Report unplaced months and span counts per officer. Blocked on **P7-18** for the Insights-tab surfaces,
-  and requires real users this app doesn't have yet (only the developer is on TestFlight as of 2026-09-18).
+Untouched, carried forward as-is per user decision (unchanged in substance from Phase 7 — see there for
+full text): **P7-11** (Service Timeline pagination — trigger: an unusably long real timeline), **P7-21**
+(MNS/NCC matrix scope — trigger: an MNS/NCC user), **P7-22** (TPTA city class null Jun–Sep 2017 — trigger:
+a real officer needs those months classified), **P7-23** (out-of-scope rules: Level 14+, first
+post-promotion increment, leave/suspension TPTA — trigger: a real officer in one of these situations),
+**P7-24** (real-data timeline validation — blocked on real users), **P7-25** (the validation checkpoint
+itself — blocked on real users and on Phase 9's P7-18).
 
-**Small/medium code fixes (similar shape to Phase 7's P7-04–P7-10, not attempted only for pacing):**
+### Phase 9 — New rule modeling and architecture carry-overs
 
-- [ ] **P7-12 — "What changed this month" covers one transition, not the whole timeline.**
-  `PayAuditScreen` calls `PayLineChangeExplainer` only for the current payslip vs. its immediate
-  predecessor. No "explain every transition at once" view across the full Service Timeline exists.
-- [ ] **P7-13 — Transition following an untrusted month is skipped, not attempted.** If the immediately
-  preceding stored payslip is excluded from the timeline, `PayLineChangeExplainer` returns nothing rather
-  than comparing against the last trustworthy month further back.
-- [ ] **P7-20 — Other auditors not rebuilt on the timeline.** `SalaryLossAuditor` (net-pay drop) and the
-  rest were never part of Phase 2's rebuild list.
+The 6 items Phase 8 explicitly did not attempt (new rule modeling and multi-file architecture work, not
+bug fixes — user decision at the start of Phase 8 was to give each proper design attention rather than
+rush them alongside P7-12/13/20). IDs kept as `P7-NN`, same reasoning as Phase 8.
 
 **New feature work (new rule modeling, not bug fixes):**
 
 - [ ] **P7-14 — TPTA arrears not linked to a DA rise (`arrearsTpta`) are untracked.** Only DA-linked
   TPTA-DA arrears (`arrearsTptaDa`) are explained; a posting-change back-payment of base TPTA has no rule.
 - [ ] **P7-15 — Licence-fee rate (accommodation/rent bracket) not modeled.** Timeline tracks quarters
-  occupancy as start/stop only; 13 of 104 tracked corpus changes are the fee amount moving while quarters
-  stay occupied. Pinned in `PayLineChangeExplanationCorpusTest`, not fixed.
+  occupancy as start/stop only; 13 of 106 tracked corpus changes (Phase 8's P7-13 fix moved the
+  denominator from 104) are the fee amount moving while quarters stay occupied. Pinned in
+  `PayLineChangeExplanationCorpusTest`, not fixed.
 - [ ] **P7-16 — Only ten pay-line fields are explained.** ~30 other `Earnings`/`Deductions` fields (income
   tax, DSOP subscription, CEA, NPA, dress/ration/technical allowance, non-DA arrears, `adj*` corrections)
   have no structural rule and produce no `ChangeExplanation` at all — invisible to the coverage gate.
@@ -392,7 +410,9 @@ wasn't attempted in Phase 7, so this phase doesn't read as a silent backlog dump
   exemptions never fire there (Pay Audit's own screen was already fixed in Phase 4 via
   `rememberPayAuditEngineResult` reading `PayslipUiState.payslips` directly). Fix: migrate `InsightsState`
   the same way, or extend the ledger table (Room v11 → v12, needs an `AutoMigration`). The same gap means
-  `DaArrearsAuditor` never sees `arrearsDa` on the Insights-tab path.
+  `DaArrearsAuditor` never sees `arrearsDa` on the Insights-tab path. Also means Phase 8's P7-20 needsReview
+  gate is a no-op on the Insights-tab path today (`LedgerRecordEntity.toParsedPayslip()` never sets
+  `needsReview = true`) — worth re-checking once this item lands.
 - [ ] **P7-19 — No Compose/UI test exercises any Pay Audit or Insights-tab composable.** Matches existing
   convention (no Insights-tab composable has one either) but recorded per CLAUDE.md fail-loud: covers
   `PayAuditScreen`, `PayAuditTimelineSection`, `PayAuditFindingsSection`, `PayAuditPredictionsSection`,
