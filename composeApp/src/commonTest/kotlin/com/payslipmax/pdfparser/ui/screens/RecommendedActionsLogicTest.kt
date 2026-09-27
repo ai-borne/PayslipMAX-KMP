@@ -72,7 +72,8 @@ class RecommendedActionsLogicTest {
         assertTrue(actions.none { it.gate == FeatureGate.TAX_PLANNER })
     }
 
-    private fun provenAnomaly() = Anomaly("SALARY_LOSS", "field", 1000.0, "02/2026", "detail", 5000.0, 4000.0, "Test Authority")
+    // MISSING_ALLOWANCE, not SALARY_LOSS (excluded from REPRESENTATION_DRAFT_TYPES outright by P7-10).
+    private fun provenAnomaly() = Anomaly("MISSING_ALLOWANCE", "field", 1000.0, "02/2026", "detail", 5000.0, 4000.0, "Test Authority")
 
     @Test
     fun `a proven representation-eligible anomaly surfaces a Claim Generator recommendation`() {
@@ -84,7 +85,15 @@ class RecommendedActionsLogicTest {
     fun `an unproven representation-eligible anomaly surfaces no Claim Generator recommendation`() {
         // P7-09: no letter would actually be drafted for an unproven instance (Phase 5's isProven gate),
         // so the CTA must not promise one either.
-        val anomaly = Anomaly("SALARY_LOSS", "field", 1000.0, "02/2026", "detail")
+        val anomaly = Anomaly("MISSING_ALLOWANCE", "field", 1000.0, "02/2026", "detail")
+        val actions = buildRecommendedActions(state(anomalies = listOf(anomaly), dsopSubscription = 0.0), shownInsights = emptyList())
+        assertTrue(actions.none { it.gate == FeatureGate.CLAIM_GENERATOR })
+    }
+
+    @Test
+    fun `SALARY_LOSS never surfaces a Claim Generator recommendation even when proven`() {
+        // P7-10: SALARY_LOSS is excluded from REPRESENTATION_DRAFT_TYPES outright.
+        val anomaly = Anomaly("SALARY_LOSS", "field", 1000.0, "02/2026", "detail", 5000.0, 4000.0, "Test Authority")
         val actions = buildRecommendedActions(state(anomalies = listOf(anomaly), dsopSubscription = 0.0), shownInsights = emptyList())
         assertTrue(actions.none { it.gate == FeatureGate.CLAIM_GENERATOR })
     }

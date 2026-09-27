@@ -63,8 +63,9 @@ class FinancialIntelligenceRepositoryTest {
     @Test
     fun testProcessPayslipDoesNotGenerateDraftForUnprovenSalaryLoss() =
         runTest {
-            // SalaryLossAuditor is a bare heuristic: it never sets expected/actual/authority, so even
-            // though SALARY_LOSS is in REPRESENTATION_DRAFT_TYPES, it must never draft a letter.
+            // SalaryLossAuditor is a bare heuristic: it never sets expected/actual/authority, so it can
+            // never be proven and is excluded from REPRESENTATION_DRAFT_TYPES outright (P7-10) — must
+            // never draft a letter.
             repository.processPayslipAndRunAnalysis(createMockPayslip("04/2026", basicPay = 60000.0, tpta = 3600.0))
             val result = repository.processPayslipAndRunAnalysis(createMockPayslip("05/2026", basicPay = 50000.0, tpta = 3600.0))
 

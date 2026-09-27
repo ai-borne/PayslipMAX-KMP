@@ -305,12 +305,17 @@ Everything Phases 0–6 left unproven or unbuilt, kept in one place (CLAUDE.md "
   proven in practice per Phase 5) updated to use a proven fixture where the old CTA behavior was the point
   of the test; new tests added for the unproven case in both `SmartInsightsBuilderTest` and
   `RecommendedActionsLogicTest`.
-- [ ] **P7-10 — `SALARY_LOSS`/`MISSING_ALLOWANCE` no longer auto-draft letters.** Correct under the literal
-  "proven" gate but a user-visible regression from pre-Phase-5 behavior. Two options, pick one: (a) add
-  verified `PayAuthorities` citations for `MissingAllowanceAuditor`'s HRA-drop/MSP-drop rules (structural,
-  so a citation should exist) to make `MISSING_ALLOWANCE` provable; or (b) explicitly drop `SALARY_LOSS`
-  from `REPRESENTATION_DRAFT_TYPES` (decide it should never auto-draft, being a bare heuristic) rather than
-  leaving it in the set where it silently never fires.
+- [x] **P7-10 — `SALARY_LOSS`/`MISSING_ALLOWANCE` no longer auto-draft letters** (decided 2026-09-27,
+  user call: drop `SALARY_LOSS`, leave `MISSING_ALLOWANCE` open). `SALARY_LOSS` removed outright from
+  `REPRESENTATION_DRAFT_TYPES` — it's a bare net-pay heuristic with no evidence fields, never provable in
+  production, so exclusion is now explicit instead of an implicit always-false `isProven()`.
+  `MISSING_ALLOWANCE` stays in the set (its HRA/MSP-Level-14 rules are structural and in principle
+  citable) but still has no verified `PayAuthorities` entry — sourcing one needs real legal-citation
+  research, deliberately not attempted here to avoid repeating the MSP-citation mistake P7-02 caught.
+  Updated tests across `FinancialIntelligenceRepositoryTest`, `SmartInsightsBuilderTest`,
+  `RecommendedActionsLogicTest`, `GatedNavigationInvariantTest` to use `MISSING_ALLOWANCE` for the
+  proven/unproven CTA cases (the type actually exercising the `isProven()` gate now), plus new tests
+  confirming `SALARY_LOSS` never gets a CTA even when synthetically "proven".
 - [ ] **P7-11 — Service Timeline list has no pagination/collapsing.** Flat list, newest first, no cap.
   Fine for the single corpus officer; untested for a real officer with a much longer service record.
 - [ ] **P7-12 — "What changed this month" covers one transition, not the whole timeline.**
