@@ -7,9 +7,11 @@ import kotlin.math.abs
  * Explains a month-to-month move in the pay-line fields the [ServiceTimeline] already models (Phases 1-2
  * of docs/Plan/09_PayAudit_PhasePlan.md): Basic Pay (DNI/promotion), DA and its arrears (rate revision),
  * Transport Allowance (posting change, relocation, or DA), its posting-change arrears, HRA/licence fee
- * (quarters), and Risk & Hardship/Field allowance (posting spans). Fields the timeline does not model
- * (income tax, DSOP, one-off adjustments) are out of scope — a changed field with no matching rule below
- * comes back with [ChangeExplanation.reason] null rather than a guess, so coverage can be measured honestly.
+ * (quarters), Risk & Hardship/Field allowance (posting spans), and Non-Practicing Allowance (a fixed
+ * percentage of basic pay). Fields the timeline does not model (income tax, DSOP, one-off adjustments,
+ * and allowances whose eligibility this app doesn't parse — CEA, dress/ration, technical, special forces
+ * pay) are out of scope — a changed field with no matching rule below comes back with
+ * [ChangeExplanation.reason] null rather than a guess, so coverage can be measured honestly.
  */
 object PayLineChangeExplainer {
     private const val AMOUNT_TOLERANCE = 0.5
@@ -65,6 +67,7 @@ object PayLineChangeExplainer {
             Triple("licenseFee", previous.deductions.licenseFee, current.deductions.licenseFee),
             Triple("riskHardshipAllowance", previous.earnings.riskHardshipAllowance, current.earnings.riskHardshipAllowance),
             Triple("fieldAllowance", previous.earnings.fieldAllowance, current.earnings.fieldAllowance),
+            Triple("nonPracticingAllowance", previous.earnings.nonPracticingAllowance, current.earnings.nonPracticingAllowance),
         )
 
     private fun tptaTotal(payslip: ParsedPayslip): Double = payslip.earnings.transportAllowance + payslip.earnings.transportAllowanceDa
@@ -89,6 +92,7 @@ object PayLineChangeExplainer {
             "houseRentAllowance", "licenseFee" -> quartersReason(prevMonth, currMonth)
             "riskHardshipAllowance" -> postingReason(PostingKind.RISK_HARDSHIP, currMonth.month, timeline, "Risk & Hardship")
             "fieldAllowance" -> postingReason(PostingKind.FIELD, currMonth.month, timeline, "Field")
+            "nonPracticingAllowance" -> npaReason(from, currMonth, timeline)
             else -> null
         }
 
@@ -185,6 +189,22 @@ object PayLineChangeExplainer {
         val prevDa = prevMonth.daPercent
         val currDa = currMonth.daPercent
         return if (prevDa != null && currDa != null && prevDa != currDa) "TPTA follows DA: $prevDa%→$currDa%" else null
+    }
+
+    /**
+     * NPA is a fixed 20% of basic pay, capped at basic+MSP+NPA ≤ 237,500 (GoI MoD letter dated 28-09-2017;
+     * Handbook of Pay and Allowances 2023, p. 104), so it only moves when basic pay itself does. Its
+     * onset/cessation (medical-corps eligibility) is not modeled anywhere in the app, so a month with no
+     * prior NPA is left unexplained rather than guessed.
+     */
+    private fun npaReason(
+        from: Double,
+        currMonth: TimelineMonth,
+        timeline: ServiceTimeline,
+    ): String? {
+        if (from <= 0.0) return null
+        val payBaseEvent = timeline.events.firstOrNull { it.month == currMonth.month } ?: return null
+        return "NPA follows the ${payBaseEvent.type.name.lowercase()} pay-base rise"
     }
 
     private fun quartersReason(

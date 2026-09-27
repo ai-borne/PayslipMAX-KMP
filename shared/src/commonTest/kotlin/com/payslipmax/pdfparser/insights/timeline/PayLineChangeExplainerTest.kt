@@ -28,6 +28,7 @@ class PayLineChangeExplainerTest {
         arrearsDa: Double = 0.0,
         arrearsTptaDa: Double = 0.0,
         arrearsTpta: Double = 0.0,
+        npa: Double = 0.0,
     ) = ParsedPayslip(
         file = "t.pdf",
         year = year,
@@ -48,6 +49,7 @@ class PayLineChangeExplainerTest {
                 arrearsDa = arrearsDa,
                 arrearsTptaDa = arrearsTptaDa,
                 arrearsTpta = arrearsTpta,
+                nonPracticingAllowance = npa,
             ),
         deductions = Deductions(licenseFee = licenseFee),
         ledgerBalances = LedgerBalances(),
@@ -125,6 +127,22 @@ class PayLineChangeExplainerTest {
     fun tptaArrearsWithNoPostingChangeIsUnexplained() {
         val changes = explainLast(payslip(2018, 1, 85300.0), payslip(2018, 2, 85300.0, arrearsTpta = 1200.0))
         assertNull(changes.reasonFor("arrearsTpta"))
+    }
+
+    @Test
+    fun anIncrementExplainsTheNpaRiseThatTracksBasicPay() {
+        val changes =
+            explainLast(
+                payslip(2018, 6, 82800.0, npa = 16560.0),
+                payslip(2018, 7, 85300.0, npa = 17060.0),
+            )
+        assertTrue(changes.reasonFor("nonPracticingAllowance")!!.contains("increment", ignoreCase = true))
+    }
+
+    @Test
+    fun npaStartingFromZeroIsUnexplainedEligibilityIsNotModeled() {
+        val changes = explainLast(payslip(2018, 1, 85300.0, npa = 0.0), payslip(2018, 2, 85300.0, npa = 17060.0))
+        assertNull(changes.reasonFor("nonPracticingAllowance"))
     }
 
     @Test
