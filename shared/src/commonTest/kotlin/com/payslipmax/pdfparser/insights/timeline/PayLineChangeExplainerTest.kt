@@ -155,4 +155,21 @@ class PayLineChangeExplainerTest {
         val timeline = ServiceTimelineBuilder.build(listOf(payslip(2018, 1, 85300.0)))
         assertTrue(PayLineChangeExplainer.explain(payslip(2018, 1, 85300.0), emptyList(), timeline).isEmpty())
     }
+
+    @Test
+    fun explainAllCoversEveryTransitionInTheHistoryNotJustTheLatestOne() {
+        val history =
+            listOf(
+                payslip(2018, 6, 82800.0),
+                payslip(2018, 7, 85300.0),
+                payslip(2019, 9, 90500.0),
+                payslip(2019, 10, 121200.0),
+            )
+        val timeline = ServiceTimelineBuilder.build(history)
+        val changes = PayLineChangeExplainer.explainAll(history, timeline)
+        val basicPayChanges = changes.filter { it.field == "basicPay" }
+        assertEquals(3, basicPayChanges.size, "One tracked basicPay change per consecutive pair across 4 stored months")
+        assertTrue(basicPayChanges.single { it.month == PayMonth(2018, 7) }.reason!!.contains("increment", ignoreCase = true))
+        assertTrue(basicPayChanges.single { it.month == PayMonth(2019, 10) }.reason!!.contains("Promotion"))
+    }
 }

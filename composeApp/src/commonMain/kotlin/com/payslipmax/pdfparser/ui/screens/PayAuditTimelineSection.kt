@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.insights.timeline.ChangeExplanation
+import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.insights.timeline.ServiceTimeline
 import com.payslipmax.pdfparser.insights.timeline.TimelineMonth
 import com.payslipmax.pdfparser.insights.timeline.TptaCityClass
@@ -38,6 +39,30 @@ fun LazyListScope.payAuditChangesItems(changes: List<ChangeExplanation>) {
         }
     } else {
         items(explained, key = { "${it.field}_${it.month.index}" }, contentType = { "change_row" }) { change ->
+            PayAuditChangeRow(change = change)
+        }
+    }
+}
+
+/**
+ * Every explained change across the whole stored history (docs/Plan/09_PayAudit_PhasePlan.md Phase 8
+ * P7-12), excluding [currentMonth] since that transition is already shown by [payAuditChangesItems]
+ * above — avoids duplicate `LazyColumn` keys and a duplicated row for the same month.
+ */
+fun LazyListScope.payAuditAllChangesItems(
+    changes: List<ChangeExplanation>,
+    currentMonth: PayMonth,
+) {
+    val explained = changes.filter { it.reason != null && it.month != currentMonth }.sortedByDescending { it.month }
+    item(key = "pay_audit_all_changes_header", contentType = "section_header") {
+        Text(text = PayAuditStrings.allChangesSectionTitle, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+    }
+    if (explained.isEmpty()) {
+        item(key = "pay_audit_all_changes_empty", contentType = "empty_state") {
+            Text(text = PayAuditStrings.allChangesEmptyState, style = MaterialTheme.typography.bodyMedium)
+        }
+    } else {
+        items(explained, key = { "all_${it.field}_${it.month.index}" }, contentType = { "change_row" }) { change ->
             PayAuditChangeRow(change = change)
         }
     }

@@ -40,6 +40,15 @@ object PayLineChangeExplainer {
             }
     }
 
+    /**
+     * [explain] for every stored month against the one before it (Phase 8 P7-12) — covers the whole
+     * [ServiceTimeline], not just [current]'s own transition.
+     */
+    fun explainAll(
+        history: List<ParsedPayslip>,
+        timeline: ServiceTimeline,
+    ): List<ChangeExplanation> = history.flatMap { explain(it, history, timeline) }
+
     private fun trackedFields(
         previous: ParsedPayslip,
         current: ParsedPayslip,

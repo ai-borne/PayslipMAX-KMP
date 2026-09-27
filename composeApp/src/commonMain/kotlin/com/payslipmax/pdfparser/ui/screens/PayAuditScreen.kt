@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
@@ -102,6 +103,10 @@ private fun PayAuditBody(
     ) {
         payAuditFindingsItems(display = findings, onUnlockClick = onShowUpgradeSheet)
         payAuditChangesItems(changes = engineResult.changeExplanations)
+        payAuditAllChangesItems(
+            changes = engineResult.allChangeExplanations,
+            currentMonth = PayMonth(selected.year, selected.monthNum),
+        )
         payAuditPredictionsItems(incrementPrediction = engineResult.incrementPrediction, dsopRoom = engineResult.dsopRoom)
         payAuditFixationCalculatorItems(timeline = engineResult.timeline)
         payAuditTimelineItems(timeline = engineResult.timeline)

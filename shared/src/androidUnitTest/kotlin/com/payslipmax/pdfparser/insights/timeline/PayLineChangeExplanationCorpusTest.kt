@@ -26,8 +26,7 @@ class PayLineChangeExplanationCorpusTest {
 
     private val timeline = ServiceTimelineBuilder.build(history)
 
-    private val explanations: List<ChangeExplanation> =
-        history.flatMap { current -> PayLineChangeExplainer.explain(current, history, timeline) }
+    private val explanations: List<ChangeExplanation> = PayLineChangeExplainer.explainAll(history, timeline)
 
     @Test
     fun everyTrackedChangeIsExplainedExceptTheKnownLicenceFeeRateGap() {

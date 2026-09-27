@@ -21,6 +21,9 @@ object PayAuditStrings {
     const val changesSectionTitle = "What changed this month"
     const val changesEmptyState = "No pay-line changes are explained for this month yet."
 
+    const val allChangesSectionTitle = "Every change explained"
+    const val allChangesEmptyState = "No other explained pay-line changes yet."
+
     const val findingsSectionTitle = "Findings"
     const val findingsEmptyState = "No findings on this payslip — everything checks out."
     const val findingsCountSingular = "finding found on this payslip"

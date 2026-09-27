@@ -78,6 +78,22 @@ class DeterministicIntelligenceEngineTest {
         assertTrue(basicPayChange.reason!!.contains("increment", ignoreCase = true))
     }
 
+    /** Phase 8 P7-12: EngineResult must expose every explained transition across the whole history, not
+     * just [EngineResult.changeExplanations]' current-month subset. */
+    @Test
+    fun testEngineResultExposesAllChangeExplanationsAcrossTheWholeHistory() {
+        val first = parsedPayslip(2018, 6, 82800.0)
+        val second = parsedPayslip(2018, 7, 85300.0)
+        val third = parsedPayslip(2019, 9, 90500.0)
+        val current = parsedPayslip(2019, 10, 121200.0)
+
+        val result = DeterministicIntelligenceEngine.analyze(current, third, listOf(first, second, third))
+
+        val basicPayChanges = result.allChangeExplanations.filter { it.field == "basicPay" }
+        assertEquals(3, basicPayChanges.size, "One tracked basicPay change per consecutive pair across 4 stored months")
+        assertTrue(basicPayChanges.any { it.reason?.contains("Promotion") == true }, "Should explain the 2019/10 promotion")
+    }
+
     /** Pay Audit Phase 6: EngineResult must expose the next-increment prediction and DSOP room it derives
      * from the same timeline/history it already builds internally, with no user input. */
     @Test

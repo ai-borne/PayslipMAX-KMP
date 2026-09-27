@@ -39,6 +39,9 @@ data class EngineResult(
     // safe default keeps that annotation honest without forcing timeline/ChangeExplanation serializable too.
     @Transient val timeline: ServiceTimeline = ServiceTimeline(emptyList(), emptyList(), emptyList()),
     @Transient val changeExplanations: List<ChangeExplanation> = emptyList(),
+    // Every explained transition across the whole stored history (Phase 8 P7-12), not just current's own
+    // — [changeExplanations] above stays as the current-month subset the "This month" section already uses.
+    @Transient val allChangeExplanations: List<ChangeExplanation> = emptyList(),
     // Predictions (Pay Audit Phase 6), both zero-input and derived from the same timeline/history the
     // engine already built above — null when there is nothing trustworthy to predict from.
     @Transient val incrementPrediction: NextIncrementPrediction? = null,
@@ -92,6 +95,7 @@ object DeterministicIntelligenceEngine {
                 }
             }
         val changeExplanations = PayLineChangeExplainer.explain(current, history, timeline)
+        val allChangeExplanations = PayLineChangeExplainer.explainAll(history + current, timeline)
         val incrementPrediction = NextIncrementPredictor.predict(timeline)
         val dsopRoom = DsopRoomCalculator.calculate(current, history)
 
@@ -111,6 +115,7 @@ object DeterministicIntelligenceEngine {
             taxRatio = taxRate,
             timeline = timeline,
             changeExplanations = changeExplanations,
+            allChangeExplanations = allChangeExplanations,
             incrementPrediction = incrementPrediction,
             dsopRoom = dsopRoom,
         )
