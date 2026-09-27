@@ -75,4 +75,16 @@ class DsopRoomCalculatorTest {
 
         assertEquals(40000.0, room.subscribedYtd)
     }
+
+    @Test
+    fun currentTakesPrecedenceOverAStaleDuplicateInHistory() {
+        // The stored history still holds the original, uncorrected figure for June; the freshly re-parsed
+        // "current" payslip for the same month carries the corrected one (P7-06).
+        val current = payslip(2026, 6, 45000.0)
+        val history = listOf(payslip(2026, 6, 40000.0))
+
+        val room = DsopRoomCalculator.calculate(current, history)
+
+        assertEquals(45000.0, room.subscribedYtd)
+    }
 }

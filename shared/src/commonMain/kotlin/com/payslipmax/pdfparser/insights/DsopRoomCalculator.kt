@@ -23,8 +23,11 @@ object DsopRoomCalculator {
         history: List<ParsedPayslip>,
     ): DsopRoom {
         val fyStartYear = financialYearStart(current)
+        // current first: if a month is duplicated between current and history (a re-parsed, corrected
+        // payslip passed alongside the original), distinctBy keeps the first occurrence, so current's
+        // figure wins rather than a possibly-stale one from history (P7-06).
         val subscribedYtd =
-            (history + current)
+            (listOf(current) + history)
                 .filter { financialYearStart(it) == fyStartYear }
                 .distinctBy { it.year to it.monthNum }
                 .sumOf { it.deductions.dsopSubscription }

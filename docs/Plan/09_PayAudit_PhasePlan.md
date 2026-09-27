@@ -283,10 +283,10 @@ Everything Phases 0–6 left unproven or unbuilt, kept in one place (CLAUDE.md "
   tests: `NextIncrementPredictorTest.flagsOverdueWhenTheDueDateIsWellBeforeTheLatestPayslip`, plus
   `isOverdue` assertions added to the two existing prediction tests (boundary-exact and genuinely-upcoming
   cases).
-- [ ] **P7-06 — DsopRoomCalculator dedup ordering.** Dedupes `history + current` by `(year, monthNum)`,
-  keeping whichever appears first — silently uses a stale DSOP figure if a re-parsed/corrected entry for
-  the same month is ever passed alongside the original. Not observed in practice; needs an explicit
-  precedence rule (e.g. prefer `current` over `history`) plus a test.
+- [x] **P7-06 — DsopRoomCalculator dedup ordering** (done 2026-09-27). Now dedupes `listOf(current) +
+  history` (current first) by `(year, monthNum)`, so `current`'s figure wins over a stale duplicate in
+  history rather than whichever happened to be first in the old `history + current` order. New test:
+  `currentTakesPrecedenceOverAStaleDuplicateInHistory`.
 - [ ] **P7-07 — Calculator's silent DNI-month default.** `resolveFixationComparison` defaults to a January
   increment cycle with no UI indication when the officer has no recorded INCREMENT event yet — reads as a
   fact, not an assumption. Surface the assumption in the UI when it's used.
