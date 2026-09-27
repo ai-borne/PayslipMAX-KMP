@@ -30,14 +30,16 @@ class PayAuditFixationCalculatorLogicTest {
                 postings = emptyList(),
             )
 
-        val comparison =
+        val result =
             resolveFixationComparison(
                 timeline,
                 FixationCalculatorInputs(toLevel = PayLevel.L11, promotionYear = 2026, promotionMonth = 3),
             )
 
-        assertEquals(71500, comparison!!.option1.fixedPay)
-        assertEquals(73600, comparison.option2.fixedPay)
+        assertEquals(71500, result!!.comparison.option1.fixedPay)
+        assertEquals(73600, result.comparison.option2.fixedPay)
+        // An increment was recorded, so the DNI month is a fact, not an assumption.
+        assertEquals(false, result.dniMonthAssumed)
     }
 
     @Test
@@ -45,7 +47,7 @@ class PayAuditFixationCalculatorLogicTest {
         val timeline =
             ServiceTimeline(months = listOf(month(2018, 1, PayLevel.L10, 8)), events = emptyList(), postings = emptyList())
 
-        val comparison =
+        val result =
             resolveFixationComparison(
                 timeline,
                 FixationCalculatorInputs(toLevel = PayLevel.L11, promotionYear = 2026, promotionMonth = 3),
@@ -54,7 +56,9 @@ class PayAuditFixationCalculatorLogicTest {
         // DNI defaults to the January cycle: next Jan on/after Mar 2026 is Jan 2027, so the first
         // post-DNI increment (6 months later, on cycle) lands in July 2027 — not Jan 2027, which a
         // July-default would have produced instead.
-        assertEquals(PayMonth(2027, 7), comparison!!.option2.firstIncrementDate)
+        assertEquals(PayMonth(2027, 7), result!!.comparison.option2.firstIncrementDate)
+        // No increment on the timeline — this is an assumption, and the UI must say so (P7-07).
+        assertEquals(true, result.dniMonthAssumed)
     }
 
     @Test

@@ -287,9 +287,11 @@ Everything Phases 0–6 left unproven or unbuilt, kept in one place (CLAUDE.md "
   history` (current first) by `(year, monthNum)`, so `current`'s figure wins over a stale duplicate in
   history rather than whichever happened to be first in the old `history + current` order. New test:
   `currentTakesPrecedenceOverAStaleDuplicateInHistory`.
-- [ ] **P7-07 — Calculator's silent DNI-month default.** `resolveFixationComparison` defaults to a January
-  increment cycle with no UI indication when the officer has no recorded INCREMENT event yet — reads as a
-  fact, not an assumption. Surface the assumption in the UI when it's used.
+- [x] **P7-07 — Calculator's silent DNI-month default** (done 2026-09-27). `resolveFixationComparison` now
+  returns `FixationCalculatorResult(comparison, dniMonthAssumed)`; `PayAuditFixationCalculatorSection` shows
+  a note ("No increment found in your payslips yet — assuming a January DNI cycle...") in the error color
+  above the comparison whenever `dniMonthAssumed` is true. New assertions on `dniMonthAssumed` added to the
+  two existing DNI-related tests in `PayAuditFixationCalculatorLogicTest`.
 - [ ] **P7-08 — Evidence display is only half-closed.** `expected`/`actual`/`authority` render on
   `PayAuditScreen`'s own finding rows, but `AdvancedAnomaliesCard` on the Insights tab (same PRO anomalies,
   including Pay Audit's) still shows `description` text only. Two surfaces, inconsistent detail.

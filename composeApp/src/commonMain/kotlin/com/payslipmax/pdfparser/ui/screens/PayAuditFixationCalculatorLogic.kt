@@ -15,6 +15,16 @@ data class FixationCalculatorInputs(
 )
 
 /**
+ * [PayFixationComparison] plus whether [PayFixationComparison]'s DNI-month input was actually read off a
+ * recorded increment or silently defaulted (P7-07) — an officer with no INCREMENT event yet gets a January
+ * default that is an assumption, not a fact from their own payslips, and the UI needs to say so.
+ */
+data class FixationCalculatorResult(
+    val comparison: PayFixationComparison,
+    val dniMonthAssumed: Boolean,
+)
+
+/**
  * Resolves [PayFixationCalculator.compare]'s from-level/from-stage/DNI-month arguments from the
  * [ServiceTimeline] (Pay Audit Phase 6) so the calculator only ever asks the user for the one thing the
  * timeline cannot know: the promotion itself. `dniMonth` is read off the most recent INCREMENT event
@@ -29,7 +39,7 @@ data class FixationCalculatorInputs(
 fun resolveFixationComparison(
     timeline: ServiceTimeline,
     inputs: FixationCalculatorInputs,
-): PayFixationComparison? {
+): FixationCalculatorResult? {
     val latest = timeline.months.maxByOrNull { it.month } ?: return null
     val fromLevel = latest.level ?: return null
     val fromStage = latest.stage ?: return null
@@ -37,15 +47,18 @@ fun resolveFixationComparison(
     val promotionMonth = PayMonth(inputs.promotionYear, inputs.promotionMonth)
     if (promotionMonth <= latest.month) return null
     if (promotionMonth.index - latest.month.index > MAX_PROMOTION_MONTHS_AHEAD) return null
-    val dniMonth = timeline.events.lastOrNull { it.type == TimelineEventType.INCREMENT }?.month?.month ?: 1
+    val lastIncrement = timeline.events.lastOrNull { it.type == TimelineEventType.INCREMENT }
+    val dniMonth = lastIncrement?.month?.month ?: 1
 
-    return PayFixationCalculator.compare(
-        fromLevel = fromLevel,
-        fromStage = fromStage,
-        toLevel = inputs.toLevel,
-        promotionMonth = promotionMonth,
-        dniMonth = dniMonth,
-    )
+    val comparison =
+        PayFixationCalculator.compare(
+            fromLevel = fromLevel,
+            fromStage = fromStage,
+            toLevel = inputs.toLevel,
+            promotionMonth = promotionMonth,
+            dniMonth = dniMonth,
+        )
+    return FixationCalculatorResult(comparison, dniMonthAssumed = lastIncrement == null)
 }
 
 /** 30 years covers a full commissioned-officer career span; anything beyond is not a plausible promotion. */

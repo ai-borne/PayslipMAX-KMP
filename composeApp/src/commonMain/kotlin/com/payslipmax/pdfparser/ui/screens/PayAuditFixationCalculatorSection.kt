@@ -60,7 +60,7 @@ private fun PayAuditFixationCalculatorCard(timeline: ServiceTimeline) {
 
         val month = monthText.toIntOrNull()?.coerceIn(1, 12)
         val year = yearText.toIntOrNull()
-        val comparison =
+        val result =
             remember(timeline, toLevel, month, year) {
                 if (month == null || year == null) {
                     null
@@ -69,10 +69,17 @@ private fun PayAuditFixationCalculatorCard(timeline: ServiceTimeline) {
                 }
             }
 
-        if (comparison == null) {
+        if (result == null) {
             Text(text = PayAuditStrings.fixationCalculatorInvalidInput, style = MaterialTheme.typography.bodySmall)
         } else {
-            PayFixationComparisonResult(comparison)
+            if (result.dniMonthAssumed) {
+                Text(
+                    text = PayAuditStrings.fixationCalculatorDniAssumedNote,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+            PayFixationComparisonResult(result.comparison)
         }
     }
 }

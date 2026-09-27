@@ -51,4 +51,6 @@ object PayAuditStrings {
     const val fixationCalculatorRecommendedPrefix = "Recommended: Option "
     const val fixationCalculatorNextIncrementPrefix = "Next increment: "
     const val fixationCalculatorInvalidInput = "Enter a valid promotion year and a level higher than your current one."
+    const val fixationCalculatorDniAssumedNote =
+        "No increment found in your payslips yet — assuming a January DNI cycle. Actual cycle month may differ."
 }
