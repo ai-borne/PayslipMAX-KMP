@@ -51,12 +51,17 @@ class PayAuditCorpusPrecisionTest {
     }
 
     @Test
-    fun auditedAtImportBeforeLaterPayslipsExistTheTransitionMonthsAreHeldNotFlagged() {
+    fun auditedAtImportBeforeLaterPayslipsExistTheTransitionMonthsAreHeldPendingNotFlaggedAsProven() {
         // Fixed by Phase 9's P7-17: TptaAbsenceExplainer.isPendingFutureData holds a finding rather than
-        // flagging it while the explaining months (Jan 2020, Jun 2022, Oct 2024) are not yet stored, since
-        // a same-window relocation can't be ruled out without them.
-        val flagged = findings(TptaEntitlementAuditor(), onlyEarlierMonths = true).map { it.month }
-        assertTrue(flagged.isEmpty(), "Findings that should have been held pending future data: $flagged")
+        // confidently flagging it while the explaining months (Jan 2020, Jun 2022, Oct 2024) are not yet
+        // stored, since a same-window relocation can't be ruled out without them. Phase 10's P7-17b makes
+        // the hold visible instead of invisible: the finding is still returned, marked isPending, so it
+        // never drafts a representation letter (not proven) but also never silently disappears.
+        val held = findings(TptaEntitlementAuditor(), onlyEarlierMonths = true)
+        val heldMonths = held.map { it.month }
+        assertEquals(listOf("12/2019", "05/2022", "09/2024"), heldMonths)
+        assertTrue(held.all { it.isPending }, "Held findings must be marked pending, not confidently flagged: $held")
+        assertTrue(held.none { it.isProven() }, "A pending finding must never be proven: $held")
     }
 
     private fun CorpusExpected.toParsedPayslip() =

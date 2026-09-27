@@ -25,6 +25,10 @@ data class Anomaly(
     val expected: Double? = null,
     val actual: Double? = null,
     val authority: String? = null,
+    // True when the auditor could not yet rule the finding in or out (e.g. TptaAbsenceExplainer.isPendingFutureData:
+    // the same-window payslip that would confirm/rule out a relocation hasn't been imported yet) — shown, not hidden,
+    // but never proven (see Anomaly.isProven) and never drafts a representation letter.
+    val isPending: Boolean = false,
 )
 
 @Serializable

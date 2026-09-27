@@ -99,6 +99,13 @@ private fun PayAuditFindingRow(anomaly: Anomaly) {
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(text = anomaly.description, style = MaterialTheme.typography.bodyMedium)
+            if (anomaly.isPending) {
+                Text(
+                    text = PayAuditStrings.findingsPendingLabel,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.tertiary,
+                )
+            }
             val expected = anomaly.expected
             val actual = anomaly.actual
             if (expected != null && actual != null) {

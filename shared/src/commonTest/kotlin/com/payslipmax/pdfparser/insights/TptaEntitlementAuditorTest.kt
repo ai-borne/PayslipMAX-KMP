@@ -68,4 +68,16 @@ class TptaEntitlementAuditorTest {
         val months = payAuditMonths(2018, 1, 2) { y, m -> payAuditPayslip(y, m, 85300.0, tpta = 0.0, arrearsTpta = if (m == 2) 500.0 else 0.0) }
         assertTrue(run(months).isEmpty())
     }
+
+    @Test
+    fun aRelocationGapWithNoFutureSampleYetIsReturnedPendingNotSuppressed() {
+        // Same fixture as TptaAbsenceExplainerTest.aRelocationGapWithNoFutureSampleYetIsPending: the
+        // higher-city sample that would confirm or rule out a relocation hasn't been imported yet, so the
+        // auditor must surface a held finding (P7-17b) instead of returning emptyList().
+        val months = payAuditMonths(2018, 1, 3) { y, m -> payAuditPayslip(y, m, 85300.0, tpta = if (m == 3) 0.0 else 3600.0 * 1.17) }
+        val finding = run(months).single()
+        assertEquals("TPTA_ENTITLEMENT", finding.type)
+        assertTrue(finding.isPending)
+        assertTrue(finding.expected == null && finding.actual == null && finding.authority == null)
+    }
 }

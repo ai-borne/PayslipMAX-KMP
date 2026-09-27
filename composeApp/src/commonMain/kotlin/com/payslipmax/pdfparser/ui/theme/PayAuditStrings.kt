@@ -32,6 +32,7 @@ object PayAuditStrings {
     const val findingsExpectedLabel = "Expected: ₹"
     const val findingsActualLabel = "Actual: ₹"
     const val findingsAuthorityLabel = "Authority: "
+    const val findingsPendingLabel = "Pending — waiting for a later payslip to confirm this"
 
     const val predictionsSectionTitle = "What's next"
     const val nextIncrementTitle = "Next increment"
