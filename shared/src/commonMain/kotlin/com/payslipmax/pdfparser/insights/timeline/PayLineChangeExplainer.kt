@@ -6,10 +6,10 @@ import kotlin.math.abs
 /**
  * Explains a month-to-month move in the pay-line fields the [ServiceTimeline] already models (Phases 1-2
  * of docs/Plan/09_PayAudit_PhasePlan.md): Basic Pay (DNI/promotion), DA and its arrears (rate revision),
- * Transport Allowance (posting change, relocation, or DA), HRA/licence fee (quarters), and Risk &
- * Hardship/Field allowance (posting spans). Fields the timeline does not model (income tax, DSOP, one-off
- * adjustments, non-DA arrears) are out of scope — a changed field with no matching rule below comes back
- * with [ChangeExplanation.reason] null rather than a guess, so coverage can be measured honestly.
+ * Transport Allowance (posting change, relocation, or DA), its posting-change arrears, HRA/licence fee
+ * (quarters), and Risk & Hardship/Field allowance (posting spans). Fields the timeline does not model
+ * (income tax, DSOP, one-off adjustments) are out of scope — a changed field with no matching rule below
+ * comes back with [ChangeExplanation.reason] null rather than a guess, so coverage can be measured honestly.
  */
 object PayLineChangeExplainer {
     private const val AMOUNT_TOLERANCE = 0.5
@@ -58,6 +58,7 @@ object PayLineChangeExplainer {
             Triple("dearnessAllowance", previous.earnings.dearnessAllowance, current.earnings.dearnessAllowance),
             Triple("arrearsDa", previous.earnings.arrearsDa, current.earnings.arrearsDa),
             Triple("arrearsTptaDa", previous.earnings.arrearsTptaDa, current.earnings.arrearsTptaDa),
+            Triple("arrearsTpta", previous.earnings.arrearsTpta, current.earnings.arrearsTpta),
             Triple("militaryServicePay", previous.earnings.militaryServicePay, current.earnings.militaryServicePay),
             Triple("transportAllowance", tptaTotal(previous), tptaTotal(current)),
             Triple("houseRentAllowance", previous.earnings.houseRentAllowance, current.earnings.houseRentAllowance),
@@ -82,6 +83,7 @@ object PayLineChangeExplainer {
             "dearnessAllowance" -> daReason(prevMonth, currMonth, timeline)
             "arrearsDa" -> arrearsReason(from, to, prevMonth, currMonth, current, tptaDaSeparate = false)
             "arrearsTptaDa" -> arrearsReason(from, to, prevMonth, currMonth, current, tptaDaSeparate = true)
+            "arrearsTpta" -> tptaArrearsReason(from, to, currMonth, timeline)
             "militaryServicePay" -> mspReason(currMonth, current)
             "transportAllowance" -> tptaReason(prevMonth, currMonth, timeline)
             "houseRentAllowance", "licenseFee" -> quartersReason(prevMonth, currMonth)
@@ -140,6 +142,25 @@ object PayLineChangeExplainer {
         val effectiveMonth = if (monthNum <= 6) 1 else 7
         val lastMonth = monthNum - 1
         return if (lastMonth >= effectiveMonth) effectiveMonth to lastMonth else null
+    }
+
+    /**
+     * Base TPTA arrears (`arrearsTpta`) are a posting-change back-payment, not a DA-rate rise — distinct
+     * from [arrearsReason], which only fires on a DA revision. Triggers when the same posting-change or
+     * relocation edge that explains a TPTA drop/absence ([TptaAbsenceExplainer]) sits at this month.
+     */
+    private fun tptaArrearsReason(
+        from: Double,
+        to: Double,
+        currMonth: TimelineMonth,
+        timeline: ServiceTimeline,
+    ): String? {
+        if (to == 0.0 && from > 0.0) return "One-off arrears payment, not recurring"
+        return if (TptaAbsenceExplainer.explains(timeline, currMonth.month)) {
+            "Transport Allowance arrears for the posting change or relocation"
+        } else {
+            null
+        }
     }
 
     private fun mspReason(

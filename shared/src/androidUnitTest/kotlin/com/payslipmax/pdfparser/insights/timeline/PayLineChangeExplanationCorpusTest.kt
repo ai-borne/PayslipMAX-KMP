@@ -10,11 +10,11 @@ import kotlin.test.assertTrue
 
 /**
  * Phase 3 gate (docs/Plan/09_PayAudit_PhasePlan.md), updated by Phase 8's P7-13 fix (walking back to the
- * last trusted month instead of skipping a transition after an untrusted one): coverage of
- * [PayLineChangeExplainer] over one real (de-identified) officer's whole history — 93 of 106
- * month-to-month moves in the tracked pay-line fields carry a reason (87.7%). The 13 gaps are pinned, not
- * just counted, so a new unexplained field or month fails loud instead of quietly widening the known gap
- * (CLAUDE.md "fail loud").
+ * last trusted month instead of skipping a transition after an untrusted one) and Phase 9's P7-14 fix
+ * (base TPTA arrears now tracked): coverage of [PayLineChangeExplainer] over one real (de-identified)
+ * officer's whole history — 95 of 108 month-to-month moves in the tracked pay-line fields carry a reason
+ * (88.0%). The 13 gaps are pinned, not just counted, so a new unexplained field or month fails loud
+ * instead of quietly widening the known gap (CLAUDE.md "fail loud").
  */
 class PayLineChangeExplanationCorpusTest {
     private val history: List<ParsedPayslip> =
@@ -50,7 +50,7 @@ class PayLineChangeExplanationCorpusTest {
 
     @Test
     fun coverageGateStaysAtLeastEightyFivePercent() {
-        assertEquals(106, explanations.size, "Tracked-change count moved; re-check the pinned gap list too")
+        assertEquals(108, explanations.size, "Tracked-change count moved; re-check the pinned gap list too")
         val coverage = explanations.count { it.reason != null }.toDouble() / explanations.size
         assertTrue(coverage >= 0.85, "Coverage dropped to $coverage")
     }

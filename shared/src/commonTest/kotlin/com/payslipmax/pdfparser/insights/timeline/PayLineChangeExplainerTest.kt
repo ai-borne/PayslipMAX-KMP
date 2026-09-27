@@ -27,6 +27,7 @@ class PayLineChangeExplainerTest {
         licenseFee: Double = 0.0,
         arrearsDa: Double = 0.0,
         arrearsTptaDa: Double = 0.0,
+        arrearsTpta: Double = 0.0,
     ) = ParsedPayslip(
         file = "t.pdf",
         year = year,
@@ -46,6 +47,7 @@ class PayLineChangeExplainerTest {
                 houseRentAllowance = hra,
                 arrearsDa = arrearsDa,
                 arrearsTptaDa = arrearsTptaDa,
+                arrearsTpta = arrearsTpta,
             ),
         deductions = Deductions(licenseFee = licenseFee),
         ledgerBalances = LedgerBalances(),
@@ -99,6 +101,30 @@ class PayLineChangeExplainerTest {
             )
         assertTrue(changes.reasonFor("riskHardshipAllowance")!!.contains("posting", ignoreCase = true))
         assertTrue(changes.reasonFor("transportAllowance")!!.contains("posting", ignoreCase = true))
+    }
+
+    @Test
+    fun aPostingChangeExplainsBaseTptaArrearsNotLinkedToADaRise() {
+        val changes =
+            explainLast(
+                payslip(2018, 1, 85300.0, tpta = 3600.0),
+                payslip(2018, 2, 85300.0, tpta = 0.0, riskHardship = 20300.0),
+                payslip(2018, 3, 85300.0, tpta = 0.0, riskHardship = 20300.0, arrearsTpta = 3600.0),
+            )
+        val reason = changes.reasonFor("arrearsTpta")
+        assertTrue(reason != null && reason.contains("posting", ignoreCase = true), "was: $reason")
+    }
+
+    @Test
+    fun aOneOffTptaArrearsPaymentIsExplainedWithoutNeedingAPostingChange() {
+        val changes = explainLast(payslip(2018, 1, 85300.0, arrearsTpta = 3600.0), payslip(2018, 2, 85300.0, arrearsTpta = 0.0))
+        assertEquals("One-off arrears payment, not recurring", changes.reasonFor("arrearsTpta"))
+    }
+
+    @Test
+    fun tptaArrearsWithNoPostingChangeIsUnexplained() {
+        val changes = explainLast(payslip(2018, 1, 85300.0), payslip(2018, 2, 85300.0, arrearsTpta = 1200.0))
+        assertNull(changes.reasonFor("arrearsTpta"))
     }
 
     @Test
