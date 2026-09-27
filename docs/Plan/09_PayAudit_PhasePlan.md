@@ -41,7 +41,7 @@ cites a verified authority.
 
 Each phase ends with a green build and 100% passing tests, followed by a Phase Summary per CLAUDE.md.
 
-### Phase 0 — Fix the false DA arrears alarm (live bug)
+### Phase 0 — Fix the false DA arrears alarm (live bug) — DONE
 
 `DaArrearsAuditor` feeds `SALARY_LOSS`, which is in `REPRESENTATION_DRAFT_TYPES`, so a false mismatch
 offers the user a complaint letter. Known defects:
@@ -63,7 +63,7 @@ Fix:
 
 Gate: unit tests for each defect, plus a corpus test showing zero false `SALARY_LOSS` from this auditor.
 
-### Phase 1 — Service timeline
+### Phase 1 — Service timeline — DONE (2026-09-27; open items in Phase 7)
 
 Payslip history becomes a month-by-month `ServiceTimeline` containing:
 
@@ -78,6 +78,12 @@ The pay matrix is ported into `shared` as a Kotlin object (SSOT). Months with `n
 basic pay are excluded.
 
 Gate: on the corpus, the timeline reconstructs the known events listed above.
+
+Delivered in `shared/.../insights/timeline/`: `PayMatrix` (SSOT; `PayMatrixTest` fails if it drifts from
+`scripts/pcdao_factory/output/pay_matrix_7th_cpc.json`), `LevelResolver`, `ServiceTimelineBuilder`,
+`ServiceTimeline` models. Also excluded: basic pay that is not a 7th CPC matrix cell (pre-Jun 2017 pay,
+arrears-inflated months). A basic shared by two levels with no history to settle it is left unplaced
+(level/stage null) rather than guessed.
 
 ### Phase 2 — Rebuild existing auditors on the timeline
 
@@ -114,6 +120,21 @@ Only proven findings feed the existing `RepresentationScreen`.
 - the pay-fixation option calculator, with the Option 2 next-increment date fixed to 12 months after
   re-fixation (verify against the Army Officers Pay Rules 2017; test cases from the official worked
   example)
+
+### Phase 7 — Carry-overs from earlier phases
+
+Everything Phases 0–1 left unproven or unbuilt, kept in one place (CLAUDE.md "fail loud").
+
+- **Real-data validation of the timeline (Phase 1).** The gate ran on one officer's corpus. Never
+  exercised on real data: unplaced months from a shared matrix cell (10 vs 10B, 11 vs 12A), FIELD
+  posting spans (the corpus has no field allowance), and a Level 12A officer who starts mid-history.
+  Fold into the Validation checkpoint: report unplaced months and span counts per officer.
+- **TPTA city class for Jun–Sep 2017 (Phase 1).** Those payslips still print the pre-7th CPC TPTA (₹3,712),
+  so the class is null. Correct as is; revisit only if a real officer needs those months classified.
+- **Officer scope of the matrix (Phase 1).** Only regular-Army Levels 10–18 are ported. MNS and NCC
+  matrices are out of scope; decide whether to add them only if such users appear.
+- **Timeline has no consumer yet (Phase 1).** Deliberate: Phase 2 wires it into the auditors.
+- **Other findings/notes from Phase 0.** None outstanding; all five defects are fixed and tested.
 
 ## Deferred / dropped
 
