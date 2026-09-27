@@ -530,8 +530,12 @@ graph TD
 | `DsopComplianceAuditor` | 6% statutory minimum savings; ₹41,666/mo tax threshold |
 | `TaxProjectionAuditor` | Annual ITAX trajectory from YTD |
 | `SalaryLossAuditor` | Unexplained net-pay drops |
-| `MissingAllowanceAuditor` | Allowances present in past but absent this month |
-| `TptaEntitlementAuditor` | Transport allowance entitlement vs received |
+| `MissingAllowanceAuditor` | HRA/MSP paid last month but absent now, unless the service timeline explains it (quarters taken, Level 14+) |
+| `TptaEntitlementAuditor` | Transport allowance absent for Levels 10-13A, unless a posting change or relocation explains it; amount = rate x DA |
+| `IncrementAuditor` | Annual increment (DNI) not applied 12 months after the last one |
+| `MspAuditor` | Military Service Pay paid but below ₹15,500 (Levels 10-13A) |
+
+The last four are `TimelineAuditor`s: the engine builds one `ServiceTimeline` per run (see `docs/Plan/09_PayAudit_PhasePlan.md`) and each finding carries `expected`/`actual`/`authority`.
 
 `InsightPrioritizationEngine` scores alerts on 5 dimensions, filters below 7.0, caps dashboard at top 4, uses ₹ value as tie-breaker.
 

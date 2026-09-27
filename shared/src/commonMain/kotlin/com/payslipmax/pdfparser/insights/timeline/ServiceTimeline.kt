@@ -56,4 +56,6 @@ data class ServiceTimeline(
     val months: List<TimelineMonth>,
     val events: List<TimelineEvent>,
     val postings: List<PostingSpan>,
-)
+) {
+    fun monthAt(month: PayMonth): TimelineMonth? = months.firstOrNull { it.month == month }
+}

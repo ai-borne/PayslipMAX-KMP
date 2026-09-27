@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.insights
 
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
 import com.payslipmax.pdfparser.domain.*
+import com.payslipmax.pdfparser.insights.timeline.ServiceTimelineBuilder
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -12,6 +13,11 @@ data class Anomaly(
     val amount: Double,
     val month: String,
     val description: String,
+    // Evidence behind a rule-based finding: the amount the rule requires, the amount the payslip shows,
+    // and the verified authority (see PayAuthorities). Null where the check has no such source.
+    val expected: Double? = null,
+    val actual: Double? = null,
+    val authority: String? = null,
 )
 
 @Serializable
@@ -28,6 +34,8 @@ object DeterministicIntelligenceEngine {
             SalaryLossAuditor(),
             MissingAllowanceAuditor(),
             TptaEntitlementAuditor(),
+            IncrementAuditor(),
+            MspAuditor(),
             DaArrearsAuditor(),
             MarriedQuartersRiskAuditor(),
             UnexpectedDebitAuditor(),
@@ -51,9 +59,10 @@ object DeterministicIntelligenceEngine {
         previous: ParsedPayslip? = null,
         history: List<ParsedPayslip> = emptyList(),
     ): EngineResult {
+        val timeline by lazy { ServiceTimelineBuilder.build(history + current) }
         val anomalies =
             auditors.flatMap { auditor ->
-                auditor.audit(current, previous, history)
+                if (auditor is TimelineAuditor) auditor.audit(current, previous, timeline) else auditor.audit(current, previous, history)
             }
 
         val dsop = current.deductions.dsopSubscription

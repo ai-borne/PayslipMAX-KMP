@@ -40,8 +40,8 @@ class FinancialIntelligenceRepositoryTest {
     @Test
     fun testProcessPayslipGeneratesRepresentationDraftAndInsightsForMissingTPTA() =
         runTest {
-            // Basic pay >= 56100 but TPTA is 0.0 -> TPTA_ENTITLEMENT anomaly
-            val mockPayslip = createMockPayslip("05/2026", basicPay = 60000.0, tpta = 0.0)
+            // Basic pay is a real Level 10 pay-matrix cell (stage 3) but TPTA is 0.0 -> TPTA_ENTITLEMENT anomaly
+            val mockPayslip = createMockPayslip("05/2026", basicPay = 59500.0, tpta = 0.0)
 
             val result = repository.processPayslipAndRunAnalysis(mockPayslip)
 

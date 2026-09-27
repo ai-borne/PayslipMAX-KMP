@@ -85,7 +85,7 @@ Delivered in `shared/.../insights/timeline/`: `PayMatrix` (SSOT; `PayMatrixTest`
 arrears-inflated months). A basic shared by two levels with no history to settle it is left unplaced
 (level/stage null) rather than guessed.
 
-### Phase 2 — Rebuild existing auditors on the timeline
+### Phase 2 — Rebuild existing auditors on the timeline — DONE (2026-09-27; open items in Phase 7)
 
 - **TPTA:** skip months the timeline explains; compute the rate × DA.
 - **Missing allowance:** explain drops caused by posting changes.
@@ -93,6 +93,27 @@ arrears-inflated months). A basic shared by two levels with no history to settle
 - **Evidence fields:** extend `Anomaly` with expected, actual and authority.
 
 Gate: a precision run on the corpus. Every remaining finding is genuine (user-confirmed) or removed.
+
+Delivered in `shared/.../insights/`:
+
+- `TimelineAuditor` (an auditor that takes the `ServiceTimeline`; the engine builds it once per run) and
+  `PayAuthorities` (SSOT of cited authorities, taken from `scripts/pcdao_factory/output/`).
+- `Anomaly` gains `expected`, `actual`, `authority` (all optional). Filled by the TPTA, increment and MSP
+  auditors and by `DaArrearsAuditor` (which has no verified authority yet, so it cites none).
+- `TptaEntitlementAuditor`: flags absent TPTA for Levels 10-13A from Jul 2017, unless `TptaAbsenceExplainer`
+  finds a posting change or a relocation (city class differs before/after the gap). Amount due = lowest
+  rate (other-places base) x (1 + DA % read from the payslips), never overstated.
+- `MissingAllowanceAuditor`: HRA drop explained by taking quarters; MSP drop explained by Level 14+; TPTA
+  removed from it (it was reported twice, by both auditors; now only `TptaEntitlementAuditor` reports it).
+- `IncrementAuditor` (new): a January/July increment with no promotion since falls due again 12 months
+  later; flags a month where basic pay did not move to the next matrix cell.
+- `MspAuditor` (new): flags MSP paid but below the flat 15,500 for Levels 10-13A.
+- Both new auditors report under `SALARY_LOSS`, so they reuse the existing severity, prioritisation and
+  representation-draft handling.
+
+Gate result: over the corpus the four auditors raise zero findings (`PayAuditCorpusPrecisionTest`). The old
+TPTA rule fired on four genuine transition months of this officer (Dec 2019, Apr, May 2022 and Sep 2024
+had no TPTA). Recall is covered by synthetic tests only; the corpus officer was paid correctly.
 
 ### Validation checkpoint
 
@@ -135,6 +156,34 @@ Everything Phases 0–1 left unproven or unbuilt, kept in one place (CLAUDE.md "
   matrices are out of scope; decide whether to add them only if such users appear.
 - **Timeline has no consumer yet (Phase 1).** Deliberate: Phase 2 wires it into the auditors.
 - **Other findings/notes from Phase 0.** None outstanding; all five defects are fixed and tested.
+
+Carried over from Phase 2 (nothing here is claimed done):
+
+- **The app's stored history is too thin for the new explanations.** The engine is fed `LedgerRecordEntity`
+  rows, which keep no Risk & Hardship / field allowance, licence fee, arrears, adjustment or `needsReview`
+  data. In the app, so: the posting-change and quarters explanations never fire, the arrears/adjustment
+  exemptions in the TPTA auditor never fire, and no posting spans exist. The same gap means
+  `DaArrearsAuditor` never sees `arrearsDa` in production (pre-existing). Fix: feed the engine full
+  `ParsedPayslip` history or extend the ledger table (Room v11 to v12 needs a migration). Blocks the
+  Validation checkpoint.
+- **Findings are decided at import time.** A TPTA-free month is explained by the months around it, which
+  may not be imported yet. Audited with earlier months only, the corpus's Dec 2019, May 2022 and Sep 2024 are
+  flagged (pinned in `PayAuditCorpusPrecisionTest`). Needs a re-audit that retracts a finding once later
+  payslips explain it, or a rule that holds a finding until the next month exists. Same for an increment
+  paid late with arrears the following month.
+- **Evidence is not stored or shown.** `expected`/`actual`/`authority` live on `Anomaly`, but
+  `FinancialInsightEntity` keeps only the description text and the UI shows nothing more. Phase 4/5.
+- **Not user-confirmed.** The gate is zero false findings on one officer. "Genuine" findings need real
+  officers (Validation checkpoint).
+- **Out of scope for the increment/MSP/TPTA rules:** Level 14+ (different TPTA slab, official-car option,
+  no MSP); the first increment after a promotion (date rules INCREMENT_004, six-month rule PROMO_FIX_004);
+  leave/suspension months that switch TPTA off (TA_TRANSPORT_002/003, not visible in payslips).
+- **Tier.** Increment and MSP findings use `SALARY_LOSS`, which is in the FREE tier. Confirm that is the
+  intended tier for Pay Audit findings (Phase 4 says details are Premium).
+- **Authority check.** The MSP letter (No. 1(16)/2017/D(Pay/Services), 18-09-2017) is also the authority the
+  reference gives for flying allowance. Confirm it against the Handbook before it is shown to users.
+- **Other auditors.** `SalaryLossAuditor` (net-pay drop) and the rest were not rebuilt on the timeline; not
+  part of Phase 2's list.
 
 ## Deferred / dropped
 

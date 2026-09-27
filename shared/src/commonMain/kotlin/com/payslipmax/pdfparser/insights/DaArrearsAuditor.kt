@@ -87,6 +87,8 @@ class DaArrearsAuditor : RuleAuditor {
                     amount = actual,
                     month = month,
                     description = "Verified: Your $label arrears of ₹${actual.toInt()} match the expected calculation exactly.",
+                    expected = expected,
+                    actual = actual,
                 ),
             )
         } else if (actual < expected) {
@@ -97,6 +99,8 @@ class DaArrearsAuditor : RuleAuditor {
                     amount = expected - actual,
                     month = month,
                     description = "Underpaid/Mismatched: Your $label arrears of ₹${actual.toInt()} do not match the expected calculation of ₹${expected.toInt()}.",
+                    expected = expected,
+                    actual = actual,
                 ),
             )
         }
