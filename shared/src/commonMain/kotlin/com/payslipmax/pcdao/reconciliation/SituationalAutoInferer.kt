@@ -1,0 +1,127 @@
+package com.payslipmax.pcdao.reconciliation
+
+import com.payslipmax.pdfparser.domain.ParsedPayslip
+import kotlin.math.round
+
+class SituationalAutoInferer {
+    fun inferFlags(payslip: ParsedPayslip): InferredSituationalFlags {
+        val basicPay = payslip.earnings.basicPay
+        val da = payslip.earnings.dearnessAllowance
+        val daPercent = computeDaPercentage(basicPay, da)
+        val rankLevel = inferRankLevel(basicPay)
+        val isPeaceHigher = payslip.earnings.transportAllowance >= 7200.0
+        val isField = payslip.earnings.fieldAllowance > 0 || payslip.earnings.riskHardshipAllowance > 0
+        val isHighDsop = (payslip.deductions.dsopSubscription * 12.0) > 500000.0
+        val hasCea = payslip.earnings.childrenEducationAllowance > 0 || payslip.earnings.arrearsCea > 0
+        val hasHra = payslip.earnings.houseRentAllowance > 0 || payslip.earnings.arrearsHra > 0
+        val hasGovtAccomm = payslip.deductions.licenseFee > 0
+
+        return InferredSituationalFlags(
+            inferredRankLevel = rankLevel,
+            inferredDaPercent = daPercent,
+            inferredDaCrossed50 = daPercent >= 50.0,
+            inferredPeaceHigher = isPeaceHigher,
+            inferredField = isField,
+            inferredHighDsop = isHighDsop,
+            inferredCeaActive = hasCea,
+            inferredHraActive = hasHra,
+            inferredGovtAccomm = hasGovtAccomm,
+        )
+    }
+
+    fun inferActiveContext(payslip: ParsedPayslip): ActiveSituationalContext {
+        val flags = inferFlags(payslip)
+        val tileIds = mutableSetOf<String>()
+        val specializedFactors = mutableSetOf<SpecializedMilitaryFactor>()
+
+        inferPostingTiles(flags, tileIds)
+        inferHousingTiles(flags, tileIds)
+        inferFundAndCeaTiles(flags, tileIds)
+        inferSpecializedFactors(payslip, specializedFactors)
+
+        val childrenCount = if (flags.inferredCeaActive) 2 else 0
+
+        return ActiveSituationalContext(
+            inferredFlags = flags,
+            activeTileIds = tileIds,
+            activeSpecializedFactors = specializedFactors,
+            numberOfChildrenCea = childrenCount,
+        )
+    }
+
+    private fun inferPostingTiles(
+        flags: InferredSituationalFlags,
+        tileIds: MutableSet<String>,
+    ) {
+        if (flags.inferredField) {
+            tileIds.add(SituationalTileKeys.POST_FIELD_HAFAA)
+        } else if (flags.inferredPeaceHigher) {
+            tileIds.add(SituationalTileKeys.POST_PEACE_HIGHER)
+        } else {
+            tileIds.add(SituationalTileKeys.POST_PEACE_OTHER)
+        }
+    }
+
+    private fun inferHousingTiles(
+        flags: InferredSituationalFlags,
+        tileIds: MutableSet<String>,
+    ) {
+        if (flags.inferredGovtAccomm) {
+            tileIds.add(SituationalTileKeys.HOUSE_GOVT_MQ)
+        } else if (flags.inferredHraActive) {
+            tileIds.add(SituationalTileKeys.HOUSE_FAMILY_SPR)
+        }
+    }
+
+    private fun inferFundAndCeaTiles(
+        flags: InferredSituationalFlags,
+        tileIds: MutableSet<String>,
+    ) {
+        if (flags.inferredHighDsop) {
+            tileIds.add(SituationalTileKeys.DSOP_HIGH_PACING)
+        }
+        if (flags.inferredCeaActive) {
+            tileIds.add(SituationalTileKeys.CEA_TWO_CHILDREN)
+        }
+    }
+
+    private fun inferSpecializedFactors(
+        payslip: ParsedPayslip,
+        specializedFactors: MutableSet<SpecializedMilitaryFactor>,
+    ) {
+        if (payslip.earnings.specialForcesPay > 0 || payslip.deductions.recSpecialForces > 0) {
+            specializedFactors.add(SpecializedMilitaryFactor.MARCOS_SPECIAL_FORCES)
+        }
+        if (payslip.earnings.riskHardshipAllowance >= 42500.0) {
+            specializedFactors.add(SpecializedMilitaryFactor.SIACHEN_GLACIER)
+        }
+    }
+
+    private fun computeDaPercentage(
+        basicPay: Double,
+        da: Double,
+    ): Double {
+        if (basicPay <= 0.0) return 0.0
+        val rawRate = (da / basicPay) * 100.0
+        return round(rawRate * 10.0) / 10.0
+    }
+
+    private fun inferRankLevel(basicPay: Double): String? {
+        val payInt = basicPay.toInt()
+        val level12ACells = setOf(121200, 124800, 128500, 132400, 136400, 140400, 140500, 144700, 149000, 153500)
+        val level11Cells = setOf(69400, 71500, 73600, 75800, 78100, 80400, 82800, 85300, 87900, 90500)
+        val level10Cells = setOf(56100, 57800, 59500, 61300, 63100, 65000, 67000, 69000, 71100, 73200)
+
+        return when {
+            payInt in level12ACells -> "12A"
+            payInt in level11Cells -> "11"
+            payInt in level10Cells -> "10"
+            payInt in 56100..69000 -> "10"
+            payInt in 69400..90500 -> "11"
+            payInt in 121200..167700 -> "12A"
+            payInt in 167800..215900 -> "13"
+            payInt >= 216000 -> "14"
+            else -> null
+        }
+    }
+}

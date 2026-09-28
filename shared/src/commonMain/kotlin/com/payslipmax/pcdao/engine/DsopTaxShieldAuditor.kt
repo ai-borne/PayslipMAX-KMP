@@ -27,7 +27,7 @@ class DsopTaxShieldAuditor {
             discrepancies.add(buildTaxExposureDiscrepancy(request, annualProjected, excess, taxableInterest))
         }
         if (stoppageViolated) {
-            discrepancies.add(buildRetirementStoppageDiscrepancy(request, daysToRetire ?: 0))
+            discrepancies.add(buildRetirementStoppageDiscrepancy(request, daysToRetire))
         }
 
         return DsopTaxShieldResult(

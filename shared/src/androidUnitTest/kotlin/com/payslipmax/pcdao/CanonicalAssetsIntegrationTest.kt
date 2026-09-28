@@ -264,4 +264,17 @@ class CanonicalAssetsIntegrationTest {
             assertEquals(7100.0, result.taxableInterest, 0.01)
             assertTrue(result.isRetirementStoppageViolated)
         }
+
+    @Test
+    fun testSituationalReconciliationWithCanonicalRules() =
+        runBlocking {
+            val allowances = repository.getSpecializedAllowances()
+            assertEquals(33750, allowances.childrenEducationAllowance.ceaAnnualRate)
+            assertEquals(101250, allowances.childrenEducationAllowance.hostelSubsidyAnnualRate)
+
+            val resolver = com.payslipmax.pcdao.reconciliation.SituationalRuleResolver()
+            val rates = resolver.calculateEscalatedRates(60.0)
+            assertEquals(allowances.childrenEducationAllowance.ceaAnnualRate.toDouble(), rates.ceaAnnualPerChild)
+            assertEquals(allowances.childrenEducationAllowance.hostelSubsidyAnnualRate.toDouble(), rates.hostelSubsidyAnnual)
+        }
 }
