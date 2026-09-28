@@ -215,4 +215,25 @@ class CanonicalAssetsIntegrationTest {
             assertEquals(62800L, result.cumulativeDelta)
             assertEquals(com.payslipmax.pcdao.engine.FixationOption.OPTION_2, result.recommendedOption)
         }
+
+    @Test
+    fun testAllowanceCollisionAuditorWithCanonicalRules() =
+        runBlocking {
+            val rules = repository.getCanonicalRules()
+            assertTrue(rules.rules.any { it.ruleId == "RH_CONCURRENT_001" })
+
+            val auditor = com.payslipmax.pcdao.engine.AllowanceCollisionAuditor()
+            val hazards =
+                auditor.auditClaims(
+                    activeAllowances =
+                        listOf(
+                            com.payslipmax.pcdao.engine.AllowanceCollisionCodes.TPTA_HIGHER_CITY,
+                            com.payslipmax.pcdao.engine.AllowanceCollisionCodes.HAFAA,
+                        ),
+                    daRate = 0.60,
+                )
+            assertEquals(1, hazards.size)
+            assertEquals("HAZARD_TPTA_FIELD_COLLISION", hazards[0].id)
+            assertEquals("ALLOWANCE_TPTA_003", hazards[0].relevantRuleId)
+        }
 }
