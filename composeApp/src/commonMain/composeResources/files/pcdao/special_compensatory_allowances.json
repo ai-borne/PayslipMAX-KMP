@@ -1,0 +1,158 @@
+{
+  "allowance_group": "Special Compensatory & Operational Allowances",
+  "source_document": "Handbook_Pay_and_Allowances_2023.pdf",
+  "source_chapters": "Chapters 14, 15, 17, 18 (pp. 118-121, 144-150, 160-175)",
+  "dress_allowance": {
+    "annual_rate_army_officers": 20000,
+    "annual_rate_mns_officers": 15000,
+    "credit_month": "July",
+    "credit_frequency": "Annually in July payslip",
+    "effective_date": "2017-07-01",
+    "authority": "MoD letter No. PC-1(16)/2017/D(Pay/Services) dated 16/11/2017",
+    "escalation": "Increases by 25% each time DA rises by 50%",
+    "subsumed_allowances": [
+      "Uniform Outfit Allowance",
+      "Kit Maintenance Allowance (KMA)"
+    ],
+    "recovery_on_early_exit": {
+      "July_Sept": {
+        "superannuation_percent": 60,
+        "vrs_resignation_percent": 80
+      },
+      "Oct_Dec": {
+        "superannuation_percent": 40,
+        "vrs_resignation_percent": 55
+      },
+      "Jan_March": {
+        "superannuation_percent": 25,
+        "vrs_resignation_percent": 33
+      },
+      "April_June": {
+        "superannuation_percent": 0,
+        "vrs_resignation_percent": 0
+      }
+    }
+  },
+  "tough_location_allowance": {
+    "categories": {
+      "TLA_I": {
+        "monthly_rate": 5300,
+        "places_covered": "Part A and Part B remote/difficult areas",
+        "escalated_at_50_da": 6625
+      },
+      "TLA_II": {
+        "monthly_rate": 3400,
+        "places_covered": "Part C remote areas",
+        "escalated_at_50_da": 4250
+      },
+      "TLA_III": {
+        "monthly_rate": 1200,
+        "places_covered": "Part D remote areas",
+        "escalated_at_50_da": 1500
+      }
+    },
+    "escalation": "Increases by 25% each time DA rises by 50%",
+    "mutual_exclusion_rule": "If field concessions are admissible, officer has option of higher of field or TLA."
+  },
+  "regional_duty_allowances": {
+    "special_duty_allowance_sda": {
+      "rate_percent_of_basic_pay": 10,
+      "applicable_regions": "North Eastern Region and Ladakh",
+      "condition": "Serving in specified difficult areas in civil/military employ",
+      "basic_pay_definition": "Pay drawn in prescribed Level in Pay Matrix only"
+    },
+    "island_special_duty_allowance_isda": {
+      "areas_around_capital_towns": {
+        "rate_percent_of_basic": 10,
+        "towns": "Port Blair, Kavaratti, Agatti"
+      },
+      "difficult_areas": {
+        "rate_percent_of_basic": 16,
+        "areas": "North & Middle Andaman, South Andaman ex-Port Blair"
+      },
+      "more_difficult_areas": {
+        "rate_percent_of_basic": 20,
+        "areas": "Little Andaman, Nicobar group, Narcondam, Minicoy"
+      },
+      "leave_limit": "Not admissible during leave/training beyond 15 days at a time and 30 days in a year"
+    }
+  },
+  "deputation_and_training": {
+    "deputation_duty_allowance": {
+      "same_station_with_concessions": {
+        "rate_percent": 2.5,
+        "ceiling_monthly": 2250
+      },
+      "same_station_without_concessions": {
+        "rate_percent": 5.0,
+        "ceiling_monthly": 4500
+      },
+      "outstation_with_concessions": {
+        "rate_percent": 5.0,
+        "ceiling_monthly": 4500
+      },
+      "outstation_without_concessions": {
+        "rate_percent": 10.0,
+        "ceiling_monthly": 9000
+      },
+      "escalation": "Ceilings increase by 25% each time DA rises by 50%"
+    },
+    "training_allowance": {
+      "national_central_academies": {
+        "rate_percent_of_basic_pay": 24,
+        "institutions": [
+          "IMA Dehradun",
+          "NDA Khadakwasla",
+          "OTA Chennai",
+          "OTA Gaya",
+          "DIQA Bengaluru",
+          "ITM Mussoorie",
+          "CAATS Nasik Road"
+        ]
+      },
+      "other_training_establishments": {
+        "rate_percent_of_basic_pay": 12,
+        "institutions": [
+          "AFMC Pune",
+          "Armoured Corps School",
+          "School of Artillery",
+          "AATS Agra",
+          "AIPT Pune",
+          "ASC Centre",
+          "Infantry School Mhow",
+          "HAWS",
+          "CIJW"
+        ]
+      }
+    }
+  },
+  "special_corps_allowances": {
+    "parachute_allowance": {
+      "rate_monthly": 10500,
+      "escalated_at_50_da": 13125,
+      "para_jump_instructor": 6000,
+      "escalation": "Increases by 25% each time DA rises by 50%",
+      "probation": "Admissible after 1 month probation upon qualifying basic parachute course"
+    },
+    "language_allowance": {
+      "Category_I": {
+        "rate_monthly": 2025,
+        "escalated_at_50_da": 2531
+      },
+      "Category_II": {
+        "rate_monthly": 1689,
+        "escalated_at_50_da": 2111
+      },
+      "Category_III": {
+        "rate_monthly": 1350,
+        "escalated_at_50_da": 1688
+      },
+      "condition": "Actual performance of foreign language translator/interpreter duties + annual test pass"
+    },
+    "constant_attendance_allowance": {
+      "rate_monthly": 6750,
+      "eligibility": "100% disabled retirees needing constant personal attendance",
+      "escalation": "Increases by 25% each time DA rises by 50%"
+    }
+  }
+}
