@@ -190,4 +190,29 @@ class CanonicalAssetsIntegrationTest {
             val thirdLoad = repository.getPayMatrix()
             assertTrue(firstLoad !== thirdLoad, "Repository should reload after clearing cache")
         }
+
+    @Test
+    fun testPayFixationOptimizerWithCanonicalPayMatrix() =
+        runBlocking {
+            val matrix = repository.getPayMatrix()
+            val optimizer = com.payslipmax.pcdao.engine.PayFixationOptimizer(matrix)
+
+            val request =
+                com.payslipmax.pcdao.engine.PayFixationRequest(
+                    fromLevel = "10",
+                    fromStage = 8,
+                    toLevel = "11",
+                    promotionDate = "2026-03-15",
+                    dniMonth = 7,
+                )
+
+            val result = optimizer.optimizePromotion(request)
+            assertEquals(69000, result.fromBasicPay)
+            assertEquals(71500, result.opt1FixedPay)
+            assertEquals(73600, result.opt2PostDniFixedPay)
+            assertEquals(2664000L, result.opt1Total36Months)
+            assertEquals(2726800L, result.opt2Total36Months)
+            assertEquals(62800L, result.cumulativeDelta)
+            assertEquals(com.payslipmax.pcdao.engine.FixationOption.OPTION_2, result.recommendedOption)
+        }
 }
