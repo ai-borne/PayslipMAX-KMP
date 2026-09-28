@@ -83,6 +83,43 @@ object RedressalLetterGenerator {
         )
     }
 
+    fun createRequestFromCumulativeRollup(
+        payslip: ParsedPayslip,
+        rollup: com.payslipmax.pcdao.timeline.CumulativeArrearsRollup,
+        rank: String = "Officer",
+        serviceNumber: String = "IC-XXXXXX",
+        ledgerSection: String? = null,
+        maskPii: Boolean = false,
+        exportFormat: ExportFormat = ExportFormat.TXT,
+    ): RedressalRequest {
+        val resolvedSection = ledgerSection ?: resolveLedgerSection(rank)
+        val lineItems =
+            rollup.monthlyBreakdowns.mapIndexed { idx, item ->
+                DiffLineItem(
+                    serialNo = idx + 1,
+                    lineItemName = "${item.monthName} ${item.year} - ${item.allowanceName}",
+                    entitledAmount = item.entitledAmount,
+                    creditedAmount = item.creditedAmount,
+                    netDue = item.arrearsDue,
+                    statutoryAuthority = "7th CPC & MoD Cumulative Entitlement Regulations",
+                    ruleId = "CUMULATIVE_ARREARS",
+                )
+            }
+
+        return RedressalRequest(
+            officerName = payslip.officer.name.ifBlank { "Officer Name" },
+            serviceNumber = serviceNumber,
+            rank = rank,
+            cdaAccountNo = payslip.officer.accountNo.ifBlank { "12/345/678901" },
+            ledgerSection = resolvedSection,
+            disputeMonth = "${rollup.auditedMonthCount} Months (${rollup.startMonthDateStr} to ${rollup.endMonthDateStr})",
+            lineItems = lineItems,
+            maskPii = maskPii,
+            pan = payslip.officer.pan,
+            exportFormat = exportFormat,
+        )
+    }
+
     fun resolveLedgerSection(rank: String): String {
         val upper = rank.uppercase()
         return when {

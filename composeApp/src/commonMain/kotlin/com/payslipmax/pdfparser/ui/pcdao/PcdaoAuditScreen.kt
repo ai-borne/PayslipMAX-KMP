@@ -170,6 +170,24 @@ private fun LazyListScope.auditContentItems(
             criticalAlarmsCount = uiState.alarmsCount,
         )
     }
+    if (uiState.hasCumulativeArrears && uiState.cumulativeRollup != null) {
+        item {
+            CumulativeArrearsBanner(
+                rollup = uiState.cumulativeRollup,
+                isCumulativeActive = uiState.isCumulativeViewActive,
+                isUnlocked = hasAccess,
+                onToggleView = { viewModel.toggleCumulativeView() },
+                onUpgradeClick = onUpgradeClick,
+            )
+        }
+    }
+    if (uiState.careerMilestones.isNotEmpty()) {
+        item {
+            CareerMilestonesCard(
+                milestones = uiState.careerMilestones,
+            )
+        }
+    }
     uiState.payFixationResult?.let { fixation ->
         item {
             PayFixationCard(

@@ -97,4 +97,18 @@ object AppStringsPcdao {
     const val teaserHeadlineDesc = "Upgrade to PRO to unlock full math diffs, statutory citations & 1-tap redressal."
     const val teaserUpgradeButton = "Unlock PRO"
     const val fixationOptionLocked = "🔒 36-Mo Trajectory (PRO • Tap to unlock)"
+
+    // Phase 9 Multi-Month Cumulative Intelligence & Timeline Strings
+    const val cumulativeBannerTitle = "Cumulative Multi-Month Back-Dues"
+    const val cumulativeMonthPrefix = "Calculated across "
+    const val cumulativeMonthSuffix = " uploaded statements"
+    const val cumulativeViewToggleSelected = "Selected Month"
+    const val cumulativeViewToggleAll = "All Months (Cumulative)"
+    const val cumulativeArrearsTableTitle = "Chronological Dues Schedule"
+    const val careerMilestoneTitle = "🎖️ Career Milestones & Increments"
+    const val careerMilestoneSubtitle = "7th CPC statutory progression & Central DA revision tracker"
+    const val milestoneVerifiedBadge = "VERIFIED"
+    const val milestoneAlertBadge = "ATTENTION"
+    const val monthSelectorTitle = "Select Audit Month"
+    const val btnGenerateCumulativeLetter = "📄 Multi-Month Cumulative Claim Kit"
 }

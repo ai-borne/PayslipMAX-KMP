@@ -99,6 +99,10 @@ private fun MonthSelectorDropdown(
     onExpand: () -> Unit,
     onSelect: (ParsedPayslip) -> Unit,
 ) {
+    val grouped =
+        remember(availablePayslips) {
+            com.payslipmax.pcdao.timeline.VaultMonthGroupMapper.groupByFinancialYear(availablePayslips)
+        }
     Box {
         Text(
             text = AppStringsPcdao.switchMonthButton,
@@ -108,14 +112,28 @@ private fun MonthSelectorDropdown(
             modifier = Modifier.clickable { onExpand() }.padding(4.dp),
         )
         DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
-            availablePayslips.forEach { payslip ->
+            grouped.forEach { (fy, slips) ->
                 DropdownMenuItem(
-                    text = { Text("${payslip.monthName} ${payslip.year}") },
-                    onClick = {
-                        onSelect(payslip)
-                        onDismiss()
+                    text = {
+                        Text(
+                            text = fy,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
                     },
+                    onClick = {},
+                    enabled = false,
                 )
+                slips.forEach { payslip ->
+                    DropdownMenuItem(
+                        text = { Text("  ${payslip.monthName} ${payslip.year}") },
+                        onClick = {
+                            onSelect(payslip)
+                            onDismiss()
+                        },
+                    )
+                }
             }
         }
     }

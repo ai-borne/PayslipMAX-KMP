@@ -9,6 +9,8 @@ import com.payslipmax.pcdao.reconciliation.ShadowLedgerReconciliationResult
 import com.payslipmax.pcdao.reconciliation.SituationalCategory
 import com.payslipmax.pcdao.reconciliation.SituationalTileKeys
 import com.payslipmax.pcdao.redressal.RedressalLetter
+import com.payslipmax.pcdao.timeline.CareerMilestone
+import com.payslipmax.pcdao.timeline.CumulativeArrearsRollup
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 
 /**
@@ -38,6 +40,10 @@ data class PcdaoAuditUiState(
     val generatedLetter: RedressalLetter? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+    val cumulativeRollup: CumulativeArrearsRollup? = null,
+    val careerMilestones: List<CareerMilestone> = emptyList(),
+    val groupedMonths: Map<String, List<ParsedPayslip>> = emptyMap(),
+    val isCumulativeViewActive: Boolean = false,
 ) {
     val filteredDiscrepancies: List<AuditDiscrepancy>
         get() {
@@ -60,11 +66,24 @@ data class PcdaoAuditUiState(
     val isPromotionActive: Boolean
         get() = activeContext.activeTileIds.contains(SituationalTileKeys.PROMOTION_ACTIVE)
 
+    val hasCumulativeArrears: Boolean
+        get() = (cumulativeRollup?.totalUnderpaidArrears ?: 0.0) > 0.0 && availablePayslips.size > 1
+
     val unclaimedTotal: Double
-        get() = reconciliationResult?.totalUnclaimedAnnual ?: 0.0
+        get() =
+            if (isCumulativeViewActive && hasCumulativeArrears) {
+                cumulativeRollup?.totalUnderpaidArrears ?: (reconciliationResult?.totalUnclaimedAnnual ?: 0.0)
+            } else {
+                reconciliationResult?.totalUnclaimedAnnual ?: 0.0
+            }
 
     val hazardTotal: Double
-        get() = reconciliationResult?.totalRecoveryHazard ?: 0.0
+        get() =
+            if (isCumulativeViewActive && hasCumulativeArrears) {
+                cumulativeRollup?.totalRecoveryHazard ?: (reconciliationResult?.totalRecoveryHazard ?: 0.0)
+            } else {
+                reconciliationResult?.totalRecoveryHazard ?: 0.0
+            }
 
     val alarmsCount: Int
         get() = reconciliationResult?.criticalAlarmCount ?: 0

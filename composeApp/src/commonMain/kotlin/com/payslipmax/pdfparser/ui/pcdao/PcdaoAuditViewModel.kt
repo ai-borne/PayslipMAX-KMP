@@ -13,6 +13,9 @@ import com.payslipmax.pcdao.reconciliation.SpecializedMilitaryFactor
 import com.payslipmax.pcdao.redressal.RedressalLetter
 import com.payslipmax.pcdao.redressal.RedressalLetterGenerator
 import com.payslipmax.pcdao.repository.PcdaoRulesRepository
+import com.payslipmax.pcdao.timeline.CareerMilestoneAuditor
+import com.payslipmax.pcdao.timeline.CumulativeLedgerRollupEngine
+import com.payslipmax.pcdao.timeline.VaultMonthGroupMapper
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.pcdao.ComposePcdaoAssetProvider
 import com.payslipmax.pdfparser.repository.PayslipRepository
@@ -28,6 +31,8 @@ class PcdaoAuditViewModel(
     private val rulesRepository: PcdaoRulesRepository = PcdaoRulesRepository(ComposePcdaoAssetProvider()),
     private val reconciler: ShadowLedgerReconciler = ShadowLedgerReconciler(),
     private val autoInferer: SituationalAutoInferer = SituationalAutoInferer(),
+    private val rollupEngine: CumulativeLedgerRollupEngine = CumulativeLedgerRollupEngine(reconciler),
+    private val milestoneAuditor: CareerMilestoneAuditor = CareerMilestoneAuditor(),
     coroutineScope: CoroutineScope? = null,
 ) : ViewModel() {
     private val scope: CoroutineScope = coroutineScope ?: viewModelScope
@@ -43,11 +48,12 @@ class PcdaoAuditViewModel(
             _uiState.update { it.copy(isLoading = true) }
             try {
                 payslipRepository.getAllPayslips().collect { list ->
-                    val nextSelected = _uiState.value.selectedPayslip ?: list.lastOrNull()
+                    val newestFirst = VaultMonthGroupMapper.sortNewestFirst(list)
+                    val nextSelected = _uiState.value.selectedPayslip ?: newestFirst.firstOrNull()
                     if (nextSelected != null) {
-                        applyPayslipSelection(list, nextSelected)
+                        applyPayslipSelection(newestFirst, nextSelected)
                     } else {
-                        _uiState.update { it.copy(availablePayslips = list, isLoading = false) }
+                        _uiState.update { it.copy(availablePayslips = newestFirst, isLoading = false) }
                     }
                 }
             } catch (e: Exception) {
@@ -63,6 +69,9 @@ class PcdaoAuditViewModel(
         val initialContext = autoInferer.inferActiveContext(payslip)
         val autoDetectedTiles = initialContext.activeTileIds
         val recon = reconciler.reconcile(payslip, initialContext)
+        val rollup = rollupEngine.calculateRollup(allPayslips, initialContext)
+        val milestones = milestoneAuditor.auditMilestones(allPayslips)
+        val grouped = VaultMonthGroupMapper.groupByFinancialYear(allPayslips)
 
         _uiState.update {
             it.copy(
@@ -71,6 +80,9 @@ class PcdaoAuditViewModel(
                 activeContext = initialContext,
                 autoInferredTileIds = autoDetectedTiles,
                 reconciliationResult = recon,
+                cumulativeRollup = rollup,
+                careerMilestones = milestones,
+                groupedMonths = grouped,
                 isLoading = false,
                 errorMessage = null,
             )
@@ -94,6 +106,10 @@ class PcdaoAuditViewModel(
         _uiState.update { it.copy(isAddFactorSheetVisible = visible) }
     }
 
+    fun toggleCumulativeView() {
+        _uiState.update { it.copy(isCumulativeViewActive = !it.isCumulativeViewActive) }
+    }
+
     fun toggleTile(tileId: String) {
         val currentContext = _uiState.value.activeContext
         val newTileIds = currentContext.activeTileIds.toMutableSet()
@@ -106,11 +122,13 @@ class PcdaoAuditViewModel(
         val updatedContext = syncContextWithTile(currentContext, tileId, newTileIds)
         val payslip = _uiState.value.selectedPayslip
         val newRecon = payslip?.let { reconciler.reconcile(it, updatedContext) }
+        val newRollup = rollupEngine.calculateRollup(_uiState.value.availablePayslips, updatedContext)
 
         _uiState.update {
             it.copy(
                 activeContext = updatedContext,
                 reconciliationResult = newRecon ?: it.reconciliationResult,
+                cumulativeRollup = newRollup,
             )
         }
 
@@ -150,11 +168,13 @@ class PcdaoAuditViewModel(
         val updatedContext = _uiState.value.activeContext.copy(activeSpecializedFactors = currentFactors)
         val payslip = _uiState.value.selectedPayslip
         val newRecon = payslip?.let { reconciler.reconcile(it, updatedContext) }
+        val newRollup = rollupEngine.calculateRollup(_uiState.value.availablePayslips, updatedContext)
 
         _uiState.update {
             it.copy(
                 activeContext = updatedContext,
                 reconciliationResult = newRecon ?: it.reconciliationResult,
+                cumulativeRollup = newRollup,
             )
         }
     }
@@ -194,8 +214,14 @@ class PcdaoAuditViewModel(
 
     fun generateRedressalLetter(): RedressalLetter? {
         val payslip = _uiState.value.selectedPayslip ?: return null
-        val recon = _uiState.value.reconciliationResult ?: return null
-        val request = RedressalLetterGenerator.createRequestFromReconciliation(payslip, recon)
+        val state = _uiState.value
+        val request =
+            if (state.isCumulativeViewActive && state.hasCumulativeArrears && state.cumulativeRollup != null) {
+                RedressalLetterGenerator.createRequestFromCumulativeRollup(payslip, state.cumulativeRollup)
+            } else {
+                val recon = state.reconciliationResult ?: return null
+                RedressalLetterGenerator.createRequestFromReconciliation(payslip, recon)
+            }
         val letter = RedressalLetterGenerator.generateLetter(request)
         _uiState.update { it.copy(generatedLetter = letter) }
         return letter
