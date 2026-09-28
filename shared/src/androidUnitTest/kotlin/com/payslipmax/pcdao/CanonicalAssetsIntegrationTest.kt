@@ -236,4 +236,32 @@ class CanonicalAssetsIntegrationTest {
             assertEquals("HAZARD_TPTA_FIELD_COLLISION", hazards[0].id)
             assertEquals("ALLOWANCE_TPTA_003", hazards[0].relevantRuleId)
         }
+
+    @Test
+    fun testForfeitureDeadlinesWithCanonicalTravelTada() =
+        runBlocking {
+            val travel = repository.getTravelTada()
+            val deadlines = travel.deadlinesAndDocumentation?.claimDeadlines
+            assertNotNull(deadlines)
+            assertEquals(60, deadlines["td_and_pdm_without_advance"]?.deadlineDays)
+            assertEquals(180, deadlines["retirement_ta"]?.deadlineDays)
+
+            val tracker = com.payslipmax.pcdao.engine.ForfeitureDeadlineTracker()
+            val result = tracker.evaluateClaim(com.payslipmax.pcdao.engine.MilitaryClaimType.TEMPORARY_DUTY, 70)
+            assertEquals(com.payslipmax.pcdao.engine.DeadlineStatus.TIME_BARRED_FORFEITED, result.status)
+        }
+
+    @Test
+    fun testDsopTaxShieldWithCanonicalServiceConditions() =
+        runBlocking {
+            val cond = repository.getServiceConditions()
+            assertEquals(500000L, cond.dsopFund.annualTaxExemptSubscriptionLimit)
+            assertTrue(cond.dsopFund.subscriptionStoppageBeforeRetirement?.contains("3 months") == true)
+
+            val auditor = com.payslipmax.pcdao.engine.DsopTaxShieldAuditor()
+            val result = auditor.auditSubscription(monthlySubscription = 50000.0, monthsToRetirement = 2)
+            assertEquals(100000.0, result.excessContribution)
+            assertEquals(7100.0, result.taxableInterest, 0.01)
+            assertTrue(result.isRetirementStoppageViolated)
+        }
 }
