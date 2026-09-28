@@ -23,7 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import com.payslipmax.pdfparser.insights.timeline.PayFixationComparison
 import com.payslipmax.pdfparser.insights.timeline.PayLevel
+import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.insights.timeline.ServiceTimeline
+import com.payslipmax.pdfparser.insights.timeline.plusMonths
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
 
@@ -49,9 +51,20 @@ fun LazyListScope.payAuditFixationCalculatorItems(timeline: ServiceTimeline) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PayAuditFixationCalculatorCard(timeline: ServiceTimeline) {
-    var toLevel by remember { mutableStateOf(PayLevel.L11) }
-    var monthText by remember { mutableStateOf("1") }
-    var yearText by remember { mutableStateOf("2026") }
+    // Defaults must resolve to a *valid* comparison against this officer's own timeline out of the box —
+    // a hardcoded Level 11/January 2026 shows an error on first paint for anyone at Level 11+ already, or
+    // whose latest payslip is already past January 2026 (resolveFixationComparison rejects both a toLevel
+    // no higher than the current one and a promotion month not strictly after the latest trusted month).
+    val latestMonth = remember(timeline) { timeline.months.maxByOrNull { it.month } }
+    val defaultToLevel =
+        remember(timeline) {
+            latestMonth?.level?.let { current -> PayLevel.entries.getOrNull(current.ordinal + 1) } ?: PayLevel.L11
+        }
+    val defaultPromotionMonth = remember(timeline) { latestMonth?.month?.plusMonths(1) ?: PayMonth(2026, 1) }
+
+    var toLevel by remember(timeline) { mutableStateOf(defaultToLevel) }
+    var monthText by remember(timeline) { mutableStateOf(defaultPromotionMonth.month.toString()) }
+    var yearText by remember(timeline) { mutableStateOf(defaultPromotionMonth.year.toString()) }
     var levelMenuExpanded by remember { mutableStateOf(false) }
 
     PredictionCard(title = PayAuditStrings.fixationCalculatorSubtitle) {
