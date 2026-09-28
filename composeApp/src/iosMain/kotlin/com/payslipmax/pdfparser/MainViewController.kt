@@ -13,6 +13,7 @@ import com.payslipmax.pdfparser.di.sharedModule
 import com.payslipmax.pdfparser.nav.AppNavState
 import com.payslipmax.pdfparser.nav.NavBridge
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.pcdao.PcdaoAuditScreen
 import com.payslipmax.pdfparser.ui.screens.HelpLegalScreen
 import com.payslipmax.pdfparser.ui.screens.PayslipReplicaDetailScreen
 import com.payslipmax.pdfparser.ui.screens.PremiumFeaturesScreen
@@ -22,6 +23,7 @@ import com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen
 import com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
+import com.payslipmax.pdfparser.ui.updateRepresentationDraft
 import org.koin.core.context.startKoin
 import org.koin.mp.KoinPlatformTools
 import platform.UIKit.UIViewController
@@ -86,48 +88,67 @@ class IosNavHost(
 
     fun detailViewController(screenName: String): UIViewController {
         val onBack = { bridge.requestPop() }
-        // Reset before each push so a stale flag from the previous detail screen can never leak in.
         activeDetailHasUnsavedState = { false }
         return themedViewController {
-            when (Screen.valueOf(screenName)) {
-                Screen.PremiumFeatures ->
-                    PremiumFeaturesScreen(
-                        viewModel = viewModel,
-                        onNavigateTo = { screen -> bridge.navigateToDetail(screen) },
-                        onBack = onBack,
-                    )
-                Screen.Representation ->
-                    RepresentationScreen(
-                        viewModel = viewModel,
-                        onBack = onBack,
-                        onUnsavedStateChanged = { unsaved -> activeDetailHasUnsavedState = { unsaved } },
-                    )
-                Screen.TaxPlanning -> TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
-                Screen.RetirementPlanning -> RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
-                Screen.RetirementCalculators -> RetirementCalculatorsScreen(viewModel = viewModel, onBack = onBack)
-                Screen.FAQ -> HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
-                Screen.PrivacyPolicy -> HelpLegalScreen(screen = Screen.PrivacyPolicy, onBack = onBack)
-                Screen.PayslipReplica -> {
-                    activeDetailHasUnsavedState = { viewModel.uiState.value.isEditModeActive }
-                    PayslipReplicaDetailScreen(
-                        viewModel = viewModel,
-                        onBack = onBack,
-                        onOpenOriginal = { payslip ->
-                            viewModel.getPayslipPdf(payslip.dateStr) { bytes ->
-                                if (bytes != null) onOpenPdf(bytes, payslip.file)
-                            }
-                        },
-                    )
-                }
-                Screen.HelpLegal -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
-                // Tab roots are structurally unreachable here: onNavigate() routes them via
-                // switchTab(), never push()/nativeDetailNavigator, and AppNavStateSaver.restore()
-                // filters activeDetail to !isTabRoot. Handled only so this `when` stays exhaustive
-                // against future Screen cases.
-                Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings ->
-                    HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
-            }
+            DetailScreenContent(screenName = screenName, onBack = onBack)
         }
+    }
+
+    @Composable
+    private fun DetailScreenContent(
+        screenName: String,
+        onBack: () -> Unit,
+    ) {
+        when (Screen.valueOf(screenName)) {
+            Screen.PremiumFeatures ->
+                PremiumFeaturesScreen(
+                    viewModel = viewModel,
+                    onNavigateTo = { screen -> bridge.navigateToDetail(screen) },
+                    onBack = onBack,
+                )
+            Screen.Representation ->
+                RepresentationScreen(
+                    viewModel = viewModel,
+                    onBack = onBack,
+                    onUnsavedStateChanged = { unsaved -> activeDetailHasUnsavedState = { unsaved } },
+                )
+            Screen.PcdaoAudit ->
+                PcdaoAuditScreen(
+                    payslipRepository = viewModel.repository,
+                    onBack = onBack,
+                    onNavigateToRepresentation = { letter ->
+                        viewModel.updateRepresentationDraft(letter.toRepresentationDraftEntity())
+                        bridge.navigateToDetail(Screen.Representation)
+                    },
+                )
+            Screen.TaxPlanning -> TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
+            Screen.RetirementPlanning -> RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
+            Screen.RetirementCalculators -> RetirementCalculatorsScreen(viewModel = viewModel, onBack = onBack)
+            Screen.FAQ -> HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
+            Screen.PrivacyPolicy -> HelpLegalScreen(screen = Screen.PrivacyPolicy, onBack = onBack)
+            Screen.PayslipReplica -> PayslipReplicaDetail(onBack = onBack)
+            Screen.HelpLegal -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+            // Tab roots are structurally unreachable here: onNavigate() routes them via
+            // switchTab(), never push()/nativeDetailNavigator, and AppNavStateSaver.restore()
+            // filters activeDetail to !isTabRoot. Handled only so this `when` stays exhaustive
+            // against future Screen cases.
+            Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings ->
+                HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+        }
+    }
+
+    @Composable
+    private fun PayslipReplicaDetail(onBack: () -> Unit) {
+        activeDetailHasUnsavedState = { viewModel.uiState.value.isEditModeActive }
+        PayslipReplicaDetailScreen(
+            viewModel = viewModel,
+            onBack = onBack,
+            onOpenOriginal = { payslip ->
+                viewModel.getPayslipPdf(payslip.dateStr) { bytes ->
+                    if (bytes != null) onOpenPdf(bytes, payslip.file)
+                }
+            },
+        )
     }
 
     /** Called by Swift's `gestureRecognizerShouldBegin` to gate the edge-swipe while mid-edit. */

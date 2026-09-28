@@ -21,6 +21,7 @@ class AppNavStateTest {
             Screen.PrivacyPolicy,
             Screen.PayslipReplica,
             Screen.PremiumFeatures,
+            Screen.PcdaoAudit,
         )
 
     @Test

@@ -19,6 +19,9 @@ enum class FeatureGate {
 
     /** Gates backup *creation* only. Restore stays free so a new device can always recover its data. */
     BACKUP_RESTORE,
+
+    /** Gates the PCDA(O) Military Financial Intelligence Engine & Situational Matrix. */
+    PAYSLIPMAX_AI,
 }
 
 /**

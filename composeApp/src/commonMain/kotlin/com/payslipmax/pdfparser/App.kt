@@ -39,6 +39,7 @@ enum class Screen {
     PrivacyPolicy,
     PayslipReplica,
     PremiumFeatures,
+    PcdaoAudit,
 }
 
 /** The four bottom-tab roots; the remaining [Screen] values are pushed detail screens. */
@@ -246,6 +247,15 @@ private fun DetailContent(
             com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
         Screen.RetirementCalculators ->
             com.payslipmax.pdfparser.ui.screens.RetirementCalculatorsScreen(viewModel = viewModel, onBack = onBack)
+        Screen.PcdaoAudit ->
+            com.payslipmax.pdfparser.ui.pcdao.PcdaoAuditScreen(
+                payslipRepository = viewModel.repository,
+                onBack = onBack,
+                onNavigateToRepresentation = { letter ->
+                    viewModel.updateRepresentationDraft(letter.toRepresentationDraftEntity())
+                    onNavigateTo(Screen.Representation)
+                },
+            )
         Screen.FAQ ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
         Screen.PrivacyPolicy ->

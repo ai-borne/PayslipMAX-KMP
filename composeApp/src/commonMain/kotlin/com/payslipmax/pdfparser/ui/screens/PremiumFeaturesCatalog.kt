@@ -108,6 +108,15 @@ fun featureMeta(gate: FeatureGate): PremiumFeatureMeta =
                 target = null,
                 availability = PremiumFeatureAvailability.AVAILABLE,
             )
+        FeatureGate.PAYSLIPMAX_AI ->
+            PremiumFeatureMeta(
+                gate = gate,
+                icon = com.payslipmax.pdfparser.ui.pcdao.AppStringsPcdao.screenIcon,
+                title = com.payslipmax.pdfparser.ui.pcdao.AppStringsPcdao.screenTitle,
+                description = com.payslipmax.pdfparser.ui.pcdao.AppStringsPcdao.screenDescription,
+                target = Screen.PcdaoAudit,
+                availability = PremiumFeatureAvailability.AVAILABLE,
+            )
     }
 
 /** The full catalog in [FeatureGate] declaration order — one row per gate, none forgotten. */
