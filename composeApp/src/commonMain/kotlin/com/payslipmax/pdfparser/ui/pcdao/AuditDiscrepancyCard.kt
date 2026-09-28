@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.ui.pcdao
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,11 +26,14 @@ import com.payslipmax.pdfparser.ui.screens.formatCurrency
 
 /**
  * Finding card for one detected audit discrepancy with side-by-side math table and authority citation.
+ * Supports locked teaser presentation when free tier.
  */
 @Composable
 fun AuditDiscrepancyCard(
     discrepancy: AuditDiscrepancy,
     modifier: Modifier = Modifier,
+    isUnlocked: Boolean = true,
+    onUpgradeClick: () -> Unit = {},
 ) {
     FlatBorderedCard(
         modifier = modifier.fillMaxWidth(),
@@ -43,8 +47,16 @@ fun AuditDiscrepancyCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            MathDiffTable(discrepancy = discrepancy)
-            RemediationAndAuthority(discrepancy = discrepancy)
+            if (isUnlocked) {
+                MathDiffTable(discrepancy = discrepancy)
+                RemediationAndAuthority(discrepancy = discrepancy)
+            } else {
+                LockedMathDiffTable(onUpgradeClick = onUpgradeClick)
+                LockedRemediationAndAuthority(
+                    action = discrepancy.recommendedAction,
+                    onUpgradeClick = onUpgradeClick,
+                )
+            }
         }
     }
 }
@@ -134,6 +146,38 @@ private fun MathDiffTable(discrepancy: AuditDiscrepancy) {
 }
 
 @Composable
+private fun LockedMathDiffTable(onUpgradeClick: () -> Unit) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                .clickable(onClick = onUpgradeClick)
+                .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column {
+            Text(text = AppStringsPcdao.colEntitled, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = AppStringsPcdao.maskedAmount, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+        }
+        Column {
+            Text(text = AppStringsPcdao.colCredited, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = AppStringsPcdao.maskedAmount, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            Text(text = AppStringsPcdao.colNetDue, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = AppStringsPcdao.proUnlockMathBadge,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
+    }
+}
+
+@Composable
 private fun RemediationAndAuthority(discrepancy: AuditDiscrepancy) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
@@ -146,6 +190,28 @@ private fun RemediationAndAuthority(discrepancy: AuditDiscrepancy) {
             text = "${AppStringsPcdao.authorityPrefix}${discrepancy.authority}",
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
+        )
+    }
+}
+
+@Composable
+private fun LockedRemediationAndAuthority(
+    action: String,
+    onUpgradeClick: () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(
+            text = "💡 $action",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Medium,
+        )
+        Text(
+            text = AppStringsPcdao.proAuthorityLocked,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.clickable(onClick = onUpgradeClick),
         )
     }
 }

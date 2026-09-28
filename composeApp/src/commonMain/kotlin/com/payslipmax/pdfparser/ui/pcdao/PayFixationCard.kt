@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.pcdao
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,8 @@ import com.payslipmax.pdfparser.ui.screens.formatCurrency
 fun PayFixationCard(
     result: PayFixationResult,
     modifier: Modifier = Modifier,
+    isUnlocked: Boolean = true,
+    onUpgradeClick: () -> Unit = {},
 ) {
     FlatBorderedCard(
         modifier = modifier.fillMaxWidth(),
@@ -46,7 +49,11 @@ fun PayFixationCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(vertical = 4.dp),
             )
-            FixationComparisonGrid(result = result)
+            FixationComparisonGrid(
+                result = result,
+                isUnlocked = isUnlocked,
+                onUpgradeClick = onUpgradeClick,
+            )
             FixationUrgentCallout()
         }
     }
@@ -83,8 +90,25 @@ private fun FixationHeader() {
 }
 
 @Composable
-private fun FixationComparisonGrid(result: PayFixationResult) {
+private fun FixationComparisonGrid(
+    result: PayFixationResult,
+    isUnlocked: Boolean,
+    onUpgradeClick: () -> Unit,
+) {
     val isOpt2Winner = result.recommendedOption == FixationOption.OPTION_2
+    val opt1Total =
+        if (isUnlocked) {
+            "${AppStringsPcdao.fixation36MonthPrefix}${formatCurrency(result.opt1Total36Months.toDouble())}"
+        } else {
+            AppStringsPcdao.fixationOptionLocked
+        }
+    val opt2Total =
+        if (isUnlocked) {
+            "${AppStringsPcdao.fixation36MonthPrefix}${formatCurrency(result.opt2Total36Months.toDouble())}"
+        } else {
+            AppStringsPcdao.fixationOptionLocked
+        }
+
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -92,17 +116,21 @@ private fun FixationComparisonGrid(result: PayFixationResult) {
         FixationOptionBox(
             title = AppStringsPcdao.fixationOpt1Title,
             payValue = "${formatCurrency(result.opt1FixedPay.toDouble())}/mo",
-            total36Mo = "${AppStringsPcdao.fixation36MonthPrefix}${formatCurrency(result.opt1Total36Months.toDouble())}",
+            total36Mo = opt1Total,
             isWinner = !isOpt2Winner,
             winnerBadge = null,
+            isUnlocked = isUnlocked,
+            onUpgradeClick = onUpgradeClick,
             modifier = Modifier.weight(1f),
         )
         FixationOptionBox(
             title = AppStringsPcdao.fixationOpt2Title,
             payValue = "${formatCurrency(result.opt2PostDniFixedPay.toDouble())}/mo",
-            total36Mo = "${AppStringsPcdao.fixation36MonthPrefix}${formatCurrency(result.opt2Total36Months.toDouble())}",
+            total36Mo = opt2Total,
             isWinner = isOpt2Winner,
             winnerBadge = "${AppStringsPcdao.fixationRecommendedBadge} (+${formatCurrency(result.cumulativeDelta.toDouble())})",
+            isUnlocked = isUnlocked,
+            onUpgradeClick = onUpgradeClick,
             modifier = Modifier.weight(1f),
         )
     }
@@ -115,6 +143,8 @@ private fun FixationOptionBox(
     total36Mo: String,
     isWinner: Boolean,
     winnerBadge: String?,
+    isUnlocked: Boolean,
+    onUpgradeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val borderColor = if (isWinner) Color(0xFF34D399) else MaterialTheme.colorScheme.outlineVariant
@@ -125,6 +155,7 @@ private fun FixationOptionBox(
             modifier
                 .border(BorderStroke(1.dp, borderColor), RoundedCornerShape(8.dp))
                 .background(bgColor, RoundedCornerShape(8.dp))
+                .then(if (!isUnlocked) Modifier.clickable(onClick = onUpgradeClick) else Modifier)
                 .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
@@ -150,8 +181,8 @@ private fun FixationOptionBox(
         Text(
             text = total36Mo,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = FontWeight.Medium,
+            color = if (!isUnlocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = if (!isUnlocked) FontWeight.Bold else FontWeight.Medium,
         )
     }
 }

@@ -84,4 +84,17 @@ object AppStringsPcdao {
     const val chkMaskPiiLabel = "Mask Sensitive PII (Safe for Sharing)"
     const val btnCopyText = "📋 Copy Text"
     const val btnSaveDraft = "💾 Save to Claims"
+
+    // Phase 8 Monetization & Teaser Strings
+    const val switchMonthButton = "▼ Switch Month"
+    const val proBadge = "PRO"
+    const val maskedAmount = "₹••••••"
+    const val proUnlockMathBadge = "PRO 🔒"
+    const val proAuthorityLocked = "🔒 Official PCDA(O) Rule Citation (PRO • Tap to unlock)"
+    const val proRedressalLocked = "🔒 1-Tap PCDA(O) Redressal Kit (PRO)"
+    const val teaserHeadlineClaimsPrefix = "Potential Claims Detected: "
+    const val teaserHeadlineClaimsSuffix = "Unclaimed"
+    const val teaserHeadlineDesc = "Upgrade to PRO to unlock full math diffs, statutory citations & 1-tap redressal."
+    const val teaserUpgradeButton = "Unlock PRO"
+    const val fixationOptionLocked = "🔒 36-Mo Trajectory (PRO • Tap to unlock)"
 }

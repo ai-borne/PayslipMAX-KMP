@@ -249,7 +249,7 @@ private fun DetailContent(
             com.payslipmax.pdfparser.ui.screens.RetirementCalculatorsScreen(viewModel = viewModel, onBack = onBack)
         Screen.PcdaoAudit ->
             com.payslipmax.pdfparser.ui.pcdao.PcdaoAuditScreen(
-                payslipRepository = viewModel.repository,
+                viewModel = viewModel,
                 onBack = onBack,
                 onNavigateToRepresentation = { letter ->
                     viewModel.updateRepresentationDraft(letter.toRepresentationDraftEntity())

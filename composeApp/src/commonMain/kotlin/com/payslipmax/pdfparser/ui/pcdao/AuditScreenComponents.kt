@@ -101,7 +101,7 @@ private fun MonthSelectorDropdown(
 ) {
     Box {
         Text(
-            text = "▼ Switch Month",
+            text = AppStringsPcdao.switchMonthButton,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold,
@@ -126,6 +126,7 @@ internal fun FeedHeaderSection(
     selectedFilter: FindingFilter,
     onFilterSelected: (FindingFilter) -> Unit,
     onRedressalClick: () -> Unit,
+    isUnlocked: Boolean = true,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
@@ -147,7 +148,7 @@ internal fun FeedHeaderSection(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             ) {
                 Text(
-                    text = AppStringsPcdao.btnRedressalKit,
+                    text = if (isUnlocked) AppStringsPcdao.btnRedressalKit else AppStringsPcdao.proRedressalLocked,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                 )

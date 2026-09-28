@@ -114,7 +114,7 @@ class IosNavHost(
                 )
             Screen.PcdaoAudit ->
                 PcdaoAuditScreen(
-                    payslipRepository = viewModel.repository,
+                    viewModel = viewModel,
                     onBack = onBack,
                     onNavigateToRepresentation = { letter ->
                         viewModel.updateRepresentationDraft(letter.toRepresentationDraftEntity())
