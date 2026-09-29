@@ -11,4 +11,5 @@ object TestTags {
     const val MARCOS_CHECKBOX = "marcos_checkbox"
     const val APPLY_FACTORS_BUTTON = "apply_factors_button"
     const val REDRESSAL_KIT_BUTTON = "redressal_kit_button"
+    const val PRESET_CAROUSEL = "preset_carousel"
 }

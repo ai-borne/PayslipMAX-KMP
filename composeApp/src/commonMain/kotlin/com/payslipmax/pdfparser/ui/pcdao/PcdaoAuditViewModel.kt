@@ -6,9 +6,11 @@ import com.payslipmax.pcdao.engine.PayFixationOptimizer
 import com.payslipmax.pcdao.engine.PayFixationRequest
 import com.payslipmax.pcdao.engine.PayFixationResult
 import com.payslipmax.pcdao.reconciliation.ActiveSituationalContext
+import com.payslipmax.pcdao.reconciliation.MissionPresetId
 import com.payslipmax.pcdao.reconciliation.ShadowLedgerReconciler
 import com.payslipmax.pcdao.reconciliation.SituationalAutoInferer
 import com.payslipmax.pcdao.reconciliation.SituationalCategory
+import com.payslipmax.pcdao.reconciliation.SituationalMissionPresets
 import com.payslipmax.pcdao.reconciliation.SituationalTileKeys
 import com.payslipmax.pcdao.reconciliation.SpecializedMilitaryFactor
 import com.payslipmax.pcdao.redressal.RedressalLetter
@@ -46,6 +48,8 @@ class PcdaoAuditViewModel(
     private val _uiState = MutableStateFlow(PcdaoAuditUiState())
     val uiState: StateFlow<PcdaoAuditUiState> = _uiState.asStateFlow()
 
+    private val monthContextOverrides: MutableMap<String, ActiveSituationalContext> = mutableMapOf()
+    private val monthPresetOverrides: MutableMap<String, MissionPresetId?> = mutableMapOf()
     private var calculationJob: Job? = null
     internal val activeCalculationJob: Job? get() = calculationJob
 
@@ -76,9 +80,11 @@ class PcdaoAuditViewModel(
         allPayslips: List<ParsedPayslip>,
         payslip: ParsedPayslip,
     ) {
-        val initialContext = autoInferer.inferActiveContext(payslip, allPayslips)
-        val autoDetectedTiles = initialContext.activeTileIds
-        val recon = reconciler.reconcile(payslip, initialContext)
+        val key = monthKey(payslip)
+        val context = monthContextOverrides[key] ?: autoInferer.inferActiveContext(payslip, allPayslips)
+        val autoDetectedTiles = autoInferer.inferActiveContext(payslip, allPayslips).activeTileIds
+        val presetId = monthPresetOverrides[key]
+        val recon = reconciler.reconcile(payslip, context)
         val milestones = milestoneAuditor.auditMilestones(allPayslips)
         val grouped = VaultMonthGroupMapper.groupByFinancialYear(allPayslips)
 
@@ -86,8 +92,9 @@ class PcdaoAuditViewModel(
             it.copy(
                 availablePayslips = allPayslips,
                 selectedPayslip = payslip,
-                activeContext = initialContext,
+                activeContext = context,
                 autoInferredTileIds = autoDetectedTiles,
+                activePresetId = presetId,
                 reconciliationResult = recon,
                 careerMilestones = milestones,
                 groupedMonths = grouped,
@@ -95,27 +102,39 @@ class PcdaoAuditViewModel(
                 errorMessage = null,
             )
         }
-        launchCalculation(initialContext)
+        launchCalculation(context)
     }
 
-    fun selectPayslip(payslip: ParsedPayslip) {
-        applyPayslipSelection(_uiState.value.availablePayslips, payslip)
-    }
+    fun selectPayslip(payslip: ParsedPayslip) = applyPayslipSelection(_uiState.value.availablePayslips, payslip)
 
-    fun selectCategory(category: SituationalCategory) {
-        _uiState.update { it.copy(selectedCategory = category) }
-    }
+    fun selectCategory(category: SituationalCategory) = _uiState.update { it.copy(selectedCategory = category) }
 
-    fun setFilter(filter: FindingFilter) {
-        _uiState.update { it.copy(selectedFilter = filter) }
-    }
+    fun setFilter(filter: FindingFilter) = _uiState.update { it.copy(selectedFilter = filter) }
 
-    fun setAddFactorSheetVisible(visible: Boolean) {
-        _uiState.update { it.copy(isAddFactorSheetVisible = visible) }
-    }
+    fun setAddFactorSheetVisible(visible: Boolean) = _uiState.update { it.copy(isAddFactorSheetVisible = visible) }
 
-    fun toggleCumulativeView() {
-        _uiState.update { it.copy(isCumulativeViewActive = !it.isCumulativeViewActive) }
+    fun toggleCumulativeView() = _uiState.update { it.copy(isCumulativeViewActive = !it.isCumulativeViewActive) }
+
+    fun applyMissionPreset(presetId: MissionPresetId) {
+        val preset = SituationalMissionPresets.getById(presetId)
+        val current = _uiState.value.activeContext
+        val numChildren =
+            when {
+                preset.tileIds.contains(SituationalTileKeys.CEA_TWO_CHILDREN) -> 2
+                preset.tileIds.contains(SituationalTileKeys.CEA_ONE_CHILD) -> 1
+                else -> 0
+            }
+        val updatedContext =
+            current.copy(
+                activeTileIds = preset.tileIds,
+                activeSpecializedFactors = preset.specializedFactors,
+                sprCityTier = preset.sprCityTier,
+                numberOfChildrenCea = numChildren,
+                hasHostelChild = preset.tileIds.contains(SituationalTileKeys.CEA_HOSTEL),
+            )
+        recordContextOverride(updatedContext, presetId)
+        _uiState.update { it.copy(activeContext = updatedContext, activePresetId = presetId) }
+        launchCalculation(updatedContext)
     }
 
     fun toggleTile(tileId: String) {
@@ -125,15 +144,21 @@ class PcdaoAuditViewModel(
             newTileIds.remove(tileId)
         } else {
             newTileIds.add(tileId)
-            if (SituationalTileKeys.PEACE_STATION_KEYS.contains(tileId)) {
-                newTileIds.removeAll(SituationalTileKeys.PEACE_STATION_KEYS - tileId)
-            }
-            if (SituationalTileKeys.CEA_CHILD_KEYS.contains(tileId)) {
-                newTileIds.removeAll(SituationalTileKeys.CEA_CHILD_KEYS - tileId)
-            }
+            if (SituationalTileKeys.PEACE_STATION_KEYS.contains(tileId)) newTileIds.removeAll(SituationalTileKeys.PEACE_STATION_KEYS - tileId)
+            if (SituationalTileKeys.HOUSING_KEYS.contains(tileId)) newTileIds.removeAll(SituationalTileKeys.HOUSING_KEYS - tileId)
+            if (SituationalTileKeys.CEA_CHILD_KEYS.contains(tileId)) newTileIds.removeAll(SituationalTileKeys.CEA_CHILD_KEYS - tileId)
         }
-
         val updatedContext = syncContextWithTile(currentContext, tileId, newTileIds)
+        recordContextOverride(updatedContext, _uiState.value.activePresetId)
+        _uiState.update { it.copy(activeContext = updatedContext) }
+        launchCalculation(updatedContext)
+    }
+
+    fun toggleSpecializedFactor(factor: SpecializedMilitaryFactor) {
+        val currentFactors = _uiState.value.activeContext.activeSpecializedFactors.toMutableSet()
+        if (currentFactors.contains(factor)) currentFactors.remove(factor) else currentFactors.add(factor)
+        val updatedContext = _uiState.value.activeContext.copy(activeSpecializedFactors = currentFactors)
+        recordContextOverride(updatedContext, _uiState.value.activePresetId)
         _uiState.update { it.copy(activeContext = updatedContext) }
         launchCalculation(updatedContext)
     }
@@ -145,33 +170,28 @@ class PcdaoAuditViewModel(
     ): ActiveSituationalContext {
         var numChildren = context.numberOfChildrenCea
         var hasHostel = context.hasHostelChild
-
         when (toggledTile) {
             SituationalTileKeys.CEA_NONE -> numChildren = 0
             SituationalTileKeys.CEA_ONE_CHILD -> numChildren = if (newTiles.contains(toggledTile)) 1 else 0
             SituationalTileKeys.CEA_TWO_CHILDREN -> numChildren = if (newTiles.contains(toggledTile)) 2 else 0
             SituationalTileKeys.CEA_HOSTEL -> hasHostel = newTiles.contains(toggledTile)
         }
-
-        return context.copy(
-            activeTileIds = newTiles,
-            numberOfChildrenCea = numChildren,
-            hasHostelChild = hasHostel,
-        )
+        return context.copy(activeTileIds = newTiles, numberOfChildrenCea = numChildren, hasHostelChild = hasHostel)
     }
 
-    fun toggleSpecializedFactor(factor: SpecializedMilitaryFactor) {
-        val currentFactors = _uiState.value.activeContext.activeSpecializedFactors.toMutableSet()
-        if (currentFactors.contains(factor)) {
-            currentFactors.remove(factor)
-        } else {
-            currentFactors.add(factor)
+    private fun recordContextOverride(
+        context: ActiveSituationalContext,
+        presetId: MissionPresetId?,
+    ) {
+        _uiState.value.selectedPayslip?.let { payslip ->
+            val key = monthKey(payslip)
+            monthContextOverrides[key] = context
+            monthPresetOverrides[key] = presetId
         }
-
-        val updatedContext = _uiState.value.activeContext.copy(activeSpecializedFactors = currentFactors)
-        _uiState.update { it.copy(activeContext = updatedContext) }
-        launchCalculation(updatedContext)
     }
+
+    private fun monthKey(payslip: ParsedPayslip): String =
+        "${payslip.year}-${payslip.monthNum.toString().padStart(2, '0')}"
 
     private fun launchCalculation(context: ActiveSituationalContext) {
         calculationJob?.cancel()
@@ -185,14 +205,7 @@ class PcdaoAuditViewModel(
                 coroutineContext.ensureActive()
                 val fixation = calculatePayFixation(payslip, context)
                 coroutineContext.ensureActive()
-
-                _uiState.update {
-                    it.copy(
-                        reconciliationResult = recon ?: it.reconciliationResult,
-                        cumulativeRollup = rollup,
-                        payFixationResult = fixation,
-                    )
-                }
+                _uiState.update { it.copy(reconciliationResult = recon ?: it.reconciliationResult, cumulativeRollup = rollup, payFixationResult = fixation) }
             }
     }
 
@@ -200,20 +213,12 @@ class PcdaoAuditViewModel(
         payslip: ParsedPayslip?,
         context: ActiveSituationalContext,
     ): PayFixationResult? {
-        if (payslip == null || !context.activeTileIds.contains(SituationalTileKeys.PROMOTION_ACTIVE)) {
-            return null
-        }
+        if (payslip == null || !context.activeTileIds.contains(SituationalTileKeys.PROMOTION_ACTIVE)) return null
         return try {
             val payMatrix = rulesRepository.getPayMatrix()
-            val fromLevel =
-                _uiState.value.sandboxFromLevel
-                    ?: context.inferredFlags.inferredRankLevel
-                    ?: "10"
-            val toLevel =
-                _uiState.value.sandboxToLevel
-                    ?: defaultPromotionalTarget(fromLevel)
-            val optimizer = PayFixationOptimizer(payMatrix)
-            optimizer.optimizePromotion(
+            val fromLevel = _uiState.value.sandboxFromLevel ?: context.inferredFlags.inferredRankLevel ?: "10"
+            val toLevel = _uiState.value.sandboxToLevel ?: defaultPromotionalTarget(fromLevel)
+            PayFixationOptimizer(payMatrix).optimizePromotion(
                 PayFixationRequest(
                     fromLevel = fromLevel,
                     fromStage = 8,
@@ -262,7 +267,5 @@ class PcdaoAuditViewModel(
         return letter
     }
 
-    fun clearGeneratedLetter() {
-        _uiState.update { it.copy(generatedLetter = null) }
-    }
+    fun clearGeneratedLetter() = _uiState.update { it.copy(generatedLetter = null) }
 }

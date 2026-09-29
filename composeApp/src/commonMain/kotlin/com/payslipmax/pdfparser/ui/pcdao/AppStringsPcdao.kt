@@ -34,12 +34,42 @@ object AppStringsPcdao {
     const val addFactorButtonLabel = "+ Add Specialized Factor"
     const val specializedFactorsActivePrefix = "Active Factors: "
 
-    // Category Tabs
-    const val tabPosting = "Posting"
-    const val tabHousing = "Housing"
+    // Category Tabs (6 Tabs)
+    const val tabPostingOps = "Posting & Ops"
+    const val tabHousingTlc = "Housing & TLC"
     const val tabChildrenCea = "Children (CEA)"
-    const val tabCareer = "Career"
-    const val tabFundsLtc = "Funds & LTC"
+    const val tabDutyLeave = "Duty & Leave"
+    const val tabCareerCadres = "Career & Cadres"
+    const val tabFundsRetirement = "Funds & Release"
+
+    // Backward-compatibility aliases
+    const val tabPosting = tabPostingOps
+    const val tabHousing = tabHousingTlc
+    const val tabCareer = tabCareerCadres
+    const val tabFundsLtc = tabFundsRetirement
+
+    // 8 Mission Presets Copy
+    const val presetsHeaderTitle = "⚡ 1-Tap Mission Presets"
+    const val presetRrCiOps = "🌲 RR CI Ops"
+    const val presetSiachen = "❄️ Siachen"
+    const val presetAmc = "🏥 AMC Hospital"
+    const val presetAviation = "✈️ Aviation"
+    const val presetDssc = "🏛️ DSSC Course"
+    const val presetAnc = "🌴 ANC Island"
+    const val presetPeace = "🎖️ Peace Station"
+    const val presetUn = "🌐 UN Mission"
+
+    fun getPresetLabel(id: com.payslipmax.pcdao.reconciliation.MissionPresetId): String =
+        when (id) {
+            com.payslipmax.pcdao.reconciliation.MissionPresetId.RR_CI_OPS -> presetRrCiOps
+            com.payslipmax.pcdao.reconciliation.MissionPresetId.SIACHEN_BRIGADE -> presetSiachen
+            com.payslipmax.pcdao.reconciliation.MissionPresetId.AMC_HOSPITAL -> presetAmc
+            com.payslipmax.pcdao.reconciliation.MissionPresetId.ARMY_AVIATION -> presetAviation
+            com.payslipmax.pcdao.reconciliation.MissionPresetId.DSSC_COURSE -> presetDssc
+            com.payslipmax.pcdao.reconciliation.MissionPresetId.ANC_ISLAND -> presetAnc
+            com.payslipmax.pcdao.reconciliation.MissionPresetId.PEACE_REGIMENTAL -> presetPeace
+            com.payslipmax.pcdao.reconciliation.MissionPresetId.UN_MISSION -> presetUn
+        }
 
     // Pay Fixation Optimizer Card (Rule 10 & 11)
     const val fixationCardTitle = "⭐ Rule 10 & 11 Army Pay Rules 2017: Pay Fixation Optimizer"

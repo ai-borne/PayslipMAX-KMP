@@ -213,6 +213,8 @@ private fun LazyListScope.auditFeedAndMilestonesItems(
             selectedCategory = uiState.selectedCategory,
             activeContext = uiState.activeContext,
             autoInferredTileIds = uiState.autoInferredTileIds,
+            activePresetId = uiState.activePresetId,
+            onPresetSelected = { viewModel.applyMissionPreset(it) },
             onCategorySelected = { viewModel.selectCategory(it) },
             onToggleTile = { viewModel.toggleTile(it) },
             onOpenAddFactorSheet = { viewModel.setAddFactorSheetVisible(true) },

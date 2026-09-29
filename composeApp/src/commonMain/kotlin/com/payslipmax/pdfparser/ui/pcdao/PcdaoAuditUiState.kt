@@ -5,6 +5,7 @@ import com.payslipmax.pcdao.model.AuditDiscrepancy
 import com.payslipmax.pcdao.model.DiscrepancySeverity
 import com.payslipmax.pcdao.model.DiscrepancyType
 import com.payslipmax.pcdao.reconciliation.ActiveSituationalContext
+import com.payslipmax.pcdao.reconciliation.MissionPresetId
 import com.payslipmax.pcdao.reconciliation.ShadowLedgerReconciliationResult
 import com.payslipmax.pcdao.reconciliation.SituationalCategory
 import com.payslipmax.pcdao.reconciliation.SituationalTileKeys
@@ -32,6 +33,7 @@ data class PcdaoAuditUiState(
     val selectedPayslip: ParsedPayslip? = null,
     val activeContext: ActiveSituationalContext = ActiveSituationalContext(),
     val autoInferredTileIds: Set<String> = emptySet(),
+    val activePresetId: MissionPresetId? = null,
     val selectedCategory: SituationalCategory = SituationalCategory.POSTING,
     val selectedFilter: FindingFilter = FindingFilter.ALL,
     val isAddFactorSheetVisible: Boolean = false,
