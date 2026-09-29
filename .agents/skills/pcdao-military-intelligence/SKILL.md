@@ -84,3 +84,4 @@ When a new MoD Circular, DA Revision, or 8th CPC order is released:
 
 - [Canonical Rules Cheatsheet](./references/canonical_rules_cheatsheet.md): Index of 378 rules, 5 action types, and PCDA Pune task desks.
 - [3-Tier Matrix Architecture](./references/3tier_matrix_architecture.md): Smart Auto-Inference, 5 Quick-Tap Tabs, and Specialized Factors Sheet.
+- [Handbook Authority Sources & Pipeline](./references/handbook_authority_sources.md): Provenance of official PCDA(O) handbooks, who updates them, and the re-extraction pipeline.
