@@ -35,6 +35,7 @@ fun PayFixationCard(
     modifier: Modifier = Modifier,
     isUnlocked: Boolean = true,
     onUpgradeClick: () -> Unit = {},
+    onLevelSelected: ((fromLevel: String, toLevel: String) -> Unit)? = null,
 ) {
     FlatBorderedCard(
         modifier = modifier.fillMaxWidth(),
@@ -54,6 +55,13 @@ fun PayFixationCard(
                 isUnlocked = isUnlocked,
                 onUpgradeClick = onUpgradeClick,
             )
+            if (onLevelSelected != null) {
+                FixationSandboxSelector(
+                    fromLevel = result.fromLevel,
+                    toLevel = result.toLevel,
+                    onLevelSelected = onLevelSelected,
+                )
+            }
             FixationUrgentCallout()
         }
     }

@@ -44,6 +44,8 @@ data class PcdaoAuditUiState(
     val careerMilestones: List<CareerMilestone> = emptyList(),
     val groupedMonths: Map<String, List<ParsedPayslip>> = emptyMap(),
     val isCumulativeViewActive: Boolean = false,
+    val sandboxFromLevel: String? = null,
+    val sandboxToLevel: String? = null,
 ) {
     val filteredDiscrepancies: List<AuditDiscrepancy>
         get() {

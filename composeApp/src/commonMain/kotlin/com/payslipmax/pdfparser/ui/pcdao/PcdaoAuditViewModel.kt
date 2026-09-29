@@ -76,7 +76,7 @@ class PcdaoAuditViewModel(
         allPayslips: List<ParsedPayslip>,
         payslip: ParsedPayslip,
     ) {
-        val initialContext = autoInferer.inferActiveContext(payslip)
+        val initialContext = autoInferer.inferActiveContext(payslip, allPayslips)
         val autoDetectedTiles = initialContext.activeTileIds
         val recon = reconciler.reconcile(payslip, initialContext)
         val milestones = milestoneAuditor.auditMilestones(allPayslips)
@@ -205,8 +205,13 @@ class PcdaoAuditViewModel(
         }
         return try {
             val payMatrix = rulesRepository.getPayMatrix()
-            val fromLevel = context.inferredFlags.inferredRankLevel ?: "10"
-            val toLevel = if (fromLevel == "10") "11" else "12A"
+            val fromLevel =
+                _uiState.value.sandboxFromLevel
+                    ?: context.inferredFlags.inferredRankLevel
+                    ?: "10"
+            val toLevel =
+                _uiState.value.sandboxToLevel
+                    ?: defaultPromotionalTarget(fromLevel)
             val optimizer = PayFixationOptimizer(payMatrix)
             optimizer.optimizePromotion(
                 PayFixationRequest(
@@ -222,6 +227,24 @@ class PcdaoAuditViewModel(
             if (e is CancellationException) throw e
             null
         }
+    }
+
+    private fun defaultPromotionalTarget(from: String): String =
+        when (from) {
+            "10" -> "11"
+            "11" -> "12A"
+            "12A" -> "13"
+            "13" -> "13A"
+            "13A" -> "14"
+            else -> "11"
+        }
+
+    fun setSandboxLevels(
+        fromLevel: String,
+        toLevel: String,
+    ) {
+        _uiState.update { it.copy(sandboxFromLevel = fromLevel, sandboxToLevel = toLevel) }
+        launchCalculation(_uiState.value.activeContext)
     }
 
     fun generateRedressalLetter(maskPii: Boolean = false): RedressalLetter? {

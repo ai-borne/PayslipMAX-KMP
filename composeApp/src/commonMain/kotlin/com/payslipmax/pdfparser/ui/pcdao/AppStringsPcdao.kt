@@ -53,6 +53,12 @@ object AppStringsPcdao {
     const val fixation36MonthPrefix = "36-Mo: ₹"
     const val fixationUrgentCallout =
         "⚠️ Urgent: Option must be submitted to PCDA(O) within 30 days of promotion order, or Option 1 is applied by default!"
+    const val fixationSandboxTitle = "Sandbox Mode: Project Future Promotion"
+    const val fixationFromLevelLabel = "From:"
+    const val fixationToLevelLabel = "To:"
+    const val fixationPromotionAdvisory =
+        "Substantive Promotion Approaching: Compare Option 1 vs Option 2 to maximize 36-month pay."
+    const val fixationLevelPrefix = "Level "
 
     // Intelligence Feed & Filter Tabs
     const val feedHeaderTitle = "⚡ Intelligence Feed"

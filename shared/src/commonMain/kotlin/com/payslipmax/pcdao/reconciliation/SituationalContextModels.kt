@@ -22,6 +22,8 @@ data class InferredSituationalFlags(
     val inferredCeaActive: Boolean = false,
     val inferredHraActive: Boolean = false,
     val inferredGovtAccomm: Boolean = false,
+    val inferredPromotionEligible: Boolean = false,
+    val inferredPromotionAdvisory: String? = null,
 )
 
 @Serializable

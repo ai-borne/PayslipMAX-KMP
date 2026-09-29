@@ -195,6 +195,7 @@ private fun LazyListScope.auditBannerItems(
                 result = fixation,
                 isUnlocked = hasAccess,
                 onUpgradeClick = onUpgradeClick,
+                onLevelSelected = { from, to -> viewModel.setSandboxLevels(from, to) },
             )
         }
     }

@@ -25,13 +25,15 @@ class SituationalAutoInfererTest {
         hra: Double = 0.0,
         cea: Double = 0.0,
         specialForces: Double = 0.0,
+        year: Int = 2026,
+        monthNum: Int = 3,
     ): ParsedPayslip {
         return ParsedPayslip(
             file = "test_payslip.pdf",
-            year = 2026,
-            monthNum = 3,
+            year = year,
+            monthNum = monthNum,
             monthName = "March",
-            dateStr = "2026-03-31",
+            dateStr = "$year-03-31",
             officer = Officer(name = "Col R. S. Rathore", accountNo = "01/142/987654", pan = "ABCDE1234F"),
             earnings =
                 Earnings(
@@ -135,5 +137,26 @@ class SituationalAutoInfererTest {
         val payslipSf = createTestPayslip(specialForces = 25000.0)
         val context = inferer.inferActiveContext(payslipSf)
         assertTrue(context.activeSpecializedFactors.contains(SpecializedMilitaryFactor.MARCOS_SPECIAL_FORCES))
+    }
+
+    @Test
+    fun testOfficerWith6YearsTenureApproachingMajorTriggersPromotionAdvisory() {
+        val commissionPayslip = createTestPayslip(basicPay = 56100.0, year = 2020, monthNum = 3)
+        val currentPayslip = createTestPayslip(basicPay = 69000.0, year = 2026, monthNum = 3)
+        val history = listOf(commissionPayslip, currentPayslip)
+
+        assertTrue(inferer.inferPromotionEligibility(currentPayslip, history))
+
+        val flags = inferer.inferFlags(currentPayslip, history)
+        assertTrue(flags.inferredPromotionEligible)
+        assertEquals(SituationalAutoInferer.PROMOTION_ADVISORY, flags.inferredPromotionAdvisory)
+
+        val context = inferer.inferActiveContext(currentPayslip, history)
+        assertTrue(context.activeTileIds.contains(SituationalTileKeys.PROMOTION_ACTIVE))
+
+        // Negative check: single payslip or fresh commissioning does not auto-trigger
+        assertFalse(inferer.inferPromotionEligibility(commissionPayslip, listOf(commissionPayslip)))
+        val freshFlags = inferer.inferFlags(commissionPayslip, listOf(commissionPayslip))
+        assertFalse(freshFlags.inferredPromotionEligible)
     }
 }

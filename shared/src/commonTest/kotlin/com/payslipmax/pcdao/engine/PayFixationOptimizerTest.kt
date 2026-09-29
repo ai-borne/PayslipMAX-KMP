@@ -28,6 +28,17 @@ class PayFixationOptimizerTest {
                             158700, 163500, 168400, 173500, 178700, 184100, 189600, 195300, 201200,
                             207200,
                         ),
+                    "12A" to
+                        listOf(
+                            121200, 124800, 128500, 132400, 136400, 140500, 144700, 149000, 153500,
+                            158100, 162800, 167700, 172700, 177900, 183200, 188700, 194400, 200200,
+                            206200, 212400,
+                        ),
+                    "13" to
+                        listOf(
+                            130600, 134500, 138500, 142700, 147000, 151400, 155900, 160600, 165400,
+                            170400, 175500, 180800, 186200, 191800, 197600, 203500,
+                        ),
                     "13A" to
                         listOf(
                             139600, 143800, 148100, 152500, 157100, 161800, 166700, 171700, 176900,
@@ -206,5 +217,55 @@ class PayFixationOptimizerTest {
         val deserialized = Json.decodeFromString<PayFixationResult>(jsonStr)
         assertEquals(result.cumulativeDelta, deserialized.cumulativeDelta)
         assertEquals(result.recommendedOption, deserialized.recommendedOption)
+    }
+
+    @Test
+    fun testSandboxSimulationLevel11To12A() {
+        val request =
+            PayFixationRequest(
+                fromLevel = "11",
+                fromStage = 8,
+                toLevel = "12A",
+                promotionDate = "2026-03-15",
+                dniMonth = 7,
+            )
+
+        val result = optimizer.optimizePromotion(request)
+
+        assertEquals("11", result.fromLevel)
+        assertEquals("12A", result.toLevel)
+        assertEquals(85300, result.fromBasicPay)
+        assertEquals(121200, result.opt1FixedPay)
+        assertEquals(1, result.opt1InitialStage)
+        assertEquals(121200, result.opt2PreDniPay)
+        assertEquals(121200, result.opt2PostDniFixedPay)
+        assertEquals(1, result.opt2DniStage)
+        assertEquals(36, result.monthlyTrajectory.size)
+    }
+
+    @Test
+    fun testSandboxSimulationLevel12ATo13() {
+        val request =
+            PayFixationRequest(
+                fromLevel = "12A",
+                fromStage = 8,
+                toLevel = "13",
+                promotionDate = "2026-03-15",
+                dniMonth = 7,
+            )
+
+        val result = optimizer.optimizePromotion(request)
+
+        assertEquals("12A", result.fromLevel)
+        assertEquals("13", result.toLevel)
+        assertEquals(149000, result.fromBasicPay)
+        assertEquals(155900, result.opt1FixedPay)
+        assertEquals(7, result.opt1InitialStage)
+        assertEquals(151400, result.opt2PreDniPay)
+        assertEquals(160600, result.opt2PostDniFixedPay)
+        assertEquals(8, result.opt2DniStage)
+        assertEquals(36, result.monthlyTrajectory.size)
+        assertEquals(FixationOption.OPTION_2, result.recommendedOption)
+        assertTrue(result.cumulativeDelta > 0L)
     }
 }

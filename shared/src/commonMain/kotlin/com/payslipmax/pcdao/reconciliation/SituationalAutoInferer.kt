@@ -4,7 +4,10 @@ import com.payslipmax.pdfparser.domain.ParsedPayslip
 import kotlin.math.round
 
 class SituationalAutoInferer {
-    fun inferFlags(payslip: ParsedPayslip): InferredSituationalFlags {
+    fun inferFlags(
+        payslip: ParsedPayslip,
+        allPayslips: List<ParsedPayslip> = emptyList(),
+    ): InferredSituationalFlags {
         val basicPay = payslip.earnings.basicPay
         val da = payslip.earnings.dearnessAllowance
         val daPercent = computeDaPercentage(basicPay, da)
@@ -15,6 +18,8 @@ class SituationalAutoInferer {
         val hasCea = payslip.earnings.childrenEducationAllowance > 0 || payslip.earnings.arrearsCea > 0
         val hasHra = payslip.earnings.houseRentAllowance > 0 || payslip.earnings.arrearsHra > 0
         val hasGovtAccomm = payslip.deductions.licenseFee > 0
+        val isPromoEligible = inferPromotionEligibility(payslip, allPayslips)
+        val promoAdvisory = if (isPromoEligible) PROMOTION_ADVISORY else null
 
         return InferredSituationalFlags(
             inferredRankLevel = rankLevel,
@@ -26,11 +31,16 @@ class SituationalAutoInferer {
             inferredCeaActive = hasCea,
             inferredHraActive = hasHra,
             inferredGovtAccomm = hasGovtAccomm,
+            inferredPromotionEligible = isPromoEligible,
+            inferredPromotionAdvisory = promoAdvisory,
         )
     }
 
-    fun inferActiveContext(payslip: ParsedPayslip): ActiveSituationalContext {
-        val flags = inferFlags(payslip)
+    fun inferActiveContext(
+        payslip: ParsedPayslip,
+        allPayslips: List<ParsedPayslip> = emptyList(),
+    ): ActiveSituationalContext {
+        val flags = inferFlags(payslip, allPayslips)
         val tileIds = mutableSetOf<String>()
         val specializedFactors = mutableSetOf<SpecializedMilitaryFactor>()
 
@@ -38,6 +48,10 @@ class SituationalAutoInferer {
         inferHousingTiles(flags, tileIds)
         inferFundAndCeaTiles(flags, tileIds)
         inferSpecializedFactors(payslip, specializedFactors)
+
+        if (flags.inferredPromotionEligible) {
+            tileIds.add(SituationalTileKeys.PROMOTION_ACTIVE)
+        }
 
         val childrenCount = if (flags.inferredCeaActive) 2 else 0
 
@@ -47,6 +61,33 @@ class SituationalAutoInferer {
             activeSpecializedFactors = specializedFactors,
             numberOfChildrenCea = childrenCount,
         )
+    }
+
+    fun inferPromotionEligibility(
+        payslip: ParsedPayslip,
+        allPayslips: List<ParsedPayslip> = emptyList(),
+    ): Boolean {
+        val basicPay = payslip.earnings.basicPay
+        val tenureYears = calculateServiceTenureYears(payslip, allPayslips)
+        val rank = inferRankLevel(basicPay)
+
+        val isLtToCapt = (rank == "10" && tenureYears in 1..3 && basicPay in 57800.0..61300.0)
+        val isCaptToMajor = ((rank == "10" || rank == "10B") && tenureYears in 5..7 && basicPay in 61300.0..73200.0)
+        val isMajorToLtCol = (rank == "11" && tenureYears in 12..14 && basicPay in 69400.0..121200.0)
+        val isLtColToCol = (rank == "12A" && tenureYears in 25..27 && basicPay in 121200.0..212400.0)
+
+        return isLtToCapt || isCaptToMajor || isMajorToLtCol || isLtColToCol
+    }
+
+    private fun calculateServiceTenureYears(
+        payslip: ParsedPayslip,
+        allPayslips: List<ParsedPayslip>,
+    ): Int {
+        if (allPayslips.size < 2) return 0
+        val sorted = allPayslips.sortedWith(compareBy({ it.year }, { it.monthNum }))
+        val oldest = sorted.first()
+        val monthsDiff = (payslip.year - oldest.year) * 12 + (payslip.monthNum - oldest.monthNum)
+        return (monthsDiff / 12).coerceAtLeast(0)
     }
 
     private fun inferPostingTiles(
@@ -123,5 +164,10 @@ class SituationalAutoInferer {
             payInt >= 216000 -> "14"
             else -> null
         }
+    }
+
+    companion object {
+        const val PROMOTION_ADVISORY: String =
+            "Substantive Promotion Approaching: Compare Option 1 vs Option 2 to maximize 36-month pay."
     }
 }
