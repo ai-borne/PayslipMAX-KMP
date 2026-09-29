@@ -245,7 +245,7 @@ private fun getTilesForCategory(
 ): List<SituationalTile> {
     val active = context.activeTileIds
     return when (category) {
-        SituationalCategory.POSTING ->
+        SituationalCategory.POSTING_OPS ->
             listOf(
                 SituationalTile(SituationalTileKeys.POST_FIELD_HAFAA, category, "🏔️ HAFAA Field Area", "Serving in Highly Active Field Area", "₹16,900/mo", autoInferred.contains(SituationalTileKeys.POST_FIELD_HAFAA), active.contains(SituationalTileKeys.POST_FIELD_HAFAA)),
                 SituationalTile(SituationalTileKeys.POST_PEACE_HIGHER, category, "🏙️ Peace (Pune / Higher UA)", "Higher Rate City (20 UA Cities)", "₹7,200 + DA", autoInferred.contains(SituationalTileKeys.POST_PEACE_HIGHER), active.contains(SituationalTileKeys.POST_PEACE_HIGHER), isRadioStyle = true),
@@ -253,7 +253,7 @@ private fun getTilesForCategory(
                 SituationalTile(SituationalTileKeys.POST_SIACHEN, category, "❄️ Siachen Glacier", "RH-MAX deployment zone", "₹42,500 + 25% = ₹53,125", autoInferred.contains(SituationalTileKeys.POST_SIACHEN), active.contains(SituationalTileKeys.POST_SIACHEN)),
                 SituationalTile(SituationalTileKeys.POST_SDA_NE, category, "🌿 North-East SDA", "Special Duty Allowance", "10% of Basic Pay", autoInferred.contains(SituationalTileKeys.POST_SDA_NE), active.contains(SituationalTileKeys.POST_SDA_NE)),
             )
-        SituationalCategory.HOUSING ->
+        SituationalCategory.HOUSING_TLC ->
             listOf(
                 SituationalTile(SituationalTileKeys.HOUSE_GOVT_MQ, category, "🏢 Govt Married Accomm", "License Fee deducted, no HRA", "License Fee", autoInferred.contains(SituationalTileKeys.HOUSE_GOVT_MQ), active.contains(SituationalTileKeys.HOUSE_GOVT_MQ)),
                 SituationalTile(SituationalTileKeys.HOUSE_FAMILY_SPR, category, "📍 Family at SPR", "Selected Place of Residence", "20%/30% HRA", autoInferred.contains(SituationalTileKeys.HOUSE_FAMILY_SPR), active.contains(SituationalTileKeys.HOUSE_FAMILY_SPR)),
@@ -267,13 +267,15 @@ private fun getTilesForCategory(
                 SituationalTile(SituationalTileKeys.CEA_TWO_CHILDREN, category, "🎒 2 Children in Day School", "Standard 2-child entitlement", "₹67,500/yr", autoInferred.contains(SituationalTileKeys.CEA_TWO_CHILDREN), active.contains(SituationalTileKeys.CEA_TWO_CHILDREN), isRadioStyle = true),
                 SituationalTile(SituationalTileKeys.CEA_HOSTEL, category, "🏫 Child in Hostel", "Hostel Subsidy (Escalated 25%)", "₹1,01,250/yr", autoInferred.contains(SituationalTileKeys.CEA_HOSTEL), active.contains(SituationalTileKeys.CEA_HOSTEL)),
             )
-        SituationalCategory.CAREER_PROMOTION ->
+        SituationalCategory.DUTY_COURSES_LEAVE ->
+            emptyList()
+        SituationalCategory.CAREER_CADRES ->
             listOf(
                 SituationalTile(SituationalTileKeys.PROMOTION_ACTIVE, category, "⭐ Substantive Promotion Due", "Triggers Rule 10/11 Fixation", "Option 1 vs 2", autoInferred.contains(SituationalTileKeys.PROMOTION_ACTIVE), active.contains(SituationalTileKeys.PROMOTION_ACTIVE)),
                 SituationalTile(SituationalTileKeys.RETIRE_NEAR, category, "⏳ Retiring in < 3 Months", "Superannuation / Release", "DSOP Stop Alarm", autoInferred.contains(SituationalTileKeys.RETIRE_NEAR), active.contains(SituationalTileKeys.RETIRE_NEAR)),
                 SituationalTile(SituationalTileKeys.DNI_SCHEDULED, category, "📅 Annual Increment: 1 July", "Scheduled DNI cycle", "Next Increment", autoInferred.contains(SituationalTileKeys.DNI_SCHEDULED), active.contains(SituationalTileKeys.DNI_SCHEDULED)),
             )
-        SituationalCategory.FUNDS_LTC ->
+        SituationalCategory.FUNDS_RETIREMENT ->
             listOf(
                 SituationalTile(SituationalTileKeys.AVAILED_LTC, category, "🎫 Availed LTC Concession", "10-day leave encashment eligible", "10 Days Pay+DA", autoInferred.contains(SituationalTileKeys.AVAILED_LTC), active.contains(SituationalTileKeys.AVAILED_LTC)),
                 SituationalTile(SituationalTileKeys.DSOP_HIGH_PACING, category, "📈 DSOP > ₹5 Lakh Annual", "Sec 10(11) tax-exempt limit", "Tax Drag Alert", autoInferred.contains(SituationalTileKeys.DSOP_HIGH_PACING), active.contains(SituationalTileKeys.DSOP_HIGH_PACING)),

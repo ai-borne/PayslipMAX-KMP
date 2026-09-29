@@ -4,11 +4,20 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class SituationalCategory {
-    POSTING,
-    HOUSING,
+    POSTING_OPS,
+    HOUSING_TLC,
     CHILDREN_CEA,
-    CAREER_PROMOTION,
-    FUNDS_LTC,
+    DUTY_COURSES_LEAVE,
+    CAREER_CADRES,
+    FUNDS_RETIREMENT,
+    ;
+
+    companion object {
+        val POSTING = POSTING_OPS
+        val HOUSING = HOUSING_TLC
+        val CAREER_PROMOTION = CAREER_CADRES
+        val FUNDS_LTC = FUNDS_RETIREMENT
+    }
 }
 
 @Serializable
@@ -37,6 +46,14 @@ enum class SpecializedMilitaryFactor {
     COMPOSITE_TRANSFER_GRANT,
     FLYING_ALLOWANCE,
     TECHNICAL_ALLOWANCE,
+    NON_PRACTICING_ALLOWANCE_AMC,
+    PARACHUTE_ALLOWANCE,
+    TRAINING_ALLOWANCE,
+    HIGH_ALTITUDE_CAT_I,
+    HIGH_ALTITUDE_CAT_II,
+    ISLAND_SPECIAL_DUTY,
+    TOUGH_LOCATION_ALLOWANCE,
+    LANGUAGE_ALLOWANCE,
 }
 
 @Serializable
@@ -79,26 +96,61 @@ object SituationalTileKeys {
     const val POST_PEACE_HIGHER = "post_peace_higher"
     const val POST_PEACE_OTHER = "post_peace_other"
     const val POST_FIELD_HAFAA = "post_field_hafaa"
+    const val POST_FIELD_CFAA = "post_field_cfaa"
+    const val POST_FIELD_CMFAA = "post_field_cmfaa"
     const val POST_SIACHEN = "post_siachen"
     const val POST_SDA_NE = "post_sda_ne"
+    const val POST_ISDA_ISLAND = "post_isda_island"
+
     const val HOUSE_GOVT_MQ = "house_govt_mq"
     const val HOUSE_FAMILY_SPR = "house_family_spr"
+    const val HOUSE_PEACE_RETENTION = "house_peace_retention"
+    const val HOUSE_SF_ACCOMMODATION = "house_sf_accommodation"
     const val HOUSE_LIVING_OUT_NAC = "house_living_out_nac"
+    const val HOUSE_TWO_LOCATION_CONCESSION = "house_two_location_concession"
     const val HOUSE_GOVT_CONVEYANCE = "house_govt_conveyance"
+
     const val CEA_NONE = "cea_none"
     const val CEA_ONE_CHILD = "cea_one_child"
     const val CEA_TWO_CHILDREN = "cea_two_children"
     const val CEA_HOSTEL = "cea_hostel"
+
+    const val DUTY_COURSE_LONG = "duty_course_long"
+    const val DUTY_FIELD_FIRING = "duty_field_firing"
+    const val DUTY_TEMPORARY_DUTY = "duty_temporary_duty"
+    const val LEAVE_FULL_MONTH = "leave_full_month"
+
+    const val CADRE_AMC_NPA = "cadre_amc_npa"
+    const val CADRE_TECHNICAL_OFFICER = "cadre_technical_officer"
     const val PROMOTION_ACTIVE = "promo_active"
-    const val RETIRE_NEAR = "retire_near"
     const val DNI_SCHEDULED = "dni_scheduled"
-    const val AVAILED_LTC = "availed_ltc"
+
+    const val RETIRE_NEAR = "retire_near"
     const val DSOP_HIGH_PACING = "dsop_high_pacing"
     const val TRANSFER_CTG = "transfer_ctg"
+    const val AVAILED_LTC = "availed_ltc"
+    const val TAX_ARREARS_SEC89 = "tax_arrears_sec89"
 
-    val STATION_POSTING_KEYS = setOf(POST_FIELD_HAFAA, POST_PEACE_HIGHER, POST_PEACE_OTHER, POST_SIACHEN)
+    val STATION_POSTING_KEYS =
+        setOf(
+            POST_SIACHEN,
+            POST_FIELD_HAFAA,
+            POST_FIELD_CFAA,
+            POST_FIELD_CMFAA,
+            POST_PEACE_HIGHER,
+            POST_PEACE_OTHER,
+        )
     val PEACE_STATION_KEYS = setOf(POST_PEACE_HIGHER, POST_PEACE_OTHER)
+    val HOUSING_KEYS =
+        setOf(
+            HOUSE_GOVT_MQ,
+            HOUSE_FAMILY_SPR,
+            HOUSE_PEACE_RETENTION,
+            HOUSE_SF_ACCOMMODATION,
+            HOUSE_LIVING_OUT_NAC,
+        )
     val CEA_CHILD_KEYS = setOf(CEA_NONE, CEA_ONE_CHILD, CEA_TWO_CHILDREN)
+    val LEAVE_KEYS = setOf(LEAVE_FULL_MONTH)
 }
 
 @Serializable
