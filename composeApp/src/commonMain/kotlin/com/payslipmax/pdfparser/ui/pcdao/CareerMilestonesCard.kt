@@ -11,7 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +33,9 @@ fun CareerMilestonesCard(
 ) {
     if (milestones.isEmpty()) return
 
+    var isExpanded by remember { mutableStateOf(false) }
+    val displayedMilestones = if (isExpanded || milestones.size <= 1) milestones else milestones.take(1)
+
     Box(
         modifier =
             modifier
@@ -42,27 +50,66 @@ fun CareerMilestonesCard(
                 .padding(AppDimensions.PaddingMedium),
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
-            Text(
-                text = AppStringsPcdao.careerMilestoneTitle,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = AppStringsPcdao.careerMilestoneSubtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            MilestoneCardHeader()
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
                 modifier = Modifier.padding(top = 4.dp),
             ) {
-                milestones.forEach { milestone ->
+                displayedMilestones.forEach { milestone ->
                     MilestoneRow(milestone = milestone)
                 }
             }
+
+            if (milestones.size > 1) {
+                MilestoneExpandToggle(
+                    isExpanded = isExpanded,
+                    totalCount = milestones.size,
+                    onToggle = { isExpanded = !isExpanded },
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun MilestoneCardHeader() {
+    Text(
+        text = AppStringsPcdao.careerMilestoneTitle,
+        style = MaterialTheme.typography.titleSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface,
+    )
+    Text(
+        text = AppStringsPcdao.careerMilestoneSubtitle,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+@Composable
+private fun MilestoneExpandToggle(
+    isExpanded: Boolean,
+    totalCount: Int,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TextButton(
+        onClick = onToggle,
+        modifier = modifier,
+    ) {
+        Text(
+            text =
+                if (isExpanded) {
+                    AppStringsPcdao.milestoneShowLess
+                } else {
+                    AppStringsPcdao.formatMilestoneShowAll(totalCount)
+                },
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.primary,
+        )
     }
 }
 

@@ -109,6 +109,10 @@ object AppStringsPcdao {
     const val careerMilestoneSubtitle = "7th CPC statutory progression & Central DA revision tracker"
     const val milestoneVerifiedBadge = "VERIFIED"
     const val milestoneAlertBadge = "ATTENTION"
+    const val milestoneShowAll = "Show All Milestones (%d) ▾"
+    const val milestoneShowLess = "Show Recent Only ▴"
     const val monthSelectorTitle = "Select Audit Month"
     const val btnGenerateCumulativeLetter = "📄 Multi-Month Cumulative Claim Kit"
+
+    fun formatMilestoneShowAll(count: Int): String = milestoneShowAll.replace("%d", count.toString())
 }

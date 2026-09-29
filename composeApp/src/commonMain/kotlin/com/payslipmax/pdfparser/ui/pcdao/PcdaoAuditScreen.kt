@@ -154,6 +154,16 @@ private fun LazyListScope.auditContentItems(
     onUpgradeClick: () -> Unit,
     onNavigateToRepresentation: ((RedressalLetter) -> Unit)?,
 ) {
+    auditBannerItems(uiState, viewModel, hasAccess, onUpgradeClick)
+    auditFeedAndMilestonesItems(uiState, viewModel, hasAccess, onUpgradeClick, onNavigateToRepresentation)
+}
+
+private fun LazyListScope.auditBannerItems(
+    uiState: PcdaoAuditUiState,
+    viewModel: PcdaoAuditViewModel,
+    hasAccess: Boolean,
+    onUpgradeClick: () -> Unit,
+) {
     if (!hasAccess && uiState.filteredDiscrepancies.isNotEmpty()) {
         item {
             AuditTeaserBanner(
@@ -181,13 +191,6 @@ private fun LazyListScope.auditContentItems(
             )
         }
     }
-    if (uiState.careerMilestones.isNotEmpty()) {
-        item {
-            CareerMilestonesCard(
-                milestones = uiState.careerMilestones,
-            )
-        }
-    }
     uiState.payFixationResult?.let { fixation ->
         item {
             PayFixationCard(
@@ -197,6 +200,15 @@ private fun LazyListScope.auditContentItems(
             )
         }
     }
+}
+
+private fun LazyListScope.auditFeedAndMilestonesItems(
+    uiState: PcdaoAuditUiState,
+    viewModel: PcdaoAuditViewModel,
+    hasAccess: Boolean,
+    onUpgradeClick: () -> Unit,
+    onNavigateToRepresentation: ((RedressalLetter) -> Unit)?,
+) {
     item {
         SituationalTileMatrix(
             selectedCategory = uiState.selectedCategory,
@@ -222,6 +234,21 @@ private fun LazyListScope.auditContentItems(
             isUnlocked = hasAccess,
         )
     }
+    auditDiscrepancyList(uiState, hasAccess, onUpgradeClick)
+    if (uiState.careerMilestones.isNotEmpty()) {
+        item {
+            CareerMilestonesCard(
+                milestones = uiState.careerMilestones,
+            )
+        }
+    }
+}
+
+private fun LazyListScope.auditDiscrepancyList(
+    uiState: PcdaoAuditUiState,
+    hasAccess: Boolean,
+    onUpgradeClick: () -> Unit,
+) {
     if (uiState.filteredDiscrepancies.isEmpty()) {
         item { EmptyFindingsState() }
     } else {
