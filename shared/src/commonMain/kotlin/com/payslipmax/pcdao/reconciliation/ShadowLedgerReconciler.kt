@@ -115,14 +115,24 @@ class ShadowLedgerReconciler(
     ) {
         val codes = mutableSetOf<String>()
         val tiles = context.activeTileIds
+        codes.addAll(tiles)
 
         if (tiles.contains(SituationalTileKeys.POST_PEACE_HIGHER)) codes.add(AllowanceCollisionCodes.TPTA_HIGHER_CITY)
         if (tiles.contains(SituationalTileKeys.POST_PEACE_OTHER)) codes.add(AllowanceCollisionCodes.TPTA_OTHER)
         if (tiles.contains(SituationalTileKeys.POST_FIELD_HAFAA)) codes.add(AllowanceCollisionCodes.HAFAA)
+        if (tiles.contains(SituationalTileKeys.POST_FIELD_CFAA)) codes.add(AllowanceCollisionCodes.CFAA)
+        if (tiles.contains(SituationalTileKeys.POST_FIELD_CMFAA)) codes.add(AllowanceCollisionCodes.CMFAA)
         if (tiles.contains(SituationalTileKeys.POST_SIACHEN)) codes.add(AllowanceCollisionCodes.SIACHEN)
         if (tiles.contains(SituationalTileKeys.HOUSE_GOVT_MQ)) codes.add(AllowanceCollisionCodes.GOVT_ACCOMM_ALLOTTED)
         if (tiles.contains(SituationalTileKeys.HOUSE_FAMILY_SPR)) codes.add(AllowanceCollisionCodes.HRA_CLAIMED)
         if (tiles.contains(SituationalTileKeys.POST_SDA_NE)) codes.add(AllowanceCollisionCodes.SDA)
+        if (tiles.contains(SituationalTileKeys.LEAVE_FULL_MONTH)) codes.add(AllowanceCollisionCodes.LEAVE_FULL_MONTH)
+        if (tiles.contains(SituationalTileKeys.HOUSE_TWO_LOCATION_CONCESSION)) codes.add(AllowanceCollisionCodes.TWO_LOCATION_CONCESSION)
+        if (tiles.contains(SituationalTileKeys.CADRE_AMC_NPA)) codes.add(AllowanceCollisionCodes.CADRE_AMC_NPA)
+
+        val tptaTotal = payslip.earnings.transportAllowance + payslip.earnings.transportAllowanceDa
+        val rationTotal = payslip.earnings.rationMoney
+        if (rationTotal > 0.0) codes.add(AllowanceCollisionCodes.RATION_MONEY_ALLOWANCE)
 
         val req =
             AllowanceCollisionRequest(
@@ -131,9 +141,16 @@ class ShadowLedgerReconciler(
                 daRate = da / 100.0,
                 defaultOverdrawnMonths = 6,
                 payLevel = context.inferredFlags.inferredRankLevel ?: "10",
+                rationMoneyMonthly = rationTotal,
+                tptaMonthly = tptaTotal,
             )
         val collisionResult = collisionAuditor.audit(req)
-        discrepancies.addAll(collisionResult.discrepancies)
+        for (disc in collisionResult.discrepancies) {
+            if (disc.relevantRuleId == "FUNDS_DSOP_002" && discrepancies.any { it.relevantRuleId == "FUNDS_DSOP_002" }) {
+                continue
+            }
+            discrepancies.add(disc)
+        }
     }
 
     private fun evaluateDsopShield(

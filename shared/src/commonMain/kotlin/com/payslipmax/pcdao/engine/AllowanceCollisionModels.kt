@@ -20,6 +20,10 @@ data class AllowanceCollisionRequest(
     val daRate: Double = 0.50,
     val defaultOverdrawnMonths: Int = 6,
     val payLevel: String = "10",
+    val monthsToRetirement: Int? = null,
+    val dsopMonthly: Double = 0.0,
+    val rationMoneyMonthly: Double = 0.0,
+    val tptaMonthly: Double = 0.0,
 )
 
 @Serializable
@@ -56,11 +60,23 @@ object AllowanceCollisionCodes {
     const val HRA_PEACE = "HRA_PEACE"
     const val GOVT_ACCOMM_ALLOTTED = "GOVT_ACCOMM_ALLOTTED"
     const val MARRIED_QUARTERS = "MARRIED_QUARTERS"
+    const val TWO_LOCATION_CONCESSION = "TWO_LOCATION_CONCESSION"
 
     // Specialized & Operational
     const val FLYING_PAY = "FLYING_PAY"
     const val SPECIAL_FORCES_PAY = "SPECIAL_FORCES_PAY"
     const val RH_MATRIX_ALLOWANCE = "RH_MATRIX_ALLOWANCE"
+
+    // Leave & Absence
+    const val LEAVE_FULL_MONTH = "LEAVE_FULL_MONTH"
+
+    // Ration Money
+    const val RATION_MONEY_ALLOWANCE = "RATION_MONEY_ALLOWANCE"
+
+    // DSOP & Cadre
+    const val DSOP_SUBSCRIPTION = "DSOP_SUBSCRIPTION"
+    const val RETIREMENT_WITHIN_3_MONTHS = "RETIREMENT_WITHIN_3_MONTHS"
+    const val CADRE_AMC_NPA = "CADRE_AMC_NPA"
 
     // Valid Non-Colliding Additions
     const val GALLANTRY_AWARD = "GALLANTRY_AWARD"
