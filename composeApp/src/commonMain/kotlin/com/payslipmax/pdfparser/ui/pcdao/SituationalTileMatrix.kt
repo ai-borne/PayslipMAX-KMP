@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -155,23 +156,18 @@ private fun TileRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        if (tile.isRadioStyle) {
+            RadioButton(
+                selected = tile.isSelected,
+                onClick = null,
+                modifier = Modifier.padding(end = 6.dp),
+            )
+        }
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(text = tile.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                 if (tile.isAutoInferred) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .background(Color(0xFF38BDF8).copy(alpha = 0.15f), RoundedCornerShape(4.dp))
-                                .padding(horizontal = 4.dp, vertical = 1.dp),
-                    ) {
-                        Text(
-                            text = AppStringsPcdao.tileAutoDetectedBadge,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFF38BDF8),
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
+                    AutoDetectedBadge()
                 }
             }
             Text(text = tile.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -182,6 +178,23 @@ private fun TileRow(
             color = if (tile.isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 8.dp),
+        )
+    }
+}
+
+@Composable
+private fun AutoDetectedBadge() {
+    Box(
+        modifier =
+            Modifier
+                .background(Color(0xFF38BDF8).copy(alpha = 0.15f), RoundedCornerShape(4.dp))
+                .padding(horizontal = 4.dp, vertical = 1.dp),
+    ) {
+        Text(
+            text = AppStringsPcdao.tileAutoDetectedBadge,
+            style = MaterialTheme.typography.labelSmall,
+            color = Color(0xFF38BDF8),
+            fontWeight = FontWeight.Bold,
         )
     }
 }
@@ -231,8 +244,8 @@ private fun getTilesForCategory(
         SituationalCategory.POSTING ->
             listOf(
                 SituationalTile(SituationalTileKeys.POST_FIELD_HAFAA, category, "🏔️ HAFAA Field Area", "Serving in Highly Active Field Area", "₹16,900/mo", autoInferred.contains(SituationalTileKeys.POST_FIELD_HAFAA), active.contains(SituationalTileKeys.POST_FIELD_HAFAA)),
-                SituationalTile(SituationalTileKeys.POST_PEACE_HIGHER, category, "🏙️ Peace (Pune / Higher UA)", "Higher Rate City (20 UA Cities)", "₹7,200 + DA", autoInferred.contains(SituationalTileKeys.POST_PEACE_HIGHER), active.contains(SituationalTileKeys.POST_PEACE_HIGHER)),
-                SituationalTile(SituationalTileKeys.POST_PEACE_OTHER, category, "🌾 Peace (Other Locations)", "Standard Peace TPTA", "₹3,600 + DA", autoInferred.contains(SituationalTileKeys.POST_PEACE_OTHER), active.contains(SituationalTileKeys.POST_PEACE_OTHER)),
+                SituationalTile(SituationalTileKeys.POST_PEACE_HIGHER, category, "🏙️ Peace (Pune / Higher UA)", "Higher Rate City (20 UA Cities)", "₹7,200 + DA", autoInferred.contains(SituationalTileKeys.POST_PEACE_HIGHER), active.contains(SituationalTileKeys.POST_PEACE_HIGHER), isRadioStyle = true),
+                SituationalTile(SituationalTileKeys.POST_PEACE_OTHER, category, "🌾 Peace (Other Locations)", "Standard Peace TPTA", "₹3,600 + DA", autoInferred.contains(SituationalTileKeys.POST_PEACE_OTHER), active.contains(SituationalTileKeys.POST_PEACE_OTHER), isRadioStyle = true),
                 SituationalTile(SituationalTileKeys.POST_SIACHEN, category, "❄️ Siachen Glacier", "RH-MAX deployment zone", "₹42,500 + 25% = ₹53,125", autoInferred.contains(SituationalTileKeys.POST_SIACHEN), active.contains(SituationalTileKeys.POST_SIACHEN)),
                 SituationalTile(SituationalTileKeys.POST_SDA_NE, category, "🌿 North-East SDA", "Special Duty Allowance", "10% of Basic Pay", autoInferred.contains(SituationalTileKeys.POST_SDA_NE), active.contains(SituationalTileKeys.POST_SDA_NE)),
             )
@@ -245,9 +258,9 @@ private fun getTilesForCategory(
             )
         SituationalCategory.CHILDREN_CEA ->
             listOf(
-                SituationalTile(SituationalTileKeys.CEA_NONE, category, "0 School Children", "No education claims active", "₹0", autoInferred.contains(SituationalTileKeys.CEA_NONE), active.contains(SituationalTileKeys.CEA_NONE)),
-                SituationalTile(SituationalTileKeys.CEA_ONE_CHILD, category, "🎒 1 Child in Day School", "Class Nursery to XII", "₹33,750/yr", autoInferred.contains(SituationalTileKeys.CEA_ONE_CHILD), active.contains(SituationalTileKeys.CEA_ONE_CHILD)),
-                SituationalTile(SituationalTileKeys.CEA_TWO_CHILDREN, category, "🎒 2 Children in Day School", "Standard 2-child entitlement", "₹67,500/yr", autoInferred.contains(SituationalTileKeys.CEA_TWO_CHILDREN), active.contains(SituationalTileKeys.CEA_TWO_CHILDREN)),
+                SituationalTile(SituationalTileKeys.CEA_NONE, category, "0 School Children", "No education claims active", "₹0", autoInferred.contains(SituationalTileKeys.CEA_NONE), active.contains(SituationalTileKeys.CEA_NONE), isRadioStyle = true),
+                SituationalTile(SituationalTileKeys.CEA_ONE_CHILD, category, "🎒 1 Child in Day School", "Class Nursery to XII", "₹33,750/yr", autoInferred.contains(SituationalTileKeys.CEA_ONE_CHILD), active.contains(SituationalTileKeys.CEA_ONE_CHILD), isRadioStyle = true),
+                SituationalTile(SituationalTileKeys.CEA_TWO_CHILDREN, category, "🎒 2 Children in Day School", "Standard 2-child entitlement", "₹67,500/yr", autoInferred.contains(SituationalTileKeys.CEA_TWO_CHILDREN), active.contains(SituationalTileKeys.CEA_TWO_CHILDREN), isRadioStyle = true),
                 SituationalTile(SituationalTileKeys.CEA_HOSTEL, category, "🏫 Child in Hostel", "Hostel Subsidy (Escalated 25%)", "₹1,01,250/yr", autoInferred.contains(SituationalTileKeys.CEA_HOSTEL), active.contains(SituationalTileKeys.CEA_HOSTEL)),
             )
         SituationalCategory.CAREER_PROMOTION ->

@@ -46,6 +46,7 @@ data class SituationalTile(
     val valuePreview: String,
     val isAutoInferred: Boolean = false,
     val isSelected: Boolean = false,
+    val isRadioStyle: Boolean = false,
 )
 
 @Serializable
@@ -92,6 +93,10 @@ object SituationalTileKeys {
     const val AVAILED_LTC = "availed_ltc"
     const val DSOP_HIGH_PACING = "dsop_high_pacing"
     const val TRANSFER_CTG = "transfer_ctg"
+
+    val STATION_POSTING_KEYS = setOf(POST_FIELD_HAFAA, POST_PEACE_HIGHER, POST_PEACE_OTHER, POST_SIACHEN)
+    val PEACE_STATION_KEYS = setOf(POST_PEACE_HIGHER, POST_PEACE_OTHER)
+    val CEA_CHILD_KEYS = setOf(CEA_NONE, CEA_ONE_CHILD, CEA_TWO_CHILDREN)
 }
 
 @Serializable

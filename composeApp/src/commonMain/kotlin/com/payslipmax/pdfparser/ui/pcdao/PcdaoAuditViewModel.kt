@@ -117,6 +117,12 @@ class PcdaoAuditViewModel(
             newTileIds.remove(tileId)
         } else {
             newTileIds.add(tileId)
+            if (SituationalTileKeys.PEACE_STATION_KEYS.contains(tileId)) {
+                newTileIds.removeAll(SituationalTileKeys.PEACE_STATION_KEYS - tileId)
+            }
+            if (SituationalTileKeys.CEA_CHILD_KEYS.contains(tileId)) {
+                newTileIds.removeAll(SituationalTileKeys.CEA_CHILD_KEYS - tileId)
+            }
         }
 
         val updatedContext = syncContextWithTile(currentContext, tileId, newTileIds)
