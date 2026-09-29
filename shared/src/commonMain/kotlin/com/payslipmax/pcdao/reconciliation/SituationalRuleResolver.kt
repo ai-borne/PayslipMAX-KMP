@@ -1,6 +1,10 @@
 package com.payslipmax.pcdao.reconciliation
 
-class SituationalRuleResolver {
+class SituationalRuleResolver(
+    private val operationalResolvers: OperationalAllowanceResolvers = OperationalAllowanceResolvers(),
+    private val housingResolver: HousingAllowanceResolver = HousingAllowanceResolver(),
+    private val personalResolver: PersonalBenefitResolvers = PersonalBenefitResolvers(),
+) {
     fun calculateEscalatedRates(daPercent: Double): EscalatedRates {
         val isEscalated = daPercent >= 50.0
         val multiplier = if (isEscalated) 1.25 else 1.0
@@ -16,9 +20,6 @@ class SituationalRuleResolver {
                 else -> mapOf("X" to 24.0, "Y" to 16.0, "Z" to 8.0)
             }
 
-        val siachenRate = 42500.0 * multiplier
-        val hafaRate = 16900.0 * multiplier
-
         return EscalatedRates(
             daRate = daPercent,
             isEscalated = isEscalated,
@@ -28,8 +29,58 @@ class SituationalRuleResolver {
             hostelSubsidyAnnual = hostelMonthly * 12.0,
             dressAllowanceAnnual = dressAnnual,
             hraRates = hraRates,
-            siachenMonthlyRate = siachenRate,
-            hafaMonthlyRate = hafaRate,
+            siachenMonthlyRate = 42500.0 * multiplier,
+            hafaMonthlyRate = 16900.0 * multiplier,
+            cfaaMonthlyRate = 10500.0 * multiplier,
+            cmfaaMonthlyRate = 6300.0 * multiplier,
+        )
+    }
+
+    fun calculateNpaAmount(basicPay: Double): Double {
+        val rawNpa = basicPay * 0.20
+        val maxAllowableNpa = (237500.0 - basicPay).coerceAtLeast(0.0)
+        return minOf(rawNpa, maxAllowableNpa)
+    }
+
+    fun calculateEffectivePay(
+        context: ActiveSituationalContext,
+        basicPay: Double,
+    ): Double {
+        val hasNpa =
+            context.activeTileIds.contains(SituationalTileKeys.CADRE_AMC_NPA) ||
+                context.activeSpecializedFactors.contains(SpecializedMilitaryFactor.NON_PRACTICING_ALLOWANCE_AMC)
+        return if (hasNpa) basicPay + calculateNpaAmount(basicPay) else basicPay
+    }
+
+    fun calculateDearnessAllowance(
+        context: ActiveSituationalContext,
+        basicPay: Double,
+    ): Double {
+        val effectivePay = calculateEffectivePay(context, basicPay)
+        val daPercent = resolveEffectiveDa(context)
+        return effectivePay * (daPercent / 100.0)
+    }
+
+    fun resolveNpaEntitlement(
+        context: ActiveSituationalContext,
+        basicPay: Double,
+    ): ResolvedEntitlement {
+        val npaAmount = calculateNpaAmount(basicPay)
+        val isCapped = (basicPay + basicPay * 0.20) > 237500.0
+        val explanation =
+            if (isCapped) {
+                "NPA of 20% capped at ₹${npaAmount.toInt()}/mo to maintain ₹2,37,500 Apex ceiling."
+            } else {
+                "20% NPA on Basic Pay ₹${basicPay.toInt()} = ₹${npaAmount.toInt()}/mo."
+            }
+        return ResolvedEntitlement(
+            allowanceKey = "NPA",
+            allowanceName = "Non-Practicing Allowance (AMC/ADC/RVC)",
+            entitledMonthly = npaAmount,
+            entitledAnnual = npaAmount * 12.0,
+            statutoryAuthority = "MoD Letter No. 1(7)/2017/D(Pay/Services) dated 28.09.2017",
+            relevantRuleId = "NPA_002",
+            explanation = explanation,
         )
     }
 
@@ -64,55 +115,24 @@ class SituationalRuleResolver {
     ): ResolvedEntitlement {
         val da = resolveEffectiveDa(context)
         val escalated = calculateEscalatedRates(da)
-        val tier = context.sprCityTier.uppercase()
-        val hraPercent = escalated.hraRates[tier] ?: 20.0
-        val entitledMonthly = basicPay * (hraPercent / 100.0)
-        val entitledAnnual = entitledMonthly * 12.0
+        val effectivePay = calculateEffectivePay(context, basicPay)
+        return housingResolver.resolveHraEntitlement(context, effectivePay, da, escalated)
+    }
 
-        return ResolvedEntitlement(
-            allowanceKey = "HRA_SPR",
-            allowanceName = "Selected Place of Residence (SPR) HRA ($tier-City)",
-            entitledMonthly = entitledMonthly,
-            entitledAnnual = entitledAnnual,
-            statutoryAuthority = "Handbook of Pay & Allowances 2023, Chapter 10, Para 5",
-            relevantRuleId = "HRA_SPR_001",
-            explanation = "Family at SPR qualifies for ${hraPercent.toInt()}% HRA on Basic Pay ₹${basicPay.toInt()}.",
-            isEscalated = escalated.isEscalated,
-        )
+    fun resolveTwoLocationConcessionEntitlement(
+        context: ActiveSituationalContext,
+        basicPay: Double,
+    ): ResolvedEntitlement {
+        val da = resolveEffectiveDa(context)
+        val escalated = calculateEscalatedRates(da)
+        val effectivePay = calculateEffectivePay(context, basicPay)
+        return housingResolver.resolveTwoLocationConcessionEntitlement(context, effectivePay, da, escalated)
     }
 
     fun resolveEducationEntitlement(context: ActiveSituationalContext): ResolvedEntitlement {
         val da = resolveEffectiveDa(context)
         val escalated = calculateEscalatedRates(da)
-        val childrenCount = context.numberOfChildrenCea.coerceIn(0, 2)
-        val isDivyangChild = context.activeSpecializedFactors.contains(SpecializedMilitaryFactor.DIVYANG_CHILD)
-
-        return if (context.hasHostelChild) {
-            val annual = escalated.hostelSubsidyAnnual * childrenCount
-            ResolvedEntitlement(
-                allowanceKey = "HOSTEL_SUBSIDY",
-                allowanceName = "Hostel Subsidy ($childrenCount Children)",
-                entitledMonthly = annual / 12.0,
-                entitledAnnual = annual,
-                statutoryAuthority = "DoPT OM No. A-27012/02/2017-Estt.(AL) dated 16/17 July 2018",
-                relevantRuleId = "ALLOWANCE_CEA_002",
-                explanation = "Hostel subsidy rate of ₹${escalated.hostelSubsidyAnnual.toInt()}/child/yr.",
-                isEscalated = escalated.isEscalated,
-            )
-        } else {
-            val childRate = if (isDivyangChild) escalated.ceaAnnualPerChild * 2.0 else escalated.ceaAnnualPerChild
-            val annual = childRate * childrenCount
-            ResolvedEntitlement(
-                allowanceKey = "CEA",
-                allowanceName = "Children Education Allowance ($childrenCount Children)",
-                entitledMonthly = annual / 12.0,
-                entitledAnnual = annual,
-                statutoryAuthority = "DoPT OM No. A-27012/02/2017-Estt.(AL)",
-                relevantRuleId = "ALLOWANCE_CEA_001",
-                explanation = "CEA annual reimbursement of ₹${childRate.toInt()}/child/yr.",
-                isEscalated = escalated.isEscalated,
-            )
-        }
+        return personalResolver.resolveEducationEntitlement(context, escalated)
     }
 
     fun resolveLtcEncashment(
@@ -121,51 +141,57 @@ class SituationalRuleResolver {
         msp: Double,
     ): ResolvedEntitlement {
         val da = resolveEffectiveDa(context)
-        val totalDailyPay = (basicPay + msp) * (1.0 + da / 100.0) / 30.0
-        val encashmentAmount = totalDailyPay * 10.0
-
-        return ResolvedEntitlement(
-            allowanceKey = "LTC_ENCASHMENT",
-            allowanceName = "10 Days Leave Encashment on LTC",
-            entitledMonthly = encashmentAmount / 12.0,
-            entitledAnnual = encashmentAmount,
-            statutoryAuthority = "Rule 38(A) Travel Regulations & 7th CPC Orders",
-            relevantRuleId = "LEAVE_ENCASH_LTC_001",
-            explanation = "10 days (Basic Pay + MSP + DA) / 30 encashment for LTC concession.",
-        )
+        val effectivePay = calculateEffectivePay(context, basicPay)
+        return personalResolver.resolveLtcEncashment(context, effectivePay, msp, da)
     }
 
     fun resolveCtgEntitlement(
         context: ActiveSituationalContext,
         basicPay: Double,
     ): ResolvedEntitlement {
-        val ctgAmount = basicPay * 0.80
-        return ResolvedEntitlement(
-            allowanceKey = "CTG",
-            allowanceName = "Composite Transfer Grant (80% Basic Pay)",
-            entitledMonthly = ctgAmount / 12.0,
-            entitledAnnual = ctgAmount,
-            statutoryAuthority = "MoD Order 19030/1/2017-E.IV dated 13.07.2017",
-            relevantRuleId = "TRANSFER_CTG_001",
-            explanation = "Composite Transfer Grant upon permanent transfer posting.",
-        )
+        val effectivePay = calculateEffectivePay(context, basicPay)
+        return personalResolver.resolveCtgEntitlement(context, effectivePay)
     }
+
+    fun resolveSiachenEntitlement(context: ActiveSituationalContext): ResolvedEntitlement =
+        operationalResolvers.resolveSiachenEntitlement(context, resolveEffectiveDa(context) >= 50.0)
+
+    fun resolveHafaaEntitlement(context: ActiveSituationalContext): ResolvedEntitlement =
+        operationalResolvers.resolveHafaaEntitlement(context, resolveEffectiveDa(context) >= 50.0)
+
+    fun resolveCfaaEntitlement(context: ActiveSituationalContext): ResolvedEntitlement =
+        operationalResolvers.resolveCfaaEntitlement(context, resolveEffectiveDa(context) >= 50.0)
+
+    fun resolveCmfaaEntitlement(context: ActiveSituationalContext): ResolvedEntitlement =
+        operationalResolvers.resolveCmfaaEntitlement(context, resolveEffectiveDa(context) >= 50.0)
 
     fun resolveSpecialDutyAllowance(
         context: ActiveSituationalContext,
         basicPay: Double,
-    ): ResolvedEntitlement {
-        val sdaMonthly = basicPay * 0.10
-        return ResolvedEntitlement(
-            allowanceKey = "SDA",
-            allowanceName = "Special Duty Allowance (10% Basic Pay)",
-            entitledMonthly = sdaMonthly,
-            entitledAnnual = sdaMonthly * 12.0,
-            statutoryAuthority = "MoD Letter No. 1(26)/2017/D(Pay/Services) dated 18.09.2017",
-            relevantRuleId = "ALLOWANCE_SDA_001",
-            explanation = "10% of Basic Pay for postings in North-East and Ladakh.",
-        )
-    }
+    ): ResolvedEntitlement = operationalResolvers.resolveSpecialDutyAllowance(context, basicPay)
+
+    fun resolveIslandSpecialDutyAllowance(
+        context: ActiveSituationalContext,
+        basicPay: Double,
+        tierPercent: Double = 16.0,
+    ): ResolvedEntitlement =
+        operationalResolvers.resolveIslandSpecialDutyAllowance(context, basicPay, tierPercent)
+
+    fun resolveTrainingAllowance(
+        context: ActiveSituationalContext,
+        basicPay: Double,
+        isNationalAcademy: Boolean = false,
+    ): ResolvedEntitlement =
+        operationalResolvers.resolveTrainingAllowance(context, basicPay, isNationalAcademy)
+
+    fun resolveTechnicalPayEntitlement(
+        context: ActiveSituationalContext,
+        tier: Int = 1,
+    ): ResolvedEntitlement =
+        operationalResolvers.resolveTechnicalPayEntitlement(context, tier)
+
+    fun resolveParachuteAllowance(context: ActiveSituationalContext): ResolvedEntitlement =
+        operationalResolvers.resolveParachuteAllowance(context, resolveEffectiveDa(context) >= 50.0)
 
     fun resolveAllEntitlements(
         context: ActiveSituationalContext,
@@ -174,24 +200,57 @@ class SituationalRuleResolver {
     ): List<ResolvedEntitlement> {
         val list = mutableListOf<ResolvedEntitlement>()
         val tiles = context.activeTileIds
+        val factors = context.activeSpecializedFactors
+        val effectivePay = calculateEffectivePay(context, basicPay)
 
-        if (tiles.contains(SituationalTileKeys.POST_PEACE_HIGHER) || tiles.contains(SituationalTileKeys.POST_PEACE_OTHER)) {
-            list.add(resolveTptaEntitlement(context, basicPay))
+        if (tiles.contains(SituationalTileKeys.CADRE_AMC_NPA) ||
+            factors.contains(SpecializedMilitaryFactor.NON_PRACTICING_ALLOWANCE_AMC)
+        ) {
+            list.add(resolveNpaEntitlement(context, basicPay))
         }
-        if (tiles.contains(SituationalTileKeys.HOUSE_FAMILY_SPR) || tiles.contains(SituationalTileKeys.HOUSE_LIVING_OUT_NAC)) {
-            list.add(resolveHraEntitlement(context, basicPay))
+        if (tiles.contains(SituationalTileKeys.POST_PEACE_HIGHER) || tiles.contains(SituationalTileKeys.POST_PEACE_OTHER)) {
+            list.add(resolveTptaEntitlement(context, effectivePay))
+        }
+        if (tiles.contains(SituationalTileKeys.HOUSE_TWO_LOCATION_CONCESSION)) {
+            list.add(resolveTwoLocationConcessionEntitlement(context, effectivePay))
+        } else if (tiles.contains(SituationalTileKeys.HOUSE_FAMILY_SPR) || tiles.contains(SituationalTileKeys.HOUSE_LIVING_OUT_NAC)) {
+            list.add(resolveHraEntitlement(context, effectivePay))
         }
         if (context.numberOfChildrenCea > 0 || tiles.contains(SituationalTileKeys.CEA_ONE_CHILD) || tiles.contains(SituationalTileKeys.CEA_TWO_CHILDREN) || tiles.contains(SituationalTileKeys.CEA_HOSTEL)) {
             list.add(resolveEducationEntitlement(context))
+        }
+        if (tiles.contains(SituationalTileKeys.POST_SIACHEN) || factors.contains(SpecializedMilitaryFactor.SIACHEN_GLACIER)) {
+            list.add(resolveSiachenEntitlement(context))
+        }
+        if (tiles.contains(SituationalTileKeys.POST_FIELD_HAFAA)) {
+            list.add(resolveHafaaEntitlement(context))
+        }
+        if (tiles.contains(SituationalTileKeys.POST_FIELD_CFAA)) {
+            list.add(resolveCfaaEntitlement(context))
+        }
+        if (tiles.contains(SituationalTileKeys.POST_FIELD_CMFAA)) {
+            list.add(resolveCmfaaEntitlement(context))
+        }
+        if (tiles.contains(SituationalTileKeys.POST_SDA_NE)) {
+            list.add(resolveSpecialDutyAllowance(context, basicPay))
+        }
+        if (tiles.contains(SituationalTileKeys.POST_ISDA_ISLAND) || factors.contains(SpecializedMilitaryFactor.ISLAND_SPECIAL_DUTY)) {
+            list.add(resolveIslandSpecialDutyAllowance(context, basicPay))
+        }
+        if (factors.contains(SpecializedMilitaryFactor.TRAINING_ALLOWANCE) || tiles.contains(SituationalTileKeys.DUTY_COURSE_LONG)) {
+            list.add(resolveTrainingAllowance(context, basicPay))
+        }
+        if (tiles.contains(SituationalTileKeys.CADRE_TECHNICAL_OFFICER) || factors.contains(SpecializedMilitaryFactor.TECHNICAL_ALLOWANCE)) {
+            list.add(resolveTechnicalPayEntitlement(context))
+        }
+        if (factors.contains(SpecializedMilitaryFactor.PARACHUTE_ALLOWANCE)) {
+            list.add(resolveParachuteAllowance(context))
         }
         if (tiles.contains(SituationalTileKeys.AVAILED_LTC)) {
             list.add(resolveLtcEncashment(context, basicPay, msp))
         }
         if (tiles.contains(SituationalTileKeys.TRANSFER_CTG)) {
             list.add(resolveCtgEntitlement(context, basicPay))
-        }
-        if (tiles.contains(SituationalTileKeys.POST_SDA_NE)) {
-            list.add(resolveSpecialDutyAllowance(context, basicPay))
         }
 
         return list

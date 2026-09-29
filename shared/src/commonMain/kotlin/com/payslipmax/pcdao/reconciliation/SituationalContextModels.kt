@@ -165,6 +165,8 @@ data class EscalatedRates(
     val hraRates: Map<String, Double>,
     val siachenMonthlyRate: Double,
     val hafaMonthlyRate: Double,
+    val cfaaMonthlyRate: Double = if (isEscalated) 13125.0 else 10500.0,
+    val cmfaaMonthlyRate: Double = if (isEscalated) 7875.0 else 6300.0,
 )
 
 @Serializable
