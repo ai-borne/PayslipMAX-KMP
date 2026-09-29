@@ -1,0 +1,72 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-09-28T00:00:00Z",
+  "circulars": [
+    {
+      "id": "MOD-DA-54-HIKE-2026-09",
+      "number": "1(2)/2026/D(Pay/Services)",
+      "date": "2026-09-29",
+      "title": "Grant of Dearness Allowance to Armed Forces Officers at Revised Rate of 54%",
+      "authority": "Ministry of Defence / PCDA(O) Pune",
+      "category": "ALLOWANCE_REVISION",
+      "source_url": "https://pcdaopune.gov.in/orders/da_revision_54.pdf",
+      "provisions": [
+        "Central DA enhanced from 50% to 54% with retrospective effect.",
+        "Triggers recalculation across all active military pay calculations.",
+        "Higher Rate Cities Transport Allowance: \u20b97,200 + 54% DA = \u20b911,088/mo.",
+        "Other Cities Transport Allowance: \u20b93,600 + 54% DA = \u20b95,544/mo."
+      ],
+      "impact": "Updates SituationalRuleResolver.kt DA rate engine and 1-tap redressal math."
+    },
+    {
+      "id": "MOD-1-25-2017-TPTA",
+      "number": "1(25)/2017/D(Pay/Services)",
+      "date": "2017-07-07",
+      "title": "Implementation of 7th CPC recommendations on Transport Allowance (TPTA)",
+      "authority": "MoD / PCDA(O) Pune",
+      "category": "ALLOWANCE_REVISION",
+      "source_url": "https://pcdaopune.gov.in",
+      "status": "INGESTED"
+    },
+    {
+      "id": "MOD-1-16-2017-RH",
+      "number": "1(16)/2017/D(Pay/Services)",
+      "date": "2017-09-18",
+      "title": "Implementation of Risk and Hardship Matrix for Armed Forces Officers",
+      "authority": "MoD / PCDA(O) Pune",
+      "category": "ALLOWANCE_REVISION",
+      "source_url": "https://pcdaopune.gov.in",
+      "status": "INGESTED"
+    },
+    {
+      "id": "MOD-TR-230B-HAFAA-TPTA",
+      "number": "12630/Tpt.A/Mov C/246/D(Mov)/17",
+      "date": "2017-09-15",
+      "title": "Mutual exclusion of Transport Allowance with Field Area deployments (TR-230B)",
+      "authority": "MoD / PCDA(O) Pune",
+      "category": "RECOVERY_HAZARD",
+      "source_url": "https://pcdaopune.gov.in",
+      "status": "INGESTED"
+    },
+    {
+      "id": "ARMY-RULE-10-11-2017",
+      "number": "Army Officers Pay Rules 2017 Rule 10/11",
+      "date": "2017-05-03",
+      "title": "Fixation of Pay on Promotion: Option 1 vs Option 2 and DNI Cycles",
+      "authority": "MoD / Military Secretary",
+      "category": "PAY_FIXATION",
+      "source_url": "https://pcdaopune.gov.in",
+      "status": "INGESTED"
+    },
+    {
+      "id": "MOD-DA-50-ESCALATION-2024",
+      "number": "1(1)/2024/D(Pay/Services)",
+      "date": "2024-03-15",
+      "title": "Escalation of Allowances by 25% on Central DA reaching 50%",
+      "authority": "DoPT / MoD",
+      "category": "ALLOWANCE_REVISION",
+      "source_url": "https://pcdaopune.gov.in",
+      "status": "INGESTED"
+    }
+  ]
+}

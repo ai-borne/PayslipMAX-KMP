@@ -1,0 +1,73 @@
+name: 🎖️ PCDA(O) Intelligence Watchdog
+
+on:
+  schedule:
+    # Run every Monday at 02:00 UTC (07:30 IST)
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+    inputs:
+      simulate_new_circular:
+        description: 'Simulate a newly published MoD order for verification'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  pcdao-watchdog:
+    name: 🔍 Scan & Evolve Military Intelligence Codex
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run PCDA(O) Intelligence Watchdog
+        id: watchdog
+        run: |
+          SIMULATE_FLAG=""
+          if [ "${{ github.event.inputs.simulate_new_circular }}" = "true" ]; then
+            SIMULATE_FLAG="--simulate"
+          fi
+          python3 scripts/pcdao_factory/pcdao_watchdog.py ${SIMULATE_FLAG} --alert-file pcdao_alert.md
+          if [ -s pcdao_alert.md ]; then
+            cat pcdao_alert.md >> $GITHUB_STEP_SUMMARY
+            echo "has_alerts=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_alerts=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Issue Notification
+        if: steps.watchdog.outputs.has_alerts == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('pcdao_alert.md')) {
+              const body = fs.readFileSync('pcdao_alert.md', 'utf8');
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🚨 [PCDA Intelligence] New MoD Circular / Statutory Order Detected',
+                body: body,
+                labels: ['military-intelligence', 'automated-alert']
+              });
+            }
+
+      - name: Commit Updated Intelligence Codex
+        if: steps.watchdog.outputs.has_alerts == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add scripts/pcdao_factory/knowledge/
+          git commit -m "chore(pcda): evolve military intelligence codex with newly detected circulars [skip ci]" || echo "No changes"
+          git push || echo "Push failed, will be committed in PR"

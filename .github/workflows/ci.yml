@@ -104,6 +104,9 @@ jobs:
       - name: Check Room Schema Immutability
         run: python3 scripts/check_schema_immutability.py
 
+      - name: Verify PCDA(O) Military Financial Intelligence Moat
+        run: bash .agents/skills/pcdao-military-intelligence/scripts/run_pcdao_audit_suite.sh
+
       - name: Run Lint, Code Style & Tests (Android + Common)
         run: ./gradlew check -x iosX64Test -x iosSimulatorArm64Test
 
