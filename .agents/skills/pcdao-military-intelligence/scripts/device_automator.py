@@ -60,7 +60,7 @@ def node_matches(node: ET.Element, text: Optional[str], contains: Optional[str],
             return False
     if text and node_text != text:
         return False
-    if contains and contains.lower() not in node_text.lower():
+    if contains and (contains.lower() not in node_text.lower() and contains.lower() not in node_desc.lower()):
         return False
     if desc and node_desc != desc:
         return False
@@ -93,6 +93,7 @@ def swipe_screen(device_id: Optional[str], direction: str = "down") -> None:
 def find_and_tap(device_id: Optional[str], text: Optional[str] = None, contains: Optional[str] = None,
                  desc: Optional[str] = None, res_id: Optional[str] = None, max_scrolls: int = 4) -> bool:
     """Finds an element, scrolling if necessary, and taps its center."""
+    scrolls_done = 0
     for scroll in range(max_scrolls + 1):
         root = dump_hierarchy(device_id)
         coords = find_element(root, text=text, contains=contains, desc=desc, res_id=res_id)
@@ -105,6 +106,12 @@ def find_and_tap(device_id: Optional[str], text: Optional[str] = None, contains:
         if scroll < max_scrolls:
             print(f"  [Automator] Target not in view. Scrolling down (attempt {scroll + 1}/{max_scrolls})...")
             swipe_screen(device_id, direction="down")
+            scrolls_done += 1
+
+    if scrolls_done > 0:
+        print(f"  [Automator] Resetting view (scrolling up {scrolls_done} times)...")
+        for _ in range(scrolls_done):
+            swipe_screen(device_id, direction="up")
 
     return False
 
