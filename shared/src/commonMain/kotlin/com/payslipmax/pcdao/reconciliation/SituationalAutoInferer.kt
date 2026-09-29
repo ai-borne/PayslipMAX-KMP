@@ -21,6 +21,13 @@ class SituationalAutoInferer {
         val isPromoEligible = inferPromotionEligibility(payslip, allPayslips)
         val promoAdvisory = if (isPromoEligible) PROMOTION_ADVISORY else null
 
+        val isNpa = payslip.earnings.npa > 0 || payslip.earnings.nonPracticingAllowance > 0
+        val isCfaa = payslip.earnings.fieldAllowance in 10500.0..13125.0
+        val isCmfaa = payslip.earnings.fieldAllowance in 6300.0..7875.0
+        val isTechnical = payslip.earnings.technicalPay > 0 || payslip.earnings.technicalAllowance > 0
+        val isTlc = isField && hasHra
+        val isFullMonthLeave = payslip.earnings.daysWorked == 0
+
         return InferredSituationalFlags(
             inferredRankLevel = rankLevel,
             inferredDaPercent = daPercent,
@@ -33,6 +40,12 @@ class SituationalAutoInferer {
             inferredGovtAccomm = hasGovtAccomm,
             inferredPromotionEligible = isPromoEligible,
             inferredPromotionAdvisory = promoAdvisory,
+            inferredNpaActive = isNpa,
+            inferredCfaaActive = isCfaa,
+            inferredCmfaaActive = isCmfaa,
+            inferredTechnicalActive = isTechnical,
+            inferredTwoLocationConcession = isTlc,
+            inferredFullMonthLeave = isFullMonthLeave,
         )
     }
 
@@ -47,7 +60,8 @@ class SituationalAutoInferer {
         inferPostingTiles(flags, tileIds)
         inferHousingTiles(flags, tileIds)
         inferFundAndCeaTiles(flags, tileIds)
-        inferSpecializedFactors(payslip, specializedFactors)
+        inferCadreAndLeaveTiles(flags, tileIds)
+        inferSpecializedFactors(payslip, flags, specializedFactors)
 
         if (flags.inferredPromotionEligible) {
             tileIds.add(SituationalTileKeys.PROMOTION_ACTIVE)
@@ -94,7 +108,11 @@ class SituationalAutoInferer {
         flags: InferredSituationalFlags,
         tileIds: MutableSet<String>,
     ) {
-        if (flags.inferredField) {
+        if (flags.inferredCfaaActive) {
+            tileIds.add(SituationalTileKeys.POST_FIELD_CFAA)
+        } else if (flags.inferredCmfaaActive) {
+            tileIds.add(SituationalTileKeys.POST_FIELD_CMFAA)
+        } else if (flags.inferredField) {
             tileIds.add(SituationalTileKeys.POST_FIELD_HAFAA)
         } else if (flags.inferredPeaceHigher) {
             tileIds.add(SituationalTileKeys.POST_PEACE_HIGHER)
@@ -112,6 +130,9 @@ class SituationalAutoInferer {
         } else if (flags.inferredHraActive) {
             tileIds.add(SituationalTileKeys.HOUSE_FAMILY_SPR)
         }
+        if (flags.inferredTwoLocationConcession) {
+            tileIds.add(SituationalTileKeys.HOUSE_TWO_LOCATION_CONCESSION)
+        }
     }
 
     private fun inferFundAndCeaTiles(
@@ -126,8 +147,24 @@ class SituationalAutoInferer {
         }
     }
 
+    private fun inferCadreAndLeaveTiles(
+        flags: InferredSituationalFlags,
+        tileIds: MutableSet<String>,
+    ) {
+        if (flags.inferredNpaActive) {
+            tileIds.add(SituationalTileKeys.CADRE_AMC_NPA)
+        }
+        if (flags.inferredTechnicalActive) {
+            tileIds.add(SituationalTileKeys.CADRE_TECHNICAL_OFFICER)
+        }
+        if (flags.inferredFullMonthLeave) {
+            tileIds.add(SituationalTileKeys.LEAVE_FULL_MONTH)
+        }
+    }
+
     private fun inferSpecializedFactors(
         payslip: ParsedPayslip,
+        flags: InferredSituationalFlags,
         specializedFactors: MutableSet<SpecializedMilitaryFactor>,
     ) {
         if (payslip.earnings.specialForcesPay > 0 || payslip.deductions.recSpecialForces > 0) {
@@ -135,6 +172,12 @@ class SituationalAutoInferer {
         }
         if (payslip.earnings.riskHardshipAllowance >= 42500.0) {
             specializedFactors.add(SpecializedMilitaryFactor.SIACHEN_GLACIER)
+        }
+        if (flags.inferredNpaActive) {
+            specializedFactors.add(SpecializedMilitaryFactor.NON_PRACTICING_ALLOWANCE_AMC)
+        }
+        if (flags.inferredTechnicalActive) {
+            specializedFactors.add(SpecializedMilitaryFactor.TECHNICAL_ALLOWANCE)
         }
     }
 

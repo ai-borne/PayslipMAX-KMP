@@ -89,7 +89,11 @@ data class Earnings(
     val arrearsTechnicalAllowance: Double = 0.0,
     val adjTicketRecovery: Double = 0.0,
     val miscEarnings: Double = 0.0,
-)
+    val daysWorked: Int? = null,
+) {
+    val npa: Double get() = nonPracticingAllowance
+    val technicalPay: Double get() = technicalAllowance
+}
 
 @Serializable
 data class Deductions(
