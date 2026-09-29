@@ -114,6 +114,8 @@ class RedressalLetterGeneratorTest {
         assertEquals("Section R (Regimental Officers)", RedressalLetterGenerator.resolveLedgerSection("Major"))
         assertEquals("Section R (Regimental Officers)", RedressalLetterGenerator.resolveLedgerSection("Captain"))
         assertEquals("Section R (Regimental Officers)", RedressalLetterGenerator.resolveLedgerSection("Lieutenant"))
+        assertEquals("Section T (Transportation & Travel Claims)", RedressalLetterGenerator.resolveLedgerSection("Major", "TLC"))
+        assertEquals("Section T (Transportation & Travel Claims)", RedressalLetterGenerator.resolveLedgerSection("Captain", "TPTA"))
     }
 
     @Test

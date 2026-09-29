@@ -5,10 +5,19 @@ import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 
 object RedressalLetterGenerator {
-    private const val PCDA_RECIPIENT = "The Principal Controller of Defence Accounts (Officers),\nGolibar Maidan, Pune - 411001 (Maharashtra)"
-    private const val DEFAULT_SECTION_R = "Section R (Regimental Officers)"
-    private const val SECTION_L1 = "Section L-1 (Colonels & Brigadiers)"
-    private const val SECTION_M = "Section M (Medical Corps)"
+    const val PCDA_RECIPIENT =
+        "The Principal Controller of Defence Accounts (Officers),\n" +
+            "Golibar Maidan, Pune - 411001 (Maharashtra)"
+    const val DEFAULT_SECTION_R = "Section R (Regimental Officers)"
+    const val SECTION_L1 = "Section L-1 (Colonels & Brigadiers)"
+    const val SECTION_M = "Section M (Medical Corps)"
+    const val SECTION_T = "Section T (Transportation & Travel Claims)"
+
+    const val CITATION_TLC = RedressalTemplates.CITATION_TLC
+    const val CITATION_NPA = RedressalTemplates.CITATION_NPA
+    const val CITATION_CFAA = RedressalTemplates.CITATION_CFAA
+    const val CITATION_CMFAA = RedressalTemplates.CITATION_CMFAA
+    const val CITATION_LEAVE_TPTA = RedressalTemplates.CITATION_LEAVE_TPTA
 
     fun generateLetter(
         request: RedressalRequest,
@@ -56,7 +65,8 @@ object RedressalLetterGenerator {
         maskPii: Boolean = false,
         exportFormat: ExportFormat = ExportFormat.TXT,
     ): RedressalRequest {
-        val resolvedSection = ledgerSection ?: resolveLedgerSection(rank)
+        val primaryRuleId = reconciliationResult.lineItems.firstOrNull()?.allowanceKey
+        val resolvedSection = ledgerSection ?: resolveLedgerSection(rank, primaryRuleId)
         val lineItems =
             reconciliationResult.lineItems.mapIndexed { idx, diff ->
                 DiffLineItem(
@@ -65,7 +75,7 @@ object RedressalLetterGenerator {
                     entitledAmount = diff.entitledAmount,
                     creditedAmount = diff.creditedAmount,
                     netDue = diff.netDifference,
-                    statutoryAuthority = diff.authorityRef,
+                    statutoryAuthority = resolveStatutoryAuthority(diff.allowanceKey, diff.authorityRef),
                     ruleId = diff.allowanceKey,
                 )
             }
@@ -121,105 +131,119 @@ object RedressalLetterGenerator {
         )
     }
 
-    fun resolveLedgerSection(rank: String): String {
-        val upper = rank.uppercase()
+    fun createTlcDisallowanceRequest(
+        payslip: ParsedPayslip,
+        entitledHra: Double,
+        rank: String = "Major",
+        serviceNumber: String = "IC-XXXXXX",
+        sprCityTier: String = "X",
+    ): RedressalRequest =
+        RedressalTemplates.createTlcDisallowanceRequest(
+            payslip,
+            entitledHra,
+            rank,
+            serviceNumber,
+            sprCityTier,
+        )
+
+    fun createNpaOmissionRequest(
+        payslip: ParsedPayslip,
+        entitledNpa: Double,
+        rank: String = "Captain",
+        serviceNumber: String = "MS-XXXXXX",
+    ): RedressalRequest =
+        RedressalTemplates.createNpaOmissionRequest(
+            payslip,
+            entitledNpa,
+            rank,
+            serviceNumber,
+        )
+
+    fun createCfaaUnderpaymentRequest(
+        payslip: ParsedPayslip,
+        entitledCfaa: Double,
+        creditedCfaa: Double = 0.0,
+        rank: String = "Major",
+        serviceNumber: String = "IC-XXXXXX",
+        isModifiedField: Boolean = false,
+    ): RedressalRequest =
+        RedressalTemplates.createCfaaUnderpaymentRequest(
+            payslip,
+            entitledCfaa,
+            creditedCfaa,
+            rank,
+            serviceNumber,
+            isModifiedField,
+        )
+
+    fun createLeaveTptaWaiverRequest(
+        payslip: ParsedPayslip,
+        disputedDebitAmount: Double,
+        rank: String = "Captain",
+        serviceNumber: String = "IC-XXXXXX",
+        dutyDaysPresent: Int = 1,
+    ): RedressalRequest =
+        RedressalTemplates.createLeaveTptaWaiverRequest(
+            payslip,
+            disputedDebitAmount,
+            rank,
+            serviceNumber,
+            dutyDaysPresent,
+        )
+
+    fun resolveLedgerSection(
+        rank: String,
+        lineItemRuleId: String? = null,
+    ): String {
+        val upperRank = rank.uppercase()
+        val upperRule = lineItemRuleId?.uppercase().orEmpty()
         return when {
-            upper.contains("COLONEL") || upper.contains("BRIGADIER") || upper.contains("GENERAL") -> SECTION_L1
-            upper.contains("AMC") || upper.contains("ADC") || upper.contains("RVC") || upper.contains("MNS") -> SECTION_M
+            upperRank.contains("COLONEL") || upperRank.contains("BRIGADIER") ||
+                upperRank.contains("GENERAL") -> SECTION_L1
+            upperRank.contains("AMC") || upperRank.contains("ADC") || upperRank.contains("RVC") ||
+                upperRank.contains("MNS") || upperRule.contains("NPA") -> SECTION_M
+            upperRule.contains("TLC") || upperRule.contains("TWO_LOCATION") ||
+                upperRule.contains("CONCESSION") || upperRule.contains("TPTA") ||
+                upperRule.contains("TRAVEL") || upperRule.contains("LEAVE_TPTA") -> SECTION_T
             else -> DEFAULT_SECTION_R
         }
     }
 
-    fun maskName(name: String): String {
-        if (name.isBlank()) return "****"
-        val trimmed = name.trim()
-        val firstChar = trimmed.first()
-        return "$firstChar. *******"
+    fun resolveStatutoryAuthority(
+        allowanceKey: String,
+        defaultAuthority: String = "",
+    ): String {
+        val upper = allowanceKey.uppercase()
+        return when {
+            upper.contains("TLC") || upper.contains("TWO_LOCATION") -> CITATION_TLC
+            upper.contains("NPA") || upper.contains("AMC") -> CITATION_NPA
+            upper.contains("CMFAA") -> CITATION_CMFAA
+            upper.contains("CFAA") -> CITATION_CFAA
+            upper.contains("LEAVE_TPTA") || (upper.contains("LEAVE") && upper.contains("TPTA")) -> CITATION_LEAVE_TPTA
+            defaultAuthority.isNotBlank() -> defaultAuthority
+            else -> "7th CPC & MoD Statutory Pay & Allowance Regulations"
+        }
     }
 
-    fun maskServiceNumber(serviceNum: String): String {
-        if (serviceNum.length <= 4) return "****"
-        val visiblePart = serviceNum.take(serviceNum.length.coerceAtMost(5))
-        return "$visiblePart***"
-    }
+    fun maskName(name: String): String = RedressalFormatters.maskName(name)
 
-    fun maskCdaAccount(cda: String): String {
-        if (cda.length <= 5) return "******"
-        return cda.take(5) + "******"
-    }
+    fun maskServiceNumber(serviceNum: String): String = RedressalFormatters.maskServiceNumber(serviceNum)
 
-    fun maskPan(pan: String?): String? {
-        if (pan.isNullOrBlank()) return null
-        if (pan.length < 10) return "******"
-        return pan.take(5) + "****" + pan.takeLast(1)
-    }
+    fun maskCdaAccount(cda: String): String = RedressalFormatters.maskCdaAccount(cda)
+
+    fun maskPan(pan: String?): String? = RedressalFormatters.maskPan(pan)
 
     fun formatDiscrepancyTable(
         lineItems: List<DiffLineItem>,
         format: ExportFormat,
-    ): String {
-        return if (format == ExportFormat.MARKDOWN) {
-            formatMarkdownTable(lineItems)
-        } else {
-            formatTextTable(lineItems)
-        }
-    }
-
-    private fun formatTextTable(lineItems: List<DiffLineItem>): String {
-        val sb = StringBuilder()
-        sb.appendLine("SR | DISCREPANCY LINE ITEM         | ENTITLED   | CREDITED   | NET DUE  ")
-        sb.appendLine("-----------------------------------------------------------------------")
-        if (lineItems.isEmpty()) {
-            sb.appendLine("N/A| No discrepancies detected     | Rs. 0      | Rs. 0      | Rs. 0   ")
-        } else {
-            lineItems.forEach { item ->
-                val sr = item.serialNo.toString().padEnd(2)
-                val name = item.lineItemName.take(28).padEnd(28)
-                val ent = formatCurrency(item.entitledAmount).padEnd(10)
-                val cred = formatCurrency(item.creditedAmount).padEnd(10)
-                val due = formatCurrency(item.netDue).padEnd(9)
-                sb.appendLine("$sr | $name | $ent | $cred | $due")
-            }
-        }
-        sb.appendLine("-----------------------------------------------------------------------")
-        val total = lineItems.sumOf { it.netDue }
-        sb.append("TOTAL STATUTORY NET DUE: ${formatCurrency(total)}")
-        return sb.toString()
-    }
-
-    private fun formatMarkdownTable(lineItems: List<DiffLineItem>): String {
-        val sb = StringBuilder()
-        sb.appendLine("| SR. | DISCREPANCY LINE ITEM | ENTITLED | CREDITED | NET DUE |")
-        sb.appendLine("| :--- | :--- | :--- | :--- | :--- |")
-        lineItems.forEach { item ->
-            sb.appendLine("| ${item.serialNo} | ${item.lineItemName} | ${formatCurrency(item.entitledAmount)} | ${formatCurrency(item.creditedAmount)} | ${formatCurrency(item.netDue)} |")
-        }
-        val total = lineItems.sumOf { it.netDue }
-        sb.append("\n**TOTAL STATUTORY NET DUE**: ${formatCurrency(total)}")
-        return sb.toString()
-    }
+    ): String =
+        RedressalFormatters.formatDiscrepancyTable(lineItems, format)
 
     fun formatStatutoryCitations(
         lineItems: List<DiffLineItem>,
         format: ExportFormat,
-    ): String {
-        if (lineItems.isEmpty()) return "None"
-        val sb = StringBuilder()
-        lineItems.forEachIndexed { idx, item ->
-            val num = ('a' + (idx % 26)).toString()
-            if (format == ExportFormat.MARKDOWN) {
-                sb.appendLine("- **${item.lineItemName}**: ${item.statutoryAuthority}")
-            } else {
-                sb.appendLine("   ($num) ${item.lineItemName}: ${item.statutoryAuthority}")
-            }
-        }
-        return sb.toString().trimEnd()
-    }
-
-    private fun formatCurrency(amount: Double): String {
-        val intVal = amount.toInt()
-        return "Rs. $intVal"
-    }
+    ): String =
+        RedressalFormatters.formatStatutoryCitations(lineItems, format)
 
     private fun buildFullBody(
         req: RedressalRequest,
@@ -230,45 +254,16 @@ object RedressalLetterGenerator {
         tableText: String,
         citationsText: String,
         totalDue: Double,
-    ): String {
-        val remarks = req.prayerRemarks?.let { "\n   $it\n" } ?: ""
-        return """
-            CONFIDENTIAL & OFFICIAL MILITARY CORRESPONDENCE
-            -----------------------------------------------------------------------
-            To,
-            $PCDA_RECIPIENT
-
-            ATTENTION: ${req.ledgerSection}
-            SUBJECT  : FORMAL REPRESENTATION REGARDING DISCREPANCY IN RUNNING LEDGER ACCOUNT (IRLA)
-            CDA A/C  : $cda
-            OFFICER  : ${req.rank} $name ($sNum)
-            DATE     : $dateStr
-            -----------------------------------------------------------------------
-
-            Sir / Madam,
-
-            1. I have the honour to draw your kind attention to my Individual Running Ledger Account (IRLA)
-               under CDA Account No. $cda for the period of ${req.disputeMonth}. Upon audit synthesis against
-               the canonical orders of the 7th Central Pay Commission and Ministry of Defence regulations,
-               the following statutory dues remain omitted / under-credited to my account:
-
-            $tableText
-
-            2. STATUTORY AUTHORITY & REFERENCES:
-            $citationsText
-
-            3. PRAYER:$remarks
-               In light of the documentary references cited above, it is respectfully requested that
-               the statutory dues of ${formatCurrency(totalDue)} be credited to my IRLA at the earliest convenience, and an amended
-               Statement of Account (SOA) be issued.
-
-            Thanking you,
-
-            Yours faithfully,
-
-            ($name)
-            ${req.rank}, Indian Army
-            -----------------------------------------------------------------------
-            """.trimIndent()
-    }
+    ): String =
+        RedressalFormatters.buildFullBody(
+            req = req,
+            name = name,
+            sNum = sNum,
+            cda = cda,
+            dateStr = dateStr,
+            tableText = tableText,
+            citationsText = citationsText,
+            totalDue = totalDue,
+            recipient = PCDA_RECIPIENT,
+        )
 }
