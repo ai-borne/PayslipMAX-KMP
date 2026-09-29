@@ -81,9 +81,17 @@ object AppStringsPcdao {
 
     // Redressal Letter Export
     const val letterModalTitle = "📜 Official PCDA(O) Pune Representation"
+    const val redressalDraftTitle = "PCDA(O) Official Representation"
+    const val redressalTableColItem = "Discrepancy Line Item"
+    const val redressalTableColEntitled = "Entitled"
+    const val redressalTableColCredited = "Credited"
+    const val redressalTableColDue = "Net Due"
     const val chkMaskPiiLabel = "Mask Sensitive PII (Safe for Sharing)"
     const val btnCopyText = "📋 Copy Text"
     const val btnSaveDraft = "💾 Save to Claims"
+    const val btnExportPdf = "📄 Export PDF"
+    const val btnShareText = "📤 Share"
+    const val btnEditText = "✏️ Edit Text"
 
     // Phase 8 Monetization & Teaser Strings
     const val switchMonthButton = "▼ Switch Month"

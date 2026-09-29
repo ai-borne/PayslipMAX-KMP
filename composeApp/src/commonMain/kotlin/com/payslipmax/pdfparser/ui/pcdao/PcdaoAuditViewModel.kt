@@ -224,15 +224,15 @@ class PcdaoAuditViewModel(
         }
     }
 
-    fun generateRedressalLetter(): RedressalLetter? {
+    fun generateRedressalLetter(maskPii: Boolean = false): RedressalLetter? {
         val payslip = _uiState.value.selectedPayslip ?: return null
         val state = _uiState.value
         val request =
             if (state.isCumulativeViewActive && state.hasCumulativeArrears && state.cumulativeRollup != null) {
-                RedressalLetterGenerator.createRequestFromCumulativeRollup(payslip, state.cumulativeRollup)
+                RedressalLetterGenerator.createRequestFromCumulativeRollup(payslip, state.cumulativeRollup, maskPii = maskPii)
             } else {
                 val recon = state.reconciliationResult ?: return null
-                RedressalLetterGenerator.createRequestFromReconciliation(payslip, recon)
+                RedressalLetterGenerator.createRequestFromReconciliation(payslip, recon, maskPii = maskPii)
             }
         val letter = RedressalLetterGenerator.generateLetter(request)
         _uiState.update { it.copy(generatedLetter = letter) }

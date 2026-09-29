@@ -70,6 +70,7 @@ class IosNavHost(
     // Representation's `selectedDraft` is genuinely screen-local (not promoted into PayslipUiState,
     // which would violate SSOT the other way), so it reports itself via a per-push callback instead.
     private var activeDetailHasUnsavedState: () -> Boolean = { false }
+    private var pendingLetter: com.payslipmax.pcdao.redressal.RedressalLetter? = null
 
     fun rootViewController(): UIViewController =
         // App() themes itself internally (required for Android, which calls App() directly), so the
@@ -109,14 +110,19 @@ class IosNavHost(
             Screen.Representation ->
                 RepresentationScreen(
                     viewModel = viewModel,
-                    onBack = onBack,
+                    onBack = {
+                        pendingLetter = null
+                        onBack()
+                    },
                     onUnsavedStateChanged = { unsaved -> activeDetailHasUnsavedState = { unsaved } },
+                    initialLetter = pendingLetter,
                 )
             Screen.PcdaoAudit ->
                 PcdaoAuditScreen(
                     viewModel = viewModel,
                     onBack = onBack,
                     onNavigateToRepresentation = { letter ->
+                        pendingLetter = letter
                         viewModel.updateRepresentationDraft(letter.toRepresentationDraftEntity())
                         bridge.navigateToDetail(Screen.Representation)
                     },

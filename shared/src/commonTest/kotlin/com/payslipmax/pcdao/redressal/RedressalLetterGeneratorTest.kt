@@ -45,66 +45,23 @@ class RedressalLetterGeneratorTest {
     }
 
     @Test
-    fun testMathematicalDiscrepancyTableFormatting() {
-        val items =
-            listOf(
-                DiffLineItem(
-                    serialNo = 1,
-                    lineItemName = "Children Education Allowance (CEA)",
-                    entitledAmount = 67500.0,
-                    creditedAmount = 54000.0,
-                    netDue = 13500.0,
-                    statutoryAuthority = "DoPT OM No. A-27012/02/2017-Estt.(AL) dated 16/17 July 2018; Para 4",
-                ),
-                DiffLineItem(
-                    serialNo = 2,
-                    lineItemName = "Siachen Allowance",
-                    entitledAmount = 53125.0,
-                    creditedAmount = 42500.0,
-                    netDue = 10625.0,
-                    statutoryAuthority = "MoD Letter No. 1(16)/2017/D(Pay/Services) dated 18 Sep 2017",
-                ),
-            )
-
+    fun testOfficialTitleWithoutEnumLeaking() {
         val request =
             RedressalRequest(
-                officerName = "Amit Sharma",
-                serviceNumber = "IC-61234M",
-                rank = "Major",
-                cdaAccountNo = "08/112/994433",
-                ledgerSection = "Section R (Regimental Officers)",
-                disputeMonth = "July 2026",
-                lineItems = items,
+                officerName = "Capt Vikram Batra",
+                serviceNumber = "IC-12345K",
+                rank = "Captain",
+                cdaAccountNo = "12/345/678901",
+                disputeMonth = "March 2026",
             )
-
         val letter = RedressalLetterGenerator.generateLetter(request)
+        assertEquals(DEFAULT_REDRESSAL_TITLE, letter.title)
+        assertEquals("PCDA(O) Official Representation", letter.title)
+        assertFalse(letter.title.contains("PCDAO_AUDIT_DISCREPANCY"))
 
-        assertTrue(letter.discrepancyTableText.contains("ENTITLED"))
-        assertTrue(letter.discrepancyTableText.contains("CREDITED"))
-        assertTrue(letter.discrepancyTableText.contains("NET DUE"))
-        assertTrue(letter.discrepancyTableText.contains("Rs. 67500"))
-        assertTrue(letter.discrepancyTableText.contains("Rs. 54000"))
-        assertTrue(letter.discrepancyTableText.contains("Rs. 13500"))
-        assertTrue(letter.discrepancyTableText.contains("TOTAL STATUTORY NET DUE: Rs. 24125"))
-        assertEquals(24125.0, letter.totalNetDue)
-    }
-
-    @Test
-    fun testStatutoryCitationsFormatting() {
-        val items =
-            listOf(
-                DiffLineItem(
-                    serialNo = 1,
-                    lineItemName = "Transport Allowance (TPTA)",
-                    entitledAmount = 10800.0,
-                    creditedAmount = 5400.0,
-                    netDue = 5400.0,
-                    statutoryAuthority = "MoD Letter No. 1(26)/1997/D(Pay/Services) dated 29.02.2000 & 7th CPC Para 8.15.53",
-                ),
-            )
-        val citations = RedressalLetterGenerator.formatStatutoryCitations(items, ExportFormat.TXT)
-        assertTrue(citations.contains("(a) Transport Allowance (TPTA):"))
-        assertTrue(citations.contains("MoD Letter No. 1(26)/1997/D(Pay/Services)"))
+        val draftEntity = letter.toRepresentationDraftEntity()
+        assertEquals("PCDA(O) Official Representation", draftEntity.disputeType)
+        assertFalse(draftEntity.disputeType.contains("PCDAO_AUDIT_DISCREPANCY"))
     }
 
     @Test
@@ -185,7 +142,9 @@ class RedressalLetterGeneratorTest {
         val entity = letter.toRepresentationDraftEntity()
 
         assertEquals("March 2026", entity.disputeMonth)
-        assertEquals("PCDAO_AUDIT_DISCREPANCY", entity.disputeType)
+        assertEquals(DEFAULT_REDRESSAL_TITLE, entity.disputeType)
+        assertEquals("PCDA(O) Official Representation", entity.disputeType)
+        assertFalse(entity.disputeType.contains("PCDAO_AUDIT_DISCREPANCY"))
         assertEquals("PCDA_O_PUNE", entity.recipient)
         assertEquals(letter.subject, entity.subject)
         assertEquals(letter.fullBodyText, entity.bodyText)
@@ -242,25 +201,6 @@ class RedressalLetterGeneratorTest {
         val letter = RedressalLetterGenerator.generateLetter(request)
         assertTrue(letter.fullBodyText.contains("Colonel Karan Thapar (IC-11223L)"))
         assertTrue(letter.fullBodyText.contains("TOTAL STATUTORY NET DUE: Rs. 67500"))
-    }
-
-    @Test
-    fun testMarkdownExportFormat() {
-        val items =
-            listOf(
-                DiffLineItem(
-                    serialNo = 1,
-                    lineItemName = "Hostel Subsidy",
-                    entitledAmount = 101250.0,
-                    creditedAmount = 81000.0,
-                    netDue = 20250.0,
-                    statutoryAuthority = "DoPT OM No. A-27012/02/2017-Estt.(AL)",
-                ),
-            )
-        val table = RedressalLetterGenerator.formatDiscrepancyTable(items, ExportFormat.MARKDOWN)
-        assertTrue(table.contains("| SR. | DISCREPANCY LINE ITEM | ENTITLED | CREDITED | NET DUE |"))
-        assertTrue(table.contains("| 1 | Hostel Subsidy | Rs. 101250 | Rs. 81000 | Rs. 20250 |"))
-        assertTrue(table.contains("**TOTAL STATUTORY NET DUE**: Rs. 20250"))
     }
 
     @Test

@@ -91,13 +91,11 @@ fun PcdaoAuditScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    if (uiState.isAddFactorSheetVisible) {
-        AddFactorBottomSheet(
-            activeFactors = uiState.activeContext.activeSpecializedFactors,
-            onToggleFactor = { viewModel.toggleSpecializedFactor(it) },
-            onDismiss = { viewModel.setAddFactorSheetVisible(false) },
-        )
-    }
+    PcdaoAuditDialogs(
+        uiState = uiState,
+        viewModel = viewModel,
+        onNavigateToRepresentation = onNavigateToRepresentation,
+    )
 
     Box(
         modifier =
@@ -225,8 +223,7 @@ private fun LazyListScope.auditFeedAndMilestonesItems(
             onFilterSelected = { viewModel.setFilter(it) },
             onRedressalClick = {
                 if (hasAccess) {
-                    val letter = viewModel.generateRedressalLetter()
-                    if (letter != null) onNavigateToRepresentation?.invoke(letter)
+                    viewModel.generateRedressalLetter()
                 } else {
                     onUpgradeClick()
                 }

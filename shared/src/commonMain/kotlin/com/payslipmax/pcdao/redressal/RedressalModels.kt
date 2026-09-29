@@ -37,6 +37,8 @@ data class RedressalRequest(
     val exportFormat: ExportFormat = ExportFormat.TXT,
 )
 
+const val DEFAULT_REDRESSAL_TITLE = "PCDA(O) Official Representation"
+
 @Serializable
 data class RedressalLetter(
     val id: String,
@@ -52,12 +54,13 @@ data class RedressalLetter(
     val isPiiMasked: Boolean,
     val exportFormat: ExportFormat = ExportFormat.TXT,
     val disputeMonth: String = "",
+    val title: String = DEFAULT_REDRESSAL_TITLE,
 ) {
-    fun toRepresentationDraftEntity(): RepresentationDraftEntity {
+    fun toRepresentationDraftEntity(disputeTitle: String = title): RepresentationDraftEntity {
         return RepresentationDraftEntity(
             id = id,
             disputeMonth = disputeMonth.ifBlank { "N/A" },
-            disputeType = "PCDAO_AUDIT_DISCREPANCY",
+            disputeType = disputeTitle,
             recipient = "PCDA_O_PUNE",
             subject = subject,
             bodyText = fullBodyText,

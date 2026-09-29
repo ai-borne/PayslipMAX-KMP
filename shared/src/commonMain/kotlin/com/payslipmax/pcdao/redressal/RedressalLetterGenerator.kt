@@ -43,6 +43,7 @@ object RedressalLetterGenerator {
             isPiiMasked = request.maskPii,
             exportFormat = request.exportFormat,
             disputeMonth = request.disputeMonth,
+            title = DEFAULT_REDRESSAL_TITLE,
         )
     }
 
@@ -166,21 +167,21 @@ object RedressalLetterGenerator {
 
     private fun formatTextTable(lineItems: List<DiffLineItem>): String {
         val sb = StringBuilder()
-        sb.appendLine("SR.  | DISCREPANCY LINE ITEM                | ENTITLED     | CREDITED     | NET DUE     ")
-        sb.appendLine("------------------------------------------------------------------------------------")
+        sb.appendLine("SR | DISCREPANCY LINE ITEM         | ENTITLED   | CREDITED   | NET DUE  ")
+        sb.appendLine("-----------------------------------------------------------------------")
         if (lineItems.isEmpty()) {
-            sb.appendLine("N/A  | No discrepancies detected            | Rs. 0        | Rs. 0        | Rs. 0       ")
+            sb.appendLine("N/A| No discrepancies detected     | Rs. 0      | Rs. 0      | Rs. 0   ")
         } else {
             lineItems.forEach { item ->
-                val sr = item.serialNo.toString().padEnd(4)
-                val name = item.lineItemName.take(36).padEnd(36)
-                val ent = formatCurrency(item.entitledAmount).padEnd(12)
-                val cred = formatCurrency(item.creditedAmount).padEnd(12)
-                val due = formatCurrency(item.netDue).padEnd(12)
+                val sr = item.serialNo.toString().padEnd(2)
+                val name = item.lineItemName.take(28).padEnd(28)
+                val ent = formatCurrency(item.entitledAmount).padEnd(10)
+                val cred = formatCurrency(item.creditedAmount).padEnd(10)
+                val due = formatCurrency(item.netDue).padEnd(9)
                 sb.appendLine("$sr | $name | $ent | $cred | $due")
             }
         }
-        sb.appendLine("------------------------------------------------------------------------------------")
+        sb.appendLine("-----------------------------------------------------------------------")
         val total = lineItems.sumOf { it.netDue }
         sb.append("TOTAL STATUTORY NET DUE: ${formatCurrency(total)}")
         return sb.toString()
@@ -233,7 +234,7 @@ object RedressalLetterGenerator {
         val remarks = req.prayerRemarks?.let { "\n   $it\n" } ?: ""
         return """
             CONFIDENTIAL & OFFICIAL MILITARY CORRESPONDENCE
-            --------------------------------------------------------------------------------
+            -----------------------------------------------------------------------
             To,
             $PCDA_RECIPIENT
 
@@ -242,7 +243,7 @@ object RedressalLetterGenerator {
             CDA A/C  : $cda
             OFFICER  : ${req.rank} $name ($sNum)
             DATE     : $dateStr
-            --------------------------------------------------------------------------------
+            -----------------------------------------------------------------------
 
             Sir / Madam,
 
@@ -267,7 +268,7 @@ object RedressalLetterGenerator {
 
             ($name)
             ${req.rank}, Indian Army
-            --------------------------------------------------------------------------------
+            -----------------------------------------------------------------------
             """.trimIndent()
     }
 }

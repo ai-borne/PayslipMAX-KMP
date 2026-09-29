@@ -236,30 +236,31 @@ private fun DetailContent(
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
     onNavigateTo: (Screen) -> Unit,
 ) {
+    var pendingLetter by remember { mutableStateOf<com.payslipmax.pcdao.redressal.RedressalLetter?>(null) }
     when (detail) {
         Screen.PremiumFeatures ->
             com.payslipmax.pdfparser.ui.screens.PremiumFeaturesScreen(viewModel = viewModel, onNavigateTo = onNavigateTo, onBack = onBack)
         Screen.Representation ->
-            com.payslipmax.pdfparser.ui.screens.RepresentationScreen(viewModel = viewModel, onBack = onBack)
-        Screen.TaxPlanning ->
-            com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
-        Screen.RetirementPlanning ->
-            com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
-        Screen.RetirementCalculators ->
-            com.payslipmax.pdfparser.ui.screens.RetirementCalculatorsScreen(viewModel = viewModel, onBack = onBack)
+            com.payslipmax.pdfparser.ui.screens.RepresentationScreen(
+                viewModel = viewModel,
+                onBack = {
+                    pendingLetter = null
+                    onBack()
+                },
+                initialLetter = pendingLetter,
+            )
+        Screen.TaxPlanning, Screen.RetirementPlanning, Screen.RetirementCalculators ->
+            PlanningDetailContent(detail = detail, viewModel = viewModel, onBack = onBack)
         Screen.PcdaoAudit ->
             com.payslipmax.pdfparser.ui.pcdao.PcdaoAuditScreen(
                 viewModel = viewModel,
                 onBack = onBack,
                 onNavigateToRepresentation = { letter ->
+                    pendingLetter = letter
                     viewModel.updateRepresentationDraft(letter.toRepresentationDraftEntity())
                     onNavigateTo(Screen.Representation)
                 },
             )
-        Screen.FAQ ->
-            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
-        Screen.PrivacyPolicy ->
-            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.PrivacyPolicy, onBack = onBack)
         Screen.PayslipReplica ->
             com.payslipmax.pdfparser.ui.screens.PayslipReplicaDetailScreen(
                 viewModel = viewModel,
@@ -270,12 +271,23 @@ private fun DetailContent(
                     }
                 },
             )
-        Screen.HelpLegal ->
-            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
-        // Tab roots are structurally unreachable here: onNavigate() routes them via switchTab(),
-        // never push(), and AppNavStateSaver.restore() filters activeDetail to !isTabRoot. Handled
-        // only so this `when` stays exhaustive against future Screen cases.
-        Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings ->
-            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+        Screen.FAQ, Screen.PrivacyPolicy, Screen.HelpLegal,
+        Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings,
+        ->
+            com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = detail, onBack = onBack)
+    }
+}
+
+@Composable
+private fun PlanningDetailContent(
+    detail: Screen,
+    viewModel: PayslipViewModel,
+    onBack: () -> Unit,
+) {
+    when (detail) {
+        Screen.TaxPlanning -> com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen(viewModel = viewModel, onBack = onBack)
+        Screen.RetirementPlanning -> com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen(viewModel = viewModel, onBack = onBack)
+        Screen.RetirementCalculators -> com.payslipmax.pdfparser.ui.screens.RetirementCalculatorsScreen(viewModel = viewModel, onBack = onBack)
+        else -> Unit
     }
 }

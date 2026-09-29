@@ -103,7 +103,7 @@ class CanonicalRedressalIntegrationTest {
 
             val draftEntity = letter.toRepresentationDraftEntity()
             assertEquals("03/2026", draftEntity.disputeMonth)
-            assertEquals("PCDAO_AUDIT_DISCREPANCY", draftEntity.disputeType)
+            assertEquals("PCDA(O) Official Representation", draftEntity.disputeType)
             assertEquals("PCDA_O_PUNE", draftEntity.recipient)
             assertEquals(letter.fullBodyText, draftEntity.bodyText)
         }

@@ -197,6 +197,18 @@ class PcdaoAuditViewModelTest {
             assertNotNull(letter)
             assertTrue(letter.recipient.contains("Defence Accounts"))
             assertTrue(letter.fullBodyText.isNotEmpty())
+            assertEquals("PCDA(O) Official Representation", letter.title)
+            assertEquals(letter, viewModel.uiState.value.generatedLetter)
+
+            // Test PII Masking
+            val maskedLetter = viewModel.generateRedressalLetter(maskPii = true)
+            assertNotNull(maskedLetter)
+            assertTrue(maskedLetter.isPiiMasked)
+            assertEquals(maskedLetter, viewModel.uiState.value.generatedLetter)
+
+            // Test Clear Generated Letter
+            viewModel.clearGeneratedLetter()
+            assertNull(viewModel.uiState.value.generatedLetter)
         }
 
     @Test
