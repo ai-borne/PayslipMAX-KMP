@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.payslipmax.pcdao.engine.PayFixationOptimizer
 import com.payslipmax.pcdao.engine.PayFixationRequest
+import com.payslipmax.pcdao.engine.PayFixationResult
 import com.payslipmax.pcdao.reconciliation.ActiveSituationalContext
 import com.payslipmax.pcdao.reconciliation.ShadowLedgerReconciler
 import com.payslipmax.pcdao.reconciliation.SituationalAutoInferer
@@ -19,7 +20,12 @@ import com.payslipmax.pcdao.timeline.VaultMonthGroupMapper
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.pcdao.ComposePcdaoAssetProvider
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,11 +39,15 @@ class PcdaoAuditViewModel(
     private val autoInferer: SituationalAutoInferer = SituationalAutoInferer(),
     private val rollupEngine: CumulativeLedgerRollupEngine = CumulativeLedgerRollupEngine(reconciler),
     private val milestoneAuditor: CareerMilestoneAuditor = CareerMilestoneAuditor(),
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
     coroutineScope: CoroutineScope? = null,
 ) : ViewModel() {
     private val scope: CoroutineScope = coroutineScope ?: viewModelScope
     private val _uiState = MutableStateFlow(PcdaoAuditUiState())
     val uiState: StateFlow<PcdaoAuditUiState> = _uiState.asStateFlow()
+
+    private var calculationJob: Job? = null
+    internal val activeCalculationJob: Job? get() = calculationJob
 
     init {
         observePayslips()
@@ -69,7 +79,6 @@ class PcdaoAuditViewModel(
         val initialContext = autoInferer.inferActiveContext(payslip)
         val autoDetectedTiles = initialContext.activeTileIds
         val recon = reconciler.reconcile(payslip, initialContext)
-        val rollup = rollupEngine.calculateRollup(allPayslips, initialContext)
         val milestones = milestoneAuditor.auditMilestones(allPayslips)
         val grouped = VaultMonthGroupMapper.groupByFinancialYear(allPayslips)
 
@@ -80,14 +89,13 @@ class PcdaoAuditViewModel(
                 activeContext = initialContext,
                 autoInferredTileIds = autoDetectedTiles,
                 reconciliationResult = recon,
-                cumulativeRollup = rollup,
                 careerMilestones = milestones,
                 groupedMonths = grouped,
                 isLoading = false,
                 errorMessage = null,
             )
         }
-        recalculatePayFixationIfActive(payslip, initialContext)
+        launchCalculation(initialContext)
     }
 
     fun selectPayslip(payslip: ParsedPayslip) {
@@ -126,19 +134,8 @@ class PcdaoAuditViewModel(
         }
 
         val updatedContext = syncContextWithTile(currentContext, tileId, newTileIds)
-        val payslip = _uiState.value.selectedPayslip
-        val newRecon = payslip?.let { reconciler.reconcile(it, updatedContext) }
-        val newRollup = rollupEngine.calculateRollup(_uiState.value.availablePayslips, updatedContext)
-
-        _uiState.update {
-            it.copy(
-                activeContext = updatedContext,
-                reconciliationResult = newRecon ?: it.reconciliationResult,
-                cumulativeRollup = newRollup,
-            )
-        }
-
-        if (payslip != null) recalculatePayFixationIfActive(payslip, updatedContext)
+        _uiState.update { it.copy(activeContext = updatedContext) }
+        launchCalculation(updatedContext)
     }
 
     private fun syncContextWithTile(
@@ -172,49 +169,58 @@ class PcdaoAuditViewModel(
         }
 
         val updatedContext = _uiState.value.activeContext.copy(activeSpecializedFactors = currentFactors)
-        val payslip = _uiState.value.selectedPayslip
-        val newRecon = payslip?.let { reconciler.reconcile(it, updatedContext) }
-        val newRollup = rollupEngine.calculateRollup(_uiState.value.availablePayslips, updatedContext)
-
-        _uiState.update {
-            it.copy(
-                activeContext = updatedContext,
-                reconciliationResult = newRecon ?: it.reconciliationResult,
-                cumulativeRollup = newRollup,
-            )
-        }
+        _uiState.update { it.copy(activeContext = updatedContext) }
+        launchCalculation(updatedContext)
     }
 
-    private fun recalculatePayFixationIfActive(
-        payslip: ParsedPayslip,
-        context: ActiveSituationalContext,
-    ) {
-        if (!context.activeTileIds.contains(SituationalTileKeys.PROMOTION_ACTIVE)) {
-            _uiState.update { it.copy(payFixationResult = null) }
-            return
-        }
+    private fun launchCalculation(context: ActiveSituationalContext) {
+        calculationJob?.cancel()
+        calculationJob =
+            scope.launch(defaultDispatcher) {
+                val payslip = _uiState.value.selectedPayslip
+                val allPayslips = _uiState.value.availablePayslips
+                val recon = payslip?.let { reconciler.reconcile(it, context) }
+                coroutineContext.ensureActive()
+                val rollup = rollupEngine.calculateRollup(allPayslips, context)
+                coroutineContext.ensureActive()
+                val fixation = calculatePayFixation(payslip, context)
+                coroutineContext.ensureActive()
 
-        scope.launch {
-            try {
-                val payMatrix = rulesRepository.getPayMatrix()
-                val fromLevel = context.inferredFlags.inferredRankLevel ?: "10"
-                val toLevel = if (fromLevel == "10") "11" else "12A"
-                val optimizer = PayFixationOptimizer(payMatrix)
-                val result =
-                    optimizer.optimizePromotion(
-                        PayFixationRequest(
-                            fromLevel = fromLevel,
-                            fromStage = 8,
-                            toLevel = toLevel,
-                            promotionDate = "2026-03-15",
-                            dniMonth = 7,
-                            mspMonthly = payslip.earnings.militaryServicePay.toInt().takeIf { it > 0 } ?: 15500,
-                        ),
+                _uiState.update {
+                    it.copy(
+                        reconciliationResult = recon ?: it.reconciliationResult,
+                        cumulativeRollup = rollup,
+                        payFixationResult = fixation,
                     )
-                _uiState.update { it.copy(payFixationResult = result) }
-            } catch (e: Exception) {
-                // Keep UI functional even if matrix load fails
+                }
             }
+    }
+
+    private suspend fun calculatePayFixation(
+        payslip: ParsedPayslip?,
+        context: ActiveSituationalContext,
+    ): PayFixationResult? {
+        if (payslip == null || !context.activeTileIds.contains(SituationalTileKeys.PROMOTION_ACTIVE)) {
+            return null
+        }
+        return try {
+            val payMatrix = rulesRepository.getPayMatrix()
+            val fromLevel = context.inferredFlags.inferredRankLevel ?: "10"
+            val toLevel = if (fromLevel == "10") "11" else "12A"
+            val optimizer = PayFixationOptimizer(payMatrix)
+            optimizer.optimizePromotion(
+                PayFixationRequest(
+                    fromLevel = fromLevel,
+                    fromStage = 8,
+                    toLevel = toLevel,
+                    promotionDate = "2026-03-15",
+                    dniMonth = 7,
+                    mspMonthly = payslip.earnings.militaryServicePay.toInt().takeIf { it > 0 } ?: 15500,
+                ),
+            )
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            null
         }
     }
 

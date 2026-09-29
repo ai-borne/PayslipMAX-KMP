@@ -49,6 +49,7 @@ class PcdaoAuditViewModelStationTest {
             PcdaoAuditViewModel(
                 payslipRepository = repository,
                 rulesRepository = rulesRepository,
+                defaultDispatcher = testDispatcher,
                 coroutineScope = kotlinx.coroutines.CoroutineScope(testDispatcher),
             )
     }
