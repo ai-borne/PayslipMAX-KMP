@@ -63,55 +63,57 @@ capture_step() {
     adb -s "${DEVICE_ID}" exec-out screencap -p > "${dest}"
 }
 
-# 6. Interactive Traversal on Pixel 9 (1080x2424)
-echo "Executing automated visual UI flow..."
+# 6. Interactive Traversal on Pixel 9 (Dynamic UIAutomator Selectors)
+echo "Executing automated visual UI flow using device_automator.py..."
+AUTOMATOR="python3 ${SCRIPT_DIR}/device_automator.py --device ${DEVICE_ID}"
 
 # Step 1: Dashboard
 capture_step "01" "dashboard"
 
-# Step 2: Navigate to Insights tab (x=625, y=2250)
-adb -s "${DEVICE_ID}" shell input tap 625 2250
-sleep 1
-adb -s "${DEVICE_ID}" shell input swipe 540 1800 540 1000 300
+# Step 2: Navigate to Insights tab (Dynamic text/desc selector)
+echo "Navigating to Insights tab..."
+${AUTOMATOR} tap --text "Insights" || ${AUTOMATOR} tap --desc "Insights"
 sleep 1
 capture_step "02" "insights_screen"
 
-# Step 3: Open PayslipMax AI card (x=770, y=1900)
-adb -s "${DEVICE_ID}" shell input tap 770 1900
+# Step 3: Open PayslipMax AI card (Dynamic testTag/res-id selector with auto-scroll)
+echo "Opening PayslipMax AI Cockpit..."
+${AUTOMATOR} tap --res-id "pcdao_card" --scrolls 4 || ${AUTOMATOR} tap --contains "PayslipMax AI" --scrolls 4
 sleep 2
 capture_step "03" "pcdao_cockpit"
 
-# Step 4: Scroll down to Situational Matrix
-adb -s "${DEVICE_ID}" shell input swipe 540 1800 540 600 300
-sleep 1
+# Step 4: Scroll down to Situational Matrix if needed
+echo "Inspecting Situational Matrix..."
+${AUTOMATOR} wait-for --res-id "posting_peace_tile" --timeout 5 || ${AUTOMATOR} swipe --direction down
 capture_step "04" "situational_matrix"
 
-# Step 5: Open "+ Add Specialized Factor" bottom sheet (x=700, y=1620)
-adb -s "${DEVICE_ID}" shell input tap 700 1620
+# Step 5: Open "+ Add Specialized Factor" bottom sheet (Dynamic testTag)
+echo "Opening Specialized Factors sheet..."
+${AUTOMATOR} tap --res-id "add_factor_button" --scrolls 2 || ${AUTOMATOR} tap --contains "Specialized Factor" --scrolls 2
 sleep 1
 capture_step "05" "specialized_factors_sheet"
 
-# Step 6: Select MARCOS (x=765, y=1030) and tap Apply (x=540, y=2280)
-adb -s "${DEVICE_ID}" shell input tap 765 1030
-sleep 1
-adb -s "${DEVICE_ID}" shell input tap 540 2280
+# Step 6: Select MARCOS (Dynamic testTag) and tap Apply
+echo "Selecting MARCOS Special Forces factor..."
+${AUTOMATOR} tap --res-id "marcos_checkbox" --scrolls 3 || ${AUTOMATOR} tap --contains "MARCOS" --scrolls 3
+${AUTOMATOR} tap --res-id "apply_factors_button" --scrolls 1 || ${AUTOMATOR} tap --contains "Apply" --scrolls 1
 sleep 1
 
-# Step 7: Toggle Peace UA tile (x=400, y=980) to trigger collision with HAFAA
-adb -s "${DEVICE_ID}" shell input tap 400 980
-sleep 1
-adb -s "${DEVICE_ID}" shell input swipe 540 1800 540 800 300
+# Step 7: Toggle Peace UA tile to trigger collision with HAFAA (Dynamic testTag)
+echo "Toggling Peace Station to trigger TPTA vs HAFAA collision..."
+${AUTOMATOR} tap --res-id "posting_peace_tile" --scrolls 2 || ${AUTOMATOR} tap --contains "Peace (Pune" --scrolls 2
 sleep 1
 capture_step "06" "collision_hazard_detected"
 
-# Step 8: Tap 1-Tap PCDA(O) Redressal Kit (x=750, y=1780)
-adb -s "${DEVICE_ID}" shell input tap 750 1780
+# Step 8: Tap 1-Tap PCDA(O) Redressal Kit (Dynamic testTag)
+echo "Triggering 1-Tap PCDA(O) Redressal Kit..."
+${AUTOMATOR} tap --res-id "redressal_kit_button" --scrolls 3 || ${AUTOMATOR} tap --contains "Redressal Kit" --scrolls 3
 sleep 1
-capture_step "07" "claim_generator_list"
+capture_step "07" "redressal_modal_open"
 
-# Step 9: Open formal letter draft (x=300, y=770)
-adb -s "${DEVICE_ID}" shell input tap 300 770
-sleep 1
+# Step 9: Verify formal representation letter draft preview
+echo "Verifying formal letter preview..."
+${AUTOMATOR} wait-for --contains "Representation" --timeout 5 || sleep 1
 capture_step "08" "official_representation_draft"
 
 # Clean return to cockpit

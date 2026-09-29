@@ -14,8 +14,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
+import com.payslipmax.pdfparser.ui.pcdao.TestTags
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
@@ -34,10 +36,17 @@ fun PremiumToolsSection(
             color = MaterialTheme.colorScheme.primary,
         )
         tools.forEach { tool ->
+            val toolModifier =
+                if (tool.target == Screen.PcdaoAudit) {
+                    Modifier.testTag(TestTags.PCDAO_CARD)
+                } else {
+                    Modifier
+                }
             PremiumToolCard(
                 spec = tool,
                 // Non-null by construction: quickAccessTools() filters out entries with a null target.
                 onClick = { onNavigateTo(requireNotNull(tool.target)) },
+                modifier = toolModifier,
             )
         }
     }
@@ -55,6 +64,7 @@ private fun PremiumToolCard(
     modifier: Modifier = Modifier,
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
         colors =

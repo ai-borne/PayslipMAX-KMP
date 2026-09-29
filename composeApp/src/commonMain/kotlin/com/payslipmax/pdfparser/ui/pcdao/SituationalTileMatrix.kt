@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.payslipmax.pcdao.reconciliation.ActiveSituationalContext
@@ -145,10 +146,12 @@ private fun TileRow(
     val borderColor = if (tile.isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
     val bgColor = if (tile.isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.08f) else Color.Transparent
 
+    val isPeace = tile.id == SituationalTileKeys.POST_PEACE_HIGHER
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
+                .then(if (isPeace) Modifier.testTag(TestTags.POSTING_PEACE_TILE) else Modifier)
                 .border(BorderStroke(1.dp, borderColor), RoundedCornerShape(8.dp))
                 .background(bgColor, RoundedCornerShape(8.dp))
                 .clickable(onClick = onClick)
@@ -221,6 +224,7 @@ private fun SpecializedFactorsRow(
         }
         Button(
             onClick = onOpenSheet,
+            modifier = Modifier.testTag(TestTags.ADD_FACTOR_BUTTON),
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         ) {

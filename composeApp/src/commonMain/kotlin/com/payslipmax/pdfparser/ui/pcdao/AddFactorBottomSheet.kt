@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -58,7 +59,7 @@ fun AddFactorBottomSheet(
                 }
                 Button(
                     onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag(TestTags.APPLY_FACTORS_BUTTON),
                     shape = RoundedCornerShape(8.dp),
                 ) {
                     Text(
@@ -96,6 +97,7 @@ private fun FactorCatalogRow(
 ) {
     val borderColor = if (entry.isActive) Color(0xFF34D399) else MaterialTheme.colorScheme.outlineVariant
     val bgColor = if (entry.isActive) Color(0xFF34D399).copy(alpha = 0.08f) else Color.Transparent
+    val isMarcos = entry.factor == SpecializedMilitaryFactor.MARCOS_SPECIAL_FORCES
 
     Row(
         modifier =
@@ -121,7 +123,10 @@ private fun FactorCatalogRow(
         Checkbox(
             checked = entry.isActive,
             onCheckedChange = { onToggle() },
-            modifier = Modifier.padding(start = 6.dp),
+            modifier =
+                Modifier
+                    .padding(start = 6.dp)
+                    .then(if (isMarcos) Modifier.testTag(TestTags.MARCOS_CHECKBOX) else Modifier),
         )
     }
 }
