@@ -8,6 +8,7 @@ class OnboardingManagerTest {
     private class FakeOnboardingStorage(
         private var hasCompletedOnboarding: Boolean = false,
         private var hasSeenUploadCoachmark: Boolean = false,
+        private var hasSeenPcdaoAuditIntro: Boolean = false,
     ) : OnboardingStorage {
         override fun getHasCompletedOnboarding(): Boolean = hasCompletedOnboarding
 
@@ -19,6 +20,12 @@ class OnboardingManagerTest {
 
         override fun saveHasSeenUploadCoachmark(seen: Boolean) {
             hasSeenUploadCoachmark = seen
+        }
+
+        override fun getHasSeenPcdaoAuditIntro(): Boolean = hasSeenPcdaoAuditIntro
+
+        override fun saveHasSeenPcdaoAuditIntro(seen: Boolean) {
+            hasSeenPcdaoAuditIntro = seen
         }
     }
 
@@ -57,6 +64,23 @@ class OnboardingManagerTest {
     }
 
     @Test
+    fun shouldShowPcdaoAuditIntroTrueByDefault() {
+        val manager = OnboardingManager(FakeOnboardingStorage())
+
+        assertTrue(manager.shouldShowPcdaoAuditIntro())
+    }
+
+    @Test
+    fun shouldShowPcdaoAuditIntroFalseAfterDismissed() {
+        val storage = FakeOnboardingStorage()
+        val manager = OnboardingManager(storage)
+
+        manager.onPcdaoAuditIntroDismissed()
+
+        assertFalse(manager.shouldShowPcdaoAuditIntro())
+    }
+
+    @Test
     fun coachmarkFlagIsIndependentOfOnboardingCompletedFlag() {
         val storage = FakeOnboardingStorage()
         val manager = OnboardingManager(storage)
@@ -65,5 +89,6 @@ class OnboardingManagerTest {
 
         assertTrue(manager.shouldShowCoachmark())
         assertFalse(manager.shouldShowOnboarding())
+        assertTrue(manager.shouldShowPcdaoAuditIntro())
     }
 }

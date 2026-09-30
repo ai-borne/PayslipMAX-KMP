@@ -178,15 +178,19 @@ object AppStringsPcdao {
     // Military Orientation Primer Sheet (Phase 3)
     const val onboardingTopBarGuideDesc = "Orientation Guide"
     const val onboardingTopBarGuideLabel = "Guide"
+    const val onboardingSlide1Icon = "🛡️"
     const val onboardingSlide1Title = "Automated IRLA Statutory Audit"
     const val onboardingSlide1Body =
         "Cross-examines your monthly Individual Running Ledger Account against 7th CPC regulations, MoD circulars, and PCDA(O) rules."
+    const val onboardingSlide2Icon = "🎛️"
     const val onboardingSlide2Title = "Interactive Situational Matrix"
     const val onboardingSlide2Body =
         "Select your operational deployment (Field, High Altitude, Peace, AMC, RR) using 1-Tap Mission Presets to calculate true entitlements."
+    const val onboardingSlide3Icon = "📄"
     const val onboardingSlide3Title = "1-Tap Official Redressal Kit"
     const val onboardingSlide3Body =
         "Generates legally precise representation letters formatted directly to PCDA(O) Pune sections with MoD citations."
+    const val onboardingPagerIndicatorDesc = "Orientation slides indicator"
     const val onboardingBtnNext = "Next"
     const val onboardingBtnBack = "Back"
     const val onboardingBtnEnter = "Enter Cockpit"

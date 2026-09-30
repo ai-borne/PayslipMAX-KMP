@@ -23,6 +23,7 @@ class OnboardingStorageAndroidTest {
 
         assertFalse(storage.getHasCompletedOnboarding())
         assertFalse(storage.getHasSeenUploadCoachmark())
+        assertFalse(storage.getHasSeenPcdaoAuditIntro())
     }
 
     @Test
@@ -34,6 +35,7 @@ class OnboardingStorageAndroidTest {
 
         assertTrue(storage.getHasCompletedOnboarding())
         assertFalse(storage.getHasSeenUploadCoachmark())
+        assertFalse(storage.getHasSeenPcdaoAuditIntro())
     }
 
     @Test
@@ -45,5 +47,18 @@ class OnboardingStorageAndroidTest {
 
         assertTrue(storage.getHasSeenUploadCoachmark())
         assertFalse(storage.getHasCompletedOnboarding())
+        assertFalse(storage.getHasSeenPcdaoAuditIntro())
+    }
+
+    @Test
+    fun realContextRoundTripsPcdaoAuditIntroFlagIndependentlyOfOtherFlags() {
+        ContextHolder.context = RuntimeEnvironment.getApplication()
+        val storage = AndroidOnboardingStorage()
+
+        storage.saveHasSeenPcdaoAuditIntro(true)
+
+        assertTrue(storage.getHasSeenPcdaoAuditIntro())
+        assertFalse(storage.getHasCompletedOnboarding())
+        assertFalse(storage.getHasSeenUploadCoachmark())
     }
 }

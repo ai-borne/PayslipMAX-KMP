@@ -19,4 +19,10 @@ class OnboardingManager(
     fun onCoachmarkDismissed() {
         storage.saveHasSeenUploadCoachmark(true)
     }
+
+    fun shouldShowPcdaoAuditIntro(): Boolean = !storage.getHasSeenPcdaoAuditIntro()
+
+    fun onPcdaoAuditIntroDismissed() {
+        storage.saveHasSeenPcdaoAuditIntro(true)
+    }
 }

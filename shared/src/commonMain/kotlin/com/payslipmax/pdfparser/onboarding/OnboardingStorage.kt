@@ -11,6 +11,10 @@ interface OnboardingStorage {
     fun getHasSeenUploadCoachmark(): Boolean
 
     fun saveHasSeenUploadCoachmark(seen: Boolean)
+
+    fun getHasSeenPcdaoAuditIntro(): Boolean = false
+
+    fun saveHasSeenPcdaoAuditIntro(seen: Boolean) {}
 }
 
 /**

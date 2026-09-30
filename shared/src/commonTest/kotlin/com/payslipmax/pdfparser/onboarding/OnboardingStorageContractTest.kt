@@ -8,6 +8,7 @@ class OnboardingStorageContractTest {
     private class FakeOnboardingStorage(
         private var hasCompletedOnboarding: Boolean = false,
         private var hasSeenUploadCoachmark: Boolean = false,
+        private var hasSeenPcdaoAuditIntro: Boolean = false,
     ) : OnboardingStorage {
         override fun getHasCompletedOnboarding(): Boolean = hasCompletedOnboarding
 
@@ -20,6 +21,12 @@ class OnboardingStorageContractTest {
         override fun saveHasSeenUploadCoachmark(seen: Boolean) {
             hasSeenUploadCoachmark = seen
         }
+
+        override fun getHasSeenPcdaoAuditIntro(): Boolean = hasSeenPcdaoAuditIntro
+
+        override fun saveHasSeenPcdaoAuditIntro(seen: Boolean) {
+            hasSeenPcdaoAuditIntro = seen
+        }
     }
 
     @Test
@@ -28,6 +35,7 @@ class OnboardingStorageContractTest {
 
         assertFalse(storage.getHasCompletedOnboarding())
         assertFalse(storage.getHasSeenUploadCoachmark())
+        assertFalse(storage.getHasSeenPcdaoAuditIntro())
     }
 
     @Test
@@ -38,6 +46,7 @@ class OnboardingStorageContractTest {
 
         assertTrue(storage.getHasCompletedOnboarding())
         assertFalse(storage.getHasSeenUploadCoachmark())
+        assertFalse(storage.getHasSeenPcdaoAuditIntro())
     }
 
     @Test
@@ -48,5 +57,17 @@ class OnboardingStorageContractTest {
 
         assertTrue(storage.getHasSeenUploadCoachmark())
         assertFalse(storage.getHasCompletedOnboarding())
+        assertFalse(storage.getHasSeenPcdaoAuditIntro())
+    }
+
+    @Test
+    fun pcdaoAuditIntroFlagRoundTripsIndependentlyOfOtherFlags() {
+        val storage = FakeOnboardingStorage()
+
+        storage.saveHasSeenPcdaoAuditIntro(true)
+
+        assertTrue(storage.getHasSeenPcdaoAuditIntro())
+        assertFalse(storage.getHasCompletedOnboarding())
+        assertFalse(storage.getHasSeenUploadCoachmark())
     }
 }

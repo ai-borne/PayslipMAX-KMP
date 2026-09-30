@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -35,7 +36,10 @@ import androidx.compose.ui.unit.dp
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 
 @Composable
-internal fun TopNavBar(onBack: () -> Unit) {
+internal fun TopNavBar(
+    onBack: () -> Unit,
+    onGuideClick: (() -> Unit)? = null,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -44,7 +48,7 @@ internal fun TopNavBar(onBack: () -> Unit) {
         IconButton(onClick = onBack) {
             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
         }
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = AppStringsPcdao.screenTitle,
                 style = MaterialTheme.typography.titleLarge,
@@ -56,6 +60,18 @@ internal fun TopNavBar(onBack: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        }
+        if (onGuideClick != null) {
+            IconButton(
+                onClick = onGuideClick,
+                modifier = Modifier.testTag("pcdao_guide_button"),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = AppStringsPcdao.onboardingTopBarGuideDesc,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
     }
 }

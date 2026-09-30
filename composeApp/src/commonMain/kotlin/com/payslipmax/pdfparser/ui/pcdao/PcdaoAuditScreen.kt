@@ -14,10 +14,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.payslipmax.pcdao.redressal.RedressalLetter
+import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipViewModel
@@ -34,6 +36,7 @@ fun PcdaoAuditScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     onNavigateToRepresentation: ((RedressalLetter) -> Unit)? = null,
+    onboardingManager: OnboardingManager = remember { OnboardingManager() },
 ) {
     val selectedPayslip = viewModel.uiState.collectAsState().value.selectedPayslip
     val auditViewModel = remember { PcdaoAuditViewModel(viewModel.repository, initialSelectedPayslip = selectedPayslip) }
@@ -48,6 +51,7 @@ fun PcdaoAuditScreen(
         hasAccess = hasAccess,
         onUpgradeClick = { showUpgradeSheet = true },
         onNavigateToRepresentation = onNavigateToRepresentation,
+        onboardingManager = onboardingManager,
     )
 
     if (showUpgradeSheet) {
@@ -69,6 +73,7 @@ fun PcdaoAuditScreen(
     hasAccess: Boolean = true,
     onUpgradeClick: () -> Unit = {},
     onNavigateToRepresentation: ((RedressalLetter) -> Unit)? = null,
+    onboardingManager: OnboardingManager = remember { OnboardingManager() },
 ) {
     val viewModel = remember { PcdaoAuditViewModel(payslipRepository) }
     PcdaoAuditScreen(
@@ -78,6 +83,7 @@ fun PcdaoAuditScreen(
         hasAccess = hasAccess,
         onUpgradeClick = onUpgradeClick,
         onNavigateToRepresentation = onNavigateToRepresentation,
+        onboardingManager = onboardingManager,
     )
 }
 
@@ -89,14 +95,27 @@ fun PcdaoAuditScreen(
     hasAccess: Boolean = true,
     onUpgradeClick: () -> Unit = {},
     onNavigateToRepresentation: ((RedressalLetter) -> Unit)? = null,
+    onboardingManager: OnboardingManager = remember { OnboardingManager() },
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showOnboardingSheet by rememberSaveable {
+        mutableStateOf(onboardingManager.shouldShowPcdaoAuditIntro())
+    }
 
     PcdaoAuditDialogs(
         uiState = uiState,
         viewModel = viewModel,
         onNavigateToRepresentation = onNavigateToRepresentation,
     )
+
+    if (showOnboardingSheet) {
+        PcdaoOnboardingSheet(
+            onDismiss = {
+                showOnboardingSheet = false
+                onboardingManager.onPcdaoAuditIntroDismissed()
+            },
+        )
+    }
 
     Box(
         modifier =
@@ -113,6 +132,7 @@ fun PcdaoAuditScreen(
             hasAccess = hasAccess,
             onUpgradeClick = onUpgradeClick,
             onNavigateToRepresentation = onNavigateToRepresentation,
+            onGuideClick = { showOnboardingSheet = true },
         )
     }
 }
@@ -125,12 +145,13 @@ private fun AuditScreenBody(
     hasAccess: Boolean,
     onUpgradeClick: () -> Unit,
     onNavigateToRepresentation: ((RedressalLetter) -> Unit)?,
+    onGuideClick: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        item { TopNavBar(onBack = onBack) }
+        item { TopNavBar(onBack = onBack, onGuideClick = onGuideClick) }
         item {
             MonthSelectorRow(
                 availablePayslips = uiState.availablePayslips,

@@ -7,6 +7,7 @@ class AndroidOnboardingStorage : OnboardingStorage {
     private val prefsName = "payslipmax_onboarding_prefs"
     private val keyHasCompletedOnboarding = "has_completed_onboarding"
     private val keyHasSeenUploadCoachmark = "has_seen_upload_coachmark"
+    private val keyHasSeenPcdaoAuditIntro = "has_seen_pcdao_audit_intro"
 
     override fun getHasCompletedOnboarding(): Boolean {
         val ctx = ContextHolder.context ?: return false
@@ -30,6 +31,18 @@ class AndroidOnboardingStorage : OnboardingStorage {
         val ctx = ContextHolder.context ?: return
         val prefs = ctx.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
         prefs.edit().putBoolean(keyHasSeenUploadCoachmark, seen).apply()
+    }
+
+    override fun getHasSeenPcdaoAuditIntro(): Boolean {
+        val ctx = ContextHolder.context ?: return false
+        val prefs = ctx.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+        return prefs.getBoolean(keyHasSeenPcdaoAuditIntro, false)
+    }
+
+    override fun saveHasSeenPcdaoAuditIntro(seen: Boolean) {
+        val ctx = ContextHolder.context ?: return
+        val prefs = ctx.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(keyHasSeenPcdaoAuditIntro, seen).apply()
     }
 }
 
