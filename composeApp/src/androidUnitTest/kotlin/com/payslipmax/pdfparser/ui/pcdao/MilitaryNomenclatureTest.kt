@@ -29,7 +29,7 @@ class MilitaryNomenclatureTest {
     @Test
     fun screenSubtitle_containsCanonicalMilitaryAuditNomenclatureAndZeroTechJargon() {
         assertEquals(
-            "PCDA(O) Military Financial Intelligence & Audit Engine",
+            "Financial Intelligence & Audit Engine",
             AppStringsPcdao.screenSubtitle,
         )
         assertFalse(AppStringsPcdao.screenSubtitle.contains("Moat", ignoreCase = true))

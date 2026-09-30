@@ -8,7 +8,7 @@ object AppStringsPcdao {
     // Screen & Catalog Metadata
     const val screenIcon = "✨"
     const val screenTitle = "PayslipMax AI"
-    const val screenSubtitle = "PCDA(O) Military Financial Intelligence & Audit Engine"
+    const val screenSubtitle = "Financial Intelligence & Audit Engine"
     const val screenDescription = "Automated PCDA(O) audit, 3-tier situational matrix, and 1-tap redressal kit."
 
     // Month Selector & Vault
