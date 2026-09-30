@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.ui.pcdao
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
@@ -117,5 +118,35 @@ class PcdaoTestTagsUiTest {
             card.performClick()
             waitForIdle()
             assertEquals(Screen.PcdaoAudit, navigatedScreen)
+        }
+
+    @Test
+    fun hazardsKpiCardAndExplainerDialog_haveTestTagsAndInteract() =
+        runComposeUiTest {
+            var hazardCardClicked = false
+            var dialogDismissed = false
+
+            setContent {
+                ImpactCountersStrip(
+                    unclaimedAmount = 10000.0,
+                    hazardAmount = 25000.0,
+                    criticalAlarmsCount = 1,
+                    onHazardCardClick = { hazardCardClicked = true },
+                )
+                HazardExplainerDialog(
+                    onDismiss = { dialogDismissed = true },
+                )
+            }
+
+            val hazardCard = onNodeWithTag(TestTags.HAZARDS_KPI_CARD, useUnmergedTree = true)
+            hazardCard.performClick()
+            assertTrue(hazardCardClicked)
+
+            val dialog = onNodeWithTag(TestTags.HAZARD_EXPLAINER_DIALOG)
+            dialog.assertIsDisplayed()
+
+            val dismissBtn = onNodeWithTag("hazard_explainer_dismiss_button")
+            dismissBtn.performClick()
+            assertTrue(dialogDismissed)
         }
 }

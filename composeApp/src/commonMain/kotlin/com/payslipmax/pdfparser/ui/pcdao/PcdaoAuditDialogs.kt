@@ -11,7 +11,12 @@ internal fun PcdaoAuditDialogs(
     uiState: PcdaoAuditUiState,
     viewModel: PcdaoAuditViewModel,
     onNavigateToRepresentation: ((RedressalLetter) -> Unit)?,
+    showHazardExplainer: Boolean = false,
+    onDismissHazardExplainer: () -> Unit = {},
 ) {
+    if (showHazardExplainer) {
+        HazardExplainerDialog(onDismiss = onDismissHazardExplainer)
+    }
     if (uiState.isAddFactorSheetVisible) {
         AddFactorBottomSheet(
             activeFactors = uiState.activeContext.activeSpecializedFactors,

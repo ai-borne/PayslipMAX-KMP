@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.pcdao
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.payslipmax.pdfparser.ui.screens.CardTint
@@ -25,6 +27,7 @@ fun ImpactCountersStrip(
     hazardAmount: Double,
     criticalAlarmsCount: Int,
     modifier: Modifier = Modifier,
+    onHazardCardClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -42,7 +45,11 @@ fun ImpactCountersStrip(
             value = formatCurrency(hazardAmount),
             subtitle = AppStringsPcdao.kpiHazardsSubtitle,
             valueColor = if (hazardAmount > 0.0) Color(0xFFF87171) else Color(0xFF94A3B8),
-            modifier = Modifier.weight(1f),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .testTag(TestTags.HAZARDS_KPI_CARD),
+            onClick = onHazardCardClick,
         )
         KpiCard(
             title = AppStringsPcdao.kpiAlarmsTitle,
@@ -61,9 +68,10 @@ private fun KpiCard(
     subtitle: String,
     valueColor: Color,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     FlatBorderedCard(
-        modifier = modifier,
+        modifier = modifier.then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         tint = CardTint.Neutral,
         contentSpacing = 4.dp,
     ) {

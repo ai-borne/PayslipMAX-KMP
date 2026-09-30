@@ -101,11 +101,14 @@ fun PcdaoAuditScreen(
     var showOnboardingSheet by rememberSaveable {
         mutableStateOf(onboardingManager.shouldShowPcdaoAuditIntro())
     }
+    var showHazardExplainer by rememberSaveable { mutableStateOf(false) }
 
     PcdaoAuditDialogs(
         uiState = uiState,
         viewModel = viewModel,
         onNavigateToRepresentation = onNavigateToRepresentation,
+        showHazardExplainer = showHazardExplainer,
+        onDismissHazardExplainer = { showHazardExplainer = false },
     )
 
     if (showOnboardingSheet) {
@@ -133,6 +136,7 @@ fun PcdaoAuditScreen(
             onUpgradeClick = onUpgradeClick,
             onNavigateToRepresentation = onNavigateToRepresentation,
             onGuideClick = { showOnboardingSheet = true },
+            onHazardClick = { showHazardExplainer = true },
         )
     }
 }
@@ -146,6 +150,7 @@ private fun AuditScreenBody(
     onUpgradeClick: () -> Unit,
     onNavigateToRepresentation: ((RedressalLetter) -> Unit)?,
     onGuideClick: () -> Unit,
+    onHazardClick: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -162,7 +167,7 @@ private fun AuditScreenBody(
         if (uiState.availablePayslips.isEmpty() && !uiState.isLoading) {
             item { EmptyVaultState() }
         } else {
-            auditContentItems(uiState, viewModel, hasAccess, onUpgradeClick, onNavigateToRepresentation)
+            auditContentItems(uiState, viewModel, hasAccess, onUpgradeClick, onNavigateToRepresentation, onHazardClick)
         }
     }
 }
@@ -173,8 +178,9 @@ private fun LazyListScope.auditContentItems(
     hasAccess: Boolean,
     onUpgradeClick: () -> Unit,
     onNavigateToRepresentation: ((RedressalLetter) -> Unit)?,
+    onHazardClick: () -> Unit,
 ) {
-    auditBannerItems(uiState, viewModel, hasAccess, onUpgradeClick)
+    auditBannerItems(uiState, viewModel, hasAccess, onUpgradeClick, onHazardClick)
     auditFeedAndMilestonesItems(uiState, viewModel, hasAccess, onUpgradeClick, onNavigateToRepresentation)
 }
 
@@ -183,6 +189,7 @@ private fun LazyListScope.auditBannerItems(
     viewModel: PcdaoAuditViewModel,
     hasAccess: Boolean,
     onUpgradeClick: () -> Unit,
+    onHazardClick: () -> Unit,
 ) {
     if (!hasAccess && uiState.filteredDiscrepancies.isNotEmpty()) {
         item {
@@ -198,6 +205,7 @@ private fun LazyListScope.auditBannerItems(
             unclaimedAmount = uiState.unclaimedTotal,
             hazardAmount = uiState.hazardTotal,
             criticalAlarmsCount = uiState.alarmsCount,
+            onHazardCardClick = onHazardClick,
         )
     }
     if (uiState.hasCumulativeArrears && uiState.cumulativeRollup != null) {

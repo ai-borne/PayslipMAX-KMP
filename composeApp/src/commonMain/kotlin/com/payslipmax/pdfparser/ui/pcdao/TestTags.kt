@@ -12,4 +12,7 @@ object TestTags {
     const val APPLY_FACTORS_BUTTON = "apply_factors_button"
     const val REDRESSAL_KIT_BUTTON = "redressal_kit_button"
     const val PRESET_CAROUSEL = "preset_carousel"
+    const val HAZARDS_KPI_CARD = "hazards_kpi_card"
+    const val HAZARD_EXPLAINER_DIALOG = "hazard_explainer_dialog"
+    const val MATRIX_SCROLL_CUE = "matrix_scroll_cue"
 }

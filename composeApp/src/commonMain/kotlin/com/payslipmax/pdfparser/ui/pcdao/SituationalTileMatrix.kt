@@ -15,8 +15,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -50,7 +48,7 @@ fun SituationalTileMatrix(
             MatrixHeader()
             MissionPresetsCarousel(activePresetId, onPresetSelected, Modifier.padding(bottom = 6.dp))
             SpecializedFactorsRow(activeContext.activeSpecializedFactors.size, onOpenAddFactorSheet)
-            CategoryTabBar(selectedCategory, onCategorySelected)
+            SituationalCategoryTabBar(selectedCategory, onCategorySelected)
             CategoryTilesList(CategoryTileCatalog.getTilesForCategory(selectedCategory, activeContext, autoInferredTileIds), onToggleTile)
         }
     }
@@ -71,43 +69,6 @@ private fun MatrixHeader() {
                     .padding(horizontal = 6.dp, vertical = 2.dp),
         ) {
             Text(AppStringsPcdao.matrixActiveBadge, style = MaterialTheme.typography.labelSmall, color = Color(0xFFC084FC), fontWeight = FontWeight.Bold)
-        }
-    }
-}
-
-@Composable
-private fun CategoryTabBar(
-    selectedCategory: SituationalCategory,
-    onCategorySelected: (SituationalCategory) -> Unit,
-) {
-    val categories = SituationalCategory.values()
-    val titles =
-        listOf(
-            AppStringsPcdao.tabPostingOps,
-            AppStringsPcdao.tabHousingTlc,
-            AppStringsPcdao.tabChildrenCea,
-            AppStringsPcdao.tabDutyLeave,
-            AppStringsPcdao.tabCareerCadres,
-            AppStringsPcdao.tabFundsRetirement,
-        )
-    ScrollableTabRow(
-        selectedTabIndex = selectedCategory.ordinal,
-        edgePadding = 0.dp,
-        modifier = Modifier.fillMaxWidth(),
-        containerColor = Color.Transparent,
-    ) {
-        categories.forEachIndexed { index, cat ->
-            Tab(
-                selected = selectedCategory == cat,
-                onClick = { onCategorySelected(cat) },
-                text = {
-                    Text(
-                        text = titles.getOrElse(index) { cat.name },
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = if (selectedCategory == cat) FontWeight.Bold else FontWeight.Normal,
-                    )
-                },
-            )
         }
     }
 }
