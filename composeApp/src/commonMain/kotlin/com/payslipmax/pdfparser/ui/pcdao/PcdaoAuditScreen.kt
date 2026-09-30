@@ -35,7 +35,8 @@ fun PcdaoAuditScreen(
     modifier: Modifier = Modifier,
     onNavigateToRepresentation: ((RedressalLetter) -> Unit)? = null,
 ) {
-    val auditViewModel = remember { PcdaoAuditViewModel(viewModel.repository) }
+    val selectedPayslip = viewModel.uiState.collectAsState().value.selectedPayslip
+    val auditViewModel = remember { PcdaoAuditViewModel(viewModel.repository, initialSelectedPayslip = selectedPayslip) }
     val hasAccess = viewModel.rememberHasAccess(FeatureGate.PAYSLIPMAX_AI)
     val premiumPrice by viewModel.premiumPriceState.collectAsState()
     var showUpgradeSheet by remember { mutableStateOf(false) }

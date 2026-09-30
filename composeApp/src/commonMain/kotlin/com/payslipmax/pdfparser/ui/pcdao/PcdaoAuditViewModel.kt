@@ -43,6 +43,7 @@ class PcdaoAuditViewModel(
     private val milestoneAuditor: CareerMilestoneAuditor = CareerMilestoneAuditor(),
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
     coroutineScope: CoroutineScope? = null,
+    private val initialSelectedPayslip: ParsedPayslip? = null,
 ) : ViewModel() {
     private val scope: CoroutineScope = coroutineScope ?: viewModelScope
     private val _uiState = MutableStateFlow(PcdaoAuditUiState())
@@ -63,7 +64,10 @@ class PcdaoAuditViewModel(
             try {
                 payslipRepository.getAllPayslips().collect { list ->
                     val newestFirst = VaultMonthGroupMapper.sortNewestFirst(list)
-                    val nextSelected = _uiState.value.selectedPayslip ?: newestFirst.firstOrNull()
+                    val nextSelected =
+                        _uiState.value.selectedPayslip
+                            ?: initialSelectedPayslip?.let { init -> newestFirst.find { it.dateStr == init.dateStr } }
+                            ?: newestFirst.firstOrNull()
                     if (nextSelected != null) {
                         applyPayslipSelection(newestFirst, nextSelected)
                     } else {

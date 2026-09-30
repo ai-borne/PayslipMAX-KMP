@@ -26,6 +26,7 @@ import com.payslipmax.pdfparser.ui.onFilePicked
 import com.payslipmax.pdfparser.ui.onImportPasswordChanged
 import com.payslipmax.pdfparser.ui.onSubmitImportPassword
 import com.payslipmax.pdfparser.ui.onToggleImportPasswordVisibility
+import com.payslipmax.pdfparser.ui.pcdao.DashboardAuditBannerCard
 import com.payslipmax.pdfparser.ui.saveDashboardScrollPosition
 import com.payslipmax.pdfparser.ui.screens.importflow.ImportPayslipDialog
 import com.payslipmax.pdfparser.ui.startImport
@@ -40,6 +41,7 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
     onboardingManager: OnboardingManager = OnboardingManager(),
     suppressCoachmark: Boolean = false,
+    onNavigateToAudit: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val payslips = uiState.payslips
@@ -69,6 +71,7 @@ fun DashboardScreen(
         showUploadDialog = showUploadDialog,
         onboardingManager = onboardingManager,
         suppressCoachmark = suppressCoachmark,
+        onNavigateToAudit = onNavigateToAudit,
         modifier = modifier,
     )
 
@@ -96,6 +99,7 @@ private fun DashboardContent(
     onboardingManager: OnboardingManager,
     suppressCoachmark: Boolean,
     modifier: Modifier = Modifier,
+    onNavigateToAudit: () -> Unit = {},
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         if (uiState.isLoading && payslips.isEmpty()) {
@@ -111,7 +115,13 @@ private fun DashboardContent(
         } else if (payslips.isEmpty()) {
             EmptyDashboardPlaceholder(Modifier.testTag("dashboard_empty"))
         } else {
-            PopulatedDashboard(payslips, selected, viewModel, Modifier.testTag("dashboard_populated"))
+            PopulatedDashboard(
+                payslips = payslips,
+                selected = selected,
+                viewModel = viewModel,
+                onNavigateToAudit = onNavigateToAudit,
+                modifier = Modifier.testTag("dashboard_populated"),
+            )
         }
         DashboardUploadArea(
             onboardingManager = onboardingManager,
@@ -149,6 +159,7 @@ private fun PopulatedDashboard(
     selected: ParsedPayslip?,
     viewModel: PayslipViewModel,
     modifier: Modifier = Modifier,
+    onNavigateToAudit: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberDashboardScrollState(uiState, viewModel)
@@ -177,6 +188,12 @@ private fun PopulatedDashboard(
         )
 
         selected?.let {
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+            DashboardAuditBannerCard(
+                payslipsCount = payslips.size,
+                onAuditClick = onNavigateToAudit,
+            )
+
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
             StatsGridSection(payslip = it)
 

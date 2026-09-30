@@ -223,6 +223,7 @@ private fun ScreenContent(
                     viewModel = viewModel,
                     onPickPdf = onPickPdf,
                     suppressCoachmark = suppressUploadCoachmark,
+                    onNavigateToAudit = { onNavigate(Screen.PcdaoAudit) },
                 )
         }
     }
@@ -270,6 +271,7 @@ private fun DetailContent(
                         if (bytes != null) onOpenPdf(bytes, payslip.file)
                     }
                 },
+                onNavigateTo = onNavigateTo,
             )
         Screen.FAQ, Screen.PrivacyPolicy, Screen.HelpLegal,
         Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings,

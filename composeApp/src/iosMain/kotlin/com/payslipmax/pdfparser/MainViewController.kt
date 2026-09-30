@@ -154,6 +154,7 @@ class IosNavHost(
                     if (bytes != null) onOpenPdf(bytes, payslip.file)
                 }
             },
+            onNavigateTo = { screen -> bridge.navigateToDetail(screen) },
         )
     }
 

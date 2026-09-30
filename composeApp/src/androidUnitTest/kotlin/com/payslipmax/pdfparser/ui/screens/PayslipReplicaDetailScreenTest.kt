@@ -31,6 +31,7 @@ import org.robolectric.annotation.Config
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -196,5 +197,28 @@ class PayslipReplicaDetailScreenTest {
             onNodeWithText("${AppStrings.replicaOfficerPrefix}Col Vikram Batra").assertIsDisplayed()
             onNodeWithText("${AppStrings.replicaCdaPrefix}99999/Z").assertIsDisplayed()
             onNodeWithText("${AppStrings.replicaPanPrefix}ABCDE1234F").assertIsDisplayed()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testReplicaAuditActionTriggersNavigationAndSelectsPayslip() =
+        runComposeUiTest {
+            var navigatedTo: com.payslipmax.pdfparser.Screen? = null
+            setContent {
+                PayslipReplicaDetailScreen(
+                    viewModel = viewModel,
+                    onBack = {},
+                    onNavigateTo = { navigatedTo = it },
+                )
+            }
+            testDispatcher.scheduler.runCurrent()
+            waitForIdle()
+
+            onNodeWithTag("replica_audit_action_card").performClick()
+            testDispatcher.scheduler.runCurrent()
+            waitForIdle()
+
+            assertEquals(com.payslipmax.pdfparser.Screen.PcdaoAudit, navigatedTo)
+            assertEquals(testDateStr, viewModel.uiState.value.selectedPayslip?.dateStr)
         }
 }
