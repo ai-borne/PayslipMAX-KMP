@@ -197,9 +197,7 @@ object AppStringsPcdao {
     const val onboardingBtnSkip = "Skip"
 
     // Matrix Discovery & Hazard Demystification (Phase 4)
-    const val matrixTabScrollCue = "More tabs →"
-    const val presetsSimulationHint =
-        "⚡ Quick Simulation Baselines — Tap to preview entitlements (safe, non-destructive)"
+    const val presetsSimulationHint = "Simulator to audit your salary"
     const val hazardDialogTitle = "Understanding Recovery Hazards"
     const val hazardDialogBody =
         "This is a statutory audit risk warning, not an active deduction. PCDA(O) Pune routinely initiates retroactive debit recoveries with 18% penal interest when allowances clash (e.g. TPTA drawn during field tenure per TR-230(B)). PayslipMax AI detects these clashes early so you can publish casualty Part II Orders and prevent penal loss."

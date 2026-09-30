@@ -14,5 +14,4 @@ object TestTags {
     const val PRESET_CAROUSEL = "preset_carousel"
     const val HAZARDS_KPI_CARD = "hazards_kpi_card"
     const val HAZARD_EXPLAINER_DIALOG = "hazard_explainer_dialog"
-    const val MATRIX_SCROLL_CUE = "matrix_scroll_cue"
 }

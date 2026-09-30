@@ -16,21 +16,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.payslipmax.pcdao.reconciliation.SituationalCategory
-import kotlinx.coroutines.launch
 
 /**
  * Horizontal scrollable category tab bar for the Situational Matrix.
- * Displays 6 military operational categories with dynamic scroll affordance cue.
+ * Displays 6 military operational categories with unobscured smooth scrolling.
  */
 @Composable
 fun SituationalCategoryTabBar(
@@ -41,25 +36,21 @@ fun SituationalCategoryTabBar(
 ) {
     val categories = SituationalCategory.values()
 
-    Box(modifier = modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(scrollState),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            categories.forEach { cat ->
-                CategoryTabChip(
-                    category = cat,
-                    isSelected = selectedCategory == cat,
-                    onClick = { onCategorySelected(cat) },
-                )
-            }
-        }
-        if (scrollState.canScrollForward) {
-            TabScrollAffordanceCue(scrollState = scrollState, modifier = Modifier.align(Alignment.CenterEnd))
+    Row(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+                .horizontalScroll(scrollState),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        categories.forEach { cat ->
+            CategoryTabChip(
+                category = cat,
+                isSelected = selectedCategory == cat,
+                onClick = { onCategorySelected(cat) },
+            )
         }
     }
 }
@@ -98,52 +89,5 @@ private fun CategoryTabChip(
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             color = contentColor,
         )
-    }
-}
-
-@Composable
-private fun TabScrollAffordanceCue(
-    scrollState: ScrollState,
-    modifier: Modifier = Modifier,
-) {
-    val coroutineScope = rememberCoroutineScope()
-    Box(
-        modifier =
-            modifier
-                .background(
-                    Brush.horizontalGradient(
-                        colors =
-                            listOf(
-                                Color.Transparent,
-                                MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-                            ),
-                    ),
-                )
-                .padding(start = 24.dp),
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .testTag(TestTags.MATRIX_SCROLL_CUE)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .border(
-                        BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
-                        RoundedCornerShape(12.dp),
-                    )
-                    .clickable {
-                        coroutineScope.launch {
-                            scrollState.animateScrollTo(scrollState.value + 150)
-                        }
-                    }
-                    .padding(horizontal = 8.dp, vertical = 3.dp),
-        ) {
-            Text(
-                text = AppStringsPcdao.matrixTabScrollCue,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                fontWeight = FontWeight.SemiBold,
-            )
-        }
     }
 }

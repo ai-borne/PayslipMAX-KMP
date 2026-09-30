@@ -1,15 +1,11 @@
 package com.payslipmax.pdfparser.ui.pcdao
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.width
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
-import androidx.compose.ui.unit.dp
 import com.payslipmax.pcdao.reconciliation.ActiveSituationalContext
 import com.payslipmax.pcdao.reconciliation.MissionPresetId
 import com.payslipmax.pcdao.reconciliation.SituationalCategory
@@ -118,20 +114,17 @@ class SituationalMatrixAffordanceTest {
         }
 
     @Test
-    fun situationalCategoryTabBar_displaysScrollCue_whenCanScrollForward() =
+    fun situationalCategoryTabBar_rendersAllCategories_unobscured() =
         runComposeUiTest {
             setContent {
-                Box(modifier = Modifier.width(150.dp)) {
-                    SituationalCategoryTabBar(
-                        selectedCategory = SituationalCategory.POSTING_OPS,
-                        onCategorySelected = {},
-                    )
-                }
+                SituationalCategoryTabBar(
+                    selectedCategory = SituationalCategory.POSTING_OPS,
+                    onCategorySelected = {},
+                )
             }
             waitForIdle()
 
-            val cueNode = onNodeWithTag(TestTags.MATRIX_SCROLL_CUE, useUnmergedTree = true)
-            cueNode.assertExists()
-            cueNode.assertIsDisplayed()
+            onNodeWithText(AppStringsPcdao.tabPostingOps).assertIsDisplayed()
+            onNodeWithText(AppStringsPcdao.tabHousingTlc).assertIsDisplayed()
         }
 }

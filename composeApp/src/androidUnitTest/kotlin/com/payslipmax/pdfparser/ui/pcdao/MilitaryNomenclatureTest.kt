@@ -111,7 +111,7 @@ class MilitaryNomenclatureTest {
         assertTrue(AppStringsPcdao.hazardDialogBody.contains("TR-230(B)"))
         assertTrue(AppStringsPcdao.hazardDialogBody.contains("18% penal interest"))
         assertTrue(AppStringsPcdao.hazardDialogBody.contains("Part II Orders"))
-        assertTrue(AppStringsPcdao.presetsSimulationHint.contains("safe, non-destructive"))
+        assertTrue(AppStringsPcdao.presetsSimulationHint.contains("Simulator to audit your salary"))
     }
 
     @Test
