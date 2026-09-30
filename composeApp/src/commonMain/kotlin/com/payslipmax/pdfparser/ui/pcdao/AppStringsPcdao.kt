@@ -8,7 +8,7 @@ object AppStringsPcdao {
     // Screen & Catalog Metadata
     const val screenIcon = "✨"
     const val screenTitle = "PayslipMax AI"
-    const val screenSubtitle = "PCDA(O) Financial Intelligence & Moat Engine"
+    const val screenSubtitle = "PCDA(O) Military Financial Intelligence & Audit Engine"
     const val screenDescription = "Automated PCDA(O) audit, 3-tier situational matrix, and 1-tap redressal kit."
 
     // Month Selector & Vault
@@ -19,7 +19,7 @@ object AppStringsPcdao {
 
     // Top Impact KPI Counters Strip
     const val kpiUnclaimedTitle = "💰 Unclaimed Money"
-    const val kpiUnclaimedSubtitle = "Annual statutory dues left on table"
+    const val kpiUnclaimedSubtitle = "Annual statutory dues underdrawn"
     const val kpiHazardsTitle = "⚠️ Recovery Hazards"
     const val kpiHazardsSubtitle = "Risk of 18% penal debit recovery"
     const val kpiAlarmsTitle = "🚨 Critical Alarms"
@@ -159,4 +159,45 @@ object AppStringsPcdao {
     const val btnGenerateCumulativeLetter = "📄 Multi-Month Cumulative Claim Kit"
 
     fun formatMilestoneShowAll(count: Int): String = milestoneShowAll.replace("%d", count.toString())
+
+    // Dashboard AI Audit Discovery Banner (Phase 2)
+    const val dashboardBannerTitle = "PCDA(O) Military Financial Intelligence"
+    const val dashboardBannerSubtitleZero = "Import your first payslip to unlock 7th CPC audit & IRLA reconciliation."
+    const val dashboardBannerSubtitleSingle = "1 statement analyzed across your IRLA (Statement of Account)"
+    const val dashboardBannerSubtitleMultiple = "%d statements analyzed across your IRLA"
+    const val dashboardBannerCta = "Run 1-Tap Audit →"
+    const val replicaAuditCta = "Audit with PayslipMax AI"
+
+    fun formatDashboardStatementsAnalyzed(count: Int): String =
+        when (count) {
+            0 -> dashboardBannerSubtitleZero
+            1 -> dashboardBannerSubtitleSingle
+            else -> dashboardBannerSubtitleMultiple.replace("%d", count.toString())
+        }
+
+    // Military Orientation Primer Sheet (Phase 3)
+    const val onboardingTopBarGuideDesc = "Orientation Guide"
+    const val onboardingTopBarGuideLabel = "Guide"
+    const val onboardingSlide1Title = "Automated IRLA Statutory Audit"
+    const val onboardingSlide1Body =
+        "Cross-examines your monthly Individual Running Ledger Account against 7th CPC regulations, MoD circulars, and PCDA(O) rules."
+    const val onboardingSlide2Title = "Interactive Situational Matrix"
+    const val onboardingSlide2Body =
+        "Select your operational deployment (Field, High Altitude, Peace, AMC, RR) using 1-Tap Mission Presets to calculate true entitlements."
+    const val onboardingSlide3Title = "1-Tap Official Redressal Kit"
+    const val onboardingSlide3Body =
+        "Generates legally precise representation letters formatted directly to PCDA(O) Pune sections with MoD citations."
+    const val onboardingBtnNext = "Next"
+    const val onboardingBtnBack = "Back"
+    const val onboardingBtnEnter = "Enter Cockpit"
+    const val onboardingBtnSkip = "Skip"
+
+    // Matrix Discovery & Hazard Demystification (Phase 4)
+    const val matrixTabScrollCue = "More tabs →"
+    const val presetsSimulationHint =
+        "⚡ Quick Simulation Baselines — Tap to preview entitlements (safe, non-destructive)"
+    const val hazardDialogTitle = "Understanding Recovery Hazards"
+    const val hazardDialogBody =
+        "This is a statutory audit risk warning, not an active deduction. PCDA(O) Pune routinely initiates retroactive debit recoveries with 18% penal interest when allowances clash (e.g. TPTA drawn during field tenure per TR-230(B)). PayslipMax AI detects these clashes early so you can publish casualty Part II Orders and prevent penal loss."
+    const val hazardDialogDismiss = "Understood"
 }
