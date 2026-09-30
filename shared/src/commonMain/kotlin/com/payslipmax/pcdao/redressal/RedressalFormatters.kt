@@ -108,18 +108,10 @@ internal object RedressalFormatters {
     ): String {
         val remarks = req.prayerRemarks?.let { "\n   $it\n" } ?: ""
         val dueStr = formatCurrency(totalDue)
+        val header = buildLetterHeader(recipient, req.ledgerSection, cda, req.rank, name, sNum, dateStr)
+        val signOff = buildLetterSignOff(name, req.rank, cda)
         return """
-            CONFIDENTIAL & OFFICIAL MILITARY CORRESPONDENCE
-            -----------------------------------------------------------------------
-            To,
-            $recipient
-
-            ATTENTION: ${req.ledgerSection}
-            SUBJECT  : FORMAL REPRESENTATION REGARDING DISCREPANCY IN RUNNING LEDGER ACCOUNT (IRLA)
-            CDA A/C  : $cda
-            OFFICER  : ${req.rank} $name ($sNum)
-            DATE     : $dateStr
-            -----------------------------------------------------------------------
+            $header
 
             Sir / Madam,
 
@@ -140,11 +132,44 @@ internal object RedressalFormatters {
 
             Thanking you,
 
-            Yours faithfully,
-
-            ($name)
-            ${req.rank}, Indian Army
-            -----------------------------------------------------------------------
+            $signOff
             """.trimIndent()
     }
+
+    private fun buildLetterHeader(
+        recipient: String,
+        section: String,
+        cda: String,
+        rank: String,
+        name: String,
+        sNum: String,
+        dateStr: String,
+    ): String =
+        """
+        CONFIDENTIAL & OFFICIAL MILITARY CORRESPONDENCE
+        -----------------------------------------------------------------------
+        To,
+        $recipient
+
+        ATTENTION: $section
+        SUBJECT  : FORMAL REPRESENTATION REGARDING DISCREPANCY IN RUNNING LEDGER ACCOUNT (IRLA)
+        CDA A/C  : $cda
+        OFFICER  : $rank $name ($sNum)
+        DATE     : $dateStr
+        -----------------------------------------------------------------------
+        """.trimIndent()
+
+    private fun buildLetterSignOff(
+        name: String,
+        rank: String,
+        cda: String,
+    ): String =
+        """
+        Yours faithfully,
+
+        ($name)
+        $rank, Indian Army
+        CDA A/C: $cda
+        -----------------------------------------------------------------------
+        """.trimIndent()
 }

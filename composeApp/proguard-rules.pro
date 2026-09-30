@@ -8,6 +8,34 @@
 
 # 2. Kotlinx Serialization
 -keepattributes *Annotation*,ElementValuePairs
+-keepclassmembers class * {
+    @kotlinx.serialization.Serializable <fields>;
+}
+-keepclassmembers class * {
+    @kotlinx.serialization.SerialName <fields>;
+}
+-keepclassmembers class * extends kotlinx.serialization.KSerializer {
+    *** INSTANCE;
+}
+-keepclassmembers class * {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# 2b. Navigation & Enum Obfuscation Safety (rememberSaveable Screen restoration)
+-keepclassmembers enum com.payslipmax.pdfparser.Screen {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+    **[] $VALUES;
+}
+-keep enum com.payslipmax.pdfparser.Screen { *; }
+-keepclassmembers enum com.payslipmax.pcdao.** {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
 
 # 3. Room Database & SQLite
 -dontwarn androidx.room.paging.**

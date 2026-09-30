@@ -19,6 +19,16 @@ object RedressalLetterGenerator {
     const val CITATION_CMFAA = RedressalTemplates.CITATION_CMFAA
     const val CITATION_LEAVE_TPTA = RedressalTemplates.CITATION_LEAVE_TPTA
 
+    fun inferRankFromPayLevel(
+        level: Int,
+        basicPay: Double = 0.0,
+    ): String = RedressalRankInferer.inferRank(level.toString(), basicPay)
+
+    fun inferRankFromPayLevel(
+        level: String?,
+        basicPay: Double = 0.0,
+    ): String = RedressalRankInferer.inferRank(level, basicPay)
+
     fun generateLetter(
         request: RedressalRequest,
         currentDateStr: String = "28 September 2026",
@@ -59,14 +69,20 @@ object RedressalLetterGenerator {
     fun createRequestFromReconciliation(
         payslip: ParsedPayslip,
         reconciliationResult: ShadowLedgerReconciliationResult,
-        rank: String = "Officer",
+        rank: String? = null,
         serviceNumber: String = "IC-XXXXXX",
         ledgerSection: String? = null,
         maskPii: Boolean = false,
         exportFormat: ExportFormat = ExportFormat.TXT,
     ): RedressalRequest {
+        val resolvedRank =
+            if (!rank.isNullOrBlank() && !rank.equals("Officer", ignoreCase = true)) {
+                rank
+            } else {
+                inferRankFromPayLevel(level = null, basicPay = payslip.earnings.basicPay)
+            }
         val primaryRuleId = reconciliationResult.lineItems.firstOrNull()?.allowanceKey
-        val resolvedSection = ledgerSection ?: resolveLedgerSection(rank, primaryRuleId)
+        val resolvedSection = ledgerSection ?: resolveLedgerSection(resolvedRank, primaryRuleId)
         val lineItems =
             reconciliationResult.lineItems.mapIndexed { idx, diff ->
                 DiffLineItem(
@@ -83,7 +99,7 @@ object RedressalLetterGenerator {
         return RedressalRequest(
             officerName = payslip.officer.name.ifBlank { "Officer Name" },
             serviceNumber = serviceNumber,
-            rank = rank,
+            rank = resolvedRank,
             cdaAccountNo = payslip.officer.accountNo.ifBlank { "12/345/678901" },
             ledgerSection = resolvedSection,
             disputeMonth = payslip.dateStr.ifBlank { payslip.monthName + " " + payslip.year },
@@ -97,13 +113,19 @@ object RedressalLetterGenerator {
     fun createRequestFromCumulativeRollup(
         payslip: ParsedPayslip,
         rollup: com.payslipmax.pcdao.timeline.CumulativeArrearsRollup,
-        rank: String = "Officer",
+        rank: String? = null,
         serviceNumber: String = "IC-XXXXXX",
         ledgerSection: String? = null,
         maskPii: Boolean = false,
         exportFormat: ExportFormat = ExportFormat.TXT,
     ): RedressalRequest {
-        val resolvedSection = ledgerSection ?: resolveLedgerSection(rank)
+        val resolvedRank =
+            if (!rank.isNullOrBlank() && !rank.equals("Officer", ignoreCase = true)) {
+                rank
+            } else {
+                inferRankFromPayLevel(level = null, basicPay = payslip.earnings.basicPay)
+            }
+        val resolvedSection = ledgerSection ?: resolveLedgerSection(resolvedRank)
         val lineItems =
             rollup.monthlyBreakdowns.mapIndexed { idx, item ->
                 DiffLineItem(
@@ -120,7 +142,7 @@ object RedressalLetterGenerator {
         return RedressalRequest(
             officerName = payslip.officer.name.ifBlank { "Officer Name" },
             serviceNumber = serviceNumber,
-            rank = rank,
+            rank = resolvedRank,
             cdaAccountNo = payslip.officer.accountNo.ifBlank { "12/345/678901" },
             ledgerSection = resolvedSection,
             disputeMonth = "${rollup.auditedMonthCount} Months (${rollup.startMonthDateStr} to ${rollup.endMonthDateStr})",
@@ -138,13 +160,7 @@ object RedressalLetterGenerator {
         serviceNumber: String = "IC-XXXXXX",
         sprCityTier: String = "X",
     ): RedressalRequest =
-        RedressalTemplates.createTlcDisallowanceRequest(
-            payslip,
-            entitledHra,
-            rank,
-            serviceNumber,
-            sprCityTier,
-        )
+        RedressalTemplates.createTlcDisallowanceRequest(payslip, entitledHra, rank, serviceNumber, sprCityTier)
 
     fun createNpaOmissionRequest(
         payslip: ParsedPayslip,
@@ -152,12 +168,7 @@ object RedressalLetterGenerator {
         rank: String = "Captain",
         serviceNumber: String = "MS-XXXXXX",
     ): RedressalRequest =
-        RedressalTemplates.createNpaOmissionRequest(
-            payslip,
-            entitledNpa,
-            rank,
-            serviceNumber,
-        )
+        RedressalTemplates.createNpaOmissionRequest(payslip, entitledNpa, rank, serviceNumber)
 
     fun createCfaaUnderpaymentRequest(
         payslip: ParsedPayslip,
@@ -167,14 +178,7 @@ object RedressalLetterGenerator {
         serviceNumber: String = "IC-XXXXXX",
         isModifiedField: Boolean = false,
     ): RedressalRequest =
-        RedressalTemplates.createCfaaUnderpaymentRequest(
-            payslip,
-            entitledCfaa,
-            creditedCfaa,
-            rank,
-            serviceNumber,
-            isModifiedField,
-        )
+        RedressalTemplates.createCfaaUnderpaymentRequest(payslip, entitledCfaa, creditedCfaa, rank, serviceNumber, isModifiedField)
 
     fun createLeaveTptaWaiverRequest(
         payslip: ParsedPayslip,
@@ -183,13 +187,7 @@ object RedressalLetterGenerator {
         serviceNumber: String = "IC-XXXXXX",
         dutyDaysPresent: Int = 1,
     ): RedressalRequest =
-        RedressalTemplates.createLeaveTptaWaiverRequest(
-            payslip,
-            disputedDebitAmount,
-            rank,
-            serviceNumber,
-            dutyDaysPresent,
-        )
+        RedressalTemplates.createLeaveTptaWaiverRequest(payslip, disputedDebitAmount, rank, serviceNumber, dutyDaysPresent)
 
     fun resolveLedgerSection(
         rank: String,
@@ -197,9 +195,16 @@ object RedressalLetterGenerator {
     ): String {
         val upperRank = rank.uppercase()
         val upperRule = lineItemRuleId?.uppercase().orEmpty()
+        val isLtCol =
+            (upperRank.contains("LT") || upperRank.contains("LIEUTENANT")) &&
+                upperRank.contains("COLONEL")
+        val isSeniorOfficer =
+            (upperRank.contains("COLONEL") && !isLtCol) ||
+                upperRank.contains("BRIGADIER") ||
+                upperRank.contains("GENERAL")
+
         return when {
-            upperRank.contains("COLONEL") || upperRank.contains("BRIGADIER") ||
-                upperRank.contains("GENERAL") -> SECTION_L1
+            isSeniorOfficer -> SECTION_L1
             upperRank.contains("AMC") || upperRank.contains("ADC") || upperRank.contains("RVC") ||
                 upperRank.contains("MNS") || upperRule.contains("NPA") -> SECTION_M
             upperRule.contains("TLC") || upperRule.contains("TWO_LOCATION") ||

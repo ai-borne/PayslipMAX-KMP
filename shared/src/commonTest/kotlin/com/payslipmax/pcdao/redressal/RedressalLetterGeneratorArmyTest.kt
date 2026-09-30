@@ -194,4 +194,83 @@ class RedressalLetterGeneratorArmyTest {
         assertTrue(item.statutoryAuthority.contains("Handbook Chapter 10 Para 5"))
         assertTrue(item.statutoryAuthority.contains("SAO 10/S/86"))
     }
+
+    @Test
+    fun testInferRankFromPayLevelCanonicalMappings() {
+        assertEquals("Lieutenant", RedressalLetterGenerator.inferRankFromPayLevel(10, 56100.0))
+        assertEquals("Lieutenant", RedressalLetterGenerator.inferRankFromPayLevel(10, 57800.0))
+        assertEquals("Captain", RedressalLetterGenerator.inferRankFromPayLevel(10, 61300.0))
+        assertEquals("Captain", RedressalLetterGenerator.inferRankFromPayLevel(10, 0.0))
+        assertEquals("Captain", RedressalLetterGenerator.inferRankFromPayLevel("10"))
+        assertEquals("Captain", RedressalLetterGenerator.inferRankFromPayLevel("10B"))
+        assertEquals("Major", RedressalLetterGenerator.inferRankFromPayLevel(11))
+        assertEquals("Major", RedressalLetterGenerator.inferRankFromPayLevel("11", 69400.0))
+        assertEquals("Lt Colonel", RedressalLetterGenerator.inferRankFromPayLevel(12))
+        assertEquals("Lt Colonel", RedressalLetterGenerator.inferRankFromPayLevel("12A", 121200.0))
+        assertEquals("Colonel", RedressalLetterGenerator.inferRankFromPayLevel(13))
+        assertEquals("Colonel", RedressalLetterGenerator.inferRankFromPayLevel("13", 167800.0))
+        assertEquals("Brigadier", RedressalLetterGenerator.inferRankFromPayLevel("13A"))
+        assertEquals("Major General", RedressalLetterGenerator.inferRankFromPayLevel(14))
+        assertEquals("Major General", RedressalLetterGenerator.inferRankFromPayLevel("14", 216000.0))
+    }
+
+    @Test
+    fun testInferRankFromPayLevelFallbacks() {
+        assertEquals("Lieutenant", RedressalLetterGenerator.inferRankFromPayLevel(null, 56100.0))
+        assertEquals("Captain", RedressalLetterGenerator.inferRankFromPayLevel(null, 63100.0))
+        assertEquals("Major", RedressalLetterGenerator.inferRankFromPayLevel(null, 69400.0))
+        assertEquals("Lt Colonel", RedressalLetterGenerator.inferRankFromPayLevel(null, 121200.0))
+        assertEquals("Colonel", RedressalLetterGenerator.inferRankFromPayLevel(null, 167800.0))
+        assertEquals("Major General", RedressalLetterGenerator.inferRankFromPayLevel(null, 216000.0))
+        assertEquals("Serving Officer", RedressalLetterGenerator.inferRankFromPayLevel(null, 0.0))
+        assertEquals("Serving Officer", RedressalLetterGenerator.inferRankFromPayLevel("", 0.0))
+        assertEquals("Serving Officer", RedressalLetterGenerator.inferRankFromPayLevel("INVALID", 0.0))
+        assertEquals("Serving Officer", RedressalLetterGenerator.inferRankFromPayLevel(99, 0.0))
+    }
+
+    @Test
+    fun testFormalMilitarySignOffBlockWithCdaAccount() {
+        val payslip = createDummyPayslip("Major", "Vikram Batra", "01/142/987654")
+        val request =
+            RedressalLetterGenerator.createCfaaUnderpaymentRequest(
+                payslip = payslip,
+                entitledCfaa = 13125.0,
+                creditedCfaa = 10500.0,
+                rank = "Major",
+                serviceNumber = "IC-54321A",
+            )
+        val letter = RedressalLetterGenerator.generateLetter(request)
+        assertTrue(letter.fullBodyText.contains("Yours faithfully,\n\n(Vikram Batra)\nMajor, Indian Army\nCDA A/C: 01/142/987654"))
+
+        val maskedRequest = request.copy(maskPii = true)
+        val maskedLetter = RedressalLetterGenerator.generateLetter(maskedRequest)
+        assertTrue(maskedLetter.fullBodyText.contains("Yours faithfully,\n\n(V. *******)\nMajor, Indian Army\nCDA A/C: 01/14******"))
+    }
+
+    @Test
+    fun testLtColonelLedgerRoutingAndAutoInferredRank() {
+        assertEquals("Section R (Regimental Officers)", RedressalLetterGenerator.resolveLedgerSection("Lt Colonel"))
+        assertEquals("Section R (Regimental Officers)", RedressalLetterGenerator.resolveLedgerSection("Lieutenant Colonel"))
+        assertEquals("Section T (Transportation & Travel Claims)", RedressalLetterGenerator.resolveLedgerSection("Lt Colonel", "TLC"))
+
+        val ltColSlip = createDummyPayslip(rank = "Officer", name = "Sanjay Kumar", accountNo = "02/112/334455", basicPay = 121200.0)
+        val dummyRecon =
+            ShadowLedgerReconciliationResult(
+                lineItems =
+                    listOf(
+                        LedgerDifferenceItem(
+                            allowanceKey = "RH_CFAA",
+                            allowanceName = "CFAA",
+                            creditedAmount = 0.0,
+                            entitledAmount = 10500.0,
+                            authorityRef = "MoD",
+                        ),
+                    ),
+                totalUnclaimedAnnual = 10500.0,
+                summaryMessage = "1 item",
+            )
+        val req = RedressalLetterGenerator.createRequestFromReconciliation(ltColSlip, dummyRecon)
+        assertEquals("Lt Colonel", req.rank)
+        assertEquals("Section R (Regimental Officers)", req.ledgerSection)
+    }
 }

@@ -30,7 +30,8 @@ actual fun sharePdf(
     val document = PdfDocument()
     renderPages(document, PdfLetterFormatter.contentLines(title, bodyText), titlePaint, bodyPaint)
 
-    val file = File(context.cacheDir, fileName)
+    val redressalDir = File(context.cacheDir, "redressal").apply { if (!exists()) mkdirs() }
+    val file = File(redressalDir, fileName)
     FileOutputStream(file).use { document.writeTo(it) }
     document.close()
 
