@@ -1,28 +1,26 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# verify_device.sh — Automated On-Device Visual Verification for PayslipMax AI
+# verify_device.sh — Automated On-Device Hardware Verification for PayslipMax AI
 # Targets: Connected Google Pixel 9 (or auto-detected ADB device)
-# Phase 7 Army Domain Expansion: 8-scenario traversal covering TLC 3-way
-# housing, AMC NPA compounding, Leave TPTA hazard, sticky SSOT month-switch,
-# and 1-Tap Redressal Kit.
+# Phase 6: Release Sign-Off Traversal (Onboarding, Discovery, Matrix Affordance,
+# Hazard Demystification, and Military Redressal Kit Protocol).
 # ==============================================================================
 
 set -euo pipefail
 
-# 1. Resolve workspace root & output directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORKSPACE_ROOT="$(cd "${SCRIPT_DIR}/../../../.." && pwd)"
-OUTPUT_DIR="${1:-${WORKSPACE_ROOT}/build/device_verification/$(date +%Y%m%d_%H%M%S)}"
+OUTPUT_DIR="${1:-${WORKSPACE_ROOT}/build/device_verification/onboarding_release}"
 mkdir -p "${OUTPUT_DIR}"
 
 echo "=========================================================="
 echo "  PayslipMax AI — Automated Pixel 9 Device Verification   "
-echo "  Phase 7: Army Domain Expansion Scenarios                 "
+echo "  Phase 6: Onboarding, Discovery & Release Sign-Off       "
 echo "=========================================================="
 echo "Workspace:  ${WORKSPACE_ROOT}"
 echo "Output Dir: ${OUTPUT_DIR}"
 
-# 2. Pre-flight ADB checks
+# 1. Pre-flight ADB checks
 command -v adb >/dev/null 2>&1 || { echo "ERROR: adb command not found on PATH"; exit 1; }
 
 DEVICE_COUNT=$(adb devices | grep -v "List" | grep "device$" | wc -l | tr -d ' ')
@@ -39,7 +37,7 @@ echo "Target Device: ${DEVICE_MODEL} (${DEVICE_ID})"
 echo "Android:       ${ANDROID_VER}"
 echo "Screen:        ${SCREEN_RES}"
 
-# 3. Wake screen and clear lock if needed
+# 2. Wake screen and clear lock
 ensure_device_awake() {
     local wakefulness
     wakefulness=$(adb -s "${DEVICE_ID}" shell dumpsys power | grep "mWakefulness=" | head -n 1 | tr -d '\r')
@@ -52,15 +50,22 @@ ensure_device_awake() {
 }
 ensure_device_awake
 
-# Set window animations to 0.5x for stable screenshot timing
-echo "Setting animation scales to 0.5x for stable captures..."
-adb -s "${DEVICE_ID}" shell settings put global window_animation_scale 0.5 2>/dev/null || true
-adb -s "${DEVICE_ID}" shell settings put global transition_animation_scale 0.5 2>/dev/null || true
-adb -s "${DEVICE_ID}" shell settings put global animator_duration_scale 0.5 2>/dev/null || true
+# Animation scale controls
+set_animation_scales() {
+    local scale="$1"
+    adb -s "${DEVICE_ID}" shell settings put global window_animation_scale "${scale}" 2>/dev/null || true
+    adb -s "${DEVICE_ID}" shell settings put global transition_animation_scale "${scale}" 2>/dev/null || true
+    adb -s "${DEVICE_ID}" shell settings put global animator_duration_scale "${scale}" 2>/dev/null || true
+}
+set_animation_scales 0.5
 
-# 4. Sideload fresh debug build targeting current user
+# 3. Sideload fresh debug build targeting current user
 echo "Building and installing :composeApp:installDebug..."
 (cd "${WORKSPACE_ROOT}" && ./gradlew :composeApp:installDebug --daemon)
+
+# 4. Reset onboarding preference to test first-time orientation sheet
+echo "Resetting has_seen_pcdao_audit_intro preference..."
+adb -s "${DEVICE_ID}" shell 'run-as in.aiborne.payslipmax sed -i "/has_seen_pcdao_audit_intro/d" shared_prefs/payslipmax_onboarding_prefs.xml' 2>/dev/null || true
 
 # 5. Launch app cleanly
 echo "Launching PayslipMax MainActivity..."
@@ -69,7 +74,6 @@ sleep 1
 adb -s "${DEVICE_ID}" shell am start -n in.aiborne.payslipmax/com.payslipmax.pdfparser.MainActivity
 sleep 3
 
-# Helper: Capture screencap with logged step label
 capture_step() {
     local step_num="$1"
     local step_name="$2"
@@ -78,182 +82,121 @@ capture_step() {
     adb -s "${DEVICE_ID}" exec-out screencap -p > "${dest}"
 }
 
-# Helper: Dynamic UIAutomator tap/wait via device_automator.py
 automator() {
     python3 "${SCRIPT_DIR}/device_automator.py" --device "${DEVICE_ID}" "$@"
 }
 
-# Helper: Optional tap (no exit on failure)
-optional_tap() {
-    automator tap "$@" --optional 2>/dev/null || true
-}
+echo ""
+echo "----------------------------------------------------------"
+echo "  SCENARIO 01: App Launch & Primary Dashboard Discovery   "
+echo "----------------------------------------------------------"
+automator wait-for --res-id "dashboard_audit_banner_card" --timeout 10
+automator wait-for --contains "statements analyzed" --timeout 5
+capture_step "01" "dashboard_discovery"
 
 echo ""
 echo "----------------------------------------------------------"
-echo "  SCENARIO 01: Dashboard Launch State on Pixel 9          "
+echo "  SCENARIO 02 & 03: Enter Cockpit & First-Time Onboarding "
 echo "----------------------------------------------------------"
-capture_step "01" "dashboard"
-
-echo ""
-echo "----------------------------------------------------------"
-echo "  SCENARIO 02: Insights Tab & PayslipMax AI Entry         "
-echo "----------------------------------------------------------"
-echo "Navigating to Insights tab..."
-automator tap --text "Insights" || automator tap --desc "Insights"
-sleep 1
-capture_step "02" "insights_entry"
-
-echo "Opening PayslipMax AI Cockpit..."
-automator tap --res-id "pcdao_card" --scrolls 4 || automator tap --contains "PayslipMax AI" --scrolls 4
-sleep 2
-capture_step "02b" "pcdao_cockpit"
-
-echo ""
-echo "----------------------------------------------------------"
-echo "  SCENARIO 03: Mission Presets Strip — 8 Army Presets     "
-echo "----------------------------------------------------------"
-echo "Verifying horizontal Mission Presets carousel..."
-# Scroll down to ensure the presets strip is visible
-automator swipe --direction down
-sleep 1
-automator wait-for --contains "RR CI Ops" --timeout 8 || automator wait-for --contains "Presets" --timeout 5 || true
-capture_step "03" "mission_presets_strip"
-
-# Tap each preset to verify 1-tap context switch
-echo "Tapping RR CI Ops preset..."
-optional_tap --contains "RR CI Ops" --scrolls 2
-sleep 1
-echo "Tapping Siachen preset..."
-optional_tap --contains "Siachen" --scrolls 2
-sleep 1
-echo "Tapping AMC Hospital preset..."
-optional_tap --contains "AMC" --scrolls 2
-sleep 1
-capture_step "03b" "presets_tap_verification"
-
-echo ""
-echo "----------------------------------------------------------"
-echo "  SCENARIO 04: TLC 3-Way Housing Selector                 "
-echo "----------------------------------------------------------"
-echo "Navigating to Housing & TLC tab..."
-automator tap --contains "Housing" --scrolls 2 || automator tap --text "Housing & TLC" --scrolls 2 || optional_tap --contains "TLC" --scrolls 2
-sleep 1
-capture_step "04" "tlc_3way_housing"
-
-# Verify all 3 TLC options are present
-echo "Verifying SPR HRA option..."
-optional_tap --contains "Family SPR" --scrolls 2
-sleep 1
-capture_step "04b" "tlc_spr_hra_selected"
-
-echo "Verifying Peace Retention option..."
-optional_tap --contains "Peace Retention" --scrolls 2
-sleep 1
-
-echo "Verifying SF Accommodation option..."
-optional_tap --contains "SF Accommodation" --scrolls 2
-sleep 1
-capture_step "04c" "tlc_sf_accomm_selected"
-
-echo ""
-echo "----------------------------------------------------------"
-echo "  SCENARIO 05: AMC Hospital Preset — NPA 20% Compounding  "
-echo "----------------------------------------------------------"
-echo "Applying AMC Hospital mission preset..."
-automator swipe --direction up
-sleep 1
-optional_tap --contains "AMC" --scrolls 3
-sleep 2
-capture_step "05" "amc_npa_compounding"
-
-# Navigate to Career & Cadres tab to verify NPA tile is active
-automator tap --contains "Career" --scrolls 2 || optional_tap --contains "Cadres" --scrolls 2
-sleep 1
-capture_step "05b" "amc_cadre_npa_tile_active"
-
-echo ""
-echo "----------------------------------------------------------"
-echo "  SCENARIO 06: Full-Month Leave — TPTA Collision Hazard   "
-echo "----------------------------------------------------------"
-echo "Navigating to Duty & Leave tab..."
-automator tap --contains "Duty" --scrolls 2 || automator tap --text "Duty & Leave" --scrolls 2 || optional_tap --contains "Leave" --scrolls 2
-sleep 1
-
-echo "Toggling Full-Month Leave tile..."
-optional_tap --res-id "leave_full_month_tile" --scrolls 3
-optional_tap --contains "Full Month Leave" --scrolls 3
-sleep 2
-capture_step "06" "leave_tpta_hazard_alert"
-
-# Scroll down to view hazard detail (principal + 18% interest)
-automator swipe --direction down
-sleep 1
-capture_step "06b" "leave_tpta_hazard_detail"
-
-echo ""
-echo "----------------------------------------------------------"
-echo "  SCENARIO 07: Sticky SSOT Month-Switch Verification      "
-echo "----------------------------------------------------------"
-echo "Navigating back to main cockpit to switch months..."
-adb -s "${DEVICE_ID}" shell input keyevent 4
-sleep 1
-adb -s "${DEVICE_ID}" shell input keyevent 4
-sleep 1
-
-echo "Launching cockpit and switching months on timeline..."
-automator tap --contains "PayslipMax AI" --scrolls 4 || automator tap --res-id "pcdao_card" --scrolls 4 || true
+echo "Tapping Dashboard Audit CTA..."
+automator tap --res-id "dashboard_audit_cta"
 sleep 2
 
-# Swipe timeline to switch months
-echo "Swiping month timeline left (next month)..."
-automator swipe --direction down
+echo "Verifying Slide 1: Automated IRLA Statutory Audit..."
+automator wait-for --contains "IRLA Statutory Audit" --timeout 5
+capture_step "02" "onboarding_slide_1_audit"
+
+echo "Advancing to Slide 2: Situational Matrix..."
+automator tap --text "Next"
 sleep 1
-optional_tap --contains "Timeline" --scrolls 2
+automator wait-for --contains "Situational Matrix" --timeout 5
+capture_step "03" "onboarding_slide_2_matrix"
+
+echo "Advancing to Slide 3: Redressal Kit..."
+automator tap --text "Next"
 sleep 1
-# Attempt month switch via swipe on timeline area
-adb -s "${DEVICE_ID}" shell input swipe 800 400 200 400 400  # horizontal swipe for month change
+automator wait-for --contains "Redressal Kit" --timeout 5
+capture_step "04" "onboarding_slide_3_redressal"
+
+echo "Dismissing Onboarding Sheet with 'Enter Cockpit'..."
+automator tap --text "Enter Cockpit"
 sleep 2
-capture_step "07" "sticky_ssot_month_switch"
+automator wait-for --contains "PayslipMax AI" --timeout 5
+capture_step "05" "pcdao_cockpit_initial"
 
 echo ""
 echo "----------------------------------------------------------"
-echo "  SCENARIO 08: 1-Tap Redressal Kit — TLC / NPA Letter     "
+echo "  SCENARIO 04: Replay Guide Top-Bar Action                "
 echo "----------------------------------------------------------"
-echo "Triggering 1-Tap PCDA(O) Redressal Kit..."
-# NOTE: The Redressal Kit button only appears when a payslip with collision hazards
-# has been loaded. In the automated traversal without a pre-loaded payslip, this
-# step captures the cockpit state for visual proof of routing readiness.
-optional_tap --res-id "redressal_kit_button" --scrolls 4
-optional_tap --contains "Redressal Kit" --scrolls 4
-optional_tap --contains "Redressal" --scrolls 4
-sleep 2
-capture_step "08" "redressal_tlc_letter"
+echo "Tapping Guide button on top bar..."
+automator tap --res-id "pcdao_guide_button"
+sleep 1
+automator wait-for --contains "IRLA Statutory Audit" --timeout 5
+capture_step "06" "guide_replayed"
 
-# Verify formal letter preview text (optional — requires loaded payslip)
-automator wait-for --contains "Representation" --timeout 5 || \
-    automator wait-for --contains "PCDA" --timeout 3 || true
-capture_step "08b" "redressal_formal_letter_preview"
+echo "Dismissing replayed guide via Skip..."
+automator tap --text "Skip"
+sleep 1
+capture_step "07" "cockpit_after_guide"
 
 echo ""
 echo "----------------------------------------------------------"
-echo "  LOOSE WIRING & GOTCHA SWEEP                             "
+echo "  SCENARIO 05: Situational Matrix Tab Affordance          "
 echo "----------------------------------------------------------"
-echo "Capturing final full-screen DPI compliance screenshot..."
-adb -s "${DEVICE_ID}" shell input keyevent 4
+echo "Verifying scroll cue affordance is visible..."
+automator wait-for --res-id "matrix_scroll_cue" --timeout 5
+capture_step "08" "matrix_tabs_scroll_cue_visible"
+
+echo "Tapping scroll cue to scroll category tabs to the end..."
+for i in {1..6}; do
+    automator tap --res-id "matrix_scroll_cue" --scrolls 0 --optional || true
+    sleep 0.5
+done
+automator wait-for --contains "Funds & Release" --timeout 5
+capture_step "09" "matrix_tabs_scrolled_to_end_cue_hidden"
+
+echo ""
+echo "----------------------------------------------------------"
+echo "  SCENARIO 06: Hazard Demystification Dialog              "
+echo "----------------------------------------------------------"
+echo "Tapping Recovery Hazards KPI card..."
+automator tap --res-id "hazards_kpi_card" --scrolls 2
 sleep 1
-adb -s "${DEVICE_ID}" shell input keyevent 4
+automator wait-for --text "Understanding Recovery Hazards" --timeout 5
+automator wait-for --contains "TR-230(B)" --timeout 5
+capture_step "10" "hazard_explainer_dialog"
+
+echo "Dismissing hazard dialog via Understood..."
+automator tap --text "Understood"
 sleep 1
-capture_step "09" "loose_wiring_sweep_final"
+capture_step "11" "cockpit_hazard_dismissed"
+
+echo ""
+echo "----------------------------------------------------------"
+echo "  SCENARIO 07: 1-Tap PCDA(O) Redressal Kit Verification   "
+echo "----------------------------------------------------------"
+echo "Scrolling down to Redressal Kit button..."
+automator tap --res-id "redressal_kit_button" --scrolls 4
+sleep 2
+
+echo "Verifying formal military correspondence & inferred rank..."
+automator wait-for --contains "CONFIDENTIAL & OFFICIAL MILITARY CORRESPONDENCE" --timeout 5
+automator wait-for --contains "Lt Colonel" --timeout 5
+automator wait-for --contains "Yours faithfully" --timeout 5
+capture_step "12" "redressal_kit_dialog"
+
+echo "Dismissing Redressal Kit dialog..."
+automator tap --desc "Close" || adb -s "${DEVICE_ID}" shell input keyevent 4
+sleep 1
+capture_step "13" "release_verified_final"
 
 # Restore animation scales to default
 echo "Restoring animation scales to 1.0x..."
-adb -s "${DEVICE_ID}" shell settings put global window_animation_scale 1.0 2>/dev/null || true
-adb -s "${DEVICE_ID}" shell settings put global transition_animation_scale 1.0 2>/dev/null || true
-adb -s "${DEVICE_ID}" shell settings put global animator_duration_scale 1.0 2>/dev/null || true
+set_animation_scales 1.0
 
 echo ""
 echo "=========================================================="
-echo "  Phase 7 Verification Complete! Screenshots captured:    "
-echo "  Location: ${OUTPUT_DIR}"
+echo "  Phase 6 Hardware Verification Complete! Visual Proof:   "
+echo "  Directory: ${OUTPUT_DIR}"
 echo "=========================================================="
 ls -la "${OUTPUT_DIR}"
