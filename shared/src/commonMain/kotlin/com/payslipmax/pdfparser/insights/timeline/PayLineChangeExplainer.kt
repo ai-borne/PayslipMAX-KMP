@@ -88,7 +88,7 @@ object PayLineChangeExplainer {
             "arrearsTptaDa" -> arrearsReason(from, to, prevMonth, currMonth, current, tptaDaSeparate = true)
             "arrearsTpta" -> tptaArrearsReason(from, to, currMonth, timeline)
             "militaryServicePay" -> mspReason(currMonth, current)
-            "transportAllowance" -> tptaReason(prevMonth, currMonth, timeline)
+            "transportAllowance" -> tptaReason(from, to, prevMonth, currMonth, timeline)
             "houseRentAllowance", "licenseFee" -> quartersReason(prevMonth, currMonth)
             "riskHardshipAllowance" -> postingReason(PostingKind.RISK_HARDSHIP, currMonth.month, timeline, "Risk & Hardship")
             "fieldAllowance" -> postingReason(PostingKind.FIELD, currMonth.month, timeline, "Field")
@@ -178,17 +178,22 @@ object PayLineChangeExplainer {
         }
 
     private fun tptaReason(
+        from: Double,
+        to: Double,
         prevMonth: TimelineMonth,
         currMonth: TimelineMonth,
         timeline: ServiceTimeline,
     ): String? {
+        val prevDa = prevMonth.daPercent
+        val currDa = currMonth.daPercent
+        val daChanged = prevDa != null && currDa != null && prevDa != currDa
+        // TPTA that moved exactly in proportion to DA is DA-linked even in a posting-change month.
+        if (daChanged && abs(to - from * (100 + currDa!!) / (100 + prevDa!!)) <= AMOUNT_TOLERANCE) return "TPTA follows DA: $prevDa%→$currDa%"
         if (TptaAbsenceExplainer.explains(timeline, currMonth.month)) return "Posting change or relocation (Transport Allowance)"
         val prevCity = prevMonth.tptaCity
         val currCity = currMonth.tptaCity
         if (prevCity != null && currCity != null && prevCity != currCity) return "TPTA city class changed ($prevCity→$currCity)"
-        val prevDa = prevMonth.daPercent
-        val currDa = currMonth.daPercent
-        return if (prevDa != null && currDa != null && prevDa != currDa) "TPTA follows DA: $prevDa%→$currDa%" else null
+        return if (daChanged) "TPTA follows DA: $prevDa%→$currDa%" else null
     }
 
     /**

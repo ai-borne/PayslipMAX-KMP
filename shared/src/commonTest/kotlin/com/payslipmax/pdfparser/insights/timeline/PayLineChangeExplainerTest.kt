@@ -105,6 +105,21 @@ class PayLineChangeExplainerTest {
         assertTrue(changes.reasonFor("transportAllowance")!!.contains("posting", ignoreCase = true))
     }
 
+    /**
+     * WHY: found on a real officer's Nov 2024 payslip. A Risk & Hardship posting began the same month DA
+     * rose 50%→53%, and TPTA moved 5400→5508 = exactly 5400 × 1.53/1.50. That is TPTA following DA, not a
+     * posting change; labelling it "posting change" would mislead the user about why their pay moved.
+     */
+    @Test
+    fun tptaMovingInProportionToDaIsExplainedAsFollowingDaEvenInAPostingChangeMonth() {
+        val changes =
+            explainLast(
+                payslip(2024, 10, 140500.0, daPercent = 50.0, tpta = 5400.0),
+                payslip(2024, 11, 140500.0, daPercent = 53.0, tpta = 5508.0, riskHardship = 21125.0),
+            )
+        assertEquals("TPTA follows DA: 50%→53%", changes.reasonFor("transportAllowance"))
+    }
+
     @Test
     fun aPostingChangeExplainsBaseTptaArrearsNotLinkedToADaRise() {
         val changes =
