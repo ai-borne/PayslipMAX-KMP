@@ -59,4 +59,22 @@ class PayAuditFindingsSectionTest {
 
             onNodeWithText("No findings on this payslip — everything checks out.").assertExists()
         }
+
+    /**
+     * WHY: a month's basic-DA and TPTA-DA arrears checks are both type ARREARS_AUDIT / field arrearsDa for
+     * the same month (found on a real Pixel, release build: the unlocked Pay Audit screen crashed with
+     * "Key ARREARS_AUDIT_10/2025 was already used"). Row keys must not assume (type, month) is unique.
+     */
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun rendersTwoFindingsOfTheSameTypeAndMonthWithoutCrashing() =
+        runComposeUiTest {
+            fun arrears(label: String) =
+                Anomaly(type = "ARREARS_AUDIT", field = "arrearsDa", amount = 100.0, month = "10/2025", description = "Verified: $label arrears")
+            val display = PayAuditFindingsDisplay(unlocked = listOf(arrears("DA"), arrears("TPTA DA")), lockedCount = 0, lockedLabels = emptyList())
+            setContent { LazyColumn { payAuditFindingsItems(display = display, onUnlockClick = {}) } }
+
+            onNodeWithText("Verified: DA arrears").assertExists()
+            onNodeWithText("Verified: TPTA DA arrears").assertExists()
+        }
 }

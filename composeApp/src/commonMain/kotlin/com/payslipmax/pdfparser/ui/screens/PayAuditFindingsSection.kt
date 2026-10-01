@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +47,12 @@ fun LazyListScope.payAuditFindingsItems(
                 PayAuditLockedFindingsCard(display = display, onUnlockClick = onUnlockClick)
             }
         else ->
-            items(display.unlocked, key = { "${it.type}_${it.month}" }, contentType = { "finding_row" }) { anomaly ->
+            itemsIndexed(
+                display.unlocked,
+                // (type, month) is not unique: the basic-DA and TPTA-DA arrears checks share both.
+                key = { index, it -> "${it.type}_${it.month}_$index" },
+                contentType = { _, _ -> "finding_row" },
+            ) { _, anomaly ->
                 PayAuditFindingRow(anomaly = anomaly)
             }
     }
