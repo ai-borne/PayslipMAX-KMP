@@ -527,15 +527,24 @@ continuity, per CLAUDE.md's "fail loud" rule — not a sign of unfinished Phase 
   worth re-checking that the Insights-tab `needsReview` gate behaves as expected once more real data exists.
 - **UX redesign (consolidation plan Phase 2, 2026-10-01).** The Pay Audit screen now opens on a verdict card
   (correct / issue with pay line and amount / waiting), has an on-screen month picker limited to months with a
-  payslip, and three tabs (This month, History, Plan ahead), driven by `PayAuditViewModel`. Open: the
-  An arrears under-payment (`SALARY_LOSS`, `arrearsDa`) is now shown as an
-  issue so the verdict cannot read clean over it; the "pay lines" wording no longer claims every line was audited.
+  payslip, and three tabs (This month, History, Plan ahead), driven by `PayAuditViewModel`. An arrears
+  under-payment (`SALARY_LOSS`, `arrearsDa`) is shown as an issue so the verdict cannot read clean over it; the
+  "pay lines" wording no longer claims every line was audited.
 
 - **Entry points (consolidation plan Phase 3, 2026-10-01).** Ported from `pay_audit_1.0` and rewritten for the
   timeline/evidence model: a free-visible Dashboard banner, an "Audit this month" card on the payslip detail
   screen (opens Pay Audit on that month through the selected-payslip state into `setInputs(requestedMonth)`), and
   a one-time orientation sheet behind `OnboardingManager.shouldShowPayAuditIntro()`. No tiles, no "unclaimed ₹".
   Checked on the Pixel 9 (release build): the banner, the CTA (opened the viewed month, Jun 2026) and the one-time sheet work. Open: the orientation cannot be re-opened after dismissal.
+
+- **Release readiness (consolidation plan Phase 4, 2026-10-01).** Full Android gate, the four corpus tests (re-run
+  forced, no assertion changed), iOS tests (`--rerun-tasks`) and the iOS link are green. The minified release was
+  smoke-tested on the Pixel 9 (banner, "Audit this month" opening the viewed month, verdict, History, Plan ahead,
+  verified-arrears cards with "Why?", the orientation sheet staying dismissed after an upgrade and relaunch; no
+  fatal/R8 errors in logcat). The iOS app builds, installs and launches on the simulator; its UI is not driven
+  (see the verify skill) and stays a manual check on a real iPhone. The `pay_audit_1.0` archive note is
+  `10_PayAudit_1.0_Archive.md`. Still unverified on any device: the locked (free) state, Issue/Waiting verdicts and
+  "Draft letter" (no real month produces them; Compose/ViewModel tests only).
 
 Apart from P7-24/P7-25 (partially done above), none of these has a trigger that has fired yet. This phase does no code work unless one does.
 
