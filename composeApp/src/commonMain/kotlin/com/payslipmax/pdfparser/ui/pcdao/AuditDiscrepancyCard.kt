@@ -8,13 +8,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.payslipmax.pcdao.model.AuditDiscrepancy
@@ -34,6 +40,7 @@ fun AuditDiscrepancyCard(
     modifier: Modifier = Modifier,
     isUnlocked: Boolean = true,
     onUpgradeClick: () -> Unit = {},
+    onDismiss: (() -> Unit)? = null,
 ) {
     FlatBorderedCard(
         modifier = modifier.fillMaxWidth(),
@@ -41,7 +48,7 @@ fun AuditDiscrepancyCard(
         contentSpacing = 6.dp,
     ) {
         Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            CardHeader(discrepancy = discrepancy)
+            CardHeader(discrepancy = discrepancy, onDismiss = onDismiss)
             Text(
                 text = discrepancy.explanation,
                 style = MaterialTheme.typography.bodySmall,
@@ -61,8 +68,15 @@ fun AuditDiscrepancyCard(
     }
 }
 
+internal fun isDismissableDiscrepancy(discrepancy: AuditDiscrepancy): Boolean =
+    discrepancy.type == DiscrepancyType.FORFEITURE_RISK ||
+        !(discrepancy.type == DiscrepancyType.RECOVERY_HAZARD && discrepancy.severity == DiscrepancySeverity.CRITICAL)
+
 @Composable
-private fun CardHeader(discrepancy: AuditDiscrepancy) {
+private fun CardHeader(
+    discrepancy: AuditDiscrepancy,
+    onDismiss: (() -> Unit)? = null,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -75,9 +89,28 @@ private fun CardHeader(discrepancy: AuditDiscrepancy) {
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             SeverityBadge(severity = discrepancy.severity)
             TypeBadge(type = discrepancy.type)
+            if (onDismiss != null && isDismissableDiscrepancy(discrepancy)) {
+                IconButton(
+                    onClick = onDismiss,
+                    modifier =
+                        Modifier
+                            .size(48.dp)
+                            .testTag(TestTags.DISMISS_ALARM_BUTTON),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = AppStringsPcdao.dismissAlarmDesc,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
+            }
         }
     }
 }
@@ -139,7 +172,12 @@ private fun MathDiffTable(discrepancy: AuditDiscrepancy) {
         }
         Column(horizontalAlignment = Alignment.End) {
             Text(text = AppStringsPcdao.colNetDue, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            val netColor = if (discrepancy.netDue >= 0) Color(0xFF34D399) else Color(0xFFF87171)
+            val netColor =
+                when {
+                    discrepancy.netDue > 0.0 -> Color(0xFF34D399)
+                    discrepancy.netDue < 0.0 -> Color(0xFFF87171)
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant
+                }
             Text(text = formatCurrency(discrepancy.netDue), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = netColor)
         }
     }

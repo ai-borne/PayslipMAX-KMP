@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -168,126 +166,6 @@ private fun AuditScreenBody(
             item { EmptyVaultState() }
         } else {
             auditContentItems(uiState, viewModel, hasAccess, onUpgradeClick, onNavigateToRepresentation, onHazardClick)
-        }
-    }
-}
-
-private fun LazyListScope.auditContentItems(
-    uiState: PcdaoAuditUiState,
-    viewModel: PcdaoAuditViewModel,
-    hasAccess: Boolean,
-    onUpgradeClick: () -> Unit,
-    onNavigateToRepresentation: ((RedressalLetter) -> Unit)?,
-    onHazardClick: () -> Unit,
-) {
-    auditBannerItems(uiState, viewModel, hasAccess, onUpgradeClick, onHazardClick)
-    auditFeedAndMilestonesItems(uiState, viewModel, hasAccess, onUpgradeClick, onNavigateToRepresentation)
-}
-
-private fun LazyListScope.auditBannerItems(
-    uiState: PcdaoAuditUiState,
-    viewModel: PcdaoAuditViewModel,
-    hasAccess: Boolean,
-    onUpgradeClick: () -> Unit,
-    onHazardClick: () -> Unit,
-) {
-    if (!hasAccess && uiState.filteredDiscrepancies.isNotEmpty()) {
-        item {
-            AuditTeaserBanner(
-                claimsCount = uiState.filteredDiscrepancies.size,
-                unclaimedTotal = uiState.unclaimedTotal,
-                onUpgradeClick = onUpgradeClick,
-            )
-        }
-    }
-    item {
-        ImpactCountersStrip(
-            unclaimedAmount = uiState.unclaimedTotal,
-            hazardAmount = uiState.hazardTotal,
-            criticalAlarmsCount = uiState.alarmsCount,
-            onHazardCardClick = onHazardClick,
-        )
-    }
-    if (uiState.hasCumulativeArrears && uiState.cumulativeRollup != null) {
-        item {
-            CumulativeArrearsBanner(
-                rollup = uiState.cumulativeRollup,
-                isCumulativeActive = uiState.isCumulativeViewActive,
-                isUnlocked = hasAccess,
-                onToggleView = { viewModel.toggleCumulativeView() },
-                onUpgradeClick = onUpgradeClick,
-            )
-        }
-    }
-    uiState.payFixationResult?.let { fixation ->
-        item {
-            PayFixationCard(
-                result = fixation,
-                isUnlocked = hasAccess,
-                onUpgradeClick = onUpgradeClick,
-                onLevelSelected = { from, to -> viewModel.setSandboxLevels(from, to) },
-            )
-        }
-    }
-}
-
-private fun LazyListScope.auditFeedAndMilestonesItems(
-    uiState: PcdaoAuditUiState,
-    viewModel: PcdaoAuditViewModel,
-    hasAccess: Boolean,
-    onUpgradeClick: () -> Unit,
-    onNavigateToRepresentation: ((RedressalLetter) -> Unit)?,
-) {
-    item {
-        SituationalTileMatrix(
-            selectedCategory = uiState.selectedCategory,
-            activeContext = uiState.activeContext,
-            autoInferredTileIds = uiState.autoInferredTileIds,
-            activePresetId = uiState.activePresetId,
-            onPresetSelected = { viewModel.applyMissionPreset(it) },
-            onCategorySelected = { viewModel.selectCategory(it) },
-            onToggleTile = { viewModel.toggleTile(it) },
-            onOpenAddFactorSheet = { viewModel.setAddFactorSheetVisible(true) },
-        )
-    }
-    item {
-        FeedHeaderSection(
-            selectedFilter = uiState.selectedFilter,
-            onFilterSelected = { viewModel.setFilter(it) },
-            onRedressalClick = {
-                if (hasAccess) {
-                    viewModel.generateRedressalLetter()
-                } else {
-                    onUpgradeClick()
-                }
-            },
-            isUnlocked = hasAccess,
-        )
-    }
-    auditDiscrepancyList(uiState, hasAccess, onUpgradeClick)
-    if (uiState.careerMilestones.isNotEmpty()) {
-        item {
-            CareerMilestonesCard(
-                milestones = uiState.careerMilestones,
-            )
-        }
-    }
-}
-
-private fun LazyListScope.auditDiscrepancyList(
-    uiState: PcdaoAuditUiState,
-    hasAccess: Boolean,
-    onUpgradeClick: () -> Unit,
-) {
-    if (uiState.filteredDiscrepancies.isEmpty()) {
-        item { EmptyFindingsState() }
-    } else {
-        items(uiState.filteredDiscrepancies) { discrepancy ->
-            AuditDiscrepancyCard(
-                discrepancy = discrepancy,
-                isUnlocked = hasAccess,
-                onUpgradeClick = onUpgradeClick,
-            )
         }
     }
 }

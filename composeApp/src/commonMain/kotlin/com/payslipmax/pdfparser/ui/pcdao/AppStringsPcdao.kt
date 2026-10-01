@@ -202,4 +202,12 @@ object AppStringsPcdao {
     const val hazardDialogBody =
         "This is a statutory audit risk warning, not an active deduction. PCDA(O) Pune routinely initiates retroactive debit recoveries with 18% penal interest when allowances clash (e.g. TPTA drawn during field tenure per TR-230(B)). PayslipMax AI detects these clashes early so you can publish casualty Part II Orders and prevent penal loss."
     const val hazardDialogDismiss = "Understood"
+
+    // Alarm Dismissal & TPTA Advisory (Phase 3)
+    const val dismissAlarmDesc = "Dismiss audit alarm"
+    const val tptaFieldAdvisoryTitle = "Transport Allowance (TPTA) in Field Area — Audit Advisory"
+    const val tptaFieldAdvisoryExplanation =
+        "TPTA in field deployments is admissible only when Government conveyance is NOT provided. Ensure Non-Availability Certificate (NAC) / DO2 casualty is on record with PCDA(O) Pune to prevent retrospective audit objections."
+    const val tptaFieldAdvisoryAction =
+        "Verify no staff/unit conveyance is allotted; maintain NAC casualty on unit record."
 }
