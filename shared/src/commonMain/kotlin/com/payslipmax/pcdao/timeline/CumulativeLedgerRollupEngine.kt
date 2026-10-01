@@ -31,7 +31,7 @@ class CumulativeLedgerRollupEngine(
         var primaryClaim = ""
 
         for (slip in chronological) {
-            val result = reconciler.reconcile(slip, context)
+            val result = reconciler.reconcile(slip, context, chronological)
 
             for (d in result.discrepancies) {
                 if (d.type == DiscrepancyType.UNDERPAYMENT && d.monthlyImpact > 0.0) {

@@ -88,7 +88,7 @@ class PcdaoAuditViewModel(
         val context = monthContextOverrides[key] ?: autoInferer.inferActiveContext(payslip, allPayslips)
         val autoDetectedTiles = autoInferer.inferActiveContext(payslip, allPayslips).activeTileIds
         val presetId = monthPresetOverrides[key]
-        val recon = reconciler.reconcile(payslip, context)
+        val recon = reconciler.reconcile(payslip, context, allPayslips)
         val milestones = milestoneAuditor.auditMilestones(allPayslips)
         val grouped = VaultMonthGroupMapper.groupByFinancialYear(allPayslips)
 
@@ -203,7 +203,7 @@ class PcdaoAuditViewModel(
             scope.launch(defaultDispatcher) {
                 val payslip = _uiState.value.selectedPayslip
                 val allPayslips = _uiState.value.availablePayslips
-                val recon = payslip?.let { reconciler.reconcile(it, context) }
+                val recon = payslip?.let { reconciler.reconcile(it, context, allPayslips) }
                 coroutineContext.ensureActive()
                 val rollup = rollupEngine.calculateRollup(allPayslips, context)
                 coroutineContext.ensureActive()

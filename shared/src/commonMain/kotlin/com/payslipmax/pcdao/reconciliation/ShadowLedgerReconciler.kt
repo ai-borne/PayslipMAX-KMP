@@ -16,10 +16,13 @@ class ShadowLedgerReconciler(
     private val ruleResolver: SituationalRuleResolver = SituationalRuleResolver(),
     private val dsopAuditor: DsopTaxShieldAuditor = DsopTaxShieldAuditor(),
     private val collisionAuditor: AllowanceCollisionAuditor = AllowanceCollisionAuditor(),
+    private val creditMatcher: ReconciledCreditMatcher = ReconciledCreditMatcher(),
+    private val ceaEvaluator: CeaReconciliationEvaluator = CeaReconciliationEvaluator(creditMatcher),
 ) {
     fun reconcile(
         payslip: ParsedPayslip,
         context: ActiveSituationalContext,
+        allPayslips: List<ParsedPayslip> = emptyList(),
     ): ShadowLedgerReconciliationResult {
         val lineItems = mutableListOf<LedgerDifferenceItem>()
         val discrepancies = mutableListOf<AuditDiscrepancy>()
@@ -28,7 +31,7 @@ class ShadowLedgerReconciler(
         val msp = payslip.earnings.militaryServicePay
         val effectiveDa = context.customDaPercent ?: context.inferredFlags.inferredDaPercent
 
-        evaluateEntitlements(payslip, context, basicPay, msp, lineItems, discrepancies)
+        evaluateEntitlements(payslip, context, allPayslips, basicPay, msp, lineItems, discrepancies)
         evaluateRecoveryHazards(payslip, context, effectiveDa, discrepancies)
         evaluateDsopShield(payslip, context, discrepancies)
         evaluateDo2Rejection(context, discrepancies)
@@ -52,6 +55,7 @@ class ShadowLedgerReconciler(
     private fun evaluateEntitlements(
         payslip: ParsedPayslip,
         context: ActiveSituationalContext,
+        allPayslips: List<ParsedPayslip>,
         basicPay: Double,
         msp: Double,
         lineItems: MutableList<LedgerDifferenceItem>,
@@ -59,7 +63,11 @@ class ShadowLedgerReconciler(
     ) {
         val entitlements = ruleResolver.resolveAllEntitlements(context, basicPay, msp)
         for (ent in entitlements) {
-            val creditedMonthly = getCreditedAmount(payslip, ent.allowanceKey)
+            if (ent.allowanceKey == "CEA" || ent.allowanceKey == "HOSTEL_SUBSIDY") {
+                ceaEvaluator.evaluateCeaEntitlement(payslip, ent, allPayslips, lineItems, discrepancies)
+                continue
+            }
+            val creditedMonthly = creditMatcher.getCreditedAmount(payslip, ent.allowanceKey)
             val netDiffMonthly = ent.entitledMonthly - creditedMonthly
             val netDiffAnnual = ent.entitledAnnual - (creditedMonthly * 12.0)
 
@@ -92,18 +100,6 @@ class ShadowLedgerReconciler(
                     ),
                 )
             }
-        }
-    }
-
-    private fun getCreditedAmount(
-        payslip: ParsedPayslip,
-        key: String,
-    ): Double {
-        return when (key) {
-            "TPTA" -> payslip.earnings.transportAllowance + payslip.earnings.transportAllowanceDa
-            "HRA_SPR" -> payslip.earnings.houseRentAllowance
-            "CEA", "HOSTEL_SUBSIDY" -> payslip.earnings.childrenEducationAllowance / 12.0
-            else -> 0.0
         }
     }
 

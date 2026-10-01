@@ -5,7 +5,14 @@ class PersonalBenefitResolvers {
         context: ActiveSituationalContext,
         escalated: EscalatedRates,
     ): ResolvedEntitlement {
-        val childrenCount = context.numberOfChildrenCea.coerceIn(0, 2)
+        val childrenCount =
+            when {
+                context.numberOfChildrenCea > 0 -> context.numberOfChildrenCea.coerceIn(0, 2)
+                context.activeTileIds.contains(SituationalTileKeys.CEA_TWO_CHILDREN) -> 2
+                context.activeTileIds.contains(SituationalTileKeys.CEA_ONE_CHILD) -> 1
+                context.activeTileIds.contains(SituationalTileKeys.CEA_HOSTEL) -> 1
+                else -> 0
+            }
         val isDivyangChild = context.activeSpecializedFactors.contains(SpecializedMilitaryFactor.DIVYANG_CHILD)
 
         return if (context.hasHostelChild) {

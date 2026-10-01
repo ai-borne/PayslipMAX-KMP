@@ -16,10 +16,11 @@ object CategoryTileCatalog {
         autoInferred: Set<String>,
     ): List<SituationalTile> {
         val active = context.activeTileIds
+        val isEscalated = context.customDaPercent?.let { it >= 50.0 } ?: context.inferredFlags.inferredDaCrossed50
         return when (category) {
-            SituationalCategory.POSTING_OPS -> postingOpsTiles(active, autoInferred, category)
+            SituationalCategory.POSTING_OPS -> postingOpsTiles(active, autoInferred, category, isEscalated)
             SituationalCategory.HOUSING_TLC -> housingTlcTiles(active, autoInferred, category)
-            SituationalCategory.CHILDREN_CEA -> childrenCeaTiles(active, autoInferred, category)
+            SituationalCategory.CHILDREN_CEA -> childrenCeaTiles(active, autoInferred, category, isEscalated)
             SituationalCategory.DUTY_COURSES_LEAVE -> dutyCoursesLeaveTiles(active, autoInferred, category)
             SituationalCategory.CAREER_CADRES -> careerCadresTiles(active, autoInferred, category)
             SituationalCategory.FUNDS_RETIREMENT -> fundsRetirementTiles(active, autoInferred, category)
@@ -30,17 +31,23 @@ object CategoryTileCatalog {
         active: Set<String>,
         inferred: Set<String>,
         cat: SituationalCategory,
-    ): List<SituationalTile> =
-        listOf(
-            tile(SituationalTileKeys.POST_FIELD_HAFAA, cat, "🏔️ HAFAA Field Area", "Serving in Highly Active Field Area", "₹16,900/mo", active, inferred),
-            tile(SituationalTileKeys.POST_FIELD_CFAA, cat, "🌲 CFAA (CI Ops / RR)", "Counter-Insurgency Field Deployment", "₹10,500/mo", active, inferred),
-            tile(SituationalTileKeys.POST_FIELD_CMFAA, cat, "🌾 CMFAA (Modified Field)", "Modified Field Area Deployment", "₹6,300/mo", active, inferred),
+        isEscalated: Boolean,
+    ): List<SituationalTile> {
+        val hafaaRate = if (isEscalated) "₹21,125/mo" else "₹16,900/mo"
+        val cfaaRate = if (isEscalated) "₹13,125/mo" else "₹10,500/mo"
+        val cmfaaRate = if (isEscalated) "₹7,875/mo" else "₹6,300/mo"
+        val siachenRate = if (isEscalated) "₹53,125/mo" else "₹42,500/mo"
+        return listOf(
+            tile(SituationalTileKeys.POST_FIELD_HAFAA, cat, "🏔️ HAFAA Field Area", "Serving in Highly Active Field Area", hafaaRate, active, inferred),
+            tile(SituationalTileKeys.POST_FIELD_CFAA, cat, "🌲 CFAA (CI Ops / RR)", "Counter-Insurgency Field Deployment", cfaaRate, active, inferred),
+            tile(SituationalTileKeys.POST_FIELD_CMFAA, cat, "🌾 CMFAA (Modified Field)", "Modified Field Area Deployment", cmfaaRate, active, inferred),
             tile(SituationalTileKeys.POST_PEACE_HIGHER, cat, "🏙️ Peace (Pune / Higher UA)", "Higher Rate City (20 UA Cities)", "₹7,200 + DA", active, inferred, isRadio = true),
             tile(SituationalTileKeys.POST_PEACE_OTHER, cat, "🌾 Peace (Other Locations)", "Standard Peace TPTA", "₹3,600 + DA", active, inferred, isRadio = true),
-            tile(SituationalTileKeys.POST_SIACHEN, cat, "❄️ Siachen Glacier", "RH-MAX deployment zone", "₹42,500 + 25% = ₹53,125", active, inferred),
+            tile(SituationalTileKeys.POST_SIACHEN, cat, "❄️ Siachen Glacier", "RH-MAX deployment zone", siachenRate, active, inferred),
             tile(SituationalTileKeys.POST_SDA_NE, cat, "🌿 North-East SDA", "Special Duty Allowance", "10% of Basic Pay", active, inferred),
             tile(SituationalTileKeys.POST_ISDA_ISLAND, cat, "🌴 Island Command (ISDA)", "A&N Islands Special Duty Allowance", "10%/16%/20%", active, inferred),
         )
+    }
 
     private fun housingTlcTiles(
         active: Set<String>,
@@ -61,13 +68,18 @@ object CategoryTileCatalog {
         active: Set<String>,
         inferred: Set<String>,
         cat: SituationalCategory,
-    ): List<SituationalTile> =
-        listOf(
+        isEscalated: Boolean,
+    ): List<SituationalTile> {
+        val oneChildRate = if (isEscalated) "₹33,750/yr" else "₹27,000/yr"
+        val twoChildrenRate = if (isEscalated) "₹67,500/yr" else "₹54,000/yr"
+        val hostelRate = if (isEscalated) "₹1,01,250/yr" else "₹81,000/yr"
+        return listOf(
             tile(SituationalTileKeys.CEA_NONE, cat, "0 School Children", "No education claims active", "₹0", active, inferred, isRadio = true),
-            tile(SituationalTileKeys.CEA_ONE_CHILD, cat, "🎒 1 Child in Day School", "Class Nursery to XII", "₹33,750/yr", active, inferred, isRadio = true),
-            tile(SituationalTileKeys.CEA_TWO_CHILDREN, cat, "🎒 2 Children in Day School", "Standard 2-child entitlement", "₹67,500/yr", active, inferred, isRadio = true),
-            tile(SituationalTileKeys.CEA_HOSTEL, cat, "🏫 Child in Hostel", "Hostel Subsidy (Escalated 25%)", "₹1,01,250/yr", active, inferred),
+            tile(SituationalTileKeys.CEA_ONE_CHILD, cat, "🎒 1 Child in Day School", "Class Nursery to XII", oneChildRate, active, inferred, isRadio = true),
+            tile(SituationalTileKeys.CEA_TWO_CHILDREN, cat, "🎒 2 Children in Day School", "Standard 2-child entitlement", twoChildrenRate, active, inferred, isRadio = true),
+            tile(SituationalTileKeys.CEA_HOSTEL, cat, "🏫 Child in Hostel", "Hostel Subsidy (Escalated 25%)", hostelRate, active, inferred),
         )
+    }
 
     private fun dutyCoursesLeaveTiles(
         active: Set<String>,

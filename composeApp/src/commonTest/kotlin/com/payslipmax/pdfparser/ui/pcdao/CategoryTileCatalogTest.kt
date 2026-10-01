@@ -49,6 +49,19 @@ class CategoryTileCatalogTest {
     }
 
     @Test
+    fun testPostingOpsTilesContainEscalatedRatesWhenDaCrosses50() {
+        val escalatedContext = ActiveSituationalContext(customDaPercent = 60.0)
+        val tiles = CategoryTileCatalog.getTilesForCategory(SituationalCategory.POSTING_OPS, escalatedContext, emptySet())
+        val hafaaTile = tiles.first { it.id == SituationalTileKeys.POST_FIELD_HAFAA }
+        assertEquals("₹21,125/mo", hafaaTile.valuePreview)
+
+        val unescalatedContext = ActiveSituationalContext(customDaPercent = 45.0)
+        val unescalatedTiles = CategoryTileCatalog.getTilesForCategory(SituationalCategory.POSTING_OPS, unescalatedContext, emptySet())
+        val unescalatedHafaa = unescalatedTiles.first { it.id == SituationalTileKeys.POST_FIELD_HAFAA }
+        assertEquals("₹16,900/mo", unescalatedHafaa.valuePreview)
+    }
+
+    @Test
     fun testHousingTlcTilesContainCanonicalHousingOptionsAndTlc() {
         val context =
             ActiveSituationalContext(

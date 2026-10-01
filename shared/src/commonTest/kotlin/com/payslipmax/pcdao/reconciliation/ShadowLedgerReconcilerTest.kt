@@ -179,4 +179,55 @@ class ShadowLedgerReconcilerTest {
         assertEquals(0.0, result.totalRecoveryHazard)
         assertEquals(0, result.criticalAlarmCount)
     }
+
+    @Test
+    fun testReconcileHafaaCreditedShowsZeroDiscrepancy() {
+        val payslip =
+            createColRathorePayslip().copy(
+                earnings =
+                    Earnings(
+                        basicPay = 149000.0,
+                        dearnessAllowance = 89400.0,
+                        militaryServicePay = 15500.0,
+                        riskHardshipAllowance = 21125.0,
+                    ),
+            )
+        val context =
+            ActiveSituationalContext(
+                activeTileIds = setOf(SituationalTileKeys.POST_FIELD_HAFAA),
+                customDaPercent = 60.0,
+            )
+
+        val result = reconciler.reconcile(payslip, context)
+        val hafaaDisc = result.discrepancies.firstOrNull { it.id == "DISC_UNDERPAY_HAFAA" }
+        assertTrue(hafaaDisc == null, "When HAFAA is credited at entitled rate (21125), no discrepancy should be generated")
+        assertEquals(0.0, result.totalUnclaimedAnnual)
+    }
+
+    @Test
+    fun testReconcileHafaaUnderpaidShowsExactArrearsDifference() {
+        val payslip =
+            createColRathorePayslip().copy(
+                earnings =
+                    Earnings(
+                        basicPay = 149000.0,
+                        dearnessAllowance = 89400.0,
+                        militaryServicePay = 15500.0,
+                        riskHardshipAllowance = 16900.0,
+                    ),
+            )
+        val context =
+            ActiveSituationalContext(
+                activeTileIds = setOf(SituationalTileKeys.POST_FIELD_HAFAA),
+                customDaPercent = 60.0,
+            )
+
+        val result = reconciler.reconcile(payslip, context)
+        val hafaaDisc = result.discrepancies.firstOrNull { it.id == "DISC_UNDERPAY_HAFAA" }
+        assertTrue(hafaaDisc != null, "HAFAA underpaid discrepancy should be flagged when credited 16900 vs entitled 21125")
+        assertEquals(21125.0, hafaaDisc.entitledAmount)
+        assertEquals(16900.0, hafaaDisc.drawnAmount)
+        assertEquals(4225.0, hafaaDisc.monthlyImpact)
+        assertEquals(50700.0, hafaaDisc.annualImpact)
+    }
 }
