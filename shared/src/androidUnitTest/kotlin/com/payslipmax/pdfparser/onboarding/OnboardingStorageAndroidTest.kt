@@ -23,6 +23,7 @@ class OnboardingStorageAndroidTest {
 
         assertFalse(storage.getHasCompletedOnboarding())
         assertFalse(storage.getHasSeenUploadCoachmark())
+        assertFalse(storage.getHasSeenPayAuditIntro())
     }
 
     @Test
@@ -45,5 +46,17 @@ class OnboardingStorageAndroidTest {
 
         assertTrue(storage.getHasSeenUploadCoachmark())
         assertFalse(storage.getHasCompletedOnboarding())
+    }
+
+    @Test
+    fun realContextRoundTripsPayAuditIntroFlagIndependentlyOfOtherFlags() {
+        ContextHolder.context = RuntimeEnvironment.getApplication()
+        val storage = AndroidOnboardingStorage()
+
+        storage.saveHasSeenPayAuditIntro(true)
+
+        assertTrue(AndroidOnboardingStorage().getHasSeenPayAuditIntro())
+        assertFalse(storage.getHasCompletedOnboarding())
+        assertFalse(storage.getHasSeenUploadCoachmark())
     }
 }

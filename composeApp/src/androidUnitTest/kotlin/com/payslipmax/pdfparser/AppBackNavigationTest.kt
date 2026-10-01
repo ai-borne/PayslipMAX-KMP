@@ -92,6 +92,10 @@ class AppBackNavigationTest {
         override fun getHasSeenUploadCoachmark(): Boolean = true
 
         override fun saveHasSeenUploadCoachmark(seen: Boolean) {}
+
+        override fun getHasSeenPayAuditIntro(): Boolean = false
+
+        override fun saveHasSeenPayAuditIntro(seen: Boolean) {}
     }
 
     // --- Decision 9: state survives process death via the Saver ---

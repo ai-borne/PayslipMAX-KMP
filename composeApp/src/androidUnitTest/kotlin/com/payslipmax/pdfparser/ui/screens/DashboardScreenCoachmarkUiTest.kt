@@ -96,5 +96,9 @@ class DashboardScreenCoachmarkUiTest {
         override fun saveHasSeenUploadCoachmark(seen: Boolean) {
             hasSeenUploadCoachmark = seen
         }
+
+        override fun getHasSeenPayAuditIntro(): Boolean = false
+
+        override fun saveHasSeenPayAuditIntro(seen: Boolean) {}
     }
 }

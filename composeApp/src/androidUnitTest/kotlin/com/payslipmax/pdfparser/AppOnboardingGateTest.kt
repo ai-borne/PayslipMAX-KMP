@@ -39,6 +39,10 @@ class AppOnboardingGateTest {
         override fun getHasSeenUploadCoachmark(): Boolean = false
 
         override fun saveHasSeenUploadCoachmark(seen: Boolean) {}
+
+        override fun getHasSeenPayAuditIntro(): Boolean = false
+
+        override fun saveHasSeenPayAuditIntro(seen: Boolean) {}
     }
 
     @BeforeTest

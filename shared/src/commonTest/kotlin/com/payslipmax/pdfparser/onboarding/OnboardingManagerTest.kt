@@ -8,6 +8,7 @@ class OnboardingManagerTest {
     private class FakeOnboardingStorage(
         private var hasCompletedOnboarding: Boolean = false,
         private var hasSeenUploadCoachmark: Boolean = false,
+        private var hasSeenPayAuditIntro: Boolean = false,
     ) : OnboardingStorage {
         override fun getHasCompletedOnboarding(): Boolean = hasCompletedOnboarding
 
@@ -19,6 +20,12 @@ class OnboardingManagerTest {
 
         override fun saveHasSeenUploadCoachmark(seen: Boolean) {
             hasSeenUploadCoachmark = seen
+        }
+
+        override fun getHasSeenPayAuditIntro(): Boolean = hasSeenPayAuditIntro
+
+        override fun saveHasSeenPayAuditIntro(seen: Boolean) {
+            hasSeenPayAuditIntro = seen
         }
     }
 
@@ -65,5 +72,25 @@ class OnboardingManagerTest {
 
         assertTrue(manager.shouldShowCoachmark())
         assertFalse(manager.shouldShowOnboarding())
+    }
+
+    @Test
+    fun payAuditIntroShowsOnFirstOpenAndNeverAgainOnceDismissed() {
+        val manager = OnboardingManager(FakeOnboardingStorage())
+        assertTrue(manager.shouldShowPayAuditIntro())
+
+        manager.onPayAuditIntroDismissed()
+
+        assertFalse(manager.shouldShowPayAuditIntro())
+    }
+
+    @Test
+    fun payAuditIntroFlagDoesNotTouchTheCarouselOrCoachmarkFlags() {
+        val manager = OnboardingManager(FakeOnboardingStorage())
+
+        manager.onPayAuditIntroDismissed()
+
+        assertTrue(manager.shouldShowOnboarding())
+        assertTrue(manager.shouldShowCoachmark())
     }
 }
