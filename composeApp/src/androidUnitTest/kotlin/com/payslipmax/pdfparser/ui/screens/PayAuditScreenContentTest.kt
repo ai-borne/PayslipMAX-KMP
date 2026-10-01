@@ -22,11 +22,11 @@ class PayAuditScreenContentTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun cleanVerdictAnswersCorrectAndShowsTheHistoryLineWithoutScrolling() =
+    fun cleanVerdictAnswersNoIssuesAndShowsTheHistoryLineWithoutScrolling() =
         runComposeUiTest {
             setContent { PayAuditContent(base, {}, {}, {}, {}) }
 
-            onNodeWithText("Aug 2026: 12 pay lines checked, all correct").assertExists()
+            onNodeWithText("Aug 2026: no issues found on 12 pay lines").assertExists()
             onNodeWithText("20 months audited · 0 issues").assertExists()
         }
 

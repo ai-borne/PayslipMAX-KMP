@@ -13,11 +13,22 @@ import com.payslipmax.pdfparser.insights.isProven
  * "Verified … match exactly" arrears row (DaArrearsAuditor only ever emits it on a match), the rest are issues.
  */
 internal fun classifyPayAuditFindings(anomalies: List<Anomaly>): PayAuditMonthFindings {
-    val findings = anomalies.filter { it.type in PayAuditFindingTypes.TYPES }
+    val findings = anomalies.filter { it.type in PayAuditFindingTypes.TYPES || it.isArrearsShortfall() }
     val (waiting, resolved) = findings.partition { it.isPending }
     val (verified, issues) = resolved.partition { it.type == AnomalyTierMap.ARREARS_AUDIT }
     return PayAuditMonthFindings(issues = issues, waiting = waiting, verified = verified)
 }
+
+/**
+ * DaArrearsAuditor reports an under-paid arrears as SALARY_LOSS with expected/actual from the payslips. It is
+ * not a [PayAuditFindingTypes] member (that set would also admit SalaryLossAuditor's bare net-pay heuristic,
+ * which carries no evidence), so the verdict would otherwise read clean over a real shortfall. Unproven (no
+ * authority), so it never offers a letter.
+ */
+private fun Anomaly.isArrearsShortfall(): Boolean =
+    type == AnomalyTierMap.SALARY_LOSS && field == ARREARS_DA_FIELD && expected != null && actual != null
+
+private const val ARREARS_DA_FIELD = "arrearsDa"
 
 /** Only a proven finding of a letter-eligible type gets a "Draft letter" action (same rule as the draft generator). */
 fun Anomaly.canDraftLetter(): Boolean = type in REPRESENTATION_DRAFT_TYPES && isProven() && !isPending

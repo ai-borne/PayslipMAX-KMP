@@ -148,6 +148,23 @@ class PayAuditViewModelTest {
     }
 
     @Test
+    fun arrearsShortfallIsAnIssueSoTheVerdictNeverSaysCleanOverIt() {
+        // DaArrearsAuditor reports an under-paid arrears as SALARY_LOSS (expected/actual set, no authority).
+        val short = Anomaly("SALARY_LOSS", "arrearsDa", 2000.0, "10/2026", "Underpaid/Mismatched", expected = 9870.0, actual = 7870.0)
+        val v = vm(mapOf(202610 to listOf(short)))
+        v.setInputs(slips, hasAccess = true)
+        assertEquals(PayAuditVerdict.Issue(1, listOf("DA arrears"), 2000.0, canDraftLetter = false), v.uiState.value.verdict)
+    }
+
+    @Test
+    fun aBareSalaryLossHeuristicIsStillNotAnIssue() {
+        val bare = Anomaly("SALARY_LOSS", "netPay", 500.0, "10/2026", "Net pay dropped")
+        val v = vm(mapOf(202610 to listOf(bare)))
+        v.setInputs(slips, hasAccess = true)
+        assertTrue(v.uiState.value.verdict is PayAuditVerdict.Clean)
+    }
+
+    @Test
     fun anomaliesFromOtherAuditorsNeverReachThePayAuditVerdict() {
         // Carried over from the old PayAuditFindingsLogicTest: DSOP/tax findings belong to other screens.
         val other = tpta.copy(type = "DSOP_COMPLIANCE")

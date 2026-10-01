@@ -10,9 +10,9 @@ class PayAuditVerdictCopyTest {
     private val aug = PayMonth(2026, 8)
 
     @Test
-    fun cleanMonthStatesTheLinesCheckedAndIsGreen() {
+    fun cleanMonthSaysNoIssuesWithoutClaimingEveryLineWasAudited() {
         val c = payAuditVerdictCopy(PayAuditVerdict.Clean(12, 0), aug)
-        assertEquals("Aug 2026: 12 pay lines checked, all correct", c.headline)
+        assertEquals("Aug 2026: no issues found on 12 pay lines", c.headline)
         assertEquals(VerdictTone.OK, c.tone)
     }
 
