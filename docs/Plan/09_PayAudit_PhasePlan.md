@@ -535,7 +535,7 @@ continuity, per CLAUDE.md's "fail loud" rule — not a sign of unfinished Phase 
   timeline/evidence model: a free-visible Dashboard banner, an "Audit this month" card on the payslip detail
   screen (opens Pay Audit on that month through the selected-payslip state into `setInputs(requestedMonth)`), and
   a one-time orientation sheet behind `OnboardingManager.shouldShowPayAuditIntro()`. No tiles, no "unclaimed ₹".
-  Open: not yet checked on a device; the orientation cannot be re-opened after dismissal.
+  Checked on the Pixel 9 (release build): the banner, the CTA (opened the viewed month, Jun 2026) and the one-time sheet work. Open: the orientation cannot be re-opened after dismissal.
 
 Apart from P7-24/P7-25 (partially done above), none of these has a trigger that has fired yet. This phase does no code work unless one does.
 
