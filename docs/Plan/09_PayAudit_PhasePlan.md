@@ -528,8 +528,8 @@ continuity, per CLAUDE.md's "fail loud" rule — not a sign of unfinished Phase 
 - **UX redesign (consolidation plan Phase 2, 2026-10-01).** The Pay Audit screen now opens on a verdict card
   (correct / issue with pay line and amount / waiting), has an on-screen month picker limited to months with a
   payslip, and three tabs (This month, History, Plan ahead), driven by `PayAuditViewModel`. Open: the
-  Pixel walkthrough of the new build; "N pay lines checked" counts lines on the payslip, not lines audited;
-  an arrears under-payment (`SALARY_LOSS`, not a Pay Audit finding type) can leave the verdict at "all correct".
+  Pixel walkthrough of the new build. An arrears under-payment (`SALARY_LOSS`, `arrearsDa`) is now shown as an
+  issue so the verdict cannot read clean over it; the "pay lines" wording no longer claims every line was audited.
 
 Apart from P7-24/P7-25 (partially done above), none of these has a trigger that has fired yet. This phase does no code work unless one does.
 
