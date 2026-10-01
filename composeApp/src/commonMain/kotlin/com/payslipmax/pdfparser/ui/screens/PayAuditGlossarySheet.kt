@@ -15,12 +15,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.PayAuditEntryStrings
 import com.payslipmax.pdfparser.ui.theme.PayAuditVerdictStrings
 
 /** Plain-words glossary (U5): DNI, Stage, TPTA, MSP, DA, "waiting" and "verified". */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PayAuditGlossarySheet(onDismiss: () -> Unit) {
+fun PayAuditGlossarySheet(
+    onDismiss: () -> Unit,
+    onShowOrientation: () -> Unit,
+) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier.navigationBarsPadding().padding(AppDimensions.PaddingMedium).verticalScroll(rememberScrollState()),
@@ -31,6 +35,7 @@ fun PayAuditGlossarySheet(onDismiss: () -> Unit) {
                 Text(term, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
                 Text(meaning, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
+            OutlinedButton(onClick = onShowOrientation) { Text(PayAuditEntryStrings.orientationTitle) }
             OutlinedButton(onClick = onDismiss) { Text(PayAuditVerdictStrings.glossaryClose) }
         }
     }

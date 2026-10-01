@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,9 +59,17 @@ fun PayAuditScreen(
     val hasAnomalyDetection = viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION)
     var showUpgradeSheet by remember { mutableStateOf(false) }
     val requested = selected?.let { PayMonth(it.year, it.monthNum) }
-    // Only the first open follows the app-wide selection; after that the on-screen picker owns the month.
+    // Survives the system recreating the app; a fresh entry (new composition) starts empty and follows `requested`.
+    var saved by rememberSaveable(stateSaver = PayAuditSavedState.Saver) { mutableStateOf(PayAuditSavedState()) }
+    // Only the first open follows the app-wide selection (or the restored month); after that the on-screen picker owns it.
     LaunchedEffect(uiState.payslips, hasAnomalyDetection) {
-        payAuditViewModel.setInputs(uiState.payslips, hasAnomalyDetection, requestedMonth = if (payAuditViewModel.uiState.value.selectedMonth == null) requested else null)
+        val firstOpen = payAuditViewModel.uiState.value.selectedMonth == null
+        payAuditViewModel.setInputs(uiState.payslips, hasAnomalyDetection, requestedMonth = if (firstOpen) saved.month ?: requested else null)
+        if (firstOpen && uiState.payslips.isNotEmpty()) payAuditViewModel.selectTab(saved.tab)
+    }
+    val audit by payAuditViewModel.uiState.collectAsState()
+    LaunchedEffect(audit.selectedMonth, audit.tab) {
+        if (audit.selectedMonth != null) saved = PayAuditSavedState(audit.selectedMonth, audit.tab)
     }
     DisposableEffect(payAuditViewModel) { onDispose { payAuditViewModel.dispose() } }
     if (uiState.payslips.isNotEmpty()) PayAuditIntroGate(onboardingManager)
@@ -137,7 +146,8 @@ internal fun PayAuditContent(
                 onSelectMonth(it)
                 sheet = null
             }, onDismiss = { sheet = null })
-        PayAuditSheet.GLOSSARY -> PayAuditGlossarySheet(onDismiss = { sheet = null })
+        PayAuditSheet.GLOSSARY -> PayAuditGlossarySheet(onDismiss = { sheet = null }, onShowOrientation = { sheet = PayAuditSheet.ORIENTATION })
+        PayAuditSheet.ORIENTATION -> PayAuditOrientationSheet(onDismiss = { sheet = null })
         null -> Unit
     }
 }
@@ -153,7 +163,7 @@ private fun verdictAction(
     else -> onShowEvidence()
 }
 
-private enum class PayAuditSheet { MONTH, GLOSSARY }
+private enum class PayAuditSheet { MONTH, GLOSSARY, ORIENTATION }
 
 private fun LazyListScope.payAuditTabContent(
     state: PayAuditUiState,

@@ -33,7 +33,6 @@ object PayAuditVerdictStrings {
     const val nextMonthDescription = "Next month"
     const val monthPickerTitle = "Pick a month"
     const val monthPickerNote = "Months without a payslip are greyed out."
-    const val monthPickerNoPayslip = "no payslip"
     const val infoGlyph = "ⓘ"
     const val dropdownSuffix = " ▾"
 

@@ -92,10 +92,7 @@ private fun PayAuditYearGrid(
                 val month = PayMonth(year, m)
                 val has = month in months
                 OutlinedButton(onClick = { onSelect(month) }, enabled = has, modifier = Modifier.weight(1f)) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(PayslipPatternConfig.monthNames[m].take(3), fontWeight = if (month == selected) FontWeight.Bold else FontWeight.Normal)
-                        if (!has) Text(PayAuditVerdictStrings.monthPickerNoPayslip, style = MaterialTheme.typography.labelSmall)
-                    }
+                    Text(PayslipPatternConfig.monthNames[m].take(3), fontWeight = if (month == selected) FontWeight.Bold else FontWeight.Normal)
                 }
             }
         }

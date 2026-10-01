@@ -1,9 +1,14 @@
 package com.payslipmax.pdfparser.ui.screens
 
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.runComposeUiTest
 import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import kotlin.test.Test
@@ -106,5 +111,31 @@ class PayAuditScreenContentTest {
 
             onNodeWithText("ⓘ").performClick()
             onNodeWithText("Date of Next Increment", substring = true).assertExists()
+        }
+
+    // A "no payslip" sub-label made the greyed months two lines tall and the grid rows uneven; the greyed
+    // (disabled) button plus the sheet's note already say it.
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun monthPickerGreysOutMonthsWithoutAPayslipWithoutAddingASecondLine() =
+        runComposeUiTest {
+            setContent { PayAuditContent(base, {}, {}, {}, {}) }
+
+            onNodeWithText("Aug 2026 ▾").performClick()
+            onNodeWithText("Months without a payslip are greyed out.").assertExists()
+            onAllNodesWithText("no payslip").assertCountEquals(0)
+        }
+
+    // The orientation sheet is shown once automatically; the glossary must let the user read it again.
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun glossaryCanReopenTheOrientationSheet() =
+        runComposeUiTest {
+            setContent { PayAuditContent(base, {}, {}, {}, {}) }
+
+            onNodeWithText("ⓘ").performClick()
+            // Robolectric does not deliver pointer clicks into ModalBottomSheet content; use the semantics action.
+            onNodeWithText("How Pay Audit works").performSemanticsAction(SemanticsActions.OnClick)
+            onNodeWithTag("pay_audit_orientation_got_it").assertExists()
         }
 }
