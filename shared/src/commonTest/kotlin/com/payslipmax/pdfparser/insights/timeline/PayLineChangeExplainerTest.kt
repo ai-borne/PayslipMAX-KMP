@@ -78,6 +78,28 @@ class PayLineChangeExplainerTest {
     }
 
     @Test
+    fun aDaRiseOnAnIncrementMonthSaysInPlainWordsThatDaIsAShareOfBasicPay() {
+        val changes = explainLast(payslip(2018, 6, 82800.0), payslip(2018, 7, 85300.0))
+        assertEquals("DA is a share of basic pay, which rose with the annual increment", changes.reasonFor("dearnessAllowance"))
+    }
+
+    @Test
+    fun aDaRiseOnAPromotionMonthNamesThePromotion() {
+        val changes = explainLast(payslip(2019, 9, 90500.0), payslip(2019, 10, 121200.0))
+        assertEquals("DA is a share of basic pay, which rose with the promotion", changes.reasonFor("dearnessAllowance"))
+    }
+
+    @Test
+    fun aSingleMonthOfArrearsIsNamedAsOneMonthNotARange() {
+        val changes =
+            explainLast(
+                payslip(2018, 6, 85300.0, daPercent = 17.0),
+                payslip(2018, 8, 85300.0, daPercent = 21.0, arrearsDa = 2500.0),
+            )
+        assertEquals("DA revised 17%→21%, arrears for Jul 2018", changes.reasonFor("arrearsDa"))
+    }
+
+    @Test
     fun aDaRateRiseExplainsTheDaAmountChange() {
         val changes = explainLast(payslip(2018, 1, 85300.0, daPercent = 17.0), payslip(2018, 2, 85300.0, daPercent = 21.0))
         assertEquals("DA revised 17%→21%", changes.reasonFor("dearnessAllowance"))
@@ -91,7 +113,7 @@ class PayLineChangeExplainerTest {
                 payslip(2018, 9, 85300.0, daPercent = 21.0, arrearsDa = 5000.0),
             )
         val reason = changes.reasonFor("arrearsDa")
-        assertTrue(reason != null && reason.contains("arrears for 7/2018–8/2018"), "was: $reason")
+        assertTrue(reason != null && reason.endsWith("arrears for Jul–Aug 2018"), "was: $reason")
     }
 
     @Test
@@ -135,7 +157,7 @@ class PayLineChangeExplainerTest {
     @Test
     fun aOneOffTptaArrearsPaymentIsExplainedWithoutNeedingAPostingChange() {
         val changes = explainLast(payslip(2018, 1, 85300.0, arrearsTpta = 3600.0), payslip(2018, 2, 85300.0, arrearsTpta = 0.0))
-        assertEquals("One-off arrears payment, not recurring", changes.reasonFor("arrearsTpta"))
+        assertEquals("Arrears were paid last month; none this month", changes.reasonFor("arrearsTpta"))
     }
 
     @Test
@@ -151,7 +173,7 @@ class PayLineChangeExplainerTest {
                 payslip(2018, 6, 82800.0, npa = 16560.0),
                 payslip(2018, 7, 85300.0, npa = 17060.0),
             )
-        assertTrue(changes.reasonFor("nonPracticingAllowance")!!.contains("increment", ignoreCase = true))
+        assertEquals("NPA is a share of basic pay, which rose with the annual increment", changes.reasonFor("nonPracticingAllowance"))
     }
 
     @Test

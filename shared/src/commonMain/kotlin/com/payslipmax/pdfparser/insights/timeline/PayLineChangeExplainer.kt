@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.insights.timeline
 
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.parser.PayslipPatternConfig
 import kotlin.math.abs
 
 /**
@@ -15,6 +16,7 @@ import kotlin.math.abs
  */
 object PayLineChangeExplainer {
     private const val AMOUNT_TOLERANCE = 0.5
+    private const val ARREARS_DROPPED = "Arrears were paid last month; none this month"
 
     /**
      * Explains [current] against the last trustworthy month before it in [timeline] — never the
@@ -116,7 +118,7 @@ object PayLineChangeExplainer {
         val currDa = currMonth.daPercent
         if (prevDa != null && currDa != null && prevDa != currDa) return "DA revised $prevDa%→$currDa%"
         val payBaseEvent = timeline.events.firstOrNull { it.month == currMonth.month } ?: return null
-        return "DA follows the ${payBaseEvent.type.name.lowercase()} pay-base rise"
+        return "DA is a share of basic pay, which rose with the ${payBaseEvent.type.cause()}"
     }
 
     /**
@@ -131,14 +133,26 @@ object PayLineChangeExplainer {
         current: ParsedPayslip,
         tptaDaSeparate: Boolean,
     ): String? {
-        if (to == 0.0 && from > 0.0) return "One-off arrears payment, not recurring"
+        if (to == 0.0 && from > 0.0) return ARREARS_DROPPED
         val prevDa = prevMonth.daPercent
         val currDa = currMonth.daPercent
         if (prevDa == null || currDa == null || currDa <= prevDa) return null
         if (tptaDaSeparate && current.earnings.transportAllowanceDa <= 0.0) return null
         val (rangeFrom, rangeTo) = arrearsRange(current.monthNum) ?: return null
         val label = if (tptaDaSeparate) "TPTA DA" else "DA"
-        return "$label revised $prevDa%→$currDa%, arrears for $rangeFrom/${current.year}–$rangeTo/${current.year}"
+        return "$label revised $prevDa%→$currDa%, arrears for ${monthRange(rangeFrom, rangeTo, current.year)}"
+    }
+
+    private fun TimelineEventType.cause(): String = if (this == TimelineEventType.PROMOTION) "promotion" else "annual increment"
+
+    /** "Jul 2018" for one month, "Jul–Aug 2018" for several (both ends are in the same year). */
+    private fun monthRange(
+        first: Int,
+        last: Int,
+        year: Int,
+    ): String {
+        fun name(month: Int) = PayslipPatternConfig.monthNames[month].take(3)
+        return if (first == last) "${name(first)} $year" else "${name(first)}–${name(last)} $year"
     }
 
     /** Months from the rise's effective date (1 Jan or 1 Jul) up to the month before this payslip; mirrors DaArrearsAuditor. */
@@ -159,7 +173,7 @@ object PayLineChangeExplainer {
         currMonth: TimelineMonth,
         timeline: ServiceTimeline,
     ): String? {
-        if (to == 0.0 && from > 0.0) return "One-off arrears payment, not recurring"
+        if (to == 0.0 && from > 0.0) return ARREARS_DROPPED
         return if (TptaAbsenceExplainer.explains(timeline, currMonth.month)) {
             "Transport Allowance arrears for the posting change or relocation"
         } else {
@@ -209,7 +223,7 @@ object PayLineChangeExplainer {
     ): String? {
         if (from <= 0.0) return null
         val payBaseEvent = timeline.events.firstOrNull { it.month == currMonth.month } ?: return null
-        return "NPA follows the ${payBaseEvent.type.name.lowercase()} pay-base rise"
+        return "NPA is a share of basic pay, which rose with the ${payBaseEvent.type.cause()}"
     }
 
     private fun quartersReason(
