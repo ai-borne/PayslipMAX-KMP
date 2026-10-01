@@ -45,17 +45,17 @@ class DaArrearsAuditor : RuleAuditor {
         val tptaDaIsSeparate = current.earnings.transportAllowanceDa > 0.0 || arrearsTptaDa > 0.0
 
         if (tptaDaIsSeparate) {
-            checkArrears(anomalies, arrearsDa, expectedDa, current.dateStr, "Dearness Allowance (DA)")
+            checkArrears(anomalies, arrearsDa, expectedDa, current.dateStr, "Dearness Allowance (DA)", ARREARS_DA_FIELD)
             if (tpta > 0.0 && arrearsTptaDa > 0.0) {
                 val expectedTptaDa = tpta * rateDiff * months
-                checkArrears(anomalies, arrearsTptaDa, expectedTptaDa, current.dateStr, "Transport Allowance DA (TPTA DA)")
+                checkArrears(anomalies, arrearsTptaDa, expectedTptaDa, current.dateStr, "Transport Allowance DA (TPTA DA)", ARREARS_TPTA_DA_FIELD)
             }
         } else {
             // Older payslips print TPTA inclusive of its DA and fold TPTA-DA arrears into the DA arrears line.
             val tptaBase = tpta / (1.0 + currentRatePercent / 100.0)
             val expectedWithTptaDa = expectedDa + tptaBase * rateDiff * months
             val bestMatch = if (abs(arrearsDa - expectedWithTptaDa) < abs(arrearsDa - expectedDa)) expectedWithTptaDa else expectedDa
-            checkArrears(anomalies, arrearsDa, bestMatch, current.dateStr, "Dearness Allowance (DA)")
+            checkArrears(anomalies, arrearsDa, bestMatch, current.dateStr, "Dearness Allowance (DA)", ARREARS_DA_FIELD)
         }
 
         return anomalies
@@ -76,6 +76,7 @@ class DaArrearsAuditor : RuleAuditor {
         expected: Double,
         month: String,
         label: String,
+        field: String,
     ) {
         if (actual <= 0.0) return
         val diff = abs(actual - expected)
@@ -83,7 +84,7 @@ class DaArrearsAuditor : RuleAuditor {
             anomalies.add(
                 Anomaly(
                     type = "ARREARS_AUDIT",
-                    field = "arrearsDa",
+                    field = field,
                     amount = actual,
                     month = month,
                     description = "Verified: Your $label arrears of ₹${actual.toInt()} match the expected calculation exactly.",
@@ -95,7 +96,7 @@ class DaArrearsAuditor : RuleAuditor {
             anomalies.add(
                 Anomaly(
                     type = "SALARY_LOSS",
-                    field = "arrearsDa",
+                    field = field,
                     amount = expected - actual,
                     month = month,
                     description = "Underpaid/Mismatched: Your $label arrears of ₹${actual.toInt()} do not match the expected calculation of ₹${expected.toInt()}.",
@@ -107,6 +108,9 @@ class DaArrearsAuditor : RuleAuditor {
     }
 
     private companion object {
+        const val ARREARS_DA_FIELD = "arrearsDa"
+        const val ARREARS_TPTA_DA_FIELD = "arrearsTptaDa"
+
         // First month PCDA(O) payslips carry 7th CPC pay (per the corpus, Jun 2017).
         const val SEVENTH_CPC_FIRST_YEAR = 2017
         const val SEVENTH_CPC_FIRST_MONTH = 6

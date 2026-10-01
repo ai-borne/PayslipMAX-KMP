@@ -157,6 +157,14 @@ class PayAuditViewModelTest {
     }
 
     @Test
+    fun aTptaDaArrearsShortfallIsAnIssueNamedAfterItsOwnPayLine() {
+        val short = Anomaly("SALARY_LOSS", "arrearsTptaDa", 100.0, "10/2026", "Underpaid/Mismatched", expected = 400.0, actual = 300.0)
+        val v = vm(mapOf(202610 to listOf(short)))
+        v.setInputs(slips, hasAccess = true)
+        assertEquals(PayAuditVerdict.Issue(1, listOf("TPTA DA arrears"), 100.0, canDraftLetter = false), v.uiState.value.verdict)
+    }
+
+    @Test
     fun aBareSalaryLossHeuristicIsStillNotAnIssue() {
         val bare = Anomaly("SALARY_LOSS", "netPay", 500.0, "10/2026", "Net pay dropped")
         val v = vm(mapOf(202610 to listOf(bare)))

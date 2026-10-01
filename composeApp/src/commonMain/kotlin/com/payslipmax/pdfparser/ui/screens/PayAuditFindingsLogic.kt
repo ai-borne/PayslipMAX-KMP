@@ -26,9 +26,9 @@ internal fun classifyPayAuditFindings(anomalies: List<Anomaly>): PayAuditMonthFi
  * authority), so it never offers a letter.
  */
 private fun Anomaly.isArrearsShortfall(): Boolean =
-    type == AnomalyTierMap.SALARY_LOSS && field == ARREARS_DA_FIELD && expected != null && actual != null
+    type == AnomalyTierMap.SALARY_LOSS && field in ARREARS_FIELDS && expected != null && actual != null
 
-private const val ARREARS_DA_FIELD = "arrearsDa"
+private val ARREARS_FIELDS = setOf("arrearsDa", "arrearsTptaDa")
 
 /** Only a proven finding of a letter-eligible type gets a "Draft letter" action (same rule as the draft generator). */
 fun Anomaly.canDraftLetter(): Boolean = type in REPRESENTATION_DRAFT_TYPES && isProven() && !isPending

@@ -121,6 +121,29 @@ class DaArrearsAuditorTest {
         assertTrue(result.any { it.type == "ARREARS_AUDIT" })
     }
 
+    // Both arrears checks used field "arrearsDa", so two cards on the Pay Audit screen carried the same title
+    // ("DA arrears") and the user could not tell which pay line each one verified.
+    @Test
+    fun tptaDaArrearsAreReportedUnderTheirOwnPayLine() {
+        val previous = createMockPayslip("02/2024", basicPay = 140500.0, da = 71760.0, tpta = 3600.0, tptada = 1656.0, monthNum = 2, year = 2024)
+        val current =
+            createMockPayslip(
+                "03/2024",
+                basicPay = 140500.0,
+                da = 78000.0,
+                tpta = 3600.0,
+                tptada = 1800.0,
+                arrearsDa = 12480.0,
+                arrearsTptaDa = 288.0,
+                monthNum = 3,
+                year = 2024,
+            )
+
+        val fields = DaArrearsAuditor().audit(current, previous, emptyList()).filter { it.type == "ARREARS_AUDIT" }.map { it.field }
+
+        assertEquals(listOf("arrearsDa", "arrearsTptaDa"), fields)
+    }
+
     // Arrears with no DA rise are some other payment; inventing a 2% rise produced fake mismatches.
     @Test
     fun arrearsWithoutRateRiseAreNotAudited() {
