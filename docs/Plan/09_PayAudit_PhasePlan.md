@@ -525,6 +525,11 @@ continuity, per CLAUDE.md's "fail loud" rule — not a sign of unfinished Phase 
   Nov 2024 TPTA change (`90f0c47e`). Per-change explanation coverage cannot be read from the UI (only
   explained rows are listed); the corpus figure (87.5%) stands. Remaining trigger: 3–5 other officers; also
   worth re-checking that the Insights-tab `needsReview` gate behaves as expected once more real data exists.
+- **UX redesign (consolidation plan Phase 2, 2026-10-01).** The Pay Audit screen now opens on a verdict card
+  (correct / issue with pay line and amount / waiting), has an on-screen month picker limited to months with a
+  payslip, and three tabs (This month, History, Plan ahead), driven by `PayAuditViewModel`. Open: the
+  Pixel walkthrough of the new build; "N pay lines checked" counts lines on the payslip, not lines audited;
+  an arrears under-payment (`SALARY_LOSS`, not a Pay Audit finding type) can leave the verdict at "all correct".
 
 Apart from P7-24/P7-25 (partially done above), none of these has a trigger that has fired yet. This phase does no code work unless one does.
 
