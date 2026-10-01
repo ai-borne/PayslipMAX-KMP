@@ -375,8 +375,7 @@ full text): **P7-11** (Service Timeline pagination — trigger: an unusably long
 (MNS/NCC matrix scope — trigger: an MNS/NCC user), **P7-22** (TPTA city class null Jun–Sep 2017 — trigger:
 a real officer needs those months classified), **P7-23** (out-of-scope rules: Level 14+, first
 post-promotion increment, leave/suspension TPTA — trigger: a real officer in one of these situations),
-**P7-24** (real-data timeline validation — blocked on real users), **P7-25** (the validation checkpoint
-itself — blocked on real users and on Phase 9's P7-18).
+**P7-24** / **P7-25** (real-data validation — partially done 2026-10-01, n = 1; see the Phase 11 list below).
 
 ### Phase 9 — New rule modeling and architecture carry-overs — DONE (2026-09-27)
 
@@ -515,12 +514,19 @@ continuity, per CLAUDE.md's "fail loud" rule — not a sign of unfinished Phase 
 - **P7-22** — TPTA city class null for Jun–Sep 2017. Trigger: a real officer needs those months classified.
 - **P7-23** — Out-of-scope rules (Level 14+, first post-promotion increment, leave/suspension TPTA).
   Trigger: a real officer in one of these situations.
-- **P7-24** — Real-data timeline validation. Trigger: blocked on real users.
-- **P7-25** — The validation checkpoint itself. Trigger: blocked on real users; per Phase 9's P7-18 note,
-  also worth re-checking that the Insights-tab `needsReview` gate behaves as expected once real data
-  exists.
+- **P7-24** — Real-data timeline validation. **PARTIALLY DONE (2026-10-01, n = 1 real officer).** The
+  developer's own payslips (Jan 2024 – Aug 2026, Level 12A) were walked on a Pixel 9 minified release build;
+  the officer confirmed the timeline facts (level, stage 7→8 in Jan 2026, DA steps, R&H and quarters changes).
+  Remaining trigger: other officers / levels / postings.
+- **P7-25** — The validation checkpoint itself. **PARTIALLY DONE (n = 1).** Zero false findings on the real
+  months; the only findings are four months of "Verified … match exactly" DA/TPTA-DA arrears rows (the
+  officer marked them genuine). Two defects found and fixed test-first: a Pay Audit crash with Premium
+  unlocked (duplicate LazyColumn key when two findings share type+month, `8ce8e766`) and a mislabelled
+  Nov 2024 TPTA change (`90f0c47e`). Per-change explanation coverage cannot be read from the UI (only
+  explained rows are listed); the corpus figure (87.5%) stands. Remaining trigger: 3–5 other officers; also
+  worth re-checking that the Insights-tab `needsReview` gate behaves as expected once more real data exists.
 
-None of these has a trigger that has fired yet. This phase does no code work unless one does.
+Apart from P7-24/P7-25 (partially done above), none of these has a trigger that has fired yet. This phase does no code work unless one does.
 
 ## Deferred / dropped
 
