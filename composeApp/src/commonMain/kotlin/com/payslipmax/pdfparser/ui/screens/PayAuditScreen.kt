@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.insights.timeline.PayMonth
+import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
@@ -50,6 +51,7 @@ fun PayAuditScreen(
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
     payAuditViewModel: PayAuditViewModel = koinInject(),
+    onboardingManager: OnboardingManager = remember { OnboardingManager() },
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val selected = uiState.selectedPayslip
@@ -61,6 +63,7 @@ fun PayAuditScreen(
         payAuditViewModel.setInputs(uiState.payslips, hasAnomalyDetection, requestedMonth = if (payAuditViewModel.uiState.value.selectedMonth == null) requested else null)
     }
     DisposableEffect(payAuditViewModel) { onDispose { payAuditViewModel.dispose() } }
+    if (uiState.payslips.isNotEmpty()) PayAuditIntroGate(onboardingManager)
 
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).detailScreenSafeArea()) {
         ScreenBackHeader(

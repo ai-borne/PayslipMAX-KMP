@@ -62,6 +62,7 @@ fun PayslipReplicaScreen(
     profileName: String = "",
     profileCda: String = "",
     profilePan: String = "",
+    onAuditClick: () -> Unit = {},
 ) {
     var activeGlossaryItem by remember { mutableStateOf<Pair<String, String>?>(null) }
 
@@ -88,6 +89,9 @@ fun PayslipReplicaScreen(
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
             PdfDocumentCard(payslip = payslip, onViewPdfClick = onViewPdfClick)
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+
+            ReplicaAuditActionCard(onAuditClick = onAuditClick)
             Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
             LedgerSection(

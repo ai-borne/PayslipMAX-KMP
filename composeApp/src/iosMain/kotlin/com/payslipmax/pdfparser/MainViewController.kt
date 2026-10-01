@@ -118,6 +118,7 @@ class IosNavHost(
                                 if (bytes != null) onOpenPdf(bytes, payslip.file)
                             }
                         },
+                        onNavigateTo = { screen -> bridge.navigateToDetail(screen) },
                     )
                 }
                 Screen.HelpLegal -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)

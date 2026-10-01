@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.applyCorrection
@@ -32,6 +33,7 @@ fun PayslipReplicaDetailScreen(
     viewModel: PayslipViewModel,
     onBack: () -> Unit,
     onOpenOriginal: (ParsedPayslip) -> Unit = {},
+    onNavigateTo: (Screen) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -66,5 +68,10 @@ fun PayslipReplicaDetailScreen(
         profileName = uiState.profileName,
         profileCda = uiState.profileCdaNumber,
         profilePan = uiState.profilePanNumber,
+        onAuditClick = {
+            // Pay Audit opens on the app-wide selected payslip, so selecting the viewed one pre-selects its month.
+            viewModel.selectPayslip(payslip)
+            onNavigateTo(Screen.PayAudit)
+        },
     )
 }

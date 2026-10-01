@@ -40,6 +40,7 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
     onboardingManager: OnboardingManager = OnboardingManager(),
     suppressCoachmark: Boolean = false,
+    onNavigateToAudit: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val payslips = uiState.payslips
@@ -69,6 +70,7 @@ fun DashboardScreen(
         showUploadDialog = showUploadDialog,
         onboardingManager = onboardingManager,
         suppressCoachmark = suppressCoachmark,
+        onNavigateToAudit = onNavigateToAudit,
         modifier = modifier,
     )
 
@@ -95,6 +97,7 @@ private fun DashboardContent(
     showUploadDialog: Boolean,
     onboardingManager: OnboardingManager,
     suppressCoachmark: Boolean,
+    onNavigateToAudit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -111,7 +114,7 @@ private fun DashboardContent(
         } else if (payslips.isEmpty()) {
             EmptyDashboardPlaceholder(Modifier.testTag("dashboard_empty"))
         } else {
-            PopulatedDashboard(payslips, selected, viewModel, Modifier.testTag("dashboard_populated"))
+            PopulatedDashboard(payslips, selected, viewModel, onNavigateToAudit, Modifier.testTag("dashboard_populated"))
         }
         DashboardUploadArea(
             onboardingManager = onboardingManager,
@@ -148,6 +151,7 @@ private fun PopulatedDashboard(
     payslips: List<ParsedPayslip>,
     selected: ParsedPayslip?,
     viewModel: PayslipViewModel,
+    onNavigateToAudit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -175,9 +179,8 @@ private fun PopulatedDashboard(
             viewModel = viewModel,
             selected = selected,
         )
-
         selected?.let {
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+            DashboardAuditBannerCard(payslips.size, onNavigateToAudit, Modifier.padding(vertical = AppDimensions.SpacingLarge))
             StatsGridSection(payslip = it)
 
             val countdown = remember { SalaryCountdownCalculator.getCurrentCountdown() }
