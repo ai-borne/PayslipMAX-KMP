@@ -51,6 +51,7 @@ class PcdaoAuditViewModel(
 
     private val monthContextOverrides: MutableMap<String, ActiveSituationalContext> = mutableMapOf()
     private val monthPresetOverrides: MutableMap<String, MissionPresetId?> = mutableMapOf()
+    private val monthDismissedOverrides: MutableMap<String, MutableSet<String>> = mutableMapOf()
     private var calculationJob: Job? = null
     internal val activeCalculationJob: Job? get() = calculationJob
 
@@ -88,6 +89,7 @@ class PcdaoAuditViewModel(
         val context = monthContextOverrides[key] ?: autoInferer.inferActiveContext(payslip, allPayslips)
         val autoDetectedTiles = autoInferer.inferActiveContext(payslip, allPayslips).activeTileIds
         val presetId = monthPresetOverrides[key]
+        val dismissed = monthDismissedOverrides[key]?.toSet() ?: emptySet()
         val recon = reconciler.reconcile(payslip, context, allPayslips)
         val milestones = milestoneAuditor.auditMilestones(allPayslips)
         val grouped = VaultMonthGroupMapper.groupByFinancialYear(allPayslips)
@@ -99,6 +101,7 @@ class PcdaoAuditViewModel(
                 activeContext = context,
                 autoInferredTileIds = autoDetectedTiles,
                 activePresetId = presetId,
+                dismissedDiscrepancyIds = dismissed,
                 reconciliationResult = recon,
                 careerMilestones = milestones,
                 groupedMonths = grouped,
@@ -152,7 +155,7 @@ class PcdaoAuditViewModel(
             if (SituationalTileKeys.HOUSING_KEYS.contains(tileId)) newTileIds.removeAll(SituationalTileKeys.HOUSING_KEYS - tileId)
             if (SituationalTileKeys.CEA_CHILD_KEYS.contains(tileId)) newTileIds.removeAll(SituationalTileKeys.CEA_CHILD_KEYS - tileId)
         }
-        val updatedContext = syncContextWithTile(currentContext, tileId, newTileIds)
+        val updatedContext = PcdaoAuditViewModelHelpers.syncContextWithTile(currentContext, tileId, newTileIds)
         recordContextOverride(updatedContext, _uiState.value.activePresetId)
         _uiState.update { it.copy(activeContext = updatedContext) }
         launchCalculation(updatedContext)
@@ -167,20 +170,17 @@ class PcdaoAuditViewModel(
         launchCalculation(updatedContext)
     }
 
-    private fun syncContextWithTile(
-        context: ActiveSituationalContext,
-        toggledTile: String,
-        newTiles: Set<String>,
-    ): ActiveSituationalContext {
-        var numChildren = context.numberOfChildrenCea
-        var hasHostel = context.hasHostelChild
-        when (toggledTile) {
-            SituationalTileKeys.CEA_NONE -> numChildren = 0
-            SituationalTileKeys.CEA_ONE_CHILD -> numChildren = if (newTiles.contains(toggledTile)) 1 else 0
-            SituationalTileKeys.CEA_TWO_CHILDREN -> numChildren = if (newTiles.contains(toggledTile)) 2 else 0
-            SituationalTileKeys.CEA_HOSTEL -> hasHostel = newTiles.contains(toggledTile)
-        }
-        return context.copy(activeTileIds = newTiles, numberOfChildrenCea = numChildren, hasHostelChild = hasHostel)
+    fun dismissDiscrepancy(discrepancyId: String) {
+        val key = _uiState.value.selectedPayslip?.let { monthKey(it) } ?: ""
+        val currentDismissed = monthDismissedOverrides.getOrPut(key) { mutableSetOf() }
+        currentDismissed.add(discrepancyId)
+        _uiState.update { it.copy(dismissedDiscrepancyIds = currentDismissed.toSet()) }
+    }
+
+    fun resetDismissedDiscrepancies() {
+        val key = _uiState.value.selectedPayslip?.let { monthKey(it) } ?: ""
+        monthDismissedOverrides.remove(key)
+        _uiState.update { it.copy(dismissedDiscrepancyIds = emptySet()) }
     }
 
     private fun recordContextOverride(
@@ -221,7 +221,7 @@ class PcdaoAuditViewModel(
         return try {
             val payMatrix = rulesRepository.getPayMatrix()
             val fromLevel = _uiState.value.sandboxFromLevel ?: context.inferredFlags.inferredRankLevel ?: "10"
-            val toLevel = _uiState.value.sandboxToLevel ?: defaultPromotionalTarget(fromLevel)
+            val toLevel = _uiState.value.sandboxToLevel ?: PcdaoAuditViewModelHelpers.defaultPromotionalTarget(fromLevel)
             PayFixationOptimizer(payMatrix).optimizePromotion(
                 PayFixationRequest(
                     fromLevel = fromLevel,
@@ -238,16 +238,6 @@ class PcdaoAuditViewModel(
         }
     }
 
-    private fun defaultPromotionalTarget(from: String): String =
-        when (from) {
-            "10" -> "11"
-            "11" -> "12A"
-            "12A" -> "13"
-            "13" -> "13A"
-            "13A" -> "14"
-            else -> "11"
-        }
-
     fun setSandboxLevels(
         fromLevel: String,
         toLevel: String,
@@ -258,26 +248,7 @@ class PcdaoAuditViewModel(
 
     fun generateRedressalLetter(maskPii: Boolean = false): RedressalLetter? {
         val payslip = _uiState.value.selectedPayslip ?: return null
-        val state = _uiState.value
-        val inferredLevel = state.activeContext.inferredFlags.inferredRankLevel
-        val inferredRank = RedressalLetterGenerator.inferRankFromPayLevel(inferredLevel, payslip.earnings.basicPay)
-        val request =
-            if (state.isCumulativeViewActive && state.hasCumulativeArrears && state.cumulativeRollup != null) {
-                RedressalLetterGenerator.createRequestFromCumulativeRollup(
-                    payslip = payslip,
-                    rollup = state.cumulativeRollup,
-                    rank = inferredRank,
-                    maskPii = maskPii,
-                )
-            } else {
-                val recon = state.reconciliationResult ?: return null
-                RedressalLetterGenerator.createRequestFromReconciliation(
-                    payslip = payslip,
-                    reconciliationResult = recon,
-                    rank = inferredRank,
-                    maskPii = maskPii,
-                )
-            }
+        val request = PcdaoAuditViewModelHelpers.buildRedressalRequest(_uiState.value, payslip, maskPii) ?: return null
         val letter = RedressalLetterGenerator.generateLetter(request)
         _uiState.update { it.copy(generatedLetter = letter) }
         return letter

@@ -48,20 +48,22 @@ data class PcdaoAuditUiState(
     val isCumulativeViewActive: Boolean = false,
     val sandboxFromLevel: String? = null,
     val sandboxToLevel: String? = null,
+    val dismissedDiscrepancyIds: Set<String> = emptySet(),
 ) {
     val filteredDiscrepancies: List<AuditDiscrepancy>
         get() {
             val list = reconciliationResult?.discrepancies ?: return emptyList()
+            val activeList = if (dismissedDiscrepancyIds.isEmpty()) list else list.filterNot { it.id in dismissedDiscrepancyIds }
             return when (selectedFilter) {
-                FindingFilter.ALL -> list
-                FindingFilter.ENTITLEMENTS -> list.filter { it.type == DiscrepancyType.UNDERPAYMENT }
-                FindingFilter.HAZARDS -> list.filter { it.type == DiscrepancyType.RECOVERY_HAZARD }
+                FindingFilter.ALL -> activeList
+                FindingFilter.ENTITLEMENTS -> activeList.filter { it.type == DiscrepancyType.UNDERPAYMENT }
+                FindingFilter.HAZARDS -> activeList.filter { it.type == DiscrepancyType.RECOVERY_HAZARD }
                 FindingFilter.ALARMS ->
-                    list.filter {
+                    activeList.filter {
                         it.severity == DiscrepancySeverity.CRITICAL || it.type == DiscrepancyType.FORFEITURE_RISK
                     }
                 FindingFilter.TAX_SHIELD ->
-                    list.filter {
+                    activeList.filter {
                         it.type == DiscrepancyType.TAX_EXPOSURE || it.authority.contains("10(11)", ignoreCase = true)
                     }
             }
@@ -90,5 +92,9 @@ data class PcdaoAuditUiState(
             }
 
     val alarmsCount: Int
-        get() = reconciliationResult?.criticalAlarmCount ?: 0
+        get() =
+            reconciliationResult?.discrepancies
+                ?.filterNot { it.id in dismissedDiscrepancyIds }
+                ?.count { it.severity == DiscrepancySeverity.CRITICAL || it.type == DiscrepancyType.FORFEITURE_RISK }
+                ?: 0
 }
