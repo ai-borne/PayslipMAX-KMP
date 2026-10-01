@@ -531,6 +531,12 @@ continuity, per CLAUDE.md's "fail loud" rule — not a sign of unfinished Phase 
   An arrears under-payment (`SALARY_LOSS`, `arrearsDa`) is now shown as an
   issue so the verdict cannot read clean over it; the "pay lines" wording no longer claims every line was audited.
 
+- **Entry points (consolidation plan Phase 3, 2026-10-01).** Ported from `pay_audit_1.0` and rewritten for the
+  timeline/evidence model: a free-visible Dashboard banner, an "Audit this month" card on the payslip detail
+  screen (opens Pay Audit on that month through the selected-payslip state into `setInputs(requestedMonth)`), and
+  a one-time orientation sheet behind `OnboardingManager.shouldShowPayAuditIntro()`. No tiles, no "unclaimed ₹".
+  Open: not yet checked on a device; the orientation cannot be re-opened after dismissal.
+
 Apart from P7-24/P7-25 (partially done above), none of these has a trigger that has fired yet. This phase does no code work unless one does.
 
 ## Deferred / dropped
