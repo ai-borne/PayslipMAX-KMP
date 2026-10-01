@@ -66,7 +66,8 @@ object PayAuditVerdictStrings {
 
     const val spanStageSeparator = " · Stage "
     const val spanMonthsSuffix = " months"
-    const val spanEffectivePrefix = "Effective "
+    const val spanFirstPaidPrefix = "First paid on the "
+    const val spanFirstPaidSuffix = " payslip"
     const val spanRiskHardshipPosting = "Risk & Hardship posting"
     const val spanFieldPosting = "Field posting"
 

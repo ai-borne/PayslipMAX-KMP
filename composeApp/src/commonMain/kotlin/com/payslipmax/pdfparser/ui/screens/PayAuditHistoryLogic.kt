@@ -56,7 +56,7 @@ private fun daSteps(months: List<TimelineMonth>): List<TimelineSpan> =
         if (from == null || to == null || from == to) {
             null
         } else {
-            TimelineSpan(b.month, b.month, "DA $from% → $to%", "${PayAuditVerdictStrings.spanEffectivePrefix}${formatPayMonth(b.month)}")
+            TimelineSpan(b.month, b.month, "DA $from% → $to%", "${PayAuditVerdictStrings.spanFirstPaidPrefix}${formatPayMonth(b.month)}${PayAuditVerdictStrings.spanFirstPaidSuffix}")
         }
     }
 
