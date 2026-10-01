@@ -1,35 +1,40 @@
 package com.payslipmax.pdfparser.ui.screens
 
+import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.insights.Anomaly
+import com.payslipmax.pdfparser.insights.AnomalyTierMap
 import com.payslipmax.pdfparser.insights.PayAuditFindingTypes
+import com.payslipmax.pdfparser.insights.REPRESENTATION_DRAFT_TYPES
+import com.payslipmax.pdfparser.insights.isProven
 
 /**
- * Display partition for the Pay Audit screen's findings, gated by
- * [com.payslipmax.pdfparser.subscription.FeatureGate.ANOMALY_DETECTION] (docs/Plan/09_PayAudit_PhasePlan.md
- * Phase 4: "Free tier: timeline and finding count. Premium: details."). Mirrors
- * [partitionAdvancedAnomalies], scoped to [PayAuditFindingTypes.TYPES] only.
+ * Splits the engine's Pay Audit findings by what the user should do about each: an unresolved
+ * ([Anomaly.isPending]) one waits for a later payslip, an [AnomalyTierMap.ARREARS_AUDIT] one is a
+ * "Verified … match exactly" arrears row (DaArrearsAuditor only ever emits it on a match), the rest are issues.
  */
-data class PayAuditFindingsDisplay(
-    val unlocked: List<Anomaly>,
-    val lockedCount: Int,
-    val lockedLabels: List<String>,
-) {
-    val totalCount: Int get() = unlocked.size + lockedCount
-    val isLocked: Boolean get() = lockedCount > 0
+internal fun classifyPayAuditFindings(anomalies: List<Anomaly>): PayAuditMonthFindings {
+    val findings = anomalies.filter { it.type in PayAuditFindingTypes.TYPES }
+    val (waiting, resolved) = findings.partition { it.isPending }
+    val (verified, issues) = resolved.partition { it.type == AnomalyTierMap.ARREARS_AUDIT }
+    return PayAuditMonthFindings(issues = issues, waiting = waiting, verified = verified)
 }
 
-fun partitionPayAuditFindings(
-    anomalies: List<Anomaly>,
-    hasAnomalyDetection: Boolean,
-): PayAuditFindingsDisplay {
-    val findings = anomalies.filter { it.type in PayAuditFindingTypes.TYPES }
-    return if (hasAnomalyDetection) {
-        PayAuditFindingsDisplay(unlocked = findings, lockedCount = 0, lockedLabels = emptyList())
-    } else {
-        PayAuditFindingsDisplay(
-            unlocked = emptyList(),
-            lockedCount = findings.size,
-            lockedLabels = findings.map { anomalyCategoryLabel(it.type) }.distinct(),
-        )
+/** Only a proven finding of a letter-eligible type gets a "Draft letter" action (same rule as the draft generator). */
+fun Anomaly.canDraftLetter(): Boolean = type in REPRESENTATION_DRAFT_TYPES && isProven() && !isPending
+
+internal fun payAuditLinesChecked(payslip: ParsedPayslip): Int = getCreditsList(payslip).size + getDebitsList(payslip).size
+
+internal fun buildPayAuditVerdict(
+    findings: PayAuditMonthFindings,
+    hasAccess: Boolean,
+    linesChecked: Int,
+): PayAuditVerdict {
+    val labels = findings.issues.map { payLineLabel(it.field) }.distinct()
+    return when {
+        findings.issues.isNotEmpty() && !hasAccess -> PayAuditVerdict.LockedIssue(findings.issues.size, labels)
+        findings.issues.isNotEmpty() ->
+            PayAuditVerdict.Issue(findings.issues.size, labels, findings.issues.singleOrNull()?.amount, findings.issues.any { it.canDraftLetter() })
+        findings.waiting.isNotEmpty() -> PayAuditVerdict.Waiting(findings.waiting.size)
+        else -> PayAuditVerdict.Clean(linesChecked, findings.verified.size)
     }
 }

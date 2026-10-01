@@ -38,8 +38,8 @@ class PayAuditPredictionsSectionTest {
         runComposeUiTest {
             setContent { LazyColumn { payAuditPredictionsItems(incrementPrediction = upcomingIncrement, dsopRoom = null) } }
 
-            onNodeWithText("Due 1/2027", substring = true).assertExists()
-            onNodeWithText("Basic Pay moves to ₹87800", substring = true).assertExists()
+            onNodeWithText("Due Jan 2027", substring = true).assertExists()
+            onNodeWithText("Basic Pay moves to ₹87,800", substring = true).assertExists()
         }
 
     @OptIn(ExperimentalTestApi::class)
@@ -48,7 +48,7 @@ class PayAuditPredictionsSectionTest {
         runComposeUiTest {
             setContent { LazyColumn { payAuditPredictionsItems(incrementPrediction = overdueIncrement, dsopRoom = null) } }
 
-            onNodeWithText("Overdue since 1/2025", substring = true).assertExists()
+            onNodeWithText("Overdue since Jan 2025", substring = true).assertExists()
         }
 
     @OptIn(ExperimentalTestApi::class)
@@ -57,7 +57,7 @@ class PayAuditPredictionsSectionTest {
         runComposeUiTest {
             setContent { LazyColumn { payAuditPredictionsItems(incrementPrediction = null, dsopRoom = dsopRoom) } }
 
-            onNodeWithText("Subscribed so far: ₹120000", substring = true).assertExists()
-            onNodeWithText("Room left under the ₹5L tax-free cap: ₹380000", substring = true).assertExists()
+            onNodeWithText("Subscribed so far: ₹1,20,000", substring = true).assertExists()
+            onNodeWithText("Room left under the ₹5L tax-free cap: ₹3,80,000", substring = true).assertExists()
         }
 }

@@ -11,135 +11,115 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.insights.timeline.ChangeExplanation
 import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.insights.timeline.ServiceTimeline
-import com.payslipmax.pdfparser.insights.timeline.TimelineMonth
-import com.payslipmax.pdfparser.insights.timeline.TptaCityClass
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
+import com.payslipmax.pdfparser.ui.theme.PayAuditVerdictStrings as S
 
 /**
- * "What changed this month" + Service Timeline sections of [PayAuditScreen] (docs/Plan/09_PayAudit_PhasePlan.md
- * Phase 4). Both render for free users — only [payAuditFindingsItems] is gated. [changes] is filtered
- * to entries with a non-null [ChangeExplanation.reason]; an unexplained move is an honest gap
- * (Phase 3), not something worth surfacing as an empty "no reason" row.
+ * "What changed from last month" (U3): every row names its pay line, then the move and the reason in
+ * plain words. Only explained moves are shown; an unexplained one is an honest gap (Phase 3), not a row.
  */
 fun LazyListScope.payAuditChangesItems(changes: List<ChangeExplanation>) {
     val explained = changes.filter { it.reason != null }
     item(key = "pay_audit_changes_header", contentType = "section_header") {
-        Text(text = PayAuditStrings.changesSectionTitle, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(text = S.changesTitle, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     }
     if (explained.isEmpty()) {
         item(key = "pay_audit_changes_empty", contentType = "empty_state") {
-            Text(text = PayAuditStrings.changesEmptyState, style = MaterialTheme.typography.bodyMedium)
+            Text(text = S.changesEmpty, style = MaterialTheme.typography.bodyMedium)
         }
     } else {
-        items(explained, key = { "${it.field}_${it.month.index}" }, contentType = { "change_row" }) { change ->
-            PayAuditChangeRow(change = change)
-        }
+        items(explained, key = { "change_${it.field}_${it.month.index}" }, contentType = { "change_row" }) { PayAuditChangeRow(it, showMonth = false) }
     }
 }
 
-/**
- * Every explained change across the whole stored history (docs/Plan/09_PayAudit_PhasePlan.md Phase 8
- * P7-12), excluding [currentMonth] since that transition is already shown by [payAuditChangesItems]
- * above — avoids duplicate `LazyColumn` keys and a duplicated row for the same month.
- */
-fun LazyListScope.payAuditAllChangesItems(
-    changes: List<ChangeExplanation>,
-    currentMonth: PayMonth,
+/** History tab: the timeline as spans, then every explained change collapsed by year (U4). */
+fun LazyListScope.payAuditHistoryItems(
+    timeline: ServiceTimeline,
+    allChanges: List<ChangeExplanation>,
+    currentMonth: PayMonth?,
 ) {
-    val explained = changes.filter { it.reason != null && it.month != currentMonth }.sortedByDescending { it.month }
-    item(key = "pay_audit_all_changes_header", contentType = "section_header") {
-        Text(text = PayAuditStrings.allChangesSectionTitle, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+    item(key = "pay_audit_spans_header", contentType = "section_header") {
+        Text(text = S.spansTitle, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     }
-    if (explained.isEmpty()) {
-        item(key = "pay_audit_all_changes_empty", contentType = "empty_state") {
-            Text(text = PayAuditStrings.allChangesEmptyState, style = MaterialTheme.typography.bodyMedium)
-        }
-    } else {
-        items(explained, key = { "all_${it.field}_${it.month.index}" }, contentType = { "change_row" }) { change ->
-            PayAuditChangeRow(change = change)
-        }
-    }
-}
-
-fun LazyListScope.payAuditTimelineItems(timeline: ServiceTimeline) {
-    item(key = "pay_audit_timeline_header", contentType = "section_header") {
-        Text(text = PayAuditStrings.timelineSectionTitle, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-    }
-    if (timeline.months.isEmpty()) {
-        item(key = "pay_audit_timeline_empty", contentType = "empty_state") {
+    val spans = buildTimelineSpans(timeline)
+    if (spans.isEmpty()) {
+        item(key = "pay_audit_spans_empty", contentType = "empty_state") {
             Text(text = PayAuditStrings.timelineEmptyState, style = MaterialTheme.typography.bodyMedium)
         }
     } else {
-        val monthsNewestFirst = timeline.months.sortedByDescending { it.month }
-        items(monthsNewestFirst, key = { it.month.index }, contentType = { "timeline_month_row" }) { month ->
-            PayAuditTimelineMonthRow(month = month)
-        }
+        items(spans, key = { "span_${it.from.index}_${it.to.index}_${it.title}" }, contentType = { "span_row" }) { PayAuditSpanRow(it) }
+    }
+    item(key = "pay_audit_by_year_header", contentType = "section_header") {
+        Text(text = S.everyChangeTitle, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+    }
+    val byYear =
+        groupChangesByYear(
+            allChanges.filter { it.reason != null }.sortedByDescending { it.month }.map { it.month.year to it },
+        )
+    items(byYear, key = { "year_${it.first}" }, contentType = { "year_group" }) { (year, changes) ->
+        PayAuditYearGroup(year = year, changes = changes, startExpanded = currentMonth?.year == year)
     }
 }
 
 @Composable
-private fun PayAuditChangeRow(change: ChangeExplanation) {
+private fun PayAuditYearGroup(
+    year: Int,
+    changes: List<ChangeExplanation>,
+    startExpanded: Boolean,
+) {
+    var expanded by rememberSaveable(year) { mutableStateOf(startExpanded) }
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
     ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingSmall),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTwo),
-        ) {
-            Text(
-                text = "${change.month.month}/${change.month.year} — ₹${change.from.toInt()} → ₹${change.to.toInt()}",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(text = change.reason.orEmpty(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Column(modifier = Modifier.padding(AppDimensions.PaddingSmall), verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
+            TextButton(onClick = { expanded = !expanded }) {
+                Text("$year · ${changes.size}${if (changes.size == 1) S.changesCountSingular else S.changesCountPlural}", fontWeight = FontWeight.Bold)
+            }
+            if (expanded) changes.forEach { PayAuditChangeRow(it, showMonth = true) }
         }
     }
 }
 
 @Composable
-private fun PayAuditTimelineMonthRow(month: TimelineMonth) {
+private fun PayAuditChangeRow(
+    change: ChangeExplanation,
+    showMonth: Boolean,
+) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTwo)) {
+        val name = payLineLabel(change.field)
+        Text(text = if (showMonth) "${formatPayMonth(change.month)} · $name" else name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+        Text(text = formatChangeAmounts(change.from, change.to), style = MaterialTheme.typography.bodyMedium)
+        Text(text = change.reason.orEmpty(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
+private fun PayAuditSpanRow(span: TimelineSpan) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f),
         border = BorderStroke(AppDimensions.BorderHairline, MaterialTheme.colorScheme.outlineVariant),
     ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingSmall),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTwo),
-        ) {
-            Text(text = "${month.month.month}/${month.month.year}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-            Text(text = timelineMonthDetail(month), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Column(modifier = Modifier.padding(AppDimensions.PaddingSmall), verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTwo)) {
+            val range = if (span.from == span.to) formatPayMonth(span.from) else "${formatPayMonth(span.from)} – ${formatPayMonth(span.to)}"
+            Text(text = range, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = span.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+            Text(text = span.detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
-
-private fun timelineMonthDetail(month: TimelineMonth): String =
-    buildString {
-        val level = month.level
-        val stage = month.stage
-        if (level != null && stage != null) {
-            append(PayAuditStrings.timelineLevelPrefix)
-            append(level.label)
-            append(PayAuditStrings.timelineStageSeparator)
-            append(stage)
-        } else {
-            append(PayAuditStrings.timelineLevelUnresolved)
-        }
-        month.daPercent?.let {
-            append(" · ")
-            append(it)
-            append(PayAuditStrings.timelineDaSuffix)
-        }
-        if (month.tptaCity == TptaCityClass.HIGHER) append(PayAuditStrings.timelineTptaHigherLabel)
-        if (month.occupiesQuarters) append(PayAuditStrings.timelineQuartersLabel)
-    }

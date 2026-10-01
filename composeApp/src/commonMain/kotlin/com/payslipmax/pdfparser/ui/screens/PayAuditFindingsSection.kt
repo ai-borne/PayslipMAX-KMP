@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
@@ -10,123 +11,145 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.insights.Anomaly
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
-import com.payslipmax.pdfparser.ui.theme.InsightsStrings
-import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
+import com.payslipmax.pdfparser.ui.theme.PayAuditVerdictStrings as S
+
+private enum class FindingKind { ISSUE, WAITING, VERIFIED }
 
 /**
- * Findings section of [PayAuditScreen]: unlocked findings render in full, including the evidence
- * ([Anomaly.expected]/[Anomaly.actual]/[Anomaly.authority]) Phase 2 attached but no surface has shown
- * until now (docs/Plan/09_PayAudit_PhasePlan.md Phase 7 carry-over, "Evidence is not stored or
- * shown... Phase 4/5"); locked shows only the count + category labels, per Phase 4's free-tier split.
+ * "This month" findings as evidence cards (docs/Plan Phase 2 U6): pay line, should-be / credited /
+ * difference, a "Why?" expander with the authority, and "Draft letter" only for proven findings. Verified
+ * arrears are shown (the user marked them genuine) but styled as good news, never as an issue. When the
+ * free tier hides the evidence, [hiddenCount] drives one locked card instead.
  */
 fun LazyListScope.payAuditFindingsItems(
-    display: PayAuditFindingsDisplay,
+    findings: PayAuditMonthFindings,
+    hiddenCount: Int,
     onUnlockClick: () -> Unit,
+    onDraftLetter: () -> Unit,
 ) {
-    item(key = "pay_audit_findings_header", contentType = "section_header") {
-        Text(
-            text = PayAuditStrings.findingsSectionTitle,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-        )
+    val rows = findings.issues.map { it to FindingKind.ISSUE } + findings.waiting.map { it to FindingKind.WAITING } + findings.verified.map { it to FindingKind.VERIFIED }
+    itemsIndexed(
+        rows,
+        // (type, month) is not unique: the basic-DA and TPTA-DA arrears checks share both.
+        key = { index, (a, _) -> "finding_${a.type}_${a.month}_$index" },
+        contentType = { _, _ -> "finding_card" },
+    ) { _, (anomaly, kind) ->
+        PayAuditFindingCard(anomaly = anomaly, kind = kind, onDraftLetter = onDraftLetter)
     }
-    when {
-        display.totalCount == 0 ->
-            item(key = "pay_audit_findings_empty", contentType = "empty_state") {
-                Text(text = PayAuditStrings.findingsEmptyState, style = MaterialTheme.typography.bodyMedium)
-            }
-        display.isLocked ->
-            item(key = "pay_audit_findings_locked", contentType = "locked_teaser") {
-                PayAuditLockedFindingsCard(display = display, onUnlockClick = onUnlockClick)
-            }
-        else ->
-            itemsIndexed(
-                display.unlocked,
-                // (type, month) is not unique: the basic-DA and TPTA-DA arrears checks share both.
-                key = { index, it -> "${it.type}_${it.month}_$index" },
-                contentType = { _, _ -> "finding_row" },
-            ) { _, anomaly ->
-                PayAuditFindingRow(anomaly = anomaly)
-            }
+    if (hiddenCount > 0) {
+        item(key = "pay_audit_findings_locked", contentType = "locked_card") { PayAuditLockedCard(onUnlockClick) }
     }
 }
 
 @Composable
-private fun PayAuditLockedFindingsCard(
-    display: PayAuditFindingsDisplay,
-    onUnlockClick: () -> Unit,
+private fun PayAuditFindingCard(
+    anomaly: Anomaly,
+    kind: FindingKind,
+    onDraftLetter: () -> Unit,
 ) {
+    var showWhy by rememberSaveable { mutableStateOf(false) }
+    val tone =
+        when (kind) {
+            FindingKind.ISSUE -> MaterialTheme.colorScheme.error
+            FindingKind.WAITING -> MaterialTheme.colorScheme.tertiary
+            FindingKind.VERIFIED -> MaterialTheme.colorScheme.secondary
+        }
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
+        shape = RoundedCornerShape(AppDimensions.CornerRadius),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(AppDimensions.BorderThin, tone.copy(alpha = 0.5f)),
     ) {
         Column(
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
-            val countLabel = if (display.lockedCount == 1) PayAuditStrings.findingsCountSingular else PayAuditStrings.findingsCountPlural
-            Text(text = "${display.lockedCount} $countLabel", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-            Text(
-                text = display.lockedLabels.joinToString(InsightsStrings.advancedAnomaliesLabelSeparator),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Button(onClick = onUnlockClick) { Text(PayAuditStrings.findingsLockedCta) }
+            val kicker =
+                when (kind) {
+                    FindingKind.ISSUE -> S.kickerIssue
+                    FindingKind.WAITING -> S.kickerWaiting
+                    FindingKind.VERIFIED -> S.kickerVerified
+                }
+            Text(kicker, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = tone)
+            Text(payLineLabel(anomaly.field), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            PayAuditEvidenceRow(anomaly, kind)
+            Text(anomaly.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (kind == FindingKind.WAITING) Text(S.waitingNote, style = MaterialTheme.typography.bodySmall)
+            PayAuditFindingActions(anomaly, showWhy, onToggleWhy = { showWhy = !showWhy }, onDraftLetter = onDraftLetter)
         }
     }
 }
 
 @Composable
-private fun PayAuditFindingRow(anomaly: Anomaly) {
+private fun PayAuditEvidenceRow(
+    anomaly: Anomaly,
+    kind: FindingKind,
+) {
+    val expected = anomaly.expected
+    val actual = anomaly.actual
+    if (expected == null || actual == null) return
+    Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge)) {
+        PayAuditEvidenceCell(S.evidenceShouldBe, formatCurrency(expected))
+        PayAuditEvidenceCell(S.evidenceCredited, formatCurrency(actual))
+        if (kind != FindingKind.WAITING) PayAuditEvidenceCell(S.evidenceDifference, formatCurrency(expected - actual))
+    }
+}
+
+@Composable
+private fun PayAuditEvidenceCell(
+    label: String,
+    value: String,
+) {
+    Column {
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+private fun PayAuditFindingActions(
+    anomaly: Anomaly,
+    showWhy: Boolean,
+    onToggleWhy: () -> Unit,
+    onDraftLetter: () -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
+        OutlinedButton(onClick = onToggleWhy) { Text(if (showWhy) S.hideWhyButton else S.whyButton) }
+        if (anomaly.canDraftLetter()) Button(onClick = onDraftLetter) { Text(S.draftLetterButton) }
+    }
+    if (showWhy) {
+        Text(
+            text = anomaly.authority?.let { "${S.whyAuthorityPrefix}$it" } ?: S.whyNoAuthority,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun PayAuditLockedCard(onUnlockClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium),
+        shape = RoundedCornerShape(AppDimensions.CornerRadius),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)),
+        border = BorderStroke(AppDimensions.BorderThin, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)),
     ) {
-        Column(
-            modifier = Modifier.padding(AppDimensions.PaddingSmall),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
-        ) {
-            Text(
-                text = anomalyCategoryLabel(anomaly.type),
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(text = anomaly.description, style = MaterialTheme.typography.bodyMedium)
-            if (anomaly.isPending) {
-                Text(
-                    text = PayAuditStrings.findingsPendingLabel,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.tertiary,
-                )
-            }
-            val expected = anomaly.expected
-            val actual = anomaly.actual
-            if (expected != null && actual != null) {
-                Text(
-                    text = "${PayAuditStrings.findingsExpectedLabel}${expected.toInt()}   ${PayAuditStrings.findingsActualLabel}${actual.toInt()}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            anomaly.authority?.let {
-                Text(
-                    text = "${PayAuditStrings.findingsAuthorityLabel}$it",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+        Column(modifier = Modifier.padding(AppDimensions.PaddingMedium), verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
+            Text(S.kickerLocked, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+            Text(S.lockedCardNote, style = MaterialTheme.typography.bodySmall)
+            Button(onClick = onUnlockClick) { Text(S.lockedCardCta) }
         }
     }
 }

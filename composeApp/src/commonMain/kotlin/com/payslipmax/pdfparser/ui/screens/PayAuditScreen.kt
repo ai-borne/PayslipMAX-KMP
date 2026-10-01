@@ -8,9 +8,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipViewModel
@@ -30,48 +35,46 @@ import com.payslipmax.pdfparser.ui.rememberHasAccess
 import com.payslipmax.pdfparser.ui.restorePurchases
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
+import com.payslipmax.pdfparser.ui.theme.PayAuditVerdictStrings
+import org.koin.compose.koinInject
 
 /**
- * Pay Audit screen (docs/Plan/09_PayAudit_PhasePlan.md Phase 4): the service timeline, this month's
- * explained pay-line changes, and findings, gated by [FeatureGate.ANOMALY_DETECTION] at the findings
- * level only — the timeline and finding count stay free.
+ * Pay Audit screen (docs/Plan Phase 2 redesign): a month picker and a one-glance verdict on top, then three
+ * tabs. All derived state comes from [PayAuditViewModel]; this composable only renders it. Premium gating
+ * ([FeatureGate.ANOMALY_DETECTION]) stays at the findings-evidence level only.
  */
 @Composable
 fun PayAuditScreen(
     viewModel: PayslipViewModel,
     onBack: () -> Unit,
+    onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
+    payAuditViewModel: PayAuditViewModel = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val selected = uiState.selectedPayslip
+    val hasAnomalyDetection = viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION)
     var showUpgradeSheet by remember { mutableStateOf(false) }
+    val requested = selected?.let { PayMonth(it.year, it.monthNum) }
+    // Only the first open follows the app-wide selection; after that the on-screen picker owns the month.
+    LaunchedEffect(uiState.payslips, hasAnomalyDetection) {
+        payAuditViewModel.setInputs(uiState.payslips, hasAnomalyDetection, requestedMonth = if (payAuditViewModel.uiState.value.selectedMonth == null) requested else null)
+    }
+    DisposableEffect(payAuditViewModel) { onDispose { payAuditViewModel.dispose() } }
 
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .detailScreenSafeArea(),
-    ) {
+    Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).detailScreenSafeArea()) {
         ScreenBackHeader(
             title = PayAuditStrings.screenTitle,
             subtitle = PayAuditStrings.screenSubtitle,
             onBack = onBack,
             modifier = Modifier.padding(AppDimensions.PaddingMedium),
         )
-        if (selected == null) {
+        if (uiState.payslips.isEmpty()) {
             PayAuditEmptyState()
         } else {
-            val hasAnomalyDetection = viewModel.rememberHasAccess(FeatureGate.ANOMALY_DETECTION)
-            PayAuditBody(
-                selected = selected,
-                payslips = uiState.payslips,
-                hasAnomalyDetection = hasAnomalyDetection,
-                onShowUpgradeSheet = { showUpgradeSheet = true },
-            )
+            PayAuditBody(payAuditViewModel, onShowUpgradeSheet = { showUpgradeSheet = true }, onDraftLetter = { onNavigateTo(Screen.Representation) })
         }
     }
-
     if (showUpgradeSheet) {
         val premiumPrice by viewModel.premiumPriceState.collectAsState()
         PremiumUpgradeBottomSheet(
@@ -86,30 +89,102 @@ fun PayAuditScreen(
 
 @Composable
 private fun PayAuditBody(
-    selected: ParsedPayslip,
-    payslips: List<ParsedPayslip>,
-    hasAnomalyDetection: Boolean,
+    vm: PayAuditViewModel,
     onShowUpgradeSheet: () -> Unit,
+    onDraftLetter: () -> Unit,
 ) {
-    val engineResult = rememberPayAuditEngineResult(selected, payslips)
-    val findings =
-        remember(engineResult, hasAnomalyDetection) {
-            partitionPayAuditFindings(engineResult.anomalies, hasAnomalyDetection)
-        }
+    val state by vm.uiState.collectAsState()
+    PayAuditContent(state, vm::selectMonth, vm::selectTab, onShowUpgradeSheet, onDraftLetter)
+}
+
+/** Stateless render of [PayAuditUiState]: the month bar, the verdict card, the tab row and the selected tab. */
+@Composable
+internal fun PayAuditContent(
+    state: PayAuditUiState,
+    onSelectMonth: (PayMonth) -> Unit,
+    onSelectTab: (PayAuditTab) -> Unit,
+    onShowUpgradeSheet: () -> Unit,
+    onDraftLetter: () -> Unit,
+) {
+    var sheet by remember { mutableStateOf<PayAuditSheet?>(null) }
+    val month = state.selectedMonth
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(AppDimensions.PaddingMedium),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
-        payAuditFindingsItems(display = findings, onUnlockClick = onShowUpgradeSheet)
-        payAuditChangesItems(changes = engineResult.changeExplanations)
-        payAuditAllChangesItems(
-            changes = engineResult.allChangeExplanations,
-            currentMonth = PayMonth(selected.year, selected.monthNum),
+        item(key = "month_bar", contentType = "month_bar") {
+            PayAuditMonthBar(month, state.availableMonths, onSelectMonth, { sheet = PayAuditSheet.MONTH }, { sheet = PayAuditSheet.GLOSSARY })
+        }
+        if (month != null) {
+            item(key = "verdict", contentType = "verdict") {
+                PayAuditVerdictCard(
+                    copy = payAuditVerdictCopy(state.verdict, month),
+                    historyLine = if (state.history.monthsAudited > 0) payAuditHistoryLine(state.history) else null,
+                    onAction = { verdictAction(state.verdict, onShowUpgradeSheet, onDraftLetter) { onSelectTab(PayAuditTab.THIS_MONTH) } },
+                )
+            }
+        }
+        item(key = "tabs", contentType = "tabs") { PayAuditTabs(state.tab, onSelectTab) }
+        payAuditTabContent(state, onShowUpgradeSheet, onDraftLetter)
+    }
+    when (sheet) {
+        PayAuditSheet.MONTH ->
+            PayAuditMonthPickerSheet(month, state.availableMonths, onSelect = {
+                onSelectMonth(it)
+                sheet = null
+            }, onDismiss = { sheet = null })
+        PayAuditSheet.GLOSSARY -> PayAuditGlossarySheet(onDismiss = { sheet = null })
+        null -> Unit
+    }
+}
+
+private fun verdictAction(
+    verdict: PayAuditVerdict,
+    onUnlock: () -> Unit,
+    onDraftLetter: () -> Unit,
+    onShowEvidence: () -> Unit,
+) = when {
+    verdict is PayAuditVerdict.LockedIssue -> onUnlock()
+    verdict is PayAuditVerdict.Issue && verdict.canDraftLetter -> onDraftLetter()
+    else -> onShowEvidence()
+}
+
+private enum class PayAuditSheet { MONTH, GLOSSARY }
+
+private fun LazyListScope.payAuditTabContent(
+    state: PayAuditUiState,
+    onShowUpgradeSheet: () -> Unit,
+    onDraftLetter: () -> Unit,
+) {
+    when (state.tab) {
+        PayAuditTab.THIS_MONTH -> {
+            payAuditFindingsItems(state.findings, state.hiddenFindingCount, onShowUpgradeSheet, onDraftLetter)
+            payAuditChangesItems(state.changes)
+        }
+        PayAuditTab.HISTORY -> payAuditHistoryItems(state.timeline, state.allChanges, state.selectedMonth)
+        PayAuditTab.PLAN_AHEAD -> {
+            payAuditPredictionsItems(state.incrementPrediction, state.dsopRoom)
+            payAuditFixationCalculatorItems(state.timeline)
+        }
+    }
+}
+
+@Composable
+private fun PayAuditTabs(
+    selected: PayAuditTab,
+    onSelect: (PayAuditTab) -> Unit,
+) {
+    val labels =
+        mapOf(
+            PayAuditTab.THIS_MONTH to PayAuditVerdictStrings.tabThisMonth,
+            PayAuditTab.HISTORY to PayAuditVerdictStrings.tabHistory,
+            PayAuditTab.PLAN_AHEAD to PayAuditVerdictStrings.tabPlanAhead,
         )
-        payAuditPredictionsItems(incrementPrediction = engineResult.incrementPrediction, dsopRoom = engineResult.dsopRoom)
-        payAuditFixationCalculatorItems(timeline = engineResult.timeline)
-        payAuditTimelineItems(timeline = engineResult.timeline)
+    PrimaryTabRow(selectedTabIndex = selected.ordinal) {
+        PayAuditTab.entries.forEach { tab ->
+            Tab(selected = tab == selected, onClick = { onSelect(tab) }, text = { Text(labels.getValue(tab)) })
+        }
     }
 }
 

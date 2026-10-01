@@ -3,19 +3,21 @@ package com.payslipmax.pdfparser.ui.screens
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import com.payslipmax.pdfparser.insights.Anomaly
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 /**
- * [payAuditFindingsItems] (docs/Plan/09_PayAudit_PhasePlan.md Phase 4/Phase 7 P7-08): unlocked findings
- * render the evidence ([Anomaly.expected]/[Anomaly.actual]/[Anomaly.authority]) attached in Phase 2, and
- * a locked (unproven-tier) display shows the count/CTA teaser without leaking any finding's description.
+ * [payAuditFindingsItems] (docs/Plan Phase 2 U6). Rewritten from the Phase 4/7 tests: findings are now
+ * evidence cards (pay line, should-be / credited / difference, a "Why?" expander) with a "Draft letter"
+ * action that must appear only for proven, non-pending findings, and verified arrears render as good news.
  */
 @org.junit.runner.RunWith(org.robolectric.RobolectricTestRunner::class)
 @org.robolectric.annotation.Config(sdk = [34])
 class PayAuditFindingsSectionTest {
-    private val anomalyWithEvidence =
+    private val proven =
         Anomaly(
             type = "TPTA_ENTITLEMENT",
             field = "transportAllowance",
@@ -23,58 +25,92 @@ class PayAuditFindingsSectionTest {
             month = "05/2026",
             description = "Transport Allowance is missing from your earnings ledger.",
             expected = 4212.0,
-            actual = 0.0,
+            actual = 100.0,
             authority = "GoI MoD letter No. 12630/Tpt.A/Mov C/246/D(Mov)/17",
         )
+    private val unproven = proven.copy(field = "militaryServicePay", authority = null, description = "No authority yet.")
+    private val waiting = proven.copy(field = "arrearsDa", isPending = true, description = "Waiting for a later payslip.")
+    private val verified =
+        Anomaly("ARREARS_AUDIT", "arrearsDa", 9870.0, "04/2026", "Verified: matches exactly.", expected = 9870.0, actual = 9870.0)
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun rendersUnlockedFindingWithItsEvidenceAndAuthority() =
+    fun issueCardNamesThePayLineShowsEvidenceAndRevealsTheAuthorityOnWhy() =
         runComposeUiTest {
-            val display = PayAuditFindingsDisplay(unlocked = listOf(anomalyWithEvidence), lockedCount = 0, lockedLabels = emptyList())
-            setContent { LazyColumn { payAuditFindingsItems(display = display, onUnlockClick = {}) } }
+            setContent {
+                LazyColumn { payAuditFindingsItems(PayAuditMonthFindings(issues = listOf(proven)), 0, onUnlockClick = {}, onDraftLetter = {}) }
+            }
 
-            onNodeWithText("Transport Allowance is missing from your earnings ledger.").assertExists()
-            onNodeWithText("Expected: ₹4212   Actual: ₹0", substring = true).assertExists()
-            onNodeWithText("Authority: GoI MoD letter No. 12630/Tpt.A/Mov C/246/D(Mov)/17", substring = true).assertExists()
+            onNodeWithText("TPTA (transport allowance)").assertExists()
+            onNodeWithText("₹4,212").assertExists()
+            onNodeWithText("₹4,112").assertExists()
+            onNodeWithText("Authority:", substring = true).assertDoesNotExist()
+            onNodeWithText("Why?").performClick()
+            onNodeWithText("Authority: GoI MoD letter", substring = true).assertExists()
         }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun rendersLockedTeaserWithoutLeakingTheFindingDescription() =
+    fun draftLetterActionAppearsOnlyForAProvenFindingAndOpensTheLetterFlow() =
         runComposeUiTest {
-            val display = PayAuditFindingsDisplay(unlocked = emptyList(), lockedCount = 1, lockedLabels = listOf("Allowance"))
-            setContent { LazyColumn { payAuditFindingsItems(display = display, onUnlockClick = {}) } }
+            var drafts = 0
+            setContent {
+                LazyColumn { payAuditFindingsItems(PayAuditMonthFindings(issues = listOf(proven)), 0, onUnlockClick = {}, onDraftLetter = { drafts++ }) }
+            }
+            onNodeWithText("Draft letter").performClick()
+            assertEquals(1, drafts)
+        }
 
-            onNodeWithText("Unlock Pay Audit findings").assertExists()
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun noDraftLetterForUnprovenOrWaitingFindings() =
+        runComposeUiTest {
+            setContent {
+                LazyColumn { payAuditFindingsItems(PayAuditMonthFindings(issues = listOf(unproven), waiting = listOf(waiting)), 0, {}, {}) }
+            }
+            onNodeWithText("Military Service Pay (MSP)").assertExists()
+            onNodeWithText("Draft letter").assertDoesNotExist()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun verifiedArrearsStayVisibleAsGoodNewsNotAsAnIssue() =
+        runComposeUiTest {
+            setContent {
+                LazyColumn { payAuditFindingsItems(PayAuditMonthFindings(verified = listOf(verified)), 0, {}, {}) }
+            }
+            onNodeWithText("Verified · not an issue").assertExists()
+            onNodeWithText("Issue · Proven").assertDoesNotExist()
+            onNodeWithText("Draft letter").assertDoesNotExist()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun waitingCardSaysItIsCheckedAgainWhenTheNextPayslipArrives() =
+        runComposeUiTest {
+            setContent { LazyColumn { payAuditFindingsItems(PayAuditMonthFindings(waiting = listOf(waiting)), 0, {}, {}) } }
+            onNodeWithText("We check again", substring = true).assertExists()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun lockedCardOffersUnlockAndLeaksNoDescription() =
+        runComposeUiTest {
+            var unlocks = 0
+            setContent { LazyColumn { payAuditFindingsItems(PayAuditMonthFindings(), hiddenCount = 1, onUnlockClick = { unlocks++ }, onDraftLetter = {}) } }
             onNodeWithText("Transport Allowance is missing from your earnings ledger.").assertDoesNotExist()
+            onNodeWithText("Unlock evidence and letter").performClick()
+            assertEquals(1, unlocks)
         }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun rendersTheEmptyStateWhenThereAreNoFindings() =
+    fun twoFindingsSharingTypeAndMonthDoNotCrashTheList() =
         runComposeUiTest {
-            val display = PayAuditFindingsDisplay(unlocked = emptyList(), lockedCount = 0, lockedLabels = emptyList())
-            setContent { LazyColumn { payAuditFindingsItems(display = display, onUnlockClick = {}) } }
-
-            onNodeWithText("No findings on this payslip — everything checks out.").assertExists()
-        }
-
-    /**
-     * WHY: a month's basic-DA and TPTA-DA arrears checks are both type ARREARS_AUDIT / field arrearsDa for
-     * the same month (found on a real Pixel, release build: the unlocked Pay Audit screen crashed with
-     * "Key ARREARS_AUDIT_10/2025 was already used"). Row keys must not assume (type, month) is unique.
-     */
-    @OptIn(ExperimentalTestApi::class)
-    @Test
-    fun rendersTwoFindingsOfTheSameTypeAndMonthWithoutCrashing() =
-        runComposeUiTest {
-            fun arrears(label: String) =
-                Anomaly(type = "ARREARS_AUDIT", field = "arrearsDa", amount = 100.0, month = "10/2025", description = "Verified: $label arrears")
-            val display = PayAuditFindingsDisplay(unlocked = listOf(arrears("DA"), arrears("TPTA DA")), lockedCount = 0, lockedLabels = emptyList())
-            setContent { LazyColumn { payAuditFindingsItems(display = display, onUnlockClick = {}) } }
-
-            onNodeWithText("Verified: DA arrears").assertExists()
-            onNodeWithText("Verified: TPTA DA arrears").assertExists()
+            // Regression for commit 8ce8e766: the basic-DA and TPTA-DA arrears checks share (type, month).
+            val a = verified
+            val b = verified.copy(description = "Verified: TPTA DA matches exactly.")
+            setContent { LazyColumn { payAuditFindingsItems(PayAuditMonthFindings(verified = listOf(a, b)), 0, {}, {}) } }
+            onNodeWithText("Verified: matches exactly.").assertExists()
         }
 }

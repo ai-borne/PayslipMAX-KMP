@@ -264,7 +264,7 @@ private fun DetailContent(
         Screen.HelpLegal ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
         Screen.PayAudit ->
-            com.payslipmax.pdfparser.ui.screens.PayAuditScreen(viewModel = viewModel, onBack = onBack)
+            com.payslipmax.pdfparser.ui.screens.PayAuditScreen(viewModel = viewModel, onBack = onBack, onNavigateTo = onNavigateTo)
         // Tab roots are structurally unreachable here: onNavigate() routes them via switchTab(),
         // never push(), and AppNavStateSaver.restore() filters activeDetail to !isTabRoot. Handled
         // only so this `when` stays exhaustive against future Screen cases.

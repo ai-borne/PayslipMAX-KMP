@@ -1,10 +1,8 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.runtime.remember
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.domain.ParsedPayslip
-import com.payslipmax.pdfparser.insights.PayAuditFindingTypes
 import com.payslipmax.pdfparser.subscription.FeatureGate
 
 /**
@@ -46,14 +44,7 @@ fun LazyListScope.insightsPrimaryItems(
     }
     item(key = "pay_trend_chart", contentType = "pay_trend_chart") { PayTrendChart(history = state.historySorted, selected = state.currentRecord) }
     item(key = "pay_audit_entry", contentType = "pay_audit_entry") {
-        // Sourced from the full ParsedPayslip history (not state.engineResult, which is built off the
-        // thin LedgerRecordEntity ledger) so this teaser's count matches what PayAuditScreen itself shows.
-        val payAuditResult = rememberPayAuditEngineResult(selected, payslips)
-        val findingsCount = remember(payAuditResult) { payAuditResult.anomalies.count { it.type in PayAuditFindingTypes.TYPES } }
-        PayAuditEntryCard(
-            timelineMonths = payAuditResult.timeline.months.size,
-            findingsCount = findingsCount,
-            onOpen = { onNavigateTo(Screen.PayAudit) },
-        )
+        // Same ParsedPayslip pipeline as PayAuditScreen, so this teaser's count matches the screen.
+        PayAuditEntryHost(selected = selected, payslips = payslips, onOpen = { onNavigateTo(Screen.PayAudit) })
     }
 }

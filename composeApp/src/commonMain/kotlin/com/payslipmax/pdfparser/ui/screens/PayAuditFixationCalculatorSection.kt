@@ -155,11 +155,11 @@ private fun PromotionMonthYearFields(
 @Composable
 private fun PayFixationComparisonResult(comparison: PayFixationComparison) {
     Text(
-        text = "${PayAuditStrings.fixationCalculatorOption1Label}: ₹${comparison.option1.fixedPay}",
+        text = "${PayAuditStrings.fixationCalculatorOption1Label}: ${formatCurrency(comparison.option1.fixedPay.toDouble())}",
         style = MaterialTheme.typography.bodyMedium,
     )
     Text(
-        text = "${PayAuditStrings.fixationCalculatorOption2Label}: ₹${comparison.option2.fixedPay}",
+        text = "${PayAuditStrings.fixationCalculatorOption2Label}: ${formatCurrency(comparison.option2.fixedPay.toDouble())}",
         style = MaterialTheme.typography.bodyMedium,
     )
     Text(

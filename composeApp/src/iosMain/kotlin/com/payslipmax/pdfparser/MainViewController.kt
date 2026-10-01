@@ -121,7 +121,7 @@ class IosNavHost(
                     )
                 }
                 Screen.HelpLegal -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
-                Screen.PayAudit -> PayAuditScreen(viewModel = viewModel, onBack = onBack)
+                Screen.PayAudit -> PayAuditScreen(viewModel = viewModel, onBack = onBack, onNavigateTo = { screen -> bridge.navigateToDetail(screen) })
                 // Tab roots are structurally unreachable here: onNavigate() routes them via
                 // switchTab(), never push()/nativeDetailNavigator, and AppNavStateSaver.restore()
                 // filters activeDetail to !isTabRoot. Handled only so this `when` stays exhaustive

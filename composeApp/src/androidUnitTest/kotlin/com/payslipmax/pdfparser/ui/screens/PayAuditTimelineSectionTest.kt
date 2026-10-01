@@ -3,39 +3,40 @@ package com.payslipmax.pdfparser.ui.screens
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import com.payslipmax.pdfparser.insights.timeline.ChangeExplanation
 import com.payslipmax.pdfparser.insights.timeline.PayLevel
 import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.insights.timeline.ServiceTimeline
 import com.payslipmax.pdfparser.insights.timeline.TimelineMonth
-import com.payslipmax.pdfparser.insights.timeline.TptaCityClass
 import kotlin.test.Test
 
 /**
- * [payAuditChangesItems]/[payAuditAllChangesItems]/[payAuditTimelineItems] (docs/Plan/09_PayAudit_PhasePlan.md
- * Phase 4/8, P7-19b): the free "What changed this month"/"Every change explained"/Service Timeline
- * sections of [PayAuditScreen], untested at the UI layer until now.
+ * [payAuditChangesItems] / [payAuditHistoryItems] (docs/Plan Phase 2 U3/U4/U5). Adapted from the Phase 4/8
+ * tests: the raw "5/2026 — ₹85300 → ₹87800" row is now a named pay line with grouped rupees, and the
+ * one-row-per-month timeline and flat "every change" list became spans and year groups.
  */
 @org.junit.runner.RunWith(org.robolectric.RobolectricTestRunner::class)
 @org.robolectric.annotation.Config(sdk = [34])
 class PayAuditTimelineSectionTest {
     private val explainedChange =
         ChangeExplanation(month = PayMonth(2026, 5), field = "basicPay", from = 85300.0, to = 87800.0, reason = "DNI increment.")
-    private val olderExplainedChange =
-        ChangeExplanation(month = PayMonth(2026, 1), field = "transportAllowance", from = 0.0, to = 4212.0, reason = "Posting change ended.")
+    private val olderChange =
+        ChangeExplanation(month = PayMonth(2025, 1), field = "transportAllowance", from = 0.0, to = 4212.0, reason = "Posting change ended.")
     private val unexplainedChange =
         ChangeExplanation(month = PayMonth(2026, 5), field = "licenseFee", from = 1200.0, to = 1400.0, reason = null)
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun changesItemsRendersOnlyExplainedMoves() =
+    fun changeRowNamesThePayLineAndGroupsTheRupees() =
         runComposeUiTest {
             setContent { LazyColumn { payAuditChangesItems(changes = listOf(explainedChange, unexplainedChange)) } }
 
-            onNodeWithText("5/2026 — ₹85300 → ₹87800", substring = true).assertExists()
+            onNodeWithText("Basic pay").assertExists()
+            onNodeWithText("₹85,300 → ₹87,800").assertExists()
             onNodeWithText("DNI increment.").assertExists()
-            onNodeWithText("No pay-line changes are explained for this month yet.").assertDoesNotExist()
+            onNodeWithText("Licence fee").assertDoesNotExist()
         }
 
     @OptIn(ExperimentalTestApi::class)
@@ -44,48 +45,51 @@ class PayAuditTimelineSectionTest {
         runComposeUiTest {
             setContent { LazyColumn { payAuditChangesItems(changes = listOf(unexplainedChange)) } }
 
-            onNodeWithText("No pay-line changes are explained for this month yet.").assertExists()
+            onNodeWithText("No pay line changed this month.").assertExists()
+        }
+
+    private val timeline =
+        ServiceTimeline(
+            months =
+                listOf(
+                    TimelineMonth(PayMonth(2025, 12), 80000.0, PayLevel.L11, 4, 50, null, false),
+                    TimelineMonth(PayMonth(2026, 1), 85300.0, PayLevel.L11, 5, 50, null, false),
+                    TimelineMonth(PayMonth(2026, 2), 85300.0, PayLevel.L11, 5, 50, null, false),
+                ),
+            events = emptyList(),
+            postings = emptyList(),
+        )
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun historyShowsSpansInsteadOfOneRowPerMonth() =
+        runComposeUiTest {
+            setContent { LazyColumn { payAuditHistoryItems(timeline, emptyList(), currentMonth = null) } }
+
+            onNodeWithText("Level 11 · Stage 5").assertExists()
+            onNodeWithText("Jan 2026 – Feb 2026").assertExists()
+            onNodeWithText("Level 11 · Stage 4").assertExists()
         }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun allChangesItemsExcludesTheCurrentMonthAndSortsNewestFirst() =
+    fun everyChangeIsCollapsedByYearExceptTheCurrentOneAndExpandsOnTap() =
         runComposeUiTest {
             setContent {
-                LazyColumn {
-                    payAuditAllChangesItems(changes = listOf(explainedChange, olderExplainedChange), currentMonth = PayMonth(2026, 5))
-                }
+                LazyColumn { payAuditHistoryItems(ServiceTimeline(emptyList(), emptyList(), emptyList()), listOf(explainedChange, olderChange), currentMonth = PayMonth(2026, 5)) }
             }
 
+            onNodeWithText("DNI increment.").assertExists()
+            onNodeWithText("Posting change ended.").assertDoesNotExist()
+            onNodeWithText("2025 · 1 change").performClick()
             onNodeWithText("Posting change ended.").assertExists()
-            onNodeWithText("DNI increment.").assertDoesNotExist()
         }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun timelineItemsRendersMonthsNewestFirstWithLevelStageAndDa() =
+    fun historyRendersTheEmptyStateWithNoMonths() =
         runComposeUiTest {
-            val timeline =
-                ServiceTimeline(
-                    months =
-                        listOf(
-                            TimelineMonth(PayMonth(2026, 1), 85300.0, PayLevel.L11, 5, 50, TptaCityClass.HIGHER, occupiesQuarters = true),
-                        ),
-                    events = emptyList(),
-                    postings = emptyList(),
-                )
-            setContent { LazyColumn { payAuditTimelineItems(timeline = timeline) } }
-
-            onNodeWithText("1/2026").assertExists()
-            onNodeWithText("Level 11, Stage 5 · 50% DA · TPTA (higher-rate city) · Quarters", substring = true).assertExists()
-        }
-
-    @OptIn(ExperimentalTestApi::class)
-    @Test
-    fun timelineItemsRendersTheEmptyStateWithNoMonths() =
-        runComposeUiTest {
-            val timeline = ServiceTimeline(months = emptyList(), events = emptyList(), postings = emptyList())
-            setContent { LazyColumn { payAuditTimelineItems(timeline = timeline) } }
+            setContent { LazyColumn { payAuditHistoryItems(ServiceTimeline(emptyList(), emptyList(), emptyList()), emptyList(), null) } }
 
             onNodeWithText("Upload more payslips to build your service timeline.").assertExists()
         }

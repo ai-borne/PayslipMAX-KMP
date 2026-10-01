@@ -52,13 +52,13 @@ private fun NextIncrementCard(prediction: NextIncrementPrediction?) {
         } else {
             val datePrefix = if (prediction.isOverdue) PayAuditStrings.nextIncrementOverduePrefix else PayAuditStrings.nextIncrementDatePrefix
             Text(
-                text = "$datePrefix${prediction.date.month}/${prediction.date.year}",
+                text = "$datePrefix${formatPayMonth(prediction.date)}",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = if (prediction.isOverdue) MaterialTheme.colorScheme.error else Color.Unspecified,
             )
             Text(
-                text = "${PayAuditStrings.nextIncrementAmountPrefix}${prediction.predictedBasicPay.toInt()}",
+                text = "${PayAuditStrings.nextIncrementAmountPrefix}${formatCurrency(prediction.predictedBasicPay)}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -70,11 +70,11 @@ private fun NextIncrementCard(prediction: NextIncrementPrediction?) {
 private fun DsopRoomCard(room: DsopRoom) {
     PredictionCard(title = "${PayAuditStrings.dsopRoomTitle} (${room.financialYearLabel})") {
         Text(
-            text = "${PayAuditStrings.dsopRoomSubscribedPrefix}${room.subscribedYtd.toInt()}",
+            text = "${PayAuditStrings.dsopRoomSubscribedPrefix}${formatCurrency(room.subscribedYtd)}",
             style = MaterialTheme.typography.bodyMedium,
         )
         Text(
-            text = "${PayAuditStrings.dsopRoomLeftPrefix}${room.roomLeft.toInt()}",
+            text = "${PayAuditStrings.dsopRoomLeftPrefix}${formatCurrency(room.roomLeft)}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

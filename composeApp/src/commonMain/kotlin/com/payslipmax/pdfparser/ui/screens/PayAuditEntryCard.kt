@@ -13,9 +13,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
@@ -72,3 +79,27 @@ fun PayAuditEntryCard(
 }
 
 private fun findingsCountLabel(count: Int): String = if (count == 1) PayAuditStrings.findingsCountSingular else PayAuditStrings.findingsCountPlural
+
+/**
+ * Insights-tab host for [PayAuditEntryCard]: runs the same [PayAuditViewModel] pipeline as the Pay Audit
+ * screen so the teaser's issue count always matches what the screen shows (waiting and verified arrears
+ * are not issues). Gating is irrelevant to a count, so it analyses as unlocked.
+ */
+@Composable
+fun PayAuditEntryHost(
+    selected: ParsedPayslip,
+    payslips: List<ParsedPayslip>,
+    onOpen: () -> Unit,
+) {
+    val viewModel = remember { PayAuditViewModel() }
+    DisposableEffect(viewModel) { onDispose { viewModel.dispose() } }
+    LaunchedEffect(selected, payslips) { viewModel.setInputs(payslips, hasAccess = true, requestedMonth = PayMonth(selected.year, selected.monthNum)) }
+    val state by viewModel.uiState.collectAsState()
+    val issues =
+        when (val verdict = state.verdict) {
+            is PayAuditVerdict.Issue -> verdict.count
+            is PayAuditVerdict.LockedIssue -> verdict.count
+            else -> 0
+        }
+    PayAuditEntryCard(timelineMonths = state.timeline.months.size, findingsCount = issues, onOpen = onOpen)
+}
