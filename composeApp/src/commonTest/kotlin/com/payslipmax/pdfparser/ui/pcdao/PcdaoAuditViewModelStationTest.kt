@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.pcdao
 
+import com.payslipmax.pcdao.engine.AllowanceCollisionCodes
 import com.payslipmax.pcdao.reconciliation.SituationalTileKeys
 import com.payslipmax.pcdao.repository.PcdaoAssetProvider
 import com.payslipmax.pcdao.repository.PcdaoRulesRepository
@@ -88,12 +89,18 @@ class PcdaoAuditViewModelStationTest {
             val payslip = createMockStationPayslip("03/2026", basicPay = 69000.0, tpta = 7200.0)
             fakeDao.insertPayslip(payslip.toEncryptedEntity())
 
-            // Select POST_FIELD_HAFAA while POST_PEACE_HIGHER is active -> retains both to trigger recovery hazard
+            // Select POST_FIELD_HAFAA while POST_PEACE_HIGHER is active -> retains both to trigger advisory alarm
             viewModel.toggleTile(SituationalTileKeys.POST_FIELD_HAFAA)
             val tilesWithCollision = viewModel.uiState.value.activeContext.activeTileIds
             assertTrue(tilesWithCollision.contains(SituationalTileKeys.POST_PEACE_HIGHER))
             assertTrue(tilesWithCollision.contains(SituationalTileKeys.POST_FIELD_HAFAA))
-            assertTrue(viewModel.uiState.value.hazardTotal > 0.0, "TPTA + HAFAA collision must trigger recovery hazard")
+            assertEquals(0.0, viewModel.uiState.value.hazardTotal, "TPTA in field must not inflate recovery hazard")
+            assertTrue(
+                viewModel.uiState.value.filteredDiscrepancies.any {
+                    it.id == AllowanceCollisionCodes.ALARM_TPTA_FIELD_CONVEYANCE
+                },
+                "TPTA + HAFAA collision must trigger advisory alarm",
+            )
 
             // Switching peace station to POST_PEACE_OTHER replaces POST_PEACE_HIGHER but retains POST_FIELD_HAFAA
             viewModel.toggleTile(SituationalTileKeys.POST_PEACE_OTHER)
@@ -101,9 +108,14 @@ class PcdaoAuditViewModelStationTest {
             assertTrue(tilesSwitched.contains(SituationalTileKeys.POST_PEACE_OTHER))
             assertFalse(tilesSwitched.contains(SituationalTileKeys.POST_PEACE_HIGHER))
             assertTrue(tilesSwitched.contains(SituationalTileKeys.POST_FIELD_HAFAA))
-            assertTrue(viewModel.uiState.value.hazardTotal > 0.0)
+            assertEquals(0.0, viewModel.uiState.value.hazardTotal)
+            assertTrue(
+                viewModel.uiState.value.filteredDiscrepancies.any {
+                    it.id == AllowanceCollisionCodes.ALARM_TPTA_FIELD_CONVEYANCE
+                },
+            )
 
-            // Toggling off HAFAA removes collision hazard
+            // Toggling off HAFAA removes collision alarm
             viewModel.toggleTile(SituationalTileKeys.POST_FIELD_HAFAA)
             assertFalse(viewModel.uiState.value.activeContext.activeTileIds.contains(SituationalTileKeys.POST_FIELD_HAFAA))
             assertTrue(viewModel.uiState.value.activeContext.activeTileIds.contains(SituationalTileKeys.POST_PEACE_OTHER))

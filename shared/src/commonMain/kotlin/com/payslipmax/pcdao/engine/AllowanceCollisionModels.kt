@@ -39,6 +39,10 @@ data class AllowanceCollisionResult(
 }
 
 object AllowanceCollisionCodes {
+    // Advisory Alarm & Discrepancy IDs
+    const val ALARM_TPTA_FIELD_CONVEYANCE = "ALARM_TPTA_FIELD_CONVEYANCE"
+    const val HAZARD_TPTA_FIELD_COLLISION = "HAZARD_TPTA_FIELD_COLLISION"
+
     // Transport Allowance
     const val TPTA_PEACE = "TPTA_PEACE"
     const val TPTA_HIGHER_CITY = "TPTA_HIGHER_CITY"

@@ -2,6 +2,7 @@ package com.payslipmax.pcdao.engine
 
 import com.payslipmax.pcdao.model.AuditDiscrepancy
 import com.payslipmax.pcdao.model.DiscrepancySeverity
+import com.payslipmax.pcdao.model.DiscrepancyType
 import com.payslipmax.pcdao.reconciliation.ActiveSituationalContext
 import com.payslipmax.pcdao.reconciliation.SituationalTileKeys
 import com.payslipmax.pdfparser.domain.ParsedPayslip
@@ -21,9 +22,10 @@ class AllowanceCollisionAuditor {
             )
 
         val discrepancies = checkers.mapNotNull { it(request) }
-        val principalTotal = discrepancies.sumOf { it.drawnAmount }
-        val penalTotal = discrepancies.sumOf { (-it.netDue) - it.drawnAmount }.coerceAtLeast(0.0)
-        val exposureTotal = discrepancies.sumOf { -it.netDue }.coerceAtLeast(0.0)
+        val recoveryHazards = discrepancies.filter { it.type == DiscrepancyType.RECOVERY_HAZARD && it.netDue < 0.0 }
+        val principalTotal = recoveryHazards.sumOf { it.drawnAmount }
+        val penalTotal = recoveryHazards.sumOf { (-it.netDue) - it.drawnAmount }.coerceAtLeast(0.0)
+        val exposureTotal = recoveryHazards.sumOf { -it.netDue }.coerceAtLeast(0.0)
 
         return AllowanceCollisionResult(
             discrepancies = discrepancies,

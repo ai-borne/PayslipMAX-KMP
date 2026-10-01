@@ -233,7 +233,8 @@ class CanonicalAssetsIntegrationTest {
                     daRate = 0.60,
                 )
             assertEquals(1, hazards.size)
-            assertEquals("HAZARD_TPTA_FIELD_COLLISION", hazards[0].id)
+            assertEquals(com.payslipmax.pcdao.engine.MilitaryCollisionCheckers.ID_ALARM_TPTA_FIELD, hazards[0].id)
+            assertEquals(0.0, hazards[0].netDue, 0.01)
             assertEquals("ALLOWANCE_TPTA_003", hazards[0].relevantRuleId)
         }
 

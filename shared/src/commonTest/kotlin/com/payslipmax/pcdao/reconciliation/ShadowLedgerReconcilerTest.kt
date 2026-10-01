@@ -92,7 +92,7 @@ class ShadowLedgerReconcilerTest {
     }
 
     @Test
-    fun testReconcileTptaFieldAreaCollisionHazard() {
+    fun testReconcileTptaFieldAreaAdvisoryAlarm() {
         val payslip = createColRathorePayslip()
         val context =
             ActiveSituationalContext(
@@ -105,12 +105,12 @@ class ShadowLedgerReconcilerTest {
             )
 
         val result = reconciler.reconcile(payslip, context)
-        val hazard = result.discrepancies.firstOrNull { it.type == DiscrepancyType.RECOVERY_HAZARD }
-        assertTrue(hazard != null, "Recovery hazard should be present")
-        assertEquals(DiscrepancySeverity.CRITICAL, hazard.severity)
-        // 6 months * 11520 = 69120 principal + 18% penal (12441.60) = 81561.60
-        assertEquals(81561.60, result.totalRecoveryHazard, 0.01)
-        assertTrue(result.criticalAlarmCount >= 1)
+        val alarm = result.discrepancies.firstOrNull { it.type == DiscrepancyType.FORFEITURE_RISK }
+        assertTrue(alarm != null, "Advisory alarm should be present for TPTA + Field Area")
+        assertEquals(DiscrepancySeverity.WARNING, alarm.severity)
+        assertEquals(0.0, alarm.netDue, 0.01)
+        // TPTA in field area must NOT inflate the recovery hazard counter
+        assertEquals(0.0, result.totalRecoveryHazard, 0.01)
     }
 
     @Test

@@ -7,7 +7,12 @@ import com.payslipmax.pcdao.reconciliation.SituationalTileKeys
 
 internal object MilitaryCollisionCheckers {
     const val PENAL_INTEREST_RATE = 0.18
+    const val ID_ALARM_TPTA_FIELD = AllowanceCollisionCodes.ALARM_TPTA_FIELD_CONVEYANCE
+    const val ID_HAZARD_TPTA_FIELD_LEGACY = AllowanceCollisionCodes.HAZARD_TPTA_FIELD_COLLISION
     private const val DEFAULT_RMA_MONTHLY = 4200.0
+
+    fun isTptaFieldDiscrepancy(id: String): Boolean =
+        id == ID_ALARM_TPTA_FIELD || id == ID_HAZARD_TPTA_FIELD_LEGACY
 
     private val TPTA_CODES =
         setOf(
@@ -29,12 +34,7 @@ internal object MilitaryCollisionCheckers {
         )
 
     private val LEAVE_CODES =
-        setOf(
-            AllowanceCollisionCodes.LEAVE_FULL_MONTH,
-            SituationalTileKeys.LEAVE_FULL_MONTH,
-            "LEAVE_FULL_MONTH",
-            "leave_full_month",
-        )
+        setOf(AllowanceCollisionCodes.LEAVE_FULL_MONTH, SituationalTileKeys.LEAVE_FULL_MONTH, "LEAVE_FULL_MONTH", "leave_full_month")
 
     private val RATION_CODES =
         setOf(AllowanceCollisionCodes.RATION_MONEY_ALLOWANCE, "RMA", "RATION_MONEY", "ration_money")
@@ -85,17 +85,22 @@ internal object MilitaryCollisionCheckers {
         val customClaim = request.claims.firstOrNull { it.code in TPTA_CODES }
         val monthly = customClaim?.monthlyAmount?.takeIf { it > 0 } ?: resolveTptaMonthly(request.payLevel, isHigher, request.daRate)
         val months = customClaim?.monthsDrawn?.takeIf { it > 0 } ?: request.defaultOverdrawnMonths
+        val principal = monthly * months
 
-        return buildHazard(
-            id = "HAZARD_TPTA_FIELD_COLLISION",
-            title = "Transport Allowance (TPTA) Drawn Concurrently with Field Deployment",
-            severity = DiscrepancySeverity.CRITICAL,
-            monthly = monthly,
-            months = months,
-            authority = "GoI MoD letter No. 12630/Tpt.A/Mov C/246/D(Mov)/17 dated 15 Sept 2017; TR-230(B)",
-            explanation = "Government conveyance is provided in field deployments. Concurrent TPTA credit triggers 18% penal recovery.",
-            action = "Cease TPTA drawing via Unit Part II Order casualty publication to arrest compounding penal interest debit.",
-            ruleId = "ALLOWANCE_TPTA_003",
+        return AuditDiscrepancy(
+            id = ID_ALARM_TPTA_FIELD,
+            title = "Transport Allowance (TPTA) in Field Area — Audit Advisory",
+            type = DiscrepancyType.FORFEITURE_RISK,
+            severity = DiscrepancySeverity.WARNING,
+            monthlyImpact = monthly,
+            annualImpact = monthly * 12.0,
+            drawnAmount = principal,
+            entitledAmount = principal,
+            netDue = 0.0,
+            authority = "Travel Regulations Rule 230(B) (TR-230(B)); GoI MoD letter No. 12630/Tpt.A/Mov C/246/D(Mov)/17 dated 15 Sept 2017",
+            explanation = "Under TR-230(B) and MoD letter dated 15 Sept 2017, TPTA is inadmissible in field deployments only when Government conveyance is provided. Officers without Govt conveyance may draw TPTA provided Non-Availability Certificate (NAC) / Part II Order casualty is on record with PCDA(O) Pune.",
+            recommendedAction = "Verify if Government conveyance was allotted during deployment. If not allotted, ensure Unit Part II Order casualty with Non-Availability Certificate (NAC) is submitted to PCDA(O) to prevent retrospective recovery objection.",
+            relevantRuleId = "ALLOWANCE_TPTA_003",
         )
     }
 

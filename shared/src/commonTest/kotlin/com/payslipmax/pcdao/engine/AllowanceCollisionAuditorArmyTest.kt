@@ -107,7 +107,7 @@ class AllowanceCollisionAuditorArmyTest {
     }
 
     @Test
-    fun testFieldCfaaTptaCollisionTriggersRecoveryHazard() {
+    fun testFieldCfaaTptaCollisionTriggersAuditAdvisoryAlarm() {
         val request =
             AllowanceCollisionRequest(
                 activeAllowanceCodes =
@@ -122,16 +122,18 @@ class AllowanceCollisionAuditorArmyTest {
 
         val result = auditor.audit(request)
 
-        assertTrue(result.hasHazards, "Field deployment (CFAA) + TPTA must trigger recovery hazard")
-        val disc = result.discrepancies.firstOrNull { it.id == "HAZARD_TPTA_FIELD_COLLISION" }
+        assertTrue(result.hasHazards, "Field deployment (CFAA) + TPTA must trigger advisory alarm")
+        val disc = result.discrepancies.firstOrNull { it.id == MilitaryCollisionCheckers.ID_ALARM_TPTA_FIELD }
         assertNotNull(disc)
-        assertEquals(DiscrepancyType.RECOVERY_HAZARD, disc.type)
-        assertEquals(DiscrepancySeverity.CRITICAL, disc.severity)
+        assertEquals(DiscrepancyType.FORFEITURE_RISK, disc.type)
+        assertEquals(DiscrepancySeverity.WARNING, disc.severity)
         assertEquals("ALLOWANCE_TPTA_003", disc.relevantRuleId)
+        assertEquals(0.0, disc.netDue, 0.01)
+        assertEquals(0.0, result.totalRecoveryExposure, 0.01)
     }
 
     @Test
-    fun testFieldCmfaaTptaCollisionTriggersRecoveryHazard() {
+    fun testFieldCmfaaTptaCollisionTriggersAuditAdvisoryAlarm() {
         val request =
             AllowanceCollisionRequest(
                 activeAllowanceCodes =
@@ -146,10 +148,13 @@ class AllowanceCollisionAuditorArmyTest {
 
         val result = auditor.audit(request)
 
-        assertTrue(result.hasHazards, "Modified Field (CMFAA) + TPTA must trigger recovery hazard")
-        val disc = result.discrepancies.firstOrNull { it.id == "HAZARD_TPTA_FIELD_COLLISION" }
+        assertTrue(result.hasHazards, "Modified Field (CMFAA) + TPTA must trigger advisory alarm")
+        val disc = result.discrepancies.firstOrNull { it.id == MilitaryCollisionCheckers.ID_ALARM_TPTA_FIELD }
         assertNotNull(disc)
-        assertEquals(DiscrepancySeverity.CRITICAL, disc.severity)
+        assertEquals(DiscrepancyType.FORFEITURE_RISK, disc.type)
+        assertEquals(DiscrepancySeverity.WARNING, disc.severity)
+        assertEquals(0.0, disc.netDue, 0.01)
+        assertEquals(0.0, result.totalRecoveryExposure, 0.01)
     }
 
     @Test

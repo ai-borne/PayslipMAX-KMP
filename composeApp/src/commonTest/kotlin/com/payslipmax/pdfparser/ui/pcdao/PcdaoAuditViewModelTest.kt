@@ -1,5 +1,7 @@
 package com.payslipmax.pdfparser.ui.pcdao
 
+import com.payslipmax.pcdao.engine.AllowanceCollisionCodes
+import com.payslipmax.pcdao.model.DiscrepancyType
 import com.payslipmax.pcdao.reconciliation.SituationalCategory
 import com.payslipmax.pcdao.reconciliation.SituationalTileKeys
 import com.payslipmax.pcdao.reconciliation.SpecializedMilitaryFactor
@@ -127,14 +129,24 @@ class PcdaoAuditViewModelTest {
             val initialHazard = viewModel.uiState.value.hazardTotal
             assertEquals(0.0, initialHazard)
 
-            // Toggle Field Area (HAFAA) while Peace TPTA was drawn -> triggers mutual exclusion collision
-            viewModel.toggleTile(SituationalTileKeys.POST_FIELD_HAFAA)
-            val hazardAfter = viewModel.uiState.value.hazardTotal
-            assertTrue(hazardAfter > 0.0, "Concurrent TPTA + HAFAA should trigger recovery hazard exposure")
-
-            // Toggle it back off
+            // Toggle Field Area (HAFAA) while Peace TPTA was drawn -> triggers advisory alarm, zero recovery distortion
             viewModel.toggleTile(SituationalTileKeys.POST_FIELD_HAFAA)
             assertEquals(0.0, viewModel.uiState.value.hazardTotal)
+            assertTrue(
+                viewModel.uiState.value.filteredDiscrepancies.any {
+                    it.type == DiscrepancyType.FORFEITURE_RISK && it.id == AllowanceCollisionCodes.ALARM_TPTA_FIELD_CONVEYANCE
+                },
+                "Concurrent TPTA + HAFAA should trigger advisory alarm without inflating recovery hazard",
+            )
+
+            // Toggle it back off -> removes the alarm
+            viewModel.toggleTile(SituationalTileKeys.POST_FIELD_HAFAA)
+            assertEquals(0.0, viewModel.uiState.value.hazardTotal)
+            assertFalse(
+                viewModel.uiState.value.filteredDiscrepancies.any {
+                    it.id == AllowanceCollisionCodes.ALARM_TPTA_FIELD_CONVEYANCE
+                },
+            )
         }
 
     @Test

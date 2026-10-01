@@ -11,7 +11,7 @@ class AllowanceCollisionAuditorTest {
     private val auditor = AllowanceCollisionAuditor()
 
     @Test
-    fun testTptaFieldCollisionMatchesVerifiedSimulationBenchmark() {
+    fun testTptaFieldCollisionProducesAdvisoryAlarmWithZeroRecovery() {
         val request =
             AllowanceCollisionRequest(
                 activeAllowanceCodes =
@@ -26,25 +26,27 @@ class AllowanceCollisionAuditorTest {
 
         val result = auditor.audit(request)
 
-        assertTrue(result.hasHazards, "Should detect hazard for TPTA + HAFAA")
+        assertTrue(result.hasHazards, "Should detect alarm discrepancy for TPTA + HAFAA")
         assertEquals(1, result.discrepancies.size)
 
         val disc = result.discrepancies.first()
-        assertEquals("HAZARD_TPTA_FIELD_COLLISION", disc.id)
-        assertEquals(DiscrepancyType.RECOVERY_HAZARD, disc.type)
-        assertEquals(DiscrepancySeverity.CRITICAL, disc.severity)
+        assertEquals(MilitaryCollisionCheckers.ID_ALARM_TPTA_FIELD, disc.id)
+        assertEquals(DiscrepancyType.FORFEITURE_RISK, disc.type)
+        assertEquals(DiscrepancySeverity.WARNING, disc.severity)
         assertEquals("ALLOWANCE_TPTA_003", disc.relevantRuleId)
 
-        // Exact benchmark calculation matching test_simulation_scenarios.py:
-        // Monthly = 7200 * 1.60 = 11,520
-        // Principal = 11,520 * 6 = 69,120
-        // 18% Penal Interest = 69,120 * 0.18 = 12,441.6
-        // Total Recovery = 81,561.6
-        assertEquals(69120.0, result.totalPrincipalRecovery, 0.01)
-        assertEquals(12441.6, result.totalPenalInterest, 0.01)
-        assertEquals(81561.6, result.totalRecoveryExposure, 0.01)
-        assertEquals(-81561.6, disc.netDue, 0.01)
+        // TPTA in Field Area is an Audit Advisory Alarm, NOT a penal recovery hazard.
+        // Monthly = 7200 * 1.60 = 11,520; 6 mos = 69,120.
+        // Recovery exposure, principal, and penal interest must all be strictly 0.0.
+        assertEquals(0.0, result.totalPrincipalRecovery, 0.01)
+        assertEquals(0.0, result.totalPenalInterest, 0.01)
+        assertEquals(0.0, result.totalRecoveryExposure, 0.01)
+        assertEquals(0.0, disc.netDue, 0.01)
+        assertEquals(69120.0, disc.drawnAmount, 0.01)
+        assertEquals(69120.0, disc.entitledAmount, 0.01)
         assertTrue(disc.authority.contains("12630/Tpt.A"))
+        assertTrue(disc.authority.contains("TR-230(B)"))
+        assertTrue(disc.explanation.contains("Government conveyance"))
     }
 
     @Test
@@ -57,72 +59,8 @@ class AllowanceCollisionAuditorTest {
             )
 
         assertEquals(1, hazards.size)
-        assertEquals("HAZARD_TPTA_FIELD_COLLISION", hazards.first().id)
-        assertEquals(-81561.6, hazards.first().netDue, 0.01)
-    }
-
-    @Test
-    fun testTptaSiachenCollision() {
-        val result =
-            auditor.audit(
-                AllowanceCollisionRequest(
-                    activeAllowanceCodes = setOf(AllowanceCollisionCodes.TPTA_PEACE, AllowanceCollisionCodes.SIACHEN),
-                    daRate = 0.50,
-                    defaultOverdrawnMonths = 6,
-                ),
-            )
-
-        assertEquals(1, result.discrepancies.size)
-        val disc = result.discrepancies.first()
-        assertEquals("HAZARD_TPTA_FIELD_COLLISION", disc.id)
-        // Rate: 7200 * 1.50 = 10,800. For 6 mos: 64,800. Penal: 11,664. Total: 76,464
-        assertEquals(64800.0, result.totalPrincipalRecovery, 0.01)
-        assertEquals(11664.0, result.totalPenalInterest, 0.01)
-        assertEquals(76464.0, result.totalRecoveryExposure, 0.01)
-    }
-
-    @Test
-    fun testTptaOtherPlacesRate() {
-        val result =
-            auditor.audit(
-                AllowanceCollisionRequest(
-                    activeAllowanceCodes = setOf(AllowanceCollisionCodes.TPTA_OTHER, AllowanceCollisionCodes.CFAA),
-                    daRate = 0.50,
-                    defaultOverdrawnMonths = 6,
-                    payLevel = "11",
-                ),
-            )
-
-        // Other places rate for Level 11 is 3600.
-        // Monthly = 3600 * 1.50 = 5400.
-        // Principal = 5400 * 6 = 32,400.
-        // Penal = 32,400 * 0.18 = 5,832.
-        // Total = 38,232.
-        assertEquals(32400.0, result.totalPrincipalRecovery, 0.01)
-        assertEquals(5832.0, result.totalPenalInterest, 0.01)
-        assertEquals(38232.0, result.totalRecoveryExposure, 0.01)
-    }
-
-    @Test
-    fun testTptaMajorGeneralRate() {
-        val result =
-            auditor.audit(
-                AllowanceCollisionRequest(
-                    activeAllowanceCodes = setOf(AllowanceCollisionCodes.TPTA_HIGHER_CITY, AllowanceCollisionCodes.HAFAA),
-                    daRate = 0.50,
-                    defaultOverdrawnMonths = 6,
-                    payLevel = "14",
-                ),
-            )
-
-        // Major General (Level 14+) Higher City rate is 15,750.
-        // Monthly = 15,750 * 1.50 = 23,625.
-        // Principal = 23,625 * 6 = 141,750.
-        // Penal = 141,750 * 0.18 = 25,515.
-        // Total = 167,265.
-        assertEquals(141750.0, result.totalPrincipalRecovery, 0.01)
-        assertEquals(25515.0, result.totalPenalInterest, 0.01)
-        assertEquals(167265.0, result.totalRecoveryExposure, 0.01)
+        assertEquals(MilitaryCollisionCheckers.ID_ALARM_TPTA_FIELD, hazards.first().id)
+        assertEquals(0.0, hazards.first().netDue, 0.01)
     }
 
     @Test
@@ -227,7 +165,8 @@ class AllowanceCollisionAuditorTest {
             )
 
         assertEquals(3, result.discrepancies.size)
-        assertTrue(result.criticalHazardsCount >= 2)
+        assertEquals(1, result.criticalHazardsCount)
+        assertEquals(2, result.warningHazardsCount)
         assertTrue(result.totalRecoveryExposure > 100000.0)
     }
 
@@ -257,12 +196,38 @@ class AllowanceCollisionAuditorTest {
                 ),
             )
 
-        // Custom amount: 12000 * 3 = 36,000 principal
-        // Penal interest: 36,000 * 0.18 = 6,480
-        // Total: 42,480
-        assertEquals(36000.0, result.totalPrincipalRecovery, 0.01)
-        assertEquals(6480.0, result.totalPenalInterest, 0.01)
-        assertEquals(42480.0, result.totalRecoveryExposure, 0.01)
+        // Custom amount: 12000 * 3 = 36,000 for TPTA + HAFAA advisory alarm (netDue = 0.0, zero recovery)
+        assertEquals(0.0, result.totalPrincipalRecovery, 0.01)
+        assertEquals(0.0, result.totalPenalInterest, 0.01)
+        assertEquals(0.0, result.totalRecoveryExposure, 0.01)
+        val disc = result.discrepancies.first()
+        assertEquals(MilitaryCollisionCheckers.ID_ALARM_TPTA_FIELD, disc.id)
+        assertEquals(0.0, disc.netDue, 0.01)
+        assertEquals(36000.0, disc.drawnAmount, 0.01)
+    }
+
+    @Test
+    fun testRecoveryHazardsSeparatedFromAdvisoryAlarms() {
+        val result =
+            auditor.audit(
+                AllowanceCollisionRequest(
+                    activeAllowanceCodes =
+                        setOf(
+                            AllowanceCollisionCodes.TPTA_HIGHER_CITY,
+                            AllowanceCollisionCodes.HAFAA,
+                            AllowanceCollisionCodes.LEAVE_FULL_MONTH,
+                        ),
+                    daRate = 0.50,
+                    defaultOverdrawnMonths = 1,
+                    tptaMonthly = 10800.0,
+                ),
+            )
+
+        // 2 discrepancies: 1 alarm (TPTA+Field, netDue=0) and 1 hazard (TPTA+Leave, netDue=-12744)
+        assertEquals(2, result.discrepancies.size)
+        assertEquals(10800.0, result.totalPrincipalRecovery, 0.01)
+        assertEquals(1944.0, result.totalPenalInterest, 0.01)
+        assertEquals(12744.0, result.totalRecoveryExposure, 0.01)
     }
 
     @Test
