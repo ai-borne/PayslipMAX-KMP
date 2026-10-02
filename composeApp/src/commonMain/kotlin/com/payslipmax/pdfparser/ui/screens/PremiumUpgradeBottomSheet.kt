@@ -68,6 +68,32 @@ internal fun restoreSheetOutcome(result: PurchaseResult): PurchaseSheetOutcome =
         is PurchaseResult.Error -> PurchaseSheetOutcome.ShowError("${AppStrings.statusRestorePurchasesFailed}${result.message}")
     }
 
+/** The banner a result shows, or null when the sheet should stay as it is. */
+private fun PurchaseSheetOutcome.feedback(): BackupStatus? =
+    when (this) {
+        is PurchaseSheetOutcome.Success -> BackupStatus(message, isSuccess = true)
+        is PurchaseSheetOutcome.ShowError -> BackupStatus(message, isSuccess = false)
+        is PurchaseSheetOutcome.StayOpen -> null
+    }
+
+@Composable
+private fun SheetLifecycleEffects(
+    onPresented: () -> Unit,
+    pendingDismissDelayMs: Long?,
+    onDismissRequest: () -> Unit,
+) {
+    // Re-read the store price as the sheet opens: the startup read can predate StoreKit resolving
+    // the storefront, and this sheet is where the quoted price becomes a commitment.
+    LaunchedEffect(Unit) { onPresented() }
+
+    LaunchedEffect(pendingDismissDelayMs) {
+        pendingDismissDelayMs?.let { delayMs ->
+            delay(delayMs)
+            onDismissRequest()
+        }
+    }
+}
+
 @Composable
 fun PremiumUpgradeBottomSheet(
     onDismissRequest: () -> Unit,
@@ -84,14 +110,22 @@ fun PremiumUpgradeBottomSheet(
     var feedbackStatus by remember { mutableStateOf<BackupStatus?>(null) }
     var pendingDismissDelayMs by remember { mutableStateOf<Long?>(null) }
 
-    // Re-read the store price as the sheet opens: the startup read can predate StoreKit resolving
-    // the storefront, and this sheet is where the quoted price becomes a commitment.
-    LaunchedEffect(Unit) { onPresented() }
+    SheetLifecycleEffects(onPresented, pendingDismissDelayMs, onDismissRequest)
 
-    LaunchedEffect(pendingDismissDelayMs) {
-        pendingDismissDelayMs?.let { delayMs ->
-            delay(delayMs)
-            onDismissRequest()
+    // One purchase-or-restore flow at a time; the outcome decides the banner and whether the sheet closes itself.
+    fun runFlow(
+        setBusy: (Boolean) -> Unit,
+        start: (onResult: (PurchaseResult) -> Unit) -> Unit,
+        toOutcome: (PurchaseResult) -> PurchaseSheetOutcome,
+    ) {
+        if (isPurchasing || isRestoring) return
+        setBusy(true)
+        feedbackStatus = null
+        start { result ->
+            setBusy(false)
+            val outcome = toOutcome(result)
+            feedbackStatus = outcome.feedback() ?: feedbackStatus
+            pendingDismissDelayMs = dismissDelayMsFor(outcome)
         }
     }
 
@@ -101,46 +135,9 @@ fun PremiumUpgradeBottomSheet(
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
         UpgradeSheetContent(
-            price = price,
-            isPurchasing = isPurchasing,
-            isRestoring = isRestoring,
-            feedbackStatus = feedbackStatus,
-            onUnlockClick = {
-                if (isPurchasing || isRestoring) return@UpgradeSheetContent
-                isPurchasing = true
-                feedbackStatus = null
-                onUnlockClick { result ->
-                    isPurchasing = false
-                    when (val outcome = purchaseSheetOutcome(result)) {
-                        is PurchaseSheetOutcome.Success -> {
-                            feedbackStatus = BackupStatus(outcome.message, isSuccess = true)
-                            pendingDismissDelayMs = dismissDelayMsFor(outcome)
-                        }
-                        is PurchaseSheetOutcome.StayOpen -> Unit
-                        is PurchaseSheetOutcome.ShowError -> {
-                            feedbackStatus = BackupStatus(outcome.message, isSuccess = false)
-                        }
-                    }
-                }
-            },
-            onRestoreClick = {
-                if (isPurchasing || isRestoring) return@UpgradeSheetContent
-                isRestoring = true
-                feedbackStatus = null
-                onRestoreClick { result ->
-                    isRestoring = false
-                    when (val outcome = restoreSheetOutcome(result)) {
-                        is PurchaseSheetOutcome.Success -> {
-                            feedbackStatus = BackupStatus(outcome.message, isSuccess = true)
-                            pendingDismissDelayMs = dismissDelayMsFor(outcome)
-                        }
-                        is PurchaseSheetOutcome.StayOpen -> Unit
-                        is PurchaseSheetOutcome.ShowError -> {
-                            feedbackStatus = BackupStatus(outcome.message, isSuccess = false)
-                        }
-                    }
-                }
-            },
+            price = price, isPurchasing = isPurchasing, isRestoring = isRestoring, feedbackStatus = feedbackStatus,
+            onUnlockClick = { runFlow({ isPurchasing = it }, onUnlockClick, ::purchaseSheetOutcome) },
+            onRestoreClick = { runFlow({ isRestoring = it }, onRestoreClick, ::restoreSheetOutcome) },
             onCloseClick = onDismissRequest,
             onTermsClick = onTermsClick,
             onPrivacyClick = onPrivacyClick,

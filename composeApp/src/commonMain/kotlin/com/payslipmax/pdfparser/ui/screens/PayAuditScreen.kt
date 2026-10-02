@@ -32,9 +32,7 @@ import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
-import com.payslipmax.pdfparser.ui.launchPurchaseFlow
 import com.payslipmax.pdfparser.ui.rememberHasAccess
-import com.payslipmax.pdfparser.ui.restorePurchases
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
 import com.payslipmax.pdfparser.ui.theme.PayAuditVerdictStrings
@@ -87,22 +85,7 @@ fun PayAuditScreen(
             PayAuditBody(payAuditViewModel, onShowUpgradeSheet = { showUpgradeSheet = true }, onDraftLetter = { onNavigateTo(Screen.Representation) })
         }
     }
-    if (showUpgradeSheet) PayAuditUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
-}
-
-@Composable
-private fun PayAuditUpgradeSheet(
-    viewModel: PayslipViewModel,
-    onDismiss: () -> Unit,
-) {
-    val premiumPrice by viewModel.premiumPriceState.collectAsState()
-    PremiumUpgradeBottomSheet(
-        onDismissRequest = onDismiss,
-        onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
-        onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
-        price = premiumPrice,
-        onPresented = viewModel::refreshPremiumPrice,
-    )
+    if (showUpgradeSheet) PayslipUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
 }
 
 @Composable

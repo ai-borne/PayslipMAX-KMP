@@ -58,18 +58,8 @@ fun LedgerSection(
     var addingEarning by remember { mutableStateOf(false) }
     var addingDeduction by remember { mutableStateOf(false) }
 
-    val displayCredits =
-        if (isEditModeActive) {
-            buildDisplayList(getCreditsList(payslip), EntryCategory.EARNING, draftCorrections)
-        } else {
-            getCreditsList(payslip).map { DisplayLedgerLine(it.code, it.amount, it.desc, it.fieldKey) }
-        }
-    val displayDebits =
-        if (isEditModeActive) {
-            buildDisplayList(getDebitsList(payslip), EntryCategory.DEDUCTION, draftCorrections)
-        } else {
-            getDebitsList(payslip).map { DisplayLedgerLine(it.code, it.amount, it.desc, it.fieldKey) }
-        }
+    val displayCredits = displayLines(getCreditsList(payslip), EntryCategory.EARNING, isEditModeActive, draftCorrections)
+    val displayDebits = displayLines(getDebitsList(payslip), EntryCategory.DEDUCTION, isEditModeActive, draftCorrections)
 
     val creditMismatch = if (isEditModeActive) computeDisplayMismatch(displayCredits, payslip.summary.grossPay) else creditsMismatch(payslip)
     val debitMismatch = if (isEditModeActive) computeDisplayMismatch(displayDebits, payslip.summary.totalDeductions) else debitsMismatch(payslip)

@@ -48,16 +48,7 @@ fun DashboardScreen(
     val selected = uiState.selectedPayslip
     var showUploadDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(uiState.importUiState) {
-        val importState = uiState.importUiState
-        if (importState is ImportUiState.Success) {
-            kotlinx.coroutines.delay(600)
-            viewModel.maybePromptForRating(importState.payslip)
-            kotlinx.coroutines.delay(600)
-            showUploadDialog = false
-            viewModel.startImport()
-        }
-    }
+    CloseImportAfterSuccess(uiState.importUiState, viewModel, onClosed = { showUploadDialog = false })
 
     DashboardContent(
         uiState = uiState,
@@ -85,6 +76,24 @@ fun DashboardScreen(
                 showUploadDialog = false
             },
         )
+    }
+}
+
+/** Once an import succeeds: ask for a rating, then close the upload dialog and reset the import flow. */
+@Composable
+private fun CloseImportAfterSuccess(
+    importState: ImportUiState,
+    viewModel: PayslipViewModel,
+    onClosed: () -> Unit,
+) {
+    LaunchedEffect(importState) {
+        if (importState is ImportUiState.Success) {
+            kotlinx.coroutines.delay(600)
+            viewModel.maybePromptForRating(importState.payslip)
+            kotlinx.coroutines.delay(600)
+            onClosed()
+            viewModel.startImport()
+        }
     }
 }
 
