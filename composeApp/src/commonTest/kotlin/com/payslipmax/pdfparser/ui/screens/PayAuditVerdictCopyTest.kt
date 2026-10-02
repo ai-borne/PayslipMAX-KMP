@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens
 
+import com.payslipmax.pdfparser.insights.Anomaly
 import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -65,5 +66,29 @@ class PayAuditVerdictCopyTest {
         assertEquals("33 months audited · 0 issues", payAuditHistoryLine(PayAuditHistorySummary(33, 0)))
         assertEquals("20 months audited · 1 issue", payAuditHistoryLine(PayAuditHistorySummary(20, 1)))
         assertEquals("20 months audited · 3 issues", payAuditHistoryLine(PayAuditHistorySummary(20, 3)))
+    }
+
+    // WHY: found on the Pixel with the Phase 8 seed: a held TPTA gap said "Arrears are not credited yet", which is
+    // not what is being waited for (a posting change or relocation to be ruled out by the next payslip).
+    @Test
+    fun aWaitingMissingPayLineIsNotDescribedAsArrears() {
+        val c = payAuditVerdictCopy(PayAuditVerdict.Waiting(1, forMissingPayLine = true), aug)
+        assertFalse(c.subtitle.contains("Arrears"), c.subtitle)
+        assertEquals("Aug 2026. A missing pay line can be explained by a posting change or relocation. We check again when your next payslip is added. Not counted as an issue.", c.subtitle)
+    }
+
+    @Test
+    fun aWaitingArrearsKeepsTheArrearsWording() {
+        val c = payAuditVerdictCopy(PayAuditVerdict.Waiting(1), aug)
+        assertEquals("Aug 2026. Arrears are not credited yet. They normally arrive 1–3 months later. Not counted as an issue.", c.subtitle)
+    }
+
+    @Test
+    fun theVerdictKnowsWhetherTheWaitingFindingIsAMissingPayLineOrArrears() {
+        val tpta = Anomaly("TPTA_ENTITLEMENT", "transportAllowance", 4212.0, "03/2018", "held", isPending = true)
+        val arrears = tpta.copy(field = "arrearsDa")
+        assertEquals(PayAuditVerdict.Waiting(1, forMissingPayLine = true), buildPayAuditVerdict(PayAuditMonthFindings(waiting = listOf(tpta)), true, 3))
+        assertEquals(PayAuditVerdict.Waiting(1), buildPayAuditVerdict(PayAuditMonthFindings(waiting = listOf(arrears)), true, 3))
+        assertEquals(PayAuditVerdict.Waiting(2), buildPayAuditVerdict(PayAuditMonthFindings(waiting = listOf(tpta, arrears)), true, 3), "any arrears keeps the arrears wording")
     }
 }

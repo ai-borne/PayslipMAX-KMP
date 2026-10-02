@@ -45,7 +45,7 @@ internal fun buildPayAuditVerdict(
         findings.issues.isNotEmpty() && !hasAccess -> PayAuditVerdict.LockedIssue(findings.issues.size, labels)
         findings.issues.isNotEmpty() ->
             PayAuditVerdict.Issue(findings.issues.size, labels, findings.issues.singleOrNull()?.amount, findings.issues.any { it.canDraftLetter() })
-        findings.waiting.isNotEmpty() -> PayAuditVerdict.Waiting(findings.waiting.size)
+        findings.waiting.isNotEmpty() -> PayAuditVerdict.Waiting(findings.waiting.size, findings.waiting.none { it.field in ARREARS_FIELDS })
         else -> PayAuditVerdict.Clean(linesChecked, findings.verified.size)
     }
 }

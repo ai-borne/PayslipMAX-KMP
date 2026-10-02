@@ -45,7 +45,12 @@ fun payAuditVerdictCopy(
                 S.lockedCta,
             )
         is PayAuditVerdict.Waiting ->
-            VerdictCopy(S.verdictLabelWaiting, "${verdict.count}${S.waitingHeadlineSuffix}", "$monthText. ${S.waitingSubtitle}", VerdictTone.WAITING)
+            VerdictCopy(
+                S.verdictLabelWaiting,
+                "${verdict.count}${S.waitingHeadlineSuffix}",
+                "$monthText. ${if (verdict.forMissingPayLine) S.waitingMissingLineSubtitle else S.waitingSubtitle}",
+                VerdictTone.WAITING,
+            )
     }
 }
 

@@ -30,7 +30,8 @@ sealed interface PayAuditVerdict {
     /** Free tier: the count and pay-line names stay visible, the amount and evidence do not. */
     data class LockedIssue(val count: Int, val labels: List<String>) : PayAuditVerdict
 
-    data class Waiting(val count: Int) : PayAuditVerdict
+    /** [forMissingPayLine]: nothing waited on is an arrears credit (e.g. a held TPTA gap), so the copy must not talk of arrears. */
+    data class Waiting(val count: Int, val forMissingPayLine: Boolean = false) : PayAuditVerdict
 }
 
 /** "12 months audited · 0 issues": waiting findings are deliberately left out of [issues]. */

@@ -19,6 +19,8 @@ object PayAuditVerdictStrings {
     const val lockedCta = "Unlock the amount"
     const val waitingHeadlineSuffix = " waiting for your next payslip"
     const val waitingSubtitle = "Arrears are not credited yet. They normally arrive 1–3 months later. Not counted as an issue."
+    const val waitingMissingLineSubtitle =
+        "A missing pay line can be explained by a posting change or relocation. We check again when your next payslip is added. Not counted as an issue."
     const val noPayslipHeadline = "No payslip for this month"
     const val noPayslipSubtitle = "Pick a month that has a payslip, or add this one from History."
     const val seeWhyAndDraftCta = "See why and draft a letter"
