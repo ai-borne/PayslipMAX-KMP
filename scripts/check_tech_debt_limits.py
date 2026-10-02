@@ -50,20 +50,9 @@ def check_file_limits(filepath):
                     break
 
             if func_line_idx != -1:
-                brace_count = 0
-                started = False
                 start_line = func_line_idx
-                end_line = -1
-
-                for k in range(func_line_idx, len(lines)):
-                    k_line = lines[k]
-                    brace_count += k_line.count('{')
-                    brace_count -= k_line.count('}')
-                    if '{' in k_line:
-                        started = True
-                    if started and brace_count == 0:
-                        end_line = k
-                        break
+                span = _body_span(lines, func_line_idx)
+                end_line = span[1] if span else -1
 
                 if end_line != -1:
                     length = (end_line - start_line) + 1
@@ -144,11 +133,12 @@ def check_ios_vc_theming(filepath):
     return errors
 
 
-def _brace_span(lines, start_idx):
-    """Return the (start, end) inclusive line-index span of the block starting at start_idx.
+def _body_span(lines, start_idx):
+    """Return the (start, end) inclusive line-index span of the block starting at start_idx, or None
+    if no block opens and closes (e.g. an expression-bodied function).
     Paren-depth aware so a parameter default lambda on the signature line (e.g.
-    `onBack: () -> Unit = {}`) isn't mistaken for the function body's opening/closing brace —
-    braces only count once the top-level parameter-list parens have closed."""
+    `onBack: () -> Unit = {}` or `x: T = remember { T() }`) isn't mistaken for the function body's
+    opening/closing brace — braces only count once the top-level parameter-list parens have closed."""
     paren_depth = 0
     brace_count = 0
     started = False
@@ -165,7 +155,12 @@ def _brace_span(lines, start_idx):
                 brace_count -= 1
         if started and brace_count == 0:
             return start_idx, k
-    return start_idx, len(lines) - 1
+    return None
+
+
+def _brace_span(lines, start_idx):
+    """Like _body_span, but an unclosed/absent block spans to the end of the file."""
+    return _body_span(lines, start_idx) or (start_idx, len(lines) - 1)
 
 
 def _find_fun_span(lines, name):
