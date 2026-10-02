@@ -879,6 +879,48 @@ Pay Audit is a Premium feature, and the home screen must not carry Premium conte
 - Claim lifecycle and a "₹ recovered" figure, closed when a later payslip shows the arrears.
 - An evidence-pack PDF attached to the representation letter.
 
+### Candidate rules to add later (rule audit 2026-10-02, not scheduled)
+
+Found by reading the auditors against the plan's own bar: zero user input, provable from the payslips alone,
+and a citable authority. Nothing here is built or tested. Figures are from memory: find the circular for each
+before writing code (the 18% penal-interest hazard was dropped for exactly this reason). To be planned in
+phases at a later session, with the corpus tests green and no assertion loosened.
+
+**Strong fit (data already parsed; suggested first: 1, 3, 4)**
+
+| # | Rule | Why it fits | Notes |
+|---|---|---|---|
+| 1 | Transport Allowance paid too low | `TptaEntitlementAuditor` returns early when TPTA > 0, so a part-payment passes unchecked. Same shape as `MspAuditor`. | Minimum slab: base (`TptaCityClass` ₹3,600 / ₹7,200) plus DA. Can't tell a listed city, so flag only below the lowest slab. |
+| 2 | DA on TPTA = DA rate x TPTA | Only checked in the DA arrears month today (`DaArrearsAuditor`). | Rate is read from the officer's own payslips; no rate table. |
+| 3 | Basic Pay that is not a pay matrix cell | `ServiceTimelineBuilder` silently drops these months (`PayMatrix.levelsContaining(...).isNotEmpty()`), so a wrong basic pay hides itself and the audit skips the month. | Surface as a finding, not an exclusion. Check it is not a parser error first (`needsReview`). |
+| 4 | Promotion pay fixation | Timeline already detects PROMOTION events; `PayFixationCalculator` already holds Option 1 / Option 2. A new basic matching neither is provable. | Highest value: a mis-fixation compounds every month. Only one with a real false-positive risk on real promotion months; run the corpus first. |
+| 5 | Non-Practicing Allowance != 20% of basic (cap ₹2,37,500) | NPA is only used to explain changes today (P7-16). Authority already cited: GoI MoD letter 28-09-2017. | Medical-corps eligibility is not modeled, so flag a wrong amount, never an absent NPA. |
+
+**Good fit (needs a small design change)**
+
+| # | Rule | Notes |
+|---|---|---|
+| 6 | Expire "waiting" findings | A held TPTA/arrears finding never escalates. After N months with no confirming payslip, show it as a finding. This is the harder P7-17b option under "After validation". Pick N with the officer. |
+| 7 | DA moves mid-half-year or falls | DA should step only on 1 Jan / 1 Jul and never decrease. Consistency check against the officer's own earlier months. |
+
+**Not yet provable (blocked on data)**
+
+| # | Rule | Blocker |
+|---|---|---|
+| 8 | First increment after promotion (6-month rule) | Needs the promotion date; payslips only show the month, so a month-end promotion is ambiguous. |
+| 9 | DSOP minimum subscription | Current minimum percentage unconfirmed. Find the circular. `DsopComplianceAuditor` covers the ₹5 lakh cap only. |
+| 10 | Field / Risk & Hardship area allowance missing | Needs the posting, which payslips don't carry. |
+
+**Deferred by user decision (2026-10-02): CEA reminder.** Not a finding: whether CEA is owed depends on the
+number of children and the academic session, which the app doesn't hold (see "Not ported from
+`pay_audit_1.0`"). If built, an opt-in setting (children count) plus a reminder when the session ends; CEA is
+claimed once per financial year, not monthly. This would be the first Pay Audit feature that asks the officer
+for input, so settle the design before any code.
+
+**Known scope boundaries (not planned):** Dress, Ration, Technical and Special Forces pay (need trade/unit
+data); withheld or forfeited increments (invisible in a payslip, so the increment finding only warns);
+LTC / TA-DA / claim deadlines (deferred "until users ask"); licence-fee rent brackets (dropped in Phase 10).
+
 ### Critical files (on `feature/pay-audit`)
 
 - **Engine:** `shared/src/commonMain/.../insights/` (`DeterministicIntelligenceEngine`, the auditors, `PayAuthorities`, `PayAuditFindingTypes`, `RepresentationDraftTypes`) and `insights/timeline/`.
