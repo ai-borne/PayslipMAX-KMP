@@ -165,23 +165,22 @@ interface PayslipDao {
      */
     @Transaction
     suspend fun replaceWithBackup(
-        payslips: List<EncryptedPayslipEntity>,
-        pdfs: List<PayslipPdfEntity>,
+        rows: BackupRows,
         settings: AppSettingsEntity,
     ) {
         clearAllUserData()
         clearSettings()
         insertSettings(settings)
-        mergeBackup(payslips, pdfs)
+        mergeBackup(rows)
     }
 
     /** MERGE restore as one transaction: the backup's rows are layered on top of what the device holds. */
     @Transaction
-    suspend fun mergeBackup(
-        payslips: List<EncryptedPayslipEntity>,
-        pdfs: List<PayslipPdfEntity>,
-    ) {
-        insertPayslips(payslips)
-        pdfs.forEach { insertPayslipPdf(it) }
+    suspend fun mergeBackup(rows: BackupRows) {
+        insertPayslips(rows.payslips)
+        rows.pdfs.forEach { insertPayslipPdf(it) }
+        rows.drafts.forEach { insertRepresentationDraft(it) }
+        rows.dismissedDrafts.forEach { insertDismissedDraft(it) }
+        rows.corrections.forEach { insertCorrection(it) }
     }
 }

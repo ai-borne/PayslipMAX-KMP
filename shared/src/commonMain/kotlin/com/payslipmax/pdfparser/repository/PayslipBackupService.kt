@@ -18,7 +18,8 @@ class PayslipBackupService(
     private val dispatcher: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.Default,
 ) {
     /**
-     * Exports all app data (payslips, PDFs, settings) as an encrypted JSON archive.
+     * Exports everything the user created (payslips, PDFs, settings, letters, deleted-letter records,
+     * corrections) as an encrypted JSON archive. Derived data (ledger, insights) is not exported.
      */
     suspend fun export(password: String): Result<ByteArray> =
         withContext(dispatcher) {
@@ -43,10 +44,13 @@ class PayslipBackupService(
 
                 val backup =
                     PortableBackup(
-                        version = 2,
+                        version = PortableBackup.CURRENT_VERSION,
                         encryptedPayslips = exportedPayslips,
                         pdfs = pdfs,
                         settings = settings,
+                        drafts = payslipDao.getAllRepresentationDrafts().first(),
+                        dismissedDrafts = payslipDao.getAllDismissedDrafts(),
+                        corrections = exportCorrections(deviceKey, password),
                     )
 
                 val jsonStr = Json.encodeToString(PortableBackup.serializer(), backup)
@@ -55,6 +59,20 @@ class PayslipBackupService(
                 CryptoHelper.encrypt(jsonBytes, password)
             } catch (e: Exception) {
                 Result.failure(e)
+            }
+        }
+
+    /** Corrections move from the device key to the backup password so the archive is self-contained. */
+    private suspend fun exportCorrections(
+        deviceKey: String,
+        password: String,
+    ): List<PayslipCorrectionEntity> =
+        payslipDao.getAllCorrections().first().mapNotNull { entity ->
+            try {
+                entity.toCorrectionList(deviceKey).toCorrectionEntity(entity.dateStr, password)
+            } catch (e: Exception) {
+                Logger.e("PayslipBackupService", "Skipping undecryptable corrections for ${entity.dateStr} during backup", e)
+                null
             }
         }
 
@@ -76,7 +94,7 @@ class PayslipBackupService(
                 }
 
                 val jsonStr = decryptResult.getOrThrow().decodeToString()
-                val backup = Json.decodeFromString(PortableBackup.serializer(), jsonStr)
+                val backup = lenientJson.decodeFromString(PortableBackup.serializer(), jsonStr)
 
                 // Decode and re-encrypt every payslip *before* touching the database: one unreadable row
                 // then fails the restore with the device's data untouched, instead of after a wipe.
@@ -92,6 +110,14 @@ class PayslipBackupService(
                             }
                         domainModel.toEncryptedEntity(deviceKey)
                     }
+                val rows =
+                    BackupRows(
+                        payslips = databasePayslips,
+                        pdfs = backup.pdfs,
+                        drafts = backup.drafts,
+                        dismissedDrafts = backup.dismissedDrafts,
+                        corrections = backup.corrections.map { it.toCorrectionList(password).toCorrectionEntity(it.dateStr, deviceKey) },
+                    )
 
                 // REPLACE makes the device an exact copy of the backup (every user and derived table is
                 // emptied first); MERGE keeps the device's existing data and its own settings and layers
@@ -102,12 +128,11 @@ class PayslipBackupService(
                     val deviceEntitlement = payslipDao.getSettings()?.isPremiumEnabled ?: false
                     val restoredSettings = backup.settings ?: AppSettingsEntity()
                     payslipDao.replaceWithBackup(
-                        databasePayslips,
-                        backup.pdfs,
+                        rows,
                         restoredSettings.copy(isPremiumEnabled = deviceEntitlement),
                     )
                 } else {
-                    payslipDao.mergeBackup(databasePayslips, backup.pdfs)
+                    payslipDao.mergeBackup(rows)
                 }
 
                 Result.success(Unit)
@@ -116,3 +141,6 @@ class PayslipBackupService(
             }
         }
 }
+
+/** Tolerates fields added by a later app version, so an older build still restores what it understands. */
+private val lenientJson = Json { ignoreUnknownKeys = true }

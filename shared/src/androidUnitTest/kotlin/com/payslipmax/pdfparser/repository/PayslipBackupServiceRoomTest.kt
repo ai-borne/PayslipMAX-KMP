@@ -5,9 +5,13 @@ import androidx.room.useWriterConnection
 import androidx.sqlite.driver.AndroidSQLiteDriver
 import androidx.test.core.app.ApplicationProvider
 import com.payslipmax.pdfparser.crypto.ContextHolder
+import com.payslipmax.pdfparser.database.DismissedDraftEntity
 import com.payslipmax.pdfparser.database.PayslipDatabase
 import com.payslipmax.pdfparser.database.PayslipPdfEntity
+import com.payslipmax.pdfparser.database.RepresentationDraftEntity
 import com.payslipmax.pdfparser.database.getDatabaseBuilder
+import com.payslipmax.pdfparser.database.toCorrectionEntity
+import com.payslipmax.pdfparser.database.toCorrectionList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -68,17 +72,25 @@ class PayslipBackupServiceRoomTest {
         runBlocking {
             val dao = database.payslipDao()
             dao.seedDeviceMonth("01/2023")
-            // The last write of a restore is the PDF insert; make it fail so everything before it has
-            // already run (the wipe and the payslip insert) when the failure hits.
+            // The last write of a restore is the correction insert; make it fail so everything before it
+            // has already run (the wipe, payslips, PDFs, letters) when the failure hits.
             database.useWriterConnection {
                 it.usePrepared(
-                    "CREATE TRIGGER fail_pdf BEFORE INSERT ON payslip_pdfs " +
+                    "CREATE TRIGGER fail_correction BEFORE INSERT ON payslip_corrections " +
                         "BEGIN SELECT RAISE(ABORT, 'simulated failure'); END",
                 ) { statement -> statement.step() }
             }
             val backup =
                 backupBytes(
-                    PortableBackup(2, listOf(goodEntity("08/2024")), listOf(PayslipPdfEntity("08/2024", byteArrayOf(9))), null),
+                    PortableBackup(
+                        version = 3,
+                        encryptedPayslips = listOf(goodEntity("08/2024")),
+                        pdfs = listOf(PayslipPdfEntity("08/2024", byteArrayOf(9))),
+                        settings = null,
+                        drafts = listOf(RepresentationDraftEntity("d-new", "08/2024", "MISSING_HRA", "PCDA_O_PUNE", "s", "b", 1L)),
+                        dismissedDrafts = listOf(DismissedDraftEntity("08/2024", "SALARY_DROP")),
+                        corrections = listOf(mapOf("basicPay" to 2.0).toCorrectionEntity("08/2024", BACKUP_PASSWORD)),
+                    ),
                 )
 
             val result = service.restore(backup, BACKUP_PASSWORD, RestoreMode.REPLACE)
@@ -91,5 +103,22 @@ class PayslipBackupServiceRoomTest {
             assertEquals(1, dao.getAllRepresentationDrafts().first().size)
             assertEquals(1, dao.getAllDismissedDrafts().size)
             assertEquals(1, dao.getAllCorrections().first().size)
+            assertEquals(listOf("d-01/2023"), dao.getAllRepresentationDrafts().first().map { it.id })
+        }
+
+    @Test
+    fun `letters, deleted-letter records and corrections round-trip through the real database`() =
+        runBlocking {
+            val dao = database.payslipDao()
+            dao.seedDeviceMonth("01/2023")
+            val archive = service.export(BACKUP_PASSWORD).getOrThrow()
+            dao.insertDismissedDraft(DismissedDraftEntity("09/2024", "MISSING_TPTA"))
+
+            service.restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+
+            assertEquals(listOf("d-01/2023"), dao.getAllRepresentationDrafts().first().map { it.id })
+            assertEquals(listOf(DismissedDraftEntity("01/2023", "MISSING_HRA")), dao.getAllDismissedDrafts())
+            assertEquals(1.0, dao.getCorrectionByDate("01/2023")!!.toCorrectionList().single().amount)
+            assertTrue(dao.getAllLedgerRecords().first().isEmpty(), "derived rows are rebuilt later, never restored")
         }
 }
