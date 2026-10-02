@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.di
 
 import com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository
+import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
@@ -42,6 +43,7 @@ class GemmaInstallerDiWiringTest {
                     module {
                         single { PayslipRepository(FakePayslipDao(), FakePdfParser(), Dispatchers.Unconfined) }
                         single<FinancialIntelligenceRepository> { FakeFinancialIntelligenceRepository() }
+                        single { PayslipBackupService(FakePayslipDao(), Dispatchers.Unconfined) }
                     },
                 )
             }.koin

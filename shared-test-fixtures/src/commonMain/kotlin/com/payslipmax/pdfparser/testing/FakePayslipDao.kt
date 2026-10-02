@@ -33,9 +33,9 @@ class FakePayslipDao : PayslipDao {
         database.value = database.value - dateStr
     }
 
+    // Like the Room query it stands in for, this empties the payslip table only (PDFs have clearAllPdfs).
     override suspend fun clearAll() {
         database.value = emptyMap()
-        pdfDatabase.value = emptyMap()
     }
 
     private val correctionsDatabase = MutableStateFlow<Map<String, PayslipCorrectionEntity>>(emptyMap())

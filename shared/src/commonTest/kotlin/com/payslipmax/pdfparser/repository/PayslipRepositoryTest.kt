@@ -276,4 +276,17 @@ class PayslipRepositoryTest {
             assertEquals(1, emissions.size)
             assertEquals("08/2024", emissions.first().dateStr)
         }
+
+    @Test
+    fun testGetStoredPayslipCount() =
+        runTest {
+            assertEquals(0, repository.getStoredPayslipCount())
+
+            fakeParser.result = Result.success(createMockPayslip("08/2024"))
+            repository.importPayslip(byteArrayOf(1), "pw", "a.pdf")
+            fakeParser.result = Result.success(createMockPayslip("09/2024"))
+            repository.importPayslip(byteArrayOf(2), "pw", "b.pdf")
+
+            assertEquals(2, repository.getStoredPayslipCount())
+        }
 }

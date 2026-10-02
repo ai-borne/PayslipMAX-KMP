@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.database.PayslipDao
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.parser.PdfParser
 import com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository
+import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.telemetry.CrashReporter
 import com.payslipmax.pdfparser.telemetry.InstallationIdManager
@@ -59,10 +60,20 @@ class AppKoinModulesTest {
         koin.get<FinancialIntelligenceRepository>()
         koin.get<CrashReporter>()
         koin.get<InstallationIdManager>()
+        koin.get<PayslipBackupService>()
         koin.get<PayslipViewModel>()
         koin.get<PayAuditViewModel>()
         // Resolved by every screen that gates onboarding; unbound it throws on the first composition.
         koin.get<OnboardingManager>()
+    }
+
+    @Test
+    fun theViewModelBacksUpThroughTheSharedBackupService() {
+        val koin = start()
+
+        // A ViewModel built without it reports "backup unavailable" on every export and restore, and
+        // nothing else in the graph would notice: the field is nullable so older call sites still compile.
+        assertSame(koin.get<PayslipBackupService>(), koin.get<PayslipViewModel>().backupService)
     }
 
     @Test

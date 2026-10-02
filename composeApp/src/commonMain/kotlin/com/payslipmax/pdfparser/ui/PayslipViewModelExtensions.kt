@@ -30,13 +30,15 @@ fun PayslipViewModel.clearAllData() {
     }
 }
 
+private fun backupUnavailable() = IllegalStateException("Backup service is not available")
+
 fun PayslipViewModel.exportBackup(
     password: String,
     onComplete: (Result<ByteArray>) -> Unit,
 ) {
     viewModelScope.launch {
         _uiState.update { it.copy(isLoading = true) }
-        val result = repository.exportUniversalBackup(password)
+        val result = backupService?.export(password) ?: Result.failure(backupUnavailable())
         _uiState.update { it.copy(isLoading = false) }
         onComplete(result)
     }
@@ -50,7 +52,7 @@ fun PayslipViewModel.importBackup(
 ) {
     viewModelScope.launch {
         _uiState.update { it.copy(isLoading = true) }
-        val result = repository.importUniversalBackup(backupBytes, password, mode)
+        val result = backupService?.restore(backupBytes, password, mode) ?: Result.failure(backupUnavailable())
         _uiState.update { it.copy(isLoading = false) }
         onComplete(result)
     }

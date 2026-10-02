@@ -4,6 +4,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.payslipmax.pdfparser.database.PayslipDatabase
 import com.payslipmax.pdfparser.database.getDatabaseBuilder
 import com.payslipmax.pdfparser.parser.PdfParser
+import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -21,6 +22,10 @@ val sharedModule: Module =
 
         single {
             get<PayslipDatabase>().payslipDao()
+        }
+
+        single {
+            PayslipBackupService(get())
         }
 
         single<PdfParser> {

@@ -15,7 +15,14 @@ val appModule =
         single<GemmaBaseModelInstaller> { provideGemmaBaseModelInstaller() }
         // One manager so App, Dashboard and Pay Audit read and write the same first-run flags.
         single { OnboardingManager() }
-        factory { PayslipViewModel(get(), get(), get()) }
+        factory {
+            PayslipViewModel(
+                repository = get(),
+                financialIntelligenceRepository = get(),
+                backupService = get(),
+                gemmaBaseModelInstaller = get(),
+            )
+        }
         factory { PayAuditViewModel() }
     }
 
