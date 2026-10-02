@@ -233,3 +233,10 @@ dependencies {
 tasks.matching { it.name == "assetPackReleasePreBundleTask" }.configureEach {
     dependsOn(":gemmaModelPack:fetchGemmaModelForRelease")
 }
+
+// The R8 mapping is uploaded to Crashlytics only for the Play artifact (`bundleRelease`). A local
+// `assembleRelease` APK carries the same versionCode as the Play build and would overwrite its mapping.
+val uploadsCrashlyticsMapping = gradle.startParameter.taskNames.any { it.endsWith("bundleRelease") }
+tasks.matching { it.name == "uploadCrashlyticsMappingFileRelease" }.configureEach {
+    enabled = uploadsCrashlyticsMapping
+}

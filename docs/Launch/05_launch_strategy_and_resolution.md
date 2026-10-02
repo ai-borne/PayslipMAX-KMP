@@ -453,6 +453,10 @@ export GEMMA_MODEL_SOURCE_PATH="/path/to/gemma3-1b-it-int4.litertlm"
 ./gradlew :composeApp:bundleRelease
 ```
 
+The Crashlytics R8 mapping upload (`uploadCrashlyticsMappingFileRelease`) runs only when `bundleRelease` is
+requested; a local `assembleRelease` skips it, so a sideloaded APK at the same versionCode can never overwrite
+the Play build's mapping. No `-x` flag is needed locally.
+
 **Never** pass `-PallowPlaceholderGemmaModel=true` for a build going to Play Console, at any track —
 that ships a broken offline-AI fallback to real testers/users. Placeholder builds are for local
 development only and must never leave the developer's machine.
