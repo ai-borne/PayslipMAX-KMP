@@ -54,6 +54,7 @@ fun PayslipViewModel.saveEditingSession(dateStr: String) {
         _uiState.update { it.copy(isLoading = true) }
         val corrections = _uiState.value.draftCorrections.values.toList()
         repository.saveAllCorrections(dateStr, corrections)
+        refreshAuditHistory()
 
         val merged = repository.getPayslipByDate(dateStr)
         _uiState.update { state ->

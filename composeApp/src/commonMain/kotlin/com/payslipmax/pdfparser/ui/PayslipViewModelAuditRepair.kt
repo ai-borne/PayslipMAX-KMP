@@ -2,6 +2,9 @@ package com.payslipmax.pdfparser.ui
 
 import androidx.lifecycle.viewModelScope
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.logging.Logger
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -23,4 +26,21 @@ internal fun PayslipViewModel.repairAuditHistoryOnce(payslips: List<ParsedPaysli
     auditRepairChecked = true
     val intelligence = financialIntelligenceRepository ?: return
     viewModelScope.launch { intelligence.repairAuditHistoryIfIncomplete(payslips) }
+}
+
+/**
+ * Re-derives the ledger and insights from the payslips as the officer now sees them, after something changed
+ * what a stored payslip holds (a saved correction, a re-parse). The payslips and corrections are already
+ * committed, so a failure here is logged without PII and never fails the action that triggered it; the
+ * startup repair and the next rebuild finish the job.
+ */
+internal suspend fun PayslipViewModel.refreshAuditHistory() {
+    val intelligence = financialIntelligenceRepository ?: return
+    try {
+        intelligence.rebuildAuditHistory(repository.getAllPayslips().first())
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        Logger.e("PayslipViewModel", "Audit history refresh failed", e)
+    }
 }
