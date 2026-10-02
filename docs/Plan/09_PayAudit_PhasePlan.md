@@ -787,7 +787,7 @@ Decisions: no PR/push until the very end; Crashlytics mapping upload only for th
 
 - **Phase 5 (DONE, commits 5154435d, f85d9786):** TPTA-DA arrears own pay line (arrearsTptaDa); month picker "no payslip" label removed; month/tab survive app recreation (PayAuditSavedState + rememberSaveable); glossary "How Pay Audit works" reopens the orientation; Insights dropdown already payslip-only (pinned by test). Device-unverified: the recreation behaviour (check in Phase 8 with "don't keep activities").
 - **Phase 6 (DONE, commit 88007e19): plain wording (#6).** New SSOT `PayAuditWording` (`shared/.../insights/`: grouped rupees via `TaxLedgerAggregator.formatIndianCurrency`, "58% to 60%", month names, "July to August 2018"). All ten auditors' descriptions, `PayLineChangeExplainer` reasons, the representation-letter amounts ("Rs. 1,23,100") and the History "DA 58% to 60%" title use it. No engine/rule logic changed; the four corpus tests have the same findings and coverage. Details and the changed-assertion list are in the Phase 6 hand-off and the carry-overs below.
-- **Phase 7: re-audit on import (#12).** User chose "re-run on import": when a new payslip is imported, re-audit the neighbouring earlier months so a held (isPending) TPTA finding resolves or surfaces, reconciling against stored `FinancialInsightEntity` rows. Held findings must never draft a letter; resolved ones must not leave a stale pending row. Any Room change needs a migration + upgrade test.
+- **Phase 7 (DONE, 2026-10-02): re-audit on import (#12).** User chose "re-run on import". `FinancialIntelligenceRepository.processPayslipAndRunAnalysis` now audits the imported month and then re-audits every stored month in the 6 months before it (`TptaAbsenceExplainer.RELOCATION_WINDOW_MONTHS`, now public to the module: the window the explainer itself uses, so it covers every month a new payslip can change). Per month, stored `FinancialInsightEntity` rows are reconciled: rows no longer produced are deleted (a held TPTA row whose gap a later payslip explains), the rest are rewritten in the current wording keeping `createdAt` and `isArchived`; a surfaced finding keeps the held row's id (`sha256(month-type-field)`), so it is one row. Drafts: one per month and dispute type (a re-audit or re-import never stacks a duplicate; this also fixed the existing duplicate-on-re-import bug), never for a held finding (it is not proven), and never deleted by a re-audit. No schema change, no DAO change, no auditor rule change. Tests: `FinancialIntelligenceReauditTest` (9; 5 red on the old code with real assertion failures, 4 are guards). Decisions (user, 2026-10-02): scope = the 6-month window; old drafts are left alone.
 - **Phase 8: debug synthetic seed + device checks (#4, #5).** User chose a debug-only synthetic seed (de-identified synthetic payslips: missing-TPTA month, held month, increment miss) so the Pixel can show locked state (Settings > Developer > Force Free), Issue/Waiting verdicts, "Draft letter", the first-run orientation sheet, and state restore after recreation. Needs a `.pcda` backup + user OK before any install (debug build has a different cert = uninstall). Seed code must be debug-only (not in release/R8), no PII.
 
 #### Phase 6 carry-overs (2026-10-01, fail-loud)
@@ -797,6 +797,18 @@ Decisions: no PR/push until the very end; Crashlytics mapping upload only for th
 - **Kept on purpose (user decision):** arrows in composeApp `PayAuditFormat.formatChange` ("₹5,400 → ₹5,508"); only percentages use words.
 - **Deferred to Phase 7 (user decision):** old stored insight rows keep their old wording until re-audit; no startup re-audit pass.
 - **Device:** wording not yet seen on the Pixel (no build installed this phase).
+
+#### Phase 7 carry-overs (2026-10-02, fail-loud)
+
+- **Not verified on any device.** Covered by repository tests on `FakePayslipDao` and the full gate only. No Phase 6 wording or Phase 7 re-audit has been seen on the Pixel or iOS (Phase 8 seed is the way to do it).
+- **A draft the officer deleted comes back** on the next re-audit or re-import while the finding is still proven (dedupe looks at stored drafts only). Fixing it needs a tombstone, i.e. a schema change, so it was not done unasked.
+- **A draft whose finding later becomes held or resolved stays** (user decision: drafts are the officer's documents). Nothing marks it as no longer supported.
+- **Backfill imports only re-audit earlier months.** Importing an older payslip can turn a later month's proven finding into a held one (a prior city sample now exists); that month is not re-audited and keeps its proven row and draft until its own next re-audit or re-import.
+- **Letters for earlier months are signed with the imported payslip's officer** (the stored ledger records are de-identified). Fine while a device holds one officer's payslips.
+- **Old wording** is rewritten only for months inside a later import's window; older rows keep it (user decision, no startup pass).
+- **Re-audit rewrites all of a month's rows, not just TPTA**, so a re-audited month can also gain or lose a non-TPTA row if the engine's view of it changed with the new history. The four corpus tests are unchanged.
+- **iOS gate timing:** `iosSimulatorArm64Test --rerun-tasks` took 45 s this time (29 tasks executed, fresh results, 123 suites 0 failures, the new test 9/9), not the ~40 min seen before; the earlier figure is not a constant.
+- **Cost:** up to 7 engine runs per import (imported month + 6), each over the full ledger history; not measured on a device.
 
 ---
 
