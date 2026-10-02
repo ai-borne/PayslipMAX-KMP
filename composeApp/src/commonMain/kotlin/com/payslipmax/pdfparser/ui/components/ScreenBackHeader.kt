@@ -24,7 +24,7 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
  * source of truth for the "back arrow + screen title" affordance across all detail screens,
  * replacing the three divergent styles (filled Button, TextButton, ad-hoc IconButton) that existed
  * before. Callers wanting a trailing action (e.g. the replica screen's edit toggle) place this in a
- * parent [Row] with `Modifier.weight(1f)` and add their action after it.
+ * parent [Row] with `Modifier.weight(1f)` and add their action after it, or pass [trailing] to keep it inside the header row.
  */
 @Composable
 fun ScreenBackHeader(
@@ -32,6 +32,7 @@ fun ScreenBackHeader(
     subtitle: String? = null,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    trailing: (@Composable () -> Unit)? = null,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -45,6 +46,7 @@ fun ScreenBackHeader(
         }
         Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
         HeaderTitleBlock(title = title, subtitle = subtitle, modifier = Modifier.weight(1f))
+        trailing?.invoke()
     }
 }
 

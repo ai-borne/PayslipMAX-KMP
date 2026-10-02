@@ -37,7 +37,6 @@ fun PayAuditMonthBar(
     months: List<PayMonth>,
     onSelect: (PayMonth) -> Unit,
     onOpenPicker: () -> Unit,
-    onOpenGlossary: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val index = months.indexOf(selected)
@@ -51,7 +50,6 @@ fun PayAuditMonthBar(
         IconButton(onClick = { onSelect(months[index + 1]) }, enabled = index in 0 until months.lastIndex) {
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = PayAuditVerdictStrings.nextMonthDescription)
         }
-        IconButton(onClick = onOpenGlossary) { Text(PayAuditVerdictStrings.infoGlyph, style = MaterialTheme.typography.titleLarge) }
     }
 }
 

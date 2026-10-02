@@ -7,8 +7,7 @@ object PayAuditVerdictStrings {
     const val verdictLabelWaiting = "… Waiting"
     const val verdictLabelNoPayslip = "No payslip"
 
-    const val cleanHeadlineMiddle = ": no issues found on "
-    const val cleanHeadlineSuffix = " pay lines"
+    const val cleanHeadline = ": no issues found in the payslip entries"
     const val cleanSubtitle = "Nothing to claim this month."
     const val cleanVerifiedPrefix = "Arrears credits verified, they match the rules exactly: "
     const val issueShortSuffix = " short"

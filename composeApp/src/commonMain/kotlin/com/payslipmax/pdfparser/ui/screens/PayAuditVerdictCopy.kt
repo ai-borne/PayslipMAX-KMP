@@ -24,7 +24,7 @@ fun payAuditVerdictCopy(
         is PayAuditVerdict.Clean ->
             VerdictCopy(
                 S.verdictLabelCorrect,
-                "$monthText${S.cleanHeadlineMiddle}${verdict.linesChecked}${S.cleanHeadlineSuffix}",
+                "$monthText${S.cleanHeadline}",
                 if (verdict.verifiedCount > 0) "${S.cleanVerifiedPrefix}${verdict.verifiedCount}" else S.cleanSubtitle,
                 VerdictTone.OK,
             )

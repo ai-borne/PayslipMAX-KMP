@@ -3,11 +3,14 @@ package com.payslipmax.pdfparser.ui.screens
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.runComposeUiTest
 import com.payslipmax.pdfparser.insights.timeline.PayMonth
@@ -31,7 +34,7 @@ class PayAuditScreenContentTest {
         runComposeUiTest {
             setContent { PayAuditContent(base, {}, {}, {}, {}) }
 
-            onNodeWithText("Aug 2026: no issues found on 12 pay lines").assertExists()
+            onNodeWithText("Aug 2026: no issues found in the payslip entries").assertExists()
             onNodeWithText("20 months audited · 0 issues").assertExists()
         }
 
@@ -88,6 +91,8 @@ class PayAuditScreenContentTest {
         runComposeUiTest {
             setContent { PayAuditContent(base.copy(tab = PayAuditTab.PLAN_AHEAD), {}, {}, {}, {}) }
 
+            // The header now sits above the list, so the card may start below Robolectric's small viewport.
+            onNode(hasScrollAction()).performScrollToNode(hasText("Next increment"))
             onNodeWithText("Next increment").assertExists()
             onNodeWithText("This month").assertExists()
         }

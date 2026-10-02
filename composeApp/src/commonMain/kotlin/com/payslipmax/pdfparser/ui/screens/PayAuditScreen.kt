@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
@@ -73,16 +74,11 @@ fun PayAuditScreen(
     if (uiState.payslips.isNotEmpty()) PayAuditIntroGate(onboardingManager)
 
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).detailScreenSafeArea()) {
-        ScreenBackHeader(
-            title = PayAuditStrings.screenTitle,
-            subtitle = PayAuditStrings.screenSubtitle,
-            onBack = onBack,
-            modifier = Modifier.padding(AppDimensions.PaddingMedium),
-        )
         if (uiState.payslips.isEmpty()) {
+            PayAuditHeader(onBack)
             PayAuditEmptyState()
         } else {
-            PayAuditBody(payAuditViewModel, onShowUpgradeSheet = { showUpgradeSheet = true }, onDraftLetter = { onNavigateTo(Screen.Representation) })
+            PayAuditBody(payAuditViewModel, onBack, onShowUpgradeSheet = { showUpgradeSheet = true }, onDraftLetter = { onNavigateTo(Screen.Representation) })
         }
     }
     if (showUpgradeSheet) PayslipUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
@@ -91,14 +87,29 @@ fun PayAuditScreen(
 @Composable
 private fun PayAuditBody(
     vm: PayAuditViewModel,
+    onBack: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
     onDraftLetter: () -> Unit,
 ) {
     val state by vm.uiState.collectAsState()
-    PayAuditContent(state, vm::selectMonth, vm::selectTab, onShowUpgradeSheet, onDraftLetter)
+    PayAuditContent(state, vm::selectMonth, vm::selectTab, onShowUpgradeSheet, onDraftLetter, onBack)
 }
 
-/** Stateless render of [PayAuditUiState]: the month bar, the verdict card, the tab row and the selected tab. */
+@Composable
+private fun PayAuditHeader(
+    onBack: () -> Unit,
+    onOpenGlossary: (() -> Unit)? = null,
+) {
+    ScreenBackHeader(
+        title = PayAuditStrings.screenTitle,
+        subtitle = PayAuditStrings.screenSubtitle,
+        onBack = onBack,
+        modifier = Modifier.padding(AppDimensions.PaddingMedium),
+        trailing = onOpenGlossary?.let { open -> { IconButton(onClick = open) { Text(PayAuditVerdictStrings.infoGlyph, style = MaterialTheme.typography.titleLarge) } } },
+    )
+}
+
+/** Stateless render of [PayAuditUiState]: the header (with the glossary button), the month bar, the verdict card, the tab row and the selected tab. */
 @Composable
 internal fun PayAuditContent(
     state: PayAuditUiState,
@@ -106,28 +117,32 @@ internal fun PayAuditContent(
     onSelectTab: (PayAuditTab) -> Unit,
     onShowUpgradeSheet: () -> Unit,
     onDraftLetter: () -> Unit,
+    onBack: () -> Unit = {},
 ) {
     var sheet by remember { mutableStateOf<PayAuditSheet?>(null) }
     val month = state.selectedMonth
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(AppDimensions.PaddingMedium),
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-    ) {
-        item(key = "month_bar", contentType = "month_bar") {
-            PayAuditMonthBar(month, state.availableMonths, onSelectMonth, { sheet = PayAuditSheet.MONTH }, { sheet = PayAuditSheet.GLOSSARY })
-        }
-        if (month != null) {
-            item(key = "verdict", contentType = "verdict") {
-                PayAuditVerdictCard(
-                    copy = payAuditVerdictCopy(state.verdict, month),
-                    historyLine = if (state.history.monthsAudited > 0) payAuditHistoryLine(state.history) else null,
-                    onAction = { verdictAction(state.verdict, onShowUpgradeSheet, onDraftLetter) { onSelectTab(PayAuditTab.THIS_MONTH) } },
-                )
+    Column(modifier = Modifier.fillMaxSize()) {
+        PayAuditHeader(onBack, onOpenGlossary = { sheet = PayAuditSheet.GLOSSARY })
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(AppDimensions.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
+        ) {
+            item(key = "month_bar", contentType = "month_bar") {
+                PayAuditMonthBar(month, state.availableMonths, onSelectMonth, { sheet = PayAuditSheet.MONTH })
             }
+            if (month != null) {
+                item(key = "verdict", contentType = "verdict") {
+                    PayAuditVerdictCard(
+                        copy = payAuditVerdictCopy(state.verdict, month),
+                        historyLine = if (state.history.monthsAudited > 0) payAuditHistoryLine(state.history) else null,
+                        onAction = { verdictAction(state.verdict, onShowUpgradeSheet, onDraftLetter) { onSelectTab(PayAuditTab.THIS_MONTH) } },
+                    )
+                }
+            }
+            item(key = "tabs", contentType = "tabs") { PayAuditTabs(state.tab, onSelectTab) }
+            payAuditTabContent(state, onShowUpgradeSheet, onDraftLetter)
         }
-        item(key = "tabs", contentType = "tabs") { PayAuditTabs(state.tab, onSelectTab) }
-        payAuditTabContent(state, onShowUpgradeSheet, onDraftLetter)
     }
     when (sheet) {
         PayAuditSheet.MONTH ->
