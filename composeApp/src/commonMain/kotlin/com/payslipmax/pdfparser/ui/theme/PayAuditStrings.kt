@@ -7,14 +7,13 @@ object PayAuditStrings {
     const val emptyState = "Upload a payslip to start your Pay Audit."
 
     const val entryCardSubtitle = "Every rupee of your pay, checked against the rules"
-    const val entryCardNoFindings = "No findings on this payslip"
+    const val badgeSingular = "finding"
+    const val badgePlural = "findings"
 
     const val timelineEmptyState = "Upload more payslips to build your service timeline."
     const val timelineLevelPrefix = "Level "
     const val timelineLevelUnresolved = "Level unresolved"
 
-    const val findingsCountSingular = "finding found on this payslip"
-    const val findingsCountPlural = "findings found on this payslip"
     const val findingsExpectedLabel = "Expected: ₹"
     const val findingsActualLabel = "Actual: ₹"
     const val findingsAuthorityLabel = "Authority: "

@@ -26,7 +26,6 @@ import com.payslipmax.pdfparser.testing.testAppModule
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.theme.AppStringsOnboarding
 import com.payslipmax.pdfparser.ui.theme.PayAuditEntryStrings
-import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -82,9 +81,9 @@ class KoinInjectedDependenciesUiTest {
     }
 
     @Test
-    fun entryHostShowsTheIssueCountOfTheViewModelKoinProvides() =
+    fun payAuditRibbonBadgeShowsTheIssueCountOfTheViewModelKoinProvides() =
         runComposeUiTest {
-            // A clean payslip: only an injected engine can report an issue, so "1 ..." proves the host used it.
+            // A clean payslip: only an injected engine can report an issue, so a "1 finding" badge proves the count came from it.
             val oneIssue =
                 Anomaly(type = "TPTA_ENTITLEMENT", field = "transportAllowance", amount = 5508.0, month = "08/2024", description = "TPTA is short.", expected = 11268.0, actual = 5760.0)
             val oneMonthTimeline = ServiceTimeline(listOf(TimelineMonth(PayMonth(2024, 8), 100000.0, null, null, null, null, false)), emptyList(), emptyList())
@@ -95,12 +94,15 @@ class KoinInjectedDependenciesUiTest {
 
             setContent {
                 WithTestKoin(testAppModule(payAuditEngine = engine)) {
-                    PayAuditEntryHost(selected = payslips.last(), payslips = payslips, onOpen = {})
+                    PremiumToolsSection(
+                        onNavigateTo = {},
+                        payAuditFindings = rememberPayAuditFindingsCount(selected = payslips.last(), payslips = payslips),
+                    )
                 }
             }
             waitForIdle()
 
-            onNodeWithText("1 ${PayAuditStrings.findingsCountSingular}").assertExists()
+            onNodeWithText("1 finding").assertExists()
         }
 
     @Test

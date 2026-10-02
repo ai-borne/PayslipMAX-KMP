@@ -78,16 +78,13 @@ fun LazyListScope.insightsPremiumItems(
         }
         return
     }
-    item(key = "pay_audit_entry", contentType = "pay_audit_entry") {
-        // Same ParsedPayslip pipeline as PayAuditScreen, so this teaser's count matches the screen.
-        PayAuditEntryHost(selected = selected, payslips = payslips, onOpen = { onNavigateTo(Screen.PayAudit) })
-    }
     item(key = "advanced_anomalies", contentType = "advanced_anomalies") { AdvancedAnomaliesCard(anomalies = state.engineResult.anomalies, hasAnomalyDetection = hasAnomalyDetection) }
     item(key = "premium_report", contentType = "premium_report") {
         PremiumReportCard(
             toolsExpanded = toolsExpanded,
             onToolsExpandClick = onToolsExpandClick,
             onNavigateTo = onNavigateTo,
+            payAuditFindings = rememberPayAuditFindingsCount(selected, payslips),
         )
     }
 }

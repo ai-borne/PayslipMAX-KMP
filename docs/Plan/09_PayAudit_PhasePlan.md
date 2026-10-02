@@ -854,6 +854,15 @@ Decisions: no PR/push until the very end; Crashlytics mapping upload only for th
 
 ---
 
+### Entry points revised (2026-10-02, user decision)
+
+Pay Audit is a Premium feature, and the home screen must not carry Premium content. This supersedes the Phase 3 entry points:
+
+- **Removed:** the Dashboard banner (`DashboardAuditBannerCard`) and the payslip detail "Audit this month" card (`ReplicaAuditActionCard`), with their strings, parameters and tests. `PayAuditEntryCard`/`PayAuditEntryHost` (the Insights teaser card) were removed earlier the same day.
+- **Single entry:** a "Pay Audit" ribbon, first in Insights → Premium Report → Premium Financial Tools, shown to Premium users only. It carries a findings badge (`payAuditBadgeLabel`, hidden on a clean month) fed by `rememberPayAuditFindingsCount`, the same `PayAuditViewModel` pipeline as the screen.
+- **Free users** see Pay Audit only as the "Pay Audit & Anomaly Detection" line in the locked Premium hub and in Settings → Premium Features.
+- **Tests:** `DashboardHasNoPayAuditEntryTest`, `PayslipReplicaHasNoPayAuditEntryTest`, `PremiumToolsSectionBadgeTest`, `PayAuditRibbonBadgeTest`.
+
 ### Not ported from `pay_audit_1.0` (and why)
 
 | Piece | Why not |

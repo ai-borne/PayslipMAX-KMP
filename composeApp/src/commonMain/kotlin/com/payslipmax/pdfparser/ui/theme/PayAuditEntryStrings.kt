@@ -1,16 +1,7 @@
 package com.payslipmax.pdfparser.ui.theme
 
-/** Copy for the Pay Audit entry points (docs/Plan Phase 3): dashboard banner, "Audit this month" CTA, orientation sheet. */
+/** Copy for the Pay Audit orientation sheet (docs/Plan Phase 3). */
 object PayAuditEntryStrings {
-    const val dashboardBannerTitle = "Pay Audit"
-    const val dashboardBannerCta = "Open Pay Audit"
-
-    fun dashboardBannerSubtitle(payslipCount: Int): String =
-        "Check your $payslipCount ${if (payslipCount == 1) "payslip" else "payslips"} against the rules"
-
-    const val replicaCtaTitle = "Audit this month"
-    const val replicaCtaBody = "See whether each pay line on this payslip is correct"
-
     const val orientationTitle = "How Pay Audit works"
     const val orientationGotIt = "Got it"
     const val orientationGlossaryHint = "Tap ⓘ on the audit screen any time to see what DNI, Stage and TPTA mean."

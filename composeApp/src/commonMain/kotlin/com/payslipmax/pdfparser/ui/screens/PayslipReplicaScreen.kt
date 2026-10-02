@@ -62,7 +62,6 @@ fun PayslipReplicaScreen(
     profileName: String = "",
     profileCda: String = "",
     profilePan: String = "",
-    onAuditClick: () -> Unit = {},
 ) {
     var activeGlossaryItem by remember { mutableStateOf<Pair<String, String>?>(null) }
 
@@ -79,7 +78,7 @@ fun PayslipReplicaScreen(
         ) {
             ReplicaSections(
                 payslip, onBackClick, onViewPdfClick, onCorrectField, isEditModeActive, draftCorrections, onStartEditing, onUpdateDraft, onDeleteDraft,
-                onCancelSession, Triple(profileName, profileCda, profilePan), onAuditClick,
+                onCancelSession, Triple(profileName, profileCda, profilePan),
                 onItemClick = { code, desc -> activeGlossaryItem = code to desc },
             )
         }
@@ -108,7 +107,6 @@ private fun ColumnScope.ReplicaSections(
     onDeleteDraft: (fieldKey: String, codeHead: String, category: EntryCategory, originalAmount: Double?) -> Unit,
     onCancelSession: () -> Unit,
     profile: Triple<String, String, String>,
-    onAuditClick: () -> Unit,
     onItemClick: (code: String, desc: String) -> Unit,
 ) {
     ReplicaHeader(onBackClick, isEditModeActive, onStartEditing, onCancelSession)
@@ -118,9 +116,6 @@ private fun ColumnScope.ReplicaSections(
     Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
     PdfDocumentCard(payslip = payslip, onViewPdfClick = onViewPdfClick)
-    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-
-    ReplicaAuditActionCard(onAuditClick = onAuditClick)
     Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
 
     LedgerSection(

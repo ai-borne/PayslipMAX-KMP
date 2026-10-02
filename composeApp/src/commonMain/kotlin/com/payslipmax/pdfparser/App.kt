@@ -224,7 +224,6 @@ private fun ScreenContent(
                     viewModel = viewModel,
                     onPickPdf = onPickPdf,
                     suppressCoachmark = suppressUploadCoachmark,
-                    onNavigateToAudit = { onNavigate(Screen.PayAudit) },
                 )
         }
     }
@@ -262,7 +261,6 @@ private fun DetailContent(
                         if (bytes != null) onOpenPdf(bytes, payslip.file)
                     }
                 },
-                onNavigateTo = onNavigateTo,
             )
         Screen.HelpLegal ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)

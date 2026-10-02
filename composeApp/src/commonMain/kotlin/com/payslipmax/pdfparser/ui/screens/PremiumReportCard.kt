@@ -32,6 +32,7 @@ fun PremiumReportCard(
     onToolsExpandClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
+    payAuditFindings: Int = 0,
 ) {
     FlatBorderedCard(modifier = modifier, tint = CardTint.Accent) {
         Text(
@@ -42,7 +43,7 @@ fun PremiumReportCard(
         )
         PremiumToolsExpandHeader(expanded = toolsExpanded, onClick = onToolsExpandClick)
         if (toolsExpanded) {
-            PremiumToolsSection(onNavigateTo = onNavigateTo)
+            PremiumToolsSection(onNavigateTo = onNavigateTo, payAuditFindings = payAuditFindings)
         }
     }
 }

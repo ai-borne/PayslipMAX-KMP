@@ -41,7 +41,6 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
     onboardingManager: OnboardingManager = koinInject(),
     suppressCoachmark: Boolean = false,
-    onNavigateToAudit: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val payslips = uiState.payslips
@@ -62,7 +61,6 @@ fun DashboardScreen(
         showUploadDialog = showUploadDialog,
         onboardingManager = onboardingManager,
         suppressCoachmark = suppressCoachmark,
-        onNavigateToAudit = onNavigateToAudit,
         modifier = modifier,
     )
 
@@ -107,7 +105,6 @@ private fun DashboardContent(
     showUploadDialog: Boolean,
     onboardingManager: OnboardingManager,
     suppressCoachmark: Boolean,
-    onNavigateToAudit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -124,7 +121,7 @@ private fun DashboardContent(
         } else if (payslips.isEmpty()) {
             EmptyDashboardPlaceholder(Modifier.testTag("dashboard_empty"))
         } else {
-            PopulatedDashboard(payslips, selected, viewModel, onNavigateToAudit, Modifier.testTag("dashboard_populated"))
+            PopulatedDashboard(payslips, selected, viewModel, Modifier.testTag("dashboard_populated"))
         }
         DashboardUploadArea(
             onboardingManager = onboardingManager,
@@ -161,7 +158,6 @@ private fun PopulatedDashboard(
     payslips: List<ParsedPayslip>,
     selected: ParsedPayslip?,
     viewModel: PayslipViewModel,
-    onNavigateToAudit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -189,33 +185,23 @@ private fun PopulatedDashboard(
             viewModel = viewModel,
             selected = selected,
         )
-        selected?.let { DashboardCards(it, payslips, onNavigateToAudit) }
+        selected?.let {
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+            StatsGridSection(payslip = it)
+
+            val countdown = remember { SalaryCountdownCalculator.getCurrentCountdown() }
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+            SalaryCountdownRibbon(countdown = countdown)
+
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+            TrendChartCard(payslips = payslips)
+
+            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+            AllocationChartCard(payslip = it, modifier = Modifier.testTag("allocation_chart_card"))
+        }
 
         Spacer(modifier = Modifier.height(AppDimensions.FabClearanceHeight))
     }
-}
-
-@Composable
-private fun DashboardCards(
-    payslip: ParsedPayslip,
-    payslips: List<ParsedPayslip>,
-    onNavigateToAudit: () -> Unit,
-) {
-    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-    StatsGridSection(payslip = payslip)
-
-    val countdown = remember { SalaryCountdownCalculator.getCurrentCountdown() }
-    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-    SalaryCountdownRibbon(countdown = countdown)
-
-    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-    TrendChartCard(payslips = payslips)
-
-    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-    AllocationChartCard(payslip = payslip, modifier = Modifier.testTag("allocation_chart_card"))
-
-    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-    DashboardAuditBannerCard(payslips.size, onNavigateToAudit)
 }
 
 @Composable

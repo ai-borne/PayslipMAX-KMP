@@ -1,11 +1,8 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.runComposeUiTest
-import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.database.toEncryptedEntity
 import com.payslipmax.pdfparser.domain.Deductions
 import com.payslipmax.pdfparser.domain.Earnings
@@ -13,8 +10,6 @@ import com.payslipmax.pdfparser.domain.LedgerBalances
 import com.payslipmax.pdfparser.domain.Officer
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.PayslipSummary
-import com.payslipmax.pdfparser.insights.EngineResult
-import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
@@ -32,17 +27,16 @@ import org.robolectric.annotation.Config
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 /**
- * "Audit this month" must open Pay Audit on the payslip the user is *looking at*, not on whatever month
- * the dashboard happened to have selected. The month travels through the existing selected-payslip state
- * into [PayAuditViewModel.setInputs] (requestedMonth) — no new global.
+ * Pay Audit is Premium-only and entered solely from the Insights tools list, so the payslip detail screen
+ * (free to view) must not carry an "Audit this month" shortcut. The replica table is asserted present
+ * first so the absence cannot pass on an empty screen.
  */
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTestApi::class)
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
-class PayslipReplicaAuditEntryTest {
+class PayslipReplicaHasNoPayAuditEntryTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: PayslipViewModel
 
@@ -77,37 +71,15 @@ class PayslipReplicaAuditEntryTest {
     }
 
     @Test
-    fun auditThisMonthSelectsTheViewedPayslipAndOpensPayAudit() =
+    fun payslipDetailOffersNoWayIntoPayAudit() =
         runComposeUiTest {
-            // The viewed payslip (Jul) is not the app-wide selection (the latest, Aug).
-            viewModel.selectPayslip(slip(8))
             viewModel.selectHistoryDetailPayslip("07/2024")
             testDispatcher.scheduler.runCurrent()
-            val opened = mutableListOf<Screen>()
-            setContent { PayslipReplicaDetailScreen(viewModel = viewModel, onBack = {}, onNavigateTo = { opened += it }) }
+            setContent { PayslipReplicaDetailScreen(viewModel = viewModel, onBack = {}) }
             testDispatcher.scheduler.runCurrent()
 
-            onNodeWithTag("replica_audit_action_card").performScrollTo().performClick()
-            testDispatcher.scheduler.runCurrent()
-
-            assertEquals(listOf(Screen.PayAudit), opened)
-            assertEquals("07/2024", viewModel.uiState.value.selectedPayslip?.dateStr)
+            onNodeWithText("Net Remittance (Take Home)").assertExists()
+            onNodeWithText("Audit this month").assertDoesNotExist()
+            onNodeWithText("See whether each pay line on this payslip is correct").assertDoesNotExist()
         }
-
-    @Test
-    fun payAuditOpensOnTheMonthTheCtaSelected() {
-        viewModel.selectPayslip(slip(7))
-        testDispatcher.scheduler.runCurrent()
-        val payAudit =
-            PayAuditViewModel(
-                engine = { _, _, _ -> EngineResult(healthScore = 0, anomalies = emptyList(), monthlySavingRate = 0.0, taxRatio = 0.0) },
-                dispatcher = testDispatcher,
-            )
-        val state = viewModel.uiState.value
-        val requested = state.selectedPayslip?.let { PayMonth(it.year, it.monthNum) }
-
-        payAudit.setInputs(state.payslips, hasAccess = true, requestedMonth = requested)
-
-        assertEquals(PayMonth(2024, 7), payAudit.uiState.value.selectedMonth)
-    }
 }
