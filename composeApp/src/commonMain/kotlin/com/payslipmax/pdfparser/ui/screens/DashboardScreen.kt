@@ -31,6 +31,7 @@ import com.payslipmax.pdfparser.ui.screens.importflow.ImportPayslipDialog
 import com.payslipmax.pdfparser.ui.startImport
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import org.koin.compose.koinInject
 import kotlin.math.round
 
 @Composable
@@ -38,7 +39,7 @@ fun DashboardScreen(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
-    onboardingManager: OnboardingManager = OnboardingManager(),
+    onboardingManager: OnboardingManager = koinInject(),
     suppressCoachmark: Boolean = false,
     onNavigateToAudit: () -> Unit = {},
 ) {

@@ -8,8 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
-import com.payslipmax.pdfparser.di.appModule
-import com.payslipmax.pdfparser.di.sharedModule
+import com.payslipmax.pdfparser.di.appKoinModules
 import com.payslipmax.pdfparser.nav.AppNavState
 import com.payslipmax.pdfparser.nav.NavBridge
 import com.payslipmax.pdfparser.ui.PayslipViewModel
@@ -29,7 +28,7 @@ import platform.UIKit.UIViewController
 
 private fun ensureKoin() {
     if (KoinPlatformTools.defaultContext().getOrNull() == null) {
-        startKoin { modules(sharedModule, appModule) }
+        startKoin { modules(appKoinModules()) }
     }
 }
 

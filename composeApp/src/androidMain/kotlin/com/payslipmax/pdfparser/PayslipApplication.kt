@@ -1,8 +1,7 @@
 package com.payslipmax.pdfparser
 
 import android.app.Application
-import com.payslipmax.pdfparser.di.appModule
-import com.payslipmax.pdfparser.di.sharedModule
+import com.payslipmax.pdfparser.di.appKoinModules
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 
@@ -33,7 +32,7 @@ class PayslipApplication : Application() {
         // a prior test's stopKoin() teardown hadn't run yet in that fork.
         if (GlobalContext.getOrNull() == null) {
             startKoin {
-                modules(sharedModule, appModule)
+                modules(appKoinModules())
             }
         }
 

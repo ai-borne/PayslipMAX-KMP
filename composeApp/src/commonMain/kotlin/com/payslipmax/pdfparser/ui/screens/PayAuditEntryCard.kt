@@ -17,7 +17,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -26,6 +25,7 @@ import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
+import org.koin.compose.koinInject
 
 /**
  * Free-visible entry point into the Pay Audit screen (docs/Plan/09_PayAudit_PhasePlan.md Phase 4):
@@ -90,8 +90,8 @@ fun PayAuditEntryHost(
     selected: ParsedPayslip,
     payslips: List<ParsedPayslip>,
     onOpen: () -> Unit,
+    viewModel: PayAuditViewModel = koinInject(),
 ) {
-    val viewModel = remember { PayAuditViewModel() }
     DisposableEffect(viewModel) { onDispose { viewModel.dispose() } }
     LaunchedEffect(selected, payslips) { viewModel.setInputs(payslips, hasAccess = true, requestedMonth = PayMonth(selected.year, selected.monthNum)) }
     val state by viewModel.uiState.collectAsState()

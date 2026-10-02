@@ -119,6 +119,8 @@ kotlin {
                 implementation("org.robolectric:robolectric:4.12.2")
                 implementation("androidx.compose.ui:ui-test-junit4:1.9.4")
                 implementation("androidx.compose.ui:ui-test-manifest:1.9.4")
+                // Module.verify() reflects over constructors, so it is JVM-only; never on a release classpath.
+                implementation(libs.koin.test)
             }
         }
     }

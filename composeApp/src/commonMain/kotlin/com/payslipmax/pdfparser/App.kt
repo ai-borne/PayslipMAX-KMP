@@ -24,6 +24,7 @@ import com.payslipmax.pdfparser.ui.screens.LockScreen
 import com.payslipmax.pdfparser.ui.screens.SettingsScreen
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
+import org.koin.compose.koinInject
 
 enum class Screen {
     Dashboard,
@@ -87,7 +88,7 @@ fun App(
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
     navState: AppNavState = rememberSaveable(saver = AppNavStateSaver) { AppNavState() },
     nativeDetailNavigator: ((Screen) -> Unit)? = null,
-    onboardingManager: OnboardingManager = OnboardingManager(),
+    onboardingManager: OnboardingManager = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

@@ -52,7 +52,7 @@ fun PayAuditScreen(
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
     payAuditViewModel: PayAuditViewModel = koinInject(),
-    onboardingManager: OnboardingManager = remember { OnboardingManager() },
+    onboardingManager: OnboardingManager = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val selected = uiState.selectedPayslip
@@ -87,16 +87,22 @@ fun PayAuditScreen(
             PayAuditBody(payAuditViewModel, onShowUpgradeSheet = { showUpgradeSheet = true }, onDraftLetter = { onNavigateTo(Screen.Representation) })
         }
     }
-    if (showUpgradeSheet) {
-        val premiumPrice by viewModel.premiumPriceState.collectAsState()
-        PremiumUpgradeBottomSheet(
-            onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
-            onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
-            price = premiumPrice,
-            onPresented = viewModel::refreshPremiumPrice,
-        )
-    }
+    if (showUpgradeSheet) PayAuditUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
+}
+
+@Composable
+private fun PayAuditUpgradeSheet(
+    viewModel: PayslipViewModel,
+    onDismiss: () -> Unit,
+) {
+    val premiumPrice by viewModel.premiumPriceState.collectAsState()
+    PremiumUpgradeBottomSheet(
+        onDismissRequest = onDismiss,
+        onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
+        onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
+        price = premiumPrice,
+        onPresented = viewModel::refreshPremiumPrice,
+    )
 }
 
 @Composable
