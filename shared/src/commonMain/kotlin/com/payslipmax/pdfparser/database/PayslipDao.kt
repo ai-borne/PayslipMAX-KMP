@@ -125,4 +125,20 @@ interface PayslipDao {
 
     @Query("DELETE FROM representation_drafts")
     suspend fun clearAllRepresentationDrafts()
+
+    // Dismissed (deleted-by-the-officer) letters
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDismissedDraft(dismissed: DismissedDraftEntity)
+
+    @Query("SELECT * FROM dismissed_drafts")
+    suspend fun getAllDismissedDrafts(): List<DismissedDraftEntity>
+
+    @Query("DELETE FROM dismissed_drafts WHERE disputeMonth = :disputeMonth AND disputeType = :disputeType")
+    suspend fun deleteDismissedDraft(
+        disputeMonth: String,
+        disputeType: String,
+    )
+
+    @Query("DELETE FROM dismissed_drafts")
+    suspend fun clearAllDismissedDrafts()
 }

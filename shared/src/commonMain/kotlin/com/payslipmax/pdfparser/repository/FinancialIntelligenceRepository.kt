@@ -53,10 +53,14 @@ open class FinancialIntelligenceRepository(
         }
 
     /**
-     * Deletes a representation draft.
+     * Deletes a representation draft. If the audit drafts that type of letter, the deletion is remembered
+     * so a re-audit does not draft it again while the same finding is still proven.
      */
     suspend fun deleteRepresentationDraft(id: String) =
         withContext(dispatcher) {
+            payslipDao.getRepresentationDraftById(id)
+                ?.takeIf { it.disputeType in REPRESENTATION_DRAFT_TYPES }
+                ?.let { payslipDao.insertDismissedDraft(DismissedDraftEntity(it.disputeMonth, it.disputeType)) }
             payslipDao.deleteRepresentationDraft(id)
         }
 
@@ -170,9 +174,13 @@ open class FinancialIntelligenceRepository(
         val stale = existingDrafts.filter { it.disputeMonth == dateStr && it.disputeType in REPRESENTATION_DRAFT_TYPES && it.disputeType !in provenTypes }
         stale.forEach { payslipDao.deleteRepresentationDraft(it.id) }
         val keptDrafts = existingDrafts - stale.toSet()
+        // A deletion is remembered only while its finding stands: once the finding is gone, a later new one drafts afresh.
+        val dismissed = payslipDao.getAllDismissedDrafts().filter { it.disputeMonth == dateStr }
+        dismissed.filter { it.disputeType !in provenTypes }.forEach { payslipDao.deleteDismissedDraft(it.disputeMonth, it.disputeType) }
+        val dismissedTypes = dismissed.map { it.disputeType }.toSet()
         engineResult.anomalies.forEach { anomaly ->
             val alreadyDrafted = keptDrafts.any { it.disputeMonth == dateStr && it.disputeType == anomaly.type }
-            if (anomaly.type in REPRESENTATION_DRAFT_TYPES && anomaly.isProven() && !alreadyDrafted) {
+            if (anomaly.type in REPRESENTATION_DRAFT_TYPES && anomaly.isProven() && !alreadyDrafted && anomaly.type !in dismissedTypes) {
                 val draft =
                     RepresentationDraftGenerator.generateRepresentationDraft(
                         disputeMonth = dateStr,

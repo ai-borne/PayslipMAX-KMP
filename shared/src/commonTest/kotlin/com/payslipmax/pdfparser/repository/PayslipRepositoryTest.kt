@@ -132,6 +132,7 @@ class PayslipRepositoryTest {
             fakeDao.insertLedgerRecord(LedgerRecordEntity(dateStr = "01/2024", year = 2024, monthNum = 1, basicPay = 10000.0, dearnessAllowance = 1000.0, militaryServicePay = 1000.0, transportAllowance = 100.0, transportAllowanceDa = 10.0, houseRentAllowance = 500.0, grossPay = 15000.0, dsopSubscription = 1000.0, incomeTax = 1000.0, netPay = 13000.0))
             fakeDao.insertFinancialInsight(FinancialInsightEntity("id1", "01/2024", "NARRATIVE", "Title", "Markdown", "INFO", 1234567890L))
             fakeDao.insertRepresentationDraft(RepresentationDraftEntity("id2", "01/2024", "MISSING_HRA", "PCDA_O_PUNE", "Subject", "Body", 1234567890L))
+            fakeDao.insertDismissedDraft(com.payslipmax.pdfparser.database.DismissedDraftEntity("01/2024", "TPTA_ENTITLEMENT"))
 
             // Verify they exist in DAO
             assertEquals(1, repository.getAllPayslips().first().size)
@@ -149,6 +150,7 @@ class PayslipRepositoryTest {
             assertTrue(fakeDao.getAllLedgerRecords().first().isEmpty())
             assertTrue(fakeDao.getAllFinancialInsights().first().isEmpty())
             assertTrue(fakeDao.getAllRepresentationDrafts().first().isEmpty())
+            assertTrue(fakeDao.getAllDismissedDrafts().isEmpty(), "a full reset forgets which letters were deleted")
         }
 
     @Test

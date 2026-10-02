@@ -165,6 +165,7 @@ class PayslipRepository(
             payslipDao.clearAllLedgerRecords()
             payslipDao.clearAllFinancialInsights()
             payslipDao.clearAllRepresentationDrafts()
+            payslipDao.clearAllDismissedDrafts()
             payslipDao.clearAllPdfs()
         }
 

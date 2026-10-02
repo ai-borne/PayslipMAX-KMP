@@ -188,4 +188,23 @@ class FakePayslipDao : PayslipDao {
     override suspend fun clearAllRepresentationDrafts() {
         draftsDatabase.value = emptyMap()
     }
+
+    private val dismissedDrafts = MutableStateFlow<Set<DismissedDraftEntity>>(emptySet())
+
+    override suspend fun insertDismissedDraft(dismissed: DismissedDraftEntity) {
+        dismissedDrafts.value = dismissedDrafts.value + dismissed
+    }
+
+    override suspend fun getAllDismissedDrafts(): List<DismissedDraftEntity> = dismissedDrafts.value.toList()
+
+    override suspend fun deleteDismissedDraft(
+        disputeMonth: String,
+        disputeType: String,
+    ) {
+        dismissedDrafts.value = dismissedDrafts.value - DismissedDraftEntity(disputeMonth, disputeType)
+    }
+
+    override suspend fun clearAllDismissedDrafts() {
+        dismissedDrafts.value = emptySet()
+    }
 }

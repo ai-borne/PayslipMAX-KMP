@@ -213,4 +213,59 @@ class FinancialIntelligenceReauditTest {
 
             assertEquals(listOf(legacy), drafts("03/2018"))
         }
+
+    // Deleted letters (user decision 2026-10-02): a letter the officer deletes stays gone while its finding stands.
+    private suspend fun provenMarch() =
+        importMonths(slip(2018, 1, otherCityTpta), slip(2018, 2, otherCityTpta), slip(2018, 3, 0.0), slip(2018, 4, otherCityTpta))
+
+    @Test
+    fun aLetterTheOfficerDeletedDoesNotComeBackOnTheNextReaudit() =
+        runTest {
+            provenMarch()
+            repository.deleteRepresentationDraft(drafts("03/2018").single().id)
+            assertTrue(drafts("03/2018").isEmpty())
+
+            importMonths(slip(2018, 5, otherCityTpta))
+            importMonths(slip(2018, 4, otherCityTpta))
+
+            assertTrue(drafts("03/2018").isEmpty(), "the finding still stands, but the officer chose to delete its letter")
+            assertEquals(1, tptaRows("03/2018").size, "the finding itself is still shown")
+        }
+
+    @Test
+    fun deletingOneLetterDoesNotSuppressAnotherMonthsLetter() =
+        runTest {
+            provenMarch()
+            importMonths(slip(2018, 5, 0.0), slip(2018, 6, otherCityTpta))
+            assertEquals(1, drafts("05/2018").size)
+
+            repository.deleteRepresentationDraft(drafts("03/2018").single().id)
+            importMonths(slip(2018, 7, otherCityTpta))
+
+            assertEquals(1, drafts("05/2018").size, "May's letter is untouched")
+        }
+
+    @Test
+    fun aFindingThatResolvesAndIsProvenAgainDraftsAFreshLetter() =
+        runTest {
+            provenMarch()
+            repository.deleteRepresentationDraft(drafts("03/2018").single().id)
+            importMonths(slip(2018, 3, otherCityTpta))
+            assertTrue(tptaRows("03/2018").isEmpty(), "March now pays TPTA, so the finding is addressed")
+
+            importMonths(slip(2018, 3, 0.0))
+
+            assertEquals(1, drafts("03/2018").size, "a new finding is not suppressed by the old deletion")
+        }
+
+    @Test
+    fun deletingALetterOfAnUnauditedTypeLeavesNoRecord() =
+        runTest {
+            val legacy = com.payslipmax.pdfparser.database.RepresentationDraftEntity("legacy", "03/2018", "SALARY_DROP", "PCDA", "s", "b", 1L)
+            dao.insertRepresentationDraft(legacy)
+
+            repository.deleteRepresentationDraft("legacy")
+
+            assertTrue(dao.getAllDismissedDrafts().isEmpty())
+        }
 }
