@@ -20,7 +20,6 @@ import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.PayslipSummary
 import com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
-import com.payslipmax.pdfparser.ui.screens.DeveloperToolsRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -28,7 +27,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -40,9 +38,6 @@ import kotlin.test.assertTrue
 class DebugSeedSectionTest {
     private val dao = FakePayslipDao()
     private val seeder = DebugSeeder(dao, FinancialIntelligenceRepository(dao, Dispatchers.Unconfined))
-
-    @AfterTest
-    fun tearDown() = DeveloperToolsRegistry.clear()
 
     /** Settings hosts the section inside its own scrolling column; the test does the same. */
     @Composable

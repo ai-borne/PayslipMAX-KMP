@@ -4,6 +4,9 @@ import re
 import sys
 import argparse
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import stateful_singleton_guard
+
 # Default directory paths to scan if no specific files are passed
 SCAN_DIRECTORIES = [
     "composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui",
@@ -314,6 +317,7 @@ def audit_file(filepath, workspace_dir):
         + check_ios_vc_theming(filepath)
         + check_pushed_screen_insets(filepath, workspace_dir)
         + check_risky_regex_patterns(filepath)
+        + stateful_singleton_guard.check_stateful_singletons(filepath)
     )
 
 
@@ -353,6 +357,12 @@ def main():
                         total_files_checked += 1
                         if errors:
                             all_errors[rel_path] = errors
+
+    if not args.files:
+        # The singleton rule covers every production source set, not only the scan directories above.
+        for error in stateful_singleton_guard.scan_repository(workspace_dir):
+            path, _, message = error.partition(": ")
+            all_errors.setdefault(path, []).append(message)
 
     if all_errors:
         print(f"\n⚠️ Found violations in {len(all_errors)} / {total_files_checked} checked files:\n")

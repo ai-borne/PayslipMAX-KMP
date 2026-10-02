@@ -10,25 +10,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.payslipmax.pdfparser.database.PayslipDao
-import com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository
-import org.koin.compose.koinInject
-
-/** The Settings section: Koin-backed entry used by the registry. */
-@Composable
-fun DebugSeedSection() {
-    val dao = koinInject<PayslipDao>()
-    val intelligence = koinInject<FinancialIntelligenceRepository>()
-    val viewModel = remember { DebugSeedViewModel(DebugSeeder(dao, intelligence)) }
-    DisposableEffect(viewModel) { onDispose { viewModel.dispose() } }
-    DebugSeedSection(viewModel)
-}
 
 @Composable
 fun DebugSeedSection(viewModel: DebugSeedViewModel) {
