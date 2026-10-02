@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,7 +20,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.payslipmax.pdfparser.insights.timeline.PayFixationComparison
 import com.payslipmax.pdfparser.insights.timeline.PayLevel
@@ -134,19 +138,24 @@ private fun PromotionMonthYearFields(
     onMonthChange: (String) -> Unit,
     onYearChange: (String) -> Unit,
 ) {
+    val focusManager = LocalFocusManager.current
     Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
         OutlinedTextField(
             value = monthText,
             onValueChange = onMonthChange,
             label = { Text(PayAuditStrings.fixationCalculatorMonthLabel) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) }),
             modifier = Modifier.fillMaxWidth(0.5f),
         )
         OutlinedTextField(
             value = yearText,
             onValueChange = onYearChange,
             label = { Text(PayAuditStrings.fixationCalculatorYearLabel) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
             modifier = Modifier.fillMaxWidth(),
         )
     }
