@@ -34,7 +34,7 @@ class PayAuditScreenContentTest {
         runComposeUiTest {
             setContent { PayAuditContent(base, {}, {}, {}, {}) }
 
-            onNodeWithText("Aug 2026: no issues found in the payslip entries").assertExists()
+            onNodeWithText("Aug 2026: no issues found in payslip").assertExists()
             onNodeWithText("20 months audited · 0 issues").assertExists()
         }
 
