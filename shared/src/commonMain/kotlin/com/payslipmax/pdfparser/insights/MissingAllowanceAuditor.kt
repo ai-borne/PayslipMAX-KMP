@@ -35,7 +35,7 @@ class MissingAllowanceAuditor : TimelineAuditor {
                     field = field,
                     amount = prevVal,
                     month = current.dateStr,
-                    description = "Your active $name of ₹${prevVal.toInt()} in the previous month is missing in this statement.",
+                    description = "$name of ${PayAuditWording.rupees(prevVal)} was on your previous payslip but is not on this one.",
                     expected = prevVal,
                     actual = 0.0,
                 )

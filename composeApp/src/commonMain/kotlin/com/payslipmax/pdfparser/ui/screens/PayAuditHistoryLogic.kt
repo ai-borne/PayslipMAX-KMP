@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens
 
+import com.payslipmax.pdfparser.insights.PayAuditWording
 import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.insights.timeline.PostingKind
 import com.payslipmax.pdfparser.insights.timeline.ServiceTimeline
@@ -56,7 +57,7 @@ private fun daSteps(months: List<TimelineMonth>): List<TimelineSpan> =
         if (from == null || to == null || from == to) {
             null
         } else {
-            TimelineSpan(b.month, b.month, "DA $from% → $to%", "${PayAuditVerdictStrings.spanFirstPaidPrefix}${formatPayMonth(b.month)}${PayAuditVerdictStrings.spanFirstPaidSuffix}")
+            TimelineSpan(b.month, b.month, "DA ${PayAuditWording.percentChange(from, to)}", "${PayAuditVerdictStrings.spanFirstPaidPrefix}${formatPayMonth(b.month)}${PayAuditVerdictStrings.spanFirstPaidSuffix}")
         }
     }
 

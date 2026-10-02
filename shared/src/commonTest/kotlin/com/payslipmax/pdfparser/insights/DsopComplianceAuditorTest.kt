@@ -45,6 +45,7 @@ class DsopComplianceAuditorTest {
         val complianceAnomaly = result.find { it.type == "DSOP_COMPLIANCE" }
         assertTrue(complianceAnomaly != null)
         assertEquals(6000.0, complianceAnomaly.amount) // 6% of 100k
+        assertEquals("DSOP contribution is zero. The minimum is 6% of your Basic Pay, which is ₹6,000 a month.", complianceAnomaly.description)
     }
 
     @Test
@@ -57,6 +58,7 @@ class DsopComplianceAuditorTest {
         assertTrue(milestone != null)
         assertEquals(45000.0, milestone.amount)
         assertTrue(milestone.description.contains("Tax-free annual interest"))
+        assertTrue(milestone.description.contains("₹45,000") && milestone.description.contains("₹8,00,000"), milestone.description)
     }
 
     @Test

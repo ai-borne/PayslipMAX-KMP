@@ -44,7 +44,7 @@ class PayAuditHistoryLogicTest {
                 postings = emptyList(),
             )
         val step = buildTimelineSpans(timeline).single { it.title.startsWith("DA") }
-        assertEquals("DA 58% → 60%", step.title)
+        assertEquals("DA 58% to 60%", step.title)
         assertEquals(PayMonth(2026, 4), step.from)
         // A DA rise is effective 1 Jan / 1 Jul; the payslip month is only when it first showed up (real device, Apr 2026).
         assertEquals("First paid on the Apr 2026 payslip", step.detail)

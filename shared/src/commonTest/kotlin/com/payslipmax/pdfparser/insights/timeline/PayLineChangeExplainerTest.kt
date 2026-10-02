@@ -80,13 +80,13 @@ class PayLineChangeExplainerTest {
     @Test
     fun aDaRiseOnAnIncrementMonthSaysInPlainWordsThatDaIsAShareOfBasicPay() {
         val changes = explainLast(payslip(2018, 6, 82800.0), payslip(2018, 7, 85300.0))
-        assertEquals("DA is a share of basic pay, which rose with the annual increment", changes.reasonFor("dearnessAllowance"))
+        assertEquals("Dearness Allowance (DA) is a percentage of your pay, which went up with your annual increment", changes.reasonFor("dearnessAllowance"))
     }
 
     @Test
     fun aDaRiseOnAPromotionMonthNamesThePromotion() {
         val changes = explainLast(payslip(2019, 9, 90500.0), payslip(2019, 10, 121200.0))
-        assertEquals("DA is a share of basic pay, which rose with the promotion", changes.reasonFor("dearnessAllowance"))
+        assertEquals("Dearness Allowance (DA) is a percentage of your pay, which went up with your promotion", changes.reasonFor("dearnessAllowance"))
     }
 
     @Test
@@ -96,13 +96,13 @@ class PayLineChangeExplainerTest {
                 payslip(2018, 6, 85300.0, daPercent = 17.0),
                 payslip(2018, 8, 85300.0, daPercent = 21.0, arrearsDa = 2500.0),
             )
-        assertEquals("DA revised 17%→21%, arrears for Jul 2018", changes.reasonFor("arrearsDa"))
+        assertEquals("Dearness Allowance (DA) rate changed from 17% to 21%; this is the back-pay for July 2018", changes.reasonFor("arrearsDa"))
     }
 
     @Test
     fun aDaRateRiseExplainsTheDaAmountChange() {
         val changes = explainLast(payslip(2018, 1, 85300.0, daPercent = 17.0), payslip(2018, 2, 85300.0, daPercent = 21.0))
-        assertEquals("DA revised 17%→21%", changes.reasonFor("dearnessAllowance"))
+        assertEquals("Dearness Allowance (DA) rate changed from 17% to 21%", changes.reasonFor("dearnessAllowance"))
     }
 
     @Test
@@ -113,7 +113,7 @@ class PayLineChangeExplainerTest {
                 payslip(2018, 9, 85300.0, daPercent = 21.0, arrearsDa = 5000.0),
             )
         val reason = changes.reasonFor("arrearsDa")
-        assertTrue(reason != null && reason.endsWith("arrears for Jul–Aug 2018"), "was: $reason")
+        assertTrue(reason != null && reason.endsWith("this is the back-pay for July to August 2018"), "was: $reason")
     }
 
     @Test
@@ -139,7 +139,7 @@ class PayLineChangeExplainerTest {
                 payslip(2024, 10, 140500.0, daPercent = 50.0, tpta = 5400.0),
                 payslip(2024, 11, 140500.0, daPercent = 53.0, tpta = 5508.0, riskHardship = 21125.0),
             )
-        assertEquals("TPTA follows DA: 50%→53%", changes.reasonFor("transportAllowance"))
+        assertEquals("Transport Allowance (TPTA) moves with DA, which changed from 50% to 53%", changes.reasonFor("transportAllowance"))
     }
 
     @Test
@@ -157,7 +157,7 @@ class PayLineChangeExplainerTest {
     @Test
     fun aOneOffTptaArrearsPaymentIsExplainedWithoutNeedingAPostingChange() {
         val changes = explainLast(payslip(2018, 1, 85300.0, arrearsTpta = 3600.0), payslip(2018, 2, 85300.0, arrearsTpta = 0.0))
-        assertEquals("Arrears were paid last month; none this month", changes.reasonFor("arrearsTpta"))
+        assertEquals("Back-pay was paid last month and does not repeat", changes.reasonFor("arrearsTpta"))
     }
 
     @Test
@@ -173,7 +173,7 @@ class PayLineChangeExplainerTest {
                 payslip(2018, 6, 82800.0, npa = 16560.0),
                 payslip(2018, 7, 85300.0, npa = 17060.0),
             )
-        assertEquals("NPA is a share of basic pay, which rose with the annual increment", changes.reasonFor("nonPracticingAllowance"))
+        assertEquals("Non-Practicing Allowance (NPA) is a percentage of your basic pay, which went up with your annual increment", changes.reasonFor("nonPracticingAllowance"))
     }
 
     @Test
@@ -228,7 +228,7 @@ class PayLineChangeExplainerTest {
         val history = listOf(jan, feb, mar)
         val timeline = ServiceTimelineBuilder.build(history)
         val changes = PayLineChangeExplainer.explain(mar, history, timeline)
-        assertEquals("DA revised 17%→21%", changes.reasonFor("dearnessAllowance"))
+        assertEquals("Dearness Allowance (DA) rate changed from 17% to 21%", changes.reasonFor("dearnessAllowance"))
     }
 
     @Test
@@ -252,5 +252,35 @@ class PayLineChangeExplainerTest {
         assertEquals(3, basicPayChanges.size, "One tracked basicPay change per consecutive pair across 4 stored months")
         assertTrue(basicPayChanges.single { it.month == PayMonth(2018, 7) }.reason!!.contains("increment", ignoreCase = true))
         assertTrue(basicPayChanges.single { it.month == PayMonth(2019, 10) }.reason!!.contains("Promotion"))
+    }
+
+    // Added in the plain-wording phase: reasons that previously showed enum names, "admissible" or arrows.
+    @Test
+    fun theTptaCityClassReasonNamesTheCitiesInWordsNotEnumNames() {
+        val changes =
+            explainLast(
+                payslip(2019, 11, 85300.0, tpta = 3600.0 * 1.17),
+                payslip(2019, 12, 85300.0, tpta = 7200.0 * 1.17),
+            )
+        assertEquals("Transport Allowance city class changed from other cities to higher-rate cities", changes.reasonFor("transportAllowance"))
+    }
+
+    @Test
+    fun mspAbsentFromLevelFourteenIsExplainedWithoutTheWordAdmissible() {
+        val changes = explainLast(payslip(2020, 1, 85300.0, msp = 15500.0), payslip(2020, 2, 144200.0, msp = 0.0))
+        assertEquals("Military Service Pay is not paid from Level 14", changes.reasonFor("militaryServicePay"))
+    }
+
+    @Test
+    fun theTptaDaArrearsReasonNamesTheLineItBackPays() {
+        val changes =
+            explainLast(
+                payslip(2018, 6, 85300.0, daPercent = 17.0),
+                payslip(2018, 9, 85300.0, daPercent = 21.0, arrearsTptaDa = 600.0, tptaDa = 400.0),
+            )
+        assertEquals(
+            "Dearness Allowance (DA) rate changed from 17% to 21%; this is the back-pay of DA on Transport Allowance for July to August 2018",
+            changes.reasonFor("arrearsTptaDa"),
+        )
     }
 }

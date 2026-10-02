@@ -50,5 +50,6 @@ class UnexpectedDebitAuditorTest {
         assertEquals("DEBIT_RECOVERY", anomaly.type)
         assertTrue(anomaly.description.contains("Unexpected deduction"))
         assertTrue(anomaly.description.contains("5.0%")) // 5000/100000 = 5%
+        assertEquals("Unexpected deduction of ₹5,000 (recovery of an earlier debit), which is 5.0% of your gross monthly pay.", anomaly.description)
     }
 }

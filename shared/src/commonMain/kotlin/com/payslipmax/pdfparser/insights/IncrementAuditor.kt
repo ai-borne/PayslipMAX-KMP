@@ -35,9 +35,9 @@ class IncrementAuditor : TimelineAuditor {
                 amount = expected - now.basicPay,
                 month = current.dateStr,
                 description =
-                    "Annual increment not applied: your last increment took effect in ${last.month.month}/${last.month.year}, so Basic Pay " +
-                        "should move from ₹${now.basicPay.toInt()} to ₹${expected.toInt()} (Level ${level.label}). " +
-                        "Check that no increment was withheld before raising it.",
+                    "Your annual increment looks missing. Your last increment took effect in ${PayAuditWording.monthYear(last.month.month, last.month.year)}, " +
+                        "so your Basic Pay should rise from ${PayAuditWording.rupees(now.basicPay)} to ${PayAuditWording.rupees(expected)} (Level ${level.label}). " +
+                        "Check whether an increment was withheld before raising it.",
                 expected = expected,
                 actual = now.basicPay,
                 authority = PayAuthorities.ANNUAL_INCREMENT,

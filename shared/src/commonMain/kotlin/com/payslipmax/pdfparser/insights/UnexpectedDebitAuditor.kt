@@ -22,9 +22,9 @@ class UnexpectedDebitAuditor : RuleAuditor {
 
         val recoveryType =
             when {
-                debitRecovery > 0.0 && ticketRecovery > 0.0 -> "Debit and LTC Ticket Recoveries"
-                debitRecovery > 0.0 -> "Retroactive Debit Recovery"
-                else -> "LTC Ticket Recovery"
+                debitRecovery > 0.0 && ticketRecovery > 0.0 -> "recovery of earlier debits and LTC tickets"
+                debitRecovery > 0.0 -> "recovery of an earlier debit"
+                else -> "recovery of LTC ticket cost"
             }
 
         anomalies.add(
@@ -33,7 +33,7 @@ class UnexpectedDebitAuditor : RuleAuditor {
                 field = "recoveryOfDebits",
                 amount = totalRecovery,
                 month = current.dateStr,
-                description = "Unexpected deduction of ₹${totalRecovery.toInt()} ($recoveryType) consumed ${ratio.toString().take(4)}% of your gross monthly pay.",
+                description = "Unexpected deduction of ${PayAuditWording.rupees(totalRecovery)} ($recoveryType), which is ${ratio.toString().take(4)}% of your gross monthly pay.",
             ),
         )
 

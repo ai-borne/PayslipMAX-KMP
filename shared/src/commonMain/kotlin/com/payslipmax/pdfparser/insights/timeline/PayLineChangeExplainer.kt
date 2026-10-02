@@ -1,7 +1,7 @@
 package com.payslipmax.pdfparser.insights.timeline
 
 import com.payslipmax.pdfparser.domain.ParsedPayslip
-import com.payslipmax.pdfparser.parser.PayslipPatternConfig
+import com.payslipmax.pdfparser.insights.PayAuditWording
 import kotlin.math.abs
 
 /**
@@ -16,7 +16,8 @@ import kotlin.math.abs
  */
 object PayLineChangeExplainer {
     private const val AMOUNT_TOLERANCE = 0.5
-    private const val ARREARS_DROPPED = "Arrears were paid last month; none this month"
+    private const val DA_RATE_CHANGED = "Dearness Allowance (DA) rate changed from"
+    private const val ARREARS_DROPPED = "Back-pay was paid last month and does not repeat"
 
     /**
      * Explains [current] against the last trustworthy month before it in [timeline] — never the
@@ -116,9 +117,9 @@ object PayLineChangeExplainer {
     ): String? {
         val prevDa = prevMonth.daPercent
         val currDa = currMonth.daPercent
-        if (prevDa != null && currDa != null && prevDa != currDa) return "DA revised $prevDa%→$currDa%"
+        if (prevDa != null && currDa != null && prevDa != currDa) return "$DA_RATE_CHANGED ${PayAuditWording.percentChange(prevDa, currDa)}"
         val payBaseEvent = timeline.events.firstOrNull { it.month == currMonth.month } ?: return null
-        return "DA is a share of basic pay, which rose with the ${payBaseEvent.type.cause()}"
+        return "Dearness Allowance (DA) is a percentage of your pay, which went up with your ${payBaseEvent.type.cause()}"
     }
 
     /**
@@ -139,21 +140,11 @@ object PayLineChangeExplainer {
         if (prevDa == null || currDa == null || currDa <= prevDa) return null
         if (tptaDaSeparate && current.earnings.transportAllowanceDa <= 0.0) return null
         val (rangeFrom, rangeTo) = arrearsRange(current.monthNum) ?: return null
-        val label = if (tptaDaSeparate) "TPTA DA" else "DA"
-        return "$label revised $prevDa%→$currDa%, arrears for ${monthRange(rangeFrom, rangeTo, current.year)}"
+        val backPaid = if (tptaDaSeparate) "the back-pay of DA on Transport Allowance" else "the back-pay"
+        return "$DA_RATE_CHANGED ${PayAuditWording.percentChange(prevDa, currDa)}; this is $backPaid for ${PayAuditWording.monthSpan(rangeFrom, rangeTo, current.year)}"
     }
 
     private fun TimelineEventType.cause(): String = if (this == TimelineEventType.PROMOTION) "promotion" else "annual increment"
-
-    /** "Jul 2018" for one month, "Jul–Aug 2018" for several (both ends are in the same year). */
-    private fun monthRange(
-        first: Int,
-        last: Int,
-        year: Int,
-    ): String {
-        fun name(month: Int) = PayslipPatternConfig.monthNames[month].take(3)
-        return if (first == last) "${name(first)} $year" else "${name(first)}–${name(last)} $year"
-    }
 
     /** Months from the rise's effective date (1 Jan or 1 Jul) up to the month before this payslip; mirrors DaArrearsAuditor. */
     private fun arrearsRange(monthNum: Int): Pair<Int, Int>? {
@@ -175,7 +166,7 @@ object PayLineChangeExplainer {
     ): String? {
         if (to == 0.0 && from > 0.0) return ARREARS_DROPPED
         return if (TptaAbsenceExplainer.explains(timeline, currMonth.month)) {
-            "Transport Allowance arrears for the posting change or relocation"
+            "Back-pay of Transport Allowance after a posting change or relocation"
         } else {
             null
         }
@@ -186,7 +177,7 @@ object PayLineChangeExplainer {
         current: ParsedPayslip,
     ): String? =
         if (current.earnings.militaryServicePay == 0.0 && currMonth.level?.let { it >= PayLevel.L14 } == true) {
-            "Military Service Pay not admissible from Level 14"
+            "Military Service Pay is not paid from Level 14"
         } else {
             null
         }
@@ -202,13 +193,20 @@ object PayLineChangeExplainer {
         val currDa = currMonth.daPercent
         val daChanged = prevDa != null && currDa != null && prevDa != currDa
         // TPTA that moved exactly in proportion to DA is DA-linked even in a posting-change month.
-        if (daChanged && abs(to - from * (100 + currDa!!) / (100 + prevDa!!)) <= AMOUNT_TOLERANCE) return "TPTA follows DA: $prevDa%→$currDa%"
+        if (daChanged && abs(to - from * (100 + currDa!!) / (100 + prevDa!!)) <= AMOUNT_TOLERANCE) return tptaFollowsDa(prevDa, currDa)
         if (TptaAbsenceExplainer.explains(timeline, currMonth.month)) return "Posting change or relocation (Transport Allowance)"
         val prevCity = prevMonth.tptaCity
         val currCity = currMonth.tptaCity
-        if (prevCity != null && currCity != null && prevCity != currCity) return "TPTA city class changed ($prevCity→$currCity)"
-        return if (daChanged) "TPTA follows DA: $prevDa%→$currDa%" else null
+        if (prevCity != null && currCity != null && prevCity != currCity) return "Transport Allowance city class changed from ${cityLabel(prevCity)} to ${cityLabel(currCity)}"
+        return if (daChanged) tptaFollowsDa(prevDa!!, currDa!!) else null
     }
+
+    private fun tptaFollowsDa(
+        prevDa: Int,
+        currDa: Int,
+    ) = "Transport Allowance (TPTA) moves with DA, which changed from ${PayAuditWording.percentChange(prevDa, currDa)}"
+
+    private fun cityLabel(city: TptaCityClass) = if (city == TptaCityClass.HIGHER) "higher-rate cities" else "other cities"
 
     /**
      * NPA is a fixed 20% of basic pay, capped at basic+MSP+NPA ≤ 237,500 (GoI MoD letter dated 28-09-2017;
@@ -223,7 +221,7 @@ object PayLineChangeExplainer {
     ): String? {
         if (from <= 0.0) return null
         val payBaseEvent = timeline.events.firstOrNull { it.month == currMonth.month } ?: return null
-        return "NPA is a share of basic pay, which rose with the ${payBaseEvent.type.cause()}"
+        return "Non-Practicing Allowance (NPA) is a percentage of your basic pay, which went up with your ${payBaseEvent.type.cause()}"
     }
 
     private fun quartersReason(

@@ -27,7 +27,7 @@ class TaxProjectionAuditor : RuleAuditor {
                     field = "incomeTax",
                     amount = projectedTax,
                     month = current.dateStr,
-                    description = "New FY Tax Projection: April starts the new tax cycle. Estimated annual tax liability is ₹${projectedTax.toInt()} (${taxRatio.toString().take(4)}% of gross).",
+                    description = "New FY Tax Projection: April starts the new tax cycle. Estimated annual tax liability is ${PayAuditWording.rupees(projectedTax)} (${taxRatio.toString().take(4)}% of gross).",
                 ),
             )
         } else if (isTaxSpike) {
@@ -38,7 +38,9 @@ class TaxProjectionAuditor : RuleAuditor {
                     field = "incomeTax",
                     amount = spikeAmount,
                     month = current.dateStr,
-                    description = "Income Tax deduction spiked by ₹${spikeAmount.toInt()} (+${(((currentTax - previousTax) / previousTax) * 100).toInt()}%). Plan tax deductions to avoid net pay shocks in Jan/Feb.",
+                    description =
+                        "Income Tax deduction rose by ${PayAuditWording.rupees(spikeAmount)} (+${(((currentTax - previousTax) / previousTax) * 100).toInt()}%) over your previous payslip. " +
+                            "Review your tax deductions now so your take-home pay stays steady in Jan/Feb.",
                 ),
             )
         }

@@ -36,8 +36,8 @@ class TptaEntitlementAuditor : TimelineAuditor {
                     amount = 0.0,
                     month = current.dateStr,
                     description =
-                        "Transport Allowance (TPTA) is missing from your earnings ledger for Level ${level.label}. " +
-                            "This may be explained by a posting change or relocation — held pending a later payslip that would confirm it.",
+                        "Transport Allowance (TPTA) is not on this payslip. It may be explained by a posting change or relocation, " +
+                            "so it is on hold until a later payslip confirms.",
                     isPending = true,
                 ),
             )
@@ -52,8 +52,8 @@ class TptaEntitlementAuditor : TimelineAuditor {
                 amount = expected,
                 month = current.dateStr,
                 description =
-                    "Basic Pay is ₹${month.basicPay.toInt()} (Level ${level.label}), but Transport Allowance (TPTA) is missing " +
-                        "from your earnings ledger. At least ₹${expected.toInt()} (₹${TptaCityClass.OTHER.baseRate.toInt()} + $daPercent% DA) is due.",
+                    "Transport Allowance (TPTA) is not on this payslip. At Level ${level.label}, at least ${PayAuditWording.rupees(expected)} a month is due " +
+                        "(${PayAuditWording.rupees(TptaCityClass.OTHER.baseRate)} base rate plus $daPercent% Dearness Allowance on it).",
                 expected = expected,
                 actual = 0.0,
                 authority = PayAuthorities.TRANSPORT_ALLOWANCE,

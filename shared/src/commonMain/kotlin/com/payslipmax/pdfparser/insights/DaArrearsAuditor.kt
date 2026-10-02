@@ -48,7 +48,7 @@ class DaArrearsAuditor : RuleAuditor {
             checkArrears(anomalies, arrearsDa, expectedDa, current.dateStr, "Dearness Allowance (DA)", ARREARS_DA_FIELD)
             if (tpta > 0.0 && arrearsTptaDa > 0.0) {
                 val expectedTptaDa = tpta * rateDiff * months
-                checkArrears(anomalies, arrearsTptaDa, expectedTptaDa, current.dateStr, "Transport Allowance DA (TPTA DA)", ARREARS_TPTA_DA_FIELD)
+                checkArrears(anomalies, arrearsTptaDa, expectedTptaDa, current.dateStr, "Dearness Allowance on your Transport Allowance", ARREARS_TPTA_DA_FIELD)
             }
         } else {
             // Older payslips print TPTA inclusive of its DA and fold TPTA-DA arrears into the DA arrears line.
@@ -87,7 +87,7 @@ class DaArrearsAuditor : RuleAuditor {
                     field = field,
                     amount = actual,
                     month = month,
-                    description = "Verified: Your $label arrears of ₹${actual.toInt()} match the expected calculation exactly.",
+                    description = "Verified: your $label arrears of ${PayAuditWording.rupees(actual)} match the amount worked out from your DA rise exactly.",
                     expected = expected,
                     actual = actual,
                 ),
@@ -99,7 +99,9 @@ class DaArrearsAuditor : RuleAuditor {
                     field = field,
                     amount = expected - actual,
                     month = month,
-                    description = "Underpaid/Mismatched: Your $label arrears of ₹${actual.toInt()} do not match the expected calculation of ₹${expected.toInt()}.",
+                    description =
+                        "Your $label arrears are ${PayAuditWording.rupees(actual)}, which is ${PayAuditWording.rupees(expected - actual)} less than the " +
+                            "${PayAuditWording.rupees(expected)} worked out from your DA rise. If part of it is paid on a later payslip, this will clear.",
                     expected = expected,
                     actual = actual,
                 ),

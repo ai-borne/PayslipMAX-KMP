@@ -75,7 +75,7 @@ class DaArrearsAuditorTest {
         assertEquals(1, result.size)
         val anomaly = result.first()
         assertEquals("ARREARS_AUDIT", anomaly.type)
-        assertTrue(anomaly.description.contains("Verified"))
+        assertEquals("Verified: your Dearness Allowance (DA) arrears of ₹10,395 match the amount worked out from your DA rise exactly.", anomaly.description)
     }
 
     @Test
@@ -92,7 +92,11 @@ class DaArrearsAuditorTest {
         assertEquals(1, result.size)
         val anomaly = result.first()
         assertEquals("SALARY_LOSS", anomaly.type)
-        assertTrue(anomaly.description.contains("Underpaid/Mismatched"))
+        assertEquals(
+            "Your Dearness Allowance (DA) arrears are ₹5,000, which is ₹5,395 less than the ₹10,395 worked out from your DA rise. " +
+                "If part of it is paid on a later payslip, this will clear.",
+            anomaly.description,
+        )
     }
 
     // A DA rise effective 1 Jan and first paid in March covers only Jan + Feb. Assuming a fixed 3 months

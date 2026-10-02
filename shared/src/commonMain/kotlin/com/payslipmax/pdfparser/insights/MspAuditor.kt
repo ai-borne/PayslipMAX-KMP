@@ -28,7 +28,8 @@ class MspAuditor : TimelineAuditor {
                 field = "militaryServicePay",
                 amount = MSP_RATE - msp,
                 month = current.dateStr,
-                description = "Underpaid: Military Service Pay is ₹${msp.toInt()}, but Level ${level.label} officers are due ₹${MSP_RATE.toInt()} a month.",
+                description =
+                    "Military Service Pay (MSP) is ${PayAuditWording.rupees(msp)}, but ${PayAuditWording.rupees(MSP_RATE)} a month is due at Level ${level.label}.",
                 expected = MSP_RATE,
                 actual = msp,
                 authority = PayAuthorities.MILITARY_SERVICE_PAY,

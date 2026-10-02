@@ -51,5 +51,10 @@ class MarriedQuartersRiskAuditorTest {
         assertEquals("RENT_RECOVERY_RISK", anomaly.type)
         assertTrue(anomaly.description.contains("Quarters Rent Recovery Risk"))
         assertEquals(12000.0, anomaly.amount) // 3 months * 4000.0
+        assertEquals(
+            "Quarters Rent Recovery Risk: no House Rent Allowance, License Fee or Furniture Rent has appeared on your last 3 payslips. " +
+                "If you live in government quarters, about ₹12,000 may be recovered later.",
+            anomaly.description,
+        )
     }
 }

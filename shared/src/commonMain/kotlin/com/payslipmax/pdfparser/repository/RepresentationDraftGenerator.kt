@@ -3,8 +3,12 @@ package com.payslipmax.pdfparser.repository
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.database.RepresentationDraftEntity
 import com.payslipmax.pdfparser.domain.Officer
+import com.payslipmax.pdfparser.insights.TaxLedgerAggregator
 
 object RepresentationDraftGenerator {
+    /** Indian digit grouping (SSOT: [TaxLedgerAggregator.formatIndianCurrency]); "Rs." not "₹" because the letter is exported as a PDF. */
+    private fun grouped(amount: Double) = TaxLedgerAggregator.formatIndianCurrency(amount)
+
     fun generateRepresentationDraft(
         disputeMonth: String,
         disputeType: String,
@@ -44,9 +48,9 @@ object RepresentationDraftGenerator {
             3.  Discrepancy Details:
                 (a) Component name     : $componentName
                 (b) Discrepancy month  : $disputeMonth
-                (c) Amount due         : Rs. ${expected.toInt()}
-                (d) Amount credited    : Rs. ${actual.toInt()}
-                (e) Shortfall          : Rs. ${amount.toInt()}
+                (c) Amount due         : Rs. ${grouped(expected)}
+                (d) Amount credited    : Rs. ${grouped(actual)}
+                (e) Shortfall          : Rs. ${grouped(amount)}
 
             4.  This is admissible under: $authority
 
