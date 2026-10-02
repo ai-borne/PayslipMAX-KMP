@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- Debug-only: registers the synthetic Pay Audit seed section in Settings. Absent from release. -->
+        <provider
+            android:name="com.payslipmax.pdfparser.debugseed.DebugSeedProvider"
+            android:authorities="${applicationId}.debugseed"
+            android:exported="false" />
+    </application>
+
+</manifest>

@@ -154,6 +154,9 @@ private fun SecondarySettingsGroup(
     // Developer entitlement override (debug builds only; no-op in release)
     DeveloperOverrideSection(viewModel = viewModel)
 
+    // Developer-only sections registered by the debug source set (empty in release)
+    DeveloperToolsRegistry.Render()
+
     // Sandbox / Staging
     DeveloperSandboxSection(devModeEnabled = devModeEnabled, viewModel = viewModel)
 
