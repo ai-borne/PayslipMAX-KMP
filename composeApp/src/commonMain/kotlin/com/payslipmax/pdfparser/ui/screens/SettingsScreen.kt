@@ -46,17 +46,13 @@ fun SettingsScreen(
     )
 
     if (showUpgradeSheet) {
-        val premiumPrice by viewModel.premiumPriceState.collectAsState()
-        PremiumUpgradeBottomSheet(
-            onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
-            onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
+        PayslipUpgradeSheet(
+            viewModel,
+            onDismiss = { showUpgradeSheet = false },
             onPrivacyClick = {
                 showUpgradeSheet = false
                 onNavigateTo(Screen.PrivacyPolicy)
             },
-            price = premiumPrice,
-            onPresented = viewModel::refreshPremiumPrice,
         )
     }
 }

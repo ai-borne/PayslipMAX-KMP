@@ -17,7 +17,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,9 +28,7 @@ import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
-import com.payslipmax.pdfparser.ui.launchPurchaseFlow
 import com.payslipmax.pdfparser.ui.rememberHasAccess
-import com.payslipmax.pdfparser.ui.restorePurchases
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
@@ -100,16 +97,7 @@ fun PremiumFeaturesScreen(
         }
     }
 
-    if (showUpgradeSheet) {
-        val premiumPrice by viewModel.premiumPriceState.collectAsState()
-        PremiumUpgradeBottomSheet(
-            onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
-            onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
-            price = premiumPrice,
-            onPresented = viewModel::refreshPremiumPrice,
-        )
-    }
+    if (showUpgradeSheet) PayslipUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
 }
 
 @Composable

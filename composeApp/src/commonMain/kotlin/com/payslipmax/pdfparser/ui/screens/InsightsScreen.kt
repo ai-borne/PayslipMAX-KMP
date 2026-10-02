@@ -28,9 +28,7 @@ import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.hasAccess
-import com.payslipmax.pdfparser.ui.launchPurchaseFlow
 import com.payslipmax.pdfparser.ui.rememberHasAccess
-import com.payslipmax.pdfparser.ui.restorePurchases
 import com.payslipmax.pdfparser.ui.saveInsightsScrollPosition
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -81,16 +79,7 @@ private fun InsightsOverlayDialogs(
     viewModel: PayslipViewModel,
     onDismissUpgrade: () -> Unit,
 ) {
-    if (showUpgradeSheet) {
-        val premiumPrice by viewModel.premiumPriceState.collectAsState()
-        PremiumUpgradeBottomSheet(
-            onDismissRequest = onDismissUpgrade,
-            onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
-            onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
-            price = premiumPrice,
-            onPresented = viewModel::refreshPremiumPrice,
-        )
-    }
+    if (showUpgradeSheet) PayslipUpgradeSheet(viewModel, onDismiss = onDismissUpgrade)
 }
 
 @Composable
