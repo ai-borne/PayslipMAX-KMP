@@ -556,6 +556,280 @@ continuity, per CLAUDE.md's "fail loud" rule — not a sign of unfinished Phase 
 
 Apart from P7-24/P7-25 (partially done above), none of these has a trigger that has fired yet. This phase does no code work unless one does.
 
+> Single plan: this file is the only plan. The consolidation work (2026-10-01 onwards) is the section below; the engine phases above are its history. Phase numbers below ("Phase 6 = plain wording") are the consolidation phases, not the engine phases above.
+
+## Consolidation on `feature/pay-audit`: validate, then port (Phases 0-8)
+
+### Context
+
+There are two competing Pay Audit branches, both cut from `main` @ `74723452`:
+
+- **`feature/pay_audit_1.0`** (current, 39 commits): a separate `pcdao/` engine with situation tiles, an "Unclaimed ₹" counter and 18 % penal hazards. The audit on 2026-10-01 found confirmed false rupee figures:
+  - ₹22,13,800 of fake back-dues;
+  - ₹3,37,200 of "HRA unclaimed";
+  - DA computed on Basic only;
+  - pre-7th Pay Commission payslips audited with 7th CPC rules.
+- **`feature/pay-audit`** (35 commits, Phases 0–10 done): extends the existing `DeterministicIntelligenceEngine` / `RuleAuditor`.
+  - A `ServiceTimeline` is rebuilt from the payslips.
+  - `PayLineChangeExplainer` gives a reason for 87.5 % of month-to-month changes.
+  - `PayAuditCorpusPrecisionTest` finds 0 false findings on the corpus.
+  - Representation letters are drafted only from proven findings.
+  - It predicts the next increment, DSOP room and pay fixation.
+  - Its own plan (`docs/Plan/09_PayAudit_PhasePlan.md`) explicitly dropped the tiles, the unclaimed counter and the 18 % penalty.
+
+**Decision (user, 2026-10-01):** `feature/pay-audit` is the base. Pieces of `pay_audit_1.0` are ported only if they pass that branch's precision gate.
+
+Its only open items (Phase 11) are waiting on real-user data, most importantly **P7-25, the validation checkpoint**. The Pixel 9 holds 20 real months (Jan 2025 – Aug 2026), so that checkpoint can partly start now.
+
+**Outcome:** one Pay Audit engine, validated on real payslips, reachable from the app's main screens, released through a minified build without regressions.
+
+### Standards for every phase (exit checklist)
+
+- **TDD.** Tests are written first and shown failing on the old code (red first). Unit and integration tests both.
+- **Green build.** `./gradlew check -x iosX64Test -x iosSimulatorArm64Test` plus `iosSimulatorArm64Test` and `linkDebugFrameworkIosSimulatorArm64` when commonMain changed. Zero ktlint violations.
+- **Size.** No file over 300 lines (`check_tech_debt_limits.py --strict`).
+- **Architecture.** MVVM, DRY, SOLID and SSOT. Extend the existing SSOT objects (`PayAuthorities`, `PayAuditFindingTypes`, `PayMatrix`, `REPRESENTATION_DRAFT_TYPES`); never shadow them. No circular dependencies.
+- **Singletons.** Stateless constant and pure-function `object`s may stay. Anything with collaborators or that tests need to substitute is an injected class, applied to new and touched code only.
+- **Resources.** Copy goes in `PayAuditStrings` / `AppStrings` (`AppStrings.kt` is at 295/300 lines, so new copy goes in the feature file). Colors go in `Theme.kt`.
+- **Security.**
+  - No PII in findings, logs or fixtures.
+  - Real payslips are used only through the opt-in local-corpus test and are never committed.
+  - Any Room change gets a migration and its upgrade test.
+  - gitleaks passes.
+  - Any new regex hot path in commonMain gets an `iosTest` timing test.
+- **Regression safeguards.**
+  - `PayAuditCorpusPrecisionTest`, `ServiceTimelineCorpusTest`, `PayLineChangeExplanationCorpusTest` and `TokenParseCorpusRegressionTest` must stay green **without loosening any assertion**. Any intended assertion change is listed in the handoff with its reason.
+  - Parser files are out of scope.
+  - Hooks are never bypassed.
+- **Handoff.** Each phase ends with a summary: tech debt incurred, how it was fully resolved in the same phase, and build and test proof.
+
+---
+
+### Phase 0: branch consolidation and baseline (no feature code)
+
+1. **Preserve the current branch.** `feature/pay_audit_1.0` is 3 commits ahead of `origin` (`f4864755`, `63686cda`, `8b722d75`).
+   - Push them. The pre-push hook runs the full Android, iOS and gitleaks suite and must pass, never bypassed.
+   - Tag the tip `archive/pay-audit-pcdao-1.0` and push the tag.
+   - Leave the branch on the remote, unmerged and undeleted, so it can be revived or cherry-picked later.
+   - The tag is annotated with the reason it was superseded (false findings; replaced by `feature/pay-audit`). No new commit is made on the archived branch.
+2. Check out `feature/pay-audit`. Check whether `95f844df` (removal of the machine-specific `org.gradle.java.home`) is needed there. If it is, cherry-pick it alone.
+3. Run the full gate (Android `check`, iOS tests, iOS link, ktlint) and record the result.
+4. **R8 baseline.**
+   - Build the minified release.
+   - On the Pixel: back up first (see the pixel-adb gotchas memory), then install. This migrates schema v11 → v12.
+   - Confirm the Pay Audit screen, timeline and findings render in the release build.
+   - `proguard-rules.pro` on that branch has no pcdao-specific rules; confirm no keep rule is needed.
+5. Update memory: base branch decision, and that `pay_audit_1.0` is archived.
+
+**Exit:** green gate, a working release build on the Pixel, and baseline screenshots recorded.
+
+### Phase 1: real-data validation, first part of P7-25 (developer's own payslips)
+
+1. On the Pixel, record what Pay Audit shows for all 20 real months:
+   - every finding (type, month, expected, actual, authority, pending or not);
+   - change-explanation coverage;
+   - the timeline (level, stage, DNI, postings).
+2. Load three peace-posting months (Mar, Sep and Dec 2024) and repeat.
+3. You mark each finding **genuine** or **false**, and each unexplained change as acceptable or as a gap.
+4. Every false finding or wrong timeline fact becomes a TDD fix:
+   - write a failing synthetic test that encodes why it is wrong;
+   - fix it in the auditor or timeline;
+   - keep the corpus precision tests green.
+   - Real payslips are never committed. If a regression fixture is needed, it goes through `CorpusScrubber` first.
+5. Explanation gaps on real data: model one only if a verified authority exists (the same bar as P7-15). Otherwise list it as a known gap.
+
+**Exit:** zero false findings on the developer's real months, and the coverage figure recorded. P7-24 and P7-25 are updated in `09_PayAudit_PhasePlan.md` as partially done (n = 1 real officer).
+
+### Phase 2: UX redesign of the Pay Audit screen (design first, then build)
+
+**UX problems found in `feature/pay-audit`'s code:**
+
+| # | Problem | Where |
+|---|---|---|
+| U1 | No answer at the top. The screen opens on a "Findings" header, and a clean month shows a single line of text. | `PayAuditScreen.PayAuditBody` |
+| U2 | No month picker on the screen. The month comes silently from the global selection. | same |
+| U3 | **A change row doesn't name the pay line.** It shows "10/2024 — ₹3600 → ₹0" without saying TPTA. | `PayAuditTimelineSection.PayAuditChangeRow` |
+| U4 | Six sections in one scroll. "Every change explained" (about 100 rows) sits above the predictions, so they're buried. | `PayAuditBody` order |
+| U5 | Raw formatting: "8/2025", ₹ without digit grouping, and unexplained terms (Stage, DNI, TPTA, MSP). | rows, `PayAuditStrings` |
+| U6 | A finding has no next step: no "what this means", and no "Draft letter" link to the Representation screen. | `PayAuditFindingRow` |
+| U7 | The engine runs inside a Composable (`rememberPayAuditEngineResult`) with no dedicated ViewModel, which violates MVVM. | `PayAuditScreen` |
+
+**Steps:**
+
+0. **Primary acceptance criterion (user, 2026-10-01): a clear verdict.** On opening, the user must be able to tell within one glance, without scrolling, whether the selected month's pay is correct, has an issue (with the pay line and ₹ amount), or is waiting for a later payslip. U3–U7 are fixed too, but the verdict card is the gate.
+1. **Check it on the device first.** Install the `feature/pay-audit` debug build on the Pixel, walk the screen with you, and record your specific pain points (screenshots). This list is the acceptance criteria.
+2. **Clickable HTML prototype (confirmed).** Published as a private artifact you can open on your phone. It shows all verdict states (clean / issue / pending / locked) using realistic numbers from the corpus, with no PII. No Compose work starts until you approve it.
+3. **Proposed layout** (to be validated by the prototype):
+   - **Header:** a month picker, ported from 1.0's `AuditMonthSelector` and aligned with Insights.
+   - **Verdict card:**
+     - clean: "Aug 2026: 12 pay lines checked, all correct";
+     - issue: "1 issue: TPTA ₹5,508 short";
+     - waiting: "1 waiting for next payslip".
+     - Plus a one-line history summary: "20 months audited · 0 issues".
+   - **Three tabs:**
+     - *This month:* findings as evidence cards (pay line, expected / credited / difference, a "Why?" expander with the authority, and a "Draft letter" action for proven findings), then "What changed" with the pay line named and the reason in plain words.
+     - *History:* the timeline grouped into spans (postings, level/stage, DA steps) instead of one row per month. Issue months are marked, and "every change" is collapsed by year.
+     - *Plan ahead:* next increment, DSOP room, pay-fixation calculator.
+   - **Info (ⓘ) glossary sheet**, ported from 1.0's onboarding sheet and rewritten: DNI, Stage, TPTA, MSP, "pending".
+   - **Formatting:** amounts use the existing `formatCurrency` (`InsightsComponents.kt`, Indian digit grouping); month names come from `PayslipPatternConfig.monthNames`.
+   - **Locked (free) state:** the verdict, the "What changed" tab and History stay free. Findings show the count and pay-line names, and the unlock CTA explains its value.
+4. **MVVM.** A new `PayAuditViewModel`, injected through Koin, owns the selected month, the engine result, the tab and the derived UI state. Composables only render. `rememberPayAuditEngineResult` is removed.
+5. **Tests first:**
+   - ViewModel tests for the verdict states (clean / issue / pending / locked) and month switching.
+   - Compose UI tests: the change row names the pay line, the verdict copy, tab content, and the Draft-letter action appearing only for proven findings.
+   - Existing `PayAudit*SectionTest`s are adapted. Each changed assertion is listed in the handoff.
+6. Files stay under 300 lines; one composable per section file. Copy goes in `PayAuditStrings` and colors in `Theme.kt`.
+
+**Exit:** a design you approved, implemented; green gate; a Pixel walkthrough showing that every recorded pain point is resolved.
+
+### Phase 3: entry points ported from `pay_audit_1.0`
+
+These are the only parts of 1.0 that fit the zero-input, precision-first principles:
+
+- **Dashboard discovery banner.** Port `DashboardAuditBannerCard` and its test from 1.0, pointing at `Screen.PayAudit`.
+- **"Audit this month" CTA on the payslip detail screen.** Port `ReplicaAuditActionCard` and its tests. It opens Pay Audit with that month pre-selected; the selection is passed through the existing nav/state, not a new global.
+- **First-time orientation sheet.** Port `PcdaoOnboardingSheet` together with the `OnboardingManager`/`OnboardingStorage` flag (Android and iOS actuals plus their contract tests). Rewrite the copy for the timeline/evidence model: no tiles, no "unclaimed ₹".
+- Copy goes in `PayAuditStrings`. Premium gating stays at the findings level only, unchanged (`ANOMALY_DETECTION`).
+- Tests are ported and adapted first, and must fail until the components are wired.
+
+**Exit:** green gate, Compose UI tests for all three entry points, and the Pixel shows each entry reaching the correct month.
+
+### Phase 4: release readiness
+
+1. Run all regression safeguards (above) plus the full pre-push suite.
+2. Build the minified release and smoke-test it on the Pixel: entry points, timeline, findings (locked and unlocked), a draft letter from a proven finding, and the predictions.
+3. iOS: link, run the iOS tests, and smoke-test on the simulator through the existing Xcode path.
+4. Docs:
+   - close Phase 11 items in `09_PayAudit_PhasePlan.md` as appropriate;
+   - add a `pay_audit_1.0` archive note (why it was dropped, what was ported);
+   - correct the corpus fixture count in `CLAUDE.md` (52 → 139).
+5. Open a PR from `feature/pay-audit` to `main`, but only when you ask.
+
+**Exit:** green gate, release build verified on both platforms, docs current.
+
+---
+
+### Final phase: carry-overs from Phase 0 (fail-loud, consolidated 2026-10-01)
+
+Phase 0 steps 1, 2, 3, 5 are done. Step 4 (R8 baseline) is only partly done:
+
+- Done: the minified release APK was built from `feature/pay-audit` @ `76f91c67`. It installed on the Pixel after an uninstall (signature mismatch) and launches into onboarding.
+- **Done (2026-10-01):** the user restored the `.pcda` backup on the Pixel. The Pay Audit screen (findings, what changed, every change explained, what's next, pay-fixation calculator, service timeline) rendered in the minified release with real data, and logcat showed no `ClassNotFound`/`NoSuchMethod`/fatal errors. So no R8 keep rule is needed.
+- **Done:** baseline screenshots saved in the session scratchpad (`baseline_1..4_*.png`). They show real financial data, so they are never committed.
+- **Not verified:** the Aug 2026 audit shows "No findings" with no unlock/lock state visible on this build. The locked-vs-unlocked findings display needs a check in Phase 2/4.
+- **Pending:** note whether the Gemma background download (started automatically on first launch) should be cancelled or left to finish.
+- Note: `assembleRelease` ran `uploadCrashlyticsMappingFileRelease`, i.e. the build uploaded an R8 mapping file to Crashlytics. Confirm this is acceptable for local builds.
+- Note: the iOS test and link run took only 30 s, so Gradle may have reused cached results. The Phase 4 gate should force a re-run (`--rerun-tasks` on `iosSimulatorArm64Test`).
+- Environment gotcha: an IDE-started Gradle daemon breaks AGP builds (missing `jlink`/`jmod`). Run `./gradlew --stop` immediately before each build from the shell.
+
+Phase 0's exit is met except for the notes above (Gemma download, Crashlytics upload, iOS cache re-run, locked-state check).
+
+#### Phase 1 carry-overs (2026-10-01)
+
+- Done: 33 months (Jan 2024 – Aug 2026) recorded on the Pixel; 4 months show 2 "Verified … match exactly" arrears rows; user marked them genuine, all timeline facts correct, Nov 2024 TPTA label a gap (fixed, `90f0c47e`). Crash on the unlocked screen fixed (`8ce8e766`).
+- **Not fixed (user marked genuine, but note):** the old Insights engine's "Quarters Rent Recovery Risk ₹60,000–80,000" alert is not a Pay Audit finding; user says it is correct for them.
+- **Gap, not modeled:** change-explanation coverage cannot be read from the UI (only explained rows are shown); corpus figure 87.5% stands. No unexplained real change was visible.
+- **Not verified on the device:** the two fixes need a new build on the Pixel. Installing a local build needs an uninstall (signature mismatch) = wipes data; not done. Re-verify at Phase 2/4 after a `.pcda` backup.
+- Mar 2024 / Sep 2024 / Dec 2024 recorded as part of the 33 months; Mar 2024 could not be re-read on the Insights tab (dropdown selection failed), its crash was seen in the logcat only.
+- The Pay Audit screen has no month picker and the Insights month dropdown is a calendar (Jan 2024 – Aug 2026) that includes months with no payslip: both worth covering in the Phase 2 UX work.
+
+#### Phase 2 carry-overs (2026-10-01, fail-loud)
+
+Phase 2 is implemented, tested and walked through on the Pixel (design approved by the user the same day). Exit is met except the device-unverified items below.
+
+- **Pixel walkthrough: done 2026-10-01 (release build, `adb install -r` over the existing local release, same signing cert and versionCode 16, so no uninstall; the user exported a `.pcda` backup first).** Verified on the device with real data (screenshots stay in the session scratchpad, never committed):
+  - Pay Audit opens on "This month"; the verdict card is visible without scrolling ("no issues found on N pay lines", "32 months audited · 0 issues").
+  - Apr 2026 (two verified arrears rows) renders unlocked without the Phase 1 duplicate-key crash, shown as "Verified · not an issue" cards.
+  - Change rows name the pay line with grouped rupees; the Nov 2024 TPTA change now reads "TPTA follows DA: 50%→53%" (Phase 1 fix confirmed).
+  - Month steppers, the month picker (months without a payslip greyed out), the ⓘ glossary, the History spans and the Plan ahead tab all work.
+  - Found and fixed: History said "Effective Apr 2026" for a DA step (the payslip month, not the effective date); now "First paid on the Apr 2026 payslip" (commit `6d8dd367`, rebuilt, reinstalled with `install -r` and re-checked on the device).
+  - **Not verified on the device:** the locked (free-tier) state, the Issue and Waiting verdicts, the "Why?" expander and "Draft letter" (no real month produces an issue or a waiting finding; covered by Compose/ViewModel tests only), and whether the Gemma download or Play dialog appeared (not seen).
+  - **Device gaps found:** the second verified card (TPTA DA arrears) is titled "DA arrears" like the first because the engine uses `field = "arrearsDa"` for both (the description disambiguates); the month picker's "no payslip" label wraps to two lines and makes those rows taller.
+- **Resolved (2026-10-01, user raised both): false "all correct".** An arrears under-payment (`SALARY_LOSS`, field `arrearsDa`, with expected/actual) now counts as a Pay Audit issue in the display classification (`classifyPayAuditFindings`); the bare net-pay `SALARY_LOSS` heuristic still does not. It is unproven (no authority), so no letter is offered. Corpus probe: 14 verified, 0 shortfalls (n=1 officer). Watch for partial arrears paid across several months reading as a shortfall; the fix, if it happens, is to hold it as waiting. Engine and corpus tests untouched.
+- **Resolved: "N pay lines checked" overclaim.** Reworded to "Aug 2026: no issues found on 12 pay lines" (N is still the lines on the payslip, which the wording now says).
+- **U5 partly done.** Screen formatting is fixed (Indian grouping, "Aug 2026", glossary). Not fixed: finding `description` strings from the auditors (`shared`, e.g. "arrears of ₹9870") and change `reason` strings from `PayLineChangeExplainer` (e.g. "arrears for 1/2026-3/2026", "58%->60%") are still raw. Both live in `shared` and are asserted by corpus/unit tests; a wording change there is its own phase.
+- **DI deviation.** `PayAuditScreen` gets `PayAuditViewModel` from Koin (`koinInject`); the Insights entry card (`PayAuditEntryHost`) uses `remember { PayAuditViewModel() }` because existing Insights UI tests run without Koin and the constructor has no collaborators. Move it to Koin when those tests start Koin.
+- **ViewModel lifetime.** `PayAuditViewModel` is a plain class tied to composition (`dispose()` on leave), so the selected tab/month reset on rotation or re-entry. Acceptable now (reopens on the app-wide selected month); revisit if users complain.
+- **Insights month dropdown** is still a calendar that includes months with no payslip; only Pay Audit got the payslip-aware picker.
+- **Process note:** `PayAuditHistoryLogicTest` was written before `PayAuditHistoryLogic` but never run against a stub (compile-red only); the ViewModel and format tests were run red (17/18 and all failing) first.
+- **Not verified:** iOS simulator smoke test of the new sheets (Phase 4); no screenshot comparison against the HTML prototype.
+
+#### Phase 3 carry-overs (2026-10-01, fail-loud)
+
+Phase 3 is implemented and tested (tests written first and shown red). Exit is **not fully met**: the Pixel check is owed.
+
+- **Pixel check done 2026-10-01 (release build, `install -r`, data kept, user OK'd after backup):** Dashboard banner showed "Check your 32 payslips…" and opened Pay Audit on Aug 2026; the orientation sheet appeared on that first open, "Got it" dismissed it, and it did not return on the next open; "Audit this month" on the June 2026 payslip opened Pay Audit on Jun 2026 (not the dashboard's Aug). Still unchecked on the device: the sheet after an app restart (persistence) and locked/Issue/Waiting verdicts.
+- ~~Not done: Pixel check that each entry reaches the correct month.~~ (superseded by the line above; the paragraph below describes what the unit tests cover.) Needs a new release build on the Pixel, so a `.pcda` backup and the user's OK first (same-cert `install -r` keeps data). Covered only by Compose/ViewModel tests: `PayslipReplicaAuditEntryTest` (CTA selects the viewed payslip, navigates to `Screen.PayAudit`; `PayAuditViewModel.setInputs(requestedMonth)` lands on it), `DashboardAuditEntryTest`, `PayAuditEntryPointCardsTest`, `PayAuditOrientationSheetTest`.
+- **Phase 2 asks skipped as already resolved.** Both Phase 2 risks (arrears under-payment shown as an issue; "no issues found on N pay lines" wording) were closed in `9f29a56f` / `6d8dd367`; the Phase 3 prompt was stale on this. No engine change was made in Phase 3.
+- **Month hand-off is the existing app-wide selected payslip, not a new global.** "Audit this month" calls `PayslipViewModel.selectPayslip(payslip)` and `PayAuditScreen` already turns the selected payslip into `setInputs(requestedMonth)` on first open. Side effect: after the CTA the Dashboard also shows that month. Not changed because the plan forbids a new global and iOS navigates natively (no argument channel).
+- **Orientation sheet is a single bottom sheet, not 1.0's three-slide dialog.** Three short points plus a "Got it" button; the pager, skip/back/next and the indicator were not ported (no tiles to explain). It cannot be re-opened after dismissal; the existing ⓘ glossary covers the terms. Add a "How it works" row to the glossary sheet only if users ask.
+- **Orientation flag is a plain boolean per install** (`has_seen_pay_audit_intro`: SharedPreferences / NSUserDefaults), like the coachmark flag. It is not part of the `.pcda` backup, so a restore on a new install shows it once more.
+- **Banner copy deliberately makes no claim:** "Check your N payslips against the rules" (the timeline excludes `needsReview` months, so "N payslips checked" would overclaim, the same trap as Phase 2). The banner is free-visible and says nothing about findings; premium gating is unchanged at the findings level.
+- **Sheet UI tests use the semantics click action**, not a pointer click: Robolectric does not deliver pointer clicks into `ModalBottomSheet` content (also true with a tall-screen qualifier).
+- **`PayAuditScreen` gets `OnboardingManager` by `remember { OnboardingManager() }`**, matching `DashboardScreen`'s default, not Koin.
+- **iOS:** the new flag's `actual` compiles, links and passes `iosSimulatorArm64Test`; the iOS UI (banner, CTA through `bridge.navigateToDetail`, sheet) is not smoke-tested (Phase 4).
+
+#### Phase 4 carry-overs (2026-10-01, fail-loud)
+
+Phase 4 is done except the items below. Gate: Android `check` green; the four corpus tests re-run with `--rerun` and green, no assertion changed; `iosSimulatorArm64Test --rerun-tasks` and `linkDebugFrameworkIosSimulatorArm64 --rerun-tasks` green. Minified release (versionCode 16) installed on the Pixel with `install -r` (data kept, after the user's `.pcda` backup and OK).
+
+- **Pixel verified:** banner; "Audit this month" on Jul 2026 opened Jul 2026 (not the dashboard's Aug); verdict, History, Plan ahead (increment, DSOP room, fixation calculator); Apr 2026 verified-arrears cards and "Why?"; the orientation sheet did not return after the upgrade and relaunch (persistence); no FATAL/ClassNotFound/NoSuchMethod in logcat.
+- **Not verified on any device:** locked (free) state, Issue and Waiting verdicts, "Draft letter" from a proven finding (no real month produces them; unit/Compose tests only); the first-ever orientation sheet on this build (it was already dismissed). The Pixel is Premium-unlocked, so the locked state needs a debug "Force Free" build or another account.
+- **iOS UI not smoke-tested.** The app builds with xcodebuild, installs and launches on the iPhone 17 simulator, but banner / CTA / sheet could not be driven (no seedable payslip data, no automation per the verify skill). Manual check on a real iPhone before release. Note: the Xcode "Upload symbols to Crashlytics" run-script phase runs on every build, including Debug simulator builds.
+- **Crashlytics mapping upload:** the local release was built with `-x uploadCrashlyticsMappingFileRelease` because a local build at the same versionCode as the Play build could overwrite its R8 mapping. A normal `assembleRelease` still uploads; decide whether local builds should skip it.
+- **Corpus count:** `index.json` lists 139 (the plan's number was right; the first guess of 140 counted `apr_14`, which is on disk but not indexed, so it is not in the gate). CLAUDE.md, the `TokenParseCorpusRegressionTest` KDoc and four counts in `AI_INSIGHTS_PIPELINE.md` (52 -> 139) are fixed. Not touched: `AI_INSIGHTS_PIPELINE.md` line about `PayslipCorpusRegressionTest` (a deleted legacy test) and the historical "52/52" anecdote in CLAUDE.md (about an old bug).
+- **Gemma download:** not observed during the smoke test; whether to cancel or let it finish is still undecided.
+- **Not done by design:** no PR opened, nothing pushed.
+
+### Phases 5-8: post-release-readiness items (user decisions 2026-10-01)
+
+Decisions: no PR/push until the very end; Crashlytics mapping upload only for the production release build; Gemma download is production-only (ignore on debug); P7-24/25 validated later with other officers in closed testing.
+
+- **Phase 5 (DONE, commits 5154435d, f85d9786):** TPTA-DA arrears own pay line (arrearsTptaDa); month picker "no payslip" label removed; month/tab survive app recreation (PayAuditSavedState + rememberSaveable); glossary "How Pay Audit works" reopens the orientation; Insights dropdown already payslip-only (pinned by test). Device-unverified: the recreation behaviour (check in Phase 8 with "don't keep activities").
+- **Phase 6 (DONE, commit 88007e19): plain wording (#6).** New SSOT `PayAuditWording` (`shared/.../insights/`: grouped rupees via `TaxLedgerAggregator.formatIndianCurrency`, "58% to 60%", month names, "July to August 2018"). All ten auditors' descriptions, `PayLineChangeExplainer` reasons, the representation-letter amounts ("Rs. 1,23,100") and the History "DA 58% to 60%" title use it. No engine/rule logic changed; the four corpus tests have the same findings and coverage. Details and the changed-assertion list are in the Phase 6 hand-off and the carry-overs below.
+- **Phase 7: re-audit on import (#12).** User chose "re-run on import": when a new payslip is imported, re-audit the neighbouring earlier months so a held (isPending) TPTA finding resolves or surfaces, reconciling against stored `FinancialInsightEntity` rows. Held findings must never draft a letter; resolved ones must not leave a stale pending row. Any Room change needs a migration + upgrade test.
+- **Phase 8: debug synthetic seed + device checks (#4, #5).** User chose a debug-only synthetic seed (de-identified synthetic payslips: missing-TPTA month, held month, increment miss) so the Pixel can show locked state (Settings > Developer > Force Free), Issue/Waiting verdicts, "Draft letter", the first-run orientation sheet, and state restore after recreation. Needs a `.pcda` backup + user OK before any install (debug build has a different cert = uninstall). Seed code must be debug-only (not in release/R8), no PII.
+
+#### Phase 6 carry-overs (2026-10-01, fail-loud)
+
+- **Stale premise:** the goal's "arrears for 1/2026-3/2026" was already "Jan-Mar 2026" in the code (month names via `PayslipPatternConfig`); the real raw parts were "58%->60%", enum names ("HIGHER->OTHER"), "admissible", ungrouped rupees and "N/YYYY" in `IncrementAuditor`.
+- **Closed in the Phase 6 follow-up (user decisions 2026-10-02):** the two formatters are merged: composeApp `formatCurrency` delegates to `PayAuditWording.rupees` (rounds, no negative zero; amounts on screen may now differ by 1 rupee from the old truncation). The DSOP 18-month line is reworded (no "Sec 10(11)", same figures).
+- **Kept on purpose (user decision):** arrows in composeApp `PayAuditFormat.formatChange` ("₹5,400 → ₹5,508"); only percentages use words.
+- **Deferred to Phase 7 (user decision):** old stored insight rows keep their old wording until re-audit; no startup re-audit pass.
+- **Device:** wording not yet seen on the Pixel (no build installed this phase).
+
+---
+
+### Not ported from `pay_audit_1.0` (and why)
+
+| Piece | Why not |
+|---|---|
+| Situation tiles, mission presets, "Unclaimed ₹" counter, 18 % penal hazards, collision auditors | Already dropped in 09's plan as needing user input or lacking a verified authority; the audit confirmed false figures. |
+| CEA multi-month check by financial year | Needs the number of children (user input). A missing claim isn't a proven underpayment. Revisit as a reminder, not a finding, if users ask. |
+| Forfeiture/deadline tracker | Deferred in 09's plan until users ask. |
+| DSOP ₹5 lakh check | Already in `feature/pay-audit` (`DsopRoomCalculator`, `DsopComplianceAuditor`). |
+| CI "intelligence watchdog" workflow | Not needed for the app. Would need a separate network and security review. |
+
+### After validation (moat work, not scheduled; gated on Phase 1 results and 3–5 real officers)
+
+- Re-check earlier months automatically when a new payslip arrives: held (pending) findings get resolved, or a later arrears credit closes a gap. This is the harder P7-17b option.
+- Claim lifecycle and a "₹ recovered" figure, closed when a later payslip shows the arrears.
+- An evidence-pack PDF attached to the representation letter.
+
+### Critical files (on `feature/pay-audit`)
+
+- **Engine:** `shared/src/commonMain/.../insights/` (`DeterministicIntelligenceEngine`, the auditors, `PayAuthorities`, `PayAuditFindingTypes`, `RepresentationDraftTypes`) and `insights/timeline/`.
+- **UI:** `composeApp/.../ui/screens/PayAudit*.kt`, `DashboardScreen.kt`, `PayslipReplicaDetailScreen.kt`, `ui/theme/PayAuditStrings.kt`, `App.kt`, iOS `MainViewController.kt`.
+- **Onboarding:** `shared/.../onboarding/` (port from 1.0).
+- **Tests:** `shared/src/androidUnitTest/.../insights/*CorpusTest.kt`, composeApp `PayAudit*Test.kt`.
+
+### Verification
+
+1. Each phase: the full Gradle gate, iOS tests and link, ktlint, and the size audit.
+2. The four corpus tests stay green with no assertion loosened.
+3. The minified release on the Pixel at Phases 0, 2, 3 and 4. iOS simulator at Phase 4.
+4. Phase 1: every finding on 23 real months reviewed by you, with zero false findings.
+
 ## Deferred / dropped
 
 - **Deferred until users ask:** situational tiles / 3-tier matrix, claim/LTC/TA rules (~300 of the 378), deadline trackers.
