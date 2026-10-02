@@ -96,7 +96,7 @@ class PayLineChangeExplainerTest {
                 payslip(2018, 6, 85300.0, daPercent = 17.0),
                 payslip(2018, 8, 85300.0, daPercent = 21.0, arrearsDa = 2500.0),
             )
-        assertEquals("Dearness Allowance (DA) rate changed from 17% to 21%; this is the back-pay for July 2018", changes.reasonFor("arrearsDa"))
+        assertEquals("Dearness Allowance (DA) rate changed from 17% to 21%; these are the arrears for July 2018", changes.reasonFor("arrearsDa"))
     }
 
     @Test
@@ -113,7 +113,7 @@ class PayLineChangeExplainerTest {
                 payslip(2018, 9, 85300.0, daPercent = 21.0, arrearsDa = 5000.0),
             )
         val reason = changes.reasonFor("arrearsDa")
-        assertTrue(reason != null && reason.endsWith("this is the back-pay for July to August 2018"), "was: $reason")
+        assertTrue(reason != null && reason.endsWith("these are the arrears for July to August 2018"), "was: $reason")
     }
 
     @Test
@@ -157,7 +157,7 @@ class PayLineChangeExplainerTest {
     @Test
     fun aOneOffTptaArrearsPaymentIsExplainedWithoutNeedingAPostingChange() {
         val changes = explainLast(payslip(2018, 1, 85300.0, arrearsTpta = 3600.0), payslip(2018, 2, 85300.0, arrearsTpta = 0.0))
-        assertEquals("Back-pay was paid last month and does not repeat", changes.reasonFor("arrearsTpta"))
+        assertEquals("Arrears were paid last month and do not repeat", changes.reasonFor("arrearsTpta"))
     }
 
     @Test
@@ -272,14 +272,14 @@ class PayLineChangeExplainerTest {
     }
 
     @Test
-    fun theTptaDaArrearsReasonNamesTheLineItBackPays() {
+    fun theTptaDaArrearsReasonNamesTheLineItArrearsCovers() {
         val changes =
             explainLast(
                 payslip(2018, 6, 85300.0, daPercent = 17.0),
                 payslip(2018, 9, 85300.0, daPercent = 21.0, arrearsTptaDa = 600.0, tptaDa = 400.0),
             )
         assertEquals(
-            "Dearness Allowance (DA) rate changed from 17% to 21%; this is the back-pay of DA on Transport Allowance for July to August 2018",
+            "Dearness Allowance (DA) rate changed from 17% to 21%; these are the arrears of DA on Transport Allowance for July to August 2018",
             changes.reasonFor("arrearsTptaDa"),
         )
     }

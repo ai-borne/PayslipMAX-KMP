@@ -19,7 +19,7 @@ data class FyTaxLedgerSummary(
     val ytdGross: Double,
     val ytdTaxDeducted: Double,
     /**
-     * One-off retrospective back-pay YTD (D4), added back verbatim rather than annualised --
+     * One-off retrospective arrears YTD (D4), added back verbatim rather than annualised --
      * kept on the summary (not just a local in [buildFySummary]) so Phase 5's arrears-transparency
      * insight can disclose the exact figure already used to build [projectedAnnualGross].
      */
@@ -108,7 +108,7 @@ object TaxLedgerAggregator {
     private val riskHardshipKeywords = listOf("RHA", "RISK", "HARDSHIP", "SICHA")
 
     /**
-     * D4 fix: PCDA codes retrospective back-pay as `ARR-*` (e.g. `ARR-DA`, `ARR-RH11`), which
+     * D4 fix: PCDA codes retrospective arrears as `ARR-*` (e.g. `ARR-DA`, `ARR-RH11`), which
      * [PayslipPatternConfig.creditKeysMapping] resolves into **structured** `arrears*` fields on
      * [com.payslipmax.pdfparser.domain.Earnings] at parse time -- they never reach [ParsedPayslip.rawEarnings].
      * The old implementation matched an English keyword list ("ARREAR"/"BACKPAY") against `rawEarnings`
@@ -133,7 +133,7 @@ object TaxLedgerAggregator {
      * D5 fix: [PayslipPatternConfig.creditKeysMapping] maps refund/reimbursement-style one-off codes
      * ("ETKT-ref" ticket reimbursement, "Ref.L Fee"/"Ref.Furn." deduction refunds, "LTC Encash",
      * "Adhoc Payt") into `adjTicketRecovery`/`adjPayAndAllce`. Unlike arrears, these are not taxable
-     * back-pay to annualise or add back -- they are excluded from the taxable projection entirely (the
+     * arrears to annualise or add back -- they are excluded from the taxable projection entirely (the
      * ETKT credit already nets against its own `ticketRecovery` deduction; the others are non-recurring
      * refunds of money the officer already paid). Falls back to the raw `ETKT` code for unmapped credits.
      */

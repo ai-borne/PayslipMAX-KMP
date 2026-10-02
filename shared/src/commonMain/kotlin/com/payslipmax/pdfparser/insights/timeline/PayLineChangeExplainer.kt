@@ -17,7 +17,7 @@ import kotlin.math.abs
 object PayLineChangeExplainer {
     private const val AMOUNT_TOLERANCE = 0.5
     private const val DA_RATE_CHANGED = "Dearness Allowance (DA) rate changed from"
-    private const val ARREARS_DROPPED = "Back-pay was paid last month and does not repeat"
+    private const val ARREARS_DROPPED = "Arrears were paid last month and do not repeat"
 
     /**
      * Explains [current] against the last trustworthy month before it in [timeline] — never the
@@ -124,7 +124,7 @@ object PayLineChangeExplainer {
 
     /**
      * DA (or separately-printed TPTA-DA) arrears are paid the month a rise first appears, for the months
-     * since its effective date, and never repeat the month after — a one-off back-payment, not a new rate.
+     * since its effective date, and never repeat the month after — a one-off arrears payment, not a new rate.
      */
     private fun arrearsReason(
         from: Double,
@@ -140,8 +140,8 @@ object PayLineChangeExplainer {
         if (prevDa == null || currDa == null || currDa <= prevDa) return null
         if (tptaDaSeparate && current.earnings.transportAllowanceDa <= 0.0) return null
         val (rangeFrom, rangeTo) = arrearsRange(current.monthNum) ?: return null
-        val backPaid = if (tptaDaSeparate) "the back-pay of DA on Transport Allowance" else "the back-pay"
-        return "$DA_RATE_CHANGED ${PayAuditWording.percentChange(prevDa, currDa)}; this is $backPaid for ${PayAuditWording.monthSpan(rangeFrom, rangeTo, current.year)}"
+        val arrearsPhrase = if (tptaDaSeparate) "the arrears of DA on Transport Allowance" else "the arrears"
+        return "$DA_RATE_CHANGED ${PayAuditWording.percentChange(prevDa, currDa)}; these are $arrearsPhrase for ${PayAuditWording.monthSpan(rangeFrom, rangeTo, current.year)}"
     }
 
     private fun TimelineEventType.cause(): String = if (this == TimelineEventType.PROMOTION) "promotion" else "annual increment"
@@ -154,7 +154,7 @@ object PayLineChangeExplainer {
     }
 
     /**
-     * Base TPTA arrears (`arrearsTpta`) are a posting-change back-payment, not a DA-rate rise — distinct
+     * Base TPTA arrears (`arrearsTpta`) are a posting-change arrears payment, not a DA-rate rise — distinct
      * from [arrearsReason], which only fires on a DA revision. Triggers when the same posting-change or
      * relocation edge that explains a TPTA drop/absence ([TptaAbsenceExplainer]) sits at this month.
      */
@@ -166,7 +166,7 @@ object PayLineChangeExplainer {
     ): String? {
         if (to == 0.0 && from > 0.0) return ARREARS_DROPPED
         return if (TptaAbsenceExplainer.explains(timeline, currMonth.month)) {
-            "Back-pay of Transport Allowance after a posting change or relocation"
+            "Arrears of Transport Allowance after a posting change or relocation"
         } else {
             null
         }
