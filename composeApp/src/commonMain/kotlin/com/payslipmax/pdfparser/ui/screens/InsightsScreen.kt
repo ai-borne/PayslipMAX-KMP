@@ -146,8 +146,6 @@ private fun InsightsLazyBody(
             hasAccess = { gate -> viewModel.hasAccess(gate) },
             onShowUpgradeSheet = onShowUpgradeSheet,
             onNavigateTo = onNavigateTo,
-            selected = selected,
-            payslips = uiState.payslips,
         )
         insightsPremiumItems(
             state = state,
@@ -158,6 +156,8 @@ private fun InsightsLazyBody(
             onToolsExpandClick = { toolsExpanded = !toolsExpanded },
             onShowUpgradeSheet = onShowUpgradeSheet,
             onNavigateTo = onNavigateTo,
+            selected = selected,
+            payslips = uiState.payslips,
             price = premiumPrice,
         )
     }

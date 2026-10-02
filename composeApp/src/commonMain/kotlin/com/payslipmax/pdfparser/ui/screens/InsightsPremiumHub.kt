@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
+import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
@@ -67,6 +68,8 @@ fun LazyListScope.insightsPremiumItems(
     onToolsExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
+    selected: ParsedPayslip,
+    payslips: List<ParsedPayslip>,
     price: String? = null,
 ) {
     if (!isPremium) {
@@ -74,6 +77,10 @@ fun LazyListScope.insightsPremiumItems(
             LockedPremiumHubCard(state = state, smartInsights = smartInsights, onUpgradeClick = onShowUpgradeSheet, price = price)
         }
         return
+    }
+    item(key = "pay_audit_entry", contentType = "pay_audit_entry") {
+        // Same ParsedPayslip pipeline as PayAuditScreen, so this teaser's count matches the screen.
+        PayAuditEntryHost(selected = selected, payslips = payslips, onOpen = { onNavigateTo(Screen.PayAudit) })
     }
     item(key = "advanced_anomalies", contentType = "advanced_anomalies") { AdvancedAnomaliesCard(anomalies = state.engineResult.anomalies, hasAnomalyDetection = hasAnomalyDetection) }
     item(key = "premium_report", contentType = "premium_report") {

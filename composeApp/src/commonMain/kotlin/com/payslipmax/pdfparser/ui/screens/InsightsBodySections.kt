@@ -2,7 +2,6 @@ package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.lazy.LazyListScope
 import com.payslipmax.pdfparser.Screen
-import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.subscription.FeatureGate
 
 /**
@@ -22,8 +21,6 @@ fun LazyListScope.insightsPrimaryItems(
     hasAccess: (FeatureGate) -> Boolean,
     onShowUpgradeSheet: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
-    selected: ParsedPayslip,
-    payslips: List<ParsedPayslip>,
 ) {
     item(key = "monthly_snapshot", contentType = "monthly_snapshot") {
         MonthlySnapshot(
@@ -43,8 +40,4 @@ fun LazyListScope.insightsPrimaryItems(
         )
     }
     item(key = "pay_trend_chart", contentType = "pay_trend_chart") { PayTrendChart(history = state.historySorted, selected = state.currentRecord) }
-    item(key = "pay_audit_entry", contentType = "pay_audit_entry") {
-        // Same ParsedPayslip pipeline as PayAuditScreen, so this teaser's count matches the screen.
-        PayAuditEntryHost(selected = selected, payslips = payslips, onOpen = { onNavigateTo(Screen.PayAudit) })
-    }
 }

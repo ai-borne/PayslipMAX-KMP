@@ -189,23 +189,33 @@ private fun PopulatedDashboard(
             viewModel = viewModel,
             selected = selected,
         )
-        selected?.let {
-            DashboardAuditBannerCard(payslips.size, onNavigateToAudit, Modifier.padding(vertical = AppDimensions.SpacingLarge))
-            StatsGridSection(payslip = it)
-
-            val countdown = remember { SalaryCountdownCalculator.getCurrentCountdown() }
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-            SalaryCountdownRibbon(countdown = countdown)
-
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-            TrendChartCard(payslips = payslips)
-
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-            AllocationChartCard(payslip = it, modifier = Modifier.testTag("allocation_chart_card"))
-        }
+        selected?.let { DashboardCards(it, payslips, onNavigateToAudit) }
 
         Spacer(modifier = Modifier.height(AppDimensions.FabClearanceHeight))
     }
+}
+
+@Composable
+private fun DashboardCards(
+    payslip: ParsedPayslip,
+    payslips: List<ParsedPayslip>,
+    onNavigateToAudit: () -> Unit,
+) {
+    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+    StatsGridSection(payslip = payslip)
+
+    val countdown = remember { SalaryCountdownCalculator.getCurrentCountdown() }
+    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+    SalaryCountdownRibbon(countdown = countdown)
+
+    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+    TrendChartCard(payslips = payslips)
+
+    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+    AllocationChartCard(payslip = payslip, modifier = Modifier.testTag("allocation_chart_card"))
+
+    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+    DashboardAuditBannerCard(payslips.size, onNavigateToAudit)
 }
 
 @Composable
