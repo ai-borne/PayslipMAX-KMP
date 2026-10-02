@@ -1,18 +1,31 @@
 package com.payslipmax.pdfparser.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.PayAuditEntryStrings
@@ -21,10 +34,8 @@ import com.payslipmax.pdfparser.ui.theme.PayAuditVerdictStrings
 /** Plain-words glossary (U5): DNI, Stage, TPTA, MSP, DA, "waiting" and "verified". */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PayAuditGlossarySheet(
-    onDismiss: () -> Unit,
-    onShowOrientation: () -> Unit,
-) {
+fun PayAuditGlossarySheet(onDismiss: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier.navigationBarsPadding().padding(AppDimensions.PaddingMedium).verticalScroll(rememberScrollState()),
@@ -35,8 +46,24 @@ fun PayAuditGlossarySheet(
                 Text(term, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
                 Text(meaning, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            OutlinedButton(onClick = onShowOrientation) { Text(PayAuditEntryStrings.orientationTitle) }
-            OutlinedButton(onClick = onDismiss) { Text(PayAuditVerdictStrings.glossaryClose) }
+            HorizontalDivider()
+            Row(
+                modifier = Modifier.fillMaxWidth().clickable { expanded = !expanded }.padding(vertical = AppDimensions.SpacingSmall).testTag("pay_audit_how_it_works"),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(PayAuditEntryStrings.orientationTitle, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                Icon(
+                    imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                    contentDescription = if (expanded) PayAuditVerdictStrings.collapseDesc else PayAuditVerdictStrings.expandDesc,
+                )
+            }
+            if (expanded) {
+                PayAuditEntryStrings.orientationPoints.forEach { (heading, body) ->
+                    Text(heading, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                    Text(body, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
         }
     }
 }

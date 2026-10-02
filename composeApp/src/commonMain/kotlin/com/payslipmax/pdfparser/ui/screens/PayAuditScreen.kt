@@ -150,8 +150,7 @@ internal fun PayAuditContent(
                 onSelectMonth(it)
                 sheet = null
             }, onDismiss = { sheet = null })
-        PayAuditSheet.GLOSSARY -> PayAuditGlossarySheet(onDismiss = { sheet = null }, onShowOrientation = { sheet = PayAuditSheet.ORIENTATION })
-        PayAuditSheet.ORIENTATION -> PayAuditOrientationSheet(onDismiss = { sheet = null })
+        PayAuditSheet.GLOSSARY -> PayAuditGlossarySheet(onDismiss = { sheet = null })
         null -> Unit
     }
 }
@@ -167,7 +166,7 @@ private fun verdictAction(
     else -> onShowEvidence()
 }
 
-private enum class PayAuditSheet { MONTH, GLOSSARY, ORIENTATION }
+private enum class PayAuditSheet { MONTH, GLOSSARY }
 
 private fun LazyListScope.payAuditTabContent(
     state: PayAuditUiState,

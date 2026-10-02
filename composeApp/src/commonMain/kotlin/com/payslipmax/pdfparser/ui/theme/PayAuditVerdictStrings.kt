@@ -72,7 +72,8 @@ object PayAuditVerdictStrings {
     const val spanFieldPosting = "Field posting"
 
     const val glossaryTitle = "What these terms mean"
-    const val glossaryClose = "Close"
+    const val expandDesc = "Show how Pay Audit works"
+    const val collapseDesc = "Hide how Pay Audit works"
     val glossary: List<Pair<String, String>> =
         listOf(
             "Stage" to "Your annual increment step within a pay level. Stage 8 means 8 increments earned at this level.",

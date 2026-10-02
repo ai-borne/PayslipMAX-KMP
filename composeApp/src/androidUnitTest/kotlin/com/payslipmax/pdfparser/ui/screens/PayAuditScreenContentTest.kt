@@ -131,16 +131,19 @@ class PayAuditScreenContentTest {
             onAllNodesWithText("no payslip").assertCountEquals(0)
         }
 
-    // The orientation sheet is shown once automatically; the glossary must let the user read it again.
+    // The orientation is shown once automatically; the glossary must let the user read it again, in place
+    // (a second sheet stacked on the first was poor UI).
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun glossaryCanReopenTheOrientationSheet() =
+    fun glossaryExpandsTheOrientationInlineAndHasNoCloseButton() =
         runComposeUiTest {
             setContent { PayAuditContent(base, {}, {}, {}, {}) }
 
             onNodeWithText("ⓘ").performClick()
+            onAllNodesWithText("Close").assertCountEquals(0)
+            onNodeWithText("Only proven issues").assertDoesNotExist()
             // Robolectric does not deliver pointer clicks into ModalBottomSheet content; use the semantics action.
-            onNodeWithText("How Pay Audit works").performSemanticsAction(SemanticsActions.OnClick)
-            onNodeWithTag("pay_audit_orientation_got_it").assertExists()
+            onNodeWithTag("pay_audit_how_it_works").performSemanticsAction(SemanticsActions.OnClick)
+            onNodeWithText("Only proven issues").assertExists()
         }
 }
