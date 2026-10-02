@@ -1,6 +1,8 @@
 package com.payslipmax.pdfparser.insights
 
 import com.payslipmax.pdfparser.parser.PayslipPatternConfig
+import kotlin.math.abs
+import kotlin.math.round
 
 /**
  * SSOT for how finding descriptions and change reasons write rupees, percentages and months, so every
@@ -8,7 +10,10 @@ import com.payslipmax.pdfparser.parser.PayslipPatternConfig
  * "58% to 60%", "July to August 2018" — never "₹123100", "58%->60%" or "7/2018".
  */
 object PayAuditWording {
-    fun rupees(amount: Double): String = "₹" + TaxLedgerAggregator.formatIndianCurrency(amount)
+    fun rupees(amount: Double): String {
+        val sign = if (round(amount) < 0.0) "-" else ""
+        return "$sign₹" + TaxLedgerAggregator.formatIndianCurrency(abs(amount))
+    }
 
     fun percentChange(
         from: Int,

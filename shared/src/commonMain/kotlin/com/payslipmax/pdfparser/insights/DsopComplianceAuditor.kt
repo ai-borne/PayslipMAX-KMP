@@ -70,7 +70,9 @@ class DsopComplianceAuditor : RuleAuditor {
                         field = "dsopSubscription",
                         amount = 0.0,
                         month = current.dateStr,
-                        description = "DSOP contribution unchanged for 18+ months at ${savingRate.toInt()}%. Consider increasing contribution towards ₹41,666/mo (₹5 Lakhs/yr) for 100% tax-free compounding growth under Sec 10(11).",
+                        description =
+                            "Your DSOP contribution has not changed for 18+ months (${savingRate.toInt()}% of gross pay). " +
+                                "Consider raising it towards ₹41,666 a month (₹5,00,000 a year), the most whose interest stays tax-free.",
                     ),
                 )
             }

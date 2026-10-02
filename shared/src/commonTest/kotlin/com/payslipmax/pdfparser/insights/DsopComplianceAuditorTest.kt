@@ -71,6 +71,10 @@ class DsopComplianceAuditorTest {
         val complianceAnomaly = result.find { it.type == "DSOP_COMPLIANCE" }
         assertTrue(complianceAnomaly != null)
         assertEquals(0.0, complianceAnomaly.amount)
-        assertTrue(complianceAnomaly.description.contains("₹41,666/mo (₹5 Lakhs/yr)"))
+        assertEquals(
+            "Your DSOP contribution has not changed for 18+ months (12% of gross pay). " +
+                "Consider raising it towards ₹41,666 a month (₹5,00,000 a year), the most whose interest stays tax-free.",
+            complianceAnomaly.description,
+        )
     }
 }

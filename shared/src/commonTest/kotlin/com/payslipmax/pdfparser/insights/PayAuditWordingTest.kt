@@ -12,6 +12,8 @@ class PayAuditWordingTest {
         assertEquals("₹22,13,800", PayAuditWording.rupees(2213800.0))
         assertEquals("₹500", PayAuditWording.rupees(500.0))
         assertEquals("₹0", PayAuditWording.rupees(0.0))
+        assertEquals("-₹5", PayAuditWording.rupees(-5.0))
+        assertEquals("₹0", PayAuditWording.rupees(-0.4))
     }
 
     @Test

@@ -546,6 +546,14 @@ continuity, per CLAUDE.md's "fail loud" rule — not a sign of unfinished Phase 
   `10_PayAudit_1.0_Archive.md`. Still unverified on any device: the locked (free) state, Issue/Waiting verdicts and
   "Draft letter" (no real month produces them; Compose/ViewModel tests only).
 
+- **Plain wording (consolidation plan Phase 6, 2026-10-02).** Finding descriptions (all auditors), change reasons
+  (`PayLineChangeExplainer`), the representation-letter amounts and the History DA-step title now read in plain
+  words with Indian-grouped rupees, month names and "58% to 60%". One wording source: `PayAuditWording`
+  (`shared/.../insights/`); composeApp `formatCurrency` delegates to it (rounds; no negative zero). No rule or
+  engine logic changed and the corpus tests keep the same findings and coverage. Deliberately kept: compact arrows
+  for amount ranges in the change rows. Old stored insight rows keep their old wording until Phase 7's re-audit on
+  import rewrites them. Not yet seen on a device.
+
 Apart from P7-24/P7-25 (partially done above), none of these has a trigger that has fired yet. This phase does no code work unless one does.
 
 ## Deferred / dropped
