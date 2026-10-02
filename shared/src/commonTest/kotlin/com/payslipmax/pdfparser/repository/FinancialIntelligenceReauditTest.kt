@@ -159,4 +159,58 @@ class FinancialIntelligenceReauditTest {
 
             assertTrue(result.anomalies.none { it.type == "TPTA_ENTITLEMENT" }, "April itself pays TPTA; the March finding is not April's")
         }
+
+    // Backfill: an older payslip imported later can change a later month's verdict. With no earlier payslip,
+    // March's missing TPTA reads as proven; once February (paying TPTA) exists and nothing after March does,
+    // a relocation can no longer be ruled out, so March is only held.
+    @Test
+    fun importingAnEarlierPayslipLaterReauditsTheMonthsAfterIt() =
+        runTest {
+            importMonths(slip(2018, 3, 0.0))
+            assertTrue(!tptaRows("03/2018").single().contentMarkdown.contains("on hold"), "alone, March reads as proven")
+            assertEquals(1, drafts("03/2018").size)
+
+            importMonths(slip(2018, 2, otherCityTpta))
+
+            assertTrue(tptaRows("03/2018").single().contentMarkdown.contains("on hold"), "February's payslip makes March held")
+            assertTrue(drafts("03/2018").isEmpty(), "a held finding is not proven, so its letter goes")
+        }
+
+    // Stale letters (user decision 2026-10-02): once the finding is addressed its letter is gone.
+    @Test
+    fun aLetterIsRemovedOnceItsFindingNoLongerAppliesAfterReimport() =
+        runTest {
+            importMonths(slip(2018, 1, otherCityTpta), slip(2018, 2, otherCityTpta), slip(2018, 3, 0.0), slip(2018, 4, otherCityTpta))
+            assertEquals(1, drafts("03/2018").size, "proven, so a letter exists")
+
+            importMonths(slip(2018, 3, otherCityTpta))
+
+            assertTrue(tptaRows("03/2018").isEmpty(), "March now pays TPTA")
+            assertTrue(drafts("03/2018").isEmpty(), "the finding was addressed, so its letter is removed")
+        }
+
+    @Test
+    fun aLetterForAStillProvenFindingIsKeptAndItsEditsSurvive() =
+        runTest {
+            importMonths(slip(2018, 1, otherCityTpta), slip(2018, 2, otherCityTpta), slip(2018, 3, 0.0), slip(2018, 4, otherCityTpta))
+            val letter = drafts("03/2018").single()
+            dao.insertRepresentationDraft(letter.copy(bodyText = "edited by the officer"))
+
+            importMonths(slip(2018, 5, otherCityTpta))
+
+            assertEquals("edited by the officer", drafts("03/2018").single().bodyText)
+        }
+
+    @Test
+    fun aLetterOfAnOlderTypeThatTheAuditNeverDraftsIsLeftAlone() =
+        runTest {
+            heldMarch()
+            val legacy =
+                com.payslipmax.pdfparser.database.RepresentationDraftEntity("legacy", "03/2018", "SALARY_DROP", "PCDA", "s", "b", 1L)
+            dao.insertRepresentationDraft(legacy)
+
+            importMonths(slip(2018, 4, higherCityTpta))
+
+            assertEquals(listOf(legacy), drafts("03/2018"))
+        }
 }

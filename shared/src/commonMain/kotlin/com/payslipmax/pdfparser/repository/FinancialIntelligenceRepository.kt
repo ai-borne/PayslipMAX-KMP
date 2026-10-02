@@ -71,7 +71,7 @@ open class FinancialIntelligenceRepository(
     /**
      * Saves a parsed payslip into the ledger, executes the local deterministic checks,
      * updates database records, and automatically triggers representation drafts. It then re-audits the
-     * earlier months this payslip can change (see [reauditEarlierMonths]).
+     * neighbouring months this payslip can change (see [reauditNeighbourMonths]).
      */
     open suspend fun processPayslipAndRunAnalysis(
         payslip: ParsedPayslip,
@@ -86,27 +86,28 @@ open class FinancialIntelligenceRepository(
             val history = payslipDao.getAllLedgerRecords().firstOrNull() ?: emptyList()
             val engineResult = auditMonth(currentRecord, history, payslip.officer)
 
-            reauditEarlierMonths(currentRecord, history, payslip.officer)
+            reauditNeighbourMonths(currentRecord, history, payslip.officer)
 
             engineResult
         }
 
     /**
-     * Re-runs the audit for every stored month in the [TptaAbsenceExplainer.RELOCATION_WINDOW_MONTHS]
-     * before [imported] — the only months whose verdict a newly imported payslip can change: a TPTA gap
-     * held as pending until a later payslip arrived either resolves (its pending row is removed) or
-     * surfaces as a proven finding under the same row id. Driven by the stored ledger records, so a month
-     * whose payslip was deleted is never brought back. The officer on the imported payslip signs any
-     * letter a newly proven finding drafts (the history is one officer's).
+     * Re-runs the audit for every stored month within [TptaAbsenceExplainer.RELOCATION_WINDOW_MONTHS] of
+     * [imported], before or after it — the only months whose verdict a newly imported payslip can change.
+     * Earlier months: a TPTA gap held as pending until a later payslip arrived either resolves (its pending
+     * row is removed) or surfaces as a proven finding under the same row id. Later months (a backfill of an
+     * older payslip): a city sample now exists, so a later month's finding can appear or become held. Driven
+     * by the stored ledger records, so a month whose payslip was deleted is never brought back. The officer
+     * on the imported payslip signs any letter a newly proven finding drafts (the history is one officer's).
      */
-    private suspend fun reauditEarlierMonths(
+    private suspend fun reauditNeighbourMonths(
         imported: LedgerRecordEntity,
         history: List<LedgerRecordEntity>,
         officer: Officer,
     ) {
         val importedIndex = imported.year * 12 + imported.monthNum - 1
         history
-            .filter { importedIndex - (it.year * 12 + it.monthNum - 1) in 1..TptaAbsenceExplainer.RELOCATION_WINDOW_MONTHS }
+            .filter { kotlin.math.abs(importedIndex - (it.year * 12 + it.monthNum - 1)) in 1..TptaAbsenceExplainer.RELOCATION_WINDOW_MONTHS }
             .forEach { auditMonth(it, history, officer) }
     }
 
@@ -160,11 +161,17 @@ open class FinancialIntelligenceRepository(
         // (payslips supply both expected and actual amounts, and a verified authority is cited) —
         // an unproven heuristic (e.g. a bare SALARY_LOSS or an uncited MISSING_ALLOWANCE) never drafts
         // a formal complaint letter, and neither does a held (pending) finding, which is never proven.
-        // One letter per month and dispute type: a re-audit never stacks a duplicate, and never deletes a
-        // letter the officer may already have edited or sent.
+        // One letter per month and dispute type: a re-audit never stacks a duplicate. A letter whose finding no
+        // longer applies (addressed by a later payslip, or no longer proven) is removed with it; a letter for a
+        // still-proven finding is never touched, so the officer's edits survive. Letters of types the audit
+        // never drafts are left alone.
+        val provenTypes = engineResult.anomalies.filter { it.type in REPRESENTATION_DRAFT_TYPES && it.isProven() }.map { it.type }.toSet()
         val existingDrafts = payslipDao.getAllRepresentationDrafts().firstOrNull() ?: emptyList()
+        val stale = existingDrafts.filter { it.disputeMonth == dateStr && it.disputeType in REPRESENTATION_DRAFT_TYPES && it.disputeType !in provenTypes }
+        stale.forEach { payslipDao.deleteRepresentationDraft(it.id) }
+        val keptDrafts = existingDrafts - stale.toSet()
         engineResult.anomalies.forEach { anomaly ->
-            val alreadyDrafted = existingDrafts.any { it.disputeMonth == dateStr && it.disputeType == anomaly.type }
+            val alreadyDrafted = keptDrafts.any { it.disputeMonth == dateStr && it.disputeType == anomaly.type }
             if (anomaly.type in REPRESENTATION_DRAFT_TYPES && anomaly.isProven() && !alreadyDrafted) {
                 val draft =
                     RepresentationDraftGenerator.generateRepresentationDraft(
