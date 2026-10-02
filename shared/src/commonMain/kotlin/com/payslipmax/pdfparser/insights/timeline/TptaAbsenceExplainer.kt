@@ -9,7 +9,8 @@ import kotlin.math.abs
  * starts or ends), or the TPTA city class differs before and after the gap (the officer relocated).
  */
 internal object TptaAbsenceExplainer {
-    private const val RELOCATION_WINDOW_MONTHS = 6
+    /** How far either side of a month the explainer looks; also how far back an import must re-audit (Phase 7). */
+    const val RELOCATION_WINDOW_MONTHS = 6
 
     fun explains(
         timeline: ServiceTimeline,
