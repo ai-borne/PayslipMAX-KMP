@@ -7,7 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.runComposeUiTest
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
-import com.payslipmax.pdfparser.onboarding.OnboardingStorage
+import com.payslipmax.pdfparser.testing.FakeOnboardingStorage
 import com.payslipmax.pdfparser.ui.theme.PayAuditEntryStrings
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -26,22 +26,6 @@ import kotlin.test.assertTrue
 @Config(sdk = [34])
 @OptIn(ExperimentalTestApi::class)
 class PayAuditOrientationSheetTest {
-    private class FakeStorage(var introSeen: Boolean = false) : OnboardingStorage {
-        override fun getHasCompletedOnboarding() = true
-
-        override fun saveHasCompletedOnboarding(completed: Boolean) = Unit
-
-        override fun getHasSeenUploadCoachmark() = true
-
-        override fun saveHasSeenUploadCoachmark(seen: Boolean) = Unit
-
-        override fun getHasSeenPayAuditIntro() = introSeen
-
-        override fun saveHasSeenPayAuditIntro(seen: Boolean) {
-            introSeen = seen
-        }
-    }
-
     @Test
     fun sheetExplainsTimelineEvidenceAndExplainedChanges() =
         runComposeUiTest {
@@ -76,7 +60,7 @@ class PayAuditOrientationSheetTest {
     @Test
     fun gateShowsTheSheetOnFirstOpenAndRemembersTheDismissal() =
         runComposeUiTest {
-            val storage = FakeStorage()
+            val storage = FakeOnboardingStorage(hasCompletedOnboarding = true, hasSeenUploadCoachmark = true)
             setContent { PayAuditIntroGate(OnboardingManager(storage)) }
 
             onNodeWithText(PayAuditEntryStrings.orientationTitle).assertExists()
@@ -84,13 +68,13 @@ class PayAuditOrientationSheetTest {
             waitForIdle()
 
             onNodeWithText(PayAuditEntryStrings.orientationTitle).assertDoesNotExist()
-            assertTrue(storage.introSeen)
+            assertTrue(storage.getHasSeenPayAuditIntro())
         }
 
     @Test
     fun gateStaysClosedOnceTheIntroHasBeenSeen() =
         runComposeUiTest {
-            setContent { PayAuditIntroGate(OnboardingManager(FakeStorage(introSeen = true))) }
+            setContent { PayAuditIntroGate(OnboardingManager(FakeOnboardingStorage(hasCompletedOnboarding = true, hasSeenUploadCoachmark = true, hasSeenPayAuditIntro = true))) }
 
             onNodeWithText(PayAuditEntryStrings.orientationTitle).assertDoesNotExist()
         }

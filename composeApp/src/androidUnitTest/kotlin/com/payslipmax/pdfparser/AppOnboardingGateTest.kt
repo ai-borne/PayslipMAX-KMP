@@ -2,8 +2,8 @@ package com.payslipmax.pdfparser
 
 import androidx.compose.ui.test.*
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
-import com.payslipmax.pdfparser.onboarding.OnboardingStorage
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.testing.FakeOnboardingStorage
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.PayslipViewModel
@@ -26,24 +26,6 @@ import kotlin.test.Test
 class AppOnboardingGateTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: PayslipViewModel
-
-    private class FakeOnboardingStorage(
-        private var hasCompletedOnboarding: Boolean,
-    ) : OnboardingStorage {
-        override fun getHasCompletedOnboarding(): Boolean = hasCompletedOnboarding
-
-        override fun saveHasCompletedOnboarding(completed: Boolean) {
-            hasCompletedOnboarding = completed
-        }
-
-        override fun getHasSeenUploadCoachmark(): Boolean = false
-
-        override fun saveHasSeenUploadCoachmark(seen: Boolean) {}
-
-        override fun getHasSeenPayAuditIntro(): Boolean = false
-
-        override fun saveHasSeenPayAuditIntro(seen: Boolean) {}
-    }
 
     @BeforeTest
     fun setUp() {
