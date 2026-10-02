@@ -6,6 +6,7 @@ import com.payslipmax.pdfparser.domain.Officer
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.insights.*
 import com.payslipmax.pdfparser.insights.timeline.TptaAbsenceExplainer
+import com.payslipmax.pdfparser.logging.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -93,6 +94,40 @@ open class FinancialIntelligenceRepository(
             reauditNeighbourMonths(currentRecord, history, payslip.officer)
 
             engineResult
+        }
+
+    /**
+     * Rebuilds the derived data from [payslips] (the single source, corrections already applied): upserts
+     * every ledger row first, so each month is audited against the full history, then audits each month once
+     * in date order. Letters for still-proven findings are kept with their edits, stale ones are removed and
+     * a deleted-letter record still stops re-drafting. Each month's own officer signs its letter.
+     */
+    open suspend fun rebuildAuditHistory(payslips: List<ParsedPayslip>) =
+        withContext(dispatcher) {
+            val ordered = payslips.sortedWith(compareBy({ it.year }, { it.monthNum }))
+            payslipDao.insertLedgerRecords(ordered.map { it.toLedgerRecordEntity() })
+            val history = payslipDao.getAllLedgerRecords().firstOrNull() ?: emptyList()
+            val officers = ordered.associate { it.dateStr to it.officer }
+            history.forEach { record -> officers[record.dateStr]?.let { auditMonth(record, history, it) } }
+        }
+
+    /**
+     * One-time repair: rebuilds only when a payslip has no ledger row (a restore from before backups rebuilt
+     * derived data), so a complete ledger costs a single read. Never throws and never touches payslips,
+     * PDFs, settings or corrections; returns whether a rebuild ran to completion.
+     */
+    suspend fun repairAuditHistoryIfIncomplete(payslips: List<ParsedPayslip>): Boolean =
+        try {
+            val stored = withContext(dispatcher) { payslipDao.getAllLedgerRecords().firstOrNull() ?: emptyList() }.map { it.dateStr }.toSet()
+            if (payslips.all { it.dateStr in stored }) {
+                false
+            } else {
+                rebuildAuditHistory(payslips)
+                true
+            }
+        } catch (e: Exception) {
+            Logger.e("FinancialIntelligenceRepository", "Audit history repair failed", e)
+            false
         }
 
     /**
@@ -197,62 +232,4 @@ open class FinancialIntelligenceRepository(
 
         return engineResult
     }
-
-    private fun ParsedPayslip.toLedgerRecordEntity(): LedgerRecordEntity {
-        return LedgerRecordEntity(
-            dateStr = dateStr,
-            year = year,
-            monthNum = monthNum,
-            basicPay = earnings.basicPay,
-            dearnessAllowance = earnings.dearnessAllowance,
-            militaryServicePay = earnings.militaryServicePay,
-            transportAllowance = earnings.transportAllowance,
-            transportAllowanceDa = earnings.transportAllowanceDa,
-            houseRentAllowance = earnings.houseRentAllowance,
-            grossPay = summary.grossPay,
-            dsopSubscription = deductions.dsopSubscription,
-            incomeTax = deductions.incomeTax,
-            netPay = summary.netRemittance,
-            riskHardshipAllowance = earnings.riskHardshipAllowance,
-            fieldAllowance = earnings.fieldAllowance,
-            licenseFee = deductions.licenseFee,
-            furnitureRent = deductions.furnitureRent,
-            arrearsDa = earnings.arrearsDa,
-            arrearsTpta = earnings.arrearsTpta,
-            arrearsTptaDa = earnings.arrearsTptaDa,
-            adjTpta = earnings.adjTpta,
-            adjMsp = earnings.adjMsp,
-            needsReview = needsReview,
-        )
-    }
-
-    private fun mapAnomalyTypeToCategory(type: String): String {
-        return when (type) {
-            "SALARY_LOSS", "DEBIT_RECOVERY", "INCREMENT_MISSED", "MSP_SHORTFALL" -> "SALARY_LOSS"
-            "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "ARREARS_AUDIT" -> "ALLOWANCE"
-            "DEDUCTION_SPIKE", "RENT_RECOVERY_RISK", "TAX_PROJECTION" -> "TAX"
-            "DSOP_COMPLIANCE", "DSOP_MILESTONE" -> "RETIREMENT"
-            else -> "INFO"
-        }
-    }
-
-    private fun mapAnomalyTypeToTitle(type: String): String {
-        return when (type) {
-            "SALARY_LOSS" -> "Salary Reduction Detected"
-            "MISSING_ALLOWANCE" -> "Missing Pay Allowance"
-            "TPTA_ENTITLEMENT" -> "TPTA Entitlement Advisory"
-            "DEDUCTION_SPIKE" -> "Deduction Spike Alert"
-            "DSOP_COMPLIANCE" -> "DSOP Subscription Advisory"
-            "RENT_RECOVERY_RISK" -> "Quarters Rent Recovery Risk"
-            "DEBIT_RECOVERY" -> "Unexpected Debit Recovery"
-            "DSOP_MILESTONE" -> "DSOP Milestone Credited"
-            "TAX_PROJECTION" -> "Income Tax Cycle Projection"
-            "ARREARS_AUDIT" -> "Dearness Allowance Arrears Verified"
-            "INCREMENT_MISSED" -> "Annual Increment Not Applied"
-            "MSP_SHORTFALL" -> "Military Service Pay Shortfall"
-            else -> "Financial Advisory"
-        }
-    }
-
-    private fun mapAnomalyTypeToSeverity(type: String): String = AnomalySeverityMapper.severityOf(type).toPersistedString()
 }

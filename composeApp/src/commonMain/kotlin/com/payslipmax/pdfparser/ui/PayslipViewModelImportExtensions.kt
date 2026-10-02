@@ -128,7 +128,7 @@ fun PayslipViewModel.onDismissImport() = startImport()
 private suspend fun PayslipViewModel.handleSuccessfulImport(parsed: ParsedPayslip) {
     pendingImportPdfBytes = null
     pendingImportFilename = null
-    financialIntelligenceRepository?.processPayslipAndRunAnalysis(parsed)
+    auditImported(parsed)
     _uiState.update { state ->
         val isNew = state.payslips.none { it.dateStr == parsed.dateStr }
         lastImportWasNewPayslip = isNew

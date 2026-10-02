@@ -16,6 +16,8 @@ import kotlinx.serialization.json.Json
 class PayslipBackupService(
     private val payslipDao: PayslipDao,
     private val dispatcher: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.Default,
+    private val payslipRepository: PayslipRepository? = null,
+    private val intelligence: FinancialIntelligenceRepository? = null,
 ) {
     /**
      * Exports everything the user created (payslips, PDFs, settings, letters, deleted-letter records,
@@ -138,11 +140,27 @@ class PayslipBackupService(
                     payslipDao.mergeBackup(rows)
                 }
 
+                rebuildDerivedData()
                 Result.success(Unit)
             } catch (e: Exception) {
                 Result.failure(e)
             }
         }
+
+    /**
+     * The ledger and insights are never stored in a backup, so they are rebuilt from the restored payslips
+     * (corrections applied, as Pay Audit shows them). The restore is already committed by now, so a failure
+     * here is logged without PII and left to the startup repair instead of failing the restore.
+     */
+    private suspend fun rebuildDerivedData() {
+        val repository = payslipRepository ?: return
+        val intelligence = intelligence ?: return
+        try {
+            intelligence.rebuildAuditHistory(repository.getAllPayslips().first())
+        } catch (e: Exception) {
+            Logger.e("PayslipBackupService", "Rebuilding ledger and insights after restore failed", e)
+        }
+    }
 }
 
 /** Tolerates fields added by a later app version, so an older build still restores what it understands. */

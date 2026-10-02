@@ -24,10 +24,6 @@ val sharedModule: Module =
             get<PayslipDatabase>().payslipDao()
         }
 
-        single {
-            PayslipBackupService(get())
-        }
-
         single<PdfParser> {
             com.payslipmax.pdfparser.parser.PlatformPdfParser()
         }
@@ -38,6 +34,10 @@ val sharedModule: Module =
 
         single {
             com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository(get())
+        }
+
+        single {
+            PayslipBackupService(get(), payslipRepository = get(), intelligence = get())
         }
 
         single<com.payslipmax.pdfparser.telemetry.CrashReporter> {
