@@ -95,6 +95,9 @@ class PayslipBackupService(
 
                 val jsonStr = decryptResult.getOrThrow().decodeToString()
                 val backup = lenientJson.decodeFromString(PortableBackup.serializer(), jsonStr)
+                if (backup.version > PortableBackup.CURRENT_VERSION) {
+                    return@withContext Result.failure(UnsupportedBackupVersionException(backup.version))
+                }
 
                 // Decode and re-encrypt every payslip *before* touching the database: one unreadable row
                 // then fails the restore with the device's data untouched, instead of after a wipe.

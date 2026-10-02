@@ -169,7 +169,7 @@ class PayslipBackupServiceV3Test {
         runTest {
             val future =
                 buildJsonObject {
-                    put("version", 4)
+                    put("version", 3)
                     put(
                         "encryptedPayslips",
                         Json.encodeToJsonElement(ListSerializer(EncryptedPayslipEntity.serializer()), listOf(goodEntity("08/2024"))),

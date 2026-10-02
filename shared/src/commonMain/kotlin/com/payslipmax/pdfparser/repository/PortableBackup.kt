@@ -45,3 +45,11 @@ enum class RestoreMode {
     REPLACE,
     MERGE,
 }
+
+/**
+ * Thrown when a backup was written by a newer app than this one. Its message is shown to the user as the
+ * restore error, so it says what to do.
+ */
+class UnsupportedBackupVersionException(
+    val backupVersion: Int,
+) : Exception("This backup was made by a newer version of PayslipMax. Update the app, then restore again.")
