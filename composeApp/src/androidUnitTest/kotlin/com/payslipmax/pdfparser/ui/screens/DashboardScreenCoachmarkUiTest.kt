@@ -2,8 +2,8 @@ package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.ui.test.*
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
-import com.payslipmax.pdfparser.onboarding.OnboardingStorage
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.testing.FakeOnboardingStorage
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.PayslipViewModel
@@ -53,7 +53,7 @@ class DashboardScreenCoachmarkUiTest {
                 DashboardScreen(
                     viewModel = viewModel,
                     onPickPdf = {},
-                    onboardingManager = OnboardingManager(FakeOnboardingStorage(hasSeenUploadCoachmark = false)),
+                    onboardingManager = OnboardingManager(FakeOnboardingStorage(hasCompletedOnboarding = true, hasSeenUploadCoachmark = false)),
                 )
             }
             testDispatcher.scheduler.runCurrent()
@@ -73,28 +73,11 @@ class DashboardScreenCoachmarkUiTest {
                 DashboardScreen(
                     viewModel = viewModel,
                     onPickPdf = {},
-                    onboardingManager = OnboardingManager(FakeOnboardingStorage(hasSeenUploadCoachmark = true)),
+                    onboardingManager = OnboardingManager(FakeOnboardingStorage(hasCompletedOnboarding = true, hasSeenUploadCoachmark = true)),
                 )
             }
             testDispatcher.scheduler.runCurrent()
 
             onNodeWithTag("upload_coachmark").assertDoesNotExist()
         }
-
-    private class FakeOnboardingStorage(
-        private var hasCompletedOnboarding: Boolean = true,
-        private var hasSeenUploadCoachmark: Boolean = false,
-    ) : OnboardingStorage {
-        override fun getHasCompletedOnboarding(): Boolean = hasCompletedOnboarding
-
-        override fun saveHasCompletedOnboarding(completed: Boolean) {
-            hasCompletedOnboarding = completed
-        }
-
-        override fun getHasSeenUploadCoachmark(): Boolean = hasSeenUploadCoachmark
-
-        override fun saveHasSeenUploadCoachmark(seen: Boolean) {
-            hasSeenUploadCoachmark = seen
-        }
-    }
 }

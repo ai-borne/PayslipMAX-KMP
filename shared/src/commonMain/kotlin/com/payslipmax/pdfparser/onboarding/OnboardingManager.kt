@@ -19,4 +19,10 @@ class OnboardingManager(
     fun onCoachmarkDismissed() {
         storage.saveHasSeenUploadCoachmark(true)
     }
+
+    fun shouldShowPayAuditIntro(): Boolean = !storage.getHasSeenPayAuditIntro()
+
+    fun onPayAuditIntroDismissed() {
+        storage.saveHasSeenPayAuditIntro(true)
+    }
 }

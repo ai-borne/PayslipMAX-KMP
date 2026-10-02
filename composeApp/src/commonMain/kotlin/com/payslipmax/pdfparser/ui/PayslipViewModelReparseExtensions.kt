@@ -19,6 +19,7 @@ fun PayslipViewModel.reparseAllPayslips(
         _uiState.update { it.copy(isLoading = true, error = null) }
         try {
             val summary = repository.reparseAllPayslips(password)
+            refreshAuditHistory()
             _uiState.update { it.copy(isLoading = false) }
             onComplete(Result.success(summary))
         } catch (e: Exception) {

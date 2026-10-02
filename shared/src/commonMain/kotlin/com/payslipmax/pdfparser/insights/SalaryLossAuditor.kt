@@ -25,10 +25,10 @@ class SalaryLossAuditor : RuleAuditor {
 
             val reason =
                 when {
-                    hraDiff > 0.0 -> "primarily due to the absence or reduction of House Rent Allowance (HRA) by ₹${hraDiff.toInt()}"
-                    basicDiff > 0.0 -> "due to an adjustment or drop in Basic Pay by ₹${basicDiff.toInt()}"
-                    taxDiff > 0.0 -> "due to a spike in Income Tax deductions by ₹${taxDiff.toInt()}"
-                    else -> "due to minor fluctuations across multiple pay and deduction elements"
+                    hraDiff > 0.0 -> "because House Rent Allowance (HRA) is ${PayAuditWording.rupees(hraDiff)} lower"
+                    basicDiff > 0.0 -> "because Basic Pay is ${PayAuditWording.rupees(basicDiff)} lower"
+                    taxDiff > 0.0 -> "because ${PayAuditWording.rupees(taxDiff)} more Income Tax was deducted"
+                    else -> "because several pay and deduction items changed a little"
                 }
 
             anomalies.add(
@@ -37,7 +37,7 @@ class SalaryLossAuditor : RuleAuditor {
                     field = "netPay",
                     amount = netLoss,
                     month = current.dateStr,
-                    description = "Your net salary reduced by ₹${netLoss.toInt()} compared to the previous month, $reason.",
+                    description = "Your net pay is ${PayAuditWording.rupees(netLoss)} lower than on your previous payslip, $reason.",
                 ),
             )
         }

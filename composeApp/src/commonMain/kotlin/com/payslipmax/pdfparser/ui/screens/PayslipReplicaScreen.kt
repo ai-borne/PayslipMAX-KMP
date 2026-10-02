@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.payslipmax.pdfparser.domain.EntryCategory
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.SingleCorrection
@@ -74,34 +74,13 @@ fun PayslipReplicaScreen(
                     .detailScreenSafeArea()
                     .verticalScroll(rememberScrollState())
                     .padding(AppDimensions.PaddingMedium)
-                    .padding(bottom = if (isEditModeActive) 80.dp else 0.dp),
+                    .then(if (isEditModeActive) Modifier.padding(bottom = AppDimensions.BannerClearance) else Modifier),
         ) {
-            ReplicaHeader(onBackClick, isEditModeActive, onStartEditing, onCancelSession)
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-
-            MetadataSection(
-                payslip = payslip,
-                profileName = profileName,
-                profileCda = profileCda,
-                profilePan = profilePan,
-            )
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-
-            PdfDocumentCard(payslip = payslip, onViewPdfClick = onViewPdfClick)
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
-
-            LedgerSection(
-                payslip = payslip,
+            ReplicaSections(
+                payslip, onBackClick, onViewPdfClick, onCorrectField, isEditModeActive, draftCorrections, onStartEditing, onUpdateDraft, onDeleteDraft,
+                onCancelSession, Triple(profileName, profileCda, profilePan),
                 onItemClick = { code, desc -> activeGlossaryItem = code to desc },
-                onCorrectField = onCorrectField,
-                isEditModeActive = isEditModeActive,
-                draftCorrections = draftCorrections,
-                onUpdateDraft = onUpdateDraft,
-                onDeleteDraft = onDeleteDraft,
             )
-
-            Spacer(modifier = Modifier.height(AppDimensions.SpacingHuge))
-            FooterSection()
         }
 
         if (isEditModeActive) {
@@ -112,6 +91,45 @@ fun PayslipReplicaScreen(
             GlossaryDialog(code = code, desc = desc, onDismiss = { activeGlossaryItem = null })
         }
     }
+}
+
+/** The ordered sections of a replica payslip, laid out inside the screen's scrolling column. */
+@Composable
+private fun ColumnScope.ReplicaSections(
+    payslip: ParsedPayslip,
+    onBackClick: () -> Unit,
+    onViewPdfClick: (String) -> Unit,
+    onCorrectField: (fieldKey: String, newValue: Double) -> Unit,
+    isEditModeActive: Boolean,
+    draftCorrections: Map<String, SingleCorrection>,
+    onStartEditing: () -> Unit,
+    onUpdateDraft: (SingleCorrection) -> Unit,
+    onDeleteDraft: (fieldKey: String, codeHead: String, category: EntryCategory, originalAmount: Double?) -> Unit,
+    onCancelSession: () -> Unit,
+    profile: Triple<String, String, String>,
+    onItemClick: (code: String, desc: String) -> Unit,
+) {
+    ReplicaHeader(onBackClick, isEditModeActive, onStartEditing, onCancelSession)
+    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+
+    MetadataSection(payslip = payslip, profileName = profile.first, profileCda = profile.second, profilePan = profile.third)
+    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+
+    PdfDocumentCard(payslip = payslip, onViewPdfClick = onViewPdfClick)
+    Spacer(modifier = Modifier.height(AppDimensions.SpacingLarge))
+
+    LedgerSection(
+        payslip = payslip,
+        onItemClick = onItemClick,
+        onCorrectField = onCorrectField,
+        isEditModeActive = isEditModeActive,
+        draftCorrections = draftCorrections,
+        onUpdateDraft = onUpdateDraft,
+        onDeleteDraft = onDeleteDraft,
+    )
+
+    Spacer(modifier = Modifier.height(AppDimensions.SpacingHuge))
+    FooterSection()
 }
 
 @Composable

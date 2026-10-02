@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 class PayslipViewModel(
     internal val repository: PayslipRepository,
     internal val financialIntelligenceRepository: com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository? = null,
+    internal val backupService: com.payslipmax.pdfparser.repository.PayslipBackupService? = null,
     internal val gemmaBaseModelInstaller: GemmaBaseModelInstaller = provideGemmaBaseModelInstaller(),
     internal val gemmaModelStorage: GemmaModelStorageManager = GemmaModelStorageManager(),
     internal val gemmaInstallTelemetry: GemmaInstallTelemetry = provideGemmaInstallTelemetry(),
@@ -75,6 +76,9 @@ class PayslipViewModel(
     // duplicate import never counts as a fresh "positive moment".
     internal var lastImportWasNewPayslip: Boolean = false
 
+    // The startup ledger repair runs after the first payslip emission only (see PayslipViewModelAuditRepair.kt).
+    internal var auditRepairChecked: Boolean = false
+
     init {
         verifyAppIntegrity()
         checkGemmaSupport()
@@ -105,6 +109,7 @@ class PayslipViewModel(
             _uiState.update { it.copy(isLoading = true) }
             try {
                 repository.getAllPayslips().collect { list ->
+                    repairAuditHistoryOnce(list)
                     val nextSelected = _uiState.value.selectedPayslip ?: list.lastOrNull()
                     val latestYear = list.maxOfOrNull { it.year }
                     val optimizationResult = computeTaxOptimization(list, nextSelected)
@@ -170,7 +175,7 @@ class PayslipViewModel(
             if (result.isSuccess) {
                 val parsed = result.getOrNull()
                 if (parsed != null) {
-                    financialIntelligenceRepository?.processPayslipAndRunAnalysis(parsed)
+                    auditImported(parsed)
                 }
                 _uiState.update { state ->
                     val updatedPayslips =

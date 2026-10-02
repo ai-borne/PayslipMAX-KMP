@@ -53,6 +53,20 @@ class AdvancedAnomaliesCardTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
+    fun rendersThePendingNoteForAHeldTptaFinding() =
+        runComposeUiTest {
+            // P7-08's SSOT claim (PayAuditStrings evidence labels shared with PayAuditFindingRow) must
+            // hold for isPending too (P7-17b), or the same finding looks confirmed here but held there.
+            val anomaly = Anomaly("TPTA_ENTITLEMENT", "transportAllowance", 0.0, "02/2026", "TPTA missing, held pending", isPending = true)
+            setContent {
+                AdvancedAnomaliesCard(anomalies = listOf(anomaly), hasAnomalyDetection = true)
+            }
+
+            onNodeWithText("Pending — waiting for a later payslip to confirm this").assertExists()
+        }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
     fun rendersNothingWhenHasAnomalyDetectionIsFalse() =
         runComposeUiTest {
             // Defense in depth: in production this card is only ever reached from the PRO-dissolve

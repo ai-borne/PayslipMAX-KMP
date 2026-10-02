@@ -16,14 +16,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
+import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
+import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
 
 @Composable
 fun PremiumToolsSection(
     onNavigateTo: (Screen) -> Unit,
     modifier: Modifier = Modifier,
+    payAuditFindings: Int = 0,
 ) {
     val tools = quickAccessTools()
     FlatBorderedCard(modifier = modifier, tint = CardTint.Accent) {
@@ -32,6 +35,17 @@ fun PremiumToolsSection(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
+        )
+        // Pay Audit is gated by ANOMALY_DETECTION but deliberately has no catalog target (the Dashboard
+        // entry stays free), so its ribbon is built here from that row's gate and icon.
+        PremiumToolCard(
+            spec =
+                featureMeta(FeatureGate.ANOMALY_DETECTION).copy(
+                    title = PayAuditStrings.screenTitle,
+                    description = PayAuditStrings.entryCardSubtitle,
+                ),
+            badge = payAuditBadgeLabel(payAuditFindings),
+            onClick = { onNavigateTo(Screen.PayAudit) },
         )
         tools.forEach { tool ->
             PremiumToolCard(
@@ -53,6 +67,7 @@ private fun PremiumToolCard(
     spec: PremiumFeatureMeta,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    badge: String? = null,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -72,12 +87,7 @@ private fun PremiumToolCard(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
             ) {
-                Text(
-                    text = spec.title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+                PremiumToolTitle(title = spec.title, badge = badge)
                 Text(
                     text = spec.description,
                     style = MaterialTheme.typography.bodySmall,
@@ -90,6 +100,29 @@ private fun PremiumToolCard(
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun PremiumToolTitle(
+    title: String,
+    badge: String?,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        if (badge != null) {
+            Text(
+                text = badge,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.error,
+            )
         }
     }
 }

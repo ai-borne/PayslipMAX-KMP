@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -125,4 +126,61 @@ interface PayslipDao {
 
     @Query("DELETE FROM representation_drafts")
     suspend fun clearAllRepresentationDrafts()
+
+    // Dismissed (deleted-by-the-officer) letters
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDismissedDraft(dismissed: DismissedDraftEntity)
+
+    @Query("SELECT * FROM dismissed_drafts")
+    suspend fun getAllDismissedDrafts(): List<DismissedDraftEntity>
+
+    @Query("DELETE FROM dismissed_drafts WHERE disputeMonth = :disputeMonth AND disputeType = :disputeType")
+    suspend fun deleteDismissedDraft(
+        disputeMonth: String,
+        disputeType: String,
+    )
+
+    @Query("DELETE FROM dismissed_drafts")
+    suspend fun clearAllDismissedDrafts()
+
+    /**
+     * Empties every table that holds user or derived data. The single list of those tables, shared by
+     * "clear all data" and the REPLACE restore; app settings are deliberately excluded because they carry
+     * the device's own entitlement.
+     */
+    @Transaction
+    suspend fun clearAllUserData() {
+        clearAll()
+        clearAllCorrections()
+        clearAllLedgerRecords()
+        clearAllFinancialInsights()
+        clearAllRepresentationDrafts()
+        clearAllDismissedDrafts()
+        clearAllPdfs()
+    }
+
+    /**
+     * REPLACE restore as one transaction: either the device ends up an exact copy of the backup or, if
+     * any write fails, it is left exactly as it was.
+     */
+    @Transaction
+    suspend fun replaceWithBackup(
+        rows: BackupRows,
+        settings: AppSettingsEntity,
+    ) {
+        clearAllUserData()
+        clearSettings()
+        insertSettings(settings)
+        mergeBackup(rows)
+    }
+
+    /** MERGE restore as one transaction: the backup's rows are layered on top of what the device holds. */
+    @Transaction
+    suspend fun mergeBackup(rows: BackupRows) {
+        insertPayslips(rows.payslips)
+        rows.pdfs.forEach { insertPayslipPdf(it) }
+        rows.drafts.forEach { insertRepresentationDraft(it) }
+        rows.dismissedDrafts.forEach { insertDismissedDraft(it) }
+        rows.corrections.forEach { insertCorrection(it) }
+    }
 }

@@ -49,4 +49,12 @@ class FormatCurrencyTest {
         assertEquals("₹1,23,45,678", formatCurrency(12345678.0))
         assertEquals("-₹1,23,45,678", formatCurrency(-12345678.0))
     }
+
+    // WHY: one rounding rule app-wide (PayAuditWording), so a finding's "₹9,871" and a screen's amount never differ by ₹1.
+    @Test
+    fun fractionsRoundLikeTheFindingsDoAndNeverShowNegativeZero() {
+        assertEquals("₹9,871", formatCurrency(9870.6))
+        assertEquals("-₹9,871", formatCurrency(-9870.6))
+        assertEquals("₹0", formatCurrency(-0.4))
+    }
 }

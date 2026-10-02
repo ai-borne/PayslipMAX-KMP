@@ -98,8 +98,11 @@ jobs:
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
 
+      - name: Test the Tech Debt Audit Script
+        run: python3 -m unittest discover -s scripts/tests
+
       - name: Audit Tech Debt Limits and Regressions
-        run: python3 scripts/check_tech_debt_limits.py
+        run: python3 scripts/check_tech_debt_limits.py --strict
 
       - name: Check Room Schema Immutability
         run: python3 scripts/check_schema_immutability.py

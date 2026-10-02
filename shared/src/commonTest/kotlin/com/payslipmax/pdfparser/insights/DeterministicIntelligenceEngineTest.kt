@@ -1,8 +1,15 @@
 package com.payslipmax.pdfparser.insights
 
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
+import com.payslipmax.pdfparser.domain.Deductions
+import com.payslipmax.pdfparser.domain.Earnings
+import com.payslipmax.pdfparser.domain.LedgerBalances
+import com.payslipmax.pdfparser.domain.Officer
+import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.domain.PayslipSummary
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class DeterministicIntelligenceEngineTest {
@@ -36,6 +43,73 @@ class DeterministicIntelligenceEngineTest {
             incomeTax = tax,
             netPay = net,
         )
+    }
+
+    private fun parsedPayslip(
+        year: Int,
+        month: Int,
+        basicPay: Double,
+    ) = ParsedPayslip(
+        file = "t.pdf",
+        year = year,
+        monthNum = month,
+        monthName = "",
+        dateStr = "$month/$year",
+        officer = Officer("N", "A", "P"),
+        earnings = Earnings(basicPay = basicPay),
+        deductions = Deductions(),
+        ledgerBalances = LedgerBalances(),
+        summary = PayslipSummary(0.0, 0.0, 0.0),
+        taxAndSavings = null,
+    )
+
+    /** Pay Audit (docs/Plan/09_PayAudit_PhasePlan.md Phase 4): EngineResult must expose the timeline
+     * it already builds internally, and the current month's change explanations derived from it. */
+    @Test
+    fun testEngineResultExposesTimelineAndChangeExplanations() {
+        val previous = parsedPayslip(2018, 6, 82800.0)
+        val current = parsedPayslip(2018, 7, 85300.0)
+
+        val result = DeterministicIntelligenceEngine.analyze(current, previous, listOf(previous, current))
+
+        assertTrue(result.timeline.months.isNotEmpty(), "EngineResult should expose the ServiceTimeline built for this run")
+        val basicPayChange = result.changeExplanations.find { it.field == "basicPay" }
+        assertNotNull(basicPayChange, "Should explain the basic-pay rise via the timeline-based increment rule")
+        assertTrue(basicPayChange.reason!!.contains("increment", ignoreCase = true))
+    }
+
+    /** Phase 8 P7-12: EngineResult must expose every explained transition across the whole history, not
+     * just [EngineResult.changeExplanations]' current-month subset. */
+    @Test
+    fun testEngineResultExposesAllChangeExplanationsAcrossTheWholeHistory() {
+        val first = parsedPayslip(2018, 6, 82800.0)
+        val second = parsedPayslip(2018, 7, 85300.0)
+        val third = parsedPayslip(2019, 9, 90500.0)
+        val current = parsedPayslip(2019, 10, 121200.0)
+
+        val result = DeterministicIntelligenceEngine.analyze(current, third, listOf(first, second, third))
+
+        val basicPayChanges = result.allChangeExplanations.filter { it.field == "basicPay" }
+        assertEquals(3, basicPayChanges.size, "One tracked basicPay change per consecutive pair across 4 stored months")
+        assertTrue(basicPayChanges.any { it.reason?.contains("Promotion") == true }, "Should explain the 2019/10 promotion")
+    }
+
+    /** Pay Audit Phase 6: EngineResult must expose the next-increment prediction and DSOP room it derives
+     * from the same timeline/history it already builds internally, with no user input. */
+    @Test
+    fun testEngineResultExposesIncrementPredictionAndDsopRoom() {
+        val previous = parsedPayslip(2018, 6, 82800.0)
+        val current = parsedPayslip(2018, 7, 85300.0)
+
+        val result = DeterministicIntelligenceEngine.analyze(current, previous, listOf(previous, current))
+
+        val prediction = assertNotNull(result.incrementPrediction, "should predict the next DNI from the increment just seen")
+        assertEquals(2019, prediction.date.year)
+        assertEquals(7, prediction.date.month)
+
+        val dsopRoom = assertNotNull(result.dsopRoom, "DSOP room should always be computed, even at zero subscription")
+        assertEquals("FY 2018-19", dsopRoom.financialYearLabel)
+        assertEquals(500000.0, dsopRoom.roomLeft)
     }
 
     @Test
@@ -83,6 +157,78 @@ class DeterministicIntelligenceEngineTest {
         val dsopAnomaly = result.anomalies.find { it.type == "DSOP_COMPLIANCE" }
         assertTrue(dsopAnomaly != null, "Should flag zero DSOP contribution compliance error")
         assertTrue(result.healthScore <= 75, "Zero DSOP contribution should severely impact the score")
+    }
+
+    private fun parsedPayslipWithNetPay(
+        year: Int,
+        month: Int,
+        netRemittance: Double,
+        needsReview: Boolean = false,
+    ) = parsedPayslip(year, month, 85300.0)
+        .copy(summary = PayslipSummary(grossPay = netRemittance, totalDeductions = 0.0, netRemittance = netRemittance), needsReview = needsReview)
+
+    /** Phase 8 P7-20: plain (non-[TimelineAuditor]) auditors never fire on a needsReview parse. */
+    @Test
+    fun testPlainAuditorsDoNotFireOnANeedsReviewMonth() {
+        val previous = parsedPayslipWithNetPay(2026, 4, netRemittance = 100000.0)
+        val current = parsedPayslipWithNetPay(2026, 5, netRemittance = 90000.0, needsReview = true)
+
+        val result = DeterministicIntelligenceEngine.analyze(current, previous, emptyList())
+
+        assertTrue(result.anomalies.none { it.type == "SALARY_LOSS" }, "SALARY_LOSS should not fire on a needsReview month")
+    }
+
+    /** P7-18 (docs/Plan/09_PayAudit_PhasePlan.md): the ledger-backed [LedgerRecordEntity] path now
+     * carries arrearsDa, so DaArrearsAuditor sees it on the Insights-tab path, not just PayAuditScreen's. */
+    @Test
+    fun testArrearsDaIsAuditedViaTheLedgerBackedPath() {
+        val payBase = 85300.0 + 15500.0
+        val previous =
+            LedgerRecordEntity(
+                dateStr = "07/2018", year = 2018, monthNum = 7,
+                basicPay = 85300.0, dearnessAllowance = payBase * 0.17, militaryServicePay = 15500.0,
+                transportAllowance = 3600.0, transportAllowanceDa = 0.0, houseRentAllowance = 0.0,
+                grossPay = 0.0, dsopSubscription = 0.0, incomeTax = 0.0, netPay = 0.0,
+            )
+        val current =
+            LedgerRecordEntity(
+                dateStr = "09/2018", year = 2018, monthNum = 9,
+                basicPay = 85300.0, dearnessAllowance = payBase * 0.21, militaryServicePay = 15500.0,
+                transportAllowance = 3600.0, transportAllowanceDa = 0.0, houseRentAllowance = 0.0,
+                grossPay = 0.0, dsopSubscription = 0.0, incomeTax = 0.0, netPay = 0.0,
+                arrearsDa = payBase * 0.04 * 2,
+            )
+
+        val result = DeterministicIntelligenceEngine.analyze(current, previous, listOf(previous))
+
+        val arrearsFinding = result.anomalies.find { it.field == "arrearsDa" }
+        assertNotNull(arrearsFinding, "DaArrearsAuditor should see arrearsDa read from the ledger, not just default to 0.0")
+        assertEquals("ARREARS_AUDIT", arrearsFinding.type, "Paid exactly the expected amount, so this should verify, not flag a loss")
+    }
+
+    /** P7-18: needsReview now round-trips through [LedgerRecordEntity], so Phase 8's P7-20 gate (plain
+     * auditors skip a needsReview month) actually applies on the Insights-tab path, not just a no-op. */
+    @Test
+    fun testNeedsReviewOnALedgerRecordGatesPlainAuditors() {
+        val previous =
+            LedgerRecordEntity(
+                dateStr = "04/2026", year = 2026, monthNum = 4,
+                basicPay = 85300.0, dearnessAllowance = 27000.0, militaryServicePay = 15500.0,
+                transportAllowance = 3600.0, transportAllowanceDa = 0.0, houseRentAllowance = 27000.0,
+                grossPay = 100000.0, dsopSubscription = 12000.0, incomeTax = 7200.0, netPay = 80800.0,
+            )
+        val current =
+            LedgerRecordEntity(
+                dateStr = "05/2026", year = 2026, monthNum = 5,
+                basicPay = 85300.0, dearnessAllowance = 27000.0, militaryServicePay = 15500.0,
+                transportAllowance = 3600.0, transportAllowanceDa = 0.0, houseRentAllowance = 0.0,
+                grossPay = 90000.0, dsopSubscription = 12000.0, incomeTax = 7200.0, netPay = 70800.0,
+                needsReview = true,
+            )
+
+        val result = DeterministicIntelligenceEngine.analyze(current, previous, emptyList())
+
+        assertTrue(result.anomalies.none { it.type == "SALARY_LOSS" }, "SALARY_LOSS should not fire on a needsReview ledger month")
     }
 
     @Test

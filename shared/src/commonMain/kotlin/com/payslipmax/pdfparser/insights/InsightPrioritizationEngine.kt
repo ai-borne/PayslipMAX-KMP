@@ -49,13 +49,16 @@ object InsightPrioritizationEngine {
             "DSOP_COMPLIANCE" -> if (amount > 0.0) 7 else 5
             "DSOP_MILESTONE" -> 6
             "TAX_PROJECTION" -> 6
+            "INCREMENT_MISSED", "MSP_SHORTFALL" -> 8
             else -> 5
         }
     }
 
     private fun getConfidence(type: String): Int {
         return when (type) {
-            "SALARY_LOSS", "DEBIT_RECOVERY", "ARREARS_AUDIT", "TPTA_ENTITLEMENT", "DSOP_COMPLIANCE", "DSOP_MILESTONE" -> 10
+            "SALARY_LOSS", "DEBIT_RECOVERY", "ARREARS_AUDIT", "TPTA_ENTITLEMENT", "DSOP_COMPLIANCE", "DSOP_MILESTONE",
+            "INCREMENT_MISSED", "MSP_SHORTFALL",
+            -> 10
             "MISSING_ALLOWANCE", "DEDUCTION_SPIKE", "TAX_PROJECTION" -> 9
             "RENT_RECOVERY_RISK" -> 8
             else -> 8
@@ -75,7 +78,7 @@ object InsightPrioritizationEngine {
             "RENT_RECOVERY_RISK" -> 10
             "TPTA_ENTITLEMENT" -> 9
             "DSOP_COMPLIANCE" -> 9
-            "SALARY_LOSS", "MISSING_ALLOWANCE" -> 8
+            "SALARY_LOSS", "MISSING_ALLOWANCE", "INCREMENT_MISSED", "MSP_SHORTFALL" -> 8
             "DEBIT_RECOVERY", "DEDUCTION_SPIKE" -> 7
             "TAX_PROJECTION" -> 6
             "ARREARS_AUDIT", "DSOP_MILESTONE" -> 5
@@ -86,7 +89,7 @@ object InsightPrioritizationEngine {
     private fun getPremiumValue(type: String): Int {
         return when (type) {
             "SALARY_LOSS", "RENT_RECOVERY_RISK" -> 10
-            "MISSING_ALLOWANCE", "ARREARS_AUDIT" -> 9
+            "MISSING_ALLOWANCE", "ARREARS_AUDIT", "INCREMENT_MISSED", "MSP_SHORTFALL" -> 9
             "TPTA_ENTITLEMENT", "DEBIT_RECOVERY", "DSOP_COMPLIANCE" -> 8
             "DEDUCTION_SPIKE" -> 7
             "DSOP_MILESTONE", "TAX_PROJECTION" -> 6

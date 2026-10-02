@@ -1,6 +1,8 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import com.payslipmax.pdfparser.Screen
+import com.payslipmax.pdfparser.insights.REPRESENTATION_DRAFT_TYPES
+import com.payslipmax.pdfparser.insights.isProven
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
@@ -28,7 +30,7 @@ private fun candidateRecommendedActions(state: InsightsState): List<RecommendedA
                 ),
             )
         }
-        if (state.engineResult.anomalies.any { it.type in REPRESENTATION_DRAFT_TYPES }) {
+        if (state.engineResult.anomalies.any { it.type in REPRESENTATION_DRAFT_TYPES && it.isProven() }) {
             add(
                 RecommendedActionUiModel(
                     gate = FeatureGate.CLAIM_GENERATOR,

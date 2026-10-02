@@ -18,8 +18,9 @@ import androidx.room.migration.AutoMigrationSpec
         LedgerRecordEntity::class,
         FinancialInsightEntity::class,
         RepresentationDraftEntity::class,
+        DismissedDraftEntity::class,
     ],
-    version = 11,
+    version = 13,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = PayslipDatabase.DeleteGeminiApiKeySpec::class),
@@ -28,6 +29,8 @@ import androidx.room.migration.AutoMigrationSpec
         AutoMigration(from = 8, to = 9),
         AutoMigration(from = 9, to = 10),
         AutoMigration(from = 10, to = 11, spec = PayslipDatabase.DeleteAiInsightReportsTableSpec::class),
+        AutoMigration(from = 11, to = 12),
+        AutoMigration(from = 12, to = 13),
     ],
 )
 @ConstructedBy(PayslipDatabaseConstructor::class)

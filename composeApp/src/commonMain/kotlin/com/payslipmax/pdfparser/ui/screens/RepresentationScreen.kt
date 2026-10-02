@@ -15,7 +15,6 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.database.RepresentationDraftEntity
-import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
@@ -23,8 +22,6 @@ import com.payslipmax.pdfparser.ui.platform.rememberClipboardCopier
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
-import com.payslipmax.pdfparser.utils.PdfLetterFormatter
-import com.payslipmax.pdfparser.utils.sharePdf
 import com.payslipmax.pdfparser.utils.shareText
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -41,33 +38,14 @@ fun RepresentationScreen(
     var editedBody by remember { mutableStateOf("") }
     var showUpgradeSheet by remember { mutableStateOf(false) }
 
-    // Export to PDF is gated by CLAIM_GENERATOR (Phase 4d): unlocked users get the share sheet; locked
-    // users get the upgrade sheet (D4). Everything else (edit/copy/text-share) stays free within this
-    // already-premium screen.
-    val hasClaimGenerator = viewModel.rememberHasAccess(FeatureGate.CLAIM_GENERATOR)
-    val onExportPdf: (RepresentationDraftEntity) -> Unit = { draft ->
-        if (hasClaimGenerator) {
-            sharePdf(PdfLetterFormatter.fileName(draft.disputeMonth), draft.subject, draft.bodyText)
-        } else {
-            showUpgradeSheet = true
-        }
-    }
+    val onExportPdf = rememberGatedPdfExport(viewModel, onLocked = { showUpgradeSheet = true })
 
     // Nested handler: while a draft is open, back closes it and returns to the list (mirrors the
     // editor's Cancel button). Disabled at the list level, so App.kt's handler pops the screen.
     BackHandler(enabled = selectedDraft != null) { selectedDraft = null }
     LaunchedEffect(selectedDraft) { onUnsavedStateChanged(selectedDraft != null) }
 
-    if (showUpgradeSheet) {
-        val premiumPrice by viewModel.premiumPriceState.collectAsState()
-        PremiumUpgradeBottomSheet(
-            onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
-            onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
-            price = premiumPrice,
-            onPresented = viewModel::refreshPremiumPrice,
-        )
-    }
+    if (showUpgradeSheet) PayslipUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
 
     Box(
         modifier =
@@ -77,34 +55,29 @@ fun RepresentationScreen(
                 .detailScreenSafeArea()
                 .padding(AppDimensions.PaddingMedium),
     ) {
-        val currentSelected = selectedDraft
-        if (currentSelected != null) {
-            RepresentationEditor(
-                draft = currentSelected,
-                editedBody = editedBody,
-                onBodyChange = { editedBody = it },
-                onSave = {
-                    viewModel.updateRepresentationDraft(currentSelected.copy(bodyText = editedBody))
-                    selectedDraft = null
-                },
-                onCancel = { selectedDraft = null },
-            )
-        } else {
-            RepresentationDraftList(
-                drafts = drafts,
-                onBack = onBack,
-                onSelect = {
-                    selectedDraft = it
-                    editedBody = it.bodyText
-                },
-                onExportPdf = onExportPdf,
-            )
-        }
+        RepresentationContent(
+            drafts = drafts,
+            selectedDraft = selectedDraft,
+            editedBody = editedBody,
+            onBodyChange = { editedBody = it },
+            onSave = { draft ->
+                viewModel.updateRepresentationDraft(draft.copy(bodyText = editedBody))
+                selectedDraft = null
+            },
+            onCancel = { selectedDraft = null },
+            onBack = onBack,
+            onSelect = {
+                selectedDraft = it
+                editedBody = it.bodyText
+            },
+            onExportPdf = onExportPdf,
+        )
     }
 }
 
+/** Internal (not private) so a UI test can exercise the drafted-representation-gating path directly, without a [PayslipViewModel]. */
 @Composable
-private fun RepresentationDraftList(
+internal fun RepresentationDraftList(
     drafts: List<RepresentationDraftEntity>,
     onBack: () -> Unit,
     onSelect: (RepresentationDraftEntity) -> Unit,
@@ -238,7 +211,7 @@ private fun RepresentationActionsRow(
 }
 
 @Composable
-private fun RepresentationEditor(
+internal fun RepresentationEditor(
     draft: RepresentationDraftEntity,
     editedBody: String,
     onBodyChange: (String) -> Unit,

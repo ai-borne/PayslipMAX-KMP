@@ -51,5 +51,7 @@ fun anomalyCategoryLabel(type: String): String =
         AnomalyTierMap.TAX_PROJECTION -> InsightsStrings.anomalyLabelTaxProjection
         AnomalyTierMap.RENT_RECOVERY_RISK -> InsightsStrings.anomalyLabelRentRecoveryRisk
         AnomalyTierMap.DEBIT_RECOVERY -> InsightsStrings.anomalyLabelDebitRecovery
+        AnomalyTierMap.INCREMENT_MISSED -> InsightsStrings.anomalyLabelIncrementMissed
+        AnomalyTierMap.MSP_SHORTFALL -> InsightsStrings.anomalyLabelMspShortfall
         else -> InsightsStrings.anomalyLabelUnknown
     }

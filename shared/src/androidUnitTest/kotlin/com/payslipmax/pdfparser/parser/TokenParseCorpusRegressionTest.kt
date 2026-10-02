@@ -10,8 +10,8 @@ import kotlin.test.assertTrue
  * and diffs the full [com.payslipmax.pdfparser.domain.ParsedPayslip] against human-verified ground truth.
  *
  * [GrammarAwareParser] is the engine wired into both Android and iOS (RC3), so this suite tests exactly
- * what ships. It passes all 52/52 fixtures with an empty quarantine and is fully offline — no device,
- * no PDFs, no PII.
+ * what ships. It passes every fixture listed in `corpus/index.json` (139) with an empty quarantine and
+ * is fully offline — no device, no PDFs, no PII.
  *
  * ### Ground-truth correction (Phase 4)
  * Four months (Apr-2022, Mar/Apr/Jun-2023) previously relied on the legacy

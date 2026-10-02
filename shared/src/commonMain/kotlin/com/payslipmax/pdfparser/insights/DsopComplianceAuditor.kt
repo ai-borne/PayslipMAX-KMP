@@ -25,7 +25,7 @@ class DsopComplianceAuditor : RuleAuditor {
                     field = "dsopSubscription",
                     amount = minDsop,
                     month = current.dateStr,
-                    description = "DSOP contribution is zero. A minimum contribution of 6% of your Basic Pay (₹${minDsop.toInt()}) is mandatory.",
+                    description = "DSOP contribution is zero. The minimum is 6% of your Basic Pay, which is ${PayAuditWording.rupees(minDsop)} a month.",
                 ),
             )
         } else if (dsop < minDsop) {
@@ -35,7 +35,7 @@ class DsopComplianceAuditor : RuleAuditor {
                     field = "dsopSubscription",
                     amount = minDsop - dsop,
                     month = current.dateStr,
-                    description = "DSOP contribution of ₹${dsop.toInt()} is below the mandatory 6% threshold (₹${minDsop.toInt()}).",
+                    description = "Your DSOP contribution of ${PayAuditWording.rupees(dsop)} is below the 6% minimum (${PayAuditWording.rupees(minDsop)}).",
                 ),
             )
         }
@@ -50,7 +50,9 @@ class DsopComplianceAuditor : RuleAuditor {
                     field = "dsopSubscription",
                     amount = miscAdj,
                     month = current.dateStr,
-                    description = "DSOP Milestone: Tax-free annual interest of ₹${miscAdj.toInt()} was credited to your DSOP ledger. Total compounding balance is ₹${closingBalance.toInt()}.",
+                    description =
+                        "DSOP Milestone: Tax-free annual interest of ${PayAuditWording.rupees(miscAdj)} was credited to your DSOP fund. " +
+                            "Your total DSOP balance is ${PayAuditWording.rupees(closingBalance)}.",
                 ),
             )
         }
@@ -68,7 +70,9 @@ class DsopComplianceAuditor : RuleAuditor {
                         field = "dsopSubscription",
                         amount = 0.0,
                         month = current.dateStr,
-                        description = "DSOP contribution unchanged for 18+ months at ${savingRate.toInt()}%. Consider increasing contribution towards ₹41,666/mo (₹5 Lakhs/yr) for 100% tax-free compounding growth under Sec 10(11).",
+                        description =
+                            "Your DSOP contribution has not changed for 18+ months (${savingRate.toInt()}% of gross pay). " +
+                                "Consider raising it towards ₹41,666 a month (₹5,00,000 a year), the most whose interest stays tax-free.",
                     ),
                 )
             }

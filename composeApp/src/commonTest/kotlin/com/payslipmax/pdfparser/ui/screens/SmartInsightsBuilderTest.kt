@@ -37,7 +37,10 @@ class SmartInsightsBuilderTest {
     private fun anomaly(
         type: String,
         amount: Double = 1000.0,
-    ) = Anomaly(type, "field", amount, "02/2026", "$type detail")
+        expected: Double? = null,
+        actual: Double? = null,
+        authority: String? = null,
+    ) = Anomaly(type, "field", amount, "02/2026", "$type detail", expected, actual, authority)
 
     private fun state(
         anomalies: List<Anomaly> = emptyList(),
@@ -96,11 +99,34 @@ class SmartInsightsBuilderTest {
     }
 
     @Test
-    fun `an anomaly with an existing representation-draft flow gets an action target and label`() {
-        val card = buildSmartInsights(state(anomalies = listOf(anomaly("SALARY_LOSS")))).single()
+    fun `a proven representation-draft-eligible anomaly gets an action target and label`() {
+        // P7-09: the CTA is scoped to a proven instance, matching the letter-drafting gate itself.
+        // MISSING_ALLOWANCE (not SALARY_LOSS, excluded from REPRESENTATION_DRAFT_TYPES outright by P7-10).
+        val proven = anomaly("MISSING_ALLOWANCE", expected = 5000.0, actual = 4000.0, authority = "Test Authority")
+        val card = buildSmartInsights(state(anomalies = listOf(proven))).single()
         assertEquals(Screen.Representation, card.actionTarget)
-        assertEquals(InsightsStrings.wellnessImproveSalaryLoss, card.actionLabel)
+        assertEquals(InsightsStrings.wellnessImproveMissingAllowance, card.actionLabel)
         assertEquals(FeatureGate.CLAIM_GENERATOR, card.gate)
+    }
+
+    @Test
+    fun `an unproven representation-draft-eligible anomaly gets no action target or label`() {
+        // Without expected/actual/authority no letter would actually be drafted (Phase 5's isProven gate),
+        // so the CTA must not promise one either (P7-09) — a label without a target is dead UI.
+        val card = buildSmartInsights(state(anomalies = listOf(anomaly("MISSING_ALLOWANCE")))).single()
+        assertNull(card.actionTarget)
+        assertNull(card.actionLabel)
+        assertNull(card.gate)
+    }
+
+    @Test
+    fun `SALARY_LOSS never gets a representation action target even when proven`() {
+        // P7-10: SALARY_LOSS is excluded from REPRESENTATION_DRAFT_TYPES outright — it's a bare
+        // heuristic, never actually provable in production, so the exclusion doesn't depend on the
+        // (synthetic, test-only) evidence fields below being present.
+        val proven = anomaly("SALARY_LOSS", expected = 5000.0, actual = 4000.0, authority = "Test Authority")
+        val card = buildSmartInsights(state(anomalies = listOf(proven))).single()
+        assertNull(card.actionTarget)
     }
 
     @Test

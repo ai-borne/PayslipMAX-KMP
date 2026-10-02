@@ -4,6 +4,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.payslipmax.pdfparser.database.PayslipDatabase
 import com.payslipmax.pdfparser.database.getDatabaseBuilder
 import com.payslipmax.pdfparser.parser.PdfParser
+import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -33,6 +34,10 @@ val sharedModule: Module =
 
         single {
             com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository(get())
+        }
+
+        single {
+            PayslipBackupService(get(), payslipRepository = get(), intelligence = get())
         }
 
         single<com.payslipmax.pdfparser.telemetry.CrashReporter> {

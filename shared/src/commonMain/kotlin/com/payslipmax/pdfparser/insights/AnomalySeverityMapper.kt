@@ -10,7 +10,7 @@ package com.payslipmax.pdfparser.insights
 object AnomalySeverityMapper {
     fun severityOf(anomalyType: String): InsightSeverity =
         when (anomalyType) {
-            "SALARY_LOSS", "DSOP_COMPLIANCE", "RENT_RECOVERY_RISK", "DEBIT_RECOVERY" -> InsightSeverity.IMPORTANT
+            "SALARY_LOSS", "DSOP_COMPLIANCE", "RENT_RECOVERY_RISK", "DEBIT_RECOVERY", "INCREMENT_MISSED", "MSP_SHORTFALL" -> InsightSeverity.IMPORTANT
             "MISSING_ALLOWANCE", "TPTA_ENTITLEMENT", "DEDUCTION_SPIKE", "TAX_PROJECTION" -> InsightSeverity.WARNING
             else -> InsightSeverity.INFO
         }

@@ -19,8 +19,8 @@ import com.payslipmax.pdfparser.domain.Officer
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.PayslipSummary
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
-import com.payslipmax.pdfparser.onboarding.OnboardingStorage
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.testing.FakeOnboardingStorage
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.FakeFinancialIntelligenceRepository
@@ -82,17 +82,7 @@ class AppBackNavigationTest {
         }
 
     // These tests exercise post-onboarding tab/detail navigation, so the gate is pre-completed.
-    private val completedOnboardingManager = OnboardingManager(AlreadyCompletedOnboardingStorage())
-
-    private class AlreadyCompletedOnboardingStorage : OnboardingStorage {
-        override fun getHasCompletedOnboarding(): Boolean = true
-
-        override fun saveHasCompletedOnboarding(completed: Boolean) {}
-
-        override fun getHasSeenUploadCoachmark(): Boolean = true
-
-        override fun saveHasSeenUploadCoachmark(seen: Boolean) {}
-    }
+    private val completedOnboardingManager = OnboardingManager(FakeOnboardingStorage(hasCompletedOnboarding = true, hasSeenUploadCoachmark = true))
 
     // --- Decision 9: state survives process death via the Saver ---
     // (pure-Saver-logic round-trip tests live in AppNavStateSaverTest.kt / commonTest — no

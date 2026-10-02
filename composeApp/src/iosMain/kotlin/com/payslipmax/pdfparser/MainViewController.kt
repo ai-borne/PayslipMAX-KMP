@@ -8,12 +8,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
-import com.payslipmax.pdfparser.di.appModule
-import com.payslipmax.pdfparser.di.sharedModule
+import com.payslipmax.pdfparser.di.appKoinModules
 import com.payslipmax.pdfparser.nav.AppNavState
 import com.payslipmax.pdfparser.nav.NavBridge
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.HelpLegalScreen
+import com.payslipmax.pdfparser.ui.screens.PayAuditScreen
 import com.payslipmax.pdfparser.ui.screens.PayslipReplicaDetailScreen
 import com.payslipmax.pdfparser.ui.screens.PremiumFeaturesScreen
 import com.payslipmax.pdfparser.ui.screens.RepresentationScreen
@@ -28,7 +28,7 @@ import platform.UIKit.UIViewController
 
 private fun ensureKoin() {
     if (KoinPlatformTools.defaultContext().getOrNull() == null) {
-        startKoin { modules(sharedModule, appModule) }
+        startKoin { modules(appKoinModules()) }
     }
 }
 
@@ -120,6 +120,7 @@ class IosNavHost(
                     )
                 }
                 Screen.HelpLegal -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+                Screen.PayAudit -> PayAuditScreen(viewModel = viewModel, onBack = onBack, onNavigateTo = { screen -> bridge.navigateToDetail(screen) })
                 // Tab roots are structurally unreachable here: onNavigate() routes them via
                 // switchTab(), never push()/nativeDetailNavigator, and AppNavStateSaver.restore()
                 // filters activeDetail to !isTabRoot. Handled only so this `when` stays exhaustive

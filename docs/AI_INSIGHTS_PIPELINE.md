@@ -413,7 +413,7 @@ shared/src/androidUnitTest/resources/corpus_ios_tokens/
                            iOS/Android parity tests below run on the JVM with no live device
 ```
 
-52 fixtures covering Jan 2022 – Apr 2026 (4 per month across eras, including the Nov/Dec transition and Mar 2025 boundary), plus the matching 52 committed iOS token dumps above. De-identified by `CorpusScrubber`:
+139 fixtures (listed in `corpus/index.json`) covering Mar 2015 – Apr 2026, including the Nov/Dec transition and Mar 2025 boundary, plus the matching 139 committed iOS token dumps above. De-identified by `CorpusScrubber`:
 - Name → `Officer Officer Officer`
 - Account → `16/000/000000X`
 - PAN → `AR*****90G`
@@ -424,14 +424,14 @@ shared/src/androidUnitTest/resources/corpus_ios_tokens/
 
 | Test | Scope | What it checks |
 |------|-------|----------------|
-| `TokenParseCorpusRegressionTest` | androidUnitTest | Drives the **production engine** `GrammarAwareParser.parse` over all 52 fixtures vs `expected.json` — this is the primary regression gate |
+| `TokenParseCorpusRegressionTest` | androidUnitTest | Drives the **production engine** `GrammarAwareParser.parse` over all 139 fixtures vs `expected.json` — this is the primary regression gate |
 | `TokenCorpusRegressionTest` | androidUnitTest | Token fixture well-formedness (52 `.tokens.json` files) |
 | `TokenEngineCorpusTest` | androidUnitTest | Pure token engine (`GridReconstructor → RowPairing → TokenTableClassifier`) against real de-identified fixtures — unambiguous single-row fields only (BPAY, DA, MSP, core deductions); reversals/arrears/misc are Stage 5's job, intentionally out of scope here |
 | `TokenTableEngineTest` | commonTest | Synthetic token layout tests: translation-invariance, Hindi-merge regression, single-column-layout regression, prose-footer-noise regression |
 | `GrammarRegistryTest` | commonTest | Date-primary era boundaries (pre-Oct-2023, Oct/Nov 2023 transition, Feb/Mar 2025 transition, future months, dateless fallback) |
 | `GrammarEraMapperTest` / `StatementPeriodExtractorTest` | commonTest | Pure unit tests for the era-boundary lookup and period-parsing helpers |
 | `ReplicaUtilsMismatchTest` / `ReplicaUtilsTest` | commonTest | MISC row appearance, `creditsMismatch`/`debitsMismatch` helpers, structured+raw merge regression |
-| `TokenParityDiffTest` | androidUnitTest | **CI-enforced iOS/Android token parity.** Compares the committed Android token corpus against the committed `corpus_ios_tokens/` iOS dump for all 52 ids: asserts per-section (table/tax/dsop) token-*content* parity (order-insensitive multiset diff, small documented benign-tokenization tolerance) for every id outside `CorpusQuarantine`; reports per-token geometry (dx/dy/dHeight) informationally only, since PDFBox/PDFKit apply a small, consistent, already-accepted font-metrics offset. No env vars — both fixture sets are committed, so this runs by default, unlike the manual/report-only check it replaced. |
+| `TokenParityDiffTest` | androidUnitTest | **CI-enforced iOS/Android token parity.** Compares the committed Android token corpus against the committed `corpus_ios_tokens/` iOS dump for all 139 ids: asserts per-section (table/tax/dsop) token-*content* parity (order-insensitive multiset diff, small documented benign-tokenization tolerance) for every id outside `CorpusQuarantine`; reports per-token geometry (dx/dy/dHeight) informationally only, since PDFBox/PDFKit apply a small, consistent, already-accepted font-metrics offset. No env vars — both fixture sets are committed, so this runs by default, unlike the manual/report-only check it replaced. |
 | `IosTokenParseCorpusRegressionTest` | androidUnitTest | **CI-enforced iOS/Android structured-field parity.** Builds a `TokenizedPayslip` from each committed iOS token dump, runs it through the same production `GrammarAwareParser.parse`, and diffs against the same `<id>.expected.json` ground truth used for the Android corpus (±1.0 tolerance), for every id outside `CorpusQuarantine`. This is the strongest available proof — short of a live device run — that iOS and Android parse a given payslip to the same salary numbers through the identical `SharedParsingPipeline` code path. |
 | `ParserUtilsIosPerfTest` | iosTest | **CI-enforced Kotlin/Native performance guard.** Runs `negateHindiTransliterations`/`parseTotals` on the real Kotlin/Native regex engine at 12KB/17KB synthetic inputs (matching the two real documents from the [§11](#11-changelog) diagnosis), asserting an absolute time bound plus a coarse linearity check (larger input ≤~2× the smaller one's time) so a regression back to quadratic-shaped matching fails even if still under the absolute bound. This is the only test in the suite that exercises this `commonMain` code on Native rather than JVM — the JVM-backed tests above could not have caught the bug this guards against. Runs via `iosSimulatorArm64Test` in CI's `kmp-ios-ci` job (`macos-latest`), separate from the primary `check` task. |
 
@@ -530,8 +530,18 @@ graph TD
 | `DsopComplianceAuditor` | 6% statutory minimum savings; ₹41,666/mo tax threshold |
 | `TaxProjectionAuditor` | Annual ITAX trajectory from YTD |
 | `SalaryLossAuditor` | Unexplained net-pay drops |
-| `MissingAllowanceAuditor` | Allowances present in past but absent this month |
-| `TptaEntitlementAuditor` | Transport allowance entitlement vs received |
+| `MissingAllowanceAuditor` | HRA/MSP paid last month but absent now, unless the service timeline explains it (quarters taken, Level 14+) |
+| `TptaEntitlementAuditor` | Transport allowance absent for Levels 10-13A, unless a posting change or relocation explains it; amount = rate x DA |
+| `IncrementAuditor` | Annual increment (DNI) not applied 12 months after the last one |
+| `MspAuditor` | Military Service Pay paid but below ₹15,500 (Levels 10-13A) |
+
+The last four are `TimelineAuditor`s: the engine builds one `ServiceTimeline` per run (see `docs/Plan/09_PayAudit_PhasePlan.md`) and each finding carries `expected`/`actual`/`authority`.
+
+`PayLineChangeExplainer` (Pay Audit Phase 3, same package) is a sibling, not an `Anomaly`-emitting auditor:
+given a month's `ServiceTimeline` context it explains a move in ten pay-line fields (Basic Pay, DA and its
+arrears, Transport Allowance, HRA/licence fee, Risk & Hardship/Field allowance) with a `ChangeExplanation`,
+or `null` when no structural rule accounts for it. Not wired into `DeterministicIntelligenceEngine` — it
+does not affect health score or anomaly tiers; Phase 4 wires it into the Pay Audit screen.
 
 `InsightPrioritizationEngine` scores alerts on 5 dimensions, filters below 7.0, caps dashboard at top 4, uses ₹ value as tie-breaker.
 
@@ -661,7 +671,7 @@ corpus) and the small test suite that exercises it directly.
 
 | File | Role |
 |------|------|
-| `androidUnitTest/.../TokenParseCorpusRegressionTest.kt` | Always-on production-engine regression (52 fixtures, primary gate) |
+| `androidUnitTest/.../TokenParseCorpusRegressionTest.kt` | Always-on production-engine regression (139 fixtures, primary gate) |
 | `androidUnitTest/.../PayslipCorpusRegressionTest.kt` | Always-on text-path regression (52 fixtures, secondary/legacy path) |
 | `androidUnitTest/.../TokenCorpusRegressionTest.kt` | Token fixture well-formedness check |
 | `androidUnitTest/.../TokenEngineCorpusTest.kt` | Pure token-engine (classification core) regression against real fixtures |

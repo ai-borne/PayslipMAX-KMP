@@ -8,6 +8,7 @@ class OnboardingStorageContractTest {
     private class FakeOnboardingStorage(
         private var hasCompletedOnboarding: Boolean = false,
         private var hasSeenUploadCoachmark: Boolean = false,
+        private var hasSeenPayAuditIntro: Boolean = false,
     ) : OnboardingStorage {
         override fun getHasCompletedOnboarding(): Boolean = hasCompletedOnboarding
 
@@ -19,6 +20,12 @@ class OnboardingStorageContractTest {
 
         override fun saveHasSeenUploadCoachmark(seen: Boolean) {
             hasSeenUploadCoachmark = seen
+        }
+
+        override fun getHasSeenPayAuditIntro(): Boolean = hasSeenPayAuditIntro
+
+        override fun saveHasSeenPayAuditIntro(seen: Boolean) {
+            hasSeenPayAuditIntro = seen
         }
     }
 
@@ -48,5 +55,16 @@ class OnboardingStorageContractTest {
 
         assertTrue(storage.getHasSeenUploadCoachmark())
         assertFalse(storage.getHasCompletedOnboarding())
+    }
+
+    @Test
+    fun payAuditIntroFlagRoundTripsIndependentlyOfOtherFlags() {
+        val storage = FakeOnboardingStorage()
+
+        storage.saveHasSeenPayAuditIntro(true)
+
+        assertTrue(storage.getHasSeenPayAuditIntro())
+        assertFalse(storage.getHasCompletedOnboarding())
+        assertFalse(storage.getHasSeenUploadCoachmark())
     }
 }

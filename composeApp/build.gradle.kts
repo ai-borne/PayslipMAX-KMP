@@ -119,6 +119,8 @@ kotlin {
                 implementation("org.robolectric:robolectric:4.12.2")
                 implementation("androidx.compose.ui:ui-test-junit4:1.9.4")
                 implementation("androidx.compose.ui:ui-test-manifest:1.9.4")
+                // Module.verify() reflects over constructors, so it is JVM-only; never on a release classpath.
+                implementation(libs.koin.test)
             }
         }
     }
@@ -163,7 +165,7 @@ android {
         applicationId = "in.aiborne.payslipmax"
         minSdk = 26
         targetSdk = 36
-        versionCode = 16
+        versionCode = 17
         versionName = appVersionName
     }
     // On-demand asset pack carrying the Tier 6 Gemma base model (Play Asset Delivery).
@@ -232,4 +234,11 @@ dependencies {
 // debug builds — verify and copy the real binary into gemmaModelPack's assets first.
 tasks.matching { it.name == "assetPackReleasePreBundleTask" }.configureEach {
     dependsOn(":gemmaModelPack:fetchGemmaModelForRelease")
+}
+
+// The R8 mapping is uploaded to Crashlytics only for the Play artifact (`bundleRelease`). A local
+// `assembleRelease` APK carries the same versionCode as the Play build and would overwrite its mapping.
+val uploadsCrashlyticsMapping = gradle.startParameter.taskNames.any { it.endsWith("bundleRelease") }
+tasks.matching { it.name == "uploadCrashlyticsMappingFileRelease" }.configureEach {
+    enabled = uploadsCrashlyticsMapping
 }

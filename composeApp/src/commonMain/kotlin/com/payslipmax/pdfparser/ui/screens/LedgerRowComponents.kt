@@ -176,6 +176,19 @@ private fun LedgerMismatchBanner(
     }
 }
 
+/** The lines to show: the stored ones, or those merged with the in-progress edits while editing. */
+internal fun displayLines(
+    stored: List<LedgerLine>,
+    category: EntryCategory,
+    isEditModeActive: Boolean,
+    draftCorrections: Map<String, SingleCorrection>,
+): List<DisplayLedgerLine> =
+    if (isEditModeActive) {
+        buildDisplayList(stored, category, draftCorrections)
+    } else {
+        stored.map { DisplayLedgerLine(it.code, it.amount, it.desc, it.fieldKey) }
+    }
+
 internal fun buildDisplayList(
     baseItems: List<com.payslipmax.pdfparser.ui.screens.LedgerLine>,
     category: EntryCategory,

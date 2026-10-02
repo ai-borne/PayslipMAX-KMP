@@ -130,6 +130,9 @@ object AppDimensions {
     /** Default M3 FAB (56dp) + its edge margin (16dp) + breathing room (8dp) so scrolled content clears it. */
     val FabClearanceHeight = 80.dp
 
+    // Bottom padding that keeps scrolling content clear of the floating edit-session confirmation banner.
+    val BannerClearance = 80.dp
+
     val TextSizeTiny = 9.sp
     val TextSizeSmall = 11.sp
     val TextSizeMedium = 12.sp

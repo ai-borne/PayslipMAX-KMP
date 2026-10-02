@@ -24,6 +24,7 @@ import com.payslipmax.pdfparser.ui.screens.LockScreen
 import com.payslipmax.pdfparser.ui.screens.SettingsScreen
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
+import org.koin.compose.koinInject
 
 enum class Screen {
     Dashboard,
@@ -39,6 +40,7 @@ enum class Screen {
     PrivacyPolicy,
     PayslipReplica,
     PremiumFeatures,
+    PayAudit,
 }
 
 /** The four bottom-tab roots; the remaining [Screen] values are pushed detail screens. */
@@ -86,7 +88,7 @@ fun App(
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
     navState: AppNavState = rememberSaveable(saver = AppNavStateSaver) { AppNavState() },
     nativeDetailNavigator: ((Screen) -> Unit)? = null,
-    onboardingManager: OnboardingManager = OnboardingManager(),
+    onboardingManager: OnboardingManager = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -262,6 +264,8 @@ private fun DetailContent(
             )
         Screen.HelpLegal ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+        Screen.PayAudit ->
+            com.payslipmax.pdfparser.ui.screens.PayAuditScreen(viewModel = viewModel, onBack = onBack, onNavigateTo = onNavigateTo)
         // Tab roots are structurally unreachable here: onNavigate() routes them via switchTab(),
         // never push(), and AppNavStateSaver.restore() filters activeDetail to !isTabRoot. Handled
         // only so this `when` stays exhaustive against future Screen cases.

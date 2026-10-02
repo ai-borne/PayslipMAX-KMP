@@ -7,7 +7,7 @@ package com.payslipmax.pdfparser.insights
  *
  * The formula treats three kinds of YTD income differently:
  * - **Regular pay** (basic/DA/MSP/allowances etc.) is annualised off the FY-calendar run rate.
- * - **Arrears** (one-off retrospective back-pay, D4) are added back verbatim -- never annualised.
+ * - **Arrears** (one-off retrospective arrears, D4) are added back verbatim -- never annualised.
  * - **Reimbursements** (refunds/recoveries of money already spent, D5) are dropped entirely -- neither
  *   annualised nor added back, since they were never taxable income.
  */

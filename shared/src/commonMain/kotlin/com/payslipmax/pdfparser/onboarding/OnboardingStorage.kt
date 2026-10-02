@@ -1,7 +1,7 @@
 package com.payslipmax.pdfparser.onboarding
 
 /**
- * Persistence abstraction for onboarding-carousel and upload-coachmark completion state.
+ * Persistence abstraction for onboarding-carousel, upload-coachmark and Pay Audit orientation completion state.
  */
 interface OnboardingStorage {
     fun getHasCompletedOnboarding(): Boolean
@@ -11,6 +11,10 @@ interface OnboardingStorage {
     fun getHasSeenUploadCoachmark(): Boolean
 
     fun saveHasSeenUploadCoachmark(seen: Boolean)
+
+    fun getHasSeenPayAuditIntro(): Boolean
+
+    fun saveHasSeenPayAuditIntro(seen: Boolean)
 }
 
 /**

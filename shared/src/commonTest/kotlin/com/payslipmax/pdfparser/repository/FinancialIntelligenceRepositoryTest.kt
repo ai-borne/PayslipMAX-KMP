@@ -40,8 +40,8 @@ class FinancialIntelligenceRepositoryTest {
     @Test
     fun testProcessPayslipGeneratesRepresentationDraftAndInsightsForMissingTPTA() =
         runTest {
-            // Basic pay >= 56100 but TPTA is 0.0 -> TPTA_ENTITLEMENT anomaly
-            val mockPayslip = createMockPayslip("05/2026", basicPay = 60000.0, tpta = 0.0)
+            // Basic pay is a real Level 10 pay-matrix cell (stage 3) but TPTA is 0.0 -> TPTA_ENTITLEMENT anomaly
+            val mockPayslip = createMockPayslip("05/2026", basicPay = 59500.0, tpta = 0.0)
 
             val result = repository.processPayslipAndRunAnalysis(mockPayslip)
 
@@ -58,6 +58,22 @@ class FinancialIntelligenceRepositoryTest {
             assertEquals(1, drafts.size)
             assertEquals("TPTA_ENTITLEMENT", drafts.first().disputeType)
             assertTrue(drafts.first().subject.contains("Transport Allowance (TPTA)"))
+        }
+
+    @Test
+    fun testProcessPayslipDoesNotGenerateDraftForUnprovenSalaryLoss() =
+        runTest {
+            // SalaryLossAuditor is a bare heuristic: it never sets expected/actual/authority, so it can
+            // never be proven and is excluded from REPRESENTATION_DRAFT_TYPES outright (P7-10) — must
+            // never draft a letter.
+            repository.processPayslipAndRunAnalysis(createMockPayslip("04/2026", basicPay = 60000.0, tpta = 3600.0))
+            val result = repository.processPayslipAndRunAnalysis(createMockPayslip("05/2026", basicPay = 50000.0, tpta = 3600.0))
+
+            assertTrue(result.anomalies.any { it.type == "SALARY_LOSS" })
+            assertTrue(result.anomalies.first { it.type == "SALARY_LOSS" }.authority == null)
+
+            val drafts = repository.getAllRepresentationDrafts().first()
+            assertTrue(drafts.none { it.disputeType == "SALARY_LOSS" })
         }
 
     @Test

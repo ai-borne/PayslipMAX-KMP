@@ -8,6 +8,7 @@ import com.payslipmax.pdfparser.domain.Officer
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.PayslipSummary
 import com.payslipmax.pdfparser.domain.TaxAndSavings
+import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.testing.FakePayslipDao
@@ -41,7 +42,11 @@ class PayslipViewModelBackupTest {
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
         repository = PayslipRepository(fakeDao, fakeParser, Dispatchers.Unconfined)
-        viewModel = PayslipViewModel(repository)
+        viewModel =
+            PayslipViewModel(
+                repository,
+                backupService = PayslipBackupService(fakeDao, Dispatchers.Unconfined),
+            )
     }
 
     @AfterTest

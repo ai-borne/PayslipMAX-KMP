@@ -44,7 +44,9 @@ class MarriedQuartersRiskAuditor : RuleAuditor {
                     field = "licenseFee",
                     amount = estimatedTotalRisk,
                     month = current.dateStr,
-                    description = "Quarters Rent Recovery Risk: You have not received HRA or paid License Fee/Furniture Rent for $consecutiveMonths months. Expected retroactive debt recovery is approximately ₹${estimatedTotalRisk.toInt()}.",
+                    description =
+                        "Quarters Rent Recovery Risk: no House Rent Allowance, License Fee or Furniture Rent has appeared on your last $consecutiveMonths payslips. " +
+                            "If you live in government quarters, about ${PayAuditWording.rupees(estimatedTotalRisk)} may be recovered later.",
                 ),
             )
         }

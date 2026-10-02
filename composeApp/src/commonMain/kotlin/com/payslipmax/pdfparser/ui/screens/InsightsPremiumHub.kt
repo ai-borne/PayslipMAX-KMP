@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
+import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
@@ -67,6 +68,8 @@ fun LazyListScope.insightsPremiumItems(
     onToolsExpandClick: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
+    selected: ParsedPayslip,
+    payslips: List<ParsedPayslip>,
     price: String? = null,
 ) {
     if (!isPremium) {
@@ -81,6 +84,7 @@ fun LazyListScope.insightsPremiumItems(
             toolsExpanded = toolsExpanded,
             onToolsExpandClick = onToolsExpandClick,
             onNavigateTo = onNavigateTo,
+            payAuditFindings = rememberPayAuditFindingsCount(selected, payslips),
         )
     }
 }

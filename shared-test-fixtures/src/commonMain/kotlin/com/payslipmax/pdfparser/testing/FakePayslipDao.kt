@@ -33,9 +33,9 @@ class FakePayslipDao : PayslipDao {
         database.value = database.value - dateStr
     }
 
+    // Like the Room query it stands in for, this empties the payslip table only (PDFs have clearAllPdfs).
     override suspend fun clearAll() {
         database.value = emptyMap()
-        pdfDatabase.value = emptyMap()
     }
 
     private val correctionsDatabase = MutableStateFlow<Map<String, PayslipCorrectionEntity>>(emptyMap())
@@ -187,5 +187,24 @@ class FakePayslipDao : PayslipDao {
 
     override suspend fun clearAllRepresentationDrafts() {
         draftsDatabase.value = emptyMap()
+    }
+
+    private val dismissedDrafts = MutableStateFlow<Set<DismissedDraftEntity>>(emptySet())
+
+    override suspend fun insertDismissedDraft(dismissed: DismissedDraftEntity) {
+        dismissedDrafts.value = dismissedDrafts.value + dismissed
+    }
+
+    override suspend fun getAllDismissedDrafts(): List<DismissedDraftEntity> = dismissedDrafts.value.toList()
+
+    override suspend fun deleteDismissedDraft(
+        disputeMonth: String,
+        disputeType: String,
+    ) {
+        dismissedDrafts.value = dismissedDrafts.value - DismissedDraftEntity(disputeMonth, disputeType)
+    }
+
+    override suspend fun clearAllDismissedDrafts() {
+        dismissedDrafts.value = emptySet()
     }
 }

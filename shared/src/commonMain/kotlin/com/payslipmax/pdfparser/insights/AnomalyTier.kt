@@ -25,6 +25,8 @@ object AnomalyTierMap {
     const val TAX_PROJECTION = "TAX_PROJECTION"
     const val RENT_RECOVERY_RISK = "RENT_RECOVERY_RISK"
     const val DEBIT_RECOVERY = "DEBIT_RECOVERY"
+    const val INCREMENT_MISSED = "INCREMENT_MISSED"
+    const val MSP_SHORTFALL = "MSP_SHORTFALL"
 
     val tiers: Map<String, AnomalyTier> =
         mapOf(
@@ -38,6 +40,10 @@ object AnomalyTierMap {
             TAX_PROJECTION to AnomalyTier.PRO,
             RENT_RECOVERY_RISK to AnomalyTier.PRO,
             DEBIT_RECOVERY to AnomalyTier.PRO,
+            // Pay Audit (docs/Plan/09_PayAudit_PhasePlan.md): part of existing Premium, not free — despite
+            // both being salary-loss findings like SALARY_LOSS, which stays FREE for the pre-Pay-Audit gate.
+            INCREMENT_MISSED to AnomalyTier.PRO,
+            MSP_SHORTFALL to AnomalyTier.PRO,
         )
 
     fun tierFor(type: String): AnomalyTier = tiers[type] ?: AnomalyTier.PRO

@@ -53,6 +53,6 @@ class TaxProjectionAuditorTest {
         val anomaly = result.find { it.type == "DEDUCTION_SPIKE" }
         assertTrue(anomaly != null)
         assertEquals(3000.0, anomaly.amount)
-        assertTrue(anomaly.description.contains("spiked by"))
+        assertTrue(anomaly.description.contains("rose by"), anomaly.description)
     }
 }

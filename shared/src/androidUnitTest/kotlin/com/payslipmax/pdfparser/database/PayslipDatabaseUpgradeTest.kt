@@ -23,6 +23,7 @@ import kotlin.test.assertTrue
 private const val PRODUCTION_DB = "payslips.db"
 private const val SCHEMA_DIR = "schemas/com.payslipmax.pdfparser.database.PayslipDatabase"
 private const val FUTURE_VERSION = 99
+private const val V12 = 12
 
 /**
  * WHY: user payslips exist only in this database (there is no server copy), so the database must
@@ -93,6 +94,26 @@ class PayslipDatabaseUpgradeTest {
                 assertEquals("2026-01", cursor.getString(0))
                 assertEquals("cafe", cursor.getString(1))
                 assertEquals(1, cursor.count)
+            }
+        }
+    }
+
+    // WHY: a letter the officer deletes must stay deleted across re-audits, which needs a record of the
+    // deletion (Phase 10 of the post-Phase-8 work). The table arrives with the upgrade, and the officer's
+    // existing letters must come through it untouched.
+    @Test
+    fun `the v12 database gains the dismissed drafts table and keeps its letters`() {
+        helper.createDatabase(PRODUCTION_DB, V12).use {
+            it.execSQL(
+                "INSERT INTO representation_drafts (id, disputeMonth, disputeType, recipient, subject, bodyText, createdAt) " +
+                    "VALUES ('d1', '03/2018', 'TPTA_ENTITLEMENT', 'PCDA', 's', 'b', 1)",
+            )
+        }
+
+        helper.runMigrationsAndValidate(PRODUCTION_DB, headVersion(), true).use { db ->
+            db.query("SELECT id FROM representation_drafts").use { assertEquals(1, it.count, "the letter survives the upgrade") }
+            db.query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'dismissed_drafts'").use {
+                assertEquals(1, it.count, "dismissed_drafts table exists after the upgrade")
             }
         }
     }

@@ -27,6 +27,8 @@ class AnomalyTierMapTest {
                 "TAX_PROJECTION",
                 "RENT_RECOVERY_RISK",
                 "DEBIT_RECOVERY",
+                "INCREMENT_MISSED",
+                "MSP_SHORTFALL",
             )
         knownAuditorTypes.forEach { type ->
             assertTrue(AnomalyTierMap.tiers.containsKey(type), "Unclassified anomaly type: $type")

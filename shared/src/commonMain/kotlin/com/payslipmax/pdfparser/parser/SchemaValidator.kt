@@ -16,7 +16,9 @@ data class SchemaValidationResult(
  * invariants (Gross Pay sum, Deductions sum, and Net Remittance balance) after extraction and confidence scoring.
  */
 object SchemaValidator {
-    private const val TOLERANCE = 2.0
+    // SSOT in ConfidenceThresholds — the same ₹ arithmetic-residual tolerance the solver and display
+    // layer already use (PhantomReconciler, VerticalBandFilter, ReplicaUtils, LedgerRowComponents).
+    private const val TOLERANCE = com.payslipmax.pdfparser.domain.ConfidenceThresholds.ITEM_SUM_TOLERANCE
 
     fun validate(
         grossPay: Double,

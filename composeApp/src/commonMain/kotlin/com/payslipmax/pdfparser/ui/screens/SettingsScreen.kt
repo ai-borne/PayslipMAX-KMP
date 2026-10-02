@@ -46,17 +46,13 @@ fun SettingsScreen(
     )
 
     if (showUpgradeSheet) {
-        val premiumPrice by viewModel.premiumPriceState.collectAsState()
-        PremiumUpgradeBottomSheet(
-            onDismissRequest = { showUpgradeSheet = false },
-            onUnlockClick = { onResult -> viewModel.launchPurchaseFlow(onResult) },
-            onRestoreClick = { onResult -> viewModel.restorePurchases(onResult) },
+        PayslipUpgradeSheet(
+            viewModel,
+            onDismiss = { showUpgradeSheet = false },
             onPrivacyClick = {
                 showUpgradeSheet = false
                 onNavigateTo(Screen.PrivacyPolicy)
             },
-            price = premiumPrice,
-            onPresented = viewModel::refreshPremiumPrice,
         )
     }
 }
@@ -153,6 +149,9 @@ private fun SecondarySettingsGroup(
 
     // Developer entitlement override (debug builds only; no-op in release)
     DeveloperOverrideSection(viewModel = viewModel)
+
+    // Developer-only sections bound in Koin by the debug build (none in release)
+    DeveloperToolsSections()
 
     // Sandbox / Staging
     DeveloperSandboxSection(devModeEnabled = devModeEnabled, viewModel = viewModel)
