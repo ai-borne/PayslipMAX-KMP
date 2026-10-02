@@ -807,14 +807,14 @@ Decisions: no PR/push until the very end; Crashlytics mapping upload only for th
 #### Phase 7 carry-overs (2026-10-02, fail-loud)
 
 - ~~**Not verified on any device.**~~ **Android: verified on the Pixel 2026-10-02 in Phase 8** (a held TPTA month resolves after a later import; a held month surfaces once with exactly one letter). Phase 6 wording also seen. **iOS: not verified** (see Phase 8 carry-overs).
-- **A draft the officer deleted comes back** on the next re-audit or re-import while the finding is still proven (dedupe looks at stored drafts only). Fixing it needs a tombstone, i.e. a schema change, so it was not done unasked.
-- **A draft whose finding later becomes held or resolved stays** (user decision: drafts are the officer's documents). Nothing marks it as no longer supported.
-- **Backfill imports only re-audit earlier months.** Importing an older payslip can turn a later month's proven finding into a held one (a prior city sample now exists); that month is not re-audited and keeps its proven row and draft until its own next re-audit or re-import.
+- ~~**A draft the officer deleted comes back** on the next re-audit or re-import while the finding is still proven.~~ **Fixed 2026-10-02 (commit `2f2a503c`):** new `dismissed_drafts` table (Room v13, AutoMigration 12->13), cleared when the finding stops applying.
+- ~~**A draft whose finding later becomes held or resolved stays**~~ **Reversed 2026-10-02 (user decision, commit `6de299b3`):** a letter whose finding no longer applies is removed on the re-audit; letters of still-proven findings (and the officer's edits) and of types the audit never drafts are kept.
+- ~~**Backfill imports only re-audit earlier months.**~~ **Fixed 2026-10-02 (commit `6de299b3`):** an import re-audits the months within 6 on both sides, so a later month turning from proven to held is picked up (and its letter removed).
 - **Letters for earlier months are signed with the imported payslip's officer** (the stored ledger records are de-identified). Fine while a device holds one officer's payslips.
 - **Old wording** is rewritten only for months inside a later import's window; older rows keep it (user decision, no startup pass).
 - **Re-audit rewrites all of a month's rows, not just TPTA**, so a re-audited month can also gain or lose a non-TPTA row if the engine's view of it changed with the new history. The four corpus tests are unchanged.
 - **iOS gate timing:** `iosSimulatorArm64Test --rerun-tasks` took 45 s this time (29 tasks executed, fresh results, 123 suites 0 failures, the new test 9/9), not the ~40 min seen before; the earlier figure is not a constant.
-- **Cost:** up to 7 engine runs per import (imported month + 6), each over the full ledger history; not measured on a device.
+- ~~**Cost:** up to 7 engine runs per import; not measured on a device.~~ **Measured on the Pixel 2026-10-02:** see "Follow-up decisions" below (negligible).
 
 #### Phase 8 carry-overs (2026-10-02, fail-loud)
 
@@ -827,6 +827,14 @@ Decisions: no PR/push until the very end; Crashlytics mapping upload only for th
 - **Registry is mutable global state.** `DeveloperToolsRegistry` is an `object` filled at startup by the debug provider; accepted as a debug extension point (registering the same key replaces, so it cannot duplicate). Release never fills it.
 - **Seeder duplicates the import write order** (insert payslip, then audit) because `PayslipRepository` has no "save a parsed payslip" method; adding one only for debug use would put debug-driven API in production code.
 - **Cost of the re-audit on import** (up to 7 engine runs per import) is still unmeasured on a device; the 19-month seed block imported without a visible stall but was not timed.
+
+#### Follow-up decisions after Phase 8 (user, 2026-10-02)
+
+- **Done:** backfill re-audit both sides and stale-letter removal (`6de299b3`); deleted letters stay deleted via the `dismissed_drafts` table, Room v13 (`2f2a503c`); Crashlytics mapping uploads only for `bundleRelease`, a local `assembleRelease` skips it with no `-x` flag (`816c8ec7`, observed "SKIPPED" in a real build).
+- **Import cost, measured on the Pixel (real 32-month history, minified release, temporary timing patch never committed):** the engine over all 32 real months took 9 ms in total (7 ms for the first, cold run; about 0 ms per month after), so a worst-case import re-auditing 13 months is on the order of 100 ms and a typical 7-audit import a few ms. Whole imports of Aug 2026 and Jan 2026 took 23 ms and 13 ms, with a ledger of only 1-2 months (see the next point). Not a concern.
+- **Found while measuring:** a `.pcda` restore brings the payslips back but not the ledger, stored insights or letters (they are not in the backup), and the ledger refills only as payslips are imported. Pay Audit itself reads the payslips, so its screen is unaffected, but stored insight rows and letters are not restored. Not changed; decide whether the backup should carry them.
+- **Gemma download: let it continue** (decision recorded; no code change).
+- **Planned, not started: DI clean-up (user: "architecturally correct, long term").** Remaining bypasses of Koin: `PayAuditEntryHost` uses `remember { PayAuditViewModel() }`; `PayAuditScreen` uses `remember { OnboardingManager() }`; `DashboardScreen` and `App` default `OnboardingManager()`. Steps, each its own green commit: (1) register `single { OnboardingManager() }` in `appModule`; (2) `PayAuditEntryHost` and `PayAuditScreen` take their ViewModel/manager as parameters defaulting to `koinInject()`; (3) `DashboardScreen`/`App` likewise; (4) every UI test that renders them passes explicit fakes or starts Koin with a test module (Robolectric tests already get Koin from `PayslipApplication`, which is the first thing to confirm, since the Phase 2 note says those tests run without Koin); (5) verify iOS starts Koin before the first composition (`MainViewController`) and re-run `iosSimulatorArm64Test` and the link. Risk: iOS UI cannot be driven here, so a mistaken Koin ordering on iOS would only show on a device.
 
 ---
 
