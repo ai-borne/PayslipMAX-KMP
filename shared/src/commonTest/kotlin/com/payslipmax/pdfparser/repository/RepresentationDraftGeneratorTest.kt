@@ -40,4 +40,24 @@ class RepresentationDraftGeneratorTest {
         assertTrue(draft.bodyText.contains("Amount due         : Rs. 1,23,100"), draft.bodyText)
         assertTrue(draft.bodyText.contains("Shortfall          : Rs. 1,23,100"), draft.bodyText)
     }
+
+    // WHY: found on the Pixel with the Phase 8 seed: the letter subject read "Non-Admissibility of INCREMENT_MISSED".
+    // The officer sends this to PCDA(O), so a code name must never reach the letter.
+    @Test
+    fun everyLetterEligibleTypeIsNamedInPlainWords() {
+        listOf("INCREMENT_MISSED" to "Basic Pay", "MSP_SHORTFALL" to "Military Service Pay").forEach { (type, plain) ->
+            val draft =
+                RepresentationDraftGenerator.generateRepresentationDraft(
+                    disputeMonth = "07/2022",
+                    disputeType = type,
+                    amount = 2600.0,
+                    officer = Officer(name = "Test Officer", accountNo = "12345", pan = "ABCDE1234F"),
+                    expected = 87900.0,
+                    actual = 85300.0,
+                    authority = PayAuthorities.ANNUAL_INCREMENT,
+                )
+            assertTrue(draft.subject.contains(plain), "${draft.subject} should name $plain")
+            assertTrue(!draft.subject.contains(type) && !draft.bodyText.contains(type), "$type must not appear in the letter")
+        }
+    }
 }

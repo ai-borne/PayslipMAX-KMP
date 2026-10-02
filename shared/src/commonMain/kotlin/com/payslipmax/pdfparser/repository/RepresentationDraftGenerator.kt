@@ -24,6 +24,8 @@ object RepresentationDraftGenerator {
                 "MISSING_ALLOWANCE" -> "HRA / Allowance"
                 "TPTA_ENTITLEMENT" -> "Transport Allowance (TPTA)"
                 "SALARY_LOSS" -> "Net Pay"
+                "INCREMENT_MISSED" -> "Basic Pay (annual increment)"
+                "MSP_SHORTFALL" -> "Military Service Pay (MSP)"
                 else -> disputeType
             }
         val subject = "Representation regarding Non-Admissibility of $componentName"
