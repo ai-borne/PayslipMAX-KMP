@@ -635,14 +635,16 @@ Flag `FREE_LAUNCH_MODE_ANDROID` back to `true`, versionCode 17 → 18; commit `c
    bank proof and video KYC. This is the only real blocker to charging money.
 2. **Still open from v15:** import a real payslip to exercise parse → persist and an in-place Room upgrade; watch the
    Gemma banner run through to Installed.
-3. **After a few days on internal:** `promote_release version_code:16 to:alpha`.
-4. **After BillDesk approves:** run `validate_production_release`, then promote v16 to production, and re-check gates
-   with the flag off.
+3. ~~After a few days on internal: promote v16 to alpha.~~ **Superseded 2026-10-03:** v16/v17 (paywall builds) never left internal;
+   v18 (Pay Audit, free-launch flag on) went straight to production at 100% (see versionCode 18). Closed testing (`alpha`) still holds v15.
+4. **BillDesk KYC (20-30 days from 2026-10-03):** when it clears, make one real-money purchase from a non-tester account and confirm the
+   `PayslipMax Premium` entitlement in RevenueCat; then set `FREE_LAUNCH_MODE_ANDROID = false`, bump versionCode, run
+   `validate_production_release`, and promote. Consider restricting the listing and the subscription to India first (Play Console).
 5. **Apple server notification:** confirm a first event reaches RevenueCat (needs a signed-in App Store Connect session or a
    TestFlight purchase). Optional cleanup: fix the
    stale header comment in `RevenueCatApiKey.kt` (says Android ships the Test Store key; it ships a `goog_...` key).
 6. **Resolved 2026-09-26:** the 2026-09-14 RevenueCat "no Play Store products" `ConfigurationError` (seen on v11) is
-   fixed by the wiring above; re-check logcat on v16 if it recurs.
+   fixed by the wiring above; re-check logcat when the paywall build returns if it recurs.
 
 > **Note (2026-09-21):** the Developer Sandbox used for the v8 Crashlytics symbolication check is now gated to debug/TestFlight builds. A future release-build R8 check can no longer use the 7-tap unlock; use a debug or temporary local build instead.
 
