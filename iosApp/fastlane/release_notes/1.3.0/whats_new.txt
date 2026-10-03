@@ -1,0 +1,9 @@
+What's new in 1.3.0:
+
+• Pay Audit (Premium): PayslipMax now checks every month of your service against PCDA(O) rules, using only the payslips you have imported. It shows what was verified, what looks short, and what is still waiting for a later payslip, each with the amount and the reason in plain words.
+• Why did my pay change? Each change in your pay is explained month to month, such as a new DA rate, an increment, or a posting change.
+• Representation letters: when a shortfall is proven from your payslips, you can draft a ready-to-edit letter to PCDA(O) and export it as a PDF.
+• Next increment: see when your next increment is expected.
+• Safer backups: backup files now also carry your saved letters and your manual corrections, and a restore either completes fully or changes nothing.
+
+Everything still runs 100% on your device. Your payslips are never uploaded.

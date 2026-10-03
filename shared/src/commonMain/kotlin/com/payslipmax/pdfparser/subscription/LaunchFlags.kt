@@ -14,7 +14,9 @@ object LaunchFlags {
     // is live from v1.2: gates now follow the real RevenueCat entitlement.
     const val FREE_LAUNCH_MODE_IOS: Boolean = false
 
-    // Flipped false for versionCode 16 (internal testing only) — the paywall build; gates follow the real
-    // RevenueCat entitlement. Production/closed testing stay on versionCode 15 (flag true) until promoted.
-    const val FREE_LAUNCH_MODE_ANDROID: Boolean = false
+    // true again from versionCode 18 (2026-10-03): BillDesk merchant KYC is still pending (about 20-30 days), so
+    // Google Play sales may be paused or fail and a paywall could not be passed. Android stays free until KYC
+    // clears and a real-money purchase succeeds; then flip to false (docs/Launch/07, section 4). versionCodes
+    // 16 and 17 were the paywall builds (internal testing only).
+    const val FREE_LAUNCH_MODE_ANDROID: Boolean = true
 }

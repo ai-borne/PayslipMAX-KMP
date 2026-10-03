@@ -5,16 +5,18 @@ checks, track state). Update it at every release bump; don't batch. Releases lan
 are promoted to Closed testing (`alpha`) once verified, then to production; each release's heading states
 which track it is on. The 14-day closed-testing gate was completed on 2026-09-24.
 
-## Current status (2026-09-26)
+## Current status (2026-10-03)
 
 | Track | versionCode | Free-launch flag | State |
 |---|---|---|---|
 | `production` | 15 (1.0.0) | on | **Live on Google Play** since 2026-09-24 |
 | `alpha` (closed testing) | 15 (1.0.0) | on | Passed the 14-day gate; production access granted 2026-09-24 |
-| `internal` | 16 (1.0.0) | **off** | Paywall build, uploaded 2026-09-26, verified on device |
+| `internal` | 17 (1.3.0) | **off** | Pay Audit + paywall build, uploaded 2026-10-03, installed from Play on the Pixel and tested |
 
-Confirmed with `fastlane android track_status`. v16 stays off production and closed testing until BillDesk
-KYC clears (BillDesk needs the app live, so production stays on v15).
+Confirmed with `fastlane android track_status`. v16 and v17 stay off production and closed testing until BillDesk
+KYC clears (BillDesk needs the app live, so production stays on v15). The fastlane service account now also holds
+"Release to production" (confirmed in Play Console, 2026-10-03), so permissions no longer block a promotion; the
+BillDesk/paywall gate does.
 
 **Release path.** v15 was promoted alpha → production on 2026-09-24 (`promote_release version_code:15
 to:production from:alpha`, 100% rollout) and cleared Google's first-production-release review. The store
@@ -588,6 +590,26 @@ Flag `FREE_LAUNCH_MODE_ANDROID` false, versionCode 15 → 16 (`versionName` stay
   override section):** locked free-user state, live ₹999.00 paywall, Play reported "already subscribed" (the earlier test
   subscription), and Restore Purchases unlocked the gates. This closes the gate-unlocking gap the flag-on debug run
   could not test.
+
+### versionCode 17 (1.3.0) — on Internal testing (2026-10-03) — Pay Audit
+
+`versionName` 1.0.0 → 1.3.0 (`version.properties`, now the one source for Android and iOS), versionCode 16 → 17; the flag stays
+`false` (paywall build). Merged to `main` as PR #11 (merge commit `008b707c`); release commit `d59f0487`, tags `v1.3.0`,
+`ios-1.3.0-b3`, `android-1.3.0-vc17`. User-facing: Pay Audit (Premium), plain-language findings, "why did my pay change",
+representation letters, next-increment estimate, backup v3 (letters and corrections included, atomic restore).
+- **Gate:** the pre-push hook (both build variants, corpus regression, lint, iOS tests, Room schema check, gitleaks) passed twice
+  (254 s and 258 s); CI green on the PR and on `main` (Android, iOS, gitleaks, web prototype).
+- **Build:** `bundleRelease -PgemmaModelSourcePath=<gemma3-1b-it-int4.litertlm>`, 442 MB AAB; the real model is inside
+  (`gemma_model_pack/assets/gemma-active.litertlm`, 584,417,280 bytes, same size as the source). Crashlytics mapping uploaded.
+  Uploaded with `upload_to_track track:internal` (notes en-IN, file `composeApp/fastlane/release_notes/1.3.0/whats_new_en-IN.txt`);
+  `track_status`: internal [17], alpha [15], production [15].
+- **On-device (Pixel 9):** the Play internal-track install first served v16 (stale Play cache); force-stopping the Play Store and
+  trimming caches made it offer and install v17 within a minute (`installerPackageName=com.android.vending`, data kept). The user
+  tested the app on the Pixel and an iPhone and reported both working.
+- **Not done / known:** a DA-arrears shortfall shows as an issue but has no "Draft letter"; Pay Audit has no in-screen disclaimer
+  (only Settings > Help); letters keep placeholders for officer details.
+- **iOS counterpart:** TestFlight 1.3.0 (3), uploaded 2026-10-03 (see doc 08 for the iOS side); notes in
+  `iosApp/fastlane/release_notes/1.3.0/`.
 
 ## Next steps
 

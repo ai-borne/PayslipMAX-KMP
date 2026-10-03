@@ -1,0 +1,21 @@
+Dear App Review Team,
+
+This is a feature update (v1.3.0) on top of the approved v1.2.3. There are no new permissions, no new data collection, no network calls added and no changes to the In-App Purchase.
+
+WHAT CHANGED:
+
+1. Pay Audit (new, part of the existing Premium subscription): the app rebuilds a month-by-month service timeline from the payslips the user has already imported and checks each month against published PCDA(O) pay rules. Each finding shows the payslip figures it is based on and the rule it cites. It never needs a login and sends nothing off the device. Where to find it: Insights tab > Premium Report > Premium Financial Tools > "Pay Audit" (subscribers only). Free users see only a locked entry in the Premium screen, which leads to the existing paywall.
+
+2. Representation letters: from a proven finding the user can draft a letter to PCDA(O) and export it as a PDF through the standard iOS share sheet. Letters are generated locally.
+
+3. Backups: the existing password-protected backup file now also contains saved letters and manual corrections, and a restore is all-or-nothing.
+
+4. Internal: version number handling and dependency-injection clean-up. No user-visible change.
+
+IN-APP PURCHASE (unchanged since v1.2): the yearly auto-renewing subscription "payslipmax_yearly_premium" is offered from Settings > Upgrade to PayslipMax Premium. Restore Purchases is on the same sheet, and Terms of Use (Apple standard EULA) and Privacy Policy links are shown in its footer and in the App Description.
+
+HOW TO TEST: the app requires no login or credentials. Tap the Upload button on the Dashboard and choose a PCDA(O) payslip PDF. Pay Audit is built for Indian Army officers' PCDA(O) payslips, so it needs imported payslips of that kind to show findings; without them, a subscriber sees the empty state and a free user sees the locked state. Pay Audit is informational: it does not give financial or legal advice, and the app is not an official app of the PCDA, the Ministry of Defence or the Indian Army (stated in Settings > Help).
+
+All parsing and auditing run locally on the device and no payslip data is transmitted anywhere.
+
+Thank you for your time and review!
