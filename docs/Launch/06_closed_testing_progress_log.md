@@ -9,14 +9,16 @@ which track it is on. The 14-day closed-testing gate was completed on 2026-09-24
 
 | Track | versionCode | Free-launch flag | State |
 |---|---|---|---|
-| `production` | 15 (1.0.0) | on | **Live on Google Play** since 2026-09-24 |
+| `production` | 18 (1.3.0) | **on** | **Live**, 100% rollout, promoted 2026-10-03 (replaces v15) |
 | `alpha` (closed testing) | 15 (1.0.0) | on | Passed the 14-day gate; production access granted 2026-09-24 |
-| `internal` | 17 (1.3.0) | **off** | Pay Audit + paywall build, uploaded 2026-10-03, installed from Play on the Pixel and tested |
+| `internal` | 18 (1.3.0) | **on** | Same build as production |
 
-Confirmed with `fastlane android track_status`. v16 and v17 stay off production and closed testing until BillDesk
-KYC clears (BillDesk needs the app live, so production stays on v15). The fastlane service account now also holds
-"Release to production" (confirmed in Play Console, 2026-10-03), so permissions no longer block a promotion; the
-BillDesk/paywall gate does.
+Confirmed with `fastlane android track_status`. v16 and v17 were paywall builds (flag off) and never left internal testing.
+v18 is Pay Audit with `FREE_LAUNCH_MODE_ANDROID = true` again, because BillDesk merchant KYC needs another 20-30 days and
+Google Play sales may be paused or fail until then (official payments page: sales outside India paused until verified;
+India behaviour not documented). Next flag flip (to `false`) only after KYC clears and a real-money purchase from a
+non-tester account succeeds (docs/Launch/07, section 4). The fastlane service account holds "Release to production"
+(confirmed in Play Console, 2026-10-03).
 
 **Release path.** v15 was promoted alpha → production on 2026-09-24 (`promote_release version_code:15
 to:production from:alpha`, 100% rollout) and cleared Google's first-production-release review. The store
@@ -610,6 +612,22 @@ representation letters, next-increment estimate, backup v3 (letters and correcti
   (only Settings > Help); letters keep placeholders for officer details.
 - **iOS counterpart:** TestFlight 1.3.0 (3), uploaded 2026-10-03 (see doc 08 for the iOS side); notes in
   `iosApp/fastlane/release_notes/1.3.0/`.
+
+### versionCode 18 (1.3.0) — PRODUCTION at 100% (2026-10-03) — Pay Audit, free-launch mode
+
+Flag `FREE_LAUNCH_MODE_ANDROID` back to `true`, versionCode 17 → 18; commit `c4de9b24`, tag `android-1.3.0-vc18`. Decision (user,
+2026-10-03): ship Pay Audit free on Android while BillDesk KYC is pending, at 100% (no staged rollout, there are no real users yet).
+- **Gate:** `ktlintCheck check -x iosX64Test -x iosSimulatorArm64Test` green (14m41s; shared 2263 tests / 1 pre-existing skip,
+  composeApp 1505, 0 failures); pre-commit hook green.
+- **Build/upload:** `bundleRelease` with the real Gemma model (584,417,280 bytes inside the AAB), 442 MB. The first two internal
+  uploads failed on network errors (connection reset, TCP timeout; Play discards the edit, nothing partial); the third succeeded.
+  `validate_production_release` found no blockers, then `promote_release version_code:18 to:production` (status completed, no
+  `userFraction`, so 100%). `track_status`: production [18], alpha [15], internal [18].
+- **On-device (Pixel 9, Play update from internal, `installerPackageName=com.android.vending`):** Settings shows "Everything
+  Included" with no upgrade row (free-launch mode), Insights shows "Premium Report (Activated)", and Pay Audit opens and reads
+  "32 months audited · 0 issues".
+- **Not done:** Play Console availability is still 172 countries (restricting to India is a Play Console step, recommended);
+  alpha (closed testing) still holds v15.
 
 ## Next steps
 

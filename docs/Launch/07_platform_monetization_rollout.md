@@ -155,6 +155,12 @@ closed-testing days, without touching the unverified merchant profile:
    the paywall-enabled release. Android's real production users only ever see a free window for as
    long as BillDesk KYC takes — everything else is pre-staged.
 
+7. **Updated 2026-10-03:** BillDesk KYC still needs 20-30 days, and Google documents that sales outside India are paused until
+   it clears (India behaviour unstated). So the paywall builds v16 and v17 never shipped; **v18 (Pay Audit, 1.3.0) went to
+   production at 100% with `FREE_LAUNCH_MODE_ANDROID = true`** (flag back on). Flip to `false` only after KYC clears and a
+   real-money purchase from a non-tester account is verified in RevenueCat; consider restricting the listing and the
+   subscription to India first. See doc 06, versionCode 18.
+
 ## 5. Why this order doesn't create a grandfathering problem on Android
 
 Android has **zero production users today** (updated 2026-09-24: versionCode 15 just went live, so a
