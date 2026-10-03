@@ -588,6 +588,71 @@ platform :ios do
     UI.success("Set review notes (#{review_notes.length} chars)")
   end
 
+  desc "Set a version's Description and Promotional Text from fastlane/release_notes/<version>/{description,promotional_text}.txt (the shipped listing copy lives in the repo). Dry-run by default; pass apply:true to write. Never submits."
+  lane :apply_version_listing_text do |options|
+    asc_api_key
+    version_string = options[:version] or UI.user_error!("Pass version: e.g. '1.3.0'")
+    locale = options[:locale] || "en-US"
+    dir = File.join(__dir__, "release_notes", version_string)
+    description = File.read(File.join(dir, "description.txt")).strip
+    promo = File.read(File.join(dir, "promotional_text.txt")).strip
+    UI.user_error!("Description is #{description.length} chars; ASC's limit is 4000") if description.length > 4000
+    UI.user_error!("Promotional text is #{promo.length} chars; ASC's limit is 170") if promo.length > 170
+    eula_url = "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+    UI.user_error!("Description must keep the EULA link (Guideline 3.1.2)") unless description.include?(eula_url)
+
+    app = Spaceship::ConnectAPI::App.find(CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier))
+    version = (asc_get("/v1/apps/#{app.id}/appStoreVersions?limit=10")["data"] || []).find { |v| v['attributes']['versionString'] == version_string }
+    UI.user_error!("No appStoreVersion #{version_string}") unless version
+    UI.user_error!("#{version_string} is #{version['attributes']['appVersionState']}, not editable") unless version['attributes']['appVersionState'] == "PREPARE_FOR_SUBMISSION"
+    loc = (asc_get("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations")["data"] || []).find { |l| l['attributes']['locale'] == locale }
+    UI.user_error!("No #{locale} localization found") unless loc
+
+    UI.message("Description: #{loc['attributes']['description'].to_s.length} -> #{description.length} chars; Promotional Text: #{loc['attributes']['promotionalText'].to_s.length} -> #{promo.length} chars")
+    next UI.important("Dry run — pass apply:true to write") unless options[:apply].to_s == "true"
+
+    asc_patch("/v1/appStoreVersionLocalizations/#{loc['id']}", { "data" => { "type" => "appStoreVersionLocalizations", "id" => loc['id'], "attributes" => { "description" => description, "promotionalText" => promo } } })
+    UI.success("Set Description and Promotional Text for #{version_string} (#{locale})")
+  end
+
+  desc "Read-only pre-submission checklist for an editable App Store version: build, text fields, URLs, screenshots, review contact and notes, release type. Prints MISSING for anything empty. Pass version:."
+  lane :submission_readiness do |options|
+    asc_api_key
+    version_string = options[:version] or UI.user_error!("Pass version: e.g. '1.3.0'")
+    locale = options[:locale] || "en-US"
+    app = Spaceship::ConnectAPI::App.find(CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier))
+    version = (asc_get("/v1/apps/#{app.id}/appStoreVersions?limit=10")["data"] || []).find { |v| v['attributes']['versionString'] == version_string }
+    UI.user_error!("No appStoreVersion #{version_string}") unless version
+    show = lambda { |label, value| UI.message("#{label.ljust(26)} #{value.to_s.strip.empty? ? 'MISSING' : value.to_s[0, 110]}") }
+
+    a = version['attributes']
+    show.call("state", a['appVersionState'])
+    show.call("releaseType", a['releaseType'])
+    show.call("copyright", a['copyright'])
+    build = asc_get("/v1/appStoreVersions/#{version['id']}/build")["data"]
+    show.call("attached build", build && "#{build['attributes']['version']} (#{build['attributes']['processingState']})")
+
+    loc = (asc_get("/v1/appStoreVersions/#{version['id']}/appStoreVersionLocalizations")["data"] || []).find { |l| l['attributes']['locale'] == locale }
+    la = loc ? loc['attributes'] : {}
+    %w[whatsNew description keywords promotionalText supportUrl marketingUrl].each { |k| show.call(k, k == 'description' || k == 'whatsNew' ? "#{la[k].to_s.length} chars" : la[k]) }
+    sets = loc ? (asc_get("/v1/appStoreVersionLocalizations/#{loc['id']}/appScreenshotSets")["data"] || []) : []
+    if sets.empty?
+      show.call("screenshots", nil)
+    else
+      sets.each { |s| n = (asc_get("/v1/appScreenshotSets/#{s['id']}/appScreenshots")["data"] || []).count; show.call("screenshots #{s['attributes']['screenshotDisplayType']}", "#{n}") }
+    end
+
+    detail = asc_get("/v1/appStoreVersions/#{version['id']}/appStoreReviewDetail")["data"]
+    da = detail ? detail['attributes'] : {}
+    %w[contactFirstName contactLastName contactPhone contactEmail].each { |k| show.call("review #{k}", da[k]) }
+    show.call("review demoAccountRequired", da['demoAccountRequired'].inspect)
+    show.call("review notes", "#{da['notes'].to_s.length} chars")
+
+    info = (asc_get("/v1/apps/#{app.id}/appInfos")["data"] || []).first
+    iloc = info && (asc_get("/v1/appInfos/#{info['id']}/appInfoLocalizations")["data"] || []).find { |l| l['attributes']['locale'] == locale }
+    show.call("privacyPolicyUrl", iloc && iloc['attributes']['privacyPolicyUrl'])
+  end
+
   desc "Submit an editable App Store version to App Review. Pass version:. Requires confirm:true — this is outward-facing and (releaseType AFTER_APPROVAL) auto-publishes on approval."
   lane :submit_for_review do |options|
     asc_api_key
