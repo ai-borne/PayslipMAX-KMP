@@ -768,3 +768,20 @@ until Apple sends the first event. Not yet verified: that an event actually arri
 Google-side equivalent on Android (same day): topic `Play-Store-Notifications` connected in RevenueCat and enabled in Play
 Console (Monetization setup → Real-time developer notifications); Play's "Send test notification" reached RevenueCat
 ("Last received 2026-09-26, 10:45 UTC"). The Apple delivery test is still pending.
+
+## v1.3.0 (Pay Audit) submitted to App Review (2026-10-03)
+
+Build 1.3.0 (3), TestFlight `VALID`, submitted by the user in App Store Connect on 2026-10-03; `fastlane review_status` shows
+`WAITING_FOR_REVIEW` (Apple quotes up to 48 hours). Release type `AFTER_APPROVAL`, so it publishes on approval. No IAP change
+(`FREE_LAUNCH_MODE_IOS` stays `false`); Pay Audit is part of the existing Premium subscription.
+- **Listing:** What's New (874 chars), review notes (2,188 chars), Description (3,945 of 4,000; adds a "Pay Audit (Premium)" section, the
+  auto-renewal sentence and EULA link kept) and Promotional Text (131 chars) are in `iosApp/fastlane/release_notes/1.3.0/` and were applied
+  with `prepare_submission` and `apply_version_listing_text`. Keywords unchanged (no "pay audit"; 93 of 100 chars used). The 8 iPhone 6.5"
+  screenshots are carried over from 1.2.3 and do not show Pay Audit.
+- **Signing:** the first TestFlight export failed ("No signing certificate iOS Distribution found") until the user signed in to Xcode; the
+  retry then exported and uploaded with no lane change.
+- **Tooling added:** `apply_version_listing_text` (dry-run by default) and `submission_readiness` (read-only checklist, reports screenshot and
+  attachment processing states). ASC showed "attachment uploads in progress" right after the version was created while the screenshots and
+  review attachment were copied from 1.2.3; the API reported all `COMPLETE` and a page reload cleared it.
+- **Not verified:** Pay Audit on iOS had only been checked on the user's real iPhone through TestFlight (reported working), not by an agent;
+  a reviewer without a PCDA(O) payslip PDF sees only the locked or empty state (stated in the review notes).

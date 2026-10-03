@@ -639,7 +639,11 @@ platform :ios do
     if sets.empty?
       show.call("screenshots", nil)
     else
-      sets.each { |s| n = (asc_get("/v1/appScreenshotSets/#{s['id']}/appScreenshots")["data"] || []).count; show.call("screenshots #{s['attributes']['screenshotDisplayType']}", "#{n}") }
+      sets.each do |s|
+        shots = asc_get("/v1/appScreenshotSets/#{s['id']}/appScreenshots")["data"] || []
+        states = shots.map { |x| (x['attributes']['assetDeliveryState'] || {})['state'] }.tally
+        show.call("screenshots #{s['attributes']['screenshotDisplayType']}", "#{shots.count} #{states.inspect}")
+      end
     end
 
     detail = asc_get("/v1/appStoreVersions/#{version['id']}/appStoreReviewDetail")["data"]
@@ -647,6 +651,8 @@ platform :ios do
     %w[contactFirstName contactLastName contactPhone contactEmail].each { |k| show.call("review #{k}", da[k]) }
     show.call("review demoAccountRequired", da['demoAccountRequired'].inspect)
     show.call("review notes", "#{da['notes'].to_s.length} chars")
+    atts = detail ? (asc_get("/v1/appStoreReviewDetails/#{detail['id']}/appStoreReviewAttachments")["data"] || []) : []
+    show.call("review attachments", "#{atts.count} #{atts.map { |x| (x['attributes']['assetDeliveryState'] || {})['state'] }.tally.inspect}")
 
     info = (asc_get("/v1/apps/#{app.id}/appInfos")["data"] || []).first
     iloc = info && (asc_get("/v1/appInfos/#{info['id']}/appInfoLocalizations")["data"] || []).find { |l| l['attributes']['locale'] == locale }
