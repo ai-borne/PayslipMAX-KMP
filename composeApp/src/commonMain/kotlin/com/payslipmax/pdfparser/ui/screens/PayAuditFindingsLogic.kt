@@ -33,6 +33,21 @@ private val ARREARS_FIELDS = setOf("arrearsDa", "arrearsTptaDa")
 /** Only a proven finding of a letter-eligible type gets a "Draft letter" action (same rule as the draft generator). */
 fun Anomaly.canDraftLetter(): Boolean = type in REPRESENTATION_DRAFT_TYPES && isProven() && !isPending
 
+/**
+ * Lazy-list keys that follow the finding, not its position. (type, month) is not unique (the basic-DA and
+ * TPTA-DA arrears checks share both), so the pay line is part of the key; an exact repeat gets an occurrence
+ * suffix so the list can never throw on a duplicate key.
+ */
+internal fun payAuditFindingKeys(findings: List<Anomaly>): List<String> {
+    val seen = mutableMapOf<String, Int>()
+    return findings.map { a ->
+        val base = "finding_${a.type}_${a.month}_${a.field}"
+        val occurrence = (seen[base] ?: 0) + 1
+        seen[base] = occurrence
+        if (occurrence == 1) base else "${base}_$occurrence"
+    }
+}
+
 internal fun payAuditLinesChecked(payslip: ParsedPayslip): Int = getCreditsList(payslip).size + getDebitsList(payslip).size
 
 internal fun buildPayAuditVerdict(
