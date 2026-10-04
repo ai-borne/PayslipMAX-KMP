@@ -14,7 +14,7 @@ import composeApp
 /// Actor-isolated cache keyed by an arbitrary `Hashable` key. Actors are the Swift 6-mandated
 /// async-safe replacement for locking a mutable dictionary across `await` boundaries. Generic (not
 /// `Engine`-specific) so `loadOrCreate`'s caching behavior is testable without loading a real model.
-actor KeyedCache<Key: Hashable, Value> {
+actor KeyedCache<Key: Hashable & Sendable, Value> {
     private var values: [Key: Value] = [:]
 
     func value(for key: Key) -> Value? {
@@ -31,7 +31,7 @@ enum LoadOrCreateCache {
     /// result, and returns it. Extracted for testability (see `GemmaInferenceBridgeCacheTests`) —
     /// verifies `create` runs at most once per key, which is what keeps the ~500MB Gemma model load
     /// off the hot path for every Tier 6 call after the first.
-    static func loadOrCreate<Key: Hashable, Value>(
+    static func loadOrCreate<Key: Hashable & Sendable, Value>(
         key: Key,
         cache: KeyedCache<Key, Value>,
         create: () async throws -> Value
