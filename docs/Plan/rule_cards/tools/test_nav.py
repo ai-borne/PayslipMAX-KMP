@@ -47,5 +47,23 @@ class NavChecks(unittest.TestCase):
         self.assertTrue(any('unknown also-card' in e for e in errs))
 
 
+class FacetChecks(unittest.TestCase):
+    def test_missing_facet_is_an_error(self):
+        cards = [dict(c) for c in CARDS]
+        fac = json.load(open(os.path.join(CARDS_DIR, 'facets.json'), encoding='utf-8'))
+        errs = []
+        nav.apply_facets(cards, CARDS_DIR, errs)
+        self.assertEqual(errs, [])
+        self.assertTrue(all(c['facet'] in fac['labels'] for c in cards))
+
+    def test_invalid_facet_value_is_an_error(self):
+        import tempfile
+        d = tempfile.mkdtemp()
+        json.dump({'labels': {'Q': 'x'}, 'cards': {CARDS[0]['id']: 'Z'}}, open(os.path.join(d, 'facets.json'), 'w'))
+        errs = []
+        nav.apply_facets([dict(CARDS[0]), dict(CARDS[1])], d, errs)
+        self.assertTrue(any('no valid facet' in e for e in errs))
+
+
 if __name__ == '__main__':
     unittest.main()

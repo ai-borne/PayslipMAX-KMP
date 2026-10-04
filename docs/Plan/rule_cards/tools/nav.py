@@ -57,3 +57,19 @@ def build_nav(cards, nav, errors):
         if k['id'] not in homes:
             errors.append(f"nav: card {k['id']} ({k['topic']}) has no home")
     return tree, homes
+
+
+def apply_facets(cards, cards_dir, errors):
+    """facets.json maps every card id to one facet key (the filter chips inside a case feed)."""
+    with open(os.path.join(cards_dir, 'facets.json'), encoding='utf-8') as fh:
+        fac = json.load(fh)
+    ids = {c['id'] for c in cards}
+    for c in cards:
+        k = fac['cards'].get(c['id'])
+        if k not in fac['labels']:
+            errors.append(f"facet: card {c['id']} has no valid facet ({k!r})")
+        c['facet'] = k or ''
+    for i in fac['cards']:
+        if i not in ids:
+            errors.append(f"facet: unknown card {i}")
+    return fac['labels']

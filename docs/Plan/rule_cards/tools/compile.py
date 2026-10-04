@@ -140,6 +140,7 @@ def main():
                           'personal': card['attrs'].get('personal', ''), 'from': frm, 'open': card['open'],
                           'status': card['attrs'].get('status', 'draft')})
     nav_tree, nav_homes = navmod.build_nav(out_cards, navmod.load_nav(CARDS_DIR), errors)
+    facet_labels = navmod.apply_facets(out_cards, CARDS_DIR, errors)
     for c in out_cards:
         c['nav'] = nav_homes.get(c['id'], '')
     skipped = {s['from'] for s in skips}
@@ -170,7 +171,7 @@ def main():
     if not check_only:
         data = {'version': 1, 'generated': __import__('datetime').date.today().isoformat(), 'limits': LIMITS,
                 'topics': [{k: t[k] for k in t if k in ('id', 'title', 'domain', 'chapter', 'handbook_page', 'tr_rules')} for t in topics.values()],
-                'nav': nav_tree, 'cards': out_cards, 'skipped': skips, 'coverage': cov, 'uncovered': uncovered, 'pay_topics_open': pay_topics_open}
+                'nav': nav_tree, 'facets': facet_labels, 'cards': out_cards, 'skipped': skips, 'coverage': cov, 'uncovered': uncovered, 'pay_topics_open': pay_topics_open}
         with open(os.path.join(CARDS_DIR, 'rulebook.json'), 'w', encoding='utf-8') as fh:
             json.dump(data, fh, indent=1, ensure_ascii=False)
         print('wrote rulebook.json')
