@@ -53,7 +53,7 @@ private fun renderPages(
                 ctx.beginPage()
                 y = PdfLayoutSpec.MARGIN.toDouble()
             }
-            (visual as NSString).drawAtPoint(CGPointMake(PdfLayoutSpec.MARGIN.toDouble(), y), withAttributes = attrs)
+            (visual as Any as NSString).drawAtPoint(CGPointMake(PdfLayoutSpec.MARGIN.toDouble(), y), withAttributes = attrs)
             y += PdfLayoutSpec.LINE_HEIGHT
         }
     }
@@ -63,4 +63,4 @@ private fun renderPages(
 private fun measureWidth(
     text: String,
     attrs: Map<Any?, Any?>,
-): Double = (text as NSString).sizeWithAttributes(attrs).useContents { width }
+): Double = (text as Any as NSString).sizeWithAttributes(attrs).useContents { width }

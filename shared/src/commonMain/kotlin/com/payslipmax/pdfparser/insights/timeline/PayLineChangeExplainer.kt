@@ -193,12 +193,12 @@ object PayLineChangeExplainer {
         val currDa = currMonth.daPercent
         val daChanged = prevDa != null && currDa != null && prevDa != currDa
         // TPTA that moved exactly in proportion to DA is DA-linked even in a posting-change month.
-        if (daChanged && abs(to - from * (100 + currDa!!) / (100 + prevDa!!)) <= AMOUNT_TOLERANCE) return tptaFollowsDa(prevDa, currDa)
+        if (daChanged && abs(to - from * (100 + currDa) / (100 + prevDa)) <= AMOUNT_TOLERANCE) return tptaFollowsDa(prevDa, currDa)
         if (TptaAbsenceExplainer.explains(timeline, currMonth.month)) return "Posting change or relocation (Transport Allowance)"
         val prevCity = prevMonth.tptaCity
         val currCity = currMonth.tptaCity
         if (prevCity != null && currCity != null && prevCity != currCity) return "Transport Allowance city class changed from ${cityLabel(prevCity)} to ${cityLabel(currCity)}"
-        return if (daChanged) tptaFollowsDa(prevDa!!, currDa!!) else null
+        return if (daChanged) tptaFollowsDa(prevDa, currDa) else null
     }
 
     private fun tptaFollowsDa(

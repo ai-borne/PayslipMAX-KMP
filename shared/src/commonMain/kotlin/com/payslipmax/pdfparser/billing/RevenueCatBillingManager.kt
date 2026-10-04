@@ -104,7 +104,7 @@ class RevenueCatBillingManager : BillingManager, PurchasesDelegate {
                         if (userCancelled) {
                             PurchaseResult.UserCancelled
                         } else {
-                            PurchaseResult.Error(error.message ?: "Purchase failed")
+                            PurchaseResult.Error(error.message)
                         },
                     )
                 },
@@ -119,13 +119,13 @@ class RevenueCatBillingManager : BillingManager, PurchasesDelegate {
     override suspend fun restorePurchases(): PurchaseResult =
         suspendCoroutine { continuation ->
             Purchases.sharedInstance.restorePurchases(
-                onError = { error -> continuation.resume(PurchaseResult.Error(error.message ?: "Restore failed")) },
+                onError = { error -> continuation.resume(PurchaseResult.Error(error.message)) },
                 onSuccess = { customerInfo ->
                     _subscriptionState.value = mapCustomerInfoToSubscriptionState(customerInfo)
                     val restored = customerInfo.entitlements.active.containsKey(REVENUECAT_ENTITLEMENT_ID)
                     continuation.resume(
                         if (restored) {
-                            PurchaseResult.Success(purchaseToken = customerInfo.originalAppUserId ?: "")
+                            PurchaseResult.Success(purchaseToken = customerInfo.originalAppUserId)
                         } else {
                             PurchaseResult.Error("No active verified subscription found")
                         },
@@ -147,7 +147,7 @@ class RevenueCatBillingManager : BillingManager, PurchasesDelegate {
                 onError = { error ->
                     continuation.resume(
                         YearlyPackageResolution.OfferingsUnavailable(
-                            error.message ?: "Could not load subscription offerings",
+                            error.message,
                         ),
                     )
                 },
