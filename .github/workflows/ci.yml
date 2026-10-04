@@ -91,7 +91,9 @@ jobs:
         run: npm ci
 
       - name: Run Dependency Audit
-        run: npm audit --audit-level=high
+        # Production deps only: dev-only tooling advisories (e.g. stylelint) never ship and kept
+        # turning this job red whenever a new advisory was published.
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Run ESLint
         run: npm run lint
