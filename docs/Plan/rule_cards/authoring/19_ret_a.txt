@@ -1,0 +1,134 @@
+# Retirement, death, transport allowance, warrants batch (SS-T154..SS-T347). Written from TR 2014 Rules 200A, 200B, 201, 206, 209, 216, 230A, 230B, 231-233, 238.
+
+=== topic=RR-MOD-02 from=SS-T154,SS-T225
+T: Sea or river steamer class by pay level
+A: Level 10 and above: the highest class. To the islands by SCI ships: deluxe class.
+K: Mainland to Andaman, Nicobar or Lakshadweep by Shipping Corporation ships: deluxe
+C: Rule 58 and Rule 107, TR 2014; MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017
+
+=== topic=RR-MOD-05 from=SS-T159
+T: Road mileage allowance by pay level
+A: Level 14 and above: actual public bus fare, AC taxi or auto rates. Levels 10 to 13B: no AC taxi.
+K: Actual fare by any public bus, including AC bus
+K: Taxi or auto journeys: at the prescribed rates
+K: Own car, scooter or motorcycle: paid at the auto-rickshaw rate
+C: Rule 102, 106 and 111, TR 2014; MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017
+D: Where State or neighbouring States have no rates: base Rs 24 a km for own car or taxi and Rs 12 a km for auto-rickshaw or own scooter, from 01-07-2017. The rates rise 25% each time DA rises by 50%; DA passed 50% on 01-01-2024.
+
+=== topic=RR-MOD-06 from=SS-T160
+T: Free baggage on a warrant journey
+A: Railways allow 40 kg of baggage, including bedding, free on a warrant journey.
+K: The cost of heavier baggage is not covered by the free allowance
+C: Rule 238, TR 2014
+
+=== topic=RR-MOD-07 from=SS-T161
+T: Who issues warrants, requisitions and credit notes?
+A: Only the authorised persons in Appendix X, who are liable for loss through misuse.
+K: A warrant states the actual route, class and baggage weight
+K: Use reduced return tickets where they are available
+K: Payments not by warrant are made by credit note
+C: Rule 231, Rule 232 and Rule 233, TR 2014
+
+--- skip SS-T241 owner review: rate card dropped
+
+=== topic=RR-RET-01 from=SS-T292,SS-T295
+T: TA on retirement: what do I get?
+A: Conveyance, baggage, car and CTG from your last station to your home or chosen place, as on a permanent move.
+K: You and family travel on cash TA; no warrant
+K: CTG at the same rate as on a permanent move
+K: Premature retirement gets the same benefits
+C: Rule 200A(a), TR 2014; CGDA letter AT/IV/039 dt 04-08-1980
+
+=== topic=RR-RET-01 from=SS-T292 id=RB-SS-T292-b
+T: Settling at my last duty station after retirement
+A: If your residence changes, you get TA for the move, and one-third CTG.
+K: Self: actual cost, up to road mileage under Rule 61
+K: Family: one mileage for two members, one more for more than two
+K: Settling within 20 km: one-third CTG if you actually change residence
+C: Rule 200B and Rule 200A, TR 2014
+
+=== topic=RR-RET-01 from=SS-T294
+T: Outgoing Service Chiefs: free airlift on retirement
+A: One free Air Force airlift for the Chief, family and baggage, from Delhi to the airport nearest home.
+K: Then by surface route to the home town or SPR
+K: Baggage is reduced by what the aircraft carries
+C: Note 4 under Rule 200A, TR 2014
+
+=== topic=RR-RET-01 from=SS-T296
+T: Premature retirement to join a Central PSU: retirement TA?
+A: Not admissible. Rule 200 TA and DA do not apply to premature retirement for permanent absorption.
+K: Applies to premature or voluntary retirement for absorption
+C: CGDA letter AT/IV/4505-II dt 19-01-1987
+
+=== topic=RR-RET-01 from=SS-T297
+T: Called to a departmental enquiry after dismissal or removal
+A: TA as for a tour from where the summons reaches you, capped at the cost from your home town.
+K: Regulated by the pay of the post you last held
+K: Applies after removal, dismissal or compulsory retirement
+C: MoD letter 12266/Q(Mov)C/2275/D(Mov) dt 24-06-1980
+
+=== topic=RR-RET-01 from=SS-T289
+T: Re-employed officer: CTG, baggage and car at the first posting
+A: Yes, if the re-employment order came after you retired, from home town or SPR to the new place.
+K: Order received before retirement: posting claim from the old duty station
+C: Rule 201 and Rule 206, TR 2014
+
+=== topic=RR-RET-02 from=SS-T299
+T: Release from re-employment: what travel do I get?
+A: Free conveyance for you and your family to your SPR, limited to your home town.
+K: No CTG, car or baggage, except 225 kg as on first appointment
+K: Unclaimed retirement TA: claim within a year of release
+C: Rule 206, TR 2014
+
+=== topic=RR-RET-03 from=SS-T300
+T: Dismissed or removed: free conveyance home?
+A: The Army Chief, delegated to GOC-in-C, may allow a warrant to the station nearest your home, if you cannot pay.
+K: Baggage limited to the railway free allowance
+K: The authority orders the class in each case
+W: These powers are personal and cannot be delegated further
+C: Rule 209, TR 2014
+
+=== topic=RR-RET-04 from=SS-T302,SS-T239
+T: Officer dies in service: family's TA and CTG
+A: Family conveyance, CTG, baggage and vehicle are admissible as on a permanent move.
+K: The unit OC prefers the claim to PCDA(O)
+K: No family: baggage goes on warrant to the next of kin
+K: Death on a course or TD: baggage from both stations, within scale
+C: Rule 216(i)(a), (ii) and (iii), TR 2014; SAO 10/S/1976; MoD letter Air HQ/23952/304/PP&R4/988/D(Mov) dt 13-03-1979
+D: The vehicle's transport to the home town or SPR at government expense is also admissible on an officer's death in service.
+
+=== topic=RR-RET-04 from=SS-T301
+T: Family of a deceased officer settling away from the home town
+A: Fares are paid for the shortest route from the officer's last HQ to the place they choose.
+K: A member starting elsewhere: capped at the last-HQ-to-place cost
+C: Rule 216(i)(b), TR 2014; MoD letter 12311/Q/Mov C/2065/D(Mov) dt 23-05-1981
+
+=== topic=RR-RET-04 from=SS-T303
+T: Death in operations: which office pays what?
+A: Regional PCsDA audit and pay claims for transporting dead bodies. Send them there, not to PCDA(O).
+K: Dependents may travel by the fastest means, including air, for customary rites
+K: Two relatives of a battle casualty travel at government expense
+C: Rule 216, 217A and 218B, TR 2014; MoD letter 12630/Mov C/3737/D(Mov)/08 dt 29-12-2008
+
+=== topic=RR-RET-04 from=SS-T195
+T: Family of a deceased officer: how baggage claims are checked
+A: The Controlling Officer checks that the baggage really reached the family's chosen residence, within scale.
+K: Checks are made before the travel expenses are allowed
+C: Rule 216, TR 2014
+
+=== topic=RR-TPT-01 from=SS-T347
+T: Transport allowance at double rate for blind or disabled personnel
+A: Double the normal rate, at least Rs 1,000 a month plus DA.
+K: Orthopaedic: 40% permanent disability of limbs, or 50% of both together
+K: Recommended by the Head of Orthopaedics or Ophthalmology at a Military Hospital
+W: Stops during leave (casual leave excepted), joining time and suspension
+C: Rule 230A, TR 2014
+
+=== topic=RR-TPT-01 from=SS-T347 id=RB-SS-T347-b
+T: Transport allowance: when is it not paid?
+A: Not where you have been given government transport.
+K: Rates now follow the 7th-CPC pay level, not the TR grade pay
+K: Not paid for a full calendar month of leave, training or tour
+C: Rule 230B, TR 2014
+
+--- skip SS-T322 claim-form declaration text (course or exam), not a rule

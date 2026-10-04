@@ -1,0 +1,110 @@
+=== topic=RP-044 from=SS-P044,SS-P042
+T: Parachute Allowance: who qualifies?
+A: Operational parachutists in posts authorised on the unit establishment. Administrative posts qualify only if the post needs a parachutist.
+K: Base Rs 10,500 a month for all ranks from 01-07-2017
+K: Rises 25% each time DA rises by 50%
+K: Paid on top of normal pay and allowances
+C: Rules 94, 95 and 100 to 101, Pay and Allowances Regulations for the Army; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017
+
+=== topic=RP-044 from=SS-P043
+T: Is Parachute Allowance paid on annual leave?
+A: Yes. It continues during annual leave.
+K: Yearly refresher course with two jumps keeps it going
+C: Rule 105, Pay and Allowances Regulations for the Army
+
+=== topic=RP-045 from=SS-P046,SS-P045
+T: Para Reserve Allowance: who gets it and who can move to the reserve?
+A: Parachute reservists in non-parachute units, from posting as reservist until struck off the reserve.
+K: Transfer needs 3 years in a Para unit as trained parachutist
+K: Age under 35; above that needs administrative sanction
+K: Base Rs 2,625 a month from 01-07-2017
+C: Rule 111, Pay and Allowances Regulations for the Army; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017
+D: Reservists must attend a refresher course with at least two jumps each training year. When called up for para service or annual training they draw full Parachute Allowance. Not paid together with Special Force Allowance. Rate rises 25% each time DA rises by 50%.
+
+=== topic=RP-051 from=SS-P055
+T: Do I claim Ration Money Allowance myself?
+A: No. The unit notifies it by Part II order GTDRSHNA, which must be followed by a stop order.
+K: Grant order GTDRSHNA, then cessation STPRSHNA
+K: Long leaves of 180 days or more: unit publishes quarterly in arrears
+H: Certificates: no free ration, no DA or DMA, not hospitalised
+C: Rule 174(B), Defence Service Regulations, Pay and Allowances (Officers); SAPCS letter C/7099/Policy/SAPCS/2022 dt 01-04-2022
+O: SAPCS letter is the 2022 procedure on quarterly Part II orders; Rule 174(B) is the base rule. Confirm both with domain owner.
+
+=== topic=RP-051 from=SS-P056
+T: Ration Money Allowance during study leave
+A: Yes, study leave in India at a non-military station with no ration drawing facility.
+K: Station must be notified by Government
+K: Also payable on annual leave, sick leave on full pay, furlough, maternity
+C: Rule 174(B), Defence Service Regulations, Pay and Allowances (Officers)
+
+=== topic=RP-056 from=SS-P078
+T: HAFA, CFA and CMFA in a static unit
+A: Not admissible to static units such as military farms, MES, recruiting offices, training centres and NCC units.
+K: TA units get it only when embodied
+K: Record offices and cantonment units also static
+K: Hospitals, EME workshops and supply depots count as non-static
+C: MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994
+D: Base rates from 01-07-2017: HAFAA Rs 16,900, CFAA Rs 10,500, CMFAA Rs 6,300 a month. Each rises 25% when DA rises by 50%.
+O: The FAQ static list and the handbook non-static list overlap; confirm with the Corps notification.
+
+=== topic=RP-056 from=SS-P079
+T: Field area allowance while on leave from the field area
+A: Only casual leave (up to 20 days) and sick list or transit (up to 15 days) keep it going.
+K: Annual, maternity, furlough, study, child care, sick leave: not paid
+K: TD up to 3 months, if you return to field area
+C: MoD letter 1(16)/2017/D(Pay/Services)/Pt.III dt 24-01-2020; MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994
+
+=== topic=RP-056 from=SS-P080
+T: Is field area allowance restored after leave automatically?
+A: No. It restarts only after a Part II order granting it is published after you rejoin.
+K: Stopped when you go on leave
+C: MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994
+O: FAQ-only on the restart procedure.
+
+=== topic=RP-058 from=SS-P081,SS-P083
+T: Siachen Allowance during leave or temporary duty
+A: Up to 14 days on sick list, casual leave or TD keeps it if you return. Annual leave stops it from day one.
+K: Base Rs 42,500 a month from 01-07-2017
+K: Rises 25% each time DA rises by 50%
+K: Starts on arrival; ends the day after you leave
+C: MoD letter 1(2)/91/D(Pay/Services) dt 01-05-1991 as amended; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017
+
+=== topic=RP-058 from=SS-P082,SS-P084,SS-P085
+T: Siachen Allowance with other allowances
+A: Payable with HAFA and with SCCIA. Not payable with High Altitude Allowance or Flying Allowance.
+K: HAUCA and SCCIA can be claimed together
+K: Siachen and HAUCA cannot be claimed together
+K: Aviators choose Siachen or Flying
+C: MoD letter 1(2)/91/D(Pay/Services) dt 01-05-1991 as amended; MoD letter 3(4)/97/D(Pay/Services) dt 28-05-1999
+
+=== topic=RP-091 from=SS-P099,SS-P096,RP-093
+T: Transit or guest house stay on posting: when reimbursed?
+A: When you applied for accommodation, got none, and stayed in a government guest house at the new station.
+K: Station Headquarters NAC (no accommodation certificate) is needed
+K: Guest house must be at the place of posting
+K: HRA is not paid for those days
+C: MoF OM 2/05/2018-E.II(B) dt 01-02-2019; MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020
+
+=== topic=RP-091 from=SS-P097
+T: Documents for transit accommodation charges
+A: Part II order with code REIMACCO from the new unit, an NAC and the original rent receipt.
+K: The new unit, not the old one, publishes the order
+H: REIMACCO Part II order
+H: NAC from Station HQ
+H: Original rent receipt
+C: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020
+
+=== topic=RP-091 from=SS-P098
+T: How long are transit accommodation charges reimbursed?
+A: For a maximum of six months.
+K: Reimbursed in line with how HRA is paid
+K: Needs the new unit's Part II order, certificate and rent receipt
+W: No HRA for the stay; the payment is taxable
+C: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020
+O: Six-month cap is from the FAQ (Dec 2025) only; the handbook text, read in full, does not state a cap.
+
+=== topic=RP-091 from=SS-P095,SS-P100
+T: Is transit accommodation reimbursement taxable, and is HRA also paid?
+A: It is taxable because it replaces HRA. HRA is not paid for the same stay.
+K: Certify that you will not claim HRA for those days
+C: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020

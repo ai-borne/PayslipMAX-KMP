@@ -1,0 +1,59 @@
+=== topic=RP-030 from=RP-030
+T: How much joining time do I get on a permanent posting?
+A: Six days preparatory time plus journey time: one day per 500 km by rail, 250 km by road, 350 km by sea.
+K: Air: actual time, part day counts as one
+K: Distance is actual, not the railway's assumed distance
+K: Counted as duty; Sundays ignored but count toward 30-day limit
+C: Para 18, AO 259/73
+D: Journey by river is 150 km a day and by other means 25 km. The competent authority may extend joining time up to 30 days. Casual leave may be granted in place of joining time but the two cannot be combined. Joining time is intended for winding up and re-establishing the household.
+
+=== topic=RP-030 id=RB-C9-02 from=RP-030
+T: Joining time for a course or temporary duty
+A: Admissible for courses over 6 months only if you give up service accommodation. Otherwise only the journey time.
+K: No 6 days preparation from a field area
+K: Not on return to the same station
+K: Newly commissioned: actual journey only on first posting
+C: Paras 5, 10 and 19, AO 259/73; CGDA letter 1223/AT-P dt 06-07-1973
+D: If posted on permanent duty while on TD or a course, joining time counts from that station. Combined with annual leave and furlough: annual leave first, furlough next, then joining time.
+
+=== topic=RP-030 id=RB-C9-03 from=RP-030
+T: Joining time reckoning, sickness, civil posting and handing-over days
+A: Handing or taking over: 7 days with a stores check (10 if dispersed), 4 days otherwise, Sundays and holidays included.
+K: Not when joining time is joined with annual leave on transfer
+K: Not for interchange of posts within one unit
+K: Transfer to civil or foreign service: the borrowing body's rules
+C: AO 310/73; Paras 7, 11 and 19, AO 259/73
+D: Falling sick in joining time and recovering within sick-list concession lets you take the balance. With annual leave on transfer, joining time runs from the old station, or the leave station if that gives less.
+
+=== topic=RP-031 from=RP-031
+T: What are the types of attachment of an officer?
+A: Disciplinary or suspension, staff attachment up to six months, training attachment up to three months, and after hospital pending posting.
+K: Staff attachment: held supernumerary in parent unit
+K: Training attachment: no extra pay
+K: After hospital: attached to your own arm's unit or SSO
+C: Para 93, Regulations for the Army 1987; Para 7(d), AO 97/56; AI 106/60
+D: A low medical category officer attached pending posting after the unit moves to an operational area draws pay and allowances of the rank and appointment held.
+
+=== topic=RP-031 id=RB-C12-02 from=RP-031
+T: Pay while under arrest or suspension
+A: Withholding under Army Act sections 90 and 91 is permissive, and only from the date the order is signed.
+K: No retrospective withholding
+K: Struck off strength; held supernumerary to establishment
+K: Withheld pay cannot clear debts during withholding
+C: Army Act sections 90, 91 and 93; Para 5, AO 17/01; Para 349, Regulations for the Army 1987
+D: If all pay is withheld and mess bills cannot be met, they are claimed from PCDA(O) under Para 1289 of the Regulations and Rules 538-539 of the Pay and Allowances Regulations.
+
+=== topic=RP-032 from=RP-032 chips=GUIDANCE
+T: Where are penal deductions explained?
+A: Penal deductions under sections 90 and 91 of the Army Act are detailed in AO 7/03.
+K: Read AO 7/03 before disputing a deduction
+C: AO 7/03
+O: Handbook gives only the pointer. Authoring a full card needs AO 7/03 text, not available here.
+
+=== topic=RP-033 from=RP-033
+T: How is maintenance allowance for wife and children paid?
+A: On sanction of the GOC-in-C only, up to 50% of pay and allowances. PCDA(O) does not act on a court order alone.
+K: Starts and stops only on GOC-in-C communication
+K: Base: pay level, DA, Technical Allowance
+K: MSP counts from 07-07-2020
+C: AO 06/2020

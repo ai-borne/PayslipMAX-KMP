@@ -1,0 +1,89 @@
+# Permanent move batch B: modes, first appointment, families, MNS (SS-T273..SS-T288, SS-T184). Written from TR 2014 Rules 61A, 64, 65, 67, 79, 83, 85, 85A, 178, 182.
+
+=== topic=RR-PDM-02 from=SS-T273,SS-T274,SS-T151
+T: How do I travel on a permanent posting?
+A: Your travel entitlement is the same as for temporary duty, mode by mode.
+K: Rail: on warrant, unless the competent authority allows cash payment
+K: Cash payment: fare of the class travelled or entitled, whichever is less
+K: Own accord without warrant: cost of warrant or actual, whichever is less
+C: Rule 67(a)(i) and Rule 47(iii), TR 2014
+
+=== topic=RR-PDM-03 from=SS-T275,SS-T277
+T: Newly commissioned: travel to my first station
+A: AC II on warrant from home or your academy, family by direct route, and 225 kg baggage on warrant.
+K: Family: free conveyance from your home to the permanent station
+K: Baggage up to 225 kg, including 55 kg from the training unit
+K: Daily allowance for the journey period; no CTG
+C: Rule 64 and Rule 65, TR 2014; CGDA letter 4199/AT-P dt 09-04-1973
+
+=== topic=RR-PDM-03 from=SS-T276
+T: Re-employed after retirement: travel to my first station
+A: AC II on warrant for you and your family, from your home to the reporting station.
+K: Re-employed within six months: unclaimed retirement TA can be claimed later
+K: Lower class if there is no AC II on the line
+C: Rule 64, Rule 201 and Rule 206, TR 2014; SAI 1/S/80
+
+=== topic=RR-PDM-04 from=SS-T278
+T: Baggage carried on free government transport
+A: What the free transport carries is deducted from your entitlement. Any excess is recovered.
+K: Applies when free road transport is provided on transfer
+K: Recovery is at the rate you would have been reimbursed
+C: Rule 79, TR 2014
+
+=== topic=RR-PDM-05 from=SS-T280
+T: Married while in a field area: wife's move to a peace station
+A: Her conveyance is paid under Rule 85, limited to the lower of two costs.
+K: Rail head nearest your old field station to the new peace station
+K: Or her residence to the new peace station, if less
+K: Baggage conveyance is allowed from her place of residence
+C: Rule 85, TR 2014
+
+=== topic=RR-PDM-05 from=SS-T281
+T: My family moves before or after me: what is paid?
+A: Warrant, or the lower of the entitled-class fare and the actual fare. Officers' families may fly.
+K: Baggage up to your maximum scale, less what you carry yourself
+K: Government liability stops at the old-to-new station distance
+C: Rule 85 and Rule 16, TR 2014
+
+=== topic=RR-PDM-05 from=SS-T282
+T: Family joining me in government married accommodation in a field area
+A: One-time free warrant for your family and baggage from their residence, once accommodation is allotted.
+K: Only government-built married accommodation, not hired or requisitioned
+K: Baggage limited to what was first moved to the SPR
+K: Valid only while the station is a family station
+C: Rule 85A, TR 2014
+
+=== topic=RR-PDM-06 from=SS-T283
+T: Officer lent to another department: whose travel rules apply?
+A: Those of the lending or borrowing department, depending on whose pay scale you draw.
+K: The borrowing department bears the cost
+K: Unless the loan letter says otherwise
+C: Rule 83, TR 2014
+
+=== topic=RR-PDM-07 from=SS-T284
+T: MNS officer: my husband's travel entitlements
+A: He is part of your family and gets its facilities, unless his own employer gives the same.
+K: No proof of dependency and no income limit
+K: You must give details of his job
+C: Rule 2, TR 2014
+
+=== topic=RR-ORD-02 from=SS-T285
+T: Can a Lieutenant travel by air on TD?
+A: Yes. All commissioned officers, including MNS officers, are entitled to travel by air.
+K: Levels 5A to 11 and Levels 12 to 13B: economy class
+K: Level 14 and above: business or club class
+C: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017; Rule 62 TR
+
+=== topic=RR-PDM-07 from=SS-T286,SS-T287,SS-T288,SS-T209
+T: MNS officers: TA/DA, LTC and concession vouchers
+A: Same TA/DA as other service officers. LTC is the same, but with Form G at 50% fare.
+K: Form G: 50% of the fare, including reservation charges
+K: Six one-way journeys a year, like Form D
+K: Form D is not available to MNS officers
+C: Rule 178 and Rule 182, TR 2014; MoD letter B/83878/DGAFMS/MNS/2204/D(Mov) dt 01-06-1981
+D: Family members of MNS officers may use Form 'D', but Form 'D' and Form G together are capped at six a calendar year.
+
+=== topic=RR-TD-02 from=SS-T184 chips=GUIDANCE
+T: Missed connection, night in a transit city: reimbursed?
+A: Yes. Hotel rent, conveyance and food are payable for an enforced halt.
+K: Applies on temporary duty when no connecting flight is available that day

@@ -1,0 +1,118 @@
+# General rules batch B: advances, penal interest, routes, charges (SS-T004, SS-T033..SS-T057). Written from TR 2014 Rules 17, 17A, 18, 24, 35, 39, 40, 42, 43, 44, 47 and the handbook.
+
+--- skip SS-T004 owner review: 1969/1984 orders not verifiable
+
+=== topic=RR-GEN-07 from=SS-T033
+T: My TD or LTC was cancelled but I drew an advance
+A: Pay it back at once, to PCDA(O) Pune only, by MRO. It is not recovered automatically.
+K: Delay means recovery with penal interest
+D: Check the current PCDA(O) MRO code on the PCDA(O) Pune website before paying.
+C: Rule 17A, TR 2014
+
+=== topic=RR-GEN-07 from=SS-T034,SS-T040 chips=RATES
+T: Penal interest on a TA advance: when and how much?
+A: Charged at the GPF rate plus 2%, from the day of drawal to refund.
+K: Timely claim: interest on the unused part only
+K: Late claim: whole advance recovered, with interest on all
+K: Correctly charged interest is not refunded
+C: Rule 17A, TR 2014; MoD (DMA) letter 12692/PI/Mov C/42/D(Mov)/2022 dt 18-01-2022
+D: The handbook gave 7.1% + 2% = 9.1% a year at the time; the base moves with the GPF rate.
+
+=== topic=RR-GEN-07 from=SS-T035
+T: Advance for the family of an officer who dies in service
+A: The Commanding Officer of the unit can draw it, under Rule 216.
+K: Subject to the conditions in Rule 21
+C: Rule 18, TR 2014
+
+=== topic=RR-GEN-07 from=SS-T036
+T: Advance for a course of instruction
+A: TA plus DA for the course is paid ten days before you leave.
+K: Return TA is paid ten days before the course ends
+K: Since 01-01-2015: draw it all online at once (CAT A and B)
+K: Adjustment claim goes to your own unit, countersigned by the CO
+C: Rule 17(iv), TR 2014
+
+=== topic=RR-GEN-07 from=SS-T037
+T: Drawing more advance than my entitlement
+A: Not allowed. The excess and its penal interest are recovered in one sum.
+K: Recovery from your IRLA, or by treasury deposit
+K: Over-drawing is treated as highly irregular
+C: Rule 17(vi), TR 2014; CGDA letter AT/IV/4378 dt 12-02-1982
+
+=== topic=RR-GEN-07 from=SS-T038
+T: Advance for officers on deputation to Assam Rifles
+A: You can draw TA, DA or LTC advance from PCDA(O) under Rule 17.
+K: The advance must be one the rules authorise
+C: Rule 17 TR; MoD letters 1137/D(Pay/Services) dt 15-02-1963 and 84048/AG/PS3(d)/323-S/D(Pay-Services) dt 21-04-1980
+
+=== topic=RR-GEN-07 from=SS-T039
+T: LTC advance: how early, and what conditions?
+A: For rail journeys, draw it up to 125 days before the move. Show the outward tickets within 10 days.
+K: Move cancelled: refund the advance at once, in one sum
+K: Outward journey not started within 120 days: refund forthwith
+C: Rule 17(i)(B)(i), TR 2014; MoD letter 12647/LTC/Mov C/62/D(Mov)/2016 dt 19-07-2016; DoPT OM 31011/8/2015-Estt(A.IV) dt 13-05-2016
+D: TR 2014 originally said 95 days. The 2016 MoD letter raised it to 125 days from 01-04-2015, to suit rail booking. DoPT keeps 65 days for other modes of travel.
+O: CONFLICT (resolved for rail): TR 2014 says 95 days; the later MoD letter says 125. Advance limit for Army air or road LTC not seen; DoPT civil limit is 65 days.
+
+=== topic=RR-GEN-07 from=SS-T041
+T: Adjusting an advance: when, and what if I do not
+A: Submit the adjustment TA bill right after the journey, complete in all respects.
+K: Otherwise PCDA(O) may recover the advance with penal interest
+K: Recovered from your pay in the second month after the journey
+C: Rule 17(v), TR 2014
+
+=== topic=RR-GEN-07 from=SS-T043
+T: A second advance while one is outstanding
+A: Not ordinarily allowed. Check that no earlier advance is outstanding.
+K: Concurrent advances should be avoided
+C: Rule 17(vii), TR 2014
+
+=== topic=RR-GEN-07 from=SS-T044
+T: Who can draw a TA advance, and for what?
+A: For TD, permanent move and LTC, up to your actual entitlement, if the amount exceeds Rs 50.
+K: No advance for journeys on retirement
+C: Rule 17(i)(A), TR 2014; AHQ letter 12059/Q Mov C dt 01-07-1992
+
+=== topic=RR-GEN-08 from=SS-T045
+T: Warrant, requisition, credit note, cash: how is conveyance given?
+A: Directly by warrant, requisition, credit note or cash, or indirectly as passage or TA.
+K: Other mode or class: the lower of actual fare and Government's cost
+K: Warrant not used: the warrant's value, with the Controlling Officer's sanction
+C: Rule 24, Rule 35 and Rule 47(iii), TR 2014
+
+=== topic=RR-GEN-09 from=SS-T050,SS-T051,SS-T049,SS-T229,SS-T251
+T: Routes: main route and longer routes
+A: On warrant or requisition, take the main route. Another route needs a medical or military reason.
+K: LTC warrants under 177A, 177B, 177C and Rule 180: main route
+K: Andaman and Nicobar: NOIC or Embarkation Commandants can sanction a longer route
+W: Commandants must ensure you will not be held at port
+C: Rule 39 and Rule 40, TR 2014
+
+=== topic=RR-GEN-10 from=SS-T052
+T: Cancelling an official ticket: are charges refunded?
+A: Yes, when the journey is cancelled in public interest or for reasons beyond your control. Not on LTC.
+K: Tatkal cancellation charges are reimbursable too
+K: Attach a certificate under Rule 44
+K: Your family's charges are refunded in the same way
+C: Rule 44, TR 2014
+
+=== topic=RR-GEN-10 from=SS-T053,SS-T055,SS-T056
+T: Railway supplementary and reservation charges
+A: Reimbursed as part of the fare, for officers and families.
+K: Superfast and express supplementary charges, and reservation charges
+K: Claim them through your TA claim
+K: Link a supplementary claim to the original claim
+C: Rule 43(b), TR 2014; AO 23/1980
+
+=== topic=RR-GEN-10 from=SS-T054
+T: Ferry charges and tolls on duty
+A: Within 8 km of your station, you can claim actual ferry, toll and rail fares.
+K: Tolls on a warrant road journey are reimbursed
+C: Rule 42, TR 2014
+
+=== topic=RR-GEN-11 from=SS-T057
+T: I travelled by rail without using my warrant
+A: You get the warrant's cost at public tariff, or the actual expenditure if less.
+K: Needs the Controlling Officer's sanction under Rule 47(iii)
+K: Applies to you and your family
+C: Rule 47(iii), TR 2014

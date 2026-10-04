@@ -1,0 +1,100 @@
+=== topic=RP-000 from=SS-P001,SS-P004 chips=GUIDANCE
+T: Documents needed for a personal number change or extension of service
+A: A letter from the MS branch, DGMS or DGAFMS covering the event is what the pay office warrants.
+K: Personal number allotment or change: MS branch letter
+K: Extension of service: MS branch letter
+O: FAQ-only; no primary authority found. Hold as guidance.
+
+=== topic=RP-000 from=SS-P002
+T: Documents needed to open an account on re-employment
+A: Re-employment needs the Part II order, your bank particulars and an MS branch letter.
+K: Retired officers re-employed open a fresh pay account
+H: Part II order of re-employment
+H: Bank details with a cancelled cheque
+H: MS branch letter
+C: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army
+O: FAQ-only; cite is the form procedure. Confirm authority with domain owner.
+
+=== topic=RP-000 from=SS-P003
+T: Documents needed to reopen the account on re-commission
+A: Casualty-code Part II order, bank details, PAN card, Form A and the MS branch letter.
+K: Earlier account number is reactivated on re-commission
+H: Part II order notifying the casualty code
+H: Bank details with a cancelled cheque
+H: PAN card, Form A, MS branch letter
+W: Territorial Army commission also needs the TA number allotment sanction
+C: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army
+O: FAQ-only; cite is the form procedure. Confirm with domain owner.
+
+=== topic=RP-000 from=SS-P005,SS-P006
+T: Documents needed on reversion from deputation or secondment
+A: Part II order with the right casualty code, bank details, MS branch letter and last pay certificate.
+K: Reversion from deputation: casualty code REVDEP
+K: Reversion from secondment: casualty code REVSECND
+H: Cancelled cheque, last pay certificate, MS branch letter
+H: PAN card and Form A on secondment
+C: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army
+O: FAQ-only; handbook confirms last pay certificate from the previous audit office is needed.
+
+=== topic=RP-005 from=SS-P012,SS-P007,SS-P013
+T: Promotion pay fixation: which option and how to opt
+A: By default pay is fixed on the promotion date. You may opt for fixation on the next increment date.
+K: Opt within 3 months of promotion or IHQ order
+K: Part II order with occurrence code OPTFXDNI is needed
+H: Option form signed by you and countersigned
+W: Not available for deputation, direct recruitment or ad-hoc promotion
+C: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion; MoD OM 1(20)/2017/D(Pay/Services) dt 26-02-2019
+
+=== topic=RP-005 from=SS-P008,SS-P009
+T: Can I change or late-file my promotion pay fixation option?
+A: No. The option is final once made, and a late option is not accepted.
+K: No option in time: pay is fixed from the date of promotion
+K: No later amendment of an option already exercised
+C: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
+O: FAQ-only on finality; primary rule not located.
+
+=== topic=RP-005 from=SS-P010
+T: Why was pay recovered after I opted for DNI fixation?
+A: The default fixation from the date of promotion is cancelled up to the next increment date.
+K: Promotion date to DNI: next higher cell in the new level
+K: On DNI: two notional increments in the old level, then fix
+K: Earlier default fixation is recovered up to DNI
+C: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
+
+=== topic=RP-005 from=SS-P014
+T: When is my first increment after promotion fixation?
+A: After 6 months, on the next 1 January or 1 July. Later increments follow every 12 months.
+K: Applies to promotions on or after 01-01-2016
+K: Only one increment a year: 1 January or 1 July
+C: Army Pay Rules 2017 (7th CPC); SRO 12(E) dt 03-05-2017
+
+=== topic=RP-005 from=SS-P011
+T: What document goes with the OPTFXDNI Part II order?
+A: The option form signed by you and countersigned by the competent authority.
+K: Both documents are forwarded together to PCDA(O)
+C: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
+O: FAQ-only; primary rule not located.
+
+=== topic=RP-006 from=SS-P018,SS-P016
+T: Special increments for sports: who qualifies and how many?
+A: Excellence at national or international events: 1 increment for national, 2 for international, maximum 5 in a career.
+K: National: first to third in athletics, first only in games
+K: Starts from the 1st of the month after the event
+K: Government sanction needed in each case
+C: MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017 and 24-08-2018, corrigendum dt 17-09-2021
+O: FAQ also cites DoPT OM 03-10-2013 and MoD letter 1272 dt 19-08-1996; not read in full.
+D: Referees and umpires accepted by an international federation can get two increments per event, within the same five-increment cap.
+
+=== topic=RP-006 from=SS-P015
+T: Do sports increments count for pay fixation or allowances?
+A: No. They do not count for pay fixation, retirement benefits or allowances such as HRA.
+K: Paid as personal pay by level
+K: Not counted for promotion fixation
+C: DoPT OM 6/1/2017-Estt(Pay-I) dt 11-06-2018, para 5
+D: Personal pay per month: Level 10: 1,240; 11: 1,470; 12: 1,690; 13: 1,800; 13A: 2,030; 14 and 15: 2,250.
+
+=== topic=RP-006 from=SS-P017
+T: Time limit to claim a sports special increment
+A: Claim within 6 months of the end of the sporting event.
+K: Counted from completion of the overall event
+C: DoPT OM 6/1/2017-Estt(Pay-I) dt 11-06-2018, para 6

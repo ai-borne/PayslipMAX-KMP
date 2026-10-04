@@ -1,0 +1,110 @@
+=== topic=RP-001 from=RP-001
+T: When does pay start on first commission?
+A: From the date of commission. For NDA, IMA or OTA officers it cannot start more than 30 days before you report for duty.
+K: MNS officers: pay from date of joining only
+K: Field-area first posting: date you report to the unit
+K: Medical officers: date you report for duty, not transit camp
+C: Rules 1 and 2, Pay and Allowances Regulations for the Army
+D: Newly commissioned officers who report to a transit camp after 21 days of joining leave are treated as reported for duty. Late reporting after the fixed date must be regularised. Send Form A (AO 03/03) within 7 days of reporting, signed by you and countersigned by the CO or OC.
+O: Handbook cites AHQ letter 06888/52/MPRS(O) dt 19-01-1967 and CGDA letter 1312/AT-P dt 28-06-1975 for the field-area and medical notes; both are old and unchecked.
+
+=== topic=RP-001 id=RB-C4-02 from=RP-001
+T: Does a change of name or spelling affect my pay records?
+A: Yes. Even a spelling change counts as a change of name and needs a Gazette notification to be published in Part II.
+K: Cover the Part II order with the Gazette number and date
+C: Army Instruction 196/51
+O: AI 196/51 is quoted in the handbook; not independently checked.
+
+=== topic=RP-002 from=RP-002
+T: Pay of cadets and trainees during pre-commission training
+A: Cadets get a fixed stipend. Trainees from the ranks keep their old rank pay, with a lump-sum balance on commissioning.
+K: Stipend Rs 56,100 a month from 01-01-2016
+K: Stipend becomes pay on successful commissioning
+K: Training period is not commissioned service
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+D: Covers IMA, OTA and the cadet wings at CME, MCEME and MCTE. PBOR trainees get the difference between stipend plus DA and what they were paid in one sum.
+
+=== topic=RP-003 from=RP-003
+T: Pay of an officer taken prisoner of war
+A: Full pay and allowances of the substantive rank, adjusted for any pay received from the enemy.
+K: Applies once reported prisoner of war
+C: Rule 55, Pay and Allowances Regulations for the Army
+
+=== topic=RP-004 from=RP-004
+T: What service counts towards increments, and does forfeiture matter?
+A: Only full-pay commissioned service counts, including full-pay or furlough-rate leave. Forfeiture hits only future increments.
+K: Forfeiture by court martial is not retrospective
+K: Forfeiture for promotion does not affect increment service
+K: Summary trial seniority loss leaves promotion dates unchanged
+C: Rule 41, Pay and Allowances Regulations for the Army; CGDA letter 6995/AFL dt 17-07-1967
+D: Increments fall on 1 January or 1 July. Incentive for small family norms was abolished from 01-07-2017 under MoF DoE OM 12(4)/2016-EIII.A dt 07-07-2017.
+
+=== topic=RP-007 from=RP-007,RP-008
+T: How are time-scale promotions earned, up to Colonel?
+A: By time scale, regardless of vacancies, once you complete the service period, pass the exam and are fit. Colonel (TS) also by time scale.
+K: General cadre: Captain 2 years, Major 6, Lt Col 13
+K: Colonel (TS) at 26 years
+K: Time-scale Colonel is held against a Lt Colonel post
+C: MoD letter 18(1)/2004-D(GS-I) dt 21-12-2004
+D: Effective 16-12-2004 after the AVS Committee. Special List officers use the same 2, 6 and 13 years.
+
+=== topic=RP-008 id=RB-C6-02 from=RP-008
+T: Time-scale promotion years for AMC, ADC and RVC officers
+A: AMC: Major after 4 years as Captain, Lt Col after 11, Colonel (TS) after 24. ADC and RVC run about six months later.
+K: ADC with internship: Major 4y6m, Lt Col 11y6m, Col 24y6m
+K: ADC without internship: one more year each
+K: RVC: Major 4y6m, Lt Col 11y6m, Col (TS) 24y6m
+C: MoD letter 10(3)(1)/05/D(Med) dt 29-10-2007; MoD letter 5(2)/2005-D(QS) dt 14-11-2005; MoD ID B/32006/Misc/AG/PS2(a)/1269/Dir(AG) dt 22-05-2017
+D: AMC (NT) follows the general cadre years (2, 6, 13, 26) under MoD letter 10(3)(1)/05-D(Med) dt 28-10-2005.
+
+=== topic=RP-008 id=RB-C6-03 from=RP-008
+T: Time-scale promotion years for MNS, TA and Special List officers
+A: MNS: Captain 3 years, Major 8, Lt Col 16. TA: Captain 4, Major 8, Lt Col 15, Colonel 28.
+K: AMC (TA): Captain on commission, Major 7, Lt Col 14, Col 27
+K: Special List: Captain 2, Major 6, Lt Col 13
+C: MoD letter 10(4)/2009/D(Med) dt 22-10-2010; MoD letter 18(1)/2006-D(GS-I) dt 18-04-2006; MoD letter 18(1)/2004-D(GS-I) dt 21-12-2004
+
+=== topic=RP-008 id=RB-C6-04 from=RP-008
+T: Substantive rank for SSC officers
+A: Old-term SSC officers are placed on par with permanent officers: Captain at 2 years, Major 6, Lt Col 13.
+K: Seniority reduced by the shorter training period
+K: Pay re-fixed notionally; new pay from 14-03-2012
+K: Retired or deceased before 20-07-2006: notional benefit only
+C: MoD letter B/32314/2011/14/AG/PS-2(a)/CC-148-D(AG-II) dt 10-05-2018; SRO 121 dt 28-10-2005
+D: Following the Supreme Court order of 29-01-2018. Not applicable to SSC and women officers already given PC. SSC women are considered for PC from 25-02-2019 and opt after 3 years (MoD letter 14(01)/2020-D(AG) dt 16-07-2020).
+O: Financial benefit cut-off is the AFT order of 14-03-2012; verify effect for officers retired after 20-07-2006.
+
+=== topic=RP-009 from=RP-009
+T: What is in-situ promotion and what does it pay?
+A: A senior empanelled officer is promoted in place for at most six months, until posted to the earmarked appointment.
+K: For Brigadier and above; extended to Colonel from 01-08-2009
+K: Pay of the rank of the appointment held
+K: The officiating incumbent gets no officiating allowance
+C: MoD ID 19(28)/2009-D(MS) dt 20-05-2009; AHQ MS Branch letters 04477/MS 9B/P dt 07-10-1986 and 04502/MS Policy dt 14-05-2009
+O: Colonel in-situ was to be re-examined in Jan 2014; no later MoD order known.
+
+=== topic=RP-010 from=RP-010
+T: Ages of retirement for combat arms and services
+A: Armoured, Infantry, Artillery, Engineers, Signals, Intelligence: Major 52, Lt Col and Colonel 54, Brigadier 56, Major General 58, Lt General 60.
+K: ASC, AOC, EME, Pioneers: Major and below 54
+K: Others in that group as for combat arms
+K: Food Inspection cadre: Lt Col and Colonel 57
+C: MoD letter 14(3)/98/D(AG) dt 03-09-1998; MoD letter 18(1)/2004-D(GS-I) dt 21-12-2004
+
+=== topic=RP-010 id=RB-C7-02 from=RP-010
+T: Ages of retirement for AMC, ADC, RVC and MNS officers
+A: Up to Lt Col 56, Colonel 58, Brigadier 59, Major General 60. Lt General and DGAFMS serve a fixed tenure.
+K: Lt General (not DGAFMS): 2 years or age 61, not before 60
+K: DGAFMS: 3 years or age 62, not before 60
+K: AMC (NT): up to Colonel 57, Brigadier 59
+C: MoD letter 14(3)/98-D(AG) dt 01-05-2000; MoD letter 10(14)/06/D(Med) dt 20-04-2007
+D: AMC (NT): Colonel (Selection) 57, Brigadier (Records) 58, Major General 60, per MoD letters of 10-11-2006, 24-03-2009 and 26-12-2017.
+
+=== topic=RP-010 id=RB-C7-03 from=RP-010
+T: Ages of retirement for Special List, RC, NCC and TA officers
+A: Special List and AEC, APTC, JAG: Colonel and below 57, Brigadier 58, Major General 59, Lt General 60. RC officers: 52 or 12 years.
+K: NCC whole-time permanent officers: 57 years
+K: AMC (TA), MNS (TA): Lt Col 56, Colonel 58, Brigadier 59
+K: TA Colonel (TS): 56 or 4 years tenure, not before 54
+C: MoD letter 18(1)/2004-D(GS-I) dt 21-12-2004; MoD letter 72512/AMC/TA-4/409/US/D(GS-III) dt 28-05-2008; MoD letter 46347/Amdt/R-14/TA-4/71/US/D(GS-III)/2017 dt 19-09-2017
+D: RC officers: AI 5/93 and 32/89. NCC officers retire at noon on the month-end following the 57th birthday; a 1st-of-month birthday retires them at the previous month-end.

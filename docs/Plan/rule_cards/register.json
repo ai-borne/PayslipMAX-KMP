@@ -1,0 +1,5544 @@
+{
+ "generated": "2026-10-03",
+ "item_status": {
+  "FAQ": {
+   "PAY_DOMAIN": 135,
+   "TR_ANCHORED_KW": 9,
+   "ORDER_ANCHORED": 38,
+   "TR_ANCHORED": 62,
+   "SECTION_DEFAULT": 6,
+   "OUT_OR_NICHE": 1
+  },
+  "TA": {
+   "RESIDUAL": 9,
+   "TR_ANCHORED": 165,
+   "TR_ANCHORED_KW": 21,
+   "ORDER_ANCHORED": 54,
+   "FORM_NOISE": 46,
+   "OUT_OR_NICHE": 12,
+   "CROSS_PAY": 4
+  }
+ },
+ "travel": [
+  {
+   "id": "RR-GEN-01",
+   "title": "Definitions: family, duty station, pay grade of family; who the rules cover",
+   "domain": "GEN",
+   "kind": "TR",
+   "tr_rules": [
+    "1",
+    "2",
+    "13"
+   ],
+   "tr_titles": [
+    "Classes of personnel to whom these rules",
+    "Definitions",
+    "Families belong to the same grade as the"
+   ],
+   "faq": [
+    "pwEmNG",
+    "buM1cW",
+    "LjFPZM",
+    "/Ls/2R"
+   ],
+   "ta_paras": [
+    "8@p16",
+    "18@p30",
+    "19@p36",
+    "20@p36",
+    "21@p36",
+    "27@p39",
+    "34@p43",
+    "44@p51",
+    "49@p55",
+    "50@p56",
+    "51@p56",
+    "59@p74",
+    "75@p86",
+    "91@p95",
+    "94@p96",
+    "95@p107",
+    "107@p115",
+    "6@p119",
+    "167@p146",
+    "171@p158",
+    "191@p164",
+    "219@p180"
+   ],
+   "authority_leads": [
+    "TR 47 and Note 2 TR 40",
+    "Rule 40 Note 2 TR",
+    "AO 90/1977"
+   ]
+  },
+  {
+   "id": "RR-GEN-02",
+   "title": "Who may order a move / sanction TA",
+   "domain": "GEN",
+   "kind": "TR",
+   "tr_rules": [
+    "3",
+    "4",
+    "5"
+   ],
+   "tr_titles": [
+    "Delegation of Powers",
+    "Authorities empowered to authorise moves",
+    "Powers to sanction travelling allowance"
+   ],
+   "faq": [
+    "2DX+GR"
+   ],
+   "ta_paras": [
+    "8@p16",
+    "13@p19",
+    "15@p23",
+    "16@p27",
+    "17@p29",
+    "21@p36",
+    "3@p64",
+    "59@p74",
+    "63@p78",
+    "88@p93",
+    "94@p96",
+    "114@p120"
+   ],
+   "authority_leads": [
+    "GoI, MoF, DOE OM No. 19030/1/2017-E",
+    "Note 5 under TR 114 (vi)",
+    "AO 90/1977"
+   ]
+  },
+  {
+   "id": "RR-GEN-03",
+   "title": "Countersignature, claim submission and time limits",
+   "domain": "GEN",
+   "kind": "TR",
+   "tr_rules": [
+    "6",
+    "7",
+    "8",
+    "9",
+    "23",
+    "202"
+   ],
+   "tr_titles": [
+    "Controlling Officer Counter-signature on",
+    "Officers who are permitted to submit claims",
+    "When endorsed by the controlling officer, the",
+    "Duties and powers of controlling officers"
+   ],
+   "faq": [
+    "N4yVKy",
+    "n7ZD7v"
+   ],
+   "ta_paras": [
+    "1@p14.2",
+    "13@p19",
+    "14@p22",
+    "54@p69",
+    "94@p96",
+    "107@p115",
+    "118@p121"
+   ],
+   "authority_leads": [
+    "GoI, MoF, DOE OM No. 19030/1/2017-E",
+    "GoI, MoD letter No. 12630/TA/Mov C/198/D(Mov)/2018 dated 06 Dec 2018 extendi",
+    "GoI, MoD letter No. 12630/TA/Mov C/198/D(Mov)/2018 dated 06 Dec 2018, ext"
+   ]
+  },
+  {
+   "id": "RR-GEN-04",
+   "title": "Classification of journeys; officer in transit",
+   "domain": "GEN",
+   "kind": "TR",
+   "tr_rules": [
+    "10",
+    "12"
+   ],
+   "tr_titles": [
+    "Classification of journeys",
+    "An individual in transit from one post to"
+   ],
+   "faq": [],
+   "ta_paras": [],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-GEN-05",
+   "title": "Revision of TA on reversion/promotion",
+   "domain": "GEN",
+   "kind": "TR",
+   "tr_rules": [
+    "14"
+   ],
+   "tr_titles": [
+    "Revision of TA on reversion or promotion"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "14@p22",
+    "33@p42"
+   ],
+   "authority_leads": [
+    "Rule 14 TR 29 Handbook on Travelling Allowances - 2023"
+   ]
+  },
+  {
+   "id": "RR-GEN-06",
+   "title": "Lien on conveyance; penalty for non-acceptance",
+   "domain": "GEN",
+   "kind": "TR",
+   "tr_rules": [
+    "15",
+    "16",
+    "204"
+   ],
+   "tr_titles": [
+    "Penalty for non-acceptance of conveyance",
+    "Lien on conveyance",
+    "Lien on conveyance preparatory to"
+   ],
+   "faq": [
+    "9Pcv0v",
+    "+rqKT3"
+   ],
+   "ta_paras": [
+    "34@p43",
+    "35@p44",
+    "36@p44",
+    "37@p44",
+    "38@p45",
+    "39@p45",
+    "40@p45",
+    "97@p109",
+    "98@p109",
+    "119@p122",
+    "237@p188"
+   ],
+   "authority_leads": [
+    "Rule 16(ii) h TR",
+    "Rule 16 (i) (a) and 204 TR (ii) A family entitled to conveyance within India",
+    "Rule 16(ii) (a) TR (iii) Family of an officer who is transferre"
+   ]
+  },
+  {
+   "id": "RR-GEN-07",
+   "title": "Advances of TA/DA and penal interest",
+   "domain": "GEN",
+   "kind": "TR",
+   "tr_rules": [
+    "17",
+    "17A",
+    "18"
+   ],
+   "tr_titles": [
+    "Advances of Travelling Allowance and their",
+    "Charging of penal interest on advance of",
+    "Advance of TA/DA to Families of Service"
+   ],
+   "faq": [
+    "FPLR3m",
+    "0/OTYE"
+   ],
+   "ta_paras": [
+    "13@p19",
+    "140@p135",
+    "143@p135",
+    "144@p136",
+    "146@p136",
+    "148@p136",
+    "7@p138",
+    "150@p139",
+    "151@p139",
+    "152@p140",
+    "153@p140"
+   ],
+   "authority_leads": [
+    "GoI, MoF, DOE OM No. 19030/1/2017-E",
+    "GoI, MoD letter No. 12630/TA/Mov C/198/D(Mov)/2018 dated 06 Dec 2018 extendi",
+    "GoI, MoD letter No. 12630/TA/Mov C/198/D(Mov)/2018 dated 06 Dec 2018, ext"
+   ]
+  },
+  {
+   "id": "RR-GEN-08",
+   "title": "Forms of conveyance: warrant, requisition, credit note, cash",
+   "domain": "GEN",
+   "kind": "TR",
+   "tr_rules": [
+    "24",
+    "25",
+    "29",
+    "35",
+    "37"
+   ],
+   "tr_titles": [
+    "Conveyance Conveyance may be provided",
+    "Provision of conveyance by requisition",
+    "Conveyance by Road - Entitlement of",
+    "Conveyance by a mode and/or class other"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "22@p38",
+    "23@p38",
+    "33@p42"
+   ],
+   "authority_leads": [
+    "Rule 24 TR Reimbursement of the cost of conveyance to an off",
+    "Rule 35 TR When a warrant is not used by the officer who may",
+    "Rule 47(iii) TR"
+   ]
+  },
+  {
+   "id": "RR-GEN-09",
+   "title": "Mileage: routes, start/end points, shortest route, fractions of a km",
+   "domain": "GEN",
+   "kind": "TR",
+   "tr_rules": [
+    "38",
+    "39",
+    "40",
+    "41",
+    "45",
+    "106"
+   ],
+   "tr_titles": [
+    "Calculation of Mileage Allowance for",
+    "Routes",
+    "Grant of Mileage Allowance-routes other than",
+    "Point of Commencement and End of"
+   ],
+   "faq": [
+    "buM1cW",
+    "LjFPZM",
+    "/Ls/2R"
+   ],
+   "ta_paras": [
+    "18@p30",
+    "27@p39",
+    "51@p56",
+    "191@p164",
+    "224@p182"
+   ],
+   "authority_leads": [
+    "TR 47 and Note 2 TR 40",
+    "Rule 40 Note 2 TR",
+    "Appx E to SAO 07/S/1984 Where the cancellation was due to other th"
+   ]
+  },
+  {
+   "id": "RR-GEN-10",
+   "title": "Ferry/toll charges, reservation expenses, cancellation refunds",
+   "domain": "GEN",
+   "kind": "TR",
+   "tr_rules": [
+    "42",
+    "43",
+    "44"
+   ],
+   "tr_titles": [
+    "Ferry Charges, Tolls and Railway Fares",
+    "Incidence of Expenses in Connection with",
+    "Refund of Cancellation Charges on Unused"
+   ],
+   "faq": [
+    "iKQ6m3"
+   ],
+   "ta_paras": [
+    "2@p14",
+    "29@p41",
+    "30@p41",
+    "31@p41",
+    "32@p41",
+    "153@p140"
+   ],
+   "authority_leads": [
+    "AO 23/1980",
+    "Rule 44 (a), (b), (c) & (d) TR Following charges will be reimbursab"
+   ]
+  },
+  {
+   "id": "RR-GEN-11",
+   "title": "TA when warrant cannot be issued; passage orders",
+   "domain": "GEN",
+   "kind": "TR",
+   "tr_rules": [
+    "47",
+    "48"
+   ],
+   "tr_titles": [
+    "Travelling Allowance admissible when",
+    "Provision of Conveyance on Passage Order"
+   ],
+   "faq": [
+    "LjFPZM",
+    "/Ls/2R"
+   ],
+   "ta_paras": [
+    "13@p19",
+    "22@p38",
+    "51@p56",
+    "94@p96",
+    "169@p152",
+    "172@p158",
+    "173@p159",
+    "210@p172",
+    "13@p206"
+   ],
+   "authority_leads": [
+    "TR 47 and Note 2 TR 40",
+    "GoI, MoF, DOE OM No. 19030/1/2017-E",
+    "GoI, MoD letter No. 12630/TA/Mov C/198/D(Mov)/2018 dated 06 Dec 2018 extendi"
+   ]
+  },
+  {
+   "id": "RR-LTC-01",
+   "title": "Home Town LTC (Rule 177A)",
+   "domain": "LTC",
+   "kind": "TR",
+   "tr_rules": [
+    "177"
+   ],
+   "tr_titles": [
+    "Leave Travel Concessions for Service"
+   ],
+   "faq": [
+    "q3HiNE",
+    "pwEmNG",
+    "vJG+3H",
+    "SvSa4y",
+    "8Xy7Va",
+    "gE2cXy",
+    "gsCWgD",
+    "M1qyYW",
+    "kzxS68",
+    "62oxWK",
+    "l2Ctix",
+    "OCGv/O",
+    "boLeCr",
+    "Oo2Xs8",
+    "rdaBoG",
+    "tcVWnB",
+    "RjWi0w",
+    "nQ3VWr",
+    "ehfKzC",
+    "LLQrG8",
+    "T5GnSx",
+    "N6Df2s",
+    "vxYEmh",
+    "J2AON1",
+    "BlgGIx",
+    "8M2Rbx"
+   ],
+   "ta_paras": [
+    "13@p19",
+    "15@p23",
+    "17@p29",
+    "166@p146",
+    "169@p152",
+    "171@p158",
+    "172@p158",
+    "174@p159",
+    "176@p159",
+    "177@p159",
+    "178@p160",
+    "179@p160",
+    "185@p161",
+    "186@p162",
+    "189@p163",
+    "191@p164",
+    "192@p164",
+    "193@p164",
+    "194@p167",
+    "209@p172",
+    "210@p172",
+    "212@p174",
+    "217@p179",
+    "218@p180",
+    "230@p183",
+    "232@p186",
+    "233@p187",
+    "234@p187",
+    "236@p188",
+    "237@p188",
+    "241@p192",
+    "10@p204",
+    "13@p206"
+   ],
+   "authority_leads": [
+    "Rule 177A(i)(a)",
+    "GoI, MoF, DOE OM No. 19030/1/2017-E",
+    "Rule 177A(i)(d)"
+   ]
+  },
+  {
+   "id": "RR-LTC-02",
+   "title": "Anywhere-in-India LTC (Rule 177B)",
+   "domain": "LTC",
+   "kind": "TR",
+   "tr_rules": [
+    "177"
+   ],
+   "tr_titles": [
+    "Leave Travel Concessions for Service"
+   ],
+   "faq": [
+    "q3HiNE",
+    "pKiaVZ",
+    "pwEmNG",
+    "BZLKmB",
+    "QkXLlK",
+    "8Xy7Va",
+    "gE2cXy",
+    "gsCWgD",
+    "M1qyYW",
+    "5yQPzY",
+    "hqImwO",
+    "6lWcwP",
+    "bYCZEJ",
+    "thRc2B",
+    "Oo2Xs8",
+    "rdaBoG",
+    "RjWi0w",
+    "nQ3VWr",
+    "JnG97c",
+    "T5GnSx",
+    "2wAlMX"
+   ],
+   "ta_paras": [
+    "13@p19",
+    "15@p23",
+    "18@p30",
+    "97@p109",
+    "171@p158",
+    "180@p160",
+    "181@p160",
+    "182@p161",
+    "183@p161",
+    "184@p161",
+    "186@p162",
+    "187@p163",
+    "191@p164",
+    "193@p164",
+    "194@p167",
+    "195@p168",
+    "196@p168",
+    "197@p168",
+    "198@p169",
+    "200@p169",
+    "201@p169",
+    "202@p170",
+    "203@p170",
+    "204@p170",
+    "205@p171",
+    "210@p172",
+    "212@p174",
+    "216@p176",
+    "217@p179",
+    "218@p180",
+    "230@p183",
+    "232@p186",
+    "233@p187",
+    "234@p187",
+    "237@p188",
+    "241@p192",
+    "242@p195",
+    "10@p204",
+    "13@p206"
+   ],
+   "authority_leads": [
+    "GoI, MoF, DOE OM No. 19030/1/2017-E",
+    "Rule 177 (B) (i) (b) TR",
+    "Rule 177A(i)(a)"
+   ]
+  },
+  {
+   "id": "RR-LTC-03",
+   "title": "LTC for Field / CI areas (Rule 177C)",
+   "domain": "LTC",
+   "kind": "TR",
+   "tr_rules": [
+    "177"
+   ],
+   "tr_titles": [
+    "Leave Travel Concessions for Service"
+   ],
+   "faq": [
+    "pwEmNG",
+    "gE2cXy",
+    "Oo2Xs8",
+    "tcVWnB",
+    "RjWi0w",
+    "JnG97c",
+    "vxYEmh",
+    "R18Ket"
+   ],
+   "ta_paras": [
+    "15@p23",
+    "191@p164",
+    "193@p164",
+    "210@p172",
+    "212@p174",
+    "230@p183",
+    "10@p204",
+    "13@p206"
+   ],
+   "authority_leads": [
+    "AO 194/1972 & 30/1989 and GoI, MoD letter No",
+    "IHQ of MoD(Army)/DGMS letter notifying posting and movement order",
+    "GoI, MoF, DoE, New Delhi letter No. 19024/03/2021-E"
+   ]
+  },
+  {
+   "id": "RR-LTC-04",
+   "title": "Study leave, children in hostel (Rule 177D, 191)",
+   "domain": "LTC",
+   "kind": "TR",
+   "tr_rules": [
+    "177",
+    "191"
+   ],
+   "tr_titles": [
+    "Leave Travel Concessions for Service",
+    "Children's travel concessions during"
+   ],
+   "faq": [
+    "pwEmNG",
+    "DE7mJA"
+   ],
+   "ta_paras": [
+    "213@p175",
+    "10@p204"
+   ],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-LTC-05",
+   "title": "LTC general: one-per-calendar-year, mode/class, forfeiture, road conveyance on leave",
+   "domain": "LTC",
+   "kind": "TR",
+   "tr_rules": [
+    "176",
+    "177",
+    "179",
+    "184A"
+   ],
+   "tr_titles": [
+    "Mode and class of Accommodation",
+    "Leave Travel Concessions for Service",
+    "Road Conveyance for Officers proceeding",
+    "Forfeiture of LTC"
+   ],
+   "faq": [
+    "l2HDhC",
+    "2Zxg2y",
+    "ETYXwl",
+    "v1wGSK",
+    "+7qwiC",
+    "AqwLyu",
+    "FVj9l1"
+   ],
+   "ta_paras": [
+    "13@p19",
+    "104@p113",
+    "156@p143",
+    "167@p146",
+    "168@p147",
+    "2@p157",
+    "185@p161",
+    "190@p163",
+    "214@p175",
+    "215@p175",
+    "216@p176",
+    "217@p179",
+    "238@p188",
+    "239@p191"
+   ],
+   "authority_leads": [
+    "GoI, MoF, DOE OM No. 19030/1/2017-E",
+    "Rule 176(e) iii TR",
+    "Rule 176(e)(ii) TR"
+   ]
+  },
+  {
+   "id": "RR-LTC-06",
+   "title": "LTC by air: winter, special regions, free air travel",
+   "domain": "LTC",
+   "kind": "TR",
+   "tr_rules": [
+    "176A",
+    "176B",
+    "176C"
+   ],
+   "tr_titles": [
+    "Facility of LTC by air during winter only",
+    "Journey by Air on LTC to Service",
+    "Free Air Travel facility for Service"
+   ],
+   "faq": [],
+   "ta_paras": [],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-LTC-07",
+   "title": "Reduced fare / concession certificates",
+   "domain": "LTC",
+   "kind": "TR",
+   "tr_rules": [
+    "181",
+    "183"
+   ],
+   "tr_titles": [
+    "Reduced Fare Certificate for Service",
+    "Concession Voucher to Service Personnel"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "104@p113",
+    "154@p142",
+    "155@p142",
+    "156@p143",
+    "163@p144",
+    "164@p145",
+    "234@p187"
+   ],
+   "authority_leads": [
+    "Rule 181 TR, AO 299/58, GoI, MoD letter No",
+    "GoI, MoD letter No. 12522/Q Mov C/1634/D(Mov)/98 dated 26 Jun 1998 and CGDA letter",
+    "Rule 182 (a) TR The use of Concessional Voucher is restricted t"
+   ]
+  },
+  {
+   "id": "RR-LTC-08",
+   "title": "Army Aviation / air crew LTC",
+   "domain": "LTC",
+   "kind": "TR",
+   "tr_rules": [
+    "180"
+   ],
+   "tr_titles": [
+    "Army Officer employed as Army Aviation"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "191@p164",
+    "218@p180",
+    "219@p180",
+    "10@p204"
+   ],
+   "authority_leads": [
+    "Note 1 under Rule 180 TR \u25cf\u25cf\u25cf"
+   ]
+  },
+  {
+   "id": "RR-MOD-01",
+   "title": "Rail: class and accommodation entitlement",
+   "domain": "MOD",
+   "kind": "TR",
+   "tr_rules": [
+    "27",
+    "57",
+    "92",
+    "93",
+    "94",
+    "95A",
+    "96"
+   ],
+   "tr_titles": [
+    "Scale of accommodation for journeys by",
+    "Classes of Accommodation for Travel by Rail",
+    "Class of Accommodation For Travel By Rail",
+    "Use of Railway Saloons and Special"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "32@p41",
+    "44@p51",
+    "45@p53",
+    "48@p55",
+    "49@p55",
+    "50@p56",
+    "72@p84",
+    "90@p95"
+   ],
+   "authority_leads": [
+    "Rule 44 (a), (b), (c) & (d) TR Following charges will be reimbursab",
+    "Note 1 below Rule 62 TR read with 108 TR d",
+    "GoI, MoF, DoE ID No. I/E/IV/2007 dated 27 Feb 2007 received vide CGDA Office letter"
+   ]
+  },
+  {
+   "id": "RR-MOD-02",
+   "title": "Sea / river steamer entitlement",
+   "domain": "MOD",
+   "kind": "TR",
+   "tr_rules": [
+    "26",
+    "58",
+    "107"
+   ],
+   "tr_titles": [
+    "Sea journey within Indian limits",
+    "Entitlement for Journey by Sea or by River Steamer",
+    "Class of accommodation for sea journey"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "46@p53",
+    "90@p95"
+   ],
+   "authority_leads": [
+    "Rule 57 & 58 TR",
+    "GoI, MoD letter No. 12630/Mov C/242/D(Mov)/2017 dated 15 Sept 2017"
+   ]
+  },
+  {
+   "id": "RR-MOD-03",
+   "title": "Road: mileage allowance rates and conditions",
+   "domain": "MOD",
+   "kind": "TR",
+   "tr_rules": [
+    "61",
+    "111",
+    "112",
+    "113"
+   ],
+   "tr_titles": [
+    "Rates of Road Mileage for Journey by Road",
+    "Road Mileage for journeys by Road",
+    "Journeys where Rail-cum-Road tickets are",
+    "Road Mileage for journeys at Outports"
+   ],
+   "faq": [
+    "WuO7Sj"
+   ],
+   "ta_paras": [
+    "41@p46",
+    "47@p54",
+    "51@p56",
+    "94@p96",
+    "216@p176"
+   ],
+   "authority_leads": [
+    "Rule 111 (e) TR read with Rule 61 TR Note: Where intermediate journeys by road are necessa",
+    "Rule 111 (c) TR (iv) When a road journey is performed between pl",
+    "Rule 111 (d) TR, MoD letter No"
+   ]
+  },
+  {
+   "id": "RR-MOD-04",
+   "title": "Air journeys: entitlement and class",
+   "domain": "MOD",
+   "kind": "TR",
+   "tr_rules": [
+    "62",
+    "108",
+    "245"
+   ],
+   "tr_titles": [
+    "Conveyance for Air Journeys in India",
+    "Journeys by Air",
+    "Class of Air Travel"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "44@p51",
+    "72@p84",
+    "118@p121",
+    "229@p183"
+   ],
+   "authority_leads": [
+    "Note 1 below Rule 62 TR read with 108 TR d",
+    "GoI, MoF, DoE ID No. I/E/IV/2007 dated 27 Feb 2007 received vide CGDA Office letter",
+    "GoI, MoD letter No. 1/69/2008/D(Pay/Service) dated 24 Jul 2009 and No"
+   ]
+  },
+  {
+   "id": "RR-MOD-05",
+   "title": "Hiring conveyance / private car at outstation",
+   "domain": "MOD",
+   "kind": "TR",
+   "tr_rules": [
+    "102",
+    "103",
+    "104"
+   ],
+   "tr_titles": [
+    "Scale of accommodation",
+    "Hire of conveyance at outstation",
+    "Hiring of Motor cars or use of private cars"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "47@p54",
+    "216@p176"
+   ],
+   "authority_leads": [
+    "Rule 179 (ii) TR and CGDA letter No",
+    "Rule 179 (iii) TR (iv) Road conveyance normally by Govt",
+    "Rule 179 (iv) TR (v) When journey is performed under own arrang"
+   ]
+  },
+  {
+   "id": "RR-MOD-06",
+   "title": "Free baggage allowance on warrant",
+   "domain": "MOD",
+   "kind": "TR",
+   "tr_rules": [
+    "238"
+   ],
+   "tr_titles": [
+    "Free Allowance of Baggage"
+   ],
+   "faq": [],
+   "ta_paras": [],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-MOD-07",
+   "title": "Booking on warrant; credit notes; payment mode",
+   "domain": "MOD",
+   "kind": "TR",
+   "tr_rules": [
+    "231",
+    "232",
+    "233",
+    "237"
+   ],
+   "tr_titles": [
+    "Custody and issue of warrants, credit notes",
+    "Mode of Payment",
+    "Booking of individuals travelling on railway",
+    "Credit Notes"
+   ],
+   "faq": [],
+   "ta_paras": [],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-ORD-01",
+   "title": "Air tickets: booking only via authorised travel agents; fees; mileage points",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [
+    "II6mb0",
+    "4JdJqS",
+    "jcVHwc",
+    "TapAZg",
+    "ZHWO9n",
+    "OtQuFn",
+    "v6zuGv",
+    "FxlX1s",
+    "Llkm+I",
+    "i1aElZ",
+    "jp25aW",
+    "GSoBLO"
+   ],
+   "ta_paras": [
+    "42@p48"
+   ],
+   "authority_leads": [
+    "GoI, MoF, DoE OM no19024/03/2021-E",
+    "GoI, MoF, DoE OMno19024/03/2021-E",
+    "GoI, MoF, DoE OMno19024/03/2021-E.IV dated 31/12/2021"
+   ]
+  },
+  {
+   "id": "RR-ORD-02",
+   "title": "Air travel entitlement for officers (all commissioned officers, best fare, private airlines)",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [
+    "bbEDjK",
+    "OlCYD1",
+    "goDxzu"
+   ],
+   "ta_paras": [
+    "6@p15",
+    "56@p69",
+    "1@p147",
+    "228@p183"
+   ],
+   "authority_leads": [
+    "GoI, MoD letter No. 3(7)/2008/D(Ceremonials) dated 23 Feb 2009",
+    "AO 775/1973",
+    "GoI, MoD letter No. 3(7)/2003/D(Cer) dated 09 Apr 2015 and No"
+   ]
+  },
+  {
+   "id": "RR-ORD-03",
+   "title": "Food charges on TD (lump sum by absence hours and pay level)",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [
+    "4JVjgQ",
+    "cRHU7f",
+    "FZAVOW",
+    "4MqbK4"
+   ],
+   "ta_paras": [],
+   "authority_leads": [
+    "GoI, MoD letter No. 12630/Mov C/242/D (Mov)/2017 dated 15th September 2017"
+   ]
+  },
+  {
+   "id": "RR-ORD-04",
+   "title": "Hotel / guest-room on TD: ceilings, GST, non-availability certificate",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [
+    "hUTUSs",
+    "IS3WU7"
+   ],
+   "ta_paras": [
+    "2@p64"
+   ],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-ORD-05",
+   "title": "Own car on TD / RMA: sanction, least-of rule, warrant cost",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [
+    "8iu6b8",
+    "f50mLc"
+   ],
+   "ta_paras": [
+    "1@p200"
+   ],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-ORD-06",
+   "title": "Composite Transfer Grant, baggage and car conveyance on permanent move",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [
+    "t6o+6M",
+    "iK2XsO",
+    "MXy6Dr",
+    "xIko6b"
+   ],
+   "ta_paras": [
+    "101@p111",
+    "123@p124"
+   ],
+   "authority_leads": [
+    "GoI, MoD letter No. 12630/TA/DA/Mov C/13/D (Mov)18 dt",
+    "GoI, MoD letter No. 12630/Mov C/242/D (Mov)/2017 dated 15th September 2017"
+   ]
+  },
+  {
+   "id": "RR-ORD-07",
+   "title": "Supporting documents: movement order, move sanction, boarding pass, certificates",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [
+    "/49OsO",
+    "A9gVvG",
+    "bp8Zwe",
+    "ey2JYd"
+   ],
+   "ta_paras": [
+    "7@p15",
+    "1@p64",
+    "157@p143",
+    "165@p145",
+    "240@p191",
+    "243@p195",
+    "2@p200",
+    "3@p200",
+    "5@p200"
+   ],
+   "authority_leads": [
+    "AO 6/2002",
+    "GoI, MoD letter No. 12647/LTC/SPORTS/Mov C/22/D (Mov)/2019 dated 22 March 2019, Do"
+   ]
+  },
+  {
+   "id": "RR-ORD-08",
+   "title": "Time limits for submitting claims",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [
+    "uij20z"
+   ],
+   "ta_paras": [
+    "100@p110",
+    "1@p137",
+    "2@p137",
+    "3@p137",
+    "4@p138",
+    "5@p138",
+    "6@p138"
+   ],
+   "authority_leads": [
+    "GoI, MoD Letter No. A/01117/Q3(B-1)/246-S/D(Q&C) dated 04 May 1965 reproduced in A"
+   ]
+  },
+  {
+   "id": "RR-ORD-09",
+   "title": "DTS, online advance requisition, and claim submission procedure",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [],
+   "ta_paras": [
+    "3@p14",
+    "9@p17",
+    "10@p18",
+    "131@p128",
+    "141@p135",
+    "142@p135"
+   ],
+   "authority_leads": [
+    "AO 4/2003"
+   ]
+  },
+  {
+   "id": "RR-ORD-10",
+   "title": "LTC to special regions (NE, J&K, A&N, Lakshadweep, Ladakh)",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [
+    "DcW8JP"
+   ],
+   "ta_paras": [
+    "3@p149",
+    "220@p181",
+    "221@p181",
+    "222@p181",
+    "225@p182"
+   ],
+   "authority_leads": [
+    "GoI, MoD letter No. 9840/NCC/Coord (Officers)/956/B(GS- IV) dated 31 May 1967",
+    "GoI, MoD letter No. 79257/PCI/ EIA1245S / D(Pay/Services) dated 17 Dec 1966",
+    "GoI, MoD letter No.67668/AG/PS3(a)/1316/D (Pay/ Services) dat"
+   ]
+  },
+  {
+   "id": "RR-ORD-11",
+   "title": "Travel within city; receipts and vouchers for local conveyance",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [
+    "i3ynYy",
+    "RUxJmF"
+   ],
+   "ta_paras": [],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-ORD-12",
+   "title": "Travel entitlements of family: spouse, parents, dependents, MNS husband",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [],
+   "ta_paras": [
+    "175@p159",
+    "199@p169",
+    "206@p171",
+    "207@p171"
+   ],
+   "authority_leads": [
+    "AO 531/1964"
+   ]
+  },
+  {
+   "id": "RR-ORD-13",
+   "title": "Home town / home address: declaration and change",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [
+    "BjgiaC",
+    "n2K3xD",
+    "AbRYGw"
+   ],
+   "ta_paras": [
+    "124@p124",
+    "188@p163"
+   ],
+   "authority_leads": [
+    "AO 22/02 and SAO 4/S/88",
+    "GoI, MoD Letter No. Air HQ/23952/304/PP&R4/988 /D (Mov) dated 13 Mar 1979"
+   ]
+  },
+  {
+   "id": "RR-ORD-14",
+   "title": "Rates and entitlements by pay level (7th CPC pay matrix)",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [],
+   "ta_paras": [
+    "139@p134"
+   ],
+   "authority_leads": [
+    "GoI, MoD letter No. 20(1)/2017/D(GS-III) dated 21 Sept 2017"
+   ]
+  },
+  {
+   "id": "RR-ORD-15",
+   "title": "Form 'D' railway concession for leave journeys and joining time",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [],
+   "ta_paras": [
+    "158@p144",
+    "159@p144",
+    "160@p144",
+    "161@p144",
+    "162@p144"
+   ],
+   "authority_leads": [
+    "GoI, MoD letter No.PT/1203/NHQ/4851/D(Mov) dated 12 Sep 1974 and CGDA letter No",
+    "GoI, MoD letter No. G/05492/Q Mov C/3853 D(Mov) dated 25 Sep 1979"
+   ]
+  },
+  {
+   "id": "RR-ORD-16",
+   "title": "Special-posting LTC and leave provisions (Andaman & Nicobar, NCC, island stations)",
+   "domain": "ORD",
+   "kind": "ORDER",
+   "tr_rules": [],
+   "tr_titles": [],
+   "faq": [],
+   "ta_paras": [
+    "211@p173",
+    "13@p180",
+    "223@p181",
+    "226@p182",
+    "227@p182",
+    "235@p187"
+   ],
+   "authority_leads": [
+    "GoI, MoD letter No. 5(1)/2007/D(Mov)(I) dated 20 Aug 2007 and GoI, MoD letter No",
+    "GoI, MoD letter No. A/14209/AG/PS2(B)/188-S-D(AG-ii) dated 16 Feb 1972 as amended",
+    "GoI, MoD letter No. C/01632/Q Mov C/2348/D(Mov) dated 17 May 1976"
+   ]
+  },
+  {
+   "id": "RR-PDM-01",
+   "title": "What is a permanent duty move (180-day test)",
+   "domain": "PDM",
+   "kind": "TR",
+   "tr_rules": [
+    "56"
+   ],
+   "tr_titles": [
+    "Definition of Permanent Duty"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "23@p38",
+    "94@p96"
+   ],
+   "authority_leads": [
+    "Rule 56 and Rule 91 TR 24(B)",
+    "Rule 80 TR (e) Officers of all ranks are entitled to perform",
+    "Rule 67 (a)(i)(5) TR and GoI, MoD letter No"
+   ]
+  },
+  {
+   "id": "RR-PDM-02",
+   "title": "TA on permanent move: service officers, same-station, spouses, transit",
+   "domain": "PDM",
+   "kind": "TR",
+   "tr_rules": [
+    "67",
+    "80",
+    "81",
+    "82",
+    "86",
+    "87",
+    "88",
+    "89",
+    "90",
+    "90A"
+   ],
+   "tr_titles": [
+    "Journey on permanent duty - (Service",
+    "Journey by Road where Rail-cum-Road",
+    "Entitlement for transfer within the same",
+    "Entitlement of Travelling Allowance when"
+   ],
+   "faq": [
+    "PeYimS",
+    "boLeCr",
+    "ZUDdHo",
+    "Jwvivv",
+    "guEuYG",
+    "rKPLkV",
+    "A81ikg",
+    "krie/2"
+   ],
+   "ta_paras": [
+    "5@p15",
+    "26@p39",
+    "38@p45",
+    "92@p95",
+    "94@p96",
+    "95@p107",
+    "96@p108",
+    "99@p110",
+    "102@p111",
+    "103@p112",
+    "104@p113",
+    "105@p115",
+    "106@p115",
+    "107@p115",
+    "108@p116",
+    "109@p116",
+    "110@p117",
+    "6@p119"
+   ],
+   "authority_leads": [
+    "Rule 67 TR and GoI, MoD letter No",
+    "Rule 82 (a) (b) TR",
+    "AO 681/1973 and 130/1975"
+   ]
+  },
+  {
+   "id": "RR-PDM-03",
+   "title": "DA on permanent move and first appointment/training",
+   "domain": "PDM",
+   "kind": "TR",
+   "tr_rules": [
+    "59",
+    "64",
+    "65"
+   ],
+   "tr_titles": [
+    "Admissibility of Daily Allowance",
+    "Travelling Allowance to Commissioned",
+    "Daily Allowance to Officers Undergoing Post"
+   ],
+   "faq": [
+    "kyU7AQ"
+   ],
+   "ta_paras": [
+    "8@p16",
+    "93@p95",
+    "128@p126"
+   ],
+   "authority_leads": [
+    "AO 90/1977",
+    "SAI 1/S/80, Para 6 of Appx to SAO 13/S/65 and Rule 201 and 206",
+    "Rule 64 TR (B) During the re-employment: Same as applicable to serv"
+   ]
+  },
+  {
+   "id": "RR-PDM-04",
+   "title": "Baggage / personal effects on transfer",
+   "domain": "PDM",
+   "kind": "TR",
+   "tr_rules": [
+    "61A",
+    "79"
+   ],
+   "tr_titles": [
+    "Carriage of Personal Effects on Transfer",
+    "Conveyance of baggage when free"
+   ],
+   "faq": [],
+   "ta_paras": [],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-PDM-05",
+   "title": "Families: warning orders, moving apart, free conveyance",
+   "domain": "PDM",
+   "kind": "TR",
+   "tr_rules": [
+    "63",
+    "73",
+    "85",
+    "85A"
+   ],
+   "tr_titles": [
+    "Warning Orders- Conveyance of Families",
+    "Conveyance to Families of Service",
+    "Families moving apart from the Head of the",
+    "Grant free conveyance to families of"
+   ],
+   "faq": [
+    "UThRFs"
+   ],
+   "ta_paras": [
+    "34@p43",
+    "72@p84",
+    "96@p108",
+    "98@p109",
+    "99@p110",
+    "104@p113"
+   ],
+   "authority_leads": [
+    "Rule 16 (i) (a) and 204 TR (ii) A family entitled to conveyance within India",
+    "Rule 16(ii) (a) TR (iii) Family of an officer who is transferre",
+    "Note 1 below Rule 16 (ii) (a) TR (iv) The family conveyance admissible as"
+   ]
+  },
+  {
+   "id": "RR-PDM-06",
+   "title": "Officers lent to other departments / bodies",
+   "domain": "PDM",
+   "kind": "TR",
+   "tr_rules": [
+    "83"
+   ],
+   "tr_titles": [
+    "Individuals whose services are lent to other"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "111@p117"
+   ],
+   "authority_leads": [
+    "Rule 83 (a) & (b) TR \u25cf\u25cf\u25cf 105 Handbook on Travelling Allowances - 2023"
+   ]
+  },
+  {
+   "id": "RR-PDM-07",
+   "title": "Military Nursing Service officers",
+   "domain": "PDM",
+   "kind": "TR",
+   "tr_rules": [
+    "68",
+    "178",
+    "182",
+    "207A",
+    "207B"
+   ],
+   "tr_titles": [
+    "Military Nursing Officers",
+    "Leave Travel Concession to officers of the",
+    "Reduced Fare Certificate for MNS Officers",
+    "Travelling Allowance to MNS Officers on"
+   ],
+   "faq": [
+    "gcZj83",
+    "iA5rNT"
+   ],
+   "ta_paras": [
+    "68@p81",
+    "84@p91",
+    "6@p119",
+    "163@p144",
+    "215@p175"
+   ],
+   "authority_leads": [
+    "Rule 150-A TR 68 Regulation Of TA - Temporary Dut",
+    "GoI, MoD letter No. B/83878/DGAFMS/MNS/2204/D (Mov) dated 01 Jun 1981",
+    "Rule 200 -A(a) TR and GoI, MoD letter No"
+   ]
+  },
+  {
+   "id": "RR-RET-01",
+   "title": "TA on retirement, release, transfer to reserve",
+   "domain": "RET",
+   "kind": "TR",
+   "tr_rules": [
+    "200A",
+    "200B",
+    "201",
+    "203"
+   ],
+   "tr_titles": [
+    "Entitlement on Retirement/ Release/",
+    "Travelling Allowance to Service",
+    "Concession of TA/DA etc. to Service",
+    "Entitlement of domiciled/ individuals who"
+   ],
+   "faq": [
+    "9u3Sp/",
+    "8Xy7Va",
+    "HAWpTI"
+   ],
+   "ta_paras": [
+    "93@p95",
+    "115@p121",
+    "116@p121",
+    "126@p124",
+    "128@p126",
+    "1@p157",
+    "212@p174"
+   ],
+   "authority_leads": [
+    "GoI, MoF, DoE OM no. 19030/1/2017/E",
+    "GoI, MoD Letter No.12266/Q(Mov)C/2275/D(Mov) dated 24 Jun 1980",
+    "SAI 1/S/80, Para 6 of Appx to SAO 13/S/65 and Rule 201 and 206"
+   ]
+  },
+  {
+   "id": "RR-RET-02",
+   "title": "TA on release from re-employment",
+   "domain": "RET",
+   "kind": "TR",
+   "tr_rules": [
+    "206"
+   ],
+   "tr_titles": [
+    "Travelling Allowance on release from re-"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "128@p126"
+   ],
+   "authority_leads": [
+    "SAI 1/S/80, Para 6 of Appx to SAO 13/S/65 and Rule 201 and 206",
+    "Rule 64 TR (B) During the re-employment: Same as applicable to serv",
+    "Rule 64, 201 and 206 TR and SAI 1/S/80"
+   ]
+  },
+  {
+   "id": "RR-RET-03",
+   "title": "Dismissal or removal from service",
+   "domain": "RET",
+   "kind": "TR",
+   "tr_rules": [
+    "209"
+   ],
+   "tr_titles": [
+    "Conveyance to Service Officers on"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "120@p122"
+   ],
+   "authority_leads": [
+    "Rule 209 TR Note: The powers conferred on the Chief of the Army staf"
+   ]
+  },
+  {
+   "id": "RR-RET-04",
+   "title": "Families of officers who die in service / missing / POW",
+   "domain": "RET",
+   "kind": "TR",
+   "tr_rules": [
+    "216",
+    "219"
+   ],
+   "tr_titles": [
+    "Travelling Allowance entitlement of families",
+    "Travelling Allowance entitlement of families"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "11@p18",
+    "121@p122",
+    "122@p123",
+    "151@p139"
+   ],
+   "authority_leads": [
+    "Rule 216, 217A, 218 B TR and GoI, MoD letter No",
+    "Rule 162 TR & GoI, MoD letter No",
+    "GoI, MoD letter No. 12630/Mov C/3737 /D(Mov)/ 08 dated 29 Dec 2008"
+   ]
+  },
+  {
+   "id": "RR-TD-01",
+   "title": "What is temporary duty; TA entitlement on TD",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "91",
+    "119"
+   ],
+   "tr_titles": [
+    "Definition of Temporary Duty",
+    "Entitlement of Travelling Allowance on"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "16@p27",
+    "23@p38",
+    "27@p39",
+    "57@p72",
+    "75@p86",
+    "78@p87",
+    "79@p87",
+    "83@p90",
+    "94@p96",
+    "138@p134"
+   ],
+   "authority_leads": [
+    "AO 237/1970",
+    "AO 342/1965 (h) No TA/DA is admissible for the journey in respec",
+    "AO 20/1996 (i) A separate certificate issued by the Controlling"
+   ]
+  },
+  {
+   "id": "RR-TD-02",
+   "title": "Daily allowance on TD (halts, hotel, food, rates)",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "114",
+    "115",
+    "116"
+   ],
+   "tr_titles": [
+    "Daily Allowance on Temporary Duty",
+    "Daily Allowance Admissible during",
+    "Daily Allowance admissible to Officers"
+   ],
+   "faq": [
+    "/LlS61",
+    "2DX+GR",
+    "CSfsjJ"
+   ],
+   "ta_paras": [
+    "41@p46",
+    "51@p56",
+    "3@p64",
+    "52@p68",
+    "53@p68",
+    "55@p69",
+    "57@p72",
+    "58@p72",
+    "59@p74",
+    "60@p76",
+    "74@p85",
+    "83@p90",
+    "85@p91",
+    "89@p93",
+    "93@p95",
+    "138@p134",
+    "2@p148",
+    "4@p149",
+    "170@p152"
+   ],
+   "authority_leads": [
+    "GoI, MoD, letter No. 12630/TA/DA/7thCPC/Mov C/85/D (Mov)/2018 dated 14 May 2018 and",
+    "Note 5 under TR 114 (vi)",
+    "GoI, MoD, Dept of Mil affairs letter no. 12030/TA/DA/7thCPC/Mov C 143/D (Mov)/21 dated 16/"
+   ]
+  },
+  {
+   "id": "RR-TD-03",
+   "title": "Courses and training: TA/DA and conveyance",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "117",
+    "123",
+    "124",
+    "129"
+   ],
+   "tr_titles": [
+    "Travelling and Daily Allowance for Officer",
+    "Daily Allowance admissible when attending",
+    "Conveyance to individuals attending",
+    "Travelling Allowance to an individual"
+   ],
+   "faq": [
+    "inpcOn",
+    "n2+jGs"
+   ],
+   "ta_paras": [
+    "76@p86",
+    "77@p86",
+    "78@p87",
+    "79@p87",
+    "81@p89",
+    "152@p140",
+    "6@p200"
+   ],
+   "authority_leads": [
+    "Rule 124(iv) TR",
+    "Rule 129 TR Student officers undergoing the Technical Staff Off",
+    "Rule 124 TR (II) Conveyance of family to course station: When t"
+   ]
+  },
+  {
+   "id": "RR-TD-04",
+   "title": "Obligatory/professional examinations",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "118",
+    "127",
+    "127A",
+    "150B"
+   ],
+   "tr_titles": [
+    "Daily Allowance admissible in connection",
+    "Conveyance for Obligatory Departmental",
+    "Travelling Allowance from Office/",
+    "Conveyance for Individuals attending"
+   ],
+   "faq": [
+    "TsDii6"
+   ],
+   "ta_paras": [
+    "77@p86",
+    "81@p89"
+   ],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-TD-05",
+   "title": "Conferences, boards, meetings, regimental conferences",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "136",
+    "138",
+    "140"
+   ],
+   "tr_titles": [
+    "Travelling Allowance admissible to officer",
+    "Conveyance admissible in",
+    "Travelling Allowance admissible to Officer"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "63@p78",
+    "64@p78"
+   ],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-TD-06",
+   "title": "Sports and sports control boards",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "141",
+    "142"
+   ],
+   "tr_titles": [
+    "Travelling Allowance for journeys to attend",
+    "Conveyance for journeys of Service"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "65@p79",
+    "66@p79"
+   ],
+   "authority_leads": [
+    "Rule 141 and 141-A TR",
+    "Rule 141 TR However, army officers participating in preliminary and final 66 Regulation Of"
+   ]
+  },
+  {
+   "id": "RR-TD-07",
+   "title": "Manoeuvres and training camps",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "121"
+   ],
+   "tr_titles": [
+    "Travelling Allowance for journey to and"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "62@p77"
+   ],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-TD-08",
+   "title": "Medical journeys: consultation, treatment, attendants, sick families",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "109",
+    "153",
+    "154",
+    "157",
+    "158",
+    "159",
+    "160",
+    "166A"
+   ],
+   "tr_titles": [
+    "Evacuation of Casualties by Air",
+    "Conveyance for journeys to obtain Medical",
+    "Conveyance for Journeys to obtain Medical",
+    "Conveyance for Service Personnel"
+   ],
+   "faq": [
+    "+rR0tg"
+   ],
+   "ta_paras": [
+    "72@p84",
+    "204@p170"
+   ],
+   "authority_leads": [
+    "Rule 157 TR & 157-A TR As per SPC and 7th CPC orders, the authorised",
+    "Rule 94 and 108 TR and GoI, MoD letter No",
+    "Rule 158 TR 73"
+   ]
+  },
+  {
+   "id": "RR-TD-09",
+   "title": "Leave: conveyance during leave, recall from leave",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "150",
+    "151"
+   ],
+   "tr_titles": [
+    "Circumstances and conditions under which",
+    "Conveyance when recalled from Leave for"
+   ],
+   "faq": [
+    "vMvKlF"
+   ],
+   "ta_paras": [
+    "17@p29",
+    "67@p80",
+    "68@p81",
+    "69@p82",
+    "70@p83",
+    "82@p90"
+   ],
+   "authority_leads": [
+    "Rule 150 (i) and (ii) TR",
+    "AO 179/1978 (b) When more than one railway warrant or Form 'D",
+    "Rule 150-A TR 68 Regulation Of TA - Temporary Dut"
+   ]
+  },
+  {
+   "id": "RR-TD-10",
+   "title": "Colonels/Colonel Commandants visiting units; Field Marshals",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "152",
+    "152A"
+   ],
+   "tr_titles": [
+    "Travelling Allowance to Colonels/ Colonel",
+    "Travelling Allowance/Daily Allowance to"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "71@p83"
+   ],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-TD-11",
+   "title": "Liaison duty, collection of tickets/visas, misc. duty journeys",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "149",
+    "175",
+    "119B",
+    "122"
+   ],
+   "tr_titles": [
+    "Travelling Allowance/Daily Allowance",
+    "Conveyance to the Civilian/ Service",
+    "Daily Allowance to Regular Service",
+    "Special Allowance to EME and AOC"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "85@p91",
+    "87@p93"
+   ],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-TD-12",
+   "title": "Courts, enquiries, witnesses",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "131",
+    "132",
+    "133"
+   ],
+   "tr_titles": [
+    "Conveyance to Witnesses attending Military",
+    "Travelling Allowance to individuals for",
+    "Travelling Allowance to individuals"
+   ],
+   "faq": [],
+   "ta_paras": [],
+   "authority_leads": []
+  },
+  {
+   "id": "RR-TD-13",
+   "title": "Relatives of officers: illness, bereavement, battle casualty",
+   "domain": "TD",
+   "kind": "TR",
+   "tr_rules": [
+    "161",
+    "162"
+   ],
+   "tr_titles": [
+    "Conveyance for relatives of Service",
+    "Conveyance to the relative of Service"
+   ],
+   "faq": [],
+   "ta_paras": [
+    "11@p18"
+   ],
+   "authority_leads": [
+    "Rule 216, 217A, 218 B TR and GoI, MoD letter No",
+    "Rule 162 TR & GoI, MoD letter No",
+    "GoI, MoD letter No. 12630/Mov C/3737 /D(Mov)/ 08 dated 29 Dec 2008"
+   ]
+  },
+  {
+   "id": "RR-TPT-01",
+   "title": "Transport allowance at double rate for specified disabilities",
+   "domain": "TPT",
+   "kind": "TR",
+   "tr_rules": [
+    "230A",
+    "230B"
+   ],
+   "tr_titles": [
+    "Grant of Transport Allowance to Blind and",
+    "Grant of Transportation Allowance to"
+   ],
+   "faq": [],
+   "ta_paras": [],
+   "authority_leads": []
+  }
+ ],
+ "tr_disposition": [
+  {
+   "rule": "1",
+   "title": "Classes of personnel to whom these rules",
+   "chapter": "ONE",
+   "page": 22,
+   "disposition": "IN",
+   "ref": "RR-GEN-01",
+   "linked_items": 12
+  },
+  {
+   "rule": "2",
+   "title": "Definitions",
+   "chapter": "ONE",
+   "page": 22,
+   "disposition": "IN",
+   "ref": "RR-GEN-01",
+   "linked_items": 19
+  },
+  {
+   "rule": "3",
+   "title": "Delegation of Powers",
+   "chapter": "ONE",
+   "page": 25,
+   "disposition": "IN",
+   "ref": "RR-GEN-02",
+   "linked_items": 1
+  },
+  {
+   "rule": "4",
+   "title": "Authorities empowered to authorise moves",
+   "chapter": "ONE",
+   "page": 25,
+   "disposition": "IN",
+   "ref": "RR-GEN-02",
+   "linked_items": 11
+  },
+  {
+   "rule": "5",
+   "title": "Powers to sanction travelling allowance",
+   "chapter": "ONE",
+   "page": 25,
+   "disposition": "IN",
+   "ref": "RR-GEN-02",
+   "linked_items": 3
+  },
+  {
+   "rule": "6",
+   "title": "Controlling Officer Counter-signature on",
+   "chapter": "ONE",
+   "page": 26,
+   "disposition": "IN",
+   "ref": "RR-GEN-03",
+   "linked_items": 3
+  },
+  {
+   "rule": "7",
+   "title": "Officers who are permitted to submit claims",
+   "chapter": "ONE",
+   "page": 26,
+   "disposition": "IN",
+   "ref": "RR-GEN-03",
+   "linked_items": 1
+  },
+  {
+   "rule": "8",
+   "title": "When endorsed by the controlling officer, the",
+   "chapter": "ONE",
+   "page": 26,
+   "disposition": "IN",
+   "ref": "RR-GEN-03",
+   "linked_items": 1
+  },
+  {
+   "rule": "9",
+   "title": "Duties and powers of controlling officers",
+   "chapter": "ONE",
+   "page": 26,
+   "disposition": "IN",
+   "ref": "RR-GEN-03",
+   "linked_items": 4
+  },
+  {
+   "rule": "10",
+   "title": "Classification of journeys",
+   "chapter": "ONE",
+   "page": 27,
+   "disposition": "IN",
+   "ref": "RR-GEN-04",
+   "linked_items": 0
+  },
+  {
+   "rule": "12",
+   "title": "An individual in transit from one post to",
+   "chapter": "ONE",
+   "page": 27,
+   "disposition": "IN",
+   "ref": "RR-GEN-04",
+   "linked_items": 0
+  },
+  {
+   "rule": "13",
+   "title": "Families belong to the same grade as the",
+   "chapter": "ONE",
+   "page": 27,
+   "disposition": "IN",
+   "ref": "RR-GEN-01",
+   "linked_items": 0
+  },
+  {
+   "rule": "14",
+   "title": "Revision of TA on reversion or promotion",
+   "chapter": "ONE",
+   "page": 27,
+   "disposition": "IN",
+   "ref": "RR-GEN-05",
+   "linked_items": 2
+  },
+  {
+   "rule": "15",
+   "title": "Penalty for non-acceptance of conveyance",
+   "chapter": "ONE",
+   "page": 27,
+   "disposition": "IN",
+   "ref": "RR-GEN-06",
+   "linked_items": 0
+  },
+  {
+   "rule": "16",
+   "title": "Lien on conveyance",
+   "chapter": "ONE",
+   "page": 27,
+   "disposition": "IN",
+   "ref": "RR-GEN-06",
+   "linked_items": 13
+  },
+  {
+   "rule": "17",
+   "title": "Advances of Travelling Allowance and their",
+   "chapter": "ONE",
+   "page": 29,
+   "disposition": "IN",
+   "ref": "RR-GEN-07",
+   "linked_items": 11
+  },
+  {
+   "rule": "17A",
+   "title": "Charging of penal interest on advance of",
+   "chapter": "ONE",
+   "page": 33,
+   "disposition": "IN",
+   "ref": "RR-GEN-07",
+   "linked_items": 1
+  },
+  {
+   "rule": "18",
+   "title": "Advance of TA/DA to Families of Service",
+   "chapter": "ONE",
+   "page": 33,
+   "disposition": "IN",
+   "ref": "RR-GEN-07",
+   "linked_items": 1
+  },
+  {
+   "rule": "20",
+   "title": "Grant of TA/DA Advance to JCOs and their",
+   "chapter": "ONE",
+   "page": 33,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "21",
+   "title": "Advance of TA/DA to the family of a Civilian",
+   "chapter": "ONE",
+   "page": 34,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 1
+  },
+  {
+   "rule": "23",
+   "title": "Completion of Travelling Allowance Claims",
+   "chapter": "ONE",
+   "page": 34,
+   "disposition": "IN",
+   "ref": "RR-GEN-03",
+   "linked_items": 1
+  },
+  {
+   "rule": "24",
+   "title": "Conveyance Conveyance may be provided",
+   "chapter": "ONE",
+   "page": 35,
+   "disposition": "IN",
+   "ref": "RR-GEN-08",
+   "linked_items": 2
+  },
+  {
+   "rule": "25",
+   "title": "Provision of conveyance by requisition",
+   "chapter": "ONE",
+   "page": 35,
+   "disposition": "IN",
+   "ref": "RR-GEN-08",
+   "linked_items": 0
+  },
+  {
+   "rule": "26",
+   "title": "Sea journey within Indian limits",
+   "chapter": "ONE",
+   "page": 35,
+   "disposition": "IN",
+   "ref": "RR-MOD-02",
+   "linked_items": 0
+  },
+  {
+   "rule": "27",
+   "title": "Scale of accommodation for journeys by",
+   "chapter": "ONE",
+   "page": 35,
+   "disposition": "IN",
+   "ref": "RR-MOD-01",
+   "linked_items": 0
+  },
+  {
+   "rule": "29",
+   "title": "Conveyance by Road - Entitlement of",
+   "chapter": "ONE",
+   "page": 35,
+   "disposition": "IN",
+   "ref": "RR-GEN-08",
+   "linked_items": 1
+  },
+  {
+   "rule": "32",
+   "title": "Port of Embarkation for Passenger",
+   "chapter": "ONE",
+   "page": 35,
+   "disposition": "OUT",
+   "ref": "General provisions without officer-facing content",
+   "linked_items": 1
+  },
+  {
+   "rule": "35",
+   "title": "Conveyance by a mode and/or class other",
+   "chapter": "ONE",
+   "page": 35,
+   "disposition": "IN",
+   "ref": "RR-GEN-08",
+   "linked_items": 1
+  },
+  {
+   "rule": "36",
+   "title": "Payment of Port Taxes",
+   "chapter": "ONE",
+   "page": 36,
+   "disposition": "OUT",
+   "ref": "General provisions without officer-facing content",
+   "linked_items": 0
+  },
+  {
+   "rule": "37",
+   "title": "Through Booking on Warrant or Requisition",
+   "chapter": "ONE",
+   "page": 36,
+   "disposition": "IN",
+   "ref": "RR-GEN-08",
+   "linked_items": 0
+  },
+  {
+   "rule": "38",
+   "title": "Calculation of Mileage Allowance for",
+   "chapter": "ONE",
+   "page": 36,
+   "disposition": "IN",
+   "ref": "RR-GEN-09",
+   "linked_items": 0
+  },
+  {
+   "rule": "39",
+   "title": "Routes",
+   "chapter": "ONE",
+   "page": 36,
+   "disposition": "IN",
+   "ref": "RR-GEN-09",
+   "linked_items": 2
+  },
+  {
+   "rule": "40",
+   "title": "Grant of Mileage Allowance-routes other than",
+   "chapter": "ONE",
+   "page": 38,
+   "disposition": "IN",
+   "ref": "RR-GEN-09",
+   "linked_items": 7
+  },
+  {
+   "rule": "41",
+   "title": "Point of Commencement and End of",
+   "chapter": "ONE",
+   "page": 39,
+   "disposition": "IN",
+   "ref": "RR-GEN-09",
+   "linked_items": 0
+  },
+  {
+   "rule": "42",
+   "title": "Ferry Charges, Tolls and Railway Fares",
+   "chapter": "ONE",
+   "page": 40,
+   "disposition": "IN",
+   "ref": "RR-GEN-10",
+   "linked_items": 1
+  },
+  {
+   "rule": "43",
+   "title": "Incidence of Expenses in Connection with",
+   "chapter": "ONE",
+   "page": 40,
+   "disposition": "IN",
+   "ref": "RR-GEN-10",
+   "linked_items": 2
+  },
+  {
+   "rule": "44",
+   "title": "Refund of Cancellation Charges on Unused",
+   "chapter": "ONE",
+   "page": 41,
+   "disposition": "IN",
+   "ref": "RR-GEN-10",
+   "linked_items": 2
+  },
+  {
+   "rule": "45",
+   "title": "Fractions of a kilometre in road journeys",
+   "chapter": "ONE",
+   "page": 41,
+   "disposition": "IN",
+   "ref": "RR-GEN-09",
+   "linked_items": 0
+  },
+  {
+   "rule": "47",
+   "title": "Travelling Allowance admissible when",
+   "chapter": "ONE",
+   "page": 42,
+   "disposition": "IN",
+   "ref": "RR-GEN-11",
+   "linked_items": 11
+  },
+  {
+   "rule": "48",
+   "title": "Provision of Conveyance on Passage Order",
+   "chapter": "ONE",
+   "page": 42,
+   "disposition": "IN",
+   "ref": "RR-GEN-11",
+   "linked_items": 1
+  },
+  {
+   "rule": "56",
+   "title": "Definition of Permanent Duty",
+   "chapter": "TWO",
+   "page": 43,
+   "disposition": "IN",
+   "ref": "RR-PDM-01",
+   "linked_items": 2
+  },
+  {
+   "rule": "57",
+   "title": "Classes of Accommodation for Travel by Rail",
+   "chapter": "TWO",
+   "page": 43,
+   "disposition": "IN",
+   "ref": "RR-MOD-01",
+   "linked_items": 2
+  },
+  {
+   "rule": "58",
+   "title": "Entitlement for Journey by Sea or by River Steamer",
+   "chapter": "TWO",
+   "page": 45,
+   "disposition": "IN",
+   "ref": "RR-MOD-02",
+   "linked_items": 2
+  },
+  {
+   "rule": "59",
+   "title": "Admissibility of Daily Allowance",
+   "chapter": "TWO",
+   "page": 45,
+   "disposition": "IN",
+   "ref": "RR-PDM-03",
+   "linked_items": 0
+  },
+  {
+   "rule": "61",
+   "title": "Rates of Road Mileage for Journey by Road",
+   "chapter": "TWO",
+   "page": 45,
+   "disposition": "IN",
+   "ref": "RR-MOD-03",
+   "linked_items": 5
+  },
+  {
+   "rule": "61A",
+   "title": "Carriage of Personal Effects on Transfer",
+   "chapter": "TWO",
+   "page": 46,
+   "disposition": "IN",
+   "ref": "RR-PDM-04",
+   "linked_items": 0
+  },
+  {
+   "rule": "62",
+   "title": "Conveyance for Air Journeys in India",
+   "chapter": "TWO",
+   "page": 47,
+   "disposition": "IN",
+   "ref": "RR-MOD-04",
+   "linked_items": 1
+  },
+  {
+   "rule": "63",
+   "title": "Warning Orders- Conveyance of Families",
+   "chapter": "TWO",
+   "page": 48,
+   "disposition": "IN",
+   "ref": "RR-PDM-05",
+   "linked_items": 1
+  },
+  {
+   "rule": "64",
+   "title": "Travelling Allowance to Commissioned",
+   "chapter": "TWO",
+   "page": 48,
+   "disposition": "IN",
+   "ref": "RR-PDM-03",
+   "linked_items": 3
+  },
+  {
+   "rule": "65",
+   "title": "Daily Allowance to Officers Undergoing Post",
+   "chapter": "TWO",
+   "page": 49,
+   "disposition": "IN",
+   "ref": "RR-PDM-03",
+   "linked_items": 2
+  },
+  {
+   "rule": "66",
+   "title": "Entitlement of Regular Reserve Officer (other",
+   "chapter": "TWO",
+   "page": 49,
+   "disposition": "NICHE",
+   "ref": "Regular reserve officers called up",
+   "linked_items": 0
+  },
+  {
+   "rule": "67",
+   "title": "Journey on permanent duty - (Service",
+   "chapter": "TWO",
+   "page": 49,
+   "disposition": "IN",
+   "ref": "RR-PDM-02",
+   "linked_items": 9
+  },
+  {
+   "rule": "67A",
+   "title": "Headquarters in case of Naval Officers",
+   "chapter": "TWO",
+   "page": 55,
+   "disposition": "OUT",
+   "ref": "Navy / Air Force specific",
+   "linked_items": 1
+  },
+  {
+   "rule": "68",
+   "title": "Military Nursing Officers",
+   "chapter": "TWO",
+   "page": 55,
+   "disposition": "IN",
+   "ref": "RR-PDM-07",
+   "linked_items": 1
+  },
+  {
+   "rule": "69",
+   "title": "JCOs holding Honorary Commissions",
+   "chapter": "TWO",
+   "page": 55,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "70",
+   "title": "Service Personnel Below Officers Rank",
+   "chapter": "TWO",
+   "page": 55,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "70A",
+   "title": "Conveyance to JCOs and Equivalents",
+   "chapter": "TWO",
+   "page": 59,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "70B",
+   "title": "Entitlement: Civilian Sisters",
+   "chapter": "TWO",
+   "page": 60,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "71",
+   "title": "Conveyance for Reservists",
+   "chapter": "TWO",
+   "page": 60,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "73",
+   "title": "Conveyance to Families of Service",
+   "chapter": "TWO",
+   "page": 61,
+   "disposition": "IN",
+   "ref": "RR-PDM-05",
+   "linked_items": 1
+  },
+  {
+   "rule": "74",
+   "title": "Conveyance to families of PBOR when",
+   "chapter": "TWO",
+   "page": 62,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "75",
+   "title": "Conveyance to the families of Gorkha",
+   "chapter": "TWO",
+   "page": 62,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "76",
+   "title": "Journey on permanent duty: Civilians paid",
+   "chapter": "TWO",
+   "page": 63,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "77",
+   "title": "Travelling Allowance entitlement for",
+   "chapter": "TWO",
+   "page": 65,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "78",
+   "title": "Travelling Allowance entitlement for",
+   "chapter": "TWO",
+   "page": 65,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "79",
+   "title": "Conveyance of baggage when free",
+   "chapter": "TWO",
+   "page": 65,
+   "disposition": "IN",
+   "ref": "RR-PDM-04",
+   "linked_items": 0
+  },
+  {
+   "rule": "80",
+   "title": "Journey by Road where Rail-cum-Road",
+   "chapter": "TWO",
+   "page": 65,
+   "disposition": "IN",
+   "ref": "RR-PDM-02",
+   "linked_items": 1
+  },
+  {
+   "rule": "81",
+   "title": "Entitlement for transfer within the same",
+   "chapter": "TWO",
+   "page": 65,
+   "disposition": "IN",
+   "ref": "RR-PDM-02",
+   "linked_items": 1
+  },
+  {
+   "rule": "82",
+   "title": "Entitlement of Travelling Allowance when",
+   "chapter": "TWO",
+   "page": 66,
+   "disposition": "IN",
+   "ref": "RR-PDM-02",
+   "linked_items": 2
+  },
+  {
+   "rule": "83",
+   "title": "Individuals whose services are lent to other",
+   "chapter": "TWO",
+   "page": 66,
+   "disposition": "IN",
+   "ref": "RR-PDM-06",
+   "linked_items": 1
+  },
+  {
+   "rule": "85",
+   "title": "Families moving apart from the Head of the",
+   "chapter": "TWO",
+   "page": 66,
+   "disposition": "IN",
+   "ref": "RR-PDM-05",
+   "linked_items": 5
+  },
+  {
+   "rule": "85A",
+   "title": "Grant free conveyance to families of",
+   "chapter": "TWO",
+   "page": 67,
+   "disposition": "IN",
+   "ref": "RR-PDM-05",
+   "linked_items": 0
+  },
+  {
+   "rule": "86",
+   "title": "Transfer whilst on duty away from HQ",
+   "chapter": "TWO",
+   "page": 67,
+   "disposition": "IN",
+   "ref": "RR-PDM-02",
+   "linked_items": 1
+  },
+  {
+   "rule": "87",
+   "title": "Transfer whilst on short leave",
+   "chapter": "TWO",
+   "page": 68,
+   "disposition": "IN",
+   "ref": "RR-PDM-02",
+   "linked_items": 2
+  },
+  {
+   "rule": "88",
+   "title": "Individuals transferred whilst on leave not",
+   "chapter": "TWO",
+   "page": 69,
+   "disposition": "IN",
+   "ref": "RR-PDM-02",
+   "linked_items": 1
+  },
+  {
+   "rule": "89",
+   "title": "Transfer whilst on leave other than short",
+   "chapter": "TWO",
+   "page": 70,
+   "disposition": "IN",
+   "ref": "RR-PDM-02",
+   "linked_items": 1
+  },
+  {
+   "rule": "90",
+   "title": "Free conveyance to individuals proceeding",
+   "chapter": "TWO",
+   "page": 70,
+   "disposition": "IN",
+   "ref": "RR-PDM-02",
+   "linked_items": 1
+  },
+  {
+   "rule": "90A",
+   "title": "Grant of Travelling Allowance (including",
+   "chapter": "TWO",
+   "page": 71,
+   "disposition": "IN",
+   "ref": "RR-PDM-02",
+   "linked_items": 0
+  },
+  {
+   "rule": "91",
+   "title": "Definition of Temporary Duty",
+   "chapter": "TWO",
+   "page": 72,
+   "disposition": "IN",
+   "ref": "RR-TD-01",
+   "linked_items": 6
+  },
+  {
+   "rule": "92",
+   "title": "Class of Accommodation For Travel By Rail",
+   "chapter": "THREE",
+   "page": 72,
+   "disposition": "IN",
+   "ref": "RR-MOD-01",
+   "linked_items": 1
+  },
+  {
+   "rule": "93",
+   "title": "Use of Railway Saloons and Special",
+   "chapter": "THREE",
+   "page": 72,
+   "disposition": "IN",
+   "ref": "RR-MOD-01",
+   "linked_items": 3
+  },
+  {
+   "rule": "94",
+   "title": "Journey By Rail: The entitlement of journey",
+   "chapter": "THREE",
+   "page": 73,
+   "disposition": "IN",
+   "ref": "RR-MOD-01",
+   "linked_items": 2
+  },
+  {
+   "rule": "95A",
+   "title": "Entitlement to travel by Shatabdi Express",
+   "chapter": "THREE",
+   "page": 73,
+   "disposition": "IN",
+   "ref": "RR-MOD-01",
+   "linked_items": 0
+  },
+  {
+   "rule": "96",
+   "title": "Provision of lying down accommodation for",
+   "chapter": "THREE",
+   "page": 73,
+   "disposition": "IN",
+   "ref": "RR-MOD-01",
+   "linked_items": 0
+  },
+  {
+   "rule": "97",
+   "title": "Rail accommodation for prisoners and",
+   "chapter": "THREE",
+   "page": 73,
+   "disposition": "OUT",
+   "ref": "Prisoners / infectious cases / stores / secret mail",
+   "linked_items": 0
+  },
+  {
+   "rule": "98",
+   "title": "Reserved compartment for persons suffering",
+   "chapter": "THREE",
+   "page": 74,
+   "disposition": "OUT",
+   "ref": "Prisoners / infectious cases / stores / secret mail",
+   "linked_items": 0
+  },
+  {
+   "rule": "99",
+   "title": "Rail accommodation for Signal/Cipher",
+   "chapter": "THREE",
+   "page": 74,
+   "disposition": "OUT",
+   "ref": "Navy / Air Force specific",
+   "linked_items": 0
+  },
+  {
+   "rule": "99A",
+   "title": "Rail Accommodation for DSC and Service",
+   "chapter": "THREE",
+   "page": 74,
+   "disposition": "OUT",
+   "ref": "Navy / Air Force specific",
+   "linked_items": 0
+  },
+  {
+   "rule": "100",
+   "title": "Conveyance of secret mail belonging to the",
+   "chapter": "THREE",
+   "page": 75,
+   "disposition": "OUT",
+   "ref": "Prisoners / infectious cases / stores / secret mail",
+   "linked_items": 0
+  },
+  {
+   "rule": "101",
+   "title": "Reimbursement of expenses incurred by",
+   "chapter": "THREE",
+   "page": 76,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "102",
+   "title": "Scale of accommodation",
+   "chapter": "THREE",
+   "page": 76,
+   "disposition": "IN",
+   "ref": "RR-MOD-05",
+   "linked_items": 2
+  },
+  {
+   "rule": "103",
+   "title": "Hire of conveyance at outstation",
+   "chapter": "THREE",
+   "page": 77,
+   "disposition": "IN",
+   "ref": "RR-MOD-05",
+   "linked_items": 0
+  },
+  {
+   "rule": "104",
+   "title": "Hiring of Motor cars or use of private cars",
+   "chapter": "THREE",
+   "page": 77,
+   "disposition": "IN",
+   "ref": "RR-MOD-05",
+   "linked_items": 0
+  },
+  {
+   "rule": "105",
+   "title": "Hire of motor cars for use of recruiting party",
+   "chapter": "THREE",
+   "page": 78,
+   "disposition": "OUT",
+   "ref": "Recruiting parties",
+   "linked_items": 0
+  },
+  {
+   "rule": "106",
+   "title": "Road Conveyance where the shortest route",
+   "chapter": "THREE",
+   "page": 78,
+   "disposition": "IN",
+   "ref": "RR-GEN-09",
+   "linked_items": 0
+  },
+  {
+   "rule": "107",
+   "title": "Class of accommodation for sea journey",
+   "chapter": "THREE",
+   "page": 78,
+   "disposition": "IN",
+   "ref": "RR-MOD-02",
+   "linked_items": 1
+  },
+  {
+   "rule": "108",
+   "title": "Journeys by Air",
+   "chapter": "THREE",
+   "page": 78,
+   "disposition": "IN",
+   "ref": "RR-MOD-04",
+   "linked_items": 3
+  },
+  {
+   "rule": "108A",
+   "title": "Travel by Civil Aircraft by Personnel of non-",
+   "chapter": "THREE",
+   "page": 79,
+   "disposition": "OUT",
+   "ref": "Navy / Air Force specific",
+   "linked_items": 0
+  },
+  {
+   "rule": "109",
+   "title": "Evacuation of Casualties by Air",
+   "chapter": "THREE",
+   "page": 79,
+   "disposition": "IN",
+   "ref": "RR-TD-08",
+   "linked_items": 0
+  },
+  {
+   "rule": "110",
+   "title": "Conveyance for Air Journeys for Recruiting",
+   "chapter": "THREE",
+   "page": 79,
+   "disposition": "OUT",
+   "ref": "Recruiting parties",
+   "linked_items": 0
+  },
+  {
+   "rule": "111",
+   "title": "Road Mileage for journeys by Road",
+   "chapter": "THREE",
+   "page": 79,
+   "disposition": "IN",
+   "ref": "RR-MOD-03",
+   "linked_items": 2
+  },
+  {
+   "rule": "112",
+   "title": "Journeys where Rail-cum-Road tickets are",
+   "chapter": "THREE",
+   "page": 80,
+   "disposition": "IN",
+   "ref": "RR-MOD-03",
+   "linked_items": 1
+  },
+  {
+   "rule": "113",
+   "title": "Road Mileage for journeys at Outports",
+   "chapter": "THREE",
+   "page": 80,
+   "disposition": "IN",
+   "ref": "RR-MOD-03",
+   "linked_items": 0
+  },
+  {
+   "rule": "114",
+   "title": "Daily Allowance on Temporary Duty",
+   "chapter": "THREE",
+   "page": 80,
+   "disposition": "IN",
+   "ref": "RR-TD-02",
+   "linked_items": 13
+  },
+  {
+   "rule": "115",
+   "title": "Daily Allowance Admissible during",
+   "chapter": "THREE",
+   "page": 86,
+   "disposition": "IN",
+   "ref": "RR-TD-02",
+   "linked_items": 0
+  },
+  {
+   "rule": "116",
+   "title": "Daily Allowance admissible to Officers",
+   "chapter": "THREE",
+   "page": 86,
+   "disposition": "IN",
+   "ref": "RR-TD-02",
+   "linked_items": 1
+  },
+  {
+   "rule": "117",
+   "title": "Travelling and Daily Allowance for Officer",
+   "chapter": "THREE",
+   "page": 86,
+   "disposition": "IN",
+   "ref": "RR-TD-03",
+   "linked_items": 1
+  },
+  {
+   "rule": "118",
+   "title": "Daily Allowance admissible in connection",
+   "chapter": "THREE",
+   "page": 87,
+   "disposition": "IN",
+   "ref": "RR-TD-04",
+   "linked_items": 1
+  },
+  {
+   "rule": "119",
+   "title": "Entitlement of Travelling Allowance on",
+   "chapter": "THREE",
+   "page": 87,
+   "disposition": "IN",
+   "ref": "RR-TD-01",
+   "linked_items": 4
+  },
+  {
+   "rule": "119A",
+   "title": "Daily Allowance admissible to Air Force",
+   "chapter": "THREE",
+   "page": 88,
+   "disposition": "OUT",
+   "ref": "Navy / Air Force specific",
+   "linked_items": 0
+  },
+  {
+   "rule": "119B",
+   "title": "Daily Allowance to Regular Service",
+   "chapter": "THREE",
+   "page": 88,
+   "disposition": "IN",
+   "ref": "RR-TD-11",
+   "linked_items": 0
+  },
+  {
+   "rule": "121",
+   "title": "Travelling Allowance for journey to and",
+   "chapter": "THREE",
+   "page": 88,
+   "disposition": "IN",
+   "ref": "RR-TD-07",
+   "linked_items": 1
+  },
+  {
+   "rule": "122",
+   "title": "Special Allowance to EME and AOC",
+   "chapter": "THREE",
+   "page": 88,
+   "disposition": "IN",
+   "ref": "RR-TD-11",
+   "linked_items": 0
+  },
+  {
+   "rule": "123",
+   "title": "Daily Allowance admissible when attending",
+   "chapter": "THREE",
+   "page": 89,
+   "disposition": "IN",
+   "ref": "RR-TD-03",
+   "linked_items": 2
+  },
+  {
+   "rule": "124",
+   "title": "Conveyance to individuals attending",
+   "chapter": "THREE",
+   "page": 89,
+   "disposition": "IN",
+   "ref": "RR-TD-03",
+   "linked_items": 5
+  },
+  {
+   "rule": "125",
+   "title": "Conveyance to Civilian Personnel of MES,",
+   "chapter": "THREE",
+   "page": 90,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 1
+  },
+  {
+   "rule": "126",
+   "title": "Travelling Allowance/Daily Allowance to",
+   "chapter": "THREE",
+   "page": 91,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "127",
+   "title": "Conveyance for Obligatory Departmental",
+   "chapter": "THREE",
+   "page": 91,
+   "disposition": "IN",
+   "ref": "RR-TD-04",
+   "linked_items": 2
+  },
+  {
+   "rule": "127A",
+   "title": "Travelling Allowance from Office/",
+   "chapter": "THREE",
+   "page": 92,
+   "disposition": "IN",
+   "ref": "RR-TD-04",
+   "linked_items": 0
+  },
+  {
+   "rule": "128",
+   "title": "Travelling Allowance to Specialists",
+   "chapter": "THREE",
+   "page": 93,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "129",
+   "title": "Travelling Allowance to an individual",
+   "chapter": "THREE",
+   "page": 93,
+   "disposition": "IN",
+   "ref": "RR-TD-03",
+   "linked_items": 1
+  },
+  {
+   "rule": "130",
+   "title": "Conveyance on cash payment/ Passage",
+   "chapter": "THREE",
+   "page": 94,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "131",
+   "title": "Conveyance to Witnesses attending Military",
+   "chapter": "THREE",
+   "page": 94,
+   "disposition": "IN",
+   "ref": "RR-TD-12",
+   "linked_items": 0
+  },
+  {
+   "rule": "132",
+   "title": "Travelling Allowance to individuals for",
+   "chapter": "THREE",
+   "page": 95,
+   "disposition": "IN",
+   "ref": "RR-TD-12",
+   "linked_items": 0
+  },
+  {
+   "rule": "133",
+   "title": "Travelling Allowance to individuals",
+   "chapter": "THREE",
+   "page": 97,
+   "disposition": "IN",
+   "ref": "RR-TD-12",
+   "linked_items": 0
+  },
+  {
+   "rule": "133A",
+   "title": "Travelling Allowance to Retired civilians",
+   "chapter": "THREE",
+   "page": 99,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "134",
+   "title": "Conveyance for Journeys to peruse Official",
+   "chapter": "THREE",
+   "page": 99,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "134A",
+   "title": "Travelling Allowance to retired Civilian",
+   "chapter": "THREE",
+   "page": 100,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "134B",
+   "title": "Travelling Allowance/ DA to retired",
+   "chapter": "THREE",
+   "page": 100,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "135",
+   "title": "Conveyance to Accused Person from one",
+   "chapter": "THREE",
+   "page": 100,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "136",
+   "title": "Travelling Allowance admissible to officer",
+   "chapter": "THREE",
+   "page": 100,
+   "disposition": "IN",
+   "ref": "RR-TD-05",
+   "linked_items": 1
+  },
+  {
+   "rule": "137",
+   "title": "Travelling Allowance to the representatives",
+   "chapter": "THREE",
+   "page": 101,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "138",
+   "title": "Conveyance admissible in",
+   "chapter": "THREE",
+   "page": 101,
+   "disposition": "IN",
+   "ref": "RR-TD-05",
+   "linked_items": 1
+  },
+  {
+   "rule": "139",
+   "title": "Travelling Allowance admissible to military",
+   "chapter": "THREE",
+   "page": 102,
+   "disposition": "OUT",
+   "ref": "PBOR boards",
+   "linked_items": 0
+  },
+  {
+   "rule": "140",
+   "title": "Travelling Allowance admissible to Officer",
+   "chapter": "THREE",
+   "page": 102,
+   "disposition": "IN",
+   "ref": "RR-TD-05",
+   "linked_items": 0
+  },
+  {
+   "rule": "141",
+   "title": "Travelling Allowance for journeys to attend",
+   "chapter": "THREE",
+   "page": 102,
+   "disposition": "IN",
+   "ref": "RR-TD-06",
+   "linked_items": 2
+  },
+  {
+   "rule": "142",
+   "title": "Conveyance for journeys of Service",
+   "chapter": "THREE",
+   "page": 102,
+   "disposition": "IN",
+   "ref": "RR-TD-06",
+   "linked_items": 1
+  },
+  {
+   "rule": "143",
+   "title": "Travelling Allowance to Probationers",
+   "chapter": "THREE",
+   "page": 103,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "144",
+   "title": "Conveyance admissible for Prisoners and",
+   "chapter": "THREE",
+   "page": 103,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "145",
+   "title": "Conveyance for individuals residing in",
+   "chapter": "THREE",
+   "page": 103,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 2
+  },
+  {
+   "rule": "146",
+   "title": "Conveyance for Recruiting Parties",
+   "chapter": "THREE",
+   "page": 103,
+   "disposition": "OUT",
+   "ref": "Recruiting parties",
+   "linked_items": 0
+  },
+  {
+   "rule": "147",
+   "title": "Recruiting parties to and from Andaman,",
+   "chapter": "THREE",
+   "page": 104,
+   "disposition": "OUT",
+   "ref": "Recruiting parties",
+   "linked_items": 0
+  },
+  {
+   "rule": "148",
+   "title": "Clerks of Recruiting Officer when",
+   "chapter": "THREE",
+   "page": 104,
+   "disposition": "OUT",
+   "ref": "Recruiting parties",
+   "linked_items": 0
+  },
+  {
+   "rule": "149",
+   "title": "Travelling Allowance/Daily Allowance",
+   "chapter": "THREE",
+   "page": 104,
+   "disposition": "IN",
+   "ref": "RR-TD-11",
+   "linked_items": 1
+  },
+  {
+   "rule": "150",
+   "title": "Circumstances and conditions under which",
+   "chapter": "THREE",
+   "page": 105,
+   "disposition": "IN",
+   "ref": "RR-TD-09",
+   "linked_items": 5
+  },
+  {
+   "rule": "150B",
+   "title": "Conveyance for Individuals attending",
+   "chapter": "THREE",
+   "page": 107,
+   "disposition": "IN",
+   "ref": "RR-TD-04",
+   "linked_items": 0
+  },
+  {
+   "rule": "151",
+   "title": "Conveyance when recalled from Leave for",
+   "chapter": "THREE",
+   "page": 107,
+   "disposition": "IN",
+   "ref": "RR-TD-09",
+   "linked_items": 2
+  },
+  {
+   "rule": "152",
+   "title": "Travelling Allowance to Colonels/ Colonel",
+   "chapter": "THREE",
+   "page": 109,
+   "disposition": "IN",
+   "ref": "RR-TD-10",
+   "linked_items": 1
+  },
+  {
+   "rule": "152A",
+   "title": "Travelling Allowance/Daily Allowance to",
+   "chapter": "THREE",
+   "page": 110,
+   "disposition": "IN",
+   "ref": "RR-TD-10",
+   "linked_items": 0
+  },
+  {
+   "rule": "153",
+   "title": "Conveyance for journeys to obtain Medical",
+   "chapter": "THREE",
+   "page": 110,
+   "disposition": "IN",
+   "ref": "RR-TD-08",
+   "linked_items": 0
+  },
+  {
+   "rule": "154",
+   "title": "Conveyance for Journeys to obtain Medical",
+   "chapter": "THREE",
+   "page": 110,
+   "disposition": "IN",
+   "ref": "RR-TD-08",
+   "linked_items": 0
+  },
+  {
+   "rule": "155",
+   "title": "Conveyance of persons summoned to",
+   "chapter": "THREE",
+   "page": 110,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "156",
+   "title": "Conveyance on Journeys for Anti-Rabic",
+   "chapter": "THREE",
+   "page": 111,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 1
+  },
+  {
+   "rule": "157",
+   "title": "Conveyance for Service Personnel",
+   "chapter": "THREE",
+   "page": 111,
+   "disposition": "IN",
+   "ref": "RR-TD-08",
+   "linked_items": 3
+  },
+  {
+   "rule": "157A",
+   "title": "Daily Allowance to Service officer when",
+   "chapter": "THREE",
+   "page": 111,
+   "disposition": "OUT",
+   "ref": "Navy / Air Force specific",
+   "linked_items": 0
+  },
+  {
+   "rule": "157B",
+   "title": "Daily Allowance to Naval Officer of",
+   "chapter": "THREE",
+   "page": 112,
+   "disposition": "OUT",
+   "ref": "Navy / Air Force specific",
+   "linked_items": 0
+  },
+  {
+   "rule": "158",
+   "title": "Conveyance for Attendants",
+   "chapter": "THREE",
+   "page": 112,
+   "disposition": "IN",
+   "ref": "RR-TD-08",
+   "linked_items": 1
+  },
+  {
+   "rule": "159",
+   "title": "Conveyance admissible to Service",
+   "chapter": "THREE",
+   "page": 112,
+   "disposition": "IN",
+   "ref": "RR-TD-08",
+   "linked_items": 0
+  },
+  {
+   "rule": "160",
+   "title": "Conveyance for individuals proceeding for",
+   "chapter": "THREE",
+   "page": 113,
+   "disposition": "IN",
+   "ref": "RR-TD-08",
+   "linked_items": 0
+  },
+  {
+   "rule": "161",
+   "title": "Conveyance for relatives of Service",
+   "chapter": "THREE",
+   "page": 113,
+   "disposition": "IN",
+   "ref": "RR-TD-13",
+   "linked_items": 0
+  },
+  {
+   "rule": "162",
+   "title": "Conveyance to the relative of Service",
+   "chapter": "THREE",
+   "page": 114,
+   "disposition": "IN",
+   "ref": "RR-TD-13",
+   "linked_items": 1
+  },
+  {
+   "rule": "163",
+   "title": "Conveyance in journeys for Mass Miniature",
+   "chapter": "THREE",
+   "page": 115,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "164",
+   "title": "Conveyance to families Accompanying",
+   "chapter": "THREE",
+   "page": 115,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "165",
+   "title": "Conveyance to Family accompanying the",
+   "chapter": "THREE",
+   "page": 115,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "166",
+   "title": "Conveyance to sick families of Soldiers,",
+   "chapter": "THREE",
+   "page": 115,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "166A",
+   "title": "Conveyance of families of Service",
+   "chapter": "THREE",
+   "page": 116,
+   "disposition": "IN",
+   "ref": "RR-TD-08",
+   "linked_items": 0
+  },
+  {
+   "rule": "167",
+   "title": "Conveyance to the Relative of PBOR",
+   "chapter": "THREE",
+   "page": 116,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "168",
+   "title": "Conveyance to Workmen of Defence",
+   "chapter": "THREE",
+   "page": 116,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "169",
+   "title": "Travelling Allowance for journey to procure",
+   "chapter": "THREE",
+   "page": 116,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "170",
+   "title": "Travelling Allowance for journeys for",
+   "chapter": "THREE",
+   "page": 116,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "171",
+   "title": "Conveyance for relatives of Civilians in case",
+   "chapter": "THREE",
+   "page": 117,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "172",
+   "title": "Conveyance to Civilians applying for",
+   "chapter": "THREE",
+   "page": 117,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "173",
+   "title": "Reservists-Move on Temporary Duty",
+   "chapter": "THREE",
+   "page": 117,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "174",
+   "title": "Special Daily Allowance to Aircrew (Officers",
+   "chapter": "THREE",
+   "page": 118,
+   "disposition": "OUT",
+   "ref": "Navy / Air Force specific",
+   "linked_items": 0
+  },
+  {
+   "rule": "175",
+   "title": "Conveyance to the Civilian/ Service",
+   "chapter": "THREE",
+   "page": 118,
+   "disposition": "IN",
+   "ref": "RR-TD-11",
+   "linked_items": 1
+  },
+  {
+   "rule": "176",
+   "title": "Mode and class of Accommodation",
+   "chapter": "THREE",
+   "page": 119,
+   "disposition": "IN",
+   "ref": "RR-LTC-05",
+   "linked_items": 10
+  },
+  {
+   "rule": "176A",
+   "title": "Facility of LTC by air during winter only",
+   "chapter": "FOUR",
+   "page": 120,
+   "disposition": "IN",
+   "ref": "RR-LTC-06",
+   "linked_items": 0
+  },
+  {
+   "rule": "176B",
+   "title": "Journey by Air on LTC to Service",
+   "chapter": "FOUR",
+   "page": 120,
+   "disposition": "IN",
+   "ref": "RR-LTC-06",
+   "linked_items": 0
+  },
+  {
+   "rule": "176C",
+   "title": "Free Air Travel facility for Service",
+   "chapter": "FOUR",
+   "page": 120,
+   "disposition": "IN",
+   "ref": "RR-LTC-06",
+   "linked_items": 0
+  },
+  {
+   "rule": "177",
+   "title": "Leave Travel Concessions for Service",
+   "chapter": "FOUR",
+   "page": 120,
+   "disposition": "IN",
+   "ref": "RR-LTC-01, RR-LTC-02, RR-LTC-03, RR-LTC-04, RR-LTC-05",
+   "linked_items": 81
+  },
+  {
+   "rule": "178",
+   "title": "Leave Travel Concession to officers of the",
+   "chapter": "FOUR",
+   "page": 125,
+   "disposition": "IN",
+   "ref": "RR-PDM-07",
+   "linked_items": 1
+  },
+  {
+   "rule": "179",
+   "title": "Road Conveyance for Officers proceeding",
+   "chapter": "FOUR",
+   "page": 125,
+   "disposition": "IN",
+   "ref": "RR-LTC-05",
+   "linked_items": 4
+  },
+  {
+   "rule": "180",
+   "title": "Army Officer employed as Army Aviation",
+   "chapter": "FOUR",
+   "page": 126,
+   "disposition": "IN",
+   "ref": "RR-LTC-08",
+   "linked_items": 4
+  },
+  {
+   "rule": "181",
+   "title": "Reduced Fare Certificate for Service",
+   "chapter": "FOUR",
+   "page": 126,
+   "disposition": "IN",
+   "ref": "RR-LTC-07",
+   "linked_items": 7
+  },
+  {
+   "rule": "182",
+   "title": "Reduced Fare Certificate for MNS Officers",
+   "chapter": "FOUR",
+   "page": 127,
+   "disposition": "IN",
+   "ref": "RR-PDM-07",
+   "linked_items": 1
+  },
+  {
+   "rule": "183",
+   "title": "Concession Voucher to Service Personnel",
+   "chapter": "FOUR",
+   "page": 127,
+   "disposition": "IN",
+   "ref": "RR-LTC-07",
+   "linked_items": 0
+  },
+  {
+   "rule": "184",
+   "title": "Leave Travel Concessions to JCOs",
+   "chapter": "FOUR",
+   "page": 127,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 1
+  },
+  {
+   "rule": "184A",
+   "title": "Forfeiture of LTC",
+   "chapter": "FOUR",
+   "page": 131,
+   "disposition": "IN",
+   "ref": "RR-LTC-05",
+   "linked_items": 0
+  },
+  {
+   "rule": "185",
+   "title": "Conveyance to Soldiers, Sailors, Airmen",
+   "chapter": "FOUR",
+   "page": 131,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "187",
+   "title": "Conveyance to Soldiers, Sailors and Airmen",
+   "chapter": "FOUR",
+   "page": 131,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "188",
+   "title": "Leave Travel Concession for Service",
+   "chapter": "FOUR",
+   "page": 132,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 1
+  },
+  {
+   "rule": "189",
+   "title": "Leave Travel Concession to Civilians",
+   "chapter": "FOUR",
+   "page": 132,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "190",
+   "title": "Leave Travel Concession for Civilians",
+   "chapter": "FOUR",
+   "page": 132,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 1
+  },
+  {
+   "rule": "191",
+   "title": "Children's travel concessions during",
+   "chapter": "FOUR",
+   "page": 143,
+   "disposition": "IN",
+   "ref": "RR-LTC-04",
+   "linked_items": 0
+  },
+  {
+   "rule": "192",
+   "title": "Travelling Allowance (TA) for candidates",
+   "chapter": "FOUR",
+   "page": 147,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "192A",
+   "title": "The ex-JCOs and their equivalents in the",
+   "chapter": "FIVE",
+   "page": 149,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "193",
+   "title": "Conveyance to Recruits, Combatants and",
+   "chapter": "FIVE",
+   "page": 149,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "194",
+   "title": "Travelling Allowance to individuals",
+   "chapter": "FIVE",
+   "page": 150,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "195",
+   "title": "Conveyance to Boys of the Signal Corps",
+   "chapter": "FIVE",
+   "page": 150,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 1
+  },
+  {
+   "rule": "196",
+   "title": "Conveyance to Ordnance Factories",
+   "chapter": "FIVE",
+   "page": 150,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "197",
+   "title": "Conveyance to Personnel for Scientific/",
+   "chapter": "FIVE",
+   "page": 150,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 1
+  },
+  {
+   "rule": "198",
+   "title": "Travelling Allowance to Scheduled Castes/",
+   "chapter": "FIVE",
+   "page": 150,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "199",
+   "title": "Travelling",
+   "chapter": "FIVE",
+   "page": 151,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "199A",
+   "title": "Daily Allowance to Civilian candidates",
+   "chapter": "FIVE",
+   "page": 151,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "200A",
+   "title": "Entitlement on Retirement/ Release/",
+   "chapter": "FIVE",
+   "page": 151,
+   "disposition": "IN",
+   "ref": "RR-RET-01",
+   "linked_items": 1
+  },
+  {
+   "rule": "200B",
+   "title": "Travelling Allowance to Service",
+   "chapter": "FIVE",
+   "page": 152,
+   "disposition": "IN",
+   "ref": "RR-RET-01",
+   "linked_items": 0
+  },
+  {
+   "rule": "201",
+   "title": "Concession of TA/DA etc. to Service",
+   "chapter": "FIVE",
+   "page": 153,
+   "disposition": "IN",
+   "ref": "RR-RET-01",
+   "linked_items": 4
+  },
+  {
+   "rule": "202",
+   "title": "Preference of TA claim by Service Officers",
+   "chapter": "FIVE",
+   "page": 153,
+   "disposition": "IN",
+   "ref": "RR-GEN-03",
+   "linked_items": 1
+  },
+  {
+   "rule": "203",
+   "title": "Entitlement of domiciled/ individuals who",
+   "chapter": "FIVE",
+   "page": 153,
+   "disposition": "IN",
+   "ref": "RR-RET-01",
+   "linked_items": 0
+  },
+  {
+   "rule": "204",
+   "title": "Lien on conveyance preparatory to",
+   "chapter": "FIVE",
+   "page": 153,
+   "disposition": "IN",
+   "ref": "RR-GEN-06",
+   "linked_items": 2
+  },
+  {
+   "rule": "206",
+   "title": "Travelling Allowance on release from re-",
+   "chapter": "FIVE",
+   "page": 153,
+   "disposition": "IN",
+   "ref": "RR-RET-02",
+   "linked_items": 1
+  },
+  {
+   "rule": "207A",
+   "title": "Travelling Allowance to MNS Officers on",
+   "chapter": "FIVE",
+   "page": 154,
+   "disposition": "IN",
+   "ref": "RR-PDM-07",
+   "linked_items": 0
+  },
+  {
+   "rule": "207B",
+   "title": "Travelling Allowance to MNS Officers on",
+   "chapter": "FIVE",
+   "page": 154,
+   "disposition": "IN",
+   "ref": "RR-PDM-07",
+   "linked_items": 1
+  },
+  {
+   "rule": "208",
+   "title": "Travelling Allowance to Civilian on",
+   "chapter": "FIVE",
+   "page": 154,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "209",
+   "title": "Conveyance to Service Officers on",
+   "chapter": "FIVE",
+   "page": 155,
+   "disposition": "IN",
+   "ref": "RR-RET-03",
+   "linked_items": 1
+  },
+  {
+   "rule": "210",
+   "title": "Conveyance to Service Personnel Below",
+   "chapter": "FIVE",
+   "page": 155,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "211",
+   "title": "Conveyance to Ex-Service Personnel when",
+   "chapter": "FIVE",
+   "page": 155,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "212",
+   "title": "Conveyance to Ex-Service Personnel for the",
+   "chapter": "FIVE",
+   "page": 156,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "213",
+   "title": "Conveyance to Ex-Service Personnel called",
+   "chapter": "FIVE",
+   "page": 156,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "214",
+   "title": "Conveyance to Ex-Service Personnel",
+   "chapter": "FIVE",
+   "page": 156,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "215",
+   "title": "Conveyance to the Attendants of Disabled",
+   "chapter": "FIVE",
+   "page": 157,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "216",
+   "title": "Travelling Allowance entitlement of families",
+   "chapter": "FIVE",
+   "page": 157,
+   "disposition": "IN",
+   "ref": "RR-RET-04",
+   "linked_items": 4
+  },
+  {
+   "rule": "217",
+   "title": "Travelling Allowance entitlement of families",
+   "chapter": "FIVE",
+   "page": 158,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "217A",
+   "title": "Defence Service personnel killed in",
+   "chapter": "FIVE",
+   "page": 159,
+   "disposition": "OUT",
+   "ref": "PBOR/JCO/OR/ex-servicemen/recruits/reservists",
+   "linked_items": 0
+  },
+  {
+   "rule": "218",
+   "title": "Travelling Allowance entitlement of families",
+   "chapter": "FIVE",
+   "page": 159,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 1
+  },
+  {
+   "rule": "218A",
+   "title": "Conveyance of dead body of a civilian",
+   "chapter": "FIVE",
+   "page": 160,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "218B",
+   "title": "Travelling Allowance entitlement of",
+   "chapter": "FIVE",
+   "page": 161,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "219",
+   "title": "Travelling Allowance entitlement of families",
+   "chapter": "FIVE",
+   "page": 161,
+   "disposition": "IN",
+   "ref": "RR-RET-04",
+   "linked_items": 0
+  },
+  {
+   "rule": "221",
+   "title": "Permanent Travelling Allowance",
+   "chapter": "SIX",
+   "page": 162,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "222",
+   "title": "Conveyance Allowance",
+   "chapter": "SIX",
+   "page": 162,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 2
+  },
+  {
+   "rule": "223",
+   "title": "Conveyance Allowance-Habitual Journeys",
+   "chapter": "SIX",
+   "page": 164,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 1
+  },
+  {
+   "rule": "224",
+   "title": "Hire charge-Government servants whether",
+   "chapter": "SIX",
+   "page": 165,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "225",
+   "title": "Conveyance Allowance-Individuals Group B",
+   "chapter": "SIX",
+   "page": 165,
+   "disposition": "OUT",
+   "ref": "Civilian government servants/candidates",
+   "linked_items": 0
+  },
+  {
+   "rule": "230A",
+   "title": "Grant of Transport Allowance to Blind and",
+   "chapter": "SIX",
+   "page": 167,
+   "disposition": "IN",
+   "ref": "RR-TPT-01",
+   "linked_items": 0
+  },
+  {
+   "rule": "230B",
+   "title": "Grant of Transportation Allowance to",
+   "chapter": "SIX",
+   "page": 168,
+   "disposition": "IN",
+   "ref": "RR-TPT-01",
+   "linked_items": 0
+  },
+  {
+   "rule": "231",
+   "title": "Custody and issue of warrants, credit notes",
+   "chapter": "SEVEN",
+   "page": 170,
+   "disposition": "IN",
+   "ref": "RR-MOD-07",
+   "linked_items": 0
+  },
+  {
+   "rule": "232",
+   "title": "Mode of Payment",
+   "chapter": "SEVEN",
+   "page": 170,
+   "disposition": "IN",
+   "ref": "RR-MOD-07",
+   "linked_items": 0
+  },
+  {
+   "rule": "233",
+   "title": "Booking of individuals travelling on railway",
+   "chapter": "SEVEN",
+   "page": 170,
+   "disposition": "IN",
+   "ref": "RR-MOD-07",
+   "linked_items": 0
+  },
+  {
+   "rule": "234",
+   "title": "Conveyance of Defence Stores and Baggage",
+   "chapter": "SEVEN",
+   "page": 170,
+   "disposition": "OUT",
+   "ref": "Prisoners / infectious cases / stores / secret mail",
+   "linked_items": 0
+  },
+  {
+   "rule": "235",
+   "title": "Rebooking of goods and parcels",
+   "chapter": "SEVEN",
+   "page": 171,
+   "disposition": "OUT",
+   "ref": "Prisoners / infectious cases / stores / secret mail",
+   "linked_items": 0
+  },
+  {
+   "rule": "236",
+   "title": "Conveyance of Government chargers and",
+   "chapter": "SEVEN",
+   "page": 171,
+   "disposition": "OUT",
+   "ref": "Prisoners / infectious cases / stores / secret mail",
+   "linked_items": 0
+  },
+  {
+   "rule": "237",
+   "title": "Credit Notes",
+   "chapter": "SEVEN",
+   "page": 171,
+   "disposition": "IN",
+   "ref": "RR-MOD-07",
+   "linked_items": 0
+  },
+  {
+   "rule": "238",
+   "title": "Free Allowance of Baggage",
+   "chapter": "SEVEN",
+   "page": 171,
+   "disposition": "IN",
+   "ref": "RR-MOD-06",
+   "linked_items": 0
+  },
+  {
+   "rule": "239",
+   "title": "Despatch of Public Stores",
+   "chapter": "SEVEN",
+   "page": 171,
+   "disposition": "OUT",
+   "ref": "Prisoners / infectious cases / stores / secret mail",
+   "linked_items": 0
+  },
+  {
+   "rule": "240",
+   "title": "Despatch of Stores by Air",
+   "chapter": "SEVEN",
+   "page": 171,
+   "disposition": "OUT",
+   "ref": "Prisoners / infectious cases / stores / secret mail",
+   "linked_items": 0
+  },
+  {
+   "rule": "241",
+   "title": "Public, Regimental and Mess Stores",
+   "chapter": "SEVEN",
+   "page": 172,
+   "disposition": "OUT",
+   "ref": "Prisoners / infectious cases / stores / secret mail",
+   "linked_items": 0
+  },
+  {
+   "rule": "242",
+   "title": "Conveyance of Band Equipment",
+   "chapter": "SEVEN",
+   "page": 172,
+   "disposition": "OUT",
+   "ref": "Prisoners / infectious cases / stores / secret mail",
+   "linked_items": 0
+  },
+  {
+   "rule": "243",
+   "title": "Transportation of printed question papers",
+   "chapter": "SEVEN",
+   "page": 172,
+   "disposition": "OUT",
+   "ref": "Prisoners / infectious cases / stores / secret mail",
+   "linked_items": 0
+  },
+  {
+   "rule": "244",
+   "title": "Approved Routes",
+   "chapter": "SEVEN",
+   "page": 173,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 3
+  },
+  {
+   "rule": "245",
+   "title": "Class of Air Travel",
+   "chapter": "SEVEN",
+   "page": 173,
+   "disposition": "IN",
+   "ref": "RR-MOD-04",
+   "linked_items": 2
+  },
+  {
+   "rule": "246",
+   "title": "Approved Mode for Air Journeys",
+   "chapter": "EIGHT",
+   "page": 173,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "247",
+   "title": "Authority for Moves",
+   "chapter": "EIGHT",
+   "page": 174,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "248",
+   "title": "Entitlements for Permanent Duty Moves to",
+   "chapter": "EIGHT",
+   "page": 174,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "249",
+   "title": "Journey by Rail/Road-cum- Sea",
+   "chapter": "EIGHT",
+   "page": 174,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "250",
+   "title": "Passage by Air",
+   "chapter": "EIGHT",
+   "page": 175,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "250A",
+   "title": "Foreign Exchange Conservation (Travel",
+   "chapter": "EIGHT",
+   "page": 176,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "251",
+   "title": "Lien on Conveyance of Family/ Servants/",
+   "chapter": "EIGHT",
+   "page": 176,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "252",
+   "title": "Passage entitlement of family or servants",
+   "chapter": "EIGHT",
+   "page": 177,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "253",
+   "title": "Travel to or from a place other than the",
+   "chapter": "EIGHT",
+   "page": 178,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "254",
+   "title": "Incidental Expenses for moves to and from",
+   "chapter": "EIGHT",
+   "page": 178,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "255",
+   "title": "Conveyance for medical examination of",
+   "chapter": "EIGHT",
+   "page": 185,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "256",
+   "title": "Conveyance entitlement of Indian servants",
+   "chapter": "EIGHT",
+   "page": 185,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "257",
+   "title": "Repatriation of Private Servants of Officers",
+   "chapter": "EIGHT",
+   "page": 185,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "258",
+   "title": "Rates of Composite Transfer Grant on",
+   "chapter": "EIGHT",
+   "page": 187,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 1
+  },
+  {
+   "rule": "259",
+   "title": "Conveyance of Personnel Effects",
+   "chapter": "EIGHT",
+   "page": 187,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 1
+  },
+  {
+   "rule": "259A",
+   "title": "Luggage scale for Civilians by Air",
+   "chapter": "EIGHT",
+   "page": 192,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "260",
+   "title": "Transportation of Personal Car-Service",
+   "chapter": "EIGHT",
+   "page": 193,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "261",
+   "title": "Transportation of Motor Conveyance on",
+   "chapter": "EIGHT",
+   "page": 195,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "262",
+   "title": "Conveyance of Family of Officers",
+   "chapter": "EIGHT",
+   "page": 196,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "263",
+   "title": "General",
+   "chapter": "EIGHT",
+   "page": 197,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "264",
+   "title": "Travel by Rail/Sea/Air",
+   "chapter": "EIGHT",
+   "page": 198,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "265",
+   "title": "Travel by Road",
+   "chapter": "EIGHT",
+   "page": 199,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "266",
+   "title": "Conveyance of Official Records",
+   "chapter": "EIGHT",
+   "page": 203,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "267",
+   "title": "Transport/Travelling Allowance to Receive/",
+   "chapter": "EIGHT",
+   "page": 204,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "268",
+   "title": "Daily Allowance (Cash Allowance)",
+   "chapter": "EIGHT",
+   "page": 204,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 3
+  },
+  {
+   "rule": "268A",
+   "title": "Payment of Cash Allowance for stay in a",
+   "chapter": "EIGHT",
+   "page": 206,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "269",
+   "title": "Daily Allowance during halts en route",
+   "chapter": "EIGHT",
+   "page": 207,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "270",
+   "title": "Entitlement to DA during detention at Ports",
+   "chapter": "EIGHT",
+   "page": 211,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "270A",
+   "title": "Reimbursement of actual lodging",
+   "chapter": "EIGHT",
+   "page": 211,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "271",
+   "title": "Leave Travel Concession to Service",
+   "chapter": "EIGHT",
+   "page": 211,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "271A",
+   "title": "Leave Travel Concession to Service",
+   "chapter": "EIGHT",
+   "page": 212,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "272",
+   "title": "Home Leave Passage/Emergency/ Leave",
+   "chapter": "EIGHT",
+   "page": 212,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 1
+  },
+  {
+   "rule": "273",
+   "title": "Conveyance to Family Members on Medical",
+   "chapter": "EIGHT",
+   "page": 217,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "274",
+   "title": "Conveyance to Service Officers ordered to",
+   "chapter": "EIGHT",
+   "page": 217,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "275",
+   "title": "Conveyance to Families of Service",
+   "chapter": "EIGHT",
+   "page": 217,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "276",
+   "title": "Children Holiday Passage",
+   "chapter": "EIGHT",
+   "page": 217,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "277",
+   "title": "Conveyance of Family Luggage and",
+   "chapter": "EIGHT",
+   "page": 224,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "278",
+   "title": "Conveyance to the family and luggage of",
+   "chapter": "EIGHT",
+   "page": 225,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  },
+  {
+   "rule": "279",
+   "title": "Conveyance to family and luggage of",
+   "chapter": "EIGHT",
+   "page": 225,
+   "disposition": "NICHE",
+   "ref": "overseas moves (deferred)",
+   "linked_items": 0
+  }
+ ],
+ "pay": [
+  {
+   "ch": 1,
+   "topic": "Organisation and Functions of PCDA(O)",
+   "page": 1,
+   "scope": "OUT",
+   "faq": []
+  },
+  {
+   "ch": 2,
+   "topic": "General Information on Pay Accounting System",
+   "page": 4,
+   "scope": "OUT",
+   "faq": []
+  },
+  {
+   "ch": 2,
+   "topic": "Correspondence with PCDA(O)",
+   "page": 5,
+   "scope": "OUT",
+   "faq": []
+  },
+  {
+   "ch": 2,
+   "topic": "Do's and Don'ts for Army officers",
+   "page": 7,
+   "scope": "OUT",
+   "faq": []
+  },
+  {
+   "ch": 3,
+   "topic": "Important Orders On Personal And Service",
+   "page": 11,
+   "scope": "OUT",
+   "faq": []
+  },
+  {
+   "ch": 4,
+   "topic": "Commencement of Pay",
+   "page": 15,
+   "scope": "IN",
+   "faq": [
+    "rJjhzi3OzBNWtGyVX0YbjA==",
+    "F0MBZmHtbodtilPiLPuxnw==",
+    "nIeXPi67VJeXFh9bBsBu1A==",
+    "y+ilDL6IujF+Aw399rVf6g==",
+    "fGGHo1/rUzHtVzpiMeyY+g==",
+    "DfjQl7SaNmWymJuRPfDSHw=="
+   ]
+  },
+  {
+   "ch": 4,
+   "topic": "Newly commissioned officers on grant of",
+   "page": 15,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 4,
+   "topic": "Pay of Trainees in Service Training Institutions",
+   "page": 16,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 4,
+   "topic": "Pay and Allowances of officers taken Prisoners",
+   "page": 17,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 5,
+   "topic": "Increments of Pay",
+   "page": 18,
+   "scope": "IN",
+   "faq": [
+    "t8nK/a1dwEYbwZPC3xTWdw==",
+    "08bfnXaEEzHkWAiroepb6w==",
+    "hR5cNR0k3l3klfIjsAWxNQ==",
+    "7pJcbmfT4kQdkMo4NM5wig==",
+    "ff8N3G43DepBFUeMtDyz1Q==",
+    "a/3yMi984/5lWJSYGzSBbg==",
+    "T6lS0k0eAXl+22Dy2+yOtg==",
+    "OE8TtAIYGfb4PvFD5Gssjg=="
+   ]
+  },
+  {
+   "ch": 5,
+   "topic": "Increase in Pay on Promotion",
+   "page": 19,
+   "scope": "IN",
+   "faq": [
+    "t8nK/a1dwEYbwZPC3xTWdw==",
+    "08bfnXaEEzHkWAiroepb6w==",
+    "hR5cNR0k3l3klfIjsAWxNQ==",
+    "7pJcbmfT4kQdkMo4NM5wig==",
+    "ff8N3G43DepBFUeMtDyz1Q==",
+    "a/3yMi984/5lWJSYGzSBbg==",
+    "T6lS0k0eAXl+22Dy2+yOtg==",
+    "OE8TtAIYGfb4PvFD5Gssjg=="
+   ]
+  },
+  {
+   "ch": 5,
+   "topic": "Special Increments for Excellence in sports",
+   "page": 19,
+   "scope": "IN",
+   "faq": [
+    "lqRjCZOinLOIejwDmSmD3w==",
+    "qNwgtLf8/K2DPJAVI3w09Q==",
+    "vDGDe51WXrsDguYuwmyBBw==",
+    "D3D/mLtcxd5uHTS0E4G/7g=="
+   ]
+  },
+  {
+   "ch": 6,
+   "topic": "Promotions",
+   "page": 23,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 6,
+   "topic": "Substantive Promotion",
+   "page": 23,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 6,
+   "topic": "In-situ Promotion",
+   "page": 28,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 7,
+   "topic": "Ages of Retirement",
+   "page": 30,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Leave",
+   "page": 34,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Casual Leave",
+   "page": 35,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Special Casual Leave",
+   "page": 36,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Annual Leave",
+   "page": 39,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Furlough Leave",
+   "page": 43,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Sick Leave",
+   "page": 44,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Sick List Concession",
+   "page": 45,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Terminal Leave",
+   "page": 46,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Maternity Leave",
+   "page": 47,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Child Care Leave for Female and Single Male Officers",
+   "page": 48,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Child Adoption Leave",
+   "page": 50,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Paternity Leave on birth of a child",
+   "page": 51,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Paternity Leave on Adoption of Child",
+   "page": 51,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Study Leave",
+   "page": 51,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Ex-India Leave",
+   "page": 57,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Regularisation of irregular grant of leave",
+   "page": 57,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Overstayal of leave",
+   "page": 58,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Encashment of leave",
+   "page": 58,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 8,
+   "topic": "Encashment of leave on LTC",
+   "page": 60,
+   "scope": "IN",
+   "faq": [
+    "M9wfgNyerlZC0JrRrpqUxw==",
+    "2tXtbSAVvenj12t7NC9K2A==",
+    "p+1Nx4A1jdcq+IWH01C+vA==",
+    "gjhpqfPlTZ704VlhEi8s+w==",
+    "APm8G3S2lBnZBXTwcE5rKQ==",
+    "R8/3UdaEf5LWmiDLqAXuzw==",
+    "Z4OD2MX8oczb3e8lDdIrkA=="
+   ]
+  },
+  {
+   "ch": 9,
+   "topic": "Joining Time",
+   "page": 64,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 10,
+   "topic": "Gallantry Awards",
+   "page": 68,
+   "scope": "OUT",
+   "faq": []
+  },
+  {
+   "ch": 11,
+   "topic": "Gazette Notifications on Substantive/",
+   "page": 71,
+   "scope": "OUT",
+   "faq": []
+  },
+  {
+   "ch": 12,
+   "topic": "Attachments",
+   "page": 74,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 12,
+   "topic": "Penal Deductions",
+   "page": 76,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 12,
+   "topic": "Payment of Maintenance Allowance",
+   "page": 76,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 13,
+   "topic": "Pay and Allowances under Seventh Pay",
+   "page": 77,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 14,
+   "topic": "Additions to Pay",
+   "page": 105,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 14,
+   "topic": "Qualification Allowance",
+   "page": 105,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 14,
+   "topic": "Qualification Grant",
+   "page": 105,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 14,
+   "topic": "Technical Allowance",
+   "page": 106,
+   "scope": "IN",
+   "faq": [
+    "MEu/NQ3tjVd0FfaJA5RmAQ==",
+    "5Srl1DkTbHPPYyyV+ActyA==",
+    "yjuHNrlUGvsD/qhIqafppg==",
+    "AHVbcyDXRZAAB8IiklY58w==",
+    "qB6tnDKdSC14/XyZYR3NuA==",
+    "l9FIvqE+ogeAAiKRtkowPA=="
+   ]
+  },
+  {
+   "ch": 14,
+   "topic": "Specialist Allowance",
+   "page": 112,
+   "scope": "IN",
+   "faq": [
+    "FNLJ5bqHDuO8HRhpbNeV6w==",
+    "EJK01TyItCMvokauh7DMhQ==",
+    "aT0liu4sUGR4crTBSWZGZg==",
+    "lnJNoeBuaQiix1tPLzgMcA=="
+   ]
+  },
+  {
+   "ch": 14,
+   "topic": "Post Graduate Allowance",
+   "page": 114,
+   "scope": "IN",
+   "faq": [
+    "ZINycxwHCEFsUyA6uKt+nw=="
+   ]
+  },
+  {
+   "ch": 14,
+   "topic": "Flying Allowance",
+   "page": 115,
+   "scope": "IN",
+   "faq": [
+    "1qPcxwaa4jEYdoXIKn6ytg==",
+    "TexNQKx8yvDL2iBYw1wAmA==",
+    "0DzNKoFKrVoUgbrlZYjxew==",
+    "GRH34WXmFEaKjQDU6vYTqA==",
+    "UPt3Xsjj3S9QRWzA9grQtw=="
+   ]
+  },
+  {
+   "ch": 14,
+   "topic": "Test Pilot Allowance",
+   "page": 117,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 14,
+   "topic": "Flight Test Engineer Allowance",
+   "page": 117,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 14,
+   "topic": "Parachute Allowance",
+   "page": 118,
+   "scope": "IN",
+   "faq": [
+    "xOwwWdIrcIqzlEsx+Mse4Q==",
+    "/LGAjqYS27uI2UcTS7PfTg==",
+    "CYp9qYI6kP17/UPR0HK7pQ=="
+   ]
+  },
+  {
+   "ch": 14,
+   "topic": "Para Reserve Allowance",
+   "page": 120,
+   "scope": "IN",
+   "faq": [
+    "v9Dvdi82kEVYP1WGNbQbdw==",
+    "kqBdjP/qwVOPZEevQA6wLg=="
+   ]
+  },
+  {
+   "ch": 14,
+   "topic": "Para Jump Instructor Allowance",
+   "page": 121,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 14,
+   "topic": "Special Force Allowance",
+   "page": 121,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 14,
+   "topic": "Official Hospitality Grant",
+   "page": 122,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 14,
+   "topic": "Transport Allowance",
+   "page": 122,
+   "scope": "IN",
+   "faq": [
+    "ofwPBlWgaIJ6vd6ip7aeXA==",
+    "EdotblDiTcSueGy+EpmM4A==",
+    "8diN7qpM87MaH1+7VvjZug==",
+    "FPvsD+9DSHuYfLZnnBY8fw==",
+    "pfvtcHA+oUlAwNVlc9dUqA==",
+    "mNzXvql94eiQGwnNGBFgRA==",
+    "Q+8rHM4p9Bnhi+an7lSKTA==",
+    "c/u0+kE8qADSuHdKbVtzLg=="
+   ]
+  },
+  {
+   "ch": 14,
+   "topic": "NSG Allowance",
+   "page": 126,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 14,
+   "topic": "Ration Money Allowance (RMA) in lieu of",
+   "page": 127,
+   "scope": "IN",
+   "faq": [
+    "wNgTCJ2LLG5J+pA68tT5nw==",
+    "CTsAJb9e7eSaaWfBtryykw=="
+   ]
+  },
+  {
+   "ch": 15,
+   "topic": "Allowances",
+   "page": 130,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Dearness Allowance",
+   "page": 130,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Kit Maintenance Allowance",
+   "page": 131,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Risk & Hardship Allowance",
+   "page": 131,
+   "scope": "IN",
+   "faq": [
+    "07QrJkK9VUZAfkcYbGqaIg==",
+    "CKmBCbdkkBce/UQLwAGW3A==",
+    "9oGRcHThCOuYqX887Bv6/g==",
+    "krfMjkMXnN1amQvJ7Clv8Q==",
+    "B1KU04lSCeYE86Nz5e0YrA==",
+    "6kyiX0QZBNsq4Cf5z8bWxg==",
+    "lqtIi8Ow/3GHfG6+0IEBkg==",
+    "3X1XkZFalS0Lw478K2T71g==",
+    "hAEzZnhGNE90DfHxR/N0+Q==",
+    "N0PHgFrb837ZOka7fLgvkg==",
+    "A+6luk8fGQujJqfxnBphsA==",
+    "4V2wFiD5fXK9+GNEGzsKWg==",
+    "kcCkf+FGVH7s0Ijh698y7g==",
+    "y/kiEjAQrxT8uMLp63eX7A==",
+    "dS8iU+uVnayFZFK/+Bl+8g==",
+    "mknSb4ZwZyVUg75guTVaXA==",
+    "rulmqLEpvQzmV/OTtLM94A==",
+    "H4h+EFyg3VggtmQAwxOjUA==",
+    "TyTqt2guKvudWPxFFrtmLQ==",
+    "P9id7wEzrAhe5vdjFCheOg==",
+    "bbISwhz2Lv15oA0jSqQAYw=="
+   ]
+  },
+  {
+   "ch": 15,
+   "topic": "Highly Active Field Area Allowance, Compensatory",
+   "page": 134,
+   "scope": "IN",
+   "faq": [
+    "aH+8sUjmqGrCcSNR1Vrl4g==",
+    "dEJtjcz1/kGXgrldUdIGeA==",
+    "gNXwL5JVs58rmnWe7wfQ9g=="
+   ]
+  },
+  {
+   "ch": 15,
+   "topic": "Special Compensatory (Counter Insurgency)",
+   "page": 138,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Siachen Allowance",
+   "page": 139,
+   "scope": "IN",
+   "faq": [
+    "ZbRhmH0hcfTT26p0PxUDPA==",
+    "iOr6Fv6+aNUnQ7w3EtiX4Q==",
+    "/sCvV7T2k2nuMzlaxSc2VQ==",
+    "6GVW/BJSMtE4aA9Hw8uL0A==",
+    "bSD8LBGyPYPIldR7uHzYWA=="
+   ]
+  },
+  {
+   "ch": 15,
+   "topic": "High Altitude / Uncongenial Climate Allowance",
+   "page": 140,
+   "scope": "IN",
+   "faq": [
+    "ZbRhmH0hcfTT26p0PxUDPA==",
+    "iOr6Fv6+aNUnQ7w3EtiX4Q==",
+    "/sCvV7T2k2nuMzlaxSc2VQ==",
+    "6GVW/BJSMtE4aA9Hw8uL0A==",
+    "bSD8LBGyPYPIldR7uHzYWA=="
+   ]
+  },
+  {
+   "ch": 15,
+   "topic": "Training Allowance to Officers on the faculty of",
+   "page": 144,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Training Allowance (erstwhile Instructional Allowance)",
+   "page": 145,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Deputation (Duty) Allowance",
+   "page": 148,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Language Award",
+   "page": 149,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Language Allowance",
+   "page": 150,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Special Security Allowance",
+   "page": 150,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Hazard Pay",
+   "page": 151,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Special Security Allowance (earlier NTRO Special",
+   "page": 151,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Hard Area Allowance",
+   "page": 152,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Hardship Allowance",
+   "page": 153,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "SPIC Allowance",
+   "page": 154,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Special Allowance for child care for women",
+   "page": 154,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Strategic Forces Allowance",
+   "page": 155,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 15,
+   "topic": "Territorial Army Allowance",
+   "page": 155,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 16,
+   "topic": "Proforma for intimating Change of Bankers /",
+   "page": 156,
+   "scope": "OUT",
+   "faq": []
+  },
+  {
+   "ch": 17,
+   "topic": "Dress Allowance(Erstwhile Outfit Allowance)",
+   "page": 160,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 17,
+   "topic": "Compensation for change of Uniform on",
+   "page": 161,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 18,
+   "topic": "Compensatory Allowances",
+   "page": 162,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 18,
+   "topic": "Composite Hill Compensatory Allowance",
+   "page": 162,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 18,
+   "topic": "Tough Location Allowance",
+   "page": 162,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 18,
+   "topic": "Island Special Duty Allowance",
+   "page": 171,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 18,
+   "topic": "Grant of Crockery, Cutlery and Glassware",
+   "page": 173,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 18,
+   "topic": "Lump sum Grant in lieu of the supply of Bed",
+   "page": 175,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 18,
+   "topic": "Bhutan Compensatory Allowance",
+   "page": 175,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 18,
+   "topic": "Myanmar Compensatory Allowance",
+   "page": 177,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 18,
+   "topic": "Allowances not to be claimed from PCDA(O)",
+   "page": 177,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 19,
+   "topic": "Children Educational Assistance and Hostel",
+   "page": 178,
+   "scope": "IN",
+   "faq": [
+    "VsUU1jD7UfbdxNS+vdygxw==",
+    "y6edPFVUto0laKsCsJRYWw==",
+    "5JFX8Say/u5nPi6Elg5EYg==",
+    "SUxtJSscXBeE/viUjBgFug==",
+    "EcDsAtemXagHwuH5YJ1t0A==",
+    "Iahkcl2DVM5Z6F6cnvNNMg==",
+    "YXFMt0IOSpF8UYLHWRVufw==",
+    "5FeZgVyCNZ20aIwAmPeXiA==",
+    "7oPKat1NXEAkRq0Nf1DhiQ=="
+   ]
+  },
+  {
+   "ch": 20,
+   "topic": "Advances",
+   "page": 184,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 20,
+   "topic": "Advances of Pay",
+   "page": 184,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 20,
+   "topic": "House Building Advance",
+   "page": 184,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 20,
+   "topic": "Conveyance Advance and Personal Computer",
+   "page": 184,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 21,
+   "topic": "DSOP Fund",
+   "page": 185,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 22,
+   "topic": "Accommodation, Rent & Allied Charges",
+   "page": 202,
+   "scope": "IN",
+   "faq": [
+    "UaO4Zwvm0xOaXDcGO+gefA==",
+    "XXWF/2hKvbNx33BDDdHN4g==",
+    "uZawO/3GfKBXfZIXlk6Xdw==",
+    "dsmqCVG3a35eHZwMaNEOvQ==",
+    "hISaNXyWtxnM4dAo5q+ZcQ==",
+    "azgEB2xMiZStGFajxhSgGA=="
+   ]
+  },
+  {
+   "ch": 23,
+   "topic": "House Rent Allowance",
+   "page": 225,
+   "scope": "IN",
+   "faq": [
+    "wB8nsuAFOw4qG5fUXqdXZQ==",
+    "8JIu1yCHtNEM5A4m00bxeg==",
+    "nLzoICDkNIa6iigp2wUXyg==",
+    "6qAC1c4aBmvboEkbGj8QLw==",
+    "HPjsNjztiK/+Mrtz+XfxZA==",
+    "as8aGiulCjwhDKUbrjxA9A==",
+    "/7wf3qExIH3Gx66bXHqibA==",
+    "061SETq6tAr1GBfWsYI3xA==",
+    "RQWw+8oePlSs1ka0ArA2rg==",
+    "JVB+8oilsosZRgwGgSEvYg==",
+    "thGJQ0n5iBIrK5betuHKDA==",
+    "lgpwdGJbjwyHDy8ULhnl4A==",
+    "OSqwg43LJQkx2HbExZqZ6g==",
+    "8Uvlj5SEeBwr4zOHF55UzQ==",
+    "yiGsvjiH+3A48gN1gUaSew==",
+    "thQ1bEw6O+XaySJ/oj0rnA==",
+    "AnIGM6r4mE6iXjhG5oqUXg==",
+    "fLvrmlaiFwLmVV0i0TU7Ug=="
+   ]
+  },
+  {
+   "ch": 23,
+   "topic": "REIMACCO",
+   "page": 241,
+   "scope": "IN",
+   "faq": []
+  },
+  {
+   "ch": 24,
+   "topic": "Income Tax",
+   "page": 242,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 24,
+   "topic": "New Tax Regime",
+   "page": 242,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 24,
+   "topic": "Old Tax Regime",
+   "page": 244,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 25,
+   "topic": "Army Group Insurance Scheme",
+   "page": 259,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 26,
+   "topic": "Armed Forces Medical Services Officers' Fund",
+   "page": 265,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 27,
+   "topic": "Deposit Linked Insurance Scheme",
+   "page": 266,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 28,
+   "topic": "Reimbursement of Medical Expenses",
+   "page": 267,
+   "scope": "IN",
+   "faq": [
+    "EexB6dp/IlZkUTIpc4ExkQ==",
+    "OJClHqlWDrL2CmXu+EKCQA==",
+    "A79Q9R5ydCGOsa2s+yCLHA==",
+    "EUM7NThWob09iZ97ocKiAw==",
+    "MgBMk8ENYr9XnTEz+Epovg==",
+    "0qeBSQbrno745O7Ic3Q9nA==",
+    "n7lloUWUhtsZbCD7iosBqw==",
+    "HJbyEdP9z1HwsGnrG1KBpA==",
+    "zgFSyLEvh5AOQ2rHOqSIWw=="
+   ]
+  },
+  {
+   "ch": 29,
+   "topic": "Retirement benefits",
+   "page": 269,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 30,
+   "topic": "Terminal benefits for officers granted Short Service",
+   "page": 271,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 31,
+   "topic": "Pension Orders under Seventh Pay Commission",
+   "page": 279,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 32,
+   "topic": "New Pension Scheme",
+   "page": 290,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 33,
+   "topic": "Ex-servicemen Contributory Health Scheme (ECHS)",
+   "page": 297,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 34,
+   "topic": "Terms & Conditions of services of",
+   "page": 299,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 35,
+   "topic": "Pension",
+   "page": 307,
+   "scope": "DEFER",
+   "faq": []
+  },
+  {
+   "ch": 35,
+   "topic": "Role of SPARSH",
+   "page": 307,
+   "scope": "DEFER",
+   "faq": []
+  }
+ ],
+ "unassigned": {
+  "TA-1@p14": "Guidelines for Army Officers for the",
+  "TA-12@p19": "Forms on which claims are to be preferred",
+  "TA-25@p39": "Notwithstanding the above mentioned provision, no move of an",
+  "TA-18@p47": "Chief of Army Staff                          18",
+  "TA-4@p50": "Regulation Of TA - Temporary Duty Journey",
+  "TA-117@p121": "Concessions admissible to non-regular officers",
+  "TA-137@p134": "When admissible",
+  "TA-9@p204": "Particulars of members of family (as recorded in Service",
+  "TA-11@p205": "Details of previous LTC availed by officer/ Family-"
+ },
+ "faq_pay_unmapped": [
+  "General",
+  "General",
+  "General",
+  "General",
+  "Login Related Queries",
+  "Login Related Queries",
+  "Login Related Queries",
+  "Login Related Queries"
+ ]
+}

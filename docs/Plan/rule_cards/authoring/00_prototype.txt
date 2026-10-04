@@ -1,0 +1,55 @@
+# Seed cards from the reviewed prototype (tone, wording and DA line approved by the owner 2026-10-04).
+=== topic=RR-ORD-03 from=SS-T181,SS-T182,SS-T183 chips=RATES,AMENDED personal=level:food_rate
+T: Food charges on TD: how much do I get?
+A: A fixed daily amount for your pay level. No bills needed. How much you get depends on hours away.
+K: Under 6 hours away: 30% of the day's amount
+K: 6 to 12 hours: 70%. Over 12 hours: 100%
+K: Your amount: Level {level} = Rs {food_rate}/day
+H: No food bills or vouchers
+W: Hours count midnight to midnight, each day
+W: Rates rise with DA; check the 'as of' date
+C: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017; Rule 114 TR
+D: Base daily amount by level before the DA-linked 25% rise: Level 14+ Rs 1,200; 12 to 13B Rs 1,000; 9 to 11 Rs 900. From 01-01-2024 (DA at 50%) it is base x 1.25 plus taxes: up to Level 11 Rs 1,125; Level 12 to 13B Rs 1,250; Level 14 and above Rs 1,500.
+
+=== topic=RR-ORD-05 from=SS-T047,SS-T048,SS-T046,SS-T188
+T: Own car on TD: can I claim mileage?
+A: Only with a sanction from the competent authority. Without it, you get the cost of the warrant only.
+K: With a Rule 40 Note 2 sanction: road mileage allowance
+K: Without it: cost of the warrant journey
+H: The sanction under Rule 40 Note 2
+W: Sanction must come from the GOC-in-C of the Command, or their delegate
+W: NCC officers: only DGNCC can sanction
+W: A Rule 47(iii) sanction covers cost of warrant only
+C: Rule 40 Note 2 and Rule 47, TR 2014
+D: Audit asks one question: did travelling by own car serve a public interest, for places connected by rail?
+
+=== topic=RR-LTC-01 from=SS-T068,SS-T060,SS-T237,SS-T236
+T: Home Town LTC: how often can I take it?
+A: Once per calendar year, to your home town. Not in a year you take Anywhere-in-India LTC.
+K: Home Town LTC (177A) or Anywhere-in-India (177B): one per year
+K: Anywhere-in-India LTC is for alternate years only
+W: A home-town trip on a warrant counts as that year's LTC
+C: Rule 177A(i)(a), TR 2014
+D: Field and CI postings have extra entitlements under Rule 177C; see the field-area LTC card.
+
+=== topic=RR-ORD-06 from=SS-T254,SS-T260,SS-T193 chips=AMENDED personal=payslip_basic:ctg_estimate
+T: CTG on a permanent move: how much?
+A: 80% of your last month's basic pay, for a permanent move of 20 km or more.
+K: To or from Andaman, Nicobar or Lakshadweep: 100%
+K: Under 20 km, or same city: one-third of the 80%
+K: Your CTG is about Rs {ctg_estimate}
+H: Local move: vacation report, occupation report, allotment letter
+W: Basic pay only: NPA and MSP are not counted
+W: Permanent posting only, not after study leave
+C: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017
+D: The same percentage applies to field and peace postings. If both spouses serve, separate rules apply.
+
+=== topic=RR-ORD-08 from=SS-T291,SS-T021,SS-T042,SS-T210,SS-T212
+T: How long do I have to submit a TD or move claim?
+A: 60 days from the day the journey ends. Retirement journeys get 180 days.
+K: LTC claims: 30 days with an advance, 60 days without
+K: Missed 30 days: advance recovered; you can still claim in 60
+K: Submission date is the day you sign the contingent bill
+W: Missing both limits forfeits the claim
+W: A late advance adjustment carries penal interest
+C: MoF DoE OM 19030/1/2017-E.IV dt 13-03-2018 and 15-06-2021; GFR 2017 Rule 290; DoPT OM 31011/3/2015-Estt(A-IV) dt 01-04-2015

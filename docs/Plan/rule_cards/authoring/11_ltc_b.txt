@@ -1,0 +1,115 @@
+# LTC batch B: Anywhere-in-India LTC (177B) and family rules (SS-T100..SS-T126). Written from TR 2014 Rule 177 first.
+
+=== topic=RR-LTC-02 from=SS-T100
+T: Can I start my LTC journey from another city?
+A: No. Start from your duty station and go directly, by the shortest route, to your declared destination.
+K: The claim is limited to the shortest direct route from duty station
+K: A detour through another city is not paid
+C: Rule 177B(i)(d), TR 2014
+
+=== topic=RR-LTC-02 from=SS-T101,SS-T106,SS-T133
+T: LTC by air: can I break the journey or stay en route?
+A: No. Book one ticket for each leg. A break in journey is not admissible, except a connecting flight.
+K: One ticket per leg, even with a change of flight
+K: An en-route stay is not allowed on air LTC
+K: Two separate tickets: only the through-ticket fare is admitted
+W: Rail LTC differs: linked warrants are allowed for breaks (177B)
+C: DoPT OM 31011/12/2022-Estt.A-IV dt 29-08-2022; Rule 177B(iii) TR
+
+=== topic=RR-LTC-02 from=SS-T124,SS-T126
+T: Family lives elsewhere: LTC from where they live?
+A: Yes. LTC for your wife and children runs from where they live to your leave station and back.
+K: When you serve at a non-family station or have no family accommodation
+K: Claim is limited to entitled mode and class by the shortest route
+H: Your reasons for the family living elsewhere
+W: The Controlling Authority checks those reasons
+C: Rule 177B(i)(c) and (d), TR 2014; CGDA letter 4007/AT-P dt 05-05-1976
+
+=== topic=RR-LTC-02 from=SS-T103
+T: LTC air ticket bought from an unauthorised agent
+A: The air fare is not admitted. The claim passes for zero and that year's LTC counts as used.
+K: Tickets must come from the three authorised agents
+K: Only unavoidable cases can be relaxed, by a senior authority
+C: DoE OM 19024/03/2021-E.IV dt 31-12-2021
+
+=== topic=RR-LTC-02 from=SS-T104,SS-T123
+T: Family's LTC journey: warrant or fare refund?
+A: You travel on warrant. Your wife and children are refunded the actual fare they paid.
+K: No railway warrant for the family under 177B
+K: Refund has no distance limit, each direction
+K: Fare is by your entitled mode and class
+C: Rule 177B(i)(g), TR 2014
+
+=== topic=RR-LTC-02 from=SS-T107
+T: Anywhere-in-India LTC: can parents, brothers or sisters travel?
+A: No. 177B covers only the officer, spouse and children.
+K: Not covered: dependent parents, step-parents, brothers, sisters
+K: Parents travel under Home Town LTC (177A) instead
+C: Rule 177B(i)(a), TR 2014
+
+=== topic=RR-LTC-02 from=SS-T109,SS-T118
+T: Newly married wife joining me: what travel do I get?
+A: One-way LTC under 177B for her journey from your home town to the station where you serve.
+K: Return to your HQ if she gives up that year's own LTC
+K: Applies in peace, field and modified areas with married accommodation
+W: No baggage, scooter or car conveyance for her move
+W: Marrying after your posting gives no permanent-move TA for her
+C: Rule 177B(i)(a) Note and (f), and Rule 16, TR 2014
+
+=== topic=RR-LTC-02 from=SS-T120
+T: I married while serving in a field area: wife's LTC?
+A: Her LTC runs from her residence, treated like an SPR, to your leave station.
+K: Limited to fare from the rail head or airport nearest you
+K: If you take no LTC, her residence is still the base
+C: Rule 177B(i)(e), TR 2014
+
+=== topic=RR-LTC-02 from=SS-T111,SS-T122
+T: Wife and children's return journey: the six-month rule
+A: The return must finish within six months of the onward journey, or only the onward fare is paid.
+K: Return in the next calendar year needs sanction from the Competent Authority
+K: Heads of Branches (Service HQ) or GOC-in-C (commands) may relax the limit
+C: Rule 177B(i)(a), TR 2014; CGDA letter 4007/AT-P dt 05-05-1976
+
+=== topic=RR-LTC-02 from=SS-T112
+T: Encashing leave with LTC: how much?
+A: You can encash 10 days of annual leave with each LTC, up to 60 days over your career.
+K: Encashed leave does not reduce what you can encash at retirement
+K: Both spouses serving: each gets up to 60 days
+K: No limit on the number of spells
+W: Encashment can be allowed up to 60 days before the outward journey
+C: Rule 177B Notes 1 to 3, TR 2014
+D: The 60-day career cap applies to each spouse from 01-09-2008.
+
+=== topic=RR-LTC-02 from=SS-T113
+T: Spouse's LTC destination must match mine
+A: Your spouse travels to the same leave station as you. Going beyond it is not covered.
+K: Passing through your leave station to a farther place is not admissible
+K: Your spouse still has an independent title
+C: Rule 177B(i)(a), TR 2014
+
+=== topic=RR-LTC-02 from=SS-T114
+T: Can my family travel in batches?
+A: Yes, in any number of batches. One member cannot get the concession twice in a block.
+K: No limit on the number of batches
+C: Rule 177B(i)(a), TR 2014; CGDA letter 4007/AT-P dt 05-05-1976
+
+=== topic=RR-LTC-02 from=SS-T115,SS-T125
+T: Year-end leave: which year does my family's LTC count against?
+A: If you and your family travel together next year, their LTC counts against the year yours counts.
+K: Applies when your leave is granted late in the year
+K: Next calendar year's own LTC is not affected
+C: Rule 177B(i)(b) and Rule 177A(v), TR 2014
+
+=== topic=RR-LTC-02 from=SS-T117
+T: LTC by bus, steamer or car: what is refunded?
+A: For places connected by rail, only up to the rail warrant cost in your entitled class.
+K: Private chartered buses and vans: not reimbursed
+K: State or public-sector charter buses: actual cost, up to warrant fare
+K: Private cars: not reimbursed, whoever owns them
+C: Rule 177B(ii) and Notes 1 and 2, TR 2014
+
+=== topic=RR-LTC-02 from=SS-T119
+T: LTC when I will not return from leave
+A: Not admissible if it is known at departure that you will not return to duty after the leave.
+K: Applies to Anywhere-in-India LTC
+C: Rule 177B(vi), TR 2014

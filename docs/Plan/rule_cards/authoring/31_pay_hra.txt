@@ -1,0 +1,114 @@
+# Pay batch 2: House Rent Allowance and SPR (SS-P101..SS-P118). Written from the P&A handbook ch. 23 and the MoD/MoF letters it cites.
+
+=== topic=RP-092 from=SS-P114,SS-P110,SS-P116,SS-P115
+T: HRA: who gets it, and at which place's rate?
+A: Paid when no government accommodation is allotted. Peace posting: place-of-posting rate. Field posting: your SPR's rate.
+K: No government accommodation at your present or previous duty station
+K: Any accommodation, even below your entitlement, stops HRA
+K: Single officers qualify only if dependents incur rent
+C: MoD letter 1(5)/97/D(Pay/Services) dt 02-11-1997, modified 29-09-1999; MoD letter 1(2)/2021-D(Q&C) dt 08-04-2022
+
+=== topic=RP-092 from=SS-P116 id=RB-SS-P116-rates chips=RATES personal=basic:hra_estimate
+T: HRA rate by city class
+A: X cities 24%, Y cities 16%, Z cities 8% of basic pay, from 01-07-2017.
+K: 27%, 18% and 9% once DA crosses 25%
+K: 30%, 20% and 10% once DA crosses 50%
+K: Basic pay excludes NPA, MSP and special pay
+C: MoF OM 2/5/2017-E.II(B) dt 07-07-2017; MoD letter 3(1)/2015-D(Q&C) dt 11-10-2017
+D: X cities: Delhi, Greater Mumbai, Kolkata, Chennai, Hyderabad, Ahmedabad, Bengaluru, Pune. Unlisted towns are Z. Faridabad, Ghaziabad, Noida, Gurgaon keep Delhi rates; Shillong, Goa, Port Blair, Jalandhar Cantt and Mathura-Vrindavan are Y.
+
+=== topic=RP-092 from=SS-P113
+T: What is an SPR?
+A: Your Selected Place of Residence: where your family lives when you are posted to a field, modified field or concessional area.
+K: Applies where families are not permitted
+K: Options: keep old quarters, move to a chosen place, or home town
+K: Can be your last station, home town, SF station or any station
+C: AO 488/64, AO 508/65 and AO 261/70
+
+=== topic=RP-092 from=SS-P105,SS-P118,SS-P103,SS-P104,SS-P111,SS-P112
+T: Declaring your SPR: deadline and how
+A: Within 60 days of posting, or 90 days with the Station Commander's approval. Publish a Part II order.
+K: Declare on every field posting, even if SPR is your home town
+K: The Part II order is the declaration; there is no fixed format
+K: Missed deadline: baggage, family move and HRA claims are refused
+C: AO 488/64 as amended; SAO 10/S/86
+
+=== topic=RP-092 from=SS-P101
+T: Can I change my SPR?
+A: SPR once declared is final. It may be changed once, in extreme circumstances.
+K: Applies to the SPR you declared on posting
+C: PCDA(O) Advisory 08/2025
+
+=== topic=RP-092 from=SS-P102
+T: Family moved home for want of quarters: can they join me at Government cost?
+A: Rule 85A allows a one-time free move to join you once Government married accommodation is allotted.
+K: Only for Government-built married accommodation
+K: Baggage is limited to what was first moved to the SPR
+C: Rule 85A, TR 2014
+
+=== topic=RP-092 from=SS-P106
+T: HRA for a single officer with dependents
+A: Admissible if the dependents keep incurring rent. Their Part II order (DEPNDNT) must be notified.
+K: Brothers: until 25, or until earning Rs 9,000 a month
+K: Sisters: until marriage, 25, or earning Rs 9,000 a month
+K: Parents also count as dependents
+C: MoD letter 12647/LTC/Mov C/2970/D(Mov)/08 dt 17-12-2008; MoD letter 17(01)/2016-D(Pen/Pol) dt 29-10-2016
+
+=== topic=RP-092 from=SS-P107
+T: HRA during study leave
+A: Yes, at the rate for the study-leave station, if no Government quarters are vacant there.
+K: Not if you occupy any Government or hired accommodation
+C: MoD letter 10(55)/98/D(Q&C) dt 11-02-2008
+
+=== topic=RP-092 from=SS-P108
+T: Reserved accommodation in a concessional area: HRA?
+A: HRA is paid for your SPR or home town if Government quarters are not available there.
+K: Licence fee is charged on the reserved accommodation at the duty station
+K: Declare the SPR within 2 months of posting, not of TORS
+C: CGDA letter AT/I/1492/Vol.V dt 02-05-2019
+
+=== topic=RP-092 from=SS-P109
+T: HRA while staying in the mess
+A: Paid at the duty-station rate if your family lives at another station.
+K: Family at the same station on private arrangement: not paid
+K: Unless you certify you stay in the mess for service reasons
+H: Certificate that your family is not residing with you in the mess
+C: MoD letter ID 1865/2000/D(Q&C) dt 03-07-2000
+
+=== topic=RP-092 from=SS-P117
+T: HRA Part II order: the CO's certificate
+A: Since 08-04-2022 the CO certifies the claim in place of a station NAC.
+K: Accommodation must not stay vacant while you draw HRA
+K: Certificate states posting type, no Government quarters and family address
+K: City class of the HRA station is stated
+C: MoD letter 1(2)/2021-D(Q&C) dt 08-04-2022; IHQ letter C/7036/HRA/SAPCS/2022 dt 06-09-2022
+
+=== topic=RP-092 from=SS-P114 id=RB-SS-P114-gap
+T: HRA in the gap between two postings
+A: Claim HRA at the new station's rate until you register for married accommodation.
+K: You must have vacated your previous accommodation
+K: No Government quarters may stay vacant because of your claim
+C: MoD letter 10(55)/98/D(Q&C) dt 11-02-2008
+
+=== topic=RP-092 from=SS-P114 id=RB-SS-P114-spouse
+T: Both spouses serving: HRA or accommodation
+A: Each is entitled to accommodation or HRA at their own station.
+K: Both posted in the field: each may claim at their own SPR
+K: A field-posted spouse cannot claim SPR HRA if the other has quarters
+C: MoD letter 1(3)/HRA-Pol/2017-D(Q&C) dt 07-01-2020
+
+=== topic=RP-092 from=SS-P114 id=RB-SS-P114-possession
+T: Accommodation allotted but not occupied
+A: Take possession within 10 days. After that, HRA stops for 20 days from allotment.
+K: Licence fee is charged for the 10 days
+K: After 20 days, HRA can be allowed on a competent authority's NAC
+K: Refusing any married accommodation bars HRA
+C: MoD letter 1(5)/97/D(Pay/Services) dt 02-11-1997
+
+=== topic=RP-092 from=SS-P113 id=RB-SS-P113-hard
+T: Separated family accommodation at hard non-military stations
+A: Officers at listed hard stations may get separated family accommodation at their last duty station.
+K: GREF, NCC and recruiting units have their own station lists
+K: If none is available: hired accommodation or rent reimbursement
+K: From a field area: family moves to SPR at cost
+C: MoD letter 18147/DGBR/E-2A(T&C)/D(Q&C) dt 20-10-1997; MoD letter 6731/SFA/DGNCC/ADM(A-2)/4727/D(Q&C) dt 22-10-1991

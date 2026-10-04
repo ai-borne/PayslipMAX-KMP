@@ -1,0 +1,177 @@
+# Orders batch B: supporting documents, time limits, procedure, island postings, families, Form 'D' (SS-T197..SS-T252).
+
+=== topic=RR-ORD-07 from=SS-T197 chips=GUIDANCE
+T: I lost my LTC boarding passes
+A: Boarding passes are mandatory for LTC claims. Get a certificate from the airline with the travel details.
+K: It must give passenger name, date, class, seat number and amount paid
+K: Submit it to PCDA(O) with the claim
+
+=== topic=RR-ORD-07 from=SS-T198 chips=GUIDANCE
+T: Taxi on LTC to a place with no public transport
+A: Reimbursed up to 100 km, capped at the warrant cost, if no public or private transport exists.
+K: Only when the taxi continues an air or train journey
+K: Give a self-certificate with the taxi number
+W: Not reimbursed where private transport is available
+
+=== topic=RR-ORD-07 from=SS-T199 chips=GUIDANCE
+T: Ration money deducted from my TD claim
+A: It is not deducted if you attach a non-drawal certificate from the QM of your serving unit.
+K: The certificate must come from your own unit
+W: A certificate from the TD station is not valid
+
+=== topic=RR-ORD-07 from=SS-T201 chips=GUIDANCE
+T: Signing certificates on a claim: your responsibility
+A: You are personally responsible for every fact in a certificate you sign, and liable for false statements.
+K: Certify only what you know and believe
+K: If the form does not fit, amend it or do not sign
+
+=== topic=RR-ORD-07 from=SS-T203,SS-T204,SS-T205 chips=GUIDANCE
+T: Declarations on a TD claim
+A: Declare you used no warrant for the claimed portion, were present on DA days, and had no free board.
+K: No railway warrant or concession voucher used for that portion
+K: Actually present at the outstation on DA days; no leave taken
+K: No free boarding or lodging provided
+
+=== topic=RR-ORD-07 from=SS-T206 chips=GUIDANCE
+T: Form 'D' for army officers in civil employ
+A: Army officers in civil employ on service pay can use Form 'D'. The cost is debited to the civil department.
+K: Issued by the nearest SSO or OC Station
+K: Needs the Head of Department's certificate of service pay
+
+=== topic=RR-ORD-10 from=SS-T207,SS-T224
+T: LTC to Lakshadweep: how to travel
+A: Use SPORTS Samudram packages on Lakshadweep Administration ships. Only transport cost is reimbursed.
+K: Claim the SPORTS website rate, or less if claimed less
+K: Only the transportation cost, not accommodation
+K: Fare follows your sea or river steamer entitlement
+C: MoD letter 12647/LTC/SPORTS/Mov C/22/D(Mov)/2019 dt 22-03-2019; DoPT OM 31011/10/2017-Estt.A-IV dt 11-10-2018; CGDA letter AT/IV/4462/OA/DSD/AF dt 13-09-2017
+D: SPORTS must certify the fare components and that you and your family actually travelled. Applies from 11-10-2018.
+
+=== topic=RR-ORD-07 from=SS-T208
+T: Leave encashment with LTC: how is it paid?
+A: Ledger Wing pays it on your unit's Part II order, with your claim in the prescribed proforma.
+K: The Part II order shows the warrant used or LTC availed
+K: T Wing sections only deal with the LTC claim and title
+C: Documentation Procedure for Publication of Part II Orders (Officers) 2014
+
+=== topic=RR-ORD-08 from=SS-T211 chips=GUIDANCE
+T: A TA claim pending for over a year
+A: The Head of Department investigates. If genuine with valid reasons for delay, it is paid after usual checks.
+K: Needs supporting documents
+K: Paid by the Drawing and Disbursing or Accounts Officer
+
+=== topic=RR-ORD-08 from=SS-T214
+T: Family travelled separately: how long do I have to claim?
+A: Each journey has its own 60 days. Baggage and car claims run from delivery at the new station.
+K: Dates are reckoned separately for each journey
+K: Baggage and car: 60 days from delivery to you
+C: GFR 2017 Rule 290; MoF DoE OM 19030/1/2017-E.IV dt 13-03-2018
+
+=== topic=RR-ORD-08 from=SS-T215,SS-T216,SS-T217
+T: Which date counts as the date of submission?
+A: Your own Controlling Officer: the date the claim reaches PCDA(O). Otherwise: the date it reaches your Controlling Officer.
+K: A late treasury claim counts from your head of office's date
+W: These dating rules do not apply to LTC claims
+C: MoF DoE OM 19030/1/2017-E.IV dt 13-03-2018
+
+=== topic=RR-ORD-16 from=SS-T213
+T: Field area posting: where does my family live?
+A: Choose within two months of posting: keep old accommodation, move the family to SPR or home town, or to separated family quarters.
+K: Two months, extendable to three in individual cases
+K: Applies to officers posted to field areas
+C: SAO 10/S/86
+
+=== topic=RR-ORD-09 from=SS-T218 chips=GUIDANCE
+T: Writing to PCDA(O): how?
+A: Send queries through your CO or OC, one officer and one subject per letter, online on the PCDA(O) website.
+K: Give rank, name, personal number and CDA(O) account number
+K: No OP IMMEDIATE or PRIORITY labels
+K: Only actual cases, not hypothetical ones
+
+=== topic=RR-ORD-09 from=SS-T219,SS-T222 chips=GUIDANCE
+T: Booking through DTS: advance and claim rules
+A: DTS tickets count as an advance. The 60-day limit and penal interest apply.
+K: Show ticket amounts on both credit and debit sides
+K: Attach ticket copies and boarding passes
+K: DTS also covers the DA and accommodation advance
+
+=== topic=RR-ORD-09 from=SS-T220 chips=GUIDANCE
+T: Applying for an advance online
+A: Requisition TD, move or LTC advances online on the PCDA(O) website, separately for each.
+K: Log in with your user ID and password
+K: DTS claims go preferably through the DTS portal
+
+=== topic=RR-ORD-09 from=SS-T221 chips=GUIDANCE
+T: Refunding government dues to PCDA(O)
+A: Remit by e-MRO or MRO payable to PCDA(O) Pune alone, quoting its RBI code and the reason.
+K: e-MRO through the SBI portal is preferred
+K: State on what account the amount is remitted
+D: PCDA(O) Pune RBI code: 4021000009.
+
+=== topic=RR-TD-03 from=SS-T222 chips=GUIDANCE
+T: Courses held and attended locally: TA and DA?
+A: Not payable for courses outside authorised Category A and B establishments. Daily Messing Allowance applies.
+K: Officers on such courses get free rations
+
+=== topic=RR-ORD-09 from=SS-T223
+T: Official travel abroad: tickets and claims
+A: PCDA(O) does not pay air fare where an air warrant is mandatory, but does pay DA and incidentals.
+K: PCDA(O) pays the advance and final claims for TA and DA abroad
+K: PCDA New Delhi deals with air passage claims for ex-India travel
+C: Para 242 of the Defence Audit Code
+
+--- skip SS-T226 owner review: 1960s-70s letters not verifiable
+--- skip SS-T227 owner review: 1960s-70s letters not verifiable
+--- skip SS-T228 owner review: 1960s-70s letters not verifiable
+
+=== topic=RR-ORD-12 from=SS-T232 chips=GUIDANCE
+T: Married after taking LTC this year: spouse's LTC?
+A: Your spouse gets LTC both ways to the same leave station, within six months, even without you.
+K: You must already have taken your own LTC for the year
+
+=== topic=RR-ORD-12 from=SS-T233
+T: Officer under suspension: family's LTC?
+A: You get no LTC, but your family can take LTC independently, if otherwise due.
+K: A suspended officer cannot be granted leave
+C: CGDA letter 4308/AT/P dt 28-03-1970
+
+=== topic=RR-ORD-12 from=SS-T234
+T: Family's Home Town LTC: another station?
+A: Only the home town, even if another station is nearer or cheaper.
+K: Applies to the wife and other family members
+C: CGDA letter 4007/AT-P dt 05-05-1976
+
+=== topic=RR-ORD-12 from=SS-T235
+T: I travel on Form 'D' without LTC: my spouse's title?
+A: Your spouse's independent title stands, if you claim no LTC for that journey.
+K: Applies when you travel at your own expense using Form 'D'
+C: AO 531/1964
+
+=== topic=RR-ORD-13 from=SS-T238,SS-T140,SS-T240
+T: Changing my declared home town
+A: Once declared, the home town is final. A change is allowed once in service, in exceptional cases.
+K: Part II order quoting the AG's Branch letter; effective from its date
+K: Head of Department's sanction, or MoD's, goes with the LTC claim
+W: Administrative authorities check warrants against your recorded home station
+C: AO 22/02; SAO 4/S/88; CGDA clarification under Rule 190(5)(ii), TR 2014
+
+=== topic=RR-ORD-15 from=SS-T242,SS-T243,SS-T244,SS-T245,SS-T246
+T: Form 'D': families, chair car, joining time
+A: Unaccompanied families may use Form 'D' to any station. You may use it anywhere in the country on leave.
+K: One extra set lets them break the journey, at your cost
+K: AC chair car: Form 'D' at 60% of the actual fare
+W: Not during joining time, which is not leave
+C: MoD letters PT/1203/NHQ/4851/D(Mov) dt 12-09-1974 and G/05492/Q Mov C/3853 D(Mov) dt 25-09-1979; CGDA letters 4007/AT-P and AT/IV/4425/1
+
+=== topic=RR-ORD-16 from=SS-T248
+T: Leave from the islands: where does it start and end?
+A: Your leave begins and ends at Embarkation HQ Kolkata or Chennai. Travel time counts as duty.
+K: Applies to officers serving in A&N with homes on the mainland
+K: Moved by the quickest means: ship or service aircraft
+C: MoD letter A/14209/AG/PS2(B)/188-S-D(AG-ii) dt 16-02-1972, as amended
+
+=== topic=RR-ORD-16 from=SS-T250
+T: Islands' residents serving on the mainland: free sea passage
+A: Free sea passage by requisition between Kolkata or Chennai and the islands, and back.
+K: Voyage time and enforced halts count as duty
+C: MoD letter C/01632/Mov C/4295/D(Mov) dt 04-08-1977
