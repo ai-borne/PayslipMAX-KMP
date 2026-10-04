@@ -40,10 +40,10 @@ fun LazyListScope.payAuditFindingsItems(
     onDraftLetter: () -> Unit,
 ) {
     val rows = findings.issues.map { it to FindingKind.ISSUE } + findings.waiting.map { it to FindingKind.WAITING } + findings.verified.map { it to FindingKind.VERIFIED }
+    val keys = payAuditFindingKeys(rows.map { it.first })
     itemsIndexed(
         rows,
-        // (type, month) is not unique: the basic-DA and TPTA-DA arrears checks share both.
-        key = { index, (a, _) -> "finding_${a.type}_${a.month}_$index" },
+        key = { index, _ -> keys[index] },
         contentType = { _, _ -> "finding_card" },
     ) { _, (anomaly, kind) ->
         PayAuditFindingCard(anomaly = anomaly, kind = kind, onDraftLetter = onDraftLetter)
