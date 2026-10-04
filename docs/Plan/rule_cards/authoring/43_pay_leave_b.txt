@@ -49,8 +49,7 @@ K: Disability of 40% or more: no age limit on the child
 K: Single male officers and fathers now eligible too
 K: Adoptee mothers also eligible
 C: Rule 56A, Leave Rules for the Services Vol I (Army); MoD letters B/33922/AG/PS-2(b)/687/D(AG) dt 04-03-2014 and /1447/D(AG) dt 14-08-2019
-D: Single male means unmarried, widower or divorcee. NCC whole-time lady officers: two eldest minor children, up to 730 days in service. SSC officers later given PC receive the difference up to 360 days.
-O: Minimum 5 days a spell is marked effective 14-08-2019 in the handbook.
+D: Single male means unmarried, widower or divorcee. A spell is 5 to 30 days, at most 2 spells and 60 days a year (minimum and the disability waiver from 14-08-2019). SSC officers later given PC receive the difference up to 360 days.
 
 === topic=RP-020 id=RB-C8-14 from=RP-020
 T: Child care leave: spells, limits and combinations

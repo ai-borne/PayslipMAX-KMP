@@ -106,7 +106,7 @@ T: Refunding government dues to PCDA(O)
 A: Remit by e-MRO or MRO payable to PCDA(O) Pune alone, quoting its RBI code and the reason.
 K: e-MRO through the SBI portal is preferred
 K: State on what account the amount is remitted
-O: The handbook gives the ten-digit RBI code 4021000009; confirm it before showing it.
+D: PCDA(O) Pune RBI code: 4021000009.
 
 === topic=RR-TD-03 from=SS-T222 chips=GUIDANCE
 T: Courses held and attended locally: TA and DA?
@@ -120,13 +120,9 @@ K: PCDA(O) pays the advance and final claims for TA and DA abroad
 K: PCDA New Delhi deals with air passage claims for ex-India travel
 C: Para 242 of the Defence Audit Code
 
-=== topic=RR-ORD-10 from=SS-T226,SS-T227,SS-T228
-T: Free sea passage once a year: Port Blair groups
-A: Chief Engineer, Infantry Battalion Group and NCC Station Commander officers get free sea passage yearly.
-K: To Chennai or Kolkata and back, for self and family
-K: Travel within the mainland follows normal rules
-C: MoD letters 79257/PCI/EIA1245S/D(Pay/Services) dt 17-12-1966; 67668/AG/PS3(a)/1316/D(Pay/Services) dt 13-03-1973; 9840/NCC/Coord(Officers)/956/B(GS-IV) dt 31-05-1967
-O: These are old letters and were not found publicly.
+--- skip SS-T226 owner review: 1960s-70s letters not verifiable
+--- skip SS-T227 owner review: 1960s-70s letters not verifiable
+--- skip SS-T228 owner review: 1960s-70s letters not verifiable
 
 === topic=RR-ORD-12 from=SS-T232 chips=GUIDANCE
 T: Married after taking LTC this year: spouse's LTC?
@@ -158,7 +154,6 @@ K: Part II order quoting the AG's Branch letter; effective from its date
 K: Head of Department's sanction, or MoD's, goes with the LTC claim
 W: Administrative authorities check warrants against your recorded home station
 C: AO 22/02; SAO 4/S/88; CGDA clarification under Rule 190(5)(ii), TR 2014
-O: Army orders and the CGDA clarification were not found publicly.
 
 === topic=RR-ORD-15 from=SS-T242,SS-T243,SS-T244,SS-T245,SS-T246
 T: Form 'D': families, chair car, joining time

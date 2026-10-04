@@ -7,14 +7,7 @@ K: If detailed for specific duty during it, DA is paid
 K: Such an attachment stays temporary, even beyond 180 days
 C: Note 2 under Rule 91, TR 2014
 
-=== topic=RR-TD-02 from=SS-T305
-T: Local travel on a course: do I need receipts?
-A: No receipts for Pay Levels 9 to 11. Give a self-certificate instead.
-K: Self-certificate states the period of travel and vehicle number
-K: Undertaking: no service transport or CHT was provided
-K: Undertaking: the travel was for bonafide military duty only
-C: MoD (DMA) letter 12030/TA/DA/7thCPC/Mov C 143/D(Mov)/21 dt 16-03-2021
-O: The 2021 letter was not found publicly.
+--- skip SS-T305 owner review: 2021 letter not found
 
 === topic=RR-TD-02 from=SS-T306 chips=GUIDANCE
 T: TA/DA to attend my Corps Raising Day?
@@ -62,7 +55,6 @@ T: DA on Rajdhani Express journeys
 A: Full DA for the journey period, even though the fare includes meals.
 K: The meal charge in the fare does not reduce your DA
 C: Rule 95 TR; MoD letter B/89621/PC-16/Q Mov C/3497/D(Mov) dt 17-08-1978
-O: Pre-7th-CPC letter; confirm it still applies to the lump-sum food charge.
 
 === topic=RR-TD-02 from=SS-T309
 T: Travel to receive a Sena or Vishisht Seva Medal
@@ -71,8 +63,7 @@ K: Serving: from your unit to the place of presentation and back
 K: Ex-servicemen and next of kin of posthumous awardees: from home
 K: One guest per recipient gets a single fare each way
 C: MoD letter 3(24)/85/D(Ceremonials) dt 01-05-1987
-D: Class is what the winner was entitled to in service, or lower if actually used. Road mileage is paid where there is no rail. Ex-servicemen officers get DA for up to three days at the investiture; next of kin of posthumous awardees get free board and lodging for three days. Incidentals of Rs 37 a day for up to 4 days may be taken instead of DA. The unit or nearest formation pays the advance.
-O: The Rs 37 incidentals figure is from 1987; check whether it was revised.
+D: Class is what the winner was entitled to in service, or lower if actually used. Road mileage is paid where there is no rail. Ex-servicemen officers get DA for up to three days at the investiture; next of kin of posthumous awardees get free board and lodging for three days. The 1987 letter allowed incidentals of Rs 37 a day for up to 4 days instead of DA (historic figure). The unit or nearest formation pays the advance.
 
 === topic=RR-MOD-01 from=SS-T310,SS-T157
 T: Train and air class by pay level
@@ -115,13 +106,7 @@ K: Free tent or improvised lodging does not cut DA
 C: Rule 268 and Rule 114(iv), TR 2014; ADGSM/Mov C letter 15449/TA/DA/Mov C dt 18-03-2016; CGDA letter AT/IV/4388/X dt 16-03-2017
 D: Applies equally to the joint training cycle with the Royal Bhutan Army. The move sanction must state the nature of duty and the status of boarding and lodging, including any improvised accommodation.
 
-=== topic=RR-TD-02 from=SS-T319 chips=GUIDANCE
-T: TA for appearing before a medical examination
-A: One entitled-class warrant by rail, or taxi or autorickshaw mileage by road.
-K: From your residence to the examination place and back
-K: Over 80 km by bus: one fare, or two for the return
-K: Steamer: one first-class single fare, without meals
-O: The handbook gives no rule number; likely Rule 153 to 155. Confirm.
+--- skip SS-T319 owner review: no authority found
 
 === topic=RR-TD-03 from=SS-T320
 T: Family visiting me on a long course
@@ -137,7 +122,6 @@ K: Free board and lodging provided: DA is reduced
 K: Course at two stations: 180 days of full DA at each
 K: Language Aptitude Tests in New Delhi: normal TD TA and DA
 C: Rule 123 and Rule 124, TR 2014
-O: FAQ says only conveyance is paid under Rule 124. Rule 123 separately gives DA for courses. TR followed; confirm.
 
 === topic=RR-TD-03 from=SS-T324,SS-T006
 T: Course at my own HQ station: TA and DA

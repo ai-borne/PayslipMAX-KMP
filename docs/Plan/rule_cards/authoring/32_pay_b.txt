@@ -37,8 +37,7 @@ K: Divyaang child (40% or more): double CEA, Rs 67,500 a year
 K: Hostel subsidy: actual lodging and boarding cost, or the ceiling if lower
 K: Both can be claimed together
 C: MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018; DoPT OM A-27012/02/2017-Estt(AL) dt 16-07-2018
-D: The base was Rs 2,250 and Rs 6,750 a month. These rise 25% each time DA rises 50%.
-O: The FAQ gives the 01-04-2024 figures. Confirm the order for the 25% rise.
+D: The base was Rs 2,250 and Rs 6,750 a month. The order says both rise 25% each time DA rises 50%; x1.25 from 01-01-2024 gives the figures above.
 
 === topic=RP-085 from=SS-P086,SS-P088,SS-P093
 T: Which children qualify for CEA?
@@ -110,7 +109,6 @@ T: Dependents for medical claims
 A: A dependent has income under Rs 9,000 plus DA a month. A spouse needs no dependency test.
 K: Income from all sources, including pension, counts
 K: Attach the dependent Part II order or ID card issued before treatment
-O: The Rs 9,000 limit is tied to the minimum family pension; check the current figure.
 
 === topic=RP-094 from=SS-P126,SS-P127
 T: Medical claim: time limit and condonation
@@ -126,7 +124,6 @@ K: Level 14 and above: Rs 15,750 plus DA; rates from 01-07-2017
 K: Level 14 and above with a car: choose car or allowance
 K: Not paid if Government transport is provided for commuting
 C: MoD letter 12630/Tpt.A/Mov C/246/D(Mov)/17 dt 15-09-2017; MoF OM 11-1/2016/E.IIB dt 10-04-2018
-O: Handbook gives no 25%-per-50%-DA escalator for transport allowance; confirm whether one applies after DA crossed 50%.
 D: Higher-rate cities: Delhi, Greater Mumbai, Kolkata, Chennai, Bengaluru, Hyderabad, Pune, Ahmedabad, Surat, Gandhinagar, Patna, Kochi, Kozhikode, Indore, Nagpur, Jaipur, Coimbatore, Ghaziabad, Kanpur, Lucknow.
 
 === topic=RP-049 from=SS-P051

@@ -16,7 +16,6 @@ K: 30%, 20% and 10% once DA crosses 50%
 K: Basic pay excludes NPA, MSP and special pay
 C: MoF OM 2/5/2017-E.II(B) dt 07-07-2017; MoD letter 3(1)/2015-D(Q&C) dt 11-10-2017
 D: X cities: Delhi, Greater Mumbai, Kolkata, Chennai, Hyderabad, Ahmedabad, Bengaluru, Pune. Unlisted towns are Z. Faridabad, Ghaziabad, Noida, Gurgaon keep Delhi rates; Shillong, Goa, Port Blair, Jalandhar Cantt and Mathura-Vrindavan are Y.
-O: The full Y-class city list (about 60 cities) is a data table, not a card; add it as reference data.
 
 === topic=RP-092 from=SS-P113
 T: What is an SPR?
@@ -46,7 +45,6 @@ A: Rule 85A allows a one-time free move to join you once Government married acco
 K: Only for Government-built married accommodation
 K: Baggage is limited to what was first moved to the SPR
 C: Rule 85A, TR 2014
-O: The FAQ answer reads 'No, such claims are admissible' and contradicts itself; TR 85A is followed. Confirm.
 
 === topic=RP-092 from=SS-P106
 T: HRA for a single officer with dependents
@@ -55,7 +53,6 @@ K: Brothers: until 25, or until earning Rs 9,000 a month
 K: Sisters: until marriage, 25, or earning Rs 9,000 a month
 K: Parents also count as dependents
 C: MoD letter 12647/LTC/Mov C/2970/D(Mov)/08 dt 17-12-2008; MoD letter 17(01)/2016-D(Pen/Pol) dt 29-10-2016
-O: The Rs 9,000 limit is tied to the minimum family pension; check the current figure.
 
 === topic=RP-092 from=SS-P107
 T: HRA during study leave
@@ -115,4 +112,3 @@ K: GREF, NCC and recruiting units have their own station lists
 K: If none is available: hired accommodation or rent reimbursement
 K: From a field area: family moves to SPR at cost
 C: MoD letter 18147/DGBR/E-2A(T&C)/D(Q&C) dt 20-10-1997; MoD letter 6731/SFA/DGNCC/ADM(A-2)/4727/D(Q&C) dt 22-10-1991
-O: The hard-station lists are data tables and are not reproduced here.

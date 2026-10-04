@@ -1,12 +1,12 @@
 # PayslipMax rulebook: reference (generated)
 
-Generated from [rulebook.json](rulebook.json) on 2026-10-04. **Do not edit by hand.** 411 cards (229 travel, 182 pay). Source entries covered: 550 of 474 (skipped with a reason: 1; uncovered: 0).
+Generated from [rulebook.json](rulebook.json) on 2026-10-04. **Do not edit by hand.** 402 cards (220 travel, 182 pay). Source entries covered: 533 of 474 (skipped with a reason: 17; uncovered: 0).
 
 Each card: one-line answer in bold, short bullets, the authority to cite, optional collapsed details. "Open point" lines are for reviewers and are never shown to users. Card text is written in our own words.
 
 ## Contents
 
-- **Travel**: 229 cards
+- **Travel**: 220 cards
 - **Pay and allowances**: 182 cards
 
 ## Travel
@@ -44,7 +44,7 @@ Cite: Note 1 under 'Duty', Rule 2, TR 2014
 
 Cite: Rule 2 and Note 2 below 'Duty', TR 2014
 
-##### Who may order a move / sanction TA (4)
+##### Who may order a move / sanction TA (3)
 
 #### RB-SS-T013 Who sanctions my TD move?
 
@@ -74,17 +74,6 @@ Cite: Rule 3, TR 2014
 - Actual mode and fare from duty point to station, with a certificate
 
 Cite: Rule 4(ii) and Appendix III, TR 2014
-
-#### RB-SS-T014 Filling in a railway warrant or Form 'D'
-
-**The issuing authority checks your entitlement, fills every column and quotes your CDA(O) account number.**
-
-- Newly commissioned officers quote their personal number
-- State that PCDA(O) adjusts the cost of the warrant
-
-Cite: AO 179/1978
-
-> Open point: The handbook text on using more than one warrant is cut off; read in full.
 
 ##### Countersignature, claim submission and time limits (6)
 
@@ -221,9 +210,7 @@ Cite: Rule 16 and Appendix XI, TR 2014
 
 Cite: Rule 17A, TR 2014
 
-<sub>Details: The FAQ gives the PCDA(O) MRO code as 4021000009.</sub>
-
-> Open point: Confirm the MRO code is current before showing it.
+<sub>Details: Check the current PCDA(O) MRO code on the PCDA(O) Pune website before paying.</sub>
 
 #### RB-SS-T034 Penal interest on a TA advance: when and how much?  `RATES`
 
@@ -274,14 +261,16 @@ Cite: Rule 17 TR; MoD letters 1137/D(Pay/Services) dt 15-02-1963 and 84048/AG/PS
 
 #### RB-SS-T039 LTC advance: how early, and what conditions?
 
-**Draw it up to 125 days before the move. Show the outward tickets within 10 days.**
+**For rail journeys, draw it up to 125 days before the move. Show the outward tickets within 10 days.**
 
 - Move cancelled: refund the advance at once, in one sum
 - Outward journey not started within 120 days: refund forthwith
 
-Cite: Rule 17(i)(B)(i), TR 2014; MoD letter 12647/LTC/Mov C/62/D(Mov)/2016 dt 19-07-2016
+Cite: Rule 17(i)(B)(i), TR 2014; MoD letter 12647/LTC/Mov C/62/D(Mov)/2016 dt 19-07-2016; DoPT OM 31011/8/2015-Estt(A.IV) dt 13-05-2016
 
-> Open point: CONFLICT. TR 2014 text says 95 days before the journey; the 2016 MoD letter (per TA handbook) extends it to 125 days. Treating the later letter as the amendment. Verify the letter text.
+<sub>Details: TR 2014 originally said 95 days. The 2016 MoD letter raised it to 125 days from 01-04-2015, to suit rail booking. DoPT keeps 65 days for other modes of travel.</sub>
+
+> Open point: CONFLICT (resolved for rail): TR 2014 says 95 days; the later MoD letter says 125. Advance limit for Army air or road LTC not seen; DoPT civil limit is 65 days.
 
 #### RB-SS-T041 Adjusting an advance: when, and what if I do not
 
@@ -331,19 +320,7 @@ Cite: Rule 24, Rule 35 and Rule 47(iii), TR 2014
 
 Cite: Rule 39 and Rule 40, TR 2014
 
-##### Ferry/toll charges, reservation expenses, cancellation refunds (4)
-
-#### RB-SS-T004 Unused warrant tickets: how do I get a refund?
-
-**Deposit them with the Station Master, get a certificate, and apply. Railways refund in full for official reasons.**
-
-- Private reasons: Railways keep 10%, which is debited to your IRLA
-- Unit authorities pursue the refund; PCDA(O) watches recovery
-- Apply within six months or the loss is debited to your IRLA
-
-Cite: Appx E to SAO 07/S/1984; CGDA letter 4401/AT-P dt 22-07-1969
-
-> Open point: Army orders and a 1969 CGDA letter; none found publicly.
+##### Ferry/toll charges, reservation expenses, cancellation refunds (3)
 
 #### RB-SS-T052 Cancelling an official ticket: are charges refunded?
 
@@ -548,8 +525,6 @@ Cite: Rule 67(a)(i)(5), TR 2014; MoD letter 12630/TA/DA/Mov C/3003/D(Mov)/2006 d
 
 Cite: Rule 67(e), TR 2014
 
-> Open point: The FAQ cites 67(v); the TR text shows the car scale under clause (e). Confirm the numbering before publishing.
-
 #### RB-SS-T258 Leave-cum-posting journey: one claim or two?
 
 **Two claims: LTC for the leg to your home town, permanent-move TA for the leg to the new station.**
@@ -560,8 +535,6 @@ Cite: Rule 67(e), TR 2014
 Cite: Rule 177A and Rule 67, TR 2014
 
 <sub>Details: Posting via a leave station: you get TA by the direct route old to new, plus LTC for the two legs through the leave station. Family gets LTC only.</sub>
-
-> Open point: The handbook paragraph continues with the case where one LTC leg is unused (TA under Rule 85); read it in full before extending.
 
 #### RB-SS-T259 Both spouses serving: baggage and car on transfer?
 
@@ -582,8 +555,6 @@ Cite: Rule 82(a) and (b), TR 2014
 - CTG: one-third, once you actually change residence
 
 Cite: Rule 81, TR 2014; MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017
-
-> Open point: TA handbook says one-third of pay in the pay level; the 2017 letter and FAQ say one-third of the CTG (80% of basic). The letter was followed; confirm.
 
 #### RB-SS-T264 Posted while on leave: can I return to my old station?
 
@@ -771,7 +742,7 @@ Cite: Rule 178 and Rule 182, TR 2014; MoD letter B/83878/DGAFMS/MNS/2204/D(Mov) 
 
 Cite: Note 2 under Rule 91, TR 2014
 
-##### Daily allowance on TD (halts, hotel, food, rates) (13)
+##### Daily allowance on TD (halts, hotel, food, rates) (11)
 
 #### RB-SS-T184 Missed connection, night in a transit city: reimbursed?  `GUIDANCE`
 
@@ -780,18 +751,6 @@ Cite: Note 2 under Rule 91, TR 2014
 - Applies on temporary duty when no connecting flight is available that day
 
 Cite: none (guidance)
-
-#### RB-SS-T305 Local travel on a course: do I need receipts?
-
-**No receipts for Pay Levels 9 to 11. Give a self-certificate instead.**
-
-- Self-certificate states the period of travel and vehicle number
-- Undertaking: no service transport or CHT was provided
-- Undertaking: the travel was for bonafide military duty only
-
-Cite: MoD (DMA) letter 12030/TA/DA/7thCPC/Mov C 143/D(Mov)/21 dt 16-03-2021
-
-> Open point: The 2021 letter was not found publicly.
 
 #### RB-SS-T306 TA/DA to attend my Corps Raising Day?  `GUIDANCE`
 
@@ -855,8 +814,6 @@ Cite: Rule 114 and Rule 119, TR 2014; MoD UO B/68529/Q/RRC/1373 D(Mov) dt 30-11-
 
 Cite: Rule 95 TR; MoD letter B/89621/PC-16/Q Mov C/3497/D(Mov) dt 17-08-1978
 
-> Open point: Pre-7th-CPC letter; confirm it still applies to the lump-sum food charge.
-
 #### RB-SS-T309 Travel to receive a Sena or Vishisht Seva Medal
 
 **Serving recipients are treated as on temporary duty. Ex-servicemen and next of kin get TA or a warrant.**
@@ -867,9 +824,7 @@ Cite: Rule 95 TR; MoD letter B/89621/PC-16/Q Mov C/3497/D(Mov) dt 17-08-1978
 
 Cite: MoD letter 3(24)/85/D(Ceremonials) dt 01-05-1987
 
-<sub>Details: Class is what the winner was entitled to in service, or lower if actually used. Road mileage is paid where there is no rail. Ex-servicemen officers get DA for up to three days at the investiture; next of kin of posthumous awardees get free board and lodging for three days. Incidentals of Rs 37 a day for up to 4 days may be taken instead of DA. The unit or nearest formation pays the advance.</sub>
-
-> Open point: The Rs 37 incidentals figure is from 1987; check whether it was revised.
+<sub>Details: Class is what the winner was entitled to in service, or lower if actually used. Road mileage is paid where there is no rail. Ex-servicemen officers get DA for up to three days at the investiture; next of kin of posthumous awardees get free board and lodging for three days. The 1987 letter allowed incidentals of Rs 37 a day for up to 4 days instead of DA (historic figure). The unit or nearest formation pays the advance.</sub>
 
 #### RB-SS-T317 Which pay counts for my TA/DA level?  `AMENDED`
 
@@ -892,18 +847,6 @@ Cite: Rule 268 and Rule 114(iv), TR 2014; ADGSM/Mov C letter 15449/TA/DA/Mov C d
 
 <sub>Details: Applies equally to the joint training cycle with the Royal Bhutan Army. The move sanction must state the nature of duty and the status of boarding and lodging, including any improvised accommodation.</sub>
 
-#### RB-SS-T319 TA for appearing before a medical examination  `GUIDANCE`
-
-**One entitled-class warrant by rail, or taxi or autorickshaw mileage by road.**
-
-- From your residence to the examination place and back
-- Over 80 km by bus: one fare, or two for the return
-- Steamer: one first-class single fare, without meals
-
-Cite: none (guidance)
-
-> Open point: The handbook gives no rule number; likely Rule 153 to 155. Confirm.
-
 ##### Courses and training: TA/DA and conveyance (5)
 
 #### RB-SS-T320 Family visiting me on a long course
@@ -924,8 +867,6 @@ Cite: Rule 124(iv), TR 2014
 - Language Aptitude Tests in New Delhi: normal TD TA and DA
 
 Cite: Rule 123 and Rule 124, TR 2014
-
-> Open point: FAQ says only conveyance is paid under Rule 124. Rule 123 separately gives DA for courses. TR followed; confirm.
 
 #### RB-SS-T324 Course at my own HQ station: TA and DA
 
@@ -1138,7 +1079,7 @@ Cite: Rule 161 and Rule 162, TR 2014
 
 ### Leave Travel Concession
 
-##### Home Town LTC (Rule 177A) (10)
+##### Home Town LTC (Rule 177A) (9)
 
 #### RB-SS-T068 Home Town LTC: how often can I take it?
 
@@ -1151,8 +1092,6 @@ Cite: Rule 161 and Rule 162, TR 2014
 Cite: Rule 177A(i)(a), TR 2014
 
 <sub>Details: Field and CI postings have extra entitlements under Rule 177C; see the field-area LTC card.</sub>
-
-> Open point: Confirm 177C can be taken with 177B in the same year (FAQ says yes) before the field-area card is written.
 
 #### RB-SS-T088 Home Town LTC: what do I get?
 
@@ -1185,9 +1124,6 @@ Cite: Rule 177A and Rule 177B(i)(a), TR 2014
 - *Watch out:* Dependent orders issued after Sep 2023 are verified in the system only
 
 Cite: Rule 177A, TR 2014
-
-> Open point: TA handbook 2023 says parents from home town to duty station are not covered; the newer FAQ says they are. FAQ followed. Confirm.
-> Open point: The old claim-form certificate gives a dependent income limit of Rs 9,000 a month; check the current limit before stating one.
 
 #### RB-SS-T073 Children studying away: do they get LTC?
 
@@ -1227,19 +1163,6 @@ Cite: Rule 177A(i)(d), TR 2014
 - Form 'D' cost for that journey is recovered the same way
 
 Cite: Rule 177A, TR 2014
-
-#### RB-SS-T082 LTC for recalled reserve, NCC and Territorial Army officers
-
-**They get the same LTC as regular officers, with conditions for each group.**
-
-- Recalled reserve: counted from recall date, if no LTC taken that year
-- NCC officers (SSC, whole-time, permanent): as regular officers
-- Territorial Army: after one year of continuous embodied service
-- *Watch out:* Whole-time and NCC-commission officers need six months' service left
-
-Cite: AO 704/1965; AI 201/1954 para 11(c); TA Regulations 1948 para 195-B; AO 549/1967; MoD letter 5431/DGNCC/PC/TCS/MS(B)/1130/A/D(GS-VI) dt 23-05-1980
-
-> Open point: These are Army orders and MoD letters of 1962 to 1967; none was found publicly.
 
 #### RB-SS-T098 Both of us serve: how do we claim LTC?
 
@@ -1281,8 +1204,6 @@ Cite: Rule 177B(i)(d), TR 2014
 - *Watch out:* Rail LTC differs: linked warrants are allowed for breaks (177B)
 
 Cite: DoPT OM 31011/12/2022-Estt.A-IV dt 29-08-2022; Rule 177B(iii) TR
-
-> Open point: The DoPT OM text confirms one ticket per leg only. The 'no en-route stay' position comes from the FAQ; find its source.
 
 #### RB-SS-T124 Family lives elsewhere: LTC from where they live?
 
@@ -1423,18 +1344,18 @@ Cite: Rule 177B(i)(h) and Rule 177A, TR 2014
 
 #### RB-SS-T070 Field or CI posting: what extra LTC do I get?
 
-**An extra railway warrant, two home trips a year. Or use 177C to spend leave where your family lives.**
+**One extra LTC a year under 177C, to where your family lives, on top of 177A or 177B.**
 
-- Field, high-altitude, CI or CT areas: one extra warrant a year
-- 177C replaces 177A/B for one leave spell, to your family's government accommodation
-- Taking 177C lapses your wife's and children's 177A/B that year
+- 177C: officer only, to the family at home town or SPR
+- 177C can be taken in the same year as 177A or 177B
+- Family visiting your duty station: your own 177A/B lapses that year
 - *Watch out:* Family with you at duty station: normal 177A or 177B only
 
 Cite: Rule 177A(i)(b) Note and Rule 177C, TR 2014; MoD letter 5(1)/2007/D(Mov)(I) dt 20-08-2007
 
 <sub>Details: The unit commander may allow a warrant to another station where your family lives, at no extra cost to the state.</sub>
 
-> Open point: FAQ says 177C can be taken with 177B in the same year and calls the second trip an additional 177C. TR text says 177C replaces 177A/B and the extra trip is a separate additional warrant. TR followed; confirm.
+> Open point: CONFLICT. Owner decision (G2): follow the PCDA(O) FAQ (Dec 2025), which allows 177C with 177B in one year. TR 2014 Rule 177C(a) reads as an option in lieu of 177A/B that lapses the wife and children 177A/B for the year. Authority for the FAQ position not seen.
 
 #### RB-SS-T127 My SPR order was rejected: can I still take 177C LTC?
 
@@ -1457,7 +1378,7 @@ Cite: Rule 177C, TR 2014
 
 Cite: Rule 177D, TR 2014
 
-##### LTC general: one-per-calendar-year, mode/class, forfeiture, road conveyance on leave (20)
+##### LTC general: one-per-calendar-year, mode/class, forfeiture, road conveyance on leave (19)
 
 #### RB-SS-T079 Sick leave on a medical board's advice: LTC?
 
@@ -1526,8 +1447,6 @@ Cite: Rule 177A(i)(a) and (c), TR 2014; MoD letter B/33922/AG/PS-2(b)/3080/D(AG-
 
 Cite: Rule 177A, 177B and 179 TR; CGDA letter AT/IV/4455 dt 23-10-1986
 
-> Open point: The CGDA letter was not found publicly.
-
 #### RB-SS-T090 Breaking my LTC journey midway: what do I get?
 
 **On Home Town LTC you get one warrant. If you break the journey, claim the direct-journey fare.**
@@ -1585,27 +1504,15 @@ Cite: Rule 176(e)(i) and (ii), TR 2014; CGDA letter AT/IV/4458/XIV/6th CPC dt 04
 
 Cite: Rule 176(e)(iii), TR 2014
 
-#### RB-SS-T132 Can I claim cancellation charges of an LTC air ticket?  `GUIDANCE`
-
-**No. Air ticket cancellation charges are not reimbursed on LTC.**
-
-- This differs from tour duty, where unavoidable cancellations may be refunded
-
-Cite: none (guidance)
-
-> Open point: The FAQ gives no authority; the TD contrast is from the cancellation FAQ. Find the source.
-
 #### RB-SS-T137 Home leave fare for officers posted abroad
 
 **One set of home-leave fares during an overseas posting, and another at each transfer between stations abroad.**
 
 - The officer and entitled family can travel to India and back
 - Available after one full year at the post abroad
-- The one-year limit can be relaxed by the authority
+- The one-year limit can be relaxed by up to three months
 
 Cite: Rule 272, TR 2014
-
-> Open point: Rule 272 is inferred from the TR heading; the handbook gives no authority. Overseas posting, niche.
 
 #### RB-SS-T138 LTC for officers serving in Bhutan
 
@@ -1756,8 +1663,6 @@ Cite: MoD letter 12266/Q(Mov)C/2275/D(Mov) dt 24-06-1980
 
 Cite: Rule 201 and Rule 206, TR 2014
 
-> Open point: TR 206 says CTG, baggage and car are not admissible on release from re-employment. The FAQ's position on the first posting is followed; confirm.
-
 ##### TA on release from re-employment (1)
 
 #### RB-SS-T299 Release from re-employment: what travel do I get?
@@ -1839,10 +1744,9 @@ Cite: Rule 230A, TR 2014
 **Not where you have been given government transport.**
 
 - Rates now follow the 7th-CPC pay level, not the TR grade pay
+- Not paid for a full calendar month of leave, training or tour
 
 Cite: Rule 230B, TR 2014
-
-> Open point: The TR 230B text is cut off after the first condition; read it in full. Rates are on the pay side.
 
 ### Orders and letters (post-TR)
 
@@ -1884,8 +1788,6 @@ Cite: DoE OM 19024/03/2021-E.IV dt 31-12-2021
 - Excess baggage and food bought with the ticket were disallowed in audit
 
 Cite: DoE OM 19024/03/2021-E.IV dt 31-12-2021; DoE OM 19024/1/2012-E.IV dt 05-09-2014
-
-> Open point: 'Excess baggage and food' is PCDA(O)'s application of the rule, not text in the OM; confirm.
 
 #### RB-SS-T170 Ticket booked from an unauthorised agent in unavoidable circumstances
 
@@ -1968,9 +1870,7 @@ Cite: none (guidance)
 
 Cite: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017; Rule 114 TR · personal: level:food_rate
 
-<sub>Details: Base daily amount by level, before the DA-linked 25% rise: Level 14+ Rs 1,200; 12 to 13B Rs 1,000; 9 to 11 Rs 900; 5A to 8 Rs 800; 5 and below Rs 500.</sub>
-
-> Open point: Effective date and order for the 25% DA-linked rise (FAQ shows 1,125/1,250/1,500; letter base 900/1,000/1,200).
+<sub>Details: Base daily amount by level before the DA-linked 25% rise: Level 14+ Rs 1,200; 12 to 13B Rs 1,000; 9 to 11 Rs 900. From 01-01-2024 (DA at 50%) it is base x 1.25 plus taxes: up to Level 11 Rs 1,125; Level 12 to 13B Rs 1,250; Level 14 and above Rs 1,500.</sub>
 
 ##### Hotel / guest-room on TD: ceilings, GST, non-availability certificate (2)
 
@@ -1996,8 +1896,6 @@ Cite: DoE OM 19030/2/2017-E.IV dt 29-06-2018
 Cite: IHQ (Army) ADG PS, AG's Branch, SAPCS Advisory 03/2022; MoD letter 12630/TA/Mov C/198/D(Mov)/2018 dt 06-12-2018
 
 <sub>Details: Local journeys over 8 km between TD points more than 50 km apart in one city are made as civilians do; a taxi or scooter needs prior permission. Free board and lodging no longer gives 25% DA, but food bills still fall by the ration cost under Rule 114(xii).</sub>
-
-> Open point: Handbook prints the 2018 MoD letter as 12650 in one place and 12630 elsewhere; confirm the number.
 
 ##### Own car on TD / RMA: sanction, least-of rule, warrant cost (2)
 
@@ -2041,8 +1939,6 @@ Cite: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017 · personal: payslip_
 
 <sub>Details: The same percentage applies to field and peace postings. If both spouses serve, separate rules apply.</sub>
 
-> Open point: The one-third local-move rule needs a local-move example before drafting the spouse variants.
-
 #### RB-SS-T260 Both spouses serving: how is CTG split?
 
 **Transfers within 60 days of each other: one CTG only. After that, the later spouse gets 50%.**
@@ -2075,8 +1971,6 @@ Cite: MoD letter 12630/TA/DA/Mov C/13/D(Mov)/18 dt 18-04-2018; Rule 67(d)(vii) T
 Cite: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017; Rule 61A, TR 2014
 
 <sub>Details: Rates follow the HRA city class (X, Y, Z). Higher X and Y rates apply to moves between X or Y and Z cities. Rule 61A Note 3 also raises rates 25% whenever DA rises 50%.</sub>
-
-> Open point: The FAQ shows Rs 62.5/km (base x 1.25). Confirm the escalation order and date before stating a rupee figure.
 
 #### RB-SS-T155 Single officer, peace to peace: baggage allowed?
 
@@ -2187,8 +2081,6 @@ Cite: Documentation Procedure for Publication of Part II Orders (Officers) 2014
 
 Cite: MoF DoE OM 19030/1/2017-E.IV dt 13-03-2018 and 15-06-2021; GFR 2017 Rule 290; DoPT OM 31011/3/2015-Estt(A-IV) dt 01-04-2015
 
-> Open point: The FAQ's '30 days if an advance is drawn' is the LTC rule, not a TD rule; the card states it that way.
-
 #### RB-SS-T211 A TA claim pending for over a year  `GUIDANCE`
 
 **The Head of Department investigates. If genuine with valid reasons for delay, it is paid after usual checks.**
@@ -2256,7 +2148,7 @@ Cite: none (guidance)
 
 Cite: none (guidance)
 
-> Open point: The handbook gives the ten-digit RBI code 4021000009; confirm it before showing it.
+<sub>Details: PCDA(O) Pune RBI code: 4021000009.</sub>
 
 #### RB-SS-T223 Official travel abroad: tickets and claims
 
@@ -2267,20 +2159,22 @@ Cite: none (guidance)
 
 Cite: Para 242 of the Defence Audit Code
 
-##### LTC to special regions (NE, J&K, A&N, Lakshadweep, Ladakh) (3)
+##### LTC to special regions (NE, J&K, A&N, Lakshadweep, Ladakh) (2)
 
 #### RB-SS-T062 LTC to the North East, J&K or Andaman instead of home town
 
-**A time-limited scheme lets officers convert Home Town LTC to air travel there. Check it is still running.**
+**One Home Town LTC can be converted to air travel there. The scheme now runs to 25-09-2028.**
 
 - Travel by private airlines in your entitled class, from your HQ
 - Not allowed if your home town and HQ are the same
 - Works against 177A or 177B; fare capped at the LTC-80 limit
 - *Watch out:* It runs in two-year periods, extended from time to time
 
-Cite: Rule 177A and 177B TR; DoPT LTC air-travel relaxation orders
+Cite: Rule 177A and 177B TR; DoPT OM 31011/15/2022-Estt.A-IV dt 17-09-2024 and 09-09-2026
 
-> Open point: FAQ says the concession ran up to 25-09-2025. Check whether it was extended and add an 'as of' date before publishing.
+<sub>Details: One Home Town LTC in a four-year block may be converted. DoPT extended the scheme from 26-09-2024 to 25-09-2026, then to 25-09-2028.</sub>
+
+> Open point: DoPT OMs read (09-09-2026 from a mirror copy). No MoD adoption letter for Army officers found; owner had 25-09-2025, now superseded.
 
 #### RB-SS-T207 LTC to Lakshadweep: how to travel
 
@@ -2293,17 +2187,6 @@ Cite: Rule 177A and 177B TR; DoPT LTC air-travel relaxation orders
 Cite: MoD letter 12647/LTC/SPORTS/Mov C/22/D(Mov)/2019 dt 22-03-2019; DoPT OM 31011/10/2017-Estt.A-IV dt 11-10-2018; CGDA letter AT/IV/4462/OA/DSD/AF dt 13-09-2017
 
 <sub>Details: SPORTS must certify the fare components and that you and your family actually travelled. Applies from 11-10-2018.</sub>
-
-#### RB-SS-T226 Free sea passage once a year: Port Blair groups
-
-**Chief Engineer, Infantry Battalion Group and NCC Station Commander officers get free sea passage yearly.**
-
-- To Chennai or Kolkata and back, for self and family
-- Travel within the mainland follows normal rules
-
-Cite: MoD letters 79257/PCI/EIA1245S/D(Pay/Services) dt 17-12-1966; 67668/AG/PS3(a)/1316/D(Pay/Services) dt 13-03-1973; 9840/NCC/Coord(Officers)/956/B(GS-IV) dt 31-05-1967
-
-> Open point: These are old letters and were not found publicly.
 
 ##### Travel entitlements of family: spouse, parents, dependents, MNS husband (4)
 
@@ -2351,8 +2234,6 @@ Cite: AO 531/1964
 
 Cite: AO 22/02; SAO 4/S/88; CGDA clarification under Rule 190(5)(ii), TR 2014
 
-> Open point: Army orders and the CGDA clarification were not found publicly.
-
 ##### Form 'D' railway concession for leave journeys and joining time (1)
 
 #### RB-SS-T242 Form 'D': families, chair car, joining time
@@ -2365,7 +2246,7 @@ Cite: AO 22/02; SAO 4/S/88; CGDA clarification under Rule 190(5)(ii), TR 2014
 
 Cite: MoD letters PT/1203/NHQ/4851/D(Mov) dt 12-09-1974 and G/05492/Q Mov C/3853 D(Mov) dt 25-09-1979; CGDA letters 4007/AT-P and AT/IV/4425/1
 
-##### Special-posting LTC and leave provisions (Andaman & Nicobar, NCC, island stations) (5)
+##### Special-posting LTC and leave provisions (Andaman & Nicobar, NCC, island stations) (4)
 
 #### RB-SS-T058 LTC for officers posted in Andaman and Nicobar
 
@@ -2377,20 +2258,7 @@ Cite: MoD letters PT/1203/NHQ/4851/D(Mov) dt 12-09-1974 and G/05492/Q Mov C/3853
 
 Cite: Rule 177C(c), TR 2014; MoD letter 5(3)/07/D(Mov)/2010 dt 28-04-2010
 
-> Open point: FAQ cites a 1973 MoD letter for free sea passage once a year to Kolkata or Chennai. TR text is followed; the 1973 letter was not found.
-
-#### RB-SS-T096 Assam Courier flights on leave (Eastern sector)
-
-**Field-area officers in the Eastern sector may use spare Delhi to Jorhat courier space on leave.**
-
-- Only officers with field service concessions; static units without them are excluded
-- Leave begins and ends at Delhi
-- In place of LTC airlift; your LTC beyond Delhi stays
-- *Watch out:* Rail cost from Delhi must not exceed that from your duty station
-
-Cite: MoD letter A/32284/Q Mov C/827-S/D(Mov) dt 04-05-1968; AHQ letter 362498/Q Mov Air dt 10-02-1975
-
-> Open point: These are old letters and were not found publicly; confirm the facility is still in use.
+<sub>Details: Free sea passage once a year to Kolkata or Chennai is also allowed to officers posted in the islands (older MoD letter, not seen online).</sub>
 
 #### RB-SS-T213 Field area posting: where does my family live?
 
@@ -2417,18 +2285,6 @@ Cite: MoD letter A/14209/AG/PS2(B)/188-S-D(AG-ii) dt 16-02-1972, as amended
 - Voyage time and enforced halts count as duty
 
 Cite: MoD letter C/01632/Mov C/4295/D(Mov) dt 04-08-1977
-
-##### Rates and entitlements by pay level (7th CPC pay matrix) (1)
-
-#### RB-SS-T241 Territorial Army Allowance  `RATES`
-
-**Camp Allowance and TA Bounty are merged into one allowance of Rs 2,000 a year for officers.**
-
-- Rises 25% each time DA rises 50%
-- Full amount for completing full training
-- 75% for completing more than 80% of training
-
-Cite: MoD letter 20(1)/2017/D(GS-III) dt 21-09-2017
 
 ## Pay and allowances
 
@@ -2564,9 +2420,7 @@ Cite: Rule 41, Pay and Allowances Regulations for the Army; CGDA letter 6995/AFL
 - *Attach:* Option form signed by you and countersigned
 - *Watch out:* Not available for deputation, direct recruitment or ad-hoc promotion
 
-Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
-
-> Open point: Time limit is from the FAQ; handbook text gives no number. Primary rule not located.
+Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion; MoD OM 1(20)/2017/D(Pay/Services) dt 26-02-2019
 
 #### RB-SS-P008 Can I change or late-file my promotion pay fixation option?
 
@@ -2598,8 +2452,6 @@ Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
 
 Cite: Army Pay Rules 2017 (7th CPC); SRO 12(E) dt 03-05-2017
 
-> Open point: FAQ and handbook agree on 6 months then Jan or Jul. Confirm exact SRO clause.
-
 #### RB-SS-P011 What document goes with the OPTFXDNI Part II order?
 
 **The option form signed by you and countersigned by the competent authority.**
@@ -2620,11 +2472,11 @@ Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
 - Starts from the 1st of the month after the event
 - Government sanction needed in each case
 
-Cite: MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017
+Cite: MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017 and 24-08-2018, corrigendum dt 17-09-2021
 
 <sub>Details: Referees and umpires accepted by an international federation can get two increments per event, within the same five-increment cap.</sub>
 
-> Open point: FAQ cites DoPT OM 03-10-2013 and MoD letter 1272 dt 19-08-1996 too. Conflict: HANDOFF says MoD 30(13)/2007 dt 24-08-2018; handbook says 30-08-2017. Verify the date.
+> Open point: FAQ also cites DoPT OM 03-10-2013 and MoD letter 1272 dt 19-08-1996; not read in full.
 
 #### RB-SS-P015 Do sports increments count for pay fixation or allowances?
 
@@ -2926,9 +2778,7 @@ Cite: MoD letter B/33922/AG/PS-2(b)/943/D(AG) dt 16-03-2009; Rule 56, Leave Rule
 
 Cite: Rule 56A, Leave Rules for the Services Vol I (Army); MoD letters B/33922/AG/PS-2(b)/687/D(AG) dt 04-03-2014 and /1447/D(AG) dt 14-08-2019
 
-<sub>Details: Single male means unmarried, widower or divorcee. NCC whole-time lady officers: two eldest minor children, up to 730 days in service. SSC officers later given PC receive the difference up to 360 days.</sub>
-
-> Open point: Minimum 5 days a spell is marked effective 14-08-2019 in the handbook.
+<sub>Details: Single male means unmarried, widower or divorcee. A spell is 5 to 30 days, at most 2 spells and 60 days a year (minimum and the disability waiver from 14-08-2019). SSC officers later given PC receive the difference up to 360 days.</sub>
 
 #### RB-C8-14 Child care leave: spells, limits and combinations
 
@@ -3262,8 +3112,6 @@ Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; MoD letter 1(29)/20
 
 Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; SRO 21(E) dt 14-07-2017 for MNS
 
-> Open point: Handbook rule 6(2) text prints both 15,500 and 10,800 for Army; the Maj Gen fixation example uses 15,500, which fits Army. Verify in the SRO.
-
 #### RB-C13-06 Pay for gentlemen and lady cadets, and for those commissioned from the ranks
 
 **Cadets get a fixed stipend of Rs 56,100 a month. On commissioning, pay starts at the first cell of Level 10.**
@@ -3394,10 +3242,9 @@ Cite: CGDA letter PC-II/1098/AT-P dt 28-12-1977; MoD letter 1(16)/2017/D(Pay/Ser
 
 - MoD orders on the incentive were still awaited in 2023
 - Do not claim Qualification Grant for new courses
+- CGDA stopped Qualification Grant payments in September 2022
 
 Cite: MoF DoE resolution dt 06-07-2017
-
-> Open point: Handbook says MoD orders for Higher Qualification Incentive are awaited; confirm current status.
 
 ##### Technical Allowance (5)
 
@@ -3407,11 +3254,13 @@ Cite: MoF DoE resolution dt 06-07-2017
 
 - Tier I base Rs 3,000 a month from 01-04-2018
 - Tier II base Rs 4,500 a month from 01-04-2018
-- Rates rise 25% each time DA rises by 50%
+- Tier II needs substantive Captain rank and a Tier II course
 
 Cite: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018; MoD letter 15(49)/2017/Tech Allce/D(GS-II) dt 25-06-2018
 
-> Open point: CONFLICT. Handbook says Tier II needs substantive Captain rank; FAQ says Tier II needs detailment by Service HQ. Both may apply. Verify with letter of 25-06-2018.
+<sub>Details: Both limbs apply. Tier II needs substantive Captain rank and a prescribed Tier II course, with Service HQ detailment. Not for AMC, ADC, AEC, MNS or non-technical officers.</sub>
+
+> Open point: Handbook text prints no DA escalation clause for Technical Allowance; the earlier "rises 25%" bullet was removed. Check the 18-09-2017 letter.
 
 #### RB-SS-P029 Who is not entitled to Technical Allowance?
 
@@ -3465,8 +3314,6 @@ Cite: MoD letter 15(49)/2017/Tech Allce/D(GS-II) dt 25-06-2018; CGDA letter ARMY
 - Not for Brigadier and above (AMC) or Major General and above (ADC)
 
 Cite: Rules 88 to 91, Pay and Allowances Regulations for the Army; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017
-
-> Open point: Handbook quotes MoD letter 5019/DGAFMS/DG-1(b)1729 S(Med) dt 09-08-1984 for the AMC rank bar. FAQ P032 heading says ADC but text says AMC; handbook gives ADC bar for Maj Gen.
 
 #### RB-SS-P034 When is Specialist Allowance not payable?
 
@@ -3637,8 +3484,6 @@ Cite: MoD letter 12630/Tpt.A/Mov C/246/D(Mov)/17 dt 15-09-2017; MoF OM 11-1/2016
 
 <sub>Details: Higher-rate cities: Delhi, Greater Mumbai, Kolkata, Chennai, Bengaluru, Hyderabad, Pune, Ahmedabad, Surat, Gandhinagar, Patna, Kochi, Kozhikode, Indore, Nagpur, Jaipur, Coimbatore, Ghaziabad, Kanpur, Lucknow.</sub>
 
-> Open point: Handbook gives no 25%-per-50%-DA escalator for transport allowance; confirm whether one applies after DA crossed 50%.
-
 #### RB-SS-P051 Transport allowance at double rate: how to claim
 
 **Visually impaired, orthopaedically handicapped, deaf, hearing impaired and spinal-deformity officers get double.**
@@ -3732,9 +3577,9 @@ Cite: Rule 174(B), Defence Service Regulations, Pay and Allowances (Officers)
 
 Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
 
-<sub>Details: Rates in the handbook: 01-01-2016 nil; 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%. The 2020 to mid-2021 rates were frozen and applied only to officers who retired in that period.</sub>
+<sub>Details: Rates from each date: 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%; 01-01-2025 55%; 01-07-2025 58%; 01-01-2026 60%. Rates of 2020 to mid-2021 were frozen.</sub>
 
-> Open point: DA after 01-07-2024 (55%, 58%, 60% reported) is not yet confirmed from MoD letters. The 25% step applies from 01-01-2024 only to allowances whose original order carries an escalation clause.
+> Open point: 53%, 55% and 58% confirmed from MoD DMA letters (1(6)/2021-D(Pay/Services)-Pt-I; 58% letter dt 09-10-2025, MoF OM 06-10-2025). 60% from 01-01-2026 is from MoF DoE OM dt 22-04-2026 (read via a government circular); the MoD letter for 60% was not seen. Next revision (01-07-2026) not yet issued.
 
 ##### Kit Maintenance Allowance (1)
 
@@ -3897,8 +3742,6 @@ Cite: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018; MoD le
 
 Cite: MoD letter 1(2)/91/D(Pay/Services) dt 01-05-1991 as amended; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017
 
-> Open point: Annual leave bar is from the FAQ; the handbook lists only sick, casual and TD.
-
 #### RB-SS-P082 Siachen Allowance with other allowances
 
 **Payable with HAFA and with SCCIA. Not payable with High Altitude Allowance or Flying Allowance.**
@@ -3993,8 +3836,6 @@ Cite: Cabinet Secretariat Order 1/27/2016-EA.I-1332 dt 11-07-2017; NTRO order V(
 
 Cite: Cabinet Secretariat Order 14(9)/89-EA.II-503 dt 03-06-2002; letter F.No.14(3)/2009-EA.II-376 dt 20-07-2010
 
-> Open point: Handbook says revised rates under the 7th CPC are awaited; re-verify.
-
 ##### Hard Area Allowance (1)
 
 #### RB-RP-068 Hard Area Allowance in Nicobar, Minicoy and Lakshadweep
@@ -4064,12 +3905,14 @@ Cite: MoD secret letter SFC/TS 2005/3/Ops/(PC-II) dt 28-12-2017
 **Rs 20,000 a year for Army officers, Rs 15,000 for MNS, credited once a year in July from 01-07-2017.**
 
 - Covers only the basic uniform, not special clothing
-- Rises 25% each time DA rises by 50%
+- From 01-01-2024, after the 25% step: Rs 25,000 (MNS Rs 18,750)
 - Replaces outfit and kit maintenance allowances
 
 Cite: MoD letter PC-1(16)/2017/D(Pay/Services) dt 16-11-2017
 
 <sub>Details: Recovery if you leave in the year: superannuation July-Sept 60%, Oct-Dec 40%, Jan-Mar 25%, Apr-Jun nil. Voluntary retirement or resignation: 80%, 55%, 33%, nil. No recovery on death or invaliding beyond your control (MoD letter 1(4)2019/D(Pay/Services) dt 01-03-2021).</sub>
+
+> Open point: Escalation clause read in DoE OM 19051/1/2017-E.IV dt 02-08-2017 (para 7). Stepped figures are computed from it; the MoD order applying the step was not seen.
 
 ##### Compensation for change of Uniform on (1)
 
@@ -4214,9 +4057,7 @@ Cite: none (guidance)
 
 Cite: MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018; DoPT OM A-27012/02/2017-Estt(AL) dt 16-07-2018
 
-<sub>Details: The base was Rs 2,250 and Rs 6,750 a month. These rise 25% each time DA rises 50%.</sub>
-
-> Open point: The FAQ gives the 01-04-2024 figures. Confirm the order for the 25% rise.
+<sub>Details: The base was Rs 2,250 and Rs 6,750 a month. The order says both rise 25% each time DA rises 50%; x1.25 from 01-01-2024 gives the figures above.</sub>
 
 #### RB-SS-P086 Which children qualify for CEA?
 
@@ -4312,9 +4153,7 @@ Cite: MoD (DMA) letter F.No.15(1)/2017/D(Pay/Services) dt 19-06-2023; MoHUA OM d
 
 Cite: SAI 1/S/80; SRO 12(E) dt 03-05-2017; MoD letter 4(10)/2017/D(Med) dt 29-09-2017
 
-<sub>Details: If the account goes into debit the subscription drops to the minimum, restored after clearing. Subscription above 6% cannot exceed what remains after statutory recoveries such as tax and AGIF. Interest was 7.1% for 01-04-2020 to 31-03-2023 (earlier years 7.6% to 8%).</sub>
-
-> Open point: Interest rates are only as of 2023. Update from the latest MoF notification before showing a rate.
+<sub>Details: If the account goes into debit the subscription drops to the minimum, restored after clearing. Subscription above 6% cannot exceed what remains after statutory recoveries such as tax and AGIF. Interest has been 7.1% a year since 01-04-2020 (earlier years 7.6% to 8%); the rate is reset each quarter, so show it with its quarter.</sub>
 
 #### RB-C21-02 DSOP Fund advance: purposes, limit and time
 
@@ -4394,10 +4233,12 @@ Cite: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020
 **For a maximum of six months.**
 
 - Reimbursed in line with how HRA is paid
+- Needs the new unit's Part II order, certificate and rent receipt
+- *Watch out:* No HRA for the stay; the payment is taxable
 
 Cite: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020
 
-> Open point: Six-month cap is from the FAQ only; handbook is silent. Verify in the MoD letter.
+> Open point: Six-month cap is from the FAQ (Dec 2025) only; the handbook text, read in full, does not state a cap.
 
 #### RB-SS-P095 Is transit accommodation reimbursement taxable, and is HRA also paid?
 
@@ -4432,8 +4273,6 @@ Cite: MoD letter 1(5)/97/D(Pay/Services) dt 02-11-1997, modified 29-09-1999; MoD
 Cite: MoF OM 2/5/2017-E.II(B) dt 07-07-2017; MoD letter 3(1)/2015-D(Q&C) dt 11-10-2017 · personal: basic:hra_estimate
 
 <sub>Details: X cities: Delhi, Greater Mumbai, Kolkata, Chennai, Hyderabad, Ahmedabad, Bengaluru, Pune. Unlisted towns are Z. Faridabad, Ghaziabad, Noida, Gurgaon keep Delhi rates; Shillong, Goa, Port Blair, Jalandhar Cantt and Mathura-Vrindavan are Y.</sub>
-
-> Open point: The full Y-class city list (about 60 cities) is a data table, not a card; add it as reference data.
 
 #### RB-SS-P113 What is an SPR?
 
@@ -4472,8 +4311,6 @@ Cite: PCDA(O) Advisory 08/2025
 
 Cite: Rule 85A, TR 2014
 
-> Open point: The FAQ answer reads 'No, such claims are admissible' and contradicts itself; TR 85A is followed. Confirm.
-
 #### RB-SS-P106 HRA for a single officer with dependents
 
 **Admissible if the dependents keep incurring rent. Their Part II order (DEPNDNT) must be notified.**
@@ -4483,8 +4320,6 @@ Cite: Rule 85A, TR 2014
 - Parents also count as dependents
 
 Cite: MoD letter 12647/LTC/Mov C/2970/D(Mov)/08 dt 17-12-2008; MoD letter 17(01)/2016-D(Pen/Pol) dt 29-10-2016
-
-> Open point: The Rs 9,000 limit is tied to the minimum family pension; check the current figure.
 
 #### RB-SS-P107 HRA during study leave
 
@@ -4561,8 +4396,6 @@ Cite: MoD letter 1(5)/97/D(Pay/Services) dt 02-11-1997
 
 Cite: MoD letter 18147/DGBR/E-2A(T&C)/D(Q&C) dt 20-10-1997; MoD letter 6731/SFA/DGNCC/ADM(A-2)/4727/D(Q&C) dt 22-10-1991
 
-> Open point: The hard-station lists are data tables and are not reproduced here.
-
 ### Chapter 28
 
 ##### Reimbursement of Medical Expenses (6)
@@ -4611,8 +4444,6 @@ Cite: none (guidance)
 - Attach the dependent Part II order or ID card issued before treatment
 
 Cite: none (guidance)
-
-> Open point: The Rs 9,000 limit is tied to the minimum family pension; check the current figure.
 
 #### RB-SS-P126 Medical claim: time limit and condonation
 

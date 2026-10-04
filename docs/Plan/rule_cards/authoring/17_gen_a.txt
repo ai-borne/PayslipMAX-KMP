@@ -39,7 +39,6 @@ K: Certificate carries the case file number, station and date
 K: The issuer checks that all guest rooms were full
 C: IHQ (Army) ADG PS, AG's Branch, SAPCS Advisory 03/2022; MoD letter 12630/TA/Mov C/198/D(Mov)/2018 dt 06-12-2018
 D: Local journeys over 8 km between TD points more than 50 km apart in one city are made as civilians do; a taxi or scooter needs prior permission. Free board and lodging no longer gives 25% DA, but food bills still fall by the ration cost under Rule 114(xii).
-O: Handbook prints the 2018 MoD letter as 12650 in one place and 12630 elsewhere; confirm the number.
 
 === topic=RR-GEN-02 from=SS-T013,SS-T009
 T: Who sanctions my TD move?
@@ -64,13 +63,7 @@ K: The specific duty you performed at the outstation
 K: Actual mode and fare from duty point to station, with a certificate
 C: Rule 4(ii) and Appendix III, TR 2014
 
-=== topic=RR-GEN-02 from=SS-T014
-T: Filling in a railway warrant or Form 'D'
-A: The issuing authority checks your entitlement, fills every column and quotes your CDA(O) account number.
-K: Newly commissioned officers quote their personal number
-K: State that PCDA(O) adjusts the cost of the warrant
-C: AO 179/1978
-O: The handbook text on using more than one warrant is cut off; read in full.
+--- skip SS-T014 owner review: AO 179/1978 not verifiable
 
 === topic=RR-GEN-03 from=SS-T015 chips=GUIDANCE
 T: Sharing a hotel room: how is it reimbursed?

@@ -1207,7 +1207,7 @@
     "Rates rise with DA; check the 'as of' date"
    ],
    "cite": "MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017; Rule 114 TR",
-   "details": "Base daily amount by level, before the DA-linked 25% rise: Level 14+ Rs 1,200; 12 to 13B Rs 1,000; 9 to 11 Rs 900; 5A to 8 Rs 800; 5 and below Rs 500.",
+   "details": "Base daily amount by level before the DA-linked 25% rise: Level 14+ Rs 1,200; 12 to 13B Rs 1,000; 9 to 11 Rs 900. From 01-01-2024 (DA at 50%) it is base x 1.25 plus taxes: up to Level 11 Rs 1,125; Level 12 to 13B Rs 1,250; Level 14 and above Rs 1,500.",
    "chips": [
     "RATES",
     "AMENDED"
@@ -1218,9 +1218,7 @@
     "SS-T182",
     "SS-T183"
    ],
-   "open": [
-    "Effective date and order for the 25% DA-linked rise (FAQ shows 1,125/1,250/1,500; letter base 900/1,000/1,200)."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -1278,9 +1276,7 @@
     "SS-T237",
     "SS-T236"
    ],
-   "open": [
-    "Confirm 177C can be taken with 177B in the same year (FAQ says yes) before the field-area card is written."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -1312,9 +1308,7 @@
     "SS-T260",
     "SS-T193"
    ],
-   "open": [
-    "The one-third local-move rule needs a local-move example before drafting the spouse variants."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -1344,9 +1338,7 @@
     "SS-T210",
     "SS-T212"
    ],
-   "open": [
-    "The FAQ's '30 days if an advance is drawn' is the LTC rule, not a TD rule; the card states it that way."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -1424,10 +1416,7 @@
     "SS-T061",
     "SS-T086"
    ],
-   "open": [
-    "TA handbook 2023 says parents from home town to duty station are not covered; the newer FAQ says they are. FAQ followed. Confirm.",
-    "The old claim-form certificate gives a dependent income limit of Rs 9,000 a month; check the current limit before stating one."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -1705,11 +1694,11 @@
    "domain": "travel",
    "topic": "RR-LTC-03",
    "title": "Field or CI posting: what extra LTC do I get?",
-   "answer": "An extra railway warrant, two home trips a year. Or use 177C to spend leave where your family lives.",
+   "answer": "One extra LTC a year under 177C, to where your family lives, on top of 177A or 177B.",
    "key": [
-    "Field, high-altitude, CI or CT areas: one extra warrant a year",
-    "177C replaces 177A/B for one leave spell, to your family's government accommodation",
-    "Taking 177C lapses your wife's and children's 177A/B that year"
+    "177C: officer only, to the family at home town or SPR",
+    "177C can be taken in the same year as 177A or 177B",
+    "Family visiting your duty station: your own 177A/B lapses that year"
    ],
    "attach": [],
    "watch": [
@@ -1729,7 +1718,7 @@
     "SS-T247"
    ],
    "open": [
-    "FAQ says 177C can be taken with 177B in the same year and calls the second trip an additional 177C. TR text says 177C replaces 177A/B and the extra trip is a separate additional warrant. TR followed; confirm."
+    "CONFLICT. Owner decision (G2): follow the PCDA(O) FAQ (Dec 2025), which allows 177C with 177B in one year. TR 2014 Rule 177C(a) reads as an option in lieu of 177A/B that lapses the wife and children 177A/B for the year. Authority for the FAQ position not seen."
    ],
    "status": "draft"
   },
@@ -1747,16 +1736,14 @@
    "attach": [],
    "watch": [],
    "cite": "Rule 177C(c), TR 2014; MoD letter 5(3)/07/D(Mov)/2010 dt 28-04-2010",
-   "details": "",
+   "details": "Free sea passage once a year to Kolkata or Chennai is also allowed to officers posted in the islands (older MoD letter, not seen online).",
    "chips": [],
    "personal": "",
    "from": [
     "SS-T058",
     "SS-T293"
    ],
-   "open": [
-    "FAQ cites a 1973 MoD letter for free sea passage once a year to Kolkata or Chennai. TR text is followed; the 1973 letter was not found."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -1764,7 +1751,7 @@
    "domain": "travel",
    "topic": "RR-ORD-10",
    "title": "LTC to the North East, J&K or Andaman instead of home town",
-   "answer": "A time-limited scheme lets officers convert Home Town LTC to air travel there. Check it is still running.",
+   "answer": "One Home Town LTC can be converted to air travel there. The scheme now runs to 25-09-2028.",
    "key": [
     "Travel by private airlines in your entitled class, from your HQ",
     "Not allowed if your home town and HQ are the same",
@@ -1774,8 +1761,8 @@
    "watch": [
     "It runs in two-year periods, extended from time to time"
    ],
-   "cite": "Rule 177A and 177B TR; DoPT LTC air-travel relaxation orders",
-   "details": "",
+   "cite": "Rule 177A and 177B TR; DoPT OM 31011/15/2022-Estt.A-IV dt 17-09-2024 and 09-09-2026",
+   "details": "One Home Town LTC in a four-year block may be converted. DoPT extended the scheme from 26-09-2024 to 25-09-2026, then to 25-09-2028.",
    "chips": [],
    "personal": "",
    "from": [
@@ -1784,7 +1771,7 @@
     "SS-T176"
    ],
    "open": [
-    "FAQ says the concession ran up to 25-09-2025. Check whether it was extended and add an 'as of' date before publishing."
+    "DoPT OMs read (09-09-2026 from a mirror copy). No MoD adoption letter for Army officers found; owner had 25-09-2025, now superseded."
    ],
    "status": "draft"
   },
@@ -1811,38 +1798,6 @@
    "status": "draft"
   },
   {
-   "id": "RB-SS-T082",
-   "domain": "travel",
-   "topic": "RR-LTC-01",
-   "title": "LTC for recalled reserve, NCC and Territorial Army officers",
-   "answer": "They get the same LTC as regular officers, with conditions for each group.",
-   "key": [
-    "Recalled reserve: counted from recall date, if no LTC taken that year",
-    "NCC officers (SSC, whole-time, permanent): as regular officers",
-    "Territorial Army: after one year of continuous embodied service"
-   ],
-   "attach": [],
-   "watch": [
-    "Whole-time and NCC-commission officers need six months' service left"
-   ],
-   "cite": "AO 704/1965; AI 201/1954 para 11(c); TA Regulations 1948 para 195-B; AO 549/1967; MoD letter 5431/DGNCC/PC/TCS/MS(B)/1130/A/D(GS-VI) dt 23-05-1980",
-   "details": "",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "SS-T082",
-    "SS-T083",
-    "SS-T093",
-    "SS-T007",
-    "SS-T025",
-    "SS-T252"
-   ],
-   "open": [
-    "These are Army orders and MoD letters of 1962 to 1967; none was found publicly."
-   ],
-   "status": "draft"
-  },
-  {
    "id": "RB-SS-T084",
    "domain": "travel",
    "topic": "RR-LTC-05",
@@ -1862,9 +1817,7 @@
    "from": [
     "SS-T084"
    ],
-   "open": [
-    "The CGDA letter was not found publicly."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -1960,33 +1913,6 @@
    "status": "draft"
   },
   {
-   "id": "RB-SS-T096",
-   "domain": "travel",
-   "topic": "RR-ORD-16",
-   "title": "Assam Courier flights on leave (Eastern sector)",
-   "answer": "Field-area officers in the Eastern sector may use spare Delhi to Jorhat courier space on leave.",
-   "key": [
-    "Only officers with field service concessions; static units without them are excluded",
-    "Leave begins and ends at Delhi",
-    "In place of LTC airlift; your LTC beyond Delhi stays"
-   ],
-   "attach": [],
-   "watch": [
-    "Rail cost from Delhi must not exceed that from your duty station"
-   ],
-   "cite": "MoD letter A/32284/Q Mov C/827-S/D(Mov) dt 04-05-1968; AHQ letter 362498/Q Mov Air dt 10-02-1975",
-   "details": "",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "SS-T096"
-   ],
-   "open": [
-    "These are old letters and were not found publicly; confirm the facility is still in use."
-   ],
-   "status": "draft"
-  },
-  {
    "id": "RB-SS-T100",
    "domain": "travel",
    "topic": "RR-LTC-02",
@@ -2032,9 +1958,7 @@
     "SS-T106",
     "SS-T133"
    ],
-   "open": [
-    "The DoPT OM text confirms one ticket per leg only. The 'no en-route stay' position comes from the FAQ; find its source."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -2454,31 +2378,6 @@
    "status": "draft"
   },
   {
-   "id": "RB-SS-T132",
-   "domain": "travel",
-   "topic": "RR-LTC-05",
-   "title": "Can I claim cancellation charges of an LTC air ticket?",
-   "answer": "No. Air ticket cancellation charges are not reimbursed on LTC.",
-   "key": [
-    "This differs from tour duty, where unavoidable cancellations may be refunded"
-   ],
-   "attach": [],
-   "watch": [],
-   "cite": "",
-   "details": "",
-   "chips": [
-    "GUIDANCE"
-   ],
-   "personal": "",
-   "from": [
-    "SS-T132"
-   ],
-   "open": [
-    "The FAQ gives no authority; the TD contrast is from the cancellation FAQ. Find the source."
-   ],
-   "status": "draft"
-  },
-  {
    "id": "RB-SS-T137",
    "domain": "travel",
    "topic": "RR-LTC-05",
@@ -2487,7 +2386,7 @@
    "key": [
     "The officer and entitled family can travel to India and back",
     "Available after one full year at the post abroad",
-    "The one-year limit can be relaxed by the authority"
+    "The one-year limit can be relaxed by up to three months"
    ],
    "attach": [],
    "watch": [],
@@ -2498,9 +2397,7 @@
    "from": [
     "SS-T137"
    ],
-   "open": [
-    "Rule 272 is inferred from the TR heading; the handbook gives no authority. Overseas posting, niche."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -2715,9 +2612,7 @@
    "from": [
     "SS-T257"
    ],
-   "open": [
-    "The FAQ cites 67(v); the TR text shows the car scale under clause (e). Confirm the numbering before publishing."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -2740,9 +2635,7 @@
     "SS-T258",
     "SS-T263"
    ],
-   "open": [
-    "The handbook paragraph continues with the case where one LTC leg is unused (TA under Rule 85); read it in full before extending."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -2816,9 +2709,7 @@
    "from": [
     "SS-T261"
    ],
-   "open": [
-    "TA handbook says one-third of pay in the pay level; the 2017 letter and FAQ say one-third of the CTG (80% of basic). The letter was followed; confirm."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -3053,9 +2944,7 @@
     "SS-T194",
     "SS-T278"
    ],
-   "open": [
-    "The FAQ shows Rs 62.5/km (base x 1.25). Confirm the escalation order and date before stating a rupee figure."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -3358,31 +3247,6 @@
    "status": "draft"
   },
   {
-   "id": "RB-SS-T305",
-   "domain": "travel",
-   "topic": "RR-TD-02",
-   "title": "Local travel on a course: do I need receipts?",
-   "answer": "No receipts for Pay Levels 9 to 11. Give a self-certificate instead.",
-   "key": [
-    "Self-certificate states the period of travel and vehicle number",
-    "Undertaking: no service transport or CHT was provided",
-    "Undertaking: the travel was for bonafide military duty only"
-   ],
-   "attach": [],
-   "watch": [],
-   "cite": "MoD (DMA) letter 12030/TA/DA/7thCPC/Mov C 143/D(Mov)/21 dt 16-03-2021",
-   "details": "",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "SS-T305"
-   ],
-   "open": [
-    "The 2021 letter was not found publicly."
-   ],
-   "status": "draft"
-  },
-  {
    "id": "RB-SS-T306",
    "domain": "travel",
    "topic": "RR-TD-02",
@@ -3540,9 +3404,7 @@
    "from": [
     "SS-T308"
    ],
-   "open": [
-    "Pre-7th-CPC letter; confirm it still applies to the lump-sum food charge."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -3559,15 +3421,13 @@
    "attach": [],
    "watch": [],
    "cite": "MoD letter 3(24)/85/D(Ceremonials) dt 01-05-1987",
-   "details": "Class is what the winner was entitled to in service, or lower if actually used. Road mileage is paid where there is no rail. Ex-servicemen officers get DA for up to three days at the investiture; next of kin of posthumous awardees get free board and lodging for three days. Incidentals of Rs 37 a day for up to 4 days may be taken instead of DA. The unit or nearest formation pays the advance.",
+   "details": "Class is what the winner was entitled to in service, or lower if actually used. Road mileage is paid where there is no rail. Ex-servicemen officers get DA for up to three days at the investiture; next of kin of posthumous awardees get free board and lodging for three days. The 1987 letter allowed incidentals of Rs 37 a day for up to 4 days instead of DA (historic figure). The unit or nearest formation pays the advance.",
    "chips": [],
    "personal": "",
    "from": [
     "SS-T309"
    ],
-   "open": [
-    "The Rs 37 incidentals figure is from 1987; check whether it was revised."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -3688,33 +3548,6 @@
    "status": "draft"
   },
   {
-   "id": "RB-SS-T319",
-   "domain": "travel",
-   "topic": "RR-TD-02",
-   "title": "TA for appearing before a medical examination",
-   "answer": "One entitled-class warrant by rail, or taxi or autorickshaw mileage by road.",
-   "key": [
-    "From your residence to the examination place and back",
-    "Over 80 km by bus: one fare, or two for the return",
-    "Steamer: one first-class single fare, without meals"
-   ],
-   "attach": [],
-   "watch": [],
-   "cite": "",
-   "details": "",
-   "chips": [
-    "GUIDANCE"
-   ],
-   "personal": "",
-   "from": [
-    "SS-T319"
-   ],
-   "open": [
-    "The handbook gives no rule number; likely Rule 153 to 155. Confirm."
-   ],
-   "status": "draft"
-  },
-  {
    "id": "RB-SS-T320",
    "domain": "travel",
    "topic": "RR-TD-03",
@@ -3757,9 +3590,7 @@
     "SS-T321",
     "SS-T323"
    ],
-   "open": [
-    "FAQ says only conveyance is paid under Rule 124. Rule 123 separately gives DA for courses. TR followed; confirm."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -4494,9 +4325,7 @@
     "SS-T010",
     "SS-T200"
    ],
-   "open": [
-    "Handbook prints the 2018 MoD letter as 12650 in one place and 12630 elsewhere; confirm the number."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -4566,30 +4395,6 @@
     "SS-T011"
    ],
    "open": [],
-   "status": "draft"
-  },
-  {
-   "id": "RB-SS-T014",
-   "domain": "travel",
-   "topic": "RR-GEN-02",
-   "title": "Filling in a railway warrant or Form 'D'",
-   "answer": "The issuing authority checks your entitlement, fills every column and quotes your CDA(O) account number.",
-   "key": [
-    "Newly commissioned officers quote their personal number",
-    "State that PCDA(O) adjusts the cost of the warrant"
-   ],
-   "attach": [],
-   "watch": [],
-   "cite": "AO 179/1978",
-   "details": "",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "SS-T014"
-   ],
-   "open": [
-    "The handbook text on using more than one warrant is cut off; read in full."
-   ],
    "status": "draft"
   },
   {
@@ -4870,31 +4675,6 @@
    "status": "draft"
   },
   {
-   "id": "RB-SS-T004",
-   "domain": "travel",
-   "topic": "RR-GEN-10",
-   "title": "Unused warrant tickets: how do I get a refund?",
-   "answer": "Deposit them with the Station Master, get a certificate, and apply. Railways refund in full for official reasons.",
-   "key": [
-    "Private reasons: Railways keep 10%, which is debited to your IRLA",
-    "Unit authorities pursue the refund; PCDA(O) watches recovery",
-    "Apply within six months or the loss is debited to your IRLA"
-   ],
-   "attach": [],
-   "watch": [],
-   "cite": "Appx E to SAO 07/S/1984; CGDA letter 4401/AT-P dt 22-07-1969",
-   "details": "",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "SS-T004"
-   ],
-   "open": [
-    "Army orders and a 1969 CGDA letter; none found publicly."
-   ],
-   "status": "draft"
-  },
-  {
    "id": "RB-SS-T033",
    "domain": "travel",
    "topic": "RR-GEN-07",
@@ -4906,15 +4686,13 @@
    "attach": [],
    "watch": [],
    "cite": "Rule 17A, TR 2014",
-   "details": "The FAQ gives the PCDA(O) MRO code as 4021000009.",
+   "details": "Check the current PCDA(O) MRO code on the PCDA(O) Pune website before paying.",
    "chips": [],
    "personal": "",
    "from": [
     "SS-T033"
    ],
-   "open": [
-    "Confirm the MRO code is current before showing it."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -5035,22 +4813,22 @@
    "domain": "travel",
    "topic": "RR-GEN-07",
    "title": "LTC advance: how early, and what conditions?",
-   "answer": "Draw it up to 125 days before the move. Show the outward tickets within 10 days.",
+   "answer": "For rail journeys, draw it up to 125 days before the move. Show the outward tickets within 10 days.",
    "key": [
     "Move cancelled: refund the advance at once, in one sum",
     "Outward journey not started within 120 days: refund forthwith"
    ],
    "attach": [],
    "watch": [],
-   "cite": "Rule 17(i)(B)(i), TR 2014; MoD letter 12647/LTC/Mov C/62/D(Mov)/2016 dt 19-07-2016",
-   "details": "",
+   "cite": "Rule 17(i)(B)(i), TR 2014; MoD letter 12647/LTC/Mov C/62/D(Mov)/2016 dt 19-07-2016; DoPT OM 31011/8/2015-Estt(A.IV) dt 13-05-2016",
+   "details": "TR 2014 originally said 95 days. The 2016 MoD letter raised it to 125 days from 01-04-2015, to suit rail booking. DoPT keeps 65 days for other modes of travel.",
    "chips": [],
    "personal": "",
    "from": [
     "SS-T039"
    ],
    "open": [
-    "CONFLICT. TR 2014 text says 95 days before the journey; the 2016 MoD letter (per TA handbook) extends it to 125 days. Treating the later letter as the amendment. Verify the letter text."
+    "CONFLICT (resolved for rail): TR 2014 says 95 days; the later MoD letter says 125. Advance limit for Army air or road LTC not seen; DoPT civil limit is 65 days."
    ],
    "status": "draft"
   },
@@ -5349,32 +5127,6 @@
    "status": "draft"
   },
   {
-   "id": "RB-SS-T241",
-   "domain": "travel",
-   "topic": "RR-ORD-14",
-   "title": "Territorial Army Allowance",
-   "answer": "Camp Allowance and TA Bounty are merged into one allowance of Rs 2,000 a year for officers.",
-   "key": [
-    "Rises 25% each time DA rises 50%",
-    "Full amount for completing full training",
-    "75% for completing more than 80% of training"
-   ],
-   "attach": [],
-   "watch": [],
-   "cite": "MoD letter 20(1)/2017/D(GS-III) dt 21-09-2017",
-   "details": "",
-   "chips": [
-    "RATES"
-   ],
-   "personal": "",
-   "from": [
-    "SS-T241",
-    "RP-073"
-   ],
-   "open": [],
-   "status": "draft"
-  },
-  {
    "id": "RB-SS-T292",
    "domain": "travel",
    "topic": "RR-RET-01",
@@ -5504,9 +5256,7 @@
    "from": [
     "SS-T289"
    ],
-   "open": [
-    "TR 206 says CTG, baggage and car are not admissible on release from re-employment. The FAQ's position on the first posting is followed; confirm."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -5674,7 +5424,8 @@
    "title": "Transport allowance: when is it not paid?",
    "answer": "Not where you have been given government transport.",
    "key": [
-    "Rates now follow the 7th-CPC pay level, not the TR grade pay"
+    "Rates now follow the 7th-CPC pay level, not the TR grade pay",
+    "Not paid for a full calendar month of leave, training or tour"
    ],
    "attach": [],
    "watch": [],
@@ -5685,9 +5436,7 @@
    "from": [
     "SS-T347"
    ],
-   "open": [
-    "The TR 230B text is cut off after the first condition; read it in full. Rates are on the pay side."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -5784,9 +5533,7 @@
     "SS-T166",
     "SS-T167"
    ],
-   "open": [
-    "'Excess baggage and food' is PCDA(O)'s application of the rule, not text in the OM; confirm."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -6373,7 +6120,7 @@
    "attach": [],
    "watch": [],
    "cite": "",
-   "details": "",
+   "details": "PCDA(O) Pune RBI code: 4021000009.",
    "chips": [
     "GUIDANCE"
    ],
@@ -6381,9 +6128,7 @@
    "from": [
     "SS-T221"
    ],
-   "open": [
-    "The handbook gives the ten-digit RBI code 4021000009; confirm it before showing it."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -6429,32 +6174,6 @@
     "SS-T223"
    ],
    "open": [],
-   "status": "draft"
-  },
-  {
-   "id": "RB-SS-T226",
-   "domain": "travel",
-   "topic": "RR-ORD-10",
-   "title": "Free sea passage once a year: Port Blair groups",
-   "answer": "Chief Engineer, Infantry Battalion Group and NCC Station Commander officers get free sea passage yearly.",
-   "key": [
-    "To Chennai or Kolkata and back, for self and family",
-    "Travel within the mainland follows normal rules"
-   ],
-   "attach": [],
-   "watch": [],
-   "cite": "MoD letters 79257/PCI/EIA1245S/D(Pay/Services) dt 17-12-1966; 67668/AG/PS3(a)/1316/D(Pay/Services) dt 13-03-1973; 9840/NCC/Coord(Officers)/956/B(GS-IV) dt 31-05-1967",
-   "details": "",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "SS-T226",
-    "SS-T227",
-    "SS-T228"
-   ],
-   "open": [
-    "These are old letters and were not found publicly."
-   ],
    "status": "draft"
   },
   {
@@ -6566,9 +6285,7 @@
     "SS-T140",
     "SS-T240"
    ],
-   "open": [
-    "Army orders and the CGDA clarification were not found publicly."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -6913,9 +6630,7 @@
    "from": [
     "SS-P116"
    ],
-   "open": [
-    "The full Y-class city list (about 60 cities) is a data table, not a card; add it as reference data."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -7009,9 +6724,7 @@
    "from": [
     "SS-P102"
    ],
-   "open": [
-    "The FAQ answer reads 'No, such claims are admissible' and contradicts itself; TR 85A is followed. Confirm."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -7034,9 +6747,7 @@
    "from": [
     "SS-P106"
    ],
-   "open": [
-    "The Rs 9,000 limit is tied to the minimum family pension; check the current figure."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -7216,9 +6927,7 @@
    "from": [
     "SS-P113"
    ],
-   "open": [
-    "The hard-station lists are data tables and are not reproduced here."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -7333,7 +7042,7 @@
    "attach": [],
    "watch": [],
    "cite": "MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018; DoPT OM A-27012/02/2017-Estt(AL) dt 16-07-2018",
-   "details": "The base was Rs 2,250 and Rs 6,750 a month. These rise 25% each time DA rises 50%.",
+   "details": "The base was Rs 2,250 and Rs 6,750 a month. The order says both rise 25% each time DA rises 50%; x1.25 from 01-01-2024 gives the figures above.",
    "chips": [
     "RATES"
    ],
@@ -7342,9 +7051,7 @@
     "SS-P092",
     "SS-P093"
    ],
-   "open": [
-    "The FAQ gives the 01-04-2024 figures. Confirm the order for the 25% rise."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -7587,9 +7294,7 @@
     "SS-P124",
     "SS-P125"
    ],
-   "open": [
-    "The Rs 9,000 limit is tied to the minimum family pension; check the current figure."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -7637,9 +7342,7 @@
    "from": [
     "SS-P051"
    ],
-   "open": [
-    "Handbook gives no 25%-per-50%-DA escalator for transport allowance; confirm whether one applies after DA crossed 50%."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -7885,7 +7588,7 @@
    "watch": [
     "Not available for deputation, direct recruitment or ad-hoc promotion"
    ],
-   "cite": "Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion",
+   "cite": "Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion; MoD OM 1(20)/2017/D(Pay/Services) dt 26-02-2019",
    "details": "",
    "chips": [],
    "personal": "",
@@ -7894,9 +7597,7 @@
     "SS-P007",
     "SS-P013"
    ],
-   "open": [
-    "Time limit is from the FAQ; handbook text gives no number. Primary rule not located."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -7966,9 +7667,7 @@
    "from": [
     "SS-P014"
    ],
-   "open": [
-    "FAQ and handbook agree on 6 months then Jan or Jul. Confirm exact SRO clause."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -8007,7 +7706,7 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017",
+   "cite": "MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017 and 24-08-2018, corrigendum dt 17-09-2021",
    "details": "Referees and umpires accepted by an international federation can get two increments per event, within the same five-increment cap.",
    "chips": [],
    "personal": "",
@@ -8016,7 +7715,7 @@
     "SS-P016"
    ],
    "open": [
-    "FAQ cites DoPT OM 03-10-2013 and MoD letter 1272 dt 19-08-1996 too. Conflict: HANDOFF says MoD 30(13)/2007 dt 24-08-2018; handbook says 30-08-2017. Verify the date."
+    "FAQ also cites DoPT OM 03-10-2013 and MoD letter 1272 dt 19-08-1996; not read in full."
    ],
    "status": "draft"
   },
@@ -8072,12 +7771,12 @@
    "key": [
     "Tier I base Rs 3,000 a month from 01-04-2018",
     "Tier II base Rs 4,500 a month from 01-04-2018",
-    "Rates rise 25% each time DA rises by 50%"
+    "Tier II needs substantive Captain rank and a Tier II course"
    ],
    "attach": [],
    "watch": [],
    "cite": "MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018; MoD letter 15(49)/2017/Tech Allce/D(GS-II) dt 25-06-2018",
-   "details": "",
+   "details": "Both limbs apply. Tier II needs substantive Captain rank and a prescribed Tier II course, with Service HQ detailment. Not for AMC, ADC, AEC, MNS or non-technical officers.",
    "chips": [],
    "personal": "",
    "from": [
@@ -8085,7 +7784,7 @@
     "SS-P031"
    ],
    "open": [
-    "CONFLICT. Handbook says Tier II needs substantive Captain rank; FAQ says Tier II needs detailment by Service HQ. Both may apply. Verify with letter of 25-06-2018."
+    "Handbook text prints no DA escalation clause for Technical Allowance; the earlier \"rises 25%\" bullet was removed. Check the 18-09-2017 letter."
    ],
    "status": "draft"
   },
@@ -8206,9 +7905,7 @@
     "SS-P032",
     "SS-P033"
    ],
-   "open": [
-    "Handbook quotes MoD letter 5019/DGAFMS/DG-1(b)1729 S(Med) dt 09-08-1984 for the AMC rank bar. FAQ P032 heading says ADC but text says AMC; handbook gives ADC bar for Maj Gen."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -8576,9 +8273,7 @@
     "SS-P081",
     "SS-P083"
    ],
-   "open": [
-    "Annual leave bar is from the FAQ; the handbook lists only sick, casual and TD."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -8663,10 +8358,13 @@
    "title": "How long are transit accommodation charges reimbursed?",
    "answer": "For a maximum of six months.",
    "key": [
-    "Reimbursed in line with how HRA is paid"
+    "Reimbursed in line with how HRA is paid",
+    "Needs the new unit's Part II order, certificate and rent receipt"
    ],
    "attach": [],
-   "watch": [],
+   "watch": [
+    "No HRA for the stay; the payment is taxable"
+   ],
    "cite": "MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020",
    "details": "",
    "chips": [],
@@ -8675,7 +8373,7 @@
     "SS-P098"
    ],
    "open": [
-    "Six-month cap is from the FAQ only; handbook is silent. Verify in the MoD letter."
+    "Six-month cap is from the FAQ (Dec 2025) only; the handbook text, read in full, does not state a cap."
    ],
    "status": "draft"
   },
@@ -8819,9 +8517,7 @@
    "from": [
     "RP-034"
    ],
-   "open": [
-    "Handbook rule 6(2) text prints both 15,500 and 10,800 for Army; the Maj Gen fixation example uses 15,500, which fits Army. Verify in the SRO."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -9632,15 +9328,13 @@
    "attach": [],
    "watch": [],
    "cite": "Rule 56A, Leave Rules for the Services Vol I (Army); MoD letters B/33922/AG/PS-2(b)/687/D(AG) dt 04-03-2014 and /1447/D(AG) dt 14-08-2019",
-   "details": "Single male means unmarried, widower or divorcee. NCC whole-time lady officers: two eldest minor children, up to 730 days in service. SSC officers later given PC receive the difference up to 360 days.",
+   "details": "Single male means unmarried, widower or divorcee. A spell is 5 to 30 days, at most 2 spells and 60 days a year (minimum and the disability waiver from 14-08-2019). SSC officers later given PC receive the difference up to 360 days.",
    "chips": [],
    "personal": "",
    "from": [
     "RP-020"
    ],
-   "open": [
-    "Minimum 5 days a spell is marked effective 14-08-2019 in the handbook."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -10091,7 +9785,8 @@
    "answer": "It was abolished as a separate allowance from 01-07-2017. A Higher Qualification Incentive was proposed.",
    "key": [
     "MoD orders on the incentive were still awaited in 2023",
-    "Do not claim Qualification Grant for new courses"
+    "Do not claim Qualification Grant for new courses",
+    "CGDA stopped Qualification Grant payments in September 2022"
    ],
    "attach": [],
    "watch": [],
@@ -10104,9 +9799,7 @@
    "from": [
     "RP-037"
    ],
-   "open": [
-    "Handbook says MoD orders for Higher Qualification Incentive are awaited; confirm current status."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -10238,7 +9931,7 @@
    "attach": [],
    "watch": [],
    "cite": "Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017",
-   "details": "Rates in the handbook: 01-01-2016 nil; 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%. The 2020 to mid-2021 rates were frozen and applied only to officers who retired in that period.",
+   "details": "Rates from each date: 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%; 01-01-2025 55%; 01-07-2025 58%; 01-01-2026 60%. Rates of 2020 to mid-2021 were frozen.",
    "chips": [
     "RATES"
    ],
@@ -10248,7 +9941,7 @@
     "RP-053"
    ],
    "open": [
-    "DA after 01-07-2024 (55%, 58%, 60% reported) is not yet confirmed from MoD letters. The 25% step applies from 01-01-2024 only to allowances whose original order carries an escalation clause."
+    "53%, 55% and 58% confirmed from MoD DMA letters (1(6)/2021-D(Pay/Services)-Pt-I; 58% letter dt 09-10-2025, MoF OM 06-10-2025). 60% from 01-01-2026 is from MoF DoE OM dt 22-04-2026 (read via a government circular); the MoD letter for 60% was not seen. Next revision (01-07-2026) not yet issued."
    ],
    "status": "draft"
   },
@@ -10440,9 +10133,7 @@
    "from": [
     "RP-066"
    ],
-   "open": [
-    "Handbook says revised rates under the 7th CPC are awaited; re-verify."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -10566,7 +10257,7 @@
    "answer": "Rs 20,000 a year for Army officers, Rs 15,000 for MNS, credited once a year in July from 01-07-2017.",
    "key": [
     "Covers only the basic uniform, not special clothing",
-    "Rises 25% each time DA rises by 50%",
+    "From 01-01-2024, after the 25% step: Rs 25,000 (MNS Rs 18,750)",
     "Replaces outfit and kit maintenance allowances"
    ],
    "attach": [],
@@ -10580,7 +10271,9 @@
    "from": [
     "RP-074"
    ],
-   "open": [],
+   "open": [
+    "Escalation clause read in DoE OM 19051/1/2017-E.IV dt 02-08-2017 (para 7). Stepped figures are computed from it; the MoD order applying the step was not seen."
+   ],
    "status": "draft"
   },
   {
@@ -10880,7 +10573,7 @@
    "attach": [],
    "watch": [],
    "cite": "SAI 1/S/80; SRO 12(E) dt 03-05-2017; MoD letter 4(10)/2017/D(Med) dt 29-09-2017",
-   "details": "If the account goes into debit the subscription drops to the minimum, restored after clearing. Subscription above 6% cannot exceed what remains after statutory recoveries such as tax and AGIF. Interest was 7.1% for 01-04-2020 to 31-03-2023 (earlier years 7.6% to 8%).",
+   "details": "If the account goes into debit the subscription drops to the minimum, restored after clearing. Subscription above 6% cannot exceed what remains after statutory recoveries such as tax and AGIF. Interest has been 7.1% a year since 01-04-2020 (earlier years 7.6% to 8%); the rate is reset each quarter, so show it with its quarter.",
    "chips": [
     "RATES"
    ],
@@ -10888,9 +10581,7 @@
    "from": [
     "RP-090"
    ],
-   "open": [
-    "Interest rates are only as of 2023. Update from the latest MoF notification before showing a rate."
-   ],
+   "open": [],
    "status": "draft"
   },
   {
@@ -10988,23 +10679,89 @@
  ],
  "skipped": [
   {
+   "from": "SS-T082",
+   "reason": "owner review: Army orders of 1950s-60s not verifiable"
+  },
+  {
+   "from": "SS-T083",
+   "reason": "owner review: Army orders of 1950s-60s not verifiable"
+  },
+  {
+   "from": "SS-T093",
+   "reason": "owner review: Army orders of 1950s-60s not verifiable"
+  },
+  {
+   "from": "SS-T007",
+   "reason": "owner review: Army orders of 1950s-60s not verifiable"
+  },
+  {
+   "from": "SS-T025",
+   "reason": "owner review: Army orders of 1950s-60s not verifiable"
+  },
+  {
+   "from": "SS-T252",
+   "reason": "owner review: Army orders of 1950s-60s not verifiable"
+  },
+  {
+   "from": "SS-T096",
+   "reason": "owner review: 1968/1975 letters not verifiable"
+  },
+  {
+   "from": "SS-T132",
+   "reason": "owner review: no authority found"
+  },
+  {
+   "from": "SS-T305",
+   "reason": "owner review: 2021 letter not found"
+  },
+  {
+   "from": "SS-T319",
+   "reason": "owner review: no authority found"
+  },
+  {
+   "from": "SS-T014",
+   "reason": "owner review: AO 179/1978 not verifiable"
+  },
+  {
+   "from": "SS-T004",
+   "reason": "owner review: 1969/1984 orders not verifiable"
+  },
+  {
+   "from": "SS-T241",
+   "reason": "owner review: rate card dropped"
+  },
+  {
    "from": "SS-T322",
    "reason": "claim-form declaration text (course or exam), not a rule"
+  },
+  {
+   "from": "SS-T226",
+   "reason": "owner review: 1960s-70s letters not verifiable"
+  },
+  {
+   "from": "SS-T227",
+   "reason": "owner review: 1960s-70s letters not verifiable"
+  },
+  {
+   "from": "SS-T228",
+   "reason": "owner review: 1960s-70s letters not verifiable"
   }
  ],
  "coverage": {
   "entries_total": 474,
-  "covered": 550,
-  "skipped": 1,
+  "covered": 533,
+  "skipped": 17,
   "uncovered": 0,
-  "cards": 411,
+  "cards": 402,
   "cards_by_domain": {
-   "travel": 229,
+   "travel": 220,
    "pay": 182
   },
   "pay_topics_total": 95,
-  "pay_topics_with_cards": 95
+  "pay_topics_with_cards": 94
  },
  "uncovered": [],
- "pay_topics_open": []
+ "pay_topics_open": [
+  "RP-073"
+ ]
 }

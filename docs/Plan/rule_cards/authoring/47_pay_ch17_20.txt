@@ -2,9 +2,10 @@
 T: Dress Allowance: how much and when is it paid?
 A: Rs 20,000 a year for Army officers, Rs 15,000 for MNS, credited once a year in July from 01-07-2017.
 K: Covers only the basic uniform, not special clothing
-K: Rises 25% each time DA rises by 50%
+K: From 01-01-2024, after the 25% step: Rs 25,000 (MNS Rs 18,750)
 K: Replaces outfit and kit maintenance allowances
 C: MoD letter PC-1(16)/2017/D(Pay/Services) dt 16-11-2017
+O: Escalation clause read in DoE OM 19051/1/2017-E.IV dt 02-08-2017 (para 7). Stepped figures are computed from it; the MoD order applying the step was not seen.
 D: Recovery if you leave in the year: superannuation July-Sept 60%, Oct-Dec 40%, Jan-Mar 25%, Apr-Jun nil. Voluntary retirement or resignation: 80%, 55%, 33%, nil. No recovery on death or invaliding beyond your control (MoD letter 1(4)2019/D(Pay/Services) dt 01-03-2021).
 
 === topic=RP-075 from=RP-075 chips=GUIDANCE

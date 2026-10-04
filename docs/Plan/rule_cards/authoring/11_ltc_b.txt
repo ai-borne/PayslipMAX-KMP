@@ -15,7 +15,6 @@ K: An en-route stay is not allowed on air LTC
 K: Two separate tickets: only the through-ticket fare is admitted
 W: Rail LTC differs: linked warrants are allowed for breaks (177B)
 C: DoPT OM 31011/12/2022-Estt.A-IV dt 29-08-2022; Rule 177B(iii) TR
-O: The DoPT OM text confirms one ticket per leg only. The 'no en-route stay' position comes from the FAQ; find its source.
 
 === topic=RR-LTC-02 from=SS-T124,SS-T126
 T: Family lives elsewhere: LTC from where they live?

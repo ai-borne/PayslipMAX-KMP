@@ -43,8 +43,7 @@ K: Opt within 3 months of promotion or IHQ order
 K: Part II order with occurrence code OPTFXDNI is needed
 H: Option form signed by you and countersigned
 W: Not available for deputation, direct recruitment or ad-hoc promotion
-C: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
-O: Time limit is from the FAQ; handbook text gives no number. Primary rule not located.
+C: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion; MoD OM 1(20)/2017/D(Pay/Services) dt 26-02-2019
 
 === topic=RP-005 from=SS-P008,SS-P009
 T: Can I change or late-file my promotion pay fixation option?
@@ -68,7 +67,6 @@ A: After 6 months, on the next 1 January or 1 July. Later increments follow ever
 K: Applies to promotions on or after 01-01-2016
 K: Only one increment a year: 1 January or 1 July
 C: Army Pay Rules 2017 (7th CPC); SRO 12(E) dt 03-05-2017
-O: FAQ and handbook agree on 6 months then Jan or Jul. Confirm exact SRO clause.
 
 === topic=RP-005 from=SS-P011
 T: What document goes with the OPTFXDNI Part II order?
@@ -83,9 +81,9 @@ A: Excellence at national or international events: 1 increment for national, 2 f
 K: National: first to third in athletics, first only in games
 K: Starts from the 1st of the month after the event
 K: Government sanction needed in each case
-C: MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017
+C: MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017 and 24-08-2018, corrigendum dt 17-09-2021
+O: FAQ also cites DoPT OM 03-10-2013 and MoD letter 1272 dt 19-08-1996; not read in full.
 D: Referees and umpires accepted by an international federation can get two increments per event, within the same five-increment cap.
-O: FAQ cites DoPT OM 03-10-2013 and MoD letter 1272 dt 19-08-1996 too. Conflict: HANDOFF says MoD 30(13)/2007 dt 24-08-2018; handbook says 30-08-2017. Verify the date.
 
 === topic=RP-006 from=SS-P015
 T: Do sports increments count for pay fixation or allowances?

@@ -5,8 +5,8 @@ K: No other special pay is included
 K: Paid on leave except leave without pay and allowances
 K: Leave DA is based on leave salary actually drawn
 C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
-D: Rates in the handbook: 01-01-2016 nil; 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%. The 2020 to mid-2021 rates were frozen and applied only to officers who retired in that period.
-O: DA after 01-07-2024 (55%, 58%, 60% reported) is not yet confirmed from MoD letters. The 25% step applies from 01-01-2024 only to allowances whose original order carries an escalation clause.
+D: Rates from each date: 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%; 01-01-2025 55%; 01-07-2025 58%; 01-01-2026 60%. Rates of 2020 to mid-2021 were frozen.
+O: 53%, 55% and 58% confirmed from MoD DMA letters (1(6)/2021-D(Pay/Services)-Pt-I; 58% letter dt 09-10-2025, MoF OM 06-10-2025). 60% from 01-01-2026 is from MoF DoE OM dt 22-04-2026 (read via a government circular); the MoD letter for 60% was not seen. Next revision (01-07-2026) not yet issued.
 
 === topic=RP-054 from=RP-054 chips=GUIDANCE
 T: What happened to Kit Maintenance Allowance?
@@ -75,7 +75,6 @@ T: Hazard Pay for Special Group (SFF)
 A: Monthly by rank from 01-01-2014: Lieutenant Rs 13,500, Captain Rs 16,500, Major and above Rs 21,000.
 K: 7th CPC revised rates were still awaited
 C: Cabinet Secretariat Order 14(9)/89-EA.II-503 dt 03-06-2002; letter F.No.14(3)/2009-EA.II-376 dt 20-07-2010
-O: Handbook says revised rates under the 7th CPC are awaited; re-verify.
 
 === topic=RP-068 from=RP-068
 T: Hard Area Allowance in Nicobar, Minicoy and Lakshadweep

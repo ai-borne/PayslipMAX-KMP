@@ -37,20 +37,15 @@ K: Medical certificate from the competent authority
 K: Undertaking that the authorised mode is not feasible
 C: Rule 176(e)(iii), TR 2014
 
-=== topic=RR-LTC-05 from=SS-T132 chips=GUIDANCE
-T: Can I claim cancellation charges of an LTC air ticket?
-A: No. Air ticket cancellation charges are not reimbursed on LTC.
-K: This differs from tour duty, where unavoidable cancellations may be refunded
-O: The FAQ gives no authority; the TD contrast is from the cancellation FAQ. Find the source.
+--- skip SS-T132 owner review: no authority found
 
 === topic=RR-LTC-05 from=SS-T137
 T: Home leave fare for officers posted abroad
 A: One set of home-leave fares during an overseas posting, and another at each transfer between stations abroad.
 K: The officer and entitled family can travel to India and back
 K: Available after one full year at the post abroad
-K: The one-year limit can be relaxed by the authority
+K: The one-year limit can be relaxed by up to three months
 C: Rule 272, TR 2014
-O: Rule 272 is inferred from the TR heading; the handbook gives no authority. Overseas posting, niche.
 
 === topic=RR-LTC-05 from=SS-T138
 T: LTC for officers serving in Bhutan

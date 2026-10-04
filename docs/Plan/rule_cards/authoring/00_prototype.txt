@@ -9,8 +9,7 @@ H: No food bills or vouchers
 W: Hours count midnight to midnight, each day
 W: Rates rise with DA; check the 'as of' date
 C: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017; Rule 114 TR
-D: Base daily amount by level, before the DA-linked 25% rise: Level 14+ Rs 1,200; 12 to 13B Rs 1,000; 9 to 11 Rs 900; 5A to 8 Rs 800; 5 and below Rs 500.
-O: Effective date and order for the 25% DA-linked rise (FAQ shows 1,125/1,250/1,500; letter base 900/1,000/1,200).
+D: Base daily amount by level before the DA-linked 25% rise: Level 14+ Rs 1,200; 12 to 13B Rs 1,000; 9 to 11 Rs 900. From 01-01-2024 (DA at 50%) it is base x 1.25 plus taxes: up to Level 11 Rs 1,125; Level 12 to 13B Rs 1,250; Level 14 and above Rs 1,500.
 
 === topic=RR-ORD-05 from=SS-T047,SS-T048,SS-T046,SS-T188
 T: Own car on TD: can I claim mileage?
@@ -32,7 +31,6 @@ K: Anywhere-in-India LTC is for alternate years only
 W: A home-town trip on a warrant counts as that year's LTC
 C: Rule 177A(i)(a), TR 2014
 D: Field and CI postings have extra entitlements under Rule 177C; see the field-area LTC card.
-O: Confirm 177C can be taken with 177B in the same year (FAQ says yes) before the field-area card is written.
 
 === topic=RR-ORD-06 from=SS-T254,SS-T260,SS-T193 chips=AMENDED personal=payslip_basic:ctg_estimate
 T: CTG on a permanent move: how much?
@@ -45,7 +43,6 @@ W: Basic pay only: NPA and MSP are not counted
 W: Permanent posting only, not after study leave
 C: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017
 D: The same percentage applies to field and peace postings. If both spouses serve, separate rules apply.
-O: The one-third local-move rule needs a local-move example before drafting the spouse variants.
 
 === topic=RR-ORD-08 from=SS-T291,SS-T021,SS-T042,SS-T210,SS-T212
 T: How long do I have to submit a TD or move claim?
@@ -56,4 +53,3 @@ K: Submission date is the day you sign the contingent bill
 W: Missing both limits forfeits the claim
 W: A late advance adjustment carries penal interest
 C: MoF DoE OM 19030/1/2017-E.IV dt 13-03-2018 and 15-06-2021; GFR 2017 Rule 290; DoPT OM 31011/3/2015-Estt(A-IV) dt 01-04-2015
-O: The FAQ's '30 days if an advance is drawn' is the LTC rule, not a TD rule; the card states it that way.

@@ -28,7 +28,6 @@ K: Fees not included in the airline tariff are not payable
 K: Service tax and cess charged on the ticket are reimbursable
 K: Excess baggage and food bought with the ticket were disallowed in audit
 C: DoE OM 19024/03/2021-E.IV dt 31-12-2021; DoE OM 19024/1/2012-E.IV dt 05-09-2014
-O: 'Excess baggage and food' is PCDA(O)'s application of the rule, not text in the OM; confirm.
 
 === topic=RR-ORD-01 from=SS-T170
 T: Ticket booked from an unauthorised agent in unavoidable circumstances

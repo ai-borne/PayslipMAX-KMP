@@ -13,9 +13,9 @@ A paid in-app **Claim Guide**: a phone-friendly rulebook for PCDA(O) Army office
 5. Scope of "100% of travel and pay": travel = TD, permanent move, LTC, claims, retirement/death, transport allowance. Pay = Pay & Allowances Handbook chapters 4-9, 12-15, 17-23 and 28. Tax, insurance, pension and ECHS (ch. 24-27, 29-35) are **deferred**; the app already has a Tax Planner.
 
 ## Current numbers (from `python3 docs/Plan/rule_cards/tools/compile.py`)
-- **411 cards**: **229 travel** (complete) and **182 pay** (authored: all FAQs, all 95 pay topics).
-- Source entries covered: all 474 (1 skipped with a reason, 0 uncovered). Pay topics with a card: **95 of 95**.
-- Cards carrying an `O:` open point: 89 (2 flagged CONFLICT); guidance-only (no cite): 40.
+- **402 cards**: **220 travel** and **182 pay** (nine travel cards dropped by the owner in phase G1).
+- Source entries covered: all 474 (1 skipped with a reason, 0 uncovered). Pay topics with a card: **94 of 95** (RP-073 Territorial Army Allowance lost its card to an owner DROP).
+- Cards carrying an `O:` open point: 36 (2 flagged CONFLICT); guidance-only (no cite): 36.
 - Every authoring batch passes the compiler (limits, ids, topics) and the 8-gram copy guard (`copycheck.py` prints CLEAN).
 - `13_review_queue.md` lists every open point for the domain owner. Regenerate it after edits.
 
@@ -67,6 +67,9 @@ Pay FAQs (55 left earlier) all written (33-35). Pay handbook-only topics written
 - TR cross-check (numbers only, not a full legal read): 164 TR-cited cards scanned against `tr_rules_full.json`. Fixed: family on course is "more than 90 days" (Rule 124(iv)), not "90 or more". Conflict flagged: LTC advance 95 days (TR 2014 Rule 17) vs 125 days (MoD letter 19-07-2016). Other mismatches were figures from 7th-CPC letters, not in TR 2014.
 - Figures: transport allowance rate card gained its effective date; DA ladder stops at 42% (Jan 2023) per handbook and must be updated; whether a 25% step was notified when DA crossed 50% (01-01-2024) is unverified everywhere.
 - Not done (needs a human or primary sources): domain-owner read; the 5 never-found letters; re-verification of all DA-linked rates against current MoF/MoD orders.
+
+## Phase G1 (2026-10-04): review points verified
+Owner decisions applied (see `15_confirmed_rulesets.md`, evidence level per row). DA ladder now to 58% (60% flagged). Escalator clauses checked per allowance (none printed for Technical or Transport Allowance). Pending list archived to `archive/14_review_decisions_G2.md` (G2 close); the O: lines stay on 36 cards. G2 done: 177C follows the FAQ (owner), Rajdhani full DA restored. Owner declared the dataset GOLD on 2026-10-04. Next: Phase E (the app feature), only after the owner approves the phase plan.
 
 ## TO DO (in order)
 1. **Domain-owner review** of `13_review_queue.md` and the rate cards (18 `RATES` chips); resolve or keep each flag; update DA and the 50%-DA escalation. Then rerun compile, `render_md.py`, copycheck.

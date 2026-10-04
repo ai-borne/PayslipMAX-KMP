@@ -1,26 +1,33 @@
-# Handoff prompt (paste this at the start of the next Claude Code session)
+# Prompt for the next Claude Code session (one phase per session)
 
-## Handoff prompt
+Paste everything in the block below into a fresh session. Update the numbers and the phase name here after each phase.
 
-You are continuing a multi-session task in the PayslipMAX KMP repo (`/Users/sunil/Downloads/PayslipMAX KMP`). Read `CLAUDE.md` first (strict phases, 300-line files, no hard-coded UI strings, phase summaries), then read `docs/Plan/rule_cards/HANDOFF.md` fully before doing anything else. It is the single source of truth for the current state.
+```
+You are continuing the PayslipMAX KMP "Claim Guide" rule-card dataset. This session is exactly ONE phase: PHASE G1, verify the pending review points. Do not start any other phase, and do not touch Kotlin or app code.
 
-**The project.** We are building a paid in-app "Claim Guide": a phone-friendly rulebook of short cards (one situation per card: one-line answer, a few bullets, the authority to cite) for PCDA(O) Army officers, covering travel (TD, permanent move, LTC, claims, retirement) and pay and allowances. Before any app code, we are authoring the whole dataset as one file, `docs/Plan/rule_cards/rulebook.json`, then scanning it for errors, then building the feature.
+Read first, in order: CLAUDE.md (strict phases, no hard-coded UI strings, phase summary at the end), then docs/Plan/rule_cards/README.md, then docs/Plan/rule_cards/HANDOFF.md. Work on branch docs/rule-cards-dataset (already pushed; PR not yet opened). Do not re-read other files unless a task needs them.
 
-**Where we are.** 275 cards are authored: all 229 travel cards (complete) and 46 pay cards (Risk & Hardship, HRA/SPR, leave encashment with LTC, CEA and hostel subsidy, medical OPD, transport allowance). 418 of 474 source entries are covered. 55 pay FAQ entries remain (promotion pay fixation, commencement of pay, technical, flying, specialist, parachute, para reserve, post-graduate, ration money, Siachen/HUACA, HAFA/CFAA/CMFAA, sports increments, accommodation and transit charges). 89 of 95 pay handbook topics still have no card, including the large 7th-CPC pay chapter 13 (handbook pp. 77-104). Nothing is committed to git yet.
+Context: 411 cards (229 travel, 182 pay) are authored in docs/Plan/rule_cards/authoring/*.txt and compile to rulebook.json. 82 cards still carry an open point; 38 cards are guidance-only. Goal of the whole project ("Gold Standard"): our app should be the best, most complete, most current source of PCDA(O) rules. That means every rule traces to its primary text (TR 2014, MoD/MoF/DoPT letter, Army order), with an effective date and, for DA-linked rates, the base figure plus the 25%-per-50%-DA step.
 
-**How to work.** Cards live in `docs/Plan/rule_cards/authoring/*.txt` (compact line format described in HANDOFF.md). Never edit `rulebook.json` or `RULEBOOK.md` by hand: run `python3 docs/Plan/rule_cards/tools/compile.py` then `python3 docs/Plan/rule_cards/tools/render_md.py` from the repo root. My working tools and the extracted source text are in `~/Downloads/rulecards_workdir/` (the helper scripts are now in `tools/`; see `README.md`). If that folder is missing, say so and ask me before rebuilding it: the extracted text comes from my PCDAO PDFs in `~/Downloads/PCDAO PDFs/`.
+PHASE G1 task:
+1. Open docs/Plan/rule_cards/14_review_decisions.md (91 pending entries; DECISION lines are blank unless the owner filled some in). Apply any OK / FIX / KEEP / DROP decisions the owner has already written: edit authoring/*.txt, never rulebook.json, and move applied points to 15_confirmed_rulesets.md with their evidence level.
+2. For the remaining entries, try to settle them from primary sources: first the full local source text (tools/pa.py, tools/packet.py; the TA handbook is in ~/Downloads/rulecards_workdir/, output is not truncated if you use the full text, not the 140-word packet), then the web (prefer mod.gov.in, finmin/doe.gov.in, dopt.gov.in, cgda.nic.in, pcdaopune.gov.in; PDFs often have a text layer, try pdftotext). Treat gconnect/staffnews-type sites as secondary: they may support a PROPOSED line but not a confirmation.
+3. Confirm and apply only what you are sure of (primary document read, or full source text read). Everything else stays in 14_review_decisions.md with a PROPOSED line giving evidence and source.
+4. Priorities: (a) TR 2014 vs FAQ conflicts (e.g. LTC advance 95 vs 125 days, Technical Allowance Tier II rule, CTG on a local move); (b) confirm DA after 01-07-2024 from MoD letters and every DA-linked rate card's effective date and 25% step (which allowances carry an escalation clause in their original order); (c) the Rs 9,000 dependency limit; (d) letter-number and date discrepancies; (e) NE/J&K LTC air concession and MoD adoption. Leave old Army orders and 1960s-70s letters that are not online as KEEP.
 
-**Rules you must follow.**
-1. Write every card in our own words; the CITE names only the primary authority (TR 2014 rule, MoD/MoF/DoPT letter, Army order), never the handbook or the website. Run `copycheck.py`; it must print CLEAN.
-2. Limits (the compiler enforces them): title <= 14 words, answer <= 25, <= 3 bullets per section, each bullet <= 12 words, visible text <= 90.
-3. When sources conflict, the TR 2014 text wins over the FAQ, and the newer FAQ wins over the older handbook; always record the conflict as an `O:` line. Store DA-linked figures as base rate plus the 25%-per-50%-DA escalator with an effective date; do not hard-code unexplained rupee figures.
-4. Do not gate cards on finding primary letters; flag them instead. Do not spawn agents unless I ask. Do not commit without asking.
-5. Follow the phased protocol: finish a phase fully (compile and copy checks clean), give a short Phase Summary, then move on.
+Rules that always apply: own words only; the user-facing CITE names only a primary authority, never the handbook or website; keep card limits (title <= 14 words, answer <= 25, <= 3 bullets per section, bullet <= 12 words, visible text <= 90, details <= 120); conflicts: TR 2014 beats FAQ, newer FAQ beats older handbook, record each as an O: line; store DA-linked figures as base + escalator + effective date. Do not spawn agents. Do not commit or push without asking. Ask rather than guess on legal interpretation.
 
-**What to do now, in order.**
-1. Finish the 55 pay FAQ entries (the handbook text for chapters 4-5 is summarised in HANDOFF.md; read the other topics' sections with `pa.py` and the FAQs with `todo_pay.py`).
-2. Write cards for the 89 pay topics that have none (`from=RP-nnn`), starting with chapter 13, then DSOP, accommodation, leave, promotions, additions to pay, allowances, advances, medical. The list is at the end of HANDOFF.md.
-3. Phase D, the error scan (the checklist is in HANDOFF.md), then ask me for a domain-owner review.
-4. Only after that, plan Phase E (the app feature): propose the phases and wait for my approval before touching Kotlin.
+After every batch of edits run, from the repo root:
+  python3 docs/Plan/rule_cards/tools/compile.py --check
+  python3 docs/Plan/rule_cards/tools/copycheck.py          (must print CLEAN)
+At the end: compile (without --check), render_md.py, then regenerate 13_review_queue.md numbers in HANDOFF.md.
 
-Start by running `python3 docs/Plan/rule_cards/tools/compile.py --check` and confirming the numbers above, then continue with step 1.
+Finish with a short Phase Summary (tech debt incurred, how it was resolved or flagged, confirmation that compile passes and copycheck is CLEAN, counts of points confirmed vs still pending). Then STOP and tell me what phase comes next. Do not draft the app feature (Phase E) until I say the dataset is Gold.
+```
+
+## Phase order (one per session)
+- G1: verify pending review points (above).
+- G2: primary-source verification of every TR-cited card (read each cited rule in full, not numbers only) and of every `RATES` card.
+- G3: scope decision and gap-filling (deferred chapters: tax, pension, ECHS, insurance; gallantry; TLA district lists; bed-linen rate).
+- G4: owner sign-off; add a `gold` status to the compiler; define the update path (change log, last-verified date).
+- Phase E (app feature): only after the owner declares the dataset Gold. First deliverable is a phase plan for approval, not code.

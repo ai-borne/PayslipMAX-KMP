@@ -3,9 +3,10 @@ T: Technical Allowance: who gets Tier I and Tier II?
 A: Technically qualified officers on full-time technical duties. Tier I after the young officers' technical course; Tier II after a prescribed course (one course per tier).
 K: Tier I base Rs 3,000 a month from 01-04-2018
 K: Tier II base Rs 4,500 a month from 01-04-2018
-K: Rates rise 25% each time DA rises by 50%
+K: Tier II needs substantive Captain rank and a Tier II course
 C: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018; MoD letter 15(49)/2017/Tech Allce/D(GS-II) dt 25-06-2018
-O: CONFLICT. Handbook says Tier II needs substantive Captain rank; FAQ says Tier II needs detailment by Service HQ. Both may apply. Verify with letter of 25-06-2018.
+D: Both limbs apply. Tier II needs substantive Captain rank and a prescribed Tier II course, with Service HQ detailment. Not for AMC, ADC, AEC, MNS or non-technical officers.
+O: Handbook text prints no DA escalation clause for Technical Allowance; the earlier "rises 25%" bullet was removed. Check the 18-09-2017 letter.
 
 === topic=RP-038 from=SS-P029
 T: Who is not entitled to Technical Allowance?
@@ -46,7 +47,6 @@ K: Graded Rs 3,600, Classified Rs 4,500, Consultant Rs 5,400 monthly
 K: Base rates from 01-07-2017; rise 25% per 50% DA
 K: Not for Brigadier and above (AMC) or Major General and above (ADC)
 C: Rules 88 to 91, Pay and Allowances Regulations for the Army; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017
-O: Handbook quotes MoD letter 5019/DGAFMS/DG-1(b)1729 S(Med) dt 09-08-1984 for the AMC rank bar. FAQ P032 heading says ADC but text says AMC; handbook gives ADC bar for Maj Gen.
 
 === topic=RP-039 from=SS-P034
 T: When is Specialist Allowance not payable?

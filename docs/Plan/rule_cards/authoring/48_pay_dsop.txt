@@ -5,8 +5,7 @@ K: Optional for re-employed officers
 K: Raise twice and reduce once in a financial year
 K: Recovery stops for the last three months before retirement
 C: SAI 1/S/80; SRO 12(E) dt 03-05-2017; MoD letter 4(10)/2017/D(Med) dt 29-09-2017
-D: If the account goes into debit the subscription drops to the minimum, restored after clearing. Subscription above 6% cannot exceed what remains after statutory recoveries such as tax and AGIF. Interest was 7.1% for 01-04-2020 to 31-03-2023 (earlier years 7.6% to 8%).
-O: Interest rates are only as of 2023. Update from the latest MoF notification before showing a rate.
+D: If the account goes into debit the subscription drops to the minimum, restored after clearing. Subscription above 6% cannot exceed what remains after statutory recoveries such as tax and AGIF. Interest has been 7.1% a year since 01-04-2020 (earlier years 7.6% to 8%); the rate is reset each quarter, so show it with its quarter.
 
 === topic=RP-090 id=RB-C21-02 from=RP-090
 T: DSOP Fund advance: purposes, limit and time

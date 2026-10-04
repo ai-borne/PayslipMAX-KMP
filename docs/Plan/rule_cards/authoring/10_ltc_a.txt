@@ -25,8 +25,6 @@ H: Dependent Part II order for parents
 W: Parents visiting you in the field lapses your own LTC
 W: Dependent orders issued after Sep 2023 are verified in the system only
 C: Rule 177A, TR 2014
-O: TA handbook 2023 says parents from home town to duty station are not covered; the newer FAQ says they are. FAQ followed. Confirm.
-O: The old claim-form certificate gives a dependent income limit of Rs 9,000 a month; check the current limit before stating one.
 
 === topic=RR-LTC-01 from=SS-T073,SS-T087,SS-T290
 T: Children studying away: do they get LTC?
@@ -114,14 +112,14 @@ C: Rule 177B(i)(h) and Rule 177A, TR 2014
 
 === topic=RR-LTC-03 from=SS-T070,SS-T071,SS-T069,SS-T067,SS-T091,SS-T108,SS-T247
 T: Field or CI posting: what extra LTC do I get?
-A: An extra railway warrant, two home trips a year. Or use 177C to spend leave where your family lives.
-K: Field, high-altitude, CI or CT areas: one extra warrant a year
-K: 177C replaces 177A/B for one leave spell, to your family's government accommodation
-K: Taking 177C lapses your wife's and children's 177A/B that year
+A: One extra LTC a year under 177C, to where your family lives, on top of 177A or 177B.
+K: 177C: officer only, to the family at home town or SPR
+K: 177C can be taken in the same year as 177A or 177B
+K: Family visiting your duty station: your own 177A/B lapses that year
 W: Family with you at duty station: normal 177A or 177B only
 C: Rule 177A(i)(b) Note and Rule 177C, TR 2014; MoD letter 5(1)/2007/D(Mov)(I) dt 20-08-2007
 D: The unit commander may allow a warrant to another station where your family lives, at no extra cost to the state.
-O: FAQ says 177C can be taken with 177B in the same year and calls the second trip an additional 177C. TR text says 177C replaces 177A/B and the extra trip is a separate additional warrant. TR followed; confirm.
+O: CONFLICT. Owner decision (G2): follow the PCDA(O) FAQ (Dec 2025), which allows 177C with 177B in one year. TR 2014 Rule 177C(a) reads as an option in lieu of 177A/B that lapses the wife and children 177A/B for the year. Authority for the FAQ position not seen.
 
 === topic=RR-ORD-16 from=SS-T058,SS-T293
 T: LTC for officers posted in Andaman and Nicobar
@@ -130,17 +128,18 @@ K: Additional free railway warrant with sea passage, entitled class
 K: Between your duty station and home town or SPR
 K: In addition to normal LTC under 177A or 177B
 C: Rule 177C(c), TR 2014; MoD letter 5(3)/07/D(Mov)/2010 dt 28-04-2010
-O: FAQ cites a 1973 MoD letter for free sea passage once a year to Kolkata or Chennai. TR text is followed; the 1973 letter was not found.
+D: Free sea passage once a year to Kolkata or Chennai is also allowed to officers posted in the islands (older MoD letter, not seen online).
 
 === topic=RR-ORD-10 from=SS-T062,SS-T080,SS-T176
 T: LTC to the North East, J&K or Andaman instead of home town
-A: A time-limited scheme lets officers convert Home Town LTC to air travel there. Check it is still running.
+A: One Home Town LTC can be converted to air travel there. The scheme now runs to 25-09-2028.
 K: Travel by private airlines in your entitled class, from your HQ
 K: Not allowed if your home town and HQ are the same
 K: Works against 177A or 177B; fare capped at the LTC-80 limit
 W: It runs in two-year periods, extended from time to time
-C: Rule 177A and 177B TR; DoPT LTC air-travel relaxation orders
-O: FAQ says the concession ran up to 25-09-2025. Check whether it was extended and add an 'as of' date before publishing.
+C: Rule 177A and 177B TR; DoPT OM 31011/15/2022-Estt.A-IV dt 17-09-2024 and 09-09-2026
+D: One Home Town LTC in a four-year block may be converted. DoPT extended the scheme from 26-09-2024 to 25-09-2026, then to 25-09-2028.
+O: DoPT OMs read (09-09-2026 from a mirror copy). No MoD adoption letter for Army officers found; owner had 25-09-2025, now superseded.
 
 === topic=RR-LTC-01 from=SS-T081
 T: I used a warrant to home town in a year LTC is not due
@@ -149,15 +148,12 @@ K: Applies to a warrant used by mistake to your home station
 K: Form 'D' cost for that journey is recovered the same way
 C: Rule 177A, TR 2014
 
-=== topic=RR-LTC-01 from=SS-T082,SS-T083,SS-T093,SS-T007,SS-T025,SS-T252
-T: LTC for recalled reserve, NCC and Territorial Army officers
-A: They get the same LTC as regular officers, with conditions for each group.
-K: Recalled reserve: counted from recall date, if no LTC taken that year
-K: NCC officers (SSC, whole-time, permanent): as regular officers
-K: Territorial Army: after one year of continuous embodied service
-W: Whole-time and NCC-commission officers need six months' service left
-C: AO 704/1965; AI 201/1954 para 11(c); TA Regulations 1948 para 195-B; AO 549/1967; MoD letter 5431/DGNCC/PC/TCS/MS(B)/1130/A/D(GS-VI) dt 23-05-1980
-O: These are Army orders and MoD letters of 1962 to 1967; none was found publicly.
+--- skip SS-T082 owner review: Army orders of 1950s-60s not verifiable
+--- skip SS-T083 owner review: Army orders of 1950s-60s not verifiable
+--- skip SS-T093 owner review: Army orders of 1950s-60s not verifiable
+--- skip SS-T007 owner review: Army orders of 1950s-60s not verifiable
+--- skip SS-T025 owner review: Army orders of 1950s-60s not verifiable
+--- skip SS-T252 owner review: Army orders of 1950s-60s not verifiable
 
 === topic=RR-LTC-05 from=SS-T084
 T: Bus fare to the rail head when my station has no rail link
@@ -166,7 +162,6 @@ K: HQ without rail: bus fare both ways to the rail head
 K: Rail head to home town without rail: bus fare, entitled class
 K: 177B journeys between stations without rail: road mileage under Rule 179
 C: Rule 177A, 177B and 179 TR; CGDA letter AT/IV/4455 dt 23-10-1986
-O: The CGDA letter was not found publicly.
 
 === topic=RR-LTC-05 from=SS-T090,SS-T116
 T: Breaking my LTC journey midway: what do I get?
@@ -198,12 +193,5 @@ K: Embarkation Authority arranges the sea passage on the OC unit's requisition
 K: Road legs: warrant, or cash payment under Rule 47
 C: Rule 177A(i)(e), TR 2014
 
-=== topic=RR-ORD-16 from=SS-T096
-T: Assam Courier flights on leave (Eastern sector)
-A: Field-area officers in the Eastern sector may use spare Delhi to Jorhat courier space on leave.
-K: Only officers with field service concessions; static units without them are excluded
-K: Leave begins and ends at Delhi
-K: In place of LTC airlift; your LTC beyond Delhi stays
-W: Rail cost from Delhi must not exceed that from your duty station
-C: MoD letter A/32284/Q Mov C/827-S/D(Mov) dt 04-05-1968; AHQ letter 362498/Q Mov Air dt 10-02-1975
-O: These are old letters and were not found publicly; confirm the facility is still in use.
+--- skip SS-T096 owner review: 1968/1975 letters not verifiable
+

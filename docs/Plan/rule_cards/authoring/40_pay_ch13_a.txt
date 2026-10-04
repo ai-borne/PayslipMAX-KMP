@@ -41,7 +41,6 @@ K: MNS officers up to Brigadier: Rs 10,800
 K: Not admissible to NCC officers
 K: NPA is never calculated on MSP
 C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; SRO 21(E) dt 14-07-2017 for MNS
-O: Handbook rule 6(2) text prints both 15,500 and 10,800 for Army; the Maj Gen fixation example uses 15,500, which fits Army. Verify in the SRO.
 
 === topic=RP-034 id=RB-C13-06 from=RP-034
 T: Pay for gentlemen and lady cadets, and for those commissioned from the ranks

@@ -1,21 +1,13 @@
 # General rules batch B: advances, penal interest, routes, charges (SS-T004, SS-T033..SS-T057). Written from TR 2014 Rules 17, 17A, 18, 24, 35, 39, 40, 42, 43, 44, 47 and the handbook.
 
-=== topic=RR-GEN-10 from=SS-T004
-T: Unused warrant tickets: how do I get a refund?
-A: Deposit them with the Station Master, get a certificate, and apply. Railways refund in full for official reasons.
-K: Private reasons: Railways keep 10%, which is debited to your IRLA
-K: Unit authorities pursue the refund; PCDA(O) watches recovery
-K: Apply within six months or the loss is debited to your IRLA
-C: Appx E to SAO 07/S/1984; CGDA letter 4401/AT-P dt 22-07-1969
-O: Army orders and a 1969 CGDA letter; none found publicly.
+--- skip SS-T004 owner review: 1969/1984 orders not verifiable
 
 === topic=RR-GEN-07 from=SS-T033
 T: My TD or LTC was cancelled but I drew an advance
 A: Pay it back at once, to PCDA(O) Pune only, by MRO. It is not recovered automatically.
 K: Delay means recovery with penal interest
-D: The FAQ gives the PCDA(O) MRO code as 4021000009.
+D: Check the current PCDA(O) MRO code on the PCDA(O) Pune website before paying.
 C: Rule 17A, TR 2014
-O: Confirm the MRO code is current before showing it.
 
 === topic=RR-GEN-07 from=SS-T034,SS-T040 chips=RATES
 T: Penal interest on a TA advance: when and how much?
@@ -55,11 +47,12 @@ C: Rule 17 TR; MoD letters 1137/D(Pay/Services) dt 15-02-1963 and 84048/AG/PS3(d
 
 === topic=RR-GEN-07 from=SS-T039
 T: LTC advance: how early, and what conditions?
-A: Draw it up to 125 days before the move. Show the outward tickets within 10 days.
+A: For rail journeys, draw it up to 125 days before the move. Show the outward tickets within 10 days.
 K: Move cancelled: refund the advance at once, in one sum
 K: Outward journey not started within 120 days: refund forthwith
-C: Rule 17(i)(B)(i), TR 2014; MoD letter 12647/LTC/Mov C/62/D(Mov)/2016 dt 19-07-2016
-O: CONFLICT. TR 2014 text says 95 days before the journey; the 2016 MoD letter (per TA handbook) extends it to 125 days. Treating the later letter as the amendment. Verify the letter text.
+C: Rule 17(i)(B)(i), TR 2014; MoD letter 12647/LTC/Mov C/62/D(Mov)/2016 dt 19-07-2016; DoPT OM 31011/8/2015-Estt(A.IV) dt 13-05-2016
+D: TR 2014 originally said 95 days. The 2016 MoD letter raised it to 125 days from 01-04-2015, to suit rail booking. DoPT keeps 65 days for other modes of travel.
+O: CONFLICT (resolved for rail): TR 2014 says 95 days; the later MoD letter says 125. Advance limit for Army air or road LTC not seen; DoPT civil limit is 65 days.
 
 === topic=RR-GEN-07 from=SS-T041
 T: Adjusting an advance: when, and what if I do not

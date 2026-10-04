@@ -30,7 +30,6 @@ A: No. Only one own car can be transported at government cost, by truck or self-
 K: Officers' scale is one motor car, or one motorcycle or scooter
 K: Actual cost is paid for carriage by rail, steamer or craft
 C: Rule 67(e), TR 2014
-O: The FAQ cites 67(v); the TR text shows the car scale under clause (e). Confirm the numbering before publishing.
 
 === topic=RR-PDM-02 from=SS-T258,SS-T263
 T: Leave-cum-posting journey: one claim or two?
@@ -39,7 +38,6 @@ K: Old station to home town: LTC under Rule 177A
 K: Home town to new station: permanent move under Rule 67
 D: Posting via a leave station: you get TA by the direct route old to new, plus LTC for the two legs through the leave station. Family gets LTC only.
 C: Rule 177A and Rule 67, TR 2014
-O: The handbook paragraph continues with the case where one LTC leg is unused (TA under Rule 85); read it in full before extending.
 
 === topic=RR-PDM-02 from=SS-T259,SS-T262
 T: Both spouses serving: baggage and car on transfer?
@@ -65,7 +63,6 @@ K: Same station: municipality or corporation limits, with contiguous suburbs and
 K: Conveyance and baggage: actual cost, capped as under Rule 67
 K: CTG: one-third, once you actually change residence
 C: Rule 81, TR 2014; MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017
-O: TA handbook says one-third of pay in the pay level; the 2017 letter and FAQ say one-third of the CTG (80% of basic). The letter was followed; confirm.
 
 === topic=RR-PDM-02 from=SS-T264,SS-T267
 T: Posted while on leave: can I return to my old station?
@@ -141,4 +138,3 @@ K: Road base rate Rs 50 per km, plus the DA-linked 25% rise
 W: Receipts and vouchers are needed for the claim
 C: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017; Rule 61A, TR 2014
 D: Rates follow the HRA city class (X, Y, Z). Higher X and Y rates apply to moves between X or Y and Z cities. Rule 61A Note 3 also raises rates 25% whenever DA rises 50%.
-O: The FAQ shows Rs 62.5/km (base x 1.25). Confirm the escalation order and date before stating a rupee figure.
