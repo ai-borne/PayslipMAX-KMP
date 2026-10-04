@@ -8,7 +8,7 @@ You are continuing a multi-session task in the PayslipMAX KMP repo (`/Users/suni
 
 **Where we are.** 275 cards are authored: all 229 travel cards (complete) and 46 pay cards (Risk & Hardship, HRA/SPR, leave encashment with LTC, CEA and hostel subsidy, medical OPD, transport allowance). 418 of 474 source entries are covered. 55 pay FAQ entries remain (promotion pay fixation, commencement of pay, technical, flying, specialist, parachute, para reserve, post-graduate, ration money, Siachen/HUACA, HAFA/CFAA/CMFAA, sports increments, accommodation and transit charges). 89 of 95 pay handbook topics still have no card, including the large 7th-CPC pay chapter 13 (handbook pp. 77-104). Nothing is committed to git yet.
 
-**How to work.** Cards live in `docs/Plan/rule_cards/authoring/*.txt` (compact line format described in HANDOFF.md). Never edit `rulebook.json` or `RULEBOOK.md` by hand: run `python3 scripts/rule_dataset/compile.py` then `python3 scripts/rule_dataset/render_md.py` from the repo root. My working tools and the extracted source text are in `~/Downloads/rulecards_workdir/` (run `python3 todo_pay.py` there to see what is uncovered; `packet.py`, `pa.py` and `copycheck.py` are described in HANDOFF.md). If that folder is missing, say so and ask me before rebuilding it: the extracted text comes from my PCDAO PDFs in `~/Downloads/PCDAO PDFs/`.
+**How to work.** Cards live in `docs/Plan/rule_cards/authoring/*.txt` (compact line format described in HANDOFF.md). Never edit `rulebook.json` or `RULEBOOK.md` by hand: run `python3 docs/Plan/rule_cards/tools/compile.py` then `python3 docs/Plan/rule_cards/tools/render_md.py` from the repo root. My working tools and the extracted source text are in `~/Downloads/rulecards_workdir/` (the helper scripts are now in `tools/`; see `README.md`). If that folder is missing, say so and ask me before rebuilding it: the extracted text comes from my PCDAO PDFs in `~/Downloads/PCDAO PDFs/`.
 
 **Rules you must follow.**
 1. Write every card in our own words; the CITE names only the primary authority (TR 2014 rule, MoD/MoF/DoPT letter, Army order), never the handbook or the website. Run `copycheck.py`; it must print CLEAN.
@@ -23,4 +23,4 @@ You are continuing a multi-session task in the PayslipMAX KMP repo (`/Users/suni
 3. Phase D, the error scan (the checklist is in HANDOFF.md), then ask me for a domain-owner review.
 4. Only after that, plan Phase E (the app feature): propose the phases and wait for my approval before touching Kotlin.
 
-Start by running `python3 scripts/rule_dataset/compile.py --check` and confirming the numbers above, then continue with step 1.
+Start by running `python3 docs/Plan/rule_cards/tools/compile.py --check` and confirming the numbers above, then continue with step 1.

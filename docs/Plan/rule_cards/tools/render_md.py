@@ -7,8 +7,7 @@ import json
 import os
 from collections import defaultdict
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-CARDS_DIR = os.path.join(ROOT, 'docs', 'Plan', 'rule_cards')
+CARDS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 DOMAIN_LABEL = {'GEN': 'General rules and claims', 'MOD': 'Modes of travel', 'PDM': 'Permanent duty move', 'TD': 'Temporary duty',
                 'LTC': 'Leave Travel Concession', 'RET': 'Retirement, release, death', 'TPT': 'Transport allowance',
                 'ORD': 'Orders and letters (post-TR)'}

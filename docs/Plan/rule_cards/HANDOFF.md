@@ -1,6 +1,6 @@
 # Rule-card dataset: handoff (read this first)
 
-Last updated 2026-10-04 (end of pay authoring; Phase D automated scan done, domain-owner review pending). Nothing in this folder or in `scripts/rule_dataset/` is committed yet (`git status` shows both untracked).
+Last updated 2026-10-04 (end of pay authoring; Phase D automated scan done, domain-owner review pending). Committed on branch `docs/rule-cards-dataset`. See `README.md` for the layout.
 
 ## What we are building
 A paid in-app **Claim Guide**: a phone-friendly rulebook for PCDA(O) Army officers. One card = one situation: a one-line answer, a few short bullets, the authority to cite, optional collapsed details. Before any app code, we are building the whole dataset in one file, `rulebook.json`, so it can be scanned for errors and then bundled into the app.
@@ -12,7 +12,7 @@ A paid in-app **Claim Guide**: a phone-friendly rulebook for PCDA(O) Army office
 4. **Conflicts:** the **TR 2014 text wins** over the FAQ and the handbook when they disagree; the **newer FAQ wins** over the older handbook; record every conflict as an `O:` line on the card. Figures that rise with DA must be stored as base rate plus the 25%-per-50%-DA escalator; never hard-code a rupee figure without its base and effective date.
 5. Scope of "100% of travel and pay": travel = TD, permanent move, LTC, claims, retirement/death, transport allowance. Pay = Pay & Allowances Handbook chapters 4-9, 12-15, 17-23 and 28. Tax, insurance, pension and ECHS (ch. 24-27, 29-35) are **deferred**; the app already has a Tax Planner.
 
-## Current numbers (from `python3 scripts/rule_dataset/compile.py`)
+## Current numbers (from `python3 docs/Plan/rule_cards/tools/compile.py`)
 - **411 cards**: **229 travel** (complete) and **182 pay** (authored: all FAQs, all 95 pay topics).
 - Source entries covered: all 474 (1 skipped with a reason, 0 uncovered). Pay topics with a card: **95 of 95**.
 - Cards carrying an `O:` open point: 89 (2 flagged CONFLICT); guidance-only (no cite): 40.
@@ -26,7 +26,7 @@ A paid in-app **Claim Guide**: a phone-friendly rulebook for PCDA(O) Army office
 | `docs/Plan/rule_cards/rulebook.json` | Compiled dataset (the app will load this). Generated. |
 | `docs/Plan/rule_cards/RULEBOOK.md` | Human reference, generated from the JSON. Do not hand-edit. |
 | `docs/Plan/rule_cards/ssot.json` | The 474 source entries (FAQ and handbook items) and topic lists; the coverage target. Frozen ids (SS-Txxx travel, SS-Pxxx pay, RP-nnn pay topics). |
-| `scripts/rule_dataset/compile.py`, `render_md.py` | Compile and validate; render the reference. Run from the repo root. |
+| `tools/` | All scripts: `compile.py`, `render_md.py`, `copycheck.py`, `packet.py`, `pa.py`, `todo_pay.py` (see `README.md`). |
 | `docs/Plan/rule_cards/00_inventory_summary.md` and 01-11 | Earlier inventory, registers, verification of 21 order letters (08), card prototype (11). Background only. |
 | `~/Downloads/rulecards_workdir/` | **Working copy of the tools and extracted source text** (outside the repo on purpose: derived from copyrighted PDFs). See Tools. |
 
@@ -45,12 +45,12 @@ O: open point for the reviewer (never shown to users)
 ```
 Card id defaults to `RB-<first from id>`; add `id=` when two cards start from the same source. Travel topics are `RR-*`, pay topics `RP-nnn`. A card may cite a pay-topic id (`from=RP-nnn`) when no FAQ entry exists.
 
-## Tools (run from `~/Downloads/rulecards_workdir/`)
-- `python3 packet.py SS-P001,SS-P002` or `python3 todo_pay.py "Technical Allowance|Flying Allowance"` prints the FAQ/handbook text behind entries that are still uncovered. `python3 todo_pay.py` with no args lists uncovered counts per pay topic.
-- `python3 pa.py "<handbook heading>" <words> [occurrence] [skip]` prints a section of the Pay & Allowances Handbook (occurrence 1 is usually the body; 0 is the index). Handbook, TA handbook and the OCR'd TR text are plain .txt files there; `tr_rules_full.json` holds TR 2014 rule text by rule number.
-- `python3 copycheck.py` flags any run of 8+ identical words between card text and the sources. Must print CLEAN.
-- Then from the repo root: `python3 scripts/rule_dataset/compile.py --check` then without `--check`, then `render_md.py`.
-- Workflow per batch: read sources (handbook section + FAQs), write cards in `authoring/NN_*.txt`, compile, fix limit errors (bullets are the usual offender: keep them under 12 words), run copycheck, repeat. Use `python3 scripts/rule_dataset/compile.py --check --uncovered` for what is left.
+## Tools (all in `tools/`; source text stays in `~/Downloads/rulecards_workdir/`, override with `RULECARDS_SOURCES`)
+- `python3 docs/Plan/rule_cards/tools/packet.py SS-P001,SS-P002` or `.../tools/todo_pay.py "Technical Allowance|Flying Allowance"` prints the FAQ/handbook text behind entries that are still uncovered. `todo_pay.py` with no args lists uncovered counts per pay topic.
+- `.../tools/pa.py "<handbook heading>" <words> [occurrence] [skip]` prints a section of the Pay & Allowances Handbook (occurrence 1 is usually the body; 0 is the index). Handbook, TA handbook and the OCR'd TR text are plain .txt files there; `tr_rules_full.json` holds TR 2014 rule text by rule number.
+- `.../tools/copycheck.py` flags any run of 8+ identical words between card text and the sources. Must print CLEAN.
+- Then from the repo root: `python3 docs/Plan/rule_cards/tools/compile.py --check` then without `--check`, then `render_md.py`.
+- Workflow per batch: read sources (handbook section + FAQs), write cards in `authoring/NN_*.txt`, compile, fix limit errors (bullets are the usual offender: keep them under 12 words), run copycheck, repeat. Use `python3 docs/Plan/rule_cards/tools/compile.py --check --uncovered` for what is left.
 
 ## DONE
 - Source inventory, TR 2014 OCR (macOS Vision), dedup into 474 entries / 162 topics, 21 order letters checked against primary text (`08_order_letter_verification.md`).

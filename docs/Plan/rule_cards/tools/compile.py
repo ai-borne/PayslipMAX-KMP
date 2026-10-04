@@ -27,8 +27,7 @@ import re
 import sys
 from collections import Counter, defaultdict
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-CARDS_DIR = os.path.join(ROOT, 'docs', 'Plan', 'rule_cards')
+CARDS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 AUTH_DIR = os.path.join(CARDS_DIR, 'authoring')
 LIMITS = {'answer': 25, 'bullets': 3, 'bullet_words': 12, 'visible': 90, 'details': 120, 'title': 14}
 CHIPS = {'RATES', 'AMENDED', 'GUIDANCE'}
