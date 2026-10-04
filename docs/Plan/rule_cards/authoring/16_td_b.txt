@@ -1,0 +1,159 @@
+# Temporary duty batch B: modes, documents, leave, special duties (SS-T155..SS-T346). Written from TR 2014 Rules 61, 61A, 111, 121, 131, 132, 136, 138, 141, 149-152, 157, 161, 162, 175.
+
+=== topic=RR-ORD-06 from=SS-T155
+T: Single officer, peace to peace: baggage allowed?
+A: Up to 6,000 kg of baggage and your vehicle, moved between your two stations.
+K: Applies to a permanent posting between peace stations
+C: Rule 61A, TR 2014; MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017
+
+=== topic=RR-MOD-03 from=SS-T156
+T: Road mileage on TD: which legs are paid?
+A: Without government transport, one road mileage each way between HQ, the railway station and the duty point.
+K: Rate is the RTO-fixed taxi or rickshaw rate there
+K: Government pool transport may be provided where essential
+C: Rule 61 and Rule 111, TR 2014; AI 24/1977
+
+=== topic=RR-MOD-04 from=SS-T158
+T: Using a service aircraft while on leave
+A: Not allowed without specific Government orders. Otherwise the civil airfare is recovered from you.
+K: Exceptions are certain air courier services under specific orders
+C: MoF (Def/Air) letter 1717/BUD/AF dt 27-07-1965
+
+=== topic=RR-ORD-04 from=SS-T185
+T: GST on a hotel stay on TD: reimbursed?
+A: Yes. The hotel ceiling excludes GST, and GST is reimbursed on top.
+K: Applies to hotel or guest-house stays on tour
+K: GST is worked out on the actual charges paid
+C: DoE OM 19030/2/2017-E.IV dt 29-06-2018
+D: The first clarification that GST is outside the ceiling was dated 10-10-2017.
+
+=== topic=RR-ORD-07 from=SS-T186,SS-T202 chips=GUIDANCE
+T: Move sanction, movement order or detention certificate: which proves the TD period?
+A: The move sanction. It must show the TD period; the others cannot replace it.
+K: Detention certificate shows how long you were detained at the TD station
+K: Movement order shows only the date you moved from the unit
+W: A similar claim passed for someone else is no precedent
+
+=== topic=RR-ORD-07 from=SS-T187,SS-T190 chips=GUIDANCE
+T: Certificates to include in a TD claim
+A: State your stay, and how you travelled by road.
+K: Stay: hotel or guest room, free messing, free transport; yes or no
+K: Road: own car, shared taxi, or full taxi or auto
+K: If you claim mileage: that no government transport was used
+
+=== topic=RR-ORD-05 from=SS-T189 chips=GUIDANCE
+T: Car conveyance rate between X, Y and Z cities
+A: Paid at the road mileage rate of the city you start from, whatever the city class.
+K: Not based on the weight of the car
+
+=== topic=RR-LTC-05 from=SS-T231 chips=GUIDANCE
+T: A free last leg of my LTC journey: how to claim?
+A: Show the whole journey up to your home town in the claim, even if that last leg is not paid.
+K: Leaving it out can lead to rejection for not visiting the place
+K: Resubmit the claim with the clarification
+
+=== topic=RR-TD-05 from=SS-T330
+T: Attending a conference on my own request
+A: If government interest is served, you get conveyance of your entitled class each way.
+K: Officially sent to a conference: TA and DA as for temporary duty
+K: Moves not covered by the regulations are sanctioned under Rule 4(ii)
+C: Rule 136, TR 2014
+
+=== topic=RR-TD-05 from=SS-T331
+T: Regimental conferences: who gets TA and DA?
+A: TD-scale TA and DA for one officer per infantry battalion, every two years.
+K: To the regimental centre of the battalion's group
+K: Commanding Officers of Gorkha units: the annual conference at Kunraghat
+C: Rule 138, TR 2014
+
+=== topic=RR-TD-06 from=SS-T332,SS-T333
+T: Sports meetings and championships: TA and DA
+A: Normal TD TA and DA for Board meetings. Army officers in Services Championships get a warrant only.
+K: National championships, tournaments, coaching camps: TD scale
+K: Preliminary and final rounds of Services Championships: warrant, no DA
+K: Claims must be countersigned by the officer who convened the meeting
+C: Rule 141 and Rule 142, TR 2014
+
+=== topic=RR-TD-07 from=SS-T334
+T: Travel to training camps and exercises
+A: Participants travel on a railway warrant. Travel another way and you get the cost of the warrant.
+K: Staff exercise at IHQ of MoD (Army): TD-scale TA and DA
+K: Artillery practice camps: TD scale, except with units or as spectators
+K: HQ officers on manoeuvres, inspecting or as spectators: TD scale
+C: Rule 121, TR 2014
+
+=== topic=RR-TD-08 from=SS-T335,SS-T336
+T: Referred to another station for treatment: what is paid?
+A: TA at TD scale for the journey only. No DA and no food charges.
+K: Also for dental treatment under the medical rules
+K: Also when moved to a service hospital where your station has none
+C: Rule 157, TR 2014
+
+=== topic=RR-TD-09 from=SS-T337,SS-T338
+T: TD while on leave, or leave before and after TD
+A: Annual leave added to a TD gives one-way fare only. Casual leave does not change your fare.
+K: TD detailed on leave: TA from your leave place and back
+K: Casual leave combined with TD: no DA for those days
+H: Prior permission of the Controlling Officer
+C: Rule 150(i) and (ii), TR 2014
+
+=== topic=RR-TD-09 from=SS-T339
+T: Officiating in a leave vacancy: TA and DA?
+A: TD-scale TA and DA with sanction, if the absent officer's duties cannot be left unattended.
+K: AMC officers: DGAFMS sanctions; NCC officers: DGNCC
+K: AMC officers covering casual leave over 5 days: normal TA and DA
+C: Rule 150, TR 2014
+
+=== topic=RR-TD-09 from=SS-T340
+T: Recalled from leave: what is paid?
+A: TA at TD scale for the return from where the order reaches you. Not for casual leave.
+K: The leave authority certifies the emergency could not be foreseen
+K: Leave must be cut short by more than half
+K: Returning later to finish leave: TA at the same scale
+C: Rule 151(i) and (ii), TR 2014
+
+=== topic=RR-TD-10 from=SS-T341
+T: Colonel of the Regiment: visits to units
+A: TD-scale conveyance by air, rail, road and sea for yearly unit visits.
+K: Armoured regiment: one visit a year
+K: Infantry regiment up to 12 battalions: six visits a year
+K: More than 12 battalions: visits equal to 50% of the battalions
+C: Rule 152, TR 2014
+
+=== topic=RR-TD-11 from=SS-T342
+T: Collecting tickets, visas or passports for an official journey
+A: Conveyance by public transport is admissible, for you or the person you depute.
+K: Within India and abroad
+K: Controlling Officer controls the facility
+C: Rule 175, TR 2014
+
+=== topic=RR-TD-11 from=SS-T343
+T: NCC camps: DA for regular officers posted to NCC
+A: DA at one-quarter of the Rule 114-A rate.
+K: Applies to regular officers attending NCC camps
+C: Rule 119B, TR 2014
+
+=== topic=RR-TD-11 from=SS-T344
+T: Liaison or security duty with foreign dignitaries: TA and DA
+A: Normal TA to join the delegation and return to your duty station.
+K: Travel class: your normal entitlement as far as possible
+K: A higher class only where absolutely necessary
+K: No DA in transit; food and incidentals paid by Government
+C: Rule 149, TR 2014
+D: A higher rail class needs prior MoD sanction. Road and air travel with the dignitary is allowed where necessary.
+
+=== topic=RR-TD-12 from=SS-T345
+T: Witness in a court: conveyance?
+A: Free conveyance if the facts you testify to came from your public duties.
+K: Civil court in a criminal case involving state interests: free conveyance
+K: Do not accept TA from the court when conveyance is provided
+K: Summoned while on leave: conveyance as if on duty
+C: Rule 131 and Rule 132, TR 2014
+
+=== topic=RR-TD-13 from=SS-T346
+T: Relatives visiting a dangerously ill officer, or a funeral
+A: Free conveyance for two relatives to visit, or three persons for a funeral.
+K: Same class as the patient or the deceased, by rail or road
+K: Battle casualty in hospital over three months: two relatives every six months
+W: Not if the illness or death is due to your own misconduct
+C: Rule 161 and Rule 162, TR 2014

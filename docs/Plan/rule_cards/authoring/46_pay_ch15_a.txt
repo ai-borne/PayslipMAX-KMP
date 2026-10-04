@@ -1,0 +1,117 @@
+=== topic=RP-053 from=RP-052,RP-053 chips=RATES
+T: Dearness Allowance: when is it revised and what counts as pay?
+A: DA is revised twice a year, from 1 January and 1 July, on matrix pay plus MSP and NPA only.
+K: No other special pay is included
+K: Paid on leave except leave without pay and allowances
+K: Leave DA is based on leave salary actually drawn
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+D: Rates in the handbook: 01-01-2016 nil; 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%. The 2020 to mid-2021 rates were frozen and applied only to officers who retired in that period.
+O: DA after 01-07-2024 (55%, 58%, 60% reported) is not yet confirmed from MoD letters. The 25% step applies from 01-01-2024 only to allowances whose original order carries an escalation clause.
+
+=== topic=RP-054 from=RP-054 chips=GUIDANCE
+T: What happened to Kit Maintenance Allowance?
+A: It was merged into a single Dress Allowance from 01-07-2017.
+K: Do not claim Kit Maintenance Allowance separately
+C: MoD letter PC-1(16)/2017/D(Pay/Services) dt 16-11-2017
+
+=== topic=RP-057 from=RP-057
+T: Special Compensatory (Counter Insurgency) Allowance: who and how much?
+A: Troops on counter insurgency operations: Rs 16,900 in field areas, Rs 13,013 in modified field areas, Rs 10,500 in peace areas.
+K: Base rates from 01-07-2017; rise 25% per 50% DA
+K: Local unit needs commander's certificate of actual CI duty
+K: Under 30 days: paid pro rata
+C: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018; MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994
+D: Operations named in the handbook: Rakshak, Rhino, Orchid and Hifazat I. No other area-based allowance is paid, but High Altitude Allowance is. Army officers in BRO units in J&K and the North East are not involved in CI operations and do not get it (MoD DO letter 16(1)/2006/D(Pay/Services) dt 02-07-2008).
+
+=== topic=RP-059 from=RP-059
+T: High Altitude Allowance: who qualifies and how much?
+A: Posted to units at 9,000 feet or more. Monthly: Category I Rs 3,400, Category II Rs 5,300, Category III Rs 25,000.
+K: Cat I: 9,000 to 15,000 feet; Cat II: above 15,000 feet
+K: Cat III: 14,000 to 19,000 feet in notified difficult areas
+K: Base rates from 01-07-2017; rise 25% per 50% DA
+C: MoD letter F 69/3/75/D(Pay/Services) dt 28-02-1976; Rule 173, Pay and Allowances Regulations for the Army; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017
+D: Paid on permanent posting, on detachment or attachment over 14 days without DA, and in transit between qualifying areas. Not paid on annual or sick leave, or on duty elsewhere for over 14 days. Absence up to 14 days on sick list, casual leave or TD keeps it. Also paid with SCCIA and field area allowances, not with Siachen Allowance. MNS officers get the same.
+
+=== topic=RP-060 from=RP-060,RP-061
+T: Training allowance for faculty: 24% or 12% of basic pay
+A: Faculty at the listed training academies get 24% of basic pay, other listed establishments 12%, from 01-07-2017.
+K: Only for faculty on posting who will go back
+K: No Deputation Duty Allowance alongside
+K: Not for permanent or administrative staff
+C: MoD letter PC-1(16)/2017/D(Pay/Services)/Pt.II dt 28-11-2019; DoPT letter 13024/01/2016-Trg. Ref dt 24-10-2017
+D: 24%: NDC, DSSC, NDA, CDM, IMA, OTA Chennai, Army War College, CAATS, DIQA and ITM. 12%: AFMC, corps centres and schools, and all regimental training centres, as per Appendix B of the 2019 letter. Allowance continues during study or training tours and counts for leave salary.
+O: Check Appendix A and B lists against the current MoD letter; lists change.
+
+=== topic=RP-062 from=RP-062
+T: Deputation (Duty) Allowance: who gets it and how much?
+A: For temporary transfer outside the regular line. Choose 50% of civil rates with service concessions or 100% without them.
+K: Same station with concessions: 2.5%, max Rs 2,250
+K: Change of station with concessions: 5%, max Rs 4,500
+K: Without concessions: 5% or 10%, max Rs 4,500 or 9,000
+C: MoD letter 13(1)/87/D(Pay/Services) dt 25-09-1987; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018
+D: Percent is of basic pay; ceilings rise 25% per 50% DA, from 01-07-2017. Special pays like parachute or flying are not allowed with it unless the sanction says so; Technical, Specialist, NPA and Qualification Pay continue. Also payable to officers in civil employ, Estt 22 (SFF), Coast Guard and Assam Rifles. Not with Training Allowance or Special Security Allowance.
+
+=== topic=RP-063 from=RP-063,RP-064
+T: Language Allowance and Language Award
+A: Language Allowance: Category I Rs 2,025, II Rs 1,689, III Rs 1,350 a month. Language Award has no orders after 31-03-1997.
+K: For translators, interpreters and instructors in active use
+K: Must pass the annual School of Language test
+K: Rates rise 25% each time DA rises by 50%
+C: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018; MoD letter 22(1)/83/D(GS-II) dt 03-02-1984
+D: Part II order certificate is endorsed by an officer of Lt Col rank or above. Base rates from 01-07-2017.
+O: Language Award orders after 31-03-1997 were still awaited per the handbook.
+
+=== topic=RP-065 from=RP-065,RP-067
+T: Special Security Allowance for DG (Security), SFF and NTRO deputation
+A: 20% of matrix basic pay from 01-07-2017, excluding MSP and special pay.
+K: Replaces NTRO Special Allowance
+K: Not with Deputation Duty Allowance
+K: SFF officers also get Hazard Pay; Hard Area Allowance not alongside
+C: Cabinet Secretariat Order 1/27/2016-EA.I-1332 dt 11-07-2017; NTRO order V(B)MISC(7th CPC)/19177/2014/20149-721 dt 02-08-2018; MoD letter 4(15)/58/99/S(MS) dt 25-02-1970
+D: Special Security Allowance began 05-06-2006 for SFF deputation under HQ 22 Establishment and 22-08-2005 for NTRO.
+
+=== topic=RP-066 from=RP-066 chips=RATES
+T: Hazard Pay for Special Group (SFF)
+A: Monthly by rank from 01-01-2014: Lieutenant Rs 13,500, Captain Rs 16,500, Major and above Rs 21,000.
+K: 7th CPC revised rates were still awaited
+C: Cabinet Secretariat Order 14(9)/89-EA.II-503 dt 03-06-2002; letter F.No.14(3)/2009-EA.II-376 dt 20-07-2010
+O: Handbook says revised rates under the 7th CPC are awaited; re-verify.
+
+=== topic=RP-068 from=RP-068
+T: Hard Area Allowance in Nicobar, Minicoy and Lakshadweep
+A: Nicobar and Minicoy: 20% of basic pay. Listed Lakshadweep islands: 12%. Choose the better of this or another special compensatory allowance.
+K: Payable with Island Special Duty Allowance
+K: Paid during leave and courses under MoF OM of 1965
+K: With field concessions you get the higher of the two
+C: MoD OM PC-1(16)/2017/D(Pay/Services) Pt.II dt 17-05-2018; MoF OM 2(37)-EII(B)/64 dt 27-11-1965
+D: Applies from 01-07-2017. Not paid with Special Security Allowance.
+
+=== topic=RP-069 from=RP-069
+T: Hardship Allowance for SFF at Chakrata
+A: 10% of basic pay from 01-07-2017 for officers on SFF deputation at Chakrata.
+K: In place of Special Duty Allowance
+K: Not with CFAA, CMFAA or SCCIA
+K: Not during any leave, joining time or suspension
+C: Cabinet Secretariat Order 20/5/2017-EA-I-1808 dt 20-09-2018; Cabinet Secretariat Order 23/14/2006-EA.III dt 16-03-2009
+
+=== topic=RP-070 from=RP-070
+T: SPIC Allowance
+A: Rs 16,900 a month at SPIC sites, Rs 10,500 at SPIC HQ, from 01-07-2017.
+K: Director SPIC certifies admissibility
+K: Payable with Flying, Field or Deputation Allowance
+K: Rises 25% each time DA rises by 50%
+C: MoD DRDO letter SPIC/SPL ALLCE/ADMIN/2017/459/S/R&D dt 28-12-2017
+
+=== topic=RP-071 from=RP-071
+T: Child care allowance for women officers with disability
+A: Women with at least 40% disability get Rs 3,000 a month from the child's birth until two years of age.
+K: Maximum two eldest surviving children
+K: No double rate for multiple births
+K: Rises 25% each time DA rises by 50%
+C: MoD letter 1(23)/2017/D(Pay/Services) dt 15-09-2017; DoPT OM 12011/04/2008-Estt.(Allowance) dt 11-09-2008
+
+=== topic=RP-072 from=RP-072
+T: Strategic Forces Allowance
+A: Rs 16,900 a month for officers of Installation Security Force; Rs 10,500 for HQ SFC and its units, from 01-07-2017.
+K: Rises 25% each time DA rises by 50%
+C: MoD secret letter SFC/TS 2005/3/Ops/(PC-II) dt 28-12-2017

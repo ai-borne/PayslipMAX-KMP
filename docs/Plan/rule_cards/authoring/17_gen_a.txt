@@ -1,0 +1,156 @@
+# General rules batch A: definitions, sanction, documents, family lien (SS-T001..SS-T032). Written from TR 2014 Rules 2, 3, 4, 6, 9, 14, 16, 17A, 202, 204 and the handbook.
+
+=== topic=RR-LTC-05 from=SS-T001
+T: What do 177A, 177B, 177C and 177D mean?
+A: 177A is Home Town LTC. 177B is anywhere in India. 177C is for field officers. 177D is study leave.
+K: 177A: you, family and dependent parents, every year
+K: 177B: you, spouse and children, in alternate years
+K: Family visits you in the field under 177B: your own 177B lapses
+C: Rule 177, TR 2014
+
+=== topic=RR-GEN-01 from=SS-T002
+T: Who counts as my family for TA and LTC?
+A: Your spouse, two surviving unmarried children, and wholly dependent relatives as Rule 2 defines.
+K: Parents and step-parents: living with you and wholly dependent
+K: Minor brothers, unmarried, widowed or separated sisters, living with you
+W: LTC covers only two surviving children, with some exceptions
+W: For LTC, dependent parents qualify even if they live elsewhere
+C: Rule 2(p), TR 2014; MoD letter 12647/Q Mov C/2610/D(Mov)/98 dt 11-09-1998
+
+=== topic=RR-GEN-01 from=SS-T003
+T: Attending a court of inquiry or court martial as the accused
+A: It counts as duty. TA and DA are paid if the move is sanctioned and not held at your request.
+K: Not treated as a transfer for misconduct
+K: Sanction must come from the Competent Authority in Appendix III
+C: Note 1 under 'Duty', Rule 2, TR 2014
+
+=== topic=RR-GEN-01 from=SS-T005
+T: When is TA admissible?
+A: Only for bonafide official duty, not for personal convenience or misconduct.
+K: A transfer at your own request can count as public interest
+K: For misconduct, a commander may still permit travel on duty
+C: Rule 2 and Note 2 below 'Duty', TR 2014
+
+=== topic=RR-ORD-04 from=SS-T010,SS-T200
+T: Staying in a hotel on TD: the non-availability certificate
+A: Hotel bills are admitted only with the prescribed detention certificate saying no guest room was available.
+K: Hotel is allowed only when all available guest rooms are occupied
+K: Certificate carries the case file number, station and date
+K: The issuer checks that all guest rooms were full
+C: IHQ (Army) ADG PS, AG's Branch, SAPCS Advisory 03/2022; MoD letter 12630/TA/Mov C/198/D(Mov)/2018 dt 06-12-2018
+D: Local journeys over 8 km between TD points more than 50 km apart in one city are made as civilians do; a taxi or scooter needs prior permission. Free board and lodging no longer gives 25% DA, but food bills still fall by the ration cost under Rule 114(xii).
+O: Handbook prints the 2018 MoD letter as 12650 in one place and 12630 elsewhere; confirm the number.
+
+=== topic=RR-GEN-02 from=SS-T013,SS-T009
+T: Who sanctions my TD move?
+A: The authority listed in Appendix III, only for moves the regulations or a Government letter allow.
+K: Other moves need specific sanction under Rule 4(ii)
+K: No authority can sanction their own move; the next higher one does
+K: NPF audit: certificate that officers are not available locally
+C: Rule 4(ii) TR; AO 237/1970; CGDA letter AT/IV/4416/Vol.II dt 10-07-1984
+
+=== topic=RR-GEN-02 from=SS-T008
+T: Delegating a Controlling Officer's powers
+A: The Controlling Officer needs the Competent Authority's express permission, and the delegation must say whose powers they are.
+K: Powers may be the local superior's or the Controlling Officer's
+K: Only the Controlling Officer's powers need that permission
+C: Rule 3, TR 2014
+
+=== topic=RR-GEN-02 from=SS-T011
+T: Documents to attach to a TD claim
+A: The original move sanction, the duty performed, the warrant number and date, and the actual fare paid.
+K: Move sanction in original, under Appendix III or Rule 4(ii)
+K: The specific duty you performed at the outstation
+K: Actual mode and fare from duty point to station, with a certificate
+C: Rule 4(ii) and Appendix III, TR 2014
+
+=== topic=RR-GEN-02 from=SS-T014
+T: Filling in a railway warrant or Form 'D'
+A: The issuing authority checks your entitlement, fills every column and quotes your CDA(O) account number.
+K: Newly commissioned officers quote their personal number
+K: State that PCDA(O) adjusts the cost of the warrant
+C: AO 179/1978
+O: The handbook text on using more than one warrant is cut off; read in full.
+
+=== topic=RR-GEN-03 from=SS-T015 chips=GUIDANCE
+T: Sharing a hotel room: how is it reimbursed?
+A: Proportionately, by the number of officers or family members who share.
+K: The amount paid is divided among those sharing the room
+
+=== topic=RR-GEN-03 from=SS-T016 chips=GUIDANCE
+T: Where do I send TA/DA claims for a posting or TD abroad?
+A: To PCDA(O) Pune.
+K: Applies to posting, TD or deputation abroad
+
+=== topic=RR-GEN-03 from=SS-T017,SS-T018
+T: Who countersigns my TA claim?
+A: If a Competent Authority sanctioned the move, your local superior. Otherwise your Controlling Officer.
+K: Major General and above can claim without countersignature
+K: Officers in Appendix IV can too
+W: They still cannot sanction their own move
+W: If you are your own Controlling Officer, your immediate superior countersigns
+C: Rule 6 and Rule 202, TR 2014
+
+=== topic=RR-GEN-03 from=SS-T019
+T: State hospitality on TD: certificate to attach
+A: Attach a certificate from the CO of the TD station showing any free messing and accommodation you had.
+K: It lets the Controlling Authority check your claim
+C: Note below Rule 9(a), TR 2014
+
+=== topic=RR-GEN-03 from=SS-T020
+T: Why are TA claims returned?
+A: Incomplete claims are returned. Give full particulars, original sanctions signed in ink, and vouchers.
+K: Countersigning authority makes the Rule 9 checks
+K: Returned claims mean delay and avoidable correspondence
+C: Rule 9, TR 2014
+
+=== topic=RR-GEN-04 from=SS-T021
+T: Preparing a claim: form, ink and advance adjustment
+A: Claims must be legible, in ink or typed, on the prescribed form. Adjust an advance on time.
+K: Advance drawn: adjust within 60 days (TD, move) or 30 days (LTC)
+K: Prefer the adjustment immediately after the return journey
+W: Late adjustment is recovered with penal interest
+C: Rule 17A TR; MoD letter 12630/TA/Mov C/198/D(Mov)/2018 dt 06-12-2018
+
+=== topic=RR-GEN-05 from=SS-T022
+T: Promoted with retrospective effect: is my TA revised?
+A: Not for the period before the notification, unless your duties changed.
+K: Claims not yet audited follow the retrospective notification
+K: Claims already audited are not revised
+C: Rule 14, TR 2014
+
+=== topic=RR-GEN-06 from=SS-T023,SS-T028,SS-T029,SS-T030
+T: Family follows me on a permanent move: time limit
+A: Within six months of your move. Special cases up to one year, with sanction.
+K: Waiting for accommodation: six months run from when it is available
+K: Car: six months from your own move
+K: Within the limit, family and baggage count as accompanying you
+C: Rule 16(ii)(a), (e) and (h), TR 2014; AO 387/1973
+
+=== topic=RR-GEN-06 from=SS-T030,SS-T031
+T: Retirement: lien on conveyance
+A: Use your retirement conveyance within one year. Family may go ahead by two months, or follow within a year.
+K: Two months from your retirement; the year from your own move
+K: DGOL & SM can extend the year
+C: Rule 16(i)(a) and Rule 204, TR 2014
+
+=== topic=RR-GEN-06 from=SS-T024,SS-T026
+T: Family sent ahead, then my posting is cancelled
+A: Family and baggage sent early travel at your own risk. A refund of baggage cost is possible.
+K: Baggage refund at goods-train rate, if not sent unduly early
+K: No compensation for the family's journey if the posting changes
+K: The family's claim is admitted finally only when you actually move
+C: Rule 16(ii)(d) and (g), TR 2014
+
+=== topic=RR-GEN-06 from=SS-T032
+T: Baggage and car moved in stages (A to B to C)
+A: The six-month limit also covers baggage and car, with weight and cost capped across the stages.
+K: Total weight must not exceed the maximum scale
+K: Total cost must not exceed A-to-B plus B-to-C
+C: Rule 16(f), TR 2014
+
+=== topic=RR-GEN-06 from=SS-T027
+T: Lien beyond one year: who sanctions?
+A: DGOL & SM for family and baggage. DGOL for private conveyance.
+K: Applies to permanent transfer, beyond one year from your move
+C: Rule 16 and Appendix XI, TR 2014

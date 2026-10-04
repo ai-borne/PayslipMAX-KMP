@@ -1,0 +1,209 @@
+# LTC batch A: Home Town LTC, field-area and special cases (SS-T058..SS-T099). Written from TR 2014 Rule 177 first, then FAQ and handbook.
+
+=== topic=RR-LTC-01 from=SS-T088
+T: Home Town LTC: what do I get?
+A: From your second year of service, free travel to your home town or SPR once a year. Unused LTC lapses.
+K: Free conveyance by your entitled mode and class, direct route
+K: Your family, as defined in Rule 2, can travel once too
+K: Alternate years: any place in India instead of home town
+W: The concession lapses if you do not use it in its year
+C: Rule 177A(i)(a) and (b), TR 2014
+
+=== topic=RR-LTC-01 from=SS-T063,SS-T089
+T: Can my family take LTC without me?
+A: Yes. Your family has its own title, even if you take no LTC that year.
+K: Works even when you are on sick leave at your home town
+K: Not for the family of an officer with under one year's service
+C: Rule 177A and Rule 177B(i)(a), TR 2014
+
+=== topic=RR-LTC-01 from=SS-T075,SS-T078,SS-T061,SS-T086
+T: Parents' LTC: when can they travel?
+A: Dependent parents get a yearly LTC under 177A: to your home town, or to you if they live there.
+K: Yearly visit from your duty station to your home town
+K: Parents living in your home town can visit your duty station
+H: Dependent Part II order for parents
+W: Parents visiting you in the field lapses your own LTC
+W: Dependent orders issued after Sep 2023 are verified in the system only
+C: Rule 177A, TR 2014
+O: TA handbook 2023 says parents from home town to duty station are not covered; the newer FAQ says they are. FAQ followed. Confirm.
+O: The old claim-form certificate gives a dependent income limit of Rs 9,000 a month; check the current limit before stating one.
+
+=== topic=RR-LTC-01 from=SS-T073,SS-T087,SS-T290
+T: Children studying away: do they get LTC?
+A: Yes. One visit a year from their college or hostel to the family, from 01-09-2008.
+K: Covers children staying in hostels, under 177A or 177B
+H: Bonafide certificate from the college or institute
+W: Not extra: one LTC only in a calendar year
+C: Rule 177A(viii), TR 2014; MoD letter 12647/LTC/Mov C/2970/D(Mov)/08 dt 17-12-2008
+
+=== topic=RR-LTC-01 from=SS-T076,SS-T110
+T: LTC in my first year after commission?
+A: No separate LTC if you used the free pre-joining warrant. If unused, claim with an IMA or OTA certificate.
+K: The free home trip before you joined counts as that year's LTC
+K: Anywhere-in-India LTC: not if you took LTC as a cadet that year
+H: IMA or OTA certificate, if the free warrant was not used
+C: Rule 177A(i)(a), TR 2014
+
+=== topic=RR-LTC-01 from=SS-T064
+T: Family still at my old station: LTC there instead of home town?
+A: Yes, under 177A. But your wife's 177B entitlement lapses for that year.
+K: Old duty station can replace home town under 177A
+K: Wife's Anywhere-in-India LTC lapses for that year
+H: Non-availability certificate from your new duty station
+C: Rule 177A(i)(d), TR 2014
+
+=== topic=RR-LTC-05 from=SS-T079
+T: Sick leave on a medical board's advice: LTC?
+A: You get free conveyance to the place the Medical Board recommends. It does not use up your LTC.
+K: Any place in India the Medical Board recommends
+K: Your 177A and 177B eligibility is unaffected
+C: Rule 177A(iii), TR 2014
+
+=== topic=RR-LTC-05 from=SS-T085
+T: Duty stopped me taking LTC: can I carry it forward?
+A: Yes, if service exigencies prevented it. Use it next year; it counts as used in the original year.
+K: Applies only when exigencies of service stopped you
+K: Next year's eligibility counts it as taken in the original year
+C: Rule 177A(ii), TR 2014
+
+=== topic=RR-LTC-05 from=SS-T077
+T: Leave at year end: can the journey start next year?
+A: Only if the leave was granted at year end and both journeys fall inside that leave.
+K: Covers annual, casual, furlough, maternity and child-care leave
+K: Onward and return journeys must both be within the leave
+K: Next year's own LTC entitlement is not affected
+C: Rule 177A(v), TR 2014
+
+=== topic=RR-LTC-05 from=SS-T065 chips=GUIDANCE
+T: Can I change an admitted LTC claim to another rule?
+A: No. Once a claim is admitted under one rule, it cannot be changed or amended.
+K: Example: an admitted 177B claim cannot be switched to 177C
+K: Choose the rule carefully before you submit
+
+=== topic=RR-LTC-05 from=SS-T092
+T: Which rule do I write on the LTC claim?
+A: Name the exact rule and sub-clause. The claim form lists each one to tick.
+K: 177A Home Town; 177B anywhere in India
+K: 177C field officer visiting family at SPR; 177D study leave
+K: Hostel children: 177A or 177B clause
+C: Rule 177, TR 2014
+
+=== topic=RR-LTC-05 from=SS-T094,SS-T139,SS-T230,SS-T298
+T: What does LTC pay for, and what not?
+A: Travel only. No daily allowance, incidental expenses or local journeys.
+K: Applies on annual, casual, furlough, maternity and child-care leave
+K: Free baggage allowance only
+K: Since 20-08-2007: no distance limit for the alternate-year trip
+C: Rule 177A(i)(a) and (c), TR 2014; MoD letter B/33922/AG/PS-2(b)/3080/D(AG-II) dt 19-11-2018
+
+=== topic=RR-LTC-02 from=SS-T074,SS-T105,SS-T121
+T: Anywhere-in-India LTC (177B): how often?
+A: In alternate calendar years, for you, your wife and dependent children, to any place in India.
+K: Taken in 2023 means not available in 2024
+K: Not in the same year as Home Town LTC (177A)
+K: Wife and children's return must finish within six months
+C: Rule 177B(i)(a) and (vii), TR 2014
+
+=== topic=RR-LTC-03 from=SS-T059,SS-T066,SS-T072,SS-T069,SS-T061,SS-T102
+T: Family visits me at my station: effect on my LTC?
+A: Only one journey is admitted. If your family visits your duty station, your own LTC for that year lapses.
+K: Your trip to home town, or theirs to you: one only
+K: Family's trip is admitted under 177A or 177B if otherwise admissible
+W: Dependent parents visiting you also lapse your own LTC
+C: Rule 177B(i)(h) and Rule 177A, TR 2014
+
+=== topic=RR-LTC-03 from=SS-T070,SS-T071,SS-T069,SS-T067,SS-T091,SS-T108,SS-T247
+T: Field or CI posting: what extra LTC do I get?
+A: An extra railway warrant, two home trips a year. Or use 177C to spend leave where your family lives.
+K: Field, high-altitude, CI or CT areas: one extra warrant a year
+K: 177C replaces 177A/B for one leave spell, to your family's government accommodation
+K: Taking 177C lapses your wife's and children's 177A/B that year
+W: Family with you at duty station: normal 177A or 177B only
+C: Rule 177A(i)(b) Note and Rule 177C, TR 2014; MoD letter 5(1)/2007/D(Mov)(I) dt 20-08-2007
+D: The unit commander may allow a warrant to another station where your family lives, at no extra cost to the state.
+O: FAQ says 177C can be taken with 177B in the same year and calls the second trip an additional 177C. TR text says 177C replaces 177A/B and the extra trip is a separate additional warrant. TR followed; confirm.
+
+=== topic=RR-ORD-16 from=SS-T058,SS-T293
+T: LTC for officers posted in Andaman and Nicobar
+A: You get one additional free warrant a year, including sea passage, on top of your normal LTC.
+K: Additional free railway warrant with sea passage, entitled class
+K: Between your duty station and home town or SPR
+K: In addition to normal LTC under 177A or 177B
+C: Rule 177C(c), TR 2014; MoD letter 5(3)/07/D(Mov)/2010 dt 28-04-2010
+O: FAQ cites a 1973 MoD letter for free sea passage once a year to Kolkata or Chennai. TR text is followed; the 1973 letter was not found.
+
+=== topic=RR-ORD-10 from=SS-T062,SS-T080,SS-T176
+T: LTC to the North East, J&K or Andaman instead of home town
+A: A time-limited scheme lets officers convert Home Town LTC to air travel there. Check it is still running.
+K: Travel by private airlines in your entitled class, from your HQ
+K: Not allowed if your home town and HQ are the same
+K: Works against 177A or 177B; fare capped at the LTC-80 limit
+W: It runs in two-year periods, extended from time to time
+C: Rule 177A and 177B TR; DoPT LTC air-travel relaxation orders
+O: FAQ says the concession ran up to 25-09-2025. Check whether it was extended and add an 'as of' date before publishing.
+
+=== topic=RR-LTC-01 from=SS-T081
+T: I used a warrant to home town in a year LTC is not due
+A: The extra cost to the state is recovered from you.
+K: Applies to a warrant used by mistake to your home station
+K: Form 'D' cost for that journey is recovered the same way
+C: Rule 177A, TR 2014
+
+=== topic=RR-LTC-01 from=SS-T082,SS-T083,SS-T093,SS-T007,SS-T025,SS-T252
+T: LTC for recalled reserve, NCC and Territorial Army officers
+A: They get the same LTC as regular officers, with conditions for each group.
+K: Recalled reserve: counted from recall date, if no LTC taken that year
+K: NCC officers (SSC, whole-time, permanent): as regular officers
+K: Territorial Army: after one year of continuous embodied service
+W: Whole-time and NCC-commission officers need six months' service left
+C: AO 704/1965; AI 201/1954 para 11(c); TA Regulations 1948 para 195-B; AO 549/1967; MoD letter 5431/DGNCC/PC/TCS/MS(B)/1130/A/D(GS-VI) dt 23-05-1980
+O: These are Army orders and MoD letters of 1962 to 1967; none was found publicly.
+
+=== topic=RR-LTC-05 from=SS-T084
+T: Bus fare to the rail head when my station has no rail link
+A: Bus fare to and from the nearest rail head is admitted on top of your normal LTC.
+K: HQ without rail: bus fare both ways to the rail head
+K: Rail head to home town without rail: bus fare, entitled class
+K: 177B journeys between stations without rail: road mileage under Rule 179
+C: Rule 177A, 177B and 179 TR; CGDA letter AT/IV/4455 dt 23-10-1986
+O: The CGDA letter was not found publicly.
+
+=== topic=RR-LTC-05 from=SS-T090,SS-T116
+T: Breaking my LTC journey midway: what do I get?
+A: On Home Town LTC you get one warrant. If you break the journey, claim the direct-journey fare.
+K: Home Town LTC: no second warrant for the break
+K: Anywhere-in-India LTC: linked warrants are allowed, same route only
+K: Claim the cost of a direct-journey warrant under Rule 47(iii)
+C: Rule 177B(iii) and Rule 47(iii), TR 2014; AO 464/1955
+
+=== topic=RR-LTC-05 from=SS-T095,SS-T097
+T: Which station can my LTC warrant name?
+A: Your home station as recorded in your service records. Your CO can allow a nearby station.
+K: The officer issuing the warrant checks the station against your records
+K: CO may allow another station nearest your home, at no extra cost
+K: The authorised scale of warrants must not be exceeded
+C: Rule 177A(i)(f), TR 2014; AO 330/1973
+
+=== topic=RR-LTC-01 from=SS-T098
+T: Both of us serve: how do we claim LTC?
+A: You may declare separate home towns and claim separately. No one can be claimed twice.
+K: If one claims as family of the other, no self-claim
+K: Children count in one parent's block only
+C: Rule 177A(vii), TR 2014
+
+=== topic=RR-LTC-05 from=SS-T099
+T: LTC where part of the route is by sea or road
+A: Return sea passage is arranged on requisition. Road journeys go on warrant or cash under Rule 47.
+K: Embarkation Authority arranges the sea passage on the OC unit's requisition
+K: Road legs: warrant, or cash payment under Rule 47
+C: Rule 177A(i)(e), TR 2014
+
+=== topic=RR-ORD-16 from=SS-T096
+T: Assam Courier flights on leave (Eastern sector)
+A: Field-area officers in the Eastern sector may use spare Delhi to Jorhat courier space on leave.
+K: Only officers with field service concessions; static units without them are excluded
+K: Leave begins and ends at Delhi
+K: In place of LTC airlift; your LTC beyond Delhi stays
+W: Rail cost from Delhi must not exceed that from your duty station
+C: MoD letter A/32284/Q Mov C/827-S/D(Mov) dt 04-05-1968; AHQ letter 362498/Q Mov Air dt 10-02-1975
+O: These are old letters and were not found publicly; confirm the facility is still in use.

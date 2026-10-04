@@ -1,0 +1,94 @@
+# Orders batch A: air tickets, agents, air entitlement, rail accommodation (SS-T149..SS-T180). Written from the DoE OM of 31-12-2021 and 05-09-2014, the 2017 MoD letter and TR 93-94, 108.
+
+=== topic=RR-ORD-01 from=SS-T168,SS-T169,SS-T173,SS-T162
+T: Air tickets: book only through the three authorised agents
+A: At government cost, buy air tickets only from BLCL, ATT or IRCTC. Rule effective from 01-01-2022.
+K: The choice among the three is yours or your department's
+K: DTS bookings are encouraged
+W: No exception for units without internet
+C: DoE OM 19024/03/2021-E.IV dt 31-12-2021 and 16-06-2022
+
+=== topic=RR-ORD-01 from=SS-T163,SS-T175
+T: Can I fly a private airline on official travel?
+A: Yes. Any airline, but book through the authorised agents.
+K: Officers posted to Leh may use private airlines to Delhi on TD
+K: Applies to TD and permanent moves
+C: DoE OM 19024/03/2021-E.IV dt 31-12-2021
+
+=== topic=RR-ORD-01 from=SS-T164,SS-T165
+T: How do I make sure my air ticket is the cheapest?
+A: The agents must give the best available fare on the booking date, for your tour programme and entitlement.
+K: A full-fare ticket is not what the agents are meant to give
+C: DoE OM 19024/03/2021-E.IV dt 31-12-2021
+
+=== topic=RR-ORD-01 from=SS-T171,SS-T166,SS-T167
+T: Agency fees and extras on air tickets
+A: No agency or convenience fee is paid to the agents. Only the airline tariff is reimbursed.
+K: Fees not included in the airline tariff are not payable
+K: Service tax and cess charged on the ticket are reimbursable
+K: Excess baggage and food bought with the ticket were disallowed in audit
+C: DoE OM 19024/03/2021-E.IV dt 31-12-2021; DoE OM 19024/1/2012-E.IV dt 05-09-2014
+O: 'Excess baggage and food' is PCDA(O)'s application of the rule, not text in the OM; confirm.
+
+=== topic=RR-ORD-01 from=SS-T170
+T: Ticket booked from an unauthorised agent in unavoidable circumstances
+A: A senior authority can grant relaxation. Otherwise the fare is not admitted.
+K: Financial Adviser of the Ministry or Department
+K: Head of Department of Joint Secretary or Major General rank and above
+C: DoE OM 19024/03/2021-E.IV dt 31-12-2021
+
+=== topic=RR-ORD-01 from=SS-T172
+T: Frequent-flyer points earned on official tickets
+A: They belong to the government. Using them for private travel can lead to departmental action.
+K: Points earned by you or your family on official travel
+K: The travel agents report accrued points quarterly
+C: DoE OM 19024/03/2021-E.IV dt 31-12-2021
+
+=== topic=RR-ORD-02 from=SS-T174 chips=GUIDANCE
+T: Leave journey by air without LTC: can I claim the fare?
+A: No. Air fare on leave is claimable only under LTC.
+K: A leave journey outside LTC is at your own cost
+
+=== topic=RR-ORD-02 from=SS-T177
+T: Sanctions must be signed in ink
+A: Financial sanctions for rail, air, car and other moves must be signed in ink for audit.
+K: Many copies: ink-sign the audit copies, others can be certified
+K: A sanction without an ink signature is not accepted in audit
+C: AO 775/1973
+
+=== topic=RR-ORD-02 from=SS-T178,SS-T179
+T: Air class on LTC by pay level
+A: Level 14 and above: business or club class. Levels 10 to 13B: economy class.
+K: Rail-linked places by road: any public transport, up to the train fare
+K: No rail link: AC bus, if entitled to AC II or above
+K: You may always travel below your entitled class
+C: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017
+
+=== topic=RR-ORD-02 from=SS-T180 chips=GUIDANCE
+T: Travel to receive an award at Rashtrapati Bhavan
+A: Recipients and entitled guests may fly to Delhi and back from their nearest airport.
+K: Rail: highest class available, or the class used if lower
+K: By road between rail-linked places: actual cost, up to the rail fare
+K: Serving and retired officers; next of kin for posthumous awards
+
+=== topic=RR-MOD-01 from=SS-T149
+T: Travel for admission to hospital
+A: The class by rail and air is the same as for official tours.
+K: Applies from 01-09-2008 under the 6th pay-commission orders
+C: Rule 94 and Rule 108(2), TR 2014; MoD letter 12630/Mov C/3737/D(Mov)/08 dt 29-12-2008
+
+=== topic=RR-MOD-01 from=SS-T150
+T: Reserved rail accommodation: certificate in the bill
+A: State how many people travelled with you and certify their first class or AC II tickets, or give a NIL certificate.
+K: Beforehand, the Station Master enters their ticket details
+K: This lets Defence and the Railways adjust the fares between them
+C: Note 1 below Rule 93, TR 2014
+
+=== topic=RR-MOD-01 from=SS-T152,SS-T153
+T: Railway saloons: who may use them?
+A: The Chief and Vice Chief of the Army Staff, when absolutely necessary. Army Commanders within their command.
+K: Otherwise: a first class compartment of two or four berths
+K: A four-berth AC compartment in special cases
+K: The Chief's wife may travel free in the saloon on welfare visits
+W: At most six people, other than attendants, in the saloon
+C: Rule 93 and Notes 1 and 2, TR 2014

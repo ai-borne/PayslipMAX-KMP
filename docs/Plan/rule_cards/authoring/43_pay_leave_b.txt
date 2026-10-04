@@ -1,0 +1,146 @@
+=== topic=RP-016 from=RP-016
+T: Sick leave: how long and who extends it?
+A: Sick leave applies when sickness exceeds 30 days. First grant up to six months including annual leave due, then extensions.
+K: Extensions of 3 months each on medical board advice
+K: Total 12 months, extendable to 24 by the sanctioning authority
+K: Counts from the first day of admission to hospital
+C: Rule 20, Leave Rules for the Services Vol I (Army); AO 148/77
+D: Furlough rates beyond six months need a Part II order notifying the extension. If invaliding is under way, the Adjutant General may extend by 3 months beyond the first six. If sick leave spills into the next year, the next year's annual leave is debited against the hospital stay.
+
+=== topic=RP-016 id=RB-C8-11 from=RP-016
+T: Leave on invalidment and tuberculosis treatment
+A: Attributable sickness: up to 8 months' leave from the first day of absence. Pulmonary TB: up to 12 months with full pay.
+K: Only for officers placed in medical category E and retained in hospital
+K: TB patients can run beyond 8 months until medical finality
+K: Not available for non-attributable cases
+C: Rule 22, Leave Rules for the Services Vol I (Army); MoD letter 22679/DGAFMS/DG-3A/2721/D(Med) dt 18-07-1974
+D: For TB or non-lepromatous leprosy, treatment runs up to 12 months on full emoluments from the definite diagnosis, which must be made within 60 days. See Appendix A to AO 150/75.
+
+=== topic=RP-017 from=RP-017
+T: What is the sick list concession?
+A: It is not leave. Sickness of up to 30 days on duty or on casual leave is treated as duty.
+K: Cause of sickness must be beyond your control
+K: Over 30 days: the whole period becomes sick leave
+K: Sick on casual leave: sick leave starts when you fall sick
+C: Rule 21, Leave Rules for the Services Vol I (Army)
+
+=== topic=RP-018 from=RP-018
+T: Terminal leave for short service officers
+A: SSC officers with a first term of five years or more get 28 days' full-pay terminal leave on release.
+K: Needs a Non-Employment Certificate; medical officers also non-practising
+K: Without it: half pay without DA
+K: Added to the annual leave due for the release year
+C: Rule 51, Leave Rules for the Services Vol I (Army); AHQ MS Br letter 36963/MS7 dt 28-03-1972
+D: Strike off strength is the day after the leave ends. The year of release's annual leave cannot be accumulated for encashment.
+
+=== topic=RP-019 from=RP-019
+T: Maternity leave for women officers
+A: 180 days on full pay for each confinement, limited to two surviving children.
+K: Miscarriage or MTP: 30 days, max twice in service, 24 months apart
+K: One further month without pay in exceptional cases
+K: Applies to NCC lady officers and MNS
+C: MoD letter B/33922/AG/PS-2(b)/943/D(AG) dt 16-03-2009; Rule 56, Leave Rules for the Services Vol I (Army)
+D: Effective 01-09-2008. Nursing officers taking maternity leave in the first year give an undertaking to serve a further year after rejoining.
+
+=== topic=RP-020 from=RP-020
+T: Child care leave: how much and for which children?
+A: Permanent commission women get 360 days, SSC women 180 days, over the whole career for two eldest children under 18.
+K: Disability of 40% or more: no age limit on the child
+K: Single male officers and fathers now eligible too
+K: Adoptee mothers also eligible
+C: Rule 56A, Leave Rules for the Services Vol I (Army); MoD letters B/33922/AG/PS-2(b)/687/D(AG) dt 04-03-2014 and /1447/D(AG) dt 14-08-2019
+D: Single male means unmarried, widower or divorcee. NCC whole-time lady officers: two eldest minor children, up to 730 days in service. SSC officers later given PC receive the difference up to 360 days.
+O: Minimum 5 days a spell is marked effective 14-08-2019 in the handbook.
+
+=== topic=RP-020 id=RB-C8-14 from=RP-020
+T: Child care leave: spells, limits and combinations
+A: At most two spells a year, 5 to 30 days each, up to 60 days a year. It is not debited to other leave.
+K: Combine with any leave except casual leave
+K: Not granted during probation or training
+K: LTC allowed during CCL for women officers
+C: Rule 56A, Leave Rules for the Services Vol I (Army); MoD letter B/33922/AG/PS-2(b)/3080/D(AG-II) dt 19-11-2018
+D: A spell running into the next year counts against the starting year. Holidays within the leave count. Foreign travel needs the same security clearance as ex-India leave. CCL is never a right.
+
+=== topic=RP-021 from=RP-021
+T: Leave on adopting a child
+A: Women PC and SSC officers with fewer than two living children get 180 days on adopting a child under one year.
+K: Granted in one spell straight after adoption
+K: May combine with annual and furlough leave, scaled by child's age
+K: Not debited to your leave account
+C: Rule 56B, Leave Rules for the Services Vol I (Army); MoD letter B/33922/AG/PS-2(b)/5/US(AG-II)/D(AG) dt 15-01-2016
+D: Child under 9 months: up to four months of annual plus furlough; 9 to 12 months: up to three. Leave salary is the pay drawn just before leave. Effective 15-01-2016.
+
+=== topic=RP-022 from=RP-022,RP-023
+T: Paternity leave on birth or adoption
+A: Male officers with fewer than two living children get 15 days, on a birth or on adopting a child under one year.
+K: Birth: from 15 days before delivery to 6 months after
+K: Adoption: within 6 months of valid adoption
+K: Combine with annual leave
+C: Rules 14A and 14B, Leave Rules for the Services Vol I (Army); MoD letter B/33922/AG/PS-2(b)/5/US(AG-II)/D(AG) dt 15-01-2016
+
+=== topic=RP-024 from=RP-024
+T: Study leave for regular officers (not AMC, ADC, RVC)
+A: Up to 24 months for approved non-academic courses, extendable to 28 with annual and furlough leave, at most twice in service.
+K: Needs 5 years' service and 3 years left before retirement
+K: Full pay and allowances drawn; no TA normally
+K: Undertaking not to retire or resign for 3 years
+C: Rules 27 and 28, Leave Rules for the Services Vol I (Army); AI 42/82; AO 11/87
+D: Leaving early or not finishing means refunding leave salary, fees and expenses with interest, unless relieved on health or compassion. Journey time counts as study leave but without allowances. Apply to GS/MT Dte at IHQ of MoD (Army).
+
+=== topic=RP-024 id=RB-C8-17 from=RP-024
+T: Study leave for AMC, ADC and RVC officers
+A: Postgraduate courses only, 6 to 24 months over a career. It cannot be combined with other leave.
+K: Full pay, all allowances, and NPA are paid
+K: Undertaking: no retirement or resignation for 5 years
+K: Basic degree courses are not approved
+C: Rules 28A, 29 and 30, Leave Rules for the Services Vol I (Army); Rule 211(a), Pay and Allowances Regulations for the Army
+D: Resigning after 5 years but before 12 years of service may mean refunding study allowance. RVC courses are approved by DRVS or DMF.
+
+=== topic=RP-024 id=RB-C8-18 from=RP-024
+T: Recall from study leave
+A: DCOAS (IS&T) may recall you for operations or disciplinary matters, without refund of pay.
+K: Witness: up to 40 days in all
+K: Accused: up to four months
+K: Extension up to 4 months; unused balance goes to leave or EOL
+C: Rule 27, Leave Rules for the Services Vol I (Army); AI 42/82; AI 16/92; AI 1/2003
+D: If found culpable the study leave may be terminated at your cost. Travel between leave station and duty counts as TD. Recalled officers get no annual leave for that year on that basis.
+
+=== topic=RP-025 from=RP-025
+T: Ex-India leave rules for deputation or delegations abroad
+A: Regulated by Rule 71. For tours under 8 days you may take up to 4 days' ex-India leave.
+K: Holidays may be tacked on if no extra cost arises
+K: Short-tour rule effective 30-06-2017
+C: Rule 71, Leave Rules for the Services Vol I (Army); MoD letter B/33926/AG/PS-2(b)/4894/D(AG) dt 08-11-2011; MoD letter 13(3)/2017-D(AG) dt 30-06-2017
+
+=== topic=RP-026 from=RP-026,RP-027
+T: Irregular leave and overstayal: who can regularise?
+A: Up to 30 days: Divisional Commander. Up to 60 days: Corps Commander. More needs Government sanction.
+K: Adjusted against future annual leave or EOL
+K: Overstay from floods or quakes: IHQ may regularise up to 30 days
+K: Adjustment against annual or furlough leave
+C: MoD letter 90716/Redel/AG/PS-2(b)/776/D(AG) dt 16-02-1982; Rule 6(d)(i), Leave Rules for the Services Vol I (Army)
+
+=== topic=RP-028 from=RP-028
+T: How much leave can I encash?
+A: Up to 300 days over service, with at most 30 days accumulated a year, based on annual leave at credit.
+K: Year of retirement: 15 days if retiring 31 Jan, else 30
+K: SSC: release year's leave is not encashable
+K: Cashiered or dismissed: no encashment
+C: MoD letter B/33931/AG/PS-2(b)/1908/D(AG) dt 12-04-2010; MoD letter B/33931/AG/PS-2(b)/2890/D(AG) dt 18-07-2011; MoD letter 59910/GS/TA-3(a)/1541/US/D(GS-III)/10 dt 11-02-2011; CGDA letter AT/I/1312/X dt 03-02-1999
+D: Effective 01-01-2006. SSC officers can claim at the end of each tenure within the same 300-day limit. TA officers are covered by the same rules.
+
+=== topic=RP-028 id=RB-C8-21 from=RP-028
+T: Leave encashment on invalidment or death in service
+A: Invalided: unused annual leave of that year up to 30 days. Death in January or February: about half the leave due.
+K: Sick leave is first debited against that year's annual leave
+K: Death 31 January: 15 days; 5 January: 2 days
+K: No cut for pension equivalent of DCRG
+C: MoD letter B/33931/AG/PS-2(b)/1908/D(AG) dt 12-04-2010
+D: Fractions are rounded to the nearest day. February deaths are worked out the same way.
+
+=== topic=RP-028 id=RB-C8-22 from=RP-028
+T: Leave encashment for new officers, re-employed and on civil deputation
+A: A joiner on 30 or 31 December gets no accumulation that year. Re-employment leave cannot be accumulated.
+K: Commissioned before 1 Dec, joined early Dec: up to 15 days
+K: Civil deputation: PCDA(O) pays from Defence Estimates
+C: AG's Br AHQ letter B/32238/AG/PS-2(b) dt 03-04-1998; MoD letter B/33931/AG/PS-2(b)/1364/2015/D(AG) dt 06-11-2015

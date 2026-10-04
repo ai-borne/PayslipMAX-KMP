@@ -1,0 +1,95 @@
+# LTC batch C: modes of travel, Form 'D', special postings (SS-T127..SS-T148). Written from TR 2014 Rules 176, 176A-C, 177D, 179, 180, 181.
+
+=== topic=RR-LTC-03 from=SS-T127
+T: My SPR order was rejected: can I still take 177C LTC?
+A: Yes, if the SPR was published but rejected. SPR relates to HRA and luggage, not to LTC.
+K: SPR declaration governs HRA and luggage movement
+K: A published but rejected SPR does not block 177C
+C: Rule 177C, TR 2014
+
+=== topic=RR-LTC-04 from=SS-T128
+T: LTC while I am on study leave
+A: Yes. Reimbursement is capped at the fare from your last duty station, or actual cost if less.
+K: You: from study-leave place to anywhere in India or home town
+K: Family staying with you: the same rule applies
+K: Family elsewhere: from their residence, shortest route from your last duty station
+C: Rule 177D, TR 2014
+
+=== topic=RR-LTC-05 from=SS-T129
+T: Can I take LTC on casual leave?
+A: Yes. LTC is authorised on casual leave.
+K: Also on annual, furlough, maternity and child-care leave
+C: Rule 177A(i)(a), TR 2014
+
+=== topic=RR-LTC-05 from=SS-T130,SS-T131,SS-T134,SS-T136
+T: Own car, taxi or private bus on LTC?
+A: Not admissible. Private cars (owned, borrowed or hired) and private buses, vans or charters are out.
+K: Government or public-sector vehicles: actual cost, up to the rail fare
+K: Taxi, AC taxi and autorickshaw need a fare receipt
+K: A taxi, even shared, is not allowed where state buses run
+C: Rule 176(e)(i) and (ii), TR 2014; CGDA letter AT/IV/4458/XIV/6th CPC dt 04-03-2009
+
+=== topic=RR-LTC-05 from=SS-T135
+T: Disabled officer or family member: own car or taxi on LTC?
+A: Allowed, with a medical certificate and your undertaking. Paid up to the entitled rail or air fare.
+K: Authorised by the Controlling Officer since 19-06-2010
+K: Medical certificate from the competent authority
+K: Undertaking that the authorised mode is not feasible
+C: Rule 176(e)(iii), TR 2014
+
+=== topic=RR-LTC-05 from=SS-T132 chips=GUIDANCE
+T: Can I claim cancellation charges of an LTC air ticket?
+A: No. Air ticket cancellation charges are not reimbursed on LTC.
+K: This differs from tour duty, where unavoidable cancellations may be refunded
+O: The FAQ gives no authority; the TD contrast is from the cancellation FAQ. Find the source.
+
+=== topic=RR-LTC-05 from=SS-T137
+T: Home leave fare for officers posted abroad
+A: One set of home-leave fares during an overseas posting, and another at each transfer between stations abroad.
+K: The officer and entitled family can travel to India and back
+K: Available after one full year at the post abroad
+K: The one-year limit can be relaxed by the authority
+C: Rule 272, TR 2014
+O: Rule 272 is inferred from the TR heading; the handbook gives no authority. Overseas posting, niche.
+
+=== topic=RR-LTC-05 from=SS-T138
+T: LTC for officers serving in Bhutan
+A: Same LTC as corresponding officers in India. Road travel from Bhutan is under Rule 179.
+K: Road from Bhutan to Hasimara, Bongaigaon or Rangia: Rule 179
+C: Rule 188 TR; AI 77/1970
+
+=== topic=RR-LTC-05 from=SS-T141
+T: Road conveyance to hill stations while on leave
+A: Once a year, you, your spouse and children get road conveyance to listed stations.
+K: Applies on any authorised leave, including casual leave
+K: Stations are listed by Command in the Rule 179(i) table
+K: Road conveyance is on top of the free rail conveyance
+C: Rule 179(i), TR 2014
+D: Examples: Nainital, Mussoorie, Shillong, Gulmarg, Mahabaleshwar, Pachmarhi.
+
+=== topic=RR-LTC-06 from=SS-T142
+T: Air LTC for officers in remote regions
+A: Special air LTC facilities exist for Ladakh, the Manipur and Mizoram region, and Tripura.
+K: Ladakh, 15 Nov to 15 Mar: Leh to Srinagar, Jammu or Chandigarh
+K: Manipur, Mizoram, Cachar, Silchar: Imphal, Aizawl or Silchar to Kolkata
+K: Tripura: Agartala to Kolkata and back, once a year
+C: Rule 176A, 176B and 176C, TR 2014
+
+=== topic=RR-LTC-07 from=SS-T143,SS-T144,SS-T145,SS-T146
+T: Form 'D': 60% rail fare on leave
+A: On leave at your own expense by rail, pay 60% of your entitled class fare using Form 'D'.
+K: No reservation fee; all other charges are paid in full
+K: Six one-way forms a year for you, spouse and children
+K: Husbands of lady officers get Form 'D' too
+H: Non-availability certificate if no form is available
+W: Not for weekends or holidays unless covered by sanctioned leave
+C: Rule 181, TR 2014; MoD letter PT/2339/NHQ/passage 5870/D(Mov) dt 12-11-1975
+D: Two of the six forms may also cover dependent parents, sisters and minor brothers living with you. Forms issued with LTC are extra to the six.
+
+=== topic=RR-LTC-08 from=SS-T147,SS-T148,SS-T249
+T: Army Aviation pilots: free 1,600 km rail warrant
+A: Army Aviation pilots on regular flying duties get a free warrant up to 1,600 km each year.
+K: 1,600 km covers the onward and return journeys together
+K: The leave station may be over 800 km away within that total
+K: Not in the same leave spell as 177A or 177B
+C: Rule 180, TR 2014

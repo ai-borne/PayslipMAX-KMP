@@ -1,0 +1,45 @@
+=== topic=RP-090 from=RP-090 chips=RATES
+T: DSOP Fund: who subscribes and how much?
+A: Compulsory after one year's service, at least 6% of emoluments (matrix basic pay plus NPA, excluding DA).
+K: Optional for re-employed officers
+K: Raise twice and reduce once in a financial year
+K: Recovery stops for the last three months before retirement
+C: SAI 1/S/80; SRO 12(E) dt 03-05-2017; MoD letter 4(10)/2017/D(Med) dt 29-09-2017
+D: If the account goes into debit the subscription drops to the minimum, restored after clearing. Subscription above 6% cannot exceed what remains after statutory recoveries such as tax and AGIF. Interest was 7.1% for 01-04-2020 to 31-03-2023 (earlier years 7.6% to 8%).
+O: Interest rates are only as of 2023. Update from the latest MoF notification before showing a rate.
+
+=== topic=RP-090 id=RB-C21-02 from=RP-090
+T: DSOP Fund advance: purposes, limit and time
+A: The lower of one year's pay and 75% of your balance, repaid within 60 instalments.
+K: Illness, education, marriage, funerals, legal, durables, pilgrimage
+K: Sanction within 15 days; 7 in emergencies
+K: A simple declaration is enough; no proof
+C: MoD letter B/36293/AG/PS3(c)/2063/D(Pay/Services) dt 09-10-1996; MoD letter C/7026/VII CPC/73/423/D(Pay/Services) dt 22-05-2019; DoP&PW OM 3/2/2017-P&PW(F)(i) dt 07-03-2017
+D: Effective 07-03-2017. A new advance absorbs any balance of the old. Recovery starts from the pay for the month after drawal. An advance can later be converted into a final withdrawal if conditions are met. Sanctioning authority follows AI 22/96 as amended by AI 09/98.
+
+=== topic=RP-090 id=RB-C21-03 from=RP-090
+T: DSOP Fund withdrawal: purposes and limits
+A: After 10 years: 12 months of pay or three-quarters of the balance for education, marriage, illness or durables. Illness up to 90%.
+K: Housing: up to 90%, at any time in service
+K: Vehicle: three-quarters of balance or cost, after 10 years
+K: Final withdrawal up to 90% in the last two years
+C: MoD letter B/36293/AG/PS3(c)/2063/D(Pay/Services) dt 09-10-1996; MoD letter C/7026/VII CPC/73/423/D(Pay/Services) dt 22-05-2019; DoP&PW OM 3/2/2017-P&PW(F)(ii) dt 07-03-2017
+D: Housing covers building, buying, repaying a house loan and renovating an ancestral house, with proof of share. No repayment on sale of the house. Housing withdrawal is no longer tied to HBA limits. One withdrawal per purpose. VCOAS or GOC-in-C sanctions up to 90%; others up to 75%.
+
+=== topic=RP-090 id=RB-C21-04 from=RP-090
+T: DSOP Fund nomination and who counts as family
+A: You may nominate family members only, split by share, and cancel by notice. Family differs for male and female subscribers.
+K: Male: wife, parents, children, minor brothers, unmarried sisters
+K: Female: husband may be excluded by written notice
+K: Nomination sent to head of office stays valid
+C: MoD letter B/37981/91/AG/PS/3(c)/1434/D(Pay/Services) dt 15-05-1992
+D: Also family: deceased son's widow and children, and a paternal grandparent if no parent lives. A judicially separated wife stops being family unless you say in writing she continues. Child includes an adopted child and a ward living with you under a special will.
+
+=== topic=RP-090 id=RB-C21-05 from=RP-090
+T: When is the DSOP Fund balance paid out?
+A: Payable on quitting, dismissal, release, retirement, being declared unfit, or death (to nominee or family).
+K: Interest runs up to six months after you leave service
+K: No nomination: paid to family members
+K: Update bank, unit address and rate on AO 24/05 forms
+C: AO 24/05; MoD letter B/36293/AG/PS3(c)/2063/D(Pay/Services) dt 09-10-1996
+D: Government dues are not recovered from the final payment unless you consent. Up to Rs 10,000 can go to a guardian of minors without a guardianship certificate. A missing officer's family needs a police report and an indemnity bond. Rate change forms go to PCDA(O) a month ahead.

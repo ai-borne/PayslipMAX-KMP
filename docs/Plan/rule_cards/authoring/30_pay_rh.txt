@@ -1,0 +1,70 @@
+# Pay batch 1: Risk and Hardship allowance (SS-P057..SS-P077). Written from the P&A handbook ch. 15 and the 2022 MoD (DMA) letter as cited.
+
+=== topic=RP-055 from=SS-P060,SS-P062,SS-P063 chips=RATES
+T: Risk and Hardship allowance: how it works
+A: A location-based allowance from 22-02-2019. Your rate comes from your station's cell in the R&H matrix.
+K: Station cells run from R1H1 (highest) to R3H3 (lowest)
+K: Not paid with field, CI or Tough Location allowances
+K: Your unit's eligibility comes from the Corps Notification
+C: MoD (DMA) letter 8(3)/2017/D(Pay/Services) dt 21-04-2022; ADG PS letter C/7021/PAY/SAPCS/2022 dt 24-04-2022
+D: Monthly rates in rupees: R1H1 25,000; R1H2 16,900; R2H1 16,900; R2H2 10,500; R1H3 5,300; R3H1 5,300; R2H3 3,400; R3H2 3,400; R3H3 1,200.
+
+=== topic=RP-055 from=SS-P062,SS-P063 id=RB-SS-P062-b
+T: Claiming R&H: the Part II orders
+A: Your unit publishes a CEASE order for the old rate and a GRANT order for the revised rate, from 22-02-2019.
+K: The GRANT order quotes the unit's serial number in the Corps Notification
+K: Retired or deceased cases: the unit publishes CEASE and GRANT orders
+K: Send them to the Record Office or ORO
+H: Certificate that the 1994 and 2022 letters' conditions are met
+H: Your station code, and the unit's entry in the Corps Notification
+C: MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994; MoD (DMA) letter dt 21-04-2022
+
+=== topic=RP-055 from=SS-P067,SS-P072,SS-P074,SS-P077 chips=RATES
+T: R&H one cell down: which units?
+A: Formation HQs up to Division, static units, MES, farms, recruiting, training centres, NCC and record offices.
+K: One cell lower: R1H1 becomes R2H1; R1H2 becomes R2H2
+K: 77% of R1H2 drops to R2H2; 60% of R2H2 drops to R3H2
+K: Only for locations listed in the 21-04-2022 letter
+W: If it would cut your existing allowance, the existing one continues
+C: MoD (DMA) letter 8(3)/2017/D(Pay/Services) dt 21-04-2022
+
+=== topic=RP-055 from=SS-P068,SS-P069
+T: My location fell to a lower R&H cell: what do I get?
+A: A location that earned more before 21-04-2022 keeps it. You may claim the more beneficial allowance.
+K: A location missing from the letter: you keep the existing allowance
+K: Modified Field Area allowance continues at the present rate
+C: MoD (DMA) letter dt 21-04-2022
+
+=== topic=RP-055 from=SS-P058,SS-P059,SS-P064,SS-P070,SS-P071
+T: R&H at my location: does my Peace or Field status change?
+A: No. R&H changes only the allowance. Your unit stays peace or field for every other purpose.
+K: Peace units get no other Field Service Concessions
+K: Field and CI units stay so for other purposes
+K: HAA Cat III and HAFA at R1H1 rates are paid together
+C: MoD (DMA) letter dt 21-04-2022
+
+=== topic=RP-055 from=SS-P057
+T: Siachen: did R&H change my allowance?
+A: No. Siachen does not appear in the 21-04-2022 letter, so your entitlement is unchanged.
+K: Siachen Allowance continues as before
+C: MoD (DMA) letter dt 21-04-2022
+
+=== topic=RP-055 from=SS-P076
+T: Strategic Forces units: CFAA or R&H?
+A: CFAA, not R&H, irrespective of location.
+K: Publish Part II orders for CFAA and not for R&H
+C: Para 2.4, MoD (DMA) letter dt 21-04-2022
+
+=== topic=RP-055 from=SS-P061,SS-P065,SS-P066,SS-P073
+T: R&H during absence: leave, TD, course, hospital
+A: Paid through 20 days of casual leave and 3 months of TD. Not on annual leave or a course of 10 weeks or more.
+K: Other leave, even a day, stops it; CL, sick leave excepted
+K: A course does not count as TD for this purpose
+K: A course over 10 weeks: no R&H
+C: MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994; MoD letter PC-1(16)/2017/D(Pay/Services)/Pt.III dt 24-01-2020
+
+=== topic=RP-055 from=SS-P075
+T: What is concurrent admissibility of allowances?
+A: Two or more allowances paid at the same time, as the MoD letter of 29-02-2000 explains.
+K: R&H itself is not paid with field, CI or Tough Location allowances
+C: MoD letter 1(26)97/D(Pay/Services) dt 29-02-2000

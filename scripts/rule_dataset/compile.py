@@ -1,0 +1,174 @@
+#!/usr/bin/env python3
+"""Compile the rule-card authoring files into one dataset and validate it.
+
+Inputs : docs/Plan/rule_cards/authoring/*.txt  (our own-words cards, compact line format)
+         docs/Plan/rule_cards/ssot.json        (topics and the 474 source entries; the coverage target)
+Outputs: docs/Plan/rule_cards/rulebook.json    (canonical dataset; the app will load this)
+
+Authoring format (one block per card; '#' lines are comments):
+  === topic=RR-TD-02 from=SS-T020,SS-T021 [id=RB-x] [chips=RATES,AMENDED] [personal=level:food_rate] [status=draft]
+  T: question-style title
+  A: one-line answer
+  K: key point            (up to 3)
+  H: attach item          (optional, up to 3)
+  W: watch-out item       (optional, up to 3)
+  C: authority to cite    (empty only for guidance cards)
+  D: collapsed details    (optional)
+  O: open point for the reviewer (optional, never shown to users)
+  --- skip SS-T123 reason text
+
+Usage: compile.py [--check]   (--check validates without writing)
+Exit status is non-zero on any error, so it can gate a commit.
+"""
+import glob
+import json
+import os
+import re
+import sys
+from collections import Counter, defaultdict
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+CARDS_DIR = os.path.join(ROOT, 'docs', 'Plan', 'rule_cards')
+AUTH_DIR = os.path.join(CARDS_DIR, 'authoring')
+LIMITS = {'answer': 25, 'bullets': 3, 'bullet_words': 12, 'visible': 90, 'details': 120, 'title': 14}
+CHIPS = {'RATES', 'AMENDED', 'GUIDANCE'}
+CITE_OK = re.compile(r'(MHA|Rule|Para|TR|AO|SAO|SAI|MoD|MoF|DoE|DoPT|IHQ|CGDA|OM|SRO|Pay Rules|Army|Handbook|Regulation|Section|Sec|FR|CCS|GFR|DFPDS|Note|Appx|Order|Advisory)', re.I)
+WORD = re.compile(r"[A-Za-z0-9₹%.,/'()&+-]+")
+
+
+def wc(text):
+    return len(WORD.findall(text))
+
+
+def parse(path, errors):
+    cards, skips, cur = [], [], None
+    with open(path, encoding='utf-8') as fh:
+        for n, raw in enumerate(fh, 1):
+            line = raw.rstrip('\n')
+            if not line.strip() or line.lstrip().startswith('#'):
+                continue
+            where = f'{os.path.basename(path)}:{n}'
+            if line.startswith('=== '):
+                cur = {'attrs': dict(kv.split('=', 1) for kv in line[4:].split() if '=' in kv), 'key': [], 'attach': [], 'watch': [],
+                       'T': '', 'A': '', 'C': '', 'D': '', 'open': [], 'where': where}
+                cards.append(cur)
+            elif line.startswith('--- skip '):
+                m = re.match(r'--- skip (SS-[TP]\d+)\s+(.+)', line)
+                if not m:
+                    errors.append(f'{where}: bad skip line')
+                else:
+                    skips.append({'from': m.group(1), 'reason': m.group(2).strip()})
+            elif cur is not None and re.match(r'^[TAKHWCDO]: ?', line):
+                tag, val = line[0], line[3:].strip() if line[2:3] == ' ' else line[2:].strip()
+                if tag == 'K': cur['key'].append(val)
+                elif tag == 'H': cur['attach'].append(val)
+                elif tag == 'W': cur['watch'].append(val)
+                elif tag == 'O': cur['open'].append(val)
+                else:
+                    if cur[tag]:
+                        errors.append(f'{where}: duplicate {tag}:')
+                    cur[tag] = val
+            else:
+                errors.append(f'{where}: unrecognised line: {line[:50]}')
+    return cards, skips
+
+
+def validate(card, topics, ssot_ids, errors, warns):
+    a, w = card['attrs'], card['where']
+    topic = a.get('topic', '')
+    if topic not in topics:
+        errors.append(f'{w}: unknown topic {topic!r}')
+    frm = [x for x in a.get('from', '').split(',') if x]
+    if not frm:
+        errors.append(f'{w}: card has no from= source entries')
+    for x in frm:
+        if x not in ssot_ids:
+            errors.append(f'{w}: unknown source entry {x}')
+    chips = [c for c in a.get('chips', '').split(',') if c]
+    for c in chips:
+        if c not in CHIPS:
+            errors.append(f'{w}: unknown chip {c}')
+    if not card['T']: errors.append(f'{w}: missing T:')
+    if not card['A']: errors.append(f'{w}: missing A:')
+    if not card['key']: errors.append(f'{w}: needs at least one K:')
+    if not card['C'] and 'GUIDANCE' not in chips:
+        errors.append(f'{w}: no C: cite (add chips=GUIDANCE if there is genuinely no authority)')
+    if card['C'] and not CITE_OK.search(card['C']):
+        warns.append(f'{w}: cite does not look like an authority: {card["C"][:50]}')
+    if wc(card['T']) > LIMITS['title']: errors.append(f'{w}: title {wc(card["T"])} words > {LIMITS["title"]}')
+    if wc(card['A']) > LIMITS['answer']: errors.append(f'{w}: answer {wc(card["A"])} words > {LIMITS["answer"]}')
+    vis = wc(card['A']) + wc(card['C'])
+    for sec, label in (('key', 'K'), ('attach', 'H'), ('watch', 'W')):
+        if len(card[sec]) > LIMITS['bullets']:
+            errors.append(f'{w}: {len(card[sec])} {label}: bullets > {LIMITS["bullets"]}')
+        for b in card[sec]:
+            vis += wc(b)
+            if wc(b) > LIMITS['bullet_words']:
+                errors.append(f'{w}: {label}: bullet {wc(b)} words > {LIMITS["bullet_words"]}: {b[:40]}')
+    if vis > LIMITS['visible']: errors.append(f'{w}: visible text {vis} words > {LIMITS["visible"]}')
+    if wc(card['D']) > LIMITS['details']: errors.append(f'{w}: details {wc(card["D"])} words > {LIMITS["details"]}')
+    return frm, chips, vis
+
+
+def main():
+    check_only = '--check' in sys.argv
+    ssot = json.load(open(os.path.join(CARDS_DIR, 'ssot.json'), encoding='utf-8'))
+    topics = {t['id']: t for t in ssot['travel_topics'] + ssot['pay_topics']}
+    ssot_ids = {e['id']: e for e in ssot['entries']}
+    # handbook-only pay topics have no FAQ entries; a card may cite the topic id (RP-nnn) as its source instead
+    pay_topic_ids = {t['id'] for t in ssot['pay_topics']}
+    valid_sources = set(ssot_ids) | pay_topic_ids
+    errors, warns, raw_cards, skips = [], [], [], []
+    for path in sorted(glob.glob(os.path.join(AUTH_DIR, '*.txt'))):
+        c, s = parse(path, errors)
+        raw_cards += c
+        skips += s
+    out_cards, seen, covered, vis_total = [], set(), defaultdict(list), []
+    for card in raw_cards:
+        frm, chips, vis = validate(card, topics, valid_sources, errors, warns)
+        cid = card['attrs'].get('id') or ('RB-' + frm[0] if frm else None)
+        if cid in seen: errors.append(f'{card["where"]}: duplicate card id {cid}')
+        seen.add(cid)
+        for x in frm: covered[x].append(cid)
+        if not card['C'] and 'GUIDANCE' not in chips: chips.append('GUIDANCE')
+        vis_total.append(vis)
+        out_cards.append({'id': cid, 'domain': 'travel' if card['attrs'].get('topic', '').startswith('RR-') else 'pay',
+                          'topic': card['attrs'].get('topic'), 'title': card['T'], 'answer': card['A'], 'key': card['key'],
+                          'attach': card['attach'], 'watch': card['watch'], 'cite': card['C'], 'details': card['D'], 'chips': chips,
+                          'personal': card['attrs'].get('personal', ''), 'from': frm, 'open': card['open'],
+                          'status': card['attrs'].get('status', 'draft')})
+    skipped = {s['from'] for s in skips}
+    for s in skips:
+        if s['from'] not in ssot_ids: errors.append(f'skip of unknown entry {s["from"]}')
+        if s['from'] in covered: warns.append(f'{s["from"]} is both skipped and used in a card')
+    uncovered = [e for e in ssot_ids if e not in covered and e not in skipped]
+    pay_topics_done = {c['topic'] for c in out_cards if c['topic'] in pay_topic_ids} | {x for x in covered if x in pay_topic_ids}
+    pay_topics_open = sorted(pay_topic_ids - pay_topics_done)
+    titles = Counter(c['title'].lower() for c in out_cards)
+    for t, n in titles.items():
+        if n > 1: warns.append(f'duplicate card title: {t}')
+    dom = Counter(c['domain'] for c in out_cards)
+    cov = {'entries_total': len(ssot_ids), 'covered': len(covered), 'skipped': len(skipped), 'uncovered': len(uncovered),
+           'cards': len(out_cards), 'cards_by_domain': dict(dom),
+           'pay_topics_total': len(pay_topic_ids), 'pay_topics_with_cards': len(pay_topic_ids) - len(pay_topics_open)}
+    print(f"cards {len(out_cards)} ({dict(dom)}) | entries covered {len(covered)}/{len(ssot_ids)} | skipped {len(skipped)} | uncovered {len(uncovered)}")
+    if vis_total: print(f"visible words: max {max(vis_total)}, mean {sum(vis_total)/len(vis_total):.0f}")
+    for m in warns[:15]: print('WARN ', m)
+    for m in errors[:40]: print('ERROR', m)
+    if len(errors) > 40: print(f'... {len(errors)-40} more errors')
+    print(f"pay topics with at least one card: {len(pay_topic_ids) - len(pay_topics_open)}/{len(pay_topic_ids)}")
+    if '--uncovered' in sys.argv:
+        print('UNCOVERED', ' '.join(uncovered))
+        print('PAYTOPICS_OPEN', ' '.join(pay_topics_open))
+    if errors: sys.exit(1)
+    if not check_only:
+        data = {'version': 1, 'generated': __import__('datetime').date.today().isoformat(), 'limits': LIMITS,
+                'topics': [{k: t[k] for k in t if k in ('id', 'title', 'domain', 'chapter', 'handbook_page', 'tr_rules')} for t in topics.values()],
+                'cards': out_cards, 'skipped': skips, 'coverage': cov, 'uncovered': uncovered, 'pay_topics_open': pay_topics_open}
+        with open(os.path.join(CARDS_DIR, 'rulebook.json'), 'w', encoding='utf-8') as fh:
+            json.dump(data, fh, indent=1, ensure_ascii=False)
+        print('wrote rulebook.json')
+
+
+if __name__ == '__main__':
+    main()

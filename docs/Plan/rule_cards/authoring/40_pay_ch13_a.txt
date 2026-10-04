@@ -1,0 +1,123 @@
+=== topic=RP-034 id=RB-C13-01 from=RP-034 chips=RATES
+T: Which pay level does each Army rank draw?
+A: Lieutenant draws Level 10, Captain 10B, Major 11, Lieutenant Colonel 12A, Colonel 13, Brigadier 13A and Major General 14.
+K: Lieutenant General: Level 15, or 16 for HAG+
+K: Vice Chief and Army Commanders: Level 17
+K: Chief of Army Staff: Level 18
+C: SRO 17(E) dt 06-07-2017 (Army Officers Pay Rules 2017 pay matrix)
+D: Military Nursing Service uses its own levels (10, 10A, 10B, 11, 12, 12B, 13B). NCC whole-time lady officers use 10, 10B, 11 and 12. Pay is drawn in the level of the rank held substantively.
+O: Level table copied by meaning from handbook; check against SRO 17(E) Part A.
+
+=== topic=RP-034 id=RB-C13-02 from=RP-034
+T: Who do the 7th CPC Army pay rules cover?
+A: Army officers in service on 01-01-2016, including AMC, ADC, RVC, TA when embodied, cadets, and later joiners.
+K: Rules apply from 01-01-2016
+K: NCC and MNS officers have their own rules
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; SRO 21(E) dt 14-07-2017 for MNS
+D: NCC whole-time officers follow MoD letter 4/43/2017-D(GS-VI)/2018 dt 16-10-2018. MSP is not admissible to NCC officers.
+
+=== topic=RP-034 id=RB-C13-03 from=RP-034
+T: How was pay fixed in the 7th CPC matrix on 01-01-2016?
+A: Old basic pay times 2.57, rounded, then placed at that cell or the next higher cell of your level.
+K: If below the level's first cell, pay is first cell
+K: AMC, ADC, RVC with NPA: add DA on old NPA before locating
+K: Excess of old pay over new is personal pay
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017, rule 7
+D: Basic pay means pay band pay plus grade pay. Example: Major with Rs 32,720 gets 84,090 and is fixed at Rs 85,300 in Level 11. Personal pay is absorbed in future increases.
+O: Level 12A and 13 index of rationalisation raised from 2.57 to 2.67 by MoD resolution 1(6)/2016/D(Pay/Services) dt 22-06-2017; confirm how this affects fixation.
+
+=== topic=RP-034 id=RB-C13-04 from=RP-034
+T: Can I still change my 2016 option for revised pay?
+A: No. The option was one-time and final; the last window closed on 01-02-2020.
+K: Officers commissioned from 01-01-2016 had no option
+K: No option in time meant revised pay from 01-01-2016
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; MoD letter 1(29)/2017/D(Pay/Services) dt 06-08-2019
+D: Original window was 180 days from notification. Those out of India, suspended, deceased or released had relaxed rules. The 2019 relaxation let officers revise an earlier option up to 01-02-2020.
+
+=== topic=RP-034 id=RB-C13-05 from=RP-034 chips=RATES
+T: Military Service Pay: who gets it and how much?
+A: Army officers up to Brigadier get Rs 15,500 a month. It counts as pay for DA and pension.
+K: MNS officers up to Brigadier: Rs 10,800
+K: Not admissible to NCC officers
+K: NPA is never calculated on MSP
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; SRO 21(E) dt 14-07-2017 for MNS
+O: Handbook rule 6(2) text prints both 15,500 and 10,800 for Army; the Maj Gen fixation example uses 15,500, which fits Army. Verify in the SRO.
+
+=== topic=RP-034 id=RB-C13-06 from=RP-034
+T: Pay for gentlemen and lady cadets, and for those commissioned from the ranks
+A: Cadets get a fixed stipend of Rs 56,100 a month. On commissioning, pay starts at the first cell of Level 10.
+K: Training is not commissioned service
+K: Allowance arrears for training period are paid
+K: From ranks: old pay and allowances during training
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017, rule 10
+D: Applies at IMA, OTA Chennai and Gaya, and Cadets Training Wings at CME. For those from the ranks, on commissioning the difference between stipend plus DA and what was drawn is paid as a lump sum.
+
+=== topic=RP-034 id=RB-C13-07 from=RP-034 chips=RATES
+T: What is starting pay on commission from 01-01-2016?
+A: Lieutenant starts at Rs 56,100, cell 1 of Level 10. In AMC, ADC and RVC a Lieutenant starts at cell 2.
+K: AMC, ADC, RVC Lieutenant: Rs 57,800
+K: AMC, ADC, RVC Captain: Rs 61,300, cell 1 of Level 10B
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017, rule 11
+
+=== topic=RP-034 id=RB-C13-08 from=RP-034
+T: On which date is my annual increment due?
+A: Commissioned or promoted 2 Jan to 1 Jul: increment each 1 Jan. Commissioned or promoted 2 Jul to 1 Jan: each 1 Jul.
+K: Only one increment a year
+K: Pay revised on 01-01-2016: first increment 01-07-2016
+K: Each increment moves one cell down in your level
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+
+=== topic=RP-034 id=RB-C13-09 from=RP-034
+T: How is pay fixed on promotion from 01-01-2016?
+A: Add one increment in the old level, then place yourself at the same figure or next higher cell in the new level.
+K: Default method if you take no option
+K: Maj Gen: add one increment plus MSP, then locate cell
+K: Lt Gen not promoted Army Commander: Level 17, non-functional
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017, rule 12
+D: Example: a Lt Colonel drawing Rs 1,53,500 gets one increment to Rs 1,58,100; Level 13 has no such cell, so the next higher figure, Rs 1,60,600, applies. The Level 17 non-functional pay counts for financial benefits only, not privileges of the Army Commander appointment.
+
+=== topic=RP-034 id=RB-C13-10 from=RP-034
+T: Promotion fixation on next increment date: how the option works
+A: Until DNI you sit at the next cell in the new level. On DNI you get two old-level increments, then re-fix.
+K: Not available for deputation, direct entry or ad-hoc promotion
+K: First increment in new rank comes after 6 months
+K: Decide within 3 months; it is final
+C: Army Pay Rules 2017; MoD OM 1(20)/2017/D(Pay/Services) dt 26-02-2019; MoF DoE OM 4-21/2017-IC/E.IIIA dt 28-11-2019
+D: Those promoted 01-01-2016 to 26-02-2019 had 6 months from 26-02-2019 to opt; promotions after that have 3 months. Example: Captain at Rs 69,000 promoted 10-12-2022 to Major, DNI 01-01-2023: Rs 69,400 until DNI, Rs 73,600 on DNI, Rs 75,800 on 01-07-2023.
+
+=== topic=RP-034 id=RB-C13-11 from=RP-034
+T: Pay when commissioned with antedate on or after 01-01-2016
+A: Pay is fixed notionally from the antedate, with increments added; the result is your pay on commission.
+K: Increments in the antedate period are notional
+K: Next increment may fall soon after commission
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+D: Example: commissioned 02-03-2016 with two years antedate from 02-03-2014. Notional pay Rs 15,600 rises to 56,100 in 7th CPC; the 01-07-2016 increment takes pay to Rs 57,800.
+O: Rule number not stated in handbook; find it.
+
+=== topic=RP-034 id=RB-C13-12 from=RP-034
+T: Stepping up pay of a senior drawing less than a junior
+A: Senior promoted before 01-01-2016 and drawing less than a junior promoted later is stepped up to the junior's pay.
+K: Same arm or service, same rank, same level
+K: Not if the junior's lead comes from advance increments
+K: Effective from the junior's promotion date
+C: MoD ID Note 1(12)/2020/D(Pay/Services) dt 19-11-2020; MoF OM 4-21/2017-IC/E.IIIA dt 28-11-2019; DoPT OM 4/3/2017-Estt(Pay-I) dt 26-10-2018
+D: At promotion the senior must have drawn at least what the junior drew. Next increment falls due after the usual qualifying service from the date of re-fixation. A second limb covers seniors promoted on or after 01-01-2016.
+
+=== topic=RP-034 id=RB-C13-13 from=RP-034
+T: Bunching of pay stages at 7th CPC fixation
+A: If two officers' old pays were 3% apart but land in one cell, the higher one gets an extra increment.
+K: Only for rank, arm or service peers on direct fixation
+K: No further benefit from later bunching
+K: Not a seniority matter
+C: MoD letter 1(22)/2017/D(Pay/Services) dt 06-10-2017; MoF DoE OM 1-6/2016-IC dt 07-09-2016 and 03-08-2017
+D: Compare pays in the old structure, not the new matrix. Example: Rs 37,400 and Rs 38,770 (3% apart) with Rs 8,000 grade pay both fix at Rs 1,21,200; the second moves to Rs 1,24,800.
+
+=== topic=RP-034 id=RB-C13-14 from=RP-034 chips=RATES
+T: Non Practising Allowance for AMC, ADC and RVC
+A: NPA is 20% of basic pay in the pay matrix from 01-07-2017, capped so pay plus MSP plus NPA stays within Rs 2,37,500.
+K: Lieutenant (AMC) and AMC(NT) officers not eligible
+K: Counts as pay for DA, pension, retirement benefits
+K: Not counted in basic pay for HRA from 01-07-2017
+C: Rule 171, Pay and Allowances Regulations for the Army; MoD letter 4(10)/2017/D(Med) dt 28-09-2017; MoD letter 3(1)/2015-D(Q&C) dt 11-10-2017
+D: NPA is paid during study leave. It is not calculated on MSP.
+O: MoD letter 4(10)/2017/D(Med) is dated 28-09-2017 here but 29-09-2017 on the DSOP card; one date or two separate letters. Verify.

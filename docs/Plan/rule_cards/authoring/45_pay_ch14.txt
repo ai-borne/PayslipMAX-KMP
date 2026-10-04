@@ -1,0 +1,55 @@
+=== topic=RP-035 from=RP-035,RP-036
+T: Qualification Allowance for aviators and aviation instructors
+A: Only aviation instructors and aviators with a green card get it; monthly rates depend on the grade held.
+K: Master Instructor Rs 1,125; Senior I Rs 900; II Rs 630
+K: Master Green Card Rs 900; Green Card Rs 630
+K: Base rates from 01-07-2017; rise 25% per 50% DA
+C: CGDA letter PC-II/1098/AT-P dt 28-12-1977; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018
+D: A Part II order with the prescribed certificates is published every year.
+
+=== topic=RP-037 from=RP-037 chips=GUIDANCE
+T: What happened to Qualification Grant after the 7th CPC?
+A: It was abolished as a separate allowance from 01-07-2017. A Higher Qualification Incentive was proposed.
+K: MoD orders on the incentive were still awaited in 2023
+K: Do not claim Qualification Grant for new courses
+O: Handbook says MoD orders for Higher Qualification Incentive are awaited; confirm current status.
+C: MoF DoE resolution dt 06-07-2017
+
+=== topic=RP-042 from=RP-042,RP-043
+T: Test Pilot and Flight Test Engineer Allowance
+A: Test pilots get Rs 5,300 a month, flight test engineers Rs 4,100, both from 01-07-2017 and rising 25% per 50% DA.
+K: Test pilot: completed test pilot course, posted to AAPT Bengaluru
+K: Also paid on leave or TD up to 3 months
+K: Test pilot and Flying Allowance are paid together
+C: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018; MoD letter PC-26243/AG/PS3(a)/364/D(Pay/Services) dt 23-02-1995; MoD letter 00696/ALH/AA-5/1899/98/D(GS-I) dt 23-11-1998
+D: Test pilots are paid from 17-04-1993 while carrying out test pilot duties. Flight test engineers qualify on FTE or FTIE courses at ASTE Bengaluru or equivalent. Claims go with a Part II order citing the IHQ letter.
+
+=== topic=RP-046 from=RP-044,RP-046
+T: When does Parachute Allowance start and stop?
+A: It starts one month after the probationary attachment, if the course follows within three months, and ends when you leave the post.
+K: No probation served: from the day you start the course
+K: Failed through no fault: paid for training period at commander's discretion
+K: Training injury: up to 91 days
+C: Rules 100 and 101, Pay and Allowances Regulations for the Army
+D: If the gap between probation and the course exceeds three months, the allowance is paid retrospectively for no more than three months before the course. The Para Jump Instructor Allowance is Rs 10,500 a month from 01-07-2017 for those in authorised instructor appointments (MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017).
+
+=== topic=RP-047 from=RP-047
+T: Special Force Allowance
+A: Rs 25,000 a month from 01-07-2017 for officers of the Para (SF) commando units. It replaces Parachute and Para Reserve Allowance.
+K: Rises 25% each time DA rises by 50%
+K: Parachute continuance conditions apply
+K: On return to parent unit Para pay resumes
+C: MoD letter B/36389/AG/PS3(b)/82/S/D(Pay/Services) dt 29-01-1980 as amended; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017
+D: Applies to ten Para (SF) units: numbers one to four, nine to thirteen, and twenty-one.
+
+=== topic=RP-048 from=RP-048 chips=GUIDANCE
+T: Is there an official hospitality grant now?
+A: No. It was abolished from 30-06-2017; hospitality is office expenditure outside PCDA(O).
+K: Nothing to claim from PCDA(O)
+C: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017; MoF OM 11-1/2016/E.II B (7th CPC)/Pt.III(C) dt 10-04-2018
+
+=== topic=RP-050 from=RP-050
+T: NSG allowance for officers on deputation
+A: Army officers deputed to NSG get 40% of basic pay in the pay matrix from 01-07-2017.
+K: Based only on matrix basic pay, nothing else
+C: MHA letter II-27012/34/CF-3396431/2017-PF-I dt 03-08-2017; MHA letter 27012/28/98/PF-1/PF-IV dt 11-10-2002

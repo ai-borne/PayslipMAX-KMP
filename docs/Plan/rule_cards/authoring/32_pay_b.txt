@@ -1,0 +1,166 @@
+# Pay batch 3: leave encashment with LTC, CEA and hostel subsidy, medical OPD, transport allowance. Written from the P&A handbook and FAQ.
+
+=== topic=RP-029 from=SS-P019,SS-P023,SS-P024
+T: Leave encashment with LTC: the conditions
+A: Up to 10 days of annual leave per LTC, 60 days in all over your career, including any re-employment.
+K: At least 30 days of annual leave must remain to your credit
+K: Allowed even if only your family travels on the LTC
+K: No limit on spells; can come from leave kept for encashment
+C: MoD letter 12647/Q Mov C/2610/D(Mov)/98 dt 11-09-1998; DoPT OM 14028/4/2009-Estt(L) dt 03-06-2009
+D: Both spouses serving: each can encash up to 60 days. Re-employed officers can encash with LTC up to the same 60-day total.
+
+=== topic=RP-029 from=SS-P020,SS-P021
+T: Claiming leave encashment with LTC: documents
+A: Forward the Part II order notifying LVELTC to PCDA(O) well ahead, and then submit the LTC journey claim.
+K: The order names LTC type, place of visit and leave period
+K: You can claim 60 days before the outward journey
+W: Without the LTC journey claim, the encashment is recovered
+C: SRO 12(E) dt 03-05-2017
+
+=== topic=RP-029 from=SS-P022 chips=RATES
+T: How is LTC leave encashment calculated?
+A: (Basic pay + NPA, if any + DA) x days / 30, on the date of the journey.
+K: NPA counts only for medical officers
+K: MSP is not included
+K: Applies from 01-01-2016
+C: SRO 12(E) dt 03-05-2017
+
+=== topic=RP-029 from=SS-P025 chips=GUIDANCE
+T: Is LTC leave encashment taxable?
+A: Yes, it is taxable.
+K: Treat it as taxable income in your tax computation
+
+=== topic=RP-085 from=SS-P092,SS-P093 chips=RATES
+T: CEA and hostel subsidy: how much?
+A: CEA Rs 33,750 a year per child; hostel subsidy up to Rs 1,01,250 a year, from 01-04-2024.
+K: Divyaang child (40% or more): double CEA, Rs 67,500 a year
+K: Hostel subsidy: actual lodging and boarding cost, or the ceiling if lower
+K: Both can be claimed together
+C: MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018; DoPT OM A-27012/02/2017-Estt(AL) dt 16-07-2018
+D: The base was Rs 2,250 and Rs 6,750 a month. These rise 25% each time DA rises 50%.
+O: The FAQ gives the 01-04-2024 figures. Confirm the order for the 25% rise.
+
+=== topic=RP-085 from=SS-P086,SS-P088,SS-P093
+T: Which children qualify for CEA?
+A: Your two eldest surviving children, up to age 20 or class 12, whichever is earlier.
+K: Twins or multiple birth at the second birth: all are covered
+K: Divyaang children: up to age 22
+K: From AY 2023-24: up to three classes before Class 1
+C: MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018
+O: The handbook says two classes before Class 1; the newer FAQ says three from AY 2023-24. FAQ followed.
+
+=== topic=RP-085 from=SS-P090,SS-P087,SS-P089
+T: CEA claim: documents and Part II codes
+A: A bonafide certificate from the school and your self-declaration, with a Part II order.
+K: Divyaang child: also a disability certificate from the competent authority
+K: Twins: occurrence code RIMBCEAT; a divyaang twin: RIMBCEAD
+H: Self-attested report card or fee receipt, if no certificate
+C: MoD letter 1(23)/2017/D(Pay/Services) dt 15-09-2017
+
+=== topic=RP-085 from=SS-P091
+T: Hostel subsidy: when and with what documents
+A: For a child in a residential school at least 50 km from your home. Claim once a year.
+K: The school certificate must state the lodging and boarding cost
+K: HOSTSUB Part II order and your self-declaration
+W: Both spouses in service: only one can claim
+C: MoD letter 1(23)/2017/D(Pay/Services) dt 15-09-2017
+
+=== topic=RP-085 from=SS-P094
+T: Officer dies in service: CEA and hostel subsidy for the children
+A: Admissible if the spouse is not in Government or similar service.
+K: Paid until the officer would have reached age 60
+K: Child's limit still applies: class 12, age 20, or 22 if divyaang
+C: MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018
+
+=== topic=RP-085 from=SS-P094 id=RB-SS-P094-more
+T: CEA: retirement, failing a class, and leave
+A: Retiring mid-year: CEA runs to the end of that academic year. Failing a class does not stop it.
+K: Same class in another school after passing it: not reimbursable
+K: Distance learning counts; leave and suspension do not stop it
+K: Dies-non periods are excluded
+C: MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018
+
+=== topic=RP-094 from=SS-P119,SS-P123
+T: OPD medical claim returned: the usual reasons
+A: Check for missing papers, a late sanction, a late claim or a bill not countersigned.
+K: Missing: NAC, medical case sheet or the AO 32/81 appendix
+K: Missing: dependent Part II order or dependent ID card
+K: NAC or sanction taken after the test or investigation
+W: Special sanction under DFPDS-2016 Sec 5.7 missing where needed
+W: Claim filed late, or the contingent bill not countersigned
+C: Sec 5.7, DFPDS-2016
+
+=== topic=RP-094 from=SS-P120 chips=GUIDANCE
+T: Medical claim for an indoor patient
+A: The Regional CDA handles it. PCDA(O) deals only with OPD claims without hospitalisation.
+K: Send hospital-stay claims to your Regional CDA
+
+=== topic=RP-094 from=SS-P121 chips=GUIDANCE
+T: Special investigation at a private hospital: is an MH or CH NAC enough?
+A: Yes. An NAC from a Military Hospital or Command Hospital is sufficient.
+K: No separate NAC from the private hospital is needed
+
+=== topic=RP-094 from=SS-P122 chips=GUIDANCE
+T: My medical claim was admitted for less than I claimed
+A: Claims are passed at the CGHS rate list.
+K: Charges above the CGHS rate are not reimbursed
+
+=== topic=RP-094 from=SS-P124,SS-P125 chips=GUIDANCE
+T: Dependents for medical claims
+A: A dependent has income under Rs 9,000 plus DA a month. A spouse needs no dependency test.
+K: Income from all sources, including pension, counts
+K: Attach the dependent Part II order or ID card issued before treatment
+O: The Rs 9,000 limit is tied to the minimum family pension; check the current figure.
+
+=== topic=RP-094 from=SS-P126,SS-P127
+T: Medical claim: time limit and condonation
+A: Submit within six months of treatment or discharge. Later claims need condonation.
+K: The old three-month limit was extended to six months
+K: Condonation powers follow the 1999 OM
+C: MoHFW OM S/4025/19/2015-MS dt 27-05-2015; OM S.14025/199-MS dt 25-05-1999
+
+=== topic=RP-049 from=SS-P051 id=RB-SS-P051-rates chips=RATES personal=level,city:ta_rate
+T: Transport allowance rates by pay level
+A: Levels 10 to 13A: Rs 7,200 plus DA in listed cities, Rs 3,600 plus DA elsewhere.
+K: Level 14 and above: Rs 15,750 plus DA; rates from 01-07-2017
+K: Level 14 and above with a car: choose car or allowance
+K: Not paid if Government transport is provided for commuting
+C: MoD letter 12630/Tpt.A/Mov C/246/D(Mov)/17 dt 15-09-2017; MoF OM 11-1/2016/E.IIB dt 10-04-2018
+O: Handbook gives no 25%-per-50%-DA escalator for transport allowance; confirm whether one applies after DA crossed 50%.
+D: Higher-rate cities: Delhi, Greater Mumbai, Kolkata, Chennai, Bengaluru, Hyderabad, Pune, Ahmedabad, Surat, Gandhinagar, Patna, Kochi, Kozhikode, Indore, Nagpur, Jaipur, Coimbatore, Ghaziabad, Kanpur, Lucknow.
+
+=== topic=RP-049 from=SS-P051
+T: Transport allowance at double rate: how to claim
+A: Visually impaired, orthopaedically handicapped, deaf, hearing impaired and spinal-deformity officers get double.
+K: Medical certificate from the relevant specialist at an MH
+K: Sanction of the competent authority under Appendix I
+W: Partially blind personnel do not get the double rate
+C: MoD letter 12630/Tpt.A/Mov C/78/D(Mov)/18 dt 17-07-2018; MoF OM 21/3/2017-E.IIB dt 12-07-2018; Rule 230A TR
+
+=== topic=RP-049 from=SS-P047,SS-P049,SS-P054
+T: Transport allowance during leave
+A: Not paid for a calendar month wholly covered by leave. Part-month leave does not reduce it.
+K: Annual or furlough leave not covering a full month: full rate
+K: Study leave: not admissible
+C: MoD letter 12630/Tpt.A/Mov C/246/D(Mov)/17 dt 15-09-2017
+
+=== topic=RP-049 from=SS-P048
+T: Transport allowance during TD, tour or a course
+A: Nothing for a calendar month wholly spent on TD or tour. Under a month: the full allowance.
+K: TD over 180 days: rate of the new city class
+K: Course over 10 weeks: course-station rate, if no RMA is paid
+H: CO or OC certificate that no transport was provided during training
+C: MoD letter 12630/Tpt.A/Mov C/246/D(Mov)/17 dt 15-09-2017
+
+=== topic=RP-049 from=SS-P050,SS-P053
+T: Transport allowance during suspension
+A: None for a full calendar month of suspension, even if later treated as duty.
+K: Part of a month: reduced proportionately
+C: MoD letter 12630/Tpt.A/Mov C/246/D(Mov)/17 dt 15-09-2017
+
+=== topic=RP-049 from=SS-P052
+T: Transport allowance on deputation abroad or in Bhutan
+A: No. It is paid only within India.
+K: Not on deputation to a UN mission
+K: Not while serving in Bhutan and drawing Bhutan Compensatory Allowance
+C: MoD letter 12630/Tpt.A/Mov C/246/D(Mov)/17 dt 15-09-2017

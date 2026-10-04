@@ -1,0 +1,99 @@
+=== topic=RP-038 from=SS-P030,SS-P031
+T: Technical Allowance: who gets Tier I and Tier II?
+A: Technically qualified officers on full-time technical duties. Tier I after the young officers' technical course; Tier II after a prescribed course (one course per tier).
+K: Tier I base Rs 3,000 a month from 01-04-2018
+K: Tier II base Rs 4,500 a month from 01-04-2018
+K: Rates rise 25% each time DA rises by 50%
+C: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018; MoD letter 15(49)/2017/Tech Allce/D(GS-II) dt 25-06-2018
+O: CONFLICT. Handbook says Tier II needs substantive Captain rank; FAQ says Tier II needs detailment by Service HQ. Both may apply. Verify with letter of 25-06-2018.
+
+=== topic=RP-038 from=SS-P029
+T: Who is not entitled to Technical Allowance?
+A: AMC, ADC, AEC and MNS officers, and non-technical officers, get neither tier.
+K: Also not paid if posted against a non-technical post
+K: Courses with no direct link to duties do not qualify
+C: MoD letter 15(49)/2017/Tech Allce/D(GS-II) dt 25-06-2018
+
+=== topic=RP-038 from=SS-P026
+T: Technical Allowance for re-employed officers
+A: Only while you are working full time on technical and upkeep duties and meet every eligibility condition.
+K: Re-employment alone does not give the allowance
+C: MoD letter 1(26)/97/XXII/D(Pay/Services) dt 29-02-2000
+
+=== topic=RP-038 from=SS-P027
+T: Documents for Technical Allowance Tier I
+A: Part II order GTDTECI with a deployment certificate and a qualification certificate from the line directorate.
+K: Claim goes with the Part II order
+H: Part II order notifying GTDTECI
+H: CO or OC certificate of full-time technical deployment
+H: One-time line directorate certificate with first claim
+C: CGDA letter ARMY/BR/OFF./ALLOW/1223/Misc dt 07-10-2019
+O: Certificate format is in the CGDA letter; confirm the letter is the primary authority.
+
+=== topic=RP-038 from=SS-P028
+T: Documents for Technical Allowance Tier II
+A: Part II order GTDTECII, claim routed via the line directorate, deployment certificate and a course detailment certificate.
+K: Claim is routed through the line directorate
+H: Part II order notifying GTDTECII
+H: CO or OC full-time deployment certificate
+H: Service HQ detailment certificate for listed courses
+C: MoD letter 15(49)/2017/Tech Allce/D(GS-II) dt 25-06-2018; CGDA letter ARMY/BR/OFF./ALLOW/1223/Misc dt 07-10-2019
+
+=== topic=RP-039 from=SS-P035,SS-P032,SS-P033
+T: Specialist Allowance: who is eligible?
+A: AMC and ADC officers graded by DGAFMS as Graded or Classified Specialist or Consultant, who are in the pool or hold a specialist post.
+K: Graded Rs 3,600, Classified Rs 4,500, Consultant Rs 5,400 monthly
+K: Base rates from 01-07-2017; rise 25% per 50% DA
+K: Not for Brigadier and above (AMC) or Major General and above (ADC)
+C: Rules 88 to 91, Pay and Allowances Regulations for the Army; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017
+O: Handbook quotes MoD letter 5019/DGAFMS/DG-1(b)1729 S(Med) dt 09-08-1984 for the AMC rank bar. FAQ P032 heading says ADC but text says AMC; handbook gives ADC bar for Maj Gen.
+
+=== topic=RP-039 from=SS-P034
+T: When is Specialist Allowance not payable?
+A: In transit between specialist posts, under arrest or suspension, on study leave or a course of 10 weeks or more.
+K: Restored after suspension only if honourably acquitted
+K: Still payable in these cases if you stay in the specialist pool
+C: Rules 88 to 91, Pay and Allowances Regulations for the Army
+
+=== topic=RP-040 from=SS-P036
+T: Post Graduate Allowance: who gets it?
+A: AMC and ADC officers with a postgraduate degree or diploma who are not eligible for Specialist Allowance.
+K: Degree Rs 2,250 and diploma Rs 1,350 a month
+K: Base rates from 01-07-2017; rise 25% per 50% DA
+K: Must be on the DGAFMS pool list
+H: Part II order citing the DGAFMS letter
+C: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018
+
+=== topic=RP-041 from=SS-P041
+T: Who gets Flying Allowance?
+A: Army Aviation officers in sanctioned posts of the permanent aviation cadre, including those on staff or ERE duty.
+K: Base Rs 25,000 a month for all ranks from 01-07-2017
+K: Rises 25% each time DA rises by 50%
+K: Must meet the eligibility conditions
+C: Rule 164, Pay and Allowances Regulations for the Army; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018
+
+=== topic=RP-041 from=SS-P037
+T: Army aviator at Siachen: Siachen or Flying Allowance?
+A: One or the other, at your choice. Both are not paid together.
+K: Rule applies from 01-04-1999
+C: MoD letter 3(4)/97/D(Pay/Services) dt 28-05-1999
+
+=== topic=RP-041 from=SS-P038
+T: Flying Allowance during a course of 10 weeks or more
+A: Payable for a non-flying course if your vacancy stays unfilled and you return to AOP duty.
+K: Both conditions must hold
+C: MoD letter B/26243/AG/PS3(a)/647/D(Pay/Services) dt 18-03-1993
+
+=== topic=RP-041 from=SS-P039
+T: How Flying Allowance is claimed each month
+A: Monthly, on a Part II order granting it, with the prescribed certificates.
+K: Publish grant and stoppage in the same Part II order
+K: Claim the full month in one order
+C: MoD letter B/26243/AG/PS3(a)401/S/D(Pay/Services) dt 06-05-1982 as amended
+
+=== topic=RP-041 from=SS-P040
+T: How much Flying Allowance goes to the DSOP Fund?
+A: Two-fifths of the allowance is credited to your DSOP Fund account.
+K: This is on top of your own DSOP subscription
+C: MoD letter B/26243/AG/PS3(a)401/S/D(Pay/Services) dt 06-05-1982 as amended
+O: DSOP credit authority is in handbook only; primary letter not separately identified.

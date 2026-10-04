@@ -1,0 +1,63 @@
+=== topic=RP-011 from=RP-011
+T: Is leave a right, and can holidays be tacked on?
+A: Leave is never a right; it depends on exigencies of service. You may prefix or suffix recognised holidays with the CO's permission.
+K: Holidays do not count against leave days
+K: Saturdays count as holidays in five-day-week units
+K: Restricted holidays also count
+C: Rules 2 and 4 with Notes, Leave Rules for the Services Vol I (Army)
+D: The tacking-on concession does not apply where another special commencement or termination concession is sanctioned. No extra expense may fall on the State.
+
+=== topic=RP-012 from=RP-012
+T: How much casual leave do I get, and can it be combined?
+A: Twenty days in a calendar year, up to 20 days at a time, and it cannot be combined with other leave.
+K: Must be taken within the year it is due
+K: Spill into next year is debited to each year separately
+K: Exception: sporting events under Rule 72(A)
+C: Rules 10 and 17, Leave Rules for the Services Vol I (Army); MoD letter B/33922/AG/PS-2(b)/2628/D(AG) dt 25-06-2007
+D: Abroad on deputation or course, casual leave is at the Head of Mission's discretion and must not extend the deputation (Rule 71(1)).
+
+=== topic=RP-013 from=RP-013
+T: When is special casual leave granted for sports, IIPA or scientific meetings?
+A: Sports: up to 30 days a year, only as a representative of a recognised team. IIPA: 6 working days. Scientific bodies: as needed.
+K: Sport: national or international events, not personal entry
+K: IIPA: officers outside Delhi, plus journey time
+K: Sanctioned by the CoAS or Director level for sport
+C: Rules 72, 74, 75, Leave Rules for the Services Vol I (Army); MoD letter B/25571/AG/PS3(b)/3335/D(Pay/Services) dt 04-10-1991
+D: Sports leave may combine with casual leave or regular leave, not both at once. Trekking expeditions approved by the Indian Mountaineering Foundation also qualify. No TA/DA for IIPA moves. Scientific meeting leave is sanctioned by the casual leave authority, not below Brigadier or Sub Area Commander.
+
+=== topic=RP-013 id=RB-C8-04 from=RP-013
+T: Special casual leave after sterilisation operations
+A: Seven days for a male officer whose wife is operated; up to 14 days for a female officer. Complications and recanalisation have their own limits.
+K: IUCD insertion: one day for female officers
+K: Wife's husband's vasectomy: one day
+K: Recanalisation: 21 days or hospital stay, whichever is less
+C: Rule 73, Leave Rules for the Services Vol I (Army); MoD letter B/33927/AG/PS-2(D)/432/D(AG) dt 19-02-1997
+D: Post-operative complications: whole period of hospitalisation, plus up to 7 days after tubectomy if still unfit though not hospitalised.
+O: Sterilisation SCL rules are old; check whether superseded by later MoD or DoPT orders.
+
+=== topic=RP-014 from=RP-014
+T: Annual leave: how many days and when are they credited?
+A: Sixty days a year, credited on 1 January with no duty condition. It may be taken in spells.
+K: Leave running into next year debits the starting year
+K: First-commission leave counts against the year you join duty
+K: Accumulates up to 300 days for encashment, 30 a year
+C: Rule 69, Leave Rules for the Services Vol I (Army); MoD Case B/33922/AG/PS-2(b)/642/D(AG) dt 04-04-2011
+D: Effective 04-04-2011. Retiring on 31 Jan: 30 days, in February 58 or 59 days, in March or later 60 days (AG's Br letters of 15-06-2012 and 27-07-2015). SSC officers cannot accumulate leave in the year of release. Accumulation for encashment in the retirement year: 15 days if retiring 31 Jan, 30 days otherwise.
+
+=== topic=RP-014 id=RB-C8-05 from=RP-014
+T: Annual leave on deputation, course abroad, UN mission or re-employment
+A: UN deputees may carry forward 30 days a year. Re-employed officers get only the unavailed part of 60 days.
+K: Abroad: leave sanctioned by the Head of Mission
+K: Personal leave over 14 days or half the tour needs sanction
+K: Re-employed after 30-day gap or in December: 30 days
+C: MoD letter 17(21)/2006/D(GS-I) dt 24-08-2009; AG's Br letter B/33938/AG/PS-2(b) dt 17-05-2016
+D: Leave taken in continuation of an overseas course for personal reasons gets no transit time for return unless it is within 14 days or 50% of the duty period, or on medical grounds.
+
+=== topic=RP-015 from=RP-015
+T: Furlough leave: entitlement and rules
+A: Two months (60 days) in every three calendar years from commission. It does not accumulate.
+K: Not for NCC whole-time or re-employed officers
+K: SSC officers with 3 years' service are entitled
+K: Combined with annual leave: annual leave first, furlough last
+C: Rules 19 and 47, Leave Rules for the Services Vol I (Army)
+D: Furlough can be taken in spells at any time after the three-year cycle begins. Furlough running into the next cycle is debited to the cycle it started in.

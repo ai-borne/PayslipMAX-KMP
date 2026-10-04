@@ -1,0 +1,105 @@
+=== topic=RP-074 from=RP-074 chips=RATES
+T: Dress Allowance: how much and when is it paid?
+A: Rs 20,000 a year for Army officers, Rs 15,000 for MNS, credited once a year in July from 01-07-2017.
+K: Covers only the basic uniform, not special clothing
+K: Rises 25% each time DA rises by 50%
+K: Replaces outfit and kit maintenance allowances
+C: MoD letter PC-1(16)/2017/D(Pay/Services) dt 16-11-2017
+D: Recovery if you leave in the year: superannuation July-Sept 60%, Oct-Dec 40%, Jan-Mar 25%, Apr-Jun nil. Voluntary retirement or resignation: 80%, 55%, 33%, nil. No recovery on death or invaliding beyond your control (MoD letter 1(4)2019/D(Pay/Services) dt 01-03-2021).
+
+=== topic=RP-075 from=RP-075 chips=GUIDANCE
+T: Is there any compensation for a change of uniform?
+A: No. Dress Allowance replaced all uniform allowances, and the order has no reimbursement for a change of regiment or corps.
+K: Do not claim clothing, shoe, robe or washing allowance
+K: NSG and Assam Rifles officers lose 28 basic uniform items
+C: MoF DoE OM 19051/1/2017-E.IV dt 02-08-2017; MHA letter II-27012/CF-3396554-2017-PF-I dt 04-01-2018
+
+=== topic=RP-076 from=RP-076,RP-077
+T: Compensatory allowances and Hill Compensatory Allowance
+A: Army officers get compensatory allowances at the civilian rates and rules for the same locality. Composite Hill allowance ended 01-07-2017.
+K: MNS officers included
+K: Hill Compensatory Allowance is abolished
+C: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017
+
+=== topic=RP-078 from=RP-078
+T: Tough Location Allowance: rates and what it replaced
+A: It replaced SC(RL)A from 01-07-2017: TLA-I Rs 5,300, TLA-II Rs 3,400, TLA-III Rs 1,200 a month.
+K: Part A or B places: TLA-I; Part C: TLA-II; Part D: TLA-III
+K: A place in two parts gets the higher rate
+K: With field concessions, take the higher of the two
+C: MoD letter 1(16)/2017/D(Pay/Services) dt 16-11-2017; DoE OM 3/1/2017-E.II(B) dt 19-07-2017
+D: Whole states: Assam, Meghalaya Part D; Manipur Part C; Nagaland Part B; Sikkim and Lakshadweep Part A. Others are listed by district in the annexure. Rates rise 25% each time DA rises by 50%.
+O: Handbook cites MoD letter 1(16)/2017 dt 16-11-2017 here but the main 7th CPC letter is dt 18-09-2017 and the dress letter is PC-1(16)/2017 dt 16-11-2017; confirm the TLA letter number.
+O: District-level lists (HP, J&K, Uttarakhand, Mizoram, Tripura, Arunachal, Andaman) are not reproduced; add as lookup data if wanted.
+
+=== topic=RP-078 id=RB-C18-05 from=RP-078
+T: Tough Location Allowance on leave, TD, arrest or suspension
+A: Continues on leave for 180 days at a time, 8 months for TB, cancer or long illness. Needs family residence certificate after 180 days.
+K: Temporary duty up to six months at the same rate
+K: Arrest or suspension: paid later if acquitted or cleared
+K: Husband and wife both get it if otherwise eligible
+C: Rules 265 to 277, Pay and Allowances Regulations for the Army; MoD letter 1(37)/87/4405/D(Pay/Services) dt 28-07-1987
+D: Eligibility follows the place of duty and normally needs permanent posting. TD officers get it if they draw no daily allowance. The family certificate says you or your family stayed at the same station (or nearby area). Family excludes members with independent income above a pension of Rs 9,000.
+
+=== topic=RP-079 from=RP-079
+T: Island Special Duty Allowance
+A: Percent of matrix basic pay in the islands: 10% near capital towns, 16% in difficult areas, 20% in more difficult areas.
+K: Leave or training: 15 days at a time, 30 a year
+K: Not during suspension or joining time
+K: Paid along with TLA; with field concessions take the higher
+C: MoD letter 1(26)/97/V/D(Pay/Services) dt 29-02-2000; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017; MoF OM 20022/68E.II(B) dt 24-05-1989
+D: 10%: Port Blair, Kavaratti, Agatti. 16%: North, Middle and South Andaman (not Port Blair), Lakshadweep except Kavaratti, Agatti, Minicoy. 20%: Little Andaman, Nicobar, Narcondam, East Island, Minicoy. Applies from 01-07-2017.
+
+=== topic=RP-080 from=RP-080
+T: Crockery and cutlery grants for officers posted abroad
+A: Representational crockery: Rs 8,600 or Rs 13,000 by rank, on each posting. CCG: Rs 3,400 lump sum for daily crockery.
+K: Not for UN mission or IMTRAT Bhutan
+K: Crockery grant: at most six times in foreign postings
+K: CCG halves next time if tenure was under 18 months
+C: MoD letter B/25987/AG/PS3(a) dt 29-10-1987; MoD letter 4(1)/2011/D(Pay/Services) dt 19-08-2011; CGDA letter AT/IV/4887/VII dt 17-03-1998
+D: Representational grant: Rs 8,600 for Colonel, Lt Col, Major, Captain and Lieutenant equivalents (12-person set), Rs 13,000 for Brigadier and Major General equivalents (18-person set). Head of Mission countersigns a certificate. From 31-12-2008.
+
+=== topic=RP-081 from=RP-081
+T: Lump sum for bed and table linen for military attachés
+A: Military attachés posted abroad receive a prescribed lump sum in place of linen, released by the regional PCDA or CDA.
+K: Attachés are borne at DGMI Foreign Division (OA)
+C: MoD letter 4(1)/2011/D(Pay/Services) dt 19-08-2011; CGDA letter AT/I/0/42/VLL dt 26-02-1991
+O: The rate is not stated in the handbook; need the prescribed rate from the letter.
+
+=== topic=RP-082 from=RP-082
+T: Bhutan Compensatory Allowance at IMTRAT and Dantak
+A: Paid instead of Indian DA at rates notified by MEA, plus servant wages, on Appendix A to AO 31/80.
+K: Stops each September and March until the six-monthly certificate arrives
+K: Leave up to 14 days: no recovery
+K: Longer leave: 25% recovery for the whole leave
+C: AO 31/80; MoD letter 44003/PS3(a)/9621-A/D(PP) dt 07-12-1955; MoD letter A/00787/BCA/AG/PS-3(a)/01/2017 dt 31-05-2019
+D: Income tax on salary is reimbursed as Additional Foreign Allowance each February, pro rata for part years. Two full-time servants are paid Rs 5,456 each a month. Difficult Area Allowance is paid in specified IMTRAT areas. The 6% depression on BCA was dropped from 11-02-2019. No crockery grant. Transport allowance is for India only.
+
+=== topic=RP-083 from=RP-083
+T: Myanmar Compensatory Allowance
+A: Officers with units under HQ 760 BRTF Myanmar get the same rates, servant wages and leave conditions as IMTRAT Bhutan.
+K: Claim as for Bhutan Compensatory Allowance
+C: AO 31/80; MoD letter 44003/PS3(a)/9621-A/D(PP) dt 07-12-1955
+
+=== topic=RP-084 from=RP-084 chips=GUIDANCE
+T: Claims you must not send to PCDA(O)
+A: Briefcase allowance, bed and linen charges, telephone bills and indoor medical claims go to the Regional Controller.
+K: Submit to the Controller of the unit's region
+O: No primary letter named in the source. Find the CGDA or MoD instruction.
+
+=== topic=RP-086 from=RP-086,RP-087
+T: Which advances remain after the 7th CPC?
+A: Interest-free advances for medical treatment, travelling on tour or transfer, LTC, and TA for a deceased's family stay. Pay advances are abolished.
+K: Advance of pay on transfer and leave salary: abolished
+K: Interest-bearing car and two-wheeler advances: discontinued
+C: MoF DoE OM 12(1)/E.II(A)/2016 dt 07-10-2016, amending Rule 21(5) of the Compendium of Rules on Advances
+
+=== topic=RP-088 from=RP-088,RP-089
+T: House building advance and conveyance advance now
+A: Conveyance and computer advances were discontinued. HBA for Army officers follows the 2017 rules as extended by MoD in June 2023.
+K: New house: 34 months' basic pay, up to Rs 7 lakh
+K: Expansion: up to Rs 6 lakh; cost cap 139x basic pay
+K: Interest 8.5% from 2017-18; reviewed every three years
+C: MoD (DMA) letter F.No.15(1)/2017/D(Pay/Services) dt 19-06-2023; MoHUA OM dt 09-11-2017; MoF DoE OM 12(1)/E.II(A)/2016 dt 07-10-2016
+D: Cost cap is at most Rs 60 lakh, relaxable by up to 25% by the head of department. Principal is repaid in up to 180 instalments, then interest in up to 60. The advance is the least of the pay-based limit, cost, or repaying capacity.
+O: Check later reviews of the 8.5% interest rate.

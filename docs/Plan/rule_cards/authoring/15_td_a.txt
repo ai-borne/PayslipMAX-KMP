@@ -1,0 +1,176 @@
+# Temporary duty batch A: daily allowance, courses, exams (SS-T304..SS-T329). Written from TR 2014 Rules 114-118, 123, 124, 127, 129, 150B and the 2017 MoD letter.
+
+=== topic=RR-TD-01 from=SS-T304,SS-T049
+T: Attached for investigation of a disciplinary case: DA for the halt?
+A: No. DA is not paid for halts when you are attached only for investigation or progress of a case.
+K: If detailed for specific duty during it, DA is paid
+K: Such an attachment stays temporary, even beyond 180 days
+C: Note 2 under Rule 91, TR 2014
+
+=== topic=RR-TD-02 from=SS-T305
+T: Local travel on a course: do I need receipts?
+A: No receipts for Pay Levels 9 to 11. Give a self-certificate instead.
+K: Self-certificate states the period of travel and vehicle number
+K: Undertaking: no service transport or CHT was provided
+K: Undertaking: the travel was for bonafide military duty only
+C: MoD (DMA) letter 12030/TA/DA/7thCPC/Mov C 143/D(Mov)/21 dt 16-03-2021
+O: The 2021 letter was not found publicly.
+
+=== topic=RR-TD-02 from=SS-T306 chips=GUIDANCE
+T: TA/DA to attend my Corps Raising Day?
+A: Not admissible. TA/DA is not paid for a TD to attend functions such as Raising Day.
+K: Such functions are not treated as duty for TA/DA
+
+=== topic=RR-TD-02 from=SS-T307
+T: DA on a long TD: how long is it paid?
+A: Full DA for the first 180 days of continuous halt at one place. After that, none.
+K: Beyond 180 days the right course is to issue transfer orders
+C: Rule 114(viii), TR 2014
+
+=== topic=RR-TD-02 from=SS-T313 chips=AMENDED
+T: DA on holidays and casual leave during TD
+A: DA is paid on holidays during TD. It is not paid on restricted holidays or casual leave.
+K: Half-day casual leave: half DA
+K: DA covers only the minimum time you needed to be away
+W: Leaving early or returning late for a holiday can be deducted
+C: Rule 114(vii), TR 2014
+
+=== topic=RR-TD-02 from=SS-T314 chips=AMENDED
+T: TD within my own city: when is TA and DA paid?
+A: TA is paid if the duty place is over 8 km from your normal place. DA is at half rate.
+K: Measured from your normal place of duty, even from home
+K: No DA on a day you stay within 8 km
+C: Rule 114(v)(a) and (vi), TR 2014
+
+=== topic=RR-TD-02 from=SS-T315
+T: Officers attached to HQs under Para 93 DSR: DA?
+A: Full DA for the first 20 days, then half rate up to 42 days.
+K: Attachment is for up to six months at a time, without replacement
+K: After 42 days: half rate, if the authority allows
+K: No DA beyond 90 days in all
+C: Rule 116, TR 2014; Para 93 DSR
+
+=== topic=RR-TD-02 from=SS-T316,SS-T012
+T: Sent to help the civil authorities at another station: TA/DA?
+A: Normal TA/DA under Rules 114 and 119. State hospitality changes the DA under Rule 114(iv).
+K: Applies when detailed with or without a detachment
+K: Republic Day Parade detachments get the same normal TA/DA
+C: Rule 114 and Rule 119, TR 2014; MoD UO B/68529/Q/RRC/1373 D(Mov) dt 30-11-1977
+
+=== topic=RR-TD-02 from=SS-T308
+T: DA on Rajdhani Express journeys
+A: Full DA for the journey period, even though the fare includes meals.
+K: The meal charge in the fare does not reduce your DA
+C: Rule 95 TR; MoD letter B/89621/PC-16/Q Mov C/3497/D(Mov) dt 17-08-1978
+O: Pre-7th-CPC letter; confirm it still applies to the lump-sum food charge.
+
+=== topic=RR-TD-02 from=SS-T309
+T: Travel to receive a Sena or Vishisht Seva Medal
+A: Serving recipients are treated as on temporary duty. Ex-servicemen and next of kin get TA or a warrant.
+K: Serving: from your unit to the place of presentation and back
+K: Ex-servicemen and next of kin of posthumous awardees: from home
+K: One guest per recipient gets a single fare each way
+C: MoD letter 3(24)/85/D(Ceremonials) dt 01-05-1987
+D: Class is what the winner was entitled to in service, or lower if actually used. Road mileage is paid where there is no rail. Ex-servicemen officers get DA for up to three days at the investiture; next of kin of posthumous awardees get free board and lodging for three days. Incidentals of Rs 37 a day for up to 4 days may be taken instead of DA. The unit or nearest formation pays the advance.
+O: The Rs 37 incidentals figure is from 1987; check whether it was revised.
+
+=== topic=RR-MOD-01 from=SS-T310,SS-T157
+T: Train and air class by pay level
+A: Level 14 and above: business class or AC I. Levels 12 to 13B: economy or AC I. Levels 5A to 11: economy or AC II.
+K: Premium, Premium Tatkal and Suvidha trains are allowed
+K: Dynamic or flexi fare in Shatabdi, Rajdhani and Duranto is reimbursed
+K: Shatabdi-type trains: Levels 5A to 11 chair car; 12 and above executive
+C: Rule 92 and Rule 108, TR 2014; MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017
+
+=== topic=RR-MOD-03 from=SS-T311
+T: Road journeys on TD and LTC: what is allowed?
+A: No rail link: AC bus if you are entitled to AC II or above. Rail-linked places: any public transport.
+K: Rail-linked places: total fare must not exceed the entitled train fare
+K: You may always travel below your entitled class
+K: LTC travel has the same entitlement but no daily allowance
+C: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017
+
+=== topic=RR-LTC-05 from=SS-T312
+T: General Officer: LTC by air where there are no direct flights
+A: A General Officer can fly to the airport nearest the destination, by the shortest direct route.
+K: Applies to your home town or any declared destination
+K: Rajdhani or Shatabdi fare only if you actually travelled by them
+K: Taxi or auto only where there is no rail link
+C: MoD letter 12630/TA/DA/7thCPC/Mov C/85/D(Mov)/2018 dt 14-05-2018; DoPT OM 31011/8/2017-Estt.A-IV dt 19-09-2017
+D: A higher class or another mode cannot be claimed on a notional basis against the Rajdhani fare. Taxi or auto must run regular licensed routes. Local taxi from home to the station is not reimbursable. If several State bus services run, the lowest fare is paid.
+
+=== topic=RR-TD-02 from=SS-T317 chips=AMENDED
+T: Which pay counts for my TA/DA level?
+A: Your basic pay in the pay level. NPA, MSP and special pay are not counted.
+K: Basic pay as defined in the Army pay-rules SROs
+K: Applies from 01-07-2017
+C: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017; SRO 12(E), 17(E), 21(E)
+
+=== topic=RR-TD-02 from=SS-T318
+T: TD to Bhutan: what DA is paid?
+A: The DA fixed for that country. Only 25% if the host gives lodging and all meals.
+K: Full entitled DA at the rate the Government sets for that country
+K: State guest with lodging and meals provided: 25%
+K: Free tent or improvised lodging does not cut DA
+C: Rule 268 and Rule 114(iv), TR 2014; ADGSM/Mov C letter 15449/TA/DA/Mov C dt 18-03-2016; CGDA letter AT/IV/4388/X dt 16-03-2017
+D: Applies equally to the joint training cycle with the Royal Bhutan Army. The move sanction must state the nature of duty and the status of boarding and lodging, including any improvised accommodation.
+
+=== topic=RR-TD-02 from=SS-T319 chips=GUIDANCE
+T: TA for appearing before a medical examination
+A: One entitled-class warrant by rail, or taxi or autorickshaw mileage by road.
+K: From your residence to the examination place and back
+K: Over 80 km by bus: one fare, or two for the return
+K: Steamer: one first-class single fare, without meals
+O: The handbook gives no rule number; likely Rule 153 to 155. Confirm.
+
+=== topic=RR-TD-03 from=SS-T320
+T: Family visiting me on a long course
+A: Only if the course lasts more than 90 days.
+K: Family starts from your duty station or your SPR
+K: A course of exactly 90 days or less does not qualify
+C: Rule 124(iv), TR 2014
+
+=== topic=RR-TD-03 from=SS-T321,SS-T323
+T: Attending a course: TA and DA
+A: TA under Rule 124; DA under Rule 123. Full DA for up to 180 days if no free board and lodging.
+K: Free board and lodging provided: DA is reduced
+K: Course at two stations: 180 days of full DA at each
+K: Language Aptitude Tests in New Delhi: normal TD TA and DA
+C: Rule 123 and Rule 124, TR 2014
+O: FAQ says only conveyance is paid under Rule 124. Rule 123 separately gives DA for courses. TR followed; confirm.
+
+=== topic=RR-TD-03 from=SS-T324,SS-T006
+T: Course at my own HQ station: TA and DA
+A: At your HQ station: no DA or mileage. In nearby areas beyond 8 km: mileage and 50% DA.
+K: Elsewhere: one onward and return mileage plus normal DA
+K: A centre at your HQ is treated as your temporary HQ
+K: No DA for a same-station visit made from home
+C: Rule 129 and Note 5 under Rule 114(vi), TR 2014
+
+=== topic=RR-TD-03 from=SS-T325
+T: Command Preparatory Staff College course: TA and DA
+A: TA and DA are admissible to student officers and instructors at another station.
+K: Applies at a station other than your permanent station
+C: Rule 117, TR 2014
+
+=== topic=RR-TD-04 from=SS-T326,SS-T328
+T: Obligatory departmental exam: what is paid?
+A: Only conveyance (TA). No food charges, hotel or DA for halts.
+K: Applies to exams for retention or promotion
+K: Not for exams covered by Rules 124 and 125
+C: Rule 127, TR 2014
+
+=== topic=RR-TD-04 from=SS-T329
+T: DA for a professional-subject exam
+A: DA is payable for halts, whether you are examinee, examiner or board member.
+K: Not if you are on leave at the exam station
+K: Not for a re-attempt after failing, unless ordered outside your command
+K: Voluntary language exams: only boards and examiners get DA
+C: Rule 118, TR 2014
+
+=== topic=RR-TD-04 from=SS-T327
+T: Course or exam while I am on leave: conveyance?
+A: Annual leave alone: what you would have got on duty. Other leave: from your residence and back.
+K: Other leave: the cost must not exceed what duty would have cost
+K: No conveyance if you do not go for your own convenience
+C: Rule 150B, TR 2014
