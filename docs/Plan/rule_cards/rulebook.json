@@ -1187,6 +1187,829 @@
    "handbook_page": 267
   }
  ],
+ "nav": [
+  {
+   "id": "ltc",
+   "title": "Leave travel (LTC)",
+   "cases": [
+    {
+     "id": "ltc-home",
+     "title": "Home town LTC",
+     "sub": "Rule 177A",
+     "cards": [
+      "RB-SS-T068",
+      "RB-SS-T088",
+      "RB-SS-T063",
+      "RB-SS-T075",
+      "RB-SS-T073",
+      "RB-SS-T076",
+      "RB-SS-T064",
+      "RB-SS-T081",
+      "RB-SS-T098",
+      "RB-SS-T238"
+     ],
+     "also": []
+    },
+    {
+     "id": "ltc-anywhere",
+     "title": "Anywhere-in-India LTC",
+     "sub": "Rule 177B",
+     "cards": [
+      "RB-SS-T074",
+      "RB-SS-T100",
+      "RB-SS-T101",
+      "RB-SS-T124",
+      "RB-SS-T103",
+      "RB-SS-T104",
+      "RB-SS-T107",
+      "RB-SS-T109",
+      "RB-SS-T120",
+      "RB-SS-T111",
+      "RB-SS-T112",
+      "RB-SS-T113",
+      "RB-SS-T114",
+      "RB-SS-T115",
+      "RB-SS-T117",
+      "RB-SS-T119"
+     ],
+     "also": []
+    },
+    {
+     "id": "ltc-field",
+     "title": "Field and special postings",
+     "sub": "Rule 177C, Andaman and Nicobar",
+     "cards": [
+      "RB-SS-T059",
+      "RB-SS-T070",
+      "RB-SS-T058",
+      "RB-SS-T127",
+      "RB-SS-T147",
+      "RB-SS-T213",
+      "RB-SS-T248",
+      "RB-SS-T250"
+     ],
+     "also": []
+    },
+    {
+     "id": "ltc-regions",
+     "title": "North East, J&K and islands",
+     "sub": "Air scheme and rail concessions",
+     "cards": [
+      "RB-SS-T062",
+      "RB-SS-T142",
+      "RB-SS-T143",
+      "RB-SS-T207",
+      "RB-SS-T242"
+     ],
+     "also": []
+    },
+    {
+     "id": "ltc-family",
+     "title": "Family, parents and study leave",
+     "sub": "Rule 177D",
+     "cards": [
+      "RB-SS-T128",
+      "RB-SS-T232",
+      "RB-SS-T233",
+      "RB-SS-T234",
+      "RB-SS-T235"
+     ],
+     "also": []
+    },
+    {
+     "id": "ltc-class",
+     "title": "Class, mode and fare",
+     "sub": "Rail, road, air and steamer",
+     "cards": [
+      "RB-SS-T084",
+      "RB-SS-T090",
+      "RB-SS-T099",
+      "RB-SS-T130",
+      "RB-SS-T135",
+      "RB-SS-T137",
+      "RB-SS-T138",
+      "RB-SS-T141",
+      "RB-SS-T312"
+     ],
+     "also": []
+    },
+    {
+     "id": "ltc-rules",
+     "title": "Who can take LTC, and when",
+     "sub": "General rules",
+     "cards": [
+      "RB-SS-T079",
+      "RB-SS-T085",
+      "RB-SS-T077",
+      "RB-SS-T065",
+      "RB-SS-T092",
+      "RB-SS-T094",
+      "RB-SS-T095",
+      "RB-SS-T129",
+      "RB-SS-T231",
+      "RB-SS-T001"
+     ],
+     "also": [
+      "RB-SS-P019",
+      "RB-SS-P020",
+      "RB-SS-P022",
+      "RB-SS-P025",
+      "RB-SS-T039",
+      "RB-SS-T291"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "leave",
+   "title": "Leave and encashment",
+   "cases": [
+    {
+     "id": "leave-types",
+     "title": "Annual, casual and sick leave",
+     "sub": "",
+     "cards": [
+      "RB-RP-011",
+      "RB-RP-012",
+      "RB-RP-013",
+      "RB-C8-04",
+      "RB-RP-014",
+      "RB-C8-05",
+      "RB-RP-015",
+      "RB-RP-016",
+      "RB-C8-11",
+      "RB-RP-017",
+      "RB-RP-018"
+     ],
+     "also": []
+    },
+    {
+     "id": "leave-family",
+     "title": "Maternity, paternity and child care",
+     "sub": "",
+     "cards": [
+      "RB-RP-019",
+      "RB-RP-020",
+      "RB-C8-14",
+      "RB-RP-021",
+      "RB-RP-022"
+     ],
+     "also": []
+    },
+    {
+     "id": "leave-study",
+     "title": "Study leave and ex-India leave",
+     "sub": "",
+     "cards": [
+      "RB-RP-024",
+      "RB-C8-17",
+      "RB-C8-18",
+      "RB-RP-025",
+      "RB-RP-026"
+     ],
+     "also": []
+    },
+    {
+     "id": "leave-joining",
+     "title": "Joining time and attachments",
+     "sub": "",
+     "cards": [
+      "RB-RP-030",
+      "RB-C9-02",
+      "RB-C9-03",
+      "RB-RP-031",
+      "RB-C12-02"
+     ],
+     "also": []
+    },
+    {
+     "id": "leave-encash",
+     "title": "Leave encashment",
+     "sub": "With and without LTC",
+     "cards": [
+      "RB-SS-P019",
+      "RB-SS-P020",
+      "RB-SS-P022",
+      "RB-SS-P025",
+      "RB-RP-028",
+      "RB-C8-21",
+      "RB-C8-22"
+     ],
+     "also": []
+    }
+   ]
+  },
+  {
+   "id": "td",
+   "title": "Temporary duty (TD)",
+   "cases": [
+    {
+     "id": "td-da",
+     "title": "Daily allowance, food and hotel",
+     "sub": "",
+     "cards": [
+      "RB-SS-T181",
+      "RB-SS-T184",
+      "RB-SS-T304",
+      "RB-SS-T306",
+      "RB-SS-T307",
+      "RB-SS-T313",
+      "RB-SS-T314",
+      "RB-SS-T315",
+      "RB-SS-T316",
+      "RB-SS-T308",
+      "RB-SS-T309",
+      "RB-SS-T317",
+      "RB-SS-T318",
+      "RB-SS-T185",
+      "RB-SS-T010"
+     ],
+     "also": []
+    },
+    {
+     "id": "td-course",
+     "title": "Courses and exams",
+     "sub": "",
+     "cards": [
+      "RB-SS-T320",
+      "RB-SS-T321",
+      "RB-SS-T324",
+      "RB-SS-T325",
+      "RB-SS-T326",
+      "RB-SS-T329",
+      "RB-SS-T327",
+      "RB-SS-T222"
+     ],
+     "also": []
+    },
+    {
+     "id": "td-events",
+     "title": "Conferences, sports and camps",
+     "sub": "",
+     "cards": [
+      "RB-SS-T330",
+      "RB-SS-T331",
+      "RB-SS-T332",
+      "RB-SS-T334"
+     ],
+     "also": []
+    },
+    {
+     "id": "td-other",
+     "title": "Medical, court and other duty trips",
+     "sub": "",
+     "cards": [
+      "RB-SS-T335",
+      "RB-SS-T337",
+      "RB-SS-T339",
+      "RB-SS-T340",
+      "RB-SS-T341",
+      "RB-SS-T342",
+      "RB-SS-T343",
+      "RB-SS-T344",
+      "RB-SS-T345",
+      "RB-SS-T346"
+     ],
+     "also": []
+    },
+    {
+     "id": "td-ground",
+     "title": "Rail, sea and road travel",
+     "sub": "Entitlement and own car",
+     "cards": [
+      "RB-SS-T047",
+      "RB-SS-T310",
+      "RB-SS-T311",
+      "RB-SS-T156",
+      "RB-SS-T189",
+      "RB-SS-T154",
+      "RB-SS-T159",
+      "RB-SS-T160",
+      "RB-SS-T161",
+      "RB-SS-T149",
+      "RB-SS-T150",
+      "RB-SS-T152"
+     ],
+     "also": []
+    },
+    {
+     "id": "td-air",
+     "title": "Air travel",
+     "sub": "Entitlement and booking",
+     "cards": [
+      "RB-SS-T285",
+      "RB-SS-T158",
+      "RB-SS-T168",
+      "RB-SS-T163",
+      "RB-SS-T164",
+      "RB-SS-T171",
+      "RB-SS-T170",
+      "RB-SS-T172",
+      "RB-SS-T174",
+      "RB-SS-T177",
+      "RB-SS-T178",
+      "RB-SS-T180"
+     ],
+     "also": []
+    }
+   ]
+  },
+  {
+   "id": "move",
+   "title": "Postings and moves",
+   "cases": [
+    {
+     "id": "move-ta",
+     "title": "TA on a permanent move",
+     "sub": "",
+     "cards": [
+      "RB-SS-T253",
+      "RB-SS-T255",
+      "RB-SS-T256",
+      "RB-SS-T257",
+      "RB-SS-T258",
+      "RB-SS-T259",
+      "RB-SS-T261",
+      "RB-SS-T264",
+      "RB-SS-T266",
+      "RB-SS-T270",
+      "RB-SS-T271",
+      "RB-SS-T272",
+      "RB-SS-T273",
+      "RB-SS-T275",
+      "RB-SS-T276",
+      "RB-SS-T021"
+     ],
+     "also": []
+    },
+    {
+     "id": "move-ctg",
+     "title": "CTG, baggage and car",
+     "sub": "",
+     "cards": [
+      "RB-SS-T254",
+      "RB-SS-T260",
+      "RB-SS-T192",
+      "RB-SS-T194",
+      "RB-SS-T278",
+      "RB-SS-T155"
+     ],
+     "also": []
+    },
+    {
+     "id": "move-family",
+     "title": "Family moves and special cases",
+     "sub": "MNS and lent officers",
+     "cards": [
+      "RB-SS-T191",
+      "RB-SS-T196",
+      "RB-SS-T280",
+      "RB-SS-T281",
+      "RB-SS-T282",
+      "RB-SS-T283",
+      "RB-SS-T284",
+      "RB-SS-T286"
+     ],
+     "also": []
+    }
+   ]
+  },
+  {
+   "id": "claims",
+   "title": "Claims and advances",
+   "cases": [
+    {
+     "id": "claims-adv",
+     "title": "Advances and penal interest",
+     "sub": "",
+     "cards": [
+      "RB-SS-T033",
+      "RB-SS-T034",
+      "RB-SS-T035",
+      "RB-SS-T036",
+      "RB-SS-T037",
+      "RB-SS-T038",
+      "RB-SS-T039",
+      "RB-SS-T041",
+      "RB-SS-T043",
+      "RB-SS-T044",
+      "RB-RP-086"
+     ],
+     "also": []
+    },
+    {
+     "id": "claims-time",
+     "title": "Time limits for claims",
+     "sub": "",
+     "cards": [
+      "RB-SS-T291",
+      "RB-SS-T265",
+      "RB-SS-T015",
+      "RB-SS-T016",
+      "RB-SS-T017",
+      "RB-SS-T019",
+      "RB-SS-T020",
+      "RB-SS-T211",
+      "RB-SS-T214",
+      "RB-SS-T215"
+     ],
+     "also": []
+    },
+    {
+     "id": "claims-docs",
+     "title": "Documents and certificates",
+     "sub": "",
+     "cards": [
+      "RB-SS-T186",
+      "RB-SS-T187",
+      "RB-SS-T197",
+      "RB-SS-T198",
+      "RB-SS-T199",
+      "RB-SS-T201",
+      "RB-SS-T203",
+      "RB-SS-T206",
+      "RB-SS-T208"
+     ],
+     "also": []
+    },
+    {
+     "id": "claims-dts",
+     "title": "Claiming online (DTS)",
+     "sub": "",
+     "cards": [
+      "RB-SS-T218",
+      "RB-SS-T219",
+      "RB-SS-T220",
+      "RB-SS-T221",
+      "RB-SS-T223"
+     ],
+     "also": []
+    },
+    {
+     "id": "claims-who",
+     "title": "Who orders, signs and is covered",
+     "sub": "",
+     "cards": [
+      "RB-SS-T002",
+      "RB-SS-T003",
+      "RB-SS-T005",
+      "RB-SS-T013",
+      "RB-SS-T008",
+      "RB-SS-T011",
+      "RB-SS-T022"
+     ],
+     "also": []
+    },
+    {
+     "id": "claims-misc",
+     "title": "Mileage, ferry and refunds",
+     "sub": "",
+     "cards": [
+      "RB-SS-T023",
+      "RB-SS-T030",
+      "RB-SS-T024",
+      "RB-SS-T032",
+      "RB-SS-T027",
+      "RB-SS-T045",
+      "RB-SS-T050",
+      "RB-SS-T052",
+      "RB-SS-T053",
+      "RB-SS-T054",
+      "RB-SS-T057"
+     ],
+     "also": []
+    }
+   ]
+  },
+  {
+   "id": "ret",
+   "title": "Retirement and death",
+   "cases": [
+    {
+     "id": "ret-ret",
+     "title": "Retirement and release",
+     "sub": "",
+     "cards": [
+      "RB-SS-T292",
+      "RB-SS-T292-b",
+      "RB-SS-T294",
+      "RB-SS-T296",
+      "RB-SS-T297",
+      "RB-SS-T289",
+      "RB-SS-T299",
+      "RB-SS-T300"
+     ],
+     "also": []
+    },
+    {
+     "id": "ret-death",
+     "title": "Death, missing and POW",
+     "sub": "Families of officers",
+     "cards": [
+      "RB-SS-T302",
+      "RB-SS-T301",
+      "RB-SS-T303",
+      "RB-SS-T195"
+     ],
+     "also": []
+    }
+   ]
+  },
+  {
+   "id": "pay",
+   "title": "My pay",
+   "cases": [
+    {
+     "id": "pay-start",
+     "title": "Starting pay and training",
+     "sub": "",
+     "cards": [
+      "RB-SS-P001",
+      "RB-SS-P002",
+      "RB-SS-P003",
+      "RB-SS-P005",
+      "RB-RP-001",
+      "RB-C4-02",
+      "RB-RP-002",
+      "RB-RP-003"
+     ],
+     "also": []
+    },
+    {
+     "id": "pay-incr",
+     "title": "Increments and special increments",
+     "sub": "",
+     "cards": [
+      "RB-SS-P018",
+      "RB-SS-P015",
+      "RB-SS-P017",
+      "RB-RP-004"
+     ],
+     "also": []
+    },
+    {
+     "id": "pay-promo",
+     "title": "Promotion and substantive rank",
+     "sub": "",
+     "cards": [
+      "RB-SS-P012",
+      "RB-SS-P008",
+      "RB-SS-P010",
+      "RB-SS-P014",
+      "RB-SS-P011",
+      "RB-RP-007",
+      "RB-C6-02",
+      "RB-C6-03",
+      "RB-C6-04",
+      "RB-RP-009",
+      "RB-RP-010",
+      "RB-C7-02",
+      "RB-C7-03"
+     ],
+     "also": []
+    },
+    {
+     "id": "pay-cpc",
+     "title": "7th CPC pay structure",
+     "sub": "Levels, MSP, NPA and DA",
+     "cards": [
+      "RB-C13-01",
+      "RB-C13-02",
+      "RB-C13-03",
+      "RB-C13-04",
+      "RB-C13-05",
+      "RB-C13-06",
+      "RB-C13-07",
+      "RB-C13-08",
+      "RB-C13-09",
+      "RB-C13-10",
+      "RB-C13-11",
+      "RB-C13-12",
+      "RB-C13-13",
+      "RB-C13-14",
+      "RB-RP-035",
+      "RB-RP-052"
+     ],
+     "also": []
+    },
+    {
+     "id": "pay-dsop",
+     "title": "DSOP, advances and deductions",
+     "sub": "",
+     "cards": [
+      "RB-RP-032",
+      "RB-RP-033",
+      "RB-RP-088",
+      "RB-RP-090",
+      "RB-C21-02",
+      "RB-C21-03",
+      "RB-C21-04",
+      "RB-C21-05"
+     ],
+     "also": []
+    }
+   ]
+  },
+  {
+   "id": "allow",
+   "title": "Allowances",
+   "cases": [
+    {
+     "id": "allow-rh",
+     "title": "Risk and hardship",
+     "sub": "",
+     "cards": [
+      "RB-SS-P060",
+      "RB-SS-P062-b",
+      "RB-SS-P067",
+      "RB-SS-P068",
+      "RB-SS-P058",
+      "RB-SS-P057",
+      "RB-SS-P076",
+      "RB-SS-P061",
+      "RB-SS-P075"
+     ],
+     "also": []
+    },
+    {
+     "id": "allow-field",
+     "title": "Field area, altitude and Siachen",
+     "sub": "",
+     "cards": [
+      "RB-SS-P078",
+      "RB-SS-P079",
+      "RB-SS-P080",
+      "RB-SS-P081",
+      "RB-SS-P082",
+      "RB-RP-057",
+      "RB-RP-059",
+      "RB-RP-068",
+      "RB-RP-069",
+      "RB-RP-076"
+     ],
+     "also": []
+    },
+    {
+     "id": "allow-loc",
+     "title": "Tough location and overseas",
+     "sub": "",
+     "cards": [
+      "RB-RP-065",
+      "RB-RP-078",
+      "RB-C18-05",
+      "RB-RP-079",
+      "RB-RP-082",
+      "RB-RP-083"
+     ],
+     "also": []
+    },
+    {
+     "id": "allow-air",
+     "title": "Flying, para and special forces",
+     "sub": "",
+     "cards": [
+      "RB-SS-P041",
+      "RB-SS-P037",
+      "RB-SS-P038",
+      "RB-SS-P039",
+      "RB-SS-P040",
+      "RB-SS-P044",
+      "RB-SS-P043",
+      "RB-SS-P046",
+      "RB-RP-042",
+      "RB-RP-044",
+      "RB-RP-047",
+      "RB-RP-050",
+      "RB-RP-066",
+      "RB-RP-070",
+      "RB-RP-072"
+     ],
+     "also": []
+    },
+    {
+     "id": "allow-tech",
+     "title": "Technical, specialist and training",
+     "sub": "And other allowances",
+     "cards": [
+      "RB-SS-P030",
+      "RB-SS-P029",
+      "RB-SS-P026",
+      "RB-SS-P027",
+      "RB-SS-P028",
+      "RB-SS-P035",
+      "RB-SS-P034",
+      "RB-SS-P036",
+      "RB-RP-037",
+      "RB-RP-048",
+      "RB-RP-060",
+      "RB-RP-062",
+      "RB-RP-063",
+      "RB-RP-084"
+     ],
+     "also": []
+    },
+    {
+     "id": "allow-daily",
+     "title": "Dress, ration and transport",
+     "sub": "",
+     "cards": [
+      "RB-SS-T347",
+      "RB-SS-T347-b",
+      "RB-SS-P051-rates",
+      "RB-SS-P051",
+      "RB-SS-P047",
+      "RB-SS-P048",
+      "RB-SS-P050",
+      "RB-SS-P052",
+      "RB-SS-P055",
+      "RB-SS-P056",
+      "RB-RP-054",
+      "RB-RP-074",
+      "RB-RP-075",
+      "RB-RP-080",
+      "RB-RP-081"
+     ],
+     "also": []
+    }
+   ]
+  },
+  {
+   "id": "home",
+   "title": "Housing, family and health",
+   "cases": [
+    {
+     "id": "home-hra",
+     "title": "House rent allowance (HRA)",
+     "sub": "",
+     "cards": [
+      "RB-SS-P114",
+      "RB-SS-P116-rates",
+      "RB-SS-P113",
+      "RB-SS-P105",
+      "RB-SS-P101",
+      "RB-SS-P102",
+      "RB-SS-P106",
+      "RB-SS-P107",
+      "RB-SS-P108",
+      "RB-SS-P109",
+      "RB-SS-P117",
+      "RB-SS-P114-gap",
+      "RB-SS-P114-spouse",
+      "RB-SS-P114-possession",
+      "RB-SS-P113-hard"
+     ],
+     "also": []
+    },
+    {
+     "id": "home-quarters",
+     "title": "Quarters and transit stay",
+     "sub": "",
+     "cards": [
+      "RB-SS-P099",
+      "RB-SS-P097",
+      "RB-SS-P098",
+      "RB-SS-P095"
+     ],
+     "also": []
+    },
+    {
+     "id": "home-cea",
+     "title": "Children education (CEA)",
+     "sub": "",
+     "cards": [
+      "RB-SS-P092",
+      "RB-SS-P086",
+      "RB-SS-P090",
+      "RB-SS-P091",
+      "RB-SS-P094",
+      "RB-SS-P094-more",
+      "RB-RP-071"
+     ],
+     "also": []
+    },
+    {
+     "id": "home-med",
+     "title": "Medical claims",
+     "sub": "",
+     "cards": [
+      "RB-SS-P119",
+      "RB-SS-P120",
+      "RB-SS-P121",
+      "RB-SS-P122",
+      "RB-SS-P124",
+      "RB-SS-P126"
+     ],
+     "also": []
+    }
+   ]
+  }
+ ],
+ "facets": {
+  "Q": "Who qualifies",
+  "H": "How much",
+  "C": "How to claim",
+  "L": "Limits and traps"
+ },
  "cards": [
   {
    "id": "RB-SS-T181",
@@ -1219,7 +2042,9 @@
     "SS-T183"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T047",
@@ -1250,7 +2075,9 @@
     "SS-T188"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T068",
@@ -1277,7 +2104,9 @@
     "SS-T236"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-home"
   },
   {
    "id": "RB-SS-T254",
@@ -1309,7 +2138,9 @@
     "SS-T193"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ctg"
   },
   {
    "id": "RB-SS-T291",
@@ -1339,7 +2170,9 @@
     "SS-T212"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-time"
   },
   {
    "id": "RB-SS-T088",
@@ -1364,7 +2197,9 @@
     "SS-T088"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-home"
   },
   {
    "id": "RB-SS-T063",
@@ -1387,7 +2222,9 @@
     "SS-T089"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-home"
   },
   {
    "id": "RB-SS-T075",
@@ -1417,7 +2254,9 @@
     "SS-T086"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-home"
   },
   {
    "id": "RB-SS-T073",
@@ -1444,7 +2283,9 @@
     "SS-T290"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-home"
   },
   {
    "id": "RB-SS-T076",
@@ -1469,7 +2310,9 @@
     "SS-T110"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-home"
   },
   {
    "id": "RB-SS-T064",
@@ -1493,7 +2336,9 @@
     "SS-T064"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-home"
   },
   {
    "id": "RB-SS-T079",
@@ -1515,7 +2360,9 @@
     "SS-T079"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-rules"
   },
   {
    "id": "RB-SS-T085",
@@ -1537,7 +2384,9 @@
     "SS-T085"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-rules"
   },
   {
    "id": "RB-SS-T077",
@@ -1560,7 +2409,9 @@
     "SS-T077"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-rules"
   },
   {
    "id": "RB-SS-T065",
@@ -1584,7 +2435,9 @@
     "SS-T065"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-rules"
   },
   {
    "id": "RB-SS-T092",
@@ -1607,7 +2460,9 @@
     "SS-T092"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "ltc-rules"
   },
   {
    "id": "RB-SS-T094",
@@ -1633,7 +2488,9 @@
     "SS-T298"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-rules"
   },
   {
    "id": "RB-SS-T074",
@@ -1658,7 +2515,9 @@
     "SS-T121"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T059",
@@ -1687,7 +2546,9 @@
     "SS-T102"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-field"
   },
   {
    "id": "RB-SS-T070",
@@ -1720,7 +2581,9 @@
    "open": [
     "CONFLICT. Owner decision (G2): follow the PCDA(O) FAQ (Dec 2025), which allows 177C with 177B in one year. TR 2014 Rule 177C(a) reads as an option in lieu of 177A/B that lapses the wife and children 177A/B for the year. Authority for the FAQ position not seen."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-field"
   },
   {
    "id": "RB-SS-T058",
@@ -1744,7 +2607,9 @@
     "SS-T293"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-field"
   },
   {
    "id": "RB-SS-T062",
@@ -1773,7 +2638,9 @@
    "open": [
     "DoPT OMs read (09-09-2026 from a mirror copy). No MoD adoption letter for Army officers found; owner had 25-09-2025, now superseded."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-regions"
   },
   {
    "id": "RB-SS-T081",
@@ -1795,7 +2662,9 @@
     "SS-T081"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-home"
   },
   {
    "id": "RB-SS-T084",
@@ -1818,7 +2687,9 @@
     "SS-T084"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-class"
   },
   {
    "id": "RB-SS-T090",
@@ -1842,7 +2713,9 @@
     "SS-T116"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-class"
   },
   {
    "id": "RB-SS-T095",
@@ -1866,7 +2739,9 @@
     "SS-T097"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "ltc-rules"
   },
   {
    "id": "RB-SS-T098",
@@ -1888,7 +2763,9 @@
     "SS-T098"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "ltc-home"
   },
   {
    "id": "RB-SS-T099",
@@ -1910,7 +2787,9 @@
     "SS-T099"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-class"
   },
   {
    "id": "RB-SS-T100",
@@ -1932,7 +2811,9 @@
     "SS-T100"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T101",
@@ -1959,7 +2840,9 @@
     "SS-T133"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T124",
@@ -1986,7 +2869,9 @@
     "SS-T126"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T103",
@@ -2008,7 +2893,9 @@
     "SS-T103"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T104",
@@ -2032,7 +2919,9 @@
     "SS-T123"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T107",
@@ -2054,7 +2943,9 @@
     "SS-T107"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T109",
@@ -2080,7 +2971,9 @@
     "SS-T118"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T120",
@@ -2102,7 +2995,9 @@
     "SS-T120"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T111",
@@ -2125,7 +3020,9 @@
     "SS-T122"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T112",
@@ -2150,7 +3047,9 @@
     "SS-T112"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T113",
@@ -2172,7 +3071,9 @@
     "SS-T113"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T114",
@@ -2193,7 +3094,9 @@
     "SS-T114"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T115",
@@ -2216,7 +3119,9 @@
     "SS-T125"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T117",
@@ -2239,7 +3144,9 @@
     "SS-T117"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T119",
@@ -2260,7 +3167,9 @@
     "SS-T119"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-anywhere"
   },
   {
    "id": "RB-SS-T127",
@@ -2282,7 +3191,9 @@
     "SS-T127"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-field"
   },
   {
    "id": "RB-SS-T128",
@@ -2305,7 +3216,9 @@
     "SS-T128"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-family"
   },
   {
    "id": "RB-SS-T129",
@@ -2326,7 +3239,9 @@
     "SS-T129"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-rules"
   },
   {
    "id": "RB-SS-T130",
@@ -2352,7 +3267,9 @@
     "SS-T136"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-class"
   },
   {
    "id": "RB-SS-T135",
@@ -2375,7 +3292,9 @@
     "SS-T135"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-class"
   },
   {
    "id": "RB-SS-T137",
@@ -2398,7 +3317,9 @@
     "SS-T137"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-class"
   },
   {
    "id": "RB-SS-T138",
@@ -2419,7 +3340,9 @@
     "SS-T138"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-class"
   },
   {
    "id": "RB-SS-T141",
@@ -2442,7 +3365,9 @@
     "SS-T141"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-class"
   },
   {
    "id": "RB-SS-T142",
@@ -2465,7 +3390,9 @@
     "SS-T142"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-regions"
   },
   {
    "id": "RB-SS-T143",
@@ -2495,7 +3422,9 @@
     "SS-T146"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-regions"
   },
   {
    "id": "RB-SS-T147",
@@ -2520,7 +3449,9 @@
     "SS-T249"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-field"
   },
   {
    "id": "RB-SS-T253",
@@ -2544,7 +3475,9 @@
     "SS-T268"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T255",
@@ -2567,7 +3500,9 @@
     "SS-T255"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T256",
@@ -2591,7 +3526,9 @@
     "SS-T256"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T257",
@@ -2613,7 +3550,9 @@
     "SS-T257"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T258",
@@ -2636,7 +3575,9 @@
     "SS-T263"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T259",
@@ -2660,7 +3601,9 @@
     "SS-T262"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T260",
@@ -2685,7 +3628,9 @@
     "SS-T260"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ctg"
   },
   {
    "id": "RB-SS-T261",
@@ -2710,7 +3655,9 @@
     "SS-T261"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T264",
@@ -2734,7 +3681,9 @@
     "SS-T267"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T265",
@@ -2755,7 +3704,9 @@
     "SS-T265"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-time"
   },
   {
    "id": "RB-SS-T266",
@@ -2777,7 +3728,9 @@
     "SS-T266"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T270",
@@ -2801,7 +3754,9 @@
     "SS-T270"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T271",
@@ -2825,7 +3780,9 @@
     "SS-T269"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T272",
@@ -2847,7 +3804,9 @@
     "SS-T272"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T191",
@@ -2871,7 +3830,9 @@
     "SS-T279"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "move-family"
   },
   {
    "id": "RB-SS-T196",
@@ -2892,7 +3853,9 @@
     "SS-T196"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "move-family"
   },
   {
    "id": "RB-SS-T192",
@@ -2917,7 +3880,9 @@
     "SS-T192"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ctg"
   },
   {
    "id": "RB-SS-T194",
@@ -2945,7 +3910,9 @@
     "SS-T278"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ctg"
   },
   {
    "id": "RB-SS-T273",
@@ -2970,7 +3937,9 @@
     "SS-T151"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T275",
@@ -2994,7 +3963,9 @@
     "SS-T277"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T276",
@@ -3016,7 +3987,9 @@
     "SS-T276"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T278",
@@ -3038,7 +4011,9 @@
     "SS-T278"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "move-ctg"
   },
   {
    "id": "RB-SS-T280",
@@ -3061,7 +4036,9 @@
     "SS-T280"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-family"
   },
   {
    "id": "RB-SS-T281",
@@ -3083,7 +4060,9 @@
     "SS-T281"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-family"
   },
   {
    "id": "RB-SS-T282",
@@ -3106,7 +4085,9 @@
     "SS-T282"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-family"
   },
   {
    "id": "RB-SS-T283",
@@ -3128,7 +4109,9 @@
     "SS-T283"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "move-family"
   },
   {
    "id": "RB-SS-T284",
@@ -3150,7 +4133,9 @@
     "SS-T284"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "move-family"
   },
   {
    "id": "RB-SS-T285",
@@ -3172,7 +4157,9 @@
     "SS-T285"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T286",
@@ -3198,7 +4185,9 @@
     "SS-T209"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-family"
   },
   {
    "id": "RB-SS-T184",
@@ -3221,7 +4210,9 @@
     "SS-T184"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T304",
@@ -3244,7 +4235,9 @@
     "SS-T049"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T306",
@@ -3267,7 +4260,9 @@
     "SS-T306"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T307",
@@ -3288,7 +4283,9 @@
     "SS-T307"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T313",
@@ -3314,7 +4311,9 @@
     "SS-T313"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T314",
@@ -3338,7 +4337,9 @@
     "SS-T314"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T315",
@@ -3361,7 +4362,9 @@
     "SS-T315"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T316",
@@ -3384,7 +4387,9 @@
     "SS-T012"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T308",
@@ -3405,7 +4410,9 @@
     "SS-T308"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T309",
@@ -3428,7 +4435,9 @@
     "SS-T309"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T310",
@@ -3452,7 +4461,9 @@
     "SS-T157"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T311",
@@ -3475,7 +4486,9 @@
     "SS-T311"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T312",
@@ -3498,7 +4511,9 @@
     "SS-T312"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-class"
   },
   {
    "id": "RB-SS-T317",
@@ -3522,7 +4537,9 @@
     "SS-T317"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T318",
@@ -3545,7 +4562,9 @@
     "SS-T318"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T320",
@@ -3567,7 +4586,9 @@
     "SS-T320"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "td-course"
   },
   {
    "id": "RB-SS-T321",
@@ -3591,7 +4612,9 @@
     "SS-T323"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-course"
   },
   {
    "id": "RB-SS-T324",
@@ -3615,7 +4638,9 @@
     "SS-T006"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-course"
   },
   {
    "id": "RB-SS-T325",
@@ -3636,7 +4661,9 @@
     "SS-T325"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "td-course"
   },
   {
    "id": "RB-SS-T326",
@@ -3659,7 +4686,9 @@
     "SS-T328"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-course"
   },
   {
    "id": "RB-SS-T329",
@@ -3682,7 +4711,9 @@
     "SS-T329"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-course"
   },
   {
    "id": "RB-SS-T327",
@@ -3704,7 +4735,9 @@
     "SS-T327"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-course"
   },
   {
    "id": "RB-SS-T155",
@@ -3725,7 +4758,9 @@
     "SS-T155"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "move-ctg"
   },
   {
    "id": "RB-SS-T156",
@@ -3747,7 +4782,9 @@
     "SS-T156"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T158",
@@ -3768,7 +4805,9 @@
     "SS-T158"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T185",
@@ -3790,7 +4829,9 @@
     "SS-T185"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T186",
@@ -3817,7 +4858,9 @@
     "SS-T202"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-docs"
   },
   {
    "id": "RB-SS-T187",
@@ -3843,7 +4886,9 @@
     "SS-T190"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-docs"
   },
   {
    "id": "RB-SS-T189",
@@ -3866,7 +4911,9 @@
     "SS-T189"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T231",
@@ -3890,7 +4937,9 @@
     "SS-T231"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "ltc-rules"
   },
   {
    "id": "RB-SS-T330",
@@ -3912,7 +4961,9 @@
     "SS-T330"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-events"
   },
   {
    "id": "RB-SS-T331",
@@ -3934,7 +4985,9 @@
     "SS-T331"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "td-events"
   },
   {
    "id": "RB-SS-T332",
@@ -3958,7 +5011,9 @@
     "SS-T333"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-events"
   },
   {
    "id": "RB-SS-T334",
@@ -3981,7 +5036,9 @@
     "SS-T334"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "td-events"
   },
   {
    "id": "RB-SS-T335",
@@ -4004,7 +5061,9 @@
     "SS-T336"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-other"
   },
   {
    "id": "RB-SS-T337",
@@ -4029,7 +5088,9 @@
     "SS-T338"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-other"
   },
   {
    "id": "RB-SS-T339",
@@ -4051,7 +5112,9 @@
     "SS-T339"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-other"
   },
   {
    "id": "RB-SS-T340",
@@ -4074,7 +5137,9 @@
     "SS-T340"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-other"
   },
   {
    "id": "RB-SS-T341",
@@ -4097,7 +5162,9 @@
     "SS-T341"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-other"
   },
   {
    "id": "RB-SS-T342",
@@ -4119,7 +5186,9 @@
     "SS-T342"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-other"
   },
   {
    "id": "RB-SS-T343",
@@ -4140,7 +5209,9 @@
     "SS-T343"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-other"
   },
   {
    "id": "RB-SS-T344",
@@ -4163,7 +5234,9 @@
     "SS-T344"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-other"
   },
   {
    "id": "RB-SS-T345",
@@ -4186,7 +5259,9 @@
     "SS-T345"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "td-other"
   },
   {
    "id": "RB-SS-T346",
@@ -4210,7 +5285,9 @@
     "SS-T346"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-other"
   },
   {
    "id": "RB-SS-T001",
@@ -4233,7 +5310,9 @@
     "SS-T001"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-rules"
   },
   {
    "id": "RB-SS-T002",
@@ -4258,7 +5337,9 @@
     "SS-T002"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "claims-who"
   },
   {
    "id": "RB-SS-T003",
@@ -4280,7 +5361,9 @@
     "SS-T003"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "claims-who"
   },
   {
    "id": "RB-SS-T005",
@@ -4302,7 +5385,9 @@
     "SS-T005"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "claims-who"
   },
   {
    "id": "RB-SS-T010",
@@ -4326,7 +5411,9 @@
     "SS-T200"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "td-da"
   },
   {
    "id": "RB-SS-T013",
@@ -4350,7 +5437,9 @@
     "SS-T009"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "claims-who"
   },
   {
    "id": "RB-SS-T008",
@@ -4372,7 +5461,9 @@
     "SS-T008"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-who"
   },
   {
    "id": "RB-SS-T011",
@@ -4395,7 +5486,9 @@
     "SS-T011"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-who"
   },
   {
    "id": "RB-SS-T015",
@@ -4418,7 +5511,9 @@
     "SS-T015"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "claims-time"
   },
   {
    "id": "RB-SS-T016",
@@ -4441,7 +5536,9 @@
     "SS-T016"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-time"
   },
   {
    "id": "RB-SS-T017",
@@ -4467,7 +5564,9 @@
     "SS-T018"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-time"
   },
   {
    "id": "RB-SS-T019",
@@ -4488,7 +5587,9 @@
     "SS-T019"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-time"
   },
   {
    "id": "RB-SS-T020",
@@ -4510,7 +5611,9 @@
     "SS-T020"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-time"
   },
   {
    "id": "RB-SS-T021",
@@ -4534,7 +5637,9 @@
     "SS-T021"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "move-ta"
   },
   {
    "id": "RB-SS-T022",
@@ -4556,7 +5661,9 @@
     "SS-T022"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "claims-who"
   },
   {
    "id": "RB-SS-T023",
@@ -4582,7 +5689,9 @@
     "SS-T030"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-misc"
   },
   {
    "id": "RB-SS-T030",
@@ -4605,7 +5714,9 @@
     "SS-T031"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "claims-misc"
   },
   {
    "id": "RB-SS-T024",
@@ -4629,7 +5740,9 @@
     "SS-T026"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "claims-misc"
   },
   {
    "id": "RB-SS-T032",
@@ -4651,7 +5764,9 @@
     "SS-T032"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "claims-misc"
   },
   {
    "id": "RB-SS-T027",
@@ -4672,7 +5787,9 @@
     "SS-T027"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-misc"
   },
   {
    "id": "RB-SS-T033",
@@ -4693,7 +5810,9 @@
     "SS-T033"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-adv"
   },
   {
    "id": "RB-SS-T034",
@@ -4719,7 +5838,9 @@
     "SS-T040"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "claims-adv"
   },
   {
    "id": "RB-SS-T035",
@@ -4740,7 +5861,9 @@
     "SS-T035"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "claims-adv"
   },
   {
    "id": "RB-SS-T036",
@@ -4763,7 +5886,9 @@
     "SS-T036"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "claims-adv"
   },
   {
    "id": "RB-SS-T037",
@@ -4785,7 +5910,9 @@
     "SS-T037"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "claims-adv"
   },
   {
    "id": "RB-SS-T038",
@@ -4806,7 +5933,9 @@
     "SS-T038"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "claims-adv"
   },
   {
    "id": "RB-SS-T039",
@@ -4830,7 +5959,9 @@
    "open": [
     "CONFLICT (resolved for rail): TR 2014 says 95 days; the later MoD letter says 125. Advance limit for Army air or road LTC not seen; DoPT civil limit is 65 days."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-adv"
   },
   {
    "id": "RB-SS-T041",
@@ -4852,7 +5983,9 @@
     "SS-T041"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-adv"
   },
   {
    "id": "RB-SS-T043",
@@ -4873,7 +6006,9 @@
     "SS-T043"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "claims-adv"
   },
   {
    "id": "RB-SS-T044",
@@ -4894,7 +6029,9 @@
     "SS-T044"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "claims-adv"
   },
   {
    "id": "RB-SS-T045",
@@ -4916,7 +6053,9 @@
     "SS-T045"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "claims-misc"
   },
   {
    "id": "RB-SS-T050",
@@ -4944,7 +6083,9 @@
     "SS-T251"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-misc"
   },
   {
    "id": "RB-SS-T052",
@@ -4967,7 +6108,9 @@
     "SS-T052"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "claims-misc"
   },
   {
    "id": "RB-SS-T053",
@@ -4992,7 +6135,9 @@
     "SS-T056"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "claims-misc"
   },
   {
    "id": "RB-SS-T054",
@@ -5013,7 +6158,9 @@
     "SS-T054"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "claims-misc"
   },
   {
    "id": "RB-SS-T057",
@@ -5035,7 +6182,9 @@
     "SS-T057"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "claims-misc"
   },
   {
    "id": "RB-SS-T154",
@@ -5057,7 +6206,9 @@
     "SS-T225"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T159",
@@ -5080,7 +6231,9 @@
     "SS-T159"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T160",
@@ -5101,7 +6254,9 @@
     "SS-T160"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T161",
@@ -5124,7 +6279,9 @@
     "SS-T161"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T292",
@@ -5148,7 +6305,9 @@
     "SS-T295"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ret-ret"
   },
   {
    "id": "RB-SS-T292-b",
@@ -5171,7 +6330,9 @@
     "SS-T292"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ret-ret"
   },
   {
    "id": "RB-SS-T294",
@@ -5193,7 +6354,9 @@
     "SS-T294"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ret-ret"
   },
   {
    "id": "RB-SS-T296",
@@ -5214,7 +6377,9 @@
     "SS-T296"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ret-ret"
   },
   {
    "id": "RB-SS-T297",
@@ -5236,7 +6401,9 @@
     "SS-T297"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ret-ret"
   },
   {
    "id": "RB-SS-T289",
@@ -5257,7 +6424,9 @@
     "SS-T289"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ret-ret"
   },
   {
    "id": "RB-SS-T299",
@@ -5279,7 +6448,9 @@
     "SS-T299"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ret-ret"
   },
   {
    "id": "RB-SS-T300",
@@ -5303,7 +6474,9 @@
     "SS-T300"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ret-ret"
   },
   {
    "id": "RB-SS-T302",
@@ -5327,7 +6500,9 @@
     "SS-T239"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ret-death"
   },
   {
    "id": "RB-SS-T301",
@@ -5348,7 +6523,9 @@
     "SS-T301"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ret-death"
   },
   {
    "id": "RB-SS-T303",
@@ -5370,7 +6547,9 @@
     "SS-T303"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "ret-death"
   },
   {
    "id": "RB-SS-T195",
@@ -5391,7 +6570,9 @@
     "SS-T195"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "ret-death"
   },
   {
    "id": "RB-SS-T347",
@@ -5415,7 +6596,9 @@
     "SS-T347"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-SS-T347-b",
@@ -5437,7 +6620,9 @@
     "SS-T347"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-SS-T168",
@@ -5464,7 +6649,9 @@
     "SS-T162"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T163",
@@ -5487,7 +6674,9 @@
     "SS-T175"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T164",
@@ -5509,7 +6698,9 @@
     "SS-T165"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T171",
@@ -5534,7 +6725,9 @@
     "SS-T167"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T170",
@@ -5556,7 +6749,9 @@
     "SS-T170"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T172",
@@ -5578,7 +6773,9 @@
     "SS-T172"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T174",
@@ -5601,7 +6798,9 @@
     "SS-T174"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T177",
@@ -5623,7 +6822,9 @@
     "SS-T177"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T178",
@@ -5647,7 +6848,9 @@
     "SS-T179"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T180",
@@ -5672,7 +6875,9 @@
     "SS-T180"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-air"
   },
   {
    "id": "RB-SS-T149",
@@ -5693,7 +6898,9 @@
     "SS-T149"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T150",
@@ -5715,7 +6922,9 @@
     "SS-T150"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T152",
@@ -5741,7 +6950,9 @@
     "SS-T153"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "td-ground"
   },
   {
    "id": "RB-SS-T197",
@@ -5765,7 +6976,9 @@
     "SS-T197"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-docs"
   },
   {
    "id": "RB-SS-T198",
@@ -5791,7 +7004,9 @@
     "SS-T198"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "claims-docs"
   },
   {
    "id": "RB-SS-T199",
@@ -5816,7 +7031,9 @@
     "SS-T199"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-docs"
   },
   {
    "id": "RB-SS-T201",
@@ -5840,7 +7057,9 @@
     "SS-T201"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "claims-docs"
   },
   {
    "id": "RB-SS-T203",
@@ -5867,7 +7086,9 @@
     "SS-T205"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-docs"
   },
   {
    "id": "RB-SS-T206",
@@ -5891,7 +7112,9 @@
     "SS-T206"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "claims-docs"
   },
   {
    "id": "RB-SS-T207",
@@ -5915,7 +7138,9 @@
     "SS-T224"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-regions"
   },
   {
    "id": "RB-SS-T208",
@@ -5937,7 +7162,9 @@
     "SS-T208"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-docs"
   },
   {
    "id": "RB-SS-T211",
@@ -5961,7 +7188,9 @@
     "SS-T211"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "claims-time"
   },
   {
    "id": "RB-SS-T214",
@@ -5983,7 +7212,9 @@
     "SS-T214"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-time"
   },
   {
    "id": "RB-SS-T215",
@@ -6008,7 +7239,9 @@
     "SS-T217"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-time"
   },
   {
    "id": "RB-SS-T213",
@@ -6030,7 +7263,9 @@
     "SS-T213"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-field"
   },
   {
    "id": "RB-SS-T218",
@@ -6055,7 +7290,9 @@
     "SS-T218"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-dts"
   },
   {
    "id": "RB-SS-T219",
@@ -6081,7 +7318,9 @@
     "SS-T222"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-dts"
   },
   {
    "id": "RB-SS-T220",
@@ -6105,7 +7344,9 @@
     "SS-T220"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-dts"
   },
   {
    "id": "RB-SS-T221",
@@ -6129,7 +7370,9 @@
     "SS-T221"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "claims-dts"
   },
   {
    "id": "RB-SS-T222",
@@ -6152,7 +7395,9 @@
     "SS-T222"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "td-course"
   },
   {
    "id": "RB-SS-T223",
@@ -6174,7 +7419,9 @@
     "SS-T223"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "claims-dts"
   },
   {
    "id": "RB-SS-T232",
@@ -6197,7 +7444,9 @@
     "SS-T232"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-family"
   },
   {
    "id": "RB-SS-T233",
@@ -6218,7 +7467,9 @@
     "SS-T233"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-family"
   },
   {
    "id": "RB-SS-T234",
@@ -6239,7 +7490,9 @@
     "SS-T234"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-family"
   },
   {
    "id": "RB-SS-T235",
@@ -6260,7 +7513,9 @@
     "SS-T235"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "ltc-family"
   },
   {
    "id": "RB-SS-T238",
@@ -6286,7 +7541,9 @@
     "SS-T240"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "ltc-home"
   },
   {
    "id": "RB-SS-T242",
@@ -6314,7 +7571,9 @@
     "SS-T246"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-regions"
   },
   {
    "id": "RB-SS-T248",
@@ -6336,7 +7595,9 @@
     "SS-T248"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-field"
   },
   {
    "id": "RB-SS-T250",
@@ -6357,7 +7618,9 @@
     "SS-T250"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "ltc-field"
   },
   {
    "id": "RB-SS-P060",
@@ -6384,7 +7647,9 @@
     "SS-P063"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-rh"
   },
   {
    "id": "RB-SS-P062-b",
@@ -6411,7 +7676,9 @@
     "SS-P063"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "allow-rh"
   },
   {
    "id": "RB-SS-P067",
@@ -6441,7 +7708,9 @@
     "SS-P077"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-rh"
   },
   {
    "id": "RB-SS-P068",
@@ -6464,7 +7733,9 @@
     "SS-P069"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-rh"
   },
   {
    "id": "RB-SS-P058",
@@ -6491,7 +7762,9 @@
     "SS-P071"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-rh"
   },
   {
    "id": "RB-SS-P057",
@@ -6512,7 +7785,9 @@
     "SS-P057"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-rh"
   },
   {
    "id": "RB-SS-P076",
@@ -6533,7 +7808,9 @@
     "SS-P076"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-rh"
   },
   {
    "id": "RB-SS-P061",
@@ -6559,7 +7836,9 @@
     "SS-P073"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-rh"
   },
   {
    "id": "RB-SS-P075",
@@ -6580,7 +7859,9 @@
     "SS-P075"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-rh"
   },
   {
    "id": "RB-SS-P114",
@@ -6606,7 +7887,9 @@
     "SS-P115"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P116-rates",
@@ -6631,7 +7914,9 @@
     "SS-P116"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P113",
@@ -6654,7 +7939,9 @@
     "SS-P113"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P105",
@@ -6682,7 +7969,9 @@
     "SS-P112"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P101",
@@ -6703,7 +7992,9 @@
     "SS-P101"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P102",
@@ -6725,7 +8016,9 @@
     "SS-P102"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P106",
@@ -6748,7 +8041,9 @@
     "SS-P106"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P107",
@@ -6769,7 +8064,9 @@
     "SS-P107"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P108",
@@ -6791,7 +8088,9 @@
     "SS-P108"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P109",
@@ -6815,7 +8114,9 @@
     "SS-P109"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P117",
@@ -6838,7 +8139,9 @@
     "SS-P117"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P114-gap",
@@ -6860,7 +8163,9 @@
     "SS-P114"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P114-spouse",
@@ -6882,7 +8187,9 @@
     "SS-P114"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P114-possession",
@@ -6905,7 +8212,9 @@
     "SS-P114"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P113-hard",
@@ -6928,7 +8237,9 @@
     "SS-P113"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-hra"
   },
   {
    "id": "RB-SS-P019",
@@ -6953,7 +8264,9 @@
     "SS-P024"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-encash"
   },
   {
    "id": "RB-SS-P020",
@@ -6978,7 +8291,9 @@
     "SS-P021"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "leave-encash"
   },
   {
    "id": "RB-SS-P022",
@@ -7003,7 +8318,9 @@
     "SS-P022"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-encash"
   },
   {
    "id": "RB-SS-P025",
@@ -7026,7 +8343,9 @@
     "SS-P025"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "leave-encash"
   },
   {
    "id": "RB-SS-P092",
@@ -7052,7 +8371,9 @@
     "SS-P093"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "home-cea"
   },
   {
    "id": "RB-SS-P086",
@@ -7079,7 +8400,9 @@
    "open": [
     "The handbook says two classes before Class 1; the newer FAQ says three from AY 2023-24. FAQ followed."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-cea"
   },
   {
    "id": "RB-SS-P090",
@@ -7105,7 +8428,9 @@
     "SS-P089"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "home-cea"
   },
   {
    "id": "RB-SS-P091",
@@ -7129,7 +8454,9 @@
     "SS-P091"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-cea"
   },
   {
    "id": "RB-SS-P094",
@@ -7151,7 +8478,9 @@
     "SS-P094"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-cea"
   },
   {
    "id": "RB-SS-P094-more",
@@ -7174,7 +8503,9 @@
     "SS-P094"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "home-cea"
   },
   {
    "id": "RB-SS-P119",
@@ -7201,7 +8532,9 @@
     "SS-P123"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "home-med"
   },
   {
    "id": "RB-SS-P120",
@@ -7224,7 +8557,9 @@
     "SS-P120"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "home-med"
   },
   {
    "id": "RB-SS-P121",
@@ -7247,7 +8582,9 @@
     "SS-P121"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-med"
   },
   {
    "id": "RB-SS-P122",
@@ -7270,7 +8607,9 @@
     "SS-P122"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "home-med"
   },
   {
    "id": "RB-SS-P124",
@@ -7295,7 +8634,9 @@
     "SS-P125"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-med"
   },
   {
    "id": "RB-SS-P126",
@@ -7318,7 +8659,9 @@
     "SS-P127"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "home-med"
   },
   {
    "id": "RB-SS-P051-rates",
@@ -7343,7 +8686,9 @@
     "SS-P051"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-SS-P051",
@@ -7367,7 +8712,9 @@
     "SS-P051"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-SS-P047",
@@ -7391,7 +8738,9 @@
     "SS-P054"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-SS-P048",
@@ -7415,7 +8764,9 @@
     "SS-P048"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-SS-P050",
@@ -7437,7 +8788,9 @@
     "SS-P053"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-SS-P052",
@@ -7459,7 +8812,9 @@
     "SS-P052"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-SS-P001",
@@ -7486,7 +8841,9 @@
    "open": [
     "FAQ-only; no primary authority found. Hold as guidance."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "pay-start"
   },
   {
    "id": "RB-SS-P002",
@@ -7513,7 +8870,9 @@
    "open": [
     "FAQ-only; cite is the form procedure. Confirm authority with domain owner."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "pay-start"
   },
   {
    "id": "RB-SS-P003",
@@ -7542,7 +8901,9 @@
    "open": [
     "FAQ-only; cite is the form procedure. Confirm with domain owner."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "pay-start"
   },
   {
    "id": "RB-SS-P005",
@@ -7570,7 +8931,9 @@
    "open": [
     "FAQ-only; handbook confirms last pay certificate from the previous audit office is needed."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "pay-start"
   },
   {
    "id": "RB-SS-P012",
@@ -7598,7 +8961,9 @@
     "SS-P013"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-SS-P008",
@@ -7623,7 +8988,9 @@
    "open": [
     "FAQ-only on finality; primary rule not located."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-SS-P010",
@@ -7646,7 +9013,9 @@
     "SS-P010"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-SS-P014",
@@ -7668,7 +9037,9 @@
     "SS-P014"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-SS-P011",
@@ -7691,7 +9062,9 @@
    "open": [
     "FAQ-only; primary rule not located."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-SS-P018",
@@ -7717,7 +9090,9 @@
    "open": [
     "FAQ also cites DoPT OM 03-10-2013 and MoD letter 1272 dt 19-08-1996; not read in full."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-incr"
   },
   {
    "id": "RB-SS-P015",
@@ -7739,7 +9114,9 @@
     "SS-P015"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "pay-incr"
   },
   {
    "id": "RB-SS-P017",
@@ -7760,7 +9137,9 @@
     "SS-P017"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "pay-incr"
   },
   {
    "id": "RB-SS-P030",
@@ -7786,7 +9165,9 @@
    "open": [
     "Handbook text prints no DA escalation clause for Technical Allowance; the earlier \"rises 25%\" bullet was removed. Check the 18-09-2017 letter."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-SS-P029",
@@ -7808,7 +9189,9 @@
     "SS-P029"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-SS-P026",
@@ -7829,7 +9212,9 @@
     "SS-P026"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-SS-P027",
@@ -7856,7 +9241,9 @@
    "open": [
     "Certificate format is in the CGDA letter; confirm the letter is the primary authority."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-SS-P028",
@@ -7881,7 +9268,9 @@
     "SS-P028"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-SS-P035",
@@ -7906,7 +9295,9 @@
     "SS-P033"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-SS-P034",
@@ -7928,7 +9319,9 @@
     "SS-P034"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-SS-P036",
@@ -7953,7 +9346,9 @@
     "SS-P036"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-SS-P041",
@@ -7976,7 +9371,9 @@
     "SS-P041"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-air"
   },
   {
    "id": "RB-SS-P037",
@@ -7997,7 +9394,9 @@
     "SS-P037"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-air"
   },
   {
    "id": "RB-SS-P038",
@@ -8018,7 +9417,9 @@
     "SS-P038"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-air"
   },
   {
    "id": "RB-SS-P039",
@@ -8040,7 +9441,9 @@
     "SS-P039"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "allow-air"
   },
   {
    "id": "RB-SS-P040",
@@ -8063,7 +9466,9 @@
    "open": [
     "DSOP credit authority is in handbook only; primary letter not separately identified."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-air"
   },
   {
    "id": "RB-SS-P044",
@@ -8087,7 +9492,9 @@
     "SS-P042"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-air"
   },
   {
    "id": "RB-SS-P043",
@@ -8108,7 +9515,9 @@
     "SS-P043"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-air"
   },
   {
    "id": "RB-SS-P046",
@@ -8132,7 +9541,9 @@
     "SS-P045"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-air"
   },
   {
    "id": "RB-SS-P055",
@@ -8158,7 +9569,9 @@
    "open": [
     "SAPCS letter is the 2022 procedure on quarterly Part II orders; Rule 174(B) is the base rule. Confirm both with domain owner."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-SS-P056",
@@ -8180,7 +9593,9 @@
     "SS-P056"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-SS-P078",
@@ -8205,7 +9620,9 @@
    "open": [
     "The FAQ static list and the handbook non-static list overlap; confirm with the Corps notification."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-field"
   },
   {
    "id": "RB-SS-P079",
@@ -8227,7 +9644,9 @@
     "SS-P079"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-field"
   },
   {
    "id": "RB-SS-P080",
@@ -8250,7 +9669,9 @@
    "open": [
     "FAQ-only on the restart procedure."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "allow-field"
   },
   {
    "id": "RB-SS-P081",
@@ -8274,7 +9695,9 @@
     "SS-P083"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-field"
   },
   {
    "id": "RB-SS-P082",
@@ -8299,7 +9722,9 @@
     "SS-P085"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-field"
   },
   {
    "id": "RB-SS-P099",
@@ -8324,7 +9749,9 @@
     "RP-093"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "home-quarters"
   },
   {
    "id": "RB-SS-P097",
@@ -8349,7 +9776,9 @@
     "SS-P097"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "home-quarters"
   },
   {
    "id": "RB-SS-P098",
@@ -8375,7 +9804,9 @@
    "open": [
     "Six-month cap is from the FAQ (Dec 2025) only; the handbook text, read in full, does not state a cap."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "home-quarters"
   },
   {
    "id": "RB-SS-P095",
@@ -8397,7 +9828,9 @@
     "SS-P100"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "home-quarters"
   },
   {
    "id": "RB-C13-01",
@@ -8424,7 +9857,9 @@
    "open": [
     "Level table copied by meaning from handbook; check against SRO 17(E) Part A."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-02",
@@ -8446,7 +9881,9 @@
     "RP-034"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-03",
@@ -8471,7 +9908,9 @@
    "open": [
     "Level 12A and 13 index of rationalisation raised from 2.57 to 2.67 by MoD resolution 1(6)/2016/D(Pay/Services) dt 22-06-2017; confirm how this affects fixation."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-04",
@@ -8493,7 +9932,9 @@
     "RP-034"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-05",
@@ -8518,7 +9959,9 @@
     "RP-034"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-06",
@@ -8541,7 +9984,9 @@
     "RP-034"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-07",
@@ -8565,7 +10010,9 @@
     "RP-034"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-08",
@@ -8588,7 +10035,9 @@
     "RP-034"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-09",
@@ -8611,7 +10060,9 @@
     "RP-034"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-10",
@@ -8634,7 +10085,9 @@
     "RP-034"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-11",
@@ -8658,7 +10111,9 @@
    "open": [
     "Rule number not stated in handbook; find it."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-12",
@@ -8681,7 +10136,9 @@
     "RP-034"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-13",
@@ -8704,7 +10161,9 @@
     "RP-034"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-C13-14",
@@ -8731,7 +10190,9 @@
    "open": [
     "MoD letter 4(10)/2017/D(Med) is dated 28-09-2017 here but 29-09-2017 on the DSOP card; one date or two separate letters. Verify."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-RP-001",
@@ -8756,7 +10217,9 @@
    "open": [
     "Handbook cites AHQ letter 06888/52/MPRS(O) dt 19-01-1967 and CGDA letter 1312/AT-P dt 28-06-1975 for the field-area and medical notes; both are old and unchecked."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-start"
   },
   {
    "id": "RB-C4-02",
@@ -8779,7 +10242,9 @@
    "open": [
     "AI 196/51 is quoted in the handbook; not independently checked."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "pay-start"
   },
   {
    "id": "RB-RP-002",
@@ -8802,7 +10267,9 @@
     "RP-002"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-start"
   },
   {
    "id": "RB-RP-003",
@@ -8823,7 +10290,9 @@
     "RP-003"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-start"
   },
   {
    "id": "RB-RP-004",
@@ -8846,7 +10315,9 @@
     "RP-004"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-incr"
   },
   {
    "id": "RB-RP-007",
@@ -8870,7 +10341,9 @@
     "RP-008"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-C6-02",
@@ -8893,7 +10366,9 @@
     "RP-008"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-C6-03",
@@ -8915,7 +10390,9 @@
     "RP-008"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-C6-04",
@@ -8940,7 +10417,9 @@
    "open": [
     "Financial benefit cut-off is the AFT order of 14-03-2012; verify effect for officers retired after 20-07-2006."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-RP-009",
@@ -8965,7 +10444,9 @@
    "open": [
     "Colonel in-situ was to be re-examined in Jan 2014; no later MoD order known."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-RP-010",
@@ -8988,7 +10469,9 @@
     "RP-010"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-C7-02",
@@ -9011,7 +10494,9 @@
     "RP-010"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-C7-03",
@@ -9034,7 +10519,9 @@
     "RP-010"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-promo"
   },
   {
    "id": "RB-RP-011",
@@ -9057,7 +10544,9 @@
     "RP-011"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "leave-types"
   },
   {
    "id": "RB-RP-012",
@@ -9080,7 +10569,9 @@
     "RP-012"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-types"
   },
   {
    "id": "RB-RP-013",
@@ -9103,7 +10594,9 @@
     "RP-013"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-types"
   },
   {
    "id": "RB-C8-04",
@@ -9128,7 +10621,9 @@
    "open": [
     "Sterilisation SCL rules are old; check whether superseded by later MoD or DoPT orders."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-types"
   },
   {
    "id": "RB-RP-014",
@@ -9151,7 +10646,9 @@
     "RP-014"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-types"
   },
   {
    "id": "RB-C8-05",
@@ -9174,7 +10671,9 @@
     "RP-014"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-types"
   },
   {
    "id": "RB-RP-015",
@@ -9197,7 +10696,9 @@
     "RP-015"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-types"
   },
   {
    "id": "RB-RP-016",
@@ -9220,7 +10721,9 @@
     "RP-016"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-types"
   },
   {
    "id": "RB-C8-11",
@@ -9243,7 +10746,9 @@
     "RP-016"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-types"
   },
   {
    "id": "RB-RP-017",
@@ -9266,7 +10771,9 @@
     "RP-017"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "leave-types"
   },
   {
    "id": "RB-RP-018",
@@ -9289,7 +10796,9 @@
     "RP-018"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-types"
   },
   {
    "id": "RB-RP-019",
@@ -9312,7 +10821,9 @@
     "RP-019"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-family"
   },
   {
    "id": "RB-RP-020",
@@ -9335,7 +10846,9 @@
     "RP-020"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-family"
   },
   {
    "id": "RB-C8-14",
@@ -9358,7 +10871,9 @@
     "RP-020"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "leave-family"
   },
   {
    "id": "RB-RP-021",
@@ -9381,7 +10896,9 @@
     "RP-021"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-family"
   },
   {
    "id": "RB-RP-022",
@@ -9405,7 +10922,9 @@
     "RP-023"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-family"
   },
   {
    "id": "RB-RP-024",
@@ -9428,7 +10947,9 @@
     "RP-024"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-study"
   },
   {
    "id": "RB-C8-17",
@@ -9451,7 +10972,9 @@
     "RP-024"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-study"
   },
   {
    "id": "RB-C8-18",
@@ -9474,7 +10997,9 @@
     "RP-024"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "leave-study"
   },
   {
    "id": "RB-RP-025",
@@ -9496,7 +11021,9 @@
     "RP-025"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-study"
   },
   {
    "id": "RB-RP-026",
@@ -9520,7 +11047,9 @@
     "RP-027"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "leave-study"
   },
   {
    "id": "RB-RP-028",
@@ -9543,7 +11072,9 @@
     "RP-028"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-encash"
   },
   {
    "id": "RB-C8-21",
@@ -9566,7 +11097,9 @@
     "RP-028"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-encash"
   },
   {
    "id": "RB-C8-22",
@@ -9588,7 +11121,9 @@
     "RP-028"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-encash"
   },
   {
    "id": "RB-RP-030",
@@ -9611,7 +11146,9 @@
     "RP-030"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-joining"
   },
   {
    "id": "RB-C9-02",
@@ -9634,7 +11171,9 @@
     "RP-030"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-joining"
   },
   {
    "id": "RB-C9-03",
@@ -9657,7 +11196,9 @@
     "RP-030"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-joining"
   },
   {
    "id": "RB-RP-031",
@@ -9680,7 +11221,9 @@
     "RP-031"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "leave-joining"
   },
   {
    "id": "RB-C12-02",
@@ -9703,7 +11246,9 @@
     "RP-031"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "leave-joining"
   },
   {
    "id": "RB-RP-032",
@@ -9728,7 +11273,9 @@
    "open": [
     "Handbook gives only the pointer. Authoring a full card needs AO 7/03 text, not available here."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "C",
+   "nav": "pay-dsop"
   },
   {
    "id": "RB-RP-033",
@@ -9751,7 +11298,9 @@
     "RP-033"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-dsop"
   },
   {
    "id": "RB-RP-035",
@@ -9775,7 +11324,9 @@
     "RP-036"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-RP-037",
@@ -9800,7 +11351,9 @@
     "RP-037"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-RP-042",
@@ -9824,7 +11377,9 @@
     "RP-043"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-air"
   },
   {
    "id": "RB-RP-044",
@@ -9848,7 +11403,9 @@
     "RP-046"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-air"
   },
   {
    "id": "RB-RP-047",
@@ -9871,7 +11428,9 @@
     "RP-047"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-air"
   },
   {
    "id": "RB-RP-048",
@@ -9894,7 +11453,9 @@
     "RP-048"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-RP-050",
@@ -9915,7 +11476,9 @@
     "RP-050"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-air"
   },
   {
    "id": "RB-RP-052",
@@ -9943,7 +11506,9 @@
    "open": [
     "53%, 55% and 58% confirmed from MoD DMA letters (1(6)/2021-D(Pay/Services)-Pt-I; 58% letter dt 09-10-2025, MoF OM 06-10-2025). 60% from 01-01-2026 is from MoF DoE OM dt 22-04-2026 (read via a government circular); the MoD letter for 60% was not seen. Next revision (01-07-2026) not yet issued."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-RP-054",
@@ -9966,7 +11531,9 @@
     "RP-054"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-RP-057",
@@ -9989,7 +11556,9 @@
     "RP-057"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-field"
   },
   {
    "id": "RB-RP-059",
@@ -10012,7 +11581,9 @@
     "RP-059"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "allow-field"
   },
   {
    "id": "RB-RP-060",
@@ -10038,7 +11609,9 @@
    "open": [
     "Check Appendix A and B lists against the current MoD letter; lists change."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-RP-062",
@@ -10061,7 +11634,9 @@
     "RP-062"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-RP-063",
@@ -10087,7 +11662,9 @@
    "open": [
     "Language Award orders after 31-03-1997 were still awaited per the handbook."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-RP-065",
@@ -10111,7 +11688,9 @@
     "RP-067"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-loc"
   },
   {
    "id": "RB-RP-066",
@@ -10134,7 +11713,9 @@
     "RP-066"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-air"
   },
   {
    "id": "RB-RP-068",
@@ -10157,7 +11738,9 @@
     "RP-068"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-field"
   },
   {
    "id": "RB-RP-069",
@@ -10180,7 +11763,9 @@
     "RP-069"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-field"
   },
   {
    "id": "RB-RP-070",
@@ -10203,7 +11788,9 @@
     "RP-070"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-air"
   },
   {
    "id": "RB-RP-071",
@@ -10226,7 +11813,9 @@
     "RP-071"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "home-cea"
   },
   {
    "id": "RB-RP-072",
@@ -10247,7 +11836,9 @@
     "RP-072"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-air"
   },
   {
    "id": "RB-RP-074",
@@ -10274,7 +11865,9 @@
    "open": [
     "Escalation clause read in DoE OM 19051/1/2017-E.IV dt 02-08-2017 (para 7). Stepped figures are computed from it; the MoD order applying the step was not seen."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-RP-075",
@@ -10298,7 +11891,9 @@
     "RP-075"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-RP-076",
@@ -10321,7 +11916,9 @@
     "RP-077"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-field"
   },
   {
    "id": "RB-RP-078",
@@ -10347,7 +11944,9 @@
     "Handbook cites MoD letter 1(16)/2017 dt 16-11-2017 here but the main 7th CPC letter is dt 18-09-2017 and the dress letter is PC-1(16)/2017 dt 16-11-2017; confirm the TLA letter number.",
     "District-level lists (HP, J&K, Uttarakhand, Mizoram, Tripura, Arunachal, Andaman) are not reproduced; add as lookup data if wanted."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-loc"
   },
   {
    "id": "RB-C18-05",
@@ -10370,7 +11969,9 @@
     "RP-078"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-loc"
   },
   {
    "id": "RB-RP-079",
@@ -10393,7 +11994,9 @@
     "RP-079"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-loc"
   },
   {
    "id": "RB-RP-080",
@@ -10416,7 +12019,9 @@
     "RP-080"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-RP-081",
@@ -10439,7 +12044,9 @@
    "open": [
     "The rate is not stated in the handbook; need the prescribed rate from the letter."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-daily"
   },
   {
    "id": "RB-RP-082",
@@ -10462,7 +12069,9 @@
     "RP-082"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-loc"
   },
   {
    "id": "RB-RP-083",
@@ -10483,7 +12092,9 @@
     "RP-083"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "allow-loc"
   },
   {
    "id": "RB-RP-084",
@@ -10508,7 +12119,9 @@
    "open": [
     "No primary letter named in the source. Find the CGDA or MoD instruction."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "L",
+   "nav": "allow-tech"
   },
   {
    "id": "RB-RP-086",
@@ -10531,7 +12144,9 @@
     "RP-087"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "claims-adv"
   },
   {
    "id": "RB-RP-088",
@@ -10557,7 +12172,9 @@
    "open": [
     "Check later reviews of the 8.5% interest rate."
    ],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-dsop"
   },
   {
    "id": "RB-RP-090",
@@ -10582,7 +12199,9 @@
     "RP-090"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-dsop"
   },
   {
    "id": "RB-C21-02",
@@ -10605,7 +12224,9 @@
     "RP-090"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-dsop"
   },
   {
    "id": "RB-C21-03",
@@ -10628,7 +12249,9 @@
     "RP-090"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-dsop"
   },
   {
    "id": "RB-C21-04",
@@ -10651,7 +12274,9 @@
     "RP-090"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "Q",
+   "nav": "pay-dsop"
   },
   {
    "id": "RB-C21-05",
@@ -10674,7 +12299,9 @@
     "RP-090"
    ],
    "open": [],
-   "status": "draft"
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-dsop"
   }
  ],
  "skipped": [

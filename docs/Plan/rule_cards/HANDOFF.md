@@ -71,6 +71,9 @@ Pay FAQs (55 left earlier) all written (33-35). Pay handbook-only topics written
 ## Phase G1 (2026-10-04): review points verified
 Owner decisions applied (see `15_confirmed_rulesets.md`, evidence level per row). DA ladder now to 58% (60% flagged). Escalator clauses checked per allowance (none printed for Technical or Transport Allowance). Pending list archived to `archive/14_review_decisions_G2.md` (G2 close); the O: lines stay on 36 cards. G2 done: 177C follows the FAQ (owner), Rajdhani full DA restored. Owner declared the dataset GOLD on 2026-10-04. Next: Phase E (the app feature), only after the owner approves the phase plan.
 
+## Navigation (tile UI), added after Gold
+`nav.json` places every card in one of 9 areas > 44 cases (limits in the file: 8 to 10 areas, up to 8 cases per area, 4 to 16 cards per case). `compile.py` fails on an orphan card, a double home, or a size breach, and writes `nav` plus each card's `nav` (case id) into `rulebook.json`. Pending: per-card facet tags (who qualifies / how much / how to claim / limits), case names tested with officers.
+
 ## TO DO (in order)
 1. **Domain-owner review** of `13_review_queue.md` and the rate cards (18 `RATES` chips); resolve or keep each flag; update DA and the 50%-DA escalation. Then rerun compile, `render_md.py`, copycheck.
 2. **Phase E, the feature** (only after the review and the user's approval of the phase plan): bundle `rulebook.json` (strip `from` and `open`), a generic loader, the 3-level UI (home tiles + search, topic list, answer card) as a fifth tab "Guide" in `AppBottomBar`, copy and colours in `AppStrings.kt` and `Theme.kt`, personalisation from the Pay Audit profile (`personal=` fields), "as of" chips, copy-cite and share-as-claim-note buttons, search (words and rule numbers), pinned cards, tests, and the project rules in CLAUDE.md.

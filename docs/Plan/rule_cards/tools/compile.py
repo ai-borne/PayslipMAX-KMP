@@ -27,6 +27,9 @@ import re
 import sys
 from collections import Counter, defaultdict
 
+sys.path.insert(0, os.path.dirname(__file__))
+import nav as navmod
+
 CARDS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 AUTH_DIR = os.path.join(CARDS_DIR, 'authoring')
 LIMITS = {'answer': 25, 'bullets': 3, 'bullet_words': 12, 'visible': 90, 'details': 120, 'title': 14}
@@ -136,6 +139,10 @@ def main():
                           'attach': card['attach'], 'watch': card['watch'], 'cite': card['C'], 'details': card['D'], 'chips': chips,
                           'personal': card['attrs'].get('personal', ''), 'from': frm, 'open': card['open'],
                           'status': card['attrs'].get('status', 'draft')})
+    nav_tree, nav_homes = navmod.build_nav(out_cards, navmod.load_nav(CARDS_DIR), errors)
+    facet_labels = navmod.apply_facets(out_cards, CARDS_DIR, errors)
+    for c in out_cards:
+        c['nav'] = nav_homes.get(c['id'], '')
     skipped = {s['from'] for s in skips}
     for s in skips:
         if s['from'] not in ssot_ids: errors.append(f'skip of unknown entry {s["from"]}')
@@ -155,6 +162,7 @@ def main():
     for m in warns[:15]: print('WARN ', m)
     for m in errors[:40]: print('ERROR', m)
     if len(errors) > 40: print(f'... {len(errors)-40} more errors')
+    print(f"nav: {len(nav_tree)} areas, {sum(len(a['cases']) for a in nav_tree)} cases, {len(nav_homes)} cards homed")
     print(f"pay topics with at least one card: {len(pay_topic_ids) - len(pay_topics_open)}/{len(pay_topic_ids)}")
     if '--uncovered' in sys.argv:
         print('UNCOVERED', ' '.join(uncovered))
@@ -163,7 +171,7 @@ def main():
     if not check_only:
         data = {'version': 1, 'generated': __import__('datetime').date.today().isoformat(), 'limits': LIMITS,
                 'topics': [{k: t[k] for k in t if k in ('id', 'title', 'domain', 'chapter', 'handbook_page', 'tr_rules')} for t in topics.values()],
-                'cards': out_cards, 'skipped': skips, 'coverage': cov, 'uncovered': uncovered, 'pay_topics_open': pay_topics_open}
+                'nav': nav_tree, 'facets': facet_labels, 'cards': out_cards, 'skipped': skips, 'coverage': cov, 'uncovered': uncovered, 'pay_topics_open': pay_topics_open}
         with open(os.path.join(CARDS_DIR, 'rulebook.json'), 'w', encoding='utf-8') as fh:
             json.dump(data, fh, indent=1, ensure_ascii=False)
         print('wrote rulebook.json')

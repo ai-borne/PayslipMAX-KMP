@@ -1,0 +1,554 @@
+{
+ "limits": {
+  "areas": [
+   8,
+   10
+  ],
+  "cases_per_area": 8,
+  "cards_per_case": [
+   4,
+   16
+  ],
+  "title_words": 7,
+  "sub_words": 8
+ },
+ "areas": [
+  {
+   "id": "ltc",
+   "title": "Leave travel (LTC)",
+   "cases": [
+    {
+     "id": "ltc-home",
+     "title": "Home town LTC",
+     "sub": "Rule 177A",
+     "topics": [
+      "RR-LTC-01",
+      "RR-ORD-13"
+     ]
+    },
+    {
+     "id": "ltc-anywhere",
+     "title": "Anywhere-in-India LTC",
+     "sub": "Rule 177B",
+     "topics": [
+      "RR-LTC-02"
+     ]
+    },
+    {
+     "id": "ltc-field",
+     "title": "Field and special postings",
+     "sub": "Rule 177C, Andaman and Nicobar",
+     "topics": [
+      "RR-LTC-03",
+      "RR-ORD-16",
+      "RR-LTC-08"
+     ]
+    },
+    {
+     "id": "ltc-regions",
+     "title": "North East, J&K and islands",
+     "sub": "Air scheme and rail concessions",
+     "topics": [
+      "RR-LTC-06",
+      "RR-ORD-10",
+      "RR-LTC-07",
+      "RR-ORD-15"
+     ]
+    },
+    {
+     "id": "ltc-family",
+     "title": "Family, parents and study leave",
+     "sub": "Rule 177D",
+     "topics": [
+      "RR-LTC-04",
+      "RR-ORD-12"
+     ]
+    },
+    {
+     "id": "ltc-class",
+     "title": "Class, mode and fare",
+     "sub": "Rail, road, air and steamer",
+     "topics": [],
+     "cards": [
+      "RB-SS-T084",
+      "RB-SS-T090",
+      "RB-SS-T099",
+      "RB-SS-T130",
+      "RB-SS-T135",
+      "RB-SS-T137",
+      "RB-SS-T138",
+      "RB-SS-T141",
+      "RB-SS-T312"
+     ]
+    },
+    {
+     "id": "ltc-rules",
+     "title": "Who can take LTC, and when",
+     "sub": "General rules",
+     "topics": [],
+     "cards": [
+      "RB-SS-T079",
+      "RB-SS-T085",
+      "RB-SS-T077",
+      "RB-SS-T065",
+      "RB-SS-T092",
+      "RB-SS-T094",
+      "RB-SS-T095",
+      "RB-SS-T129",
+      "RB-SS-T231",
+      "RB-SS-T001"
+     ],
+     "also": [
+      "RB-SS-P019",
+      "RB-SS-P020",
+      "RB-SS-P022",
+      "RB-SS-P025",
+      "RB-SS-T039",
+      "RB-SS-T291"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "leave",
+   "title": "Leave and encashment",
+   "cases": [
+    {
+     "id": "leave-types",
+     "title": "Annual, casual and sick leave",
+     "sub": "",
+     "topics": [
+      "RP-011",
+      "RP-012",
+      "RP-013",
+      "RP-014",
+      "RP-015",
+      "RP-016",
+      "RP-017",
+      "RP-018"
+     ]
+    },
+    {
+     "id": "leave-family",
+     "title": "Maternity, paternity and child care",
+     "sub": "",
+     "topics": [
+      "RP-019",
+      "RP-020",
+      "RP-021",
+      "RP-022"
+     ]
+    },
+    {
+     "id": "leave-study",
+     "title": "Study leave and ex-India leave",
+     "sub": "",
+     "topics": [
+      "RP-024",
+      "RP-025",
+      "RP-026"
+     ]
+    },
+    {
+     "id": "leave-joining",
+     "title": "Joining time and attachments",
+     "sub": "",
+     "topics": [
+      "RP-030",
+      "RP-031"
+     ]
+    },
+    {
+     "id": "leave-encash",
+     "title": "Leave encashment",
+     "sub": "With and without LTC",
+     "topics": [
+      "RP-028",
+      "RP-029"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "td",
+   "title": "Temporary duty (TD)",
+   "cases": [
+    {
+     "id": "td-da",
+     "title": "Daily allowance, food and hotel",
+     "sub": "",
+     "topics": [
+      "RR-TD-01",
+      "RR-TD-02",
+      "RR-ORD-03",
+      "RR-ORD-04"
+     ]
+    },
+    {
+     "id": "td-course",
+     "title": "Courses and exams",
+     "sub": "",
+     "topics": [
+      "RR-TD-03",
+      "RR-TD-04"
+     ]
+    },
+    {
+     "id": "td-events",
+     "title": "Conferences, sports and camps",
+     "sub": "",
+     "topics": [
+      "RR-TD-05",
+      "RR-TD-06",
+      "RR-TD-07"
+     ]
+    },
+    {
+     "id": "td-other",
+     "title": "Medical, court and other duty trips",
+     "sub": "",
+     "topics": [
+      "RR-TD-08",
+      "RR-TD-13",
+      "RR-TD-09",
+      "RR-TD-10",
+      "RR-TD-11",
+      "RR-TD-12"
+     ]
+    },
+    {
+     "id": "td-ground",
+     "title": "Rail, sea and road travel",
+     "sub": "Entitlement and own car",
+     "topics": [
+      "RR-MOD-01",
+      "RR-MOD-02",
+      "RR-MOD-03",
+      "RR-MOD-05",
+      "RR-MOD-06",
+      "RR-MOD-07",
+      "RR-ORD-05"
+     ]
+    },
+    {
+     "id": "td-air",
+     "title": "Air travel",
+     "sub": "Entitlement and booking",
+     "topics": [
+      "RR-MOD-04",
+      "RR-ORD-02",
+      "RR-ORD-01"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "move",
+   "title": "Postings and moves",
+   "cases": [
+    {
+     "id": "move-ta",
+     "title": "TA on a permanent move",
+     "sub": "",
+     "topics": [
+      "RR-PDM-01",
+      "RR-PDM-02",
+      "RR-PDM-03",
+      "RR-GEN-04"
+     ]
+    },
+    {
+     "id": "move-ctg",
+     "title": "CTG, baggage and car",
+     "sub": "",
+     "topics": [
+      "RR-PDM-04",
+      "RR-ORD-06"
+     ]
+    },
+    {
+     "id": "move-family",
+     "title": "Family moves and special cases",
+     "sub": "MNS and lent officers",
+     "topics": [
+      "RR-PDM-05",
+      "RR-PDM-06",
+      "RR-PDM-07"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "claims",
+   "title": "Claims and advances",
+   "cases": [
+    {
+     "id": "claims-adv",
+     "title": "Advances and penal interest",
+     "sub": "",
+     "topics": [
+      "RR-GEN-07",
+      "RP-086"
+     ]
+    },
+    {
+     "id": "claims-time",
+     "title": "Time limits for claims",
+     "sub": "",
+     "topics": [
+      "RR-GEN-03",
+      "RR-ORD-08"
+     ]
+    },
+    {
+     "id": "claims-docs",
+     "title": "Documents and certificates",
+     "sub": "",
+     "topics": [
+      "RR-ORD-07"
+     ]
+    },
+    {
+     "id": "claims-dts",
+     "title": "Claiming online (DTS)",
+     "sub": "",
+     "topics": [
+      "RR-ORD-09"
+     ]
+    },
+    {
+     "id": "claims-who",
+     "title": "Who orders, signs and is covered",
+     "sub": "",
+     "topics": [
+      "RR-GEN-01",
+      "RR-GEN-02",
+      "RR-GEN-05"
+     ]
+    },
+    {
+     "id": "claims-misc",
+     "title": "Mileage, ferry and refunds",
+     "sub": "",
+     "topics": [
+      "RR-GEN-06",
+      "RR-GEN-08",
+      "RR-GEN-09",
+      "RR-GEN-10",
+      "RR-GEN-11"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ret",
+   "title": "Retirement and death",
+   "cases": [
+    {
+     "id": "ret-ret",
+     "title": "Retirement and release",
+     "sub": "",
+     "topics": [
+      "RR-RET-01",
+      "RR-RET-02",
+      "RR-RET-03"
+     ]
+    },
+    {
+     "id": "ret-death",
+     "title": "Death, missing and POW",
+     "sub": "Families of officers",
+     "topics": [
+      "RR-RET-04"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pay",
+   "title": "My pay",
+   "cases": [
+    {
+     "id": "pay-start",
+     "title": "Starting pay and training",
+     "sub": "",
+     "topics": [
+      "RP-000",
+      "RP-001",
+      "RP-002",
+      "RP-003"
+     ]
+    },
+    {
+     "id": "pay-incr",
+     "title": "Increments and special increments",
+     "sub": "",
+     "topics": [
+      "RP-004",
+      "RP-006"
+     ]
+    },
+    {
+     "id": "pay-promo",
+     "title": "Promotion and substantive rank",
+     "sub": "",
+     "topics": [
+      "RP-005",
+      "RP-007",
+      "RP-008",
+      "RP-009",
+      "RP-010"
+     ]
+    },
+    {
+     "id": "pay-cpc",
+     "title": "7th CPC pay structure",
+     "sub": "Levels, MSP, NPA and DA",
+     "topics": [
+      "RP-034",
+      "RP-035",
+      "RP-053"
+     ]
+    },
+    {
+     "id": "pay-dsop",
+     "title": "DSOP, advances and deductions",
+     "sub": "",
+     "topics": [
+      "RP-090",
+      "RP-088",
+      "RP-032",
+      "RP-033"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "allow",
+   "title": "Allowances",
+   "cases": [
+    {
+     "id": "allow-rh",
+     "title": "Risk and hardship",
+     "sub": "",
+     "topics": [
+      "RP-055"
+     ]
+    },
+    {
+     "id": "allow-field",
+     "title": "Field area, altitude and Siachen",
+     "sub": "",
+     "topics": [
+      "RP-056",
+      "RP-057",
+      "RP-058",
+      "RP-059",
+      "RP-068",
+      "RP-069",
+      "RP-076"
+     ]
+    },
+    {
+     "id": "allow-loc",
+     "title": "Tough location and overseas",
+     "sub": "",
+     "topics": [
+      "RP-078",
+      "RP-079",
+      "RP-082",
+      "RP-083",
+      "RP-065"
+     ]
+    },
+    {
+     "id": "allow-air",
+     "title": "Flying, para and special forces",
+     "sub": "",
+     "topics": [
+      "RP-041",
+      "RP-042",
+      "RP-044",
+      "RP-045",
+      "RP-046",
+      "RP-047",
+      "RP-072",
+      "RP-050",
+      "RP-070",
+      "RP-066"
+     ]
+    },
+    {
+     "id": "allow-tech",
+     "title": "Technical, specialist and training",
+     "sub": "And other allowances",
+     "topics": [
+      "RP-037",
+      "RP-038",
+      "RP-039",
+      "RP-040",
+      "RP-060",
+      "RP-062",
+      "RP-063",
+      "RP-048",
+      "RP-084"
+     ]
+    },
+    {
+     "id": "allow-daily",
+     "title": "Dress, ration and transport",
+     "sub": "",
+     "topics": [
+      "RP-049",
+      "RP-051",
+      "RP-054",
+      "RP-074",
+      "RP-075",
+      "RP-080",
+      "RP-081",
+      "RR-TPT-01"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "home",
+   "title": "Housing, family and health",
+   "cases": [
+    {
+     "id": "home-hra",
+     "title": "House rent allowance (HRA)",
+     "sub": "",
+     "topics": [
+      "RP-092"
+     ]
+    },
+    {
+     "id": "home-quarters",
+     "title": "Quarters and transit stay",
+     "sub": "",
+     "topics": [
+      "RP-091"
+     ]
+    },
+    {
+     "id": "home-cea",
+     "title": "Children education (CEA)",
+     "sub": "",
+     "topics": [
+      "RP-085",
+      "RP-071"
+     ]
+    },
+    {
+     "id": "home-med",
+     "title": "Medical claims",
+     "sub": "",
+     "topics": [
+      "RP-094"
+     ]
+    }
+   ]
+  }
+ ]
+}
