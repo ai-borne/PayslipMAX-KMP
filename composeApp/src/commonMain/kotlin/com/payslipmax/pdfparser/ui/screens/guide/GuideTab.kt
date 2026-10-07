@@ -37,6 +37,7 @@ import org.koin.compose.koinInject
 fun GuideTab(
     navState: GuideNavState,
     viewModel: GuideViewModel = koinInject(),
+    searchViewModel: GuideSearchViewModel = koinInject(),
 ) {
     LaunchedEffect(viewModel) { viewModel.load() }
     val state by viewModel.uiState.collectAsState()
@@ -48,7 +49,7 @@ fun GuideTab(
             LaunchedEffect(current.bundle) { navState.retainKnown(current.bundle) }
             // Android back pops the Guide stack before it leaves the tab; at Guide Home it stays disabled.
             BackHandler(enabled = navState.canPop) { navState.pop() }
-            GuideDestinationContent(navState, current, viewModel)
+            GuideDestinationContent(navState, current, viewModel, searchViewModel)
         }
     }
 }
@@ -58,10 +59,20 @@ private fun GuideDestinationContent(
     navState: GuideNavState,
     ready: GuideUiState.Ready,
     viewModel: GuideViewModel,
+    searchViewModel: GuideSearchViewModel,
 ) {
     val onBack: () -> Unit = { navState.pop() }
     when (val destination = navState.current) {
-        GuideDestination.Home -> GuideHomeScreen(ready.areas, onOpenArea = { navState.push(GuideDestination.Area(it)) })
+        GuideDestination.Home ->
+            GuideHomeScreen(
+                ready.areas,
+                onOpenArea = { navState.push(GuideDestination.Area(it)) },
+                // Each visit to search starts empty; coming back from a card (a pop) does not pass through here.
+                onOpenSearch = {
+                    searchViewModel.clear()
+                    navState.push(GuideDestination.Search)
+                },
+            )
         is GuideDestination.Area ->
             viewModel.area(destination.areaId)?.let { area ->
                 GuideAreaScreen(area, onBack, onOpenCase = { navState.push(GuideDestination.Case(it)) }, rememberGuideListState(navState))
@@ -71,8 +82,26 @@ private fun GuideDestinationContent(
             viewModel.card(destination.cardId)?.let { card ->
                 GuideCardScreen(card, viewModel.crumbs(navState.stack), navState::upTo, onBack, rememberGuideListState(navState))
             } ?: GuideLoading()
-        GuideDestination.Search -> GuidePlaceholderScreen(GuideStrings.searchTitle, null, onBack)
+        GuideDestination.Search -> GuideSearchRoute(navState, searchViewModel, onBack)
     }
+}
+
+@Composable
+private fun GuideSearchRoute(
+    navState: GuideNavState,
+    searchViewModel: GuideSearchViewModel,
+    onBack: () -> Unit,
+) {
+    val query by searchViewModel.query.collectAsState()
+    val state by searchViewModel.state.collectAsState()
+    GuideSearchScreen(
+        query = query,
+        state = state,
+        onQueryChange = searchViewModel::onQueryChange,
+        onOpenCard = { navState.push(GuideDestination.Card(it)) },
+        onBack = onBack,
+        listState = rememberGuideListState(navState),
+    )
 }
 
 @Composable

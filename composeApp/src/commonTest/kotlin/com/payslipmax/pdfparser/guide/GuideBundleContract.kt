@@ -3,6 +3,8 @@ package com.payslipmax.pdfparser.guide
 import com.payslipmax.pdfparser.di.GUIDE_BUNDLE_PATH
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.guide.domain.CardTemplate
+import com.payslipmax.pdfparser.guide.domain.GuideRuleNumberParser
+import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.ui.screens.guide.cardContent
 import com.payslipmax.pdfparser.ui.screens.guide.feedContent
@@ -75,4 +77,40 @@ object GuideBundleContract {
         // The food-rate and CTG cards carry the two placeholder bullets that phase E6 fills.
         assertEquals(setOf("RB-SS-T181", "RB-SS-T254"), cards.filter { it.body.figureTemplates.isNotEmpty() }.map { it.id }.toSet())
     }
+
+    /**
+     * The E4 search over all 402 cards. Every rule number a cite names (typed as "Rule N") finds its card, every card is found by its own
+     * title, and a fixed set of real queries all answer: "177" is the LTC family and never "1770", and "Rule 114"
+     * asks what "114" asks. This is a correctness workload (about 700 searches), not a timing one: see [realisticQueries].
+     */
+    fun assertSearchMatchesDataset(bundle: GuideBundle) {
+        val index = GuideSearchIndex(bundle)
+        for (card in bundle.cards) {
+            for (rule in GuideRuleNumberParser.ruleNumbers(card.cite)) {
+                // "Rule 2" rather than "2": a single digit is a one-character query, which is not searched.
+                assertTrue(index.search("Rule $rule").any { it.card.id == card.id }, "rule $rule of ${card.id} is not found")
+            }
+            assertTrue(index.search(card.title).any { it.card.id == card.id }, "${card.id} is not found by its own title")
+        }
+        val ltc = index.search("177").map { it.card.id }
+        assertTrue(ltc.isNotEmpty(), "177 finds the LTC rules")
+        assertTrue(index.search("177B").map { it.card.id }.let { exact -> exact.isNotEmpty() && ltc.containsAll(exact) })
+        // The middle of a cited range ("Rules 88 to 91", "Rules 265 to 277") is a rule too.
+        assertTrue(index.search("Rule 89").any { it.card.id == "RB-SS-P034" })
+        assertTrue(index.search("Rule 270").any { it.card.id == "RB-C18-05" })
+        assertEquals(index.search("114").map { it.card.id }, index.search("Rule 114").map { it.card.id })
+        for (query in listOf("85A", "allowance", "LTC", "HRA", "transport", "family", "leave", "claim")) {
+            assertTrue(index.search(query).isNotEmpty(), "'$query' finds something")
+        }
+    }
+
+    /**
+     * What a person types, for the iOS timing test: whole queries, then two phrases typed one letter at a time (the
+     * screen searches on every keystroke, so each prefix is a search).
+     */
+    val realisticQueries: List<String> =
+        listOf("177", "177B", "Rule 114", "85A", "hra", "ltc family", "food", "leave", "claim") +
+            typedLetterByLetter("transport allowance") + typedLetterByLetter("family ltc")
+
+    private fun typedLetterByLetter(phrase: String): List<String> = (1..phrase.length).map { phrase.take(it) }
 }

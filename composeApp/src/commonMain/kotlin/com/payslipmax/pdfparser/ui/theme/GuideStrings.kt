@@ -13,9 +13,14 @@ object GuideStrings {
     const val loadFailedBody = "Your payslips are not affected. Try again. If it keeps failing, update the app."
     const val retry = "Try again"
 
-    // Search is a placeholder route until phase E4 builds it; both strings go with it.
-    const val comingNext = "The cards for this topic arrive in the next update."
+    // Search.
     const val searchTitle = "Search"
+    const val searchOpen = "Search the Claim Guide"
+    const val searchPlaceholder = "Topic or rule number"
+    const val searchClear = "Clear search"
+    const val searchHint = "Search by a word, or a rule number such as 177B or Rule 114."
+    const val searchTooShort = "Type at least two letters or digits."
+    const val searchNone = "No cards match. Try fewer words, or a rule number."
 
     // Feed and breadcrumb.
     const val breadcrumbHome = "Guide"
@@ -36,6 +41,8 @@ object GuideStrings {
     fun topicCount(count: Int): String = if (count == 1) "1 topic" else "$count topics"
 
     fun cardCount(count: Int): String = if (count == 1) "1 card" else "$count cards"
+
+    fun resultCount(count: Int): String = if (count == 1) "1 result" else "$count results"
 
     fun facetAll(count: Int): String = "$facetAllLabel $count"
 

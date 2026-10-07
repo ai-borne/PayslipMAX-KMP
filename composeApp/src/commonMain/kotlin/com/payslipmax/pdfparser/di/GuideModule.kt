@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.di
 import com.payslipmax.pdfparser.guide.GuideBundleSource
 import com.payslipmax.pdfparser.guide.GuideRepository
 import com.payslipmax.pdfparser.guide.data.LazyGuideRepository
+import com.payslipmax.pdfparser.ui.screens.guide.GuideSearchViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module
@@ -22,4 +23,6 @@ val guideModule =
         single<GuideRepository> { LazyGuideRepository(source = get(), dispatcher = Dispatchers.Default) }
         // App-scoped: switching tabs or locking the app keeps the loaded Guide; it holds no screen state.
         single { GuideViewModel(repository = get(), crashReporter = get()) }
+        // App-scoped so a query and its results survive opening a card; memory only, never saved or sent.
+        single { GuideSearchViewModel(guide = get()) }
     }

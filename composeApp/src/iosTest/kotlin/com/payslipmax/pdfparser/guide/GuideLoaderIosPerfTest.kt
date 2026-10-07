@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.guide
 
+import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -38,6 +39,33 @@ class GuideLoaderIosPerfTest {
             assertTrue(elapsedMs < FEEDS_BUDGET_MS, "feeds and cards took ${elapsedMs}ms, budget ${FEEDS_BUDGET_MS}ms")
         }
 
+    @Test
+    fun searchBuildsAndAnswersWithinBudgetOnNative() =
+        runTest {
+            val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())
+
+            // The index over all 402 cards, then the fixed set of realistic queries (a search per keystroke). Plain
+            // string scans, so a regex or quadratic regression on Native would blow these budgets.
+            val buildMark = TimeSource.Monotonic.markNow()
+            val index = GuideSearchIndex(bundle)
+            val buildMs = buildMark.elapsedNow().inWholeMilliseconds
+            val queryMark = TimeSource.Monotonic.markNow()
+            val hits = GuideBundleContract.realisticQueries.sumOf { index.search(it).size }
+            val queriesMs = queryMark.elapsedNow().inWholeMilliseconds
+
+            println("guide search on Native: index ${buildMs}ms, ${GuideBundleContract.realisticQueries.size} queries ${queriesMs}ms")
+            assertTrue(hits > 0)
+            assertTrue(buildMs < SEARCH_BUDGET_MS, "index build took ${buildMs}ms, budget ${SEARCH_BUDGET_MS}ms")
+            assertTrue(queriesMs < SEARCH_BUDGET_MS, "queries took ${queriesMs}ms, budget ${SEARCH_BUDGET_MS}ms")
+        }
+
+    @Test
+    fun searchGivesTheSameAnswersOnNativeAsOnTheJvm() =
+        runTest {
+            // The full correctness workload, untimed: it proves Native reads words and rule numbers the same way.
+            GuideBundleContract.assertSearchMatchesDataset(GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText()))
+        }
+
     private companion object {
         // Generous for a debug simulator build: the first Guide open waits on this, and a quadratic
         // regression in the parser or validator would blow far past it.
@@ -45,5 +73,8 @@ class GuideLoaderIosPerfTest {
 
         // The same margin for the E3 feed and card derivations (plain list and string scans, no regex).
         const val FEEDS_BUDGET_MS = 1_500L
+
+        // E4 search, for the index build and for the realistic queries each: the same margin again.
+        const val SEARCH_BUDGET_MS = 1_500L
     }
 }

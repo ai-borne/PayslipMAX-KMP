@@ -13,6 +13,7 @@ import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -21,8 +22,8 @@ import org.junit.runner.RunWith;
 /**
  * R8 Check 2 (docs/Plan/rule_cards/16_guide_phase_plan.md): green debug tests do not prove the minified app can
  * read the Guide. This drives the installed {@code minifiedTest} app (release R8 config) like a user: open the
- * Guide tab, an area, a case, then its first card. A model or serializer R8 removed shows the load error instead and
- * fails here.
+ * Guide tab, an area, a case, then its first card, then find that card again through search. A model or serializer
+ * R8 removed shows the load error instead and fails here.
  *
  * <p>Black-box on purpose: it finds text on screen and reads the bundle from the app's own assets, so nothing pins
  * an app class against R8. The UI strings come from the app's string files through the generated {@code SmokeStrings}.
@@ -63,6 +64,21 @@ public class GuideMinifiedSmokeTest {
         await(caseTitle, "the first case tile in " + areaTitle).click();
         await(cardTitle, "the first card in the " + caseTitle + " feed").click();
         await(SmokeStrings.sectionKeyPoints, "the card's key points");
+
+        // Search (E4): back to Home with a re-tap of the tab, search for the card's own title, open it from the results.
+        await(SmokeStrings.tabLabel, "the Guide tab").click();
+        await(SmokeStrings.homeSection, "Guide Home after a tab re-tap");
+        device.wait(Until.findObject(By.desc(SmokeStrings.searchOpen)), SHORT_MS).click();
+        UiObject2 field = device.wait(Until.findObject(By.clazz("android.widget.EditText")), SHORT_MS);
+        assertNotNull("the search field is not shown", field);
+        field.setText(cardTitle);
+        // The count line ("1 result", "7 results") only exists once results do; no copy of it here, so match its stem.
+        assertNotNull("search found nothing for a card's own title",
+                device.wait(Until.findObject(By.textContains("result")), LONG_MS));
+        // The field holds the title too; the result row is the last node with that text.
+        List<UiObject2> shown = device.findObjects(By.text(cardTitle));
+        shown.get(shown.size() - 1).click();
+        await(SmokeStrings.sectionKeyPoints, "the card opened from the search results");
     }
 
     private static String cardTitle(JSONObject bundle, String cardId) throws Exception {

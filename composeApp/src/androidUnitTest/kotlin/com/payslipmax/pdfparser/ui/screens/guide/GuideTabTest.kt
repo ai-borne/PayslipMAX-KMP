@@ -34,9 +34,10 @@ class GuideTabTest {
     private val dispatcher = StandardTestDispatcher()
     private val repository = FakeGuideRepository()
     private val viewModel = GuideViewModel(repository, FakeCrashReporter(), dispatcher)
+    private val searchViewModel = GuideSearchViewModel(viewModel, dispatcher)
 
     private fun show(navState: GuideNavState = GuideNavState()): GuideNavState {
-        composeRule.setContent { GuideTab(navState = navState, viewModel = viewModel) }
+        composeRule.setContent { GuideTab(navState = navState, viewModel = viewModel, searchViewModel = searchViewModel) }
         return navState
     }
 

@@ -63,7 +63,7 @@ abstract class GenerateSmokeStrings : DefaultTask() {
 val generateSmokeStrings by tasks.registering(GenerateSmokeStrings::class) {
     val theme = rootProject.file("composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/theme")
     sources.from(theme.resolve("GuideStrings.kt"), theme.resolve("AppStringsOnboarding.kt"))
-    names.set(listOf("tabLabel", "homeSection", "loadFailedTitle", "sectionKeyPoints", "onboardingSkip", "onboardingCoachmarkDismiss"))
+    names.set(listOf("tabLabel", "homeSection", "loadFailedTitle", "sectionKeyPoints", "searchOpen", "onboardingSkip", "onboardingCoachmarkDismiss"))
     outputDir.set(layout.buildDirectory.dir("generated/smokeStrings"))
 }
 

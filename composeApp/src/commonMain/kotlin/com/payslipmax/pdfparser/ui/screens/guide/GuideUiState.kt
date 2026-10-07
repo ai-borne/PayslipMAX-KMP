@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.guide.domain.CardTemplate
 import com.payslipmax.pdfparser.guide.domain.GuideCardBody
 import com.payslipmax.pdfparser.guide.domain.GuideFeedLogic
 import com.payslipmax.pdfparser.guide.domain.GuideIndex
+import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
 import com.payslipmax.pdfparser.guide.model.GuideArea
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.GuideCase
@@ -19,6 +20,9 @@ sealed interface GuideUiState {
     data class Ready(val bundle: GuideBundle, val areas: List<GuideAreaTile>) : GuideUiState {
         /** Id lookups, built once per load. */
         val index: GuideIndex = GuideIndex(bundle)
+
+        /** Built on the first search, not on load, so opening the Guide never pays for it. */
+        val searchIndex: GuideSearchIndex by lazy { GuideSearchIndex(bundle) }
     }
 }
 

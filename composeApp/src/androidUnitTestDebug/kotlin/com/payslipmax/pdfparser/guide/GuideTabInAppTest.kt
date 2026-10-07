@@ -25,6 +25,7 @@ import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.lockApp
 import com.payslipmax.pdfparser.ui.screens.guide.GuideDestination
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
+import com.payslipmax.pdfparser.ui.screens.guide.GuideSearchViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import com.payslipmax.pdfparser.ui.setLockEnabled
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -58,7 +59,10 @@ class GuideTabInAppTest {
     private lateinit var viewModel: PayslipViewModel
     private val guideNavState = GuideNavState()
     private val guideModule =
-        module { single { GuideViewModel(FakeGuideRepository(), FakeCrashReporter(), UnconfinedTestDispatcher()) } }
+        module {
+            single { GuideViewModel(FakeGuideRepository(), FakeCrashReporter(), UnconfinedTestDispatcher()) }
+            single { GuideSearchViewModel(get(), UnconfinedTestDispatcher()) }
+        }
     private val onboarding = OnboardingManager(FakeOnboardingStorage(hasCompletedOnboarding = true, hasSeenUploadCoachmark = true))
 
     @BeforeTest

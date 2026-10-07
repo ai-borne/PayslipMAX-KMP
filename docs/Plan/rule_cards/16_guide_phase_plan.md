@@ -1,7 +1,7 @@
 # Claim Guide, Phase E plan (E1 to E9)
 
 Status: E0 (this plan) done 2026-10-07. **E1 done 2026-10-07** (branch `feature/guide-e1-bundle`). **E2 done 2026-10-07**
-(branch `feature/guide-e2-tiles`, off E1). **E3 done 2026-10-07** (branch `feature/guide-e3-feed`, off E2); E4 next.
+(branch `feature/guide-e2-tiles`, off E1). **E3 done 2026-10-07** (branch `feature/guide-e3-feed`, off E2). **E4 done 2026-10-07** (same branch); E5 next.
 Items left open by a finished phase are listed under "EP Pending items" at the end, never dropped.
 Inputs: Gold dataset (402 cards: 220 travel, 182 pay), `nav.json` (9 areas, 44 cases), `facets.json`,
 the approved clickable preview, and `CLAUDE.md`. One branch per phase off `main`
@@ -258,6 +258,42 @@ a details match; the query is never stored, saved or logged (gone after simulate
 the card and back returns to the results; iosTest timing over all 402 cards and a fixed query set.
 **Exit:** gates green, including the iOS timing test. **Tech-debt checkpoint:** ranking weights in one constant block.
 
+**E4 result (2026-10-07).** Done, with these recorded choices:
+- Domain in `shared/.../guide/domain/`: `GuideRuleNumberParser.kt` (word scan, rule numbers, number matching; no regex) and
+  `GuideSearchIndex.kt` (the index and `GuideSearchRanking`, the one block of weights: rule number 100, title 60, answer 30,
+  bullets 20, details 10, minimum query 2 characters). A card scores the sum of its best field per query word; equal scores
+  keep bundle order. Every word must match (AND). Letter words match the start of a word ("allow" finds "allowance"); number
+  words match whole numbers. Cite and case-line text are not searched as prose, only for rule numbers.
+- Rule numbers are read only after "Rule" or "Rules" in a cite (and in the rule line of the card's home case, so the 31
+  cards with no cite are still found by their case's rule). Lists and ranges work ("Rules 94, 95 and 100 to 101"; "88 to 91"
+  gives 89 and 90, spans over 50 are not expanded); dates and letter numbers are never read as rules. "177" finds 177 and
+  177A to 177Z (one family) but never 1770; "177B" finds only 177B; a leading "Rule" changes nothing. A single digit alone is
+  one character and is not searched; "Rule 2" works.
+- `GuideSearchViewModel` is an app-scoped Koin single beside `GuideViewModel`. The query lives only in its memory (not in
+  `GuideNavStateSaver`, which writes just `search`; the class has no `CrashReporter`; capped at 100 characters). Each visit from
+  Home clears it; coming back from a card keeps the query, the results and the scroll place (the Search level's scroll is
+  kept in `GuideNavState` like the others). The index is built lazily on the first search (`Ready.searchIndex`), never on load.
+- UI: a search icon in the Home header, `GuideSearchScreen.kt` (back header, auto-focused field only on a fresh search, IME
+  Search key, clear button, polite live-region count, results as the existing card rows with the home case as the pill). Back
+  from a card or the screen pops one level on both platforms. Strings in `GuideStrings.kt`.
+- Debt removed: `GuidePlaceholderScreen.kt` and `GuideStrings.comingNext` deleted (EP 8); `searchTitle` stays as the real
+  screen title. The minified smoke gained a search step (tab re-tap to Home, search a card's own title, open it from the results).
+- Gates (2026-10-07): `check -x iosX64Test -x iosSimulatorArm64Test` (both variants, corpus, lint) and `ktlintCheck`,
+  tech-debt audit, `iosSimulatorArm64Test`, `linkDebugFrameworkIosSimulatorArm64`, `assembleRelease` and `assembleMinifiedTest`
+  plus `check_r8_guide.py` (5 models and serializers kept, bundle byte-identical), the 21 rule-card tool tests: green.
+  Pixel 9: `run_guide_minified_smoke.sh` passed; a visual check of search on the Pixel showed the field focused with the search
+  key, "Rule 177" giving 54 results.
+- iOS timing (debug simulator): index 22 ms; 38 realistic queries (nine whole queries plus two phrases typed letter by
+  letter, a search per keystroke) 112 ms, about 3 ms each; budgets 1.5 s each. A first version replayed all 700 correctness
+  searches inside the timed block and took 2.5 s; that is a workload for correctness, so it now runs untimed on iOS, while
+  the timed test uses the realistic set.
+- Baselines. Tests: shared JVM 833 / 833 (1 skipped as before), composeApp JVM 658 / 635, iOS shared 786, iOS composeApp 445 (all grew from E3). Release has no Guide
+  class in its mapping; method ids 55,273 (E3) -> 55,295 (library classes such as `KeyboardActions` and `LiveRegionMode`, which
+  R8 keeps while the `GUIDE_PREVIEW` constant is not folded; the same effect E2 and E3 recorded); release APK 69,539,777
+  bytes. Cold start not re-measured: E4 adds nothing at launch (the search objects are created when the Guide first opens).
+- Not done by design: highlighting the matched words, recent searches (the query is memory only by owner decision), fuzzy
+  or typo matching, searching cite text.
+
 ## E5 Trust chips, Premium gating and staleness nudge
 **Goal:** the four chips wherever a card appears, and the Guide behind the existing Premium entitlement.
 **Files:** `GuideTrustChips.kt`, `FeatureGate.CLAIM_GUIDE` (the `hasAccess` logic is untouched),
@@ -326,5 +362,8 @@ Each item names the phase that closes it. A phase may not exit while an item ass
 | 5 | E1 | Report the load error code. **Closed in E2:** `GuideViewModel` records a non-fatal with only `error_guide_load=<code>` (`FakeCrashReporter` test). | E2 |
 | 6 | E1 | E0 (`docs/guide-phase-plan`) is not merged to `main`; E1 branched from E0 and E2 from E1. Merge in order E0, E1, E2. | Before the E1 PR |
 | 7 | E2 | With five tabs, the existing "Dashboard" label wraps to two lines at 320dp (fine at 360dp and up). Owner decision before launch: accept, or shorten the label. | E9 |
-| 8 | E2 | Placeholder routes: `GuidePlaceholderScreen.kt`, `GuideStrings.comingNext` and `searchTitle`, and the smoke's last step (it expects the placeholder). **Partly closed in E3:** the case and card routes are real screens and the smoke opens a card. Still open: the Search route, the file and both strings. | E4 |
+| 8 | E2 | Placeholder routes: `GuidePlaceholderScreen.kt`, `GuideStrings.comingNext` and `searchTitle`, and the smoke's last step. **Closed in E4:** the file and `comingNext` are deleted, `searchTitle` is the real screen's title, and the smoke searches and opens a card from the results. | E4 |
 | 9 | E3 | The two E3 device checks. **Closed 2026-10-07 on the Pixel 9** (debug-signed Play-installer `minifiedTest` build, dark theme): `run_guide_minified_smoke.sh` passed (tab, area, case, card, "Key points"); walk-through: Home, area (case rules and counts), feed with chips and counts (All 16, Who qualifies 3...), chip filter, all six "also relevant here" rows naming their real home, card with breadcrumb to the feed it was opened from, Watch out in amber, cite in monospace, Details expand (food-charge card shows no placeholder), back and a tab switch keep the scroll place, breadcrumb up. | E3 |
+| 10 | E4 | Search reads every card field (title, answer, bullets, details) for everyone. The free preview must show locked users titles and rule numbers only, and the locked state must hold no bullets or details: the index needs an access scope, and the result row must not leak a hidden field. Plan E5 already lists the test. | E5 |
+| 11 | E4 | The search field on iOS (auto-focus on a fresh search, the Search key, keyboard over the results, back from a card) is covered only by the Native timing and correctness tests; iOS UI cannot be driven from here. Check it in the E9 iOS simulator walkthrough. | E9 |
+| 12 | E4 | Cold start and APK size were not re-measured on the device against E3 (like E3: nothing is added at launch). Re-measure at E9 against the E2 figures (190 ms, 188 ms `minifiedTest`) and the Play 1.3.0 baseline. | E9 |

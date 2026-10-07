@@ -61,7 +61,7 @@ class GuideSmallScreenTest {
     @Test
     fun everyRealAreaTitleFitsOnASmallPhone() {
         val areas = bundle.toReady().areas
-        composeRule.setContent { GuideHomeScreen(areas, onOpenArea = {}) }
+        composeRule.setContent { GuideHomeScreen(areas, onOpenArea = {}, onOpenSearch = {}) }
 
         areas.forEach { tile ->
             composeRule.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(tile.title))
