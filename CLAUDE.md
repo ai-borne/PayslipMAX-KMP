@@ -85,6 +85,15 @@ At the end of every phase, before moving to the next, pause and provide a Phase 
 
 Only after resolving all debt and verifying tests will the next phase begin.
 
+### Writing a phase plan (cover these in the first draft, not in follow-ups)
+
+1. Read every existing file the plan will touch, plus its nearest existing pattern (e.g. `AppNavState`/`NavBridge`, Koin modules, `OnboardingStorage`, `shared-test-fixtures`).
+2. Check release-build (R8, resource shrinking) and iOS-only risks (Kotlin/Native perf, native iOS navigation).
+3. Plan regression controls: dark-launch flag, characterization tests before editing existing files, baselines.
+4. Plan navigation and state: arguments, back on both platforms, tab re-tap, lock screen, what survives process death.
+5. Plan versioning, DI, test fixtures and storage (schema version, one config per concern, fakes in `shared-test-fixtures`).
+6. Ask all open owner decisions in one batch.
+
 ## Working style rules
 
 - **Think before coding.** State assumptions explicitly; ask rather than guess when uncertain. Present multiple interpretations when a request is genuinely ambiguous. Push back if a simpler approach exists. Stop and name what's unclear rather than working around confusion.
