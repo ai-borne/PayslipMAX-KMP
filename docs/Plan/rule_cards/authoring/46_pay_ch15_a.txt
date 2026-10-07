@@ -8,7 +8,7 @@ C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
 D: Rates from each date: 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%; 01-01-2025 55%; 01-07-2025 58%; 01-01-2026 60%. Rates of 2020 to mid-2021 were frozen.
 O: 53%, 55% and 58% confirmed from MoD DMA letters (1(6)/2021-D(Pay/Services)-Pt-I; 58% letter dt 09-10-2025, MoF OM 06-10-2025). 60% from 01-01-2026 is from MoF DoE OM dt 22-04-2026 (read via a government circular); the MoD letter for 60% was not seen. Next revision (01-07-2026) not yet issued.
 
-=== topic=RP-054 from=RP-054 chips=GUIDANCE
+=== topic=RP-054 from=RP-054
 T: What happened to Kit Maintenance Allowance?
 A: It was merged into a single Dress Allowance from 01-07-2017.
 K: Do not claim Kit Maintenance Allowance separately

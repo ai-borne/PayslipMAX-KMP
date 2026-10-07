@@ -1,4 +1,4 @@
-# Domain-owner review queue (generated 2026-10-04)
+# Domain-owner review queue (generated 2026-10-07)
 
 Cards with an open point. CONFLICT marks a disagreement between sources. Not shown to app users.
 
@@ -146,9 +146,4 @@ Cards with an open point. CONFLICT marks a disagreement between sources. Not sho
 - RB-SS-P122: My medical claim was admitted for less than I claimed
 - RB-SS-P124: Dependents for medical claims
 - RB-SS-P001: Documents needed for a personal number change or extension of service
-- RB-RP-032: Where are penal deductions explained?
-- RB-RP-037: What happened to Qualification Grant after the 7th CPC?
-- RB-RP-048: Is there an official hospitality grant now?
-- RB-RP-054: What happened to Kit Maintenance Allowance?
-- RB-RP-075: Is there any compensation for a change of uniform?
 - RB-RP-084: Claims you must not send to PCDA(O)

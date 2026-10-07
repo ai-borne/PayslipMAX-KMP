@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.di
 
 import com.payslipmax.pdfparser.database.PayslipDao
+import com.payslipmax.pdfparser.guide.GuideRepository
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.parser.PdfParser
 import com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository
@@ -83,6 +84,14 @@ class AppKoinModulesTest {
         // App, Dashboard and Pay Audit each ask for the manager; a per-call instance would let one screen
         // dismiss a sheet that another still shows.
         assertSame(koin.get<OnboardingManager>(), koin.get<OnboardingManager>())
+    }
+
+    @Test
+    fun guideRepositoryIsOneInstanceSoTheBundleIsParsedOncePerProcess() {
+        val koin = start()
+
+        // Every Guide screen asks for it; a per-call instance would re-read and re-parse 250 KB each time.
+        assertSame(koin.get<GuideRepository>(), koin.get<GuideRepository>())
     }
 
     @Test

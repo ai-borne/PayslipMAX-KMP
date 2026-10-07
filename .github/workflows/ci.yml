@@ -140,8 +140,15 @@ jobs:
       - name: Run Lint, Code Style & Tests (Android + Common)
         run: ./gradlew check -x iosX64Test -x iosSimulatorArm64Test
 
+      - name: Test the Claim Guide Data Tools (compile rules, nav, stale-bundle guard)
+        run: python3 -m unittest discover -s docs/Plan/rule_cards/tools -p 'test_*.py'
+
       - name: Verify R8 Release Minification & Rules
-        run: ./gradlew :composeApp:minifyReleaseWithR8 -PallowPlaceholderGemmaModel=true
+        # assembleRelease (not just minifyReleaseWithR8): the Guide bundle is an asset, which only lands in the APK.
+        run: ./gradlew :composeApp:assembleRelease -PallowPlaceholderGemmaModel=true
+
+      - name: Verify the Claim Guide Survives R8 (models, serializers, bundle bytes)
+        run: python3 scripts/check_r8_guide.py
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4

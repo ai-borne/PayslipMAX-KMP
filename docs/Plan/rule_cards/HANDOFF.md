@@ -15,7 +15,7 @@ A paid in-app **Claim Guide**: a phone-friendly rulebook for PCDA(O) Army office
 ## Current numbers (from `python3 docs/Plan/rule_cards/tools/compile.py`)
 - **402 cards**: **220 travel** and **182 pay** (nine travel cards dropped by the owner in phase G1).
 - Source entries covered: all 474 (1 skipped with a reason, 0 uncovered). Pay topics with a card: **94 of 95** (RP-073 Territorial Army Allowance lost its card to an owner DROP).
-- Cards carrying an `O:` open point: 36 (2 flagged CONFLICT); guidance-only (no cite): 36.
+- Cards carrying an `O:` open point: 36 (2 flagged CONFLICT); guidance-only (no cite): 31. GUIDANCE now means exactly "no cite"; `compile.py` enforces it (owner, 2026-10-07).
 - Every authoring batch passes the compiler (limits, ids, topics) and the 8-gram copy guard (`copycheck.py` prints CLEAN).
 - `13_review_queue.md` lists every open point for the domain owner. Regenerate it after edits.
 
@@ -76,7 +76,7 @@ Owner decisions applied (see `15_confirmed_rulesets.md`, evidence level per row)
 
 ## TO DO (in order)
 1. **Domain-owner review** of `13_review_queue.md` and the rate cards (18 `RATES` chips); resolve or keep each flag; update DA and the 50%-DA escalation. Then rerun compile, `render_md.py`, copycheck.
-2. **Phase E, the feature.** Phase plan written in `16_guide_phase_plan.md` (E0, 2026-10-07), awaiting owner approval; start with E1 only after that. Original scope: bundle `rulebook.json` (strip `from` and `open`), a generic loader, the 3-level UI (home tiles + search, topic list, answer card) as a fifth tab "Guide" in `AppBottomBar`, copy and colours in `AppStrings.kt` and `Theme.kt`, personalisation from the Pay Audit profile (`personal=` fields), "as of" chips, copy-cite and share-as-claim-note buttons, search (words and rule numbers), pinned cards, tests, and the project rules in CLAUDE.md.
+2. **Phase E, the feature.** Phase plan in `16_guide_phase_plan.md`. E0 (plan) and **E1 (bundle, models, loader, R8 gate) done 2026-10-07**; next is E2. After any dataset edit, also run `tools/bundle.py`: it writes the app bundle, and CI fails on a stale one. Original scope: bundle `rulebook.json` (strip `from` and `open`), a generic loader, the 3-level UI (home tiles + search, topic list, answer card) as a fifth tab "Guide" in `AppBottomBar`, copy and colours in `AppStrings.kt` and `Theme.kt`, personalisation from the Pay Audit profile (`personal=` fields), "as of" chips, copy-cite and share-as-claim-note buttons, search (words and rule numbers), pinned cards, tests, and the project rules in CLAUDE.md.
 3. Commit the dataset and tooling (ask the user first; the pre-commit hook runs gitleaks, ktlint and tests).
 
 ## Pitfalls learned

@@ -1,6 +1,7 @@
 # Claim Guide, Phase E plan (E1 to E9)
 
-Status: **proposed 2026-10-07, awaiting owner approval.** Phase E0 (this plan) is docs only; no app code.
+Status: E0 (this plan) done 2026-10-07. **E1 done 2026-10-07** (branch `feature/guide-e1-bundle`); E2 next.
+Items left open by a finished phase are listed under "EP Pending items" at the end, never dropped.
 Inputs: Gold dataset (402 cards: 220 travel, 182 pay), `nav.json` (9 areas, 44 cases), `facets.json`,
 the approved clickable preview, and `CLAUDE.md`. One branch per phase off `main`
 (`feature/guide-eN-<name>`), one PR per phase.
@@ -34,6 +35,9 @@ the approved clickable preview, and `CLAUDE.md`. One branch per phase off `main`
 | Search query | Kept in memory only, so it is gone after the app is killed. (10-07) |
 | Nav and facet labels | Taken from the bundle. `GuideStrings.kt` holds app chrome only. (10-07) |
 | Pins | Device only, not in backup (format stays v3). (10-07) |
+| Rates as of | `2026-01` (the DA 60% step) in `tools/config.py` `RATES_AS_OF`. (10-07) |
+| No official source | Exactly the cards with an empty cite (31). `compile.py` fails a GUIDANCE card that has a cite; GUIDANCE was removed from the 5 cited cards (RP-032, 037, 048, 054, 075). (10-07) |
+| CI emulator job | No. The `minifiedTest` smoke runs on the Pixel at phase exits and in pre-push when a device is attached. (10-07) |
 | Free vs paid | Premium with a free preview (tiles, titles, one-line answer, title search free; detail, cite, personalisation, pins, share, Pay Audit link Premium). Paywall on only after open points on main rate cards are cleared. (10-07) |
 
 Standing rules: own words only. CITE shows a primary authority only. Conflicts: TR 2014 beats the FAQ, and a
@@ -112,7 +116,7 @@ its own stack.
   with an Unknown fallback the UI ignores. Area, case and facet ids stay strings, never Kotlin enums, so new
   areas or chapters are data-only changes.
 - **Trust chips, one source each:** Rates as of = `RATES` chip + `rates_as_of`; Unverified point =
-  `unverified`; No official source = one rule fixed in E1; Amended = `AMENDED` chip.
+  `unverified`; No official source = empty `cite` (`GuideCard.hasNoOfficialSource`, fixed in E1); Amended = `AMENDED` chip.
 - **Facet chips** show only when a case has more than 7 cards and more than one facet (a pure function).
 - **Opening a card:** one entry point, `GuideViewModel.openCard(cardId)`, used by Pay Audit now and by other screens later.
 - **DI:** a separate `guideModule` (Koin DSL); `AppModule.kt` only includes it.
@@ -142,6 +146,25 @@ guard; repository loads once, lazily; `check_r8_guide.py` against sample mapping
 **Exit:** all gates green, including both R8 checks; baselines recorded in the PR.
 **Tech-debt checkpoint:** the GUIDANCE chip (36 cards) and empty `cite` (31 cards) are reconciled with the owner into one rule.
 **Security:** the bundle is read-only app data; the parser rejects malformed or oversized input.
+
+**E1 result (2026-10-07).** Done as planned, with these recorded choices:
+- Bundle location: compose resource `composeApp/src/commonMain/composeResources/files/guide/guide_bundle.json`
+  (251,569 bytes). The spike passed on both platforms (Robolectric reads it through Android assets; the iOS
+  simulator reads it through `Res.readBytes` and parses and validates it in about 0.3 s against a 1.5 s budget),
+  so the shared expect/actual fallback was not needed.
+- `GuideModule.kt` sits in `composeApp/.../di/` beside `AppModule.kt`, because the bundle reader (`Res`) is generated
+  there; the repository, parser and validator are in `shared`.
+- The parser reads `version` before the typed decode and rejects card-level `from`/`open` on the raw JSON, so a
+  newer major or a leaked reviewer field is an error state, never a silent ignore. Error codes: `READ_FAILED`,
+  `TOO_LARGE`, `MALFORMED`, `UNSUPPORTED_VERSION`, `INVALID`.
+- `bundle.py` ships a whitelist of card fields, so a new internal field never ships by default.
+- R8 Check 1 runs after `assembleRelease`, not `minifyReleaseWithR8`: the bundle is an asset and only lands in the
+  APK. CI and pre-push both run it, together with the rule-card tool tests (stale-bundle guard).
+- Without the keep rule R8 removes every guide model, because no release code calls the repository until E2.
+- Baselines (base commit `454021dd`, release APK unsigned, placeholder Gemma): tests shared JVM 770 (debug) / 770
+  (release, 1 skipped as before), composeApp JVM 571 / 552, iOS shared 723, iOS composeApp 391; corpus suite green;
+  APK 69,443,385 bytes, 55,254 dex method ids. After E1: APK content +70,166 bytes compressed (bundle 63,361,
+  dex 6,963), +100 method ids (the serializers the E1 keep rule pins; see EP).
 
 ## E2 Guide tab shell, Home and Area tiles (flag on in debug only)
 **Goal:** a fifth "Guide" tab with 9 area tiles; an area shows case tiles with counts and a rule-number subtitle.
@@ -229,6 +252,17 @@ simulator walkthrough; baseline comparison; then turn on `GUIDE_ENABLED` for rel
 **Exit:** full pre-push gate green; HANDOFF.md, docs and memory updated.
 **Tech-debt checkpoint:** a known-gaps register (RP-073, unverified cards, the DA 60% flag).
 
-## Open items carried into E1
-Bundle location (E1 spike); the `rates_as_of` month (owner); the GUIDANCE vs empty-cite rule (owner); a CI
-emulator job, yes or no (owner).
+## Open items carried into E1 (all closed 2026-10-07)
+Bundle location: compose resources (E1 spike). `rates_as_of`: `2026-01`. GUIDANCE vs empty cite: one rule, empty cite.
+CI emulator job: no. See the owner decisions table.
+
+## EP Pending items (consolidated from finished phases; fail loudly, never dropped)
+Each item names the phase that closes it. A phase may not exit while an item assigned to it is still open.
+| # | From | Item | Closed in |
+|---|---|---|---|
+| 1 | E1 | Pixel cold-start baseline not recorded: no device was attached on 2026-10-07. E1 adds nothing to the launch path (the repository is a lazy Koin single), so record it on the E1 build at E2 start. | E2 start |
+| 2 | E1 | The E1 exit asked for "both R8 checks", but Check 2 (`minifiedTest` build type and smoke test) is listed in E2's files and needs the Pixel. Only Check 1 and the iOS resource test ran in E1. | E2 |
+| 3 | E1 | The guide keep rule pins the 5 serializers while nothing calls them (+100 method ids, about 7 KB dex). An `r8-analyzer` audit found the `Companion.serializer()` part redundant with kotlinx-serialization's bundled rules once the models are reachable. When E2's UI calls the repository: remove that part, narrow the `$$serializer` part (add `allowoptimization`), and prove both with `check_r8_guide.py`. | E2 |
+| 4 | E1 | `FakeGuideRepository` has no consumer yet; its first use is the E2 `GuideViewModel` tests. | E2 |
+| 5 | E1 | Report the load error code (only `GuideLoadError`, nothing else) through `TelemetrySanitizer` when the E2 error state shows. | E2 |
+| 6 | E1 | E0 (`docs/guide-phase-plan`) is not merged to `main`, so E1 branched from E0, not from `main`. Merge E0 first, then E1. | Before the E1 PR |

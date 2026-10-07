@@ -7,7 +7,7 @@ K: Base rates from 01-07-2017; rise 25% per 50% DA
 C: CGDA letter PC-II/1098/AT-P dt 28-12-1977; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018
 D: A Part II order with the prescribed certificates is published every year.
 
-=== topic=RP-037 from=RP-037 chips=GUIDANCE
+=== topic=RP-037 from=RP-037
 T: What happened to Qualification Grant after the 7th CPC?
 A: It was abolished as a separate allowance from 01-07-2017. A Higher Qualification Incentive was proposed.
 K: MoD orders on the incentive were still awaited in 2023
@@ -42,7 +42,7 @@ K: On return to parent unit Para pay resumes
 C: MoD letter B/36389/AG/PS3(b)/82/S/D(Pay/Services) dt 29-01-1980 as amended; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017
 D: Applies to ten Para (SF) units: numbers one to four, nine to thirteen, and twenty-one.
 
-=== topic=RP-048 from=RP-048 chips=GUIDANCE
+=== topic=RP-048 from=RP-048
 T: Is there an official hospitality grant now?
 A: No. It was abolished from 30-06-2017; hospitality is office expenditure outside PCDA(O).
 K: Nothing to claim from PCDA(O)

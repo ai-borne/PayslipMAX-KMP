@@ -43,7 +43,7 @@ K: Withheld pay cannot clear debts during withholding
 C: Army Act sections 90, 91 and 93; Para 5, AO 17/01; Para 349, Regulations for the Army 1987
 D: If all pay is withheld and mess bills cannot be met, they are claimed from PCDA(O) under Para 1289 of the Regulations and Rules 538-539 of the Pay and Allowances Regulations.
 
-=== topic=RP-032 from=RP-032 chips=GUIDANCE
+=== topic=RP-032 from=RP-032
 T: Where are penal deductions explained?
 A: Penal deductions under sections 90 and 91 of the Army Act are detailed in AO 7/03.
 K: Read AO 7/03 before disputing a deduction

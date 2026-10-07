@@ -95,6 +95,9 @@ def validate(card, topics, ssot_ids, errors, warns):
     if not card['key']: errors.append(f'{w}: needs at least one K:')
     if not card['C'] and 'GUIDANCE' not in chips:
         errors.append(f'{w}: no C: cite (add chips=GUIDANCE if there is genuinely no authority)')
+    if card['C'] and 'GUIDANCE' in chips:
+        # owner decision 2026-10-07: guidance means "no cite", so the app's "No official source" chip has one source
+        errors.append(f'{w}: GUIDANCE card has a cite; drop the chip or the cite')
     if card['C'] and not CITE_OK.search(card['C']):
         warns.append(f'{w}: cite does not look like an authority: {card["C"][:50]}')
     if wc(card['T']) > LIMITS['title']: errors.append(f'{w}: title {wc(card["T"])} words > {LIMITS["title"]}')

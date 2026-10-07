@@ -1,6 +1,6 @@
 # PayslipMax rulebook: reference (generated)
 
-Generated from [rulebook.json](rulebook.json) on 2026-10-04. **Do not edit by hand.** 402 cards (220 travel, 182 pay). Source entries covered: 533 of 474 (skipped with a reason: 17; uncovered: 0).
+Generated from [rulebook.json](rulebook.json) on 2026-10-07. **Do not edit by hand.** 402 cards (220 travel, 182 pay). Source entries covered: 533 of 474 (skipped with a reason: 17; uncovered: 0).
 
 Each card: one-line answer in bold, short bullets, the authority to cite, optional collapsed details. "Open point" lines are for reviewers and are never shown to users. Card text is written in our own words.
 
@@ -3026,7 +3026,7 @@ Cite: Army Act sections 90, 91 and 93; Para 5, AO 17/01; Para 349, Regulations f
 
 ##### Penal Deductions (1)
 
-#### RB-RP-032 Where are penal deductions explained?  `GUIDANCE`
+#### RB-RP-032 Where are penal deductions explained?
 
 **Penal deductions under sections 90 and 91 of the Army Act are detailed in AO 7/03.**
 
@@ -3236,7 +3236,7 @@ Cite: CGDA letter PC-II/1098/AT-P dt 28-12-1977; MoD letter 1(16)/2017/D(Pay/Ser
 
 ##### Qualification Grant (1)
 
-#### RB-RP-037 What happened to Qualification Grant after the 7th CPC?  `GUIDANCE`
+#### RB-RP-037 What happened to Qualification Grant after the 7th CPC?
 
 **It was abolished as a separate allowance from 01-07-2017. A Higher Qualification Incentive was proposed.**
 
@@ -3462,7 +3462,7 @@ Cite: MoD letter B/36389/AG/PS3(b)/82/S/D(Pay/Services) dt 29-01-1980 as amended
 
 ##### Official Hospitality Grant (1)
 
-#### RB-RP-048 Is there an official hospitality grant now?  `GUIDANCE`
+#### RB-RP-048 Is there an official hospitality grant now?
 
 **No. It was abolished from 30-06-2017; hospitality is office expenditure outside PCDA(O).**
 
@@ -3583,7 +3583,7 @@ Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
 
 ##### Kit Maintenance Allowance (1)
 
-#### RB-RP-054 What happened to Kit Maintenance Allowance?  `GUIDANCE`
+#### RB-RP-054 What happened to Kit Maintenance Allowance?
 
 **It was merged into a single Dress Allowance from 01-07-2017.**
 
@@ -3916,7 +3916,7 @@ Cite: MoD letter PC-1(16)/2017/D(Pay/Services) dt 16-11-2017
 
 ##### Compensation for change of Uniform on (1)
 
-#### RB-RP-075 Is there any compensation for a change of uniform?  `GUIDANCE`
+#### RB-RP-075 Is there any compensation for a change of uniform?
 
 **No. Dress Allowance replaced all uniform allowances, and the order has no reimbursement for a change of regiment or corps.**
 

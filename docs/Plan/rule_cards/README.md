@@ -6,6 +6,7 @@ Everything for this project lives in this folder, except the extracted source te
 |---|---|
 | `authoring/*.txt` | Card text: the source of truth. Edit these only. |
 | `rulebook.json`, `RULEBOOK.md` | Generated. Never hand-edit. |
+| `composeApp/src/commonMain/composeResources/files/guide/guide_bundle.json` | The app bundle, generated from `rulebook.json` by `tools/bundle.py`. Never hand-edit. |
 | `nav.json` | Tile navigation (areas > cases) for the Guide UI. Authored; `compile.py` validates it and writes it into `rulebook.json`. |
 | `ssot.json`, `register.json` | The 474 source entries, topics, coverage targets. |
 | `tools/` | All scripts (below). Run from anywhere; paths resolve from the script. |
@@ -20,8 +21,9 @@ Everything for this project lives in this folder, except the extracted source te
 python3 docs/Plan/rule_cards/tools/compile.py --check     # validate (add --uncovered to list gaps)
 python3 docs/Plan/rule_cards/tools/compile.py             # write rulebook.json
 python3 docs/Plan/rule_cards/tools/render_md.py           # write RULEBOOK.md
+python3 docs/Plan/rule_cards/tools/bundle.py              # write the app bundle (--check: is it stale?)
 python3 docs/Plan/rule_cards/tools/copycheck.py           # own-words guard; must print CLEAN
-python3 docs/Plan/rule_cards/tools/test_nav.py            # nav checker tests
+python3 -m unittest discover -s docs/Plan/rule_cards/tools -p 'test_*.py'   # all tool tests (CI runs these)
 python3 docs/Plan/rule_cards/tools/review_queue.py        # regenerate 13_review_queue.md
 python3 docs/Plan/rule_cards/tools/todo_pay.py            # uncovered pay entries by topic
 python3 docs/Plan/rule_cards/tools/packet.py SS-P001,SS-P002   # source text behind entries

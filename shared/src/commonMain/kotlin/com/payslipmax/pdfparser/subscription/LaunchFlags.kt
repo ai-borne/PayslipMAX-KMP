@@ -19,4 +19,8 @@ object LaunchFlags {
     // clears and a real-money purchase succeeds; then flip to false (docs/Launch/07, section 4). versionCodes
     // 16 and 17 were the paywall builds (internal testing only).
     const val FREE_LAUNCH_MODE_ANDROID: Boolean = true
+
+    // Claim Guide dark launch (docs/Plan/rule_cards/16_guide_phase_plan.md). Every Guide entry point reads it;
+    // false keeps release builds exactly as before the Guide. Flipped true only in phase E9, in its own commit.
+    const val GUIDE_ENABLED: Boolean = false
 }

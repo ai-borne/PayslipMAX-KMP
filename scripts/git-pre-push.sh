@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # Exhaustive safety net, run once per push (not per commit): full Android+common matrix (both
-# build variants, full corpus regression, lint, ktlint, checkFileSizes), the full iOS unit test
+# build variants, full corpus regression, lint, ktlint, checkFileSizes), the Claim Guide data tools
+# and R8 gate (release APK + scripts/check_r8_guide.py), the full iOS unit test
 # suite (incl. ParserUtilsIosPerfTest's Native timing assertions), the native Swift XCTest suite
 # (iosApp/PayslipMaxTests — nav bridge, byte marshaling, auth retry, Gemma engine cache; see
 # docs/Plan/07_iOS_Native_Test_Coverage_Gap.md), a Room schema immutability check, and a gitleaks
@@ -17,7 +18,7 @@ start_time=$(date +%s)
 echo "🚦 Running exhaustive pre-push checks..."
 
 echo ""
-echo "1/5 🤖 Full Android + common gate (./gradlew check -x iosX64Test -x iosSimulatorArm64Test)..."
+echo "1/7 🤖 Full Android + common gate (./gradlew check -x iosX64Test -x iosSimulatorArm64Test)..."
 stage_start=$(date +%s)
 ./gradlew check -x iosX64Test -x iosSimulatorArm64Test -q 2>&1
 if [ $? -ne 0 ]; then
@@ -27,7 +28,27 @@ fi
 echo "   ✅ done in $(($(date +%s) - stage_start))s"
 
 echo ""
-echo "2/5 🍎 Full iOS unit test suite (./gradlew iosX64Test iosSimulatorArm64Test)..."
+echo "2/7 📚 Claim Guide data tools (compile rules, nav, stale-bundle guard)..."
+stage_start=$(date +%s)
+python3 -m unittest discover -s docs/Plan/rule_cards/tools -p 'test_*.py' 2>&1
+if [ $? -ne 0 ]; then
+    echo "❌ Push rejected: rule-card tool tests failed (rerun tools/bundle.py if rulebook.json changed)."
+    exit 1
+fi
+echo "   ✅ done in $(($(date +%s) - stage_start))s"
+
+echo ""
+echo "3/7 🧩 Release build + Claim Guide R8 gate (assembleRelease, scripts/check_r8_guide.py)..."
+stage_start=$(date +%s)
+./gradlew :composeApp:assembleRelease -PallowPlaceholderGemmaModel=true -q 2>&1 && python3 scripts/check_r8_guide.py
+if [ $? -ne 0 ]; then
+    echo "❌ Push rejected: release build failed, or R8 removed a Guide model or changed the bundle."
+    exit 1
+fi
+echo "   ✅ done in $(($(date +%s) - stage_start))s"
+
+echo ""
+echo "4/7 🍎 Full iOS unit test suite (./gradlew iosX64Test iosSimulatorArm64Test)..."
 stage_start=$(date +%s)
 ./gradlew iosX64Test iosSimulatorArm64Test -q 2>&1
 if [ $? -ne 0 ]; then
@@ -37,7 +58,7 @@ fi
 echo "   ✅ done in $(($(date +%s) - stage_start))s"
 
 echo ""
-echo "3/5 📱 Native iOS XCTest suite (PayslipMaxTests)..."
+echo "5/7 📱 Native iOS XCTest suite (PayslipMaxTests)..."
 stage_start=$(date +%s)
 SIM_ID=$(xcrun simctl list devices available | grep -m1 -E '^ *iPhone .*\(' | grep -oE '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}')
 if [ -z "$SIM_ID" ]; then
@@ -52,7 +73,7 @@ fi
 echo "   ✅ done in $(($(date +%s) - stage_start))s"
 
 echo ""
-echo "4/5 🔐 Checking Room schema immutability..."
+echo "6/7 🔐 Checking Room schema immutability..."
 stage_start=$(date +%s)
 python3 scripts/check_schema_immutability.py
 if [ $? -ne 0 ]; then
@@ -62,7 +83,7 @@ fi
 echo "   ✅ done in $(($(date +%s) - stage_start))s"
 
 echo ""
-echo "5/5 🔒 Scanning pushed commit range for secrets (gitleaks)..."
+echo "7/7 🔒 Scanning pushed commit range for secrets (gitleaks)..."
 stage_start=$(date +%s)
 if command -v gitleaks >/dev/null 2>&1; then
     while read -r local_ref local_sha remote_ref remote_sha; do
