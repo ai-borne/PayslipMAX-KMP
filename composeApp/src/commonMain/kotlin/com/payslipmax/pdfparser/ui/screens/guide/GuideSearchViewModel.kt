@@ -1,6 +1,8 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
+import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
+import com.payslipmax.pdfparser.guide.domain.GuideTrust
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,8 +16,8 @@ import kotlinx.coroutines.flow.stateIn
 /** The longest query kept; anything typed or pasted past this is cut, so input to the scan is always bounded. */
 internal const val MAX_SEARCH_QUERY_LENGTH = 100
 
-/** A search result: the card's title and one-line answer, and the title of the case it is homed in. */
-data class GuideSearchRow(val cardId: String, val title: String, val answer: String, val caseTitle: String)
+/** A search result: the card's title and one-line answer, its trust chips, and the title of the case it is homed in. */
+data class GuideSearchRow(val cardId: String, val title: String, val answer: String, val caseTitle: String, val trust: GuideTrust)
 
 /** What the search screen shows below the field. */
 sealed interface GuideSearchState {
@@ -44,9 +46,17 @@ class GuideSearchViewModel(
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query
 
+    // Locked until the screen says otherwise, so a missing call can only ever search less, never leak a paid field.
+    private val _unlocked = MutableStateFlow(false)
+
     val state: StateFlow<GuideSearchState> =
-        combine(_query, guide.uiState) { query, ui -> search(query, ui) }
+        combine(_query, guide.uiState, _unlocked) { query, ui, unlocked -> search(query, ui, unlocked) }
             .stateIn(scope, SharingStarted.Eagerly, GuideSearchState.Idle)
+
+    /** Free users search titles and rule numbers only; Premium searches every field (see [GuideSearchScope]). */
+    fun setUnlocked(unlocked: Boolean) {
+        _unlocked.value = unlocked
+    }
 
     fun onQueryChange(text: String) {
         _query.value = text.take(MAX_SEARCH_QUERY_LENGTH)
@@ -60,14 +70,21 @@ class GuideSearchViewModel(
     private fun search(
         query: String,
         ui: GuideUiState,
+        unlocked: Boolean,
     ): GuideSearchState =
         when {
             ui !is GuideUiState.Ready || query.isBlank() -> GuideSearchState.Idle
             !GuideSearchIndex.isSearchable(query) -> GuideSearchState.TooShort
             else ->
                 GuideSearchState.Results(
-                    ui.searchIndex.search(query).map { hit ->
-                        GuideSearchRow(hit.card.id, hit.card.title, hit.card.answer, ui.index.case(hit.card.nav)?.title.orEmpty())
+                    ui.searchIndex.search(query, if (unlocked) GuideSearchScope.FULL else GuideSearchScope.PREVIEW).map { hit ->
+                        GuideSearchRow(
+                            hit.card.id,
+                            hit.card.title,
+                            hit.card.answer,
+                            ui.index.case(hit.card.nav)?.title.orEmpty(),
+                            GuideTrust.of(hit.card, ui.bundle.ratesAsOf),
+                        )
                     },
                 )
         }

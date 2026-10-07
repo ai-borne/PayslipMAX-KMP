@@ -16,13 +16,16 @@ import com.payslipmax.pdfparser.ui.theme.AppDimensions
 private val AnswerShape = RoundedCornerShape(AppDimensions.CornerRadius)
 
 /**
- * The top of a card under its title: the facet, then the one-line answer, set apart so it reads first (the
- * approved preview: "answer, then proof"). Trust chips (E5) and the "your figure" line (E6) join it here.
+ * The top of a card under its title: the facet and trust chips, the notices for an unverified point or old rates, then
+ * the one-line answer, set apart so it reads first (the approved preview: "answer, then proof"). Everything here is
+ * free; the "your figure" line (E6) joins it later. The paid half is drawn by [guideCardSections].
  */
 @Composable
 internal fun GuideCardHeader(card: GuideCardContent) {
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
         GuideLabelPill(card.facetLabel)
+        GuideTrustChips(card.trust)
+        GuideTrustNotices(card.trust, card.ratesStale)
         Text(
             card.answer,
             style = MaterialTheme.typography.bodyLarge,

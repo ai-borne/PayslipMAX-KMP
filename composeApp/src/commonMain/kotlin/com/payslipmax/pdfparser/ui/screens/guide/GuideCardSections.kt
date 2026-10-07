@@ -41,14 +41,23 @@ import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 /**
  * A card's body in the template order: Key points, Attach, Watch out, Authority, then Details collapsed. An empty
- * section is left out. Placeholder bullets are already split off into [GuideCardContent.body], so none is drawn raw.
+ * section is left out. Placeholder bullets are already split off into [GuideCardFull.body], so none is drawn raw. A
+ * card with no [GuideCardContent.full] (the free preview) gets the unlock panel in place of the body.
  */
-internal fun LazyListScope.guideCardSections(card: GuideCardContent) {
-    bulletSection("key", GuideStrings.sectionKeyPoints, card.body.key)
-    bulletSection("attach", GuideStrings.sectionAttach, card.body.attach)
-    bulletSection("watch", GuideStrings.sectionWatchOut, card.body.watch, isWarning = true)
-    if (card.cite.isNotBlank()) item(key = "cite") { GuideCite(card.cite) }
-    if (card.details.isNotBlank()) item(key = "details") { GuideDetails(card.id, card.details) }
+internal fun LazyListScope.guideCardSections(
+    card: GuideCardContent,
+    onUnlock: () -> Unit,
+) {
+    val full = card.full
+    if (full == null) {
+        item(key = "locked") { GuideLockedPanel(onUnlock) }
+        return
+    }
+    bulletSection("key", GuideStrings.sectionKeyPoints, full.body.key)
+    bulletSection("attach", GuideStrings.sectionAttach, full.body.attach)
+    bulletSection("watch", GuideStrings.sectionWatchOut, full.body.watch, isWarning = true)
+    if (full.cite.isNotBlank()) item(key = "cite") { GuideCite(full.cite) }
+    if (full.details.isNotBlank()) item(key = "details") { GuideDetails(card.id, full.details) }
 }
 
 private fun LazyListScope.bulletSection(

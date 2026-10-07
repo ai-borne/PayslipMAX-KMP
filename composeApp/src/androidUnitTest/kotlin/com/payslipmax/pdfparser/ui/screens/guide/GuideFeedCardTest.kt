@@ -44,7 +44,7 @@ class GuideFeedCardTest {
     private val searchViewModel = GuideSearchViewModel(viewModel, dispatcher)
 
     private fun show(navState: GuideNavState = GuideNavState()): GuideNavState {
-        composeRule.setContent { GuideTab(navState = navState, viewModel = viewModel, searchViewModel = searchViewModel) }
+        composeRule.setContent { GuideTab(navState = navState, access = UnlockedGuideAccess, viewModel = viewModel, searchViewModel = searchViewModel) }
         settle()
         return navState
     }

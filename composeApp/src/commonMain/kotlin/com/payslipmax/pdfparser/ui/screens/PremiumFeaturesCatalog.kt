@@ -2,7 +2,10 @@ package com.payslipmax.pdfparser.ui.screens
 
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.subscription.FeatureGate
+import com.payslipmax.pdfparser.subscription.LaunchFlags
+import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
+import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 
 /**
@@ -108,10 +111,30 @@ fun featureMeta(gate: FeatureGate): PremiumFeatureMeta =
                 target = null,
                 availability = PremiumFeatureAvailability.AVAILABLE,
             )
+        FeatureGate.CLAIM_GUIDE ->
+            PremiumFeatureMeta(
+                gate = gate,
+                icon = GuideStrings.catalogIcon,
+                title = GuideStrings.catalogTitle,
+                description = GuideStrings.catalogDescription,
+                target = null,
+                availability = PremiumFeatureAvailability.AVAILABLE,
+            )
     }
 
-/** The full catalog in [FeatureGate] declaration order — one row per gate, none forgotten. */
-fun premiumFeatureCatalog(): List<PremiumFeatureMeta> = FeatureGate.values().map(::featureMeta)
+/**
+ * Whether a gate is offered as a Premium feature today. [FeatureGate.CLAIM_GUIDE] is only once the Guide exists in
+ * this build and its paywall is on: before that the Guide is dark, or free for everyone, and listing it as
+ * Premium would promise something that is not for sale. Every other gate is always offered.
+ */
+internal fun isAdvertised(
+    gate: FeatureGate,
+    guideEnabled: Boolean = isGuideEnabled(),
+    guidePaywallEnabled: Boolean = LaunchFlags.GUIDE_PAYWALL_ENABLED,
+): Boolean = gate != FeatureGate.CLAIM_GUIDE || (guideEnabled && guidePaywallEnabled)
+
+/** The catalog in [FeatureGate] declaration order — one row per advertised gate; [featureMeta] covers every gate. */
+fun premiumFeatureCatalog(): List<PremiumFeatureMeta> = FeatureGate.values().filter { isAdvertised(it) }.map(::featureMeta)
 
 /**
  * Reverse lookup of [premiumFeatureCatalog]: the [FeatureGate] protecting a dedicated screen, or `null` if

@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performScrollToIndex
 import com.payslipmax.pdfparser.App
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.subscription.DevOverride
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.FakeOnboardingStorage
@@ -27,6 +28,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.GuideDestination
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideSearchViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
+import com.payslipmax.pdfparser.ui.setDevOverride
 import com.payslipmax.pdfparser.ui.setLockEnabled
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
@@ -166,5 +168,50 @@ class GuideTabInAppTest {
         assertEquals(5, guideNavState.currentScroll.index)
         composeRule.onNodeWithText("Synthetic card RB-T5?").assertIsDisplayed()
         composeRule.onNodeWithText("Synthetic card RB-T1?").assertDoesNotExist()
+    }
+
+    // RB-T2 is the second row, composed without scrolling on this default-size screen (RB-T1's only key bullet is a placeholder).
+    private fun openCardT2() {
+        openTravelArea()
+        tap("Daily allowance on duty")
+        tap("Synthetic card RB-T2?")
+    }
+
+    @Test
+    @Config(sdk = [34], qualifiers = "w360dp-h2400dp") // tall, so every section is composed and absence means left out
+    fun withQaForcingFreeTheCardIsLockedAndUnlockOpensTheUpgradeSheet() {
+        viewModel.setDevOverride(DevOverride.FORCE_FREE)
+        settle()
+        openCardT2()
+
+        composeRule.onNodeWithText("A one-line answer for RB-T2.").assertIsDisplayed()
+        composeRule.onNodeWithText(GuideStrings.sectionKeyPoints).assertDoesNotExist()
+        composeRule.onNodeWithText("Rule 114 TR").assertDoesNotExist()
+        tap(GuideStrings.unlock)
+
+        composeRule.onNodeWithText(AppStrings.settingsPremiumPlanTitle).assertIsDisplayed()
+    }
+
+    @Test
+    @Config(sdk = [34], qualifiers = "w360dp-h2400dp") // tall, so every section is composed and absence means left out
+    fun withTheDebugDefaultTheWholeCardIsOpen() {
+        openCardT2()
+
+        composeRule.onNodeWithText(GuideStrings.sectionKeyPoints).assertIsDisplayed()
+        composeRule.onNodeWithText(GuideStrings.unlock).assertDoesNotExist()
+    }
+
+    @Test
+    @Config(sdk = [34], qualifiers = "w360dp-h2400dp") // tall, so every section is composed and absence means left out
+    fun switchingTheOverrideBackUnlocksTheSameOpenCardWithoutReopeningIt() {
+        viewModel.setDevOverride(DevOverride.FORCE_FREE)
+        settle()
+        openCardT2()
+        composeRule.onNodeWithText(GuideStrings.sectionKeyPoints).assertDoesNotExist()
+
+        viewModel.setDevOverride(DevOverride.FORCE_PRO)
+        settle()
+
+        composeRule.onNodeWithText(GuideStrings.sectionKeyPoints).assertIsDisplayed()
     }
 }

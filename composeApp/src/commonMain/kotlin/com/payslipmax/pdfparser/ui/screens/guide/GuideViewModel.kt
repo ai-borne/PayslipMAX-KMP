@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens.guide
 import com.payslipmax.pdfparser.guide.GuideLoadError
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.GuideRepository
+import com.payslipmax.pdfparser.rating.currentTimeMillis
 import com.payslipmax.pdfparser.telemetry.CrashReporter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +26,7 @@ class GuideViewModel(
     private val repository: GuideRepository,
     private val crashReporter: CrashReporter,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val nowMillis: () -> Long = ::currentTimeMillis,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val _uiState = MutableStateFlow<GuideUiState>(GuideUiState.Loading)
@@ -58,7 +60,11 @@ class GuideViewModel(
         facet: String?,
     ): GuideFeedContent? = index()?.feedContent(caseId, facet)
 
-    fun card(cardId: String): GuideCardContent? = index()?.cardContent(cardId)
+    /** The card; its key points, cite and details are in the result only when [unlocked] (see [GuideCardContent]). */
+    fun card(
+        cardId: String,
+        unlocked: Boolean,
+    ): GuideCardContent? = index()?.cardContent(cardId, unlocked, nowMillis())
 
     fun crumbs(stack: List<GuideDestination>): List<GuideCrumb> = index()?.crumbs(stack).orEmpty()
 

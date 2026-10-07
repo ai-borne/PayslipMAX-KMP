@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens.guide
 import androidx.compose.runtime.saveable.SaverScope
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
+import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -20,7 +21,7 @@ class GuideSearchViewModelTest {
     private val repository = FakeGuideRepository()
     private val crashReporter = FakeCrashReporter()
     private val guide = GuideViewModel(repository, crashReporter, dispatcher)
-    private val search = GuideSearchViewModel(guide, dispatcher)
+    private val search = GuideSearchViewModel(guide, dispatcher).also { it.setUnlocked(true) }
 
     private fun test(block: suspend TestScope.() -> Unit) = runTest(dispatcher) { block() }
 
@@ -123,5 +124,54 @@ class GuideSearchViewModelTest {
             search.clear()
 
             assertTrue(crashReporter.exceptions.isEmpty() && crashReporter.logs.isEmpty() && crashReporter.keys.isEmpty(), "a query is never sent")
+        }
+
+    @Test
+    fun aLockedUserSearchesTitlesAndRuleNumbersButNeverTheLockedFields() =
+        test {
+            loadGuide()
+            search.setUnlocked(false)
+
+            // "details" is only in each card's locked details text ("Longer details for RB-..."); "key" only in a key bullet.
+            assertTrue(type("longer details").ids().isEmpty(), "details are not searched for a free user")
+            assertTrue(type("short key point").ids().isEmpty(), "key points are not searched for a free user")
+            assertEquals(13, type("synthetic card").ids().size, "titles are")
+            assertEquals(13, type("rule 114").ids().size, "rule numbers are")
+        }
+
+    @Test
+    fun unlockingWidensTheSameQueryWithoutRetypingIt() =
+        test {
+            loadGuide()
+            search.setUnlocked(false)
+            assertTrue(type("longer details").ids().isEmpty())
+
+            search.setUnlocked(true)
+            testScheduler.advanceUntilIdle()
+
+            assertEquals(13, (search.state.value as GuideSearchState.Results).rows.size)
+        }
+
+    @Test
+    fun aSearchStartsLockedSoAScreenThatForgetsToSetAccessCannotLeak() =
+        test {
+            val fresh = GuideSearchViewModel(guide, dispatcher)
+            loadGuide()
+            fresh.onQueryChange("longer details")
+            testScheduler.advanceUntilIdle()
+
+            assertTrue((fresh.state.value as GuideSearchState.Results).rows.isEmpty())
+        }
+
+    @Test
+    fun resultRowsCarryTheirTrustChipsButNoLockedText() =
+        test {
+            loadGuide()
+
+            val rows = assertIs<GuideSearchState.Results>(type("synthetic card")).rows.associateBy { it.cardId }
+
+            assertTrue(rows.getValue(SyntheticGuideBundle.UNVERIFIED_CARD).trust.unverified)
+            assertTrue(rows.getValue(SyntheticGuideBundle.NO_CITE_CARD).trust.noOfficialSource)
+            assertEquals(SyntheticGuideBundle.RATES_AS_OF, rows.getValue(SyntheticGuideBundle.PERSONAL_CARD).trust.ratesAsOf)
         }
 }

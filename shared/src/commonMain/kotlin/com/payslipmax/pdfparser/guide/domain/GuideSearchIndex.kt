@@ -16,6 +16,13 @@ object GuideSearchRanking {
     const val MIN_QUERY_CHARS = 2
 }
 
+/**
+ * What a search may read. [FULL] is Premium: every field. [PREVIEW] is the free preview (owner decision 2026-10-07):
+ * titles and rule numbers only, so a free user cannot learn from the result list what the locked key points,
+ * attach, watch-out or details say, and the one-line answer (shown free) is not searched either.
+ */
+enum class GuideSearchScope { FULL, PREVIEW }
+
 /** A card that matched, with its score; a higher score ranks first. */
 data class GuideSearchHit(
     val card: GuideCard,
@@ -58,11 +65,14 @@ class GuideSearchIndex(
         }
 
     /** The matching cards, best first; equal scores keep the bundle's order. Empty for a query that is too short. */
-    fun search(query: String): List<GuideSearchHit> {
+    fun search(
+        query: String,
+        scope: GuideSearchScope = GuideSearchScope.FULL,
+    ): List<GuideSearchHit> {
         val terms = terms(query)
         if (terms.isEmpty()) return emptyList()
         return entries
-            .mapNotNull { entry -> score(entry, terms)?.let { GuideSearchHit(entry.card, it) } }
+            .mapNotNull { entry -> score(entry, terms, scope)?.let { GuideSearchHit(entry.card, it) } }
             .sortedByDescending { it.score }
     }
 
@@ -78,10 +88,11 @@ class GuideSearchIndex(
     private fun score(
         entry: Entry,
         terms: List<String>,
+        scope: GuideSearchScope,
     ): Int? {
         var total = 0
         for (term in terms) {
-            val best = bestWeight(entry, term)
+            val best = bestWeight(entry, term, scope)
             if (best == 0) return null
             total += best
         }
@@ -91,6 +102,7 @@ class GuideSearchIndex(
     private fun bestWeight(
         entry: Entry,
         term: String,
+        scope: GuideSearchScope,
     ): Int {
         val isNumber = term.first().isDigit()
 
@@ -98,6 +110,7 @@ class GuideSearchIndex(
         return when {
             isNumber && hits(entry.rules) -> GuideSearchRanking.RULE_NUMBER
             hits(entry.title) -> GuideSearchRanking.TITLE
+            scope == GuideSearchScope.PREVIEW -> 0
             hits(entry.answer) -> GuideSearchRanking.ANSWER
             hits(entry.bullets) -> GuideSearchRanking.BULLETS
             hits(entry.details) -> GuideSearchRanking.DETAILS

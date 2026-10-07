@@ -104,6 +104,7 @@ internal fun GuideCardRowView(
             Text(row.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
             Text(row.answer, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             GuideLabelPill(row.facetLabel)
+            GuideTrustChips(row.trust)
             row.alsoHomeTitle?.let { home ->
                 Text(
                     GuideStrings.alsoRelevant(home),

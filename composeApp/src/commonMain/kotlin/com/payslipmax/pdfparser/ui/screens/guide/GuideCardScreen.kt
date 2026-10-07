@@ -15,8 +15,8 @@ import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 /**
- * One rule card: breadcrumb and title, the answer, then the body sections, and a closing note that the card is
- * guidance, not a sanction. Copy cite, share and pin arrive in E8.
+ * One rule card: breadcrumb and title, the answer with its trust chips, then the body sections (or the unlock panel in
+ * the free preview), and a closing note that the card is guidance, not a sanction. Copy cite, share and pin arrive in E8.
  */
 @Composable
 internal fun GuideCardScreen(
@@ -24,6 +24,7 @@ internal fun GuideCardScreen(
     crumbs: List<GuideCrumb>,
     onCrumb: (path: List<GuideDestination>) -> Unit,
     onBack: () -> Unit,
+    onUnlock: () -> Unit,
     listState: LazyListState = rememberLazyListState(),
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -35,7 +36,7 @@ internal fun GuideCardScreen(
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             item(key = "header") { GuideCardHeader(card) }
-            guideCardSections(card)
+            guideCardSections(card, onUnlock)
             item(key = "disclaimer") {
                 Text(
                     GuideStrings.cardDisclaimer,

@@ -1,7 +1,7 @@
 # Claim Guide, Phase E plan (E1 to E9)
 
 Status: E0 (this plan) done 2026-10-07. **E1 done 2026-10-07** (branch `feature/guide-e1-bundle`). **E2 done 2026-10-07**
-(branch `feature/guide-e2-tiles`, off E1). **E3 done 2026-10-07** (branch `feature/guide-e3-feed`, off E2). **E4 done 2026-10-07** (same branch); E5 next.
+(branch `feature/guide-e2-tiles`, off E1). **E3 done 2026-10-07** (branch `feature/guide-e3-feed`, off E2). **E4 done 2026-10-07** (same branch). **E5 done 2026-10-07** (branch `feature/guide-e5-trust-gating`, off `main`); E6 next.
 Branching (decided 2026-10-07, solo developer): `main` holds E0 to E4; each later phase is one branch off `main`,
 merged (fast-forward) when its gate is green and deleted, so at most one phase branch is ever open.
 Items left open by a finished phase are listed under "EP Pending items" at the end, never dropped.
@@ -312,6 +312,53 @@ state holds only title and one-line answer (key points, cite and details are abs
 hidden); search results for locked users show titles only; the nudge appears only past the threshold (injected clock).
 **Exit:** gates green; `minifiedTest` smoke on the Pixel. **Tech-debt checkpoint:** none carried.
 
+**E5 result (2026-10-07).** Done, with these recorded choices:
+- **Gate:** one new value, `FeatureGate.CLAIM_GUIDE`; `SubscriptionManager.hasAccess` is unchanged (the existing loops over every gate, with
+  FORCE_PRO, FORCE_FREE, free-launch and release, now cover it, plus one explicit test). The owner's "paywall on only after the open
+  points are cleared" is a separate switch, `LaunchFlags.GUIDE_PAYWALL_ENABLED = false` (pinned by `GuidePaywallFlagTest`).
+  `guideUnlocked(hasAccess, devOverride, paywallEnabled)` in `GuideAccess.kt` is the one decision: unlocked when the user has
+  access, or the paywall is off (except QA's `FORCE_FREE`, so the locked screens can be seen; the override is inert in production).
+  Free-launch mode keeps everything open as today. `GuideTabRoute` wires it to the existing `PayslipUpgradeSheet`; `GuideTab` takes a
+  `GuideAccess(isUnlocked, onUnlock)`, so the Guide never touches billing.
+- **Locked state holds only the free half.** `GuideCardContent` carries title, one-line answer, facet and trust; the paid half is
+  `GuideCardContent.full: GuideCardFull?` (key points, attach, watch-out, cite, details), null when locked, so no screen can draw it by
+  mistake. The locked card shows `GuideLockedPanel` (what Premium adds and an "Unlock with Premium" button) in its place.
+- **Search (EP 10 closed).** `GuideSearchScope { FULL, PREVIEW }`: `PREVIEW` reads titles and rule numbers only (not the answer, key points,
+  attach, watch-out or details), the same ranking. `GuideSearchViewModel` starts locked and `GuideTab` sets it from `access`, so a
+  screen that forgets can only search less. A rule-number search still matches the cite and the case's rule line for free users (the
+  owner's "rule numbers" scope); the cite text itself is not shown.
+- **Trust chips (one source each) on every card row (feed, search) and the card screen:** `GuideTrust.of(card, ratesAsOf)` = Rates as of
+  (RATES chip plus the bundle's `rates_as_of`, shown as "Rates as of Jan 2026"), Amended, Unverified point (`unverified`), No
+  official source (empty cite). Chips are flags and a date, free for everyone. An unverified card also shows the line "This point is
+  still being checked...". All copy is in `GuideStrings`; the warning chip uses the existing `GuideColors.watchOut()` token.
+- **Staleness nudge.** `GuideStaleness.isStale(ratesAsOf, nowMillis)`; `STALE_AFTER_MONTHS = 9` (DA is revised twice a year, so
+  by nine months a revision has been announced). The clock is injected into `GuideViewModel` (`nowMillis`, default
+  `currentTimeMillis`). The nudge shows on a rate card only, as "These rates are from Jan 2026 and may have changed since. Check
+  the latest order before you claim."; it never states a new rate. With `rates_as_of` 2026-01 it shows from Oct 2026. Threshold is EP 13.
+- **Catalog.** The exhaustive `featureMeta` has a `CLAIM_GUIDE` row, but `premiumFeatureCatalog()` lists it (Premium screen, hub
+  bullets) only when `isAdvertised`: the Guide exists in the build and its paywall is on. Dark or free, the Guide is not for sale, so
+  Premium does not promise it.
+- Search hint copy now reads "Search by topic, or by a rule number...", true for free and paid users.
+- Tests added: shared 17 (trust, staleness, search scope) + flag and gate tests; composeApp: access table, locked vs unlocked card state
+  and UI, chips on rows and cards, nudge before and after the threshold (injected clock), locked search on screen, three real-app
+  tests (QA `FORCE_FREE` locks the card and Unlock opens the upgrade sheet; the debug default is open; flipping the override
+  unlocks the open card), the real 402-card contract (chip counts 36 unverified, 31 no source, locked cards hold no `full`, the preview
+  never finds a card by a word only its locked text holds), and an iOS test of the preview queries (timed) and the same contract on
+  Native. Mutation checks: making `cardContent` ignore `unlocked`, or the search ignore its scope, fails 7 tests.
+- Gates (2026-10-07): `check -x iosX64Test` (both variants, corpus included), `ktlintCheck`, tech-debt audit (37 files),
+  `iosSimulatorArm64Test`, `linkDebugFrameworkIosSimulatorArm64`, `assembleRelease` and `assembleMinifiedTest` plus
+  `check_r8_guide.py` (5 models and serializers kept, bundle byte-identical): green. Release has no Guide class in its mapping and
+  the release APK is 69,539,777 bytes, identical to E4 (the Guide is still dark). Pixel 9: `run_guide_minified_smoke.sh` passed; by
+  eye, an unverified card (HBA) shows its amber "Unverified point" chip on the search row and on the card with the "still being
+  checked" line, and an ordinary card shows no chip.
+- Baselines. Tests: shared JVM 852 / 852, composeApp JVM debug 683 / 683 and release 657 / 657, iOS shared 805, iOS composeApp 458
+  (all grew from E4). iOS preview search, 38 realistic queries: 34 ms (budget 1.5 s). Cold start and method count not re-measured
+  (E5 adds nothing at launch; EP 12).
+- Not checked on the Pixel: the locked panel (it needs a debug build with `FORCE_FREE`; the `minifiedTest` build is open). Covered
+  by the Compose tests and the real-app tests; added to EP 15.
+- Not done by design: the chips do not filter or sort; no per-card "read" memory; no price on the locked panel (the existing sheet
+  shows the store price).
+
 ## E6 Personalisation from the Pay Audit profile
 **Goal:** a "your figure" line on T181 (food rate), T254 (CTG), P051 (transport allowance) and P116 (HRA).
 **Prerequisite:** a small authored `figures.json` (base rates, DA escalator, effective dates), validated by
@@ -322,6 +369,8 @@ that reads the latest `ServiceTimeline` month (`level`, `tptaCity`) and DA from 
 the card stays complete; the effective date is shown.
 **Exit:** gates green; Pixel check with a real profile. **Tech-debt checkpoint:** no copy of Pay Audit logic.
 **Security:** figures are computed on the device and never shared.
+**Premium (from E5):** the "your figure" line is part of the paid half. It is drawn only when `GuideCardContent.full` is set (the
+card is unlocked), and a locked state must not hold the resolved figure.
 
 ## E7 Pay Audit link
 **Goal:** a finding opens its matching card, and back returns to the finding.
@@ -329,6 +378,7 @@ the card stays complete; the effective date is shown.
 TPTA_ENTITLEMENT, ARREARS_AUDIT, INCREMENT_MISSED and MSP_SHORTFALL.
 **Files:** `shared/.../guide/domain/GuideLinkMap.kt`, one link control in `PayAuditFindingsSection.kt`,
 `Screen.GuideCard` in `App.kt` and its iOS host case in `MainViewController.kt`, `GuideViewModel.openCard`.
+**Premium (from E5):** the link is a paid feature (`guideUnlocked`); a locked user sees `PayslipUpgradeSheet`, never a card.
 **Tests:** findings rendering pinned first; every mapped id exists; the link pushes `GuideCard` and back returns
 (a `NavBridge` test covers the iOS path); a restored `GuideCard` with no target pops itself; the link is blocked while
 locked; a new finding type with no decision fails a test; flag off means no link; users without Premium see the paywall.
@@ -338,6 +388,8 @@ locked; a new finding type with no decision fails a test; flag off means no link
 **Goal:** pinned cards on Home, Copy cite, and Share as claim note.
 **Files:** `GuidePinsStorage` with Android and iOS implementations and a fake (no Room change, not in
 backup), `domain/GuideShareText.kt`, the existing `ShareUtils.kt` and platform clipboard.
+**Premium (from E5):** pins, copy cite and share are paid (`guideUnlocked`); the controls are absent from the locked card state,
+and a locked user's tap offers the upgrade sheet.
 **Tests:** pins persist; stale ids are dropped after a bundle update; a fixed-text test of the share note
 (card text and cite only, no profile figures, name or service number); the copied cite equals `cite`; nothing leaves without a tap.
 **Exit:** gates green; `minifiedTest` smoke. **Tech-debt checkpoint:** none carried.
@@ -348,6 +400,8 @@ outbound path, nothing Guide-related in telemetry, and no `from`/`open` in the b
 simulator walkthrough; baseline comparison; then turn on `GUIDE_ENABLED` for release in its own commit.
 **Exit:** full pre-push gate green; HANDOFF.md, docs and memory updated.
 **Tech-debt checkpoint:** a known-gaps register (RP-073, unverified cards, the DA 60% flag).
+**Carried here from earlier phases (EP):** 7 (Dashboard label at 320dp), 11 and 15 (the iOS simulator walkthrough: search field,
+locked panel, upgrade sheet, chips), 12 (cold start and APK size), 13 (staleness threshold), 14 (paywall flip checks), 16 (search scope edge).
 
 ## Open items carried into E1 (all closed 2026-10-07)
 Bundle location: compose resources (E1 spike). `rates_as_of`: `2026-01`. GUIDANCE vs empty cite: one rule, empty cite.
@@ -366,6 +420,10 @@ Each item names the phase that closes it. A phase may not exit while an item ass
 | 7 | E2 | With five tabs, the existing "Dashboard" label wraps to two lines at 320dp (fine at 360dp and up). Owner decision before launch: accept, or shorten the label. | E9 |
 | 8 | E2 | Placeholder routes: `GuidePlaceholderScreen.kt`, `GuideStrings.comingNext` and `searchTitle`, and the smoke's last step. **Closed in E4:** the file and `comingNext` are deleted, `searchTitle` is the real screen's title, and the smoke searches and opens a card from the results. | E4 |
 | 9 | E3 | The two E3 device checks. **Closed 2026-10-07 on the Pixel 9** (debug-signed Play-installer `minifiedTest` build, dark theme): `run_guide_minified_smoke.sh` passed (tab, area, case, card, "Key points"); walk-through: Home, area (case rules and counts), feed with chips and counts (All 16, Who qualifies 3...), chip filter, all six "also relevant here" rows naming their real home, card with breadcrumb to the feed it was opened from, Watch out in amber, cite in monospace, Details expand (food-charge card shows no placeholder), back and a tab switch keep the scroll place, breadcrumb up. | E3 |
-| 10 | E4 | Search reads every card field (title, answer, bullets, details) for everyone. The free preview must show locked users titles and rule numbers only, and the locked state must hold no bullets or details: the index needs an access scope, and the result row must not leak a hidden field. Plan E5 already lists the test. | E5 |
+| 10 | E4 | Search read every card field for everyone. **Closed in E5:** `GuideSearchScope.PREVIEW` (titles and rule numbers only) for free users, `FULL` for Premium; the locked card state holds no key points, cite or details. Tests: scope unit tests, view-model and on-screen tests, and the 402-card contract (no hidden word finds a card in the preview). | E5 |
 | 11 | E4 | The search field on iOS (auto-focus on a fresh search, the Search key, keyboard over the results, back from a card) is covered only by the Native timing and correctness tests; iOS UI cannot be driven from here. Check it in the E9 iOS simulator walkthrough. | E9 |
 | 12 | E4 | Cold start and APK size were not re-measured on the device against E3 (like E3: nothing is added at launch). Re-measure at E9 against the E2 figures (190 ms, 188 ms `minifiedTest`) and the Play 1.3.0 baseline. | E9 |
+| 13 | E5 | `GuideStaleness.STALE_AFTER_MONTHS = 9` is a judgement, not an owner decision (DA is revised twice a year). With `rates_as_of` 2026-01 the nudge shows from Oct 2026 on every rate card. Owner confirms or changes the number (one constant and one test line). | E9 |
+| 14 | E5 | `LaunchFlags.GUIDE_PAYWALL_ENABLED` is false, as decided: the owner clears the open points on the main rate cards (RP-088 and the rest) first, then flips it, in its own commit. What no test can prove before the flip: a sandbox purchase on each platform unlocks an open Guide card, and the Claim Guide row then appears in the Premium screen and hub (`isAdvertised`). Check both at the flip. | E9 |
+| 15 | E5 | iOS cannot be driven from here. The locked panel, the Unlock button opening the upgrade sheet, and the trust chips wrapping at large text sizes are covered by Compose tests on Android only, and the locked panel was not looked at on the Pixel either (needs a debug build with `FORCE_FREE`). Add them to the E9 iOS simulator walkthrough with EP 11. | E9 |
+| 16 | E5 | Accepted edge, not fixed: if a user's entitlement is revoked while a search is stacked under a card, the first frame after returning shows the results found under the old scope until `GuideTab` pushes the new scope (one effect later). It exposes only titles and answers the user could read a moment ago. Fixing it would need the scope in every result, which is more code than the risk warrants; revisit if refunds ever revoke Premium mid-session. | E9 |

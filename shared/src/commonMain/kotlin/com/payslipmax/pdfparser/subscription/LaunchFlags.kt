@@ -23,4 +23,10 @@ object LaunchFlags {
     // Claim Guide dark launch (docs/Plan/rule_cards/16_guide_phase_plan.md). Every Guide entry point reads it;
     // false keeps release builds exactly as before the Guide. Flipped true only in phase E9, in its own commit.
     const val GUIDE_ENABLED: Boolean = false
+
+    // Claim Guide paywall (owner decision 2026-10-07). false: every user reads the whole Guide; true: only Premium reads
+    // key points, authority and details ([FeatureGate.CLAIM_GUIDE]). Flipped only after the owner has cleared the open
+    // points on the main rate cards (RP-088 HBA 8.5% and others), because charging for "Unverified point" cards is a
+    // trust risk. The gate and the locked UI ship and are tested either way.
+    const val GUIDE_PAYWALL_ENABLED: Boolean = false
 }

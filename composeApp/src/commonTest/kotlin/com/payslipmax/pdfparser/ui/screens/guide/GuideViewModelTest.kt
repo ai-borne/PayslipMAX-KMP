@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens.guide
 import com.payslipmax.pdfparser.guide.GuideLoadError
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
+import com.payslipmax.pdfparser.guide.domain.GuideStaleness
 import com.payslipmax.pdfparser.telemetry.TelemetrySanitizer
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
@@ -121,9 +122,9 @@ class GuideViewModelTest {
             testScheduler.advanceUntilIdle()
             assertNull(viewModel.area("nowhere"))
             assertNull(viewModel.feed("nowhere", facet = null))
-            assertNull(viewModel.card("RB-NONE"))
+            assertNull(viewModel.card("RB-NONE", unlocked = true))
             assertEquals("Home town LTC", viewModel.feed("ltc-home", facet = null)!!.title)
-            assertEquals("Synthetic card RB-P1?", viewModel.card("RB-P1")!!.title)
+            assertEquals("Synthetic card RB-P1?", viewModel.card("RB-P1", unlocked = true)!!.title)
         }
 
     private fun loaded(block: suspend TestScope.() -> Unit) =
@@ -184,13 +185,14 @@ class GuideViewModelTest {
     @Test
     fun cardContentHidesPlaceholderBulletsAndKeepsTheRest() =
         loaded {
-            val card = viewModel.card(SyntheticGuideBundle.PERSONAL_CARD)!!
+            val card = viewModel.card(SyntheticGuideBundle.PERSONAL_CARD, unlocked = true)!!
+            val full = card.full!!
 
             assertEquals("How much", card.facetLabel)
-            assertEquals(emptyList(), card.body.key, "its only key bullet is a placeholder")
-            assertEquals(listOf("Your amount: Level {level} = Rs {food_rate}/day"), card.body.figureTemplates)
-            assertEquals(listOf("A form"), card.body.attach)
-            assertEquals("Rule 114 TR", card.cite)
+            assertEquals(emptyList(), full.body.key, "its only key bullet is a placeholder")
+            assertEquals(listOf("Your amount: Level {level} = Rs {food_rate}/day"), full.body.figureTemplates)
+            assertEquals(listOf("A form"), full.body.attach)
+            assertEquals("Rule 114 TR", full.cite)
         }
 
     @Test
@@ -227,4 +229,52 @@ class GuideViewModelTest {
             assertEquals(listOf(GuideStrings.breadcrumbHome, "Pay", "House rent"), crumbs.map { it.label })
             assertEquals(listOf(GuideDestination.Area("pay"), GuideDestination.Case("pay-hra")), crumbs.last().path)
         }
+
+    @Test
+    fun aLockedCardHoldsOnlyTheFreeHalfNotJustHiddenText() =
+        loaded {
+            val card = viewModel.card("RB-T5", unlocked = false)!!
+
+            assertNull(card.full, "key points, cite and details are absent from the state, not hidden by the UI")
+            assertEquals("Synthetic card RB-T5?", card.title)
+            assertEquals("A one-line answer for RB-T5.", card.answer)
+            assertEquals("How much", viewModel.card("RB-T1", unlocked = false)!!.facetLabel)
+            assertTrue(viewModel.card("RB-T5", unlocked = true)!!.full != null)
+        }
+
+    @Test
+    fun trustChipsAreFreeSoALockedCardStillShowsThem() =
+        loaded {
+            assertTrue(viewModel.card(SyntheticGuideBundle.UNVERIFIED_CARD, unlocked = false)!!.trust.unverified)
+            assertTrue(viewModel.card(SyntheticGuideBundle.NO_CITE_CARD, unlocked = false)!!.trust.noOfficialSource)
+            assertEquals(SyntheticGuideBundle.RATES_AS_OF, viewModel.card(SyntheticGuideBundle.PERSONAL_CARD, unlocked = false)!!.trust.ratesAsOf)
+        }
+
+    @Test
+    fun theFeedRowsCarryTrustChips() =
+        loaded {
+            val rows = viewModel.feed(SyntheticGuideBundle.BIG_CASE, facet = null)!!.rows.associateBy { it.cardId }
+
+            assertTrue(rows.getValue(SyntheticGuideBundle.UNVERIFIED_CARD).trust.unverified)
+            assertTrue(rows.getValue(SyntheticGuideBundle.AMENDED_CARD).trust.amended)
+            assertTrue(!rows.getValue("RB-T5").trust.hasAny)
+        }
+
+    @Test
+    fun theStaleNudgeFollowsTheInjectedClockAndOnlyAppliesToRateCards() =
+        test {
+            var now = GuideStaleness.epochDays(2026, 8, 1) * MILLIS_PER_DAY
+            val guide = GuideViewModel(repository, crashReporter, dispatcher, nowMillis = { now })
+            guide.load()
+            testScheduler.advanceUntilIdle()
+
+            assertEquals(false, guide.card(SyntheticGuideBundle.PERSONAL_CARD, unlocked = false)!!.ratesStale, "7 months old")
+            now = GuideStaleness.epochDays(2026, 10, 7) * MILLIS_PER_DAY
+            assertEquals(true, guide.card(SyntheticGuideBundle.PERSONAL_CARD, unlocked = false)!!.ratesStale, "9 months old")
+            assertEquals(false, guide.card("RB-T5", unlocked = false)!!.ratesStale, "no RATES chip, no nudge however old")
+        }
+
+    private companion object {
+        const val MILLIS_PER_DAY = 86_400_000L
+    }
 }

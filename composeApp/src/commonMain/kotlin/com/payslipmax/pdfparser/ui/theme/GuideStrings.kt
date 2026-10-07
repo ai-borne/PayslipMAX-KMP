@@ -18,7 +18,7 @@ object GuideStrings {
     const val searchOpen = "Search the Claim Guide"
     const val searchPlaceholder = "Topic or rule number"
     const val searchClear = "Clear search"
-    const val searchHint = "Search by a word, or a rule number such as 177B or Rule 114."
+    const val searchHint = "Search by topic, or by a rule number such as 177B or Rule 114."
     const val searchTooShort = "Type at least two letters or digits."
     const val searchNone = "No cards match. Try fewer words, or a rule number."
 
@@ -37,6 +37,37 @@ object GuideStrings {
     const val detailsHidden = "Hidden"
     const val bullet = "•"
     const val cardDisclaimer = "Guidance from published rules, not a sanction. Your controlling officer and PCDA(O) decide the claim."
+
+    // Trust chips (E5). Each is backed by one bundle field; see GuideTrust.
+    const val chipAmended = "Amended"
+    const val chipUnverified = "Unverified point"
+    const val chipNoOfficialSource = "No official source"
+    const val unverifiedWarning = "This point is still being checked. Confirm it against the current order before you rely on it."
+
+    // Premium preview: the locked half of a card.
+    const val lockedTitle = "Key points, authority and details are in Premium"
+    const val lockedBody = "The title and the one-line answer stay free."
+    const val unlock = "Unlock with Premium"
+
+    // Premium Features catalog row.
+    const val catalogIcon = "📖"
+    const val catalogTitle = "Claim Guide"
+    const val catalogDescription = "Key points, the authority to cite and details for every pay and travel rule card"
+
+    private val monthNames = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+    /** "2026-01" as "Jan 2026"; a value that is not a year and month is returned as it came. */
+    fun yearMonth(value: String): String {
+        val month = value.substringAfter('-', "").toIntOrNull()
+        val year = value.substringBefore('-')
+        return if (month in 1..12 && year.length == 4) "${monthNames[month!! - 1]} $year" else value
+    }
+
+    fun chipRatesAsOf(value: String): String = "Rates as of ${yearMonth(value)}"
+
+    /** The nudge on a rate card whose rates are old; asks the user to check the current order, never states a new rate. */
+    fun staleRatesNudge(value: String): String =
+        "These rates are from ${yearMonth(value)} and may have changed since. Check the latest order before you claim."
 
     fun topicCount(count: Int): String = if (count == 1) "1 topic" else "$count topics"
 

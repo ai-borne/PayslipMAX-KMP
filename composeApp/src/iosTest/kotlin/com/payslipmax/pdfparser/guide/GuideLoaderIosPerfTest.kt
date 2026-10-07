@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.guide
 
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
+import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -64,6 +65,24 @@ class GuideLoaderIosPerfTest {
         runTest {
             // The full correctness workload, untimed: it proves Native reads words and rule numbers the same way.
             GuideBundleContract.assertSearchMatchesDataset(GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText()))
+        }
+
+    @Test
+    fun previewSearchAndTrustBehaveOnNativeAsOnTheJvm() =
+        runTest {
+            val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())
+
+            // E5: the free preview searches titles and rule numbers only; time its realistic queries like the full ones.
+            val index = GuideSearchIndex(bundle)
+            val queryMark = TimeSource.Monotonic.markNow()
+            val previewHits = GuideBundleContract.realisticQueries.sumOf { index.search(it, GuideSearchScope.PREVIEW).size }
+            val queriesMs = queryMark.elapsedNow().inWholeMilliseconds
+
+            println("guide preview search on Native: ${GuideBundleContract.realisticQueries.size} queries ${queriesMs}ms")
+            assertTrue(previewHits > 0)
+            assertTrue(queriesMs < SEARCH_BUDGET_MS, "preview queries took ${queriesMs}ms, budget ${SEARCH_BUDGET_MS}ms")
+            // The chip counts, the locked cards and the no-leak preview check, untimed: a correctness workload.
+            GuideBundleContract.assertTrustAndPreviewMatchDataset(bundle)
         }
 
     private companion object {

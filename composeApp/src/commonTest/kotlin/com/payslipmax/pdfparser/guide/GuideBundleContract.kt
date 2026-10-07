@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.guide.domain.CardTemplate
 import com.payslipmax.pdfparser.guide.domain.GuideRuleNumberParser
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
+import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.ui.screens.guide.cardContent
 import com.payslipmax.pdfparser.ui.screens.guide.feedContent
@@ -71,11 +72,37 @@ object GuideBundleContract {
         val alsoRows = index.feedContent("ltc-rules", facet = null)!!.rows.filter { it.alsoHomeTitle != null }
         assertEquals(6, alsoRows.size)
         assertTrue(alsoRows.all { row -> index.card(row.cardId)!!.nav != "ltc-rules" && row.alsoHomeTitle!!.isNotBlank() })
-        val cards = bundle.cards.map { assertNotNull(index.cardContent(it.id)) }
-        val shown = cards.flatMap { listOf(it.title, it.answer, it.cite, it.details) + it.body.key + it.body.attach + it.body.watch }
+        val cards = bundle.cards.map { assertNotNull(index.cardContent(it.id, unlocked = true, nowMillis = 0L)) }
+        val shown = cards.flatMap { card -> card.full!!.let { listOf(card.title, card.answer, it.cite, it.details) + it.body.key + it.body.attach + it.body.watch } }
         assertTrue(shown.none(CardTemplate::hasPlaceholder), "a placeholder would be shown raw")
         // The food-rate and CTG cards carry the two placeholder bullets that phase E6 fills.
-        assertEquals(setOf("RB-SS-T181", "RB-SS-T254"), cards.filter { it.body.figureTemplates.isNotEmpty() }.map { it.id }.toSet())
+        assertEquals(setOf("RB-SS-T181", "RB-SS-T254"), cards.filter { it.full!!.body.figureTemplates.isNotEmpty() }.map { it.id }.toSet())
+    }
+
+    /**
+     * The E5 trust chips and Premium preview over all 402 cards: each chip count matches the dataset's own counts, a
+     * locked card holds only the free half, and the preview search never reads a locked field (a word that is in no
+     * title or rule line finds nothing, however many key points and details carry it).
+     */
+    fun assertTrustAndPreviewMatchDataset(bundle: GuideBundle) {
+        val index = bundle.toReady().index
+        val locked = bundle.cards.map { assertNotNull(index.cardContent(it.id, unlocked = false, nowMillis = 0L)) }
+        assertTrue(locked.all { it.full == null }, "a locked card holds no key points, cite or details")
+        assertEquals(36, locked.count { it.trust.unverified })
+        assertEquals(31, locked.count { it.trust.noOfficialSource })
+        assertEquals(bundle.cards.count { "RATES" in it.chips }, locked.count { it.trust.ratesAsOf == bundle.ratesAsOf })
+        assertEquals(bundle.cards.count { "AMENDED" in it.chips }, locked.count { it.trust.amended })
+        assertTrue(bundle.cards.any { "RATES" in it.chips } && bundle.cards.any { "AMENDED" in it.chips }, "both chips are in use")
+        val searchIndex = GuideSearchIndex(bundle)
+        for (card in bundle.cards) {
+            val body = CardTemplate.body(card)
+            val ownTitle = GuideRuleNumberParser.words(card.title)
+            val hidden = GuideRuleNumberParser.words((body.key + body.attach + body.watch).joinToString(" ")).filter { it.length > 3 && it.all(Char::isLetter) }
+            // A word that starts no word of this card's own title: only its locked text can make the card match it.
+            val word = hidden.firstOrNull { w -> ownTitle.none { it.startsWith(w) } } ?: continue
+            assertTrue(searchIndex.search(word, GuideSearchScope.PREVIEW).none { it.card.id == card.id }, "preview search leaked a hidden word of ${card.id}")
+            assertTrue(searchIndex.search(word, GuideSearchScope.FULL).any { it.card.id == card.id }, "full search finds ${card.id}")
+        }
     }
 
     /**

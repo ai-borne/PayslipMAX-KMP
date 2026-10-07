@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -14,10 +15,22 @@ import kotlin.test.assertTrue
  */
 class PremiumFeaturesCatalogTest {
     @Test
-    fun everyFeatureGateHasExactlyOneCatalogEntry() {
+    fun everyAdvertisedFeatureGateHasExactlyOneCatalogEntry() {
         val catalog = premiumFeatureCatalog()
-        assertEquals(FeatureGate.values().size, catalog.size, "catalog must cover every FeatureGate")
-        assertEquals(FeatureGate.values().toList(), catalog.map { it.gate }, "catalog order follows FeatureGate order")
+        val advertised = FeatureGate.values().filter { isAdvertised(it) }
+        assertEquals(advertised, catalog.map { it.gate }, "catalog order follows FeatureGate order, one row per advertised gate")
+        assertEquals(FeatureGate.values().size - 1, catalog.size, "only the Claim Guide is held back while its paywall is off")
+    }
+
+    @Test
+    fun theClaimGuideIsListedAsPremiumOnlyOnceItExistsAndItsPaywallIsOn() {
+        // Dark or free, the Guide is not for sale, so the Premium hub must not promise it (the paywall is owner-gated).
+        assertFalse(isAdvertised(FeatureGate.CLAIM_GUIDE, guideEnabled = false, guidePaywallEnabled = true))
+        assertFalse(isAdvertised(FeatureGate.CLAIM_GUIDE, guideEnabled = true, guidePaywallEnabled = false))
+        assertTrue(isAdvertised(FeatureGate.CLAIM_GUIDE, guideEnabled = true, guidePaywallEnabled = true))
+        for (gate in FeatureGate.values().filter { it != FeatureGate.CLAIM_GUIDE }) {
+            assertTrue(isAdvertised(gate, guideEnabled = false, guidePaywallEnabled = false), "$gate is unaffected by the Guide flags")
+        }
     }
 
     @Test

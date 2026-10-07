@@ -37,7 +37,7 @@ class GuideSearchScreenTest {
     private val search = GuideSearchViewModel(guide, dispatcher)
 
     private fun show(navState: GuideNavState = GuideNavState()): GuideNavState {
-        composeRule.setContent { GuideTab(navState = navState, viewModel = guide, searchViewModel = search) }
+        composeRule.setContent { GuideTab(navState = navState, access = UnlockedGuideAccess, viewModel = guide, searchViewModel = search) }
         settle()
         return navState
     }

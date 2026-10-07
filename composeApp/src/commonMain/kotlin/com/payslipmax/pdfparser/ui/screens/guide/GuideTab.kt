@@ -29,13 +29,15 @@ import org.koin.compose.koinInject
 /**
  * The Guide tab's root. Loads the bundle on first open (never at launch), shows loading or an error with retry,
  * and otherwise draws the top of [navState] inline, so the bottom bar stays on both platforms. [navState] is
- * hoisted to `App`, so switching tabs and locking the app keep the user's place.
+ * hoisted to `App`, so switching tabs and locking the app keep the user's place. [access] decides whether a card's
+ * paid half and the full-text search are open.
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Suppress("DEPRECATION")
 @Composable
 fun GuideTab(
     navState: GuideNavState,
+    access: GuideAccess,
     viewModel: GuideViewModel = koinInject(),
     searchViewModel: GuideSearchViewModel = koinInject(),
 ) {
@@ -49,7 +51,7 @@ fun GuideTab(
             LaunchedEffect(current.bundle) { navState.retainKnown(current.bundle) }
             // Android back pops the Guide stack before it leaves the tab; at Guide Home it stays disabled.
             BackHandler(enabled = navState.canPop) { navState.pop() }
-            GuideDestinationContent(navState, current, viewModel, searchViewModel)
+            GuideDestinationContent(navState, current, access, viewModel, searchViewModel)
         }
     }
 }
@@ -58,6 +60,7 @@ fun GuideTab(
 private fun GuideDestinationContent(
     navState: GuideNavState,
     ready: GuideUiState.Ready,
+    access: GuideAccess,
     viewModel: GuideViewModel,
     searchViewModel: GuideSearchViewModel,
 ) {
@@ -79,19 +82,22 @@ private fun GuideDestinationContent(
             } ?: GuideLoading()
         is GuideDestination.Case -> GuideFeedRoute(navState, destination, viewModel)
         is GuideDestination.Card ->
-            viewModel.card(destination.cardId)?.let { card ->
-                GuideCardScreen(card, viewModel.crumbs(navState.stack), navState::upTo, onBack, rememberGuideListState(navState))
+            viewModel.card(destination.cardId, access.isUnlocked)?.let { card ->
+                GuideCardScreen(card, viewModel.crumbs(navState.stack), navState::upTo, onBack, access.onUnlock, rememberGuideListState(navState))
             } ?: GuideLoading()
-        GuideDestination.Search -> GuideSearchRoute(navState, searchViewModel, onBack)
+        GuideDestination.Search -> GuideSearchRoute(navState, access, searchViewModel, onBack)
     }
 }
 
 @Composable
 private fun GuideSearchRoute(
     navState: GuideNavState,
+    access: GuideAccess,
     searchViewModel: GuideSearchViewModel,
     onBack: () -> Unit,
 ) {
+    // Free users search titles and rule numbers only; the model starts locked, so this can only widen the search.
+    LaunchedEffect(access.isUnlocked) { searchViewModel.setUnlocked(access.isUnlocked) }
     val query by searchViewModel.query.collectAsState()
     val state by searchViewModel.state.collectAsState()
     GuideSearchScreen(

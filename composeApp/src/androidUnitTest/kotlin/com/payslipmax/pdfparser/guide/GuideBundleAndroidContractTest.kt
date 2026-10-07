@@ -23,5 +23,6 @@ class GuideBundleAndroidContractTest {
             GuideBundleContract.assertTilesMatchDataset(bundle)
             GuideBundleContract.assertFeedsAndCardsMatchDataset(bundle)
             GuideBundleContract.assertSearchMatchesDataset(bundle)
+            GuideBundleContract.assertTrustAndPreviewMatchDataset(bundle)
         }
 }

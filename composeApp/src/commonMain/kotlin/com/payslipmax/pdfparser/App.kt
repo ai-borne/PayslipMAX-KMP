@@ -22,7 +22,7 @@ import com.payslipmax.pdfparser.ui.screens.LockScreen
 import com.payslipmax.pdfparser.ui.screens.SettingsScreen
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavStateSaver
-import com.payslipmax.pdfparser.ui.screens.guide.GuideTab
+import com.payslipmax.pdfparser.ui.screens.guide.GuideTabRoute
 import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
@@ -232,7 +232,7 @@ private fun TabRootContent(
         Screen.Insights -> InsightsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
         Screen.Settings -> SettingsScreen(viewModel = viewModel, onNavigateTo = onNavigate, onPickBackup = onPickBackup)
         // Unreachable with the Guide off (no tab, and the saver never restores it).
-        Screen.Guide -> guideNavState?.let { GuideTab(navState = it) }
+        Screen.Guide -> guideNavState?.let { GuideTabRoute(navState = it, viewModel = viewModel) }
         else ->
             DashboardScreen(
                 viewModel = viewModel,

@@ -174,4 +174,23 @@ class SubscriptionManagerTest {
         assertFalse(iosManager.hasAccess(FeatureGate.PREMIUM_INTELLIGENCE), "iOS gate must follow only its own flag")
         assertTrue(androidManager.hasAccess(FeatureGate.PREMIUM_INTELLIGENCE), "Android gate must stay unaffected by iOS's flag flipping")
     }
+
+    @Test
+    fun theClaimGuideGateFollowsTheSameRulesAsEveryOtherGate() {
+        // Plan E5: one FeatureGate value, no special case in hasAccess; the paywall switch lives above it (guideUnlocked).
+        var premium = false
+        val release = releaseManager { premium }
+        assertFalse(release.hasAccess(FeatureGate.CLAIM_GUIDE))
+        premium = true
+        assertTrue(release.hasAccess(FeatureGate.CLAIM_GUIDE))
+
+        val debug = debugManager { true }
+        assertTrue(debug.hasAccess(FeatureGate.CLAIM_GUIDE), "FORCE_PRO is the debug default")
+        debug.setDevOverride(DevOverride.FORCE_FREE)
+        assertFalse(debug.hasAccess(FeatureGate.CLAIM_GUIDE), "FORCE_FREE reaches the locked Guide")
+
+        val freeLaunch =
+            SubscriptionManager(isPremiumEnabledProvider = { false }, isDebugBuildProvider = { false }, isFreeLaunchModeProvider = { true })
+        assertTrue(freeLaunch.hasAccess(FeatureGate.CLAIM_GUIDE), "free-launch mode opens it like every gate")
+    }
 }

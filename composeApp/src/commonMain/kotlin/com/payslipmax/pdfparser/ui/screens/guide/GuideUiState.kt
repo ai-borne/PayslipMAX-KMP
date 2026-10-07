@@ -6,6 +6,8 @@ import com.payslipmax.pdfparser.guide.domain.GuideCardBody
 import com.payslipmax.pdfparser.guide.domain.GuideFeedLogic
 import com.payslipmax.pdfparser.guide.domain.GuideIndex
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
+import com.payslipmax.pdfparser.guide.domain.GuideStaleness
+import com.payslipmax.pdfparser.guide.domain.GuideTrust
 import com.payslipmax.pdfparser.guide.model.GuideArea
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.GuideCase
@@ -37,8 +39,18 @@ data class GuideAreaContent(val id: String, val title: String, val cases: List<G
 /** A facet chip: the facet key, its label from the bundle, and how many of the feed's cards carry it. */
 data class GuideFacetCount(val key: String, val label: String, val count: Int)
 
-/** A card in a feed. [alsoHomeTitle] names the card's main case when it is an "also relevant here" link. */
-data class GuideFeedRow(val cardId: String, val title: String, val answer: String, val facetLabel: String, val alsoHomeTitle: String?)
+/**
+ * A card in a feed. [alsoHomeTitle] names the card's main case when it is an "also relevant here" link. [trust] holds
+ * only flags and a date, so it is free for everyone; the row has no paid field to hide.
+ */
+data class GuideFeedRow(
+    val cardId: String,
+    val title: String,
+    val answer: String,
+    val facetLabel: String,
+    val alsoHomeTitle: String?,
+    val trust: GuideTrust,
+)
 
 /** A case's feed. [facets] is empty when the feed is too small for chips; a null [selectedFacet] means every card. */
 data class GuideFeedContent(
@@ -51,12 +63,24 @@ data class GuideFeedContent(
     val rows: List<GuideFeedRow>,
 )
 
-/** A card as the card screen shows it; [body] holds the placeholder bullets apart, so they are never drawn raw. */
+/**
+ * A card as the card screen shows it. The free half (title, one-line answer, trust chips) is always set. The paid half
+ * is [full], which is null for a user without access: the key points, cite and details are absent from the state
+ * itself, not hidden by the UI, so no screen can draw them by mistake. [ratesStale] asks for the "rates may have
+ * changed" nudge.
+ */
 data class GuideCardContent(
     val id: String,
     val title: String,
     val answer: String,
     val facetLabel: String,
+    val trust: GuideTrust,
+    val ratesStale: Boolean,
+    val full: GuideCardFull?,
+)
+
+/** The paid half of a card; [body] holds the placeholder bullets apart, so they are never drawn raw. */
+data class GuideCardFull(
     val body: GuideCardBody,
     val cite: String,
     val details: String,
@@ -87,12 +111,26 @@ internal fun GuideIndex.feedContent(
     val selected = GuideFeedLogic.effectiveFacet(items, facet)
     val rows =
         GuideFeedLogic.applyFacet(items, selected).map { item ->
-            GuideFeedRow(item.card.id, item.card.title, item.card.answer, labels[item.card.facet].orEmpty(), item.alsoHome?.title)
+            GuideFeedRow(
+                item.card.id,
+                item.card.title,
+                item.card.answer,
+                labels[item.card.facet].orEmpty(),
+                item.alsoHome?.title,
+                GuideTrust.of(item.card, bundle.ratesAsOf),
+            )
         }
     return GuideFeedContent(case.id, case.title, case.sub, items.size, facets, selected, rows)
 }
 
-internal fun GuideIndex.cardContent(cardId: String): GuideCardContent? {
+internal fun GuideIndex.cardContent(
+    cardId: String,
+    unlocked: Boolean,
+    nowMillis: Long,
+): GuideCardContent? {
     val card = card(cardId) ?: return null
-    return GuideCardContent(card.id, card.title, card.answer, bundle.facets[card.facet].orEmpty(), CardTemplate.body(card), card.cite, card.details)
+    val trust = GuideTrust.of(card, bundle.ratesAsOf)
+    val full = if (unlocked) GuideCardFull(CardTemplate.body(card), card.cite, card.details) else null
+    val stale = trust.ratesAsOf?.let { GuideStaleness.isStale(it, nowMillis) } == true
+    return GuideCardContent(card.id, card.title, card.answer, bundle.facets[card.facet].orEmpty(), trust, stale, full)
 }

@@ -133,7 +133,7 @@ private fun GuideSearchResults(
         }
         // The card-row pill carries the case the card lives in; a result is never an "also relevant here" link.
         items(rows, key = { it.cardId }) { row ->
-            GuideCardRowView(GuideFeedRow(row.cardId, row.title, row.answer, row.caseTitle, alsoHomeTitle = null), onClick = { onOpenCard(row.cardId) })
+            GuideCardRowView(GuideFeedRow(row.cardId, row.title, row.answer, row.caseTitle, alsoHomeTitle = null, trust = row.trust), onClick = { onOpenCard(row.cardId) })
         }
     }
 }

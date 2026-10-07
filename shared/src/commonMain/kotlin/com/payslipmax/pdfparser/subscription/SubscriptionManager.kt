@@ -19,6 +19,12 @@ enum class FeatureGate {
 
     /** Gates backup *creation* only. Restore stays free so a new device can always recover its data. */
     BACKUP_RESTORE,
+
+    /**
+     * Gates the Claim Guide's paid half: key points, attach, watch-out, authority and details. Titles, one-line
+     * answers and title/rule-number search stay free. Whether it is enforced yet is [LaunchFlags.GUIDE_PAYWALL_ENABLED].
+     */
+    CLAIM_GUIDE,
 }
 
 /**
