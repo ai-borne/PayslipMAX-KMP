@@ -247,7 +247,7 @@ and are never shown raw; the "also relevant here" links resolve (ltc-rules, 6 ca
   defaults, synthetic lambdas) that R8 optimises differently because Guide code is reachable until the
   `GUIDE_PREVIEW` constant is folded; the same effect E2 recorded as app-shell dex. Cold start not re-measured (no
   device; E3 adds nothing at launch, the Guide still loads on first open).
-- Not done in E3: the Pixel walk-through against the preview and the on-device run of the updated smoke (EP 9).
+- Pixel 9: the updated smoke and the walk-through against the preview passed (EP 9, closed).
 
 ## E4 Search (secondary)
 **Goal:** a search icon on Home that finds words and rule numbers ("177", "177B", "Rule 114").
@@ -327,4 +327,4 @@ Each item names the phase that closes it. A phase may not exit while an item ass
 | 6 | E1 | E0 (`docs/guide-phase-plan`) is not merged to `main`; E1 branched from E0 and E2 from E1. Merge in order E0, E1, E2. | Before the E1 PR |
 | 7 | E2 | With five tabs, the existing "Dashboard" label wraps to two lines at 320dp (fine at 360dp and up). Owner decision before launch: accept, or shorten the label. | E9 |
 | 8 | E2 | Placeholder routes: `GuidePlaceholderScreen.kt`, `GuideStrings.comingNext` and `searchTitle`, and the smoke's last step (it expects the placeholder). **Partly closed in E3:** the case and card routes are real screens and the smoke opens a card. Still open: the Search route, the file and both strings. | E4 |
-| 9 | E3 | No Android device was attached on 2026-10-07, so two E3 exit checks did not run: the Pixel walk-through against the approved preview (Home, area, feed with chips, breadcrumb and an "also relevant here" card, card with Details), and `scripts/run_guide_minified_smoke.sh` with its new card step. Run both and record the result here. | Before the E3 PR merges |
+| 9 | E3 | The two E3 device checks. **Closed 2026-10-07 on the Pixel 9** (debug-signed Play-installer `minifiedTest` build, dark theme): `run_guide_minified_smoke.sh` passed (tab, area, case, card, "Key points"); walk-through: Home, area (case rules and counts), feed with chips and counts (All 16, Who qualifies 3...), chip filter, all six "also relevant here" rows naming their real home, card with breadcrumb to the feed it was opened from, Watch out in amber, cite in monospace, Details expand (food-charge card shows no placeholder), back and a tab switch keep the scroll place, breadcrumb up. | E3 |
