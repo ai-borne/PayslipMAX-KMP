@@ -102,7 +102,7 @@ private fun GuideSearchRoute(
     val state by searchViewModel.state.collectAsState()
     GuideSearchScreen(
         query = query,
-        state = state,
+        state = state.visibleTo(access.isUnlocked),
         onQueryChange = searchViewModel::onQueryChange,
         onOpenCard = { navState.push(GuideDestination.Card(it)) },
         onBack = onBack,

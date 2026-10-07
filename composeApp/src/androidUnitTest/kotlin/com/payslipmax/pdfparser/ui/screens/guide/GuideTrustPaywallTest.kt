@@ -1,6 +1,9 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
@@ -174,6 +177,27 @@ class GuideTrustPaywallTest {
         composeRule.onNode(hasSetTextAction()).performTextInput("longer details")
         settle()
         composeRule.onNodeWithText(GuideStrings.resultCount(13)).assertIsDisplayed()
+    }
+
+    @Test
+    fun revokingPremiumWhileSearchingNarrowsTheOpenResultsToThePreview() {
+        var access by mutableStateOf(GuideAccess(isUnlocked = true, onUnlock = {}))
+        val nav = GuideNavState()
+        composeRule.setContent { GuideTab(navState = nav, access = access, viewModel = guide, searchViewModel = search) }
+        settle()
+        composeRule.onNodeWithContentDescription(GuideStrings.searchOpen).performClick()
+        settle()
+        composeRule.onNode(hasSetTextAction()).performTextInput("longer details")
+        settle()
+        composeRule.onNodeWithText(GuideStrings.resultCount(13)).assertIsDisplayed()
+
+        access = GuideAccess(isUnlocked = false, onUnlock = {})
+        settle() // the screen stops showing the wider results at once; the effect then tells the model...
+        composeRule.onNodeWithText(GuideStrings.resultCount(13)).assertDoesNotExist()
+        settle() // ...which searches again under the preview scope
+
+        composeRule.onNodeWithText(GuideStrings.resultCount(13)).assertDoesNotExist()
+        composeRule.onNodeWithText(GuideStrings.searchNone).assertIsDisplayed()
     }
 
     private companion object {

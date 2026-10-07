@@ -73,7 +73,7 @@ class GuideSearchViewModelTest {
             assertEquals("Home town LTC", row.caseTitle)
             assertEquals("Synthetic card RB-T9?", row.title)
             assertEquals("A one-line answer for RB-T9.", row.answer)
-            assertEquals(GuideSearchState.Results(emptyList()), type("zebra"))
+            assertEquals(GuideSearchState.Results(emptyList(), unlockedScope = true), type("zebra"))
         }
 
     @Test
@@ -173,5 +173,25 @@ class GuideSearchViewModelTest {
             assertTrue(rows.getValue(SyntheticGuideBundle.UNVERIFIED_CARD).trust.unverified)
             assertTrue(rows.getValue(SyntheticGuideBundle.NO_CITE_CARD).trust.noOfficialSource)
             assertEquals(SyntheticGuideBundle.RATES_AS_OF, rows.getValue(SyntheticGuideBundle.PERSONAL_CARD).trust.ratesAsOf)
+        }
+
+    @Test
+    fun resultsFoundUnderAnotherScopeAreNeverShownToTheCurrentOne() =
+        test {
+            loadGuide()
+            val full = assertIs<GuideSearchState.Results>(type("longer details"))
+            assertTrue(full.unlockedScope)
+            assertEquals(full, full.visibleTo(unlocked = true))
+
+            // Entitlement revoked while this state is still cached: it must not be shown, not even for one frame.
+            assertEquals(GuideSearchState.Idle, full.visibleTo(unlocked = false))
+
+            search.setUnlocked(false)
+            testScheduler.advanceUntilIdle()
+            val preview = assertIs<GuideSearchState.Results>(search.state.value)
+            assertTrue(!preview.unlockedScope)
+            assertEquals(preview, preview.visibleTo(unlocked = false))
+            assertEquals(GuideSearchState.Idle, preview.visibleTo(unlocked = true), "stale narrower results are hidden too")
+            assertEquals(GuideSearchState.TooShort, GuideSearchState.TooShort.visibleTo(unlocked = false))
         }
 }

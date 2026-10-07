@@ -354,8 +354,7 @@ hidden); search results for locked users show titles only; the nudge appears onl
 - Baselines. Tests: shared JVM 852 / 852, composeApp JVM debug 683 / 683 and release 657 / 657, iOS shared 805, iOS composeApp 458
   (all grew from E4). iOS preview search, 38 realistic queries: 34 ms (budget 1.5 s). Cold start and method count not re-measured
   (E5 adds nothing at launch; EP 12).
-- Not checked on the Pixel: the locked panel (it needs a debug build with `FORCE_FREE`; the `minifiedTest` build is open). Covered
-  by the Compose tests and the real-app tests; added to EP 15.
+- Locked panel checked on the Pixel afterwards (debug build, Force Free); see EP 15. Search scope edge closed (EP 16).
 - Not done by design: the chips do not filter or sort; no per-card "read" memory; no price on the locked panel (the existing sheet
   shows the store price).
 
@@ -401,7 +400,7 @@ simulator walkthrough; baseline comparison; then turn on `GUIDE_ENABLED` for rel
 **Exit:** full pre-push gate green; HANDOFF.md, docs and memory updated.
 **Tech-debt checkpoint:** a known-gaps register (RP-073, unverified cards, the DA 60% flag).
 **Carried here from earlier phases (EP):** 7 (Dashboard label at 320dp), 11 and 15 (the iOS simulator walkthrough: search field,
-locked panel, upgrade sheet, chips), 12 (cold start and APK size), 13 (staleness threshold), 14 (paywall flip checks), 16 (search scope edge).
+locked panel, upgrade sheet, chips), 12 (cold start and APK size), 13 (staleness threshold), 14 (paywall flip checks).
 
 ## Open items carried into E1 (all closed 2026-10-07)
 Bundle location: compose resources (E1 spike). `rates_as_of`: `2026-01`. GUIDANCE vs empty cite: one rule, empty cite.
@@ -425,5 +424,5 @@ Each item names the phase that closes it. A phase may not exit while an item ass
 | 12 | E4 | Cold start and APK size were not re-measured on the device against E3 (like E3: nothing is added at launch). Re-measure at E9 against the E2 figures (190 ms, 188 ms `minifiedTest`) and the Play 1.3.0 baseline. | E9 |
 | 13 | E5 | `GuideStaleness.STALE_AFTER_MONTHS = 9` is a judgement, not an owner decision (DA is revised twice a year). With `rates_as_of` 2026-01 the nudge shows from Oct 2026 on every rate card. Owner confirms or changes the number (one constant and one test line). | E9 |
 | 14 | E5 | `LaunchFlags.GUIDE_PAYWALL_ENABLED` is false, as decided: the owner clears the open points on the main rate cards (RP-088 and the rest) first, then flips it, in its own commit. What no test can prove before the flip: a sandbox purchase on each platform unlocks an open Guide card, and the Claim Guide row then appears in the Premium screen and hub (`isAdvertised`). Check both at the flip. | E9 |
-| 15 | E5 | iOS cannot be driven from here. The locked panel, the Unlock button opening the upgrade sheet, and the trust chips wrapping at large text sizes are covered by Compose tests on Android only, and the locked panel was not looked at on the Pixel either (needs a debug build with `FORCE_FREE`). Add them to the E9 iOS simulator walkthrough with EP 11. | E9 |
-| 16 | E5 | Accepted edge, not fixed: if a user's entitlement is revoked while a search is stacked under a card, the first frame after returning shows the results found under the old scope until `GuideTab` pushes the new scope (one effect later). It exposes only titles and answers the user could read a moment ago. Fixing it would need the scope in every result, which is more code than the risk warrants; revisit if refunds ever revoke Premium mid-session. | E9 |
+| 15 | E5 | **Android half closed 2026-10-07 on the Pixel 9** (debug build, Settings "Force Free"): a locked card shows its title, "Unverified point" chip, warning line and one-line answer, then the Unlock panel with no key points, authority or details; Unlock opens the upgrade sheet. **Still open:** iOS cannot be driven from here, so the locked panel, the sheet and chip wrapping at large text sizes go into the E9 iOS simulator walkthrough with EP 11. | E9 |
+| 16 | E5 | Search results cached under one scope could be drawn for a moment after the entitlement changed. **Closed 2026-10-07:** `GuideSearchState.Results` records its scope and `visibleTo(unlocked)` holds back results from another scope until the model has searched again (unit test, plus an on-screen test that revokes Premium mid-search). | E5 follow-up |

@@ -28,8 +28,15 @@ sealed interface GuideSearchState {
     data object TooShort : GuideSearchState
 
     /** Matches, best first; an empty list is "no results". */
-    data class Results(val rows: List<GuideSearchRow>) : GuideSearchState
+    data class Results(val rows: List<GuideSearchRow>, val unlockedScope: Boolean) : GuideSearchState
 }
+
+/**
+ * The state as the screen may show it for the user's current access. Results are found under the scope that was set
+ * when they were computed; if the entitlement has changed since (a purchase, or a revoked Premium), they are held back
+ * until the model has searched again under the new scope, so a stale wider result list is never drawn.
+ */
+fun GuideSearchState.visibleTo(unlocked: Boolean): GuideSearchState = if (this is GuideSearchState.Results && unlockedScope != unlocked) GuideSearchState.Idle else this
 
 /**
  * App-scoped (a Koin single), so the query and results survive opening a card and coming back, and a tab switch.
@@ -77,15 +84,17 @@ class GuideSearchViewModel(
             !GuideSearchIndex.isSearchable(query) -> GuideSearchState.TooShort
             else ->
                 GuideSearchState.Results(
-                    ui.searchIndex.search(query, if (unlocked) GuideSearchScope.FULL else GuideSearchScope.PREVIEW).map { hit ->
-                        GuideSearchRow(
-                            hit.card.id,
-                            hit.card.title,
-                            hit.card.answer,
-                            ui.index.case(hit.card.nav)?.title.orEmpty(),
-                            GuideTrust.of(hit.card, ui.bundle.ratesAsOf),
-                        )
-                    },
+                    unlockedScope = unlocked,
+                    rows =
+                        ui.searchIndex.search(query, if (unlocked) GuideSearchScope.FULL else GuideSearchScope.PREVIEW).map { hit ->
+                            GuideSearchRow(
+                                hit.card.id,
+                                hit.card.title,
+                                hit.card.answer,
+                                ui.index.case(hit.card.nav)?.title.orEmpty(),
+                                GuideTrust.of(hit.card, ui.bundle.ratesAsOf),
+                            )
+                        },
                 )
         }
 }
