@@ -2,6 +2,8 @@
 
 Status: E0 (this plan) done 2026-10-07. **E1 done 2026-10-07** (branch `feature/guide-e1-bundle`). **E2 done 2026-10-07**
 (branch `feature/guide-e2-tiles`, off E1). **E3 done 2026-10-07** (branch `feature/guide-e3-feed`, off E2). **E4 done 2026-10-07** (same branch); E5 next.
+Branching (decided 2026-10-07, solo developer): `main` holds E0 to E4; each later phase is one branch off `main`,
+merged (fast-forward) when its gate is green and deleted, so at most one phase branch is ever open.
 Items left open by a finished phase are listed under "EP Pending items" at the end, never dropped.
 Inputs: Gold dataset (402 cards: 220 travel, 182 pay), `nav.json` (9 areas, 44 cases), `facets.json`,
 the approved clickable preview, and `CLAUDE.md`. One branch per phase off `main`
@@ -360,7 +362,7 @@ Each item names the phase that closes it. A phase may not exit while an item ass
 | 3 | E1 | Guide keep rule pinned unused serializers. **Closed in E2:** removed entirely, not narrowed; Check 1 on `minifiedTest` and the device smoke prove the models survive without it. | E2 |
 | 4 | E1 | `FakeGuideRepository` had no consumer. **Closed in E2:** used by `GuideViewModelTest`, `GuideTabTest`, `GuideTabInAppTest`. | E2 |
 | 5 | E1 | Report the load error code. **Closed in E2:** `GuideViewModel` records a non-fatal with only `error_guide_load=<code>` (`FakeCrashReporter` test). | E2 |
-| 6 | E1 | E0 (`docs/guide-phase-plan`) is not merged to `main`; E1 branched from E0 and E2 from E1. Merge in order E0, E1, E2. | Before the E1 PR |
+| 6 | E1 | E0 to E4 were stacked branches, none merged to `main`. **Closed 2026-10-07:** fast-forwarded `main` to the E4 commit, gate green on `main`, branches deleted. From E5 on: one short-lived branch per phase off `main`, merged as soon as its gate is green, then deleted. | Before the E1 PR |
 | 7 | E2 | With five tabs, the existing "Dashboard" label wraps to two lines at 320dp (fine at 360dp and up). Owner decision before launch: accept, or shorten the label. | E9 |
 | 8 | E2 | Placeholder routes: `GuidePlaceholderScreen.kt`, `GuideStrings.comingNext` and `searchTitle`, and the smoke's last step. **Closed in E4:** the file and `comingNext` are deleted, `searchTitle` is the real screen's title, and the smoke searches and opens a card from the results. | E4 |
 | 9 | E3 | The two E3 device checks. **Closed 2026-10-07 on the Pixel 9** (debug-signed Play-installer `minifiedTest` build, dark theme): `run_guide_minified_smoke.sh` passed (tab, area, case, card, "Key points"); walk-through: Home, area (case rules and counts), feed with chips and counts (All 16, Who qualifies 3...), chip filter, all six "also relevant here" rows naming their real home, card with breadcrumb to the feed it was opened from, Watch out in amber, cite in monospace, Details expand (food-charge card shows no placeholder), back and a tab switch keep the scroll place, breadcrumb up. | E3 |
