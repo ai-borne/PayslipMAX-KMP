@@ -34,6 +34,7 @@ the approved clickable preview, and `CLAUDE.md`. One branch per phase off `main`
 | Search query | Kept in memory only, so it is gone after the app is killed. (10-07) |
 | Nav and facet labels | Taken from the bundle. `GuideStrings.kt` holds app chrome only. (10-07) |
 | Pins | Device only, not in backup (format stays v3). (10-07) |
+| Free vs paid | Premium with a free preview (tiles, titles, one-line answer, title search free; detail, cite, personalisation, pins, share, Pay Audit link Premium). Paywall on only after open points on main rate cards are cleared. (10-07) |
 
 Standing rules: own words only. CITE shows a primary authority only. Conflicts: TR 2014 beats the FAQ, and a
 newer FAQ beats an older handbook. Legal interpretation is asked, never guessed.
@@ -179,10 +180,16 @@ the card and back returns to the results; iosTest timing over all 402 cards and 
 **Goal:** the four chips wherever a card appears, and the Guide behind the existing Premium entitlement.
 **Files:** `GuideTrustChips.kt`, `FeatureGate.CLAIM_GUIDE` (the `hasAccess` logic is untouched),
 `rememberHasAccess`, the existing `PremiumUpgradeSheet*`, a staleness threshold constant.
-**Owner confirms at start:** tiles and card titles free; card body, search snippets, pins and sharing Premium;
-free-launch mode keeps everything open, as today.
+**Owner decision (2026-10-07), Premium with a free preview.**
+Free: all area and case tiles, card titles, the one-line answer, search over titles and rule numbers.
+Premium: key points, attach, watch out, cite, details, "your figure", pins, copy cite, share as claim note,
+and the Pay Audit link. The gate is one `FeatureGate` value, so the split can be loosened or tightened later
+without rework. Free-launch mode keeps everything open, as today. The paywall is turned on only after the
+owner has cleared the open points on the main rate cards (including RP-088), because charging for cards
+flagged "Unverified point" is a trust risk.
 **Tests:** all existing gates pinned first; each surface with the gate on, off and FORCE_FREE; a locked UI
-state holds no card body; the nudge appears only past the threshold (injected clock).
+state holds only title and one-line answer (key points, cite and details are absent from the state, not just
+hidden); search results for locked users show titles only; the nudge appears only past the threshold (injected clock).
 **Exit:** gates green; `minifiedTest` smoke on the Pixel. **Tech-debt checkpoint:** none carried.
 
 ## E6 Personalisation from the Pay Audit profile
