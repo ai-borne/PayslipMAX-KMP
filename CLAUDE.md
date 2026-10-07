@@ -7,7 +7,7 @@ Keep this file at 200 lines or below.
 
 PayslipMax: an offline-first Kotlin Multiplatform (Android + iOS) app that parses Indian Army PCDA(O)
 payslip PDFs into structured salary data and generates wealth/error-detection insights. Everything runs
-on-device; no PII ever leaves the device. Two independent sub-projects live in this repo:
+on-device; no PII ever leaves the device (sanitized crash/analytics telemetry is the only outbound data — see Persistence & security). Two independent sub-projects live in this repo:
 
 - **`shared/` + `composeApp/` + `iosApp/`** — the KMP app (Kotlin Multiplatform + Compose Multiplatform). This is the primary codebase.
 - **`web-prototype/`** — a standalone Vite/vanilla-JS prototype (separate lint/test toolchain, not part of the KMP build).
@@ -106,6 +106,22 @@ Only after resolving all debt and verifying tests will the next phase begin.
 - `shared/` — all business logic: parser engine, domain models, repositories, encrypted persistence, AI insight auditors. Organized into `commonMain` (platform-agnostic) plus `androidMain`/`iosMain` (`expect`/`actual` platform adapters, e.g. PDFBox vs PDFKit token extraction). Test source sets: `commonTest` (pure unit tests, no device), `androidUnitTest` (JVM tests incl. the corpus regression suite, can use real Android libs via Robolectric-free plain JVM), `iosTest`.
 - `composeApp/` — Compose Multiplatform UI, ViewModels, and display-layer formatting (e.g. `ReplicaUtils.kt`). Depends on `shared`.
 - `iosApp/` — Xcode project wrapping the `composeApp`/`shared` Kotlin framework for iOS distribution.
+- `shared-test-fixtures/` — shared test fakes consumed by the other modules' test source sets; put new fakes here, not inline per module.
+- `gemmaModelPack/` — Play asset pack carrying the Tier 6 Gemma model. Debug builds use a placeholder; a release bundle refuses to build with it (`fetchGemmaModelForRelease`), so `bundleRelease` needs `-PgemmaModelSourcePath`.
+
+### Feature areas beyond the parser (detail lives in the docs, not here)
+
+- **Pay Audit** (Premium, PCDA(O) Army only) — `docs/Plan/09_PayAudit_PhasePlan.md`.
+- **Claim Guide / rule cards** dataset — `docs/Plan/rule_cards/` (start at its `README.md`; `authoring/*.txt` is the source of truth, `rulebook.json` is generated).
+- **Monetization** — `docs/Launch/07_platform_monetization_rollout.md`, `08_ios_monetization_phaseplan.md`.
+- **Release tooling** — fastlane lanes in `iosApp/fastlane` (TestFlight/ASC) and `composeApp/fastlane` (Play tracks/listing); project skills `verify` and `ios-monetization-phase` in `.claude/skills/`.
+
+### R8 / release builds (Android)
+
+- Release is minified and resource-shrunk (`isMinifyEnabled`, `isShrinkResources`, `android.r8.optimizedResourceShrinking`). All keep rules live in `composeApp/proguard-rules.pro`; there are no `consumer-rules.pro` files, so `shared/` relies on the app module's rules. Rationale/history: `docs/Plan/05_R8_Keep_Rules_Recommendations.md`, `06_R8_Serialization_Crashlytics_Rollout_Plan.md`.
+- **Green debug tests do not prove the release build works.** Verify with `./gradlew :composeApp:minifyReleaseWithR8 -PallowPlaceholderGemmaModel=true` (CI runs it; neither git hook does) whenever you add `@Serializable` types, Koin annotations, JNI/LiteRT code, reflection, or a new library.
+- Keep rules stay narrow — no package-wide `-keep class x.** { *; }` without justification; use the `r8-analyzer` skill to audit. Remove rules for dependencies that are gone.
+- The R8 mapping uploads to Crashlytics only for `bundleRelease`; a local `assembleRelease` shares the Play versionCode and would overwrite its mapping, so it's disabled there — keep it that way.
 
 ### Parser pipeline (high level — full detail in `docs/AI_INSIGHTS_PIPELINE.md`)
 
@@ -129,4 +145,5 @@ reading any single file:
 
 - Payslip data and per-field corrections are AES-256 encrypted at rest (`CryptoHelper`, Android Keystore / iOS Keychain) via Room (`EncryptedPayslipEntity`, `PayslipCorrectionEntity`, schema v13). Room has **no destructive-migration fallback** — payslips exist only on-device, so every `@Database.version` bump needs an `AutoMigration`/`Migration`, enforced by `PayslipDatabaseUpgradeTest` (upgrades every exported schema in `shared/schemas/` to head). Corrections apply on read only (`ParsedPayslip.applyCorrections`) and never mutate the original parse — this lets re-parsing overwrite only the parsed side later.
 - `CorpusScrubber` strips all PII (name/account/PAN/email) before any fixture is committed; numeric values are left untouched. Never commit a real PDF, real token dump, or unscrubbed fixture.
+- **Crash telemetry is the one thing that leaves the device.** Firebase Crashlytics (plus Analytics on iOS) runs on both platforms via the `CrashReporter` expect/actual in `shared/.../telemetry/`. Everything sent must pass through `TelemetrySanitizer` — never log payslip values, names, or tokens into crash keys/logs/exceptions.
 - Real PII from before the Phase 6 scrub commit remains in git history; a destructive history rewrite (`filter-repo`/BFG) is deferred pending explicit user decision — don't attempt it unprompted.

@@ -12,9 +12,6 @@
 # 3. Room Database & SQLite
 -dontwarn androidx.room.paging.**
 
-# 4. Ktor Client & Networking
--dontwarn io.ktor.**
-
 # 5. Koin Dependency Injection
 -keepclassmembers class * {
     @org.koin.core.annotation.* <fields>;
