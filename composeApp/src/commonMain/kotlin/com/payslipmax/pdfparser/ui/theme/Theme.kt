@@ -133,6 +133,9 @@ object AppDimensions {
     // Bottom padding that keeps scrolling content clear of the floating edit-session confirmation banner.
     val BannerClearance = 80.dp
 
+    /** Claim Guide area tile: tall enough that a two-line area title and its topic count never crowd. */
+    val GuideAreaTileMinHeight = 92.dp
+
     val TextSizeTiny = 9.sp
     val TextSizeSmall = 11.sp
     val TextSizeMedium = 12.sp

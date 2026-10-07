@@ -9,7 +9,7 @@ import kotlin.test.assertTrue
 
 class AppNavStateTest {
     /** The four bottom-tab roots; every other [Screen] value is a detail-only destination. */
-    private val tabRoots = setOf(Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings)
+    private val tabRoots = setOf(Screen.Dashboard, Screen.History, Screen.Insights, Screen.Guide, Screen.Settings)
     private val detailScreens =
         setOf(
             Screen.Representation,
@@ -102,7 +102,7 @@ class AppNavStateTest {
 
     @Test
     fun screenEnumPartitionsIntoTabRootsAndDetailScreens() {
-        // Guards the model's core assumption: exactly the four tab roots are switchTab targets,
+        // Guards the model's core assumption: exactly the tab roots are switchTab targets,
         // every other Screen is detail-only. If a new Screen is added, this fails until the caller
         // decides which bucket it belongs to.
         assertEquals(Screen.entries.toSet(), tabRoots + detailScreens)

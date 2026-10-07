@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.nav
 import androidx.compose.runtime.saveable.SaverScope
 import com.payslipmax.pdfparser.AppNavStateSaver
 import com.payslipmax.pdfparser.Screen
+import com.payslipmax.pdfparser.appNavStateSaver
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -74,5 +75,20 @@ class AppNavStateSaverTest {
         val restored = AppNavStateSaver.restore(listOf(Screen.TaxPlanning.name, Screen.Dashboard.name))!!
         assertEquals(Screen.Dashboard, restored.currentTab)
         assertNull(restored.activeDetail)
+    }
+
+    // --- Claim Guide dark launch: the Guide tab restores only where the Guide exists ---
+
+    @Test
+    fun guideTabRestoresWhenTheGuideIsOn() {
+        val restored = appNavStateSaver(guideEnabled = true).restore(listOf(Screen.Guide.name))!!
+        assertEquals(Screen.Guide, restored.currentTab)
+    }
+
+    @Test
+    fun guideTabFallsBackToHomeWhenTheGuideIsOff() {
+        val restored = appNavStateSaver(guideEnabled = false).restore(listOf(Screen.Guide.name, Screen.FAQ.name))!!
+        assertEquals(Screen.Dashboard, restored.currentTab)
+        assertEquals(Screen.FAQ, restored.activeDetail)
     }
 }

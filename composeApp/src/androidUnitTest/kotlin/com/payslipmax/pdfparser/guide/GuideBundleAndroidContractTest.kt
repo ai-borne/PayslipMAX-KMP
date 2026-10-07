@@ -18,6 +18,8 @@ class GuideBundleAndroidContractTest {
         runTest {
             val text = GuideBundleContract.readShippedBundleText()
 
-            GuideBundleContract.assertMatchesCompiledDataset(GuideBundleContract.parseShippedBundle(text))
+            val bundle = GuideBundleContract.parseShippedBundle(text)
+            GuideBundleContract.assertMatchesCompiledDataset(bundle)
+            GuideBundleContract.assertTilesMatchDataset(bundle)
         }
 }

@@ -14,6 +14,8 @@ import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.PayAuditViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -25,6 +27,7 @@ import org.koin.dsl.module
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
@@ -86,12 +89,29 @@ class AppKoinModulesTest {
         assertSame(koin.get<OnboardingManager>(), koin.get<OnboardingManager>())
     }
 
+    // The Guide graph on its own: the app includes it only where the Guide is enabled (see the next test).
+    private fun startGuide(): Koin = koinApplication { modules(sharedModule, guideModule, testLeaves) }.koin
+
+    @Test
+    fun guideBindingsExistExactlyWhereTheGuideIsEnabled() {
+        // Release keeps the Guide dark until phase E9, and leaving guideModule out lets R8 drop all Guide code from it.
+        assertEquals(isGuideEnabled(), start().getOrNull<GuideRepository>() != null)
+        assertEquals(isGuideEnabled(), start().getOrNull<GuideViewModel>() != null)
+    }
+
     @Test
     fun guideRepositoryIsOneInstanceSoTheBundleIsParsedOncePerProcess() {
-        val koin = start()
+        val koin = startGuide()
 
         // Every Guide screen asks for it; a per-call instance would re-read and re-parse 250 KB each time.
         assertSame(koin.get<GuideRepository>(), koin.get<GuideRepository>())
+    }
+
+    @Test
+    fun guideViewModelIsAppScopedSoTabSwitchesAndLockKeepTheLoadedGuide() {
+        val koin = startGuide()
+
+        assertSame(koin.get<GuideViewModel>(), koin.get<GuideViewModel>())
     }
 
     @Test

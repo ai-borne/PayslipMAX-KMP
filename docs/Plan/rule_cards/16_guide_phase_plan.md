@@ -1,6 +1,7 @@
 # Claim Guide, Phase E plan (E1 to E9)
 
-Status: E0 (this plan) done 2026-10-07. **E1 done 2026-10-07** (branch `feature/guide-e1-bundle`); E2 next.
+Status: E0 (this plan) done 2026-10-07. **E1 done 2026-10-07** (branch `feature/guide-e1-bundle`). **E2 done 2026-10-07**
+(branch `feature/guide-e2-tiles`, off E1); E3 next.
 Items left open by a finished phase are listed under "EP Pending items" at the end, never dropped.
 Inputs: Gold dataset (402 cards: 220 travel, 182 pay), `nav.json` (9 areas, 44 cases), `facets.json`,
 the approved clickable preview, and `CLAUDE.md`. One branch per phase off `main`
@@ -63,14 +64,15 @@ Facts today: release is minified and resource-shrunk; `proguard-rules.pro` has n
 `minifyReleaseWithR8` runs in CI only and proves just that R8 *compiles*; no test exercises minified behaviour.
 - **No reflection.** Plain `@Serializable` data classes made of strings and lists. No polymorphic or sealed
   serialized types, no `Class.forName`, Koin DSL only.
-- **Narrow keep rule.** Keep `com.payslipmax.pdfparser.guide.model.**` serializers (`$$serializer` and
-  `Companion.serializer()`) only, never package-wide (doc 05). Audited with the `r8-analyzer` skill.
-- **Check 1 (CI and pre-push), new `scripts/check_r8_guide.py`.** After `minifyReleaseWithR8`, it reads
+- **No Guide keep rule (since E2).** Once the UI calls the repository, reachability plus kotlinx-serialization's
+  bundled rules keep every model and serializer; Check 1 proves it. The E1 narrow rule was removed (EP item 3).
+- **Check 1 (CI and pre-push), new `scripts/check_r8_guide.py`.** After `assembleMinifiedTest` (since E2; release
+  keeps the Guide dark, so R8 rightly drops it there), it reads
   the R8 mapping and fails unless every guide model and its serializer survive. It also confirms the
   bundle file is in the shrunk output, byte-identical to the source (optimized resource shrinking).
   `git-pre-push.sh` gains the `minifyReleaseWithR8` step, which neither hook runs today.
 - **Check 2, minified runtime smoke.** A `minifiedTest` build type (release R8 config, debug signing) and
-  one instrumented test: load and validate the bundle, then open Home, a case and a card. Run on the Pixel
+  one black-box UiAutomator test in the self-instrumenting `:guideSmokeTest` module (`scripts/run_guide_minified_smoke.sh`): load and validate the bundle, then open Home, a case and a card. Run on the Pixel
   at E2, E5, E8 and E9 exit, and in pre-push when a device is attached. A CI emulator job is added only if the owner wants it.
 - **Fail loudly in production.** The validator runs on every load. A failure shows an error with retry,
   never a blank tab, and reports only an error code through `TelemetrySanitizer`.
@@ -179,6 +181,27 @@ states (loading, loaded, error with retry); tile counts match the data; flag off
 **Exit:** gates green; Pixel run in debug and `minifiedTest`; labels checked on a small screen; baselines in range.
 **Tech-debt checkpoint:** feed and card are placeholder routes, removed in E3.
 
+**E2 result (2026-10-07).** Done, with these recorded choices:
+- Guide visibility is one compile-time value, `isGuideEnabled()` = `LaunchFlags.GUIDE_ENABLED` or a debug build
+  (`BuildConfig.GUIDE_PREVIEW` on Android, true for debug and `minifiedTest`; `isDebugBuild()` on iOS). `App` hoists
+  `GuideNavState` only when it is on; it is null otherwise, which hides the tab, blocks the route and lets R8 drop all
+  Guide code from release. `guideModule` is included in `appModule` only when it is on. A saved `Guide` tab restores
+  to Home when the Guide is off.
+- `GuideBackHeader.kt` was not created: the existing `ScreenBackHeader` is already the back-plus-title SSOT; the
+  breadcrumb arrives with E3. Case, card and search are `GuidePlaceholderScreen` (one file, removed in E3).
+- Also touched (smallest change each): `AppOnboardingOverlay.kt` and `MainViewController.kt` (pass the state; exhaustive
+  `when`), `AppModule.kt`, `composeApp/build.gradle.kts`, `settings.gradle.kts`, `libs.versions.toml`, root build file.
+  `App.kt` reached 298 lines, so `AppNavStateSaver` moved unchanged to `AppNavStateSaver.kt` (now 287), and
+  `MainScaffold`/`ScreenContent` were split (`MainBottomBar`, `TabRootContent`) to stay under 50 lines.
+- Check 2 lives in its own self-instrumenting module: an in-app androidTest shares the app's R8-renamed Kotlin
+  stdlib and crashed before running. It reads the UI copy through a generated `SmokeStrings` (from `GuideStrings.kt`).
+- Small screen: real area and case titles and the five tab labels pass at 360dp (Robolectric native graphics) and on
+  the Pixel at 360dp. At 320dp "Dashboard" wraps to two lines (EP item 7).
+- Baselines (Pixel 9). Cold start, `am start -W` WaitTime median of 10: Play 1.3.0 with real data 3,100 ms (EP 1);
+  same empty state E1 release 193 ms, E2 release 190 ms, E2 `minifiedTest` with the Guide 188 ms. Release APK
+  vs E1: content -5,897 bytes, 55,354 -> 55,269 method ids (base 55,254: the bundle plus about 0.9 KB of app-shell
+  dex). Tests: shared JVM 800 / 800 (1 skipped as before), composeApp JVM 612 / 591, iOS shared 753, iOS composeApp 416.
+
 ## E3 Feed, facet chips and card screen
 **Goal:** case tile, then a feed with breadcrumb and facet chips, then the full card.
 **Files:** `GuideFeedScreen.kt`, `GuideFacetChips.kt`, `GuideCardScreen.kt`, `GuideCardSections.kt`,
@@ -260,9 +283,11 @@ CI emulator job: no. See the owner decisions table.
 Each item names the phase that closes it. A phase may not exit while an item assigned to it is still open.
 | # | From | Item | Closed in |
 |---|---|---|---|
-| 1 | E1 | Pixel cold-start baseline not recorded: no device was attached on 2026-10-07. E1 adds nothing to the launch path (the repository is a lazy Koin single), so record it on the E1 build at E2 start. | E2 start |
-| 2 | E1 | The E1 exit asked for "both R8 checks", but Check 2 (`minifiedTest` build type and smoke test) is listed in E2's files and needs the Pixel. Only Check 1 and the iOS resource test ran in E1. | E2 |
-| 3 | E1 | The guide keep rule pins the 5 serializers while nothing calls them (+100 method ids, about 7 KB dex). An `r8-analyzer` audit found the `Companion.serializer()` part redundant with kotlinx-serialization's bundled rules once the models are reachable. When E2's UI calls the repository: remove that part, narrow the `$$serializer` part (add `allowoptimization`), and prove both with `check_r8_guide.py`. | E2 |
-| 4 | E1 | `FakeGuideRepository` has no consumer yet; its first use is the E2 `GuideViewModel` tests. | E2 |
-| 5 | E1 | Report the load error code (only `GuideLoadError`, nothing else) through `TelemetrySanitizer` when the E2 error state shows. | E2 |
-| 6 | E1 | E0 (`docs/guide-phase-plan`) is not merged to `main`, so E1 branched from E0, not from `main`. Merge E0 first, then E1. | Before the E1 PR |
+| 1 | E1 | Pixel cold-start baseline. **Closed in E2:** recorded on the Play 1.3.0 build and, like for like, on E1 vs E2 release (E2 result). | E2 start |
+| 2 | E1 | R8 Check 2 not run in E1. **Closed in E2:** `minifiedTest` and `:guideSmokeTest` pass on the Pixel 9 (3 runs). | E2 |
+| 3 | E1 | Guide keep rule pinned unused serializers. **Closed in E2:** removed entirely, not narrowed; Check 1 on `minifiedTest` and the device smoke prove the models survive without it. | E2 |
+| 4 | E1 | `FakeGuideRepository` had no consumer. **Closed in E2:** used by `GuideViewModelTest`, `GuideTabTest`, `GuideTabInAppTest`. | E2 |
+| 5 | E1 | Report the load error code. **Closed in E2:** `GuideViewModel` records a non-fatal with only `error_guide_load=<code>` (`FakeCrashReporter` test). | E2 |
+| 6 | E1 | E0 (`docs/guide-phase-plan`) is not merged to `main`; E1 branched from E0 and E2 from E1. Merge in order E0, E1, E2. | Before the E1 PR |
+| 7 | E2 | With five tabs, the existing "Dashboard" label wraps to two lines at 320dp (fine at 360dp and up). Owner decision before launch: accept, or shorten the label. | E9 |
+| 8 | E2 | Placeholder routes: `GuidePlaceholderScreen.kt`, `GuideStrings.comingNext` and `searchTitle`, and the smoke's last step (it expects the placeholder). | E3 (search: E4) |

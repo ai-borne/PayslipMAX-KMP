@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -22,6 +20,10 @@ import com.payslipmax.pdfparser.ui.screens.HistoryScreen
 import com.payslipmax.pdfparser.ui.screens.InsightsScreen
 import com.payslipmax.pdfparser.ui.screens.LockScreen
 import com.payslipmax.pdfparser.ui.screens.SettingsScreen
+import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
+import com.payslipmax.pdfparser.ui.screens.guide.GuideNavStateSaver
+import com.payslipmax.pdfparser.ui.screens.guide.GuideTab
+import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
 import org.koin.compose.koinInject
@@ -41,36 +43,16 @@ enum class Screen {
     PayslipReplica,
     PremiumFeatures,
     PayAudit,
+
+    /** Claim Guide tab root (dark launch); the Guide keeps its own stack inside the tab, see [GuideNavState]. */
+    Guide,
 }
 
-/** The four bottom-tab roots; the remaining [Screen] values are pushed detail screens. */
+/** The bottom-tab roots; the remaining [Screen] values are pushed detail screens. */
 internal val Screen.isTabRoot: Boolean
-    get() = this == Screen.Dashboard || this == Screen.History || this == Screen.Insights || this == Screen.Settings
-
-/**
- * Persists [AppNavState] across process death via a [Screen] name list: tab root first, then
- * the pushed detail stack bottom-to-top (decision 9). Restoration is crash-guarded and
- * truncates from the first invalid entry onward — if a saved constant was renamed or removed,
- * or a detail name turns up in the tab slot, everything from that point on is discarded rather
- * than reconstructing a stack ordering the user never actually created.
- */
-internal val AppNavStateSaver: Saver<AppNavState, Any> =
-    listSaver(
-        save = { listOf(it.currentTab.name) + it.detailStack.map(Screen::name) },
-        restore = { saved ->
-            AppNavState(
-                currentTab = restoreScreen(saved.getOrNull(0))?.takeIf(Screen::isTabRoot) ?: Screen.Dashboard,
-                initialDetailStack =
-                    saved.drop(1)
-                        .map(::restoreScreen)
-                        .takeWhile { it != null && !it.isTabRoot }
-                        .filterNotNull(),
-            )
-        },
-    )
-
-private fun restoreScreen(name: String?): Screen? =
-    name?.let { runCatching { Screen.valueOf(it) }.getOrNull() }
+    get() =
+        this == Screen.Dashboard || this == Screen.History || this == Screen.Insights || this == Screen.Guide ||
+            this == Screen.Settings
 
 /**
  * @param navState hoisted so iOS can share one instance between the root Compose tree and its
@@ -87,6 +69,9 @@ fun App(
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
     navState: AppNavState = rememberSaveable(saver = AppNavStateSaver) { AppNavState() },
+    // Hoisted here, above the lock screen, so locking and switching tabs keep the user's place in the Guide. Null
+    // while the Guide is off (release until E9): no Guide tab or route, and R8 drops all Guide code.
+    guideNavState: GuideNavState? = if (isGuideEnabled()) rememberSaveable(saver = GuideNavStateSaver) { GuideNavState() } else null,
     nativeDetailNavigator: ((Screen) -> Unit)? = null,
     onboardingManager: OnboardingManager = koinInject(),
 ) {
@@ -112,6 +97,7 @@ fun App(
         } else {
             MainContentWithOnboarding(
                 navState = navState,
+                guideNavState = guideNavState,
                 uiState = uiState,
                 viewModel = viewModel,
                 onPickPdf = onPickPdf,
@@ -129,6 +115,7 @@ fun App(
 @Composable
 internal fun MainScaffold(
     navState: AppNavState,
+    guideNavState: GuideNavState?,
     uiState: PayslipUiState,
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
@@ -143,12 +130,7 @@ internal fun MainScaffold(
         bottomBar = {
             // Detail screens are pushed on top and hide the tab bar (decision 8) — but on iOS the
             // native VC covers the whole root tree, so the bar stays here (hidden behind it).
-            if (hostDetailsNatively || navState.activeDetail == null) {
-                AppBottomBar(
-                    currentScreen = navState.currentTab,
-                    onNavigate = { navState.switchTab(it) },
-                )
-            }
+            if (hostDetailsNatively || navState.activeDetail == null) MainBottomBar(navState, guideNavState)
         },
     ) { paddingValues ->
         // System back pops a pushed detail; at a tab root it stays disabled so back exits.
@@ -166,6 +148,7 @@ internal fun MainScaffold(
             Box(modifier = Modifier.weight(1f)) {
                 ScreenContent(
                     navState = navState,
+                    guideNavState = guideNavState,
                     viewModel = viewModel,
                     onPickPdf = onPickPdf,
                     onOpenPdf = onOpenPdf,
@@ -179,8 +162,22 @@ internal fun MainScaffold(
 }
 
 @Composable
+private fun MainBottomBar(
+    navState: AppNavState,
+    guideNavState: GuideNavState?,
+) {
+    AppBottomBar(
+        currentScreen = navState.currentTab,
+        onNavigate = { navState.switchTab(it) },
+        showGuide = guideNavState != null,
+        onGuideReselected = { guideNavState?.popToHome() },
+    )
+}
+
+@Composable
 private fun ScreenContent(
     navState: AppNavState,
+    guideNavState: GuideNavState?,
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
@@ -206,26 +203,42 @@ private fun ScreenContent(
         val onNavigate: (Screen) -> Unit = {
             if (it.isTabRoot) navState.switchTab(it) else nativeDetailNavigator?.invoke(it) ?: navState.push(it)
         }
-        when (navState.currentTab) {
-            Screen.History ->
-                HistoryScreen(
-                    viewModel = viewModel,
-                    onOpenPdf = onOpenPdf,
-                    onNavigateToInsights = { onNavigate(Screen.Insights) },
-                    onOpenPayslipDetail = { payslip ->
-                        viewModel.selectHistoryDetailPayslip(payslip.dateStr)
-                        onNavigate(Screen.PayslipReplica)
-                    },
-                )
-            Screen.Insights -> InsightsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
-            Screen.Settings -> SettingsScreen(viewModel = viewModel, onNavigateTo = onNavigate, onPickBackup = onPickBackup)
-            else ->
-                DashboardScreen(
-                    viewModel = viewModel,
-                    onPickPdf = onPickPdf,
-                    suppressCoachmark = suppressUploadCoachmark,
-                )
-        }
+        TabRootContent(navState.currentTab, guideNavState, viewModel, onNavigate, onPickPdf, onOpenPdf, onPickBackup, suppressUploadCoachmark)
+    }
+}
+
+@Composable
+private fun TabRootContent(
+    tab: Screen,
+    guideNavState: GuideNavState?,
+    viewModel: PayslipViewModel,
+    onNavigate: (Screen) -> Unit,
+    onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
+    onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
+    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    suppressUploadCoachmark: Boolean,
+) {
+    when (tab) {
+        Screen.History ->
+            HistoryScreen(
+                viewModel = viewModel,
+                onOpenPdf = onOpenPdf,
+                onNavigateToInsights = { onNavigate(Screen.Insights) },
+                onOpenPayslipDetail = { payslip ->
+                    viewModel.selectHistoryDetailPayslip(payslip.dateStr)
+                    onNavigate(Screen.PayslipReplica)
+                },
+            )
+        Screen.Insights -> InsightsScreen(viewModel = viewModel, onNavigateTo = onNavigate)
+        Screen.Settings -> SettingsScreen(viewModel = viewModel, onNavigateTo = onNavigate, onPickBackup = onPickBackup)
+        // Unreachable with the Guide off (no tab, and the saver never restores it).
+        Screen.Guide -> guideNavState?.let { GuideTab(navState = it) }
+        else ->
+            DashboardScreen(
+                viewModel = viewModel,
+                onPickPdf = onPickPdf,
+                suppressCoachmark = suppressUploadCoachmark,
+            )
     }
 }
 
@@ -269,7 +282,7 @@ private fun DetailContent(
         // Tab roots are structurally unreachable here: onNavigate() routes them via switchTab(),
         // never push(), and AppNavStateSaver.restore() filters activeDetail to !isTabRoot. Handled
         // only so this `when` stays exhaustive against future Screen cases.
-        Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings ->
+        Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings, Screen.Guide ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
     }
 }

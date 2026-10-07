@@ -2,7 +2,8 @@
 
 # Exhaustive safety net, run once per push (not per commit): full Android+common matrix (both
 # build variants, full corpus regression, lint, ktlint, checkFileSizes), the Claim Guide data tools
-# and R8 gate (release APK + scripts/check_r8_guide.py), the full iOS unit test
+# and R8 gate (release APK, minifiedTest APK + scripts/check_r8_guide.py, and the minified device smoke
+# when an Android device is attached), the full iOS unit test
 # suite (incl. ParserUtilsIosPerfTest's Native timing assertions), the native Swift XCTest suite
 # (iosApp/PayslipMaxTests — nav bridge, byte marshaling, auth retry, Gemma engine cache; see
 # docs/Plan/07_iOS_Native_Test_Coverage_Gap.md), a Room schema immutability check, and a gitleaks
@@ -38,12 +39,22 @@ fi
 echo "   ✅ done in $(($(date +%s) - stage_start))s"
 
 echo ""
-echo "3/7 🧩 Release build + Claim Guide R8 gate (assembleRelease, scripts/check_r8_guide.py)..."
+echo "3/7 🧩 Release build + Claim Guide R8 gate (assembleRelease, assembleMinifiedTest, scripts/check_r8_guide.py)..."
 stage_start=$(date +%s)
-./gradlew :composeApp:assembleRelease -PallowPlaceholderGemmaModel=true -q 2>&1 && python3 scripts/check_r8_guide.py
+./gradlew :composeApp:assembleRelease :composeApp:assembleMinifiedTest -PallowPlaceholderGemmaModel=true -q 2>&1 && python3 scripts/check_r8_guide.py
 if [ $? -ne 0 ]; then
     echo "❌ Push rejected: release build failed, or R8 removed a Guide model or changed the bundle."
     exit 1
+fi
+# R8 Check 2 needs a device (owner decision 2026-10-07: no CI emulator). Runs only when one is attached.
+if [ "$(adb devices 2>/dev/null | grep -c 'device$')" -gt 0 ]; then
+    scripts/run_guide_minified_smoke.sh
+    if [ $? -ne 0 ]; then
+        echo "❌ Push rejected: the minified Guide smoke failed on the attached device (see output above)."
+        exit 1
+    fi
+else
+    echo "   ⚠️  No Android device attached: minified Guide smoke skipped (run scripts/run_guide_minified_smoke.sh at phase exit)."
 fi
 echo "   ✅ done in $(($(date +%s) - stage_start))s"
 

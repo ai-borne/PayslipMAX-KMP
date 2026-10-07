@@ -22,6 +22,7 @@ class GuideLoaderIosPerfTest {
 
             assertTrue(elapsedMs < PARSE_BUDGET_MS, "parse and validate took ${elapsedMs}ms, budget ${PARSE_BUDGET_MS}ms")
             GuideBundleContract.assertMatchesCompiledDataset(bundle)
+            GuideBundleContract.assertTilesMatchDataset(bundle)
         }
 
     private companion object {

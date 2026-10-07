@@ -5,12 +5,14 @@ import com.payslipmax.pdfparser.insights.gemma.provideGemmaBaseModelInstaller
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.PayAuditViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
 val appModule =
     module {
-        includes(guideModule)
+        // Release leaves the Guide out until phase E9, so R8 removes all Guide code from it (only the bundle asset ships).
+        if (isGuideEnabled()) includes(guideModule)
         // One installer for every PayslipViewModel: the iOS installer publishes its progress
         // through process-wide statics, so a second instance would orphan the first's subscriber.
         single<GemmaBaseModelInstaller> { provideGemmaBaseModelInstaller() }

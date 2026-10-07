@@ -13,6 +13,7 @@ import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.OnboardingScreen
+import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
 
 /**
  * Renders [MainScaffold] with the onboarding carousel as a translucent-scrim overlay on top of it
@@ -22,6 +23,7 @@ import com.payslipmax.pdfparser.ui.screens.OnboardingScreen
 @Composable
 internal fun MainContentWithOnboarding(
     navState: AppNavState,
+    guideNavState: GuideNavState?,
     uiState: PayslipUiState,
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
@@ -35,6 +37,7 @@ internal fun MainContentWithOnboarding(
     Box(modifier = Modifier.fillMaxSize()) {
         MainScaffold(
             navState = navState,
+            guideNavState = guideNavState,
             uiState = uiState,
             viewModel = viewModel,
             onPickPdf = onPickPdf,

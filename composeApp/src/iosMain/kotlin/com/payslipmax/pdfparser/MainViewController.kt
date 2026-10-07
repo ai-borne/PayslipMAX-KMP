@@ -125,7 +125,7 @@ class IosNavHost(
                 // switchTab(), never push()/nativeDetailNavigator, and AppNavStateSaver.restore()
                 // filters activeDetail to !isTabRoot. Handled only so this `when` stays exhaustive
                 // against future Screen cases.
-                Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings ->
+                Screen.Dashboard, Screen.History, Screen.Insights, Screen.Settings, Screen.Guide ->
                     HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
             }
         }

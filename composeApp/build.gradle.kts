@@ -123,6 +123,11 @@ kotlin {
                 implementation(libs.koin.test)
             }
         }
+
+        // minifiedTest compiles the release variant's Koin modules (no developer tooling).
+        matching { it.name == "androidMinifiedTest" }.configureEach {
+            kotlin.srcDir("src/androidRelease/kotlin")
+        }
     }
 }
 
@@ -167,6 +172,12 @@ android {
         targetSdk = 36
         versionCode = 18
         versionName = appVersionName
+        // Claim Guide dark launch: shown in debug only until LaunchFlags.GUIDE_ENABLED flips in phase E9.
+        // A constant per build type, so R8 removes the Guide UI from release (docs/Plan/rule_cards/16_guide_phase_plan.md).
+        buildConfigField("boolean", "GUIDE_PREVIEW", "false")
+    }
+    buildFeatures {
+        buildConfig = true
     }
     // On-demand asset pack carrying the Tier 6 Gemma base model (Play Asset Delivery).
     assetPacks += listOf(":gemmaModelPack")
@@ -190,6 +201,9 @@ android {
     }
 
     buildTypes {
+        getByName("debug") {
+            buildConfigField("boolean", "GUIDE_PREVIEW", "true")
+        }
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -200,6 +214,14 @@ android {
             if (isReleaseSigningConfigured) {
                 signingConfig = signingConfigs.getByName("release")
             }
+        }
+        // R8 Check 2: the release R8 and resource-shrink config with the Guide visible and debug signing, so the
+        // :guideSmokeTest module can drive it on a device. Local only: never uploaded, never shipped.
+        create("minifiedTest") {
+            initWith(getByName("release"))
+            buildConfigField("boolean", "GUIDE_PREVIEW", "true")
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
         }
     }
     packaging {
@@ -241,4 +263,16 @@ tasks.matching { it.name == "assetPackReleasePreBundleTask" }.configureEach {
 val uploadsCrashlyticsMapping = gradle.startParameter.taskNames.any { it.endsWith("bundleRelease") }
 tasks.matching { it.name == "uploadCrashlyticsMappingFileRelease" }.configureEach {
     enabled = uploadsCrashlyticsMapping
+}
+
+// The minifiedTest smoke build shares the Play versionCode and must never overwrite its Crashlytics mapping.
+tasks.matching { it.name == "uploadCrashlyticsMappingFileMinifiedTest" }.configureEach {
+    enabled = false
+}
+
+// minifiedTest exists for the device smoke only; its JVM unit tests would just rerun the release ones.
+androidComponents {
+    beforeVariants(selector().withBuildType("minifiedTest")) { variant ->
+        (variant as com.android.build.api.variant.HasUnitTestBuilder).enableUnitTest = false
+    }
 }

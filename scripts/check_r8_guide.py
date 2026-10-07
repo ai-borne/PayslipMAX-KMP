@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """Release-build gate for the Claim Guide (docs/Plan/rule_cards/16_guide_phase_plan.md, "R8 and release-build safety").
 
-Green debug tests do not prove the minified app can read the Guide. After `:composeApp:assembleRelease`, this fails
-unless:
+Green debug tests do not prove the minified app can read the Guide. It checks the `minifiedTest` build: the release R8
+and resource-shrink config with the Guide reachable, which is what release becomes when LaunchFlags.GUIDE_ENABLED flips
+in phase E9. (Release itself keeps the Guide dark, so R8 rightly drops the Guide code there.) There is no Guide keep
+rule: reachability plus kotlinx-serialization's bundled rules keep the models, and this gate proves it. After
+`:composeApp:assembleMinifiedTest`, this fails unless:
   1. every @Serializable class in guide/model/GuideModels.kt survives R8 with its generated `$$serializer` and its
      `Companion.serializer()` (read from the R8 mapping; the model list comes from the source, not a copy), and
   2. the release APK carries the Guide bundle byte-identical to the source file.
 
-Usage: check_r8_guide.py [--mapping PATH] [--apk PATH]   (defaults: the release outputs of composeApp)
+Usage: check_r8_guide.py [--mapping PATH] [--apk PATH]   (defaults: the minifiedTest outputs of composeApp)
 """
 import argparse
 import glob
@@ -21,8 +24,8 @@ PACKAGE = "com.payslipmax.pdfparser.guide.model"
 MODELS_SRC = os.path.join(ROOT, "shared/src/commonMain/kotlin/com/payslipmax/pdfparser/guide/model/GuideModels.kt")
 BUNDLE_SRC = os.path.join(ROOT, "composeApp/src/commonMain/composeResources/files/guide/guide_bundle.json")
 BUNDLE_SUFFIX = "/files/guide/guide_bundle.json"
-DEFAULT_MAPPING = os.path.join(ROOT, "composeApp/build/outputs/mapping/release/mapping.txt")
-DEFAULT_APK_GLOB = os.path.join(ROOT, "composeApp/build/outputs/apk/release/*.apk")
+DEFAULT_MAPPING = os.path.join(ROOT, "composeApp/build/outputs/mapping/minifiedTest/mapping.txt")
+DEFAULT_APK_GLOB = os.path.join(ROOT, "composeApp/build/outputs/apk/minifiedTest/*.apk")
 
 SERIALIZABLE_CLASS = re.compile(r"@Serializable\s+(?:data\s+)?class\s+(\w+)")
 CLASS_LINE = re.compile(r"^(\S+) -> \S+:$")
@@ -77,7 +80,7 @@ def main():
     args = parser.parse_args()
     apks = [args.apk] if args.apk else glob.glob(DEFAULT_APK_GLOB)
     if not os.path.exists(args.mapping) or len(apks) != 1:
-        sys.exit(f"Run ./gradlew :composeApp:assembleRelease first (mapping: {args.mapping}, apks: {apks})")
+        sys.exit(f"Run ./gradlew :composeApp:assembleMinifiedTest first (mapping: {args.mapping}, apks: {apks})")
     with open(MODELS_SRC, encoding="utf-8") as fh:
         models = serializable_models(fh.read())
     with open(args.mapping, encoding="utf-8") as fh:

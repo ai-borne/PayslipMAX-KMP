@@ -36,10 +36,7 @@
 # 9. Firebase Crashlytics & Telemetry
 -dontwarn com.google.firebase.crashlytics.**
 
-# 10. Claim Guide bundle models (docs/Plan/rule_cards/16_guide_phase_plan.md). Narrow on purpose: only the
-# generated serializers of the guide model package, renaming allowed. scripts/check_r8_guide.py fails the
-# release gate if any model or serializer is removed.
--keep,allowobfuscation class com.payslipmax.pdfparser.guide.model.*$$serializer { *; }
--keep,allowobfuscation class com.payslipmax.pdfparser.guide.model.*$Companion {
-    kotlinx.serialization.KSerializer serializer(...);
-}
+# 10. Claim Guide bundle models: no rule on purpose. Once the Guide UI calls the repository, reachability plus
+# kotlinx-serialization's bundled rules keep every model and serializer; scripts/check_r8_guide.py proves it on
+# the minifiedTest build (docs/Plan/rule_cards/16_guide_phase_plan.md, EP item 3).
+

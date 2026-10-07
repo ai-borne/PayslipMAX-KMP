@@ -3,9 +3,12 @@ package com.payslipmax.pdfparser.guide
 import com.payslipmax.pdfparser.di.GUIDE_BUNDLE_PATH
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.ui.screens.guide.toContent
+import com.payslipmax.pdfparser.ui.screens.guide.toReady
 import pdfparser.composeapp.generated.resources.Res
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 /**
  * Contract between the shipped bundle and the app, asserted on each platform after reading the real file
@@ -35,5 +38,16 @@ object GuideBundleContract {
         assertEquals("2026-01", bundle.ratesAsOf)
         // RP-088 HBA ships with the chip until the owner confirms the rate from a primary letter.
         assertEquals(true, bundle.cards.firstOrNull { it.topic == "RP-088" }?.unverified)
+    }
+
+    /** The E2 tiles: 9 area tiles holding the 44 cases, and every card counted once in the case it is homed in. */
+    fun assertTilesMatchDataset(bundle: GuideBundle) {
+        val ready = bundle.toReady()
+        assertEquals(9, ready.areas.size)
+        assertEquals(44, ready.areas.sumOf { it.caseCount })
+        val cases = bundle.nav.flatMap { it.toContent().cases }
+        assertEquals(bundle.cards.size, bundle.nav.sumOf { area -> area.cases.sumOf { it.cards.size } })
+        assertEquals(bundle.nav.sumOf { area -> area.cases.sumOf { it.cards.size + it.also.size } }, cases.sumOf { it.cardCount })
+        assertTrue(cases.all { it.cardCount > 0 }, "no empty case tile")
     }
 }

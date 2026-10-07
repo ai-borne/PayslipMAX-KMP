@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.di
 import com.payslipmax.pdfparser.guide.GuideBundleSource
 import com.payslipmax.pdfparser.guide.GuideRepository
 import com.payslipmax.pdfparser.guide.data.LazyGuideRepository
+import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module
 import pdfparser.composeapp.generated.resources.Res
@@ -19,4 +20,6 @@ val guideModule =
         single<GuideBundleSource> { GuideBundleSource { Res.readBytes(GUIDE_BUNDLE_PATH).decodeToString() } }
         // One repository per process, so the bundle is parsed once however many Guide screens ask.
         single<GuideRepository> { LazyGuideRepository(source = get(), dispatcher = Dispatchers.Default) }
+        // App-scoped: switching tabs or locking the app keeps the loaded Guide; it holds no screen state.
+        single { GuideViewModel(repository = get(), crashReporter = get()) }
     }
