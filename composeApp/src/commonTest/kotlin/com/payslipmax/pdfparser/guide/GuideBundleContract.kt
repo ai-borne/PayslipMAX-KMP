@@ -7,6 +7,7 @@ import com.payslipmax.pdfparser.guide.domain.GuideRuleNumberParser
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
 import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.subscription.LaunchFlags
 import com.payslipmax.pdfparser.ui.screens.guide.cardContent
 import com.payslipmax.pdfparser.ui.screens.guide.feedContent
 import com.payslipmax.pdfparser.ui.screens.guide.toContent
@@ -103,6 +104,17 @@ object GuideBundleContract {
             assertTrue(searchIndex.search(word, GuideSearchScope.PREVIEW).none { it.card.id == card.id }, "preview search leaked a hidden word of ${card.id}")
             assertTrue(searchIndex.search(word, GuideSearchScope.FULL).any { it.card.id == card.id }, "full search finds ${card.id}")
         }
+    }
+
+    /**
+     * Owner rule (2026-10-07): charging for key points, cite and details starts only when no card carrying the Rates chip is
+     * still an "Unverified point" (RP-088 HBA 8.5% is one). With the paywall off this holds nothing back; the day someone flips
+     * [LaunchFlags.GUIDE_PAYWALL_ENABLED] while such a card remains, this fails and names the cards.
+     */
+    fun assertPaywallOnlyWhenNoUnverifiedRateCard(bundle: GuideBundle) {
+        if (!LaunchFlags.GUIDE_PAYWALL_ENABLED) return
+        val blocking = bundle.cards.filter { "RATES" in it.chips && it.unverified }.map { it.id }
+        assertTrue(blocking.isEmpty(), "the paywall is on while rate cards are still unverified: $blocking")
     }
 
     /**

@@ -29,8 +29,8 @@ import kotlin.test.assertFalse
 /**
  * Labels on a small phone (360dp wide, the smallest common Android width; iPhone SE is 375pt): the real area and
  * case titles and the five tab labels must lay out without being cut off. Titles are bundle content, so a longer
- * title added later is caught here. At 320dp the existing "Dashboard" tab label wraps to two lines once there are
- * five tabs; that is recorded in the plan's EP list for the E9 release decision.
+ * title added later is caught here. The first tab is labelled "Home" (owner decision 2026-10-07), because the old
+ * "Dashboard" wrapped to two lines at 320dp once there were five tabs.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34], qualifiers = "w360dp-h640dp")
@@ -93,5 +93,12 @@ class GuideSmallScreenTest {
             GuideStrings.tabLabel,
             AppStrings.navigationSettings,
         ).forEach { composeRule.onNodeWithText(it).assertNotClipped(it, singleLine = true) }
+    }
+
+    @Test
+    @Config(sdk = [34], qualifiers = "w320dp-h640dp")
+    fun fiveTabLabelsStayOnOneLineEvenAt320dp() {
+        // EP 7: "Dashboard" wrapped here; "Home" must not, and neither may the other four.
+        fiveTabLabelsFitOnASmallPhone()
     }
 }

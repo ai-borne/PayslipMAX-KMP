@@ -300,7 +300,7 @@ the card and back returns to the results; iosTest timing over all 402 cards and 
 **Goal:** the four chips wherever a card appears, and the Guide behind the existing Premium entitlement.
 **Files:** `GuideTrustChips.kt`, `FeatureGate.CLAIM_GUIDE` (the `hasAccess` logic is untouched),
 `rememberHasAccess`, the existing `PremiumUpgradeSheet*`, a staleness threshold constant.
-**Owner decision (2026-10-07), Premium with a free preview.**
+**Owner decision (2026-10-07), Premium with a free preview.** (Paywall rule and 9-month nudge confirmed the same day; see EP 13, 14.)
 Free: all area and case tiles, card titles, the one-line answer, search over titles and rule numbers.
 Premium: key points, attach, watch out, cite, details, "your figure", pins, copy cite, share as claim note,
 and the Pay Audit link. The gate is one `FeatureGate` value, so the split can be loosened or tightened later
@@ -399,8 +399,8 @@ outbound path, nothing Guide-related in telemetry, and no `from`/`open` in the b
 simulator walkthrough; baseline comparison; then turn on `GUIDE_ENABLED` for release in its own commit.
 **Exit:** full pre-push gate green; HANDOFF.md, docs and memory updated.
 **Tech-debt checkpoint:** a known-gaps register (RP-073, unverified cards, the DA 60% flag).
-**Carried here from earlier phases (EP):** 7 (Dashboard label at 320dp), 11 and 15 (the iOS simulator walkthrough: search field,
-locked panel, upgrade sheet, chips), 12 (cold start and APK size), 13 (staleness threshold), 14 (paywall flip checks).
+**Carried here from earlier phases (EP):** 11 and 15 (the iOS simulator walkthrough: search field, locked panel, upgrade sheet,
+chips), 12 (cold start and APK size), 14 (the purchase and Premium-row checks at the paywall flip). 7 and 13 are closed.
 
 ## Open items carried into E1 (all closed 2026-10-07)
 Bundle location: compose resources (E1 spike). `rates_as_of`: `2026-01`. GUIDANCE vs empty cite: one rule, empty cite.
@@ -416,13 +416,13 @@ Each item names the phase that closes it. A phase may not exit while an item ass
 | 4 | E1 | `FakeGuideRepository` had no consumer. **Closed in E2:** used by `GuideViewModelTest`, `GuideTabTest`, `GuideTabInAppTest`. | E2 |
 | 5 | E1 | Report the load error code. **Closed in E2:** `GuideViewModel` records a non-fatal with only `error_guide_load=<code>` (`FakeCrashReporter` test). | E2 |
 | 6 | E1 | E0 to E4 were stacked branches, none merged to `main`. **Closed 2026-10-07:** fast-forwarded `main` to the E4 commit, gate green on `main`, branches deleted. From E5 on: one short-lived branch per phase off `main`, merged as soon as its gate is green, then deleted. | Before the E1 PR |
-| 7 | E2 | With five tabs, the existing "Dashboard" label wraps to two lines at 320dp (fine at 360dp and up). Owner decision before launch: accept, or shorten the label. | E9 |
+| 7 | E2 | With five tabs, "Dashboard" wrapped to two lines at 320dp. **Closed 2026-10-07 (owner):** the first tab is now labelled "Home" (`AppStrings.navigationHome`); `GuideSmallScreenTest` checks all five labels on one line at 360dp and 320dp (fails with "Dashboard"). | E9 |
 | 8 | E2 | Placeholder routes: `GuidePlaceholderScreen.kt`, `GuideStrings.comingNext` and `searchTitle`, and the smoke's last step. **Closed in E4:** the file and `comingNext` are deleted, `searchTitle` is the real screen's title, and the smoke searches and opens a card from the results. | E4 |
 | 9 | E3 | The two E3 device checks. **Closed 2026-10-07 on the Pixel 9** (debug-signed Play-installer `minifiedTest` build, dark theme): `run_guide_minified_smoke.sh` passed (tab, area, case, card, "Key points"); walk-through: Home, area (case rules and counts), feed with chips and counts (All 16, Who qualifies 3...), chip filter, all six "also relevant here" rows naming their real home, card with breadcrumb to the feed it was opened from, Watch out in amber, cite in monospace, Details expand (food-charge card shows no placeholder), back and a tab switch keep the scroll place, breadcrumb up. | E3 |
 | 10 | E4 | Search read every card field for everyone. **Closed in E5:** `GuideSearchScope.PREVIEW` (titles and rule numbers only) for free users, `FULL` for Premium; the locked card state holds no key points, cite or details. Tests: scope unit tests, view-model and on-screen tests, and the 402-card contract (no hidden word finds a card in the preview). | E5 |
 | 11 | E4 | The search field on iOS (auto-focus on a fresh search, the Search key, keyboard over the results, back from a card) is covered only by the Native timing and correctness tests; iOS UI cannot be driven from here. Check it in the E9 iOS simulator walkthrough. | E9 |
 | 12 | E4 | Cold start and APK size were not re-measured on the device against E3 (like E3: nothing is added at launch). Re-measure at E9 against the E2 figures (190 ms, 188 ms `minifiedTest`) and the Play 1.3.0 baseline. | E9 |
-| 13 | E5 | `GuideStaleness.STALE_AFTER_MONTHS = 9` is a judgement, not an owner decision (DA is revised twice a year). With `rates_as_of` 2026-01 the nudge shows from Oct 2026 on every rate card. Owner confirms or changes the number (one constant and one test line). | E9 |
-| 14 | E5 | `LaunchFlags.GUIDE_PAYWALL_ENABLED` is false, as decided: the owner clears the open points on the main rate cards (RP-088 and the rest) first, then flips it, in its own commit. What no test can prove before the flip: a sandbox purchase on each platform unlocks an open Guide card, and the Claim Guide row then appears in the Premium screen and hub (`isAdvertised`). Check both at the flip. | E9 |
+| 13 | E5 | Staleness threshold. **Closed 2026-10-07 (owner):** 9 months confirmed (`GuideStaleness.STALE_AFTER_MONTHS`, pinned by test). The nudge shows from Oct 2026 for rates dated 2026-01. | E9 |
+| 14 | E5 | **Owner rule (2026-10-07):** `GUIDE_PAYWALL_ENABLED` is flipped only when no card carrying the Rates chip is still an "Unverified point" (RP-088 HBA 8.5% is one); other unverified cards may stay. `GuideBundleContract.assertPaywallOnlyWhenNoUnverifiedRateCard` fails if the flag is on while such a card exists. **Still open at the flip:** a sandbox purchase on each platform unlocks an open Guide card, and the Claim Guide row then appears in the Premium screen and hub (`isAdvertised`). Check both. | E9 |
 | 15 | E5 | **Android half closed 2026-10-07 on the Pixel 9** (debug build, Settings "Force Free"): a locked card shows its title, "Unverified point" chip, warning line and one-line answer, then the Unlock panel with no key points, authority or details; Unlock opens the upgrade sheet. **Still open:** iOS cannot be driven from here, so the locked panel, the sheet and chip wrapping at large text sizes go into the E9 iOS simulator walkthrough with EP 11. | E9 |
 | 16 | E5 | Search results cached under one scope could be drawn for a moment after the entitlement changed. **Closed 2026-10-07:** `GuideSearchState.Results` records its scope and `visibleTo(unlocked)` holds back results from another scope until the model has searched again (unit test, plus an on-screen test that revokes Premium mid-search). | E5 follow-up |

@@ -3,7 +3,7 @@ package com.payslipmax.pdfparser.ui.theme
 import com.payslipmax.pdfparser.platform.platformAppVersion
 
 object AppStrings {
-    const val navigationHome = "Dashboard"
+    const val navigationHome = "Home"
     const val navigationHistory = "History"
     const val navigationInsights = "Insights"
     const val navigationSettings = "Settings"

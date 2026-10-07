@@ -24,5 +24,6 @@ class GuideBundleAndroidContractTest {
             GuideBundleContract.assertFeedsAndCardsMatchDataset(bundle)
             GuideBundleContract.assertSearchMatchesDataset(bundle)
             GuideBundleContract.assertTrustAndPreviewMatchDataset(bundle)
+            GuideBundleContract.assertPaywallOnlyWhenNoUnverifiedRateCard(bundle)
         }
 }
