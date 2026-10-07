@@ -13,6 +13,7 @@ import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,8 @@ import org.junit.runner.RunWith;
 /**
  * R8 Check 2 (docs/Plan/rule_cards/16_guide_phase_plan.md): green debug tests do not prove the minified app can
  * read the Guide. This drives the installed {@code minifiedTest} app (release R8 config) like a user: open the
- * Guide tab, an area, then a case. A model or serializer R8 removed shows the load error instead and fails here.
+ * Guide tab, an area, a case, then its first card. A model or serializer R8 removed shows the load error instead and
+ * fails here.
  *
  * <p>Black-box on purpose: it finds text on screen and reads the bundle from the app's own assets, so nothing pins
  * an app class against R8. The UI strings come from the app's string files through the generated {@code SmokeStrings}.
@@ -41,10 +43,13 @@ public class GuideMinifiedSmokeTest {
     private final Context context = InstrumentationRegistry.getInstrumentation().getContext();
 
     @Test
-    public void theMinifiedAppOpensGuideHomeAnAreaAndACase() throws Exception {
-        JSONObject firstArea = new JSONObject(readBundle()).getJSONArray("nav").getJSONObject(0);
+    public void theMinifiedAppOpensGuideHomeAnAreaACaseAndACard() throws Exception {
+        JSONObject bundle = new JSONObject(readBundle());
+        JSONObject firstArea = bundle.getJSONArray("nav").getJSONObject(0);
         String areaTitle = firstArea.getString("title");
-        String caseTitle = firstArea.getJSONArray("cases").getJSONObject(0).getString("title");
+        JSONObject firstCase = firstArea.getJSONArray("cases").getJSONObject(0);
+        String caseTitle = firstCase.getString("title");
+        String cardTitle = cardTitle(bundle, firstCase.getJSONArray("cards").getString(0));
 
         launchApp();
         dismissIfShown(SmokeStrings.onboardingSkip);
@@ -56,7 +61,16 @@ public class GuideMinifiedSmokeTest {
         await(SmokeStrings.homeSection, "Guide Home");
         await(areaTitle, "the first area tile").click();
         await(caseTitle, "the first case tile in " + areaTitle).click();
-        await(SmokeStrings.comingNext, "the case placeholder");
+        await(cardTitle, "the first card in the " + caseTitle + " feed").click();
+        await(SmokeStrings.sectionKeyPoints, "the card's key points");
+    }
+
+    private static String cardTitle(JSONObject bundle, String cardId) throws Exception {
+        JSONArray cards = bundle.getJSONArray("cards");
+        for (int i = 0; i < cards.length(); i++) {
+            if (cards.getJSONObject(i).getString("id").equals(cardId)) return cards.getJSONObject(i).getString("title");
+        }
+        throw new AssertionError("the bundle has no card " + cardId);
     }
 
     private String readBundle() throws Exception {

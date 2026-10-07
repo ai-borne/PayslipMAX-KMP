@@ -25,9 +25,25 @@ class GuideLoaderIosPerfTest {
             GuideBundleContract.assertTilesMatchDataset(bundle)
         }
 
+    @Test
+    fun everyFeedAndCardBuildsWithinBudgetOnNative() =
+        runTest {
+            val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())
+
+            // Index, all 44 feeds and all 402 cards: far more than one screen ever builds at once.
+            val mark = TimeSource.Monotonic.markNow()
+            GuideBundleContract.assertFeedsAndCardsMatchDataset(bundle)
+            val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+
+            assertTrue(elapsedMs < FEEDS_BUDGET_MS, "feeds and cards took ${elapsedMs}ms, budget ${FEEDS_BUDGET_MS}ms")
+        }
+
     private companion object {
         // Generous for a debug simulator build: the first Guide open waits on this, and a quadratic
         // regression in the parser or validator would blow far past it.
         const val PARSE_BUDGET_MS = 1_500L
+
+        // The same margin for the E3 feed and card derivations (plain list and string scans, no regex).
+        const val FEEDS_BUDGET_MS = 1_500L
     }
 }

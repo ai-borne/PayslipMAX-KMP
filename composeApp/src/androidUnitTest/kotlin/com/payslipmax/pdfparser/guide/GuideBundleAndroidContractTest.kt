@@ -21,5 +21,6 @@ class GuideBundleAndroidContractTest {
             val bundle = GuideBundleContract.parseShippedBundle(text)
             GuideBundleContract.assertMatchesCompiledDataset(bundle)
             GuideBundleContract.assertTilesMatchDataset(bundle)
+            GuideBundleContract.assertFeedsAndCardsMatchDataset(bundle)
         }
 }

@@ -8,21 +8,34 @@ private const val AREA = "area"
 private const val CASE = "case"
 private const val CARD = "card"
 private const val SEARCH = "search"
+private const val SCROLL = "scroll"
 
 /**
  * Saves the Guide stack across process death as plain strings, one per level above Home (the
- * `PayAuditSavedState` pattern). Only ids are written, never card text or a search query. Restore runs before
- * the bundle is loaded, so here it only cuts at the first entry it cannot read; [GuideNavState.retainKnown]
- * checks the ids against the bundle once loading ends.
+ * `PayAuditSavedState` pattern), followed by one `scroll|level|index|offset` entry for each level not at its top.
+ * Only ids and numbers are written, never card text or a search query. Restore runs before the bundle is loaded,
+ * so here it only cuts at the first entry it cannot read; [GuideNavState.retainKnown] checks the ids against the
+ * bundle once loading ends. A scroll entry that cannot be read is dropped on its own.
  */
 val GuideNavStateSaver: Saver<GuideNavState, Any> =
     listSaver<GuideNavState, Any>(
-        save = { state -> state.stack.mapNotNull(::encode) },
+        save = { state ->
+            state.stack.mapNotNull(::encode) +
+                state.savedScrolls.map { (level, scroll) -> listOf(SCROLL, level, scroll.index, scroll.offset).joinToString(SEPARATOR.toString()) }
+        },
         restore = { saved ->
-            val decoded = saved.map { (it as? String)?.let(::decode) }
-            GuideNavState(decoded.takeWhile { it != null }.filterNotNull())
+            val (scrollEntries, levels) = saved.map { it as? String }.partition { it?.startsWith("$SCROLL$SEPARATOR") == true }
+            val decoded = levels.map { it?.let(::decode) }
+            val scrolls = scrollEntries.mapNotNull { it?.let(::decodeScroll) }.toMap()
+            GuideNavState(decoded.takeWhile { it != null }.filterNotNull(), scrolls)
         },
     )
+
+private fun decodeScroll(entry: String): Pair<Int, GuideScroll>? {
+    val numbers = entry.split(SEPARATOR).drop(1).map { it.toIntOrNull()?.takeIf { n -> n >= 0 } ?: return null }
+    if (numbers.size != 3) return null
+    return numbers[0] to GuideScroll(numbers[1], numbers[2])
+}
 
 /** Home is implicit at the bottom of every stack, so it is never written. */
 private fun encode(destination: GuideDestination): String? =

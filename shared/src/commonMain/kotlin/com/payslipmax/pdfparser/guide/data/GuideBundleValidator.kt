@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.guide.data
 
+import com.payslipmax.pdfparser.guide.domain.CardTemplate
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.GuideCard
 import kotlinx.serialization.json.JsonArray
@@ -68,7 +69,11 @@ object GuideBundleValidator {
         val visible = (listOf(card.answer, card.cite) + card.key + card.attach + card.watch).sumOf(::countGuideWords)
         if (visible > limits.visible) problems += "card $id visible text $visible words, max ${limits.visible}"
         if (countGuideWords(card.details) > limits.details) problems += "card $id details over ${limits.details} words"
-        if (card.personal.isEmpty() && card.allText().any { '{' in it }) problems += "card $id has a placeholder but no personal spec"
+        if (card.personal.isEmpty() && card.allText().any(CardTemplate::hasPlaceholder)) problems += "card $id has a placeholder but no personal spec"
+        // Only a bullet can move to the hidden "your figure" slot; a placeholder anywhere else would show raw.
+        if (listOf(card.title, card.answer, card.cite, card.details).any(CardTemplate::hasPlaceholder)) {
+            problems += "card $id has a placeholder outside a bullet"
+        }
     }
 
     private fun GuideCard.allText(): List<String> = listOf(title, answer, cite, details) + key + attach + watch

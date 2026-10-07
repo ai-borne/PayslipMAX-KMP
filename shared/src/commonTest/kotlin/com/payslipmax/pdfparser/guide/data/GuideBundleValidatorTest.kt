@@ -105,8 +105,21 @@ class GuideBundleValidatorTest {
     @Test
     fun aPlaceholderBraceOutsideAPersonalCardIsRejected() {
         assertProblem(valid.editCard("RB-P1") { it.copy(details = "Rs {hra} a month") }, "RB-P1 has a placeholder")
-        // The personal card legitimately carries {level} and {food_rate}.
-        assertEquals(emptyList(), problems(valid.editCard(SyntheticGuideBundle.PERSONAL_CARD) { it.copy(details = "Rs {food_rate}") }))
+        // The personal card legitimately carries {level} and {food_rate} in a bullet.
+        assertEquals(emptyList(), problems(valid.editCard(SyntheticGuideBundle.PERSONAL_CARD) { it.copy(watch = listOf("Rs {food_rate}")) }))
+    }
+
+    @Test
+    fun aPlaceholderOutsideABulletIsRejectedEvenOnAPersonalCard() {
+        // Only a bullet can move to the hidden "your figure" slot; a braced name in any other text would show raw.
+        for (edit in listOf<(GuideCard) -> GuideCard>(
+            { it.copy(title = "Rs {food_rate}?") },
+            { it.copy(answer = "Rs {food_rate}.") },
+            { it.copy(cite = "Rule {n}") },
+            { it.copy(details = "Rs {food_rate}") },
+        )) {
+            assertProblem(valid.editCard(SyntheticGuideBundle.PERSONAL_CARD, edit), "${SyntheticGuideBundle.PERSONAL_CARD} has a placeholder outside a bullet")
+        }
     }
 
     @Test

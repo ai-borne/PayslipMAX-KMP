@@ -65,4 +65,37 @@ class GuideNavStateSaverTest {
 
         assertEquals(GuideDestination.Case("td-da"), restored.current)
     }
+
+    @Test
+    fun theFacetAndScrollOfEveryLevelSurviveProcessDeath() {
+        val state = GuideNavState(listOf(GuideDestination.Area("travel")))
+        state.saveScroll(GuideScroll(1, 12))
+        state.push(GuideDestination.Case("td-da"))
+        state.selectFacet("H")
+        state.saveScroll(GuideScroll(4, 25))
+        state.push(GuideDestination.Card("RB-T1"))
+        state.pop()
+
+        val restored = GuideNavStateSaver.restore(save(state))!!
+
+        assertEquals(GuideDestination.Case("td-da", facet = "H"), restored.current)
+        assertEquals(GuideScroll(4, 25), restored.currentScroll)
+        restored.pop()
+        assertEquals(GuideScroll(1, 12), restored.currentScroll)
+    }
+
+    @Test
+    fun scrollIsSavedAsPlainNumbersAndOnlyWhenNotAtTheTop() {
+        val state = GuideNavState(listOf(GuideDestination.Area("travel"), GuideDestination.Case("td-da")))
+        state.saveScroll(GuideScroll(3, 40))
+        assertEquals(listOf("area|travel", "case|td-da", "scroll|2|3|40"), save(state))
+    }
+
+    @Test
+    fun aCorruptOrOrphanScrollEntryIsIgnoredWithoutLosingTheStack() {
+        val restored =
+            GuideNavStateSaver.restore(listOf("area|travel", "scroll|1|x|0", "scroll|9|2|0", "scroll|1|-1|0", "scroll|1|2"))!!
+        assertEquals(listOf(GuideDestination.Home, GuideDestination.Area("travel")), restored.stack)
+        assertEquals(GuideScroll.Top, restored.currentScroll)
+    }
 }

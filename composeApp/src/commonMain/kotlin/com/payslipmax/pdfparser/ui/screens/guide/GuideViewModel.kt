@@ -3,8 +3,6 @@ package com.payslipmax.pdfparser.ui.screens.guide
 import com.payslipmax.pdfparser.guide.GuideLoadError
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.GuideRepository
-import com.payslipmax.pdfparser.guide.model.GuideCard
-import com.payslipmax.pdfparser.guide.model.GuideCase
 import com.payslipmax.pdfparser.telemetry.CrashReporter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -52,13 +50,19 @@ class GuideViewModel(
         load()
     }
 
-    fun area(areaId: String): GuideAreaContent? = bundle()?.nav?.firstOrNull { it.id == areaId }?.toContent()
+    fun area(areaId: String): GuideAreaContent? = index()?.area(areaId)?.toContent()
 
-    fun case(caseId: String): GuideCase? = bundle()?.nav?.firstNotNullOfOrNull { area -> area.cases.firstOrNull { it.id == caseId } }
+    /** The case's feed filtered by [facet]; a facet its chips could not show is ignored. */
+    fun feed(
+        caseId: String,
+        facet: String?,
+    ): GuideFeedContent? = index()?.feedContent(caseId, facet)
 
-    fun card(cardId: String): GuideCard? = bundle()?.cards?.firstOrNull { it.id == cardId }
+    fun card(cardId: String): GuideCardContent? = index()?.cardContent(cardId)
 
-    private fun bundle() = (_uiState.value as? GuideUiState.Ready)?.bundle
+    fun crumbs(stack: List<GuideDestination>): List<GuideCrumb> = index()?.crumbs(stack).orEmpty()
+
+    private fun index() = (_uiState.value as? GuideUiState.Ready)?.index
 
     private fun fail(error: GuideLoadError) {
         _uiState.value = GuideUiState.Failed(error)

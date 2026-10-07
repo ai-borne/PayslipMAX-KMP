@@ -75,4 +75,89 @@ class GuideNavStateTest {
         assertTrue(bundle.knows(GuideDestination.Card("RB-P3")))
         assertFalse(bundle.knows(GuideDestination.Card("RB-P4")))
     }
+
+    @Test
+    fun selectingAFacetReplacesTheCaseOnTopSoItSurvivesRestore() {
+        val state = GuideNavState(listOf(GuideDestination.Area("travel"), GuideDestination.Case("td-da")))
+
+        state.selectFacet("H")
+        assertEquals(GuideDestination.Case("td-da", facet = "H"), state.current)
+        assertEquals(3, state.stack.size, "a chip filters the feed; it is not a level back has to undo")
+
+        state.selectFacet(null)
+        assertEquals(GuideDestination.Case("td-da"), state.current)
+    }
+
+    @Test
+    fun selectingAFacetAnywhereButAFeedIsIgnored() {
+        val state = GuideNavState(listOf(GuideDestination.Card("RB-T1")))
+        state.selectFacet("H")
+        assertEquals(GuideDestination.Card("RB-T1"), state.current)
+    }
+
+    @Test
+    fun theBreadcrumbGoesUpToALevelAlreadyOnTheStack() {
+        val case = GuideDestination.Case("td-da", facet = "H")
+        val state = GuideNavState(listOf(GuideDestination.Area("travel"), case, GuideDestination.Card("RB-T1")))
+
+        state.upTo(listOf(GuideDestination.Area("travel"), case))
+        assertEquals(case, state.current, "the feed comes back with its chosen facet")
+
+        state.upTo(listOf(GuideDestination.Area("travel")))
+        assertEquals(listOf(GuideDestination.Home, GuideDestination.Area("travel")), state.stack)
+
+        state.upTo(emptyList())
+        assertEquals(listOf<GuideDestination>(GuideDestination.Home), state.stack)
+    }
+
+    @Test
+    fun theBreadcrumbBuildsThePathUpWhenTheCardWasOpenedFromElsewhere() {
+        // A card opened from search (E4) or Pay Audit (E7) has no area or case below it; its breadcrumb still
+        // leads to the card's own case, and back from there walks up the same path.
+        val state = GuideNavState(listOf(GuideDestination.Search, GuideDestination.Card("RB-T1")))
+
+        state.upTo(listOf(GuideDestination.Area("travel"), GuideDestination.Case("td-da")))
+
+        assertEquals(listOf(GuideDestination.Home, GuideDestination.Area("travel"), GuideDestination.Case("td-da")), state.stack)
+    }
+
+    @Test
+    fun eachLevelKeepsItsOwnScrollUntilItIsLeft() {
+        val state = GuideNavState(listOf(GuideDestination.Area("travel"), GuideDestination.Case("td-da")))
+        state.saveScroll(GuideScroll(5, 30))
+        state.push(GuideDestination.Card("RB-T1"))
+        assertEquals(GuideScroll.Top, state.currentScroll, "a new level starts at the top")
+        state.saveScroll(GuideScroll(2, 0))
+
+        state.pop()
+        assertEquals(GuideScroll(5, 30), state.currentScroll, "back returns to the same place in the feed")
+
+        state.push(GuideDestination.Card("RB-T2"))
+        assertEquals(GuideScroll.Top, state.currentScroll, "a popped level's scroll is not reused by the next card")
+    }
+
+    @Test
+    fun aNewFacetStartsTheFeedAtTheTop() {
+        val state = GuideNavState(listOf(GuideDestination.Case("td-da")))
+        state.saveScroll(GuideScroll(6, 10))
+
+        state.selectFacet("Q")
+
+        assertEquals(GuideScroll.Top, state.currentScroll)
+    }
+
+    @Test
+    fun goingHomeOrCuttingTheStackForgetsTheScrollAboveIt() {
+        val state = GuideNavState(listOf(GuideDestination.Area("travel"), GuideDestination.Case("removed")))
+        state.saveScroll(GuideScroll(4, 0))
+        state.retainKnown(bundle)
+        state.push(GuideDestination.Case("td-da"))
+        assertEquals(GuideScroll.Top, state.currentScroll)
+
+        state.saveScroll(GuideScroll(3, 0))
+        state.popToHome()
+        state.push(GuideDestination.Area("travel"))
+        state.push(GuideDestination.Case("td-da"))
+        assertEquals(GuideScroll.Top, state.currentScroll)
+    }
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -87,6 +88,18 @@ fun severityColor(severity: InsightSeverity): Color =
         InsightSeverity.IMPORTANT -> MaterialTheme.colorScheme.error
         InsightSeverity.OPPORTUNITY -> MaterialTheme.colorScheme.secondary
     }
+
+/** Claim Guide colours with no Material role: a light and a dark value, picked by the active scheme. */
+object GuideColors {
+    private val WatchOutLight = Color(0xFFB45309)
+    private val WatchOutDark = Color(0xFFFBBF24)
+
+    /** The card's "Watch out" heading: the [AppColors.Warning] amber, dark enough to read as text on a light surface. */
+    @Composable
+    fun watchOut(): Color = if (MaterialTheme.colorScheme.surface.luminance() < HALF_LUMINANCE) WatchOutDark else WatchOutLight
+
+    private const val HALF_LUMINANCE = 0.5f
+}
 
 object AppDimensions {
     val PaddingSmall = 8.dp

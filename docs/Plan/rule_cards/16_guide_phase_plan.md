@@ -1,7 +1,7 @@
 # Claim Guide, Phase E plan (E1 to E9)
 
 Status: E0 (this plan) done 2026-10-07. **E1 done 2026-10-07** (branch `feature/guide-e1-bundle`). **E2 done 2026-10-07**
-(branch `feature/guide-e2-tiles`, off E1); E3 next.
+(branch `feature/guide-e2-tiles`, off E1). **E3 done 2026-10-07** (branch `feature/guide-e3-feed`, off E2); E4 next.
 Items left open by a finished phase are listed under "EP Pending items" at the end, never dropped.
 Inputs: Gold dataset (402 cards: 220 travel, 182 pay), `nav.json` (9 areas, 44 cases), `facets.json`,
 the approved clickable preview, and `CLAUDE.md`. One branch per phase off `main`
@@ -84,7 +84,7 @@ Why: `Screen` is an enum without arguments, `AppNavStateSaver` saves names only,
 native view controller pushed through `NavBridge.navigateToDetail(Screen)`. The Guide needs ids, so it keeps
 its own stack.
 - `GuideNavState` holds a stack of `GuideDestination`: Home, Area(areaId), Case(caseId, facet?),
-  Card(cardId), Search. It changes only through `push`, `pop` and `popToHome`.
+  Card(cardId), Search. It changes only through `push`, `pop`, `popToHome`, `upTo` (breadcrumb) and `selectFacet` (since E3).
 - It survives process death through a `listSaver` of plain ids (the `PayAuditSavedState` pattern). Restore
   checks every id against the bundle and cuts the stack at the first unknown entry (the `AppNavStateSaver`
   rule). A restore that runs before the bundle loads is validated when loading ends. No crash, no blank screen.
@@ -99,7 +99,8 @@ its own stack.
   existing lock rule in `NavBridge` still applies.
 - State holders: an app-scoped `GuideViewModel` owns the loaded bundle (`StateFlow`, loaded once) and derives
   each screen's state. `GuideSearchViewModel` keeps the query in memory only. The facet lives in `Case`, so
-  it survives restore. Expanded details and scroll position use `rememberSaveable` keyed by id.
+  it survives restore. Expanded details use `rememberSaveable` keyed by card id. Scroll position is kept per stack level
+  in `GuideNavState` and its saver (since E3), because the tab's content leaves composition on a tab switch.
 - While the app is locked no Guide content is composed (existing rule). Unlocking returns to the saved stack.
 
 ## SSOT, scalability and clean architecture
@@ -213,6 +214,41 @@ and are never shown raw; the "also relevant here" links resolve (ltc-rules, 6 ca
 **Exit:** gates green; Pixel walk-through against the approved preview; accessibility labels on tiles and chips.
 **Tech-debt checkpoint:** E2 placeholders removed.
 
+**E3 result (2026-10-07).** Done, with these recorded choices:
+- Domain in `shared/.../guide/domain/`: `GuideFeedLogic.kt` (feed order, facet rule `FACET_CHIPS_ABOVE_CARDS = 7`,
+  filter, and `effectiveFacet`, which ignores a restored facet the feed cannot show, so it never goes empty) and
+  `CardTemplate.kt` (placeholder bullets split into `figureTemplates`, the hidden "your figure" slot E6 fills). Added
+  `GuideIndex.kt`: id lookups built once per load, so no screen scans the 402 cards.
+- Validator: a placeholder is allowed only in a bullet (title, answer, cite and details are rejected even on a
+  personal card), because only a bullet can move to the hidden slot. The E1 test that allowed one in `details` now
+  puts it in a bullet. The shipped bundle already complies (placeholders only in the key bullets of T181 and T254).
+- Breadcrumb: `GuideCrumbs.kt` (pure) and `GuideBreadcrumb.kt` (also beyond the listed files) sit above the existing
+  `ScreenBackHeader`, which stays the back SSOT. A card leads back to the feed it was opened from (an "also relevant
+  here" card to that feed, not its home); a card with no feed below it leads to its home case. New
+  `GuideNavState.upTo` pops to a level on the stack, or builds Home plus the path when it is not there. Links keep
+  the 48dp touch target.
+- Scroll: kept per stack level in `GuideNavState` and saved as `scroll|level|index|offset` entries, not with
+  `rememberSaveable`, because the tab's content leaves composition on a tab switch. A popped level's scroll is
+  dropped, and a new facet starts at the top. The area list uses the same helper. Expanded details use
+  `rememberSaveable` keyed by card id (kept on restore and while scrolling; collapsed again after a tab switch).
+- Card in E3: facet, answer box, Key points, Attach, Watch out, Authority (monospace with a side rule), Details
+  collapsed, and the preview's closing note ("Guidance from published rules, not a sanction..."). By plan, these are
+  later: trust chips and the unverified warning line (E5), the "your figure" line (E6), and copy cite, share, pin (E8).
+  The Watch out heading uses the new `GuideColors.watchOut()` token in `Theme.kt` (the preview's light and dark amber).
+- Search keeps `GuidePlaceholderScreen` until E4 (nothing opens Search before E4). The smoke's last step now opens the
+  first case's first card and waits for "Key points".
+- Gates (2026-10-07): `check` (both variants, corpus included), `ktlintCheck`, tech-debt audit, `iosSimulatorArm64Test`,
+  `linkDebugFrameworkIosSimulatorArm64`, `assembleRelease` and `assembleMinifiedTest` plus `check_r8_guide.py` (5
+  models and serializers kept, bundle byte-identical), rule-card tool tests: all green. New iosTest
+  `everyFeedAndCardBuildsWithinBudgetOnNative` (index, 44 feeds, 402 cards): 63 ms against 1.5 s.
+- Baselines. Tests: shared JVM 811 / 811 (1 skipped as before), composeApp JVM 642 / 619, iOS shared 764, iOS
+  composeApp 435 (all grew from E2). Release still has no Guide class in its mapping; method ids 55,269 (E2, rebuilt
+  like for like) -> 55,273. The +4 are Compose library methods (`FlowRow` alignment, `luminance`, `FilterChip`
+  defaults, synthetic lambdas) that R8 optimises differently because Guide code is reachable until the
+  `GUIDE_PREVIEW` constant is folded; the same effect E2 recorded as app-shell dex. Cold start not re-measured (no
+  device; E3 adds nothing at launch, the Guide still loads on first open).
+- Not done in E3: the Pixel walk-through against the preview and the on-device run of the updated smoke (EP 9).
+
 ## E4 Search (secondary)
 **Goal:** a search icon on Home that finds words and rule numbers ("177", "177B", "Rule 114").
 **Files:** `shared/.../guide/domain/GuideSearchIndex.kt`, `GuideRuleNumberParser.kt` (plain string scans),
@@ -290,4 +326,5 @@ Each item names the phase that closes it. A phase may not exit while an item ass
 | 5 | E1 | Report the load error code. **Closed in E2:** `GuideViewModel` records a non-fatal with only `error_guide_load=<code>` (`FakeCrashReporter` test). | E2 |
 | 6 | E1 | E0 (`docs/guide-phase-plan`) is not merged to `main`; E1 branched from E0 and E2 from E1. Merge in order E0, E1, E2. | Before the E1 PR |
 | 7 | E2 | With five tabs, the existing "Dashboard" label wraps to two lines at 320dp (fine at 360dp and up). Owner decision before launch: accept, or shorten the label. | E9 |
-| 8 | E2 | Placeholder routes: `GuidePlaceholderScreen.kt`, `GuideStrings.comingNext` and `searchTitle`, and the smoke's last step (it expects the placeholder). | E3 (search: E4) |
+| 8 | E2 | Placeholder routes: `GuidePlaceholderScreen.kt`, `GuideStrings.comingNext` and `searchTitle`, and the smoke's last step (it expects the placeholder). **Partly closed in E3:** the case and card routes are real screens and the smoke opens a card. Still open: the Search route, the file and both strings. | E4 |
+| 9 | E3 | No Android device was attached on 2026-10-07, so two E3 exit checks did not run: the Pixel walk-through against the approved preview (Home, area, feed with chips, breadcrumb and an "also relevant here" card, card with Details), and `scripts/run_guide_minified_smoke.sh` with its new card step. Run both and record the result here. | Before the E3 PR merges |

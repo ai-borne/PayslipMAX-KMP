@@ -6,34 +6,43 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 /**
- * An area's case tiles. The on-screen back header is the only way up on iOS, where a tab has no edge-swipe; on
- * Android system back does the same through the Guide's `BackHandler`.
+ * One rule card: breadcrumb and title, the answer, then the body sections, and a closing note that the card is
+ * guidance, not a sanction. Copy cite, share and pin arrive in E8.
  */
 @Composable
-internal fun GuideAreaScreen(
-    area: GuideAreaContent,
+internal fun GuideCardScreen(
+    card: GuideCardContent,
+    crumbs: List<GuideCrumb>,
+    onCrumb: (path: List<GuideDestination>) -> Unit,
     onBack: () -> Unit,
-    onOpenCase: (caseId: String) -> Unit,
     listState: LazyListState = rememberLazyListState(),
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        ScreenBackHeader(title = area.title, subtitle = GuideStrings.topicCount(area.cases.size), onBack = onBack)
+        GuideLevelHeader(crumbs, onCrumb, title = card.title, subtitle = null, onBack = onBack)
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
-            items(area.cases, key = { it.id }) { tile -> GuideCaseTileView(tile, onClick = { onOpenCase(tile.id) }) }
+            item(key = "header") { GuideCardHeader(card) }
+            guideCardSections(card)
+            item(key = "disclaimer") {
+                Text(
+                    GuideStrings.cardDisclaimer,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
     }
 }

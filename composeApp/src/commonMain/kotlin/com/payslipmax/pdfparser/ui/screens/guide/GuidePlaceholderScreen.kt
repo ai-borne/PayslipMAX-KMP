@@ -12,8 +12,9 @@ import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 /**
- * Stand-in for the feed, card and search screens, which phases E3 and E4 build. Debug builds only (the Guide is
- * dark in release). E3 deletes this file and [GuideStrings.comingNext] (plan, E2 tech-debt checkpoint).
+ * Stand-in for the search screen, which phase E4 builds (E3 replaced the feed and card stand-ins). Nothing opens
+ * Search before E4, so only a restored stack can show it, in debug builds (the Guide is dark in release). E4
+ * deletes this file, [GuideStrings.comingNext] and [GuideStrings.searchTitle] (plan, EP item 8).
  */
 @Composable
 internal fun GuidePlaceholderScreen(

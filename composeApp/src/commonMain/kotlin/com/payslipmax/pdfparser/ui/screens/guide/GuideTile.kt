@@ -89,6 +89,46 @@ internal fun GuideCaseTileView(
     }
 }
 
+/** A card in a feed: title, one-line answer and facet; an "also relevant here" card also names its main case. */
+@Composable
+internal fun GuideCardRowView(
+    row: GuideFeedRow,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    GuideTileFrame(onClick = onClick, modifier = modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.SpacingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
+        ) {
+            Text(row.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
+            Text(row.answer, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            GuideLabelPill(row.facetLabel)
+            row.alsoHomeTitle?.let { home ->
+                Text(
+                    GuideStrings.alsoRelevant(home),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+/** A small neutral pill, such as a card's facet ("How much"); its text is bundle content. */
+@Composable
+internal fun GuideLabelPill(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier =
+            Modifier
+                .background(MaterialTheme.colorScheme.surfaceVariant, PillShape)
+                .padding(horizontal = AppDimensions.SpacingSmall, vertical = AppDimensions.SpacingTwo),
+    )
+}
+
 @Composable
 private fun CountPill(count: Int) {
     val description = GuideStrings.cardCount(count)

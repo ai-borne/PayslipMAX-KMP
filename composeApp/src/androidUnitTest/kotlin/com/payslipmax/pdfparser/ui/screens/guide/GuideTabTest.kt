@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui.screens.guide
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -97,7 +98,7 @@ class GuideTabTest {
         composeRule.onNodeWithText("Travel").performClick()
         composeRule.onNodeWithText("Home town LTC").performClick()
         composeRule.waitForIdle()
-        composeRule.onNodeWithText(GuideStrings.comingNext).assertIsDisplayed()
+        composeRule.onNodeWithText(GuideStrings.cardCount(3)).assertIsDisplayed()
 
         composeRule.onNodeWithContentDescription(AppStrings.btnBack).performClick()
         composeRule.waitForIdle()
@@ -131,5 +132,30 @@ class GuideTabTest {
 
         assertEquals(GuideDestination.Area("travel"), restored.current)
         composeRule.onNodeWithText("Daily allowance on duty").assertIsDisplayed()
+    }
+
+    @Test
+    fun theChosenFacetSurvivesProcessDeath() {
+        val restored = GuideNavStateSaver.restore(listOf("area|travel", "case|${SyntheticGuideBundle.BIG_CASE}|H"))!!
+        show(restored)
+        finishLoading()
+
+        composeRule.onNodeWithContentDescription(GuideStrings.facetChipDescription("How much", 3)).assertIsSelected()
+        composeRule.onNodeWithText("Synthetic card RB-T1?").assertIsDisplayed()
+        composeRule.onNodeWithText("Synthetic card RB-T4?").assertDoesNotExist() // a "Who qualifies" card
+    }
+
+    @Test
+    fun theFeedsScrollPlaceSurvivesProcessDeath() {
+        // Saved scrolled to the fourth card (item 0 is the chip row). This small default screen shows about two
+        // cards, so rows well above the restored place are not composed at all.
+        val restored = GuideNavStateSaver.restore(listOf("area|travel", "case|${SyntheticGuideBundle.BIG_CASE}", "scroll|2|4|0"))!!
+        show(restored)
+        finishLoading()
+
+        composeRule.onNodeWithText("Synthetic card RB-T4?").assertIsDisplayed()
+        composeRule.onNodeWithText("Synthetic card RB-T1?").assertDoesNotExist()
+        composeRule.onNodeWithText("Synthetic card RB-T2?").assertDoesNotExist()
+        assertEquals(GuideScroll(4, 0), restored.currentScroll)
     }
 }

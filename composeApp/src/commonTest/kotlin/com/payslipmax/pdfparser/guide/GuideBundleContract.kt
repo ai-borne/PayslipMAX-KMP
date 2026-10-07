@@ -2,12 +2,16 @@ package com.payslipmax.pdfparser.guide
 
 import com.payslipmax.pdfparser.di.GUIDE_BUNDLE_PATH
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
+import com.payslipmax.pdfparser.guide.domain.CardTemplate
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.ui.screens.guide.cardContent
+import com.payslipmax.pdfparser.ui.screens.guide.feedContent
 import com.payslipmax.pdfparser.ui.screens.guide.toContent
 import com.payslipmax.pdfparser.ui.screens.guide.toReady
 import pdfparser.composeapp.generated.resources.Res
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -49,5 +53,26 @@ object GuideBundleContract {
         assertEquals(bundle.cards.size, bundle.nav.sumOf { area -> area.cases.sumOf { it.cards.size } })
         assertEquals(bundle.nav.sumOf { area -> area.cases.sumOf { it.cards.size + it.also.size } }, cases.sumOf { it.cardCount })
         assertTrue(cases.all { it.cardCount > 0 }, "no empty case tile")
+    }
+
+    /**
+     * The E3 feeds and cards over all 402 cards: every case builds a feed listing all its cards, facet counts add up,
+     * the six "also relevant here" links in ltc-rules name their real home, and no card shows a raw placeholder.
+     */
+    fun assertFeedsAndCardsMatchDataset(bundle: GuideBundle) {
+        val index = bundle.toReady().index
+        for (case in bundle.nav.flatMap { it.cases }) {
+            val feed = assertNotNull(index.feedContent(case.id, facet = null), case.id)
+            assertEquals(case.cards.size + case.also.size, feed.rows.size, case.id)
+            if (feed.facets.isNotEmpty()) assertEquals(feed.totalCount, feed.facets.sumOf { it.count }, case.id)
+        }
+        val alsoRows = index.feedContent("ltc-rules", facet = null)!!.rows.filter { it.alsoHomeTitle != null }
+        assertEquals(6, alsoRows.size)
+        assertTrue(alsoRows.all { row -> index.card(row.cardId)!!.nav != "ltc-rules" && row.alsoHomeTitle!!.isNotBlank() })
+        val cards = bundle.cards.map { assertNotNull(index.cardContent(it.id)) }
+        val shown = cards.flatMap { listOf(it.title, it.answer, it.cite, it.details) + it.body.key + it.body.attach + it.body.watch }
+        assertTrue(shown.none(CardTemplate::hasPlaceholder), "a placeholder would be shown raw")
+        // The food-rate and CTG cards carry the two placeholder bullets that phase E6 fills.
+        assertEquals(setOf("RB-SS-T181", "RB-SS-T254"), cards.filter { it.body.figureTemplates.isNotEmpty() }.map { it.id }.toSet())
     }
 }

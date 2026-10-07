@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -12,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -61,14 +64,49 @@ private fun GuideDestinationContent(
         GuideDestination.Home -> GuideHomeScreen(ready.areas, onOpenArea = { navState.push(GuideDestination.Area(it)) })
         is GuideDestination.Area ->
             viewModel.area(destination.areaId)?.let { area ->
-                GuideAreaScreen(area, onBack = onBack, onOpenCase = { navState.push(GuideDestination.Case(it)) })
+                GuideAreaScreen(area, onBack, onOpenCase = { navState.push(GuideDestination.Case(it)) }, rememberGuideListState(navState))
             } ?: GuideLoading()
-        is GuideDestination.Case ->
-            viewModel.case(destination.caseId)?.let { GuidePlaceholderScreen(it.title, it.sub, onBack) } ?: GuideLoading()
+        is GuideDestination.Case -> GuideFeedRoute(navState, destination, viewModel)
         is GuideDestination.Card ->
-            viewModel.card(destination.cardId)?.let { GuidePlaceholderScreen(it.title, null, onBack) } ?: GuideLoading()
+            viewModel.card(destination.cardId)?.let { card ->
+                GuideCardScreen(card, viewModel.crumbs(navState.stack), navState::upTo, onBack, rememberGuideListState(navState))
+            } ?: GuideLoading()
         GuideDestination.Search -> GuidePlaceholderScreen(GuideStrings.searchTitle, null, onBack)
     }
+}
+
+@Composable
+private fun GuideFeedRoute(
+    navState: GuideNavState,
+    destination: GuideDestination.Case,
+    viewModel: GuideViewModel,
+) {
+    val feed = remember(destination) { viewModel.feed(destination.caseId, destination.facet) } ?: return GuideLoading()
+    GuideFeedScreen(
+        feed = feed,
+        crumbs = viewModel.crumbs(navState.stack),
+        onCrumb = navState::upTo,
+        onBack = { navState.pop() },
+        onSelectFacet = navState::selectFacet,
+        onOpenCard = { navState.push(GuideDestination.Card(it)) },
+        listState = rememberGuideListState(navState),
+    )
+}
+
+/**
+ * The current level's list position, restored from [navState] (which outlives this tab's composition) and written
+ * back as the user scrolls. A new level, or a new facet, starts from its own saved place or the top.
+ */
+@Composable
+private fun rememberGuideListState(navState: GuideNavState): LazyListState {
+    val level = navState.stack.lastIndex
+    val destination = navState.current
+    val listState = remember(level, destination) { navState.currentScroll.let { LazyListState(it.index, it.offset) } }
+    LaunchedEffect(listState) {
+        snapshotFlow { GuideScroll(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) }
+            .collect { navState.saveScroll(it, level) }
+    }
+    return listState
 }
 
 @Composable

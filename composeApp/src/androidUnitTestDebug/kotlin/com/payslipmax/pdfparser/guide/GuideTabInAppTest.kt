@@ -2,10 +2,14 @@ package com.payslipmax.pdfparser.guide
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import com.payslipmax.pdfparser.App
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.repository.PayslipRepository
@@ -127,5 +131,36 @@ class GuideTabInAppTest {
         viewModel.unlockApp()
         settle()
         composeRule.onNodeWithText("Daily allowance on duty").assertIsDisplayed()
+    }
+
+    @Test
+    fun switchingTabsKeepsTheChosenFacet() {
+        openTravelArea()
+        tap("Daily allowance on duty")
+        composeRule.onNodeWithContentDescription(GuideStrings.facetChipDescription("How much", 3)).performClick()
+        settle()
+
+        tap(AppStrings.navigationHistory)
+        tap(GuideStrings.tabLabel)
+
+        assertEquals(GuideDestination.Case("td-da", facet = "H"), guideNavState.current)
+        composeRule.onNodeWithContentDescription(GuideStrings.facetChipDescription("How much", 3)).assertIsSelected()
+        composeRule.onNodeWithText("Synthetic card RB-T4?").assertDoesNotExist() // a "Who qualifies" card
+    }
+
+    @Test
+    fun switchingTabsKeepsTheFeedsScrollPlace() {
+        openTravelArea()
+        tap("Daily allowance on duty")
+        composeRule.onNode(hasScrollToIndexAction()).performScrollToIndex(5)
+        settle()
+
+        tap(AppStrings.navigationHistory)
+        composeRule.onNodeWithText("Synthetic card RB-T5?").assertDoesNotExist()
+        tap(GuideStrings.tabLabel)
+
+        assertEquals(5, guideNavState.currentScroll.index)
+        composeRule.onNodeWithText("Synthetic card RB-T5?").assertIsDisplayed()
+        composeRule.onNodeWithText("Synthetic card RB-T1?").assertDoesNotExist()
     }
 }
