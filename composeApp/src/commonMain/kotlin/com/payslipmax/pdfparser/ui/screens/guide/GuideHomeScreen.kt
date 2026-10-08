@@ -26,12 +26,17 @@ import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 private const val AREA_COLUMNS = 2
 
-/** Guide Home: a search icon, then one tile per area, in bundle order, two to a row (the approved preview). */
+/**
+ * Guide Home: a search icon, then the user's pinned cards when there are any (newest first; no section at all when
+ * [pinned] is empty or the user is locked), then one tile per area, in bundle order, two to a row (the approved preview).
+ */
 @Composable
 internal fun GuideHomeScreen(
     areas: List<GuideAreaTile>,
     onOpenArea: (areaId: String) -> Unit,
     onOpenSearch: () -> Unit,
+    pinned: List<GuideFeedRow> = emptyList(),
+    onOpenPinned: (cardId: String) -> Unit = {},
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(AREA_COLUMNS),
@@ -41,6 +46,18 @@ internal fun GuideHomeScreen(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTen),
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) { GuideHomeHeader(onOpenSearch) }
+        if (pinned.isNotEmpty()) {
+            item(key = "pinned-heading", span = { GridItemSpan(maxLineSpan) }) {
+                Text(
+                    GuideStrings.pinnedSection,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.semantics { heading() },
+                )
+            }
+            items(pinned, key = { "pinned-${it.cardId}" }, span = { GridItemSpan(maxLineSpan) }) { row ->
+                GuideCardRowView(row, onClick = { onOpenPinned(row.cardId) })
+            }
+        }
         items(areas, key = { it.id }) { tile -> GuideAreaTileView(tile, onClick = { onOpenArea(tile.id) }) }
     }
 }

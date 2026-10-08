@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.di.GUIDE_BUNDLE_PATH
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.guide.domain.CardTemplate
 import com.payslipmax.pdfparser.guide.domain.GuideLinkMap
+import com.payslipmax.pdfparser.guide.domain.GuidePins
 import com.payslipmax.pdfparser.guide.domain.GuideRuleNumberParser
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
 import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
@@ -11,8 +12,10 @@ import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.subscription.LaunchFlags
 import com.payslipmax.pdfparser.ui.screens.guide.cardContent
 import com.payslipmax.pdfparser.ui.screens.guide.feedContent
+import com.payslipmax.pdfparser.ui.screens.guide.shareNote
 import com.payslipmax.pdfparser.ui.screens.guide.toContent
 import com.payslipmax.pdfparser.ui.screens.guide.toReady
+import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import pdfparser.composeapp.generated.resources.Res
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -126,6 +129,28 @@ object GuideBundleContract {
         assertEquals(emptySet(), GuideLinkMap.cardIds - ids, "Pay Audit links to cards the bundle does not hold")
         val index = bundle.toReady().index
         for (id in GuideLinkMap.cardIds) assertNotNull(index.cardContent(id, unlocked = true, nowMillis = 0L), id)
+    }
+
+    /**
+     * E8: on all 402 real cards a pin is accepted (every id is a plain card id, else the pin would silently do nothing), the claim note
+     * builds, holds the title and exactly the cite, carries the warning for the 36 unverified cards and for no other, and never leaks a raw
+     * placeholder or the card's details block.
+     */
+    fun assertPinsAndShareNotesMatchDataset(bundle: GuideBundle) {
+        val index = bundle.toReady().index
+        val warning = GuideStrings.shareUnverified
+        var warned = 0
+        for (card in bundle.cards) {
+            assertTrue(GuidePins.Empty.toggle(card.id).isPinned(card.id), "${card.id} cannot be pinned")
+            val note = assertNotNull(index.cardContent(card.id, unlocked = true, nowMillis = 0L)?.shareNote(), card.id)
+            assertTrue(note.contains(card.title), card.id)
+            assertEquals(card.cite.isNotBlank(), note.contains("${GuideStrings.shareAuthority} ${card.cite}"), card.id)
+            assertEquals(card.unverified, note.contains(warning), card.id)
+            assertTrue(!note.contains('{'), card.id)
+            if (card.details.isNotBlank()) assertTrue(!note.contains(card.details), card.id)
+            if (card.unverified) warned++
+        }
+        assertEquals(36, warned)
     }
 
     /**

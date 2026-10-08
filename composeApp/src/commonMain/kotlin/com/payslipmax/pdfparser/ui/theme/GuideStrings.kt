@@ -49,6 +49,23 @@ object GuideStrings {
     const val lockedBody = "The title and the one-line answer stay free."
     const val unlock = "Unlock with Premium"
 
+    // Pins, Copy cite and Share as claim note (E8). The note's own words are the share* constants.
+    const val pin = "Pin"
+    const val unpin = "Unpin"
+    const val pinnedState = "Pinned"
+    const val pinnedSection = "Pinned"
+    const val share = "Share"
+    const val copyCite = "Copy cite"
+    const val citeCopied = "Copied"
+    const val shareChooserTitle = "Share claim note"
+    const val shareHeader = "Claim note"
+    const val shareAnswer = "Answer:"
+    const val shareKeyPoints = "Key points:"
+    const val shareAttach = "Attach:"
+    const val shareWatchOut = "Watch out:"
+    const val shareAuthority = "Authority:"
+    const val shareUnverified = "Unverified point: still being checked. Confirm it against the current order before you rely on it."
+
     // Premium Features catalog row.
     const val catalogIcon = "📖"
     const val catalogTitle = "Claim Guide"

@@ -76,6 +76,13 @@ class GuideLoaderIosPerfTest {
         }
 
     @Test
+    fun pinsAndShareNotesMatchTheDatasetOnNativeToo() =
+        runTest {
+            // E8: plain string building and a character scan (no regex), checked on Native for all 402 cards.
+            GuideBundleContract.assertPinsAndShareNotesMatchDataset(GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText()))
+        }
+
+    @Test
     fun previewSearchAndTrustBehaveOnNativeAsOnTheJvm() =
         runTest {
             val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())

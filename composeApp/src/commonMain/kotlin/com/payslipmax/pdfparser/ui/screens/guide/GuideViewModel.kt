@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens.guide
 import com.payslipmax.pdfparser.guide.GuideLoadError
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.GuideRepository
+import com.payslipmax.pdfparser.guide.data.InMemoryGuidePinsStorage
 import com.payslipmax.pdfparser.guide.domain.GuideProfile
 import com.payslipmax.pdfparser.guide.domain.GuideProfileProvider
 import com.payslipmax.pdfparser.rating.currentTimeMillis
@@ -31,6 +32,8 @@ class GuideViewModel(
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val nowMillis: () -> Long = ::currentTimeMillis,
     private val profiles: GuideProfileProvider = GuideProfileProvider.None,
+    /** The user's pins (E8). Memory-only by default, so a screen test needs no storage. */
+    val pins: GuidePinsModel = GuidePinsModel(InMemoryGuidePinsStorage()),
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val _uiState = MutableStateFlow<GuideUiState>(GuideUiState.Loading)
@@ -95,6 +98,9 @@ class GuideViewModel(
 
     /** The officer's profile, read from the stored payslips only while a screen collects it. */
     fun profileFlow(): Flow<GuideProfile?> = profiles.profile()
+
+    /** Guide Home's pinned rows for [cardIds], skipping any id the bundle no longer holds. */
+    fun pinnedRows(cardIds: List<String>): List<GuideFeedRow> = index()?.pinnedRows(cardIds).orEmpty()
 
     fun crumbs(stack: List<GuideDestination>): List<GuideCrumb> = index()?.crumbs(stack).orEmpty()
 

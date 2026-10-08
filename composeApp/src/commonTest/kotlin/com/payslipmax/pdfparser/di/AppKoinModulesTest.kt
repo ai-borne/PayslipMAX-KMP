@@ -14,6 +14,7 @@ import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.PayAuditViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.GuidePinsModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
 import kotlinx.coroutines.Dispatchers
@@ -112,6 +113,13 @@ class AppKoinModulesTest {
         val koin = startGuide()
 
         assertSame(koin.get<GuideViewModel>(), koin.get<GuideViewModel>())
+    }
+
+    @Test
+    fun theGuideAndTheCardScreensShareOnePinsModelSoAPinShowsEverywhere() {
+        val koin = startGuide()
+
+        assertSame(koin.get<GuidePinsModel>(), koin.get<GuideViewModel>().pins)
     }
 
     @Test

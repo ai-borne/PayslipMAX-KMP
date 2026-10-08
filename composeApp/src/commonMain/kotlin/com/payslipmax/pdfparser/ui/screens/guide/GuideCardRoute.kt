@@ -41,6 +41,7 @@ internal fun GuideCardHost(
     access: GuideAccess,
     onBack: () -> Unit,
     viewModel: GuideViewModel = koinInject(),
+    platform: GuidePlatform = rememberGuidePlatform(),
 ) {
     val target by viewModel.pendingCard.collectAsState()
     val state by viewModel.uiState.collectAsState()
@@ -53,7 +54,8 @@ internal fun GuideCardHost(
     if (card == null) {
         if (!leave) GuideLoading()
     } else {
-        GuideCardScreen(card, crumbs = emptyList(), onCrumb = {}, onBack = onBack, onUnlock = access.onUnlock)
+        val actions = rememberGuideCardActions(card, viewModel.pins, platform)
+        GuideCardScreen(card, crumbs = emptyList(), onCrumb = {}, onBack = onBack, onUnlock = access.onUnlock, actions = actions)
     }
 }
 

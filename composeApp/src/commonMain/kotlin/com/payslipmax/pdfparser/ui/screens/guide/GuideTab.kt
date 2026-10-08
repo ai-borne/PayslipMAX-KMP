@@ -40,6 +40,7 @@ fun GuideTab(
     access: GuideAccess,
     viewModel: GuideViewModel = koinInject(),
     searchViewModel: GuideSearchViewModel = koinInject(),
+    platform: GuidePlatform = rememberGuidePlatform(),
 ) {
     LaunchedEffect(viewModel) { viewModel.load() }
     val state by viewModel.uiState.collectAsState()
@@ -48,10 +49,14 @@ fun GuideTab(
         is GuideUiState.Failed -> GuideLoadFailed(onRetry = viewModel::retry)
         is GuideUiState.Ready -> {
             // A stack restored before the bundle loaded is checked here, once the ids can be.
-            LaunchedEffect(current.bundle) { navState.retainKnown(current.bundle) }
+            LaunchedEffect(current.bundle) {
+                navState.retainKnown(current.bundle)
+                // A pin for a card an app update removed is dropped here, once the bundle can say which ids exist.
+                viewModel.pins.retainKnown { current.index.card(it) != null }
+            }
             // Android back pops the Guide stack before it leaves the tab; at Guide Home it stays disabled.
             BackHandler(enabled = navState.canPop) { navState.pop() }
-            GuideDestinationContent(navState, current, access, viewModel, searchViewModel)
+            GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform)
         }
     }
 }
@@ -63,12 +68,17 @@ private fun GuideDestinationContent(
     access: GuideAccess,
     viewModel: GuideViewModel,
     searchViewModel: GuideSearchViewModel,
+    platform: GuidePlatform,
 ) {
     val onBack: () -> Unit = { navState.pop() }
     when (val destination = navState.current) {
-        GuideDestination.Home ->
+        GuideDestination.Home -> {
+            val pins by viewModel.pins.pins.collectAsState()
             GuideHomeScreen(
                 ready.areas,
+                // Pins are a paid feature: a locked user sees no section, and the stored pins wait for an unlock.
+                pinned = if (access.isUnlocked) viewModel.pinnedRows(pins.newestFirst) else emptyList(),
+                onOpenPinned = { navState.push(GuideDestination.Card(it)) },
                 onOpenArea = { navState.push(GuideDestination.Area(it)) },
                 // Each visit to search starts empty; coming back from a card (a pop) does not pass through here.
                 onOpenSearch = {
@@ -76,6 +86,7 @@ private fun GuideDestinationContent(
                     navState.push(GuideDestination.Search)
                 },
             )
+        }
         is GuideDestination.Area ->
             viewModel.area(destination.areaId)?.let { area ->
                 GuideAreaScreen(area, onBack, onOpenCase = { navState.push(GuideDestination.Case(it)) }, rememberGuideListState(navState))
@@ -84,7 +95,16 @@ private fun GuideDestinationContent(
         is GuideDestination.Card -> {
             val profile = rememberGuideProfile(viewModel, destination.cardId, access.isUnlocked)
             viewModel.card(destination.cardId, access.isUnlocked, profile)?.let { card ->
-                GuideCardScreen(card, viewModel.crumbs(navState.stack), navState::upTo, onBack, access.onUnlock, rememberGuideListState(navState))
+                val actions = rememberGuideCardActions(card, viewModel.pins, platform)
+                GuideCardScreen(
+                    card,
+                    viewModel.crumbs(navState.stack),
+                    navState::upTo,
+                    onBack,
+                    access.onUnlock,
+                    rememberGuideListState(navState),
+                    actions,
+                )
             } ?: GuideLoading()
         }
         GuideDestination.Search -> GuideSearchRoute(navState, access, searchViewModel, onBack)

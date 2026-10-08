@@ -37,9 +37,11 @@ class GuideCardHostTest {
     private val guide = GuideViewModel(repository, crashReporter, dispatcher)
     private var backs = 0
     private var unlocks = 0
+    private val shared = mutableListOf<String>()
+    private val platform = GuidePlatform(copy = {}, share = { text, _ -> shared += text })
 
     private fun show(unlocked: Boolean = true) {
-        composeRule.setContent { GuideCardHost(GuideAccess(unlocked, onUnlock = { unlocks++ }), onBack = { backs++ }, viewModel = guide) }
+        composeRule.setContent { GuideCardHost(GuideAccess(unlocked, onUnlock = { unlocks++ }), onBack = { backs++ }, viewModel = guide, platform = platform) }
         dispatcher.scheduler.advanceUntilIdle()
         composeRule.waitForIdle()
     }
@@ -104,5 +106,28 @@ class GuideCardHostTest {
         assertEquals(emptyList(), crashReporter.exceptions)
         assertEquals(emptyMap(), crashReporter.keys)
         assertEquals(emptyList(), crashReporter.logs)
+    }
+
+    @Test
+    fun anUnlockedHostOffersPinAndShareAndSharesOnlyOnATap() {
+        guide.openCard("RB-T5")
+        show()
+        assertEquals(emptyList(), shared)
+
+        composeRule.onNodeWithText(GuideStrings.pin).assertIsDisplayed()
+        composeRule.onNodeWithText(GuideStrings.share).performClick()
+
+        assertEquals(1, shared.size)
+        assertEquals(true, shared.single().startsWith("${GuideStrings.shareHeader}\n\nSynthetic card RB-T5?"))
+    }
+
+    @Test
+    fun aLockedHostHasNoPinShareOrCopyCite() {
+        guide.openCard("RB-T5")
+        show(unlocked = false)
+
+        for (control in listOf(GuideStrings.pin, GuideStrings.unpin, GuideStrings.share, GuideStrings.copyCite)) {
+            composeRule.onNodeWithText(control).assertDoesNotExist()
+        }
     }
 }

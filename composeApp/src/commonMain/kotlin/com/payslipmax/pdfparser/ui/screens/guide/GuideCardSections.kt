@@ -47,6 +47,7 @@ import com.payslipmax.pdfparser.ui.theme.GuideStrings
 internal fun LazyListScope.guideCardSections(
     card: GuideCardContent,
     onUnlock: () -> Unit,
+    onCopyCite: (() -> Unit)? = null,
 ) {
     val full = card.full
     if (full == null) {
@@ -57,7 +58,7 @@ internal fun LazyListScope.guideCardSections(
     bulletSection("key", GuideStrings.sectionKeyPoints, full.body.key)
     bulletSection("attach", GuideStrings.sectionAttach, full.body.attach)
     bulletSection("watch", GuideStrings.sectionWatchOut, full.body.watch, isWarning = true)
-    if (full.cite.isNotBlank()) item(key = "cite") { GuideCite(full.cite) }
+    if (full.cite.isNotBlank()) item(key = "cite") { GuideCite(full.cite, onCopyCite) }
     if (full.details.isNotBlank()) item(key = "details") { GuideDetails(card.id, full.details) }
 }
 
@@ -98,11 +99,17 @@ private fun Bullet(text: String) {
     }
 }
 
-/** The authority, in monospace like a rule reference, with a rule down its side. */
+/** The authority, in monospace like a rule reference, with a rule down its side and, when unlocked, a Copy cite button. */
 @Composable
-private fun GuideCite(cite: String) {
+private fun GuideCite(
+    cite: String,
+    onCopyCite: (() -> Unit)?,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny)) {
-        SectionHeading(GuideStrings.sectionAuthority, MaterialTheme.colorScheme.onSurfaceVariant)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.weight(1f)) { SectionHeading(GuideStrings.sectionAuthority, MaterialTheme.colorScheme.onSurfaceVariant) }
+            onCopyCite?.let { GuideCopyCiteButton(it) }
+        }
         Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
             Box(modifier = Modifier.width(AppDimensions.BorderMedium).fillMaxHeight().background(MaterialTheme.colorScheme.primary))
             Text(cite, style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.onSurfaceVariant)
