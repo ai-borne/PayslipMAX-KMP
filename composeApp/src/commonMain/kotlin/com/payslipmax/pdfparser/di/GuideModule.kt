@@ -3,6 +3,9 @@ package com.payslipmax.pdfparser.di
 import com.payslipmax.pdfparser.guide.GuideBundleSource
 import com.payslipmax.pdfparser.guide.GuideRepository
 import com.payslipmax.pdfparser.guide.data.LazyGuideRepository
+import com.payslipmax.pdfparser.guide.data.PayslipGuideProfileProvider
+import com.payslipmax.pdfparser.guide.domain.GuideProfileProvider
+import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.ui.screens.guide.GuideSearchViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +25,9 @@ val guideModule =
         // One repository per process, so the bundle is parsed once however many Guide screens ask.
         single<GuideRepository> { LazyGuideRepository(source = get(), dispatcher = Dispatchers.Default) }
         // App-scoped: switching tabs or locking the app keeps the loaded Guide; it holds no screen state.
-        single { GuideViewModel(repository = get(), crashReporter = get()) }
+        // The profile is read from the stored payslips on device, only while an unlocked figure card is open.
+        single<GuideProfileProvider> { PayslipGuideProfileProvider { get<PayslipRepository>().getAllPayslips() } }
+        single { GuideViewModel(repository = get(), crashReporter = get(), profiles = get()) }
         // App-scoped so a query and its results survive opening a card; memory only, never saved or sent.
         single { GuideSearchViewModel(guide = get()) }
     }

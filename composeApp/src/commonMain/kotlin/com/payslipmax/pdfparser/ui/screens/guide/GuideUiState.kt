@@ -5,9 +5,12 @@ import com.payslipmax.pdfparser.guide.domain.CardTemplate
 import com.payslipmax.pdfparser.guide.domain.GuideCardBody
 import com.payslipmax.pdfparser.guide.domain.GuideFeedLogic
 import com.payslipmax.pdfparser.guide.domain.GuideIndex
+import com.payslipmax.pdfparser.guide.domain.GuideProfile
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
 import com.payslipmax.pdfparser.guide.domain.GuideStaleness
 import com.payslipmax.pdfparser.guide.domain.GuideTrust
+import com.payslipmax.pdfparser.guide.domain.PersonalFigure
+import com.payslipmax.pdfparser.guide.domain.PersonalFigureResolver
 import com.payslipmax.pdfparser.guide.model.GuideArea
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.GuideCase
@@ -79,11 +82,16 @@ data class GuideCardContent(
     val full: GuideCardFull?,
 )
 
-/** The paid half of a card; [body] holds the placeholder bullets apart, so they are never drawn raw. */
+/**
+ * The paid half of a card; [body] holds the placeholder bullets apart, so they are never drawn raw. [figure] is the
+ * personal "your figure" line, null when the card has none or the profile cannot settle it. It lives here, not on
+ * [GuideCardContent], so a locked card state cannot hold a resolved figure.
+ */
 data class GuideCardFull(
     val body: GuideCardBody,
     val cite: String,
     val details: String,
+    val figure: PersonalFigure? = null,
 )
 
 internal fun GuideArea.toTile(): GuideAreaTile = GuideAreaTile(id, title, cases.size)
@@ -127,10 +135,16 @@ internal fun GuideIndex.cardContent(
     cardId: String,
     unlocked: Boolean,
     nowMillis: Long,
+    profile: GuideProfile? = null,
 ): GuideCardContent? {
     val card = card(cardId) ?: return null
     val trust = GuideTrust.of(card, bundle.ratesAsOf)
-    val full = if (unlocked) GuideCardFull(CardTemplate.body(card), card.cite, card.details) else null
+    val full =
+        if (unlocked) {
+            GuideCardFull(CardTemplate.body(card), card.cite, card.details, PersonalFigureResolver.resolve(card.id, bundle.figures, profile))
+        } else {
+            null
+        }
     val stale = trust.ratesAsOf?.let { GuideStaleness.isStale(it, nowMillis) } == true
     return GuideCardContent(card.id, card.title, card.answer, bundle.facets[card.facet].orEmpty(), trust, stale, full)
 }

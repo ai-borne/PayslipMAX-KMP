@@ -28,6 +28,7 @@ import sys
 from collections import Counter, defaultdict
 
 sys.path.insert(0, os.path.dirname(__file__))
+import figures as figmod
 import nav as navmod
 
 CARDS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -146,6 +147,7 @@ def main():
     facet_labels = navmod.apply_facets(out_cards, CARDS_DIR, errors)
     for c in out_cards:
         c['nav'] = nav_homes.get(c['id'], '')
+    errors += figmod.validate(figmod.load(), out_cards)
     skipped = {s['from'] for s in skips}
     for s in skips:
         if s['from'] not in ssot_ids: errors.append(f'skip of unknown entry {s["from"]}')

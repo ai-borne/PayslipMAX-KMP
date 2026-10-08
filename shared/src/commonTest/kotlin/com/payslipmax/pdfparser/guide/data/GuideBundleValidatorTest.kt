@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.GuideCard
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
+import com.payslipmax.pdfparser.testing.SyntheticGuideFigures
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -134,5 +135,25 @@ class GuideBundleValidatorTest {
         assertEquals(6, countGuideWords("Level {level} = Rs {food_rate}/day"))
         assertEquals(4, countGuideWords("Rs 1,200 (₹) per-day"))
         assertEquals(0, countGuideWords("  = : "))
+    }
+
+    @Test
+    fun aFigureMustBelongToAPersonalCardThatExists() {
+        val figures = SyntheticGuideFigures.figures
+        val food = figures.figures.getValue("food_rate")
+        val onPersonalCard = figures.copy(figures = mapOf("food_rate" to food.copy(card = SyntheticGuideBundle.PERSONAL_CARD)))
+        assertEquals(emptyList(), problems(valid.copy(figures = onPersonalCard)))
+
+        val unknownCard = figures.copy(figures = mapOf("food_rate" to food.copy(card = "RB-NOPE")))
+        assertProblem(valid.copy(figures = unknownCard), "figure food_rate: unknown card RB-NOPE")
+
+        val noSpec = figures.copy(figures = mapOf("food_rate" to food.copy(card = SyntheticGuideBundle.NO_CITE_CARD)))
+        assertProblem(valid.copy(figures = noSpec), "figure food_rate: card ${SyntheticGuideBundle.NO_CITE_CARD} has no personal spec")
+    }
+
+    @Test
+    fun aBundleWithoutFiguresIsStillValid() {
+        assertEquals(null, valid.figures)
+        assertEquals(emptyList(), problems(valid))
     }
 }

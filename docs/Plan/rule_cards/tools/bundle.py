@@ -2,7 +2,8 @@
 """Turn rulebook.json into the Claim Guide bundle the app ships (config.BUNDLE_PATH).
 
 Only whitelisted fields ship: internal provenance (`from`), reviewer notes (`open`) and the coverage bookkeeping
-stay in the repo. Each card gains `unverified` (it carries an open point) and the bundle gains `rates_as_of`.
+stay in the repo. Each card gains `unverified` (it carries an open point) and the bundle gains `rates_as_of` and the owner-approved
+`figures` (figures.json; authority and evidence stay in the repo).
 The output is compact and deterministic, so test_bundle.py can fail the build when it is stale.
 
 Usage: bundle.py [--check]   (--check exits non-zero if the committed bundle is out of date)
@@ -13,16 +14,19 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
+import figures
 from config import BUNDLE_PATH, BUNDLE_VERSION, CARDS_DIR, RATES_AS_OF
 
 CARD_KEYS = ('id', 'domain', 'topic', 'title', 'answer', 'key', 'attach', 'watch', 'cite', 'details', 'chips',
              'personal', 'status', 'facet', 'nav')
 
 
-def build(rulebook):
+def build(rulebook, figures_data=None):
+    figures_data = figures.load() if figures_data is None else figures_data
     cards = [dict({k: c[k] for k in CARD_KEYS}, unverified=bool(c['open'])) for c in rulebook['cards']]
     return {'version': BUNDLE_VERSION, 'generated': rulebook['generated'], 'rates_as_of': RATES_AS_OF,
-            'limits': rulebook['limits'], 'nav': rulebook['nav'], 'facets': rulebook['facets'], 'cards': cards}
+            'limits': rulebook['limits'], 'nav': rulebook['nav'], 'facets': rulebook['facets'], 'cards': cards,
+            'figures': figures.for_bundle(figures_data)}
 
 
 def render(data):

@@ -40,7 +40,7 @@ import com.payslipmax.pdfparser.ui.theme.GuideColors
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 /**
- * A card's body in the template order: Key points, Attach, Watch out, Authority, then Details collapsed. An empty
+ * A card's body in the template order: (Your figure,) Key points, Attach, Watch out, Authority, then Details collapsed. An empty
  * section is left out. Placeholder bullets are already split off into [GuideCardFull.body], so none is drawn raw. A
  * card with no [GuideCardContent.full] (the free preview) gets the unlock panel in place of the body.
  */
@@ -53,6 +53,7 @@ internal fun LazyListScope.guideCardSections(
         item(key = "locked") { GuideLockedPanel(onUnlock) }
         return
     }
+    guideYourFigure(full.figure)
     bulletSection("key", GuideStrings.sectionKeyPoints, full.body.key)
     bulletSection("attach", GuideStrings.sectionAttach, full.body.attach)
     bulletSection("watch", GuideStrings.sectionWatchOut, full.body.watch, isWarning = true)

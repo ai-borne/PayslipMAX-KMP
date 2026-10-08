@@ -27,6 +27,7 @@ object GuideBundleValidator {
         problems += duplicates("card", bundle.cards.map { it.id })
         checkHomes(bundle, problems)
         bundle.cards.forEach { checkCard(it, bundle, problems) }
+        problems += GuideFigureValidator.validate(bundle)
         return problems
     }
 

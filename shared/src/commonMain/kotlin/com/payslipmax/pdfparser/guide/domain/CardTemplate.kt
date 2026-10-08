@@ -4,8 +4,9 @@ import com.payslipmax.pdfparser.guide.model.GuideCard
 
 /**
  * A card's bullet sections as the card screen shows them. [figureTemplates] are the bullets that name profile
- * placeholders (for example "Level {level} = Rs {food_rate}/day"): they are never shown raw, and phase E6 fills
- * them into the "your figure" line. Without a profile the rest of the card is complete on its own.
+ * placeholders (for example "Level {level} = Rs {food_rate}/day"): they are never shown raw. The "your figure" line
+ * (phase E6) is drawn from the bundle's figures by [PersonalFigureResolver], not from these bullets, so all four
+ * personal cards read the same way. Without a profile the rest of the card is complete on its own.
  */
 data class GuideCardBody(
     val key: List<String>,

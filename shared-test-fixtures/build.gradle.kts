@@ -22,6 +22,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":shared"))
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

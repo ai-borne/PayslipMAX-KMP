@@ -11,6 +11,7 @@ import re
 import unittest
 
 import bundle
+import figures
 from config import BUNDLE_PATH, BUNDLE_VERSION, CARDS_DIR, RATES_AS_OF
 
 RULEBOOK = json.load(open(os.path.join(CARDS_DIR, 'rulebook.json'), encoding='utf-8'))
@@ -55,6 +56,27 @@ class BundleContents(unittest.TestCase):
         for card in BUILT['cards']:
             self.assertEqual('GUIDANCE' in card['chips'], card['cite'] == '', card['id'])
         self.assertEqual(sum(c['cite'] == '' for c in BUILT['cards']), 31)
+
+
+class BundleFigures(unittest.TestCase):
+    """The "your figure" rupee values reach the app only through the bundle (phase E6), and only once approved."""
+
+    def test_approved_figures_ship_for_the_four_personal_cards(self):
+        shipped = BUILT['figures']['figures']
+        self.assertEqual(set(shipped), {'food_rate', 'ctg', 'transport_allowance', 'hra'})
+        personal = {c['id'] for c in BUILT['cards'] if c['personal']}
+        self.assertEqual({f['card'] for f in shipped.values()}, personal)
+
+    def test_an_unapproved_figure_stops_the_build(self):
+        data = figures.load()
+        data['figures']['ctg']['approved'] = None
+        with self.assertRaises(SystemExit):
+            bundle.build(RULEBOOK, data)
+
+    def test_no_authoring_notes_ship(self):
+        text = bundle.render(BUILT)
+        for private in ('evidence', 'HANDBOOK_ONLY', 'LETTER_TEXT', 'decided_by'):
+            self.assertNotIn(private, text)
 
 
 class BundleFile(unittest.TestCase):

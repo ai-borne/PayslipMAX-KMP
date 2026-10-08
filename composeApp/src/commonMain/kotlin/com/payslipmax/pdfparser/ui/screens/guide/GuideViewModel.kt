@@ -3,6 +3,8 @@ package com.payslipmax.pdfparser.ui.screens.guide
 import com.payslipmax.pdfparser.guide.GuideLoadError
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.GuideRepository
+import com.payslipmax.pdfparser.guide.domain.GuideProfile
+import com.payslipmax.pdfparser.guide.domain.GuideProfileProvider
 import com.payslipmax.pdfparser.rating.currentTimeMillis
 import com.payslipmax.pdfparser.telemetry.CrashReporter
 import kotlinx.coroutines.CoroutineDispatcher
@@ -10,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -27,6 +30,7 @@ class GuideViewModel(
     private val crashReporter: CrashReporter,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val nowMillis: () -> Long = ::currentTimeMillis,
+    private val profiles: GuideProfileProvider = GuideProfileProvider.None,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val _uiState = MutableStateFlow<GuideUiState>(GuideUiState.Loading)
@@ -60,11 +64,21 @@ class GuideViewModel(
         facet: String?,
     ): GuideFeedContent? = index()?.feedContent(caseId, facet)
 
-    /** The card; its key points, cite and details are in the result only when [unlocked] (see [GuideCardContent]). */
+    /**
+     * The card; its key points, cite, details and "your figure" are in the result only when [unlocked] (see
+     * [GuideCardContent]). The [profile] is used only for that figure and is never kept here.
+     */
     fun card(
         cardId: String,
         unlocked: Boolean,
-    ): GuideCardContent? = index()?.cardContent(cardId, unlocked, nowMillis())
+        profile: GuideProfile? = null,
+    ): GuideCardContent? = index()?.cardContent(cardId, unlocked, nowMillis(), profile)
+
+    /** True when the card has a "your figure" line, so a screen reads the payslips for that card and no other. */
+    fun hasFigure(cardId: String): Boolean = index()?.bundle?.figures?.figures?.values?.any { it.card == cardId } == true
+
+    /** The officer's profile, read from the stored payslips only while a screen collects it. */
+    fun profileFlow(): Flow<GuideProfile?> = profiles.profile()
 
     fun crumbs(stack: List<GuideDestination>): List<GuideCrumb> = index()?.crumbs(stack).orEmpty()
 

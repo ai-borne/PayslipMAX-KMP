@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.guide
 
+import com.payslipmax.pdfparser.guide.domain.GuideProfileBuilder
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
 import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
 import kotlinx.coroutines.test.runTest
@@ -85,6 +86,26 @@ class GuideLoaderIosPerfTest {
             GuideBundleContract.assertTrustAndPreviewMatchDataset(bundle)
         }
 
+    @Test
+    fun yourFigureBuildsFromALongHistoryWithinBudgetOnNative() =
+        runTest {
+            val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())
+            val history = GuideFiguresContract.realisticHistory(months = 140)
+
+            // E6: opening a figure card builds the profile from every stored payslip (Pay Audit's timeline), then resolves.
+            val mark = TimeSource.Monotonic.markNow()
+            repeat(FIGURE_REPEATS) { GuideProfileBuilder.from(history) }
+            val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+
+            println("guide figure on Native: $FIGURE_REPEATS profiles over ${history.size} payslips ${elapsedMs}ms")
+            assertTrue(elapsedMs < FIGURE_BUDGET_MS, "profiles took ${elapsedMs}ms, budget ${FIGURE_BUDGET_MS}ms")
+            // The correctness workload, untimed: Native resolves the same amounts as the JVM.
+            GuideFiguresContract.assertShippedFiguresMatchTheApprovedLetters(bundle)
+            GuideFiguresContract.assertEveryPayLevelHasARate(bundle)
+            GuideFiguresContract.assertTransportBasesMatchPayAudit(bundle)
+            GuideFiguresContract.assertHistoryResolvesAllFourCards(bundle, history)
+        }
+
     private companion object {
         // Generous for a debug simulator build: the first Guide open waits on this, and a quadratic
         // regression in the parser or validator would blow far past it.
@@ -95,5 +116,9 @@ class GuideLoaderIosPerfTest {
 
         // E4 search, for the index build and for the realistic queries each: the same margin again.
         const val SEARCH_BUDGET_MS = 1_500L
+
+        // E6: ten profile builds over a 140-month history (a card open builds one); the same margin again.
+        const val FIGURE_REPEATS = 10
+        const val FIGURE_BUDGET_MS = 1_500L
     }
 }

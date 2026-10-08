@@ -1,7 +1,7 @@
 # Claim Guide, Phase E plan (E1 to E9)
 
 Status: E0 (this plan) done 2026-10-07. **E1 done 2026-10-07** (branch `feature/guide-e1-bundle`). **E2 done 2026-10-07**
-(branch `feature/guide-e2-tiles`, off E1). **E3 done 2026-10-07** (branch `feature/guide-e3-feed`, off E2). **E4 done 2026-10-07** (same branch). **E5 done 2026-10-07** (merged to `main`, branch deleted); E6 next, its owner decisions are closed (see E6).
+(branch `feature/guide-e2-tiles`, off E1). **E3 done 2026-10-07** (branch `feature/guide-e3-feed`, off E2). **E4 done 2026-10-07** (same branch). **E5 done 2026-10-07** (merged to `main`, branch deleted). **E6 done 2026-10-08** (committed on `feature/guide-e6-personal-figures`, not merged: owner decides); E7 next.
 Branching (decided 2026-10-07, solo developer): `main` holds E0 to E4; each later phase is one branch off `main`,
 merged (fast-forward) when its gate is green and deleted, so at most one phase branch is ever open.
 Items left open by a finished phase are listed under "EP Pending items" at the end, never dropped.
@@ -367,9 +367,11 @@ hidden); search results for locked users show titles only; the nudge appears onl
 | Profile month | The latest payslip month supplies `level`, `tptaCity`, basic pay and DA. The line says which month it is based on. |
 | Unknown facts | Show the base figure with its assumption named, never a guess: CTG "about Rs X (80% of last basic, move of 20 km or more)"; food "Rs Y a day, full day, before taxes". The card's bullets already cover the other cases. |
 | Food rate (T181) | Only the levels the card lists: 9-11 base 900, 12-13B base 1,000, 14+ base 1,200. Levels below 9 get no line. Amount is before taxes. |
-| Transport allowance (P051) | Only levels 10-13A and 14+. City: match the Pay Audit `tptaCity` against the card's listed-city list; a city not on it takes the "elsewhere" rate; no `tptaCity` hides the line. |
-| HRA (P116) | City class inferred from the payslip's HRA / basic ratio: 24/27/30% = X, 16/18/20% = Y, 8/9/10% = Z. A ratio that fits none hides the line. The line restates the rate (a cross-check), it adds no new input and no new UI. |
+| Transport allowance (P051) | Only levels 10-13A and 14+. **Revised 2026-10-08:** Pay Audit's `tptaCity` is a class (`HIGHER` or `OTHER`, recovered from the payslip's own TPTA base, null at level 14+), not a city name, so the card's city list cannot be matched. Use the class: `HIGHER` 7,200, `OTHER` 3,600 (levels 10-13A); level 14+ is a flat 15,750 with no class needed; no class at 10-13A hides the line. Amount = base x (1 + DA/100), no 25% step (same shape as `TptaEntitlementAuditor`; owner confirmed). |
+| HRA (P116) | City class inferred from the payslip's HRA / basic ratio: 24/27/30% = X, 16/18/20% = Y, 8/9/10% = Z. A ratio that fits none hides the line. **Added 2026-10-08:** a valid rate that is not the rate for that class at the payslip's DA (24% when DA is 60%) also hides the line; that mismatch is Pay Audit's finding. The HRA amount is on the payslip, not in `TimelineMonth`, so the provider reads it from the same month's `ParsedPayslip`. The line restates the rate (a cross-check), it adds no new input and no new UI. |
 | Approval | Owner approves `figures.json`. Every figure carries value, effective date and the primary letter (same standard as CITE); `compile.py` fails a figure with no source. No figure ships unapproved. |
+| Figures approved | **2026-10-08**, all four, evidence labels unchanged: food and CTG rest on the primary MoD letter text (read); transport allowance and HRA rest on the P&A Handbook 2023 (it prints the letter numbers and rates; letter text not in the source folder), HRA step dates 01-07-2021 and 01-01-2024 are web-corroborated only. The labels stay in `figures.json` and in the EP table. |
+| Food wording | Owner kept "before taxes" (2026-10-08). The letter text read does not mention taxes, so that phrase rests on the owner decision (EP 17). |
 | Not asked, default | A figure whose source letter is unverified is not asked about here; if one turns up while drafting, stop and ask the owner. |
 
 **Goal:** a "your figure" line on T181 (food rate), T254 (CTG), P051 (transport allowance) and P116 (HRA).
@@ -383,6 +385,76 @@ the card stays complete; the effective date is shown.
 **Security:** figures are computed on the device and never shared.
 **Premium (from E5):** the "your figure" line is part of the paid half. It is drawn only when `GuideCardContent.full` is set (the
 card is unlocked), and a locked state must not hold the resolved figure.
+
+### E6 phase plan (written 2026-10-08, before any Kotlin)
+Branch `feature/guide-e6-personal-figures` off `main`. Gate for this phase is "Rules for every phase" plus: `assembleRelease`,
+`assembleMinifiedTest`, `check_r8_guide.py`, the Pixel 9 smoke, and a Pixel check of the line with the real profile (debug build).
+
+**Existing code read first.** `ServiceTimeline`/`TimelineMonth` (`level`, `basicPay`, `daPercent`, `tptaCity`), `ServiceTimelineBuilder`
+(DA = DA / (Basic + MSP) as a whole percent; null when arrears are folded in), `TptaEntitlementAuditor` (base x (1 + DA/100)),
+`PayLevel` (L10, L10B, L11, L12A, L13, L13A, L14-L18), `CardTemplate`/`GuideCardBody.figureTemplates`, `GuideCardContent.full`,
+`GuideViewModel.card`, `GuideTab`, `GuideModule`, `GuideBundleValidator`, `bundle.py`, `compile.py`, `check_r8_guide.py`,
+`SyntheticGuideBundle`, `GuideBundleContract`. Facts that shaped the plan: `tptaCity` is a class, not a city; HRA is on the payslip
+only; the four cards carry `personal=` specs but only T181 and T254 have placeholder bullets.
+
+**Design (one source each).**
+- *Data:* `figures.json` (authored, approved) -> `compile.py` validates (card exists and has `personal`, ISO dates, authority present,
+  approved date present, no overlapping level bands, HRA steps ascending) -> `bundle.py` ships it as `figures` (additive, bundle
+  version stays 1; it fails if any figure is unapproved) -> `GuideBundle.figures`. No rupee figure or rate in production Kotlin.
+- *Model:* the `@Serializable` figure types live in `GuideModels.kt`, so `check_r8_guide.py` covers them with no script change.
+- *Domain (shared, commonMain):* `GuideProfile` (level label, basic, DA, TPTA class, HRA, payslip month; plain types),
+  `GuideProfileBuilder.from(history)` (calls `ServiceTimelineBuilder`; latest timeline month; no copy of Pay Audit logic),
+  `PersonalFigureResolver.resolve(cardId, figures, profile)` -> `PersonalFigure?` (null = hide the line). Integer arithmetic, no regex.
+- *UI (composeApp):* `GuideProfileProvider` (flow of `GuideProfile?` from `PayslipRepository.getAllPayslips()`, a Koin single in
+  `guideModule`), `GuideViewModel.card(..., profile)` puts the resolved figure inside `GuideCardFull.figure` (so locked state holds
+  none), `GuideYourFigure.kt` draws a "Your figure" block above Key points, copy only in `GuideStrings`. The provider is collected only
+  for an unlocked card that has a figure spec; a locked card never touches the payslips.
+- *Hiding:* any missing input (level, basic, DA, class, HRA) or unlisted level returns null; the card stays complete as today.
+
+**Tests first (each fails before its code).** Python: figure with no authority, no approved date, unknown card, or overlapping bands
+fails `compile.py`; `bundle.py` ships figures; unapproved figure blocks the bundle; stale bundle guard. Kotlin shared: resolver per card
+with and without a profile; DA 50 and 58 (food 1,125 and 1,125 / base x 1.25, DA 100 -> x1.5 as a boundary); levels below the listed
+bands get no line; TPTA `HIGHER`/`OTHER`/level 14+/null class; HRA ratio to class, a ratio that fits none, a lower tier than DA warrants
+(hidden); CTG basic only, no DA needed; profile builder takes the latest month, null DA/level pass through; figures validated by the
+bundle validator (unknown card, bad level label). composeApp: the line appears only when unlocked, locked state has `full == null` so no
+figure, missing profile leaves the card complete, effective date and payslip month shown, nothing recorded by `FakeCrashReporter`.
+Contract on the real bundle: four figures, every `PayLevel` lands in at most one band, transport bases equal Pay Audit's
+`TptaCityClass` bases (so the two sources cannot drift). Test oracles hold expected rupee values by design; production code holds none.
+
+**R8 / iOS risks.** New `@Serializable` types: `minifyReleaseWithR8`-equivalent proof is `assembleMinifiedTest` + `check_r8_guide.py`
+(release keeps the Guide dark). `figures` is a `Map<String, ...>` of plain types; no reflection. iOS: arithmetic and the existing
+`ServiceTimelineBuilder` only, but the builder now runs on card open, so an `iosTest` timing check feeds it a full history (budget as
+`ParserUtilsIosPerfTest`). No lookaround or backreference.
+
+**Regression controls.** Dark launch unchanged (`GUIDE_ENABLED`, debug only). Characterization: existing card-screen tests (locked,
+unlocked, placeholder bullets hidden) stay green first. Pay Audit files are not edited. Corpus 139/139 unchanged.
+
+**Navigation and state.** No navigation change. The figure is derived on each composition from the saved stack, the bundle and the
+payslips; it is not saved, so nothing survives process death except what already does. Lock screen: no Guide content is composed.
+
+**Versioning, DI, fixtures, storage.** Bundle `version` stays 1 (unknown key ignored by older builds). One new Koin single
+(`GuideProfileProvider`) in `guideModule`. `SyntheticGuideBundle` gains a figures block and a `FakeGuideProfileProvider` goes in
+`shared-test-fixtures`. No storage, no Room change.
+
+**Security.** Computed on device from payslips already on device; nothing is sent, logged, shared (E8 share text excludes it) or put
+in crash keys. A test asserts the reporter sees no call when figures resolve.
+
+**Owner decisions:** none open (all answered 2026-10-08, see the table above).
+
+**E6 result (2026-10-08).** Done, with these recorded choices:
+- **Data chain.** `figures.json` (owner-approved 2026-10-08, evidence label on every figure) -> `tools/figures.py` (`compile.py` fails a figure with no authority, a bad date, an unknown evidence level, an unknown card or a card without `personal=`, a level claimed twice, HRA steps that do not rise, or a `personal=` card with no figure) -> `bundle.py` ships only value, date, bands and assumption as `figures` (it stops if any figure is unapproved; authority and evidence stay in the repo). Bundle `version` stays 1. 18 tests in `test_figures.py`, 3 more in `test_bundle.py`.
+- **Resolver.** `PersonalFigureResolver` (shared, integer arithmetic, no regex) returns `FoodRate`, `Ctg`, `Transport`, `Hra` or null (hide). Rules as decided: food = base x (100 + 25 x floor(DA/50)) / 100, listed levels only; CTG = 80% of latest basic, no DA needed; transport = base x (100 + DA) / 100 with the `HIGHER`/`OTHER` class from Pay Audit (flat for level 14+); HRA = class whose rate at the payslip's DA equals HRA / basic within 0.1 point, else hidden (so a valid-but-lagging rate such as 24% at DA 60% is hidden). Any missing level, basic, DA, class or HRA hides the line. An unknown `mode` hides it too (forward compatible).
+- **Profile.** `GuideProfileBuilder` calls Pay Audit's own `ServiceTimelineBuilder` and takes the latest usable month, so level, DA and the TPTA class are read by one piece of code; only the HRA amount is read from that month's payslip. `PayslipGuideProfileProvider` is a cold flow over `getAllPayslips()`.
+- **Locked state.** The figure is `GuideCardFull.figure`, so a locked `GuideCardContent` (`full == null`) cannot hold it. `rememberGuideProfile` subscribes to the payslips only while an unlocked card with a figure is on screen and drops the profile when it leaves (tests: locked card and figure-less card never subscribe; reading stops on back). Nothing is written to telemetry (test).
+- **UI.** A "Your figure" block above Key points: amount, how it was worked out (level, base, DA step, the assumption named), and "From your Sep 2026 payslip, DA 60%. Rate in force from Jul 2017." Copy is in `GuideStrings`; colours are theme tokens; `GuideFigureText.kt` is pure so the facts each line must carry are unit-tested. The card's own placeholder bullets stay hidden (see EP 22).
+- **No rupee figure in production Kotlin.** The only numbers in production code are the integer rounding constants (100, 50) and the HRA tolerance (0.1). Test oracles hold expected amounts by design. `SyntheticGuideFigures` is checked equal to the shipped figures, and the contract pins the bundle's transport bases to Pay Audit's `TptaCityClass`, so the two sources cannot drift.
+- **Owner answers (2026-10-08):** ship transport and HRA on handbook evidence; HRA step dates correct; use the `tptaCity` class directly; transport is plus DA with no step; keep "before taxes" (no source, EP 17); hide HRA on a tier mismatch; approve all four.
+- Tests added: shared 29 (resolver 18, profile 4, provider 5, validator 2), composeApp 22 (card state 7, text 6, on screen 6, contract and iOS 3), Python 21. Mutation checks: a wrong DA step and a wrong HRA tier rule failed 7 of 18 resolver tests; ignoring the lock in the profile read, or answering `hasFigure` true for every card, failed 3 of 13 UI tests.
+- Gates (2026-10-08): `check -x iosX64Test` (both variants, corpus included), `ktlintCheck`, tech-debt audit (31 changed files, full scan 395), `iosSimulatorArm64Test`, `linkDebugFrameworkIosSimulatorArm64`, `assembleRelease`, `assembleMinifiedTest` and `check_r8_guide.py` (10 models and serializers kept, up from 5; bundle byte-identical): green. After the gate run, the only change was one equality assertion in the contract test, rerun green with ktlint.
+- Baselines. Tests: shared JVM 881 (E5: 852), composeApp JVM debug 705 / release 679 (683 / 657), iOS shared 834 (805), iOS composeApp 473 (458); none failed. The one skipped test is the existing `GemmaModelPathsAndroidTest` debug-sideload case in the shared release variant (`assumeTrue(isDebugBuild())`; it runs in the debug variant). Release APK 69,540,225 bytes (E5: 69,539,777, +448; the Guide is still dark). iOS: 10 profile builds over 140 payslips 12 ms (budget 1.5 s). Cold start not re-measured (EP 12).
+- Pixel 9 (2026-10-08): the Play 1.3.0 build was uninstalled from profile 0 after the owner confirmed a `.pcda` backup, the `minifiedTest` build installed, and `run_guide_minified_smoke.sh` passed. After the owner restored the backup, all four cards were checked on the real September 2026 payslip (BPAY 1,49,000, MSP 15,500, DA 98,700 = 60%, TPTA 3,600, no HRA but RHA 21,125): food Level 12A shows 1,250 a day (matches the FAQ for a Major), CTG about 1,19,200 (80% of 1,49,000), transport 5,760 a month (3,600 plus 60%, other places), and HRA correctly shows no line (no HRA on the payslip). Screenshot checked by eye: the block reads cleanly above Key points, with the stale-rates nudge above it. **The phone now runs the debug-signed `minifiedTest` build, not the Play build; returning to Play needs a backup, an uninstall and a Play install.**
+- **Phase Handoff.** Debt incurred and how it was resolved in the phase: (1) the test copy of the figures could drift from the shipped data: resolved by an equality assertion in the contract; (2) two sources for the transport bases (Pay Audit's enum and `figures.json`): resolved by the contract test that fails on any difference; (3) a profile held in an app-scoped object after the card closes: resolved by reading it only inside the card's composition. Left open and recorded, not hidden: EP 17-22.
+- Not done by design: no city picker, no computed 100% CTG case, no figure in the share note (E8 excludes profile figures), no figure for locked users.
 
 ## E7 Pay Audit link
 **Goal:** a finding opens its matching card, and back returns to the finding.
@@ -412,8 +484,9 @@ outbound path, nothing Guide-related in telemetry, and no `from`/`open` in the b
 simulator walkthrough; baseline comparison; then turn on `GUIDE_ENABLED` for release in its own commit.
 **Exit:** full pre-push gate green; HANDOFF.md, docs and memory updated.
 **Tech-debt checkpoint:** a known-gaps register (RP-073, unverified cards, the DA 60% flag).
-**Carried here from earlier phases (EP):** 11 and 15 (the iOS simulator walkthrough: search field, locked panel, upgrade sheet,
-chips), 12 (cold start and APK size), 14 (the purchase and Premium-row checks at the paywall flip). 7 and 13 are closed.
+**Carried here from earlier phases (EP):** 11, 15 and 20 (the iOS simulator walkthrough: search field, locked panel, upgrade sheet,
+chips, the "Your figure" block), 12 (cold start and APK size), 14 (the purchase and Premium-row checks at the paywall flip), 17 (the
+"before taxes" source), 18 (letters behind transport allowance and HRA, HRA step dates, the P116 OM number), 21 and 22 (E6 limits and the unused placeholder bullets, to review). 7 and 13 are closed.
 
 ## Open items carried into E1 (all closed 2026-10-07)
 Bundle location: compose resources (E1 spike). `rates_as_of`: `2026-01`. GUIDANCE vs empty cite: one rule, empty cite.
@@ -439,3 +512,9 @@ Each item names the phase that closes it. A phase may not exit while an item ass
 | 14 | E5 | **Owner rule (2026-10-07):** `GUIDE_PAYWALL_ENABLED` is flipped only when no card carrying the Rates chip is still an "Unverified point" (RP-088 HBA 8.5% is one); other unverified cards may stay. `GuideBundleContract.assertPaywallOnlyWhenNoUnverifiedRateCard` fails if the flag is on while such a card exists. **Still open at the flip:** a sandbox purchase on each platform unlocks an open Guide card, and the Claim Guide row then appears in the Premium screen and hub (`isAdvertised`). Check both. | E9 |
 | 15 | E5 | **Android half closed 2026-10-07 on the Pixel 9** (debug build, Settings "Force Free"): a locked card shows its title, "Unverified point" chip, warning line and one-line answer, then the Unlock panel with no key points, authority or details; Unlock opens the upgrade sheet. **Still open:** iOS cannot be driven from here, so the locked panel, the sheet and chip wrapping at large text sizes go into the E9 iOS simulator walkthrough with EP 11. | E9 |
 | 16 | E5 | Search results cached under one scope could be drawn for a moment after the entitlement changed. **Closed 2026-10-07:** `GuideSearchState.Results` records its scope and `visibleTo(unlocked)` holds back results from another scope until the model has searched again (unit test, plus an on-screen test that revokes Premium mid-search). | E5 follow-up |
+| 17 | E6 | **Food line wording.** The line says "full day (over 12 hours away), before taxes" because the owner kept "before taxes" (2026-10-08). The MoD letter text read does not mention taxes, and the T181 Details sentence "plus taxes" is in no source in hand. Owner to supply the source, or drop the phrase from `figures.json` and the card Details (one data edit, then `compile.py` and `bundle.py`). | E9 |
+| 18 | E6 | **Evidence below primary text.** Transport allowance (7,200 / 3,600 / 15,750 plus DA; MoD 12630/Tpt.A/Mov C/246/D(Mov)/17 dt 15-09-2017) and the HRA rates (MoF DoE OM 2(5)/2017-E.II(B) dt 07-07-2017) are labelled `HANDBOOK_ONLY` in `figures.json`: the P&A Handbook 2023 prints the letter numbers and rates, the letter texts are not in the source folder. The HRA step dates (01-07-2021, 01-01-2024) are `WEB_SECONDARY`. Owner approved shipping on this evidence (2026-10-08). Upgrade the labels when the letters are supplied, and before `GUIDE_PAYWALL_ENABLED` flips. Also: the P116 card cites the OM as "2/5/2017-E.II(B)", the handbook prints "2(5)/2017-E.II (B)"; confirm the number against the OM. | E9 |
+| 19 | E6 | **Pixel check of the "Your figure" line with the real profile. Closed 2026-10-08 on the Pixel 9:** `run_guide_minified_smoke.sh` passed on the `minifiedTest` build, and after the owner restored the `.pcda` backup all four cards were driven on the real September 2026 payslip (food Level 12A 1,250 a day; CTG about 1,19,200; transport 5,760 a month; HRA correctly hidden, the payslip has RHA and no HRA). See E6 result. | E6 |
+| 20 | E6 | The iOS simulator walkthrough must include the "Your figure" block (large text sizes, a card with and without a profile). Native correctness and timing are covered by `GuideLoaderIosPerfTest`; the UI is not driven from here. | E9 |
+| 21 | E6 | Two E6 limits by design, listed so they are not mistaken for gaps: the DA step is additive (1 + 0.25 x steps), which matches the letter below DA 100% and is an owner decision above it; CTG assumes the 80% case (100% for Andaman, Nicobar and Lakshadweep is named in the assumption, not computed). Level labels 9, 10A, 12, 12B, 13B are in `figures.json` because the letter lists them, but the Pay Audit matrix (`PayLevel`) has no such levels, so they are never matched. | E9 (review) |
+| 22 | E6 | The card text still carries two placeholder bullets ("Level {level} = Rs {food_rate}/day" on T181, "Your CTG is about Rs {ctg_estimate}" on T254) that are never shown, and `GuideCardBody.figureTemplates` still sets them aside; the line now comes from `figures.json`. Delete the two bullets, `figureTemplates` and its tests in one small cleanup, or keep them as documentation. Not urgent; no user sees them. | E9 (review) |

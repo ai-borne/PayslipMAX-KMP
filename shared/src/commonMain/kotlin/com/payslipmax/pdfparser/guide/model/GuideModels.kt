@@ -19,6 +19,8 @@ data class GuideBundle(
     /** Facet key (for example "Q") to its label (for example "Who qualifies"). Content, not UI copy. */
     val facets: Map<String, String>,
     val cards: List<GuideCard>,
+    /** The rupee figures behind the "your figure" line (phase E6); null in a bundle that carries none. */
+    val figures: GuideFigures? = null,
 )
 
 /** Word and bullet limits the compiler enforced; the validator rechecks them on every load. */
@@ -89,3 +91,53 @@ enum class GuideChip {
         fun fromKey(key: String): GuideChip = entries.firstOrNull { it != UNKNOWN && it.name == key } ?: UNKNOWN
     }
 }
+
+/**
+ * The owner-approved rates behind the "your figure" line, generated from `docs/Plan/rule_cards/figures.json`. No rupee
+ * figure is written in Kotlin: the resolver reads these. Every field has a default or is optional so a newer bundle
+ * that adds modes or fields still loads; a mode this version does not know simply shows no line.
+ */
+@Serializable
+data class GuideFigures(
+    @SerialName("da_step") val daStep: GuideDaStep,
+    /** Figure key (for example "food_rate") to its data. */
+    val figures: Map<String, GuideFigure>,
+)
+
+/** A rate rises by [increasePercent] each time DA rises by [perDaPercent] (MoD 15-09-2017: 25% per 50%). */
+@Serializable
+data class GuideDaStep(
+    @SerialName("per_da_percent") val perDaPercent: Int,
+    @SerialName("increase_percent") val increasePercent: Int,
+)
+
+/**
+ * One personal figure. [mode] is `da_step` (band base raised by the DA step), `percent_of_basic`, `plus_da` (band base
+ * plus DA on it) or `rate_table` (a percent of basic by city class and DA step). [assumption] is content, like card text.
+ */
+@Serializable
+data class GuideFigure(
+    val card: String,
+    val mode: String,
+    val assumption: String = "",
+    @SerialName("effective_from") val effectiveFrom: String = "",
+    val percent: Int = 0,
+    val bands: List<GuideFigureBand> = emptyList(),
+    val classes: Map<String, List<GuideRateStep>> = emptyMap(),
+)
+
+/** Pay levels (labels as printed, for example "12A") sharing one [base]; [cityClass] is `HIGHER`, `OTHER` or `ANY`. */
+@Serializable
+data class GuideFigureBand(
+    val levels: List<String>,
+    @SerialName("city_class") val cityClass: String = "ANY",
+    val base: Int,
+)
+
+/** From [fromDaPercent] upwards a city class gets [percent] of basic pay, in force from [effectiveFrom]. */
+@Serializable
+data class GuideRateStep(
+    @SerialName("from_da_percent") val fromDaPercent: Int,
+    val percent: Int,
+    @SerialName("effective_from") val effectiveFrom: String,
+)

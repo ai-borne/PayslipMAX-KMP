@@ -1,5 +1,10 @@
 package com.payslipmax.pdfparser.testing
 
+import com.payslipmax.pdfparser.guide.GuideLoadResult
+import com.payslipmax.pdfparser.guide.data.GuideBundleParser
+import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.guide.model.GuideFigures
+
 /**
  * A small, valid Claim Guide bundle for logic and UI tests, so a rate edit in the real 402 cards never breaks
  * them. It carries one card of each kind the UI treats differently: a personal card with placeholders, an
@@ -41,6 +46,16 @@ object SyntheticGuideBundle {
          ${card("RB-P2", "pay-hra", "H", domain = "pay")},
          ${card("RB-P3", "pay-hra", "L", domain = "pay")}]}
         """.trimIndent()
+
+    /**
+     * The same bundle with the approved food-rate figure on its personal card, as the real bundle ships it. Built by copy,
+     * not parsed from [JSON], so the plain synthetic bundle stays a bundle with no figures.
+     */
+    fun withFigures(): GuideBundle {
+        val bundle = (GuideBundleParser.parse(JSON) as GuideLoadResult.Loaded).bundle
+        val food = SyntheticGuideFigures.figures.figures.getValue("food_rate").copy(card = PERSONAL_CARD)
+        return bundle.copy(figures = GuideFigures(SyntheticGuideFigures.figures.daStep, mapOf("food_rate" to food)))
+    }
 
     private fun card(
         id: String,

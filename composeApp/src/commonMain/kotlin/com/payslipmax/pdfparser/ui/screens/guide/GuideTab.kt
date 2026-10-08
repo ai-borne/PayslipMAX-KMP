@@ -81,10 +81,12 @@ private fun GuideDestinationContent(
                 GuideAreaScreen(area, onBack, onOpenCase = { navState.push(GuideDestination.Case(it)) }, rememberGuideListState(navState))
             } ?: GuideLoading()
         is GuideDestination.Case -> GuideFeedRoute(navState, destination, viewModel)
-        is GuideDestination.Card ->
-            viewModel.card(destination.cardId, access.isUnlocked)?.let { card ->
+        is GuideDestination.Card -> {
+            val profile = rememberGuideProfile(viewModel, destination.cardId, access.isUnlocked)
+            viewModel.card(destination.cardId, access.isUnlocked, profile)?.let { card ->
                 GuideCardScreen(card, viewModel.crumbs(navState.stack), navState::upTo, onBack, access.onUnlock, rememberGuideListState(navState))
             } ?: GuideLoading()
+        }
         GuideDestination.Search -> GuideSearchRoute(navState, access, searchViewModel, onBack)
     }
 }

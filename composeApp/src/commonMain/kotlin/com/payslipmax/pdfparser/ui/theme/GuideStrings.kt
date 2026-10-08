@@ -92,4 +92,47 @@ object GuideStrings {
     fun alsoRelevant(homeCaseTitle: String): String = "Also relevant here. Main home: $homeCaseTitle"
 
     fun breadcrumbDescription(label: String): String = "Up to $label"
+
+    // Your figure (phase E6). The amounts come from the bundle's figures and the payslip, never from this file.
+    const val sectionYourFigure = "Your figure"
+    const val cityHigherRate = "higher-rate city"
+    const val cityOtherPlaces = "other places"
+
+    fun figureADay(amount: String): String = "$amount a day"
+
+    fun figureAMonth(amount: String): String = "$amount a month"
+
+    fun figureAbout(amount: String): String = "About $amount"
+
+    fun figurePercentOfBasic(percent: Int): String = "$percent% of basic pay"
+
+    fun figureFoodDetail(
+        level: String,
+        base: String,
+        stepPercent: Int,
+    ): String = "Level $level. Base $base" + (if (stepPercent > 0) " plus $stepPercent% for DA" else "") + "."
+
+    fun figureCtgDetail(percent: Int): String = "$percent% of your latest basic pay."
+
+    fun figureTransportDetail(
+        level: String,
+        base: String,
+        daPercent: Int,
+        city: String?,
+    ): String = "Level $level. Base $base plus $daPercent% DA on it" + (city?.let { ", $it" } ?: "") + "."
+
+    fun figureHraDetail(
+        hraClass: String,
+        daPercent: Int,
+    ): String = "Your payslip HRA fits a class $hraClass city at DA $daPercent%."
+
+    /** The assumption the card could not know, in the bundle's words; empty when the figure needs none. */
+    fun figureAssumes(assumption: String): String = if (assumption.isBlank()) "" else " Assumes a $assumption."
+
+    /** Where the number comes from: the payslip month and DA it was read from, and when the rate started. */
+    fun figureFootnote(
+        payslipMonth: String,
+        daPercent: Int?,
+        since: String,
+    ): String = "From your $payslipMonth payslip" + (daPercent?.let { ", DA $it%" } ?: "") + ". Rate in force from $since."
 }
