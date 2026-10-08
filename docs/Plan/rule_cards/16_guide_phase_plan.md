@@ -631,7 +631,7 @@ simulator walkthrough; baseline comparison; then turn on `GUIDE_ENABLED` for rel
 **Tech-debt checkpoint:** a known-gaps register (RP-073, unverified cards, the DA 60% flag).
 **Carried here from earlier phases (EP):** 11, 15, 20 and 23 (the iOS simulator walkthrough: search field, locked panel, upgrade sheet,
 chips, the "Your figure" block, the Pay Audit "Read the rule" link and its Back), 24 (locked-user and waiting-row link checks on a device), 25 (the two
-dataset gaps for the known-gaps register), 12 (cold start and APK size), 14 (the purchase and Premium-row checks at the paywall flip), 26 (the E8 iOS walkthrough: Pin, Share sheet, Copy cite, Pinned section), 27 (E8 locked-state check on a device). 7, 13 and
+dataset gaps for the known-gaps register), 12 (cold start and APK size), 14 (the purchase and Premium-row checks at the paywall flip), 26 (the E8 iOS walkthrough: Pin, Share sheet, Copy cite, Pinned section), 27 (E8 locked-state check on a device; clipboard half closed). 7, 13 and
 every other E6 item (17-19, 21, 22) are closed.
 
 ## Open items carried into E1 (all closed 2026-10-07)
@@ -668,4 +668,4 @@ Each item names the phase that closes it. A phase may not exit while an item ass
 | 24 | E7 | Not driven on a device: a locked user tapping the link (upgrade sheet, no card; Settings "Force Free" on a debug build) and a waiting (TPTA on hold) row, because the real history holds no open issue (only verified arrears links were driven on the Pixel). Both are covered by unit and on-screen tests. Open. | E9 |
 | 25 | E7 | Dataset gaps behind owner-accepted nearest-card links: no card on DA arrears (the arrears link opens `RB-RP-052`, whose DA 60% point is still flagged) and none on "HRA stops when you take quarters" (opens `RB-SS-P114`); `RB-C13-05` does not state the Level 14+ MSP exception. Content work, owner's call. Open. | E9 |
 | 26 | E8 | Pin, Copy cite and Share on iOS: `NSUserDefaults` persistence and `UIActivityViewController` (the Native storage test and the 402-card contract run on the simulator; the UI is not driven from here), the Pinned section and button wrapping at large text. Add to the E9 simulator walkthrough with EP 11, 15, 20, 23. Open. | E9 |
-| 27 | E8 | Not driven on a device: the locked card and locked Home with pins stored (Settings "Force Free" on a debug build; pins wait for an unlock) and the exact clipboard text after Copy cite (the on-screen "Copied" and the unit test of the copied string were checked; the paste itself was not). Covered by on-screen tests. Open. | E9 |
+| 27 | E8 | Not driven on a device: the locked card and locked Home with pins stored (Settings "Force Free" exists only in a debug build, and the phone runs `minifiedTest`; pins wait for an unlock). Covered by on-screen tests. **Clipboard half closed 2026-10-08 on the Pixel 9:** after Copy cite on the food card, pasting into the Guide search field gave exactly the cite text. Open (locked half). | E9 |
