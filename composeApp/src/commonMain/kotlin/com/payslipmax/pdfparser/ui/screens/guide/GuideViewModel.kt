@@ -35,6 +35,13 @@ class GuideViewModel(
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val _uiState = MutableStateFlow<GuideUiState>(GuideUiState.Loading)
     val uiState: StateFlow<GuideUiState> = _uiState
+    private val _pendingCard = MutableStateFlow<String?>(null)
+
+    /**
+     * The card a Pay Audit finding asked to open (E7). Memory only, never saved: after process death it is null and a
+     * restored `Screen.GuideCard` pops itself. It holds a card id, which is never sent anywhere.
+     */
+    val pendingCard: StateFlow<String?> = _pendingCard
     private var job: Job? = null
 
     /** Starts the first load; a no-op while one is running or once the bundle is loaded. */
@@ -47,6 +54,15 @@ class GuideViewModel(
                     is GuideLoadResult.Failed -> fail(result.error)
                 }
             }
+    }
+
+    /**
+     * The one way to open a card from outside the Guide tab: records the target and makes sure the bundle is loading.
+     * Callers check entitlement first (`guideUnlocked`); a locked user is sent to the upgrade sheet instead.
+     */
+    fun openCard(cardId: String) {
+        _pendingCard.value = cardId
+        load()
     }
 
     fun retry() {

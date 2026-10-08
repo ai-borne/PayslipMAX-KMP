@@ -116,4 +116,30 @@ class NavBridgeTest {
         assertNull(navState.activeDetail)
         assertEquals(1, rec.popCount, "only the user-initiated back pops native; the sync is a no-op")
     }
+
+    @Test
+    fun guideCardFromPayAuditPushesNativeAndBackReturnsToTheFinding() {
+        // E7, iOS path: the card is a native view controller above Pay Audit; the in-screen Back pops it once.
+        val navState = AppNavState(currentTab = Screen.Insights)
+        val (bridge, rec) = bridge(navState)
+        bridge.navigateToDetail(Screen.PayAudit)
+        bridge.navigateToDetail(Screen.GuideCard)
+
+        assertEquals(listOf(Screen.PayAudit, Screen.GuideCard), rec.pushed)
+        bridge.requestPop()
+
+        assertEquals(Screen.PayAudit, navState.activeDetail)
+        assertEquals(1, rec.popCount)
+    }
+
+    @Test
+    fun guideCardIsNotPushedWhileLocked() {
+        val navState = AppNavState(currentTab = Screen.Insights, initialDetailStack = listOf(Screen.PayAudit))
+        val (bridge, rec) = bridge(navState, locked = true)
+
+        bridge.navigateToDetail(Screen.GuideCard)
+
+        assertEquals(Screen.PayAudit, navState.activeDetail)
+        assertTrue(rec.pushed.isEmpty(), "a locked app never shows a card")
+    }
 }

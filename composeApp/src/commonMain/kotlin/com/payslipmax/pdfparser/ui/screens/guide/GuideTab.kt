@@ -147,7 +147,7 @@ private fun rememberGuideListState(navState: GuideNavState): LazyListState {
 }
 
 @Composable
-private fun GuideLoading() {
+internal fun GuideLoading() {
     Column(
         modifier = Modifier.fillMaxSize().semantics { contentDescription = GuideStrings.loading },
         verticalArrangement = Arrangement.Center,

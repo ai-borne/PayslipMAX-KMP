@@ -34,6 +34,7 @@ import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
 import com.payslipmax.pdfparser.ui.rememberHasAccess
+import com.payslipmax.pdfparser.ui.screens.guide.rememberOpenGuideCard
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
 import com.payslipmax.pdfparser.ui.theme.PayAuditVerdictStrings
@@ -72,13 +73,21 @@ fun PayAuditScreen(
     }
     DisposableEffect(payAuditViewModel) { onDispose { payAuditViewModel.dispose() } }
     if (uiState.payslips.isNotEmpty()) PayAuditIntroGate(onboardingManager)
+    // Null while the Guide is off (no link). A locked user gets the upgrade sheet, never a card (E5 rule).
+    val openGuideCard = rememberOpenGuideCard(viewModel, onOpened = { onNavigateTo(Screen.GuideCard) }, onLocked = { showUpgradeSheet = true })
 
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).detailScreenSafeArea()) {
         if (uiState.payslips.isEmpty()) {
             PayAuditHeader(onBack)
             PayAuditEmptyState()
         } else {
-            PayAuditBody(payAuditViewModel, onBack, onShowUpgradeSheet = { showUpgradeSheet = true }, onDraftLetter = { onNavigateTo(Screen.Representation) })
+            PayAuditBody(
+                payAuditViewModel,
+                onBack,
+                onShowUpgradeSheet = { showUpgradeSheet = true },
+                onDraftLetter = { onNavigateTo(Screen.Representation) },
+                onOpenGuideCard = openGuideCard,
+            )
         }
     }
     if (showUpgradeSheet) PayslipUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
@@ -90,9 +99,10 @@ private fun PayAuditBody(
     onBack: () -> Unit,
     onShowUpgradeSheet: () -> Unit,
     onDraftLetter: () -> Unit,
+    onOpenGuideCard: ((cardId: String) -> Unit)?,
 ) {
     val state by vm.uiState.collectAsState()
-    PayAuditContent(state, vm::selectMonth, vm::selectTab, onShowUpgradeSheet, onDraftLetter, onBack)
+    PayAuditContent(state, vm::selectMonth, vm::selectTab, onShowUpgradeSheet, onDraftLetter, onBack, onOpenGuideCard)
 }
 
 @Composable
@@ -118,6 +128,7 @@ internal fun PayAuditContent(
     onShowUpgradeSheet: () -> Unit,
     onDraftLetter: () -> Unit,
     onBack: () -> Unit = {},
+    onOpenGuideCard: ((cardId: String) -> Unit)? = null,
 ) {
     var sheet by remember { mutableStateOf<PayAuditSheet?>(null) }
     val month = state.selectedMonth
@@ -141,7 +152,7 @@ internal fun PayAuditContent(
                 }
             }
             item(key = "tabs", contentType = "tabs") { PayAuditTabs(state.tab, onSelectTab) }
-            payAuditTabContent(state, onShowUpgradeSheet, onDraftLetter)
+            payAuditTabContent(state, onShowUpgradeSheet, onDraftLetter, onOpenGuideCard)
         }
     }
     when (sheet) {
@@ -172,10 +183,11 @@ private fun LazyListScope.payAuditTabContent(
     state: PayAuditUiState,
     onShowUpgradeSheet: () -> Unit,
     onDraftLetter: () -> Unit,
+    onOpenGuideCard: ((cardId: String) -> Unit)?,
 ) {
     when (state.tab) {
         PayAuditTab.THIS_MONTH -> {
-            payAuditFindingsItems(state.findings, state.hiddenFindingCount, onShowUpgradeSheet, onDraftLetter)
+            payAuditFindingsItems(state.findings, state.hiddenFindingCount, onShowUpgradeSheet, onDraftLetter, onOpenGuideCard)
             payAuditChangesItems(state.changes)
         }
         PayAuditTab.HISTORY -> payAuditHistoryItems(state.timeline, state.allChanges, state.selectedMonth)

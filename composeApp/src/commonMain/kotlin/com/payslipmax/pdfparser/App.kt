@@ -11,6 +11,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import com.payslipmax.pdfparser.nav.AppNavState
+import com.payslipmax.pdfparser.nav.rememberDetailStateKeeper
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.ui.*
 import com.payslipmax.pdfparser.ui.components.AppBottomBar
@@ -20,6 +21,7 @@ import com.payslipmax.pdfparser.ui.screens.HistoryScreen
 import com.payslipmax.pdfparser.ui.screens.InsightsScreen
 import com.payslipmax.pdfparser.ui.screens.LockScreen
 import com.payslipmax.pdfparser.ui.screens.SettingsScreen
+import com.payslipmax.pdfparser.ui.screens.guide.GuideCardRoute
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavStateSaver
 import com.payslipmax.pdfparser.ui.screens.guide.GuideTabRoute
@@ -46,6 +48,12 @@ enum class Screen {
 
     /** Claim Guide tab root (dark launch); the Guide keeps its own stack inside the tab, see [GuideNavState]. */
     Guide,
+
+    /**
+     * A Claim Guide card pushed as a normal detail from a Pay Audit finding (E7). It carries no argument: the card id is
+     * the pending target in the app-scoped `GuideViewModel`, so a restored `GuideCard` with no target pops itself.
+     */
+    GuideCard,
 }
 
 /** The bottom-tab roots; the remaining [Screen] values are pushed detail screens. */
@@ -186,17 +194,20 @@ private fun ScreenContent(
     suppressUploadCoachmark: Boolean,
 ) {
     val activeDetail = navState.activeDetail
+    val detailKeeper = rememberDetailStateKeeper(navState.detailStack)
     if (activeDetail != null && nativeDetailNavigator == null) {
         // A pushed detail can itself open a further detail (e.g. the Premium catalog → Tax/DSOP screens):
         // tab roots switch tabs, detail screens push on top (SSOT via isTabRoot).
         val onNavigateFromDetail: (Screen) -> Unit = { if (it.isTabRoot) navState.switchTab(it) else navState.push(it) }
-        DetailContent(
-            detail = activeDetail,
-            viewModel = viewModel,
-            onBack = { navState.pop() },
-            onOpenPdf = onOpenPdf,
-            onNavigateTo = onNavigateFromDetail,
-        )
+        detailKeeper.Provide {
+            DetailContent(
+                detail = activeDetail,
+                viewModel = viewModel,
+                onBack = { navState.pop() },
+                onOpenPdf = onOpenPdf,
+                onNavigateTo = onNavigateFromDetail,
+            )
+        }
     } else {
         // Route by destination: tab roots switch tabs; detail screens push natively on iOS
         // (nativeDetailNavigator) or render inline on Android (SSOT via isTabRoot).
@@ -279,6 +290,7 @@ private fun DetailContent(
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
         Screen.PayAudit ->
             com.payslipmax.pdfparser.ui.screens.PayAuditScreen(viewModel = viewModel, onBack = onBack, onNavigateTo = onNavigateTo)
+        Screen.GuideCard -> GuideCardRoute(viewModel = viewModel, onBack = onBack)
         // Tab roots are structurally unreachable here: onNavigate() routes them via switchTab(),
         // never push(), and AppNavStateSaver.restore() filters activeDetail to !isTabRoot. Handled
         // only so this `when` stays exhaustive against future Screen cases.

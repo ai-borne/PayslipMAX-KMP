@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.guide
 import com.payslipmax.pdfparser.di.GUIDE_BUNDLE_PATH
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.guide.domain.CardTemplate
+import com.payslipmax.pdfparser.guide.domain.GuideLinkMap
 import com.payslipmax.pdfparser.guide.domain.GuideRuleNumberParser
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
 import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
@@ -113,6 +114,18 @@ object GuideBundleContract {
         if (!LaunchFlags.GUIDE_PAYWALL_ENABLED) return
         val blocking = bundle.cards.filter { "RATES" in it.chips && it.unverified }.map { it.id }
         assertTrue(blocking.isEmpty(), "the paywall is on while rate cards are still unverified: $blocking")
+    }
+
+    /**
+     * E7: every card a Pay Audit finding can open is in the shipped bundle, so no link can lead to a card that is missing. The owner
+     * approved the ids in the E7 mapping table; a dataset change that drops one fails here, not on a user's phone.
+     */
+    fun assertPayAuditLinksPointAtRealCards(bundle: GuideBundle) {
+        val ids = bundle.cards.map { it.id }.toSet()
+        assertTrue(GuideLinkMap.cardIds.isNotEmpty())
+        assertEquals(emptySet(), GuideLinkMap.cardIds - ids, "Pay Audit links to cards the bundle does not hold")
+        val index = bundle.toReady().index
+        for (id in GuideLinkMap.cardIds) assertNotNull(index.cardContent(id, unlocked = true, nowMillis = 0L), id)
     }
 
     /**

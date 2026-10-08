@@ -20,6 +20,7 @@ import com.payslipmax.pdfparser.ui.screens.RepresentationScreen
 import com.payslipmax.pdfparser.ui.screens.RetirementCalculatorsScreen
 import com.payslipmax.pdfparser.ui.screens.RetirementPlanningScreen
 import com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen
+import com.payslipmax.pdfparser.ui.screens.guide.GuideCardRoute
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
 import org.koin.core.context.startKoin
@@ -120,6 +121,7 @@ class IosNavHost(
                     )
                 }
                 Screen.HelpLegal -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
+                Screen.GuideCard -> GuideCardRoute(viewModel = viewModel, onBack = onBack)
                 Screen.PayAudit -> PayAuditScreen(viewModel = viewModel, onBack = onBack, onNavigateTo = { screen -> bridge.navigateToDetail(screen) })
                 // Tab roots are structurally unreachable here: onNavigate() routes them via
                 // switchTab(), never push()/nativeDetailNavigator, and AppNavStateSaver.restore()

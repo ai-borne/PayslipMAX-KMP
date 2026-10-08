@@ -69,6 +69,13 @@ class GuideLoaderIosPerfTest {
         }
 
     @Test
+    fun payAuditLinksPointAtRealCardsOnNativeToo() =
+        runTest {
+            // E7: a plain id lookup (no regex), checked on Native so the iOS link can never lead to a missing card.
+            GuideBundleContract.assertPayAuditLinksPointAtRealCards(GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText()))
+        }
+
+    @Test
     fun previewSearchAndTrustBehaveOnNativeAsOnTheJvm() =
         runTest {
             val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())

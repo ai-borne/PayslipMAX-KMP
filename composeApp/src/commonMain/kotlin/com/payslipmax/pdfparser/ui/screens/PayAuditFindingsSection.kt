@@ -3,6 +3,8 @@ package com.payslipmax.pdfparser.ui.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,8 +24,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.guide.domain.GuideLinkMap
 import com.payslipmax.pdfparser.insights.Anomaly
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import com.payslipmax.pdfparser.ui.theme.PayAuditVerdictStrings as S
 
 private enum class FindingKind { ISSUE, WAITING, VERIFIED }
@@ -38,6 +43,7 @@ fun LazyListScope.payAuditFindingsItems(
     hiddenCount: Int,
     onUnlockClick: () -> Unit,
     onDraftLetter: () -> Unit,
+    onOpenGuideCard: ((cardId: String) -> Unit)? = null,
 ) {
     val rows = findings.issues.map { it to FindingKind.ISSUE } + findings.waiting.map { it to FindingKind.WAITING } + findings.verified.map { it to FindingKind.VERIFIED }
     val keys = payAuditFindingKeys(rows.map { it.first })
@@ -46,7 +52,7 @@ fun LazyListScope.payAuditFindingsItems(
         key = { index, _ -> keys[index] },
         contentType = { _, _ -> "finding_card" },
     ) { _, (anomaly, kind) ->
-        PayAuditFindingCard(anomaly = anomaly, kind = kind, onDraftLetter = onDraftLetter)
+        PayAuditFindingCard(anomaly = anomaly, kind = kind, onDraftLetter = onDraftLetter, onOpenGuideCard = onOpenGuideCard)
     }
     if (hiddenCount > 0) {
         item(key = "pay_audit_findings_locked", contentType = "locked_card") { PayAuditLockedCard(onUnlockClick) }
@@ -58,6 +64,7 @@ private fun PayAuditFindingCard(
     anomaly: Anomaly,
     kind: FindingKind,
     onDraftLetter: () -> Unit,
+    onOpenGuideCard: ((cardId: String) -> Unit)?,
 ) {
     var showWhy by rememberSaveable { mutableStateOf(false) }
     val tone =
@@ -87,7 +94,7 @@ private fun PayAuditFindingCard(
             PayAuditEvidenceRow(anomaly, kind)
             Text(anomaly.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (kind == FindingKind.WAITING) Text(S.waitingNote, style = MaterialTheme.typography.bodySmall)
-            PayAuditFindingActions(anomaly, showWhy, onToggleWhy = { showWhy = !showWhy }, onDraftLetter = onDraftLetter)
+            PayAuditFindingActions(anomaly, showWhy, onToggleWhy = { showWhy = !showWhy }, onDraftLetter = onDraftLetter, onOpenGuideCard = onOpenGuideCard)
         }
     }
 }
@@ -118,16 +125,21 @@ private fun PayAuditEvidenceCell(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PayAuditFindingActions(
     anomaly: Anomaly,
     showWhy: Boolean,
     onToggleWhy: () -> Unit,
     onDraftLetter: () -> Unit,
+    onOpenGuideCard: ((cardId: String) -> Unit)?,
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
+    val guideCardId = onOpenGuideCard?.let { GuideLinkMap.cardFor(anomaly.type, anomaly.field) }
+    // Wraps rather than overflowing on a narrow screen: up to three actions.
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
         OutlinedButton(onClick = onToggleWhy) { Text(if (showWhy) S.hideWhyButton else S.whyButton) }
         if (anomaly.canDraftLetter()) Button(onClick = onDraftLetter) { Text(S.draftLetterButton) }
+        if (guideCardId != null) TextButton(onClick = { onOpenGuideCard(guideCardId) }) { Text(GuideStrings.payAuditSeeRule) }
     }
     if (showWhy) {
         Text(

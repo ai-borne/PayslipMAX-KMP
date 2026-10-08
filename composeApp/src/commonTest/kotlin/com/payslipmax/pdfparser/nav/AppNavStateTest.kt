@@ -22,6 +22,7 @@ class AppNavStateTest {
             Screen.PayslipReplica,
             Screen.PremiumFeatures,
             Screen.PayAudit,
+            Screen.GuideCard,
         )
 
     @Test
@@ -107,5 +108,28 @@ class AppNavStateTest {
         // decides which bucket it belongs to.
         assertEquals(Screen.entries.toSet(), tabRoots + detailScreens)
         assertTrue((tabRoots intersect detailScreens).isEmpty())
+    }
+
+    @Test
+    fun guideCardOpenedFromPayAuditBacksOutToTheFinding() {
+        // E7: the card is a normal detail on top of Pay Audit, so Back returns to the finding, not to a tab root.
+        val nav = AppNavState(currentTab = Screen.Insights)
+        nav.push(Screen.PayAudit)
+        nav.push(Screen.GuideCard)
+
+        assertEquals(Screen.GuideCard, nav.activeDetail)
+        assertTrue(nav.pop())
+        assertEquals(Screen.PayAudit, nav.activeDetail)
+    }
+
+    @Test
+    fun switchingTabsDropsAPushedGuideCard() {
+        // Tab re-tap / tab switch: the Guide's card is never left stacked under another tab.
+        val nav = AppNavState(currentTab = Screen.Insights, initialDetailStack = listOf(Screen.PayAudit, Screen.GuideCard))
+
+        nav.switchTab(Screen.Guide)
+
+        assertNull(nav.activeDetail)
+        assertEquals(Screen.Guide, nav.currentTab)
     }
 }

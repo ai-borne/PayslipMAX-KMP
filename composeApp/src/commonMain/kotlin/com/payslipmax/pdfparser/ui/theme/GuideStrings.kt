@@ -121,6 +121,9 @@ object GuideStrings {
         city: String?,
     ): String = "Level $level. Base $base plus $daPercent% DA on it" + (city?.let { ", $it" } ?: "") + "."
 
+    /** The link on a Pay Audit finding that opens the Guide card for its rule (E7). */
+    const val payAuditSeeRule = "Read the rule"
+
     fun figureHraDetail(
         hraClass: String,
         daPercent: Int,

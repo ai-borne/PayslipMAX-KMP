@@ -91,4 +91,23 @@ class AppNavStateSaverTest {
         assertEquals(Screen.Dashboard, restored.currentTab)
         assertEquals(Screen.FAQ, restored.activeDetail)
     }
+
+    @Test
+    fun aGuideCardOnTopOfPayAuditRoundTripsWhenTheGuideIsOn() {
+        val saver = appNavStateSaver(guideEnabled = true)
+        val original = AppNavState(Screen.Insights, listOf(Screen.PayAudit, Screen.GuideCard))
+        val restored = saver.restore(with(saver) { SaverScope { true }.save(original)!! })!!
+
+        assertEquals(listOf(Screen.PayAudit, Screen.GuideCard), restored.detailStack)
+    }
+
+    @Test
+    fun aGuideCardIsNeverRestoredWhereTheGuideIsOff() {
+        // Release until E9: no Guide code is reachable, so the saved card is cut and Pay Audit stays on top.
+        val restored =
+            appNavStateSaver(guideEnabled = false)
+                .restore(listOf(Screen.Insights.name, Screen.PayAudit.name, Screen.GuideCard.name, Screen.FAQ.name))!!
+
+        assertEquals(listOf(Screen.PayAudit), restored.detailStack)
+    }
 }
