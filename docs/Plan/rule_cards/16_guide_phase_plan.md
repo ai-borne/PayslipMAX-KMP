@@ -469,6 +469,65 @@ TPTA_ENTITLEMENT, ARREARS_AUDIT, INCREMENT_MISSED and MSP_SHORTFALL.
 locked; a new finding type with no decision fails a test; flag off means no link; users without Premium see the paywall.
 **Exit:** gates green; Pay Audit suites unchanged. **Tech-debt checkpoint:** none carried.
 
+### E7 phase plan (written 2026-10-08, before any Kotlin)
+Branch `feature/guide-e7-pay-audit-link` off `main`. Gate: "Rules for every phase" plus `assembleRelease`, `assembleMinifiedTest`,
+`check_r8_guide.py`, the Pixel 9 smoke, and a Pixel check with the real profile (a real finding opens its card; Back returns to the finding).
+
+**Owner decisions for E7 (2026-10-08, closed before any code).**
+| Finding / pay line | Card | Title |
+|---|---|---|
+| MISSING_ALLOWANCE, `houseRentAllowance` | `RB-SS-P114` | HRA: who gets it, and at which place's rate? |
+| MISSING_ALLOWANCE, `militaryServicePay` | `RB-C13-05` | Military Service Pay: who gets it and how much? |
+| TPTA_ENTITLEMENT | `RB-SS-P051-rates` | Transport allowance rates by pay level |
+| ARREARS_AUDIT (`arrearsDa`, `arrearsTptaDa`) | `RB-RP-052` | Dearness Allowance: when is it revised and what counts as pay? |
+| INCREMENT_MISSED | `RB-C13-08` | On which date is my annual increment due? |
+| MSP_SHORTFALL | `RB-C13-05` | Military Service Pay: who gets it and how much? |
+Also `SALARY_LOSS` on `arrearsDa` / `arrearsTptaDa` (the under-paid arrears issue Pay Audit adds outside `PayAuditFindingTypes`) -> `RB-RP-052`.
+No card covers DA arrears or "HRA stopped because I took quarters"; the nearest cards are linked (owner accepted). Link states: owner chose
+"issues and waiting, verified rows only for arrears"; in code every verified row is `ARREARS_AUDIT`, so the rule is "every row whose finding has a card".
+Any other (type, field) has no link. Not chosen: `RB-SS-P114-gap`, `RB-SS-P116-rates`, `RB-SS-P047`, `RB-SS-P014`.
+
+**Existing code read first.** `Screen`/`App.kt` (`ScreenContent`, `DetailContent`, `isTabRoot`), `AppNavState`, `NavBridge`, `AppNavStateSaver`,
+`MainViewController` (`IosNavHost.detailViewController`), `PayAuditScreen`, `PayAuditFindingsSection`/`Logic`, `PayAuditFindingTypes`, the five
+auditors, `GuideViewModel`, `GuideTabRoute`, `GuideAccess`, `GuideCardScreen`, `rememberGuideProfile`, `GuideModule`, `GuideBundleContract`,
+`SyntheticGuideBundle`.
+
+**Design (one source each).**
+- *Mapping (SSOT, shared):* `GuideLinkMap.cardFor(type, field): String?` over one decision table; `GuideLinkMap.decidedTypes` must cover every
+  `PayAuditFindingTypes.TYPES` member, so a new finding type without a decision fails a test.
+- *Entry point:* `GuideViewModel.openCard(cardId)` records the pending target (`pendingCard: StateFlow<String?>`) and starts the load; nothing else
+  opens a card from outside the Guide tab. Nothing is persisted: after process death the target is gone.
+- *Navigation:* `Screen.GuideCard` is a detail (not a tab root). Android pushes it inline (`navState.push`), iOS through `NavBridge.navigateToDetail`
+  into a native view controller; Back is the existing detail Back on both. `Screen`, the bridge and the saver carry no arguments.
+  `GuideCardRoute` (composeApp) is the one host for both platforms: no target, an unknown id, or a failed load pops itself.
+- *Saver:* `GuideCard` is restored only when the Guide is enabled (like the Guide tab); a restore with no target is handled by the host.
+- *UI:* `payAuditFindingsItems(..., onOpenGuideCard: ((String) -> Unit)? = null)`; null (flag off) draws no link. `PayAuditScreen` passes a handler
+  that opens the card when `guideUnlocked`, else shows `PayslipUpgradeSheet`. Copy in `GuideStrings`; Pay Audit suites unchanged (defaulted parameter).
+- *Entitlement:* the host reads `rememberGuideUnlocked()`, so a locked state still holds no key points, cite or details (E5 rule).
+
+**Tests first.** Characterization (green before any edit): findings rendering (`PayAuditFindingsSectionTest`), `AppNavStateSaver` round-trip,
+`NavBridge` lock rule, 4-tab bar with the Guide off, `switchTab` clears a pushed detail. Then failing-first: every mapped id exists in the
+real bundle (contract) and in `SyntheticGuideBundle`; decided types cover `PayAuditFindingTypes.TYPES`; unknown (type, field) -> null; link
+pushes `GuideCard` and Back returns (`AppNavState` and `NavBridge`, iOS path); restored `GuideCard` with no target pops itself; link blocked while
+locked; flag off -> no link (and a restored `GuideCard` is dropped); locked user taps -> upgrade sheet, never a card, `openCard` not called;
+unlocked tap -> `openCard(id)` then navigate; unknown id pops; telemetry untouched (`FakeCrashReporter`).
+
+**R8 / iOS risks.** No new `@Serializable` type, no reflection. `GuideLinkMap` is a plain `when`/map (no regex). iOS: a new native view controller
+case in the existing `when` (exhaustive; compile-checked by `linkDebugFrameworkIosSimulatorArm64`); the map lookup is O(1), so no timing test is
+needed. The simulator walkthrough stays in EP 11/15/20 for E9.
+
+**Regression controls.** Dark launch unchanged. Pay Audit logic is not edited and not copied; only the parameter on the findings section and the wiring
+in `PayAuditScreen`. Corpus untouched.
+
+**Navigation and state.** Arguments: none (pending target). Back: both platforms pop the detail to the finding. Tab re-tap: the bottom bar is hidden
+under a detail; `switchTab` clears the detail stack (pinned). Lock screen: Android swaps the tree, iOS `NavBridge` blocks the push (pinned); nothing
+Guide is composed while locked. Process death: the saver restores `GuideCard`, the target is gone, the host pops (pinned).
+
+**Versioning, DI, fixtures, storage.** No bundle, schema or Room change. `GuideViewModel` stays a Koin single. Fixtures: `SyntheticGuideBundle` gets
+the mapped ids only if the contract is run against it (the real bundle is used for the existence check). No storage.
+
+**Security.** Local navigation only; the card id is never logged, sent or put in crash keys; nothing new leaves the device.
+
 ## E8 Pins, copy cite and share as claim note
 **Goal:** pinned cards on Home, Copy cite, and Share as claim note.
 **Files:** `GuidePinsStorage` with Android and iOS implementations and a fake (no Room change, not in
