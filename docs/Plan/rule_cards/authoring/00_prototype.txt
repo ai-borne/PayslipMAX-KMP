@@ -4,7 +4,6 @@ T: Food charges on TD: how much do I get?
 A: A fixed daily amount for your pay level. No bills needed. How much you get depends on hours away.
 K: Under 6 hours away: 30% of the day's amount
 K: 6 to 12 hours: 70%. Over 12 hours: 100%
-K: Your amount: Level {level} = Rs {food_rate}/day
 H: No food bills or vouchers
 W: Hours count midnight to midnight, each day
 W: Rates rise with DA; check the 'as of' date
@@ -37,7 +36,6 @@ T: CTG on a permanent move: how much?
 A: 80% of your last month's basic pay, for a permanent move of 20 km or more.
 K: To or from Andaman, Nicobar or Lakshadweep: 100%
 K: Under 20 km, or same city: one-third of the 80%
-K: Your CTG is about Rs {ctg_estimate}
 H: Local move: vacation report, occupation report, allotment letter
 W: Basic pay only: NPA and MSP are not counted
 W: Permanent posting only, not after study leave

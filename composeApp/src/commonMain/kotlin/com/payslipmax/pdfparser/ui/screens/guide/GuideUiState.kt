@@ -83,7 +83,7 @@ data class GuideCardContent(
 )
 
 /**
- * The paid half of a card; [body] holds the placeholder bullets apart, so they are never drawn raw. [figure] is the
+ * The paid half of a card. [figure] is the
  * personal "your figure" line, null when the card has none or the profile cannot settle it. It lives here, not on
  * [GuideCardContent], so a locked card state cannot hold a resolved figure.
  */

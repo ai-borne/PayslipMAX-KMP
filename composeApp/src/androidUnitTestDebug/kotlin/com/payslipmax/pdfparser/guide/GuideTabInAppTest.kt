@@ -170,7 +170,7 @@ class GuideTabInAppTest {
         composeRule.onNodeWithText("Synthetic card RB-T1?").assertDoesNotExist()
     }
 
-    // RB-T2 is the second row, composed without scrolling on this default-size screen (RB-T1's only key bullet is a placeholder).
+    // RB-T2 is the second row, composed without scrolling on this default-size screen.
     private fun openCardT2() {
         openTravelArea()
         tap("Daily allowance on duty")

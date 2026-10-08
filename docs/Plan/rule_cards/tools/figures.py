@@ -1,7 +1,8 @@
 """Validate and ship figures.json, the rupee figures behind the Claim Guide's "your figure" line (phase E6).
 
 A figure is a rule-card rate the app turns into a personal amount from the officer's payslip. It ships only with a value,
-an effective date, a primary letter, an evidence level and the owner's approval date. No rupee figure is written in
+an effective date, a primary letter, an evidence level and the owner's approval date. OWNER_CONFIRMED (with a `confirmed` date)
+records a fact the owner stated without a document; it is the weakest label and is named as such. No rupee figure is written in
 Kotlin: the app reads these from the bundle. compile.py calls validate(); bundle.py calls for_bundle().
 """
 import datetime
@@ -14,7 +15,7 @@ from config import CARDS_DIR
 
 FIGURES_PATH = os.path.join(CARDS_DIR, 'figures.json')
 SUPPORTED_VERSION = 1
-EVIDENCE = {'LETTER_TEXT', 'HANDBOOK_ONLY', 'WEB_SECONDARY'}
+EVIDENCE = {'LETTER_TEXT', 'HANDBOOK_ONLY', 'WEB_SECONDARY', 'OWNER_CONFIRMED'}
 MODES = {'da_step', 'percent_of_basic', 'plus_da', 'rate_table'}
 CITY_CLASSES = {'HIGHER', 'OTHER', 'ANY'}
 # Fields the app needs. Authority, evidence, notes and approval stay in the repo.
@@ -122,8 +123,13 @@ def _rate_table_problems(key, fig):
         if pcts != sorted(pcts) or not all(_positive_int(p) for p in pcts):
             errs.append(f'{key}: class {name} percents must be positive and not fall as DA rises')
         for s in steps:
+            at = f'{key}: class {name} step at DA {s.get("from_da_percent")}'
             if not _is_date(s.get('effective_from')):
-                errs.append(f'{key}: class {name} step at DA {s.get("from_da_percent")} needs an effective_from date')
+                errs.append(f'{at} needs an effective_from date')
+            if 'evidence' in s and s['evidence'] not in EVIDENCE:
+                errs.append(f'{at} has unknown evidence {s["evidence"]!r}')
+            if s.get('evidence') == 'OWNER_CONFIRMED' and not _is_date(s.get('confirmed')):
+                errs.append(f'{at} is OWNER_CONFIRMED but has no confirmed date')
         ladders.append(das)
     if any(ladder != ladders[0] for ladder in ladders):
         errs.append(f'{key}: every class must use the same DA steps')

@@ -104,22 +104,21 @@ class GuideBundleValidatorTest {
     }
 
     @Test
-    fun aPlaceholderBraceOutsideAPersonalCardIsRejected() {
-        assertProblem(valid.editCard("RB-P1") { it.copy(details = "Rs {hra} a month") }, "RB-P1 has a placeholder")
-        // The personal card legitimately carries {level} and {food_rate} in a bullet.
-        assertEquals(emptyList(), problems(valid.editCard(SyntheticGuideBundle.PERSONAL_CARD) { it.copy(watch = listOf("Rs {food_rate}")) }))
-    }
-
-    @Test
-    fun aPlaceholderOutsideABulletIsRejectedEvenOnAPersonalCard() {
-        // Only a bullet can move to the hidden "your figure" slot; a braced name in any other text would show raw.
-        for (edit in listOf<(GuideCard) -> GuideCard>(
-            { it.copy(title = "Rs {food_rate}?") },
-            { it.copy(answer = "Rs {food_rate}.") },
-            { it.copy(cite = "Rule {n}") },
-            { it.copy(details = "Rs {food_rate}") },
-        )) {
-            assertProblem(valid.editCard(SyntheticGuideBundle.PERSONAL_CARD, edit), "${SyntheticGuideBundle.PERSONAL_CARD} has a placeholder outside a bullet")
+    fun aRawPlaceholderAnywhereOnAnyCardIsRejected() {
+        // Cards carry no placeholders (the "your figure" line comes from the bundle's figures), so a braced name in any
+        // text of any card, personal or not, would be shown raw.
+        for (id in listOf("RB-P1", SyntheticGuideBundle.PERSONAL_CARD)) {
+            for (edit in listOf<(GuideCard) -> GuideCard>(
+                { it.copy(title = "Rs {food_rate}?") },
+                { it.copy(answer = "Rs {food_rate}.") },
+                { it.copy(key = listOf("Rs {food_rate}")) },
+                { it.copy(attach = listOf("Rs {food_rate}")) },
+                { it.copy(watch = listOf("Rs {food_rate}")) },
+                { it.copy(cite = "Rule {n}") },
+                { it.copy(details = "Rs {food_rate}") },
+            )) {
+                assertProblem(valid.editCard(id, edit), "$id has a placeholder")
+            }
         }
     }
 

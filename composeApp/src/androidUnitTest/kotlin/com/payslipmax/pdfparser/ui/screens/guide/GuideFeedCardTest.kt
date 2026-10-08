@@ -155,13 +155,13 @@ class GuideFeedCardTest {
     }
 
     @Test
-    fun aPlaceholderBulletIsNeverShownRaw() {
+    fun aPersonalCardShowsItsBulletsAndNoRawPlaceholder() {
         openBigCase()
         tap(title(SyntheticGuideBundle.PERSONAL_CARD))
 
+        // The card has no template placeholders (the validator rejects them); its figure comes from the bundle's figures.
         composeRule.onAllNodes(hasText("{", substring = true)).assertCountEquals(0)
-        // Its only key bullet is the placeholder, so the section is left out rather than shown empty.
-        composeRule.onNodeWithText(GuideStrings.sectionKeyPoints).assertDoesNotExist()
+        composeRule.onNodeWithText(GuideStrings.sectionKeyPoints).assertIsDisplayed()
         composeRule.onNodeWithText(GuideStrings.sectionAttach).assertIsDisplayed()
     }
 

@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generated": "2026-10-07",
+ "generated": "2026-10-08",
  "limits": {
   "answer": 25,
   "bullets": 3,
@@ -2019,8 +2019,7 @@
    "answer": "A fixed daily amount for your pay level. No bills needed. How much you get depends on hours away.",
    "key": [
     "Under 6 hours away: 30% of the day's amount",
-    "6 to 12 hours: 70%. Over 12 hours: 100%",
-    "Your amount: Level {level} = Rs {food_rate}/day"
+    "6 to 12 hours: 70%. Over 12 hours: 100%"
    ],
    "attach": [
     "No food bills or vouchers"
@@ -2116,8 +2115,7 @@
    "answer": "80% of your last month's basic pay, for a permanent move of 20 km or more.",
    "key": [
     "To or from Andaman, Nicobar or Lakshadweep: 100%",
-    "Under 20 km, or same city: one-third of the 80%",
-    "Your CTG is about Rs {ctg_estimate}"
+    "Under 20 km, or same city: one-third of the 80%"
    ],
    "attach": [
     "Local move: vacation report, occupation report, allotment letter"
@@ -7904,7 +7902,7 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "MoF OM 2/5/2017-E.II(B) dt 07-07-2017; MoD letter 3(1)/2015-D(Q&C) dt 11-10-2017",
+   "cite": "MoF OM 2(5)/2017-E.II(B) dt 07-07-2017; MoD letter 3(1)/2015-D(Q&C) dt 11-10-2017",
    "details": "X cities: Delhi, Greater Mumbai, Kolkata, Chennai, Hyderabad, Ahmedabad, Bengaluru, Pune. Unlisted towns are Z. Faridabad, Ghaziabad, Noida, Gurgaon keep Delhi rates; Shillong, Goa, Port Blair, Jalandhar Cantt and Mathura-Vrindavan are Y.",
    "chips": [
     "RATES"

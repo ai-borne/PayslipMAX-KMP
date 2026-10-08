@@ -18,8 +18,7 @@ import kotlin.test.assertTrue
 
 /**
  * Phase E6, the paid half: "your figure" is part of what Premium unlocks, so a locked card state must not hold a resolved
- * figure at all (not merely hide it), and a missing profile must leave the card complete. The personal card's key bullet
- * names placeholders ("Rs {food_rate}") that are never drawn raw.
+ * figure at all (not merely hide it), and a missing profile must leave the card complete.
  */
 class GuideCardFigureStateTest {
     private val dispatcher = StandardTestDispatcher()
@@ -58,7 +57,7 @@ class GuideCardFigureStateTest {
             val full = assertNotNull(viewModel.card(SyntheticGuideBundle.PERSONAL_CARD, unlocked = true, profile = null)?.full)
 
             assertNull(full.figure)
-            assertEquals(emptyList(), full.body.key, "the only key bullet is the placeholder one, kept out of sight")
+            assertEquals(listOf("A short key point for RB-T1"), full.body.key)
             assertEquals(listOf("A form"), full.body.attach)
             assertTrue(full.cite.isNotBlank() && full.details.isNotBlank())
         }

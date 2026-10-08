@@ -66,6 +66,26 @@ class SourceRule(unittest.TestCase):
             figures.for_bundle(d)
 
 
+class OwnerConfirmed(unittest.TestCase):
+    """The HRA step dates rest on the owner's confirmation (2026-10-08), so the file must say who and when."""
+
+    def test_the_two_hra_step_dates_are_owner_confirmed_with_a_date(self):
+        for steps in REAL['figures']['hra']['classes'].values():
+            for step in steps[1:]:
+                self.assertEqual(step['evidence'], 'OWNER_CONFIRMED')
+                self.assertEqual(step['confirmed'], '2026-10-08')
+
+    def test_an_owner_confirmed_step_without_a_date_fails(self):
+        d = fresh()
+        del d['figures']['hra']['classes']['X'][1]['confirmed']
+        self.assertTrue(any('hra' in p and 'confirmed' in p for p in problems(d)))
+
+    def test_an_unknown_step_evidence_level_fails(self):
+        d = fresh()
+        d['figures']['hra']['classes']['X'][1]['evidence'] = 'HEARSAY'
+        self.assertTrue(any('hra' in p and 'evidence' in p for p in problems(d)))
+
+
 class CardLinks(unittest.TestCase):
     def test_figure_for_an_unknown_card_fails(self):
         d = fresh()

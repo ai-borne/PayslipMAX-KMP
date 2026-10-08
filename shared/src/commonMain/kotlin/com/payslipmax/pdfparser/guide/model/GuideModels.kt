@@ -64,7 +64,7 @@ data class GuideCard(
     val cite: String = "",
     val details: String = "",
     val chips: List<String> = emptyList(),
-    /** Placeholder spec (for example "level:food_rate"); the only cards allowed a raw `{` in their text. */
+    /** Marks a card that has a "your figure" line (for example "level:food_rate"); `figures.json` must hold its figure. */
     val personal: String = "",
     val status: String = "",
     val facet: String,

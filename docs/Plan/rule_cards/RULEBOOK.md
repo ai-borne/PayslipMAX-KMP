@@ -1,6 +1,6 @@
 # PayslipMax rulebook: reference (generated)
 
-Generated from [rulebook.json](rulebook.json) on 2026-10-07. **Do not edit by hand.** 402 cards (220 travel, 182 pay). Source entries covered: 533 of 474 (skipped with a reason: 17; uncovered: 0).
+Generated from [rulebook.json](rulebook.json) on 2026-10-08. **Do not edit by hand.** 402 cards (220 travel, 182 pay). Source entries covered: 533 of 474 (skipped with a reason: 17; uncovered: 0).
 
 Each card: one-line answer in bold, short bullets, the authority to cite, optional collapsed details. "Open point" lines are for reviewers and are never shown to users. Card text is written in our own words.
 
@@ -1863,7 +1863,6 @@ Cite: none (guidance)
 
 - Under 6 hours away: 30% of the day's amount
 - 6 to 12 hours: 70%. Over 12 hours: 100%
-- Your amount: Level {level} = Rs {food_rate}/day
 - *Attach:* No food bills or vouchers
 - *Watch out:* Hours count midnight to midnight, each day
 - *Watch out:* Rates rise with DA; check the 'as of' date
@@ -1930,7 +1929,6 @@ Cite: none (guidance)
 
 - To or from Andaman, Nicobar or Lakshadweep: 100%
 - Under 20 km, or same city: one-third of the 80%
-- Your CTG is about Rs {ctg_estimate}
 - *Attach:* Local move: vacation report, occupation report, allotment letter
 - *Watch out:* Basic pay only: NPA and MSP are not counted
 - *Watch out:* Permanent posting only, not after study leave
@@ -4270,7 +4268,7 @@ Cite: MoD letter 1(5)/97/D(Pay/Services) dt 02-11-1997, modified 29-09-1999; MoD
 - 30%, 20% and 10% once DA crosses 50%
 - Basic pay excludes NPA, MSP and special pay
 
-Cite: MoF OM 2/5/2017-E.II(B) dt 07-07-2017; MoD letter 3(1)/2015-D(Q&C) dt 11-10-2017 · personal: basic:hra_estimate
+Cite: MoF OM 2(5)/2017-E.II(B) dt 07-07-2017; MoD letter 3(1)/2015-D(Q&C) dt 11-10-2017 · personal: basic:hra_estimate
 
 <sub>Details: X cities: Delhi, Greater Mumbai, Kolkata, Chennai, Hyderabad, Ahmedabad, Bengaluru, Pune. Unlisted towns are Z. Faridabad, Ghaziabad, Noida, Gurgaon keep Delhi rates; Shillong, Goa, Port Blair, Jalandhar Cantt and Mathura-Vrindavan are Y.</sub>
 

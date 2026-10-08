@@ -76,8 +76,6 @@ object GuideBundleContract {
         val cards = bundle.cards.map { assertNotNull(index.cardContent(it.id, unlocked = true, nowMillis = 0L)) }
         val shown = cards.flatMap { card -> card.full!!.let { listOf(card.title, card.answer, it.cite, it.details) + it.body.key + it.body.attach + it.body.watch } }
         assertTrue(shown.none(CardTemplate::hasPlaceholder), "a placeholder would be shown raw")
-        // The food-rate and CTG cards carry the two placeholder bullets; they stay hidden (the E6 line comes from the figures).
-        assertEquals(setOf("RB-SS-T181", "RB-SS-T254"), cards.filter { it.full!!.body.figureTemplates.isNotEmpty() }.map { it.id }.toSet())
     }
 
     /**

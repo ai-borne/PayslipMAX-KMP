@@ -131,14 +131,6 @@ class GuideSearchIndexTest {
     }
 
     @Test
-    fun placeholderBulletsAreNotSearchedBecauseTheyAreNeverShown() {
-        val index = indexOf(card("personal", key = listOf("Visible bullet", "Level {level} = Rs {zzfig}/day")))
-
-        assertEquals(listOf("personal"), index.ids("visible"))
-        assertTrue(index.ids("zzfig").isEmpty())
-    }
-
-    @Test
     fun theSyntheticBundleSearchesEndToEnd() {
         // Only the two cards homed in "ltc-home" (rule line "Rule 177A") carry 177A; every card cites Rule 114.
         assertEquals(setOf("RB-T9", "RB-T10"), GuideSearchIndex(bundle).ids("177a").toSet())

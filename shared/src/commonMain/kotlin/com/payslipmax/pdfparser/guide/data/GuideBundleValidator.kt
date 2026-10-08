@@ -8,8 +8,7 @@ import kotlinx.serialization.json.JsonObject
 
 /**
  * Rechecks, on every load, the rules `compile.py` enforced when the bundle was built: ids resolve, every card
- * has exactly one home, text stays within the card layout's limits, and only personal cards carry template
- * placeholders. Problems name card ids for tests and debugging only; they must never be logged or reported.
+ * has exactly one home, text stays within the card layout's limits, and no card carries a template placeholder. Problems name card ids for tests and debugging only; they must never be logged or reported.
  * Plain string scans, no regex, so it stays linear on Kotlin/Native.
  */
 object GuideBundleValidator {
@@ -70,11 +69,8 @@ object GuideBundleValidator {
         val visible = (listOf(card.answer, card.cite) + card.key + card.attach + card.watch).sumOf(::countGuideWords)
         if (visible > limits.visible) problems += "card $id visible text $visible words, max ${limits.visible}"
         if (countGuideWords(card.details) > limits.details) problems += "card $id details over ${limits.details} words"
-        if (card.personal.isEmpty() && card.allText().any(CardTemplate::hasPlaceholder)) problems += "card $id has a placeholder but no personal spec"
-        // Only a bullet can move to the hidden "your figure" slot; a placeholder anywhere else would show raw.
-        if (listOf(card.title, card.answer, card.cite, card.details).any(CardTemplate::hasPlaceholder)) {
-            problems += "card $id has a placeholder outside a bullet"
-        }
+        // The "your figure" line comes from the bundle's figures, so no card text may carry a template placeholder.
+        if (card.allText().any(CardTemplate::hasPlaceholder)) problems += "card $id has a placeholder"
     }
 
     private fun GuideCard.allText(): List<String> = listOf(title, answer, cite, details) + key + attach + watch

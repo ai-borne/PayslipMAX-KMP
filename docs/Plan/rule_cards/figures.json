@@ -1,5 +1,5 @@
 {
-  "_note": "APPROVED by the owner 2026-10-08 (E6), evidence labels unchanged. Source of truth for the Claim Guide 'your figure' line. No figure ships until its 'approved' is a date. Every figure: value, effective date, primary letter, and the evidence level actually seen. Evidence: LETTER_TEXT = the primary letter's own text was read; HANDBOOK_ONLY = the P&A Handbook 2023 prints the letter number and the rates but the letter text was not read; WEB_SECONDARY = news or department pages quote the order, primary text not read.",
+  "_note": "APPROVED by the owner 2026-10-08 (E6), evidence labels unchanged. Source of truth for the Claim Guide 'your figure' line. No figure ships until its 'approved' is a date. Every figure: value, effective date, primary letter, and the evidence level actually seen. Evidence: LETTER_TEXT = the primary letter's own text was read; HANDBOOK_ONLY = the P&A Handbook 2023 prints the letter number and the rates but the letter text was not read; WEB_SECONDARY = news or department pages quote the order, primary text not read. OWNER_CONFIRMED = the owner stated it (with a `confirmed` date) without a document.",
   "version": 1,
   "da_step": {
     "per_da_percent": 50,
@@ -134,7 +134,7 @@
       ],
       "authority": "MoF Dept of Expenditure OM 2(5)/2017-E.II(B) dt 07-07-2017",
       "evidence": "HANDBOOK_ONLY",
-      "evidence_detail": "Handbook 2023 'HRA as per 7th CPC Orders' prints the 24/16/8 rates 'w.e.f. 01 July 2017' and the 27/18/9 (DA 25%) and 30/20/10 (DA 50%) revisions, and names the OM. OM text not read. Step dates below are WEB_SECONDARY (gconnect.in and a CAG circular quoting the DoE orders).",
+      "evidence_detail": "Handbook 2023 'HRA as per 7th CPC Orders' prints the 24/16/8 rates 'w.e.f. 01 July 2017' and the 27/18/9 (DA 25%) and 30/20/10 (DA 50%) revisions, and names the OM. OM text not read. The step dates (01-07-2021, 01-01-2024) were corroborated on the web (gconnect.in, a CAG circular) and confirmed by the owner on 2026-10-08: OWNER_CONFIRMED.",
       "classes": {
         "X": [
           {
@@ -147,13 +147,15 @@
             "from_da_percent": 25,
             "percent": 27,
             "effective_from": "2021-07-01",
-            "evidence": "WEB_SECONDARY"
+            "evidence": "OWNER_CONFIRMED",
+            "confirmed": "2026-10-08"
           },
           {
             "from_da_percent": 50,
             "percent": 30,
             "effective_from": "2024-01-01",
-            "evidence": "WEB_SECONDARY"
+            "evidence": "OWNER_CONFIRMED",
+            "confirmed": "2026-10-08"
           }
         ],
         "Y": [
@@ -167,13 +169,15 @@
             "from_da_percent": 25,
             "percent": 18,
             "effective_from": "2021-07-01",
-            "evidence": "WEB_SECONDARY"
+            "evidence": "OWNER_CONFIRMED",
+            "confirmed": "2026-10-08"
           },
           {
             "from_da_percent": 50,
             "percent": 20,
             "effective_from": "2024-01-01",
-            "evidence": "WEB_SECONDARY"
+            "evidence": "OWNER_CONFIRMED",
+            "confirmed": "2026-10-08"
           }
         ],
         "Z": [
@@ -187,13 +191,15 @@
             "from_da_percent": 25,
             "percent": 9,
             "effective_from": "2021-07-01",
-            "evidence": "WEB_SECONDARY"
+            "evidence": "OWNER_CONFIRMED",
+            "confirmed": "2026-10-08"
           },
           {
             "from_da_percent": 50,
             "percent": 10,
             "effective_from": "2024-01-01",
-            "evidence": "WEB_SECONDARY"
+            "evidence": "OWNER_CONFIRMED",
+            "confirmed": "2026-10-08"
           }
         ]
       },

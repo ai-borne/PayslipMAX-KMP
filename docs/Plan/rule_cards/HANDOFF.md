@@ -1,16 +1,16 @@
 # Claim Guide app work: where we are (read this block first; the rest of this file is dataset history)
 
-Updated 2026-10-08. App phases E0-E5 are on `main`. **E6 (personal "your figure" line) is built and committed on `feature/guide-e6-personal-figures`, not merged and not pushed** (the owner decides). Next after owner review: merge E6, then **E7** (Pay Audit link). Plan and status: `16_guide_phase_plan.md` (sections E6 incl. "E6 result", and "EP Pending items").
+Updated 2026-10-08. App phases E0-E6 are on `main`. **E6 (personal "your figure" line) is done and merged to `main`** (see "E6 result"). Next: **E7** (Pay Audit link). Plan and status: `16_guide_phase_plan.md` (sections E6 incl. "E6 result", and "EP Pending items").
 
 **E6 in one paragraph.** `figures.json` (owner-approved 2026-10-08: food rate, CTG, transport allowance, HRA, each with value, effective date, primary letter and evidence level) -> `figures.py` validates (called by `compile.py`) -> `bundle.py` ships it as `figures` in the bundle (version stays 1) -> `PersonalFigureResolver` (shared) turns it plus a `GuideProfile` (built from Pay Audit's own `ServiceTimelineBuilder` by `GuideProfileBuilder`) into a figure, or null to hide the line. The line sits in `GuideCardFull.figure`, so a locked card holds none; `rememberGuideProfile` reads the payslips only while an unlocked figure card is on screen. No rupee figure is in production Kotlin; copy is in `GuideStrings`.
 
-**Fail loud: not done in E6, carried to E9 in the EP table** (rows 17-22): 17 "before taxes" has no source; 18 transport/HRA letters are handbook-only and the HRA step dates web-only; 19 (see below); 20 iOS walkthrough of the new block; 21 design limits to review; 22 the two unused placeholder bullets on T181/T254.
+**E6 pending items: all closed with the owner on 2026-10-08 except EP 20** (the iOS walkthrough of the new block, folded into the E9 simulator walkthrough with EP 11 and 15). EP 17 food wording kept as the owner's decision; EP 18 handbook evidence accepted as final, HRA step dates owner-confirmed, P116 OM number corrected; EP 19 Pixel check done; EP 21 limits accepted; EP 22 placeholder bullets and `figureTemplates` deleted. The phone runs the debug-signed `minifiedTest` build, not the Play build.
 
 Rules that still bind: no rupee figure in Kotlin; copy only in `GuideStrings.kt`; 300-line files; locked state must not hold a resolved figure; no PII or figure in telemetry; the gates in the plan "Rules for every phase". Gradle from the shell: pass `-Dorg.gradle.java.home=/opt/homebrew/opt/openjdk@21`. zsh does not word-split `$FILES`; pipe file lists through `xargs`.
 
-Still open for E9 (EP table): 11, 15 and 20 (iOS simulator walkthrough), 12 (cold start / APK size), 14 (at the paywall flip: sandbox purchase unlocks a card; Premium row appears), 17, 18, 21 and 22 above. **EP 19 was done on the Pixel on 2026-10-08** (smoke passed, all four cards checked on the real September payslip; see "E6 result"); its row is updated. The phone now runs the debug-signed `minifiedTest` build, not the Play build. The paywall rule is test-enforced: flag may be on only when no Rates-chip card is still an Unverified point.
+Still open for E9 (EP table): 11, 15 and 20 (iOS simulator walkthrough), 12 (cold start / APK size), 14 (at the paywall flip: sandbox purchase unlocks a card; Premium row appears). The paywall rule is test-enforced: flag may be on only when no Rates-chip card is still an Unverified point.
 
-Paste to start the next session: "Continue the Claim Guide app. Read CLAUDE.md, docs/Plan/rule_cards/HANDOFF.md (top block) and the E6 result plus the EP table in docs/Plan/rule_cards/16_guide_phase_plan.md. E6 is committed on feature/guide-e6-personal-figures awaiting my review; then E7 once I say E6 is merged."
+Paste to start the next session: "Continue the Claim Guide app. Read CLAUDE.md, docs/Plan/rule_cards/HANDOFF.md (top block) and the E6 result plus the EP table in docs/Plan/rule_cards/16_guide_phase_plan.md. E6 is merged; start E7."
 
 ---
 

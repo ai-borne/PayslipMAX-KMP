@@ -14,7 +14,7 @@ A: X cities 24%, Y cities 16%, Z cities 8% of basic pay, from 01-07-2017.
 K: 27%, 18% and 9% once DA crosses 25%
 K: 30%, 20% and 10% once DA crosses 50%
 K: Basic pay excludes NPA, MSP and special pay
-C: MoF OM 2/5/2017-E.II(B) dt 07-07-2017; MoD letter 3(1)/2015-D(Q&C) dt 11-10-2017
+C: MoF OM 2(5)/2017-E.II(B) dt 07-07-2017; MoD letter 3(1)/2015-D(Q&C) dt 11-10-2017
 D: X cities: Delhi, Greater Mumbai, Kolkata, Chennai, Hyderabad, Ahmedabad, Bengaluru, Pune. Unlisted towns are Z. Faridabad, Ghaziabad, Noida, Gurgaon keep Delhi rates; Shillong, Goa, Port Blair, Jalandhar Cantt and Mathura-Vrindavan are Y.
 
 === topic=RP-092 from=SS-P113

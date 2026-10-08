@@ -32,7 +32,7 @@ object SyntheticGuideBundle {
           {"id":"pay-hra","title":"House rent","sub":"","cards":["RB-P1","RB-P2","RB-P3"],"also":[]}]}],
         "facets":{"Q":"Who qualifies","H":"How much","C":"How to claim","L":"Limits and traps"},
         "cards":[
-         ${card("RB-T1", BIG_CASE, "H", chips = "\"RATES\"", personal = "level:food_rate", key = "Your amount: Level {level} = Rs {food_rate}/day")},
+         ${card("RB-T1", BIG_CASE, "H", chips = "\"RATES\"", personal = "level:food_rate")},
          ${card("RB-T2", BIG_CASE, "H", unverified = true)},
          ${card("RB-T3", BIG_CASE, "C", cite = "", chips = "\"GUIDANCE\"")},
          ${card("RB-T4", BIG_CASE, "Q", chips = "\"AMENDED\"")},

@@ -183,14 +183,13 @@ class GuideViewModelTest {
         }
 
     @Test
-    fun cardContentHidesPlaceholderBulletsAndKeepsTheRest() =
+    fun cardContentCarriesTheBulletsAsAuthored() =
         loaded {
             val card = viewModel.card(SyntheticGuideBundle.PERSONAL_CARD, unlocked = true)!!
             val full = card.full!!
 
             assertEquals("How much", card.facetLabel)
-            assertEquals(emptyList(), full.body.key, "its only key bullet is a placeholder")
-            assertEquals(listOf("Your amount: Level {level} = Rs {food_rate}/day"), full.body.figureTemplates)
+            assertEquals(listOf("A short key point for RB-T1"), full.body.key)
             assertEquals(listOf("A form"), full.body.attach)
             assertEquals("Rule 114 TR", full.cite)
         }
