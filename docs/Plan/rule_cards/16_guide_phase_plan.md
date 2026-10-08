@@ -1,7 +1,7 @@
 # Claim Guide, Phase E plan (E1 to E9)
 
 Status: E0 (this plan) done 2026-10-07. **E1 done 2026-10-07** (branch `feature/guide-e1-bundle`). **E2 done 2026-10-07**
-(branch `feature/guide-e2-tiles`, off E1). **E3 done 2026-10-07** (branch `feature/guide-e3-feed`, off E2). **E4 done 2026-10-07** (same branch). **E5 done 2026-10-07** (branch `feature/guide-e5-trust-gating`, off `main`); E6 next.
+(branch `feature/guide-e2-tiles`, off E1). **E3 done 2026-10-07** (branch `feature/guide-e3-feed`, off E2). **E4 done 2026-10-07** (same branch). **E5 done 2026-10-07** (merged to `main`, branch deleted); E6 next, its owner decisions are closed (see E6).
 Branching (decided 2026-10-07, solo developer): `main` holds E0 to E4; each later phase is one branch off `main`,
 merged (fast-forward) when its gate is green and deleted, so at most one phase branch is ever open.
 Items left open by a finished phase are listed under "EP Pending items" at the end, never dropped.
@@ -359,6 +359,19 @@ hidden); search results for locked users show titles only; the nudge appears onl
   shows the store price).
 
 ## E6 Personalisation from the Pay Audit profile
+**Owner decisions for E6 (2026-10-07/08, all closed before any code).**
+| Topic | Decision |
+|---|---|
+| DA escalator | Step rule: multiplier = 1 + 0.25 x floor(DA / 50). DA 0-49% x1.00, 50-99% x1.25 (today, DA 60%), 100-149% x1.50. Stored once in `figures.json`, not in Kotlin. |
+| DA source | The DA of the latest payslip month (existing Pay Audit source). No dated DA table to maintain. No payslip DA means no line. |
+| Profile month | The latest payslip month supplies `level`, `tptaCity`, basic pay and DA. The line says which month it is based on. |
+| Unknown facts | Show the base figure with its assumption named, never a guess: CTG "about Rs X (80% of last basic, move of 20 km or more)"; food "Rs Y a day, full day, before taxes". The card's bullets already cover the other cases. |
+| Food rate (T181) | Only the levels the card lists: 9-11 base 900, 12-13B base 1,000, 14+ base 1,200. Levels below 9 get no line. Amount is before taxes. |
+| Transport allowance (P051) | Only levels 10-13A and 14+. City: match the Pay Audit `tptaCity` against the card's listed-city list; a city not on it takes the "elsewhere" rate; no `tptaCity` hides the line. |
+| HRA (P116) | City class inferred from the payslip's HRA / basic ratio: 24/27/30% = X, 16/18/20% = Y, 8/9/10% = Z. A ratio that fits none hides the line. The line restates the rate (a cross-check), it adds no new input and no new UI. |
+| Approval | Owner approves `figures.json`. Every figure carries value, effective date and the primary letter (same standard as CITE); `compile.py` fails a figure with no source. No figure ships unapproved. |
+| Not asked, default | A figure whose source letter is unverified is not asked about here; if one turns up while drafting, stop and ask the owner. |
+
 **Goal:** a "your figure" line on T181 (food rate), T254 (CTG), P051 (transport allowance) and P116 (HRA).
 **Prerequisite:** a small authored `figures.json` (base rates, DA escalator, effective dates), validated by
 `compile.py`, bundled, and approved by the owner. No rupee figure is written into Kotlin.

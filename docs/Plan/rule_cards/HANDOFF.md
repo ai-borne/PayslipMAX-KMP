@@ -1,3 +1,21 @@
+# Claim Guide app work: where we are (read this block first; the rest of this file is dataset history)
+
+Updated 2026-10-08. App phases E0-E5 are done and on `main`. Next is **E6** (personal "your figure" line). Plan and status: `16_guide_phase_plan.md` (sections E6 and "EP Pending items").
+
+**E6 is ready to start, but not to code.** All owner decisions are closed (table at the top of section E6 in the plan). The first deliverable is a *draft* `figures.json` for the owner to approve; no Kotlin until the owner has approved it.
+1. Branch `feature/guide-e6-personal-figures` off `main` (one short-lived branch per phase, merge when the gate is green, delete).
+2. Write the E6 phase plan first (CLAUDE.md "Writing a phase plan"): read `PersonalFigure`-related Pay Audit code (`ServiceTimeline`, `level`, `tptaCity`, the DA source), `CardTemplate.kt` (placeholder bullets move to `figureTemplates`; E6 fills them), `GuideCardContent.full` (the line is paid half: only when unlocked), `compile.py`/`bundle.py`/`test_bundle.py`.
+3. Draft `figures.json` from the cards RB-SS-T181, RB-SS-T254, RB-SS-P051-rates, RB-SS-P116-rates and the primary letters named in their CITE (sources in `~/Downloads/rulecards_workdir/`, never in the repo). Every figure: value, effective date, primary letter. Stop and ask on any unverified figure.
+4. Only after approval: `compile.py` validation, `bundle.py`, `PersonalFigureResolver` (shared), provider in composeApp, tests (spec with and without profile; DA at 50% and 58%; missing data hides the line; effective date shown), Pixel check with the real profile.
+
+Rules that still bind: no rupee figure in Kotlin; copy only in `GuideStrings.kt`; 300-line files; locked state must not hold a resolved figure; no PII or figure in telemetry; gates listed in the plan "Rules for every phase" must all be green before the phase ends. Gradle from the shell: pass `-Dorg.gradle.java.home=<Homebrew openjdk@21>`.
+
+Still open for E9 (EP table): 11 and 15 (iOS simulator walkthrough), 12 (cold start / APK size), 14 (at the paywall flip: sandbox purchase unlocks a card; Premium row appears). The paywall rule is test-enforced: flag may be on only when no Rates-chip card is still an Unverified point.
+
+Paste to start the next session: "Continue the Claim Guide app: phase E6. Read CLAUDE.md, docs/Plan/rule_cards/HANDOFF.md (top block) and the E6 section of docs/Plan/rule_cards/16_guide_phase_plan.md. Start with the E6 phase plan and a draft figures.json for my approval; do not write Kotlin before I approve the figures."
+
+---
+
 # Rule-card dataset: handoff (read this first)
 
 Last updated 2026-10-04 (end of pay authoring; Phase D automated scan done, domain-owner review pending). Committed on branch `docs/rule-cards-dataset`. See `README.md` for the layout.
