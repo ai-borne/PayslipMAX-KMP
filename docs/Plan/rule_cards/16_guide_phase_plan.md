@@ -551,6 +551,66 @@ and a locked user's tap offers the upgrade sheet.
 (card text and cite only, no profile figures, name or service number); the copied cite equals `cite`; nothing leaves without a tap.
 **Exit:** gates green; `minifiedTest` smoke. **Tech-debt checkpoint:** none carried.
 
+### E8 phase plan (written 2026-10-08, before any Kotlin)
+Branch `feature/guide-e8-pins-share` off `main` (E7 is merged and pushed). Gate: "Rules for every phase" plus `assembleRelease`,
+`assembleMinifiedTest`, `check_r8_guide.py`, and the Pixel 9 smoke plus a Pixel check of pin, Copy cite and Share. The iOS simulator walkthrough stays in the EP table (E9).
+
+**Owner decisions for E8 (2026-10-08, one batch, closed before any code).**
+| Topic | Decision |
+|---|---|
+| Share note | Full note, no app attribution: header "Claim note", title, "Answer:", "Key points:", "Attach:", "Watch out:", "Authority: <cite>" (empty sections left out). No details, no "your figure", no name, service number or profile figure. |
+| Warning line | Share adds "Unverified point: ..." under the answer for a flagged card. Copy cite stays exact: the copied text equals `cite`. |
+| Pins | No limit, newest pinned first, in a "Pinned" section above the area tiles on Guide Home. Section is not drawn when empty (Home looks as today). |
+| Controls | An action row (Pin, Share) under the answer; a Copy cite button beside the Authority line. A locked card has none of them (only the existing Unlock panel, which already names these as Premium). |
+
+**Existing code read first.** `GuideCardScreen`, `GuideCardHeader`, `GuideCardSections` (cite item), `GuideLockedPanel`, `GuideHomeScreen`, `GuideTab`
+(`GuideDestinationContent`), `GuideCardRoute`/`GuideCardHost` (the Pay Audit card host: the second user of `GuideCardScreen`), `GuideAccess`,
+`GuideViewModel`, `GuideUiState` (`GuideFeedRow`, `cardContent`), `GuideTrust`, `GuideModule`, `GuideStrings`, `OnboardingStorage` (+ Android/iOS actuals, fake,
+contract test: the storage pattern), `ClipboardCopier` (`rememberClipboardCopier`), `ShareUtils` (`shareText`), `RepresentationScreen` (existing copy/share use).
+Facts that shaped the plan: `allowBackup="false"` and the `.pcda` backup is separate, so plain prefs are not backed up; `GuideCardScreen` has two hosts;
+`GuideHomeScreen` is a `LazyVerticalGrid`; `GuideTab.kt` is 173 lines, `App.kt` stays untouched.
+
+**Design (one source each).**
+- *Storage (shared):* `GuidePinsStorage { load(): List<String>; save(ids) }`, `expect fun provideGuidePinsStorage()` with Android `SharedPreferences` and iOS
+  `NSUserDefaults` actuals (one newline-joined string of ids; no Room, no backup, no `@Serializable`). `load` drops any entry that is not a plain card id
+  (`[A-Za-z0-9._-]`, at most 64 characters) and duplicates, so a damaged value cannot inject anything. `FakeGuidePinsStorage` in `shared-test-fixtures`.
+- *Domain (shared, pure):* `GuidePins` (oldest-first list; `toggle`, `isPinned`, `newestFirst`, `retainKnown(isKnown)`); `GuideShareText.build(parts, labels)`
+  (labels are passed in, so the words live only in `GuideStrings`; the builder takes only title, answer, key points, attach, watch-out, cite and the unverified flag, so
+  no profile data can reach it by type).
+- *State (composeApp):* `GuidePinsModel` (Koin single in `guideModule`): `pins: StateFlow<List<String>>` newest first, `toggle(id)` saves at once,
+  `retainKnown` drops ids the bundle no longer holds and saves. Stale ids are also filtered when Home draws, so a bundle update never shows or opens a missing card.
+- *UI:* `GuideCardActions(isPinned, onTogglePin, onShare, onCopyCite?)`, null for a locked card, built in `rememberGuideCardActions(card)` from the platform's
+  `rememberClipboardCopier` and `shareText`; `GuideCardScreen` takes `actions: GuideCardActions?` and both hosts (Guide tab, Pay Audit card host) pass it.
+  Copy cite is offered only when the card has a cite. Home gets `pinned: List<GuideFeedRow>` (empty when locked or none). A tap on a pinned row pushes `Card(id)`.
+- *Entitlement:* `card.full == null` (locked) means `actions == null`, and the Home pinned list is empty when `!access.isUnlocked`; nothing reads pins while locked.
+  Pins stay stored if the user later locks, and reappear on unlock. Flag off: no Guide, so none of it exists.
+
+**Tests first (each fails before its code).** Characterization on `main` (green, unchanged): card screen (unlocked sections, locked panel with no key points, cite or
+details), Guide Home rendering (areas, no pinned section), `ShareUtilsTest` / `ShareUtilsIosTest`, `GuideTabTest`. Then failing-first: pins persist across a new
+model on the same storage; toggle pins newest first and unpins; stale ids dropped after a bundle update (state and storage); damaged stored value filtered;
+fixed-text share note (exact string, with and without attach/watch, unverified line only when flagged, no details, no figure); Copy cite copies exactly `cite`;
+nothing is copied or shared until a tap (fakes see zero calls on composition and navigation); locked card has no Pin, Copy cite or Share nodes and holds no actions;
+locked Home has no pinned section even with stored pins; empty pins draw no section; Pay Audit card host shows the actions when unlocked; `FakeCrashReporter` sees nothing
+and no card id reaches telemetry; Android prefs round trip (Robolectric); contract on the real bundle: every card's share note stays within the system share limit
+and contains no `{`, details or "Your figure".
+
+**R8 / iOS risks.** No new `@Serializable` type, no reflection, no keep rule; `check_r8_guide.py` still proves the 10 models. iOS: `NSUserDefaults` and string split on
+a plain character (no regex); the lists are at most a few hundred ids, so no timing test is needed beyond one `iosTest` round trip of the storage.
+
+**Regression controls.** Dark launch unchanged. Edits to existing files are limited to `GuideCardScreen`, `GuideCardSections` (cite item), `GuideHomeScreen`, `GuideTab`,
+`GuideCardRoute` (the host), `GuideModule`, `GuideStrings` and `GuideUiState` (a pinned-row mapper); `App.kt` is not touched. Corpus untouched.
+
+**Navigation and state.** No navigation change and no argument. Back from a pinned card returns to Home (the stack is Home then Card); tab re-tap pops to Home as today;
+the pin star state is derived from the model, which loads from storage, so it survives process death; lock screen composes no Guide content.
+
+**Versioning, DI, fixtures, storage.** Storage key `guide_pins_v1` (the value is a newline-joined id list; a future format gets a new key). One Koin single (`GuidePinsModel`)
+with `provideGuidePinsStorage()`. Fake in `shared-test-fixtures`. Not in backup (format stays v3), no Room change.
+
+**Security.** Nothing leaves the device without a tap: the copy and share calls run only from button taps. Pins are plain card ids, never PII; no card id, text or pin
+list is logged or put in crash keys (test). The share text is built only from public card text and cite, so a profile figure cannot reach it by type.
+
+**Owner decisions:** none open.
+
 ## E9 End-to-end, security review and release
 **Work:** end-to-end tests (tile, feed, card, pin); the `security-review` skill on the branch; confirm no new
 outbound path, nothing Guide-related in telemetry, and no `from`/`open` in the bundle; a release build and an iOS

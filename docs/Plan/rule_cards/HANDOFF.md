@@ -1,6 +1,6 @@
 # Claim Guide app work: where we are (read this block first; the rest of this file is dataset history)
 
-Updated 2026-10-08. App phases E0-E7 are done. **E7 (Pay Audit link) is complete on branch `feature/guide-e7-pay-audit-link`, committed, not merged or pushed** (owner merges when they say so). Next: **E8** (pins, copy cite, share as claim note). Plan and status: `16_guide_phase_plan.md` (sections E7 incl. "E7 result", and "EP Pending items").
+Updated 2026-10-08. App phases E0-E7 are done. **E7 (Pay Audit link) is complete, merged to `main` and pushed (2026-10-08, main at 76e25f74).** Next: **E8** (pins, copy cite, share as claim note). Plan and status: `16_guide_phase_plan.md` (sections E7 incl. "E7 result", and "EP Pending items").
 
 **E7 in one paragraph.** `GuideLinkMap` (shared) maps each Pay Audit finding (type, pay line) to an owner-approved card; `payAuditFindingsItems(..., onOpenGuideCard)` draws "Read the rule" (null with the Guide off); `rememberOpenGuideCard` sends a locked user to `PayslipUpgradeSheet` and otherwise calls `GuideViewModel.openCard(id)` then pushes `Screen.GuideCard`; `GuideCardRoute` hosts the card on Android (inline) and iOS (native VC) and pops itself with no target, an unknown id or a failed load; `DetailStateKeeper` keeps Pay Audit's month when Back returns. No argument in `Screen`, `NavBridge` or the saver. `App.kt` is exactly 300 lines: extract before adding anything.
 
