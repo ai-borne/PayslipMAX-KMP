@@ -33,5 +33,14 @@ class GuidanceRule(unittest.TestCase):
         self.assertTrue(any('GUIDANCE card has a cite' in e for e in errors_for(card('Rule 114 TR', 'GUIDANCE'))))
 
 
+class Freshness(unittest.TestCase):
+    # why: bundle --check only compares rulebook.json to the bundle; without this an authoring edit that was never
+    # compiled would pass CI and ship the old text.
+    def test_only_the_generation_date_is_ignored(self):
+        a = {'generated': '2026-01-01', 'cards': [{'id': 'RB-a', 'title': 'x'}]}
+        self.assertTrue(comp.same_content(a, dict(a, generated='2026-02-02')))
+        self.assertFalse(comp.same_content(a, {'generated': '2026-01-01', 'cards': [{'id': 'RB-a', 'title': 'y'}]}))
+
+
 if __name__ == '__main__':
     unittest.main()

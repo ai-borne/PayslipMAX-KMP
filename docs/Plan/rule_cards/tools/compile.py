@@ -16,8 +16,9 @@ Authoring format (one block per card; '#' lines are comments):
   D: collapsed details    (optional)
   O: open point for the reviewer (optional, never shown to users)
   --- skip SS-T123 reason text
+  --- retire RB-x reason text   (a shipped card is deliberately removed; see ids.py)
 
-Usage: compile.py [--check]   (--check validates without writing)
+Usage: compile.py [--check [--fresh]]   (--check validates without writing; --fresh also fails if rulebook.json is stale)
 Exit status is non-zero on any error, so it can gate a commit.
 """
 import glob
@@ -29,6 +30,7 @@ from collections import Counter, defaultdict
 
 sys.path.insert(0, os.path.dirname(__file__))
 import figures as figmod
+import ids as idsmod
 import nav as navmod
 
 CARDS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -44,7 +46,7 @@ def wc(text):
 
 
 def parse(path, errors):
-    cards, skips, cur = [], [], None
+    cards, skips, retires, cur = [], [], {}, None
     with open(path, encoding='utf-8') as fh:
         for n, raw in enumerate(fh, 1):
             line = raw.rstrip('\n')
@@ -61,6 +63,12 @@ def parse(path, errors):
                     errors.append(f'{where}: bad skip line')
                 else:
                     skips.append({'from': m.group(1), 'reason': m.group(2).strip()})
+            elif line.startswith('--- retire '):
+                m = re.match(r'--- retire (RB-\S+)\s+(.+)', line)
+                if not m:
+                    errors.append(f'{where}: bad retire line (needs an id and a reason)')
+                else:
+                    retires[m.group(1)] = m.group(2).strip()
             elif cur is not None and re.match(r'^[TAKHWCDO]: ?', line):
                 tag, val = line[0], line[3:].strip() if line[2:3] == ' ' else line[2:].strip()
                 if tag == 'K': cur['key'].append(val)
@@ -73,7 +81,7 @@ def parse(path, errors):
                     cur[tag] = val
             else:
                 errors.append(f'{where}: unrecognised line: {line[:50]}')
-    return cards, skips
+    return cards, skips, retires
 
 
 def validate(card, topics, ssot_ids, errors, warns):
@@ -116,6 +124,11 @@ def validate(card, topics, ssot_ids, errors, warns):
     return frm, chips, vis
 
 
+def same_content(a, b):
+    """Compare two rulebooks, ignoring the generation date (it changes daily)."""
+    return {k: v for k, v in a.items() if k != 'generated'} == {k: v for k, v in b.items() if k != 'generated'}
+
+
 def main():
     check_only = '--check' in sys.argv
     ssot = json.load(open(os.path.join(CARDS_DIR, 'ssot.json'), encoding='utf-8'))
@@ -124,11 +137,12 @@ def main():
     # handbook-only pay topics have no FAQ entries; a card may cite the topic id (RP-nnn) as its source instead
     pay_topic_ids = {t['id'] for t in ssot['pay_topics']}
     valid_sources = set(ssot_ids) | pay_topic_ids
-    errors, warns, raw_cards, skips = [], [], [], []
+    errors, warns, raw_cards, skips, retires = [], [], [], [], {}
     for path in sorted(glob.glob(os.path.join(AUTH_DIR, '*.txt'))):
-        c, s = parse(path, errors)
+        c, s, r = parse(path, errors)
         raw_cards += c
         skips += s
+        retires.update(r)
     out_cards, seen, covered, vis_total = [], set(), defaultdict(list), []
     for card in raw_cards:
         frm, chips, vis = validate(card, topics, valid_sources, errors, warns)
@@ -147,6 +161,7 @@ def main():
     facet_labels = navmod.apply_facets(out_cards, CARDS_DIR, errors)
     for c in out_cards:
         c['nav'] = nav_homes.get(c['id'], '')
+    errors += idsmod.check(seen, idsmod.load_lock(), retires)
     errors += figmod.validate(figmod.load(), out_cards)
     skipped = {s['from'] for s in skips}
     for s in skips:
@@ -173,13 +188,20 @@ def main():
         print('UNCOVERED', ' '.join(uncovered))
         print('PAYTOPICS_OPEN', ' '.join(pay_topics_open))
     if errors: sys.exit(1)
-    if not check_only:
-        data = {'version': 1, 'generated': __import__('datetime').date.today().isoformat(), 'limits': LIMITS,
-                'topics': [{k: t[k] for k in t if k in ('id', 'title', 'domain', 'chapter', 'handbook_page', 'tr_rules')} for t in topics.values()],
-                'nav': nav_tree, 'facets': facet_labels, 'cards': out_cards, 'skipped': skips, 'coverage': cov, 'uncovered': uncovered, 'pay_topics_open': pay_topics_open}
-        with open(os.path.join(CARDS_DIR, 'rulebook.json'), 'w', encoding='utf-8') as fh:
-            json.dump(data, fh, indent=1, ensure_ascii=False)
-        print('wrote rulebook.json')
+    if check_only and '--fresh' not in sys.argv:
+        return
+    data = {'version': 1, 'generated': __import__('datetime').date.today().isoformat(), 'limits': LIMITS,
+            'topics': [{k: t[k] for k in t if k in ('id', 'title', 'domain', 'chapter', 'handbook_page', 'tr_rules')} for t in topics.values()],
+            'nav': nav_tree, 'facets': facet_labels, 'cards': out_cards, 'skipped': skips, 'coverage': cov, 'uncovered': uncovered, 'pay_topics_open': pay_topics_open}
+    if check_only:
+        with open(os.path.join(CARDS_DIR, 'rulebook.json'), encoding='utf-8') as fh:
+            if not same_content(json.load(fh), data):
+                sys.exit('stale rulebook.json: authoring files changed, run tools/refresh.py')
+        print('rulebook.json up to date')
+        return
+    with open(os.path.join(CARDS_DIR, 'rulebook.json'), 'w', encoding='utf-8') as fh:
+        json.dump(data, fh, indent=1, ensure_ascii=False)
+    print('wrote rulebook.json')
 
 
 if __name__ == '__main__':

@@ -8,6 +8,8 @@ import os
 
 CARDS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 AUTH_DIR = os.path.join(CARDS_DIR, 'authoring')
+# Every card ID that has ever shipped (ids.py); an ID may only leave it via an authoring `--- retire` line.
+LOCK_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ids_lock.json')
 SOURCES_DIR = os.path.expanduser(os.environ.get('RULECARDS_SOURCES', '~/Downloads/rulecards_workdir'))
 
 # The Claim Guide bundle the app ships: generated from rulebook.json by bundle.py, never hand-edited.

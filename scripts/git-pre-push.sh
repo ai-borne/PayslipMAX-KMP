@@ -29,11 +29,11 @@ fi
 echo "   ✅ done in $(($(date +%s) - stage_start))s"
 
 echo ""
-echo "2/7 📚 Claim Guide data tools (compile rules, nav, stale-bundle guard)..."
+echo "2/7 📚 Claim Guide data tools (compile rules, stable IDs, stale-bundle guard)..."
 stage_start=$(date +%s)
-python3 -m unittest discover -s docs/Plan/rule_cards/tools -p 'test_*.py' 2>&1
+python3 docs/Plan/rule_cards/tools/refresh.py --check --allow-no-sources 2>&1
 if [ $? -ne 0 ]; then
-    echo "❌ Push rejected: rule-card tool tests failed (rerun tools/bundle.py if rulebook.json changed)."
+    echo "❌ Push rejected: rule-card data checks failed (run docs/Plan/rule_cards/tools/refresh.py and commit the result)."
     exit 1
 fi
 echo "   ✅ done in $(($(date +%s) - stage_start))s"

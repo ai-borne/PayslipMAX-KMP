@@ -9,6 +9,7 @@ Everything for this project lives in this folder, except the extracted source te
 | `composeApp/src/commonMain/composeResources/files/guide/guide_bundle.json` | The app bundle, generated from `rulebook.json` by `tools/bundle.py`. Never hand-edit. |
 | `nav.json` | Tile navigation (areas > cases) for the Guide UI. Authored; `compile.py` validates it and writes it into `rulebook.json`. |
 | `ssot.json`, `register.json` | The 474 source entries, topics, coverage targets. |
+| `tools/ids_lock.json` | Every card ID that has shipped. An ID may only leave via `--- retire RB-x reason` in an authoring file; `refresh.py` adds new ones. |
 | `tools/` | All scripts (below). Run from anywhere; paths resolve from the script. |
 | `13_review_queue.md` | Cards with open points (generated). |
 | `14_review_decisions.md` | Pending review decisions (fill in, then ask to apply). |
@@ -17,6 +18,8 @@ Everything for this project lives in this folder, except the extracted source te
 | `00-11_*.md`, `authentic_cards.json` | Earlier inventory and background. |
 
 ## Commands (repo root)
+After any content edit run one command: `python3 docs/Plan/rule_cards/tools/refresh.py` (rebuilds everything, runs all checks;
+`--check` writes nothing and is what CI runs). The individual steps:
 ```
 python3 docs/Plan/rule_cards/tools/compile.py --check     # validate (add --uncovered to list gaps)
 python3 docs/Plan/rule_cards/tools/compile.py             # write rulebook.json
