@@ -1,6 +1,6 @@
 # Claim Guide app work: where we are (read this block first; the rest of this file is dataset history)
 
-Updated 2026-10-09. App phases E0-E9 are done. E8 is merged and pushed (main at 442c57ff). **E9 (dataset gaps, device checks, end-to-end and security tests, release flip) is complete on branch `feature/guide-e9-release`, committed, not merged or pushed** (owner says when). `LaunchFlags.GUIDE_ENABLED` is true (commit 77faaee9); `GUIDE_PAYWALL_ENABLED` stays false, so the Guide ships free. Nothing was uploaded to a store. Plan and status: `16_guide_phase_plan.md` (sections "E9 result", "E9 known-gaps register", "Post-E9 list", EP table).
+Updated 2026-10-09. App phases E0-E9 are done. E8 is merged and pushed (main at 442c57ff). **E9 (dataset gaps, device checks, end-to-end and security tests, release flip) is complete, merged into main and pushed 2026-10-09 (main at ea364291, pre-push gate passed in 249 s); the branch is deleted.** `LaunchFlags.GUIDE_ENABLED` is true (commit 77faaee9); `GUIDE_PAYWALL_ENABLED` stays false, so the Guide ships free. Nothing was uploaded to a store. Plan and status: `16_guide_phase_plan.md` (sections "E9 result", "E9 known-gaps register", "Post-E9 list", EP table).
 
 **Dataset now:** 404 cards (220 travel, 184 pay), 37 unverified, 31 no-source; new cards `RB-RP-053-arrears` and `RB-SS-P114-quarters`; Pay Audit arrears and HRA-missing links open them. Release APK 69,606,036 B (+65,860 vs 69,540,176); cold start empty state ~187 ms.
 
@@ -8,7 +8,7 @@ Updated 2026-10-09. App phases E0-E9 are done. E8 is merged and pushed (main at 
 
 Rules that still bind: no rupee figure in Kotlin; copy only in `GuideStrings.kt`; 300-line files; locked state must not hold a card's paid half; no PII, card id, pin list or figure in telemetry (`GuideSecurityContractTest` enforces it). Gradle from the shell: `export JAVA_HOME=/opt/homebrew/opt/openjdk@21` (on "jmod ... antigravity" loop `./gradlew --stop; sleep 12`); never two Gradle commands at once (the commit hook runs Gradle too). The phone runs the debug-signed `minifiedTest` build with the owner's payslips; never uninstall.
 
-Paste to start the next session: "Continue the PayslipMAX KMP Claim Guide after E9. Read CLAUDE.md, the top block of docs/Plan/rule_cards/HANDOFF.md and the Post-E9 list at the end of docs/Plan/rule_cards/16_guide_phase_plan.md. First: merge `feature/guide-e9-release` into main (fast-forward), push with the pre-push hook, then plan the release build (do not upload or run fastlane until I say). Ask me which Post-E9 item to take next."
+Paste to start the next session: "Continue the PayslipMAX KMP Claim Guide after E9. Read CLAUDE.md, the top block of docs/Plan/rule_cards/HANDOFF.md and the Post-E9 list at the end of docs/Plan/rule_cards/16_guide_phase_plan.md. First: plan the release build (do not upload or run fastlane until I say). Ask me which Post-E9 item to take next."
 
 ---
 
