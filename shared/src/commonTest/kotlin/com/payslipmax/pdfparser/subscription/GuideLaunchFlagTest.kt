@@ -2,15 +2,16 @@ package com.payslipmax.pdfparser.subscription
 
 import kotlin.test.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
- * The Claim Guide ships dark until phase E9 (security review, end-to-end tests, release walkthrough). This
- * fails if the flag is flipped early, so turning the Guide on is a deliberate edit to this test as well.
+ * The Claim Guide is on in release since phase E9 (2026-10-09, security review and end-to-end tests done). This
+ * fails if the flag is switched off again, so pulling the Guide is a deliberate edit to this test as well.
  */
 class GuideLaunchFlagTest {
     @Test
-    fun guideStaysDarkInReleaseUntilPhaseE9() {
-        assertFalse(LaunchFlags.GUIDE_ENABLED)
+    fun guideIsOnInReleaseFromPhaseE9() {
+        assertTrue(LaunchFlags.GUIDE_ENABLED)
     }
 }
 
