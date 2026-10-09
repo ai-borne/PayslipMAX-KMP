@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
 import com.payslipmax.pdfparser.guide.GuideLoadResult
+import com.payslipmax.pdfparser.guide.domain.GuideStaleness
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
@@ -96,6 +97,19 @@ class GuideMaintenanceViewModelTest {
 
             assertEquals(SyntheticGuideRuleChange.NEW_CARD, locked.history.currentRuleId)
             assertNull(locked.full, "ids and dates only; the paid half is still absent")
+        }
+
+    @Test
+    fun aReplacedRateCardDoesNotAlsoNudgeThatItsRatesMayBeOld() =
+        test {
+            val bundle = SyntheticGuideRuleChange.bundle()
+            val rates = bundle.copy(cards = bundle.cards.map { if (it.id == SyntheticGuideRuleChange.OLD_CARD || it.id == SyntheticGuideRuleChange.NEW_CARD) it.copy(chips = listOf("RATES")) else it })
+            val far = GuideStaleness.epochDays(2030, 1, 1) * 86_400_000L
+            val model = GuideViewModel(FakeGuideRepository(GuideLoadResult.Loaded(rates)), FakeCrashReporter(), dispatcher, nowMillis = { far })
+            ready(model)
+
+            assertFalse(assertNotNull(model.card(SyntheticGuideRuleChange.OLD_CARD, unlocked = true)).ratesStale, "its own notice already says the rule no longer applies")
+            assertTrue(assertNotNull(model.card(SyntheticGuideRuleChange.NEW_CARD, unlocked = true)).ratesStale, "the card in force still gets the nudge")
         }
 
     @Test

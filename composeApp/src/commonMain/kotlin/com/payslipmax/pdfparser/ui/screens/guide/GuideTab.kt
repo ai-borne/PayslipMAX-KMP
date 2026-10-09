@@ -131,7 +131,7 @@ private fun GuideCardLevel(
             access.onUnlock,
             rememberGuideListState(navState),
             actions,
-            onOpenCard = { navState.push(GuideDestination.Card(it)) },
+            onOpenCard = navState::openCardOrReturn,
         )
     } ?: GuideLoading()
 }

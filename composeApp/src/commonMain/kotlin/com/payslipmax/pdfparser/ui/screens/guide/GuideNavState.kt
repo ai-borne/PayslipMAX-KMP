@@ -66,6 +66,15 @@ class GuideNavState(
         if (destination == GuideDestination.Home) popToHome() else replaceStack(stack + destination)
     }
 
+    /**
+     * Opens a card from a rule-history link. When the level just below is already that card (Old rule, See current rule,
+     * then Earlier rule), it goes back there instead of stacking the same two cards again, so Back never walks a loop.
+     */
+    fun openCardOrReturn(cardId: String) {
+        val card = GuideDestination.Card(cardId)
+        if (stack.getOrNull(stack.size - 2) == card) pop() else push(card)
+    }
+
     /** @return true if a level was popped, false at Home (a no-op). */
     fun pop(): Boolean {
         if (!canPop) return false

@@ -28,6 +28,7 @@ object GuideBundleValidator {
         checkHomes(bundle, problems)
         bundle.cards.forEach { checkCard(it, bundle, problems) }
         checkReplacementLoops(bundle, problems)
+        checkChangeLog(bundle, problems)
         problems += GuideFigureValidator.validate(bundle)
         return problems
     }
@@ -64,6 +65,18 @@ object GuideBundleValidator {
         bundle.cards.filter { history.loopsBack(it.id) }.forEach { problems += "card ${it.id} is in a replacement loop" }
     }
 
+    /** The change log is shown to every user, so a bad date or a card id that is not there is refused here too. */
+    private fun checkChangeLog(
+        bundle: GuideBundle,
+        problems: MutableList<String>,
+    ) {
+        val ids = bundle.cards.map { it.id }.toSet()
+        for (entry in bundle.changes) {
+            if (!isDate(entry.date)) problems += "change entry date '${entry.date}' is not YYYY-MM-DD"
+            entry.items.flatMap { it.cards }.filter { it !in ids }.forEach { problems += "change entry ${entry.date} names unknown card $it" }
+        }
+    }
+
     private fun checkCard(
         card: GuideCard,
         bundle: GuideBundle,
@@ -75,6 +88,8 @@ object GuideBundleValidator {
             problems += "card $id replaced_by ${card.replacedBy} is not another card"
         }
         if (card.isReplaced && card.until.isBlank()) problems += "card $id is replaced but has no until date"
+        if (card.effective.isNotBlank() && !isDate(card.effective)) problems += "card $id effective '${card.effective}' is not YYYY-MM-DD"
+        if (card.until.isNotBlank() && !isDate(card.until)) problems += "card $id until '${card.until}' is not YYYY-MM-DD"
         if (card.facet !in bundle.facets) problems += "card $id facet '${card.facet}' has no label"
         if (card.title.isBlank() || countGuideWords(card.title) > limits.title) problems += "card $id title empty or over ${limits.title} words"
         if (card.answer.isBlank() || countGuideWords(card.answer) > limits.answer) problems += "card $id answer empty or over ${limits.answer} words"
@@ -97,6 +112,14 @@ object GuideBundleValidator {
         ids: List<String>,
     ): List<String> = ids.groupingBy { it }.eachCount().filterValues { it > 1 }.keys.map { "duplicate $kind id $it" }
 
+    /** `YYYY-MM-DD` with a month of 1-12 and a day of 1-31 (`compile.py` checks the calendar); a plain scan, no regex. */
+    private fun isDate(value: String): Boolean {
+        if (value.length != DATE_LENGTH || value[4] != '-' || value[7] != '-') return false
+        val digits = value.removeRange(7, 8).removeRange(4, 5)
+        if (!digits.all { it in '0'..'9' }) return false
+        return value.substring(5, 7).toInt() in 1..12 && value.substring(8).toInt() in 1..MAX_DAY
+    }
+
     private fun isYearMonth(value: String): Boolean {
         if (value.length != 7 || value[4] != '-') return false
         val digits = value.removeRange(4, 5)
@@ -117,4 +140,6 @@ fun countGuideWords(text: String): Int {
     return count
 }
 
+private const val DATE_LENGTH = 10
+private const val MAX_DAY = 31
 private const val WORD_PUNCTUATION = "₹%.,/'()&+-"

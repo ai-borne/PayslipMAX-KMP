@@ -20,6 +20,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 CARD_ID = re.compile(r'^RB-[A-Za-z0-9_-]+$')
 ITEM = re.compile(r'^- (.*?)\s*(?:\[([^\]]*)\])?\s*$')
 SHIPPED_ENTRIES = 12
+# Change text is shown to every user, locked or not, so it may not state a rupee amount (that is a card's paid half).
+RUPEE_FIGURE = re.compile(r'(?:\u20b9|\bRs\.?)\s*\d', re.IGNORECASE)
 
 
 def is_date(value):
@@ -85,6 +87,8 @@ def parse_log(lines, card_ids, errors, name='changes.txt'):
             ids = [x.strip() for x in (m.group(2) or '').split(',') if x.strip()]
             if not text:
                 errors.append(f'{where}: change item has no text')
+            if RUPEE_FIGURE.search(text):
+                errors.append(f'{where}: change text states a rupee figure; free users read it, so describe the change without the amount')
             for i in ids:
                 if i not in card_ids:
                     errors.append(f'{where}: unknown card {i}')

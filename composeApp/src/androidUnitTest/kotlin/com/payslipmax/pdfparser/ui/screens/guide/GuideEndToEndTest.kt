@@ -140,12 +140,10 @@ class GuideEndToEndTest {
         tap(GuideMaintenanceStrings.earlierRule(SyntheticGuideRuleChange.EFFECTIVE))
         composeRule.onNodeWithText(GuideMaintenanceStrings.chipReplacedOn(SyntheticGuideRuleChange.EFFECTIVE)).assertIsDisplayed()
         tap(GuideMaintenanceStrings.seeCurrentRule)
-        assertEquals(
-            listOf(GuideDestination.Home, GuideDestination.Changes, GuideDestination.Card("RB-T11"), GuideDestination.Card("RB-T9"), GuideDestination.Card("RB-T11")),
-            nav.stack,
-        )
+        // See current rule from the old card returns to the new card it came from, so the stack does not grow in a loop.
+        assertEquals(listOf(GuideDestination.Home, GuideDestination.Changes, GuideDestination.Card("RB-T11")), nav.stack)
 
-        repeat(4) { composeRule.runOnUiThread { nav.pop() } }
+        repeat(2) { composeRule.runOnUiThread { nav.pop() } }
         settle()
         assertEquals(GuideDestination.Home, nav.current)
         assertTrue(crash.logs.isEmpty() && crash.keys.isEmpty() && crash.exceptions.isEmpty(), "reading rule history tells telemetry nothing")

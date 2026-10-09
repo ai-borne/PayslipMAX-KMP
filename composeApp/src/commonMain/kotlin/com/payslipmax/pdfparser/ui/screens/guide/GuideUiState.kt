@@ -147,6 +147,7 @@ internal fun GuideIndex.cardContent(
         } else {
             null
         }
-    val stale = trust.ratesAsOf?.let { GuideStaleness.isStale(it, nowMillis) } == true
+    // A replaced rule's own notice already says it no longer applies, so it gets no "rates may have changed" nudge on top.
+    val stale = !card.isReplaced && trust.ratesAsOf?.let { GuideStaleness.isStale(it, nowMillis) } == true
     return GuideCardContent(card.id, card.title, card.answer, bundle.facets[card.facet].orEmpty(), trust, stale, full, cardHistory(card.id))
 }

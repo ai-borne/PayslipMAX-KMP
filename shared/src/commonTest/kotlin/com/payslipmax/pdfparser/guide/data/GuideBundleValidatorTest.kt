@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.GuideCard
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
 import com.payslipmax.pdfparser.testing.SyntheticGuideFigures
+import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -169,6 +170,25 @@ class GuideBundleValidatorTest {
     fun aReplacedCardMustSayWhenItStoppedApplying() {
         // Without the date the card could not show "Replaced on <date>", so a reader would not see it is out of date.
         assertProblem(valid.withRb3Replaced().editCard("RB-P3") { it.copy(until = "") }, "RB-P3 is replaced but has no until date")
+    }
+
+    @Test
+    fun ruleDatesMustBeFullDates() {
+        for (bad in listOf("2026-11", "15-11-2026", "2026-13-01", "2026-11-5", "soon")) {
+            assertProblem(valid.withRb3Replaced().editCard("RB-P3") { it.copy(until = bad) }, "until '$bad' is not YYYY-MM-DD")
+            assertProblem(valid.editCard("RB-P1") { it.copy(effective = bad) }, "effective '$bad' is not YYYY-MM-DD")
+        }
+        assertEquals(emptyList(), problems(valid.editCard("RB-P1") { it.copy(effective = "2026-11-15") }))
+    }
+
+    @Test
+    fun theChangeLogMustHaveRealDatesAndKnownCards() {
+        val log = SyntheticGuideRuleChange.bundle()
+        assertEquals(emptyList(), problems(log))
+
+        assertProblem(log.copy(changes = log.changes.map { it.copy(date = "Nov 2026") }), "change entry date 'Nov 2026' is not YYYY-MM-DD")
+        val unknown = log.changes.map { c -> c.copy(items = c.items.map { it.copy(cards = it.cards + "RB-GONE") }) }
+        assertProblem(log.copy(changes = unknown), "change entry ${SyntheticGuideRuleChange.LATEST} names unknown card RB-GONE")
     }
 
     @Test

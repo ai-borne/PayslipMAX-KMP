@@ -122,6 +122,15 @@ class ChangeLog(unittest.TestCase):
         for bad in ('2026-13-01', '15-11-2026', '2026-11-5', 'soon'):
             self.assertTrue(parse(f'== {bad}\n- x\n')[1], bad)
 
+    def test_a_rupee_figure_in_the_text_is_an_error_because_free_users_read_it(self):
+        for text in ('Food rate is now Rs 5,000', 'Food rate is now Rs. 5000', 'Food rate is now \u20b95,000', 'Raised to rs 1200 a day'):
+            errs = parse(f'== 2026-11-15\n- {text}\n')[1]
+            self.assertTrue(any('rupee figure' in e and 'changes.txt:2' in e for e in errs), (text, errs))
+
+    def test_words_that_only_look_like_figures_are_fine(self):
+        for text in ('Food rate raised for the 8th CPC', 'Rule 177A wording made clearer', 'HRA classes reviewed (Rs is not followed by a number)', 'Parsed rows and cursors'):
+            self.assertEqual(parse(f'== 2026-11-15\n- {text}\n')[1], [], text)
+
     def test_a_duplicate_date_is_an_error(self):
         self.assertTrue(any('twice' in e for e in parse('== 2026-11-15\n- a\n== 2026-11-15\n- b\n')[1]))
 

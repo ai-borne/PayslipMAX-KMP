@@ -34,6 +34,32 @@ class GuideNavStateTest {
     }
 
     @Test
+    fun openingTheCardJustLeftReturnsToItInsteadOfStackingAnotherLevel() {
+        // Old rule -> See current rule -> Earlier rule: the second tap is a way back, so Back never has to walk a loop.
+        val state = GuideNavState()
+        state.push(GuideDestination.Card("OLD"))
+        state.openCardOrReturn("NEW")
+        assertEquals(listOf(GuideDestination.Home, GuideDestination.Card("OLD"), GuideDestination.Card("NEW")), state.stack)
+
+        state.openCardOrReturn("OLD")
+
+        assertEquals(listOf(GuideDestination.Home, GuideDestination.Card("OLD")), state.stack)
+    }
+
+    @Test
+    fun openingACardThatIsNotJustBelowStillStacksIt() {
+        val state = GuideNavState()
+        state.push(GuideDestination.Card("A"))
+        state.push(GuideDestination.Card("B"))
+        state.push(GuideDestination.Card("C"))
+
+        state.openCardOrReturn("A")
+
+        assertEquals(GuideDestination.Card("A"), state.current)
+        assertEquals(5, state.stack.size, "A is two levels down, not the level just left, so it stacks and Back walks C, B, A")
+    }
+
+    @Test
     fun popToHomeClearsEveryLevel() {
         // Re-tapping the active Guide tab goes back to Guide Home (owner decision 2026-10-07).
         val state = GuideNavState(listOf(GuideDestination.Area("travel"), GuideDestination.Case("td-da")))
