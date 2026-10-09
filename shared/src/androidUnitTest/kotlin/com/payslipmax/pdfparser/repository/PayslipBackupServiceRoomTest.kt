@@ -65,6 +65,7 @@ class PayslipBackupServiceRoomTest {
             assertTrue(dao.getAllRepresentationDrafts().first().isEmpty())
             assertTrue(dao.getAllDismissedDrafts().isEmpty())
             assertTrue(dao.getAllCorrections().first().isEmpty())
+            assertTrue(dao.getAllGuideNotes().first().isEmpty())
         }
 
     @Test
@@ -103,6 +104,7 @@ class PayslipBackupServiceRoomTest {
             assertEquals(1, dao.getAllRepresentationDrafts().first().size)
             assertEquals(1, dao.getAllDismissedDrafts().size)
             assertEquals(1, dao.getAllCorrections().first().size)
+            assertEquals(1, dao.getAllGuideNotes().first().size, "the device's note survives a rolled-back restore")
             assertEquals(listOf("d-01/2023"), dao.getAllRepresentationDrafts().first().map { it.id })
         }
 

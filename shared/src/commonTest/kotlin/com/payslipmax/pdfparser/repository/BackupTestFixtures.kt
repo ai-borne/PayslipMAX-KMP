@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.database.*
+import com.payslipmax.pdfparser.guide.domain.GuideNote
 
 const val BACKUP_PASSWORD = "BackupPass#1"
 
@@ -21,11 +22,12 @@ fun backupBytes(backup: PortableBackup): ByteArray =
             BACKUP_PASSWORD,
         ).getOrThrow()
 
-/** One month of everything a device holds: the payslip, its PDF, and all that is derived from or added to it. */
+/** One month of everything a device holds: the payslip, its PDF, and all that is derived from or added to it (plus one private Guide note). */
 suspend fun PayslipDao.seedDeviceMonth(dateStr: String) {
     insertPayslip(createMockPayslip(dateStr).toEncryptedEntity())
     insertPayslipPdf(PayslipPdfEntity(dateStr, byteArrayOf(1)))
     insertCorrection(mapOf("basicPay" to 1.0).toCorrectionEntity(dateStr))
+    insertGuideNote(GuideNote.of("RB-DEVICE-$dateStr".replace('/', '-'), "device note", "rev00001", 1L)!!.toEntity())
     insertLedgerRecord(ledgerRow(dateStr))
     insertFinancialInsight(FinancialInsightEntity("i-$dateStr", dateStr, "TAX", "t", "c", "INFO", 1L))
     insertRepresentationDraft(

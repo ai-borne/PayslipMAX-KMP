@@ -21,7 +21,7 @@ class PayslipBackupService(
 ) {
     /**
      * Exports everything the user created (payslips, PDFs, settings, letters, deleted-letter records,
-     * corrections) as an encrypted JSON archive. Derived data (ledger, insights) is not exported.
+     * corrections, private Guide notes) as an encrypted JSON archive. Derived data (ledger, insights) is not exported.
      */
     suspend fun export(password: String): Result<ByteArray> =
         withContext(dispatcher) {
@@ -53,6 +53,7 @@ class PayslipBackupService(
                         drafts = payslipDao.getAllRepresentationDrafts().first(),
                         dismissedDrafts = payslipDao.getAllDismissedDrafts(),
                         corrections = exportCorrections(deviceKey, password),
+                        guideNotes = GuideNoteBackup.forExport(payslipDao.getAllGuideNotes().first(), deviceKey, password),
                     )
 
                 val jsonStr = Json.encodeToString(PortableBackup.serializer(), backup)
@@ -122,6 +123,7 @@ class PayslipBackupService(
                         drafts = backup.drafts,
                         dismissedDrafts = backup.dismissedDrafts,
                         corrections = backup.corrections.map { it.toCorrectionList(password).toCorrectionEntity(it.dateStr, deviceKey) },
+                        guideNotes = restoredNotes(backup, password, deviceKey, mode),
                     )
 
                 // REPLACE makes the device an exact copy of the backup (every user and derived table is
@@ -146,6 +148,17 @@ class PayslipBackupService(
                 Result.failure(e)
             }
         }
+
+    /** An unreadable note is skipped (see [GuideNoteBackup]); only a MERGE needs the notes the device holds now. */
+    private suspend fun restoredNotes(
+        backup: PortableBackup,
+        password: String,
+        deviceKey: String,
+        mode: RestoreMode,
+    ): List<GuideNoteEntity> {
+        val existing = if (mode == RestoreMode.MERGE) payslipDao.getAllGuideNotes().first() else emptyList()
+        return GuideNoteBackup.forRestore(backup.guideNotes, password, deviceKey, existing, mode)
+    }
 
     /**
      * The ledger and insights are never stored in a backup, so they are rebuilt from the restored payslips

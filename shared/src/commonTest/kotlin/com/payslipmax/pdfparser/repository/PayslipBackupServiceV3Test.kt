@@ -80,14 +80,14 @@ class PayslipBackupServiceV3Test {
         }
 
     @Test
-    fun exportIsVersion3AndNeverCarriesDerivedLedgerOrInsights() =
+    fun exportIsTheCurrentVersionAndNeverCarriesDerivedLedgerOrInsights() =
         runTest {
             seedSourceWithCreatedData()
             source.insertFinancialInsight(FinancialInsightEntity("i1", "01/2023", "TAX", "t", "c", "INFO", 1L))
 
             val backup = decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow())
 
-            assertEquals(3, backup.version)
+            assertEquals(PortableBackup.CURRENT_VERSION, backup.version)
             assertEquals(listOf(editedLetter), backup.drafts)
             assertEquals(1, backup.dismissedDrafts.size)
             assertEquals(1, backup.corrections.size)

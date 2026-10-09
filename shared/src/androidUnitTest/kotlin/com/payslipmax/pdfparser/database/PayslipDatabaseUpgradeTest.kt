@@ -24,6 +24,7 @@ private const val PRODUCTION_DB = "payslips.db"
 private const val SCHEMA_DIR = "schemas/com.payslipmax.pdfparser.database.PayslipDatabase"
 private const val FUTURE_VERSION = 99
 private const val V12 = 12
+private const val V13 = 13
 
 /**
  * WHY: user payslips exist only in this database (there is no server copy), so the database must
@@ -115,6 +116,24 @@ class PayslipDatabaseUpgradeTest {
             db.query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'dismissed_drafts'").use {
                 assertEquals(1, it.count, "dismissed_drafts table exists after the upgrade")
             }
+        }
+    }
+
+    // WHY: personal Guide notes (M6) arrive with the v14 table. The officer's payslips and corrections are the only copy of
+    // their data, so they must come through the upgrade untouched, and the new table must start empty and usable.
+    @Test
+    fun `the v13 database gains the guide notes table and keeps its payslips and corrections`() {
+        helper.createDatabase(PRODUCTION_DB, V13).use {
+            it.insertPayslip("2026-01")
+            it.execSQL("INSERT INTO payslip_corrections (dateStr, ciphertext) VALUES ('2026-01', 'beef')")
+        }
+
+        helper.runMigrationsAndValidate(PRODUCTION_DB, headVersion(), true).use { db ->
+            db.query("SELECT ciphertext FROM encrypted_payslips").use { assertEquals(1, it.count, "the payslip survives the upgrade") }
+            db.query("SELECT ciphertext FROM payslip_corrections").use { assertEquals(1, it.count, "the correction survives the upgrade") }
+            db.query("SELECT cardId, ciphertext FROM guide_notes").use { assertEquals(0, it.count, "the new table starts empty") }
+            db.execSQL("INSERT INTO guide_notes (cardId, ciphertext) VALUES ('RB-TD-001', 'cafe')")
+            db.query("SELECT cardId FROM guide_notes").use { assertEquals(1, it.count) }
         }
     }
 

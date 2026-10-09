@@ -60,6 +60,26 @@ class FakePayslipDao : PayslipDao {
         correctionsDatabase.value = emptyMap()
     }
 
+    private val guideNotesDatabase = MutableStateFlow<Map<String, GuideNoteEntity>>(emptyMap())
+
+    override suspend fun insertGuideNote(note: GuideNoteEntity) {
+        guideNotesDatabase.value = guideNotesDatabase.value + (note.cardId to note)
+    }
+
+    override suspend fun insertGuideNotes(notes: List<GuideNoteEntity>) {
+        guideNotesDatabase.value = guideNotesDatabase.value + notes.associateBy { it.cardId }
+    }
+
+    override fun getAllGuideNotes(): Flow<List<GuideNoteEntity>> = guideNotesDatabase.map { it.values.toList() }
+
+    override suspend fun deleteGuideNote(cardId: String) {
+        guideNotesDatabase.value = guideNotesDatabase.value - cardId
+    }
+
+    override suspend fun clearAllGuideNotes() {
+        guideNotesDatabase.value = emptyMap()
+    }
+
     override suspend fun insertPayslipPdf(pdf: PayslipPdfEntity) {
         pdfDatabase.value = pdfDatabase.value + (pdf.dateStr to pdf)
     }

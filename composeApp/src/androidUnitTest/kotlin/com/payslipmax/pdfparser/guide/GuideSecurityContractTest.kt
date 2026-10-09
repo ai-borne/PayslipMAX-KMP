@@ -92,6 +92,26 @@ class GuideSecurityContractTest {
     private fun withoutComments(file: File): String = file.readText().replace(Regex("""/\*.*?\*/""", RegexOption.DOT_MATCHES_ALL), "").lines().joinToString("\n") { it.substringBefore("//") }
 
     @Test
+    fun personalNotesStayOnTheDeviceAndInTheBackupOnlyAndNothingAboutThemCanBeLoggedSharedOrReported() {
+        // M6: notes are private text. The data layer must not log, report, share or print them, must not put the text in an
+        // exception message, and the share and suggestion models must have no field that could carry one.
+        val noteFiles = setOf("GuideNote.kt", "GuideNoteEdit.kt", "GuideNotePlacements.kt", "GuideNotesRepository.kt", "RoomGuideNotesRepository.kt", "GuideNoteEntity.kt", "GuideNoteBackup.kt")
+        val found = guideSources.filter { it.name in noteFiles }
+        assertEquals(noteFiles, found.map { it.name }.toSet(), "a notes source moved; update this list so the scan stays honest")
+        val leaky = Regex("""CrashReporter|crashReporter|TelemetrySanitizer|Logger|println|\bprint\(|\blog\(|Log\.[dievw]\(|shareText|setPrimaryClip|ClipData|ACTION_SEND|GuidePlatform|Firebase""")
+        assertEquals(emptyList(), found.filter { leaky.containsMatchIn(withoutComments(it)) }.map { it.name }, "a notes file logs, reports, shares or prints")
+        // An exception message built from a template could quote the note (serialization errors quote their input already).
+        val templated = Regex("""(Exception|error|require|check)\([^)]*\$""")
+        assertEquals(emptyList(), found.filter { templated.containsMatchIn(withoutComments(it)) }.map { it.name }, "an exception message interpolates a value")
+        val shareParts = withoutComments(guideSources.first { it.name == "GuideShareText.kt" }).substringAfter("data class GuideShareParts").substringBefore("\n)")
+        assertFalse(Regex("""note""", RegexOption.IGNORE_CASE).containsMatchIn(shareParts), "the share note must have no personal-note field")
+        val entity = withoutComments(guideSources.first { it.name == "GuideNoteEntity.kt" })
+        val columns = entity.substringAfter("data class GuideNoteEntity(").substringBefore("\n)").lines().map { it.trim().removeSuffix(",") }.filter { it.isNotEmpty() }
+        assertEquals(listOf("@PrimaryKey val cardId: String", "val ciphertext: String"), columns, "the stored row is the card id (key) and one ciphertext, nothing readable")
+        assertTrue(entity.contains("CryptoHelper.encrypt"))
+    }
+
+    @Test
     fun onlyGuidePlatformNamesTheEmailHelperAndNoGuideFileBuildsALinkOrHoldsAnAddress() {
         // M5 deliberately widens the earlier "share sheet and clipboard only" rule by exactly one seam: the user's mail app, opened
         // from a button tap through the existing shareTextViaEmail. The Guide still builds no intent and no mailto link itself.

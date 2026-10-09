@@ -43,6 +43,22 @@ interface PayslipDao {
     @Query("DELETE FROM payslip_corrections")
     suspend fun clearAllCorrections()
 
+    // Personal Claim Guide notes (encrypted rows; part of the same restore transaction as everything else the user created)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertGuideNote(note: GuideNoteEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertGuideNotes(notes: List<GuideNoteEntity>)
+
+    @Query("SELECT * FROM guide_notes")
+    fun getAllGuideNotes(): Flow<List<GuideNoteEntity>>
+
+    @Query("DELETE FROM guide_notes WHERE cardId = :cardId")
+    suspend fun deleteGuideNote(cardId: String)
+
+    @Query("DELETE FROM guide_notes")
+    suspend fun clearAllGuideNotes()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayslipPdf(pdf: PayslipPdfEntity)
 
@@ -152,6 +168,7 @@ interface PayslipDao {
     suspend fun clearAllUserData() {
         clearAll()
         clearAllCorrections()
+        clearAllGuideNotes()
         clearAllLedgerRecords()
         clearAllFinancialInsights()
         clearAllRepresentationDrafts()
@@ -182,5 +199,6 @@ interface PayslipDao {
         rows.drafts.forEach { insertRepresentationDraft(it) }
         rows.dismissedDrafts.forEach { insertDismissedDraft(it) }
         rows.corrections.forEach { insertCorrection(it) }
+        insertGuideNotes(rows.guideNotes)
     }
 }

@@ -13,6 +13,7 @@ import androidx.room.migration.AutoMigrationSpec
     entities = [
         EncryptedPayslipEntity::class,
         PayslipCorrectionEntity::class,
+        GuideNoteEntity::class,
         PayslipPdfEntity::class,
         AppSettingsEntity::class,
         LedgerRecordEntity::class,
@@ -20,7 +21,7 @@ import androidx.room.migration.AutoMigrationSpec
         RepresentationDraftEntity::class,
         DismissedDraftEntity::class,
     ],
-    version = 13,
+    version = 14,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = PayslipDatabase.DeleteGeminiApiKeySpec::class),
@@ -31,6 +32,7 @@ import androidx.room.migration.AutoMigrationSpec
         AutoMigration(from = 10, to = 11, spec = PayslipDatabase.DeleteAiInsightReportsTableSpec::class),
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13),
+        AutoMigration(from = 13, to = 14),
     ],
 )
 @ConstructedBy(PayslipDatabaseConstructor::class)

@@ -10,4 +10,5 @@ data class BackupRows(
     val drafts: List<RepresentationDraftEntity> = emptyList(),
     val dismissedDrafts: List<DismissedDraftEntity> = emptyList(),
     val corrections: List<PayslipCorrectionEntity> = emptyList(),
+    val guideNotes: List<GuideNoteEntity> = emptyList(),
 )

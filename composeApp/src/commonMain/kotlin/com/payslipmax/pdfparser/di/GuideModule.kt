@@ -2,9 +2,11 @@ package com.payslipmax.pdfparser.di
 
 import com.payslipmax.pdfparser.guide.GuideBundleSource
 import com.payslipmax.pdfparser.guide.GuideRepository
+import com.payslipmax.pdfparser.guide.data.GuideNotesRepository
 import com.payslipmax.pdfparser.guide.data.GuidePinsStorage
 import com.payslipmax.pdfparser.guide.data.LazyGuideRepository
 import com.payslipmax.pdfparser.guide.data.PayslipGuideProfileProvider
+import com.payslipmax.pdfparser.guide.data.RoomGuideNotesRepository
 import com.payslipmax.pdfparser.guide.data.provideGuidePinsStorage
 import com.payslipmax.pdfparser.guide.domain.GuideProfileProvider
 import com.payslipmax.pdfparser.repository.PayslipRepository
@@ -33,6 +35,8 @@ val guideModule =
         // Pins are plain card ids on the device (SharedPreferences / NSUserDefaults), not in the Room database or the backup.
         single<GuidePinsStorage> { provideGuidePinsStorage() }
         single { GuidePinsModel(storage = get()) }
+        // Personal notes: encrypted rows in the same Room database as payslips (so the .pcda backup carries them), unlike pins.
+        single<GuideNotesRepository> { RoomGuideNotesRepository(dao = get()) }
         single { GuideViewModel(repository = get(), crashReporter = get(), profiles = get(), pins = get()) }
         // App-scoped so a query and its results survive opening a card; memory only, never saved or sent.
         single { GuideSearchViewModel(guide = get()) }
