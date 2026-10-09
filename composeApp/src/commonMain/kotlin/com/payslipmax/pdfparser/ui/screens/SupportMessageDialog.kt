@@ -23,6 +23,9 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 
 private const val MESSAGE_MIN_LINES = 4
 
+/** Bounds the field so a full-length text scrolls inside it; unbounded, the dialog outgrew the screen and hid its buttons. */
+private const val MESSAGE_MAX_LINES = 8
+
 /**
  * A short free-text message the user composes before their mail app opens: a privacy [notice], one multi-line field limited
  * to [maxLength] characters, and a confirm button that stays off until there is text. The text is held in memory only, so
@@ -52,6 +55,7 @@ fun SupportMessageDialog(
                     onValueChange = { message = it.take(maxLength) },
                     label = { Text(fieldLabel) },
                     minLines = MESSAGE_MIN_LINES,
+                    maxLines = MESSAGE_MAX_LINES,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
