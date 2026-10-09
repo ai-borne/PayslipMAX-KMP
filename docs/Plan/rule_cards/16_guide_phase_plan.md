@@ -792,7 +792,7 @@ Content-maintenance work after E9. Each phase is a short-lived branch off main, 
 | M1 | One-command `tools/refresh.py`; stable card ids (`ids_lock.json`, `--- retire`) | Done 2026-10-09 (`feature/guide-m1-refresh-ids`, in main) |
 | M2 | Expert review pack, `tools/review_pack.py [--pdf]`, intake template `17_expert_review_intake.md` | Done 2026-10-09 (in main) |
 | M3 | Rule-change metadata: `effective=`/`replaces=`, `authoring/changes.txt`, per-card `rev`, bundle `changes`, `rates_report.py`; Kotlin model fields and two validator rules | Done 2026-10-09 (`feature/guide-m3-change-metadata`, committed, not merged or pushed) |
-| M4 | "What changed" UI: change log and rule history domain, replaced cards out of search, Updated/Replaced chips, What's new row and list, Earlier rule / See current rule links, validator loop rule | Done 2026-10-09 (`feature/guide-m4-what-changed`, committed, not merged or pushed) |
+| M4 | "What changed" UI: change log and rule history domain, replaced cards out of search, Updated/Replaced chips, What's new row and list, Earlier rule / See current rule links, validator loop rule | Done 2026-10-09 (merged and pushed, main at 65221c10) |
 | M5-M8 | Suggest a correction, personal notes (data, UI), runbook and release readiness | Not started |
 | M9 | Carry-over list of anything left unfinished | Collects in the plan file |
 
