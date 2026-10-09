@@ -634,6 +634,70 @@ chips, the "Your figure" block, the Pay Audit "Read the rule" link and its Back)
 dataset gaps for the known-gaps register), 12 (cold start and APK size), 14 (the purchase and Premium-row checks at the paywall flip), 26 (the E8 iOS walkthrough: Pin, Share sheet, Copy cite, Pinned section), 27 (E8 locked-state check on a device; clipboard half closed). 7, 13 and
 every other E6 item (17-19, 21, 22) are closed.
 
+### E9 sprint prompt (owner decisions closed 2026-10-09; paste this to start)
+```
+Continue the PayslipMAX KMP Claim Guide. Run the whole of E9 as ONE sprint of strict phases (CLAUDE.md rules 0-5, Phase
+Handoff Protocol after every phase, TDD, 300-line limit, copy in GuideStrings, no hard-coded colours, no PII or card id in
+telemetry). Read first, in order: CLAUDE.md; the top block of docs/Plan/rule_cards/HANDOFF.md; then in
+docs/Plan/rule_cards/16_guide_phase_plan.md: section E9, "Rules for every phase", the E8 result, the EP table; the memory index
+(Pixel/adb gotchas, rule-cards note). Gradle from the shell: -Dorg.gradle.java.home=/opt/homebrew/opt/openjdk@21; on "jmod ...
+antigravity" or "JVM has changed" loop `./gradlew --stop; sleep 12`; never two Gradle commands at once; git push needs
+JAVA_HOME=/opt/homebrew/opt/openjdk@21; zsh: file lists through xargs.
+
+OWNER DECISIONS (closed, do not re-ask): merge E8 and push; author the two missing cards and fix the MSP wording; switch the Pay
+Audit links to the new cards; paywall stays OFF (Guide ships free, GUIDE_PAYWALL_ENABLED=false, EP 14 stays open post-launch);
+flip GUIDE_ENABLED in its own commit with NO store upload; install a debug build on the Pixel over the current one (same
+signature, adb install -r, never uninstall); perf bar: cold start within +100 ms of E2 (190 ms) and release APK within +1 MB of
+69,540,176 B. SKIP the iOS simulator walkthrough (EP 11, 15, 20, 23, 26 stay open for the owner; say so in the final report).
+
+PHASE 0 Setup. Fast-forward E8 (feature/guide-e8-pins-share, tip 44699255 or later) into main, run the pre-push hook push
+(~5 min, never bypass), delete the branch. Create feature/guide-e9-release off main. Write the E9 phase plan into the plan file
+(CLAUDE.md "Writing a phase plan" checklist) before any code; one owner batch for anything still open.
+
+PHASE 1 Dataset gaps (EP 25). Source text is in ~/Downloads/rulecards_workdir (never commit it). Draft, in own words with a primary
+cite only: (a) a card on DA arrears, (b) a card on "HRA stops when you take quarters", (c) the Level 14+ MSP exception on
+RB-C13-05. List every line plus where each rests in the handbook/FAQ, and STOP for ONE owner approval batch; legal readings are
+asked, never guessed. Only then edit authoring/*.txt, run compile.py, render_md.py, copycheck.py (CLEAN), regenerate
+13_review_queue.md, run bundle.py; update every count in GuideBundleContract and tools/test_bundle.py (402 becomes 404, domain
+split, unverified/no-source counts) and the real-bundle contracts (Pay Audit links, 402-card share/pin contract). Propose the exact
+(finding type, field) -> card table for owner approval, then update GuideLinkMap and its pinned-ids test (ARREARS_AUDIT and the
+arrears SALARY_LOSS -> the DA arrears card; HRA missing -> the quarters card where it fits; keep every other E7 mapping). Gate: the
+full chain below.
+
+PHASE 2 Device checks and perf (EP 12, 24, 27). On the Pixel 9 (serial from `adb mdns services`; if `adb connect` is refused run
+`adb shell input keyevent KEYCODE_WAKEUP` and `svc power stayon true`): (1) measure cold start (am start -W) on the minifiedTest
+build like for like against E2 190 ms and the Play 1.3.0 baseline, and record APK size and method count. (2) Install the debug
+build over the current one (adb install -r), use Settings "Force Free" to check: a locked card shows no Pin/Share/Copy cite, a
+locked Home shows no Pinned section while pins stay stored and return on unlock, a locked user's Pay Audit link opens the upgrade
+sheet and never a card (EP 24, 27). The waiting (TPTA on hold) row can only be driven if the real history has one; if not, record
+that it stays covered by tests. (3) Reinstall the minifiedTest build over it so the phone ends as it started, and re-run
+scripts/run_guide_minified_smoke.sh. Never uninstall; if an install is refused, stop and ask.
+
+PHASE 3 End-to-end, security review, known-gaps register. Add end-to-end tests (tile -> feed -> card -> pin -> Home -> reopen;
+Pay Audit link -> card -> Back). Run the security-review skill on the branch and fix findings. Prove with tests/greps: no new
+outbound path; nothing Guide-related in telemetry (card ids, queries, pins); no `from`/`open` in the shipped bundle; pins hold
+plain ids only. Write the known-gaps register in the plan: RP-073 TA Allowance, the unverified cards (36) incl. RP-088 HBA 8.5%,
+the DA 60% / rates-as-of flag, the open iOS walkthrough items, EP 14 (paywall off by owner decision).
+
+PHASE 4 Release flip (own commit). Flip GUIDE_ENABLED for release in a commit that touches only that and the tests that pinned
+"dark in release" (GuideDarkLaunchReleaseTest, AppKoinModulesTest expectations, 4/5-tab bar tests): update them to expect the
+Guide, with the paywall flag still false. Then the FULL pre-push gate. Verify: ./gradlew :composeApp:minifyReleaseWithR8
+-PallowPlaceholderGemmaModel=true, assembleRelease (APK within +1 MB of 69,540,176 B; report the exact delta), R8 mapping keeps the
+Guide models (check_r8_guide.py adapted to the release build if needed), and the Pixel minified smoke again. Do NOT upload or run
+fastlane.
+
+PHASE 5 Close-out. Add an "E9 result" section (style of E7/E8), update the EP table (close 12, 24, 25, 27; 14 stays open as post-
+launch; 11, 15, 20, 23, 26 stay open for the owner), HANDOFF.md (top block and a paste-to-start for the post-E9 / release
+follow-up) and the memory notes. Commit on the E9 branch. Do not merge or push until I say so.
+
+GATES at the end of EVERY phase (all green, none skipped): ./gradlew check -x iosX64Test -x iosSimulatorArm64Test; ktlintCheck;
+python3 scripts/check_tech_debt_limits.py --strict (changed .kt files, via xargs); iosSimulatorArm64Test;
+:composeApp:linkDebugFrameworkIosSimulatorArm64; assembleRelease + assembleMinifiedTest + python3 scripts/check_r8_guide.py.
+After each phase give the Phase Summary: debt incurred, exact steps that resolved it, build and tests confirmed. Anything
+unfinished: say so loudly and put it in the EP table and the post-E9 list; never drop one silently. Keep answers short and
+checkpoint after each significant step.
+```
+
 ## Open items carried into E1 (all closed 2026-10-07)
 Bundle location: compose resources (E1 spike). `rates_as_of`: `2026-01`. GUIDANCE vs empty cite: one rule, empty cite.
 CI emulator job: no. See the owner decisions table.

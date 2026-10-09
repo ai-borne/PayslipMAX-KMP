@@ -8,7 +8,7 @@ Updated 2026-10-08. App phases E0-E8 are done. E7 is merged and pushed (main at 
 
 Rules that still bind: no rupee figure in Kotlin; copy only in `GuideStrings.kt`; 300-line files (`App.kt` is exactly 300: extract before adding); locked state must not hold a card's paid half; no PII, card id, pin list or figure in telemetry; gates in the plan "Rules for every phase". Gradle from the shell: pass `-Dorg.gradle.java.home=/opt/homebrew/opt/openjdk@21` (on "jmod ... antigravity" loop `./gradlew --stop; sleep 12`). zsh does not word-split `$FILES`; pipe lists through `xargs`.
 
-Paste to start the next session: "Continue the Claim Guide app. Read CLAUDE.md, docs/Plan/rule_cards/HANDOFF.md (top block), then section E9, the Rules for every phase, the E8 result and the EP table in docs/Plan/rule_cards/16_guide_phase_plan.md. E8 is committed on feature/guide-e8-pins-share (merge and push only when I say so); start E9 on its own branch off main (or off E8 if it is still unmerged, and say so)."
+Paste to start the next session: the E9 sprint prompt in `16_guide_phase_plan.md` (subsection "E9 sprint prompt", owner decisions closed 2026-10-09). It starts by merging and pushing E8.
 
 ---
 
