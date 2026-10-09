@@ -36,14 +36,14 @@ object GuideBundleContract {
 
     fun assertMatchesCompiledDataset(bundle: GuideBundle) {
         assertEquals(GuideBundleParser.SUPPORTED_MAJOR, bundle.version)
-        assertEquals(402, bundle.cards.size)
+        assertEquals(404, bundle.cards.size)
         assertEquals(220, bundle.cards.count { it.domain == "travel" })
-        assertEquals(182, bundle.cards.count { it.domain == "pay" })
+        assertEquals(184, bundle.cards.count { it.domain == "pay" })
         assertEquals(9, bundle.nav.size)
         assertEquals(44, bundle.nav.sumOf { it.cases.size })
         assertEquals(setOf("Q", "H", "C", "L"), bundle.facets.keys)
-        // Owner, 2026-10-06: all 36 open-point cards ship, flagged "Unverified point".
-        assertEquals(36, bundle.cards.count { it.unverified })
+        // Owner, 2026-10-06: all open-point cards ship (36, plus the DA arrears card on 2026-10-09 = 37), flagged "Unverified point".
+        assertEquals(37, bundle.cards.count { it.unverified })
         // Owner, 2026-10-07: "No official source" is exactly the 31 cards with no cite.
         assertEquals(31, bundle.cards.count { it.hasNoOfficialSource })
         // Owner, 2026-10-07: rates current to the DA 60% step.
@@ -91,7 +91,7 @@ object GuideBundleContract {
         val index = bundle.toReady().index
         val locked = bundle.cards.map { assertNotNull(index.cardContent(it.id, unlocked = false, nowMillis = 0L)) }
         assertTrue(locked.all { it.full == null }, "a locked card holds no key points, cite or details")
-        assertEquals(36, locked.count { it.trust.unverified })
+        assertEquals(37, locked.count { it.trust.unverified })
         assertEquals(31, locked.count { it.trust.noOfficialSource })
         assertEquals(bundle.cards.count { "RATES" in it.chips }, locked.count { it.trust.ratesAsOf == bundle.ratesAsOf })
         assertEquals(bundle.cards.count { "AMENDED" in it.chips }, locked.count { it.trust.amended })
@@ -133,7 +133,7 @@ object GuideBundleContract {
 
     /**
      * E8: on all 402 real cards a pin is accepted (every id is a plain card id, else the pin would silently do nothing), the claim note
-     * builds, holds the title and exactly the cite, carries the warning for the 36 unverified cards and for no other, and never leaks a raw
+     * builds, holds the title and exactly the cite, carries the warning for the 37 unverified cards and for no other, and never leaks a raw
      * placeholder or the card's details block.
      */
     fun assertPinsAndShareNotesMatchDataset(bundle: GuideBundle) {
@@ -150,7 +150,7 @@ object GuideBundleContract {
             if (card.details.isNotBlank()) assertTrue(!note.contains(card.details), card.id)
             if (card.unverified) warned++
         }
-        assertEquals(36, warned)
+        assertEquals(37, warned)
     }
 
     /**

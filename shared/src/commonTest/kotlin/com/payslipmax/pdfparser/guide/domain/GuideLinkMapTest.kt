@@ -16,16 +16,16 @@ class GuideLinkMapTest {
     fun eachApprovedFindingOpensItsApprovedCard() {
         val approved =
             listOf(
-                Triple(AnomalyTierMap.MISSING_ALLOWANCE, "houseRentAllowance", "RB-SS-P114"),
+                Triple(AnomalyTierMap.MISSING_ALLOWANCE, "houseRentAllowance", "RB-SS-P114-quarters"),
                 Triple(AnomalyTierMap.MISSING_ALLOWANCE, "militaryServicePay", "RB-C13-05"),
                 Triple(AnomalyTierMap.TPTA_ENTITLEMENT, "transportAllowance", "RB-SS-P051-rates"),
-                Triple(AnomalyTierMap.ARREARS_AUDIT, "arrearsDa", "RB-RP-052"),
-                Triple(AnomalyTierMap.ARREARS_AUDIT, "arrearsTptaDa", "RB-RP-052"),
+                Triple(AnomalyTierMap.ARREARS_AUDIT, "arrearsDa", "RB-RP-053-arrears"),
+                Triple(AnomalyTierMap.ARREARS_AUDIT, "arrearsTptaDa", "RB-RP-053-arrears"),
                 Triple(AnomalyTierMap.INCREMENT_MISSED, "basicPay", "RB-C13-08"),
                 Triple(AnomalyTierMap.MSP_SHORTFALL, "militaryServicePay", "RB-C13-05"),
                 // The under-paid arrears issue: not a PayAuditFindingTypes member, but shown by Pay Audit.
-                Triple(AnomalyTierMap.SALARY_LOSS, "arrearsDa", "RB-RP-052"),
-                Triple(AnomalyTierMap.SALARY_LOSS, "arrearsTptaDa", "RB-RP-052"),
+                Triple(AnomalyTierMap.SALARY_LOSS, "arrearsDa", "RB-RP-053-arrears"),
+                Triple(AnomalyTierMap.SALARY_LOSS, "arrearsTptaDa", "RB-RP-053-arrears"),
             )
         for ((type, field, card) in approved) assertEquals(card, GuideLinkMap.cardFor(type, field), "$type / $field")
     }
@@ -48,6 +48,6 @@ class GuideLinkMapTest {
 
     @Test
     fun everyLinkedCardIdIsListedForTheBundleContract() {
-        assertEquals(setOf("RB-SS-P114", "RB-C13-05", "RB-SS-P051-rates", "RB-RP-052", "RB-C13-08"), GuideLinkMap.cardIds)
+        assertEquals(setOf("RB-SS-P114-quarters", "RB-C13-05", "RB-SS-P051-rates", "RB-RP-053-arrears", "RB-C13-08"), GuideLinkMap.cardIds)
     }
 }

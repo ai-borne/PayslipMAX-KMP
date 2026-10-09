@@ -112,3 +112,11 @@ K: GREF, NCC and recruiting units have their own station lists
 K: If none is available: hired accommodation or rent reimbursement
 K: From a field area: family moves to SPR at cost
 C: MoD letter 18147/DGBR/E-2A(T&C)/D(Q&C) dt 20-10-1997; MoD letter 6731/SFA/DGNCC/ADM(A-2)/4727/D(Q&C) dt 22-10-1991
+
+=== topic=RP-092 from=SS-P114,SS-P110 id=RB-SS-P114-quarters
+T: HRA stops when you are allotted government quarters
+A: Any government accommodation allotted to you or your family ends HRA, even if smaller than your entitlement.
+K: The trigger is allotment, not moving in
+K: Refusing married accommodation offered at the station also ends HRA
+K: Not taking possession within 10 days: no HRA for 20 days
+C: MoD letter 1(5)/97/D(Pay/Services) dt 02-11-1997, modified 29-09-1999

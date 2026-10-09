@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generated": "2026-10-08",
+ "generated": "2026-10-09",
  "limits": {
   "answer": 25,
   "bullets": 3,
@@ -1787,8 +1787,8 @@
       "RB-C13-12",
       "RB-C13-13",
       "RB-C13-14",
-      "RB-RP-035",
-      "RB-RP-052"
+      "RB-RP-052",
+      "RB-RP-053-arrears"
      ],
      "also": []
     },
@@ -1876,6 +1876,7 @@
       "RB-SS-P044",
       "RB-SS-P043",
       "RB-SS-P046",
+      "RB-RP-035",
       "RB-RP-042",
       "RB-RP-044",
       "RB-RP-047",
@@ -1956,7 +1957,8 @@
       "RB-SS-P114-gap",
       "RB-SS-P114-spouse",
       "RB-SS-P114-possession",
-      "RB-SS-P113-hard"
+      "RB-SS-P113-hard",
+      "RB-SS-P114-quarters"
      ],
      "also": []
     },
@@ -8240,6 +8242,32 @@
    "nav": "home-hra"
   },
   {
+   "id": "RB-SS-P114-quarters",
+   "domain": "pay",
+   "topic": "RP-092",
+   "title": "HRA stops when you are allotted government quarters",
+   "answer": "Any government accommodation allotted to you or your family ends HRA, even if smaller than your entitlement.",
+   "key": [
+    "The trigger is allotment, not moving in",
+    "Refusing married accommodation offered at the station also ends HRA",
+    "Not taking possession within 10 days: no HRA for 20 days"
+   ],
+   "attach": [],
+   "watch": [],
+   "cite": "MoD letter 1(5)/97/D(Pay/Services) dt 02-11-1997, modified 29-09-1999",
+   "details": "",
+   "chips": [],
+   "personal": "",
+   "from": [
+    "SS-P114",
+    "SS-P110"
+   ],
+   "open": [],
+   "status": "draft",
+   "facet": "L",
+   "nav": "home-hra"
+  },
+  {
    "id": "RB-SS-P019",
    "domain": "pay",
    "topic": "RP-029",
@@ -9939,7 +9967,7 @@
    "domain": "pay",
    "topic": "RP-034",
    "title": "Military Service Pay: who gets it and how much?",
-   "answer": "Army officers up to Brigadier get Rs 15,500 a month. It counts as pay for DA and pension.",
+   "answer": "Army officers up to Brigadier get Rs 15,500 a month. From Maj Gen (Level 14) it is not paid separately.",
    "key": [
     "MNS officers up to Brigadier: Rs 10,800",
     "Not admissible to NCC officers",
@@ -9948,7 +9976,7 @@
    "attach": [],
    "watch": [],
    "cite": "Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; SRO 21(E) dt 14-07-2017 for MNS",
-   "details": "",
+   "details": "MSP counts as pay for DA and pension. On promotion to Maj Gen, find the Level 14 cell by adding MSP to one increment of Brigadier pay, then take the same or next higher cell.",
    "chips": [
     "RATES"
    ],
@@ -11322,7 +11350,7 @@
    "open": [],
    "status": "draft",
    "facet": "Q",
-   "nav": "pay-cpc"
+   "nav": "allow-air"
   },
   {
    "id": "RB-RP-037",
@@ -11829,6 +11857,36 @@
    "status": "draft",
    "facet": "H",
    "nav": "allow-air"
+  },
+  {
+   "id": "RB-RP-053-arrears",
+   "domain": "pay",
+   "topic": "RP-053",
+   "title": "DA arrears: what are they and what do I check?",
+   "answer": "When a DA rise is announced late, you are owed the difference back to its start date.",
+   "key": [
+    "DA rises from 1 January and 1 July",
+    "Check each month from that date to the first payment",
+    "The rise applies to matrix pay plus MSP and NPA only"
+   ],
+   "attach": [],
+   "watch": [],
+   "cite": "Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017",
+   "details": "",
+   "chips": [
+    "RATES"
+   ],
+   "personal": "",
+   "from": [
+    "RP-052",
+    "RP-053"
+   ],
+   "open": [
+    "No source in hand prints an arrears procedure. The handbook says only that DA is payable from 01 January and 01 July, and gives its basis; \"difference owed back\" is an inference from \"payable from\". Owner approved shipping with the Unverified chip (2026-10-09)."
+   ],
+   "status": "draft",
+   "facet": "H",
+   "nav": "pay-cpc"
   },
   {
    "id": "RB-RP-074",
@@ -12367,10 +12425,10 @@
   "covered": 533,
   "skipped": 17,
   "uncovered": 0,
-  "cards": 402,
+  "cards": 404,
   "cards_by_domain": {
    "travel": 220,
-   "pay": 182
+   "pay": 184
   },
   "pay_topics_total": 95,
   "pay_topics_with_cards": 94

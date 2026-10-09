@@ -1,13 +1,13 @@
 # PayslipMax rulebook: reference (generated)
 
-Generated from [rulebook.json](rulebook.json) on 2026-10-08. **Do not edit by hand.** 402 cards (220 travel, 182 pay). Source entries covered: 533 of 474 (skipped with a reason: 17; uncovered: 0).
+Generated from [rulebook.json](rulebook.json) on 2026-10-09. **Do not edit by hand.** 404 cards (220 travel, 184 pay). Source entries covered: 533 of 474 (skipped with a reason: 17; uncovered: 0).
 
 Each card: one-line answer in bold, short bullets, the authority to cite, optional collapsed details. "Open point" lines are for reviewers and are never shown to users. Card text is written in our own words.
 
 ## Contents
 
 - **Travel**: 220 cards
-- **Pay and allowances**: 182 cards
+- **Pay and allowances**: 184 cards
 
 ## Travel
 
@@ -3102,13 +3102,15 @@ Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; MoD letter 1(29)/20
 
 #### RB-C13-05 Military Service Pay: who gets it and how much?  `RATES`
 
-**Army officers up to Brigadier get Rs 15,500 a month. It counts as pay for DA and pension.**
+**Army officers up to Brigadier get Rs 15,500 a month. From Maj Gen (Level 14) it is not paid separately.**
 
 - MNS officers up to Brigadier: Rs 10,800
 - Not admissible to NCC officers
 - NPA is never calculated on MSP
 
 Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; SRO 21(E) dt 14-07-2017 for MNS
+
+<sub>Details: MSP counts as pay for DA and pension. On promotion to Maj Gen, find the Level 14 cell by adding MSP to one increment of Brigadier pay, then take the same or next higher cell.</sub>
 
 #### RB-C13-06 Pay for gentlemen and lady cadets, and for those commissioned from the ranks
 
@@ -3563,7 +3565,7 @@ Cite: Rule 174(B), Defence Service Regulations, Pay and Allowances (Officers)
 
 ### Chapter 15
 
-##### Dearness Allowance (1)
+##### Dearness Allowance (2)
 
 #### RB-RP-052 Dearness Allowance: when is it revised and what counts as pay?  `RATES`
 
@@ -3578,6 +3580,18 @@ Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
 <sub>Details: Rates from each date: 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%; 01-01-2025 55%; 01-07-2025 58%; 01-01-2026 60%. Rates of 2020 to mid-2021 were frozen.</sub>
 
 > Open point: 53%, 55% and 58% confirmed from MoD DMA letters (1(6)/2021-D(Pay/Services)-Pt-I; 58% letter dt 09-10-2025, MoF OM 06-10-2025). 60% from 01-01-2026 is from MoF DoE OM dt 22-04-2026 (read via a government circular); the MoD letter for 60% was not seen. Next revision (01-07-2026) not yet issued.
+
+#### RB-RP-053-arrears DA arrears: what are they and what do I check?  `RATES`
+
+**When a DA rise is announced late, you are owed the difference back to its start date.**
+
+- DA rises from 1 January and 1 July
+- Check each month from that date to the first payment
+- The rise applies to matrix pay plus MSP and NPA only
+
+Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+
+> Open point: No source in hand prints an arrears procedure. The handbook says only that DA is payable from 01 January and 01 July, and gives its basis; "difference owed back" is an inference from "payable from". Owner approved shipping with the Unverified chip (2026-10-09).
 
 ##### Kit Maintenance Allowance (1)
 
@@ -4248,7 +4262,7 @@ Cite: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020
 
 ### Chapter 23
 
-##### House Rent Allowance (15)
+##### House Rent Allowance (16)
 
 #### RB-SS-P114 HRA: who gets it, and at which place's rate?
 
@@ -4393,6 +4407,16 @@ Cite: MoD letter 1(5)/97/D(Pay/Services) dt 02-11-1997
 - From a field area: family moves to SPR at cost
 
 Cite: MoD letter 18147/DGBR/E-2A(T&C)/D(Q&C) dt 20-10-1997; MoD letter 6731/SFA/DGNCC/ADM(A-2)/4727/D(Q&C) dt 22-10-1991
+
+#### RB-SS-P114-quarters HRA stops when you are allotted government quarters
+
+**Any government accommodation allotted to you or your family ends HRA, even if smaller than your entitlement.**
+
+- The trigger is allotment, not moving in
+- Refusing married accommodation offered at the station also ends HRA
+- Not taking possession within 10 days: no HRA for 20 days
+
+Cite: MoD letter 1(5)/97/D(Pay/Services) dt 02-11-1997, modified 29-09-1999
 
 ### Chapter 28
 

@@ -35,7 +35,7 @@ class BundleContents(unittest.TestCase):
         by_id = {c['id']: c for c in RULEBOOK['cards']}
         for card in BUILT['cards']:
             self.assertEqual(card['unverified'], bool(by_id[card['id']]['open']), card['id'])
-        self.assertEqual(sum(c['unverified'] for c in BUILT['cards']), 36)
+        self.assertEqual(sum(c['unverified'] for c in BUILT['cards']), 37)
 
     def test_header_carries_version_and_rates_month(self):
         self.assertEqual(BUILT['version'], BUNDLE_VERSION)
@@ -45,9 +45,9 @@ class BundleContents(unittest.TestCase):
 
     def test_matches_the_compiled_dataset(self):
         cards = BUILT['cards']
-        self.assertEqual(len(cards), 402)
+        self.assertEqual(len(cards), 404)
         self.assertEqual(sum(c['domain'] == 'travel' for c in cards), 220)
-        self.assertEqual(sum(c['domain'] == 'pay' for c in cards), 182)
+        self.assertEqual(sum(c['domain'] == 'pay' for c in cards), 184)
         self.assertEqual(len(BUILT['nav']), 9)
         self.assertEqual(sum(len(a['cases']) for a in BUILT['nav']), 44)
         self.assertEqual(BUILT['facets'], RULEBOOK['facets'])

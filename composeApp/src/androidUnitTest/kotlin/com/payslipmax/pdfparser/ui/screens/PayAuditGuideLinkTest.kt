@@ -55,7 +55,7 @@ class PayAuditGuideLinkTest {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun aVerifiedArrearsRowLinksToTheDaRevisionCard() =
+    fun aVerifiedArrearsRowLinksToTheDaArrearsCard() =
         runComposeUiTest {
             val opened = mutableListOf<String>()
             setContent {
@@ -64,7 +64,7 @@ class PayAuditGuideLinkTest {
 
             onNodeWithText(GuideStrings.payAuditSeeRule).performClick()
 
-            assertEquals(listOf("RB-RP-052"), opened)
+            assertEquals(listOf("RB-RP-053-arrears"), opened)
         }
 
     @OptIn(ExperimentalTestApi::class)

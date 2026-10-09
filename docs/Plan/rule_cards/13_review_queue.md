@@ -1,8 +1,8 @@
-# Domain-owner review queue (generated 2026-10-07)
+# Domain-owner review queue (generated 2026-10-09)
 
 Cards with an open point. CONFLICT marks a disagreement between sources. Not shown to app users.
 
-## Pay (33 cards)
+## Pay (34 cards)
 ### RB-SS-P086: Which children qualify for CEA?
 - Cite: MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018
 - **Open**: The handbook says two classes before Class 1; the newer FAQ says three from AY 2023-24. FAQ followed.
@@ -87,6 +87,9 @@ Cards with an open point. CONFLICT marks a disagreement between sources. Not sho
 ### RB-RP-063: Language Allowance and Language Award
 - Cite: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018; MoD letter 22(1)/83/D(GS-II) dt 03-02-1984
 - **Open**: Language Award orders after 31-03-1997 were still awaited per the handbook.
+### RB-RP-053-arrears: DA arrears: what are they and what do I check?
+- Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+- **Open**: No source in hand prints an arrears procedure. The handbook says only that DA is payable from 01 January and 01 July, and gives its basis; "difference owed back" is an inference from "payable from". Owner approved shipping with the Unverified chip (2026-10-09).
 ### RB-RP-074: Dress Allowance: how much and when is it paid?
 - Cite: MoD letter PC-1(16)/2017/D(Pay/Services) dt 16-11-2017
 - **Open**: Escalation clause read in DoE OM 19051/1/2017-E.IV dt 02-08-2017 (para 7). Stepped figures are computed from it; the MoD order applying the step was not seen.

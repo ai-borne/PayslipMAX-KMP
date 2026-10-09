@@ -114,3 +114,12 @@ T: Strategic Forces Allowance
 A: Rs 16,900 a month for officers of Installation Security Force; Rs 10,500 for HQ SFC and its units, from 01-07-2017.
 K: Rises 25% each time DA rises by 50%
 C: MoD secret letter SFC/TS 2005/3/Ops/(PC-II) dt 28-12-2017
+
+=== topic=RP-053 from=RP-052,RP-053 id=RB-RP-053-arrears chips=RATES
+T: DA arrears: what are they and what do I check?
+A: When a DA rise is announced late, you are owed the difference back to its start date.
+K: DA rises from 1 January and 1 July
+K: Check each month from that date to the first payment
+K: The rise applies to matrix pay plus MSP and NPA only
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+O: No source in hand prints an arrears procedure. The handbook says only that DA is payable from 01 January and 01 July, and gives its basis; "difference owed back" is an inference from "payable from". Owner approved shipping with the Unverified chip (2026-10-09).
