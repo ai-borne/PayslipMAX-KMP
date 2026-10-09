@@ -17,6 +17,24 @@ object GuideMaintenanceStrings {
     const val shareReplacedOn = "Replaced on"
     const val shareReplacedApplies = "It applies only to claims for earlier periods."
 
+    // Suggest a correction (M5): the card action, its dialog, and the words around the fields of the email it opens.
+    const val suggest = "Suggest a correction"
+    const val suggestDialogTitle = "Suggest a correction"
+    const val suggestFieldLabel = "What should change?"
+    const val suggestOpenEmail = "Open email"
+    const val suggestNotice =
+        "Your email app opens with this message ready, and nothing is sent until you press Send there. " +
+            "It names this card and the Guide and app versions. " +
+            "Please don't include your name, PAN, service number, or bank or account numbers."
+    const val suggestSubjectTag = "[Guide]"
+    const val suggestMailHeader = "Guide correction suggestion"
+    const val suggestMailCard = "Card:"
+    const val suggestMailTitle = "Title:"
+    const val suggestMailBundle = "Guide data:"
+    const val suggestMailRevision = "Card revision:"
+    const val suggestMailApp = "App version:"
+    const val suggestMailSuggestion = "Suggestion:"
+
     /** The Guide Home row, named for the month of the newest entry. */
     fun whatsNewRow(latestDate: String): String = "What's new in the Guide (${GuideStrings.yearMonth(latestDate.take(YEAR_MONTH_LENGTH))})"
 

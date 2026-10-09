@@ -54,7 +54,7 @@ internal fun GuideCardHost(
     if (card == null) {
         if (!leave) GuideLoading()
     } else {
-        val actions = rememberGuideCardActions(card, viewModel.pins, platform)
+        val actions = rememberGuideCardActions(card, viewModel, platform)
         GuideCardScreen(
             card,
             crumbs = emptyList(),

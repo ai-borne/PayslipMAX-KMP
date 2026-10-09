@@ -1,5 +1,9 @@
 package com.payslipmax.pdfparser.guide
 
+import com.payslipmax.pdfparser.guide.data.GuideBundleParser
+import com.payslipmax.pdfparser.guide.domain.GuideSuggestion
+import com.payslipmax.pdfparser.guide.domain.GuideSuggestionLabels
+import com.payslipmax.pdfparser.guide.domain.GuideSuggestionParts
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -12,8 +16,8 @@ import kotlin.test.assertTrue
 
 /**
  * E9 security evidence that can be checked mechanically. The Guide is offline: it reads one bundled file, keeps its own
- * state on the device, and talks to the outside only when the user taps Copy cite or Share (the existing clipboard and
- * share-sheet helpers). These checks fail if someone adds a network path, writes Guide data to telemetry, or ships the
+ * state on the device, and talks to the outside only when the user taps Copy cite, Share or, since M5, Suggest a correction
+ * (the existing clipboard, share-sheet and email helpers; the email one only opens the user's mail app, the app sends nothing). These checks fail if someone adds a network path, writes Guide data to telemetry, or ships the
  * bundle's internal `from`/`open` fields. They read the sources as text because the property is "this code does not exist".
  */
 @RunWith(RobolectricTestRunner::class)
@@ -84,4 +88,50 @@ class GuideSecurityContractTest {
         assertEquals(6, maintenance.size, "a maintenance source moved; update this list so the scan stays honest")
         assertTrue(maintenance.none { Regex("""CrashReporter|crashReporter|log\(|println|setPrimaryClip|ACTION_SEND""").containsMatchIn(it.readText()) })
     }
+
+    private fun withoutComments(file: File): String = file.readText().replace(Regex("""/\*.*?\*/""", RegexOption.DOT_MATCHES_ALL), "").lines().joinToString("\n") { it.substringBefore("//") }
+
+    @Test
+    fun onlyGuidePlatformNamesTheEmailHelperAndNoGuideFileBuildsALinkOrHoldsAnAddress() {
+        // M5 deliberately widens the earlier "share sheet and clipboard only" rule by exactly one seam: the user's mail app, opened
+        // from a button tap through the existing shareTextViaEmail. The Guide still builds no intent and no mailto link itself.
+        val naming = guideSources.filter { withoutComments(it).contains("shareTextViaEmail") }
+        assertEquals(listOf("GuidePlatform.kt"), naming.map { it.name }, "only the platform seam may name the email helper")
+        val mailto = guideSources.filter { Regex("mailto|ACTION_SENDTO|EXTRA_EMAIL", RegexOption.IGNORE_CASE).containsMatchIn(withoutComments(it)) }
+        assertEquals(emptyList(), mailto.map { it.name }, "a Guide file builds its own mail link or intent")
+        val addresses = guideSources.filter { Regex("""[\w.+-]+@[\w-]+\.[a-z]{2,}""", RegexOption.IGNORE_CASE).containsMatchIn(withoutComments(it)) }
+        assertEquals(emptyList(), addresses.map { it.name }, "the recipient is AppStringsSupport.supportEmail, never a literal in the Guide")
+        val recipientUsers = guideSources.filter { withoutComments(it).contains("supportEmail") }
+        assertEquals(listOf("GuideSuggestionBuilder.kt"), recipientUsers.map { it.name })
+    }
+
+    @Test
+    fun theSuggestionEmailIsBuiltFromSixFixedFieldsAndNothingFromTheCardsPaidHalfOrThePersonalState() {
+        val domain = withoutComments(guideSources.first { it.name == "GuideSuggestion.kt" })
+        val fields = domain.substringAfter("data class GuideSuggestionParts(").substringBefore("\n)").lines().map { it.trim().removeSuffix(",") }.filter { it.isNotEmpty() }
+        assertEquals(
+            listOf("val cardId: String", "val cardTitle: String", "val bundleGenerated: String", "val cardRev: String", "val appVersion: String", "val text: String"),
+            fields,
+            "a new field in the suggestion needs a deliberate decision, not a quiet addition",
+        )
+        val sources = listOf("GuideSuggestion.kt", "GuideSuggestionBuilder.kt").map { name -> withoutComments(guideSources.first { it.name == name }) }
+        val banned = Regex("""figure|profile|pins|changeLog|history|\.cite|\.key\b|\.details|\.attach|\.watch|\.answer|\.full|crashReporter|CrashReporter""", RegexOption.IGNORE_CASE)
+        assertTrue(sources.none { banned.containsMatchIn(it) }, "the suggestion must not reach a figure, profile, pin, change line or the card's body")
+    }
+
+    @Test
+    fun noRealCardsSuggestionEmailEverHoldsItsBodyItsCiteItsDetailsOrItsFigureText() =
+        runTest {
+            val bundle = (GuideBundleParser.parse(GuideBundleContract.readShippedBundleText()) as com.payslipmax.pdfparser.guide.GuideLoadResult.Loaded).bundle
+            val labels = GuideSuggestionLabels("[Guide]", "Guide correction suggestion", "Card:", "Title:", "Guide data:", "Card revision:", "App version:", "Suggestion:")
+
+            val leaks =
+                bundle.cards.filter { card ->
+                    val body = GuideSuggestion.body(GuideSuggestionParts(card.id, card.title, bundle.generated, card.rev, "1.3.0", "x"), labels)
+                    val paid = card.key + card.attach + card.watch + listOf(card.cite, card.details).filter { it.isNotBlank() } + listOf(card.answer.takeIf { it != card.title }).filterNotNull()
+                    paid.any { body.contains(it) }
+                }
+            assertEquals(emptyList(), leaks.map { it.id })
+            assertTrue(bundle.cards.size > 300, "the scan covered the real bundle")
+        }
 }

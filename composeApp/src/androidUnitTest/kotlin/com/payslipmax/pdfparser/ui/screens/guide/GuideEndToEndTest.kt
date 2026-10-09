@@ -8,11 +8,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.performTextInput
 import com.payslipmax.pdfparser.guide.GuideBundleContract
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
@@ -24,6 +29,7 @@ import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
 import com.payslipmax.pdfparser.ui.screens.PayAuditMonthFindings
 import com.payslipmax.pdfparser.ui.screens.payAuditFindingsItems
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.AppStringsSupport
 import com.payslipmax.pdfparser.ui.theme.GuideMaintenanceStrings
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import kotlinx.coroutines.runBlocking
@@ -147,6 +153,51 @@ class GuideEndToEndTest {
         settle()
         assertEquals(GuideDestination.Home, nav.current)
         assertTrue(crash.logs.isEmpty() && crash.keys.isEmpty() && crash.exceptions.isEmpty(), "reading rule history tells telemetry nothing")
+    }
+
+    /**
+     * M5 on the real bundle: a pinned row on Home opens the card, Suggest a correction takes the user's words, and Open email
+     * hands the mail seam exactly the allow-listed message with the card's real revision and the bundle's real date; nothing
+     * else of the card (its key points, its cite) and nothing to telemetry. The screen is the Robolectric default on purpose:
+     * under a `w360dp-...` screen the dialog's text layout never settles and the test JVM runs out of memory.
+     */
+    @Test
+    @Config(sdk = [34], qualifiers = "w320dp-h470dp")
+    fun aSuggestionFromAPinnedRealCardOpensTheMailAppWithOnlyTheAllowListedFields() {
+        storage.stored = MSP_ID
+        val mails = mutableListOf<Triple<String, String, String>>()
+        val guide = GuideViewModel(repository, crash, dispatcher, pins = GuidePinsModel(storage), appVersion = { "1.3.0" })
+        composeRule.setContent {
+            GuideTab(
+                navState = GuideNavState(),
+                access = GuideAccess(isUnlocked = true, onUnlock = {}),
+                viewModel = guide,
+                searchViewModel = GuideSearchViewModel(guide, dispatcher),
+                platform = GuidePlatform(copy = {}, share = { _, _ -> }, email = { to, subject, body -> mails += Triple(to, subject, body) }),
+            )
+        }
+        settle()
+
+        tap(MSP_TITLE)
+        composeRule.onNode(hasScrollAction()).performScrollToNode(hasText(GuideMaintenanceStrings.suggest))
+        tap(GuideMaintenanceStrings.suggest)
+        assertTrue(mails.isEmpty(), "opening the dialog opens no mail app")
+        composeRule.onNode(hasSetTextAction()).performTextInput("The rate is now Rs 1,500 & the order is amended.")
+        tap(GuideMaintenanceStrings.suggestOpenEmail)
+
+        val bundle = (repository.result as GuideLoadResult.Loaded).bundle
+        val card = bundle.cards.first { it.id == MSP_ID }
+        assertTrue(card.rev.isNotBlank() && bundle.generated.isNotBlank(), "the shipped bundle carries both, so the check below is not vacuous")
+        val (to, subject, body) = mails.single()
+        assertEquals(AppStringsSupport.supportEmail, to)
+        assertEquals("[Guide] $MSP_ID", subject)
+        assertEquals(
+            "Guide correction suggestion\n\nCard: $MSP_ID\nTitle: $MSP_TITLE\nGuide data: ${bundle.generated}\n" +
+                "Card revision: ${card.rev}\nApp version: 1.3.0\n\nSuggestion:\nThe rate is now Rs 1,500 & the order is amended.",
+            body,
+        )
+        assertTrue(card.key.none { body.contains(it) } && !body.contains(card.cite), "no card text beyond the title")
+        assertTrue(crash.logs.isEmpty() && crash.keys.isEmpty() && crash.exceptions.isEmpty(), "suggesting tells telemetry nothing")
     }
 
     private val arrears = Anomaly("ARREARS_AUDIT", "arrearsDa", 9870.0, "04/2026", "Verified: matches exactly.", expected = 9870.0, actual = 9870.0)

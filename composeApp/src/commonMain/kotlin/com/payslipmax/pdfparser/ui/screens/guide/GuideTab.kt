@@ -122,7 +122,7 @@ private fun GuideCardLevel(
 ) {
     val profile = rememberGuideProfile(viewModel, destination.cardId, access.isUnlocked)
     viewModel.card(destination.cardId, access.isUnlocked, profile)?.let { card ->
-        val actions = rememberGuideCardActions(card, viewModel.pins, platform)
+        val actions = rememberGuideCardActions(card, viewModel, platform)
         GuideCardScreen(
             card,
             viewModel.crumbs(navState.stack),

@@ -6,6 +6,7 @@ import com.payslipmax.pdfparser.guide.GuideRepository
 import com.payslipmax.pdfparser.guide.data.InMemoryGuidePinsStorage
 import com.payslipmax.pdfparser.guide.domain.GuideProfile
 import com.payslipmax.pdfparser.guide.domain.GuideProfileProvider
+import com.payslipmax.pdfparser.platform.platformAppVersion
 import com.payslipmax.pdfparser.rating.currentTimeMillis
 import com.payslipmax.pdfparser.telemetry.CrashReporter
 import kotlinx.coroutines.CoroutineDispatcher
@@ -34,6 +35,7 @@ class GuideViewModel(
     private val profiles: GuideProfileProvider = GuideProfileProvider.None,
     /** The user's pins (E8). Memory-only by default, so a screen test needs no storage. */
     val pins: GuidePinsModel = GuidePinsModel(InMemoryGuidePinsStorage()),
+    private val appVersion: () -> String = ::platformAppVersion,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val _uiState = MutableStateFlow<GuideUiState>(GuideUiState.Loading)
@@ -107,6 +109,12 @@ class GuideViewModel(
 
     /** The change-log entries with links to their cards, or null when the bundle has none. */
     fun whatsNew(): GuideWhatsNewContent? = index()?.whatsNewContent()
+
+    /** The email for a suggestion about [cardId] (M5), or null for an id the bundle does not hold. Nothing is sent from here. */
+    internal fun suggestionMail(
+        cardId: String,
+        text: String,
+    ): GuideSuggestionMail? = index()?.suggestionMail(cardId, text, appVersion())
 
     fun crumbs(stack: List<GuideDestination>): List<GuideCrumb> = index()?.crumbs(stack).orEmpty()
 
