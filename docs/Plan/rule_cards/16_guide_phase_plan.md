@@ -718,6 +718,18 @@ and its pinned-ids test, `GuideBundleContract`, `tools/test_bundle.py`, `GuideDa
 **Navigation and state.** No change. **Versioning, DI, storage.** None; bundle schema unchanged (card count 402 to 404).
 **Owner decisions.** All closed in the sprint prompt, except the Phase 1 wording batch and the link table (one batch, asked before any authoring edit).
 
+### E9 known-gaps register (2026-10-09; nothing here is silently dropped)
+| Gap | State at release | Where it is tracked |
+|---|---|---|
+| RP-073 TA Allowance | No card and no search alias (owner decision 10-06). | Post-E9 list |
+| Unverified cards | 37 ship with the "Unverified point" chip (the 36 from 10-06 plus the DA arrears card added 10-09: no source prints an arrears procedure). The `open` text never ships. | Post-E9 list |
+| RP-088 HBA 8.5% | Unverified until the owner confirms the rate from a primary letter. It is a Rates-chip card, so it blocks the paywall flip (EP 14). | EP 14 |
+| DA 60% / rates-as-of | `rates_as_of` is 2026-01. The 60% step rests on a MoF OM read via a circular; the MoD letter was not seen. The staleness nudge shows from Oct 2026. | RB-RP-052 `O:` point |
+| iOS walkthrough | Not done in this sprint (owner decision): EP 11, 15, 20, 23, 26. The Release flip reaches iOS through the same constant. | EP table |
+| Paywall off | `GUIDE_PAYWALL_ENABLED=false` by owner decision, so the Guide ships free; EP 14 (sandbox purchase unlocks a card, Premium row appears) stays open for the post-launch flip. | EP 14 |
+| Locked Pay Audit link on a device | Not reachable: "Force Free" locks Pay Audit itself, so no finding is shown to tap. Covered by `GuideOpenCardTest`, `GuideCardHostTest` and `GuideEndToEndTest`. | E9 result |
+| Waiting (TPTA on hold) row on a device | The real history has none; covered by tests. | E9 result |
+
 ## Open items carried into E1 (all closed 2026-10-07)
 Bundle location: compose resources (E1 spike). `rates_as_of`: `2026-01`. GUIDANCE vs empty cite: one rule, empty cite.
 CI emulator job: no. See the owner decisions table.
