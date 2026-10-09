@@ -22,7 +22,8 @@ if __name__ == '__main__':
         cur = None
         for n, line in enumerate(open(p), 1):
             if line.startswith('=== '): cur = line[:60].strip()
-            m = re.match(r'^[TAKHWD]: (.*)', line)
+            # card text lines (T: A: K: ...), and the items of the hand-written change log
+            m = re.match(r'^- (.*)' if os.path.basename(p) == 'changes.txt' else r'^[TAKHWD]: (.*)', line)
             if m:
                 ws = words(m.group(1))
                 hit = [g for g in grams(ws) if g in G]

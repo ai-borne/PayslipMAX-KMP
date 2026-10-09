@@ -2,7 +2,7 @@
 
 Updated 2026-10-09. App phases E0-E9 are done. E8 is merged and pushed (main at 442c57ff). **E9 (dataset gaps, device checks, end-to-end and security tests, release flip) is complete, merged into main and pushed 2026-10-09 (main at ea364291, pre-push gate passed in 249 s); the branch is deleted.** `LaunchFlags.GUIDE_ENABLED` is true (commit 77faaee9); `GUIDE_PAYWALL_ENABLED` stays false, so the Guide ships free. Nothing was uploaded to a store. Plan and status: `16_guide_phase_plan.md` (sections "E9 result", "E9 known-gaps register", "Post-E9 list", EP table).
 
-**Maintenance track (plan `~/.claude/plans/make-a-phase-wise-shiny-mochi.md`, M1-M9):** M1 (one-command `tools/refresh.py`, stable card IDs via `ids_lock.json`) and M2 (expert review pack: `tools/review_pack.py [--pdf]` writes `review/guide_review_<date>.html/.pdf`, git-ignored; replies go in `17_expert_review_intake.md`) are done on branches off main, no app change. Next: M3 (rule-change metadata). Owner action: send the M2 PDF to the expert.
+**Maintenance track (plan `~/.claude/plans/make-a-phase-wise-shiny-mochi.md`, M1-M9):** M1 (one-command `tools/refresh.py`, stable card IDs via `ids_lock.json`), M2 (expert review pack: `tools/review_pack.py [--pdf]` writes `review/guide_review_<date>.html/.pdf`, git-ignored; replies go in `17_expert_review_intake.md`) and **M3 (rule-change metadata, 2026-10-09)** are done on branches off main (M3 on `feature/guide-m3-change-metadata`, committed, not merged, not pushed). M3 added `effective=`/`replaces=` on cards (`tools/changes.py`; the replaced card keeps its data, gains `replaced_by`/`until`, leaves the tiles), `authoring/changes.txt` (dated change log), a per-card `rev` and the newest 12 change entries in the bundle (additive, `BUNDLE_VERSION` stays 1; bundle +6.9 KB), `tools/rates_report.py` (8th CPC sweep list, also in the review-pack appendix), and optional fields on `GuideCard`/`GuideBundle` with two validator rules. No app behaviour changed. Next: M4 ("What changed" UI; its `GuideRuleHistory` must bound its walk, see the plan's M4 and M9 sections). Owner action: send the regenerated review PDF to the expert (it is git-ignored, regenerate with `review_pack.py --pdf`).
 
 **Dataset now:** 404 cards (220 travel, 184 pay), 37 unverified, 31 no-source; new cards `RB-RP-053-arrears` and `RB-SS-P114-quarters`; Pay Audit arrears and HRA-missing links open them. Release APK 69,606,036 B (+65,860 vs 69,540,176); cold start empty state ~187 ms.
 
@@ -59,6 +59,7 @@ D: collapsed details    (optional)
 O: open point for the reviewer (never shown to users)
 --- skip SS-T123 reason
 ```
+A dated rule adds `effective=YYYY-MM-DD` and, on the new card, `replaces=RB-old` to the `===` line (see README, "Rule changes"); the dated change log is `authoring/changes.txt`.
 Card id defaults to `RB-<first from id>`; add `id=` when two cards start from the same source. Travel topics are `RR-*`, pay topics `RP-nnn`. A card may cite a pay-topic id (`from=RP-nnn`) when no FAQ entry exists.
 
 ## Tools (all in `tools/`; source text stays in `~/Downloads/rulecards_workdir/`, override with `RULECARDS_SOURCES`)

@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonObject
 
 /**
  * Rechecks, on every load, the rules `compile.py` enforced when the bundle was built: ids resolve, every card
- * has exactly one home, text stays within the card layout's limits, and no card carries a template placeholder. Problems name card ids for tests and debugging only; they must never be logged or reported.
+ * has exactly one home (a replaced card has none), text stays within the card layout's limits, and no card carries a template placeholder. Problems name card ids for tests and debugging only; they must never be logged or reported.
  * Plain string scans, no regex, so it stays linear on Kotlin/Native.
  */
 object GuideBundleValidator {
@@ -41,14 +41,16 @@ object GuideBundleValidator {
                 val card = cardsById[id]
                 when {
                     card == null -> problems += "case ${case.id}: unknown card $id"
+                    card.isReplaced -> problems += "card $id is replaced but homed in ${case.id}"
                     id in homes -> problems += "card $id homed twice (${homes[id]}, ${case.id})"
                     card.nav != case.id -> problems += "card $id nav '${card.nav}' but listed in ${case.id}"
                 }
                 homes.getOrPut(id) { case.id }
             }
             case.also.filter { it !in cardsById }.forEach { problems += "case ${case.id}: unknown also-card $it" }
+            case.also.filter { cardsById[it]?.isReplaced == true }.forEach { problems += "card $it is replaced but homed in ${case.id}" }
         }
-        bundle.cards.filter { it.id !in homes }.forEach { problems += "card ${it.id} has no home" }
+        bundle.cards.filter { it.id !in homes && !it.isReplaced }.forEach { problems += "card ${it.id} has no home" }
     }
 
     private fun checkCard(
@@ -58,6 +60,9 @@ object GuideBundleValidator {
     ) {
         val limits = bundle.limits
         val id = card.id
+        if (card.isReplaced && (card.replacedBy == id || bundle.cards.none { it.id == card.replacedBy })) {
+            problems += "card $id replaced_by ${card.replacedBy} is not another card"
+        }
         if (card.facet !in bundle.facets) problems += "card $id facet '${card.facet}' has no label"
         if (card.title.isBlank() || countGuideWords(card.title) > limits.title) problems += "card $id title empty or over ${limits.title} words"
         if (card.answer.isBlank() || countGuideWords(card.answer) > limits.answer) problems += "card $id answer empty or over ${limits.answer} words"

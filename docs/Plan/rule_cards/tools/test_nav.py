@@ -47,6 +47,52 @@ class NavChecks(unittest.TestCase):
         self.assertTrue(any('unknown also-card' in e for e in errs))
 
 
+class ReplacedCards(unittest.TestCase):
+    """M3: a card replaced by a newer dated rule stays in the data but leaves the tiles. Without this rule a replaced card
+    would trip "has no home" (so the 8th CPC rewrite could not be authored) or, if its topic still listed it, stay on screen."""
+
+    def replaced(self):
+        cards = [dict(c) for c in CARDS]
+        explicit = {i for a in NAV['areas'] for c in a['cases'] for i in c.get('cards', [])}
+        victim = next(c for c in cards if c['id'] not in explicit and c['topic'] in NAV['areas'][2]['cases'][0]['topics'])
+        victim['replaced_by'] = cards[0]['id']
+        return cards, victim['id']
+
+    def test_a_replaced_card_with_no_home_is_accepted(self):
+        cards, victim = self.replaced()
+        errs = []
+        _, homes = nav.build_nav(cards, NAV, errs)
+        self.assertEqual(errs, [])
+        self.assertNotIn(victim, homes)
+
+    def test_a_replaced_card_is_not_listed_in_its_topic_case(self):
+        cards, victim = self.replaced()
+        tree, _ = nav.build_nav(cards, NAV, [])
+        self.assertNotIn(victim, [i for a in tree for c in a['cases'] for i in c['cards']])
+
+    def test_a_replaced_card_named_in_a_case_is_an_error(self):
+        cards, victim = self.replaced()
+        n = copy.deepcopy(NAV)
+        n['areas'][0]['cases'][0].setdefault('cards', []).append(victim)
+        errs = []
+        nav.build_nav(cards, n, errs)
+        self.assertTrue(any('replaced' in e and victim in e for e in errs), errs)
+
+    def test_a_replaced_card_named_as_also_is_an_error(self):
+        cards, victim = self.replaced()
+        n = copy.deepcopy(NAV)
+        n['areas'][0]['cases'][0]['also'] = [victim]
+        errs = []
+        nav.build_nav(cards, n, errs)
+        self.assertTrue(any('replaced' in e and victim in e for e in errs), errs)
+
+    def test_an_unreplaced_orphan_is_still_an_error(self):
+        cards = [dict(c) for c in CARDS]
+        errs = run(lambda n: n['areas'][0]['cases'][0]['topics'].clear())
+        self.assertTrue(any('has no home' in e for e in errs))
+        self.assertEqual(len(cards), len(CARDS))
+
+
 class FacetChecks(unittest.TestCase):
     def test_missing_facet_is_an_error(self):
         cards = [dict(c) for c in CARDS]

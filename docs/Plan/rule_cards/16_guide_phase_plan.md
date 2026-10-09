@@ -782,3 +782,17 @@ Each item names the phase that closes it. A phase may not exit while an item ass
 3. **Owner:** confirm or revise the 37 unverified cards, the DA arrears card first; RP-073 TA Allowance has no card.
 4. Release train: merge `feature/guide-e9-release`, push (pre-push gate), then a normal release build per `project_release_1_3_0` procedure (versionCode, Gemma model path); nothing was uploaded in E9.
 5. Next DA step (01-07-2026) is not issued yet: update `rates_as_of` and the DA card when it is.
+
+## Maintenance track (M1-M9; plan in `~/.claude/plans/make-a-phase-wise-shiny-mochi.md`)
+Content-maintenance work after E9. Each phase is a short-lived branch off main, merged when its gate is green. Nothing here changes what the Guide shows until M4.
+
+| Phase | What | Status |
+|---|---|---|
+| M1 | One-command `tools/refresh.py`; stable card ids (`ids_lock.json`, `--- retire`) | Done 2026-10-09 (`feature/guide-m1-refresh-ids`, in main) |
+| M2 | Expert review pack, `tools/review_pack.py [--pdf]`, intake template `17_expert_review_intake.md` | Done 2026-10-09 (in main) |
+| M3 | Rule-change metadata: `effective=`/`replaces=`, `authoring/changes.txt`, per-card `rev`, bundle `changes`, `rates_report.py`; Kotlin model fields and two validator rules | Done 2026-10-09 (`feature/guide-m3-change-metadata`, committed, not merged or pushed) |
+| M4-M8 | "What changed" UI, suggest a correction, personal notes (data, UI), runbook and release readiness | Not started |
+| M9 | Carry-over list of anything left unfinished | Collects in the plan file |
+
+**M3 result.** Bundle 254,528 → 261,409 bytes (+6,881: an 8-hex `rev` on every card and an empty `changes` list). Bundle version unchanged (1); the Kotlin parser already ignored unknown fields (characterization test run before the model change). New `GuideCard` fields `rev`, `effective`, `replacedBy`, `until`; `GuideBundle.changes`; `GuideChange`/`GuideChangeItem`. `GuideBundleValidator` rejects a `replaced_by` that is not another card and a replaced card that is still homed in a case or an `also` list (a replaced card needs no home). `check_r8_guide.py` now covers 12 models (was 10) and passes. Python tool tests 142 (M2: 81). No EP item opened or closed.
+

@@ -3,10 +3,12 @@
 
 Inputs : docs/Plan/rule_cards/authoring/*.txt  (our own-words cards, compact line format)
          docs/Plan/rule_cards/ssot.json        (topics and the 474 source entries; the coverage target)
+         docs/Plan/rule_cards/authoring/changes.txt  (hand-written dated change log; read apart from the card files)
 Outputs: docs/Plan/rule_cards/rulebook.json    (canonical dataset; the app will load this)
 
 Authoring format (one block per card; '#' lines are comments):
   === topic=RR-TD-02 from=SS-T020,SS-T021 [id=RB-x] [chips=RATES,AMENDED] [personal=level:food_rate] [status=draft]
+      [effective=YYYY-MM-DD] [replaces=RB-x]   (a dated rule; the replaced card leaves the tiles, see changes.py)
   T: question-style title
   A: one-line answer
   K: key point            (up to 3)
@@ -29,6 +31,7 @@ import sys
 from collections import Counter, defaultdict
 
 sys.path.insert(0, os.path.dirname(__file__))
+import changes as chgmod
 import figures as figmod
 import ids as idsmod
 import nav as navmod
@@ -36,9 +39,15 @@ import nav as navmod
 CARDS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 AUTH_DIR = os.path.join(CARDS_DIR, 'authoring')
 LIMITS = {'answer': 25, 'bullets': 3, 'bullet_words': 12, 'visible': 90, 'details': 120, 'title': 14}
+CHANGE_LOG = 'changes.txt'
 CHIPS = {'RATES', 'AMENDED', 'GUIDANCE'}
 CITE_OK = re.compile(r'(MHA|Rule|Para|TR|AO|SAO|SAI|MoD|MoF|DoE|DoPT|IHQ|CGDA|OM|SRO|Pay Rules|Army|Handbook|Regulation|Section|Sec|FR|CCS|GFR|DFPDS|Note|Appx|Order|Advisory)', re.I)
 WORD = re.compile(r"[A-Za-z0-9₹%.,/'()&+-]+")
+
+
+def card_files():
+    """Card authoring files; the change log shares the folder but has its own format."""
+    return [p for p in sorted(glob.glob(os.path.join(AUTH_DIR, '*.txt'))) if os.path.basename(p) != CHANGE_LOG]
 
 
 def wc(text):
@@ -99,6 +108,10 @@ def validate(card, topics, ssot_ids, errors, warns):
     for c in chips:
         if c not in CHIPS:
             errors.append(f'{w}: unknown chip {c}')
+    if 'effective' in a and not chgmod.is_date(a['effective']):
+        errors.append(f'{w}: effective={a["effective"]!r} is not a YYYY-MM-DD date')
+    if 'replaces' in a and not chgmod.CARD_ID.match(a['replaces']):
+        errors.append(f'{w}: replaces={a["replaces"]!r} is not a card id (RB-...)')
     if not card['T']: errors.append(f'{w}: missing T:')
     if not card['A']: errors.append(f'{w}: missing A:')
     if not card['key']: errors.append(f'{w}: needs at least one K:')
@@ -138,7 +151,7 @@ def main():
     pay_topic_ids = {t['id'] for t in ssot['pay_topics']}
     valid_sources = set(ssot_ids) | pay_topic_ids
     errors, warns, raw_cards, skips, retires = [], [], [], [], {}
-    for path in sorted(glob.glob(os.path.join(AUTH_DIR, '*.txt'))):
+    for path in card_files():
         c, s, r = parse(path, errors)
         raw_cards += c
         skips += s
@@ -152,11 +165,14 @@ def main():
         for x in frm: covered[x].append(cid)
         if not card['C'] and 'GUIDANCE' not in chips: chips.append('GUIDANCE')
         vis_total.append(vis)
-        out_cards.append({'id': cid, 'domain': 'travel' if card['attrs'].get('topic', '').startswith('RR-') else 'pay',
+        dated = {k: card['attrs'][k] for k in ('effective', 'replaces') if card['attrs'].get(k)}
+        out_cards.append({**dated, 'id': cid, 'domain': 'travel' if card['attrs'].get('topic', '').startswith('RR-') else 'pay',
                           'topic': card['attrs'].get('topic'), 'title': card['T'], 'answer': card['A'], 'key': card['key'],
                           'attach': card['attach'], 'watch': card['watch'], 'cite': card['C'], 'details': card['D'], 'chips': chips,
                           'personal': card['attrs'].get('personal', ''), 'from': frm, 'open': card['open'],
                           'status': card['attrs'].get('status', 'draft')})
+    chgmod.apply_replacements(out_cards, errors)
+    log = chgmod.load_log(os.path.join(AUTH_DIR, CHANGE_LOG), seen, errors)
     nav_tree, nav_homes = navmod.build_nav(out_cards, navmod.load_nav(CARDS_DIR), errors)
     facet_labels = navmod.apply_facets(out_cards, CARDS_DIR, errors)
     for c in out_cards:
@@ -192,7 +208,7 @@ def main():
         return
     data = {'version': 1, 'generated': __import__('datetime').date.today().isoformat(), 'limits': LIMITS,
             'topics': [{k: t[k] for k in t if k in ('id', 'title', 'domain', 'chapter', 'handbook_page', 'tr_rules')} for t in topics.values()],
-            'nav': nav_tree, 'facets': facet_labels, 'cards': out_cards, 'skipped': skips, 'coverage': cov, 'uncovered': uncovered, 'pay_topics_open': pay_topics_open}
+            'nav': nav_tree, 'facets': facet_labels, 'cards': out_cards, 'changes': log, 'skipped': skips, 'coverage': cov, 'uncovered': uncovered, 'pay_topics_open': pay_topics_open}
     if check_only:
         with open(os.path.join(CARDS_DIR, 'rulebook.json'), encoding='utf-8') as fh:
             if not same_content(json.load(fh), data):

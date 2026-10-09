@@ -82,6 +82,37 @@ class CoverPage(unittest.TestCase):
                 self.assertIn(c['id'], appendix)
 
 
+class RuleChanges(unittest.TestCase):
+    """M3: the expert must see when a card is a dated rule, and the 8th CPC sweep list of cards that quote a rate."""
+
+    def dated(self):
+        rb = copy.deepcopy(RULEBOOK)
+        old, new = rb['cards'][0], rb['cards'][1]
+        new.update(effective='2026-11-15', replaces=old['id'])
+        old.update(replaced_by=new['id'], until='2026-11-15')
+        return rb, old, new
+
+    def test_a_dated_card_shows_its_effective_date_and_what_it_replaces(self):
+        rb, old, new = self.dated()
+        block = review_pack.build_html(rb, FIGURES, DATE).split(f'id="{new["id"]}"')[1].split('</article>')[0]
+        self.assertIn('<p class="meta">Applies from 2026-11-15</p>', block)
+        self.assertIn(f'<p class="meta">Replaces {old["id"]}</p>', block)
+
+    def test_a_replaced_card_is_not_printed_because_users_no_longer_see_it(self):
+        rb, old, _ = self.dated()
+        self.assertNotIn(f'<article class="card" id="{old["id"]}"', review_pack.build_html(rb, FIGURES, DATE))
+
+    def test_a_card_with_no_dated_rule_shows_no_date_line(self):
+        self.assertNotIn('<p class="meta">Applies from', HTML)
+
+    def test_the_appendix_lists_the_rates_sweep(self):
+        import rates_report
+        appendix = HTML.split('id="appendix"')[1]
+        self.assertIn('8th CPC', appendix)
+        for row in rates_report.report(RULEBOOK, FIGURES)['cards']:
+            self.assertIn(row['id'], appendix)
+
+
 class Safety(unittest.TestCase):
     def test_markup_characters_in_card_text_are_escaped(self):
         rb = copy.deepcopy(RULEBOOK)

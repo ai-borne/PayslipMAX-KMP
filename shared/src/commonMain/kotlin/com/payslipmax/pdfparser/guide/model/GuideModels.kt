@@ -21,6 +21,22 @@ data class GuideBundle(
     val cards: List<GuideCard>,
     /** The rupee figures behind the "your figure" line (phase E6); null in a bundle that carries none. */
     val figures: GuideFigures? = null,
+    /** Hand-written change-log entries (the newest 12, newest first); empty in a bundle that carries none. */
+    val changes: List<GuideChange> = emptyList(),
+)
+
+/** One dated entry of the change log (`authoring/changes.txt`): what changed in the Guide on [date] (YYYY-MM-DD). */
+@Serializable
+data class GuideChange(
+    val date: String,
+    val items: List<GuideChangeItem>,
+)
+
+/** One line of a change-log entry, with the cards it concerns (may be empty). Content, not UI copy. */
+@Serializable
+data class GuideChangeItem(
+    val text: String,
+    val cards: List<String> = emptyList(),
 )
 
 /** Word and bullet limits the compiler enforced; the validator rechecks them on every load. */
@@ -72,7 +88,18 @@ data class GuideCard(
     val nav: String,
     /** True when the card carries an open review point: shown as the "Unverified point" chip. */
     val unverified: Boolean = false,
+    /** First 8 hex characters of the SHA-256 of the card's shipped text; changes when the words a user reads change. */
+    val rev: String = "",
+    /** Date (YYYY-MM-DD) the rule applies from; empty when the card is undated. */
+    val effective: String = "",
+    /** Id of the card that replaced this one from [until]; empty for a current card. A replaced card is homed in no case. */
+    @SerialName("replaced_by") val replacedBy: String = "",
+    /** Date (YYYY-MM-DD) this rule stopped applying, the successor's effective date; empty for a current card. */
+    val until: String = "",
 ) {
+    /** True once a newer dated rule replaced this card; it stays in the data for the "earlier rule" link and old claims. */
+    val isReplaced: Boolean get() = replacedBy.isNotBlank()
+
     /** Typed chips; a chip this app version does not know maps to [GuideChip.UNKNOWN], which the UI ignores. */
     val trustChips: List<GuideChip> get() = chips.map(GuideChip::fromKey)
 

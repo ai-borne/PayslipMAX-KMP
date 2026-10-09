@@ -30,10 +30,17 @@ python3 docs/Plan/rule_cards/tools/copycheck.py           # own-words guard; mus
 python3 -m unittest discover -s docs/Plan/rule_cards/tools -p 'test_*.py'   # all tool tests (CI runs these)
 python3 docs/Plan/rule_cards/tools/review_queue.py        # regenerate 13_review_queue.md
 python3 docs/Plan/rule_cards/tools/review_pack.py --pdf    # expert hand-out in review/ (git-ignored; omit --pdf for HTML only)
+python3 docs/Plan/rule_cards/tools/rates_report.py        # 8th CPC sweep list: every card that could quote a rate, plus every figure
 python3 docs/Plan/rule_cards/tools/todo_pay.py            # uncovered pay entries by topic
 python3 docs/Plan/rule_cards/tools/packet.py SS-P001,SS-P002   # source text behind entries
 python3 docs/Plan/rule_cards/tools/pa.py "Joining Time" 400    # a P&A handbook section
 ```
+
+## Rule changes (dated rules and the change log)
+A card line may carry `effective=YYYY-MM-DD`. A newer card with `replaces=RB-old effective=...` retires the old one from the tiles
+without deleting it: the old card keeps its data and gains `replaced_by` and `until` (the new card's date). `authoring/changes.txt`
+holds the hand-written dated change log (`== 2026-11-15`, then `- text [RB-x, RB-y]`); the bundle ships the newest 12 entries.
+`compile.py` checks every id, date order and cycle. Every shipped card also gets a `rev` (hash of its text) in the bundle.
 
 ## Source text (outside the repo)
 `~/Downloads/rulecards_workdir/` holds the handbook, FAQ and OCR'd TR 2014 text. Override with

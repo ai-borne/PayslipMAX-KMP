@@ -50,6 +50,30 @@ object GuideBundleContract {
         assertEquals("2026-01", bundle.ratesAsOf)
         // RP-088 HBA ships with the chip until the owner confirms the rate from a primary letter.
         assertEquals(true, bundle.cards.firstOrNull { it.topic == "RP-088" }?.unverified)
+        assertRuleChangeMetadataIsSound(bundle)
+    }
+
+    /**
+     * M3 rule-change metadata on the real bundle. Every card has a `rev` (8 hex characters, the key a note uses to notice the card
+     * changed). Whatever rules the dataset has replaced obey the contract the app relies on: the successor exists, the card is homed
+     * in no case, and `until` is a date. The change log is at most 12 entries, newest first, and every card it names exists.
+     * These are invariants, not counts, so authoring the first real replacement does not break this test.
+     */
+    fun assertRuleChangeMetadataIsSound(bundle: GuideBundle) {
+        val ids = bundle.cards.map { it.id }.toSet()
+        val homed = bundle.nav.flatMap { area -> area.cases.flatMap { it.cards + it.also } }.toSet()
+        val hex = ('0'..'9') + ('a'..'f')
+        for (card in bundle.cards) {
+            assertTrue(card.rev.length == 8 && card.rev.all { it in hex }, "${card.id} has no 8-hex rev")
+            if (card.isReplaced) {
+                assertTrue(card.replacedBy in ids && card.replacedBy != card.id, "${card.id} is replaced by a card that is not there")
+                assertTrue(card.id !in homed, "${card.id} is replaced but still homed")
+                assertEquals(10, card.until.length, "${card.id} is replaced with no until date")
+            }
+        }
+        assertTrue(bundle.changes.size <= 12)
+        assertEquals(bundle.changes.map { it.date }.sortedDescending(), bundle.changes.map { it.date })
+        for (id in bundle.changes.flatMap { entry -> entry.items.flatMap { it.cards } }) assertTrue(id in ids, "the change log names $id, which is not a card")
     }
 
     /** The E2 tiles: 9 area tiles holding the 44 cases, and every card counted once in the case it is homed in. */

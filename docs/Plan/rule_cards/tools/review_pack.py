@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Build the expert review pack: one printable HTML (and optionally PDF) of every shipped Claim Guide card.
 
-Cover page (how to respond), one block per card grouped Guide area > case, then an appendix with the figures table
-and the unverified cards. Retired cards are not in rulebook.json, so they never appear. All text is HTML-escaped.
+Cover page (how to respond), one block per card grouped Guide area > case, then an appendix with the figures table,
+the unverified cards and the rates sweep list (rates_report.py). Retired cards are not in rulebook.json and replaced cards
+are no longer shown to users, so neither appears; a dated card prints its effective date and what it replaces. All text is HTML-escaped.
 Output goes to review/guide_review_<date>.html, which is git-ignored: the pack is a hand-out, not a source.
 
 Usage: review_pack.py [--pdf]    (--pdf converts with headless Chrome and fails loudly if Chrome is missing)
@@ -15,6 +16,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
+import rates_report
 from config import CARDS_DIR
 
 CHROME_CANDIDATES = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium']
@@ -38,12 +40,14 @@ def _items(label, values):
 def _card(c, fig_evidence):
     chips = ' '.join(f'<span class="chip">{esc(x)}</span>' for x in c['chips'])
     ev = ''.join(f'<p class="meta">Figure evidence: {esc(e)}</p>' for e in fig_evidence)
+    dated = ''.join(f'<p class="meta">{label}</p>' for label in (f'Applies from {esc(c["effective"])}' if c.get('effective') else '',
+                                                              f'Replaces {esc(c["replaces"])}' if c.get('replaces') else '') if label)
     opens = ''.join(f'<p class="open"><b>Open point:</b> {esc(o)}</p>' for o in c['open'])
     return (f'<article class="card" id="{esc(c["id"])}"><p><span class="id">{esc(c["id"])}</span> <b>{esc(c["title"])}</b> {chips}</p>'
             f'<p><b>{esc(c["answer"])}</b></p><ul>{_items("", c["key"])}{_items("Attach: ", c["attach"])}{_items("Watch out: ", c["watch"])}</ul>'
             f'<p class="meta">Cite: {esc(c["cite"] or "none (guidance)")}</p>'
             + (f'<p class="meta">Details: {esc(c["details"])}</p>' if c['details'] else '')
-            + f'<p class="meta">Source entries: {esc(", ".join(c["from"]))}</p>{ev}{opens}'
+            + f'<p class="meta">Source entries: {esc(", ".join(c["from"]))}</p>{ev}{dated}{opens}'
             '<p class="meta">Verdict (OK / Wrong / Outdated / Missing), correction, authority:</p><div class="blank"></div><div class="blank"></div></article>')
 
 
@@ -59,15 +63,19 @@ def _cover(date, count):
 def _appendix(rulebook, figures_data):
     rows = ''.join(f'<tr><td>{esc(k)}</td><td>{esc(f["card"])}</td><td>{esc(f.get("unit", ""))}</td><td>{esc(f.get("effective_from", "see rate table"))}</td>'
                    f'<td>{esc(f["authority"])}</td><td>{esc(f["evidence"])}</td></tr>' for k, f in sorted(figures_data['figures'].items()))
+    sweep = ''.join(f'<tr><td class="id">{esc(r["id"])}</td><td>{esc(r["title"])}</td><td>{esc(", ".join(r["flags"]))}</td></tr>'
+                    for r in rates_report.report(rulebook, figures_data)['cards'])
     unverified = ''.join(f'<li><span class="id">{esc(c["id"])}</span> {esc(c["title"])}</li>' for c in rulebook['cards'] if c['open'])
     return ('<section id="appendix"><h2>Appendix</h2><h3>Figures shown in the app</h3><table><tr><th>Figure</th><th>Card</th><th>Unit</th>'
             f'<th>Effective</th><th>Authority</th><th>Evidence</th></tr>{rows}</table><h3>Unverified cards (carry an open point)</h3>'
-            f'<ul>{unverified}</ul></section>')
+            f'<ul>{unverified}</ul><h3>Cards that quote a rate (re-check list for the 8th CPC)</h3><table><tr><th>Card</th><th>Title</th>'
+            f'<th>Why listed</th></tr>{sweep}</table></section>')
 
 
 def build_html(rulebook, figures_data, date, retired=()):
     retired = set(retired)
-    cards = {c['id']: c for c in rulebook['cards'] if c['id'] not in retired}
+    # A replaced card is no longer shown to users, so the expert is not asked to review it.
+    cards = {c['id']: c for c in rulebook['cards'] if c['id'] not in retired and not c.get('replaced_by')}
     evidence = {}
     for fig in figures_data['figures'].values():
         evidence.setdefault(fig['card'], []).append(fig['evidence'])

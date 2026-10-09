@@ -8,6 +8,7 @@ import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 /**
  * The parser is the gate between a file in the app package and what a user reads. A newer bundle must
@@ -48,6 +49,26 @@ class GuideBundleParserTest {
                 .replace("\"id\":\"RB-T5\",", "\"id\":\"RB-T5\",\"audio\":\"x.mp3\",")
 
         assertEquals(loaded().cards, loaded(text).cards)
+    }
+
+    @Test
+    fun ruleChangeFieldsParseIntoTheModelAndDefaultToEmpty() {
+        val plain = loaded()
+        assertTrue(plain.changes.isEmpty())
+        assertTrue(plain.cards.all { it.rev.isEmpty() && it.effective.isEmpty() && it.replacedBy.isEmpty() && it.until.isEmpty() })
+
+        val text =
+            SyntheticGuideBundle.JSON.replace("\"version\":1,", "\"version\":1,\"changes\":[{\"date\":\"2026-11-15\",\"items\":[{\"text\":\"Rate raised\",\"cards\":[\"RB-T1\"]},{\"text\":\"Note\"}]}],")
+                // RB-P3 is replaced by RB-P2, so it is taken off its tile as the compiler does.
+                .replace("\"RB-P1\",\"RB-P2\",\"RB-P3\"", "\"RB-P1\",\"RB-P2\"")
+                .replace("\"id\":\"RB-P3\",", "\"id\":\"RB-P3\",\"rev\":\"0a1b2c3d\",\"effective\":\"2020-01-01\",\"replaced_by\":\"RB-P2\",\"until\":\"2026-11-15\",")
+        val bundle = loaded(text)
+        val card = bundle.cards.first { it.id == "RB-P3" }
+        assertEquals(listOf("0a1b2c3d", "2020-01-01", "RB-P2", "2026-11-15"), listOf(card.rev, card.effective, card.replacedBy, card.until))
+        assertTrue(card.isReplaced)
+        assertEquals("2026-11-15", bundle.changes.single().date)
+        assertEquals(listOf("RB-T1"), bundle.changes.single().items[0].cards)
+        assertEquals(emptyList(), bundle.changes.single().items[1].cards)
     }
 
     @Test

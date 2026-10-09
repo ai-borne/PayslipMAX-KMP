@@ -1,0 +1,6 @@
+# Claim Guide change log: one dated block per release note, shown in the app as "What's new in the Guide" (phase M4).
+# Not card text: compile.py reads it apart from the other authoring files. Newest 12 entries ship in the bundle.
+# Format (card ids in brackets are checked against the cards; a bare item with no ids is fine):
+#   == 2026-11-15
+#   - Food rate raised for the 8th CPC pay commission [RB-SS-T181, RB-SS-T184]
+# Add an entry when a card's meaning changes (a new dated rule, a corrected rate), not for typo fixes.

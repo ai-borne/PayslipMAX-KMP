@@ -2,7 +2,8 @@
 
 nav.json (authored) defines areas > cases. A case collects cards by `topics` (every card of those
 topics) and/or explicit `cards` ids; `also` lists extra card ids shown in that case but homed elsewhere.
-A card needs exactly one home. Limits live in nav.json so the app and the checker agree.
+A card needs exactly one home, except a card replaced by a newer dated rule (`replaced_by` set by changes.py): it stays in
+the data, leaves the tiles and must not be homed. Limits live in nav.json so the app and the checker agree.
 """
 import json
 import os
@@ -20,6 +21,7 @@ def build_nav(cards, nav, errors):
     """Return (tree, homes). tree mirrors nav.json plus resolved card ids; homes maps card id -> case id."""
     lim = nav['limits']
     by_id = {c['id']: c for c in cards}
+    replaced = {c['id'] for c in cards if c.get('replaced_by')}
     homes, case_ids, tree = {}, set(), []
     areas = nav['areas']
     if not lim['areas'][0] <= len(areas) <= lim['areas'][1]:
@@ -37,16 +39,20 @@ def build_nav(cards, nav, errors):
                 if len(WORD.findall(text)) > cap:
                     errors.append(f"nav: case {c['id']} {label} over {cap} words")
             members = list(c.get('cards', []))
-            members += [k['id'] for k in cards if k['topic'] in c.get('topics', []) and k['id'] not in explicit]
+            members += [k['id'] for k in cards if k['topic'] in c.get('topics', []) and k['id'] not in explicit and k['id'] not in replaced]
             for i in members:
-                if i not in by_id:
+                if i in replaced:
+                    errors.append(f"nav: card {i} is replaced and must not be homed (in {c['id']})")
+                elif i not in by_id:
                     errors.append(f"nav: unknown card {i} in {c['id']}")
                 elif i in homes:
                     errors.append(f"nav: card {i} homed twice ({homes[i]}, {c['id']})")
                 else:
                     homes[i] = c['id']
             for i in c.get('also', []):
-                if i not in by_id:
+                if i in replaced:
+                    errors.append(f"nav: card {i} is replaced and must not be listed as also-card (in {c['id']})")
+                elif i not in by_id:
                     errors.append(f"nav: unknown also-card {i} in {c['id']}")
             n = len(members)
             if not lim['cards_per_case'][0] <= n <= lim['cards_per_case'][1]:
@@ -54,7 +60,7 @@ def build_nav(cards, nav, errors):
             out_cases.append({'id': c['id'], 'title': c['title'], 'sub': c.get('sub', ''), 'cards': members, 'also': c.get('also', [])})
         tree.append({'id': a['id'], 'title': a['title'], 'cases': out_cases})
     for k in cards:
-        if k['id'] not in homes:
+        if k['id'] not in homes and k['id'] not in replaced:
             errors.append(f"nav: card {k['id']} ({k['topic']}) has no home")
     return tree, homes
 

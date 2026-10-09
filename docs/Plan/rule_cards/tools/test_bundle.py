@@ -5,6 +5,7 @@ notes (`open`) must never reach it, every open point must surface as the "Unveri
 edit that was not re-bundled must fail the build instead of shipping stale rates. Run: python3 tools/test_bundle.py
 """
 import copy
+import hashlib
 import json
 import os
 import re
@@ -56,6 +57,87 @@ class BundleContents(unittest.TestCase):
         for card in BUILT['cards']:
             self.assertEqual('GUIDANCE' in card['chips'], card['cite'] == '', card['id'])
         self.assertEqual(sum(c['cite'] == '' for c in BUILT['cards']), 31)
+
+
+TEXT_FIELDS = ('title', 'answer', 'key', 'attach', 'watch', 'cite', 'details')
+
+
+def edited(field):
+    rb = copy.deepcopy(RULEBOOK)
+    card = rb['cards'][0]
+    card[field] = card[field] + ['changed'] if isinstance(card[field], list) else card[field] + ' changed'
+    return rb
+
+
+class CardRevision(unittest.TestCase):
+    """`rev` lets a user's note (phase M6) notice that the card it was written on has since changed."""
+
+    def test_rev_is_the_first_8_hex_of_sha256_over_the_shipped_text_fields(self):
+        card = RULEBOOK['cards'][5]
+        text = json.dumps([card[f] for f in TEXT_FIELDS], ensure_ascii=False, separators=(',', ':'))
+        expected = hashlib.sha256(text.encode('utf-8')).hexdigest()[:8]
+        self.assertEqual(BUILT['cards'][5]['rev'], expected)
+        self.assertRegex(expected, r'^[0-9a-f]{8}$')
+
+    def test_every_card_has_a_rev_and_it_is_stable_across_builds(self):
+        self.assertTrue(all(re.fullmatch(r'[0-9a-f]{8}', c['rev']) for c in BUILT['cards']))
+        again = bundle.build(copy.deepcopy(RULEBOOK))
+        self.assertEqual([c['rev'] for c in BUILT['cards']], [c['rev'] for c in again['cards']])
+
+    def test_rev_changes_when_any_shipped_text_changes(self):
+        for field in TEXT_FIELDS:
+            self.assertNotEqual(bundle.build(edited(field))['cards'][0]['rev'], BUILT['cards'][0]['rev'], field)
+
+    def test_rev_ignores_what_does_not_change_the_words_a_user_reads(self):
+        # why: a note must not be flagged "card updated" because of a reviewer note, a date or a source id.
+        rb = copy.deepcopy(RULEBOOK)
+        rb['generated'] = '2030-01-01'
+        rb['cards'][0]['open'] = ['new reviewer question']
+        rb['cards'][0]['from'] = ['SS-T999']
+        self.assertEqual(bundle.build(rb)['cards'][0]['rev'], BUILT['cards'][0]['rev'])
+
+    def test_a_text_change_is_visible_in_the_rendered_bundle(self):
+        self.assertNotEqual(bundle.render(bundle.build(edited('answer'))), bundle.render(BUILT))
+
+
+class RuleChangeFields(unittest.TestCase):
+    """Rule-change fields are additive: BUNDLE_VERSION stays 1 and a bundle with no dated rule is the old shape plus `rev`."""
+
+    def dated_rulebook(self):
+        rb = copy.deepcopy(RULEBOOK)
+        old, new = rb['cards'][0], rb['cards'][1]
+        new.update(effective='2026-11-15', replaces=old['id'])
+        old.update(replaced_by=new['id'], until='2026-11-15', effective='2020-01-01')
+        rb['changes'] = [{'date': f'2026-{m:02d}-01', 'items': [{'text': f'entry {m}', 'cards': [new['id']]}]} for m in range(12, 0, -1)]
+        rb['changes'].append({'date': '2025-06-01', 'items': [{'text': 'too old', 'cards': []}]})
+        return rb
+
+    def test_the_version_is_unchanged(self):
+        self.assertEqual(BUNDLE_VERSION, 1)
+        self.assertEqual(BUILT['version'], 1)
+
+    def test_cards_without_a_dated_rule_carry_none_of_the_new_fields(self):
+        for card in BUILT['cards']:
+            for field in ('effective', 'replaced_by', 'until', 'replaces'):
+                self.assertNotIn(field, card, card['id'])
+
+    def test_dated_cards_ship_effective_replaced_by_and_until_but_not_replaces(self):
+        built = bundle.build(self.dated_rulebook())['cards']
+        old, new = built[0], built[1]
+        self.assertEqual((old['replaced_by'], old['until'], old['effective']), (new['id'], '2026-11-15', '2020-01-01'))
+        self.assertEqual(new['effective'], '2026-11-15')
+        self.assertNotIn('replaced_by', new)
+        self.assertNotIn('replaces', new)
+
+    def test_the_bundle_carries_the_newest_12_change_entries_newest_first(self):
+        shipped = bundle.build(self.dated_rulebook())['changes']
+        self.assertEqual(len(shipped), 12)
+        self.assertEqual(shipped[0]['date'], '2026-12-01')
+        self.assertEqual(shipped[-1]['date'], '2026-01-01')
+        self.assertNotIn('too old', bundle.render(bundle.build(self.dated_rulebook())))
+
+    def test_no_log_means_an_empty_list_not_a_missing_key(self):
+        self.assertEqual(BUILT['changes'], [])
 
 
 class BundleFigures(unittest.TestCase):

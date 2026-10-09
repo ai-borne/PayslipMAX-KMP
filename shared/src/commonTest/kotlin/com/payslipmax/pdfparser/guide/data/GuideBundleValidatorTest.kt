@@ -150,6 +150,33 @@ class GuideBundleValidatorTest {
         assertProblem(valid.copy(figures = noSpec), "figure food_rate: card ${SyntheticGuideBundle.NO_CITE_CARD} has no personal spec")
     }
 
+    /** RB-P3 replaced by RB-P2 from 2026-11-15: still in the data, off the tiles, with no home. */
+    private fun GuideBundle.withRb3Replaced() =
+        editCase("pay-hra", cards = listOf("RB-P1", "RB-P2")).editCard("RB-P3") { it.copy(replacedBy = "RB-P2", until = "2026-11-15", nav = "") }
+
+    @Test
+    fun aReplacedCardOffTheTilesIsValidAndNeedsNoHome() {
+        assertEquals(emptyList(), problems(valid.withRb3Replaced()))
+    }
+
+    @Test
+    fun replacedByMustNameAnotherCardInTheBundle() {
+        assertProblem(valid.withRb3Replaced().editCard("RB-P3") { it.copy(replacedBy = "RB-NOPE") }, "RB-P3 replaced_by RB-NOPE")
+        assertProblem(valid.withRb3Replaced().editCard("RB-P3") { it.copy(replacedBy = "RB-P3") }, "RB-P3 replaced_by RB-P3")
+    }
+
+    @Test
+    fun aReplacedCardStillHomedInACaseIsRejected() {
+        // The app would show the old rule as current next to its successor.
+        assertProblem(valid.editCard("RB-P3") { it.copy(replacedBy = "RB-P2") }, "RB-P3 is replaced but homed")
+        assertProblem(valid.withRb3Replaced().editCase("ltc-home", also = listOf("RB-T1", "RB-P3")), "RB-P3 is replaced but homed")
+    }
+
+    @Test
+    fun anUnreplacedOrphanIsStillRejected() {
+        assertProblem(valid.editCase("pay-hra", cards = listOf("RB-P1", "RB-P2")).editCard("RB-P3") { it.copy(until = "2026-11-15") }, "RB-P3 has no home")
+    }
+
     @Test
     fun aBundleWithoutFiguresIsStillValid() {
         assertEquals(null, valid.figures)
