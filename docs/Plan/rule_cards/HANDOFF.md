@@ -2,6 +2,8 @@
 
 Updated 2026-10-09. App phases E0-E9 are done. E8 is merged and pushed (main at 442c57ff). **E9 (dataset gaps, device checks, end-to-end and security tests, release flip) is complete, merged into main and pushed 2026-10-09 (main at ea364291, pre-push gate passed in 249 s); the branch is deleted.** `LaunchFlags.GUIDE_ENABLED` is true (commit 77faaee9); `GUIDE_PAYWALL_ENABLED` stays false, so the Guide ships free. Nothing was uploaded to a store. Plan and status: `16_guide_phase_plan.md` (sections "E9 result", "E9 known-gaps register", "Post-E9 list", EP table).
 
+**Maintenance track (plan `~/.claude/plans/make-a-phase-wise-shiny-mochi.md`, M1-M9):** M1 (one-command `tools/refresh.py`, stable card IDs via `ids_lock.json`) and M2 (expert review pack: `tools/review_pack.py [--pdf]` writes `review/guide_review_<date>.html/.pdf`, git-ignored; replies go in `17_expert_review_intake.md`) are done on branches off main, no app change. Next: M3 (rule-change metadata). Owner action: send the M2 PDF to the expert.
+
 **Dataset now:** 404 cards (220 travel, 184 pay), 37 unverified, 31 no-source; new cards `RB-RP-053-arrears` and `RB-SS-P114-quarters`; Pay Audit arrears and HRA-missing links open them. Release APK 69,606,036 B (+65,860 vs 69,540,176); cold start empty state ~187 ms.
 
 **Still open:** iOS walkthrough (EP 11, 15, 20, 23, 26, owner); EP 14 (paywall flip checks, post-launch); RP-073 TA Allowance has no card; 37 unverified cards (RP-088 HBA 8.5% blocks the paywall).

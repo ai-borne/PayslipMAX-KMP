@@ -14,6 +14,7 @@ Everything for this project lives in this folder, except the extracted source te
 | `13_review_queue.md` | Cards with open points (generated). |
 | `14_review_decisions.md` | Pending review decisions (fill in, then ask to apply). |
 | `15_confirmed_rulesets.md` | Points already confirmed and applied. |
+| `17_expert_review_intake.md` | Template for the expert's replies, one row per card ID, and the steps to apply them. |
 | `HANDOFF.md` | Current state, decisions, to-do. Read before working. |
 | `00-11_*.md`, `authentic_cards.json` | Earlier inventory and background. |
 
@@ -28,6 +29,7 @@ python3 docs/Plan/rule_cards/tools/bundle.py              # write the app bundle
 python3 docs/Plan/rule_cards/tools/copycheck.py           # own-words guard; must print CLEAN
 python3 -m unittest discover -s docs/Plan/rule_cards/tools -p 'test_*.py'   # all tool tests (CI runs these)
 python3 docs/Plan/rule_cards/tools/review_queue.py        # regenerate 13_review_queue.md
+python3 docs/Plan/rule_cards/tools/review_pack.py --pdf    # expert hand-out in review/ (git-ignored; omit --pdf for HTML only)
 python3 docs/Plan/rule_cards/tools/todo_pay.py            # uncovered pay entries by topic
 python3 docs/Plan/rule_cards/tools/packet.py SS-P001,SS-P002   # source text behind entries
 python3 docs/Plan/rule_cards/tools/pa.py "Joining Time" 400    # a P&A handbook section

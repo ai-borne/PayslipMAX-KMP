@@ -98,3 +98,6 @@ composeApp/fastlane/report.xml
 composeApp/fastlane/README.md
 *.play_console*.json
 iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/sunil.xcuserdatad/UserInterfaceState.xcuserstate
+
+# Expert review pack output (hand-out, not a source)
+docs/Plan/rule_cards/review/
