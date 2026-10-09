@@ -14,6 +14,8 @@ class GuideShareTextTest {
             watchOut = "Watch out:",
             authority = "Authority:",
             unverified = "Unverified point: still being checked.",
+            replacedOn = "Replaced on",
+            replacedApplies = "It applies only to claims for earlier periods.",
         )
 
     private val parts =
@@ -71,6 +73,28 @@ class GuideShareTextTest {
             "Claim note\n\nWhat is the food rate?\n\nAnswer: Rs 900 a day at level 11.\n\nKey points:\n- Full day only\n- Claim in the TA bill",
             note,
         )
+    }
+
+    @Test
+    fun aReplacedCardSaysSoRightUnderTheAnswerSoAForwardedNoteCannotPassAsCurrent() {
+        val note = GuideShareText.build(parts.copy(replacedOn = "15 Nov 2026"), labels)
+
+        assertEquals(
+            "Claim note\n\nWhat is the food rate?\n\nAnswer: Rs 900 a day at level 11.\nReplaced on 15 Nov 2026. It applies only to claims for earlier periods.\n\nKey points:",
+            note.substringBefore("\n- Full day only"),
+        )
+    }
+
+    @Test
+    fun aReplacedAndUnverifiedCardPutsTheReplacementFirst() {
+        val note = GuideShareText.build(parts.copy(replacedOn = "15 Nov 2026", unverified = true), labels)
+
+        assertEquals(true, note.indexOf("Replaced on") in 1 until note.indexOf("Unverified point"))
+    }
+
+    @Test
+    fun aCurrentCardNeverMentionsAReplacement() {
+        assertFalse(GuideShareText.build(parts, labels).contains("Replaced"))
     }
 
     @Test

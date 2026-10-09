@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.guide.domain.GuideIndex
 import com.payslipmax.pdfparser.guide.domain.GuideShareLabels
 import com.payslipmax.pdfparser.guide.domain.GuideShareParts
 import com.payslipmax.pdfparser.guide.domain.GuideShareText
+import com.payslipmax.pdfparser.ui.theme.GuideMaintenanceStrings
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 private val ShareLabels =
@@ -15,6 +16,8 @@ private val ShareLabels =
         watchOut = GuideStrings.shareWatchOut,
         authority = GuideStrings.shareAuthority,
         unverified = GuideStrings.shareUnverified,
+        replacedOn = GuideMaintenanceStrings.shareReplacedOn,
+        replacedApplies = GuideMaintenanceStrings.shareReplacedApplies,
     )
 
 /**
@@ -23,7 +26,7 @@ private val ShareLabels =
  */
 internal fun GuideCardContent.shareNote(): String? =
     full?.let {
-        GuideShareText.build(GuideShareParts(title, answer, it.body.key, it.body.attach, it.body.watch, it.cite, trust.unverified), ShareLabels)
+        GuideShareText.build(GuideShareParts(title, answer, it.body.key, it.body.attach, it.body.watch, it.cite, trust.unverified, trust.replacedUntil?.let(GuideMaintenanceStrings::day)), ShareLabels)
     }
 
 /** Guide Home's pinned rows, in the order given; an id the bundle does not hold is skipped. */

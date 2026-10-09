@@ -13,6 +13,10 @@ object GuideMaintenanceStrings {
     const val replacedNotice = "This rule no longer applies to new claims. It is kept for claims made under it."
     const val openCardHint = "Open card"
 
+    // The marker line in a shared claim note of a replaced card: "<shareReplacedOn> 15 Nov 2026. <shareReplacedApplies>"
+    const val shareReplacedOn = "Replaced on"
+    const val shareReplacedApplies = "It applies only to claims for earlier periods."
+
     /** The Guide Home row, named for the month of the newest entry. */
     fun whatsNewRow(latestDate: String): String = "What's new in the Guide (${GuideStrings.yearMonth(latestDate.take(YEAR_MONTH_LENGTH))})"
 

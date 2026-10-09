@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.guide.domain.GuideIndex
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
+import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -56,6 +57,18 @@ class GuideCardShareTest {
     @Test
     fun theNoteLeavesOutTheDetailsText() {
         assertFalse(card("RB-T5").shareNote()!!.contains("Longer details"))
+    }
+
+    @Test
+    fun aReplacedCardsNoteStatesTheEndDateAndTheNewCardsNoteDoesNot() {
+        val changed = GuideIndex(SyntheticGuideRuleChange.bundle())
+
+        fun note(id: String) = checkNotNull(changed.cardContent(id, unlocked = true, nowMillis = 0L)).shareNote()!!
+
+        assertTrue(
+            note(SyntheticGuideRuleChange.OLD_CARD).contains("Answer: A one-line answer for RB-T9.\nReplaced on 15 Nov 2026. It applies only to claims for earlier periods.\n"),
+        )
+        assertFalse(note(SyntheticGuideRuleChange.NEW_CARD).contains("Replaced"))
     }
 
     @Test

@@ -9,11 +9,16 @@ data class GuideShareLabels(
     val watchOut: String,
     val authority: String,
     val unverified: String,
+    /** "Replaced on": followed by the date, then [replacedApplies]. */
+    val replacedOn: String,
+    val replacedApplies: String,
 )
 
 /**
  * Everything a share note may contain: the card's own public text and its cite. There is deliberately no field for
- * details, a personal figure, a name or a service number, so none of them can reach the note by type.
+ * details, a personal figure, a name or a service number, so none of them can reach the note by type. [replacedOn] is the day
+ * a newer rule took over (already written as a date), set only on a replaced card: a note is plain text with no chips, so
+ * without it a forwarded old rule could pass as current. It is a date, never change-log text.
  */
 data class GuideShareParts(
     val title: String,
@@ -23,6 +28,7 @@ data class GuideShareParts(
     val watch: List<String>,
     val cite: String,
     val unverified: Boolean,
+    val replacedOn: String? = null,
 )
 
 /** Builds the plain-text "claim note" the user may share. Pure and fixed in layout; an empty section is left out. */
@@ -31,7 +37,8 @@ object GuideShareText {
         parts: GuideShareParts,
         labels: GuideShareLabels,
     ): String {
-        val answer = "${labels.answer} ${parts.answer}" + if (parts.unverified) "\n${labels.unverified}" else ""
+        val replaced = parts.replacedOn?.let { "\n${labels.replacedOn} $it. ${labels.replacedApplies}" }.orEmpty()
+        val answer = "${labels.answer} ${parts.answer}" + replaced + if (parts.unverified) "\n${labels.unverified}" else ""
         val blocks =
             listOf(labels.header, parts.title, answer) +
                 listOfNotNull(
