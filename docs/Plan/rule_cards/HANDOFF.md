@@ -1,14 +1,14 @@
 # Claim Guide app work: where we are (read this block first; the rest of this file is dataset history)
 
-Updated 2026-10-08. App phases E0-E8 are done. E7 is merged and pushed (main at 76e25f74). **E8 (pins, copy cite, share as claim note) is complete on branch `feature/guide-e8-pins-share`, committed, not merged or pushed** (owner merges and pushes when they say so). Next: **E9** (end-to-end, security review, release). Plan and status: `16_guide_phase_plan.md` (sections E8 incl. "E8 result", E9 and "EP Pending items").
+Updated 2026-10-09. App phases E0-E9 are done. E8 is merged and pushed (main at 442c57ff). **E9 (dataset gaps, device checks, end-to-end and security tests, release flip) is complete on branch `feature/guide-e9-release`, committed, not merged or pushed** (owner says when). `LaunchFlags.GUIDE_ENABLED` is true (commit 77faaee9); `GUIDE_PAYWALL_ENABLED` stays false, so the Guide ships free. Nothing was uploaded to a store. Plan and status: `16_guide_phase_plan.md` (sections "E9 result", "E9 known-gaps register", "Post-E9 list", EP table).
 
-**E8 in one paragraph.** `GuidePins` (shared) + `GuidePinsStorage` (SharedPreferences / NSUserDefaults, key `guide_pins_v1`, not in backup) + `GuidePinsModel` (Koin single, also `GuideViewModel.pins`); `GuideShareText` builds the claim note from card text and cite only (unverified line for flagged cards; Copy cite copies exactly `cite`); `GuideCardActions` is null for a locked card; Home shows "Pinned" (newest first) only when unlocked and non-empty; `GuidePlatform` wraps clipboard and share and runs only on taps. No pin limit.
+**Dataset now:** 404 cards (220 travel, 184 pay), 37 unverified, 31 no-source; new cards `RB-RP-053-arrears` and `RB-SS-P114-quarters`; Pay Audit arrears and HRA-missing links open them. Release APK 69,606,036 B (+65,860 vs 69,540,176); cold start empty state ~187 ms.
 
-**Open for E9 (EP table):** 11, 15, 20, 23 and 26 (iOS simulator walkthrough), 12 (cold start / APK size), 14 (paywall flip checks), 24 and 27 (device checks: locked user, waiting row, locked card with pins), 25 (dataset gaps: DA arrears card, quarters card, MSP Level 14+ wording). The phone runs the debug-signed `minifiedTest` build with the owner's payslips (never uninstall without asking and confirming a `.pcda` backup); get the adb serial from `adb mdns services`, and if `adb connect` is refused wake the phone and retry.
+**Still open:** iOS walkthrough (EP 11, 15, 20, 23, 26, owner); EP 14 (paywall flip checks, post-launch); RP-073 TA Allowance has no card; 37 unverified cards (RP-088 HBA 8.5% blocks the paywall).
 
-Rules that still bind: no rupee figure in Kotlin; copy only in `GuideStrings.kt`; 300-line files (`App.kt` is exactly 300: extract before adding); locked state must not hold a card's paid half; no PII, card id, pin list or figure in telemetry; gates in the plan "Rules for every phase". Gradle from the shell: pass `-Dorg.gradle.java.home=/opt/homebrew/opt/openjdk@21` (on "jmod ... antigravity" loop `./gradlew --stop; sleep 12`). zsh does not word-split `$FILES`; pipe lists through `xargs`.
+Rules that still bind: no rupee figure in Kotlin; copy only in `GuideStrings.kt`; 300-line files; locked state must not hold a card's paid half; no PII, card id, pin list or figure in telemetry (`GuideSecurityContractTest` enforces it). Gradle from the shell: `export JAVA_HOME=/opt/homebrew/opt/openjdk@21` (on "jmod ... antigravity" loop `./gradlew --stop; sleep 12`); never two Gradle commands at once (the commit hook runs Gradle too). The phone runs the debug-signed `minifiedTest` build with the owner's payslips; never uninstall.
 
-Paste to start the next session: the E9 sprint prompt in `16_guide_phase_plan.md` (subsection "E9 sprint prompt", owner decisions closed 2026-10-09). It starts by merging and pushing E8.
+Paste to start the next session: "Continue the PayslipMAX KMP Claim Guide after E9. Read CLAUDE.md, the top block of docs/Plan/rule_cards/HANDOFF.md and the Post-E9 list at the end of docs/Plan/rule_cards/16_guide_phase_plan.md. First: merge `feature/guide-e9-release` into main (fast-forward), push with the pre-push hook, then plan the release build (do not upload or run fastlane until I say). Ask me which Post-E9 item to take next."
 
 ---
 
@@ -27,7 +27,7 @@ A paid in-app **Claim Guide**: a phone-friendly rulebook for PCDA(O) Army office
 5. Scope of "100% of travel and pay": travel = TD, permanent move, LTC, claims, retirement/death, transport allowance. Pay = Pay & Allowances Handbook chapters 4-9, 12-15, 17-23 and 28. Tax, insurance, pension and ECHS (ch. 24-27, 29-35) are **deferred**; the app already has a Tax Planner.
 
 ## Current numbers (from `python3 docs/Plan/rule_cards/tools/compile.py`)
-- **402 cards**: **220 travel** and **182 pay** (nine travel cards dropped by the owner in phase G1).
+- **404 cards** (2026-10-09; was 402): **220 travel** and **184 pay** (nine travel cards dropped by the owner in phase G1).
 - Source entries covered: all 474 (1 skipped with a reason, 0 uncovered). Pay topics with a card: **94 of 95** (RP-073 Territorial Army Allowance lost its card to an owner DROP).
 - Cards carrying an `O:` open point: 36 (2 flagged CONFLICT); guidance-only (no cite): 31. GUIDANCE now means exactly "no cite"; `compile.py` enforces it (owner, 2026-10-07).
 - Every authoring batch passes the compiler (limits, ids, topics) and the 8-gram copy guard (`copycheck.py` prints CLEAN).

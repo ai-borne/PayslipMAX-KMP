@@ -3,7 +3,8 @@
 
 Green debug tests do not prove the minified app can read the Guide. It checks the `minifiedTest` build: the release R8
 and resource-shrink config with the Guide reachable, which is what release becomes when LaunchFlags.GUIDE_ENABLED flips
-in phase E9. (Release itself keeps the Guide dark, so R8 rightly drops the Guide code there.) There is no Guide keep
+in phase E9. Since the E9 flip release has the Guide too, and the same checks pass on it
+(`--mapping .../mapping/release/mapping.txt --apk .../apk/release/composeApp-release.apk`). There is no Guide keep
 rule: reachability plus kotlinx-serialization's bundled rules keep the models, and this gate proves it. After
 `:composeApp:assembleMinifiedTest`, this fails unless:
   1. every @Serializable class in guide/model/GuideModels.kt survives R8 with its generated `$$serializer` and its
