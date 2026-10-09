@@ -698,6 +698,26 @@ unfinished: say so loudly and put it in the EP table and the post-E9 list; never
 checkpoint after each significant step.
 ```
 
+### E9 phase plan (written 2026-10-09, before any change)
+Branch `feature/guide-e9-release` off `main` (E8 merged; push gate run 2026-10-09). Five phases, one at a time, each ending with the full gate list in the sprint prompt above.
+No iOS simulator walkthrough in this sprint (owner decision): EP 11, 15, 20, 23, 26 stay open for the owner.
+
+**Existing code and files read first.** `LaunchFlags` (`GUIDE_ENABLED`, `GUIDE_PAYWALL_ENABLED`), `GuideAvailability` (`isGuideEnabled()` = flag or `GUIDE_PREVIEW` build field), `GuideAccess`, `GuideLinkMap`
+and its pinned-ids test, `GuideBundleContract`, `tools/test_bundle.py`, `GuideDarkLaunchReleaseTest`, `AppKoinModulesTest`, the 4/5-tab bar tests, `scripts/check_r8_guide.py`, `scripts/run_guide_minified_smoke.sh`.
+
+| Phase | Work | Success criteria |
+|---|---|---|
+| 1 Dataset gaps (EP 25) | Three content items drafted from the handbook/FAQ, owner approves every line, then authoring, tools chain, counts and link table | `compile.py` ok, `copycheck.py` CLEAN, `bundle.py` fresh, 404 cards, contracts and link tests updated, full gate chain |
+| 2 Device checks and perf (EP 12, 24, 27) | Cold start on `minifiedTest` vs E2 190 ms and Play 1.3.0, APK size, method count; "Force Free" checks on a debug build; reinstall `minifiedTest`; smoke | Cold start within +100 ms of 190 ms; locked card shows no Pin/Share/Copy cite; locked Home no Pinned; locked Pay Audit link opens the upgrade sheet; phone ends as it started |
+| 3 End-to-end, security, gaps register | Two end-to-end tests; `security-review`; tests/greps for no new outbound path, no Guide data in telemetry, no `from`/`open` in the bundle, plain-id pins; known-gaps register | All green; findings fixed or listed |
+| 4 Release flip | Own commit: `GUIDE_ENABLED = true`, only the tests that pinned "dark in release" change; paywall flag stays false; full pre-push gate; R8, APK size, mapping, smoke | Release APK within +1 MB of 69,540,176 B; Guide models kept; no upload, no fastlane |
+| 5 Close-out | E9 result, EP table, HANDOFF, memory | Committed on the branch, not merged or pushed |
+
+**Risks.** Release/R8: flipping the flag makes the Guide UI reachable in release, so `minifyReleaseWithR8` plus `check_r8_guide.py` against the release build is mandatory (`minifiedTest` was the only build that kept it before). iOS: no Kotlin/Native hot path is added; the only new `commonMain` code is the link table (a map lookup). The release flip reaches iOS too (same constant), unverified on a simulator by owner decision (EP 11, 15, 20, 23, 26).
+**Regression controls.** Characterization first: the existing dark-launch tests are edited in the flip commit only. Data: card ids stay stable; new cards get new ids; no `from`/`open` ships.
+**Navigation and state.** No change. **Versioning, DI, storage.** None; bundle schema unchanged (card count 402 to 404).
+**Owner decisions.** All closed in the sprint prompt, except the Phase 1 wording batch and the link table (one batch, asked before any authoring edit).
+
 ## Open items carried into E1 (all closed 2026-10-07)
 Bundle location: compose resources (E1 spike). `rates_as_of`: `2026-01`. GUIDANCE vs empty cite: one rule, empty cite.
 CI emulator job: no. See the owner decisions table.
