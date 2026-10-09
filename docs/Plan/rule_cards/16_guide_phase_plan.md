@@ -802,4 +802,4 @@ Content-maintenance work after E9. Each phase is a short-lived branch off main, 
 
 **M4 follow-up (2026-10-09, same branch).** Cleared the small items found in the M4 review: validator date-shape and change-log card-id checks, a `compile.py` guard against rupee figures in change text, no stale-rates nudge on a replaced card, no stack growth when tapping Earlier rule / See current rule back and forth, and the Pixel checks for light theme, a locked user and the tab re-tap. Still open: EP 28 (iOS).
 
-**M4 share decision (2026-10-09, owner).** A replaced card keeps Share and Copy cite. The claim note of a replaced card carries one line under the answer, "Replaced on <date>. It applies only to claims for earlier periods."; a current card's note is unchanged. Branch `feature/guide-m4-share-replaced`, not merged or pushed.
+**M4 share decision (2026-10-09, owner).** A replaced card keeps Share and Copy cite. The claim note of a replaced card carries one line under the answer, "Replaced on <date>. It applies only to claims for earlier periods."; a current card's note is unchanged. Merged and pushed (main at d1a36d58).
