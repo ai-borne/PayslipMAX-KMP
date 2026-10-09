@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
+import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -86,5 +87,35 @@ class GuideFeedLogicTest {
         assertNull(GuideFeedLogic.effectiveFacet(feed("ltc-home"), "Q"))
         assertNull(GuideFeedLogic.effectiveFacet(feed(SyntheticGuideBundle.BIG_CASE, bigCase(8, oneFacet = "H")), "Q"))
         assertNull(GuideFeedLogic.effectiveFacet(big, null))
+    }
+
+    // Characterization (M4): a replaced card is homed nowhere, so today a feed leaves it out only because no case lists it.
+    @Test
+    fun aFeedAfterARuleChangeListsTheNewCardInThePlaceOfTheOldOne() {
+        val changed = SyntheticGuideRuleChange.bundle()
+
+        val items = feed(SyntheticGuideRuleChange.HOME_CASE, changed)
+
+        assertEquals(listOf("RB-T11", "RB-T10", "RB-T1"), items.map { it.card.id })
+    }
+
+    // M4: the same must hold if a bundle ever homes a replaced card (the validator rejects it, but a feed must not rely on that).
+    @Test
+    fun aReplacedCardIsLeftOutOfAFeedEvenIfSomeCaseListsIt() {
+        val changed = SyntheticGuideRuleChange.bundle()
+        val homedAgain =
+            changed.copy(
+                nav =
+                    changed.nav.map { area ->
+                        area.copy(
+                            cases =
+                                area.cases.map {
+                                    if (it.id == SyntheticGuideRuleChange.HOME_CASE) it.copy(cards = listOf("RB-T9", "RB-T11", "RB-T10"), also = listOf("RB-T9", "RB-T1")) else it
+                                },
+                        )
+                    },
+            )
+
+        assertEquals(listOf("RB-T11", "RB-T10", "RB-T1"), feed(SyntheticGuideRuleChange.HOME_CASE, homedAgain).map { it.card.id })
     }
 }

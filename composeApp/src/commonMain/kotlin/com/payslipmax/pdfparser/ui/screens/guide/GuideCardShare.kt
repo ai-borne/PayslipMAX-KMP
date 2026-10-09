@@ -4,7 +4,6 @@ import com.payslipmax.pdfparser.guide.domain.GuideIndex
 import com.payslipmax.pdfparser.guide.domain.GuideShareLabels
 import com.payslipmax.pdfparser.guide.domain.GuideShareParts
 import com.payslipmax.pdfparser.guide.domain.GuideShareText
-import com.payslipmax.pdfparser.guide.domain.GuideTrust
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 private val ShareLabels =
@@ -30,5 +29,5 @@ internal fun GuideCardContent.shareNote(): String? =
 /** Guide Home's pinned rows, in the order given; an id the bundle does not hold is skipped. */
 internal fun GuideIndex.pinnedRows(cardIds: List<String>): List<GuideFeedRow> =
     cardIds.mapNotNull { id ->
-        card(id)?.let { GuideFeedRow(it.id, it.title, it.answer, bundle.facets[it.facet].orEmpty(), alsoHomeTitle = null, trust = GuideTrust.of(it, bundle.ratesAsOf)) }
+        card(id)?.let { GuideFeedRow(it.id, it.title, it.answer, bundle.facets[it.facet].orEmpty(), alsoHomeTitle = null, trust = trust(it)) }
     }

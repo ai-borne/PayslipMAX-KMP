@@ -55,7 +55,16 @@ internal fun GuideCardHost(
         if (!leave) GuideLoading()
     } else {
         val actions = rememberGuideCardActions(card, viewModel.pins, platform)
-        GuideCardScreen(card, crumbs = emptyList(), onCrumb = {}, onBack = onBack, onUnlock = access.onUnlock, actions = actions)
+        GuideCardScreen(
+            card,
+            crumbs = emptyList(),
+            onCrumb = {},
+            onBack = onBack,
+            onUnlock = access.onUnlock,
+            actions = actions,
+            // No Guide stack here: the history link swaps the pending card, and Back still returns to the Pay Audit finding.
+            onOpenCard = viewModel::openCard,
+        )
     }
 }
 

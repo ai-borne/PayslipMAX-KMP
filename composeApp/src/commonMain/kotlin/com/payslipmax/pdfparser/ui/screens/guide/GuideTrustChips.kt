@@ -17,13 +17,14 @@ import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.guide.domain.GuideTrust
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideColors
+import com.payslipmax.pdfparser.ui.theme.GuideMaintenanceStrings
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 private val ChipShape = RoundedCornerShape(percent = 50)
 
 /**
- * The trust chips wherever a card appears: Rates as of, Amended, Unverified point and No official source. They are
- * flags and a date, free for everyone, and they wrap on a narrow screen rather than cut a label. Nothing is drawn
+ * The trust chips wherever a card appears: Replaced on, Updated, Rates as of, Amended, Unverified point and No official
+ * source. They are flags and dates, free for everyone, and they wrap on a narrow screen rather than cut a label. Nothing is drawn
  * for a card without a chip.
  */
 @OptIn(ExperimentalLayoutApi::class)
@@ -38,6 +39,8 @@ internal fun GuideTrustChips(
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSix),
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSix),
     ) {
+        trust.replacedUntil?.let { TrustChip(GuideMaintenanceStrings.chipReplacedOn(it), isWarning = true) }
+        if (trust.updated) TrustChip(GuideMaintenanceStrings.chipUpdated)
         trust.ratesAsOf?.let { TrustChip(GuideStrings.chipRatesAsOf(it)) }
         if (trust.amended) TrustChip(GuideStrings.chipAmended)
         if (trust.unverified) TrustChip(GuideStrings.chipUnverified, isWarning = true)

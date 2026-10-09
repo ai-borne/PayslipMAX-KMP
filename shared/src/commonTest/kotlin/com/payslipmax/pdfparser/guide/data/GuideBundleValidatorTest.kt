@@ -166,6 +166,33 @@ class GuideBundleValidatorTest {
     }
 
     @Test
+    fun aReplacedCardMustSayWhenItStoppedApplying() {
+        // Without the date the card could not show "Replaced on <date>", so a reader would not see it is out of date.
+        assertProblem(valid.withRb3Replaced().editCard("RB-P3") { it.copy(until = "") }, "RB-P3 is replaced but has no until date")
+    }
+
+    @Test
+    fun aReplacementLoopIsRejectedBecauseNoRuleWouldBeInForce() {
+        // RB-P3 -> RB-P2 -> RB-P3: each target exists, so only the loop rule can catch it. compile.py never ships one.
+        val loop =
+            valid.editCase("pay-hra", cards = listOf("RB-P1"))
+                .editCard("RB-P3") { it.copy(replacedBy = "RB-P2", until = "2026-11-15", nav = "") }
+                .editCard("RB-P2") { it.copy(replacedBy = "RB-P3", until = "2026-11-15", nav = "") }
+
+        assertProblem(loop, "replacement loop")
+    }
+
+    @Test
+    fun aLongChainWithoutALoopIsValid() {
+        val chain =
+            valid.editCase("pay-hra", cards = listOf("RB-P1"))
+                .editCard("RB-P3") { it.copy(replacedBy = "RB-P2", until = "2026-11-15", nav = "") }
+                .editCard("RB-P2") { it.copy(replacedBy = "RB-T1", until = "2026-12-15", nav = "") }
+
+        assertEquals(emptyList(), problems(chain).filter { "loop" in it })
+    }
+
+    @Test
     fun aReplacedCardStillHomedInACaseIsRejected() {
         // The app would show the old rule as current next to its successor.
         assertProblem(valid.editCard("RB-P3") { it.copy(replacedBy = "RB-P2") }, "RB-P3 is replaced but homed")

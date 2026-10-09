@@ -102,6 +102,12 @@ class GuideViewModel(
     /** Guide Home's pinned rows for [cardIds], skipping any id the bundle no longer holds. */
     fun pinnedRows(cardIds: List<String>): List<GuideFeedRow> = index()?.pinnedRows(cardIds).orEmpty()
 
+    /** The date (YYYY-MM-DD) of the newest change-log entry, or null when the bundle has none (Home then shows no row). */
+    fun whatsNewDate(): String? = index()?.changeLog?.latest?.date
+
+    /** The change-log entries with links to their cards, or null when the bundle has none. */
+    fun whatsNew(): GuideWhatsNewContent? = index()?.whatsNewContent()
+
     fun crumbs(stack: List<GuideDestination>): List<GuideCrumb> = index()?.crumbs(stack).orEmpty()
 
     private fun index() = (_uiState.value as? GuideUiState.Ready)?.index

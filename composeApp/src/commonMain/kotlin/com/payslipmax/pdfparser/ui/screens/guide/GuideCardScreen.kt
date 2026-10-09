@@ -27,6 +27,7 @@ internal fun GuideCardScreen(
     onUnlock: () -> Unit,
     listState: LazyListState = rememberLazyListState(),
     actions: GuideCardActions? = null,
+    onOpenCard: (cardId: String) -> Unit = {},
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         GuideLevelHeader(crumbs, onCrumb, title = card.title, subtitle = null, onBack = onBack)
@@ -37,6 +38,9 @@ internal fun GuideCardScreen(
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             item(key = "header") { GuideCardHeader(card) }
+            if (card.history != GuideCardHistory.None || card.trust.replacedUntil != null) {
+                item(key = "history") { GuideCardHistoryLinks(card, onOpenCard) }
+            }
             actions?.let { item(key = "actions") { GuideCardActionRow(it) } }
             guideCardSections(card, onUnlock, actions?.onCopyCite)
             item(key = "disclaimer") {

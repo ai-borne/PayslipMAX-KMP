@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.guide.model.GuideCard
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
+import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -135,5 +136,34 @@ class GuideSearchIndexTest {
         // Only the two cards homed in "ltc-home" (rule line "Rule 177A") carry 177A; every card cites Rule 114.
         assertEquals(setOf("RB-T9", "RB-T10"), GuideSearchIndex(bundle).ids("177a").toSet())
         assertEquals(bundle.cards.size, GuideSearchIndex(bundle).search("rule 114").size)
+    }
+
+    // Characterization (M4): search reads every card of the bundle, so today it finds a card whatever its dates.
+    @Test
+    fun searchFindsEveryCardOfABundleWithNoReplacedCard() {
+        val index = GuideSearchIndex(bundle)
+
+        assertEquals(bundle.cards.map { it.id }.sorted(), index.search("synthetic").map { it.card.id }.sorted())
+    }
+
+    // M4: a replaced rule is reached from its successor's "Earlier rule" link, never from a result list.
+    @Test
+    fun aReplacedCardIsNotAResultButItsSuccessorIs() {
+        val index = GuideSearchIndex(SyntheticGuideRuleChange.bundle())
+
+        val ids = index.ids("synthetic")
+
+        assertFalse(SyntheticGuideRuleChange.OLD_CARD in ids)
+        assertTrue(SyntheticGuideRuleChange.NEW_CARD in ids)
+        assertEquals(SyntheticGuideRuleChange.bundle().cards.size - 1, ids.size, "only the replaced card is left out")
+    }
+
+    @Test
+    fun aReplacedCardIsNotFoundByItsRuleNumberEither() {
+        val changed = SyntheticGuideRuleChange.bundle()
+        val old = changed.cards.first { it.id == SyntheticGuideRuleChange.OLD_CARD }
+        val index = GuideSearchIndex(changed.copy(cards = changed.cards.map { if (it.id == old.id) old.copy(cite = "Rule 4242, TR 2014") else it }))
+
+        assertEquals(emptyList(), index.ids("4242"))
     }
 }

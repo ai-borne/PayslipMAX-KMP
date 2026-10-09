@@ -92,7 +92,7 @@ class GuideSearchViewModel(
                                 hit.card.title,
                                 hit.card.answer,
                                 ui.index.case(hit.card.nav)?.title.orEmpty(),
-                                GuideTrust.of(hit.card, ui.bundle.ratesAsOf),
+                                ui.index.trust(hit.card),
                             )
                         },
                 )

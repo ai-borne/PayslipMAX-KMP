@@ -8,6 +8,7 @@ private const val AREA = "area"
 private const val CASE = "case"
 private const val CARD = "card"
 private const val SEARCH = "search"
+private const val CHANGES = "changes"
 private const val SCROLL = "scroll"
 
 /**
@@ -42,6 +43,7 @@ private fun encode(destination: GuideDestination): String? =
     when (destination) {
         GuideDestination.Home -> null
         GuideDestination.Search -> SEARCH
+        GuideDestination.Changes -> CHANGES
         is GuideDestination.Area -> "$AREA$SEPARATOR${destination.areaId}"
         is GuideDestination.Case -> listOfNotNull(CASE, destination.caseId, destination.facet).joinToString(SEPARATOR.toString())
         is GuideDestination.Card -> "$CARD$SEPARATOR${destination.cardId}"
@@ -52,6 +54,7 @@ private fun decode(entry: String): GuideDestination? {
     val id = parts.getOrNull(1)?.takeIf { it.isNotEmpty() }
     return when (parts[0]) {
         SEARCH -> GuideDestination.Search.takeIf { parts.size == 1 }
+        CHANGES -> GuideDestination.Changes.takeIf { parts.size == 1 }
         AREA -> id?.takeIf { parts.size == 2 }?.let(GuideDestination::Area)
         CASE -> id?.takeIf { parts.size <= 3 }?.let { GuideDestination.Case(it, parts.getOrNull(2)?.takeIf(String::isNotEmpty)) }
         CARD -> id?.takeIf { parts.size == 2 }?.let(GuideDestination::Card)

@@ -30,7 +30,8 @@ data class GuideSearchHit(
 )
 
 /**
- * Search over a loaded bundle, built once per load (the bundle never changes while the app runs). A query is its
+ * Search over a loaded bundle, built once per load (the bundle never changes while the app runs). A replaced card is not
+ * searched: its successor is, and the successor links back to it. A query is its
  * words, and every word must match somewhere in the card: a letter word as the start of a word ("allow" finds
  * "allowance"), a number as a whole number (see [GuideRuleNumberParser.numberMatches]). A leading "Rule" or "Rules"
  * is dropped, so "Rule 114" and "114" ask the same. Case and punctuation never matter. The query is read here and
@@ -51,7 +52,7 @@ class GuideSearchIndex(
     private val entries: List<Entry> =
         bundle.cards.let { cards ->
             val caseRules = bundle.nav.flatMap { it.cases }.associate { it.id to GuideRuleNumberParser.ruleNumbers(it.sub) }
-            cards.map { card ->
+            cards.filterNot { it.isReplaced }.map { card ->
                 val body = CardTemplate.body(card)
                 Entry(
                     card = card,

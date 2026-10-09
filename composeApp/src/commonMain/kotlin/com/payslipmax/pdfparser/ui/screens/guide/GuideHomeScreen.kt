@@ -27,7 +27,7 @@ import com.payslipmax.pdfparser.ui.theme.GuideStrings
 private const val AREA_COLUMNS = 2
 
 /**
- * Guide Home: a search icon, then the user's pinned cards when there are any (newest first; no section at all when
+ * Guide Home: a search icon, then the "What's new" row when [whatsNewDate] is set, then the user's pinned cards when there are any (newest first; no section at all when
  * [pinned] is empty or the user is locked), then one tile per area, in bundle order, two to a row (the approved preview).
  */
 @Composable
@@ -37,6 +37,8 @@ internal fun GuideHomeScreen(
     onOpenSearch: () -> Unit,
     pinned: List<GuideFeedRow> = emptyList(),
     onOpenPinned: (cardId: String) -> Unit = {},
+    whatsNewDate: String? = null,
+    onOpenWhatsNew: () -> Unit = {},
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(AREA_COLUMNS),
@@ -46,6 +48,10 @@ internal fun GuideHomeScreen(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTen),
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) { GuideHomeHeader(onOpenSearch) }
+        // Only a bundle that carries a change entry has this row; today's real bundle has none, so Home is unchanged.
+        whatsNewDate?.let { date ->
+            item(key = "whats-new", span = { GridItemSpan(maxLineSpan) }) { GuideWhatsNewRow(date, onOpenWhatsNew) }
+        }
         if (pinned.isNotEmpty()) {
             item(key = "pinned-heading", span = { GridItemSpan(maxLineSpan) }) {
                 Text(

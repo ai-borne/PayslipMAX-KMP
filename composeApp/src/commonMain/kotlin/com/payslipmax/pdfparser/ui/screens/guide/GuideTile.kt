@@ -29,7 +29,7 @@ private val PillShape = RoundedCornerShape(percent = 50)
 
 /** A tappable bordered tile in the app's flat card style; read by screen readers as one button. */
 @Composable
-private fun GuideTileFrame(
+internal fun GuideTileFrame(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,

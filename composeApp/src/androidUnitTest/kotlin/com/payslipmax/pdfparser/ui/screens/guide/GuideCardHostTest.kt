@@ -10,7 +10,9 @@ import com.payslipmax.pdfparser.guide.GuideLoadError
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
+import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.GuideMaintenanceStrings
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
@@ -65,6 +67,26 @@ class GuideCardHostTest {
         assertEquals(0, backs)
         composeRule.onNodeWithContentDescription(AppStrings.btnBack).performClick()
         assertEquals(1, backs)
+    }
+
+    @Test
+    fun theCurrentRuleLinkSwapsTheHostedCardAndBackStillLeavesToTheFinding() {
+        val changed = FakeGuideRepository(GuideLoadResult.Loaded(SyntheticGuideRuleChange.bundle()))
+        val model = GuideViewModel(changed, crashReporter, dispatcher)
+        model.openCard(SyntheticGuideRuleChange.OLD_CARD)
+        composeRule.setContent { GuideCardHost(GuideAccess(true, onUnlock = {}), onBack = { backs++ }, viewModel = model, platform = platform) }
+        dispatcher.scheduler.advanceUntilIdle()
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithText(GuideMaintenanceStrings.chipReplacedOn(SyntheticGuideRuleChange.EFFECTIVE)).assertIsDisplayed()
+        composeRule.onNodeWithText(GuideMaintenanceStrings.seeCurrentRule).performClick()
+        dispatcher.scheduler.advanceUntilIdle()
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithText("A one-line answer for RB-T11.").assertIsDisplayed()
+        assertEquals(0, backs, "the link swaps the card, it does not leave the screen")
+        composeRule.onNodeWithContentDescription(AppStrings.btnBack).performClick()
+        assertEquals(1, backs, "one Back returns to the finding, not to the old rule")
     }
 
     @Test

@@ -4,6 +4,7 @@ import androidx.compose.runtime.saveable.SaverScope
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
+import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -97,5 +98,34 @@ class GuideNavStateSaverTest {
             GuideNavStateSaver.restore(listOf("area|travel", "scroll|1|x|0", "scroll|9|2|0", "scroll|1|-1|0", "scroll|1|2"))!!
         assertEquals(listOf(GuideDestination.Home, GuideDestination.Area("travel")), restored.stack)
         assertEquals(GuideScroll.Top, restored.currentScroll)
+    }
+
+    @Test
+    fun theWhatsNewListRoundTripsAsABareWordAndSavesNoText() {
+        val stack = listOf(GuideDestination.Changes, GuideDestination.Card("RB-T11"))
+
+        val saved = save(GuideNavState(stack)) as List<*>
+        val restored = GuideNavStateSaver.restore(saved)!!
+
+        assertEquals(listOf("changes", "card|RB-T11"), saved, "a level name and an id, never change text")
+        assertEquals(listOf(GuideDestination.Home) + stack, restored.stack)
+    }
+
+    @Test
+    fun aChangesEntryWithExtraPartsIsCutLikeAnyUnreadableEntry() {
+        val restored = GuideNavStateSaver.restore(listOf("changes|junk", "card|RB-T1"))!!
+
+        assertEquals(listOf<GuideDestination>(GuideDestination.Home), restored.stack)
+    }
+
+    @Test
+    fun theWhatsNewListIsKnownOnlyToABundleThatHasChanges() {
+        val withChanges = SyntheticGuideRuleChange.bundle()
+
+        assertEquals(true, withChanges.knows(GuideDestination.Changes))
+        assertEquals(false, bundle.knows(GuideDestination.Changes))
+        val state = GuideNavState(listOf(GuideDestination.Changes, GuideDestination.Card("RB-T1")))
+        state.retainKnown(bundle)
+        assertEquals(listOf<GuideDestination>(GuideDestination.Home), state.stack, "an update that dropped the log cuts the restored list and what was above it")
     }
 }

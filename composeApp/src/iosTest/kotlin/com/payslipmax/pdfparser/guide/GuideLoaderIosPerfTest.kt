@@ -1,8 +1,10 @@
 package com.payslipmax.pdfparser.guide
 
+import com.payslipmax.pdfparser.guide.domain.GuideIndex
 import com.payslipmax.pdfparser.guide.domain.GuideProfileBuilder
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
 import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
+import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -39,6 +41,24 @@ class GuideLoaderIosPerfTest {
             val elapsedMs = mark.elapsedNow().inWholeMilliseconds
 
             assertTrue(elapsedMs < FEEDS_BUDGET_MS, "feeds and cards took ${elapsedMs}ms, budget ${FEEDS_BUDGET_MS}ms")
+        }
+
+    @Test
+    fun ruleHistoryAndChipsForEveryCardWithinBudgetOnNative() =
+        runTest {
+            val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())
+
+            // M4: every row asks the index for its chips, so build history and change log once and ask for all 404 cards, plain
+            // list and map work. Then the same invariants as on the JVM, and the rule-change fixture (a replaced pair).
+            val mark = TimeSource.Monotonic.markNow()
+            val index = GuideIndex(bundle)
+            repeat(CHIP_REPEATS) { bundle.cards.forEach { index.trust(it) } }
+            val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+
+            println("guide chips on Native: $CHIP_REPEATS passes over ${bundle.cards.size} cards ${elapsedMs}ms")
+            assertTrue(elapsedMs < FEEDS_BUDGET_MS, "chips took ${elapsedMs}ms, budget ${FEEDS_BUDGET_MS}ms")
+            GuideBundleContract.assertRuleHistoryBehaves(bundle)
+            GuideBundleContract.assertRuleHistoryBehaves(SyntheticGuideRuleChange.bundle())
         }
 
     @Test
@@ -130,6 +150,9 @@ class GuideLoaderIosPerfTest {
 
         // E4 search, for the index build and for the realistic queries each: the same margin again.
         const val SEARCH_BUDGET_MS = 1_500L
+
+        // M4: ten passes of every card's chips (a feed asks for its rows, search for its hits); the same margin again.
+        const val CHIP_REPEATS = 10
 
         // E6: ten profile builds over a 140-month history (a card open builds one); the same margin again.
         const val FIGURE_REPEATS = 10

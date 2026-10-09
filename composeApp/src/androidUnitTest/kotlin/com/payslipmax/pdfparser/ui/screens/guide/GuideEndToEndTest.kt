@@ -6,20 +6,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.payslipmax.pdfparser.guide.GuideBundleContract
+import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.insights.Anomaly
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuidePinsStorage
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
+import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
 import com.payslipmax.pdfparser.ui.screens.PayAuditMonthFindings
 import com.payslipmax.pdfparser.ui.screens.payAuditFindingsItems
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.GuideMaintenanceStrings
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -92,6 +97,58 @@ class GuideEndToEndTest {
 
         assertEquals(listOf(MSP_ID), GuidePinsModel(storage).pins.value.newestFirst, "a rebuilt model (process death) still holds the pin")
         assertTrue(crash.logs.isEmpty() && crash.keys.isEmpty() && crash.exceptions.isEmpty(), "the walk tells telemetry nothing")
+    }
+
+    @Test
+    fun theRealBundleShowsAWhatsNewRowExactlyWhenItCarriesAChangeEntry() {
+        val guide = guideModel()
+        composeRule.setContent {
+            GuideTab(
+                navState = GuideNavState(),
+                access = GuideAccess(isUnlocked = true, onUnlock = {}),
+                viewModel = guide,
+                searchViewModel = GuideSearchViewModel(guide, dispatcher),
+                platform = GuidePlatform(copy = {}, share = { _, _ -> }),
+            )
+        }
+        settle()
+
+        val hasEntry = (repository.result as GuideLoadResult.Loaded).bundle.changes.isNotEmpty()
+        composeRule.onAllNodesWithText("What's new", substring = true).assertCountEquals(if (hasEntry) 1 else 0)
+        composeRule.onNodeWithText(GuideStrings.homeTitle).assertIsDisplayed()
+    }
+
+    @Test
+    fun aRuleChangeWalkFromHomeToTheNewRuleToTheOldRuleAndBack() {
+        val repo = FakeGuideRepository(GuideLoadResult.Loaded(SyntheticGuideRuleChange.bundle()))
+        val guide = GuideViewModel(repo, crash, dispatcher, pins = GuidePinsModel(storage))
+        val nav = GuideNavState()
+        composeRule.setContent {
+            GuideTab(
+                navState = nav,
+                access = GuideAccess(isUnlocked = true, onUnlock = {}),
+                viewModel = guide,
+                searchViewModel = GuideSearchViewModel(guide, dispatcher),
+                platform = GuidePlatform(copy = {}, share = { _, _ -> }),
+            )
+        }
+        settle()
+
+        tap(GuideMaintenanceStrings.whatsNewRow(SyntheticGuideRuleChange.LATEST))
+        composeRule.onAllNodesWithText("Synthetic card RB-T11?")[0].performClick()
+        settle()
+        tap(GuideMaintenanceStrings.earlierRule(SyntheticGuideRuleChange.EFFECTIVE))
+        composeRule.onNodeWithText(GuideMaintenanceStrings.chipReplacedOn(SyntheticGuideRuleChange.EFFECTIVE)).assertIsDisplayed()
+        tap(GuideMaintenanceStrings.seeCurrentRule)
+        assertEquals(
+            listOf(GuideDestination.Home, GuideDestination.Changes, GuideDestination.Card("RB-T11"), GuideDestination.Card("RB-T9"), GuideDestination.Card("RB-T11")),
+            nav.stack,
+        )
+
+        repeat(4) { composeRule.runOnUiThread { nav.pop() } }
+        settle()
+        assertEquals(GuideDestination.Home, nav.current)
+        assertTrue(crash.logs.isEmpty() && crash.keys.isEmpty() && crash.exceptions.isEmpty(), "reading rule history tells telemetry nothing")
     }
 
     private val arrears = Anomaly("ARREARS_AUDIT", "arrearsDa", 9870.0, "04/2026", "Verified: matches exactly.", expected = 9870.0, actual = 9870.0)

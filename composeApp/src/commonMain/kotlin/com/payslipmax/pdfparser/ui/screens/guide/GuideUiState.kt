@@ -80,6 +80,8 @@ data class GuideCardContent(
     val trust: GuideTrust,
     val ratesStale: Boolean,
     val full: GuideCardFull?,
+    /** Links to the rule in force or the rule before; ids and dates only, so a locked card may hold them. */
+    val history: GuideCardHistory = GuideCardHistory.None,
 )
 
 /**
@@ -125,7 +127,7 @@ internal fun GuideIndex.feedContent(
                 item.card.answer,
                 labels[item.card.facet].orEmpty(),
                 item.alsoHome?.title,
-                GuideTrust.of(item.card, bundle.ratesAsOf),
+                trust(item.card),
             )
         }
     return GuideFeedContent(case.id, case.title, case.sub, items.size, facets, selected, rows)
@@ -138,7 +140,7 @@ internal fun GuideIndex.cardContent(
     profile: GuideProfile? = null,
 ): GuideCardContent? {
     val card = card(cardId) ?: return null
-    val trust = GuideTrust.of(card, bundle.ratesAsOf)
+    val trust = trust(card)
     val full =
         if (unlocked) {
             GuideCardFull(CardTemplate.body(card), card.cite, card.details, PersonalFigureResolver.resolve(card.id, bundle.figures, profile))
@@ -146,5 +148,5 @@ internal fun GuideIndex.cardContent(
             null
         }
     val stale = trust.ratesAsOf?.let { GuideStaleness.isStale(it, nowMillis) } == true
-    return GuideCardContent(card.id, card.title, card.answer, bundle.facets[card.facet].orEmpty(), trust, stale, full)
+    return GuideCardContent(card.id, card.title, card.answer, bundle.facets[card.facet].orEmpty(), trust, stale, full, cardHistory(card.id))
 }

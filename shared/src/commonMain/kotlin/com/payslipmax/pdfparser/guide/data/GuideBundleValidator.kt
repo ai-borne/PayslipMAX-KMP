@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.guide.data
 
 import com.payslipmax.pdfparser.guide.domain.CardTemplate
+import com.payslipmax.pdfparser.guide.domain.GuideRuleHistory
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.GuideCard
 import kotlinx.serialization.json.JsonArray
@@ -26,6 +27,7 @@ object GuideBundleValidator {
         problems += duplicates("card", bundle.cards.map { it.id })
         checkHomes(bundle, problems)
         bundle.cards.forEach { checkCard(it, bundle, problems) }
+        checkReplacementLoops(bundle, problems)
         problems += GuideFigureValidator.validate(bundle)
         return problems
     }
@@ -53,6 +55,15 @@ object GuideBundleValidator {
         bundle.cards.filter { it.id !in homes && !it.isReplaced }.forEach { problems += "card ${it.id} has no home" }
     }
 
+    /** `compile.py` ships no loop, but the app walks `replaced_by`, so a damaged bundle is refused rather than trusted. */
+    private fun checkReplacementLoops(
+        bundle: GuideBundle,
+        problems: MutableList<String>,
+    ) {
+        val history = GuideRuleHistory(bundle.cards)
+        bundle.cards.filter { history.loopsBack(it.id) }.forEach { problems += "card ${it.id} is in a replacement loop" }
+    }
+
     private fun checkCard(
         card: GuideCard,
         bundle: GuideBundle,
@@ -63,6 +74,7 @@ object GuideBundleValidator {
         if (card.isReplaced && (card.replacedBy == id || bundle.cards.none { it.id == card.replacedBy })) {
             problems += "card $id replaced_by ${card.replacedBy} is not another card"
         }
+        if (card.isReplaced && card.until.isBlank()) problems += "card $id is replaced but has no until date"
         if (card.facet !in bundle.facets) problems += "card $id facet '${card.facet}' has no label"
         if (card.title.isBlank() || countGuideWords(card.title) > limits.title) problems += "card $id title empty or over ${limits.title} words"
         if (card.answer.isBlank() || countGuideWords(card.answer) > limits.answer) problems += "card $id answer empty or over ${limits.answer} words"

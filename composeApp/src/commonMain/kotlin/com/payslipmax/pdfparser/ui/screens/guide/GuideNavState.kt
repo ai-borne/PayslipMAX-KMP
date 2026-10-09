@@ -18,6 +18,9 @@ sealed interface GuideDestination {
     data class Card(val cardId: String) : GuideDestination
 
     data object Search : GuideDestination
+
+    /** "What's new in the Guide": the change-log entries (M4). */
+    data object Changes : GuideDestination
 }
 
 /** A list's place: its first visible item and how far that item is scrolled. Plain ints, so the saver can write it. */
@@ -123,6 +126,7 @@ class GuideNavState(
 fun GuideBundle.knows(destination: GuideDestination): Boolean =
     when (destination) {
         GuideDestination.Home, GuideDestination.Search -> true
+        GuideDestination.Changes -> changes.isNotEmpty()
         is GuideDestination.Area -> nav.any { it.id == destination.areaId }
         is GuideDestination.Case ->
             nav.any { area -> area.cases.any { it.id == destination.caseId } } &&

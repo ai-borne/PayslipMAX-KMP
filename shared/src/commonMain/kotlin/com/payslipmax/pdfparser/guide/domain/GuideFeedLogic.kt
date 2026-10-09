@@ -14,14 +14,18 @@ object GuideFeedLogic {
     /** Facet chips show only in a feed with more cards than this, and more than one facet. */
     const val FACET_CHIPS_ABOVE_CARDS = 7
 
-    /** The cards homed in [caseId], then its "also relevant here" links, each in bundle order. Empty if unknown. */
+    /**
+     * The cards homed in [caseId], then its "also relevant here" links, each in bundle order. Empty if unknown. A replaced
+     * card is never listed: it is reached from its successor's "Earlier rule" link (the validator already homes none, so
+     * this holds even if a bundle ever did).
+     */
     fun feed(
         index: GuideIndex,
         caseId: String,
     ): List<GuideFeedItem> {
         val case = index.case(caseId) ?: return emptyList()
-        val homed = case.cards.mapNotNull(index::card).map { GuideFeedItem(it) }
-        val also = case.also.mapNotNull(index::card).map { GuideFeedItem(it, alsoHome = index.case(it.nav)) }
+        val homed = case.cards.mapNotNull(index::card).filterNot { it.isReplaced }.map { GuideFeedItem(it) }
+        val also = case.also.mapNotNull(index::card).filterNot { it.isReplaced }.map { GuideFeedItem(it, alsoHome = index.case(it.nav)) }
         return homed + also
     }
 

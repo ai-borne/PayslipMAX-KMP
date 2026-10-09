@@ -70,4 +70,17 @@ class GuideSecurityContractTest {
             assertFalse(text.contains("\"open\""), "open-point text must never ship")
             assertFalse(text.contains("http", ignoreCase = true), "the bundle holds no links")
         }
+
+    @Test
+    fun ruleHistoryAndChangeTextNeverReachTheShareNoteTheClipboardOrTheSavedStack() {
+        // The claim note is built from GuideShareParts (title, answer, key points, attach, watch-out, cite, unverified), so a
+        // change line, a replacement date or an Updated flag cannot be in it; and the saver writes level names and ids only.
+        val parts = guideSources.first { it.name == "GuideShareText.kt" }.readText()
+        assertFalse(Regex("""changes|replaced|until|updated|history""", RegexOption.IGNORE_CASE).containsMatchIn(parts.substringAfter("data class GuideShareParts").substringBefore(")")))
+        val saver = guideSources.first { it.name == "GuideNavStateSaver.kt" }.readText()
+        assertFalse(Regex("""\.text|\.title|changes\.|GuideChange""").containsMatchIn(saver), "the saver must hold ids and level names, never change text")
+        val maintenance = guideSources.filter { it.name in setOf("GuideMaintenanceModels.kt", "GuideWhatsNew.kt", "GuideCardHistoryLinks.kt", "GuideChangeLog.kt", "GuideRuleHistory.kt", "GuideMaintenanceStrings.kt") }
+        assertEquals(6, maintenance.size, "a maintenance source moved; update this list so the scan stays honest")
+        assertTrue(maintenance.none { Regex("""CrashReporter|crashReporter|log\(|println|setPrimaryClip|ACTION_SEND""").containsMatchIn(it.readText()) })
+    }
 }

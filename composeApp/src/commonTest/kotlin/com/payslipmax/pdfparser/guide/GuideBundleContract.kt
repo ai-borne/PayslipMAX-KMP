@@ -3,6 +3,8 @@ package com.payslipmax.pdfparser.guide
 import com.payslipmax.pdfparser.di.GUIDE_BUNDLE_PATH
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.guide.domain.CardTemplate
+import com.payslipmax.pdfparser.guide.domain.GuideFeedLogic
+import com.payslipmax.pdfparser.guide.domain.GuideIndex
 import com.payslipmax.pdfparser.guide.domain.GuideLinkMap
 import com.payslipmax.pdfparser.guide.domain.GuidePins
 import com.payslipmax.pdfparser.guide.domain.GuideRuleNumberParser
@@ -15,6 +17,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.feedContent
 import com.payslipmax.pdfparser.ui.screens.guide.shareNote
 import com.payslipmax.pdfparser.ui.screens.guide.toContent
 import com.payslipmax.pdfparser.ui.screens.guide.toReady
+import com.payslipmax.pdfparser.ui.screens.guide.whatsNewContent
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import pdfparser.composeapp.generated.resources.Res
 import kotlin.test.assertEquals
@@ -74,6 +77,32 @@ object GuideBundleContract {
         assertTrue(bundle.changes.size <= 12)
         assertEquals(bundle.changes.map { it.date }.sortedDescending(), bundle.changes.map { it.date })
         for (id in bundle.changes.flatMap { entry -> entry.items.flatMap { it.cards } }) assertTrue(id in ids, "the change log names $id, which is not a card")
+    }
+
+    /**
+     * M4: what the app does with those dates, on the real bundle and whatever it holds today (none replaced, no change entry,
+     * so every check is vacuous and Home looks as it did before). Once a rule is replaced they bite: a replaced card is in no feed
+     * and no search result, still opens, has a rule in force, and the What's new list links only to cards that exist.
+     */
+    fun assertRuleHistoryBehaves(bundle: GuideBundle) {
+        val index = GuideIndex(bundle)
+        val searchIndex = GuideSearchIndex(bundle)
+        val inFeeds = bundle.nav.flatMap { area -> area.cases.flatMap { case -> GuideFeedLogic.feed(index, case.id).map { it.card.id } } }.toSet()
+        for (card in bundle.cards.filter { it.isReplaced }) {
+            assertTrue(card.id !in inFeeds, "${card.id} is replaced but listed in a feed")
+            assertTrue(searchIndex.search(card.title).none { it.card.id == card.id }, "${card.id} is replaced but searchable")
+            assertTrue(!index.history.loopsBack(card.id), "${card.id} is in a replacement loop")
+            assertNotNull(index.history.currentRule(card.id), "${card.id} has no rule in force")
+            assertNotNull(index.cardContent(card.id, unlocked = false, nowMillis = 0L)?.history?.currentRuleId, "${card.id} offers no way to the current rule")
+        }
+        for (card in bundle.cards) {
+            val trust = index.trust(card)
+            assertTrue(!(trust.updated && card.isReplaced), "${card.id} reads both Updated and Replaced")
+            assertEquals(card.isReplaced, trust.replacedUntil != null, "${card.id}: Replaced chip and replaced_by disagree")
+        }
+        val whatsNew = index.whatsNewContent()
+        assertEquals(bundle.changes.isEmpty(), whatsNew == null, "the What's new row must appear exactly when the bundle has a change entry")
+        whatsNew?.entries?.flatMap { e -> e.lines.flatMap { it.cards } }?.forEach { assertNotNull(index.card(it.cardId)) }
     }
 
     /** The E2 tiles: 9 area tiles holding the 44 cases, and every card counted once in the case it is homed in. */

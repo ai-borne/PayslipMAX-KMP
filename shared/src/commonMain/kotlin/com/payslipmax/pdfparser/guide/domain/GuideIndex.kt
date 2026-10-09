@@ -17,6 +17,12 @@ class GuideIndex(
     private val areaByCaseId = bundle.nav.flatMap { area -> area.cases.map { it.id to area } }.toMap()
     private val cardsById = bundle.cards.associateBy { it.id }
 
+    /** The hand-written change log; built on first use, so a Guide with no change entry pays nothing. */
+    val changeLog: GuideChangeLog by lazy { GuideChangeLog(bundle.changes) }
+
+    /** The chain of dated rules behind each card; built on first use. */
+    val history: GuideRuleHistory by lazy { GuideRuleHistory(bundle.cards) }
+
     fun area(id: String): GuideArea? = areasById[id]
 
     fun case(id: String): GuideCase? = casesById[id]
@@ -25,4 +31,14 @@ class GuideIndex(
     fun areaOfCase(caseId: String): GuideArea? = areaByCaseId[caseId]
 
     fun card(id: String): GuideCard? = cardsById[id]
+
+    /**
+     * The one place a card's chips are decided, for a feed row, a search result, a pinned row and the card screen alike.
+     * A replaced card never also reads "Updated": the replacement is the stronger message.
+     */
+    fun trust(card: GuideCard): GuideTrust =
+        GuideTrust.of(card, bundle.ratesAsOf).copy(
+            updated = !card.isReplaced && changeLog.changedInLatest(card.id),
+            replacedUntil = history.replacedOn(card.id),
+        )
 }
