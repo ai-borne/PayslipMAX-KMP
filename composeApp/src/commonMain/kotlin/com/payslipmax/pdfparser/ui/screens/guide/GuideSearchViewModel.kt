@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
 import com.payslipmax.pdfparser.guide.domain.GuideSearchNotes
 import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
 import com.payslipmax.pdfparser.guide.domain.GuideTrust
+import com.payslipmax.pdfparser.ui.UI_STOP_TIMEOUT_MS
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +58,8 @@ fun GuideSearchState.visibleTo(unlocked: Boolean): GuideSearchState = if (this i
  * The query lives only in this object's memory: it is not saved with the Guide stack, never reaches telemetry (this
  * class has no [com.payslipmax.pdfparser.telemetry.CrashReporter]) and is gone when the app is killed (owner
  * decision 2026-10-07). Results are derived on [dispatcher] from the loaded Guide, so typing never waits on the
- * index being built.
+ * index being built. [state] is computed only while a screen collects it (plus the shared grace period), so the notes
+ * are not held decrypted in memory after Search closes; the query itself keeps its own flow and survives that.
  */
 class GuideSearchViewModel(
     guide: GuideViewModel,
@@ -79,7 +81,7 @@ class GuideSearchViewModel(
 
     val state: StateFlow<GuideSearchState> =
         combine(_query, guide.uiState, _unlocked, noteWords) { query, ui, unlocked, words -> search(query, ui, unlocked, words) }
-            .stateIn(scope, SharingStarted.Eagerly, GuideSearchState.Idle)
+            .stateIn(scope, SharingStarted.WhileSubscribed(UI_STOP_TIMEOUT_MS), GuideSearchState.Idle)
 
     /** Free users search titles and rule numbers only; Premium searches every field (see [GuideSearchScope]). */
     fun setUnlocked(unlocked: Boolean) {

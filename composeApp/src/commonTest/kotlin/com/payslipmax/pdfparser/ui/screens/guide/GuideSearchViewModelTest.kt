@@ -4,6 +4,8 @@ import androidx.compose.runtime.saveable.SaverScope
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
+import com.payslipmax.pdfparser.ui.UI_STOP_TIMEOUT_MS
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -23,7 +25,12 @@ class GuideSearchViewModelTest {
     private val guide = GuideViewModel(repository, crashReporter, dispatcher)
     private val search = GuideSearchViewModel(guide, dispatcher).also { it.setUnlocked(true) }
 
-    private fun test(block: suspend TestScope.() -> Unit) = runTest(dispatcher) { block() }
+    private fun test(block: suspend TestScope.() -> Unit) =
+        runTest(dispatcher) {
+            // The state is computed only while collected, as the screen does.
+            backgroundScope.launch { search.state.collect {} }
+            block()
+        }
 
     private fun TestScope.loadGuide() {
         guide.load()
@@ -110,6 +117,7 @@ class GuideSearchViewModelTest {
             assertEquals(nav.stack, restored.stack)
             // A killed app is a new process: a new object over the same Guide has no query and no results.
             val afterRestart = GuideSearchViewModel(guide, dispatcher)
+            backgroundScope.launch { afterRestart.state.collect {} }
             testScheduler.advanceUntilIdle()
             assertEquals("", afterRestart.query.value)
             assertEquals(GuideSearchState.Idle, afterRestart.state.value)
@@ -156,6 +164,7 @@ class GuideSearchViewModelTest {
     fun aSearchStartsLockedSoAScreenThatForgetsToSetAccessCannotLeak() =
         test {
             val fresh = GuideSearchViewModel(guide, dispatcher)
+            backgroundScope.launch { fresh.state.collect {} }
             loadGuide()
             fresh.onQueryChange("longer details")
             testScheduler.advanceUntilIdle()
@@ -193,5 +202,21 @@ class GuideSearchViewModelTest {
             assertEquals(preview, preview.visibleTo(unlocked = false))
             assertEquals(GuideSearchState.Idle, preview.visibleTo(unlocked = true), "stale narrower results are hidden too")
             assertEquals(GuideSearchState.TooShort, GuideSearchState.TooShort.visibleTo(unlocked = false))
+        }
+
+    @Test
+    fun theQuerySurvivesSearchGoingQuietAndTheResultsReturnOnComingBack() =
+        test {
+            loadGuide()
+            val collector = backgroundScope.launch { search.state.collect {} }
+            type("177")
+            collector.cancel()
+            testScheduler.advanceTimeBy(2 * UI_STOP_TIMEOUT_MS)
+            testScheduler.runCurrent()
+
+            assertEquals("177", search.query.value, "the query has its own flow and outlives the results' grace period")
+            backgroundScope.launch { search.state.collect {} }
+            testScheduler.advanceUntilIdle()
+            assertTrue(search.state.value.ids().isNotEmpty(), "coming back recomputes the results for the kept query")
         }
 }

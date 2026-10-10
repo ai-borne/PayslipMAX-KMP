@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.guide.domain.GuideStaleness
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -147,6 +148,7 @@ class GuideMaintenanceViewModelTest {
         test {
             val model = ready(changedModel())
             val search = GuideSearchViewModel(model, dispatcher)
+            backgroundScope.launch { search.state.collect {} }
             search.setUnlocked(true)
             search.onQueryChange("synthetic")
             testScheduler.advanceUntilIdle()

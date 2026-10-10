@@ -8,6 +8,8 @@ import com.payslipmax.pdfparser.guide.domain.GuideNoteEdit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 
 /** In-memory [GuideNotesRepository] with the same rules as the Room one (they are [GuideNote]'s); nothing is encrypted. */
 class FakeGuideNotesRepository(
@@ -15,7 +17,15 @@ class FakeGuideNotesRepository(
 ) : GuideNotesRepository {
     private val notes = MutableStateFlow<Map<String, GuideNote>>(emptyMap())
 
-    override fun observe(): Flow<StoredGuideNotes> = notes.map { StoredGuideNotes(it.values.sortedByDescending(GuideNote::updatedAt)) }
+    /** How many [observe] collections are live right now; a test asserts it drops to 0 when nothing should hold the notes. */
+    var activeSubscribers = 0
+        private set
+
+    override fun observe(): Flow<StoredGuideNotes> =
+        notes
+            .map { StoredGuideNotes(it.values.sortedByDescending(GuideNote::updatedAt)) }
+            .onStart { activeSubscribers++ }
+            .onCompletion { activeSubscribers-- }
 
     override suspend fun save(
         cardId: String,

@@ -159,6 +159,13 @@ store notes) and the iOS walkthrough are **out of scope** (owner, separate relea
   `git merge-base --is-ancestor`). The owner confirms; I delete only the merged ones.
 - Push and open the PR only when the owner says.
 
+### P11. Deferred items from earlier phases (consolidated; run last, needs a device)
+- **From P1 (not done, no Pixel was attached on 2026-10-10):** the Pixel smoke (`scripts/run_guide_minified_smoke.sh`) and
+  the targeted walk: a note-only search finds the note; leave Search and come back (query kept) and the results return.
+  D9 requires this for P1, so P1 is **not fully verified** until this runs.
+- Add here, with the phase name, any later phase whose device check could not run.
+- Exit: every item run on a device and recorded in `19_carry_over.md`, or the owner explicitly waives it.
+
 ## Risks and controls
 - **Release/R8:** P3, P5 and P6 change models or reachability → `assembleRelease` + check each time.
 - **iOS:** no new Native hot path. `WhileSubscribed` and the model changes are covered by `iosSimulatorArm64Test`;

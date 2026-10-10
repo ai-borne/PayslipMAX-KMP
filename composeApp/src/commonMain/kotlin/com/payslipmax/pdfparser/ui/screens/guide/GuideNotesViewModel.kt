@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.guide.data.GuideNoteSaveResult
 import com.payslipmax.pdfparser.guide.data.GuideNotesRepository
 import com.payslipmax.pdfparser.guide.data.StoredGuideNotes
 import com.payslipmax.pdfparser.guide.domain.GuideNotePlacements
+import com.payslipmax.pdfparser.ui.UI_STOP_TIMEOUT_MS
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -15,8 +16,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
-private const val STOP_TIMEOUT_MS = 5_000L
 
 /** What a save or an edit did. [SAVED_NOT_MOVED]: the text is saved, but the earlier copy it should replace is still there. */
 enum class GuideNoteOutcome { SAVED, SAVED_NOT_MOVED, DELETED, FAILED }
@@ -43,7 +42,7 @@ class GuideNotesViewModel(
     val state: StateFlow<GuideNotesState> =
         combine(repository.observe().catch { emit(StoredGuideNotes(emptyList())) }, guide.uiState) { stored, ui ->
             if (ui is GuideUiState.Ready) GuideNotesState(GuideNotePlacements.of(stored.notes, ui.bundle.cards), stored.unreadable) else GuideNotesState.None
-        }.stateIn(scope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), GuideNotesState.None)
+        }.stateIn(scope, SharingStarted.WhileSubscribed(UI_STOP_TIMEOUT_MS), GuideNotesState.None)
 
     /**
      * Saves [text] as the note on [cardId], against that card's current revision. When [movedFrom] names the earlier rule's

@@ -50,13 +50,13 @@ class PayslipViewModel(
         )
 
     val ledgerRecords: StateFlow<List<com.payslipmax.pdfparser.database.LedgerRecordEntity>> =
-        financialIntelligenceRepository?.getAllLedgerRecords()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())
+        financialIntelligenceRepository?.getAllLedgerRecords()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(UI_STOP_TIMEOUT_MS), emptyList()) ?: MutableStateFlow(emptyList())
 
     val financialInsights: StateFlow<List<com.payslipmax.pdfparser.database.FinancialInsightEntity>> =
-        financialIntelligenceRepository?.getAllFinancialInsights()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())
+        financialIntelligenceRepository?.getAllFinancialInsights()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(UI_STOP_TIMEOUT_MS), emptyList()) ?: MutableStateFlow(emptyList())
 
     val representationDrafts: StateFlow<List<com.payslipmax.pdfparser.database.RepresentationDraftEntity>> =
-        financialIntelligenceRepository?.getAllRepresentationDrafts()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()) ?: MutableStateFlow(emptyList())
+        financialIntelligenceRepository?.getAllRepresentationDrafts()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(UI_STOP_TIMEOUT_MS), emptyList()) ?: MutableStateFlow(emptyList())
 
     // SSOT for the Premium yearly price shown across the upgrade sheet, settings card, and Insights
     // hub. The store is the only source of truth for price: this stays null until RevenueCat
