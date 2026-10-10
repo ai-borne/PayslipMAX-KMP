@@ -180,6 +180,17 @@ Gate: tech-debt audit and ktlint green; `check` green (includes `GuideReleaseLau
 iOS link green; `assembleRelease` 69,626,176 bytes (identical to baseline); `check_r8_guide.py` on release: 12 models kept,
 bundle byte-identical. Behaviour change: with the switch off, debug also hides the Guide. Not done: the Pixel items (P11).
 
+## P4 result (2026-10-10)
+
+Done: red = `DefaultsTest` in `test_check_r8_guide.py` (1 failed, 1 error); `check_r8_guide.py` defaults, docstring and
+failure hint now target the release mapping and APK; CI drops `assembleMinifiedTest` and runs the check after
+`assembleRelease`; pre-push builds only `assembleRelease` before the check (its device smoke already builds
+`minifiedTest` via `run_guide_minified_smoke.sh`); `proguard-rules.pro` §10, the `GuideModels.kt` doc comment (it
+claimed a keep rule exists) and CLAUDE.md (R8 gate, "neither hook runs it") corrected. Gate: Python tests 10/10;
+`assembleRelease` 69,626,176 bytes (identical to baseline); `check_r8_guide.py` with no arguments: 12 models kept,
+bundle byte-identical; ktlint and tech-debt audit green. Not done: the Pixel items (P11). The CI YAML edit could not be
+parsed locally (no PyYAML); it is a two-line change to one step.
+
 ## Risks and controls
 - **Release/R8:** P3, P5 and P6 change models or reachability → `assembleRelease` + check each time.
 - **iOS:** no new Native hot path. `WhileSubscribed` and the model changes are covered by `iosSimulatorArm64Test`;

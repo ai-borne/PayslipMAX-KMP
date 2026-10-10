@@ -38,5 +38,5 @@
 
 # 10. Claim Guide bundle models: no rule on purpose. Once the Guide UI calls the repository, reachability plus
 # kotlinx-serialization's bundled rules keep every model and serializer; scripts/check_r8_guide.py proves it on
-# the minifiedTest build (docs/Plan/rule_cards/16_guide_phase_plan.md, EP item 3).
+# the release build (docs/Plan/rule_cards/16_guide_phase_plan.md, EP item 3).
 

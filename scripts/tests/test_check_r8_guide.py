@@ -43,6 +43,17 @@ class ModelDiscoveryTest(unittest.TestCase):
         self.assertEqual(gate.serializable_models(MODELS_SRC), ["GuideBundle", "GuideCard"])
 
 
+class DefaultsTest(unittest.TestCase):
+    """The gate must inspect the build that ships; a minifiedTest-only check can pass while release breaks."""
+
+    def test_defaults_point_at_the_release_outputs(self):
+        self.assertTrue(gate.DEFAULT_MAPPING.endswith("outputs/mapping/release/mapping.txt"), gate.DEFAULT_MAPPING)
+        self.assertTrue(gate.DEFAULT_APK_GLOB.endswith("outputs/apk/release/*.apk"), gate.DEFAULT_APK_GLOB)
+
+    def test_failure_hint_names_assemble_release(self):
+        self.assertIn("assembleRelease", gate.BUILD_HINT)
+
+
 class MappingCheckTest(unittest.TestCase):
     """A model whose serializer R8 removed or renamed away fails at runtime only in release, with a blank Guide."""
 

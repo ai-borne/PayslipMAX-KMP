@@ -121,14 +121,14 @@ Only after resolving all debt and verifying tests will the next phase begin.
 ### Feature areas beyond the parser (detail lives in the docs, not here)
 
 - **Pay Audit** (Premium, PCDA(O) Army only) — `docs/Plan/09_PayAudit_PhasePlan.md`.
-- **Claim Guide / rule cards** dataset — `docs/Plan/rule_cards/` (start at its `README.md`; to change content follow `18_content_update_runbook.md`; `authoring/*.txt` is the source of truth, `rulebook.json` is generated). The app ships `tools/bundle.py`'s output as a compose resource (`files/guide/guide_bundle.json`); CI fails on a stale bundle, and `scripts/check_r8_guide.py` checks after `assembleMinifiedTest` (release R8 config, Guide reachable) that R8 kept the guide models; `scripts/run_guide_minified_smoke.sh` runs the `:guideSmokeTest` device smoke on that build. App plan and phase status: `16_guide_phase_plan.md`.
+- **Claim Guide / rule cards** dataset — `docs/Plan/rule_cards/` (start at its `README.md`; to change content follow `18_content_update_runbook.md`; `authoring/*.txt` is the source of truth, `rulebook.json` is generated). The app ships `tools/bundle.py`'s output as a compose resource (`files/guide/guide_bundle.json`); CI fails on a stale bundle, and `scripts/check_r8_guide.py` checks after `assembleRelease` that R8 kept the guide models and the bundle shipped byte-identical; `scripts/run_guide_minified_smoke.sh` builds `minifiedTest` and runs the `:guideSmokeTest` device smoke on it. App plan and phase status: `16_guide_phase_plan.md`.
 - **Monetization** — `docs/Launch/07_platform_monetization_rollout.md`, `08_ios_monetization_phaseplan.md`.
 - **Release tooling** — fastlane lanes in `iosApp/fastlane` (TestFlight/ASC) and `composeApp/fastlane` (Play tracks/listing); project skills `verify` and `ios-monetization-phase` in `.claude/skills/`.
 
 ### R8 / release builds (Android)
 
 - Release is minified and resource-shrunk (`isMinifyEnabled`, `isShrinkResources`, `android.r8.optimizedResourceShrinking`). All keep rules live in `composeApp/proguard-rules.pro`; there are no `consumer-rules.pro` files, so `shared/` relies on the app module's rules. Rationale/history: `docs/Plan/05_R8_Keep_Rules_Recommendations.md`, `06_R8_Serialization_Crashlytics_Rollout_Plan.md`.
-- **Green debug tests do not prove the release build works.** Verify with `./gradlew :composeApp:minifyReleaseWithR8 -PallowPlaceholderGemmaModel=true` (CI runs it; neither git hook does) whenever you add `@Serializable` types, Koin annotations, JNI/LiteRT code, reflection, or a new library.
+- **Green debug tests do not prove the release build works.** Verify with `./gradlew :composeApp:minifyReleaseWithR8 -PallowPlaceholderGemmaModel=true` (CI runs it; pre-push runs `assembleRelease` + `check_r8_guide.py`, pre-commit does not) whenever you add `@Serializable` types, Koin annotations, JNI/LiteRT code, reflection, or a new library.
 - Keep rules stay narrow — no package-wide `-keep class x.** { *; }` without justification; use the `r8-analyzer` skill to audit. Remove rules for dependencies that are gone.
 - The R8 mapping uploads to Crashlytics only for `bundleRelease`; a local `assembleRelease` shares the Play versionCode and would overwrite its mapping, so it's disabled there — keep it that way.
 
