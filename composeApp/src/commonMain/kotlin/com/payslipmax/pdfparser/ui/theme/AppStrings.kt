@@ -140,6 +140,7 @@ object AppStrings {
     const val settingsDeleteConfirmBtn = "Delete Everything"
     const val btnCancel = "Cancel"
     const val btnBack = "Back"
+    const val rowArrow = "➔" // Trailing "opens a screen" marker on tappable rows (Settings, Premium, Guide).
     const val settingsSetPasscodeTitle = "Set 4-Digit Passcode"
     const val settingsSetPasscodeLabel = "Enter 4-Digit PIN"
     const val settingsSetPasscodeConfirmBtn = "Enable Lock"

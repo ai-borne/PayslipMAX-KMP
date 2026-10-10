@@ -163,6 +163,6 @@ private fun SettingsRowTrailingContent(
     if (trailingContent != null) {
         trailingContent()
     } else if (onClick != null) {
-        Text("➔", fontSize = AppDimensions.TextSizeLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(AppStrings.rowArrow, fontSize = AppDimensions.TextSizeLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

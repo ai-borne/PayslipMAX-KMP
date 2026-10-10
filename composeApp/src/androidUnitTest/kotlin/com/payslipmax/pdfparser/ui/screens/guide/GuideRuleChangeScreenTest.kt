@@ -3,12 +3,15 @@ package com.payslipmax.pdfparser.ui.screens.guide
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasScrollToIndexAction
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
@@ -206,6 +209,8 @@ class GuideRuleChangeScreenTest {
         composeRule.onNode(hasSetTextAction()).performTextInput("synthetic")
         settle()
 
+        // Scrolled to, not assumed on screen: a result card's height is styling, the listing is what matters.
+        composeRule.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(newTitle))
         composeRule.onNodeWithText(newTitle).assertIsDisplayed()
         composeRule.onNodeWithText(oldTitle).assertDoesNotExist()
     }

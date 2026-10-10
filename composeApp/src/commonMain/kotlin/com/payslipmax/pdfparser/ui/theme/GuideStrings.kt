@@ -6,12 +6,30 @@ package com.payslipmax.pdfparser.ui.theme
  */
 object GuideStrings {
     const val tabLabel = "Guide"
-    const val homeTitle = "Claim Guide"
+    const val homeTitle = "Guide"
     const val homeSection = "What do you need help with?"
     const val loading = "Opening the Claim Guide…"
     const val loadFailedTitle = "The Claim Guide could not open"
     const val loadFailedBody = "Your payslips are not affected. Try again. If it keeps failing, update the app."
     const val retry = "Try again"
+
+    // One emoji per area, keyed by the bundle's area id; decoration only, never read aloud. A new area shows the
+    // fallback until it is given its own here (GuideHomeRowsTest asks for one).
+    const val areaEmojiFallback = "📘"
+
+    fun areaEmoji(areaId: String): String =
+        when (areaId) {
+            "ltc" -> "✈️"
+            "leave" -> "🗓️"
+            "td" -> "🧳"
+            "move" -> "🚚"
+            "claims" -> "🧾"
+            "ret" -> "🎖️"
+            "pay" -> "💰"
+            "allow" -> "💵"
+            "home" -> "🏠"
+            else -> areaEmojiFallback
+        }
 
     // Search.
     const val searchTitle = "Search"
@@ -89,6 +107,12 @@ object GuideStrings {
     fun topicCount(count: Int): String = if (count == 1) "1 topic" else "$count topics"
 
     fun cardCount(count: Int): String = if (count == 1) "1 card" else "$count cards"
+
+    /** A case row's second line: its rule subtitle from the bundle, when it has one, then its card count. */
+    fun caseLine(
+        subtitle: String,
+        count: Int,
+    ): String = if (subtitle.isBlank()) cardCount(count) else "$subtitle · ${cardCount(count)}"
 
     fun resultCount(count: Int): String = if (count == 1) "1 result" else "$count results"
 

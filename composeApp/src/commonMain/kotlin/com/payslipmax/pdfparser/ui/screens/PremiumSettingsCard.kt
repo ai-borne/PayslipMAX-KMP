@@ -118,7 +118,7 @@ private fun PremiumCardContent(
         }
         if (!isPremiumEnabled) {
             Text(
-                text = "➔",
+                text = AppStrings.rowArrow,
                 fontSize = AppDimensions.TextSizeLarge,
                 color = MaterialTheme.colorScheme.tertiary,
             )

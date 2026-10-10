@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -15,13 +14,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
+import com.payslipmax.pdfparser.ui.components.AccentStripeCard
+import com.payslipmax.pdfparser.ui.components.AccentStripeCardShape
 import com.payslipmax.pdfparser.ui.screens.FlatBorderedCardShape
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 private val TileShape = RoundedCornerShape(AppDimensions.CornerRadius)
@@ -39,52 +41,77 @@ internal fun GuideTileFrame(
     }
 }
 
-/** An area on Guide Home: its title from the bundle and how many topics it holds. Titles wrap, never truncate. */
+/**
+ * An area on Guide Home: the app's accent-stripe card with the area's emoji, its title from the bundle, its topic
+ * count and an arrow, laid out like a Settings row. Titles wrap, never truncate; the emoji and arrow are not read aloud.
+ */
 @Composable
 internal fun GuideAreaTileView(
     tile: GuideAreaTile,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    GuideTileFrame(onClick = onClick, modifier = modifier) {
-        Column(
-            modifier = Modifier.heightIn(min = AppDimensions.GuideAreaTileMinHeight).padding(AppDimensions.SpacingMedium),
-            verticalArrangement = Arrangement.SpaceBetween,
+    AccentStripeCard(
+        accent = MaterialTheme.colorScheme.primary,
+        modifier = modifier.clip(AccentStripeCardShape).clickable(role = Role.Button, onClick = onClick),
+    ) {
+        Row(
+            modifier = Modifier.weight(1f).padding(AppDimensions.PaddingMedium),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
-            Text(tile.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-            Text(
-                GuideStrings.topicCount(tile.caseCount),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Decoration(GuideStrings.areaEmoji(tile.id), AppDimensions.TextSizeHuge)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(tile.title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+                Text(
+                    GuideStrings.topicCount(tile.caseCount),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Decoration(AppStrings.rowArrow, AppDimensions.TextSizeLarge, MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
 
-/** A case in an area: title, the rule-number subtitle when the bundle has one, and a card-count pill. */
+/** An emoji or arrow beside a row's text: seen, never read aloud. */
+@Composable
+internal fun Decoration(
+    text: String,
+    fontSize: TextUnit,
+    color: Color = Color.Unspecified,
+) {
+    Text(text, fontSize = fontSize, color = color, modifier = Modifier.clearAndSetSemantics {})
+}
+
+/**
+ * A case in an area, drawn like an area row on Guide Home: its title, then one line with the rule subtitle (when the
+ * bundle has one) and the card count, so every row is the same height.
+ */
 @Composable
 internal fun GuideCaseTileView(
     tile: GuideCaseTile,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    GuideTileFrame(onClick = onClick, modifier = modifier.fillMaxWidth()) {
+    AccentStripeCard(
+        accent = MaterialTheme.colorScheme.primary,
+        modifier = modifier.clip(AccentStripeCardShape).clickable(role = Role.Button, onClick = onClick),
+    ) {
         Row(
-            modifier = Modifier.padding(AppDimensions.SpacingMedium),
+            modifier = Modifier.weight(1f).padding(AppDimensions.PaddingMedium),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(tile.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                if (tile.subtitle.isNotBlank()) {
-                    Text(
-                        tile.subtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                Text(tile.title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+                Text(
+                    GuideStrings.caseLine(tile.subtitle, tile.cardCount),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
-            CountPill(tile.cardCount)
+            Decoration(AppStrings.rowArrow, AppDimensions.TextSizeLarge, MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -101,12 +128,13 @@ internal fun GuideCardRowView(
     noteMark: GuideNoteMark = GuideNoteMark.NONE,
 ) {
     GuideTileFrame(onClick = onClick, modifier = modifier.fillMaxWidth()) {
+        // Smart Insights card type and padding: a bold title, then a body-size answer.
         Column(
-            modifier = Modifier.padding(AppDimensions.SpacingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
+            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
         ) {
-            Text(row.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
-            Text(row.answer, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(row.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            Text(row.answer, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             GuideLabelPill(row.facetLabel)
             GuideTrustChips(row.trust, noteMark = noteMark)
             row.alsoHomeTitle?.let { home ->
@@ -130,22 +158,6 @@ internal fun GuideLabelPill(text: String) {
         modifier =
             Modifier
                 .background(MaterialTheme.colorScheme.surfaceVariant, PillShape)
-                .padding(horizontal = AppDimensions.SpacingSmall, vertical = AppDimensions.SpacingTwo),
-    )
-}
-
-@Composable
-private fun CountPill(count: Int) {
-    val description = GuideStrings.cardCount(count)
-    Text(
-        text = count.toString(),
-        style = MaterialTheme.typography.labelMedium,
-        fontFamily = FontFamily.Monospace,
-        color = MaterialTheme.colorScheme.primary,
-        modifier =
-            Modifier
-                .clearAndSetSemantics { contentDescription = description }
-                .background(MaterialTheme.colorScheme.primaryContainer, PillShape)
                 .padding(horizontal = AppDimensions.SpacingSmall, vertical = AppDimensions.SpacingTwo),
     )
 }

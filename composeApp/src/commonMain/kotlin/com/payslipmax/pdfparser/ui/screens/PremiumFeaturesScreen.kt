@@ -163,7 +163,7 @@ private fun PremiumFeatureTrailing(mode: RowMode) {
     when (mode) {
         RowMode.OPENABLE ->
             Text(
-                text = "➔",
+                text = AppStrings.rowArrow,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
