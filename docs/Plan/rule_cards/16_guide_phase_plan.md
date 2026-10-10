@@ -797,7 +797,7 @@ Content-maintenance work after E9. Each phase is a short-lived branch off main, 
 | M4 | "What changed" UI: change log and rule history domain, replaced cards out of search, Updated/Replaced chips, What's new row and list, Earlier rule / See current rule links, validator loop rule | Done 2026-10-09 (merged and pushed, main at 65221c10) |
 | M5 | Suggest a correction: `GuideSuggestion` (allow-listed email, user text trimmed and capped at 1000), action and dialog on unlocked cards, email through the existing helper | Done 2026-10-09 (merged and pushed, main at 83e21934, pre-push gate passed in 316 s; branch deleted); gate and Pixel walkthrough passed |
 | M6 | Personal notes, data layer: `GuideNote` domain, encrypted `guide_notes` rows (Room 13 to 14), `GuideNotesRepository`, backup v4 | Done 2026-10-10 (merged into main and pushed; branch deleted); gate passed; Pixel: migration and Guide walked, on-device note proof NOT run (see M6 result) |
-| M7 | Personal notes UI: "Your note" section, `GuideNotesViewModel`, "Note" / "In your note" markers, note words in search, Home lines for unreadable and removed-card notes | Done 2026-10-10 (`feature/guide-m7-notes-ui`, 2 commits + docs, not merged or pushed); gate and Pixel walkthrough passed (dark and light) |
+| M7 | Personal notes UI: "Your note" section, `GuideNotesViewModel`, "Note" / "In your note" markers, note words in search, Home lines for unreadable and removed-card notes | Done 2026-10-10 (merged and pushed, main at 7b0ea9c2, pre-push gate passed in 309 s; branch deleted); gate and Pixel walkthrough passed (dark and light) |
 | M8 | Runbook, end-to-end and release readiness | Not started |
 | M9 | Carry-over list of anything left unfinished | Collects in the plan file |
 
