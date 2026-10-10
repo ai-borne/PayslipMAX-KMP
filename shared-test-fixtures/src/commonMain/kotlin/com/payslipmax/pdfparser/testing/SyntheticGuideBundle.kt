@@ -6,7 +6,7 @@ import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.GuideFigures
 
 /**
- * A small, valid Claim Guide bundle for logic and UI tests, so a rate edit in the real 402 cards never breaks
+ * A small, valid Claim Guide bundle for logic and UI tests, so a rate edit in the real cards never breaks
  * them. It carries one card of each kind the UI treats differently: a personal card with placeholders, an
  * unverified card, a card with no cite, rate and amended chips, an "also relevant here" link, and one case
  * with more than 7 cards across several facets.
@@ -42,9 +42,9 @@ object SyntheticGuideBundle {
          ${card("RB-T8", BIG_CASE, "C")},
          ${card("RB-T9", "ltc-home", "Q")},
          ${card("RB-T10", "ltc-home", "H")},
-         ${card("RB-P1", "pay-hra", "Q", domain = "pay")},
-         ${card("RB-P2", "pay-hra", "H", domain = "pay")},
-         ${card("RB-P3", "pay-hra", "L", domain = "pay")}]}
+         ${card("RB-P1", "pay-hra", "Q")},
+         ${card("RB-P2", "pay-hra", "H")},
+         ${card("RB-P3", "pay-hra", "L")}]}
         """.trimIndent()
 
     /**
@@ -61,15 +61,14 @@ object SyntheticGuideBundle {
         id: String,
         nav: String,
         facet: String,
-        domain: String = "travel",
         cite: String = "Rule 114 TR",
         chips: String = "",
         personal: String = "",
         key: String = "A short key point for $id",
         unverified: Boolean = false,
     ): String =
-        """{"id":"$id","domain":"$domain","topic":"RR-TD-01","title":"Synthetic card $id?",""" +
+        """{"id":"$id","title":"Synthetic card $id?",""" +
             """"answer":"A one-line answer for $id.","key":["$key"],"attach":["A form"],"watch":[],""" +
             """"cite":"$cite","details":"Longer details for $id.","chips":[$chips],"personal":"$personal",""" +
-            """"status":"draft","facet":"$facet","nav":"$nav","unverified":$unverified}"""
+            """"facet":"$facet","nav":"$nav","unverified":$unverified}"""
 }

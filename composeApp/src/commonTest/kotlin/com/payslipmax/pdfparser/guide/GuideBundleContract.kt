@@ -41,8 +41,6 @@ object GuideBundleContract {
     fun assertMatchesCompiledDataset(bundle: GuideBundle) {
         assertEquals(GuideBundleParser.SUPPORTED_MAJOR, bundle.version)
         assertEquals(404, bundle.cards.size)
-        assertEquals(220, bundle.cards.count { it.domain == "travel" })
-        assertEquals(184, bundle.cards.count { it.domain == "pay" })
         assertEquals(9, bundle.nav.size)
         assertEquals(44, bundle.nav.sumOf { it.cases.size })
         assertEquals(setOf("Q", "H", "C", "L"), bundle.facets.keys)
@@ -53,7 +51,7 @@ object GuideBundleContract {
         // Owner, 2026-10-07: rates current to the DA 60% step.
         assertEquals("2026-01", bundle.ratesAsOf)
         // RP-088 HBA ships with the chip until the owner confirms the rate from a primary letter.
-        assertEquals(true, bundle.cards.firstOrNull { it.topic == "RP-088" }?.unverified)
+        assertEquals(true, bundle.cards.firstOrNull { it.id == "RB-RP-088" }?.unverified)
         assertRuleChangeMetadataIsSound(bundle)
     }
 

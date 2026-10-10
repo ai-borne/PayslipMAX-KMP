@@ -168,6 +168,10 @@ store notes) and the iOS walkthrough are **out of scope** (owner, separate relea
   `GuideOpenCardTest.aFindingLinkRecoversWhenTheEarlierLoadFailed...`; only the on-device smoke is outstanding.
 - **From P3 (not done, no Pixel attached on 2026-10-10):** smoke `scripts/run_guide_minified_smoke.sh`, tab re-tap, and
   the Pay Audit link opening its card. Everything else in P3 is verified (see the P3 result below).
+- **From P5 (not done, no Pixel attached on 2026-10-10):** smoke `scripts/run_guide_minified_smoke.sh`, and open a card that
+  has a note: it must show no "updated since your note" marker (the `rev` values are proven unchanged off-device, but the
+  marker itself was not seen on a screen).
+- **From P4 (not done):** the device smoke now builds `minifiedTest` itself; run it once to prove that path.
 - Add here, with the phase name, any later phase whose device check could not run.
 - Exit: every item run on a device and recorded in `19_carry_over.md`, or the owner explicitly waives it.
 
@@ -190,6 +194,20 @@ claimed a keep rule exists) and CLAUDE.md (R8 gate, "neither hook runs it") corr
 `assembleRelease` 69,626,176 bytes (identical to baseline); `check_r8_guide.py` with no arguments: 12 models kept,
 bundle byte-identical; ktlint and tech-debt audit green. Not done: the Pixel items (P11). The CI YAML edit could not be
 parsed locally (no PyYAML); it is a two-line change to one step.
+
+## P5 result (2026-10-10)
+
+Done: red = `test_curator_bookkeeping_never_ships` (Python) and `curatorBookkeepingFieldsAreNeverAccepted` (Kotlin), both
+failed first; `bundle.py` `CARD_KEYS` without `status`/`topic`/`domain`; `INTERNAL_CARD_FIELDS` += the three; fields removed
+from `GuideCard` and `SyntheticGuideBundle`; travel/pay counts re-pinned on `rulebook.json`; the shipped-contract test no
+longer needs `topic` (RP-088 is found by id `RB-RP-088`); bundle regenerated. Regression control: the `rev` of all 404 cards
+equals the P0 baseline, cards are identical to the old bundle once the three keys are dropped, and the only other top-level
+change is `generated` (2026-10-09 to 2026-10-10, which `refresh.py` stamps). Bundle 261,409 to 240,327 bytes (SHA-256
+`6bdddb1d719265b196b4308277102293f64a55c16f3222d26b73525c5fb06116`); release APK 69,626,176 to 69,624,204 bytes.
+Gate: tech-debt audit, ktlint, `check` (shared 1026, composeApp 895 Android unit tests, 0 failed, 0 skipped),
+`iosSimulatorArm64Test` (981 + 559, 0 failed) and iOS link, `assembleRelease` + `check_r8_guide.py` (12 models kept,
+bundle byte-identical), `refresh.py --check`, Python tests: all green. Also closed register row A7 (P4 had left it open).
+Not done: the Pixel items (P11).
 
 ## Risks and controls
 - **Release/R8:** P3, P5 and P6 change models or reachability → `assembleRelease` + check each time.

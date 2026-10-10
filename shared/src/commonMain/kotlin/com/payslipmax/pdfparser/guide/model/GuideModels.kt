@@ -70,8 +70,6 @@ data class GuideCase(
 @Serializable
 data class GuideCard(
     val id: String,
-    val domain: String,
-    val topic: String = "",
     val title: String,
     val answer: String,
     val key: List<String>,
@@ -82,7 +80,6 @@ data class GuideCard(
     val chips: List<String> = emptyList(),
     /** Marks a card that has a "your figure" line (for example "level:food_rate"); `figures.json` must hold its figure. */
     val personal: String = "",
-    val status: String = "",
     val facet: String,
     /** Id of the one case this card is homed in. */
     val nav: String,

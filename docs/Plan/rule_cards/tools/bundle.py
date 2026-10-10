@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Turn rulebook.json into the Claim Guide bundle the app ships (config.BUNDLE_PATH).
 
-Only whitelisted fields ship: internal provenance (`from`), reviewer notes (`open`) and the coverage bookkeeping
-stay in the repo. Each card gains `unverified` (it carries an open point) and the bundle gains `rates_as_of` and the owner-approved
+Only whitelisted fields ship: internal provenance (`from`), reviewer notes (`open`), authoring metadata (`status`,
+`topic`, `domain`) and the coverage bookkeeping stay in the repo. Each card gains `unverified` (it carries an open point) and the bundle gains `rates_as_of` and the owner-approved
 `figures` (figures.json; authority and evidence stay in the repo).
 Rule-change metadata is additive (BUNDLE_VERSION stays 1): every card gains `rev`, the first 8 hex characters of the SHA-256 of
 its shipped text fields (see card_rev), so a note can tell the card changed since it was written; a dated or replaced card also
@@ -22,8 +22,7 @@ import changes
 import figures
 from config import BUNDLE_PATH, BUNDLE_VERSION, CARDS_DIR, RATES_AS_OF
 
-CARD_KEYS = ('id', 'domain', 'topic', 'title', 'answer', 'key', 'attach', 'watch', 'cite', 'details', 'chips',
-             'personal', 'status', 'facet', 'nav')
+CARD_KEYS = ('id', 'title', 'answer', 'key', 'attach', 'watch', 'cite', 'details', 'chips', 'personal', 'facet', 'nav')
 # Dated-rule fields ship only on the cards that have them, which keeps the bundle small for the 400 that do not.
 OPTIONAL_CARD_KEYS = ('effective', 'replaced_by', 'until')
 # The words a user reads. A change to any of them changes `rev`; reviewer notes, source ids and dates do not.

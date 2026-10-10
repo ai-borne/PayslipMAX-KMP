@@ -119,6 +119,18 @@ class GuideBundleParserTest {
     }
 
     @Test
+    fun curatorBookkeepingFieldsAreNeverAccepted() {
+        // status/topic/domain are authoring metadata; the app reads none of them, so a bundle carrying them is a stale build.
+        for (field in listOf("status" to "\"draft\"", "topic" to "\"RR-TD-01\"", "domain" to "\"travel\"")) {
+            assertEquals(
+                GuideLoadError.INVALID,
+                failure(SyntheticGuideBundle.JSON.replace("\"id\":\"RB-T2\",", "\"id\":\"RB-T2\",\"${field.first}\":${field.second},")),
+                field.first,
+            )
+        }
+    }
+
+    @Test
     fun aStructurallyInvalidBundleIsRejected() {
         // Valid JSON, valid types, but a case lists a card that does not exist.
         assertEquals(GuideLoadError.INVALID, failure(SyntheticGuideBundle.JSON.replace("\"RB-T9\",\"RB-T10\"", "\"RB-T9\",\"RB-T10\",\"RB-NOPE\"")))
