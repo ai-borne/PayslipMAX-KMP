@@ -41,7 +41,7 @@ import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 /**
  * A card's body in the template order: (Your figure,) Key points, Attach, Watch out, Authority, then Details collapsed. An empty
- * section is left out. Placeholder bullets are already split off into [GuideCardFull.body], so none is drawn raw. A
+ * section is left out. Cards carry no placeholders (the validator rejects them), so none is drawn raw. A
  * card with no [GuideCardContent.full] (the free preview) gets the unlock panel in place of the body.
  */
 internal fun LazyListScope.guideCardSections(
@@ -55,9 +55,9 @@ internal fun LazyListScope.guideCardSections(
         return
     }
     guideYourFigure(full.figure)
-    bulletSection("key", GuideStrings.sectionKeyPoints, full.body.key)
-    bulletSection("attach", GuideStrings.sectionAttach, full.body.attach)
-    bulletSection("watch", GuideStrings.sectionWatchOut, full.body.watch, isWarning = true)
+    bulletSection("key", GuideStrings.sectionKeyPoints, full.key)
+    bulletSection("attach", GuideStrings.sectionAttach, full.attach)
+    bulletSection("watch", GuideStrings.sectionWatchOut, full.watch, isWarning = true)
     if (full.cite.isNotBlank()) item(key = "cite") { GuideCite(full.cite, onCopyCite) }
     if (full.details.isNotBlank()) item(key = "details") { GuideDetails(card.id, full.details) }
 }

@@ -26,7 +26,7 @@ private val ShareLabels =
  */
 internal fun GuideCardContent.shareNote(): String? =
     full?.let {
-        GuideShareText.build(GuideShareParts(title, answer, it.body.key, it.body.attach, it.body.watch, it.cite, trust.unverified, trust.replacedUntil?.let(GuideMaintenanceStrings::day)), ShareLabels)
+        GuideShareText.build(GuideShareParts(title, answer, it.key, it.attach, it.watch, it.cite, trust.unverified, trust.replacedUntil?.let(GuideMaintenanceStrings::day)), ShareLabels)
     }
 
 /** Guide Home's pinned rows, in the order given; an id the bundle does not hold is skipped. */

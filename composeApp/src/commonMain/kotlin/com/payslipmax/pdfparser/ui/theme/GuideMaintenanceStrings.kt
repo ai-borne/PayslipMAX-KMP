@@ -13,7 +13,6 @@ object GuideMaintenanceStrings {
     const val seeCurrentRule = "See current rule"
     const val seeCurrentRuleDescription = "Open the rule that applies now"
     const val replacedNotice = "This rule no longer applies to new claims. It is kept for claims made under it."
-    const val openCardHint = "Open card"
 
     // The marker line in a shared claim note of a replaced card: "<shareReplacedOn> 15 Nov 2026. <shareReplacedApplies>"
     const val shareReplacedOn = "Replaced on"

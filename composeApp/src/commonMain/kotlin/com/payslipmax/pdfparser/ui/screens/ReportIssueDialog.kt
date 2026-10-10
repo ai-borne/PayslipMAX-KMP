@@ -1,10 +1,8 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.runtime.Composable
+import com.payslipmax.pdfparser.domain.SUPPORT_MESSAGE_MAX_CHARS
 import com.payslipmax.pdfparser.ui.theme.AppStringsSupport
-
-/** Keeps the pre-filled `mailto:` URL comfortably within what mail apps accept. */
-private const val MAX_DESCRIPTION_LENGTH = 1000
 
 @Composable
 fun ReportIssueDialog(
@@ -16,7 +14,7 @@ fun ReportIssueDialog(
         notice = AppStringsSupport.reportIssuePrivacyNotice,
         fieldLabel = AppStringsSupport.reportIssueDescriptionLabel,
         confirmLabel = AppStringsSupport.reportIssueSendBtn,
-        maxLength = MAX_DESCRIPTION_LENGTH,
+        maxLength = SUPPORT_MESSAGE_MAX_CHARS,
         onDismiss = onDismiss,
         onConfirm = onSend,
     )

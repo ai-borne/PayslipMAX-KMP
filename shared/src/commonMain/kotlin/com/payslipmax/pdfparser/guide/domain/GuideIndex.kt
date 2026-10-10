@@ -7,7 +7,7 @@ import com.payslipmax.pdfparser.guide.model.GuideCase
 
 /**
  * Id lookups over a loaded bundle, built once per load (the bundle never changes while the app runs), so a
- * screen never scans all 402 cards to draw one feed.
+ * screen never scans all 404 cards to draw one feed.
  */
 class GuideIndex(
     val bundle: GuideBundle,

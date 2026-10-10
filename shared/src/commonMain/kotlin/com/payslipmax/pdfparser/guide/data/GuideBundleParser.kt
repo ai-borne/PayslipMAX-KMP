@@ -17,7 +17,7 @@ object GuideBundleParser {
     /** Must equal `BUNDLE_VERSION` in `docs/Plan/rule_cards/tools/config.py`. */
     const val SUPPORTED_MAJOR = 1
 
-    /** About 8x the 2026 bundle (252 KB); anything larger is not a bundle we built. */
+    /** About 8x the 2026 bundle (240 KB); anything larger is not a bundle we built. */
     const val MAX_CHARS = 2_000_000
 
     fun parse(text: String): GuideLoadResult {

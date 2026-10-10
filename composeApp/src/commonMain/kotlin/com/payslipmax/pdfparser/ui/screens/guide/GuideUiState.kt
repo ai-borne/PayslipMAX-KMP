@@ -1,8 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
 import com.payslipmax.pdfparser.guide.GuideLoadError
-import com.payslipmax.pdfparser.guide.domain.CardTemplate
-import com.payslipmax.pdfparser.guide.domain.GuideCardBody
 import com.payslipmax.pdfparser.guide.domain.GuideFeedLogic
 import com.payslipmax.pdfparser.guide.domain.GuideIndex
 import com.payslipmax.pdfparser.guide.domain.GuideProfile
@@ -90,7 +88,9 @@ data class GuideCardContent(
  * [GuideCardContent], so a locked card state cannot hold a resolved figure.
  */
 data class GuideCardFull(
-    val body: GuideCardBody,
+    val key: List<String>,
+    val attach: List<String>,
+    val watch: List<String>,
     val cite: String,
     val details: String,
     val figure: PersonalFigure? = null,
@@ -143,7 +143,7 @@ internal fun GuideIndex.cardContent(
     val trust = trust(card)
     val full =
         if (unlocked) {
-            GuideCardFull(CardTemplate.body(card), card.cite, card.details, PersonalFigureResolver.resolve(card.id, bundle.figures, profile))
+            GuideCardFull(card.key, card.attach, card.watch, card.cite, card.details, PersonalFigureResolver.resolve(card.id, bundle.figures, profile))
         } else {
             null
         }

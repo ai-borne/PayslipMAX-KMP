@@ -13,9 +13,9 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.payslipmax.pdfparser.guide.domain.GuideStaleness
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
+import com.payslipmax.pdfparser.testing.GuideTestClock
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -39,7 +39,7 @@ class GuideTrustPaywallTest {
     val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     private val dispatcher = StandardTestDispatcher()
-    private var now = GuideStaleness.epochDays(2026, 10, 7) * MILLIS_PER_DAY
+    private var now = GuideTestClock.epochDays(2026, 10, 7) * MILLIS_PER_DAY
     private val guide = GuideViewModel(FakeGuideRepository(), FakeCrashReporter(), dispatcher, nowMillis = { now })
     private val search = GuideSearchViewModel(guide, dispatcher)
     private var unlockTaps = 0
@@ -150,7 +150,7 @@ class GuideTrustPaywallTest {
 
     @Test
     fun aFreshRateCardHasTheChipButNoNudge() {
-        now = GuideStaleness.epochDays(2026, 4, 1) * MILLIS_PER_DAY
+        now = GuideTestClock.epochDays(2026, 4, 1) * MILLIS_PER_DAY
         openCard(SyntheticGuideBundle.PERSONAL_CARD, unlocked = false)
 
         composeRule.onAllNodesWithText(GuideStrings.chipRatesAsOf(SyntheticGuideBundle.RATES_AS_OF)).assertCountEquals(1)

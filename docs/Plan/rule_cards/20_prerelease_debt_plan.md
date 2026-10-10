@@ -171,6 +171,10 @@ store notes) and the iOS walkthrough are **out of scope** (owner, separate relea
 - **From P5 (not done, no Pixel attached on 2026-10-10):** smoke `scripts/run_guide_minified_smoke.sh`, and open a card that
   has a note: it must show no "updated since your note" marker (the `rev` values are proven unchanged off-device, but the
   marker itself was not seen on a screen).
+- **From P6 (not done, no Pixel attached on 2026-10-10):** smoke `scripts/run_guide_minified_smoke.sh`, then on a card: its
+  sections (Key points, Attach, Watch out, Authority, Details) render, Share, the Suggest a correction dialog (type, then
+  discard), and Settings > Report an Issue dialog. The dialogs' shared cap and the sections are covered by on-screen unit
+  tests; only the on-device look is outstanding.
 - **From P4 (not done):** the device smoke now builds `minifiedTest` itself; run it once to prove that path.
 - Add here, with the phase name, any later phase whose device check could not run.
 - Exit: every item run on a device and recorded in `19_carry_over.md`, or the owner explicitly waives it.
@@ -208,6 +212,22 @@ Gate: tech-debt audit, ktlint, `check` (shared 1026, composeApp 895 Android unit
 `iosSimulatorArm64Test` (981 + 559, 0 failed) and iOS link, `assembleRelease` + `check_r8_guide.py` (12 models kept,
 bundle byte-identical), `refresh.py --check`, Python tests: all green. Also closed register row A7 (P4 had left it open).
 Not done: the Pixel items (P11).
+
+## P6 result (2026-10-10)
+
+Done: red = compile failures on `GuideTestClock`, `SUPPORT_MESSAGE_MAX_CHARS` and `GuideCardFull.key`, plus
+`ThemeColorsSourceTest` (the old `ThemeColors.kt` held 5 repeated colour literals, checked against `HEAD`).
+`GuideSuggestion.canSend` (and its test), `GuideMaintenanceStrings.openCardHint`, `GuideCardBody` and `CardTemplate.body`
+deleted (`GuideCardFull` now holds `key`/`attach`/`watch`; screen, share, search index and contract test updated);
+`epochDays` moved to `shared-test-fixtures` `GuideTestClock`; one `SUPPORT_MESSAGE_MAX_CHARS` (shared `domain`) replaces
+`GuideSuggestion.MAX_TEXT_LENGTH` and the private cap in `ReportIssueDialog`; `ThemeColors` aliases (`Blue100`, `Blue900`,
+`Gray100`, `Gray400`, `White`); `guideSmokeTest` dependencies in `libs.versions.toml`; the "402" (`GuideIndex`) and "252 KB"
+(`GuideBundleParser`) comments fixed, and a stale "placeholder bullets are split off" comment in `GuideCardSections`.
+Gate: tech-debt audit, ktlint, `check` (shared 1024, composeApp 896 Android unit tests, 0 failed, 0 skipped; the 2 fewer
+shared tests are the deleted `canSend`/`body` tests), `iosSimulatorArm64Test` (979 + 559, 0 failed) and iOS link,
+`assembleRelease` 69,624,204 bytes (identical to P5), `check_r8_guide.py` (12 models kept, bundle byte-identical),
+`refresh.py --check` OK. Not done: the Pixel items (P11). Left on purpose: "402 cards" in test comments
+(`GuideSearchIndexTest`, `GuideLoaderIosPerfTest`), which belong to the P9 stale-wording sweep.
 
 ## Risks and controls
 - **Release/R8:** P3, P5 and P6 change models or reachability → `assembleRelease` + check each time.

@@ -131,7 +131,7 @@ object GuideBundleContract {
         assertEquals(6, alsoRows.size)
         assertTrue(alsoRows.all { row -> index.card(row.cardId)!!.nav != "ltc-rules" && row.alsoHomeTitle!!.isNotBlank() })
         val cards = bundle.cards.map { assertNotNull(index.cardContent(it.id, unlocked = true, nowMillis = 0L)) }
-        val shown = cards.flatMap { card -> card.full!!.let { listOf(card.title, card.answer, it.cite, it.details) + it.body.key + it.body.attach + it.body.watch } }
+        val shown = cards.flatMap { card -> card.full!!.let { listOf(card.title, card.answer, it.cite, it.details) + it.key + it.attach + it.watch } }
         assertTrue(shown.none(CardTemplate::hasPlaceholder), "a placeholder would be shown raw")
     }
 
@@ -152,9 +152,8 @@ object GuideBundleContract {
         val searchIndex = GuideSearchIndex(bundle)
         // Search skips replaced cards on purpose, so only current cards can be found by a word of their text.
         for (card in bundle.cards.filterNot { it.isReplaced }) {
-            val body = CardTemplate.body(card)
             val ownTitle = GuideRuleNumberParser.words(card.title)
-            val hidden = GuideRuleNumberParser.words((body.key + body.attach + body.watch).joinToString(" ")).filter { it.length > 3 && it.all(Char::isLetter) }
+            val hidden = GuideRuleNumberParser.words((card.key + card.attach + card.watch).joinToString(" ")).filter { it.length > 3 && it.all(Char::isLetter) }
             // A word that starts no word of this card's own title: only its locked text can make the card match it.
             val word = hidden.firstOrNull { w -> ownTitle.none { it.startsWith(w) } } ?: continue
             assertTrue(searchIndex.search(word, GuideSearchScope.PREVIEW).none { it.card.id == card.id }, "preview search leaked a hidden word of ${card.id}")

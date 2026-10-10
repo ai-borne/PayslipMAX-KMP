@@ -1,9 +1,9 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
 import com.payslipmax.pdfparser.guide.GuideLoadResult
-import com.payslipmax.pdfparser.guide.domain.GuideStaleness
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
+import com.payslipmax.pdfparser.testing.GuideTestClock
 import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -105,7 +105,7 @@ class GuideMaintenanceViewModelTest {
         test {
             val bundle = SyntheticGuideRuleChange.bundle()
             val rates = bundle.copy(cards = bundle.cards.map { if (it.id == SyntheticGuideRuleChange.OLD_CARD || it.id == SyntheticGuideRuleChange.NEW_CARD) it.copy(chips = listOf("RATES")) else it })
-            val far = GuideStaleness.epochDays(2030, 1, 1) * 86_400_000L
+            val far = GuideTestClock.epochDays(2030, 1, 1) * 86_400_000L
             val model = GuideViewModel(FakeGuideRepository(GuideLoadResult.Loaded(rates)), FakeCrashReporter(), dispatcher, nowMillis = { far })
             ready(model)
 

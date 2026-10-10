@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.guide.domain
 
+import com.payslipmax.pdfparser.domain.SUPPORT_MESSAGE_MAX_CHARS
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -70,27 +71,27 @@ class GuideSuggestionTest {
 
     @Test
     fun theTextIsCappedAtTheLimitAndAnInputAtTheLimitIsKept() {
-        val atLimit = "a".repeat(GuideSuggestion.MAX_TEXT_LENGTH)
+        val atLimit = "a".repeat(SUPPORT_MESSAGE_MAX_CHARS)
 
         assertEquals(atLimit, GuideSuggestion.clean(atLimit))
         assertEquals(atLimit, GuideSuggestion.clean(atLimit + "bbbb"))
-        assertEquals(1000, GuideSuggestion.MAX_TEXT_LENGTH, "the same cap as Report an Issue")
+        assertEquals(1000, SUPPORT_MESSAGE_MAX_CHARS, "one cap for Report an Issue and the Guide suggestion")
     }
 
     @Test
     fun aCutThatWouldSplitAnEmojiDropsTheHalfInsteadOfSendingABrokenCharacter() {
         val emoji = "😀"
-        val input = "a".repeat(GuideSuggestion.MAX_TEXT_LENGTH - 1) + emoji
+        val input = "a".repeat(SUPPORT_MESSAGE_MAX_CHARS - 1) + emoji
 
         val cleaned = GuideSuggestion.clean(input)
 
-        assertEquals("a".repeat(GuideSuggestion.MAX_TEXT_LENGTH - 1), cleaned)
+        assertEquals("a".repeat(SUPPORT_MESSAGE_MAX_CHARS - 1), cleaned)
         assertFalse(cleaned.last().isHighSurrogate())
     }
 
     @Test
     fun anEmojiThatFitsWholeIsKept() {
-        val input = "a".repeat(GuideSuggestion.MAX_TEXT_LENGTH - 2) + "😀"
+        val input = "a".repeat(SUPPORT_MESSAGE_MAX_CHARS - 2) + "😀"
 
         assertEquals(input, GuideSuggestion.clean(input))
     }
@@ -100,13 +101,6 @@ class GuideSuggestionTest {
         val text = "Rs 1,500 & \"quotes\" <b>tag</b> 100% = ₹1,500 + #1? रिपोर्ट 😀 [x]"
 
         assertTrue(GuideSuggestion.body(parts(text = text), labels).endsWith("Suggestion:\n$text"))
-    }
-
-    @Test
-    fun emptyOrBlankTextCannotBeSent() {
-        assertFalse(GuideSuggestion.canSend(""))
-        assertFalse(GuideSuggestion.canSend("   \n\t "))
-        assertTrue(GuideSuggestion.canSend(" x "))
     }
 
     @Test

@@ -3,10 +3,10 @@ package com.payslipmax.pdfparser.ui.screens.guide
 import com.payslipmax.pdfparser.guide.GuideLoadError
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
-import com.payslipmax.pdfparser.guide.domain.GuideStaleness
 import com.payslipmax.pdfparser.telemetry.TelemetrySanitizer
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
+import com.payslipmax.pdfparser.testing.GuideTestClock
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -189,8 +189,8 @@ class GuideViewModelTest {
             val full = card.full!!
 
             assertEquals("How much", card.facetLabel)
-            assertEquals(listOf("A short key point for RB-T1"), full.body.key)
-            assertEquals(listOf("A form"), full.body.attach)
+            assertEquals(listOf("A short key point for RB-T1"), full.key)
+            assertEquals(listOf("A form"), full.attach)
             assertEquals("Rule 114 TR", full.cite)
         }
 
@@ -262,13 +262,13 @@ class GuideViewModelTest {
     @Test
     fun theStaleNudgeFollowsTheInjectedClockAndOnlyAppliesToRateCards() =
         test {
-            var now = GuideStaleness.epochDays(2026, 8, 1) * MILLIS_PER_DAY
+            var now = GuideTestClock.epochDays(2026, 8, 1) * MILLIS_PER_DAY
             val guide = GuideViewModel(repository, crashReporter, dispatcher, nowMillis = { now })
             guide.load()
             testScheduler.advanceUntilIdle()
 
             assertEquals(false, guide.card(SyntheticGuideBundle.PERSONAL_CARD, unlocked = false)!!.ratesStale, "7 months old")
-            now = GuideStaleness.epochDays(2026, 10, 7) * MILLIS_PER_DAY
+            now = GuideTestClock.epochDays(2026, 10, 7) * MILLIS_PER_DAY
             assertEquals(true, guide.card(SyntheticGuideBundle.PERSONAL_CARD, unlocked = false)!!.ratesStale, "9 months old")
             assertEquals(false, guide.card("RB-T5", unlocked = false)!!.ratesStale, "no RATES chip, no nudge however old")
         }

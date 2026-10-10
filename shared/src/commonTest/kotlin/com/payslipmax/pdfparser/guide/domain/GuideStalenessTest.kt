@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.guide.domain
 
+import com.payslipmax.pdfparser.testing.GuideTestClock
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -17,7 +18,7 @@ class GuideStalenessTest {
         year: Int,
         month: Int,
         day: Int = 15,
-    ): Long = GuideStaleness.epochDays(year, month, day) * 86_400_000L
+    ): Long = GuideTestClock.epochDays(year, month, day) * 86_400_000L
 
     @Test
     fun theNudgeAppearsOnlyOnceTheThresholdIsReached() {
