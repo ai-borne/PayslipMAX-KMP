@@ -799,6 +799,7 @@ The iOS UI cannot be driven from here, so every item below is the owner's, on th
 | 11 | 28 | A pinned replaced card on Home still opens; search never lists the replaced card; the carried note ("From an earlier version of this rule", stale) shows on the new rule | [ ] |
 | 12 | 15, 30 | Settings "Force Free": locked card (panel, sheet, no note, no Suggest) | [ ] |
 | 13 | 14 | Post-launch only: sandbox purchase unlocks a card on each platform and the Claim Guide row shows in the Premium screen and hub | [ ] |
+| 14 | - | Status bar clock and icons contrast with the page (`fix/android-status-bar-icon-style`; Android had white icons on the light page): System Default in light and dark, then App Appearance forced Light with the phone in dark mode and forced Dark with the phone in light mode, on a tab root and on a pushed detail screen. The iOS `ApplyStatusBarIconStyle` is a deliberate no-op until this is checked | [ ] |
 
 ## Post-E9 list (release follow-up; nothing dropped)
 1. **Owner:** iOS simulator walkthrough (EP 11, 15, 20, 23, 26, 28, 29, 30) before the iOS build ships with the Guide on; the release flip already reaches iOS. One list: "iOS walkthrough checklist" above.

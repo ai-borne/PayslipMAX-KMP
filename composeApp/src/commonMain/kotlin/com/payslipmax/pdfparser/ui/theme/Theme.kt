@@ -11,6 +11,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.payslipmax.pdfparser.insights.InsightSeverity
+import com.payslipmax.pdfparser.ui.platform.ApplyStatusBarIconStyle
+import com.payslipmax.pdfparser.ui.platform.statusBarIconStyleFor
 
 // Color Tokens (Harmonious Premium Dark & Light Palettes)
 private val DarkColorPrimary = Color(0xFF3B82F6) // Premium Blue
@@ -218,6 +220,7 @@ fun PDFParserTheme(
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
+    ApplyStatusBarIconStyle(statusBarIconStyleFor(darkTheme))
     MaterialTheme(
         colorScheme = colorScheme,
         typography = AppTypography,
