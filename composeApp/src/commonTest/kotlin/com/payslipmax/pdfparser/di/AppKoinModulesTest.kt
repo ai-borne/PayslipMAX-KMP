@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.di
 
+import androidx.lifecycle.viewModelScope
 import com.payslipmax.pdfparser.database.PayslipDao
 import com.payslipmax.pdfparser.guide.GuideRepository
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
@@ -19,6 +20,9 @@ import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.job
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -45,8 +49,19 @@ class AppKoinModulesTest {
     @BeforeTest
     fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())
 
+    // Every PayslipViewModel starts collectors on viewModelScope, which dispatches on Main. One that is still running when
+    // resetMain() removes the test Main resumes on a worker thread and throws "Main dispatcher missing"; kotlinx-coroutines-test
+    // then reports it as UncaughtExceptionsBeforeTest on whichever test runs next. So the ones built here are stopped first.
+    private val built = mutableListOf<PayslipViewModel>()
+
     @AfterTest
-    fun tearDown() = Dispatchers.resetMain()
+    fun tearDown() {
+        runBlocking { built.forEach { it.viewModelScope.coroutineContext.job.cancelAndJoin() } }
+        built.clear()
+        Dispatchers.resetMain()
+    }
+
+    private fun Koin.payslipViewModel(): PayslipViewModel = get<PayslipViewModel>().also(built::add)
 
     private val testLeaves =
         module {
@@ -66,7 +81,7 @@ class AppKoinModulesTest {
         koin.get<CrashReporter>()
         koin.get<InstallationIdManager>()
         koin.get<PayslipBackupService>()
-        koin.get<PayslipViewModel>()
+        koin.payslipViewModel()
         koin.get<PayAuditViewModel>()
         // Resolved by every screen that gates onboarding; unbound it throws on the first composition.
         koin.get<OnboardingManager>()
@@ -78,7 +93,7 @@ class AppKoinModulesTest {
 
         // A ViewModel built without it reports "backup unavailable" on every export and restore, and
         // nothing else in the graph would notice: the field is nullable so older call sites still compile.
-        assertSame(koin.get<PayslipBackupService>(), koin.get<PayslipViewModel>().backupService)
+        assertSame(koin.get<PayslipBackupService>(), koin.payslipViewModel().backupService)
     }
 
     @Test
@@ -120,6 +135,14 @@ class AppKoinModulesTest {
         val koin = startGuide()
 
         assertSame(koin.get<GuidePinsModel>(), koin.get<GuideViewModel>().pins)
+    }
+
+    @Test
+    fun payslipViewModelIsOnePerRequestBecauseEachScreenScopeOwnsItsCollectors() {
+        val koin = start()
+
+        // A shared instance would outlive the screen that cancels its scope, and a later screen would get a dead model.
+        assertNotSame(koin.payslipViewModel(), koin.payslipViewModel())
     }
 
     @Test
