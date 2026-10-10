@@ -84,11 +84,11 @@ class GuideTabTest {
         composeRule.waitForIdle()
 
         composeRule.onNodeWithText("Daily allowance on duty").assertIsDisplayed()
-        composeRule.onNodeWithText("Rule 114").assertIsDisplayed()
-        // The pill is read as "8 cards", not a bare number; 8 = cards homed in the case.
-        composeRule.onNodeWithContentDescription(GuideStrings.cardCount(8)).assertIsDisplayed()
+        // One line under the title: the rule subtitle, then the count read as "8 cards", never a bare number.
+        // 8 = cards homed in the case.
+        composeRule.onNodeWithText(GuideStrings.caseLine("Rule 114", 8)).assertIsDisplayed()
         // 3 = two homed cards plus one "also relevant here" link: what the feed will list.
-        composeRule.onNodeWithContentDescription(GuideStrings.cardCount(3)).assertIsDisplayed()
+        composeRule.onNodeWithText(GuideStrings.cardCount(3), substring = true).assertIsDisplayed()
     }
 
     @Test

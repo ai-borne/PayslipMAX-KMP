@@ -18,6 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 
+/** Where [ScreenBackHeader]'s title starts: the back arrow's 48dp touch target, then its spacer. Lets a line above the header line up with the title. */
+val ScreenBackHeaderTitleInset = AppDimensions.IconSizeDouble + AppDimensions.SpacingSmall
+
 /**
  * Consolidated back-navigation header: an [IconButton] with the standard
  * [Icons.AutoMirrored.Filled.ArrowBack] arrow followed by a title/subtitle block. This is the single
@@ -26,6 +29,7 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
  * before. Callers wanting a trailing action (e.g. the replica screen's edit toggle) place this in a
  * parent [Row] with `Modifier.weight(1f)` and add their action after it, or pass [trailing] to keep it inside the header row.
  */
+
 @Composable
 fun ScreenBackHeader(
     title: String,

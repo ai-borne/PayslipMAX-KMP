@@ -1,19 +1,13 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,6 +24,7 @@ import androidx.compose.ui.unit.Dp
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.insights.InsightSeverity
 import com.payslipmax.pdfparser.subscription.FeatureGate
+import com.payslipmax.pdfparser.ui.components.AccentStripeCard
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
 import com.payslipmax.pdfparser.ui.theme.severityColor
@@ -115,31 +110,23 @@ fun InsightCard(
     modifier: Modifier = Modifier,
 ) {
     val color = severityColor(insight.severity)
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(AppDimensions.BorderThin, color.copy(alpha = 0.3f)),
-    ) {
-        Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            Box(modifier = Modifier.fillMaxHeight().width(AppDimensions.SpacingTiny).background(color))
-            Column(
-                modifier = Modifier.padding(AppDimensions.PaddingMedium),
-                verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-            ) {
-                InsightCardHeader(insight = insight, color = color)
-                Text(
-                    text = insight.explanation,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                InsightCardFooter(
-                    insight = insight,
-                    hasAccess = hasAccess,
-                    onActionClick = onActionClick,
-                    onUpgradeClick = onUpgradeClick,
-                )
-            }
+    AccentStripeCard(accent = color, modifier = modifier) {
+        Column(
+            modifier = Modifier.padding(AppDimensions.PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+        ) {
+            InsightCardHeader(insight = insight, color = color)
+            Text(
+                text = insight.explanation,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            InsightCardFooter(
+                insight = insight,
+                hasAccess = hasAccess,
+                onActionClick = onActionClick,
+                onUpgradeClick = onUpgradeClick,
+            )
         }
     }
 }

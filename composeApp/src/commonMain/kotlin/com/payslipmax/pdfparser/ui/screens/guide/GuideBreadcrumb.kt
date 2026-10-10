@@ -5,10 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
+import com.payslipmax.pdfparser.ui.components.ScreenBackHeaderTitleInset
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
@@ -49,7 +51,8 @@ private fun GuideBreadcrumb(
     onCrumb: (path: List<GuideDestination>) -> Unit,
 ) {
     FlowRow(
-        modifier = Modifier.padding(horizontal = AppDimensions.PaddingMedium),
+        // Starts where the header title starts, so the crumbs read as the title's overline.
+        modifier = Modifier.padding(start = ScreenBackHeaderTitleInset, end = AppDimensions.PaddingMedium),
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSix),
     ) {
         crumbs.forEachIndexed { position, crumb ->
@@ -69,9 +72,11 @@ private fun GuideBreadcrumb(
                 modifier =
                     Modifier
                         .align(Alignment.CenterVertically)
-                        .minimumInteractiveComponentSize()
                         .clickable(role = Role.Button) { onCrumb(crumb.path) }
-                        .semantics { contentDescription = description },
+                        .semantics { contentDescription = description }
+                        // A 48dp touch target with the label at its start, not centred in it, so crumbs sit flush.
+                        .defaultMinSize(minWidth = AppDimensions.IconSizeDouble, minHeight = AppDimensions.IconSizeDouble)
+                        .wrapContentHeight(),
             )
         }
     }

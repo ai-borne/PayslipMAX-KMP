@@ -31,7 +31,7 @@ internal fun GuideAreaScreen(
             state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             items(area.cases, key = { it.id }) { tile -> GuideCaseTileView(tile, onClick = { onOpenCase(tile.id) }) }
         }
