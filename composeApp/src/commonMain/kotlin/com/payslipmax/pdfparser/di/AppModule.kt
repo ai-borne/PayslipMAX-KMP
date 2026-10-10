@@ -11,7 +11,7 @@ import org.koin.dsl.module
 
 val appModule =
     module {
-        // Release leaves the Guide out until phase E9, so R8 removes all Guide code from it (only the bundle asset ships).
+        // With the kill switch off the Guide is left out, so R8 removes all Guide code (only the bundle asset ships).
         if (isGuideEnabled()) includes(guideModule)
         // One installer for every PayslipViewModel: the iOS installer publishes its progress
         // through process-wide statics, so a second instance would orphan the first's subscriber.

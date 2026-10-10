@@ -58,6 +58,15 @@ class GuideSecurityContractTest {
     }
 
     @Test
+    fun theKillSwitchIsTheOnlyWayToHideTheGuideAndNoDebugPreviewPathReturns() {
+        // Owner decision D1: LaunchFlags.GUIDE_ENABLED is the one switch. Names are split so this file does not match itself.
+        val banned = Regex("GUIDE" + "_PREVIEW|isGuide" + "PreviewBuild")
+        val scanned = sourceRoots.flatMap { it.walkTopDown().filter { f -> f.isFile && f.extension == "kt" }.toList() } + File("build.gradle.kts")
+        val hits = scanned.filter { banned.containsMatchIn(it.readText()) }.map { it.name }
+        assertEquals(emptyList(), hits, "a second Guide switch (debug preview) came back beside LaunchFlags.GUIDE_ENABLED")
+    }
+
+    @Test
     fun theOnlyThingsTheGuideCanHandOutAreTheCiteAndTheClaimNote() {
         val platform = guideSources.first { it.name == "GuidePlatform.kt" }.readText()
         assertFalse(platform.contains("Intent"), "the Guide hands text to the existing share helper, it builds no intents")

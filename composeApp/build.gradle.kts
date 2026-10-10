@@ -172,9 +172,6 @@ android {
         targetSdk = 36
         versionCode = 18
         versionName = appVersionName
-        // Claim Guide dark launch: shown in debug only until LaunchFlags.GUIDE_ENABLED flips in phase E9.
-        // A constant per build type, so R8 removes the Guide UI from release (docs/Plan/rule_cards/16_guide_phase_plan.md).
-        buildConfigField("boolean", "GUIDE_PREVIEW", "false")
     }
     buildFeatures {
         buildConfig = true
@@ -201,9 +198,6 @@ android {
     }
 
     buildTypes {
-        getByName("debug") {
-            buildConfigField("boolean", "GUIDE_PREVIEW", "true")
-        }
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -215,11 +209,10 @@ android {
                 signingConfig = signingConfigs.getByName("release")
             }
         }
-        // R8 Check 2: the release R8 and resource-shrink config with the Guide visible and debug signing, so the
+        // R8 Check 2: the release R8 and resource-shrink config with debug signing, so the
         // :guideSmokeTest module can drive it on a device. Local only: never uploaded, never shipped.
         create("minifiedTest") {
             initWith(getByName("release"))
-            buildConfigField("boolean", "GUIDE_PREVIEW", "true")
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += listOf("release")
         }

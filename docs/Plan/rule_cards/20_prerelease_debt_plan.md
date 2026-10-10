@@ -166,8 +166,19 @@ store notes) and the iOS walkthrough are **out of scope** (owner, separate relea
 - **From P2 (not done, no Pixel attached on 2026-10-10):** regression smoke only (the device cannot force a failure):
   the Pay Audit "See the rule" link still opens its card. The recovery itself is covered by
   `GuideOpenCardTest.aFindingLinkRecoversWhenTheEarlierLoadFailed...`; only the on-device smoke is outstanding.
+- **From P3 (not done, no Pixel attached on 2026-10-10):** smoke `scripts/run_guide_minified_smoke.sh`, tab re-tap, and
+  the Pay Audit link opening its card. Everything else in P3 is verified (see the P3 result below).
 - Add here, with the phase name, any later phase whose device check could not run.
 - Exit: every item run on a device and recorded in `19_carry_over.md`, or the owner explicitly waives it.
+
+## P3 result (2026-10-10)
+
+Done: characterization run green before the edit; red = `GuideSecurityContractTest` scan (1 failed); `isGuidePreviewBuild`
+(common, android, ios) and the three `GUIDE_PREVIEW` build settings deleted; `isGuideEnabled()` = `LaunchFlags.GUIDE_ENABLED`
+(`GuideAvailabilityTest` pins it); `buildConfig = true` and `minifiedTest` kept; guard comments rewritten as kill-switch ones.
+Gate: tech-debt audit and ktlint green; `check` green (includes `GuideReleaseLaunchTest`); `iosSimulatorArm64Test` +
+iOS link green; `assembleRelease` 69,626,176 bytes (identical to baseline); `check_r8_guide.py` on release: 12 models kept,
+bundle byte-identical. Behaviour change: with the switch off, debug also hides the Guide. Not done: the Pixel items (P11).
 
 ## Risks and controls
 - **Release/R8:** P3, P5 and P6 change models or reachability → `assembleRelease` + check each time.

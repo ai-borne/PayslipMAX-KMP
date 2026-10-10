@@ -20,8 +20,9 @@ object LaunchFlags {
     // 16 and 17 were the paywall builds (internal testing only).
     const val FREE_LAUNCH_MODE_ANDROID: Boolean = true
 
-    // Claim Guide dark launch (docs/Plan/rule_cards/16_guide_phase_plan.md). Every Guide entry point reads it;
-    // false keeps release builds exactly as before the Guide. Flipped true in phase E9 (2026-10-09), in its own commit.
+    // Claim Guide kill switch (docs/Plan/rule_cards/16_guide_phase_plan.md), the only switch: every Guide entry point
+    // reads it through isGuideEnabled(), in every build type. false removes the tab, routes and Pay Audit link.
+    // Flipped true in phase E9 (2026-10-09), in its own commit.
     const val GUIDE_ENABLED: Boolean = true
 
     // Claim Guide paywall (owner decision 2026-10-07). false: every user reads the whole Guide; true: only Premium reads

@@ -12,7 +12,7 @@ Sources: the M9 carry-over list (M1-M8, moved from the maintenance plan) and the
 |---|---|---|---|
 | A3 | Notes are held after Search closes (`GuideSearchViewModel.state` is `Eagerly`, not `WhileSubscribed`) | P1 | done (P1: `WhileSubscribed(UI_STOP_TIMEOUT_MS)`, one shared constant; notes released about 10 s after Search closes: Search's grace, then the notes model's) |
 | A4 | Pay Audit "See the rule" stays `Failed` after a failed load (`openCard` does not retry) | P2 | closed (P2; `openCard` retries after `Failed`, test-covered) |
-| A6 | Debug-preview path (`isGuidePreviewBuild`, `BuildConfig.GUIDE_PREVIEW`) beside the `LaunchFlags.GUIDE_ENABLED` kill switch | P3 | open |
+| A6 | Debug-preview path (`isGuidePreviewBuild`, `BuildConfig.GUIDE_PREVIEW`) beside the `LaunchFlags.GUIDE_ENABLED` kill switch | P3 | done (P3: path deleted, scan in `GuideSecurityContractTest`; on-device smoke still owed, see P11) |
 | A7 | R8 gate (`check_r8_guide.py`) checks `minifiedTest`, not the shipping release build | P4 | open |
 | A8 | Internal fields `status`, `topic`, `domain` ship in the bundle and `GuideCard` | P5 | open |
 | A9 | Guide dead code: `GuideSuggestion.canSend`, `openCardHint`, `CardTemplate.body`/`GuideCardBody`, `GuideStaleness.epochDays` | P6 | open |

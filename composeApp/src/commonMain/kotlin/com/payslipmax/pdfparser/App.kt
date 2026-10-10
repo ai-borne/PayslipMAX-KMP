@@ -46,7 +46,7 @@ enum class Screen {
     PremiumFeatures,
     PayAudit,
 
-    /** Claim Guide tab root (dark launch); the Guide keeps its own stack inside the tab, see [GuideNavState]. */
+    /** Claim Guide tab root (behind the `LaunchFlags.GUIDE_ENABLED` kill switch); the Guide keeps its own stack inside the tab, see [GuideNavState]. */
     Guide,
 
     /**
@@ -78,7 +78,7 @@ fun App(
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
     navState: AppNavState = rememberSaveable(saver = AppNavStateSaver) { AppNavState() },
     // Hoisted here, above the lock screen, so locking and switching tabs keep the user's place in the Guide. Null
-    // while the Guide is off (release until E9): no Guide tab or route, and R8 drops all Guide code.
+    // while the kill switch is off: no Guide tab or route, and R8 drops all Guide code.
     guideNavState: GuideNavState? = if (isGuideEnabled()) rememberSaveable(saver = GuideNavStateSaver) { GuideNavState() } else null,
     nativeDetailNavigator: ((Screen) -> Unit)? = null,
     onboardingManager: OnboardingManager = koinInject(),

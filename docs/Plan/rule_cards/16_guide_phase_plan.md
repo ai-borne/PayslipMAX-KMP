@@ -185,7 +185,7 @@ states (loading, loaded, error with retry); tile counts match the data; flag off
 **Tech-debt checkpoint:** feed and card are placeholder routes, removed in E3.
 
 **E2 result (2026-10-07).** Done, with these recorded choices:
-- Guide visibility is one compile-time value, `isGuideEnabled()` = `LaunchFlags.GUIDE_ENABLED` or a debug build
+- (Superseded by pre-release debt plan P3: the debug-preview path is gone; `isGuideEnabled()` = `LaunchFlags.GUIDE_ENABLED` only.) Guide visibility is one compile-time value, `isGuideEnabled()` = `LaunchFlags.GUIDE_ENABLED` or a debug build
   (`BuildConfig.GUIDE_PREVIEW` on Android, true for debug and `minifiedTest`; `isDebugBuild()` on iOS). `App` hoists
   `GuideNavState` only when it is on; it is null otherwise, which hides the tab, blocks the route and lets R8 drop all
   Guide code from release. `guideModule` is included in `appModule` only when it is on. A saved `Guide` tab restores
