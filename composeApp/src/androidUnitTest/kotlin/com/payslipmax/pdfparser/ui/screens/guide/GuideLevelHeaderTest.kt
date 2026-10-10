@@ -33,7 +33,8 @@ class GuideLevelHeaderTest {
     @Test
     fun theFirstCrumbStartsWhereTheTitleStarts() {
         show()
-        val crumbLeft = composeRule.onNodeWithText(GuideStrings.breadcrumbHome).getUnclippedBoundsInRoot().left
+        // The node is the crumb's 48dp tap area; its label sits one padding further in (8dp).
+        val crumbLeft = composeRule.onNodeWithText(GuideStrings.breadcrumbHome).getUnclippedBoundsInRoot().left + 8.dp
         val titleLeft = composeRule.onNodeWithText("Retirement and release").getUnclippedBoundsInRoot().left
         assertEquals(titleLeft, crumbLeft)
     }

@@ -6,7 +6,7 @@ package com.payslipmax.pdfparser.ui.theme
  */
 object GuideStrings {
     const val tabLabel = "Guide"
-    const val homeTitle = "Claim Guide"
+    const val homeTitle = "Guide"
     const val homeSection = "What do you need help with?"
     const val loading = "Opening the Claim Guide…"
     const val loadFailedTitle = "The Claim Guide could not open"
