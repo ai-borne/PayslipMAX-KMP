@@ -28,9 +28,10 @@ import kotlin.test.assertTrue
 /**
  * Contract between the shipped bundle and the app, asserted on each platform after reading the real file
  * through the same compose resource path production uses (`GuideBundleAndroidContractTest`,
- * `GuideLoaderIosPerfTest`). Only these checks read the real 402 cards; logic tests use
+ * `GuideLoaderIosPerfTest`). Only these checks read the real cards; logic tests use
  * `SyntheticGuideBundle`. When the dataset changes on purpose, update the counts here and in
- * `docs/Plan/rule_cards/tools/test_bundle.py` together.
+ * `docs/Plan/rule_cards/tools/test_bundle.py` together (the steps are in `18_content_update_runbook.md`; a new rate also changes
+ * [GuideFiguresContract]). Checks that walk every card skip replaced ones: a replaced card has no home and is not searched.
  */
 object GuideBundleContract {
     suspend fun readShippedBundleText(): String = Res.readBytes(GUIDE_BUNDLE_PATH).decodeToString()
@@ -111,13 +112,14 @@ object GuideBundleContract {
         assertEquals(9, ready.areas.size)
         assertEquals(44, ready.areas.sumOf { it.caseCount })
         val cases = bundle.nav.flatMap { it.toContent().cases }
-        assertEquals(bundle.cards.size, bundle.nav.sumOf { area -> area.cases.sumOf { it.cards.size } })
+        // A replaced card has no home on purpose (the validator enforces it); every other card is homed exactly once.
+        assertEquals(bundle.cards.count { !it.isReplaced }, bundle.nav.sumOf { area -> area.cases.sumOf { it.cards.size } })
         assertEquals(bundle.nav.sumOf { area -> area.cases.sumOf { it.cards.size + it.also.size } }, cases.sumOf { it.cardCount })
         assertTrue(cases.all { it.cardCount > 0 }, "no empty case tile")
     }
 
     /**
-     * The E3 feeds and cards over all 402 cards: every case builds a feed listing all its cards, facet counts add up,
+     * The E3 feeds and cards over every card: every case builds a feed listing all its cards, facet counts add up,
      * the six "also relevant here" links in ltc-rules name their real home, and no card shows a raw placeholder.
      */
     fun assertFeedsAndCardsMatchDataset(bundle: GuideBundle) {
@@ -136,7 +138,7 @@ object GuideBundleContract {
     }
 
     /**
-     * The E5 trust chips and Premium preview over all 402 cards: each chip count matches the dataset's own counts, a
+     * The E5 trust chips and Premium preview over every card: each chip count matches the dataset's own counts, a
      * locked card holds only the free half, and the preview search never reads a locked field (a word that is in no
      * title or rule line finds nothing, however many key points and details carry it).
      */
@@ -150,7 +152,8 @@ object GuideBundleContract {
         assertEquals(bundle.cards.count { "AMENDED" in it.chips }, locked.count { it.trust.amended })
         assertTrue(bundle.cards.any { "RATES" in it.chips } && bundle.cards.any { "AMENDED" in it.chips }, "both chips are in use")
         val searchIndex = GuideSearchIndex(bundle)
-        for (card in bundle.cards) {
+        // Search skips replaced cards on purpose, so only current cards can be found by a word of their text.
+        for (card in bundle.cards.filterNot { it.isReplaced }) {
             val body = CardTemplate.body(card)
             val ownTitle = GuideRuleNumberParser.words(card.title)
             val hidden = GuideRuleNumberParser.words((body.key + body.attach + body.watch).joinToString(" ")).filter { it.length > 3 && it.all(Char::isLetter) }
@@ -185,7 +188,7 @@ object GuideBundleContract {
     }
 
     /**
-     * E8: on all 402 real cards a pin is accepted (every id is a plain card id, else the pin would silently do nothing), the claim note
+     * E8: on every real card a pin is accepted (every id is a plain card id, else the pin would silently do nothing), the claim note
      * builds, holds the title and exactly the cite, carries the warning for the 37 unverified cards and for no other, and never leaks a raw
      * placeholder or the card's details block.
      */
@@ -207,13 +210,17 @@ object GuideBundleContract {
     }
 
     /**
-     * The E4 search over all 402 cards. Every rule number a cite names (typed as "Rule N") finds its card, every card is found by its own
+     * The E4 search over every card. Every rule number a cite names (typed as "Rule N") finds its card, every card is found by its own
      * title, and a fixed set of real queries all answer: "177" is the LTC family and never "1770", and "Rule 114"
      * asks what "114" asks. This is a correctness workload (about 700 searches), not a timing one: see [realisticQueries].
      */
     fun assertSearchMatchesDataset(bundle: GuideBundle) {
         val index = GuideSearchIndex(bundle)
-        for (card in bundle.cards) {
+        // A replaced card is out of search on purpose (M4); it is reached by its pin or the "Earlier rule" link.
+        bundle.cards.filter { it.isReplaced }.forEach { card ->
+            assertTrue(index.search(card.title).none { it.card.id == card.id }, "${card.id} is replaced and must not be searchable")
+        }
+        for (card in bundle.cards.filterNot { it.isReplaced }) {
             for (rule in GuideRuleNumberParser.ruleNumbers(card.cite)) {
                 // "Rule 2" rather than "2": a single digit is a one-character query, which is not searched.
                 assertTrue(index.search("Rule $rule").any { it.card.id == card.id }, "rule $rule of ${card.id} is not found")

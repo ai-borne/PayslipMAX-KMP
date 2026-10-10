@@ -87,8 +87,9 @@ class ReplacementLeavesTheTiles(unittest.TestCase):
         from config import CARDS_DIR
         with open(os.path.join(CARDS_DIR, 'rulebook.json'), encoding='utf-8') as fh:
             cards = json.load(fh)['cards']
-        old = next(c for c in cards if c['id'] == 'RB-SS-T181')
-        new = next(c for c in cards if c['id'] == 'RB-SS-T184')
+        # two cards no rule change touches yet, so the test holds once the real data carries a replaced pair
+        plain = [c for c in cards if not (c.get('replaced_by') or c.get('replaces') or c.get('effective'))]
+        old, new = plain[0], plain[1]
         new.update(replaces=old['id'], effective='2026-11-15')
         errs = []
         changes.apply_replacements(cards, errs)

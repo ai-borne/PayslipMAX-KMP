@@ -54,7 +54,7 @@ class Flags(unittest.TestCase):
 class Report(unittest.TestCase):
     def test_every_rates_chip_card_is_in_the_real_report(self):
         listed = {r['id'] for r in rates_report.report(RULEBOOK, FIGURES)['cards']}
-        self.assertTrue({c['id'] for c in RULEBOOK['cards'] if 'RATES' in c['chips']} <= listed)
+        self.assertTrue({c['id'] for c in RULEBOOK['cards'] if 'RATES' in c['chips'] and not c.get('replaced_by')} <= listed)
 
     def test_every_figure_is_in_the_real_report_with_its_card(self):
         rows = rates_report.report(RULEBOOK, FIGURES)['figures']
@@ -63,7 +63,8 @@ class Report(unittest.TestCase):
 
     def test_a_card_with_a_figure_is_listed_even_if_its_text_has_no_number(self):
         rb = copy.deepcopy(RULEBOOK)
-        key, fig = next(iter(FIGURES['figures'].items()))
+        replaced = {c['id'] for c in rb['cards'] if c.get('replaced_by')}
+        key, fig = next((k, f) for k, f in FIGURES['figures'].items() if f['card'] not in replaced)
         target = next(c for c in rb['cards'] if c['id'] == fig['card'])
         target.update(chips=[], answer='No numbers', key=['none'], attach=[], watch=[], details='', cite='', title='Plain')
         listed = {r['id']: r for r in rates_report.report(rb, FIGURES)['cards']}

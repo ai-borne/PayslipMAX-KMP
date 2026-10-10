@@ -15,6 +15,7 @@ Everything for this project lives in this folder, except the extracted source te
 | `14_review_decisions.md` | Pending review decisions (fill in, then ask to apply). |
 | `15_confirmed_rulesets.md` | Points already confirmed and applied. |
 | `17_expert_review_intake.md` | Template for the expert's replies, one row per card ID, and the steps to apply them. |
+| `18_content_update_runbook.md` | **How to ship a content change**: report, intake, edit, `refresh.py`, change log, gate, release; the 8th CPC playbook; what the owner does by hand. |
 | `HANDOFF.md` | Current state, decisions, to-do. Read before working. |
 | `00-11_*.md`, `authentic_cards.json` | Earlier inventory and background. |
 

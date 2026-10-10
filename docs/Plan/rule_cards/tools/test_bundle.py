@@ -117,7 +117,10 @@ class RuleChangeFields(unittest.TestCase):
         self.assertEqual(BUILT['version'], 1)
 
     def test_cards_without_a_dated_rule_carry_none_of_the_new_fields(self):
+        dated = {c['id'] for c in RULEBOOK['cards'] if c.get('effective') or c.get('replaced_by') or c.get('until') or c.get('replaces')}
         for card in BUILT['cards']:
+            if card['id'] in dated:
+                continue
             for field in ('effective', 'replaced_by', 'until', 'replaces'):
                 self.assertNotIn(field, card, card['id'])
 
@@ -137,7 +140,11 @@ class RuleChangeFields(unittest.TestCase):
         self.assertNotIn('too old', bundle.render(bundle.build(self.dated_rulebook())))
 
     def test_no_log_means_an_empty_list_not_a_missing_key(self):
-        self.assertEqual(BUILT['changes'], [])
+        rb = copy.deepcopy(RULEBOOK)
+        rb.pop('changes', None)
+        self.assertEqual(bundle.build(rb)['changes'], [])
+        rb['changes'] = []
+        self.assertEqual(bundle.build(rb)['changes'], [])
 
 
 class BundleFigures(unittest.TestCase):

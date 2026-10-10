@@ -18,6 +18,9 @@ RULEBOOK = json.load(open(os.path.join(CARDS_DIR, 'rulebook.json'), encoding='ut
 FIGURES = json.load(open(os.path.join(CARDS_DIR, 'figures.json'), encoding='utf-8'))
 DATE = '2026-10-09'
 HTML = review_pack.build_html(RULEBOOK, FIGURES, DATE)
+# A replaced card is no longer shown to users, so the pack leaves it out. The real rulebook will carry some once a rule changes
+# (the 8th CPC), so these tests take the current cards from the data instead of assuming card 0 is one.
+CURRENT = [c for c in RULEBOOK['cards'] if not c.get('replaced_by')]
 
 
 def block_ids(html):
@@ -27,7 +30,7 @@ def block_ids(html):
 class Coverage(unittest.TestCase):
     def test_every_card_appears_exactly_once(self):
         ids = block_ids(HTML)
-        self.assertEqual(sorted(ids), sorted(c['id'] for c in RULEBOOK['cards']))
+        self.assertEqual(sorted(ids), sorted(c['id'] for c in CURRENT))
         self.assertEqual(len(ids), len(set(ids)))
 
     def test_cards_are_grouped_area_then_case_in_nav_order(self):
@@ -48,7 +51,7 @@ class Coverage(unittest.TestCase):
 class CardContents(unittest.TestCase):
     def test_every_reviewer_field_is_printed(self):
         rb = copy.deepcopy(RULEBOOK)
-        card = max(rb['cards'], key=lambda c: sum(bool(c[k]) for k in ('open', 'from', 'attach', 'watch', 'details', 'chips', 'cite')))
+        card = max((c for c in rb['cards'] if not c.get('replaced_by')), key=lambda c: sum(bool(c[k]) for k in ('open', 'from', 'attach', 'watch', 'details', 'chips', 'cite')))
         card['open'] = card['open'] or ['A made-up open point']
         html = review_pack.build_html(rb, FIGURES, DATE)
         block = html.split(f'id="{card["id"]}"')[1].split('</article>')[0]
@@ -58,7 +61,8 @@ class CardContents(unittest.TestCase):
         self.assertIn('Open point', block)
 
     def test_a_linked_figure_shows_its_evidence_level(self):
-        fig = next(iter(FIGURES['figures'].values()))
+        printed = set(block_ids(HTML))
+        fig = next(f for f in FIGURES['figures'].values() if f['card'] in printed)
         block = HTML.split(f'id="{fig["card"]}"')[1].split('</article>')[0]
         self.assertIn(fig['evidence'], block)
 
@@ -103,7 +107,10 @@ class RuleChanges(unittest.TestCase):
         self.assertNotIn(f'<article class="card" id="{old["id"]}"', review_pack.build_html(rb, FIGURES, DATE))
 
     def test_a_card_with_no_dated_rule_shows_no_date_line(self):
-        self.assertNotIn('<p class="meta">Applies from', HTML)
+        dated = {c['id'] for c in RULEBOOK['cards'] if c.get('effective')}
+        for block in HTML.split('<article class="card" id="')[1:]:
+            if block.split('"')[0] not in dated:
+                self.assertNotIn('<p class="meta">Applies from', block.split('</article>')[0])
 
     def test_the_appendix_lists_the_rates_sweep(self):
         import rates_report
@@ -116,7 +123,7 @@ class RuleChanges(unittest.TestCase):
 class Safety(unittest.TestCase):
     def test_markup_characters_in_card_text_are_escaped(self):
         rb = copy.deepcopy(RULEBOOK)
-        rb['cards'][0]['answer'] = 'Pay <b>1</b> & "more" <script>x()</script>'
+        next(c for c in rb['cards'] if not c.get('replaced_by'))['answer'] = 'Pay <b>1</b> & "more" <script>x()</script>'
         html = review_pack.build_html(rb, FIGURES, DATE)
         self.assertNotIn('<script>', html)
         self.assertIn('Pay &lt;b&gt;1&lt;/b&gt; &amp; &quot;more&quot; &lt;script&gt;', html)
@@ -142,7 +149,7 @@ class Determinism(unittest.TestCase):
 class Retired(unittest.TestCase):
     def test_retired_cards_are_excluded_everywhere(self):
         with_figure = {f['card'] for f in FIGURES['figures'].values()}
-        gone = next(c['id'] for c in RULEBOOK['cards'] if c['id'] not in with_figure)
+        gone = next(c['id'] for c in CURRENT if c['id'] not in with_figure)
         html = review_pack.build_html(RULEBOOK, FIGURES, DATE, retired={gone})
         self.assertNotIn(gone, html)
 
