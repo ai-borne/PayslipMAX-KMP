@@ -20,7 +20,7 @@
       "localizations" : [
 
       ],
-      "name" : "PayslipMax Pro",
+      "name" : "PayslipMax Yearly Premium",
       "subscriptions" : [
         {
           "adHocOffers" : [
@@ -29,7 +29,7 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "99",
+          "displayPrice" : "999",
           "familyShareable" : false,
           "groupNumber" : 1,
           "internalID" : "31000001",
@@ -37,13 +37,13 @@
           "localizations" : [
             {
               "description" : "Unlock AI Insights, Tax Advice & Cloud Backup",
-              "displayName" : "PayslipMax Pro Yearly",
+              "displayName" : "PayslipMax Premium",
               "locale" : "en_IN"
             }
           ],
-          "productID" : "com.payslipmax.pro.yearly",
+          "productID" : "payslipmax_yearly_premium",
           "recurringSubscriptionPeriod" : "P1Y",
-          "referenceName" : "PayslipMax Pro Yearly",
+          "referenceName" : "PayslipMax Yearly Premium",
           "subscriptionGroupID" : "21000001",
           "type" : "RecurringSubscription"
         }
