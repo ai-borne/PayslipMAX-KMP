@@ -28,7 +28,7 @@ import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideColors
 import com.payslipmax.pdfparser.ui.theme.GuideMaintenanceStrings
 
-/** The notes Guide Home needs: how many rows could not be read, how many sit on removed cards, and the cards that show a note. */
+/** The notes lines Guide Home needs: how many rows could not be read, how many sit on removed cards, and how to open that list. */
 internal class GuideHomeNotes(
     val unreadable: Int = 0,
     val removedCount: Int = 0,

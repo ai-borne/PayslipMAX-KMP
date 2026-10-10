@@ -2,7 +2,6 @@ package com.payslipmax.pdfparser.di
 
 import com.payslipmax.pdfparser.database.PayslipDao
 import com.payslipmax.pdfparser.guide.data.GuideNotesRepository
-import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.koin.dsl.koinApplication
@@ -20,7 +19,7 @@ import kotlin.test.assertSame
  * the leaked error landed in. This class touches no Main dispatcher.
  */
 class GuideNotesWiringTest {
-    private val dao = FakePayslipDao()
+    private val dao = GuideKoinTestDao.dao
     private val koin = koinApplication { modules(guideModule, module { single<PayslipDao> { dao } }) }.koin
 
     @Test
