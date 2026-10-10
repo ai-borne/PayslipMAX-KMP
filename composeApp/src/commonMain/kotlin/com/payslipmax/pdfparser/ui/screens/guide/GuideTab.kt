@@ -41,6 +41,8 @@ fun GuideTab(
     viewModel: GuideViewModel = koinInject(),
     searchViewModel: GuideSearchViewModel = koinInject(),
     platform: GuidePlatform = rememberGuidePlatform(),
+    /** The user's notes (M7). The two production entry points pass the Koin one; null means a screen without notes. */
+    notesViewModel: GuideNotesViewModel? = null,
 ) {
     LaunchedEffect(viewModel) { viewModel.load() }
     val state by viewModel.uiState.collectAsState()
@@ -56,7 +58,7 @@ fun GuideTab(
             }
             // Android back pops the Guide stack before it leaves the tab; at Guide Home it stays disabled.
             BackHandler(enabled = navState.canPop) { navState.pop() }
-            GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform)
+            GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform, notesViewModel)
         }
     }
 }
@@ -69,17 +71,19 @@ private fun GuideDestinationContent(
     viewModel: GuideViewModel,
     searchViewModel: GuideSearchViewModel,
     platform: GuidePlatform,
+    notes: GuideNotesViewModel?,
 ) {
     val onBack: () -> Unit = { navState.pop() }
     when (val destination = navState.current) {
-        GuideDestination.Home -> GuideHomeRoute(navState, ready, access, viewModel, searchViewModel)
+        GuideDestination.Home -> GuideHomeRoute(navState, ready, access, viewModel, searchViewModel, notes)
         is GuideDestination.Area ->
             viewModel.area(destination.areaId)?.let { area ->
                 GuideAreaScreen(area, onBack, onOpenCase = { navState.push(GuideDestination.Case(it)) }, rememberGuideListState(navState))
             } ?: GuideLoading()
-        is GuideDestination.Case -> GuideFeedRoute(navState, destination, viewModel)
-        is GuideDestination.Card -> GuideCardLevel(navState, destination, access, viewModel, platform)
-        GuideDestination.Search -> GuideSearchRoute(navState, access, searchViewModel, onBack)
+        is GuideDestination.Case -> GuideFeedRoute(navState, destination, viewModel, rememberNotedCards(notes, access))
+        is GuideDestination.Card -> GuideCardLevel(navState, destination, access, viewModel, platform, notes)
+        GuideDestination.Search -> GuideSearchRoute(navState, access, searchViewModel, onBack, rememberNotedCards(notes, access))
+        GuideDestination.RemovedNotes -> GuideRemovedNotesRoute(navState, notes, onBack)
         GuideDestination.Changes ->
             viewModel.whatsNew()?.let { content ->
                 GuideWhatsNewScreen(content, onBack, onOpenCard = { navState.push(GuideDestination.Card(it)) }, rememberGuideListState(navState))
@@ -94,8 +98,10 @@ private fun GuideHomeRoute(
     access: GuideAccess,
     viewModel: GuideViewModel,
     searchViewModel: GuideSearchViewModel,
+    notes: GuideNotesViewModel?,
 ) {
     val pins by viewModel.pins.pins.collectAsState()
+    val noteState = rememberGuideNotesState(notes)
     GuideHomeScreen(
         ready.areas,
         // Pins are a paid feature: a locked user sees no section, and the stored pins wait for an unlock.
@@ -104,6 +110,9 @@ private fun GuideHomeRoute(
         onOpenArea = { navState.push(GuideDestination.Area(it)) },
         whatsNewDate = viewModel.whatsNewDate(),
         onOpenWhatsNew = { navState.push(GuideDestination.Changes) },
+        // Notes are the user's own and free for everyone, so these two lines show whatever the entitlement.
+        notes = GuideHomeNotes(noteState.unreadable, noteState.removed.size, onOpenRemoved = { navState.push(GuideDestination.RemovedNotes) }),
+        notedCards = if (access.isUnlocked) noteState.notedCards else emptySet(),
         // Each visit to search starts empty; coming back from a card (a pop) does not pass through here.
         onOpenSearch = {
             searchViewModel.clear()
@@ -119,6 +128,7 @@ private fun GuideCardLevel(
     access: GuideAccess,
     viewModel: GuideViewModel,
     platform: GuidePlatform,
+    notes: GuideNotesViewModel?,
 ) {
     val profile = rememberGuideProfile(viewModel, destination.cardId, access.isUnlocked)
     viewModel.card(destination.cardId, access.isUnlocked, profile)?.let { card ->
@@ -132,6 +142,7 @@ private fun GuideCardLevel(
             rememberGuideListState(navState),
             actions,
             onOpenCard = navState::openCardOrReturn,
+            notes = rememberGuideNoteControls(card, notes),
         )
     } ?: GuideLoading()
 }
@@ -142,6 +153,7 @@ private fun GuideSearchRoute(
     access: GuideAccess,
     searchViewModel: GuideSearchViewModel,
     onBack: () -> Unit,
+    notedCards: Set<String>,
 ) {
     // Free users search titles and rule numbers only; the model starts locked, so this can only widen the search.
     LaunchedEffect(access.isUnlocked) { searchViewModel.setUnlocked(access.isUnlocked) }
@@ -154,7 +166,18 @@ private fun GuideSearchRoute(
         onOpenCard = { navState.push(GuideDestination.Card(it)) },
         onBack = onBack,
         listState = rememberGuideListState(navState),
+        notedCards = notedCards,
     )
+}
+
+@Composable
+private fun GuideRemovedNotesRoute(
+    navState: GuideNavState,
+    notes: GuideNotesViewModel?,
+    onBack: () -> Unit,
+) {
+    val removed = rememberGuideNotesState(notes).removed
+    GuideRemovedNotesScreen(removed, onBack, onDelete = { cardId, onDone -> notes?.delete(cardId, onDone) }, listState = rememberGuideListState(navState))
 }
 
 @Composable
@@ -162,6 +185,7 @@ private fun GuideFeedRoute(
     navState: GuideNavState,
     destination: GuideDestination.Case,
     viewModel: GuideViewModel,
+    notedCards: Set<String>,
 ) {
     val feed = remember(destination) { viewModel.feed(destination.caseId, destination.facet) } ?: return GuideLoading()
     GuideFeedScreen(
@@ -172,6 +196,7 @@ private fun GuideFeedRoute(
         onSelectFacet = navState::selectFacet,
         onOpenCard = { navState.push(GuideDestination.Card(it)) },
         listState = rememberGuideListState(navState),
+        notedCards = notedCards,
     )
 }
 

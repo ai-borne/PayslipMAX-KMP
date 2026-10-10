@@ -1,5 +1,7 @@
 package com.payslipmax.pdfparser.ui.theme
 
+import com.payslipmax.pdfparser.guide.domain.GUIDE_NOTE_MAX_CHARS
+
 /**
  * Copy for the Guide's "what changed" and rule-history views (maintenance phase M4). Kept apart from [GuideStrings], which
  * is near its size limit. The change-log text itself, and card titles, are bundle content and never appear here.
@@ -34,6 +36,38 @@ object GuideMaintenanceStrings {
     const val suggestMailRevision = "Card revision:"
     const val suggestMailApp = "App version:"
     const val suggestMailSuggestion = "Suggestion:"
+
+    // Personal notes (M7): the card section, its editor, and the markers and lists around it.
+    const val noteSectionTitle = "Your note"
+    const val noteNotOfficial = "Private to you. Not official guidance."
+    const val noteAdd = "Add a note"
+    const val noteEdit = "Edit"
+    const val noteDelete = "Delete"
+    const val noteDeleteConfirm = "Delete note"
+    const val noteDeleteTitle = "Delete this note?"
+    const val noteDeleteBody = "It is removed from this device. It can only come back from a backup you made earlier."
+    const val noteStale = "This card was updated since your note."
+    const val noteCarriedHeading = "From an earlier version of this rule"
+    const val noteCarriedStale = "Written for an earlier rule"
+    const val noteEditorTitle = "Your private note"
+    const val noteEditorLabel = "Write your note"
+    const val noteEditorNotice =
+        "Only you can see this note. It stays on this device, encrypted, and leaves it only inside your own backup. " +
+            "It is not part of the official text."
+    const val noteSave = "Save"
+    const val noteFailed = "Your note could not be changed. Try again."
+    const val noteMoveIncomplete = "Your note is saved here. The copy under the earlier rule could not be removed; delete it below."
+    const val noteMarker = "Note"
+    const val noteMarkerInNote = "In your note"
+    const val notesRemovedTitle = "Notes on removed cards"
+    const val notesRemovedSubtitle = "Your notes on cards no longer in the Guide"
+    const val notesRemovedNone = "You have no notes on removed cards."
+
+    fun noteCounter(length: Int): String = "$length / $GUIDE_NOTE_MAX_CHARS"
+
+    fun notesRemovedRow(count: Int): String = "Notes on removed cards ($count)"
+
+    fun notesUnreadable(count: Int): String = if (count == 1) "1 note could not be read" else "$count notes could not be read"
 
     /** The Guide Home row, named for the month of the newest entry. */
     fun whatsNewRow(latestDate: String): String = "What's new in the Guide (${GuideStrings.yearMonth(latestDate.take(YEAR_MONTH_LENGTH))})"

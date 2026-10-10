@@ -89,12 +89,16 @@ internal fun GuideCaseTileView(
     }
 }
 
-/** A card in a feed: title, one-line answer and facet; an "also relevant here" card also names its main case. */
+/**
+ * A card in a feed: title, one-line answer and facet; an "also relevant here" card also names its main case. [noteMark] is
+ * the user's own "Note" marker, passed in only for an unlocked user.
+ */
 @Composable
 internal fun GuideCardRowView(
     row: GuideFeedRow,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    noteMark: GuideNoteMark = GuideNoteMark.NONE,
 ) {
     GuideTileFrame(onClick = onClick, modifier = modifier.fillMaxWidth()) {
         Column(
@@ -104,7 +108,7 @@ internal fun GuideCardRowView(
             Text(row.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
             Text(row.answer, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             GuideLabelPill(row.facetLabel)
-            GuideTrustChips(row.trust)
+            GuideTrustChips(row.trust, noteMark = noteMark)
             row.alsoHomeTitle?.let { home ->
                 Text(
                     GuideStrings.alsoRelevant(home),

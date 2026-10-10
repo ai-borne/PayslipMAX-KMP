@@ -128,4 +128,15 @@ class GuideNavStateSaverTest {
         state.retainKnown(bundle)
         assertEquals(listOf<GuideDestination>(GuideDestination.Home), state.stack, "an update that dropped the log cuts the restored list and what was above it")
     }
+
+    @Test
+    fun theRemovedNotesListRoundTripsAsALevelNameOnlyAndIsAlwaysKnown() {
+        val saved = save(GuideNavState(listOf(GuideDestination.RemovedNotes))) as List<*>
+        assertEquals(listOf("removednotes"), saved, "a level name only: no card id and no note text")
+
+        val restored = GuideNavStateSaver.restore(saved)!!
+        assertEquals(listOf(GuideDestination.Home, GuideDestination.RemovedNotes), restored.stack)
+        assertEquals(true, bundle.knows(GuideDestination.RemovedNotes), "the list shows its own empty message, so it is never cut")
+        assertEquals(listOf(GuideDestination.Home), GuideNavStateSaver.restore(listOf("removednotes|x"))!!.stack, "extra parts are unreadable and cut")
+    }
 }

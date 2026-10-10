@@ -27,7 +27,7 @@ fun GuideCardRoute(
     }
     var showUpgradeSheet by remember { mutableStateOf(false) }
     val unlocked = viewModel.rememberGuideUnlocked()
-    GuideCardHost(access = GuideAccess(unlocked, onUnlock = { showUpgradeSheet = true }), onBack = onBack)
+    GuideCardHost(access = GuideAccess(unlocked, onUnlock = { showUpgradeSheet = true }), onBack = onBack, notesViewModel = koinInject())
     if (showUpgradeSheet) PayslipUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
 }
 
@@ -42,6 +42,8 @@ internal fun GuideCardHost(
     onBack: () -> Unit,
     viewModel: GuideViewModel = koinInject(),
     platform: GuidePlatform = rememberGuidePlatform(),
+    /** The user's notes (M7); [GuideCardRoute] passes the Koin one, and null means a card without notes. */
+    notesViewModel: GuideNotesViewModel? = null,
 ) {
     val target by viewModel.pendingCard.collectAsState()
     val state by viewModel.uiState.collectAsState()
@@ -64,6 +66,7 @@ internal fun GuideCardHost(
             actions = actions,
             // No Guide stack here: the history link swaps the pending card, and Back still returns to the Pay Audit finding.
             onOpenCard = viewModel::openCard,
+            notes = rememberGuideNoteControls(card, notesViewModel),
         )
     }
 }

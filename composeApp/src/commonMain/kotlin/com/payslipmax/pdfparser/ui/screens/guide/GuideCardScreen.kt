@@ -16,7 +16,8 @@ import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 /**
  * One rule card: breadcrumb and title, the answer with its trust chips, then the body sections (or the unlock panel in
- * the free preview), and a closing note that the card is guidance, not a sanction. [actions] (pin, share, copy cite) is null for a locked card.
+ * the free preview), the user's own note, and a closing note that the card is guidance, not a sanction. [actions] (pin, share, copy cite)
+ * and [notes] are null for a locked card.
  */
 @Composable
 internal fun GuideCardScreen(
@@ -28,6 +29,7 @@ internal fun GuideCardScreen(
     listState: LazyListState = rememberLazyListState(),
     actions: GuideCardActions? = null,
     onOpenCard: (cardId: String) -> Unit = {},
+    notes: GuideNoteControls? = null,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         GuideLevelHeader(crumbs, onCrumb, title = card.title, subtitle = null, onBack = onBack)
@@ -43,6 +45,7 @@ internal fun GuideCardScreen(
             }
             actions?.let { item(key = "actions") { GuideCardActionRow(it) } }
             guideCardSections(card, onUnlock, actions?.onCopyCite)
+            notes?.let { guideNoteItems(it) }
             item(key = "disclaimer") {
                 Text(
                     GuideStrings.cardDisclaimer,

@@ -21,6 +21,9 @@ sealed interface GuideDestination {
 
     /** "What's new in the Guide": the change-log entries (M4). */
     data object Changes : GuideDestination
+
+    /** The user's notes on cards the Guide no longer holds (M7). */
+    data object RemovedNotes : GuideDestination
 }
 
 /** A list's place: its first visible item and how far that item is scrolled. Plain ints, so the saver can write it. */
@@ -134,7 +137,7 @@ class GuideNavState(
 /** Whether this bundle still has the area, case, facet or card a destination names. */
 fun GuideBundle.knows(destination: GuideDestination): Boolean =
     when (destination) {
-        GuideDestination.Home, GuideDestination.Search -> true
+        GuideDestination.Home, GuideDestination.Search, GuideDestination.RemovedNotes -> true
         GuideDestination.Changes -> changes.isNotEmpty()
         is GuideDestination.Area -> nav.any { it.id == destination.areaId }
         is GuideDestination.Case ->

@@ -24,16 +24,17 @@ private val ChipShape = RoundedCornerShape(percent = 50)
 
 /**
  * The trust chips wherever a card appears: Replaced on, Updated, Rates as of, Amended, Unverified point and No official
- * source. They are flags and dates, free for everyone, and they wrap on a narrow screen rather than cut a label. Nothing is drawn
- * for a card without a chip.
+ * source, plus the user's own "Note" / "In your note" marker (M7, shown only to an unlocked user). They are flags and dates, free
+ * for everyone, and they wrap on a narrow screen rather than cut a label. Nothing is drawn for a card without a chip.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun GuideTrustChips(
     trust: GuideTrust,
     modifier: Modifier = Modifier,
+    noteMark: GuideNoteMark = GuideNoteMark.NONE,
 ) {
-    if (!trust.hasAny) return
+    if (!trust.hasAny && noteMark == GuideNoteMark.NONE) return
     FlowRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSix),
@@ -45,6 +46,11 @@ internal fun GuideTrustChips(
         if (trust.amended) TrustChip(GuideStrings.chipAmended)
         if (trust.unverified) TrustChip(GuideStrings.chipUnverified, isWarning = true)
         if (trust.noOfficialSource) TrustChip(GuideStrings.chipNoOfficialSource)
+        when (noteMark) {
+            GuideNoteMark.NONE -> Unit
+            GuideNoteMark.HAS_NOTE -> TrustChip(GuideMaintenanceStrings.noteMarker, isNote = true)
+            GuideNoteMark.MATCHED_IN_NOTE -> TrustChip(GuideMaintenanceStrings.noteMarkerInNote, isNote = true)
+        }
     }
 }
 
@@ -64,18 +70,24 @@ internal fun GuideTrustNotices(
 private fun TrustChip(
     text: String,
     isWarning: Boolean = false,
+    isNote: Boolean = false,
 ) {
     val warning = GuideColors.watchOut()
     val frame =
-        if (isWarning) {
-            Modifier.border(BorderStroke(AppDimensions.BorderThin, warning), ChipShape)
-        } else {
-            Modifier.background(MaterialTheme.colorScheme.surfaceVariant, ChipShape)
+        when {
+            isWarning -> Modifier.border(BorderStroke(AppDimensions.BorderThin, warning), ChipShape)
+            isNote -> Modifier.background(MaterialTheme.colorScheme.primaryContainer, ChipShape)
+            else -> Modifier.background(MaterialTheme.colorScheme.surfaceVariant, ChipShape)
         }
     Text(
         text = text,
         style = MaterialTheme.typography.labelSmall,
-        color = if (isWarning) warning else MaterialTheme.colorScheme.onSurfaceVariant,
+        color =
+            when {
+                isWarning -> warning
+                isNote -> MaterialTheme.colorScheme.onPrimaryContainer
+                else -> MaterialTheme.colorScheme.onSurfaceVariant
+            },
         modifier = frame.padding(horizontal = AppDimensions.SpacingSmall, vertical = AppDimensions.SpacingTwo),
     )
 }

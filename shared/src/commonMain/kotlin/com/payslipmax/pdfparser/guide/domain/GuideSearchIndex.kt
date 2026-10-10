@@ -12,6 +12,9 @@ object GuideSearchRanking {
     const val BULLETS = 20
     const val DETAILS = 10
 
+    /** A word found only in the user's own note: below every field of the card itself. */
+    const val NOTE = 5
+
     /** A query shorter than this (letters and digits) is not searched: one letter matches half the Guide. */
     const val MIN_QUERY_CHARS = 2
 }
@@ -27,6 +30,8 @@ enum class GuideSearchScope { FULL, PREVIEW }
 data class GuideSearchHit(
     val card: GuideCard,
     val score: Int,
+    /** True when at least one query word matched only in the user's note, so the card is shown as "In your note". */
+    val matchedInNote: Boolean = false,
 )
 
 /**
@@ -35,7 +40,8 @@ data class GuideSearchHit(
  * words, and every word must match somewhere in the card: a letter word as the start of a word ("allow" finds
  * "allowance"), a number as a whole number (see [GuideRuleNumberParser.numberMatches]). A leading "Rule" or "Rules"
  * is dropped, so "Rule 114" and "114" ask the same. Case and punctuation never matter. The query is read here and
- * nowhere else: nothing in this class stores, saves or logs it.
+ * nowhere else: nothing in this class stores, saves or logs it. The user's notes are handed in with each search
+ * ([GuideSearchNotes]), never fetched or kept, and only the full scope reads them.
  */
 class GuideSearchIndex(
     bundle: GuideBundle,
@@ -69,13 +75,18 @@ class GuideSearchIndex(
     fun search(
         query: String,
         scope: GuideSearchScope = GuideSearchScope.FULL,
+        notes: GuideSearchNotes = GuideSearchNotes.None,
     ): List<GuideSearchHit> {
         val terms = terms(query)
         if (terms.isEmpty()) return emptyList()
+        // The free preview reads titles and rule numbers only; a note is never part of it.
+        val readable = if (scope == GuideSearchScope.FULL) notes else GuideSearchNotes.None
         return entries
-            .mapNotNull { entry -> score(entry, terms, scope)?.let { GuideSearchHit(entry.card, it) } }
+            .mapNotNull { entry -> score(entry, terms, scope, readable.words(entry.card.id))?.let { GuideSearchHit(entry.card, it.total, it.viaNote) } }
             .sortedByDescending { it.score }
     }
+
+    private class Scored(val total: Int, val viaNote: Boolean)
 
     /** The query words that must all match, with a leading "Rule" or "Rules" dropped. Empty when too short. */
     private fun terms(query: String): List<String> {
@@ -85,19 +96,27 @@ class GuideSearchIndex(
         return withoutRule.distinct()
     }
 
-    /** The card's score, or null when any query word matches nowhere. */
+    /** The card's score, or null when any query word matches nowhere (in the card, or in the note when one is readable). */
     private fun score(
         entry: Entry,
         terms: List<String>,
         scope: GuideSearchScope,
-    ): Int? {
+        noteWords: Set<String>,
+    ): Scored? {
         var total = 0
+        var viaNote = false
         for (term in terms) {
             val best = bestWeight(entry, term, scope)
-            if (best == 0) return null
-            total += best
+            if (best > 0) {
+                total += best
+            } else if (noteWords.isNotEmpty() && matches(noteWords, term)) {
+                total += GuideSearchRanking.NOTE
+                viaNote = true
+            } else {
+                return null
+            }
         }
-        return total
+        return Scored(total, viaNote)
     }
 
     private fun bestWeight(
@@ -107,7 +126,7 @@ class GuideSearchIndex(
     ): Int {
         val isNumber = term.first().isDigit()
 
-        fun hits(words: Set<String>) = words.any { word -> if (isNumber) GuideRuleNumberParser.numberMatches(term, word) else word.startsWith(term) }
+        fun hits(words: Set<String>) = matches(words, term)
         return when {
             isNumber && hits(entry.rules) -> GuideSearchRanking.RULE_NUMBER
             hits(entry.title) -> GuideSearchRanking.TITLE
@@ -124,5 +143,11 @@ class GuideSearchIndex(
         fun isSearchable(query: String): Boolean = GuideRuleNumberParser.words(query).sumOf { it.length } >= GuideSearchRanking.MIN_QUERY_CHARS
 
         private fun wordSet(text: String): Set<String> = GuideRuleNumberParser.words(text).toSet()
+
+        /** A letter word matches as the start of a word, a number as a whole number: the same rule for a card field and a note. */
+        private fun matches(
+            words: Set<String>,
+            term: String,
+        ): Boolean = words.any { word -> if (term.first().isDigit()) GuideRuleNumberParser.numberMatches(term, word) else word.startsWith(term) }
     }
 }

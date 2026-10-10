@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.PayslipUpgradeSheet
+import org.koin.compose.koinInject
 
 /**
  * The Guide tab as `App` hosts it: [GuideTab] wired to the app's entitlement and to the existing upgrade sheet, so the
@@ -19,6 +20,6 @@ fun GuideTabRoute(
 ) {
     var showUpgradeSheet by remember { mutableStateOf(false) }
     val unlocked = viewModel.rememberGuideUnlocked()
-    GuideTab(navState = navState, access = GuideAccess(unlocked, onUnlock = { showUpgradeSheet = true }))
+    GuideTab(navState = navState, access = GuideAccess(unlocked, onUnlock = { showUpgradeSheet = true }), notesViewModel = koinInject())
     if (showUpgradeSheet) PayslipUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
 }

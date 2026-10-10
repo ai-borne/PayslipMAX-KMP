@@ -116,6 +116,9 @@ class GuideViewModel(
         text: String,
     ): GuideSuggestionMail? = index()?.suggestionMail(cardId, text, appVersion())
 
+    /** The card's current `rev`, which a note is written against; null for a card the loaded bundle does not hold. */
+    fun cardRev(cardId: String): String? = index()?.card(cardId)?.rev
+
     fun crumbs(stack: List<GuideDestination>): List<GuideCrumb> = index()?.crumbs(stack).orEmpty()
 
     private fun index() = (_uiState.value as? GuideUiState.Ready)?.index

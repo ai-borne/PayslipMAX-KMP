@@ -28,7 +28,8 @@ private const val AREA_COLUMNS = 2
 
 /**
  * Guide Home: a search icon, then the "What's new" row when [whatsNewDate] is set, then the user's pinned cards when there are any (newest first; no section at all when
- * [pinned] is empty or the user is locked), then one tile per area, in bundle order, two to a row (the approved preview).
+ * [pinned] is empty or the user is locked), then one tile per area, in bundle order, two to a row (the approved preview). Last come the
+ * user's notes lines ([notes]): the removed-cards row and the quiet "could not be read" line, each only when it applies.
  */
 @Composable
 internal fun GuideHomeScreen(
@@ -39,6 +40,8 @@ internal fun GuideHomeScreen(
     onOpenPinned: (cardId: String) -> Unit = {},
     whatsNewDate: String? = null,
     onOpenWhatsNew: () -> Unit = {},
+    notes: GuideHomeNotes = GuideHomeNotes.None,
+    notedCards: Set<String> = emptySet(),
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(AREA_COLUMNS),
@@ -61,10 +64,16 @@ internal fun GuideHomeScreen(
                 )
             }
             items(pinned, key = { "pinned-${it.cardId}" }, span = { GridItemSpan(maxLineSpan) }) { row ->
-                GuideCardRowView(row, onClick = { onOpenPinned(row.cardId) })
+                GuideCardRowView(row, onClick = { onOpenPinned(row.cardId) }, noteMark = if (row.cardId in notedCards) GuideNoteMark.HAS_NOTE else GuideNoteMark.NONE)
             }
         }
         items(areas, key = { it.id }) { tile -> GuideAreaTileView(tile, onClick = { onOpenArea(tile.id) }) }
+        if (notes.removedCount > 0) {
+            item(key = "removed-notes", span = { GridItemSpan(maxLineSpan) }) { GuideRemovedNotesRow(notes.removedCount, notes.onOpenRemoved) }
+        }
+        if (notes.unreadable > 0) {
+            item(key = "unreadable-notes", span = { GridItemSpan(maxLineSpan) }) { GuideUnreadableNotesLine(notes.unreadable) }
+        }
     }
 }
 

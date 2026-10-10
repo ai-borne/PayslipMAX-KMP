@@ -51,6 +51,7 @@ internal fun GuideSearchScreen(
     onOpenCard: (cardId: String) -> Unit,
     onBack: () -> Unit,
     listState: LazyListState = rememberLazyListState(),
+    notedCards: Set<String> = emptySet(),
 ) {
     val scope = rememberCoroutineScope()
     Column(modifier = Modifier.fillMaxSize()) {
@@ -63,7 +64,7 @@ internal fun GuideSearchScreen(
                 scope.launch { listState.scrollToItem(0) }
             },
         )
-        GuideSearchBody(state, onOpenCard, listState)
+        GuideSearchBody(state, onOpenCard, listState, notedCards)
     }
 }
 
@@ -97,6 +98,7 @@ private fun GuideSearchBody(
     state: GuideSearchState,
     onOpenCard: (cardId: String) -> Unit,
     listState: LazyListState,
+    notedCards: Set<String>,
 ) {
     when (state) {
         GuideSearchState.Idle -> GuideSearchMessage(GuideStrings.searchHint)
@@ -105,7 +107,7 @@ private fun GuideSearchBody(
             if (state.rows.isEmpty()) {
                 GuideSearchMessage(GuideStrings.searchNone)
             } else {
-                GuideSearchResults(state.rows, onOpenCard, listState)
+                GuideSearchResults(state.rows, onOpenCard, listState, notedCards)
             }
     }
 }
@@ -115,6 +117,7 @@ private fun GuideSearchResults(
     rows: List<GuideSearchRow>,
     onOpenCard: (cardId: String) -> Unit,
     listState: LazyListState,
+    notedCards: Set<String>,
 ) {
     LazyColumn(
         state = listState,
@@ -133,7 +136,13 @@ private fun GuideSearchResults(
         }
         // The card-row pill carries the case the card lives in; a result is never an "also relevant here" link.
         items(rows, key = { it.cardId }) { row ->
-            GuideCardRowView(GuideFeedRow(row.cardId, row.title, row.answer, row.caseTitle, alsoHomeTitle = null, trust = row.trust), onClick = { onOpenCard(row.cardId) })
+            val mark =
+                when {
+                    row.matchedInNote -> GuideNoteMark.MATCHED_IN_NOTE
+                    row.cardId in notedCards -> GuideNoteMark.HAS_NOTE
+                    else -> GuideNoteMark.NONE
+                }
+            GuideCardRowView(GuideFeedRow(row.cardId, row.title, row.answer, row.caseTitle, alsoHomeTitle = null, trust = row.trust), onClick = { onOpenCard(row.cardId) }, noteMark = mark)
         }
     }
 }

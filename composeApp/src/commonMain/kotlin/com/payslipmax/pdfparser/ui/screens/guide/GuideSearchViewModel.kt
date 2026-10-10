@@ -1,23 +1,37 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
+import com.payslipmax.pdfparser.guide.domain.GuideSearchNotes
 import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
 import com.payslipmax.pdfparser.guide.domain.GuideTrust
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 /** The longest query kept; anything typed or pasted past this is cut, so input to the scan is always bounded. */
 internal const val MAX_SEARCH_QUERY_LENGTH = 100
 
 /** A search result: the card's title and one-line answer, its trust chips, and the title of the case it is homed in. */
-data class GuideSearchRow(val cardId: String, val title: String, val answer: String, val caseTitle: String, val trust: GuideTrust)
+data class GuideSearchRow(
+    val cardId: String,
+    val title: String,
+    val answer: String,
+    val caseTitle: String,
+    val trust: GuideTrust,
+    /** True when the card is here only because a query word is in the user's note; the note itself is never in the row. */
+    val matchedInNote: Boolean = false,
+)
 
 /** What the search screen shows below the field. */
 sealed interface GuideSearchState {
@@ -48,6 +62,8 @@ fun GuideSearchState.visibleTo(unlocked: Boolean): GuideSearchState = if (this i
 class GuideSearchViewModel(
     guide: GuideViewModel,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    /** Where the user's notes come from (M7); null searches the Guide only. Notes are read only for an unlocked user. */
+    notes: GuideNotesViewModel? = null,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val _query = MutableStateFlow("")
@@ -56,8 +72,13 @@ class GuideSearchViewModel(
     // Locked until the screen says otherwise, so a missing call can only ever search less, never leak a paid field.
     private val _unlocked = MutableStateFlow(false)
 
+    // A locked user never subscribes to the notes at all, so their words are not even decrypted for a search.
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val noteWords: Flow<GuideSearchNotes> =
+        _unlocked.flatMapLatest { unlocked -> if (unlocked && notes != null) notes.state.map { it.searchNotes } else flowOf(GuideSearchNotes.None) }
+
     val state: StateFlow<GuideSearchState> =
-        combine(_query, guide.uiState, _unlocked) { query, ui, unlocked -> search(query, ui, unlocked) }
+        combine(_query, guide.uiState, _unlocked, noteWords) { query, ui, unlocked, words -> search(query, ui, unlocked, words) }
             .stateIn(scope, SharingStarted.Eagerly, GuideSearchState.Idle)
 
     /** Free users search titles and rule numbers only; Premium searches every field (see [GuideSearchScope]). */
@@ -78,6 +99,7 @@ class GuideSearchViewModel(
         query: String,
         ui: GuideUiState,
         unlocked: Boolean,
+        noteWords: GuideSearchNotes,
     ): GuideSearchState =
         when {
             ui !is GuideUiState.Ready || query.isBlank() -> GuideSearchState.Idle
@@ -86,13 +108,14 @@ class GuideSearchViewModel(
                 GuideSearchState.Results(
                     unlockedScope = unlocked,
                     rows =
-                        ui.searchIndex.search(query, if (unlocked) GuideSearchScope.FULL else GuideSearchScope.PREVIEW).map { hit ->
+                        ui.searchIndex.search(query, if (unlocked) GuideSearchScope.FULL else GuideSearchScope.PREVIEW, noteWords).map { hit ->
                             GuideSearchRow(
                                 hit.card.id,
                                 hit.card.title,
                                 hit.card.answer,
                                 ui.index.case(hit.card.nav)?.title.orEmpty(),
                                 ui.index.trust(hit.card),
+                                hit.matchedInNote,
                             )
                         },
                 )

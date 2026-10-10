@@ -20,6 +20,7 @@ private const val FACETS_ITEM_KEY = "facets"
 /**
  * A case's cards to scroll, in the authored order: facet chips on top when the feed is long enough, otherwise its
  * card count. [listState] is restored from the Guide stack, so the place survives a card, a tab switch and restore.
+ * [notedCards] are the cards the user has a note on (empty for a locked user), shown as a small marker.
  */
 @Composable
 internal fun GuideFeedScreen(
@@ -30,6 +31,7 @@ internal fun GuideFeedScreen(
     onSelectFacet: (facet: String?) -> Unit,
     onOpenCard: (cardId: String) -> Unit,
     listState: LazyListState = rememberLazyListState(),
+    notedCards: Set<String> = emptySet(),
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         GuideLevelHeader(crumbs, onCrumb, title = feed.title, subtitle = feed.subtitle, onBack = onBack)
@@ -50,7 +52,9 @@ internal fun GuideFeedScreen(
                     GuideFacetChips(feed, onSelectFacet)
                 }
             }
-            items(feed.rows, key = { it.cardId }) { row -> GuideCardRowView(row, onClick = { onOpenCard(row.cardId) }) }
+            items(feed.rows, key = { it.cardId }) { row ->
+                GuideCardRowView(row, onClick = { onOpenCard(row.cardId) }, noteMark = if (row.cardId in notedCards) GuideNoteMark.HAS_NOTE else GuideNoteMark.NONE)
+            }
         }
     }
 }

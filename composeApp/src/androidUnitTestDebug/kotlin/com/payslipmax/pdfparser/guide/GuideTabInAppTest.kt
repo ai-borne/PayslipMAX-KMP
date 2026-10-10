@@ -15,6 +15,7 @@ import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.subscription.DevOverride
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
+import com.payslipmax.pdfparser.testing.FakeGuideNotesRepository
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.FakeOnboardingStorage
 import com.payslipmax.pdfparser.testing.FakePayslipDao
@@ -26,6 +27,7 @@ import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.lockApp
 import com.payslipmax.pdfparser.ui.screens.guide.GuideDestination
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
+import com.payslipmax.pdfparser.ui.screens.guide.GuideNotesViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideSearchViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import com.payslipmax.pdfparser.ui.setDevOverride
@@ -63,7 +65,8 @@ class GuideTabInAppTest {
     private val guideModule =
         module {
             single { GuideViewModel(FakeGuideRepository(), FakeCrashReporter(), UnconfinedTestDispatcher()) }
-            single { GuideSearchViewModel(get(), UnconfinedTestDispatcher()) }
+            single { GuideNotesViewModel(FakeGuideNotesRepository(), get(), UnconfinedTestDispatcher()) }
+            single { GuideSearchViewModel(get(), UnconfinedTestDispatcher(), get<GuideNotesViewModel>()) }
         }
     private val onboarding = OnboardingManager(FakeOnboardingStorage(hasCompletedOnboarding = true, hasSeenUploadCoachmark = true))
 

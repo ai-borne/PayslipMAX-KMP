@@ -10,6 +10,7 @@ import com.payslipmax.pdfparser.guide.data.RoomGuideNotesRepository
 import com.payslipmax.pdfparser.guide.data.provideGuidePinsStorage
 import com.payslipmax.pdfparser.guide.domain.GuideProfileProvider
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.ui.screens.guide.GuideNotesViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuidePinsModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideSearchViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
@@ -38,6 +39,8 @@ val guideModule =
         // Personal notes: encrypted rows in the same Room database as payslips (so the .pcda backup carries them), unlike pins.
         single<GuideNotesRepository> { RoomGuideNotesRepository(dao = get()) }
         single { GuideViewModel(repository = get(), crashReporter = get(), profiles = get(), pins = get()) }
-        // App-scoped so a query and its results survive opening a card; memory only, never saved or sent.
-        single { GuideSearchViewModel(guide = get()) }
+        // App-scoped like the Guide model; reads the notes only while a screen collects them, and has no crash reporter.
+        single { GuideNotesViewModel(repository = get(), guide = get()) }
+        // App-scoped so a query and its results survive opening a card; memory only, never saved or sent. Searches the notes too.
+        single { GuideSearchViewModel(guide = get(), notes = get()) }
     }

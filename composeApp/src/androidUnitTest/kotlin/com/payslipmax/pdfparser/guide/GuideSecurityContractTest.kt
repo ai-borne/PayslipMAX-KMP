@@ -154,4 +154,38 @@ class GuideSecurityContractTest {
             assertEquals(emptyList(), leaks.map { it.id })
             assertTrue(bundle.cards.size > 300, "the scan covered the real bundle")
         }
+
+    @Test
+    fun theNotesScreensAndModelsNeverLogReportShareSaveOrPrintNoteTextAndTheEntryPointsPassTheNotesModel() {
+        // M7: the UI and view-model files for personal notes. Note text must not reach a log, telemetry, the clipboard or share
+        // sheet, a saved-state key (the draft is plain `remember`, so process death discards it) or an exception message.
+        val noteFiles =
+            setOf("GuideNotesViewModel.kt", "GuideNotesState.kt", "GuideNoteSection.kt", "GuideNoteEditor.kt", "GuideRemovedNotes.kt", "GuideSearchNotes.kt")
+        val found = guideSources.filter { it.name in noteFiles }
+        assertEquals(noteFiles, found.map { it.name }.toSet(), "a notes source moved; update this list so the scan stays honest")
+        val leaky = Regex("""CrashReporter|crashReporter|TelemetrySanitizer|Logger|println|\bprint\(|\blog\(|Log\.[dievw]\(|shareText|setPrimaryClip|ClipData|ACTION_SEND|GuidePlatform|Firebase""")
+        assertEquals(emptyList(), found.filter { leaky.containsMatchIn(withoutComments(it)) }.map { it.name }, "a notes file logs, reports, shares or prints")
+        val saved = Regex("""rememberSaveable|SavedStateHandle|savedStateHandle|\bSaver\b|listSaver|mapSaver|autoSaver""")
+        assertEquals(emptyList(), found.filter { saved.containsMatchIn(withoutComments(it)) }.map { it.name }, "a notes file saves state across process death")
+        val templated = Regex("""(Exception|error|require|check)\([^)]*\$""")
+        assertEquals(emptyList(), found.filter { templated.containsMatchIn(withoutComments(it)) }.map { it.name }, "an exception message interpolates a value")
+
+        // Nothing that is shared, copied, mailed or saved with the stack may know a note type.
+        val noteTypes = Regex("""GuideNotesViewModel|GuideNotesState|GuideCardNotes|GuideNoteItem|GuideRemovedNote|GuideSearchNotes|GuideNotesRepository|GuideNote\b|notesViewModel""")
+        val outward = setOf("GuideCardShare.kt", "GuideShareText.kt", "GuideSuggestion.kt", "GuideSuggestionBuilder.kt", "GuidePlatform.kt", "GuideCardActions.kt", "GuideNavStateSaver.kt")
+        val outwardFiles = guideSources.filter { it.name in outward }
+        assertEquals(outward, outwardFiles.map { it.name }.toSet(), "a share, suggestion or saver source moved; update this list")
+        assertEquals(emptyList(), outwardFiles.filter { noteTypes.containsMatchIn(withoutComments(it)) }.map { it.name }, "note types reached a share, suggestion or saved-state file")
+
+        // The search model is built with the notes model (optional in its constructor so older screen tests compile); a binding
+        // that dropped the argument would make search silently ignore notes.
+        assertTrue(
+            withoutComments(guideSources.first { it.name == "GuideModule.kt" }).contains("GuideSearchViewModel(guide = get(), notes = get())"),
+            "GuideModule must build the search model with the notes model",
+        )
+        // The two production entry points hand the Koin notes model down; a third that forgot would silently have no notes.
+        for (entry in listOf("GuideTabRoute.kt", "GuideCardRoute.kt")) {
+            assertTrue(withoutComments(guideSources.first { it.name == entry }).contains("notesViewModel = koinInject()"), "$entry must pass the notes model")
+        }
+    }
 }
