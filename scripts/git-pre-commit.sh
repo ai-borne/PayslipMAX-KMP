@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Pin Gradle to a full JDK 21 (with jmods). The IDE's bundled JBR lacks them and breaks JdkImageTransform.
+if JAVA_HOME_21=$(/usr/libexec/java_home -v 21 2>/dev/null); then
+    export JAVA_HOME="$JAVA_HOME_21"
+fi
+
 # Get list of staged Kotlin files
 staged_files=$(git diff --cached --name-only --diff-filter=d | grep '\.kt$')
 staged_schema_files=$(git diff --cached --name-only --diff-filter=d | grep 'shared/schemas/')
