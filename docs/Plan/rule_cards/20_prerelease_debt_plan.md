@@ -163,6 +163,9 @@ store notes) and the iOS walkthrough are **out of scope** (owner, separate relea
 - **From P1 (not done, no Pixel was attached on 2026-10-10):** the Pixel smoke (`scripts/run_guide_minified_smoke.sh`) and
   the targeted walk: a note-only search finds the note; leave Search and come back (query kept) and the results return.
   D9 requires this for P1, so P1 is **not fully verified** until this runs.
+- **From P2 (not done, no Pixel attached on 2026-10-10):** regression smoke only (the device cannot force a failure):
+  the Pay Audit "See the rule" link still opens its card. The recovery itself is covered by
+  `GuideOpenCardTest.aFindingLinkRecoversWhenTheEarlierLoadFailed...`; only the on-device smoke is outstanding.
 - Add here, with the phase name, any later phase whose device check could not run.
 - Exit: every item run on a device and recorded in `19_carry_over.md`, or the owner explicitly waives it.
 

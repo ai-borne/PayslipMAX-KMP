@@ -11,7 +11,7 @@ Sources: the M9 carry-over list (M1-M8, moved from the maintenance plan) and the
 | ID | Item | Phase | Status |
 |---|---|---|---|
 | A3 | Notes are held after Search closes (`GuideSearchViewModel.state` is `Eagerly`, not `WhileSubscribed`) | P1 | done (P1: `WhileSubscribed(UI_STOP_TIMEOUT_MS)`, one shared constant; notes released about 10 s after Search closes: Search's grace, then the notes model's) |
-| A4 | Pay Audit "See the rule" stays `Failed` after a failed load (`openCard` does not retry) | P2 | open |
+| A4 | Pay Audit "See the rule" stays `Failed` after a failed load (`openCard` does not retry) | P2 | closed (P2; `openCard` retries after `Failed`, test-covered) |
 | A6 | Debug-preview path (`isGuidePreviewBuild`, `BuildConfig.GUIDE_PREVIEW`) beside the `LaunchFlags.GUIDE_ENABLED` kill switch | P3 | open |
 | A7 | R8 gate (`check_r8_guide.py`) checks `minifiedTest`, not the shipping release build | P4 | open |
 | A8 | Internal fields `status`, `topic`, `domain` ship in the bundle and `GuideCard` | P5 | open |
@@ -22,7 +22,7 @@ Sources: the M9 carry-over list (M1-M8, moved from the maintenance plan) and the
 | A13 | Stale comments and docs (CLAUDE.md schema v14 / backup v4 / R8 wording, HANDOFF top block, 36 vs 37 count) | P9 | open |
 | A14 | Scratch tools `todo_pay.py`, `pa.py`, `packet.py` outside `tools/archive/` | P9 | open |
 | A15 | `refresh.py` prints `FAILED at step "b"` on a passing run (seen in the P0 baseline) | P9 | open |
-| A17 | Pixel smoke and walk for P1 not run (no device attached, 2026-10-10); later phases may add to it | P11 | open |
+| A17 | Pixel smoke and walk for P1 and P2 (Pay Audit link opens its card) not run (no device attached, 2026-10-10); later phases may add to it | P11 | open |
 | A16 | Old local/remote branches not yet checked against `main` | P10 | open |
 
 ## B. Carried over from M1-M8

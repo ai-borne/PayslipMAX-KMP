@@ -1,5 +1,7 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
+import com.payslipmax.pdfparser.guide.GuideLoadError
+import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
@@ -7,6 +9,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 
 /** [GuideViewModel.openCard], the one entry point a Pay Audit finding uses to open a Guide card (E7). */
@@ -91,5 +94,22 @@ class GuideOpenCardTest {
             assertEquals(0, locked)
             assertEquals(1, opened)
             assertEquals("RB-T5", viewModel.pendingCard.value)
+        }
+
+    @Test
+    fun aFindingLinkRecoversWhenTheEarlierLoadFailedInsteadOfStayingOnTheErrorState() =
+        runTest(dispatcher) {
+            // A Pay Audit user who hit a failed load (or whose first load failed) must still reach the rule.
+            repository.enqueue(GuideLoadResult.Failed(GuideLoadError.entries.first()))
+            viewModel.load()
+            testScheduler.advanceUntilIdle()
+            assertIs<GuideUiState.Failed>(viewModel.uiState.value)
+
+            viewModel.openCard(SyntheticGuideBundle.PERSONAL_CARD)
+            testScheduler.advanceUntilIdle()
+
+            assertIs<GuideUiState.Ready>(viewModel.uiState.value)
+            assertEquals(SyntheticGuideBundle.PERSONAL_CARD, viewModel.pendingCard.value)
+            assertEquals(2, repository.loadCount)
         }
 }

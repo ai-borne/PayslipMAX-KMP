@@ -63,11 +63,12 @@ class GuideViewModel(
 
     /**
      * The one way to open a card from outside the Guide tab: records the target and makes sure the bundle is loading.
-     * Callers check entitlement first (`guideUnlocked`); a locked user is sent to the upgrade sheet instead.
+     * Callers check entitlement first (`guideUnlocked`); a locked user is sent to the upgrade sheet instead. After a
+     * failed load this retries, so the link recovers instead of waiting on a card that can never appear.
      */
     fun openCard(cardId: String) {
         _pendingCard.value = cardId
-        load()
+        if (_uiState.value is GuideUiState.Failed) retry() else load()
     }
 
     fun retry() {
