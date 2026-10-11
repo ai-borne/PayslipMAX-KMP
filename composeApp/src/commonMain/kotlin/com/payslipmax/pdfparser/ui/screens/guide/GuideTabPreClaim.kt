@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +14,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.ui.components.AccentStripeCard
+import com.payslipmax.pdfparser.ui.components.AccentStripeCardShape
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimMoveType
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimRelatedCards
@@ -57,8 +62,11 @@ internal fun PreClaimEntryRow(
     locked: Boolean,
     onClick: () -> Unit,
 ) {
-    GuideTileFrame(onClick = onClick) {
-        Column(modifier = Modifier.fillMaxWidth().padding(AppDimensions.SpacingMedium)) {
+    AccentStripeCard(
+        accent = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.clip(AccentStripeCardShape).clickable(role = Role.Button, onClick = onClick),
+    ) {
+        Column(modifier = Modifier.weight(1f).padding(AppDimensions.PaddingMedium)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(PreClaimStrings.entryTitle, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
                 if (locked) Text(PreClaimStrings.entryPremium, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
