@@ -1,3 +1,5 @@
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # tools/ holds config.py, sources.py, compile.py
 import re, sys
 from config import src
 T = open(src('Handbook_Pay_and_Allowances_2023.txt'), errors='ignore').read()

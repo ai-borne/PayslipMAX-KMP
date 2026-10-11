@@ -77,7 +77,7 @@ class AppNavStateSaverTest {
         assertNull(restored.activeDetail)
     }
 
-    // --- Claim Guide dark launch: the Guide tab restores only where the Guide exists ---
+    // --- Claim Guide kill switch: the Guide tab restores only where the Guide exists ---
 
     @Test
     fun guideTabRestoresWhenTheGuideIsOn() {
@@ -103,7 +103,7 @@ class AppNavStateSaverTest {
 
     @Test
     fun aGuideCardIsNeverRestoredWhereTheGuideIsOff() {
-        // Release until E9: no Guide code is reachable, so the saved card is cut and Pay Audit stays on top.
+        // Switch off: no Guide code is reachable, so the saved card is cut and Pay Audit stays on top.
         val restored =
             appNavStateSaver(guideEnabled = false)
                 .restore(listOf(Screen.Insights.name, Screen.PayAudit.name, Screen.GuideCard.name, Screen.FAQ.name))!!

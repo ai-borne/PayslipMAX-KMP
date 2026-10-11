@@ -72,7 +72,7 @@ internal fun GuideCardHost(
 }
 
 /**
- * The Pay Audit finding's link, or null while the Guide is off (no link at all). A locked user is offered the upgrade sheet
+ * The Pay Audit finding's link, or null while the kill switch is off (no link at all). A locked user is offered the upgrade sheet
  * through [onLocked] and never reaches a card; an unlocked one goes through [GuideViewModel.openCard], then [onOpened] pushes
  * `Screen.GuideCard`.
  */

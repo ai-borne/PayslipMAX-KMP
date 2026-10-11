@@ -47,7 +47,7 @@ Standing rules: own words only. CITE shows a primary authority only. Conflicts: 
 newer FAQ beats an older handbook. Legal interpretation is asked, never guessed.
 
 ## Regression-risk controls (all phases)
-- **Dark launch.** `LaunchFlags.GUIDE_ENABLED` is false in release until E9. The tab, the Pay Audit link and
+- **Kill switch.** `LaunchFlags.GUIDE_ENABLED` (true since E9; it was a dark launch before, and the debug-preview path is gone). The tab, the Pay Audit link and
   every entry point read it. With the flag off the app behaves exactly as today, and a test asserts 4 tabs.
 - **Additive only.** New code goes in new files (`shared/.../guide/`, `composeApp/.../ui/screens/guide/`).
   Existing files get the smallest change, each named in its phase: `App.kt`, `AppBottomBar.kt`,
@@ -189,7 +189,7 @@ states (loading, loaded, error with retry); tile counts match the data; flag off
   (`BuildConfig.GUIDE_PREVIEW` on Android, true for debug and `minifiedTest`; `isDebugBuild()` on iOS). `App` hoists
   `GuideNavState` only when it is on; it is null otherwise, which hides the tab, blocks the route and lets R8 drop all
   Guide code from release. `guideModule` is included in `appModule` only when it is on. A saved `Guide` tab restores
-  to Home when the Guide is off.
+  to Home when the kill switch is off.
 - `GuideBackHeader.kt` was not created: the existing `ScreenBackHeader` is already the back-plus-title SSOT; the
   breadcrumb arrives with E3. Case, card and search are `GuidePlaceholderScreen` (one file, removed in E3).
 - Also touched (smallest change each): `AppOnboardingOverlay.kt` and `MainViewController.kt` (pass the state; exhaustive
@@ -820,8 +820,8 @@ Content-maintenance work after E9. Each phase is a short-lived branch off main, 
 | M5 | Suggest a correction: `GuideSuggestion` (allow-listed email, user text trimmed and capped at 1000), action and dialog on unlocked cards, email through the existing helper | Done 2026-10-09 (merged and pushed, main at 83e21934, pre-push gate passed in 316 s; branch deleted); gate and Pixel walkthrough passed |
 | M6 | Personal notes, data layer: `GuideNote` domain, encrypted `guide_notes` rows (Room 13 to 14), `GuideNotesRepository`, backup v4 | Done 2026-10-10 (merged into main and pushed; branch deleted); gate passed; Pixel: migration and Guide walked, on-device note proof NOT run (see M6 result) |
 | M7 | Personal notes UI: "Your note" section, `GuideNotesViewModel`, "Note" / "In your note" markers, note words in search, Home lines for unreadable and removed-card notes | Done 2026-10-10 (merged and pushed, main at 7b0ea9c2, pre-push gate passed in 309 s; branch deleted); gate and Pixel walkthrough passed (dark and light) |
-| M8 | Runbook (`18_content_update_runbook.md`), end-to-end test joining M4 and M7, tool and contract tests made safe for a real replaced card, consolidated iOS checklist | Done 2026-10-10 (`feature/guide-m8-runbook`, committed, not merged or pushed); gate and Pixel walkthrough passed (dark and light) |
-| M9 | Carry-over list of anything left unfinished | Collects in the plan file |
+| M8 | Runbook (`18_content_update_runbook.md`), end-to-end test joining M4 and M7, tool and contract tests made safe for a real replaced card, consolidated iOS checklist | Done 2026-10-10 (merged into `main`); gate and Pixel walkthrough passed (dark and light) |
+| M9 | Carry-over list of anything left unfinished, and the pre-release debt clean-up | Carry-over list is `19_carry_over.md`; the clean-up is `20_prerelease_debt_plan.md` (branch `chore/guide-prerelease-debt`) |
 
 **M3 result.** Bundle 254,528 → 261,409 bytes (+6,881: an 8-hex `rev` on every card and an empty `changes` list). Bundle version unchanged (1); the Kotlin parser already ignored unknown fields (characterization test run before the model change). New `GuideCard` fields `rev`, `effective`, `replacedBy`, `until`; `GuideBundle.changes`; `GuideChange`/`GuideChangeItem`. `GuideBundleValidator` rejects a `replaced_by` that is not another card and a replaced card that is still homed in a case or an `also` list (a replaced card needs no home). `check_r8_guide.py` now covers 12 models (was 10) and passes. Python tool tests 142 (M2: 81). No EP item opened or closed.
 

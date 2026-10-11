@@ -32,9 +32,9 @@ python3 -m unittest discover -s docs/Plan/rule_cards/tools -p 'test_*.py'   # al
 python3 docs/Plan/rule_cards/tools/review_queue.py        # regenerate 13_review_queue.md
 python3 docs/Plan/rule_cards/tools/review_pack.py --pdf    # expert hand-out in review/ (git-ignored; omit --pdf for HTML only)
 python3 docs/Plan/rule_cards/tools/rates_report.py        # 8th CPC sweep list: every card that could quote a rate, plus every figure
-python3 docs/Plan/rule_cards/tools/todo_pay.py            # uncovered pay entries by topic
-python3 docs/Plan/rule_cards/tools/packet.py SS-P001,SS-P002   # source text behind entries
-python3 docs/Plan/rule_cards/tools/pa.py "Joining Time" 400    # a P&A handbook section
+python3 docs/Plan/rule_cards/tools/archive/todo_pay.py    # uncovered pay entries by topic
+python3 docs/Plan/rule_cards/tools/archive/packet.py SS-P001,SS-P002   # source text behind entries
+python3 docs/Plan/rule_cards/tools/archive/pa.py "Joining Time" 400    # a P&A handbook section
 ```
 
 ## Rule changes (dated rules and the change log)
@@ -45,5 +45,5 @@ holds the hand-written dated change log (`== 2026-11-15`, then `- text [RB-x, RB
 
 ## Source text (outside the repo)
 `~/Downloads/rulecards_workdir/` holds the handbook, FAQ and OCR'd TR 2014 text. Override with
-`RULECARDS_SOURCES=/path`. `compile.py` and `render_md.py` do not need it; `packet.py`, `pa.py`,
-`todo_pay.py` and `copycheck.py` do. If it is missing, ask the owner; it is rebuilt from the PCDAO PDFs.
+`RULECARDS_SOURCES=/path`. `compile.py` and `render_md.py` do not need it; `copycheck.py` and the three scratch scripts in `tools/archive/` (`packet.py`, `pa.py`,
+`todo_pay.py`) do. If it is missing, ask the owner; it is rebuilt from the PCDAO PDFs.

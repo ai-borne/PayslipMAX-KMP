@@ -15,7 +15,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
- * E9 security evidence that can be checked mechanically. The Guide is offline: it reads one bundled file, keeps its own
+ * Security evidence that can be checked mechanically. The Guide is offline: it reads one bundled file, keeps its own
  * state on the device, and talks to the outside only when the user taps Copy cite, Share or, since M5, Suggest a correction
  * (the existing clipboard, share-sheet and email helpers; the email one only opens the user's mail app, the app sends nothing). These checks fail if someone adds a network path, writes Guide data to telemetry, or ships the
  * bundle's internal `from`/`open` fields. They read the sources as text because the property is "this code does not exist".

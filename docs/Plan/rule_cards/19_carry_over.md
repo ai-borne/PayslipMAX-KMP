@@ -19,17 +19,18 @@ Sources: the M9 carry-over list (M1-M8, moved from the maintenance plan) and the
 | A10 | Duplicate limit (`SUPPORT_MESSAGE_MAX_CHARS`) and duplicate colour literals vs `ThemeColors` | P6 | done (P6: one `SUPPORT_MESSAGE_MAX_CHARS`; `ThemeColors` aliases, pinned by `ThemeColorsSourceTest`) |
 | A11 | `guideSmokeTest` dependencies outside `libs.versions.toml`; stale "402" / "252 KB" comments | P6 | done (P6: smoke deps in `libs.versions.toml`; the two comments fixed; the remaining "402" in test comments go to P9) |
 | A12 | Pre-1.3.0 dead code: `PremiumSettingsCard`, 9 strings, 4 dimensions, literal glyphs, `Products.storekit` description | P7 | done (P7: 37 strings + 1 getter, 4 dimensions, the card, `AppStrings.checkMark`, false "Cloud Backup" copy; `UiResourceUsageSourceTest` keeps it clean; on-device look owed, see P11) |
-| A13 | Stale comments and docs (CLAUDE.md schema v14 / backup v4 / R8 wording, HANDOFF top block, 36 vs 37 count) | P9 | open |
-| A14 | Scratch tools `todo_pay.py`, `pa.py`, `packet.py` outside `tools/archive/` | P9 | open |
-| A15 | `refresh.py` prints `FAILED at step "b"` on a passing run (seen in the P0 baseline) | P9 | open |
-| A17 | Pixel smoke and walk for P1, P2, P3, P5, P6 and P7 (Pay Audit link opens its card; a noted card shows no "updated since your note"; P6: card sections, Share, Suggest and Report an Issue dialogs; P7: Settings and Premium screens render with checkmarks) not run (no device attached, 2026-10-10); later phases may add to it | P11 | open |
-| A16 | Old local/remote branches not yet checked against `main` | P10 | open |
+| A13 | Stale comments and docs (CLAUDE.md schema v14 / backup v4 / R8 wording, HANDOFF top block, 36 vs 37 count) | P9 | done (P9: stale wording swept in 8 files, CLAUDE.md schema v14 + notes + backup v4 + kill switch, HANDOFF top block rewritten and linked here, unverified count is 37 everywhere, phase plan M8/M9 rows) |
+| A14 | Scratch tools `todo_pay.py`, `pa.py`, `packet.py` outside `tools/archive/` | P9 | done (P9: moved with `git mv`, each puts `tools/` on `sys.path` and was run once from the new place; README, HANDOFF and HANDOFF_PROMPT paths updated) |
+| A15 | `refresh.py` prints `FAILED at step "b"` on a passing run (seen in the P0 baseline) | P9 | done (P9: the banner came from `test_stops_at_the_first_failure` printing through the default `say`; it now captures it and asserts the message; `test_a_passing_tool_test_run_never_prints_failed` guards it) |
+| A18 | P7 deleted two strings that only the Swift iOS app reads (`appProtectedTitle`, `appProtectedShieldDesc`); caught by the pre-push XCTest step | P10 | done (P10: restored; `UiResourceUsageSourceTest` scans Swift uses; see P10 result) |
+| A17 | Pixel smoke and walk for P1-P7 | P11 | done (P11, 2026-10-11, Pixel 9: smoke passed, which also proves the P4 path that builds `minifiedTest` itself; note-only search found the card marked "In your note", query kept after opening the card and after leaving Search for another tab, no "updated since your note" marker; Guide tab re-tap returns to the root; card sections, Share, Suggest a correction dialog (typed, cancelled) and Report an Issue dialog render; Settings shows the ✓ badge; Premium screen shows "✓ Included"; the throwaway note was deleted). One item **waived by the owner**: the Pay Audit "See the rule" link could not be tapped, because all 33 audited months on the device have 0 issues; covered by `GuideOpenCardTest` and the Pay Audit tests) |
+| A16 | Old local/remote branches not yet checked against `main` | P10 | open (owner-approved 2026-10-11; local `feature/closetest_01` deleted, remote deletes pending a green pre-push gate: remotes `ci/gate-web-prototype-on-changes`, `feature/insights-impr`, `feature/pay-audit`, `feature/security`, `fix/ios-storekit-test-config`, `release/ios-1.0.0-v6`, plus `feature/closetest_01` (local and remote, patch-equivalent to main). Kept, not proven merged: `docs/rule-cards-dataset`, `docs/rule-cards-nav`, `feature/insightsgemma`, `feature/pay_audit_1.0`, `test/baseline-909f2ef`; see B19) |
 
 ## B. Carried over from M1-M8
 
 | ID | Item | Phase | Status |
 |---|---|---|---|
-| B1 | Flaky `GemmaInstallTelemetryIntegrationTest` (`UncaughtExceptionsBeforeTest`, leaking coroutine resumes on Main); cause unknown | P8 | open |
+| B1 | Flaky `GemmaInstallTelemetryIntegrationTest` (`UncaughtExceptionsBeforeTest`, leaking coroutine resumes on Main); cause unknown | P8 | done (fixed before this branch, per the owner, 2026-10-11: `18e58901` / #19, the fake intelligence repository no longer hops to `Dispatchers.Default`; it is on `main`, not yet on this branch, so merge `main` before the PR; the 10-run loop was started and stopped on the owner's word, not run to the end) |
 | B2 | `copycheck` cannot run in CI (needs the copyrighted source text, outside git); runs on the owner's machine only | - | accepted (decide later: scrubbed n-gram index) |
 | B3 | `retire` directive and "ID vanished" error untested on production data (no card retired yet) | - | accepted |
 | B4 | CLAUDE.md has no "Rule 12"; "Fail loud" was applied. Owner to confirm that is what was meant | - | owner |
@@ -46,6 +47,7 @@ Sources: the M9 carry-over list (M1-M8, moved from the maintenance plan) and the
 | B15 | Not driven on a phone: locked card / Force Free, large text, Devanagari or emoji input, replaced-card share note, Pay Audit link to a replaced card (covered by on-screen tests) | - | accepted |
 | B16 | iOS UI walkthrough, 13-row checklist in `16_guide_phase_plan.md` (EP 11, 14, 15, 20, 23, 26, 28, 29, 30) | - | owner |
 | B17 | Light-theme status bar | - | done (status bar follows the effective theme, commits b51789f6 / 06f0983a) |
+| B19 | Five branches not proven merged into `main` (`docs/rule-cards-dataset`, `docs/rule-cards-nav`, `feature/insightsgemma`, `feature/pay_audit_1.0` (39 unique commits), `test/baseline-909f2ef`): owner decides whether each is squash-merged or abandoned; the dataset ones are probably squash-merged | - | owner |
 | B18 | Release prep (version bump, versionCode, store notes) | - | owner (D6, separate step) |
 
 ## C. Baseline for this branch (P0, 2026-10-10, HEAD `d6424c11`)

@@ -14,7 +14,13 @@ class UiResourceUsageSourceTest {
     private val themeDir = File("src/commonMain/kotlin/com/payslipmax/pdfparser/ui/theme")
     private val sources: List<File> =
         mainRoots.flatMap { File(it).walkTopDown().filter { f -> f.isFile && f.extension == "kt" }.toList() }
+    private val swiftSources: List<File> =
+        File("../iosApp").walkTopDown().filter { it.isFile && it.extension == "swift" }.toList()
     private val declaration = Regex("""^\s*(?:private\s+)?(?:const\s+)?val\s+([A-Za-z0-9_]+)\s*[=:]""", RegexOption.MULTILINE)
+
+    private val swiftUse = Regex("""AppStrings\.shared\.([A-Za-z0-9_]+)""")
+
+    private fun swiftUses(): Set<String> = swiftSources.flatMap { f -> swiftUse.findAll(f.readText()).map { it.groupValues[1] }.toList() }.toSet()
 
     private fun unreferenced(
         file: File,
@@ -23,7 +29,7 @@ class UiResourceUsageSourceTest {
         declaration.findAll(text).map { it.groupValues[1] }.filter { name ->
             val use = Regex("""\.$name\b""")
             val usedByItsOwnFile = Regex("""\b$name\b""").findAll(text).count() > 1
-            !usedByItsOwnFile && sources.none { it != file && use.containsMatchIn(it.readText()) }
+            !usedByItsOwnFile && name !in swiftUses() && sources.none { it != file && use.containsMatchIn(it.readText()) }
         }.toList()
 
     @Test
@@ -34,6 +40,16 @@ class UiResourceUsageSourceTest {
             }
 
         assertTrue(unused.isEmpty(), "unused strings, delete them: $unused")
+    }
+
+    @Test
+    fun everyStringTheSwiftAppReadsStillExists() {
+        // iOS reads AppStrings through the generated framework, so the Kotlin-only scan above cannot see these uses. Deleting
+        // one broke the native iOS build and was caught only by the pre-push XCTest run.
+        val declared = File(themeDir.path).listFiles { f -> f.name.startsWith("AppStrings") }.orEmpty().joinToString("\n") { it.readText() }
+        val missing = swiftUses().filterNot { Regex("""\b$it\b""").containsMatchIn(declared) }
+
+        assertTrue(swiftSources.isNotEmpty() && missing.isEmpty(), "Swift reads AppStrings members that no longer exist: $missing")
     }
 
     @Test

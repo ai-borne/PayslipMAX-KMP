@@ -136,6 +136,7 @@ store notes) and the iOS walkthrough are **out of scope** (owner, separate relea
 - Pixel: Settings and the Premium screen render (checkmarks shown).
 
 ### P8. Flaky `GemmaInstallTelemetryIntegrationTest` (D7)
+**Status (2026-10-11): already fixed on `main` (`18e58901`, #19), per the owner. No work on this branch.**
 - Run `:composeApp:testDebugUnitTest --rerun` in a loop of 10 and record the class run before each failure. Fix the
   leaking test (give its ViewModels a test scope, or cancel them in tearDown).
 - After 60 minutes without a culprit: give the class its own Main dispatcher in `setUp`/`tearDown` and record that
@@ -159,28 +160,21 @@ store notes) and the iOS walkthrough are **out of scope** (owner, separate relea
   `git merge-base --is-ancestor`). The owner confirms; I delete only the merged ones.
 - Push and open the PR only when the owner says.
 
-### P11. Deferred items from earlier phases (consolidated; run last, needs a device)
-- **From P1 (not done, no Pixel was attached on 2026-10-10):** the Pixel smoke (`scripts/run_guide_minified_smoke.sh`) and
-  the targeted walk: a note-only search finds the note; leave Search and come back (query kept) and the results return.
-  D9 requires this for P1, so P1 is **not fully verified** until this runs.
-- **From P2 (not done, no Pixel attached on 2026-10-10):** regression smoke only (the device cannot force a failure):
-  the Pay Audit "See the rule" link still opens its card. The recovery itself is covered by
-  `GuideOpenCardTest.aFindingLinkRecoversWhenTheEarlierLoadFailed...`; only the on-device smoke is outstanding.
-- **From P3 (not done, no Pixel attached on 2026-10-10):** smoke `scripts/run_guide_minified_smoke.sh`, tab re-tap, and
-  the Pay Audit link opening its card. Everything else in P3 is verified (see the P3 result below).
-- **From P5 (not done, no Pixel attached on 2026-10-10):** smoke `scripts/run_guide_minified_smoke.sh`, and open a card that
-  has a note: it must show no "updated since your note" marker (the `rev` values are proven unchanged off-device, but the
-  marker itself was not seen on a screen).
-- **From P6 (not done, no Pixel attached on 2026-10-10):** smoke `scripts/run_guide_minified_smoke.sh`, then on a card: its
-  sections (Key points, Attach, Watch out, Authority, Details) render, Share, the Suggest a correction dialog (type, then
-  discard), and Settings > Report an Issue dialog. The dialogs' shared cap and the sections are covered by on-screen unit
-  tests; only the on-device look is outstanding.
-- **From P4 (not done):** the device smoke now builds `minifiedTest` itself; run it once to prove that path.
-- **From P7 (not done, no Pixel attached on 2026-10-11):** Settings renders (offline-first badge shows the checkmark, Premium row
-  shows its subtitle "Unlock Advanced Insights & Pay Audit") and the Premium screen renders ("✓ Included" labels). The glyph
-  swap (`✔` to `✓` in the badge) and the subtitle copy are covered by unit tests only.
-- Add here, with the phase name, any later phase whose device check could not run.
-- Exit: every item run on a device and recorded in `19_carry_over.md`, or the owner explicitly waives it.
+### P11. Deferred device checks (done 2026-10-11, Pixel 9)
+Ran every deferred item from P1-P7 on the device (results in the P11 result below and in `19_carry_over.md` A17). One item
+waived by the owner: the Pay Audit "See the rule" link (no finding exists on the device).
+
+### P12. Open items for the owner (final consolidated phase; nothing here is code work this branch can finish)
+- **B19 (owner):** five branches not proven merged into `main`: `docs/rule-cards-dataset`, `docs/rule-cards-nav`, `feature/insightsgemma`,
+  `feature/pay_audit_1.0` (39 unique commits), `test/baseline-909f2ef`. Decide per branch: squash-merged (delete) or abandoned (delete) or keep.
+- **P10 (blocked, see P10 result):** the 7 approved remote branch deletions did not go through because the pre-push hook failed on this
+  branch; rerun the delete after the branch is pushed or `main` gets this fix. Also push the branch and open the PR (D10: only when the owner says).
+- **B16 (owner):** iOS UI walkthrough, 13-row checklist in `16_guide_phase_plan.md`. Includes a look at the Settings checkmark badge and
+  the Premium screen on iOS (P7 changed `✔` to `✓`).
+- **B4 (owner):** confirm that "Fail loud" is what was meant by "Rule 12". **B5 (owner):** send the regenerated expert review PDF.
+- **B18 (owner, D6):** release prep (version bump, versionCode, store notes). Mirror the "Pay Audit" wording in the store listing if it still says "Cloud Backup".
+- **Waived (owner, 2026-10-11):** on-device tap of the Pay Audit "See the rule" link.
+- **Merge `main` into this branch before the PR** (`18e58901`, P8's fix, is on `main` only).
 
 ## P3 result (2026-10-10)
 
@@ -247,6 +241,36 @@ says Cloud Backup). Gate: tech-debt audit, ktlint, `check` (shared 1024, compose
 `iosSimulatorArm64Test` (979 + 559, 0 failed) and iOS link green. `assembleRelease` + R8 check not run (no models, Koin or
 Gradle change). Not done: the Pixel items (P11). Tooling note: Gradle needed `-Dorg.gradle.java.home` (JDK 21) because an IDE
 extension JRE without `jmod` was picked up.
+
+## P9 result (2026-10-11)
+
+Done: stale wording swept (`dark launch`, `until E9`, `Guide is off`, `phase E3`) in 8 files; CLAUDE.md now says schema v14, notes in the
+encrypted `GuideNoteEntity`, backup v4 and the kill switch; HANDOFF top block rewritten short and linked to `19_carry_over.md`; unverified
+count is 37 everywhere (the bundle says 37); phase plan M8/M9 rows fixed; the three scratch tools moved to `tools/archive/` (each puts
+`tools/` on `sys.path`, each run once from the new place; README, HANDOFF, HANDOFF_PROMPT paths updated); `refresh.py`: the false
+`FAILED at step "b"` came from a test of the failure path printing through the default `say`; it now captures and asserts it, and
+`test_a_passing_tool_test_run_never_prints_failed` is red-then-green (2 failures before). Gate: tech-debt audit, ktlint, `check`
+(both variants), `refresh.py --check --allow-no-sources` (146 tool tests): green. The compile.py run rewrote only the `generated` stamp in
+`rulebook.json`; reverted.
+
+## P8 note
+Owner said P8 was already fixed in earlier commits (`18e58901`, #19, on `main`). Nothing was done here; B1 closed on that word.
+
+## P10 result and a P7 regression (2026-10-11)
+
+The pre-push hook (it also runs on a branch delete) **failed at the native iOS XCTest step**: `AppStrings.appProtectedShieldDesc` did not exist.
+Cause: **P7 deleted `appProtectedTitle` and `appProtectedShieldDesc`, which only Swift (`iOSApp.swift`, `PayslipMaxProtectedOverlayTests`) reads**;
+the Kotlin-only scan in `UiResourceUsageSourceTest` could not see them, and `iosSimulatorArm64Test` plus the framework link do not compile the app's Swift.
+The P7 claim "gate green" was true for its own gate list but that list did not include the native iOS build. Fixed: both constants restored;
+`UiResourceUsageSourceTest` now counts Swift uses as uses and has `everyStringTheSwiftAppReadsStillExists` (red before the fix, green after).
+Lesson for the gate: any `AppStrings` deletion needs the native XCTest run (`scripts/git-pre-push.sh` step 5).
+
+## P11 result (2026-10-11, Pixel 9, `minifiedTest` build with real data)
+`scripts/run_guide_minified_smoke.sh` (builds `minifiedTest` itself: P4 path proven): OK (1 test). Walk: card sections render; Share opens the
+sheet; Suggest a correction typed then cancelled; Settings > Report an Issue dialog; Settings badge shows the checkmark; Premium screen shows
+"✓ Included"; a note-only search ("zebrafish") found the card marked "In your note"; opening the card and going back kept the query; leaving
+Search for Settings for over 10 s and returning brought the results back; the Guide tab re-tap returns to the root; the noted card showed no
+"updated since your note"; the throwaway note was deleted. Not run (waived by the owner): Pay Audit link (0 issues in all 33 audited months).
 
 ## Risks and controls
 - **Release/R8:** P3, P5 and P6 change models or reachability → `assembleRelease` + check each time.
