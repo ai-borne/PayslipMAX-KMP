@@ -14,6 +14,9 @@ import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
@@ -34,21 +37,21 @@ fun AppBottomBar(
         NavigationBarItem(
             selected = currentScreen == Screen.Dashboard,
             onClick = { onNavigate(Screen.Dashboard) },
-            label = { Text(AppStrings.navigationHome) },
+            label = { TabLabel(AppStrings.navigationHome) },
             icon = { Icon(Icons.Default.Home, contentDescription = null) },
             colors = itemColors,
         )
         NavigationBarItem(
             selected = currentScreen == Screen.History,
             onClick = { onNavigate(Screen.History) },
-            label = { Text(AppStrings.navigationHistory) },
+            label = { TabLabel(AppStrings.navigationHistory) },
             icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = null) },
             colors = itemColors,
         )
         NavigationBarItem(
             selected = currentScreen == Screen.Insights,
             onClick = { onNavigate(Screen.Insights) },
-            label = { Text(AppStrings.navigationInsights) },
+            label = { TabLabel(AppStrings.navigationInsights) },
             icon = { Icon(Icons.Default.Info, contentDescription = null) },
             colors = itemColors,
         )
@@ -56,7 +59,7 @@ fun AppBottomBar(
             NavigationBarItem(
                 selected = currentScreen == Screen.Guide,
                 onClick = { if (currentScreen == Screen.Guide) onGuideReselected() else onNavigate(Screen.Guide) },
-                label = { Text(GuideStrings.tabLabel) },
+                label = { TabLabel(GuideStrings.tabLabel) },
                 icon = { Icon(Icons.Default.Place, contentDescription = null) },
                 colors = itemColors,
             )
@@ -64,7 +67,7 @@ fun AppBottomBar(
         NavigationBarItem(
             selected = currentScreen == Screen.Settings,
             onClick = { onNavigate(Screen.Settings) },
-            label = { Text(AppStrings.navigationSettings) },
+            label = { TabLabel(AppStrings.navigationSettings) },
             icon = { Icon(Icons.Default.Settings, contentDescription = null) },
             colors = itemColors,
         )
@@ -79,3 +82,15 @@ private fun appNavItemColors(): NavigationBarItemColors =
         selectedTextColor = MaterialTheme.colorScheme.primary,
         indicatorColor = MaterialTheme.colorScheme.primaryContainer,
     )
+
+/** Largest text scale a tab name grows to; a fifth of a 360dp screen holds "Settings" whole at this size, and the icon still carries the tab. */
+private const val MAX_LABEL_FONT_SCALE = 1.2f
+
+/** One line, whole word: a tab name never wraps ("Insight" / "s") however large the phone's font is set. */
+@Composable
+private fun TabLabel(text: String) {
+    val density = LocalDensity.current
+    CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale = minOf(density.fontScale, MAX_LABEL_FONT_SCALE))) {
+        Text(text, maxLines = 1, softWrap = false)
+    }
+}

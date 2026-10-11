@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -22,6 +23,9 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 val ScreenBackHeaderTitleInset = AppDimensions.IconSizeDouble + AppDimensions.SpacingSmall
 
 /**
+ * The title block keeps [AppDimensions.SpacingMedium] clear on its right, so a long subtitle at a large font never runs to the
+ * screen edge on a screen that does not pad its own content (the Claim Guide's), nor into a [trailing] action.
+ *
  * Consolidated back-navigation header: an [IconButton] with the standard
  * [Icons.AutoMirrored.Filled.ArrowBack] arrow followed by a title/subtitle block. This is the single
  * source of truth for the "back arrow + screen title" affordance across all detail screens,
@@ -49,7 +53,7 @@ fun ScreenBackHeader(
             )
         }
         Spacer(modifier = Modifier.width(AppDimensions.SpacingSmall))
-        HeaderTitleBlock(title = title, subtitle = subtitle, modifier = Modifier.weight(1f))
+        HeaderTitleBlock(title = title, subtitle = subtitle, modifier = Modifier.weight(1f).padding(end = AppDimensions.SpacingMedium))
         trailing?.invoke()
     }
 }
