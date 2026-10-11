@@ -12,6 +12,10 @@ on:
   schedule:
     - cron: '30 4 * * 1'
   workflow_dispatch:
+  # TEMPORARY first-run trigger (a workflow cannot be dispatched until it is on the default branch); removed in the next commit.
+  push:
+    branches: [feature/ta-da-preclaim]
+    paths: ['.github/workflows/faq-watch.yml']
 
 # Least privilege: read the repo, write issues. No secrets are used.
 permissions:
