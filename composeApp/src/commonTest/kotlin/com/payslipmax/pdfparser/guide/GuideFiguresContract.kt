@@ -11,6 +11,12 @@ import com.payslipmax.pdfparser.guide.domain.GuideProfileBuilder
 import com.payslipmax.pdfparser.guide.domain.PersonalFigure
 import com.payslipmax.pdfparser.guide.domain.PersonalFigureResolver
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.guide.preclaim.CtgCase
+import com.payslipmax.pdfparser.guide.preclaim.CtgEstimate
+import com.payslipmax.pdfparser.guide.preclaim.PerKmEstimate
+import com.payslipmax.pdfparser.guide.preclaim.PermanentDutyRequest
+import com.payslipmax.pdfparser.guide.preclaim.PreClaimCalculator
+import com.payslipmax.pdfparser.guide.preclaim.PreClaimProfile
 import com.payslipmax.pdfparser.insights.timeline.PayLevel
 import com.payslipmax.pdfparser.insights.timeline.TptaCityClass
 import com.payslipmax.pdfparser.testing.SyntheticGuideFigures
@@ -104,6 +110,24 @@ object GuideFiguresContract {
         assertEquals(listOf(12, 20, 30), listOf("Punjab", "Maharashtra", "Assam").map { rma.rates[it] })
         assertTrue(rma.rates.values.all { it > 0 }, "no state may be a silent nil")
         assertTrue("Lakshadweep" !in rma.rates, "the Army has no presence there, so the picker never lists it")
+    }
+
+    /**
+     * The permanent-duty estimates (plan 22, P4) on the real shipped bundle, for the owner's issued advance voucher: basic 149000,
+     * DA 60%, level 14, 2881 km. The amounts are what the approved rules imply; Native must compute the same whole-number sums.
+     */
+    fun assertPermanentDutyEstimatesMatchTheApprovedRules(bundle: GuideBundle) {
+        val figures = assertNotNull(bundle.figures)
+        val profile = PreClaimProfile.from(profile(level = "14", basic = 149000.0, da = 60).copy(mspAmount = 15500.0, npaAmount = 0.0))
+
+        fun estimates(case: CtgCase) = PreClaimCalculator.permanentDuty(figures, PermanentDutyRequest(profile, case, roadKm = 2881, originState = "Assam"))
+
+        val (ctg, baggage, conveyance) = estimates(CtgCase.NORMAL)
+        assertEquals(119200L, assertIs<CtgEstimate>(ctg).rupees, "the voucher's CTG")
+        assertEquals(6250L to 180063L, assertIs<PerKmEstimate>(baggage).let { it.ratePaise to it.rupees }, "Rs 62.50 a km, total rounded once")
+        assertEquals(3000L to 86430L, assertIs<PerKmEstimate>(conveyance).let { it.ratePaise to it.rupees }, "Assam Rs 30 a km")
+        assertEquals(149000L, assertIs<CtgEstimate>(estimates(CtgCase.ISLAND)[0]).rupees, "island: 100% of basic")
+        assertEquals(39733L, assertIs<CtgEstimate>(estimates(CtgCase.LOCAL_MOVE)[0]).rupees, "local move: one-third of the 80%")
     }
 
     /** Only the four personal cards ever get a "your figure" line, whatever else the bundle ships (the pre-claim rates have no card). */

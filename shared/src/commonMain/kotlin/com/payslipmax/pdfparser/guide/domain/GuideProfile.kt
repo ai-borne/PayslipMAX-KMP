@@ -19,12 +19,15 @@ data class GuideProfile(
     /** Transport Allowance class, `HIGHER` or `OTHER`, recovered from the payslip's TPTA base; null at level 14 and above. */
     val tptaClass: String?,
     val hraAmount: Double?,
+    /** Military Service Pay and Non-Practising Allowance as the same month's payslip paid them; the pre-claim worksheet pre-fills them. */
+    val mspAmount: Double? = null,
+    val npaAmount: Double? = null,
 )
 
 /**
  * Builds the profile through Pay Audit's own [ServiceTimelineBuilder], so level, DA and the TPTA class are read once, by
- * one piece of code, and the Guide can never disagree with Pay Audit. Only the HRA amount, which the timeline does not
- * keep, is read from the same month's payslip.
+ * one piece of code, and the Guide can never disagree with Pay Audit. Only the HRA, MSP and NPA amounts, which the timeline does not
+ * keep, are read from the same month's payslip.
  */
 object GuideProfileBuilder {
     fun from(history: List<ParsedPayslip>): GuideProfile? {
@@ -38,6 +41,8 @@ object GuideProfileBuilder {
             daPercent = latest.daPercent,
             tptaClass = latest.tptaCity?.name,
             hraAmount = payslip?.earnings?.houseRentAllowance,
+            mspAmount = payslip?.earnings?.militaryServicePay,
+            npaAmount = payslip?.earnings?.nonPracticingAllowance,
         )
     }
 }

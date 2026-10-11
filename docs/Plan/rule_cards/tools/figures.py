@@ -31,9 +31,12 @@ RMA_STATES = (
 )
 MAX_RATE_PER_KM = 100
 MAX_LIMIT_CHARS = 120
+MAX_LOCAL_MOVE_DIVISOR = 10
+CTG_CASE_KEYS = ('island_percent', 'local_move_divisor')
 CITY_CLASSES = {'HIGHER', 'OTHER', 'ANY'}
 # Fields the app needs. Authority, evidence, notes and approval stay in the repo.
-SHIPPED_FIGURE_KEYS = ('card', 'use', 'mode', 'assumption', 'effective_from', 'percent', 'bands', 'classes', 'rates')
+SHIPPED_FIGURE_KEYS = ('card', 'use', 'mode', 'assumption', 'effective_from', 'percent', 'island_percent', 'local_move_divisor', 'bands',
+                       'classes', 'rates')
 SHIPPED_BAND_KEYS = ('levels', 'city_class', 'base', 'limit')
 SHIPPED_STEP_KEYS = ('from_da_percent', 'percent', 'effective_from')
 
@@ -117,10 +120,27 @@ def _figure_problems(key, fig, by_id):
         pct = fig.get('percent')
         if not (_positive_int(pct) and pct <= 100):
             errs.append(f'{key}: percent must be a whole number from 1 to 100')
+        errs += _ctg_case_problems(key, fig)
     elif mode == 'rate_by_state':
         errs += _rate_by_state_problems(key, fig)
     else:
         errs += _rate_table_problems(key, fig)
+    if mode != 'percent_of_basic':
+        errs += [f'{key}: {field} belongs on a percent_of_basic figure' for field in CTG_CASE_KEYS if field in fig]
+    return errs
+
+
+def _ctg_case_problems(key, fig):
+    """The other two CTG cases sit beside the normal percent so the app holds no rate: island percent, and local move = 1/divisor."""
+    errs = []
+    if 'island_percent' in fig:
+        island = fig['island_percent']
+        if not (_positive_int(island) and fig.get('percent', 0) <= island <= 100):
+            errs.append(f'{key}: island_percent must be a whole number from percent to 100')
+    if 'local_move_divisor' in fig:
+        divisor = fig['local_move_divisor']
+        if not (_positive_int(divisor) and 2 <= divisor <= MAX_LOCAL_MOVE_DIVISOR):
+            errs.append(f'{key}: local_move_divisor must be a whole number from 2 to {MAX_LOCAL_MOVE_DIVISOR}')
     return errs
 
 

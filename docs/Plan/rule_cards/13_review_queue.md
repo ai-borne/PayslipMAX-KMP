@@ -1,4 +1,4 @@
-# Domain-owner review queue (generated 2026-10-10)
+# Domain-owner review queue (generated 2026-10-11)
 
 Cards with an open point. CONFLICT marks a disagreement between sources. Not shown to app users.
 

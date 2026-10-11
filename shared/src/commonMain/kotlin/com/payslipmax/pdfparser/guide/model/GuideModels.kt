@@ -145,7 +145,8 @@ data class GuideDaStep(
  * One personal figure. [mode] is `da_step` (band base raised by the DA step), `percent_of_basic`, `plus_da` (band base
  * plus DA on it), `rate_table` (a percent of basic by city class and DA step) or `rate_by_state` (rupees per km in [rates],
  * keyed by state). [assumption] is content, like card text. A figure either belongs to a rule [card] (its "your figure" line)
- * or has [use] `preclaim` and no card: it feeds the TA/DA pre-claim worksheet and never reaches a card.
+ * or has [use] `preclaim` and no card: it feeds the TA/DA pre-claim worksheet and never reaches a card. A `percent_of_basic`
+ * figure may also give the other CTG cases: [islandPercent] (0 if not shipped) and a local move at 1/[localMoveDivisor] of [percent].
  */
 @Serializable
 data class GuideFigure(
@@ -155,6 +156,8 @@ data class GuideFigure(
     val assumption: String = "",
     @SerialName("effective_from") val effectiveFrom: String = "",
     val percent: Int = 0,
+    @SerialName("island_percent") val islandPercent: Int = 0,
+    @SerialName("local_move_divisor") val localMoveDivisor: Int = 0,
     val bands: List<GuideFigureBand> = emptyList(),
     val classes: Map<String, List<GuideRateStep>> = emptyMap(),
     val rates: Map<String, Int> = emptyMap(),

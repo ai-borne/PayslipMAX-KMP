@@ -134,5 +134,43 @@ class RatePerStateMode(unittest.TestCase):
 
 
 
+class CtgCases(unittest.TestCase):
+    """CTG cases (plan 22, P4): island 100% and local move one-third live in the ctg figure, so the calculator holds no rate of its own."""
+
+    def test_the_real_ctg_figure_carries_the_island_percent_and_the_local_move_divisor(self):
+        ctg = REAL['figures']['ctg']
+        self.assertEqual((ctg['percent'], ctg['island_percent'], ctg['local_move_divisor']), (80, 100, 3))
+
+    def test_both_are_shipped_to_the_app(self):
+        shipped = figures.for_bundle(REAL)['figures']['ctg']
+        self.assertEqual((shipped['island_percent'], shipped['local_move_divisor']), (100, 3))
+
+    def test_the_island_percent_is_a_whole_percent_not_below_the_normal_one(self):
+        for bad in (0, -1, 101, 79, 100.5, '100', True, None):
+            d = fresh()
+            d['figures']['ctg']['island_percent'] = bad
+            self.assertTrue(any('ctg' in p and 'island_percent' in p for p in problems(d)), repr(bad))
+
+    def test_the_local_move_divisor_is_a_whole_number_from_2_to_10(self):
+        for bad in (0, 1, 11, -3, 2.5, '3', True, None):
+            d = fresh()
+            d['figures']['ctg']['local_move_divisor'] = bad
+            self.assertTrue(any('ctg' in p and 'local_move_divisor' in p for p in problems(d)), repr(bad))
+
+    def test_only_a_percent_of_basic_figure_may_carry_them(self):
+        for key in ('food_rate', 'td_hotel', 'rma'):
+            for field, value in (('island_percent', 100), ('local_move_divisor', 3)):
+                d = fresh()
+                d['figures'][key][field] = value
+                self.assertTrue(any(key in p and field in p for p in problems(d)), (key, field))
+
+    def test_a_figure_may_leave_both_out_and_the_app_then_offers_only_the_normal_case(self):
+        d = fresh()
+        del d['figures']['ctg']['island_percent']
+        del d['figures']['ctg']['local_move_divisor']
+        self.assertEqual(problems(d), [])
+        self.assertNotIn('island_percent', figures.for_bundle(d)['figures']['ctg'])
+
+
 if __name__ == '__main__':
     unittest.main()

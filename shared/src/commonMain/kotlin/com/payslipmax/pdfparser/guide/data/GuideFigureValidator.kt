@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.guide.data
 
+import com.payslipmax.pdfparser.guide.model.FigureModes
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.GuideCard
 import com.payslipmax.pdfparser.guide.model.GuideFigure
@@ -12,8 +13,10 @@ import com.payslipmax.pdfparser.guide.model.GuideFigure
  */
 internal object GuideFigureValidator {
     private const val USE_PRECLAIM = "preclaim"
-    private val BAND_MODES = setOf("da_step", "plus_da")
-    private const val MODE_RATE_BY_STATE = "rate_by_state"
+    private val BAND_MODES = setOf(FigureModes.DA_STEP, FigureModes.PLUS_DA)
+    private const val MIN_LOCAL_MOVE_DIVISOR = 2
+    private const val MAX_LOCAL_MOVE_DIVISOR = 10
+    private const val MAX_PERCENT = 100
 
     fun validate(bundle: GuideBundle): List<String> {
         val figures = bundle.figures ?: return emptyList()
@@ -54,12 +57,28 @@ internal object GuideFigureValidator {
                 } else {
                     emptyList()
                 }
-            MODE_RATE_BY_STATE ->
+            FigureModes.RATE_BY_STATE ->
                 if (figure.rates.isEmpty()) {
                     listOf("figure $key: no rates")
                 } else {
                     figure.rates.filterValues { it <= 0 }.keys.map { "figure $key: rate for $it must be above zero" }
                 }
+            FigureModes.PERCENT_OF_BASIC -> ctgCaseProblems(key, figure)
             else -> emptyList()
         }
+
+    /** The island percent and the local-move divisor decide a rupee amount, so a bad one stops at load. 0 means "not shipped". */
+    private fun ctgCaseProblems(
+        key: String,
+        figure: GuideFigure,
+    ): List<String> {
+        val problems = mutableListOf<String>()
+        if (figure.islandPercent != 0 && figure.islandPercent !in figure.percent..MAX_PERCENT) {
+            problems += "figure $key: island_percent must be from percent to $MAX_PERCENT"
+        }
+        if (figure.localMoveDivisor != 0 && figure.localMoveDivisor !in MIN_LOCAL_MOVE_DIVISOR..MAX_LOCAL_MOVE_DIVISOR) {
+            problems += "figure $key: local_move_divisor must be from $MIN_LOCAL_MOVE_DIVISOR to $MAX_LOCAL_MOVE_DIVISOR"
+        }
+        return problems
+    }
 }

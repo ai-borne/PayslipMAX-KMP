@@ -115,7 +115,8 @@ Kotlin tests that read the real bundle pin the dataset too, and fail on purpose 
 405-card bundle (one replaced pair, one change entry, one new figure): `GuideBundleContract.assertMatchesCompiledDataset` pins the card
 total, the travel count (and with it pay), the unverified (37) and no-cite (31) counts and `ratesAsOf`; `GuideFiguresContract`
 pins the set of figure keys and personal cards and each figure's value against the owner-approved letter, and
-`SyntheticGuideFigures` (shared-test-fixtures) must equal what ships. Update them in the same commit, taking a new figure's expected
+`SyntheticGuideFigures` (shared-test-fixtures) must equal what ships; `assertPermanentDutyEstimatesMatchTheApprovedRules` pins the pre-claim
+estimates of the owner's voucher sample (basic 149000, 2881 km: CTG 119200, baggage 180063, Assam conveyance 86430). Update them in the same commit, taking a new figure's expected
 value from the order, never from the code. Everything else in the contract passed unchanged with a replaced card in the bundle (tiles,
 feeds, search, chips, paywall rule, Pay Audit links, pins and share notes), after three checks that wrongly assumed no card was
 replaced were corrected in M8. If another test fails after a content change, read what it protects before editing it.

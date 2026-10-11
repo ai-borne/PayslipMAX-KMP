@@ -1,6 +1,8 @@
 package com.payslipmax.pdfparser.guide.domain
 
+import com.payslipmax.pdfparser.guide.model.FigureModes
 import com.payslipmax.pdfparser.guide.model.GuideFigure
+import com.payslipmax.pdfparser.guide.model.GuideFigureBand
 import com.payslipmax.pdfparser.guide.model.GuideFigures
 import com.payslipmax.pdfparser.guide.model.GuideRateStep
 import kotlin.math.abs
@@ -38,10 +40,6 @@ sealed interface PersonalFigure {
  * guess. Integer arithmetic where the rule is a rate table; plain double only for a percent of basic pay.
  */
 object PersonalFigureResolver {
-    private const val MODE_DA_STEP = "da_step"
-    private const val MODE_PERCENT_OF_BASIC = "percent_of_basic"
-    private const val MODE_PLUS_DA = "plus_da"
-    private const val MODE_RATE_TABLE = "rate_table"
     private const val CITY_ANY = "ANY"
 
     /** HRA / basic is compared to a rate within this many percentage points, for rupee rounding on the payslip. */
@@ -56,13 +54,33 @@ object PersonalFigureResolver {
         // A pre-claim figure has no card (empty), so an empty id must never match one.
         val figure = figures.figures.values.firstOrNull { it.card.isNotEmpty() && it.card == cardId } ?: return null
         return when (figure.mode) {
-            MODE_DA_STEP -> foodRate(figure, figures, profile)
-            MODE_PERCENT_OF_BASIC -> ctg(figure, profile)
-            MODE_PLUS_DA -> transport(figure, profile)
-            MODE_RATE_TABLE -> hra(figure, profile)
+            FigureModes.DA_STEP -> foodRate(figure, figures, profile)
+            FigureModes.PERCENT_OF_BASIC -> ctg(figure, profile)
+            FigureModes.PLUS_DA -> transport(figure, profile)
+            FigureModes.RATE_TABLE -> hra(figure, profile)
             else -> null
         }
     }
+
+    /**
+     * The one DA-step rule: a rate rises by `increase_percent` each time DA passes a multiple of `per_da_percent` (MoD 15-09-2017,
+     * para 2(iv)). Every escalating rate (the food line, and the pre-claim baggage and TD ceilings) reads it here. Null for a
+     * negative DA or a bundle whose period is not above zero, so a caller shows nothing instead of dividing by zero.
+     */
+    fun stepPercent(
+        figures: GuideFigures,
+        daPercent: Int,
+    ): Int? {
+        val step = figures.daStep
+        if (step.perDaPercent <= 0 || daPercent < 0) return null
+        return step.increasePercent * (daPercent / step.perDaPercent)
+    }
+
+    /** The band whose levels list [level] as printed on the payslip, or null when the figure does not cover that level. */
+    fun bandForLevel(
+        figure: GuideFigure,
+        level: String,
+    ): GuideFigureBand? = figure.bands.firstOrNull { level in it.levels }
 
     private fun basis(
         figure: GuideFigure,
@@ -77,10 +95,8 @@ object PersonalFigureResolver {
     ): PersonalFigure? {
         val level = profile.level ?: return null
         val da = profile.daPercent ?: return null
-        val band = figure.bands.firstOrNull { level in it.levels } ?: return null
-        val step = figures.daStep
-        if (step.perDaPercent <= 0) return null
-        val stepPercent = step.increasePercent * (da / step.perDaPercent)
+        val band = bandForLevel(figure, level) ?: return null
+        val stepPercent = stepPercent(figures, da) ?: return null
         val amount = (band.base * (100L + stepPercent) + 50L) / 100L
         return PersonalFigure.FoodRate(amount, band.base.toLong(), stepPercent, level, basis(figure, profile))
     }

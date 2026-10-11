@@ -190,4 +190,28 @@ class PersonalFigureResolverTest {
         val future = figures.copy(figures = figures.figures.mapValues { (_, f) -> f.copy(mode = "compound_da") })
         assertNull(PersonalFigureResolver.resolve(SyntheticGuideFigures.FOOD_CARD, future, profile()))
     }
+
+    // The DA step is one rule with one home: the food line, and the pre-claim estimates (baggage, TD ceilings), all read it from here.
+    @Test
+    fun theDaStepIsTheSharedRuleBehindEveryRateThatEscalatesWithDa() {
+        assertEquals(0, PersonalFigureResolver.stepPercent(figures, 0))
+        assertEquals(0, PersonalFigureResolver.stepPercent(figures, 49))
+        assertEquals(25, PersonalFigureResolver.stepPercent(figures, 50))
+        assertEquals(25, PersonalFigureResolver.stepPercent(figures, 99))
+        assertEquals(50, PersonalFigureResolver.stepPercent(figures, 100))
+    }
+
+    @Test
+    fun theDaStepIsNullWhenTheRuleCannotBeApplied() {
+        assertNull(PersonalFigureResolver.stepPercent(figures, -1), "a negative DA is not a payslip DA")
+        assertNull(PersonalFigureResolver.stepPercent(figures.copy(daStep = figures.daStep.copy(perDaPercent = 0)), 60), "a zero period would divide by zero")
+    }
+
+    @Test
+    fun aBandIsFoundByTheLevelAsPrintedAndNeverByAGuess() {
+        val food = figures.figures.getValue("food_rate")
+        assertEquals(1000, PersonalFigureResolver.bandForLevel(food, "12A")?.base)
+        assertNull(PersonalFigureResolver.bandForLevel(food, "8"))
+        assertNull(PersonalFigureResolver.bandForLevel(food, "12a"), "labels are matched as printed")
+    }
 }

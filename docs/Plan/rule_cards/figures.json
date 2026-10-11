@@ -64,6 +64,9 @@
       "card": "RB-SS-T254",
       "mode": "percent_of_basic",
       "percent": 80,
+      "island_percent": 100,
+      "local_move_divisor": 3,
+      "case_note": "Cases per the card (T254) and the owner's decision of 2026-10-11: the officer picks the case; there is no km threshold in code. Island = 100% of basic; local move (under 20 km, or the same city) = one-third of the 80%.",
       "assumption": "move of 20 km or more, not to or from Andaman, Nicobar or Lakshadweep (100% there)",
       "basic_excludes": [
         "NPA",
