@@ -9,7 +9,7 @@ dates and sha256 hashes (section = the portal's section id), never the portal's 
   --update  rewrite the manifest to the live state (after the owner has looked at the change); exit 0, or 2 and no write.
 
 An empty list, malformed JSON, an HTTP error or an unexpected shape is exit 2, never "everything was removed". What counts as a
-change is the words: markup, entities, whitespace, the "new" badge, list order and the updated date alone do not.
+change is the words (and routine notices matching IGNORED_NOTIFICATIONS are skipped): markup, entities, whitespace, the "new" badge, list order and the updated date alone do not.
 The report prints live titles (cut to 120 characters, one line each, no backticks) so it can sit in a fenced issue body.
 
 Usage: faq_watch.py (--check | --update) [--manifest PATH]
@@ -17,6 +17,7 @@ Usage: faq_watch.py (--check | --update) [--manifest PATH]
 import hashlib
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -31,6 +32,9 @@ TIMEOUT_SECONDS = 30
 MAX_BYTES = 10 * 1024 * 1024
 LABEL_LIMIT = 120
 USER_AGENT = 'payslipmax-faq-watch (weekly public-feed check)'
+# Routine notices that carry no rule and would open an issue every month. Matched against the visible words of a title, whole
+# title, case-insensitive. Owner, 2026-10-11: the monthly Statement of Account notice. Add a pattern only with a test.
+IGNORED_NOTIFICATIONS = (re.compile(r'Statement of Account for the month of .+ has been uploaded\.?', re.IGNORECASE),)
 BLOCK_TAGS = frozenset({'br', 'p', 'div', 'li', 'ul', 'ol', 'tr', 'td', 'th', 'table', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'})
 
 
@@ -127,6 +131,8 @@ def read_notifications(fetch):
     snapshot, labels = {}, {}
     for r in rows:
         title = words(r.get('titleEnglish'))
+        if any(p.fullmatch(title) for p in IGNORED_NOTIFICATIONS):
+            continue
         snapshot[r['id']] = {'updated': str(r.get('updatedDate') or ''),
                              'sha256': digest(title, r.get('status'), r.get('documentUrl'))}
         labels[r['id']] = label(title)
@@ -161,7 +167,8 @@ def report(title, diff, old, labels):
     lines = []
     for kind in ('added', 'removed', 'changed'):
         for i in diff[kind]:
-            what = labels.get(i) or '(no longer listed, section ' + old[i].get('section', '-') + ')'
+            section = old.get(i, {}).get('section')
+            what = labels.get(i) or ('(no longer listed' + (f', section {section})' if section else ')'))
             lines.append(f'{title} {kind}: {i} {what}')
     return lines
 

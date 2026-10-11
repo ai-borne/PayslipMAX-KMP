@@ -204,6 +204,33 @@ class CommittedManifest(unittest.TestCase):
             self.assertLessEqual(max(len(str(v)) for v in entry.values()), MAX_FIELD)
 
 
+SOA = note('n9', 'Statement of Account for the month of October 2026 has been uploaded')
+
+
+class RoutineNoticesAreIgnored(Case):
+    """The monthly "Statement of Account ... uploaded" notice carries no rule; one issue a month for it would bury the real ones."""
+
+    def test_a_new_monthly_statement_notice_is_not_a_change(self):
+        self.assertEqual(self.check(notes=BASE_NOTES + [SOA])[0], 0)
+
+    def test_the_ignored_notice_never_reaches_the_manifest(self):
+        run(['--update'], Feeds(BASE_FAQS, BASE_NOTES + [SOA]), self.manifest)
+        self.assertNotIn('n9', json.load(open(self.manifest))['notifications'])
+
+    def test_the_match_is_case_and_spacing_insensitive_and_ignores_markup(self):
+        loud = note('n9', '<b>STATEMENT  of account</b> for the month of March 2027 has been uploaded.')
+        self.assertEqual(self.check(notes=BASE_NOTES + [loud])[0], 0)
+
+    def test_a_different_statement_of_account_notice_is_still_reported(self):
+        for title in ('Statement of Account format has changed', 'Statement of Account can also be downloaded from the OASIS portal.',
+                      'Form 16 for the Financial Year 2025-26 has been uploaded.'):
+            self.assertEqual(self.check(notes=BASE_NOTES + [note('n9', title)])[0], 1, title)
+
+    def test_a_feed_of_only_routine_notices_is_still_readable_not_an_error(self):
+        # The empty-list guard looks at what the portal sent, not at what we chose to ignore.
+        self.assertEqual(self.check(notes=[SOA])[0], 1)  # n1/n2 gone from the feed: a real change, not exit 2
+
+
 class FakeResponse:
     def __init__(self, body=b'[]', url='https://pcdaopune.gov.in/x'):
         self.body, self.url = body, url
