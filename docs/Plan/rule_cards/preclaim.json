@@ -28,7 +28,7 @@
    {"id": "ltc177_children", "label": "177 children of service Personnel Studying in Outstation", "use_when": "A child studying away travels to the family.", "card": "RB-SS-T073"},
    {"id": "ltc177a_regions", "label": "177(A) visit to J&K, A&N and NE in lieu of Home Town", "use_when": "You swap the home town trip for the North East, J&K or Andaman.", "card": "RB-SS-T062"},
    {"id": "ltc177a_sick", "label": "177(A)(iii) Sick Leave", "use_when": "A medical board sent you on sick leave to a named place.", "card": "RB-SS-T079"},
-   {"id": "ltc177a_sea", "label": "177(A)(i)(e) Sea Passage", "use_when": "An island resident's sea passage to or from the mainland.", "card": "RB-SS-T250"}
+   {"id": "ltc177a_sea", "label": "177(A)(i)(e) Sea Passage", "use_when": "An island resident's sea passage to or from the mainland.", "card": "RB-SS-T058"}
   ]},
   "nature_of_leave": {"card_linked": false, "options": [
    {"id": "annual", "label": "Annual"},
