@@ -15,7 +15,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
 internal val AppNavStateSaver: Saver<AppNavState, Any> = appNavStateSaver(guideEnabled = isGuideEnabled())
 
 /**
- * [guideEnabled] false (release until E9) never restores the Guide tab, so the app stays at four tabs, and cuts a saved
+ * [guideEnabled] false (the kill switch is off) never restores the Guide tab, so the app stays at four tabs, and cuts a saved
  * [Screen.GuideCard] (with anything above it). A restored card with no pending target pops itself in its host.
  */
 internal fun appNavStateSaver(guideEnabled: Boolean): Saver<AppNavState, Any> =

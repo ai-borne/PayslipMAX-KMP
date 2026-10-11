@@ -4,6 +4,9 @@ Why they matter: a content fix used to need five scripts in the right order; a s
 stale bundle or an unchecked copy. These tests pin the order, the stop-at-first-failure rule and the loud copycheck
 skip. Run: python3 tools/test_refresh.py
 """
+import os
+import subprocess
+import sys
 import unittest
 
 import refresh
@@ -28,9 +31,20 @@ class StepPlan(unittest.TestCase):
 
 class Running(unittest.TestCase):
     def test_stops_at_the_first_failure(self):
-        ran = []
-        code = refresh.run([('a', ['a']), ('b', ['b']), ('c', ['c'])], lambda argv: (ran.append(argv[0]), 1 if argv[0] == 'b' else 0)[1])
+        ran, said = [], []
+        code = refresh.run([('a', ['a']), ('b', ['b']), ('c', ['c'])], lambda argv: (ran.append(argv[0]), 1 if argv[0] == 'b' else 0)[1], say=said.append)
         self.assertEqual((code, ran), (1, ['a', 'b']))
+        self.assertIn('FAILED at step "b" (exit 1)', said)
+
+    def test_a_passing_tool_test_run_never_prints_failed(self):
+        # A run that passes must not show the failure banner (it once did, from a test of the failure path, so a green
+        # run looked red in CI logs).
+        if os.environ.get('REFRESH_OUTPUT_PROBE'):
+            self.skipTest('inner probe run')
+        done = subprocess.run([sys.executable, '-m', 'unittest', 'test_refresh'], cwd=os.path.dirname(os.path.abspath(__file__)),
+                              capture_output=True, text=True, env={**os.environ, 'REFRESH_OUTPUT_PROBE': '1'})
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertNotIn('FAILED', done.stdout + done.stderr)
 
     def test_missing_sources_fail_loudly_unless_allowed(self):
         out = []

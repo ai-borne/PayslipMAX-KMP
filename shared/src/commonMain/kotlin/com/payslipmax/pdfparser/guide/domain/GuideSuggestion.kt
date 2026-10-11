@@ -1,5 +1,7 @@
 package com.payslipmax.pdfparser.guide.domain
 
+import com.payslipmax.pdfparser.domain.SUPPORT_MESSAGE_MAX_CHARS
+
 /** The words around a suggestion email. They are passed in, so the copy lives only in the app's `GuideMaintenanceStrings`. */
 data class GuideSuggestionLabels(
     val subjectTag: String,
@@ -32,9 +34,6 @@ data class GuideSuggestionParts(
  * is often a rupee figure or an order number.
  */
 object GuideSuggestion {
-    /** Keeps a pre-filled `mailto:` URL within what mail apps accept; the same cap as Report an Issue. */
-    const val MAX_TEXT_LENGTH = 1000
-
     fun subject(
         parts: GuideSuggestionParts,
         labels: GuideSuggestionLabels,
@@ -58,10 +57,7 @@ object GuideSuggestion {
 
     /** The user's text, trimmed and capped. A cut that would split a surrogate pair drops the half pair. */
     fun clean(text: String): String {
-        val capped = text.trim().take(MAX_TEXT_LENGTH)
+        val capped = text.trim().take(SUPPORT_MESSAGE_MAX_CHARS)
         return (if (capped.lastOrNull()?.isHighSurrogate() == true) capped.dropLast(1) else capped).trim()
     }
-
-    /** True once there is something to send; the dialog keeps its button off until then. */
-    fun canSend(text: String): Boolean = text.isNotBlank()
 }

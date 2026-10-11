@@ -73,7 +73,7 @@ fun PayAuditScreen(
     }
     DisposableEffect(payAuditViewModel) { onDispose { payAuditViewModel.dispose() } }
     if (uiState.payslips.isNotEmpty()) PayAuditIntroGate(onboardingManager)
-    // Null while the Guide is off (no link). A locked user gets the upgrade sheet, never a card (E5 rule).
+    // Null while the kill switch has the Guide off (no link). A locked user gets the upgrade sheet, never a card (E5 rule).
     val openGuideCard = rememberOpenGuideCard(viewModel, onOpened = { onNavigateTo(Screen.GuideCard) }, onLocked = { showUpgradeSheet = true })
 
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).detailScreenSafeArea()) {

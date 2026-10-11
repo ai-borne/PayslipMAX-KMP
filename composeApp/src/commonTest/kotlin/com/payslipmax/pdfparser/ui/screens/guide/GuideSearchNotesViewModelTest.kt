@@ -5,8 +5,10 @@ import com.payslipmax.pdfparser.guide.data.StoredGuideNotes
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideNotesRepository
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
+import com.payslipmax.pdfparser.ui.UI_STOP_TIMEOUT_MS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -35,6 +37,8 @@ class GuideSearchNotesViewModelTest {
 
     private fun test(block: suspend TestScope.() -> Unit) =
         runTest(dispatcher) {
+            // The state is computed only while collected, as the screen does.
+            backgroundScope.launch { search.state.collect {} }
             guide.load()
             testScheduler.advanceUntilIdle()
             block()
@@ -113,5 +117,22 @@ class GuideSearchNotesViewModelTest {
             val row = type("synthetic card RB-T5").rows().single { it.cardId == "RB-T5" }
 
             assertFalse(row.matchedInNote)
+        }
+
+    @Test
+    fun theNotesAreNotHeldOnceNoScreenCollectsTheSearchAnyMore() =
+        runTest(dispatcher) {
+            search.setUnlocked(true)
+            val collector = backgroundScope.launch { search.state.collect {} }
+            guide.load()
+            testScheduler.advanceUntilIdle()
+            assertEquals(1, store.activeSubscribers, "an unlocked, open Search reads the notes")
+
+            collector.cancel()
+            // Two chained graces: Search's own, then the notes model's.
+            testScheduler.advanceTimeBy(2 * UI_STOP_TIMEOUT_MS + 1)
+            testScheduler.runCurrent()
+
+            assertEquals(0, store.activeSubscribers, "leaving Search must not keep the decrypted notes subscribed")
         }
 }

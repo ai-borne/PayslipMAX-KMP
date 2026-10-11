@@ -20,7 +20,7 @@ import kotlin.test.assertTrue
 
 /**
  * Pins the bottom bar the app shipped before the Claim Guide: four tabs, each routing to its own root. The Guide
- * is a dark launch, so with it off these four must stay exactly as they were.
+ * sits behind the `LaunchFlags.GUIDE_ENABLED` kill switch, so with it off these four must stay exactly as they were.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])

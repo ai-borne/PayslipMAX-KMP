@@ -1,4 +1,6 @@
 """Print source material for a set of SSOT entries so cards can be drafted in our own words."""
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # tools/ holds config.py, sources.py, compile.py
 import json, re, sys
 from sources import faq, ta, txt
 from config import CARDS_DIR

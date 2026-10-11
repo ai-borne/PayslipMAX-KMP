@@ -57,8 +57,8 @@ class GuideCardFigureStateTest {
             val full = assertNotNull(viewModel.card(SyntheticGuideBundle.PERSONAL_CARD, unlocked = true, profile = null)?.full)
 
             assertNull(full.figure)
-            assertEquals(listOf("A short key point for RB-T1"), full.body.key)
-            assertEquals(listOf("A form"), full.body.attach)
+            assertEquals(listOf("A short key point for RB-T1"), full.key)
+            assertEquals(listOf("A form"), full.attach)
             assertTrue(full.cite.isNotBlank() && full.details.isNotBlank())
         }
 

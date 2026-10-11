@@ -13,8 +13,8 @@ import kotlinx.serialization.json.JsonObject
  * Plain string scans, no regex, so it stays linear on Kotlin/Native.
  */
 object GuideBundleValidator {
-    /** Reviewer notes (`open`) and internal provenance (`from`) stay in the repo; a bundle carrying them is rejected. */
-    private val INTERNAL_CARD_FIELDS = setOf("from", "open")
+    /** Reviewer notes (`open`), provenance (`from`) and authoring metadata stay in the repo; a bundle carrying them is rejected. */
+    private val INTERNAL_CARD_FIELDS = setOf("from", "open", "status", "topic", "domain")
 
     fun hasInternalFields(root: JsonObject): Boolean =
         (root["cards"] as? JsonArray).orEmpty().any { card -> (card as? JsonObject)?.keys?.any { it in INTERNAL_CARD_FIELDS } == true }

@@ -62,12 +62,8 @@ object AppStrings {
 
     // Pre-Flight Validation Errors
     const val errorUnrecognizedPdf = "Unrecognised PDF. Please upload soft copy of PCDAO Payslip in PDF Format"
-    const val errorEncryptedPdfTitle = "Password-Protected PDF"
     const val errorEncryptedPdfDesc = "This PDF requires a password to open. Please unlock the file before importing or use Edit Mode to enter data."
-    const val errorZeroTokensTitle = "Scanned / Empty PDF"
     const val errorZeroTokensDesc = "No readable text was found in this PDF. It may be a scanned image or photo. You can enter details manually via Edit Mode."
-    const val errorUnrecognizedFormatTitle = "Unrecognized Format"
-    const val errorUnrecognizedFormatDesc = "This document does not match a PCDA(O) payslip layout. You can still use Edit Mode to manually add your figures."
 
     // Dashboard - Officer Info Bar
     const val cdaInfoLabel = "CDA A/C"
@@ -110,7 +106,6 @@ object AppStrings {
     const val settingsPremiumPlanTitle = "Advanced Tax & Financial Insights"
     const val premiumTeaserCrownIcon = "👑"
     const val premiumLockIcon = "🔒"
-    const val aiRegenerateIcon = "🔄"
     const val settingsPremiumPlanDesc = "Unlock personalization & CA-grade tax advice"
 
     // Shown in place of a price when the store never returns one, so a dead product can never
@@ -123,9 +118,8 @@ object AppStrings {
     const val settingsPremiumPlanSubscribedNote = "Subscribed (Auto-Renewing Subscription Active)"
 
     // Composed with the live/fallback price at the call site, e.g. "$settingsPremiumPlanUpgradeSubtitlePrefix (₹199 / Year)".
-    const val settingsPremiumPlanUpgradeSubtitlePrefix = "Unlock Advanced Insights & Cloud Backup"
+    const val settingsPremiumPlanUpgradeSubtitlePrefix = "Unlock Advanced Insights & Pay Audit"
     const val settingsRestorePurchasesTitle = "Restore Purchases"
-    const val settingsRestorePurchasesSubtitle = "Recover your Premium subscription on this device"
     const val statusRestorePurchasesSuccess = "Purchases restored"
     const val statusRestorePurchasesFailed = "Restore failed: "
     const val statusPurchaseSuccess = "Premium activated!"
@@ -140,6 +134,7 @@ object AppStrings {
     const val settingsDeleteConfirmBtn = "Delete Everything"
     const val btnCancel = "Cancel"
     const val btnBack = "Back"
+    const val checkMark = "✓" // Leading "done / included" marker.
     const val rowArrow = "➔" // Trailing "opens a screen" marker on tappable rows (Settings, Premium, Guide).
     const val settingsSetPasscodeTitle = "Set 4-Digit Passcode"
     const val settingsSetPasscodeLabel = "Enter 4-Digit PIN"
@@ -172,7 +167,6 @@ object AppStrings {
     const val premiumBadgeTag = "PREMIUM"
     const val settingsSubtitle = "Manage your profile, security, and data backups"
     const val settingsOfflineFirst = "Offline-First"
-    const val settingsAiPoweredByProxy = "AI insights powered by on-device Gemma"
     const val settingsDevOverrideTitle = "Developer · Premium Override"
     const val settingsDevOverrideDesc = "Debug/TestFlight-only entitlement override. Not present in App Store production builds."
     const val settingsDevOverrideFollowFlag = "Follow Flag"
@@ -199,7 +193,6 @@ object AppStrings {
     const val settingsRowPasscodeLabel = "App Passcode Lock"
     const val settingsRowBackupLabel = "Backup & Restore"
     const val settingsRowProfileLabel = "User Profile"
-    const val settingsStatusNotConfigured = "Not Configured"
     const val settingsStatusConfigured = "Configured"
     const val settingsStatusEnabled = "Enabled"
     const val settingsStatusDisabled = "Disabled"
@@ -268,7 +261,6 @@ object AppStrings {
     const val dashboardEmptyStateTitle = "No Payslips Imported"
     const val dashboardEmptyStateDesc = "Import your monthly payslips to unlock digital replicas, historical tracking, financial insights, and tax audits."
     const val dashboardEmptyStateLabel = "Tap the + button below to get started"
-    const val dashboardEmptyStateDescSandbox = "Import your PDF payslips or seed simulated data from the import screen to view financial analytics."
     const val ledgerMismatchIconDesc = "Ledger mismatch"
     const val ledgerCreditMismatchPrefix = "Credits over by ₹"
     const val ledgerDebitMismatchPrefix = "Debits over by ₹"

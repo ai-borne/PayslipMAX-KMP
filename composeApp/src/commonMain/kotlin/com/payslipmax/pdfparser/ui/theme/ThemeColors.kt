@@ -29,18 +29,18 @@ private val LightColorOutlineVariant = Color(0xFFD1D5DB) // Gray-300
 
 // Roles Material's stock components read (chips, nav pill, dialogs, sheets, menus, switches). Left unset, each falls
 // back to Material's baseline purple; these keep them in the app's blue / emerald / violet / gray families.
-private val White = Color(0xFFFFFFFF) // Text and switch thumbs on a filled brand colour, in both themes.
-private val Blue100 = Color(0xFFDBEAFE)
-private val Blue900 = Color(0xFF1E3A8A)
+private val White = LightColorSurface // Text and switch thumbs on a filled brand colour, in both themes.
+private val Blue100 = LightColorPrimaryContainer
+private val Blue900 = DarkColorPrimaryContainer
 private val Emerald100 = Color(0xFFD1FAE5)
 private val Emerald900 = Color(0xFF064E3B)
 private val Violet100 = Color(0xFFEDE9FE)
 private val Violet900 = Color(0xFF4C1D95)
 private val Red100 = Color(0xFFFEE2E2)
 private val Red900 = Color(0xFF7F1D1D)
-private val Gray100 = Color(0xFFF3F4F6)
+private val Gray100 = DarkColorOnSurface
 private val Gray200 = Color(0xFFE5E7EB)
-private val Gray400 = Color(0xFF9CA3AF)
+private val Gray400 = DarkColorOnSurfaceVariant
 private val Gray500 = Color(0xFF6B7280)
 private val Gray800 = Color(0xFF1F2937)
 private val Navy850 = Color(0xFF111A2E) // Between the dark surface and Gray-800: raised containers (menus, dialogs).

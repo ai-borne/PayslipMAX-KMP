@@ -26,15 +26,6 @@ object AppStringsPremium {
     const val retCalcLeaveDaysLabel = "Encashable leave days (max 300)"
     const val retCalcLeaveHint = "(Basic + DA) ÷ 30 × days. MSP excluded per PCDA."
     const val retCalcDsopHint = "100% Tax-Free provident fund balance in Day-1 corpus."
-    const val retCalcPensionTitle = "Estimated monthly pension"
-    const val retCalcPensionNote = "50% of Basic + MSP"
-    const val retCalcGratuityTitle = "Estimated retirement gratuity"
-    const val retCalcGratuityNote = "¼ × (Basic + MSP + DA) × six-monthly periods (Capped at ₹25L)"
-    const val retCalcCommutationTitle = "Commuted lump sum (50%)"
-    const val retCalcCommutationResidualPrefix = "Residual monthly pension: "
-    const val retCalcCommutationNoFactor = "Enter an age between 20 and 67 to estimate commutation, or verify your factor with PAO."
-    const val retCalcLeaveTitle = "Estimated leave encashment"
-    const val retCalcLeaveNote = "(Basic + DA) ÷ 30 × days (MSP Excluded per PCDA rules)"
     const val retCalcDisclaimer = "Estimates only, based on your current pay — actual retirement figures depend on last-drawn emoluments and rules in force. Verify with PAO / PCDA(O)."
 
     // Modern Retirement Planner Components
@@ -53,24 +44,13 @@ object AppStringsPremium {
     const val retCaVerdictRecommend = "Recommendation: Commute 50% if you can reinvest the lump sum above "
     const val retCaVerdictRoiSuffix = "% p.a. post-tax."
     const val retCaRestorationNotice = "PCDA automatically restores full monthly pension after 15 years (180 payments)."
-    const val retMonthlyPensionTitle = "Monthly Cashflow & Dearness Relief (DR)"
     const val retCommutationSimulatorTitle = "Commutation Decision Simulator"
-    const val retCommutationBreakEvenLabel = "Required Reinvestment Yield: "
-    const val retDisabilityPensionTitle = "Disability Pension Calculator"
-    const val retDisabilityToggleLabel = "Include Medical Board Disability"
-    const val retDisabilityPercentLabel = "Disability Percentage (20% - 100%)"
-    const val retAgifMaturityTitle = "AGIF Maturity Benefit"
     const val retAgifNote = "Accumulated balance minus ₹1.6L extended cover (100% Tax Free)"
-    const val retPmrNoticeTitle = "PMR (Premature Retirement) Mode"
-    const val retPmrNoticeDesc = "Officers seeking PMR post-2014 are excluded from 5-year OROP revisions per MoD rules."
     const val retSparshTitle = "SPARSH & PCDA(O) Transition Directory"
     const val retSparshHelpline = "PCDA(O) Pune Helpline: 9309781033 · SPARSH Toll Free: 1800-180-5325"
 
     const val taxPlanningTitle = "Tax Planner"
     const val taxPlanningSubtitle = "Form 16 projections & tax-saving suggestions"
-    const val taxPlanningGrossYtd = "YTD Gross Salary"
-    const val taxPlanningTaxable = "Net Taxable Income"
-    const val taxPlanningITax = "Estimated Tax Liability"
 
     // Modern Tax Planner Strings
     const val taxPlanningFyStatusPrefix = "Financial Year "
@@ -78,7 +58,6 @@ object AppStringsPremium {
     const val taxPlanningOldRegimeLabel = "Old Tax Regime"
     const val taxPlanningNewRegimeLabel = "New Tax Regime"
     const val taxPlanningWinnerSavingsBadge = "Saves ₹"
-    const val taxPlanningWinnerRegimeRecommended = "Recommended for lowest tax liability"
     const val taxPlanningBreakEvenText = "Min Old Regime Deductions Needed: ₹"
     const val taxPlanningCurrentDeductionsText = "Your Current Old Regime Deductions: ₹"
     const val taxPlanningDeductionGapText = "Gap To Switch-Worthy: ₹"
@@ -88,7 +67,6 @@ object AppStringsPremium {
     const val taxPlanningMonthlyTdsRunway = "Projected Monthly TDS: ₹"
     const val taxPlanningTdsSpikeAlertTitle = "⚡ High TDS Spike Warning"
     const val taxPlanningTdsSpikeAlertDesc = "Your monthly tax deduction will jump from ₹"
-    const val taxPlanningExemptionsTitle = "Tax Deductions & Sec 10 Exemptions"
     const val taxPlanning80CLabel = "Sec 80C (DSOP + AGIF)"
     const val taxPlanning80CCD1BLabel = "Sec 80CCD(1B) NPS"
     const val taxPlanningHraLabel = "Sec 10(13A) HRA Exemption"
@@ -127,7 +105,6 @@ object AppStringsPremium {
     const val taxPlanningConfidenceHigh = "🟢 High Confidence"
     const val taxPlanningConfidenceModerate = "🟡 Moderate Confidence"
     const val taxPlanningConfidencePreliminary = "🔴 Preliminary Estimate"
-    const val taxPlanningRuleVersionFooter = "🛡️ Tax Engine: CBDT Rules FY 2025-26 (AY 2026-27) · Version 2026.1 (Verified 01 Jul 2026) · 100% Offline Secured"
 
     const val retirementTitle = "DSOP Simulator"
     const val retirementSubtitle = "DSOP contribution & compound wealth estimates"
@@ -141,7 +118,6 @@ object AppStringsPremium {
     const val representationEditDraftTitle = "Edit Draft:"
 
     const val retirementNoBalance = "Import a payslip with DSOP ledger balance to simulate growth."
-    const val taxPlanningSavingsProjections = "Section 80C & 80D Tax Savings Projections"
     const val taxPlanningNoProjections = "No YTD Tax Projections available for this month."
 
     // Premium Features Catalog (Phase 3) — benefit-only copy, no prices (D8)
@@ -155,13 +131,10 @@ object AppStringsPremium {
     // mention of a paid tier while the platform's free-launch flag is on; reverts to the strings
     // above automatically once it's flipped off — no call site needs to change.
     private const val launchNeutralCatalogTitle = "Everything Included"
-    private const val launchNeutralCatalogSubtitle = "All features are unlocked for launch"
     private const val launchNeutralCatalogSettingsEntrySubtitle = "See everything included"
 
     val premiumCatalogTitleDisplay: String
         get() = if (isFreeLaunchModePlatform()) launchNeutralCatalogTitle else premiumCatalogTitle
-    val premiumCatalogSubtitleDisplay: String
-        get() = if (isFreeLaunchModePlatform()) launchNeutralCatalogSubtitle else premiumCatalogSubtitle
     val premiumCatalogSettingsEntrySubtitleDisplay: String
         get() =
             if (isFreeLaunchModePlatform()) {

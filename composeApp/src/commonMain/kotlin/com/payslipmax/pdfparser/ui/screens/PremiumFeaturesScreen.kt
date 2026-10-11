@@ -169,7 +169,7 @@ private fun PremiumFeatureTrailing(mode: RowMode) {
             )
         RowMode.INCLUDED ->
             Text(
-                text = "✓ ${AppStringsPremium.premiumCatalogIncludedLabel}",
+                text = "${AppStrings.checkMark} ${AppStringsPremium.premiumCatalogIncludedLabel}",
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,

@@ -26,7 +26,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * Phase E3: case tile, then a feed with breadcrumb and facet chips, then the full card (the approved preview).
+ * Case tile, then a feed with breadcrumb and facet chips, then the full card (the approved preview).
  * Synthetic bundle: td-da has 8 cards over four facets (chips), ltc-home has 2 cards plus RB-T1 as an
  * "also relevant here" link (no chips), RB-T1 is the personal card, RB-T3 has no cite.
  *

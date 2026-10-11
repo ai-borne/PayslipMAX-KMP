@@ -1,9 +1,7 @@
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -11,34 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
-
-@Composable
-fun PremiumSettingsCard(
-    isPremiumEnabled: Boolean,
-    onUpgradePrompt: () -> Unit,
-    price: String? = null,
-    modifier: Modifier = Modifier,
-) {
-    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
-    val containerColor = getPremiumCardContainerColor(isPremiumEnabled, isDark)
-    val borderColor = getPremiumCardBorderColor(isPremiumEnabled)
-
-    Card(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .clickable {
-                    if (!isPremiumEnabled) {
-                        onUpgradePrompt()
-                    }
-                },
-        shape = RoundedCornerShape(AppDimensions.CornerRadius),
-        colors = CardDefaults.cardColors(containerColor = containerColor),
-        border = BorderStroke(AppDimensions.BorderThin, borderColor),
-    ) {
-        PremiumCardContent(isPremiumEnabled = isPremiumEnabled, price = price)
-    }
-}
 
 @Composable
 fun PremiumSettingsCardContentRow(
@@ -82,14 +52,6 @@ private fun getPremiumCardContainerColor(
         } else {
             MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.1f)
         }
-    }
-
-@Composable
-private fun getPremiumCardBorderColor(isPremiumEnabled: Boolean) =
-    if (isPremiumEnabled) {
-        MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-    } else {
-        MaterialTheme.colorScheme.tertiary.copy(alpha = 0.4f)
     }
 
 @Composable

@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.guide.domain
 
+import com.payslipmax.pdfparser.domain.SUPPORT_MESSAGE_MAX_CHARS
 import com.payslipmax.pdfparser.utils.buildMailtoUrlString
 import platform.Foundation.NSURL
 import kotlin.test.Test
@@ -65,7 +66,7 @@ class GuideSuggestionMailtoIosTest {
 
     @Test
     fun nsUrlAcceptsTheLinkEvenForAFullLengthTextOfThreeByteCharacters() {
-        val full = "रि".repeat(GuideSuggestion.MAX_TEXT_LENGTH / 2)
+        val full = "रि".repeat(SUPPORT_MESSAGE_MAX_CHARS / 2)
         val (link, _, body) = url(full)
 
         assertNotNull(NSURL.URLWithString(link), "a maximum-length Devanagari text must still be a valid URL")
@@ -74,7 +75,7 @@ class GuideSuggestionMailtoIosTest {
 
     @Test
     fun anEmojiCutAtTheLimitNeverReachesTheLinkAsABrokenCharacter() {
-        val cut = "a".repeat(GuideSuggestion.MAX_TEXT_LENGTH - 1) + "😀"
+        val cut = "a".repeat(SUPPORT_MESSAGE_MAX_CHARS - 1) + "😀"
         val (link, _, body) = url(cut)
 
         assertFalse(link.contains("%EF%BF%BD"), "no replacement character: the half pair was dropped before encoding")

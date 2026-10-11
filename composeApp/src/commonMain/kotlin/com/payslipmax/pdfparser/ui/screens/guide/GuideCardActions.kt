@@ -15,7 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import com.payslipmax.pdfparser.guide.domain.GuideSuggestion
+import com.payslipmax.pdfparser.domain.SUPPORT_MESSAGE_MAX_CHARS
 import com.payslipmax.pdfparser.ui.screens.SupportMessageDialog
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideMaintenanceStrings
@@ -81,7 +81,7 @@ private fun GuideSuggestionDialog(
         notice = GuideMaintenanceStrings.suggestNotice,
         fieldLabel = GuideMaintenanceStrings.suggestFieldLabel,
         confirmLabel = GuideMaintenanceStrings.suggestOpenEmail,
-        maxLength = GuideSuggestion.MAX_TEXT_LENGTH,
+        maxLength = SUPPORT_MESSAGE_MAX_CHARS,
         onDismiss = onDismiss,
         onConfirm = onSend,
     )

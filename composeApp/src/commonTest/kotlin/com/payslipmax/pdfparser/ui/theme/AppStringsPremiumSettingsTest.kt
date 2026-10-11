@@ -17,7 +17,7 @@ class AppStringsPremiumSettingsTest {
 
     @Test
     fun upgradeSubtitlePrefixMatchesExpectedCopy() {
-        assertEquals("Unlock Advanced Insights & Cloud Backup", AppStrings.settingsPremiumPlanUpgradeSubtitlePrefix)
+        assertEquals("Unlock Advanced Insights & Pay Audit", AppStrings.settingsPremiumPlanUpgradeSubtitlePrefix)
     }
 
     // Guards the Phase 8 removal of the hardcoded "₹199 / Year" fallback: price copy must never

@@ -59,12 +59,11 @@ class GuideSearchIndex(
         bundle.cards.let { cards ->
             val caseRules = bundle.nav.flatMap { it.cases }.associate { it.id to GuideRuleNumberParser.ruleNumbers(it.sub) }
             cards.filterNot { it.isReplaced }.map { card ->
-                val body = CardTemplate.body(card)
                 Entry(
                     card = card,
                     title = wordSet(card.title),
                     answer = wordSet(card.answer),
-                    bullets = wordSet((body.key + body.attach + body.watch).joinToString(" ")),
+                    bullets = wordSet((card.key + card.attach + card.watch).joinToString(" ")),
                     details = wordSet(card.details),
                     rules = GuideRuleNumberParser.ruleNumbers(card.cite) + caseRules[card.nav].orEmpty(),
                 )

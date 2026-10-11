@@ -3,11 +3,8 @@ package com.payslipmax.pdfparser.ui.screens.guide
 import com.payslipmax.pdfparser.subscription.LaunchFlags
 
 /**
- * Whether the Guide tab and every Guide entry point exist. Release builds follow [LaunchFlags.GUIDE_ENABLED]
- * (false until phase E9, so release behaves exactly as before the Guide); debug builds and the Android
- * `minifiedTest` smoke build always show it so each phase can be tried before launch.
+ * Whether the Guide tab and every Guide entry point exist: the [LaunchFlags.GUIDE_ENABLED] kill switch and nothing
+ * else, in every build type. Switched off, the tab, the routes, the Pay Audit link and the Guide Koin module are all
+ * absent, and R8 drops the Guide UI from release.
  */
-fun isGuideEnabled(): Boolean = LaunchFlags.GUIDE_ENABLED || isGuidePreviewBuild()
-
-/** True for debug builds (and Android's `minifiedTest`); a compile-time constant false in release. */
-internal expect fun isGuidePreviewBuild(): Boolean
+fun isGuideEnabled(): Boolean = LaunchFlags.GUIDE_ENABLED

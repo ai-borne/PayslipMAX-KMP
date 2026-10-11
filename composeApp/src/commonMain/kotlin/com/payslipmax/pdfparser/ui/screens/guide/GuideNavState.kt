@@ -12,7 +12,7 @@ sealed interface GuideDestination {
 
     data class Area(val areaId: String) : GuideDestination
 
-    /** [facet] is the chosen facet chip, kept here so it survives restore (used from phase E3). */
+    /** [facet] is the chosen facet chip, kept here so it survives restore (used by the case feed). */
     data class Case(val caseId: String, val facet: String? = null) : GuideDestination
 
     data class Card(val cardId: String) : GuideDestination

@@ -27,6 +27,12 @@ class BundleContents(unittest.TestCase):
             self.assertNotIn('from', card, card['id'])
             self.assertNotIn('open', card, card['id'])
 
+    def test_curator_bookkeeping_never_ships(self):
+        # status/topic/domain are authoring metadata the app never reads; shipping them only grew the bundle.
+        for card in BUILT['cards']:
+            for field in ('status', 'topic', 'domain'):
+                self.assertNotIn(field, card, card['id'])
+
     def test_a_new_private_card_field_is_not_shipped_by_default(self):
         rb = copy.deepcopy(RULEBOOK)
         rb['cards'][0]['reviewer_note'] = 'internal'
@@ -47,8 +53,9 @@ class BundleContents(unittest.TestCase):
     def test_matches_the_compiled_dataset(self):
         cards = BUILT['cards']
         self.assertEqual(len(cards), 404)
-        self.assertEqual(sum(c['domain'] == 'travel' for c in cards), 220)
-        self.assertEqual(sum(c['domain'] == 'pay' for c in cards), 184)
+        # The domain split is pinned on the source rulebook, because the shipped cards no longer carry `domain`.
+        self.assertEqual(sum(c['domain'] == 'travel' for c in RULEBOOK['cards']), 220)
+        self.assertEqual(sum(c['domain'] == 'pay' for c in RULEBOOK['cards']), 184)
         self.assertEqual(len(BUILT['nav']), 9)
         self.assertEqual(sum(len(a['cases']) for a in BUILT['nav']), 44)
         self.assertEqual(BUILT['facets'], RULEBOOK['facets'])

@@ -16,8 +16,8 @@ class GuideLaunchFlagTest {
 }
 
 /**
- * The Guide paywall is a separate switch from the dark launch: the owner turns it on only after clearing the open
- * points on the main rate cards, so it cannot ride along with the E9 release flip by accident.
+ * The Guide paywall is a separate switch from `LaunchFlags.GUIDE_ENABLED`: the owner turns it on only after clearing the open
+ * points on the main rate cards, so it cannot ride along with the Guide release by accident.
  */
 class GuidePaywallFlagTest {
     @Test

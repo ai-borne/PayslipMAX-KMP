@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import com.payslipmax.pdfparser.domain.SUPPORT_MESSAGE_MAX_CHARS
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsSupport
 import org.junit.Rule
@@ -21,7 +22,7 @@ import kotlin.test.assertEquals
 /**
  * Characterization of Settings > Report an Issue, written before the dialog's layout moved into a shared composable (M5), so
  * that move cannot change what the support dialog shows or sends: its copy, the Send button staying off until there is text,
- * the 1000-character cap, and which callbacks run on Send and on Cancel.
+ * the shared support cap, and which callbacks run on Send and on Cancel.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
@@ -64,13 +65,13 @@ class ReportIssueDialogTest {
     }
 
     @Test
-    fun theFieldKeepsAtMostAThousandCharacters() {
+    fun theFieldKeepsAtMostTheSharedSupportCap() {
         show()
 
-        type("a".repeat(1200))
+        type("a".repeat(SUPPORT_MESSAGE_MAX_CHARS + 200))
         composeRule.onNodeWithText(AppStringsSupport.reportIssueSendBtn).performClick()
 
-        assertEquals(listOf("a".repeat(1000)), sent)
+        assertEquals(listOf("a".repeat(SUPPORT_MESSAGE_MAX_CHARS)), sent)
     }
 
     @Test

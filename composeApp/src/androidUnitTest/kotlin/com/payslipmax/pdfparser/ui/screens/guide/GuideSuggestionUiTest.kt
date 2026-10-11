@@ -9,8 +9,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import com.payslipmax.pdfparser.domain.SUPPORT_MESSAGE_MAX_CHARS
 import com.payslipmax.pdfparser.guide.GuideLoadResult
-import com.payslipmax.pdfparser.guide.domain.GuideSuggestion
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuidePinsStorage
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
@@ -165,7 +165,7 @@ class GuideSuggestionUiTest {
         type(sentence.repeat(60))
         tap(open)
 
-        val expected = sentence.repeat(60).take(GuideSuggestion.MAX_TEXT_LENGTH).trim()
+        val expected = sentence.repeat(60).take(SUPPORT_MESSAGE_MAX_CHARS).trim()
         assertEquals(expected, mails.single().third.substringAfter("Suggestion:\n"))
         assertTrue(expected.length in 1 until sentence.length * 60, "the text typed was longer than the cap, and the email holds the capped part")
     }

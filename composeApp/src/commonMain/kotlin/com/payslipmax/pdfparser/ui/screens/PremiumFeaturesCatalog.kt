@@ -124,7 +124,7 @@ fun featureMeta(gate: FeatureGate): PremiumFeatureMeta =
 
 /**
  * Whether a gate is offered as a Premium feature today. [FeatureGate.CLAIM_GUIDE] is only once the Guide exists in
- * this build and its paywall is on: before that the Guide is dark, or free for everyone, and listing it as
+ * this build and its paywall is on: before that the kill switch has the Guide off, or it is free for everyone, and listing it as
  * Premium would promise something that is not for sale. Every other gate is always offered.
  */
 internal fun isAdvertised(

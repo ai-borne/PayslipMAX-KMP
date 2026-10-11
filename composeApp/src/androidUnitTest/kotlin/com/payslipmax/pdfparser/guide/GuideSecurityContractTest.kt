@@ -15,7 +15,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
- * E9 security evidence that can be checked mechanically. The Guide is offline: it reads one bundled file, keeps its own
+ * Security evidence that can be checked mechanically. The Guide is offline: it reads one bundled file, keeps its own
  * state on the device, and talks to the outside only when the user taps Copy cite, Share or, since M5, Suggest a correction
  * (the existing clipboard, share-sheet and email helpers; the email one only opens the user's mail app, the app sends nothing). These checks fail if someone adds a network path, writes Guide data to telemetry, or ships the
  * bundle's internal `from`/`open` fields. They read the sources as text because the property is "this code does not exist".
@@ -55,6 +55,15 @@ class GuideSecurityContractTest {
         val model = guideSources.first { it.name == "GuideViewModel.kt" }.readText()
         assertEquals(1, Regex("""crashReporter\.""").findAll(model).count(), "the view model may report exactly one thing")
         assertTrue(model.contains("mapOf(GUIDE_LOAD_ERROR_KEY to error.name)"), "the only value sent is the load error code")
+    }
+
+    @Test
+    fun theKillSwitchIsTheOnlyWayToHideTheGuideAndNoDebugPreviewPathReturns() {
+        // Owner decision D1: LaunchFlags.GUIDE_ENABLED is the one switch. Names are split so this file does not match itself.
+        val banned = Regex("GUIDE" + "_PREVIEW|isGuide" + "PreviewBuild")
+        val scanned = sourceRoots.flatMap { it.walkTopDown().filter { f -> f.isFile && f.extension == "kt" }.toList() } + File("build.gradle.kts")
+        val hits = scanned.filter { banned.containsMatchIn(it.readText()) }.map { it.name }
+        assertEquals(emptyList(), hits, "a second Guide switch (debug preview) came back beside LaunchFlags.GUIDE_ENABLED")
     }
 
     @Test
