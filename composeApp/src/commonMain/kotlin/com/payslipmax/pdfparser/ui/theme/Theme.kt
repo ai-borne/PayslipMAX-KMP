@@ -58,8 +58,6 @@ object AppDimensions {
     val CornerRadiusSmall = 2.dp
     val CornerRadiusMedium = 8.dp
     val CardElevation = 4.dp
-    val DialogElevation = 6.dp
-    val DialogMaxHeight = 240.dp
     val OnboardingCardPagerHeight = 320.dp
     val LockKeyboardWidth = 280.dp
 
@@ -70,7 +68,6 @@ object AppDimensions {
     val SpacingTen = 10.dp
     val SpacingMedium = 12.dp
     val SpacingLarge = 16.dp
-    val SpacingExtraLarge = 20.dp
     val SpacingHuge = 24.dp
     val SpacingDouble = 32.dp
 
@@ -80,7 +77,6 @@ object AppDimensions {
 
     val IconSizeSmall = 16.dp
     val IconSizeMedium = 24.dp
-    val IconSizeLarge = 32.dp
     val IconSizeExtraLarge = 40.dp
     val IconSizeDouble = 48.dp
     val IconSizeHuge = 72.dp

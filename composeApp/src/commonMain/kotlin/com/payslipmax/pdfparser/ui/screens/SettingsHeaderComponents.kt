@@ -33,7 +33,7 @@ fun OfflineStatusPill(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
         ) {
-            Text("✔", fontSize = AppDimensions.TextSizeSmall, color = MaterialTheme.colorScheme.primary)
+            Text(AppStrings.checkMark, fontSize = AppDimensions.TextSizeSmall, color = MaterialTheme.colorScheme.primary)
             Text(
                 text = AppStrings.settingsOfflineFirst,
                 style = MaterialTheme.typography.labelSmall,

@@ -176,6 +176,9 @@ store notes) and the iOS walkthrough are **out of scope** (owner, separate relea
   discard), and Settings > Report an Issue dialog. The dialogs' shared cap and the sections are covered by on-screen unit
   tests; only the on-device look is outstanding.
 - **From P4 (not done):** the device smoke now builds `minifiedTest` itself; run it once to prove that path.
+- **From P7 (not done, no Pixel attached on 2026-10-11):** Settings renders (offline-first badge shows the checkmark, Premium row
+  shows its subtitle "Unlock Advanced Insights & Pay Audit") and the Premium screen renders ("✓ Included" labels). The glyph
+  swap (`✔` to `✓` in the badge) and the subtitle copy are covered by unit tests only.
 - Add here, with the phase name, any later phase whose device check could not run.
 - Exit: every item run on a device and recorded in `19_carry_over.md`, or the owner explicitly waives it.
 
@@ -228,6 +231,22 @@ shared tests are the deleted `canSend`/`body` tests), `iosSimulatorArm64Test` (9
 `assembleRelease` 69,624,204 bytes (identical to P5), `check_r8_guide.py` (12 models kept, bundle byte-identical),
 `refresh.py --check` OK. Not done: the Pixel items (P11). Left on purpose: "402 cards" in test comments
 (`GuideSearchIndexTest`, `GuideLoaderIosPerfTest`), which belong to the P9 stale-wording sweep.
+
+## P7 result (2026-10-11)
+
+Done: red = `UiResourceUsageSourceTest` (3 failed: unused strings, unused dimensions, literal glyphs). The scan found **37 unused
+string constants and 1 unused getter** (plan guessed 9) plus the 4 dimensions; all deleted (`AppStrings` 11, `AppStringsPremium`
+26 + `premiumCatalogSubtitleDisplay` and its private `launchNeutralCatalogSubtitle`), as were `DialogElevation`, `DialogMaxHeight`,
+`SpacingExtraLarge`, `IconSizeLarge`. `PremiumSettingsCard` (the unused card; `PremiumSettingsCardContentRow` is live and stays)
+and its border-colour helper deleted. `AppStrings.checkMark` ("✓") now used at both sites; the Settings badge changes from
+`✔` to `✓`. A constant used only by a live getter in its own file counts as used (rule in the test). Checked and left alone:
+`PortableBackup.backupVersion` is a serialized field (real); no RevenueCat delegate overrides exist in the code today, so there
+was nothing to remove. Copy fix: "Cloud Backup" was false (backups are local files), so `Products.storekit` and
+`settingsPremiumPlanUpgradeSubtitlePrefix` now say "Pay Audit" (the owner should mirror the store listing text if it still
+says Cloud Backup). Gate: tech-debt audit, ktlint, `check` (shared 1024, composeApp 899 Android unit tests, 0 failed, 0 skipped),
+`iosSimulatorArm64Test` (979 + 559, 0 failed) and iOS link green. `assembleRelease` + R8 check not run (no models, Koin or
+Gradle change). Not done: the Pixel items (P11). Tooling note: Gradle needed `-Dorg.gradle.java.home` (JDK 21) because an IDE
+extension JRE without `jmod` was picked up.
 
 ## Risks and controls
 - **Release/R8:** P3, P5 and P6 change models or reachability → `assembleRelease` + check each time.

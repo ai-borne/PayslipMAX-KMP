@@ -18,11 +18,11 @@ Sources: the M9 carry-over list (M1-M8, moved from the maintenance plan) and the
 | A9 | Guide dead code: `GuideSuggestion.canSend`, `openCardHint`, `CardTemplate.body`/`GuideCardBody`, `GuideStaleness.epochDays` | P6 | done (P6: dead code removed, `GuideCardFull` holds the three lists, `epochDays` in `GuideTestClock`) |
 | A10 | Duplicate limit (`SUPPORT_MESSAGE_MAX_CHARS`) and duplicate colour literals vs `ThemeColors` | P6 | done (P6: one `SUPPORT_MESSAGE_MAX_CHARS`; `ThemeColors` aliases, pinned by `ThemeColorsSourceTest`) |
 | A11 | `guideSmokeTest` dependencies outside `libs.versions.toml`; stale "402" / "252 KB" comments | P6 | done (P6: smoke deps in `libs.versions.toml`; the two comments fixed; the remaining "402" in test comments go to P9) |
-| A12 | Pre-1.3.0 dead code: `PremiumSettingsCard`, 9 strings, 4 dimensions, literal glyphs, `Products.storekit` description | P7 | open |
+| A12 | Pre-1.3.0 dead code: `PremiumSettingsCard`, 9 strings, 4 dimensions, literal glyphs, `Products.storekit` description | P7 | done (P7: 37 strings + 1 getter, 4 dimensions, the card, `AppStrings.checkMark`, false "Cloud Backup" copy; `UiResourceUsageSourceTest` keeps it clean; on-device look owed, see P11) |
 | A13 | Stale comments and docs (CLAUDE.md schema v14 / backup v4 / R8 wording, HANDOFF top block, 36 vs 37 count) | P9 | open |
 | A14 | Scratch tools `todo_pay.py`, `pa.py`, `packet.py` outside `tools/archive/` | P9 | open |
 | A15 | `refresh.py` prints `FAILED at step "b"` on a passing run (seen in the P0 baseline) | P9 | open |
-| A17 | Pixel smoke and walk for P1, P2, P3, P5 and P6 (Pay Audit link opens its card; a noted card shows no "updated since your note"; P6: card sections, Share, Suggest and Report an Issue dialogs) not run (no device attached, 2026-10-10); later phases may add to it | P11 | open |
+| A17 | Pixel smoke and walk for P1, P2, P3, P5, P6 and P7 (Pay Audit link opens its card; a noted card shows no "updated since your note"; P6: card sections, Share, Suggest and Report an Issue dialogs; P7: Settings and Premium screens render with checkmarks) not run (no device attached, 2026-10-10); later phases may add to it | P11 | open |
 | A16 | Old local/remote branches not yet checked against `main` | P10 | open |
 
 ## B. Carried over from M1-M8
