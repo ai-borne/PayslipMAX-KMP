@@ -18,6 +18,8 @@ import com.payslipmax.pdfparser.ui.screens.PayAuditViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuidePinsModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.isPreClaimEnabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelAndJoin
@@ -113,6 +115,12 @@ class AppKoinModulesTest {
         // Release keeps the Guide dark until phase E9, and leaving guideModule out lets R8 drop all Guide code from it.
         assertEquals(isGuideEnabled(), start().getOrNull<GuideRepository>() != null)
         assertEquals(isGuideEnabled(), start().getOrNull<GuideViewModel>() != null)
+    }
+
+    @Test
+    fun preClaimBindingExistsExactlyWhereThePreClaimFlagIsOn() {
+        // Dark launch: with the flag off nothing binds the worksheet, so no user can reach it and R8 drops its code from release.
+        assertEquals(isPreClaimEnabled(), start().getOrNull<PreClaimViewModel>() != null)
     }
 
     @Test

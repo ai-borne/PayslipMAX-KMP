@@ -145,6 +145,8 @@ class GuideLoaderIosPerfTest {
             // Plan 22, P3: the worksheet decodes and validates on Native exactly as on the JVM.
             GuidePreClaimContract.assertPreClaimWorksheetReachesTheApp(bundle)
             GuidePreClaimContract.assertRulePickerLinksToRealCards(bundle)
+            // Plan 22, P6: the worksheet flow does the same sums on Native.
+            PreClaimFlowContract.assertTheWorksheetFlowRunsOnTheShippedBundle(bundle)
         }
 
     private companion object {

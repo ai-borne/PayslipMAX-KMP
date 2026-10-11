@@ -38,5 +38,6 @@ class GuideBundleAndroidContractTest {
             GuideFiguresContract.assertHistoryResolvesAllFourCards(bundle, GuideFiguresContract.realisticHistory())
             GuidePreClaimContract.assertPreClaimWorksheetReachesTheApp(bundle)
             GuidePreClaimContract.assertRulePickerLinksToRealCards(bundle)
+            PreClaimFlowContract.assertTheWorksheetFlowRunsOnTheShippedBundle(bundle)
         }
 }

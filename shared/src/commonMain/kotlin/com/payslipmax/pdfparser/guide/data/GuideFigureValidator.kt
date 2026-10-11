@@ -12,7 +12,6 @@ import com.payslipmax.pdfparser.guide.model.GuideFigure
  * resolver hides it). A bundle with no figures is valid. Problems name ids for tests only; they must never be logged or reported.
  */
 internal object GuideFigureValidator {
-    private const val USE_PRECLAIM = "preclaim"
     private val BAND_MODES = setOf(FigureModes.DA_STEP, FigureModes.PLUS_DA)
     private const val MIN_LOCAL_MOVE_DIVISOR = 2
     private const val MAX_LOCAL_MOVE_DIVISOR = 10
@@ -34,7 +33,7 @@ internal object GuideFigureValidator {
         figure: GuideFigure,
         cards: Map<String, GuideCard>,
     ): List<String> {
-        if (figure.use == USE_PRECLAIM) {
+        if (figure.use == FigureModes.USE_PRECLAIM) {
             return if (figure.card.isEmpty()) emptyList() else listOf("figure $key: a preclaim figure names a card")
         }
         if (figure.card.isEmpty()) return listOf("figure $key: no card and not a preclaim figure")

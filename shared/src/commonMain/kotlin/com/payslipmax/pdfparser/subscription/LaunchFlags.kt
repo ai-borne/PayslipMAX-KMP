@@ -30,4 +30,9 @@ object LaunchFlags {
     // points on the main rate cards (RP-088 HBA 8.5% and others), because charging for "Unverified point" cards is a
     // trust risk. The gate and the locked UI ship and are tested either way.
     const val GUIDE_PAYWALL_ENABLED: Boolean = false
+
+    // TA/DA pre-claim worksheet inside the Guide (docs/Plan/rule_cards/22_ta_da_preclaim_execution_plan.md). Dark launch: false removes
+    // the entry point, so the ViewModel and calculators ship but nothing reaches a user. The owner flips it in the release step (P9),
+    // after the device walks, in its own commit. It also needs GUIDE_ENABLED: the worksheet lives in the Guide tab.
+    const val PRECLAIM_ENABLED: Boolean = false
 }

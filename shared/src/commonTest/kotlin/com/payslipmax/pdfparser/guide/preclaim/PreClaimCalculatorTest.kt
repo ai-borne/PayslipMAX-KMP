@@ -96,4 +96,29 @@ class PreClaimCalculatorTest {
         assertNull(profile.mspAmount)
         assertNull(profile.npaAmount)
     }
+
+    @Test
+    fun withBothSpousesServingTheCtgIsANoteWhileBaggageAndConveyanceStillCompute() {
+        val (ctg, baggage, conveyance) = PreClaimCalculator.permanentDuty(figures, request().copy(bothSpousesServing = true))
+
+        assertEquals(PreClaimIssue.BOTH_SPOUSES_SERVING, assertIs<Unavailable>(ctg).issue, "owner, plan 21 round 2: note only, no CTG figure")
+        assertEquals(PreClaimElement.CTG, ctg.element)
+        assertEquals(180063L, assertIs<PerKmEstimate>(baggage).rupees)
+        assertEquals(86430L, assertIs<PerKmEstimate>(conveyance).rupees)
+    }
+
+    @Test
+    fun bothSpousesServingDefaultsToOffSoEveryEarlierCallerKeepsItsCtg() {
+        assertEquals(false, request().bothSpousesServing)
+        assertEquals(119200L, assertIs<CtgEstimate>(PreClaimCalculator.permanentDuty(figures, request()).first()).rupees)
+    }
+
+    @Test
+    fun absenceDaysIsTheInclusiveCountAndNullForAnyDatePairTheDailyElementsRefuse() {
+        assertEquals(57, PreClaimCalculator.absenceDays(CalendarDate(2024, 2, 1), CalendarDate(2024, 3, 28)))
+        assertEquals(1, PreClaimCalculator.absenceDays(CalendarDate(2026, 10, 11), CalendarDate(2026, 10, 11)))
+        assertNull(PreClaimCalculator.absenceDays(null, CalendarDate(2026, 10, 11)), "a missing date")
+        assertNull(PreClaimCalculator.absenceDays(CalendarDate(2026, 4, 31), CalendarDate(2026, 5, 2)), "31 April does not exist")
+        assertNull(PreClaimCalculator.absenceDays(CalendarDate(2026, 10, 12), CalendarDate(2026, 10, 11)), "reversed")
+    }
 }

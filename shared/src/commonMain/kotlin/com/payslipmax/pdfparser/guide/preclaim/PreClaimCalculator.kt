@@ -13,10 +13,20 @@ object PreClaimCalculator {
         request: PermanentDutyRequest,
     ): List<PreClaimOutcome> =
         listOf(
-            CtgCalculator.estimate(figures, request.profile, request.ctgCase),
+            if (request.bothSpousesServing) {
+                Unavailable(PreClaimElement.CTG, PreClaimIssue.BOTH_SPOUSES_SERVING)
+            } else {
+                CtgCalculator.estimate(figures, request.profile, request.ctgCase)
+            },
             RoadBaggageCalculator.estimate(figures, request.profile, request.roadKm),
             CarConveyanceCalculator.estimate(figures, request.originState, request.roadKm),
         )
+
+    /** Total Absence as the portal counts it, both days included; null when the dates are missing or unusable. The worksheet pre-fills nights with it. */
+    fun absenceDays(
+        from: CalendarDate?,
+        to: CalendarDate?,
+    ): Int? = (DutyDays.inclusive(from, to) as? DutySpan.Days)?.count
 
     /**
      * Food, lodging, local taxi and own-car RMA. TR Rule 124 (DA not admissible) makes the first three nil; the RMA is nil without

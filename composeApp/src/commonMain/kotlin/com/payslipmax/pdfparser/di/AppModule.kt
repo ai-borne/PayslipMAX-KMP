@@ -6,6 +6,7 @@ import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.PayAuditViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.isPreClaimEnabled
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -13,6 +14,8 @@ val appModule =
     module {
         // With the kill switch off the Guide is left out, so R8 removes all Guide code (only the bundle asset ships).
         if (isGuideEnabled()) includes(guideModule)
+        // Dark launch (LaunchFlags.PRECLAIM_ENABLED): off, the pre-claim ViewModel is not bound and R8 drops it.
+        if (isPreClaimEnabled()) includes(preClaimModule)
         // One installer for every PayslipViewModel: the iOS installer publishes its progress
         // through process-wide statics, so a second instance would orphan the first's subscriber.
         single<GemmaBaseModelInstaller> { provideGemmaBaseModelInstaller() }

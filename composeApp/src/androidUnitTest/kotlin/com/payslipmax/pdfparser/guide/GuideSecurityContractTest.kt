@@ -50,8 +50,9 @@ class GuideSecurityContractTest {
     @Test
     fun onlyTheViewModelTouchesTelemetryAndItWritesOneCodeNeverCardData() {
         val users = guideSources.filter { Regex("""CrashReporter|crashReporter|TelemetrySanitizer""").containsMatchIn(it.readText().replace(Regex("""/\*.*?\*/""", RegexOption.DOT_MATCHES_ALL), "")) }
-        // GuideModule hands the reporter to the view model; the search view model only names it in a comment.
-        assertEquals(setOf("GuideViewModel.kt", "GuideModule.kt"), users.map { it.name }.toSet())
+        // GuideModule hands the reporter to the view model; the search view model only names it in a comment. The pre-claim worksheet's
+        // ViewModel is the one deliberate second user (one breadcrumb, move type only); PreClaimSecurityContractTest pins that.
+        assertEquals(setOf("GuideViewModel.kt", "GuideModule.kt", "PreClaimViewModel.kt"), users.map { it.name }.toSet())
         val model = guideSources.first { it.name == "GuideViewModel.kt" }.readText()
         assertEquals(1, Regex("""crashReporter\.""").findAll(model).count(), "the view model may report exactly one thing")
         assertTrue(model.contains("mapOf(GUIDE_LOAD_ERROR_KEY to error.name)"), "the only value sent is the load error code")

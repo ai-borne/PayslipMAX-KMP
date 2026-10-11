@@ -35,6 +35,9 @@ enum class PreClaimIssue {
     NIGHTLY_RATE_OUT_OF_RANGE,
     TR_RULE_MISSING,
     SANCTION_UNANSWERED,
+
+    /** Not an input gap: with both spouses serving the worksheet gives a note and no CTG figure (owner, plan 21 round 2). */
+    BOTH_SPOUSES_SERVING,
 }
 
 /** Why a daily or conveyance element is nil by rule, which is an answer and not a gap. */

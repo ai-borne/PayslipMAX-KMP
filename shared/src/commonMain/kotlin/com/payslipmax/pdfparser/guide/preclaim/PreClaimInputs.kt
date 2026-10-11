@@ -27,12 +27,16 @@ data class PreClaimProfile(
     }
 }
 
-/** The answers a permanent-duty move needs. A null km or state leaves only the elements that need it unavailable. */
+/**
+ * The answers a permanent-duty move needs. A null km or state leaves only the elements that need it unavailable. With
+ * [bothSpousesServing] the CTG is a note and not a figure (owner, plan 21 round 2); baggage and conveyance are unaffected.
+ */
 data class PermanentDutyRequest(
     val profile: PreClaimProfile,
     val ctgCase: CtgCase,
     val roadKm: Int?,
     val originState: String?,
+    val bothSpousesServing: Boolean = false,
 )
 
 /**
