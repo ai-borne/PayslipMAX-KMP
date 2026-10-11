@@ -57,6 +57,9 @@ object SyntheticGuideBundle {
         return bundle.copy(figures = GuideFigures(SyntheticGuideFigures.figures.daStep, mapOf("food_rate" to food)))
     }
 
+    /** The same bundle with the synthetic pre-claim worksheet, whose rule picker links to [SyntheticGuidePreClaim.PICKER_CARD]. */
+    fun withPreClaim(): GuideBundle = (GuideBundleParser.parse(JSON) as GuideLoadResult.Loaded).bundle.copy(preclaim = SyntheticGuidePreClaim.preClaim)
+
     private fun card(
         id: String,
         nav: String,

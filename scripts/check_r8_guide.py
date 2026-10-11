@@ -5,7 +5,7 @@ Green debug tests do not prove the minified app can read the Guide. This checks 
 (R8 and resource shrinking, Guide reachable behind LaunchFlags.GUIDE_ENABLED). There is no Guide keep rule:
 reachability plus kotlinx-serialization's bundled rules keep the models, and this gate proves it. After
 `:composeApp:assembleRelease`, this fails unless:
-  1. every @Serializable class in guide/model/GuideModels.kt survives R8 with its generated `$$serializer` and its
+  1. every @Serializable class in guide/model/*.kt survives R8 with its generated `$$serializer` and its
      `Companion.serializer()` (read from the R8 mapping; the model list comes from the source, not a copy), and
   2. the release APK carries the Guide bundle byte-identical to the source file.
 The `minifiedTest` build type exists only for the device smoke (scripts/run_guide_minified_smoke.sh), which builds it.
@@ -21,7 +21,7 @@ import zipfile
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 PACKAGE = "com.payslipmax.pdfparser.guide.model"
-MODELS_SRC = os.path.join(ROOT, "shared/src/commonMain/kotlin/com/payslipmax/pdfparser/guide/model/GuideModels.kt")
+MODELS_DIR = os.path.join(ROOT, "shared/src/commonMain/kotlin/com/payslipmax/pdfparser/guide/model")
 BUNDLE_SRC = os.path.join(ROOT, "composeApp/src/commonMain/composeResources/files/guide/guide_bundle.json")
 BUNDLE_SUFFIX = "/files/guide/guide_bundle.json"
 DEFAULT_MAPPING = os.path.join(ROOT, "composeApp/build/outputs/mapping/release/mapping.txt")
@@ -35,6 +35,16 @@ METHOD_NAME = re.compile(r"\s(\w+)\(")
 
 def serializable_models(kotlin_source):
     return SERIALIZABLE_CLASS.findall(kotlin_source)
+
+
+def models_in(directory):
+    """Every @Serializable model in the folder, so splitting GuideModels.kt can never drop a model from the gate."""
+    models = []
+    for name in sorted(os.listdir(directory)):
+        if name.endswith(".kt"):
+            with open(os.path.join(directory, name), encoding="utf-8") as fh:
+                models += serializable_models(fh.read())
+    return models
 
 
 def _classes(mapping_text):
@@ -82,8 +92,7 @@ def main():
     apks = [args.apk] if args.apk else glob.glob(DEFAULT_APK_GLOB)
     if not os.path.exists(args.mapping) or len(apks) != 1:
         sys.exit(f"{BUILD_HINT} (mapping: {args.mapping}, apks: {apks})")
-    with open(MODELS_SRC, encoding="utf-8") as fh:
-        models = serializable_models(fh.read())
+    models = models_in(MODELS_DIR)
     with open(args.mapping, encoding="utf-8") as fh:
         problems = check_mapping(fh.read(), models)
     with open(BUNDLE_SRC, "rb") as fh:

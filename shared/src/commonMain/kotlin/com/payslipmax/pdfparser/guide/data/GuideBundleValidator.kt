@@ -30,6 +30,7 @@ object GuideBundleValidator {
         checkReplacementLoops(bundle, problems)
         checkChangeLog(bundle, problems)
         problems += GuideFigureValidator.validate(bundle)
+        problems += GuidePreClaimValidator.validate(bundle)
         return problems
     }
 

@@ -35,6 +35,7 @@ import changes as chgmod
 import figures as figmod
 import ids as idsmod
 import nav as navmod
+import preclaim as preclaimmod
 
 CARDS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 AUTH_DIR = os.path.join(CARDS_DIR, 'authoring')
@@ -179,6 +180,7 @@ def main():
         c['nav'] = nav_homes.get(c['id'], '')
     errors += idsmod.check(seen, idsmod.load_lock(), retires)
     errors += figmod.validate(figmod.load(), out_cards)
+    errors += preclaimmod.validate(preclaimmod.load(), out_cards)
     skipped = {s['from'] for s in skips}
     for s in skips:
         if s['from'] not in ssot_ids: errors.append(f'skip of unknown entry {s["from"]}')

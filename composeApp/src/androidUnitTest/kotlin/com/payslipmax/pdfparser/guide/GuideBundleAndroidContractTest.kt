@@ -34,5 +34,7 @@ class GuideBundleAndroidContractTest {
             GuideFiguresContract.assertEveryPayLevelHasARate(bundle)
             GuideFiguresContract.assertTransportBasesMatchPayAudit(bundle)
             GuideFiguresContract.assertHistoryResolvesAllFourCards(bundle, GuideFiguresContract.realisticHistory())
+            GuidePreClaimContract.assertPreClaimWorksheetReachesTheApp(bundle)
+            GuidePreClaimContract.assertRulePickerLinksToRealCards(bundle)
         }
 }

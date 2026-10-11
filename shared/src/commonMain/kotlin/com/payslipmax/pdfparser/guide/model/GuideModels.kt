@@ -21,6 +21,8 @@ data class GuideBundle(
     val cards: List<GuideCard>,
     /** The rupee figures behind the "your figure" line (phase E6); null in a bundle that carries none. */
     val figures: GuideFigures? = null,
+    /** The TA/DA pre-claim worksheet content (plan 22, P3); null in a bundle that carries none. */
+    val preclaim: GuidePreClaim? = null,
     /** Hand-written change-log entries (the newest 12, newest first); empty in a bundle that carries none. */
     val changes: List<GuideChange> = emptyList(),
 )
@@ -176,4 +178,86 @@ data class GuideRateStep(
     @SerialName("from_da_percent") val fromDaPercent: Int,
     val percent: Int,
     @SerialName("effective_from") val effectiveFrom: String,
+)
+
+/**
+ * The TA/DA pre-claim worksheet as data, generated from `docs/Plan/rule_cards/preclaim.json`: per move type the portal's fields in
+ * the portal's order, the documents to scan, and the dropdown options (one of them the LTC rule picker). All text is content, like
+ * card text, never UI copy. Kinds and sources stay strings (as [GuideFigure.mode] does) so the models need no keep rule.
+ */
+@Serializable
+data class GuidePreClaim(
+    val limits: GuidePreClaimLimits,
+    val upload: GuideUploadRule,
+    /** Option-group id (for example "mode_of_journey") to its options. */
+    val options: Map<String, GuideOptionGroup>,
+    /** Move type (`PD`, `TD`, `LTC`) to its worksheet. */
+    val moves: Map<String, GuidePreClaimMove>,
+)
+
+/** Character limits `preclaim.py` enforced and the validator rechecks: the one home for them, so Kotlin holds no second copy. */
+@Serializable
+data class GuidePreClaimLimits(
+    val label: Int,
+    val hint: Int,
+    @SerialName("text_chars") val textChars: Int,
+)
+
+/** The portal takes [files] scanned [format] file, more than [moreThanKb] KB and less than [lessThanMb] MB. */
+@Serializable
+data class GuideUploadRule(
+    val files: Int,
+    @SerialName("more_than_kb") val moreThanKb: Int,
+    @SerialName("less_than_mb") val lessThanMb: Int,
+    val format: String,
+)
+
+/** A dropdown. When [cardLinked] every option names a rule card (the LTC rule picker); otherwise none does. */
+@Serializable
+data class GuideOptionGroup(
+    @SerialName("card_linked") val cardLinked: Boolean = false,
+    val options: List<GuideOption>,
+)
+
+@Serializable
+data class GuideOption(
+    val id: String,
+    val label: String,
+    /** One line on when to choose this option; required for a card-linked group. */
+    @SerialName("use_when") val useWhen: String = "",
+    val card: String = "",
+)
+
+/** One move type's worksheet: [fields] in the portal's order, the scanned [documents], and short [notes]. */
+@Serializable
+data class GuidePreClaimMove(
+    val title: String,
+    val fields: List<GuidePreClaimField>,
+    val documents: List<GuidePreClaimDocument>,
+    val notes: List<String> = emptyList(),
+)
+
+/**
+ * One portal field. [kind] is the input the app shows (`text`, `date`, `number`, `amount`, `tick`, `choice`) and [source] says who fills
+ * it (`portal_filled`, `officer_types`, `app_suggests`). A [maxChars] limit applies to text; a `choice` names its group in [options].
+ * An [unverified] field was not confirmed on the portal and its [hint] says what.
+ */
+@Serializable
+data class GuidePreClaimField(
+    val id: String,
+    val label: String,
+    val kind: String,
+    val source: String,
+    @SerialName("max_chars") val maxChars: Int = 0,
+    val options: String = "",
+    val hint: String = "",
+    val unverified: Boolean = false,
+)
+
+/** A document to scan; [whenNeeded] (JSON key `when`) says when it applies, empty for always. */
+@Serializable
+data class GuidePreClaimDocument(
+    val id: String,
+    val label: String,
+    @SerialName("when") val whenNeeded: String = "",
 )

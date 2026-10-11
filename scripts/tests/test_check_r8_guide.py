@@ -43,6 +43,20 @@ class ModelDiscoveryTest(unittest.TestCase):
         self.assertEqual(gate.serializable_models(MODELS_SRC), ["GuideBundle", "GuideCard"])
 
 
+class ModelFolderTest(unittest.TestCase):
+    def test_models_in_every_file_of_the_folder_are_found_not_only_the_first(self):
+        with tempfile.TemporaryDirectory() as folder:
+            for name, source in (("GuideModels.kt", MODELS_SRC), ("GuidePreClaimModels.kt", "@Serializable\ndata class GuideOption(val id: String)\n"),
+                                 ("notes.txt", "@Serializable\nclass NotKotlin")):
+                with open(os.path.join(folder, name), "w", encoding="utf-8") as fh:
+                    fh.write(source)
+            self.assertEqual(gate.models_in(folder), ["GuideBundle", "GuideCard", "GuideOption"])
+
+    def test_the_real_folder_holds_the_pre_claim_models(self):
+        self.assertIn("GuidePreClaim", gate.models_in(gate.MODELS_DIR))
+        self.assertGreaterEqual(len(gate.models_in(gate.MODELS_DIR)), 20)
+
+
 class DefaultsTest(unittest.TestCase):
     """The gate must inspect the build that ships; a minifiedTest-only check can pass while release breaks."""
 

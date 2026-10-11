@@ -28,4 +28,9 @@ if __name__ == '__main__':
                 ws = words(m.group(1))
                 hit = [g for g in grams(ws) if g in G]
                 if hit: bad += 1; print(f"{os.path.basename(p)}:{n} copies {len(hit)} 8-grams: \"{' '.join(hit[0])}\"")
+    # the TA/DA pre-claim worksheet text (preclaim.json) is user-facing copy too
+    import preclaim
+    for text in preclaim.texts(preclaim.load()):
+        hit = [g for g in grams(words(text)) if g in G]
+        if hit: bad += 1; print(f"preclaim.json copies {len(hit)} 8-grams: \"{' '.join(hit[0])}\"")
     print('copy check:', 'CLEAN' if not bad else f'{bad} lines overlap sources')

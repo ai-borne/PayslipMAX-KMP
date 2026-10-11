@@ -2,8 +2,8 @@
 """Turn rulebook.json into the Claim Guide bundle the app ships (config.BUNDLE_PATH).
 
 Only whitelisted fields ship: internal provenance (`from`), reviewer notes (`open`), authoring metadata (`status`,
-`topic`, `domain`) and the coverage bookkeeping stay in the repo. Each card gains `unverified` (it carries an open point) and the bundle gains `rates_as_of` and the owner-approved
-`figures` (figures.json; authority and evidence stay in the repo).
+`topic`, `domain`) and the coverage bookkeeping stay in the repo. Each card gains `unverified` (it carries an open point) and the bundle gains `rates_as_of`, the owner-approved
+`figures` (figures.json; authority and evidence stay in the repo) and the `preclaim` worksheet content (preclaim.json; provenance stays).
 Rule-change metadata is additive (BUNDLE_VERSION stays 1): every card gains `rev`, the first 8 hex characters of the SHA-256 of
 its shipped text fields (see card_rev), so a note can tell the card changed since it was written; a dated or replaced card also
 gains `effective`, `replaced_by` and `until` (omitted when empty); the bundle gains `changes`, the newest 12 change-log entries.
@@ -20,6 +20,7 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 import changes
 import figures
+import preclaim
 from config import BUNDLE_PATH, BUNDLE_VERSION, CARDS_DIR, RATES_AS_OF
 
 CARD_KEYS = ('id', 'title', 'answer', 'key', 'attach', 'watch', 'cite', 'details', 'chips', 'personal', 'facet', 'nav')
@@ -41,12 +42,16 @@ def ship_card(card):
     return out
 
 
-def build(rulebook, figures_data=None):
+def build(rulebook, figures_data=None, preclaim_data=None):
     figures_data = figures.load() if figures_data is None else figures_data
+    preclaim_data = preclaim.load() if preclaim_data is None else preclaim_data
+    problems = preclaim.validate(preclaim_data, rulebook['cards'])
+    if problems:
+        sys.exit('preclaim.json is not fit to bundle:\n  ' + '\n  '.join(problems))
     cards = [ship_card(c) for c in rulebook['cards']]
     return {'version': BUNDLE_VERSION, 'generated': rulebook['generated'], 'rates_as_of': RATES_AS_OF,
             'limits': rulebook['limits'], 'nav': rulebook['nav'], 'facets': rulebook['facets'], 'cards': cards,
-            'figures': figures.for_bundle(figures_data), 'changes': changes.latest(rulebook.get('changes', []))}
+            'figures': figures.for_bundle(figures_data), 'preclaim': preclaim.for_bundle(preclaim_data), 'changes': changes.latest(rulebook.get('changes', []))}
 
 
 def render(data):

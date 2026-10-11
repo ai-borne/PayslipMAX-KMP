@@ -1,8 +1,8 @@
 # TA/DA pre-claim: strict phase-wise execution plan
 
-Status: **P0, P1 and P2 done (P2 committed on the branch, 2026-10-11); P3 onward not started. The pending points of P0 and P1 are consolidated in P10; P2 left none.** Facts, portal screens, open items and every owner decision live in
+Status: **P0, P1, P2 and P3 done (P3 committed on the branch, 2026-10-11); P4 onward not started. The pending points of P0, P1 and P3 are consolidated in P10; P2 left none.** Facts, portal screens, open items and every owner decision live in
 `21_ta_da_preclaim_plan.md` (read it first; this file does not repeat them). This file is **how we build**: the rules, the
-handoff protocol and ten phases (P0 to P9). Branch: **one feature branch `feature/ta-da-preclaim`** for the whole plan, one commit
+handoff protocol and ten phases (P0 to P9, plus the pending-points phase P10). Branch: **one feature branch `feature/ta-da-preclaim`** for the whole plan, one commit
 per phase, made only after the phase's gate is green and the owner says OK. No push, PR or merge unless the owner says so.
 
 ## 1. Standing rules (every phase, no exceptions)
@@ -131,6 +131,16 @@ Phase Summary, not a licence to incur it.
   Any field not seen on the portal is marked "unverified against the portal".
 - **Strings:** worksheet text is bundle content, reviewed under the copy-guard (own words). **Security:** length limits, no HTML in labels.
 - **R8:** yes (new `@Serializable`). **Debt:** a model file over 300 lines; split by move type.
+- **Built (2026-10-11):**
+  - `preclaim.json` (147 lines, the authoring source, same pattern as `figures.json`) and `tools/preclaim.py` (189 lines: `validate`, `for_bundle`, `texts`). `compile.py` validates it against the compiled cards and `bundle.py` ships it as the additive `preclaim` section (`BUNDLE_VERSION` stays 1; `provenance` and any other key stay in the repo). The bundle build stops on an invalid file.
+  - Content: three moves in the portal's create-form order (PD 15 fields, TD 24, LTC 28), each field marked `portal_filled` / `officer_types` / `app_suggests`; one-PDF upload rule (more than 50 KB, less than 2 MB); documents per move (the LTC leave certificate carries "needed when you travel"); option groups for Mode of Journey, TD TR Rule (4 options), LTC TR Rule (the 8-option rule picker, each linked to a live card) and Nature of Leave; the TD DTS certificate as the last field. Eight fields not confirmed on the portal are `unverified` with a hint saying what (see P10).
+  - Length limits live once, in `preclaim.py` `LIMITS`, and ship in the section (`limits`); Kotlin reads them from there (found while reviewing: two hard-coded copies would drift).
+  - Kotlin: eight `@Serializable` models appended to `GuideModels.kt` (263 lines; the R8 gate reads that folder), `GuideBundle.preclaim` (nullable), `GuidePreClaimValidator` (144 lines) wired into `GuideBundleValidator`. Unlike figures, an unknown move, kind or source is refused rather than ignored: the bundle ships inside the app, so such a value is a build mistake, and the contract test catches it before release.
+  - Own-words guard: `copycheck.py` now also scans every user-read sentence in `preclaim.json` (CLEAN), and a test pins that `texts()` offers them all.
+  - Knock-on: `scripts/check_r8_guide.py` read only `GuideModels.kt`, so a future split would have dropped models from the R8 gate; it now scans the whole model folder (2 tests). Runbook `18_*.md` names `preclaim.json`.
+  - Tests: Python 242 (33 new in `test_preclaim.py`), `scripts/tests` R8 gate 12 (2 new); shared JVM 1043 (15 new `GuidePreClaimValidatorTest`), composeApp JVM 901 (the real-bundle `GuidePreClaimContract` runs inside the existing Android contract test), iOS shared 998, iOS composeApp 559 (contract also runs in `GuideLoaderIosPerfTest`), all 0 skipped, 0 failed. A field-order mutation of the real bundle turned the Android contract red, then was restored.
+    Gate: tech-debt audit, `ktlintCheck`, `check`, `refresh.py --check` (copycheck CLEAN), iOS simulator tests, iOS framework link, `assembleRelease` + `check_r8_guide.py` (20 models kept, bundle byte-identical).
+  - Not done in P3: nothing user-visible (no UI, no flag), by design; the three open points are in P10.
 
 ### P4. Calculator: permanent duty (`shared/commonMain`, pure)
 - **Goal:** CTG, road baggage and car conveyance estimates. **Depends:** P2.
@@ -185,4 +195,6 @@ Nothing here is allowed to grow silently: a row is removed only by being done.
 | P1 | **"TD For Long Duration Course" tick: closed 2026-10-11 (owner) as note only, marked unverified against the portal.** Meaning still undocumented. | Only the portal knows. | Optional: the portal's hint text or a screenshot would let P3 word it with certainty. |
 | P1 | **Evidence upgrade (optional):** hotel, taxi and baggage stay `HANDBOOK_ONLY` because the Army letter text was not read. | Same as F6: the MoD letter is not public. | If the MoD letter turns up, read it, raise hotel, taxi and baggage to `LETTER_TEXT`, and replace the owner-confirmed step date with the letter's. |
 | P0 | **Notification churn: resolved 2026-10-11 (owner).** The monthly "Statement of Account for the month of ... has been uploaded" notice is skipped (`IGNORED_NOTIFICATIONS` in `faq_watch.py`, 5 tests; manifest re-seeded, 13 notifications). Other routine items (Form 16, DSOP Fund Statement uploaded) are still reported; add a pattern, with a test, if they become noise. | Done. | Nothing; row kept for the record until P10 is closed. |
-
+| P3 | **Rule-picker links and worksheet wording are the agent's reading, not owner-reviewed.** Eight options map to cards: 177(A) Home Town to `RB-SS-T088`, 177(B) to `T074`, 177(C) to `T070`, 177(D) to `T128`, children studying away to `T073`, J&K/A&N/NE in lieu to `T062`, Sick Leave to `T079`, and **Sea Passage to `T250`** (the weakest match: that card is about island residents' free passage, not the 177(A)(i)(e) clause itself). The `use_when` lines, notes and hints are own-words (copy-guard CLEAN) but unread by the owner. | The agent cannot approve its own content, and the TR 2014 clause text for 177(A)(i)(e) was not found in the OCR. | Owner reads `preclaim.json` once; re-point any card id or reword a line (one-file edit, `refresh.py`). Before the flag is flipped at the latest. |
+| P3 | **Eight fields are `unverified` against the portal:** TD "TD For Long Duration Course" (meaning), LTC Children (largest count), LTC Dependents (exact list), LTC Visit To (typed or dropdown), LTC Year (greyed; source), and Marital Status on all three moves (dropdown values). | Only the portal shows them; the owner's screenshots did not capture these details. | A screenshot or the portal hint text per field; then drop `"unverified"` and the hint in `preclaim.json`. P6 must treat an unverified field as optional input, and P7 shows its hint. |
+| P3 | **`GuideModels.kt` is 263 lines.** The next model added there should go in a new file in the same folder (the R8 gate now reads the folder). | Under the 300 limit, so no action is due; recorded so P6/P7 do not push it over. | Add new models in a sibling file. |

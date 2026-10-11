@@ -61,6 +61,9 @@ Card text lives only in `authoring/*.txt`; rupee figures only in `figures.json`.
 - A pre-claim figure (`use: preclaim`, no card: `td_hotel`, `td_taxi`, `baggage_road`, `rma`) has no card text to change. Edit `figures.json` only:
   a new Wing Circular on road mileage means new `rma` rates (the validator insists on all 34 states, spelt as the circular spells them), a new
   Army DA-step letter means the `da_step.first_step` date. Give the change its owner `approved` date and record it in `23_ta_da_preclaim_rate_register.md`.
+- The TA/DA pre-claim worksheet (field order, documents, dropdowns, the LTC rule picker) lives only in `preclaim.json`. When the portal changes a form,
+  edit that file in the portal's order; a field the portal was not seen to confirm gets `"unverified": true` and a `hint` saying what. A picker option
+  links to a card by id, and `compile.py` stops if that card is missing or replaced. User-facing sentences in it go through `copycheck.py` like card text.
 - A card that must go away: add `--- retire RB-x reason` in an authoring file. Without it `compile.py` refuses to drop a shipped id.
 - A new card: `=== topic=... from=... [id=RB-x] [chips=...]`; it is homed by its topic (`nav.json`) and needs an entry in
   `facets.json` (`"RB-x": "Q" | "H" | "C" | "L"`): `compile.py` stops with `has no valid facet` otherwise.
