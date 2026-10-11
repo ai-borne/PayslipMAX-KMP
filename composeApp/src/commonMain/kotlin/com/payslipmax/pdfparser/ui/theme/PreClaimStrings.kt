@@ -12,6 +12,7 @@ import com.payslipmax.pdfparser.guide.preclaim.PreClaimNote
  */
 object PreClaimStrings {
     // Entry and screen.
+    const val entryEmoji = "🧮"
     const val entryTitle = "TA/DA claim worksheet"
     const val entrySubtitle = "Get your advance claim ready for the portal"
     const val entryPremium = "Premium"

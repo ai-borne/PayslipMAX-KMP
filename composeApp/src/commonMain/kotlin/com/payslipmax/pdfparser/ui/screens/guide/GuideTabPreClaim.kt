@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimRoute
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.preClaimEntry
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.PreClaimStrings
 
 /**
@@ -66,12 +68,20 @@ internal fun PreClaimEntryRow(
         accent = MaterialTheme.colorScheme.primary,
         modifier = Modifier.clip(AccentStripeCardShape).clickable(role = Role.Button, onClick = onClick),
     ) {
-        Column(modifier = Modifier.weight(1f).padding(AppDimensions.PaddingMedium)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(PreClaimStrings.entryTitle, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-                if (locked) Text(PreClaimStrings.entryPremium, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+        Row(
+            modifier = Modifier.weight(1f).padding(AppDimensions.PaddingMedium),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
+        ) {
+            Decoration(PreClaimStrings.entryEmoji, AppDimensions.TextSizeHuge)
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(PreClaimStrings.entryTitle, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+                    if (locked) Text(PreClaimStrings.entryPremium, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                }
+                Text(PreClaimStrings.entrySubtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            Text(PreClaimStrings.entrySubtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Decoration(AppStrings.rowArrow, AppDimensions.TextSizeLarge, MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
