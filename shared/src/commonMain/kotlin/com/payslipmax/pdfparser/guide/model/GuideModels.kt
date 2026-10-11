@@ -161,6 +161,7 @@ data class GuideFigure(
     val bands: List<GuideFigureBand> = emptyList(),
     val classes: Map<String, List<GuideRateStep>> = emptyMap(),
     val rates: Map<String, Int> = emptyMap(),
+    @SerialName("time_shares") val timeShares: List<GuideTimeShare> = emptyList(),
 )
 
 /**

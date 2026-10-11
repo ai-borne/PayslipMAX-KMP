@@ -34,3 +34,28 @@ data class PermanentDutyRequest(
     val roadKm: Int?,
     val originState: String?,
 )
+
+/**
+ * The answers a temporary-duty move needs. [trRuleId] is the id of the chosen "TR Rule" option; [minutesAway] only matters for a
+ * trip that starts and ends the same day; [holdsRmaSanction] is the Rule 40 Note 2 question. Anything null leaves only the
+ * elements that need it unavailable.
+ */
+data class TemporaryDutyRequest(
+    val profile: PreClaimProfile,
+    val trRuleId: String?,
+    val from: CalendarDate?,
+    val to: CalendarDate?,
+    val minutesAway: Int?,
+    val nights: Int?,
+    val nightlyRateRupees: Long?,
+    val holdsRmaSanction: Boolean?,
+    val roadKm: Int?,
+    val originState: String?,
+)
+
+/** Temporary-duty estimates in element order, with the inclusive [days] they were worked for (null when the dates are not usable). */
+data class TemporaryDutyResult(
+    val days: Int?,
+    val outcomes: List<PreClaimOutcome>,
+    val notes: Set<PreClaimNote>,
+)

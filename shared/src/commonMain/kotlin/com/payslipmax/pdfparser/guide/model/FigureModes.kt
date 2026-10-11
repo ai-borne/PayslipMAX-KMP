@@ -7,4 +7,5 @@ internal object FigureModes {
     const val PLUS_DA = "plus_da"
     const val RATE_TABLE = "rate_table"
     const val RATE_BY_STATE = "rate_by_state"
+    const val TIME_SHARE = "time_share"
 }

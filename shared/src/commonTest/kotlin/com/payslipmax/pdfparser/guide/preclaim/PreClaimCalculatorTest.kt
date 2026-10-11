@@ -25,13 +25,12 @@ class PreClaimCalculatorTest {
     ) = PermanentDutyRequest(profile, case, km, state)
 
     @Test
-    fun thereAreThreeElementsAndNoTotalAndNoAdvance() {
+    fun aPermanentDutyMoveGetsItsThreeElementsInOrder() {
         assertEquals(
             listOf(PreClaimElement.CTG, PreClaimElement.BAGGAGE_ROAD, PreClaimElement.CAR_CONVEYANCE),
-            PreClaimElement.entries,
-            "adding a total or an advance line needs the owner (plan 21, F1: the portal sets and adjusts the advance)",
+            PreClaimCalculator.permanentDuty(figures, request()).map { it.element },
+            "the element list as a whole is pinned in TemporaryDutyCalculatorTest: a total or an advance line needs the owner (plan 21, F1)",
         )
-        assertEquals(PreClaimElement.entries, PreClaimCalculator.permanentDuty(figures, request()).map { it.element })
     }
 
     @Test

@@ -11,12 +11,22 @@ import com.payslipmax.pdfparser.guide.domain.GuideProfileBuilder
 import com.payslipmax.pdfparser.guide.domain.PersonalFigure
 import com.payslipmax.pdfparser.guide.domain.PersonalFigureResolver
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.guide.preclaim.CtgCase
 import com.payslipmax.pdfparser.guide.preclaim.CtgEstimate
+import com.payslipmax.pdfparser.guide.preclaim.LimitNote
+import com.payslipmax.pdfparser.guide.preclaim.LodgingEstimate
+import com.payslipmax.pdfparser.guide.preclaim.NilReason
+import com.payslipmax.pdfparser.guide.preclaim.NotPayable
+import com.payslipmax.pdfparser.guide.preclaim.PerDayEstimate
 import com.payslipmax.pdfparser.guide.preclaim.PerKmEstimate
 import com.payslipmax.pdfparser.guide.preclaim.PermanentDutyRequest
 import com.payslipmax.pdfparser.guide.preclaim.PreClaimCalculator
+import com.payslipmax.pdfparser.guide.preclaim.PreClaimElement
+import com.payslipmax.pdfparser.guide.preclaim.PreClaimNote
 import com.payslipmax.pdfparser.guide.preclaim.PreClaimProfile
+import com.payslipmax.pdfparser.guide.preclaim.PreClaimRules
+import com.payslipmax.pdfparser.guide.preclaim.TemporaryDutyRequest
 import com.payslipmax.pdfparser.insights.timeline.PayLevel
 import com.payslipmax.pdfparser.insights.timeline.TptaCityClass
 import com.payslipmax.pdfparser.testing.SyntheticGuideFigures
@@ -34,7 +44,7 @@ import kotlin.test.assertTrue
  */
 object GuideFiguresContract {
     private val personalCards = setOf("RB-SS-T181", "RB-SS-T254", "RB-SS-P051-rates", "RB-SS-P116-rates")
-    private val preClaimKeys = setOf("rma", "baggage_road", "td_hotel", "td_taxi")
+    private val preClaimKeys = setOf("rma", "baggage_road", "td_hotel", "td_taxi", "td_food_hours")
 
     private fun profile(
         level: String? = "14",
@@ -128,6 +138,59 @@ object GuideFiguresContract {
         assertEquals(3000L to 86430L, assertIs<PerKmEstimate>(conveyance).let { it.ratePaise to it.rupees }, "Assam Rs 30 a km")
         assertEquals(149000L, assertIs<CtgEstimate>(estimates(CtgCase.ISLAND)[0]).rupees, "island: 100% of basic")
         assertEquals(39733L, assertIs<CtgEstimate>(estimates(CtgCase.LOCAL_MOVE)[0]).rupees, "local move: one-third of the 80%")
+    }
+
+    /**
+     * The temporary-duty estimates (plan 22, P5) on the real shipped bundle, for the owner's filed claim A reduced to numbers (level
+     * 13A, DA 46%, 57 days, nights at Rs 4500), and the same officer at DA 60% on a level 11 pay level for the half-rupee ceilings.
+     * It also pins the one rule id the calculator reads by name, so renaming that option in `preclaim.json` fails here.
+     */
+    fun assertTemporaryDutyEstimatesMatchTheApprovedRules(bundle: GuideBundle) {
+        val figures = assertNotNull(bundle.figures)
+        val tdRule = assertNotNull(bundle.preclaim).options.getValue("td_rule").options.associateBy { it.id }
+        assertTrue("DA not admissible" in tdRule.getValue(PreClaimRules.NO_DA_RULE_OPTION_ID).label, "the id the calculator reads is still Rule 124")
+
+        fun request(
+            level: String,
+            da: Int,
+            rule: String,
+            to: CalendarDate,
+            nights: Int,
+            nightly: Long,
+        ) = TemporaryDutyRequest(
+            profile = PreClaimProfile(level, 150000, da, null, null),
+            trRuleId = rule,
+            from = CalendarDate(2024, 2, 1),
+            to = to,
+            minutesAway = null,
+            nights = nights,
+            nightlyRateRupees = nightly,
+            holdsRmaSanction = false,
+            roadKm = null,
+            originState = null,
+        )
+
+        val claimA = PreClaimCalculator.temporaryDuty(figures, request("13A", 46, "tr119", CalendarDate(2024, 3, 28), 57, 4500))
+        assertEquals(57, claimA.days)
+        assertEquals(57000L, assertIs<PerDayEstimate>(claimA.outcomes[0]).rupees, "57 x Rs 1000")
+        assertEquals(256500L, assertIs<LodgingEstimate>(claimA.outcomes[1]).rupees, "57 x Rs 4500")
+        assertEquals("AC taxi, up to 50 km a day within the city", assertIs<LimitNote>(claimA.outcomes[2]).text)
+        assertEquals(NotPayable(PreClaimElement.CAR_CONVEYANCE, NilReason.NO_RULE_40_SANCTION), claimA.outcomes[3])
+        assertTrue(claimA.notes.isEmpty())
+
+        val level11 = PreClaimCalculator.temporaryDuty(figures, request("11", 60, "tr119", CalendarDate(2024, 2, 2), 2, 3000))
+        assertEquals(2250L, assertIs<PerDayEstimate>(level11.outcomes[0]).rupees, "2 x Rs 1125")
+        assertEquals(281_250L, assertIs<LodgingEstimate>(level11.outcomes[1]).ceilingPaise, "Rs 2812.50, exact")
+        assertEquals(5625L, assertIs<LodgingEstimate>(level11.outcomes[1]).rupees, "the bill is capped at the ceiling")
+        assertEquals(42_250L, assertIs<PerDayEstimate>(level11.outcomes[2]).ratePaise, "Rs 422.50, exact")
+
+        val sameDay = request("13A", 60, "tr119", CalendarDate(2024, 2, 1), 0, 1).copy(minutesAway = 300)
+        assertEquals(375L, assertIs<PerDayEstimate>(PreClaimCalculator.temporaryDuty(figures, sameDay).outcomes[0]).rupees, "30% of Rs 1250")
+
+        val course = PreClaimCalculator.temporaryDuty(figures, request("13A", 60, PreClaimRules.NO_DA_RULE_OPTION_ID, CalendarDate(2024, 3, 28), 0, 1))
+        assertEquals(List(3) { NilReason.RULE_124_NO_DA }, course.outcomes.take(3).map { assertIs<NotPayable>(it).reason })
+        val long = PreClaimCalculator.temporaryDuty(figures, request("13A", 60, "tr119", CalendarDate(2024, 8, 1), 0, 1))
+        assertEquals(setOf(PreClaimNote.OVER_180_DAYS), long.notes)
     }
 
     /** Only the four personal cards ever get a "your figure" line, whatever else the bundle ships (the pre-claim rates have no card). */

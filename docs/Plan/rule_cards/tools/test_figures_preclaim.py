@@ -172,5 +172,63 @@ class CtgCases(unittest.TestCase):
         self.assertNotIn('island_percent', figures.for_bundle(d)['figures']['ctg'])
 
 
+class FoodTimeShares(unittest.TestCase):
+    """Food on a same-day trip (plan 22, P5): 30% under 6 hours, 70% from 6 to 12 hours, 100% over 12 hours (register 23, food timing row).
+
+    The shares live in the bundle so the app holds no percent of its own. The register notes that the 2014 Travel Regulations say nil under
+    6 hours and the 7th CPC letter replaced that with 30%: the test below names that row so a change back cannot slip in unseen."""
+
+    def shares(self, d):
+        return d['figures']['td_food_hours']['time_shares']
+
+    def test_the_real_figure_holds_the_approved_shares_in_whole_minutes(self):
+        self.assertEqual(self.shares(REAL), [
+            {'from_minutes': 0, 'percent': 30}, {'from_minutes': 360, 'percent': 70}, {'from_minutes': 721, 'percent': 100}])
+
+    def test_it_is_approved_owner_dated_and_labelled_handbook_only(self):
+        fig = REAL['figures']['td_food_hours']
+        self.assertEqual((fig['approved'], fig['use'], fig['mode'], fig['evidence']), ('2026-10-11', 'preclaim', 'time_share', 'HANDBOOK_ONLY'))
+
+    def test_they_are_shipped_to_the_app(self):
+        shipped = figures.for_bundle(REAL)['figures']['td_food_hours']
+        self.assertEqual(shipped['time_shares'], self.shares(REAL))
+        self.assertNotIn('authority', shipped)
+
+    def test_the_first_share_starts_at_zero_so_no_duration_falls_in_a_gap(self):
+        d = fresh()
+        self.shares(d)[0]['from_minutes'] = 30
+        self.assertTrue(any('td_food_hours' in p and 'from_minutes' in p for p in problems(d)))
+
+    def test_the_starts_must_strictly_ascend_and_the_percents_must_not_fall(self):
+        for edit in (lambda s: s[1].update(from_minutes=0), lambda s: s[2].update(from_minutes=360), lambda s: s[1].update(percent=20)):
+            d = fresh()
+            edit(self.shares(d))
+            self.assertTrue(any('td_food_hours' in p for p in problems(d)))
+
+    def test_the_last_share_is_the_full_day(self):
+        d = fresh()
+        self.shares(d)[-1]['percent'] = 90
+        self.assertTrue(any('td_food_hours' in p and '100' in p for p in problems(d)))
+
+    def test_each_share_is_a_whole_number_in_range_with_no_other_field(self):
+        for field, bad in (('percent', 0), ('percent', 101), ('percent', 30.5), ('percent', '30'), ('from_minutes', -1), ('from_minutes', True)):
+            d = fresh()
+            self.shares(d)[0][field] = bad
+            self.assertTrue(any('td_food_hours' in p for p in problems(d)), (field, bad))
+        d = fresh()
+        self.shares(d)[0]['note'] = 'x'
+        self.assertTrue(any('td_food_hours' in p and 'note' in p for p in problems(d)))
+
+    def test_a_time_share_figure_with_no_shares_is_rejected(self):
+        d = fresh()
+        del d['figures']['td_food_hours']['time_shares']
+        self.assertTrue(any('td_food_hours' in p and 'time_shares' in p for p in problems(d)))
+
+    def test_only_a_time_share_figure_may_carry_shares(self):
+        d = fresh()
+        d['figures']['td_hotel']['time_shares'] = self.shares(d)
+        self.assertTrue(any('td_hotel' in p and 'time_shares' in p for p in problems(d)))
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -19,7 +19,7 @@ from config import CARDS_DIR
 FIGURES_PATH = os.path.join(CARDS_DIR, 'figures.json')
 SUPPORTED_VERSION = 1
 EVIDENCE = {'LETTER_TEXT', 'HANDBOOK_ONLY', 'WEB_SECONDARY', 'OWNER_CONFIRMED'}
-MODES = {'da_step', 'percent_of_basic', 'plus_da', 'rate_table', 'rate_by_state'}
+MODES = {'da_step', 'percent_of_basic', 'plus_da', 'rate_table', 'rate_by_state', 'time_share'}
 USE_PRECLAIM = 'preclaim'
 # The states and territories of PCDA(O) Pune Wing Circular no. 10 (2024-09-03), spelt as the circular spells them. Lakshadweep and
 # Dadra and Nagar Haveli and Daman and Diu are absent because the Army has no presence there (owner, 2026-10-11).
@@ -33,10 +33,11 @@ MAX_RATE_PER_KM = 100
 MAX_LIMIT_CHARS = 120
 MAX_LOCAL_MOVE_DIVISOR = 10
 CTG_CASE_KEYS = ('island_percent', 'local_move_divisor')
+SHARE_KEYS = {'from_minutes', 'percent'}
 CITY_CLASSES = {'HIGHER', 'OTHER', 'ANY'}
 # Fields the app needs. Authority, evidence, notes and approval stay in the repo.
 SHIPPED_FIGURE_KEYS = ('card', 'use', 'mode', 'assumption', 'effective_from', 'percent', 'island_percent', 'local_move_divisor', 'bands',
-                       'classes', 'rates')
+                       'classes', 'rates', 'time_shares')
 SHIPPED_BAND_KEYS = ('levels', 'city_class', 'base', 'limit')
 SHIPPED_STEP_KEYS = ('from_da_percent', 'percent', 'effective_from')
 
@@ -123,10 +124,14 @@ def _figure_problems(key, fig, by_id):
         errs += _ctg_case_problems(key, fig)
     elif mode == 'rate_by_state':
         errs += _rate_by_state_problems(key, fig)
+    elif mode == 'time_share':
+        errs += _time_share_problems(key, fig)
     else:
         errs += _rate_table_problems(key, fig)
     if mode != 'percent_of_basic':
         errs += [f'{key}: {field} belongs on a percent_of_basic figure' for field in CTG_CASE_KEYS if field in fig]
+    if mode != 'time_share' and 'time_shares' in fig:
+        errs.append(f'{key}: time_shares belongs on a time_share figure')
     return errs
 
 
@@ -141,6 +146,33 @@ def _ctg_case_problems(key, fig):
         divisor = fig['local_move_divisor']
         if not (_positive_int(divisor) and 2 <= divisor <= MAX_LOCAL_MOVE_DIVISOR):
             errs.append(f'{key}: local_move_divisor must be a whole number from 2 to {MAX_LOCAL_MOVE_DIVISOR}')
+    return errs
+
+
+def _time_share_problems(key, fig):
+    """A part of the full day's rate by time away, in whole minutes so a boundary is exact: a share applies from its `from_minutes` to the next."""
+    shares = fig.get('time_shares')
+    if not isinstance(shares, list) or not shares:
+        return [f'{key}: no time_shares']
+    errs = []
+    for share in shares:
+        start, pct = share.get('from_minutes'), share.get('percent')
+        errs += [f'{key}: a share has the unknown field {extra!r}' for extra in sorted(set(share) - SHARE_KEYS)]
+        if not (isinstance(start, int) and not isinstance(start, bool) and start >= 0):
+            errs.append(f'{key}: from_minutes must be a whole number of minutes, 0 or more')
+        if not (_positive_int(pct) and pct <= 100):
+            errs.append(f'{key}: percent must be a whole number from 1 to 100')
+    starts, pcts = [s.get('from_minutes') for s in shares], [s.get('percent') for s in shares]
+    if errs:
+        return errs
+    if starts[0] != 0:
+        errs.append(f'{key}: the first share must start at from_minutes 0, or some durations have no share')
+    if starts != sorted(set(starts)):
+        errs.append(f'{key}: from_minutes must strictly ascend')
+    if pcts != sorted(pcts):
+        errs.append(f'{key}: percent must not fall as the time away grows')
+    if pcts[-1] != 100:
+        errs.append(f'{key}: the last share must be the full day (percent 100)')
     return errs
 
 

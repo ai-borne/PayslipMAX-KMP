@@ -137,6 +137,7 @@ class GuideLoaderIosPerfTest {
             GuideFiguresContract.assertShippedFiguresMatchTheApprovedLetters(bundle)
             GuideFiguresContract.assertPreClaimFiguresMatchTheApprovedRegister(bundle)
             GuideFiguresContract.assertPermanentDutyEstimatesMatchTheApprovedRules(bundle)
+            GuideFiguresContract.assertTemporaryDutyEstimatesMatchTheApprovedRules(bundle)
             GuideFiguresContract.assertOnlyPersonalCardsResolveAFigure(bundle)
             GuideFiguresContract.assertEveryPayLevelHasARate(bundle)
             GuideFiguresContract.assertTransportBasesMatchPayAudit(bundle)

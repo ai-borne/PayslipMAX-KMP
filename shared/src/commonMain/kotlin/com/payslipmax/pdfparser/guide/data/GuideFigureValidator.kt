@@ -64,6 +64,7 @@ internal object GuideFigureValidator {
                     figure.rates.filterValues { it <= 0 }.keys.map { "figure $key: rate for $it must be above zero" }
                 }
             FigureModes.PERCENT_OF_BASIC -> ctgCaseProblems(key, figure)
+            FigureModes.TIME_SHARE -> timeShareProblems(key, figure)
             else -> emptyList()
         }
 
@@ -79,6 +80,24 @@ internal object GuideFigureValidator {
         if (figure.localMoveDivisor != 0 && figure.localMoveDivisor !in MIN_LOCAL_MOVE_DIVISOR..MAX_LOCAL_MOVE_DIVISOR) {
             problems += "figure $key: local_move_divisor must be from $MIN_LOCAL_MOVE_DIVISOR to $MAX_LOCAL_MOVE_DIVISOR"
         }
+        return problems
+    }
+
+    /** The food shares of a same-day trip decide a rupee amount: no gap at the start, no falling share, and the last one is the full day. */
+    private fun timeShareProblems(
+        key: String,
+        figure: GuideFigure,
+    ): List<String> {
+        val shares = figure.timeShares
+        if (shares.isEmpty()) return listOf("figure $key: no time_shares")
+        val problems = mutableListOf<String>()
+        if (shares.any { it.fromMinutes < 0 || it.percent !in 1..MAX_PERCENT }) {
+            problems += "figure $key: each share needs from_minutes of 0 or more and a percent from 1 to $MAX_PERCENT"
+        }
+        if (shares.first().fromMinutes != 0) problems += "figure $key: the first share must start at from_minutes 0"
+        if (shares.zipWithNext().any { (a, b) -> b.fromMinutes <= a.fromMinutes }) problems += "figure $key: from_minutes must strictly ascend"
+        if (shares.zipWithNext().any { (a, b) -> b.percent < a.percent }) problems += "figure $key: percent must not fall as the time away grows"
+        if (shares.last().percent != MAX_PERCENT) problems += "figure $key: the last share must be the full day (percent $MAX_PERCENT)"
         return problems
     }
 }
