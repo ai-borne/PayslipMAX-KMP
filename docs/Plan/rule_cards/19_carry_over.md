@@ -47,7 +47,7 @@ Sources: the M9 carry-over list (M1-M8, moved from the maintenance plan) and the
 | B15 | Not driven on a phone: locked card / Force Free, large text, Devanagari or emoji input, replaced-card share note, Pay Audit link to a replaced card (covered by on-screen tests) | - | accepted |
 | B16 | iOS UI walkthrough, 13-row checklist in `16_guide_phase_plan.md` (EP 11, 14, 15, 20, 23, 26, 28, 29, 30) | - | owner |
 | B17 | Light-theme status bar | - | done (status bar follows the effective theme, commits b51789f6 / 06f0983a) |
-| B19 | Five branches not proven merged into `main` (`docs/rule-cards-dataset`, `docs/rule-cards-nav`, `feature/insightsgemma`, `feature/pay_audit_1.0` (39 unique commits), `test/baseline-909f2ef`): owner decides whether each is squash-merged or abandoned; the dataset ones are probably squash-merged | - | owner |
+| B19 | Branches not proven merged into `main` | - | done (owner, 2026-10-11: `feature/pay_audit_1.0` (tip 8b722d75), `feature/insightsgemma` (cfbf6630) and `test/baseline-909f2ef` (2ef14006) deleted on the owner's word, local and remote; restore with `git branch <name> <sha>` while the objects remain. `docs/rule-cards-dataset` and `docs/rule-cards-nav` have their content on `main` (rewritten commits, so the ancestry check misses them); still present, delete when wanted) |
 | B18 | Release prep (version bump, versionCode, store notes) | - | owner (D6, separate step) |
 
 ## C. Baseline for this branch (P0, 2026-10-10, HEAD `d6424c11`)

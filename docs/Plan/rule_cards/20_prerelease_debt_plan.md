@@ -165,15 +165,13 @@ Ran every deferred item from P1-P7 on the device (results in the P11 result belo
 waived by the owner: the Pay Audit "See the rule" link (no finding exists on the device).
 
 ### P12. Open items for the owner (final consolidated phase; nothing here is code work this branch can finish)
-- **B19 (owner):** five branches not proven merged into `main`: `docs/rule-cards-dataset`, `docs/rule-cards-nav`, `feature/insightsgemma`,
-  `feature/pay_audit_1.0` (39 unique commits), `test/baseline-909f2ef`. Decide per branch: squash-merged (delete) or abandoned (delete) or keep.
-- **Push and PR (D10):** the branch is not pushed. Push and open the PR only when the owner says. The 7 approved remote branch deletions are done (pre-push gate green, 307 s).
+- **B19 (done):** `feature/pay_audit_1.0`, `feature/insightsgemma` and `test/baseline-909f2ef` deleted by the owner's order (SHAs in `19_carry_over.md`). Left: `docs/rule-cards-dataset` and `docs/rule-cards-nav` (content is on `main`); delete when wanted.
+- **Push and PR (D10):** pushed and PR #20 opened on the owner's word; merge when CI is green. The 7 approved remote branch deletions are done (pre-push gate green, 307 s).
 - **B16 (owner):** iOS UI walkthrough, 13-row checklist in `16_guide_phase_plan.md`. Includes a look at the Settings checkmark badge and
   the Premium screen on iOS (P7 changed `✔` to `✓`).
 - **B4 (owner):** confirm that "Fail loud" is what was meant by "Rule 12". **B5 (owner):** send the regenerated expert review PDF.
 - **B18 (owner, D6):** release prep (version bump, versionCode, store notes). Mirror the "Pay Audit" wording in the store listing if it still says "Cloud Backup".
 - **Waived (owner, 2026-10-11):** on-device tap of the Pay Audit "See the rule" link.
-- **Merge `main` into this branch before the PR** (`18e58901`, P8's fix, is on `main` only).
 
 ## P3 result (2026-10-10)
 
