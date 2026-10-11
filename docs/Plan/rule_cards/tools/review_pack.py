@@ -61,7 +61,7 @@ def _cover(date, count):
 
 
 def _appendix(rulebook, figures_data):
-    rows = ''.join(f'<tr><td>{esc(k)}</td><td>{esc(f["card"])}</td><td>{esc(f.get("unit", ""))}</td><td>{esc(f.get("effective_from", "see rate table"))}</td>'
+    rows = ''.join(f'<tr><td>{esc(k)}</td><td>{esc(f.get("card", rates_report.NO_CARD))}</td><td>{esc(f.get("unit", ""))}</td><td>{esc(f.get("effective_from", "see rate table"))}</td>'
                    f'<td>{esc(f["authority"])}</td><td>{esc(f["evidence"])}</td></tr>' for k, f in sorted(figures_data['figures'].items()))
     sweep = ''.join(f'<tr><td class="id">{esc(r["id"])}</td><td>{esc(r["title"])}</td><td>{esc(", ".join(r["flags"]))}</td></tr>'
                     for r in rates_report.report(rulebook, figures_data)['cards'])
@@ -78,7 +78,8 @@ def build_html(rulebook, figures_data, date, retired=()):
     cards = {c['id']: c for c in rulebook['cards'] if c['id'] not in retired and not c.get('replaced_by')}
     evidence = {}
     for fig in figures_data['figures'].values():
-        evidence.setdefault(fig['card'], []).append(fig['evidence'])
+        if 'card' in fig:
+            evidence.setdefault(fig['card'], []).append(fig['evidence'])
     body, printed = [], set()
     for area in rulebook['nav']:
         body.append(f'<h2>{esc(area["title"])}</h2>')

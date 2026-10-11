@@ -1,7 +1,7 @@
 # TA/DA pre-claim: rate register (P1 output, 2026-10-11)
 
 Status: **researched and approved by the owner on 2026-10-11 (every row), with the step date confirmed as 2024-01-01.** This file is the one home for "where does each pre-claim
-figure come from". P2 copies a row into `figures.json` only after its approval cell holds a date; until then nothing ships (plan 22, P2).
+figure come from". P2 copied each row into `figures.json` (2026-10-11), every one with an approval date; nothing ships without one (plan 22, P2).
 Facts and decisions: `21_ta_da_preclaim_plan.md`. Build rules: `22_ta_da_preclaim_execution_plan.md`.
 
 Evidence labels are the ones `tools/figures.py` accepts (`LETTER_TEXT`, `HANDBOOK_ONLY`, `WEB_SECONDARY`, `OWNER_CONFIRMED`). No new label is
@@ -14,7 +14,7 @@ invented to make a row look stronger; where a civil order backs an Army figure, 
 | S2 | Handbook on Travelling Allowances 2023 (the owner's PDF text): TD rates table, baggage by road, Rules 114, 123, 124 | text read; prints the S1 letter number and the base rates, not the letter itself |
 | S3 | Travel Regulations 2014 (OCR text): Rules 4, 114, 119, 123, 124, 40 Note 2 | text read; OCR, so numbers in it are not used, only rule wording |
 | S4 | Finance Department, UT Ladakh, Order 231-F of 2024 dated 03-05-2024 ("Revision of rates of various allowances with increase in the DA rate by 50%"), 5 scanned pages | read page by page. **Civil**, not MoD. It lists the DoE OM 19030/1/2017-E.IV and DoE OM 1/1/2024-EII(B) dt 12-03-2024 as its authority, and applies the 25% step **w.e.f. 01-01-2024** |
-| S5 | Wing Circular no. 10 dt 03-09-2024 (RMA table) | `rma_rates.json`, `LETTER_TEXT` |
+| S5 | Wing Circular no. 10 dt 03-09-2024 (RMA table) | `figures.json` figure `rma` (moved there in P2; the standalone file is deleted), `LETTER_TEXT` |
 | S6 | The owner's phone-image rates sheet | `td_rates_sheet.json`, `WEB_SECONDARY`; now only a cross-check |
 
 S4 is a public government order (cdnbbsr.s3waas.gov.in, `.../2024/05/202405061031185669.pdf`). Only its number, date and figures are recorded here; the
@@ -32,7 +32,7 @@ Step columns are DA 50 to 99%. Base figures are the S2 handbook rates (7th CPC, 
 | `food_rate` (existing) | 900 / 1000 / 1200 | 1125 / 1250 / 1500 | `LETTER_TEXT` | S1 Table E(i) | 2024-01-01 civil text (S4 lists 1125/1250/1500) | S6 agrees | approved 2026-10-08; step date 2024-01-01 `OWNER_CONFIRMED` 2026-10-11 (F6) |
 | food timing | under 6 h 30%, 6-12 h 70%, over 12 h 100% | | `HANDBOOK_ONLY` | S2 Table (ii) | | S6 agrees. **S3 (TR 2014) says nil under 6 h; the 7th CPC letter and handbook replace it with 30%**, so 30% | **approved 2026-10-11 (owner)** |
 | `baggage_road` (personal effects, per km) | 50 (L10 and above) | 62.50 | `HANDBOOK_ONLY` | S1 letter, Handbook para E(a) "rates will further rise by 25%" | 2024-01-01, civil text only (S4 prints 50 to 62.50) | S6 (62.50); owner F2 | **approved 2026-10-11 (owner)** (shape decided in F2) |
-| `rma` (per km, by originating state, 34 rows) | n/a | table in `rma_rates.json` | `LETTER_TEXT` | S5 | 2024-09-03, from immediate effect | top rate 30 equals S4's step on 24 (civil default) | **approved 2026-10-11** |
+| `rma` (per km, by originating state, 34 rows) | n/a | table in `figures.json` (`rma`, mode `rate_by_state`) | `LETTER_TEXT` | S5 | 2024-09-03, from immediate effect | top rate 30 equals S4's step on 24 (civil default) | **approved 2026-10-11** |
 | `ctg` (existing) | 80% of basic | | `LETTER_TEXT` | S1 para 3(ii)(a) | | owner voucher 149000 gives 119200 | approved 2026-10-08 |
 
 Notes on the rows:

@@ -17,6 +17,7 @@ import com.payslipmax.pdfparser.testing.SyntheticGuideFigures
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -27,6 +28,7 @@ import kotlin.test.assertTrue
  */
 object GuideFiguresContract {
     private val personalCards = setOf("RB-SS-T181", "RB-SS-T254", "RB-SS-P051-rates", "RB-SS-P116-rates")
+    private val preClaimKeys = setOf("rma", "baggage_road", "td_hotel", "td_taxi")
 
     private fun profile(
         level: String? = "14",
@@ -43,9 +45,9 @@ object GuideFiguresContract {
 
     fun assertShippedFiguresMatchTheApprovedLetters(bundle: GuideBundle) {
         val figures = assertNotNull(bundle.figures, "the bundle ships figures")
-        assertEquals(setOf("food_rate", "ctg", "transport_allowance", "hra"), figures.figures.keys)
+        assertEquals(setOf("food_rate", "ctg", "transport_allowance", "hra") + preClaimKeys, figures.figures.keys)
         assertEquals(SyntheticGuideFigures.figures, figures, "the unit-test copy of the figures must equal what ships, or its oracle proves nothing")
-        assertEquals(personalCards, figures.figures.values.map { it.card }.toSet())
+        assertEquals(personalCards, figures.figures.values.map { it.card }.filter { it.isNotEmpty() }.toSet())
         assertEquals(personalCards, bundle.cards.filter { it.personal.isNotEmpty() }.map { it.id }.toSet(), "every personal card has a figure")
         assertEquals(50 to 25, figures.daStep.perDaPercent to figures.daStep.increasePercent)
 
@@ -61,6 +63,53 @@ object GuideFiguresContract {
         // HRA: class X at DA 60% is 30%.
         val hra = assertIs<PersonalFigure.Hra>(bundle.figureFor("RB-SS-P116-rates", profile(basic = 100000.0, hra = 30000.0)))
         assertEquals("X" to 30, hra.hraClass to hra.percent)
+    }
+
+    /**
+     * The TA/DA pre-claim figures (plan 22, P2) as the owner approved them on 2026-10-11 (register 23). Bases are the handbook
+     * figures before the DA step; no amount is pre-multiplied. A figure with no card must never reach a card's "your figure" line.
+     */
+    fun assertPreClaimFiguresMatchTheApprovedRegister(bundle: GuideBundle) {
+        val figures = assertNotNull(bundle.figures)
+        assertEquals("2024-01-01", figures.daStep.firstStepEffectiveFrom, "the owner's step date for the TD lump sums")
+        for (key in preClaimKeys) {
+            val figure = figures.figures.getValue(key)
+            assertEquals("" to "preclaim", figure.card to figure.use, key)
+            assertTrue(figure.effectiveFrom.isNotEmpty(), "$key shows a date")
+        }
+
+        fun base(
+            key: String,
+            level: String,
+        ) = figures.figures.getValue(key).bands.firstOrNull { level in it.levels }
+
+        assertEquals(listOf(7500, 4500, 2250), listOf("14", "12A", "11").map { base("td_hotel", it)?.base })
+        assertEquals(338, base("td_taxi", "9")?.base)
+        for (level in listOf("12", "13B", "14", "18")) {
+            val band = assertNotNull(base("td_taxi", level), "taxi band for $level")
+            assertEquals(0, band.base, "taxi at level $level has no rupee cap")
+            assertTrue(band.limit.isNotEmpty(), "taxi at level $level carries a limit text instead")
+        }
+        for (level in PayLevel.entries) {
+            // No level Pay Audit knows may fall out of a band, or the worksheet would show a silent nil for that officer.
+            assertEquals(50, base("baggage_road", level.label)?.base, "road baggage at ${level.label}")
+            assertTrue((base("td_hotel", level.label)?.base ?: 0) > 0, "hotel ceiling at ${level.label}")
+            assertNotNull(base("td_taxi", level.label), "taxi band at ${level.label}")
+        }
+        assertNull(base("baggage_road", "9"), "road baggage starts at level 10 in the handbook")
+
+        val rma = figures.figures.getValue("rma")
+        assertEquals("2024-09-03", rma.effectiveFrom)
+        assertEquals(34, rma.rates.size)
+        assertEquals(listOf(12, 20, 30), listOf("Punjab", "Maharashtra", "Assam").map { rma.rates[it] })
+        assertTrue(rma.rates.values.all { it > 0 }, "no state may be a silent nil")
+        assertTrue("Lakshadweep" !in rma.rates, "the Army has no presence there, so the picker never lists it")
+    }
+
+    /** Only the four personal cards ever get a "your figure" line, whatever else the bundle ships (the pre-claim rates have no card). */
+    fun assertOnlyPersonalCardsResolveAFigure(bundle: GuideBundle) {
+        val resolved = bundle.cards.filter { bundle.figureFor(it.id, profile(level = "12A", basic = 100000.0, tpta = "HIGHER", hra = 30000.0)) != null }.map { it.id }.toSet()
+        assertEquals(personalCards, resolved)
     }
 
     /** No officer level Pay Audit knows is left without a food rate or a Transport Allowance rate. */

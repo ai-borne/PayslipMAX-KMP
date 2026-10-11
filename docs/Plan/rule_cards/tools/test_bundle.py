@@ -159,9 +159,17 @@ class BundleFigures(unittest.TestCase):
 
     def test_approved_figures_ship_for_the_four_personal_cards(self):
         shipped = BUILT['figures']['figures']
-        self.assertEqual(set(shipped), {'food_rate', 'ctg', 'transport_allowance', 'hra'})
+        self.assertEqual(set(shipped), {'food_rate', 'ctg', 'transport_allowance', 'hra', 'rma', 'baggage_road', 'td_hotel', 'td_taxi'})
         personal = {c['id'] for c in BUILT['cards'] if c['personal']}
-        self.assertEqual({f['card'] for f in shipped.values()}, personal)
+        self.assertEqual({f['card'] for f in shipped.values() if 'card' in f}, personal)
+
+    def test_the_pre_claim_figures_ship_without_a_card_and_say_what_they_are_for(self):
+        shipped = BUILT['figures']['figures']
+        for key in ('rma', 'baggage_road', 'td_hotel', 'td_taxi'):
+            self.assertNotIn('card', shipped[key], key)
+            self.assertEqual(shipped[key]['use'], 'preclaim', key)
+        self.assertEqual(len(shipped['rma']['rates']), 34)
+        self.assertEqual(BUILT['figures']['da_step']['first_step_effective_from'], '2024-01-01')
 
     def test_an_unapproved_figure_stops_the_build(self):
         data = figures.load()
@@ -189,6 +197,16 @@ class BundleFile(unittest.TestCase):
         with open(BUNDLE_PATH, encoding='utf-8') as fh:
             text = fh.read()
         self.assertIsNone(re.search(r'"(from|open)"\s*:', text))
+
+    def test_committed_bundle_figures_carry_only_whitelisted_fields(self):
+        # An authoring-only field (authority, evidence, owner notes, the rma circular remarks) must never reach the APK.
+        with open(BUNDLE_PATH, encoding='utf-8') as fh:
+            shipped = json.load(fh)['figures']
+        self.assertEqual(set(shipped['da_step']), {'per_da_percent', 'increase_percent', 'first_step_effective_from'})
+        for key, fig in shipped['figures'].items():
+            self.assertLessEqual(set(fig), set(figures.SHIPPED_FIGURE_KEYS), key)
+            for band in fig.get('bands', []):
+                self.assertLessEqual(set(band), set(figures.SHIPPED_BAND_KEYS), key)
 
 
 if __name__ == '__main__':

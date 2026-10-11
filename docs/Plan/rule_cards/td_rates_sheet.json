@@ -28,5 +28,5 @@
     ]
   },
   "not_transcribed": "Rows for pay levels 5A to 8 and 5 and below (JCO/OR), and the sheet's other blocks (tele claim, briefcase, newspaper, hospitality, CEA, hostel subsidy, dress allowance, HRA, baggage on permanent move). Not in scope for the officer pre-claim; the baggage block (62.50 per km) agrees with plan F2.",
-  "conflict_noted": "The sheet's 'Road Mileage (RMA): Rs 30/-' disagrees with Wing Circular 10 (rma_rates.json: Rs 12 to 30 by state). The dated, state-wise circular wins; Rs 30 is only its top rate."
+  "conflict_noted": "The sheet's 'Road Mileage (RMA): Rs 30/-' disagrees with Wing Circular 10 (figures.json figure rma: Rs 12 to 30 by state). The dated, state-wise circular wins; Rs 30 is only its top rate."
 }

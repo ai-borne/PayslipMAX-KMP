@@ -1,6 +1,6 @@
 # TA/DA pre-claim: strict phase-wise execution plan
 
-Status: **P0 and P1 committed; P1 figures and rule readings approved by the owner 2026-10-11; P2 onward not started. The pending points of P0 and P1 are consolidated in P10.** Facts, portal screens, open items and every owner decision live in
+Status: **P0, P1 and P2 done (P2 committed on the branch, 2026-10-11); P3 onward not started. The pending points of P0 and P1 are consolidated in P10; P2 left none.** Facts, portal screens, open items and every owner decision live in
 `21_ta_da_preclaim_plan.md` (read it first; this file does not repeat them). This file is **how we build**: the rules, the
 handoff protocol and ten phases (P0 to P9). Branch: **one feature branch `feature/ta-da-preclaim`** for the whole plan, one commit
 per phase, made only after the phase's gate is green and the owner says OK. No push, PR or merge unless the owner says so.
@@ -110,6 +110,18 @@ Phase Summary, not a licence to incur it.
   then deleted so the table has one home); additive field on `GuideFigure`; bundle regenerated. Schema major stays 1.
 - **Files and SSOT:** one figures file; `PersonalFigureResolver` reused for DA steps, not copied. **Strings:** none new. **Security:** bundle validator rejects unknown internal fields.
 - **R8:** `minifyReleaseWithR8` + `check_r8_guide.py` (bundle byte-identical, models kept). **Debt:** `GuideModels.kt` size (split if over 300).
+- **Built (2026-10-11):**
+  - `tools/figures.py` (217 lines): mode `rate_by_state` (`RMA_STATES` is the validator's list of the circular's 34 names; each rate a whole number 1 to 100); a card-less figure
+    must say `use: "preclaim"` and a preclaim figure may not name a card; a `da_step` band takes a `base` **or** a plain-text `limit` (1 to 120 characters, no angle brackets), which is how
+    the taxi bands for levels 12 and above carry "no rupee cap" without an amount; `da_step.first_step` records the step date (2024-01-01, `OWNER_CONFIRMED` 2026-10-11) and ships as `first_step_effective_from`.
+  - `figures.json`: `td_hotel`, `td_taxi`, `baggage_road` (all `da_step`, `HANDBOOK_ONLY`, bases 7500/4500/2250, 338, 50 per km for levels 10 and up) and `rma` (`rate_by_state`, `LETTER_TEXT`), each `approved` 2026-10-11.
+    `rma_rates.json` is deleted; its metadata moved into the `rma` figure.
+  - Kotlin: `GuideFigure` gains `use` and `rates` (`card` defaults to empty), `GuideFigureBand` gains `limit` (`base` defaults to 0), `GuideDaStep` gains `firstStepEffectiveFrom`; `GuideFigureValidator` rechecks card/use and band/rate shape on load
+    (an unknown mode is not checked for shape); `PersonalFigureResolver` never matches an empty card id (found by a test: `resolve("")` would otherwise have picked up the first preclaim figure).
+  - Knock-on: `rates_report.py` and `review_pack.py` crashed on a card-less figure; both now list it as "(pre-claim)". `SyntheticGuideFigures` regenerated from the bundle (the contract test fails if the two drift).
+  - Tests: Python 209 (0 skipped; `test_figures_preclaim.py` split from `test_figures.py` to stay under 300 lines); shared JVM 1028, composeApp JVM 901, iOS shared 983, iOS composeApp 559, all 0 skipped, 0 failed.
+    Gate: `check`, `ktlintCheck`, tech-debt audit, `refresh.py --check`, `assembleRelease` + `check_r8_guide.py` (12 models kept, bundle byte-identical), iOS framework link.
+  - Not done in P2 and not pending: nothing user-visible (no calculator, no UI), by design. Handed to P5, not debt: see the rounding line in P5.
 
 ### P3. Worksheet content (bundle `preclaim` section)
 - **Goal:** field order, documents and the LTC rule picker are data, not code. **Depends:** P2.
@@ -131,6 +143,7 @@ Phase Summary, not a licence to incur it.
 
 ### P5. Calculator: temporary duty
 - **Goal:** food, lodging cap, local taxi, own-car RMA. **Depends:** P4.
+- **Rounding (found in P2):** three TD ceilings land on half a rupee at DA 50-99% (hotel 2812.50, taxi 422.50, baggage 62.50 per km). The food resolver rounds to whole rupees, which would show 2813 and 423 and overstate a ceiling. P5 must compute ceilings and the baggage rate exactly (paise or a `Double`-free ratio) and round only a total claimed amount, with a test that names 422.50 and 2812.50.
 - **Tests first:** food per day = band base x step x timing share (under 6 h 30%, 6 to 12 h 70%, over 12 h 100%), days = inclusive dates (57 and 61 as on the owner's claims);
   lodging = the officer's nightly rate **capped** at the ceiling, never above it; taxi cap Rs 422.50-style only for Level 9 to 11, km note only for 12 to 13B and 14+ (no amount);
   RMA nil without the Rule 40 Note 2 sanction, km x state rate with it; TR Rule 124 sets food, lodging and taxi to nil; dates over 180 days raise the cap note; DA% from the payslip.
@@ -167,8 +180,8 @@ Nothing here is allowed to grow silently: a row is removed only by being done.
 | From | Pending point | Why it is not done | What closes it |
 |---|---|---|---|
 | P0 | **Result of the first run (2026-10-11, owner-approved):** on a GitHub-hosted runner the watcher tests passed, then `--check` got `URLError` from the portal and exited 2: the job failed and opened no issue, as designed. The portal does not accept GitHub's IPs, so the workflow is now **manual-only** (schedule removed, header documents the local `--check` fallback). | Resolved per the plan's own fallback. **Still unverified:** the issue-opening step (exit 1) has never run on a runner; its shell logic was only exercised locally. | Done, except: the issue step stays untested until the check runs somewhere the portal answers (self-hosted runner), at which point re-add the schedule. Until then the owner runs `faq_watch.py --check` locally. |
-| P1 | **Figure rows and rule readings: approved by the owner 2026-10-11** (`td_hotel`, `td_taxi`, food timing, `baggage_road`, TR 4(i)/4(ii)/119 lines). | Done. | Nothing; row kept for the record. P2 may take these rows into `figures.json` with the approval date. |
-| P1 | **F6 step date: decided by the owner 2026-10-11 as 01-01-2024**, recorded `OWNER_CONFIRMED` (no Army letter exists in hand). | Done as a decision, not a document. | Nothing now; the optional upgrade row below covers the letter. |
+| P1 | **Figure rows and rule readings: approved by the owner 2026-10-11** (`td_hotel`, `td_taxi`, food timing, `baggage_road`, TR 4(i)/4(ii)/119 lines). | Done. | Nothing; row kept for the record. **P2 took these rows into `figures.json` with the approval date (2026-10-11).** |
+| P1 | **F6 step date: decided by the owner 2026-10-11 as 01-01-2024**, recorded `OWNER_CONFIRMED` (no Army letter exists in hand). | Done as a decision, not a document. | Nothing now; shipped in P2 as `da_step.first_step` (`OWNER_CONFIRMED`). The optional upgrade row below covers the letter. |
 | P1 | **"TD For Long Duration Course" tick: closed 2026-10-11 (owner) as note only, marked unverified against the portal.** Meaning still undocumented. | Only the portal knows. | Optional: the portal's hint text or a screenshot would let P3 word it with certainty. |
 | P1 | **Evidence upgrade (optional):** hotel, taxi and baggage stay `HANDBOOK_ONLY` because the Army letter text was not read. | Same as F6: the MoD letter is not public. | If the MoD letter turns up, read it, raise hotel, taxi and baggage to `LETTER_TEXT`, and replace the owner-confirmed step date with the letter's. |
 | P0 | **Notification churn: resolved 2026-10-11 (owner).** The monthly "Statement of Account for the month of ... has been uploaded" notice is skipped (`IGNORED_NOTIFICATIONS` in `faq_watch.py`, 5 tests; manifest re-seeded, 13 notifications). Other routine items (Form 16, DSOP Fund Statement uploaded) are still reported; add a pattern, with a test, if they become noise. | Done. | Nothing; row kept for the record until P10 is closed. |

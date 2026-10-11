@@ -128,34 +128,46 @@ data class GuideFigures(
     val figures: Map<String, GuideFigure>,
 )
 
-/** A rate rises by [increasePercent] each time DA rises by [perDaPercent] (MoD 15-09-2017: 25% per 50%). */
+/**
+ * A rate rises by [increasePercent] each time DA rises by [perDaPercent] (MoD 15-09-2017: 25% per 50%). [firstStepEffectiveFrom]
+ * (YYYY-MM-DD, empty if not shipped) is the day the first step, at DA 50%, reaches the lump sums (the owner's decision, 2026-10-11).
+ */
 @Serializable
 data class GuideDaStep(
     @SerialName("per_da_percent") val perDaPercent: Int,
     @SerialName("increase_percent") val increasePercent: Int,
+    @SerialName("first_step_effective_from") val firstStepEffectiveFrom: String = "",
 )
 
 /**
  * One personal figure. [mode] is `da_step` (band base raised by the DA step), `percent_of_basic`, `plus_da` (band base
- * plus DA on it) or `rate_table` (a percent of basic by city class and DA step). [assumption] is content, like card text.
+ * plus DA on it), `rate_table` (a percent of basic by city class and DA step) or `rate_by_state` (rupees per km in [rates],
+ * keyed by state). [assumption] is content, like card text. A figure either belongs to a rule [card] (its "your figure" line)
+ * or has [use] `preclaim` and no card: it feeds the TA/DA pre-claim worksheet and never reaches a card.
  */
 @Serializable
 data class GuideFigure(
-    val card: String,
+    val card: String = "",
+    val use: String = "",
     val mode: String,
     val assumption: String = "",
     @SerialName("effective_from") val effectiveFrom: String = "",
     val percent: Int = 0,
     val bands: List<GuideFigureBand> = emptyList(),
     val classes: Map<String, List<GuideRateStep>> = emptyMap(),
+    val rates: Map<String, Int> = emptyMap(),
 )
 
-/** Pay levels (labels as printed, for example "12A") sharing one [base]; [cityClass] is `HIGHER`, `OTHER` or `ANY`. */
+/**
+ * Pay levels (labels as printed, for example "12A") sharing one [base]; [cityClass] is `HIGHER`, `OTHER` or `ANY`. A band the
+ * rules cap without a rupee figure has no [base] (0) and carries a [limit] text instead; never both.
+ */
 @Serializable
 data class GuideFigureBand(
     val levels: List<String>,
     @SerialName("city_class") val cityClass: String = "ANY",
-    val base: Int,
+    val base: Int = 0,
+    val limit: String = "",
 )
 
 /** From [fromDaPercent] upwards a city class gets [percent] of basic pay, in force from [effectiveFrom]. */

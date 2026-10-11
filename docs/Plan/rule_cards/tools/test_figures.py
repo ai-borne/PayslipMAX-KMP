@@ -17,6 +17,9 @@ RULEBOOK = json.load(open(os.path.join(CARDS_DIR, 'rulebook.json'), encoding='ut
 CARDS = [{'id': c['id'], 'personal': c['personal']} for c in RULEBOOK['cards']]
 
 
+PRECLAIM = {'rma', 'baggage_road', 'td_hotel', 'td_taxi'}
+
+
 def problems(data, cards=CARDS):
     return figures.validate(data, cards)
 
@@ -31,8 +34,12 @@ class RealFigures(unittest.TestCase):
         self.assertEqual(figures.unapproved(REAL), [])
 
     def test_exactly_the_four_personal_cards_have_a_figure(self):
-        self.assertEqual({f['card'] for f in REAL['figures'].values()},
+        self.assertEqual({f['card'] for f in REAL['figures'].values() if 'card' in f},
                          {'RB-SS-T181', 'RB-SS-T254', 'RB-SS-P051-rates', 'RB-SS-P116-rates'})
+
+    def test_the_four_pre_claim_figures_have_no_card(self):
+        # They feed the pre-claim worksheet (plan 22), not a "your figure" line on a card.
+        self.assertEqual({k for k, f in REAL['figures'].items() if 'card' not in f}, PRECLAIM)
 
 
 class SourceRule(unittest.TestCase):
@@ -144,7 +151,7 @@ class Shipping(unittest.TestCase):
     def test_bundle_copy_keeps_only_what_the_app_needs(self):
         shipped = figures.for_bundle(REAL)
         self.assertEqual(set(shipped), {'da_step', 'figures'})
-        self.assertEqual(shipped['da_step'], {'per_da_percent': 50, 'increase_percent': 25})
+        self.assertEqual(shipped['da_step'], {'per_da_percent': 50, 'increase_percent': 25, 'first_step_effective_from': '2024-01-01'})
         for key, f in shipped['figures'].items():
             for private in ('authority', 'evidence', 'evidence_detail', 'approved', 'note', 'decided_by'):
                 self.assertNotIn(private, f, key)
@@ -154,6 +161,41 @@ class Shipping(unittest.TestCase):
         for steps in shipped['figures']['hra']['classes'].values():
             for step in steps:
                 self.assertEqual(set(step), {'from_da_percent', 'percent', 'effective_from'})
+
+    def test_only_whitelisted_fields_ship_even_when_an_unknown_one_is_authored(self):
+        d = fresh()
+        d['figures']['td_hotel']['internal_memo'] = 'x'
+        d['figures']['td_hotel']['bands'][0]['internal_memo'] = 'x'
+        d['figures']['rma']['rates_memo'] = 'x'
+        d['da_step']['first_step']['detail'] = 'x'
+        text = json.dumps(figures.for_bundle(d))
+        self.assertNotIn('memo', text)
+        self.assertNotIn('"detail"', text)
+
+    def test_the_pre_claim_figures_ship_with_what_the_app_needs_and_nothing_private(self):
+        shipped = figures.for_bundle(REAL)
+        self.assertEqual(shipped['da_step']['first_step_effective_from'], '2024-01-01')
+        self.assertEqual(shipped['da_step'].keys(), {'per_da_percent', 'increase_percent', 'first_step_effective_from'})
+        for key in PRECLAIM:
+            f = shipped['figures'][key]
+            self.assertNotIn('card', f, key)
+            self.assertEqual(f['use'], 'preclaim', key)
+            self.assertIn('effective_from', f, key)
+        self.assertEqual(shipped['figures']['rma']['rates'], REAL['figures']['rma']['rates'])
+        self.assertEqual(shipped['figures']['td_taxi']['bands'][1]['limit'], REAL['figures']['td_taxi']['bands'][1]['limit'])
+        self.assertNotIn('base', shipped['figures']['td_taxi']['bands'][1])
+
+    def test_an_unapproved_pre_claim_figure_still_blocks_the_bundle(self):
+        d = fresh()
+        d['figures']['rma']['approved'] = None
+        self.assertEqual(figures.unapproved(d), ['rma'])
+        with self.assertRaises(SystemExit):
+            figures.for_bundle(d)
+
+    def test_the_shipped_figures_never_name_a_private_word(self):
+        text = json.dumps(figures.for_bundle(REAL))
+        for private in ('authority', 'evidence', 'HANDBOOK_ONLY', 'OWNER_CONFIRMED', 'confirmed', 'approved', 'MoD letter'):
+            self.assertNotIn(private, text)
 
 
 if __name__ == '__main__':

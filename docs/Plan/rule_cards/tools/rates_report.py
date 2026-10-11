@@ -19,6 +19,8 @@ from config import CARDS_DIR
 
 BODY_FIELDS = ('title', 'answer', 'key', 'attach', 'watch', 'details')
 RUPEE = re.compile(r'\bRs\b|₹')
+# Shown in the Card column for a figure that feeds the TA/DA pre-claim worksheet instead of a card.
+NO_CARD = '(pre-claim)'
 
 
 def _text(card, fields):
@@ -34,7 +36,7 @@ def flags(card):
 
 
 def report(rulebook, figures_data):
-    figure_cards = {f['card'] for f in figures_data['figures'].values()}
+    figure_cards = {f['card'] for f in figures_data['figures'].values() if 'card' in f}
     rows = []
     for card in rulebook['cards']:
         if card.get('replaced_by'):
@@ -42,7 +44,7 @@ def report(rulebook, figures_data):
         why = flags(card) + (['figure'] if card['id'] in figure_cards else [])
         if why:
             rows.append({'id': card['id'], 'title': card['title'], 'flags': why})
-    figs = [{'key': k, 'card': f['card'], 'effective_from': f.get('effective_from', 'see rate table'), 'evidence': f['evidence']}
+    figs = [{'key': k, 'card': f.get('card', NO_CARD), 'effective_from': f.get('effective_from', 'see rate table'), 'evidence': f['evidence']}
             for k, f in sorted(figures_data['figures'].items())]
     return {'cards': rows, 'figures': figs}
 

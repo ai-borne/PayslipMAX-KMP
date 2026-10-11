@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.guide.data
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.GuideCard
+import com.payslipmax.pdfparser.guide.model.GuideFigure
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
 import com.payslipmax.pdfparser.testing.SyntheticGuideFigures
 import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
@@ -149,6 +150,47 @@ class GuideBundleValidatorTest {
 
         val noSpec = figures.copy(figures = mapOf("food_rate" to food.copy(card = SyntheticGuideBundle.NO_CITE_CARD)))
         assertProblem(valid.copy(figures = noSpec), "figure food_rate: card ${SyntheticGuideBundle.NO_CITE_CARD} has no personal spec")
+    }
+
+    /** The valid bundle carrying only the card-less pre-claim figures (the synthetic bundle has none of the four personal cards). */
+    private val withPreClaim: GuideBundle =
+        valid.copy(
+            figures = SyntheticGuideFigures.figures.let { all -> all.copy(figures = all.figures.filterValues { it.use == "preclaim" }) },
+        )
+
+    private fun GuideBundle.withFigure(
+        key: String,
+        edit: (GuideFigure) -> GuideFigure,
+    ): GuideBundle {
+        val figures = checkNotNull(figures)
+        return copy(figures = figures.copy(figures = figures.figures + (key to edit(figures.figures.getValue(key)))))
+    }
+
+    @Test
+    fun aPreClaimFigureNeedsNoCardButMustSayWhatItIsFor() {
+        val rma = SyntheticGuideFigures.figures.figures.getValue("rma")
+        assertEquals("" to "preclaim", rma.card to rma.use)
+        assertEquals(emptyList(), problems(withPreClaim))
+
+        // A card-less figure that does not say "preclaim" is a data slip, not a worksheet rate: it must not load silently.
+        assertProblem(withPreClaim.withFigure("rma") { it.copy(use = "") }, "figure rma: no card and not a preclaim figure")
+        assertProblem(withPreClaim.withFigure("rma") { it.copy(card = SyntheticGuideBundle.PERSONAL_CARD) }, "figure rma: a preclaim figure names a card")
+    }
+
+    @Test
+    fun aPerStateRateOrBandThatWouldBeASilentNilIsRejected() {
+        assertProblem(withPreClaim.withFigure("rma") { it.copy(rates = it.rates + ("Goa" to 0)) }, "figure rma: rate for Goa must be above zero")
+        assertProblem(withPreClaim.withFigure("rma") { it.copy(rates = emptyMap()) }, "figure rma: no rates")
+        // A taxi band is a base or a limit text, never neither and never both.
+        val taxi = SyntheticGuideFigures.figures.figures.getValue("td_taxi")
+        assertProblem(withPreClaim.withFigure("td_taxi") { it.copy(bands = listOf(taxi.bands[1].copy(limit = ""))) }, "figure td_taxi: a band needs a base or a limit")
+        assertProblem(withPreClaim.withFigure("td_taxi") { it.copy(bands = listOf(taxi.bands[0].copy(limit = "up to 50 km"))) }, "figure td_taxi: a band needs a base or a limit")
+    }
+
+    @Test
+    fun aModeThisAppDoesNotKnowIsNotCheckedForShape() {
+        val future = withPreClaim.withFigure("rma") { it.copy(mode = "per_zone", rates = emptyMap()) }
+        assertEquals(emptyList(), problems(future))
     }
 
     /** RB-P3 replaced by RB-P2 from 2026-11-15: still in the data, off the tiles, with no home. */

@@ -53,7 +53,8 @@ object PersonalFigureResolver {
         profile: GuideProfile?,
     ): PersonalFigure? {
         if (figures == null || profile == null) return null
-        val figure = figures.figures.values.firstOrNull { it.card == cardId } ?: return null
+        // A pre-claim figure has no card (empty), so an empty id must never match one.
+        val figure = figures.figures.values.firstOrNull { it.card.isNotEmpty() && it.card == cardId } ?: return null
         return when (figure.mode) {
             MODE_DA_STEP -> foodRate(figure, figures, profile)
             MODE_PERCENT_OF_BASIC -> ctg(figure, profile)

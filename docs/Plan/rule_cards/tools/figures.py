@@ -4,6 +4,9 @@ A figure is a rule-card rate the app turns into a personal amount from the offic
 an effective date, a primary letter, an evidence level and the owner's approval date. OWNER_CONFIRMED (with a `confirmed` date)
 records a fact the owner stated without a document; it is the weakest label and is named as such. No rupee figure is written in
 Kotlin: the app reads these from the bundle. compile.py calls validate(); bundle.py calls for_bundle().
+
+A figure either belongs to a rule card (`card`, shown as that card's "your figure" line) or feeds the TA/DA pre-claim worksheet
+(`use: "preclaim"`, no card). Never both, so a worksheet rate can never be drawn on the wrong card.
 """
 import datetime
 import json
@@ -16,11 +19,22 @@ from config import CARDS_DIR
 FIGURES_PATH = os.path.join(CARDS_DIR, 'figures.json')
 SUPPORTED_VERSION = 1
 EVIDENCE = {'LETTER_TEXT', 'HANDBOOK_ONLY', 'WEB_SECONDARY', 'OWNER_CONFIRMED'}
-MODES = {'da_step', 'percent_of_basic', 'plus_da', 'rate_table'}
+MODES = {'da_step', 'percent_of_basic', 'plus_da', 'rate_table', 'rate_by_state'}
+USE_PRECLAIM = 'preclaim'
+# The states and territories of PCDA(O) Pune Wing Circular no. 10 (2024-09-03), spelt as the circular spells them. Lakshadweep and
+# Dadra and Nagar Haveli and Daman and Diu are absent because the Army has no presence there (owner, 2026-10-11).
+RMA_STATES = (
+    'Andaman & Nicobar', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chandigarh (UT)', 'Chattisgarh', 'Delhi', 'Goa',
+    'Gujrat', 'Haryana', 'Himachal Pradesh', 'J&K', 'Jharkhand', 'Karnataka', 'Kerala', 'Leh & Ladakh', 'Madhya Pradesh', 'Maharashtra',
+    'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamilnadu', 'Telangana',
+    'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+)
+MAX_RATE_PER_KM = 100
+MAX_LIMIT_CHARS = 120
 CITY_CLASSES = {'HIGHER', 'OTHER', 'ANY'}
 # Fields the app needs. Authority, evidence, notes and approval stay in the repo.
-SHIPPED_FIGURE_KEYS = ('card', 'mode', 'assumption', 'effective_from', 'percent', 'bands', 'classes')
-SHIPPED_BAND_KEYS = ('levels', 'city_class', 'base')
+SHIPPED_FIGURE_KEYS = ('card', 'use', 'mode', 'assumption', 'effective_from', 'percent', 'bands', 'classes', 'rates')
+SHIPPED_BAND_KEYS = ('levels', 'city_class', 'base', 'limit')
 SHIPPED_STEP_KEYS = ('from_da_percent', 'percent', 'effective_from')
 
 
@@ -51,6 +65,7 @@ def validate(data, cards):
         errs.append('figures: da_step needs positive per_da_percent and increase_percent')
     if not step.get('authority'):
         errs.append('figures: da_step has no authority')
+    errs += _first_step_problems(step.get('first_step') or {})
     by_id = {c['id']: c for c in cards}
     figs = data.get('figures') or {}
     for key, fig in figs.items():
@@ -62,13 +77,31 @@ def validate(data, cards):
     return errs
 
 
-def _figure_problems(key, fig, by_id):
+def _first_step_problems(first):
+    """The date the first DA step (DA 50%) reaches the lump sums. It is a decision, so it names its evidence and who confirmed it."""
     errs = []
-    card = by_id.get(fig.get('card'))
+    if not _is_date(first.get('effective_from')):
+        errs.append('figures: da_step first_step needs an effective_from date')
+    if first.get('evidence') not in EVIDENCE:
+        errs.append(f'figures: da_step first_step evidence must be one of {sorted(EVIDENCE)}')
+    if first.get('evidence') == 'OWNER_CONFIRMED' and not _is_date(first.get('confirmed')):
+        errs.append('figures: da_step first_step is OWNER_CONFIRMED but has no confirmed date')
+    return errs
+
+
+def _card_problems(key, fig, by_id):
+    if 'card' not in fig:
+        return [] if fig.get('use') == USE_PRECLAIM else [f'{key}: a figure with no card must have use "{USE_PRECLAIM}"']
+    if fig.get('use') == USE_PRECLAIM:
+        return [f'{key}: a {USE_PRECLAIM} figure may not name a card']
+    card = by_id.get(fig['card'])
     if card is None:
-        errs.append(f'{key}: unknown card {fig.get("card")}')
-    elif not card.get('personal'):
-        errs.append(f'{key}: card {card["id"]} has no personal spec')
+        return [f'{key}: unknown card {fig["card"]}']
+    return [] if card.get('personal') else [f'{key}: card {card["id"]} has no personal spec']
+
+
+def _figure_problems(key, fig, by_id):
+    errs = _card_problems(key, fig, by_id)
     if not fig.get('authority'):
         errs.append(f'{key}: no authority (the primary letter)')
     if fig.get('evidence') not in EVIDENCE:
@@ -84,6 +117,8 @@ def _figure_problems(key, fig, by_id):
         pct = fig.get('percent')
         if not (_positive_int(pct) and pct <= 100):
             errs.append(f'{key}: percent must be a whole number from 1 to 100')
+    elif mode == 'rate_by_state':
+        errs += _rate_by_state_problems(key, fig)
     else:
         errs += _rate_table_problems(key, fig)
     return errs
@@ -98,8 +133,7 @@ def _band_problems(key, fig, mode):
         city = band.get('city_class', 'ANY')
         if city not in CITY_CLASSES or (mode == 'da_step' and city != 'ANY'):
             errs.append(f'{key}: bad city_class {city!r} for mode {mode}')
-        if not _positive_int(band.get('base')):
-            errs.append(f'{key}: band base must be a positive whole number')
+        errs += _amount_problems(key, band, mode)
         if not band.get('levels'):
             errs.append(f'{key}: a band has no levels')
         for level in band.get('levels', []):
@@ -107,6 +141,30 @@ def _band_problems(key, fig, mode):
                 if (level, other) in seen:
                     errs.append(f'{key}: level {level} claimed twice ({other})')
             seen[(level, city)] = True
+    return errs
+
+
+def _amount_problems(key, band, mode):
+    """A band is a rupee base, or (da_step only) a plain-text limit with no amount, for levels the rules cap without a rupee figure."""
+    if 'limit' not in band:
+        return [] if _positive_int(band.get('base')) else [f'{key}: band needs a base (a positive whole number) or a limit text']
+    limit = band['limit']
+    if mode != 'da_step' or 'base' in band:
+        return [f'{key}: a band takes a limit only in place of a base, and only in da_step mode']
+    if not (isinstance(limit, str) and 0 < len(limit) <= MAX_LIMIT_CHARS and not set('<>') & set(limit)):
+        return [f'{key}: band limit must be plain text of 1 to {MAX_LIMIT_CHARS} characters']
+    return []
+
+
+def _rate_by_state_problems(key, fig):
+    rates = fig.get('rates')
+    if not isinstance(rates, dict) or not rates:
+        return [f'{key}: no rates']
+    errs = [f'{key}: no rate for {state}' for state in RMA_STATES if state not in rates]
+    errs += [f'{key}: unknown state {state!r} (spell it as the circular does)' for state in rates if state not in RMA_STATES]
+    for state, rate in rates.items():
+        if not (_positive_int(rate) and rate <= MAX_RATE_PER_KM):
+            errs.append(f'{key}: rate for {state} must be a whole number from 1 to {MAX_RATE_PER_KM}')
     return errs
 
 
@@ -154,4 +212,6 @@ def for_bundle(data):
         if 'classes' in shipped:
             shipped['classes'] = {n: [{k: s[k] for k in SHIPPED_STEP_KEYS} for s in steps] for n, steps in fig['classes'].items()}
         out[key] = shipped
-    return {'da_step': {'per_da_percent': step['per_da_percent'], 'increase_percent': step['increase_percent']}, 'figures': out}
+    shipped_step = {'per_da_percent': step['per_da_percent'], 'increase_percent': step['increase_percent'],
+                    'first_step_effective_from': step['first_step']['effective_from']}
+    return {'da_step': shipped_step, 'figures': out}

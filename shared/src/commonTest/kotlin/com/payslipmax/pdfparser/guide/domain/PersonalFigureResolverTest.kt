@@ -175,6 +175,17 @@ class PersonalFigureResolverTest {
     }
 
     @Test
+    fun aPreClaimFigureNeverAnswersForAnyCard() {
+        // The pre-claim rates carry no card, so no card id (even an empty one) may pick them up as its "your figure" line.
+        for (cardId in listOf("", "rma", "td_hotel", "RB-SS-T181-x")) {
+            assertNull(resolve(cardId, profile()), cardId)
+        }
+        val onlyPreClaim = figures.copy(figures = figures.figures.filterValues { it.use == "preclaim" })
+        assertNull(PersonalFigureResolver.resolve(SyntheticGuideFigures.FOOD_CARD, onlyPreClaim, profile()))
+        assertNull(PersonalFigureResolver.resolve("", onlyPreClaim, profile()))
+    }
+
+    @Test
     fun aModeThisAppVersionDoesNotKnowIsHiddenNotGuessed() {
         val future = figures.copy(figures = figures.figures.mapValues { (_, f) -> f.copy(mode = "compound_da") })
         assertNull(PersonalFigureResolver.resolve(SyntheticGuideFigures.FOOD_CARD, future, profile()))

@@ -58,6 +58,9 @@ Card text lives only in `authoring/*.txt`; rupee figures only in `figures.json`.
   the card's `O:` line; if the order could not be read, keep it and say so.
 - A rate on a card: the sentence in the card text **and** the figure in `figures.json` are two places (no templating, EP 22).
   Change both, give the figure its `authority`, `evidence` and, once the owner agrees, `approved` date.
+- A pre-claim figure (`use: preclaim`, no card: `td_hotel`, `td_taxi`, `baggage_road`, `rma`) has no card text to change. Edit `figures.json` only:
+  a new Wing Circular on road mileage means new `rma` rates (the validator insists on all 34 states, spelt as the circular spells them), a new
+  Army DA-step letter means the `da_step.first_step` date. Give the change its owner `approved` date and record it in `23_ta_da_preclaim_rate_register.md`.
 - A card that must go away: add `--- retire RB-x reason` in an authoring file. Without it `compile.py` refuses to drop a shipped id.
 - A new card: `=== topic=... from=... [id=RB-x] [chips=...]`; it is homed by its topic (`nav.json`) and needs an entry in
   `facets.json` (`"RB-x": "Q" | "H" | "C" | "L"`): `compile.py` stops with `has no valid facet` otherwise.

@@ -1,5 +1,5 @@
 {
-  "_note": "APPROVED by the owner 2026-10-08 (E6), evidence labels unchanged. Source of truth for the Claim Guide 'your figure' line. No figure ships until its 'approved' is a date. Every figure: value, effective date, primary letter, and the evidence level actually seen. Evidence: LETTER_TEXT = the primary letter's own text was read; HANDBOOK_ONLY = the P&A Handbook 2023 prints the letter number and the rates but the letter text was not read; WEB_SECONDARY = news or department pages quote the order, primary text not read. OWNER_CONFIRMED = the owner stated it (with a `confirmed` date) without a document.",
+  "_note": "APPROVED by the owner 2026-10-08 (E6), evidence labels unchanged. Source of truth for the Claim Guide 'your figure' line. No figure ships until its 'approved' is a date. Every figure: value, effective date, primary letter, and the evidence level actually seen. Evidence: LETTER_TEXT = the primary letter's own text was read; HANDBOOK_ONLY = the P&A Handbook 2023 prints the letter number and the rates but the letter text was not read; WEB_SECONDARY = news or department pages quote the order, primary text not read. OWNER_CONFIRMED = the owner stated it (with a `confirmed` date) without a document. PRE-CLAIM FIGURES (plan 22, P2), approved by the owner 2026-10-11 (register 23): the four entries with `use: preclaim` have no `card`; they feed the TA/DA worksheet, not a card line.",
   "version": 1,
   "da_step": {
     "per_da_percent": 50,
@@ -7,7 +7,13 @@
     "rule": "multiplier = 1 + 0.25 x floor(DA / 50)",
     "decided_by": "owner 2026-10-07 (additive, not compounding; no difference below DA 100%)",
     "authority": "MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017, para 2(iv) ('lump sum amount will increase by 25 percent whenever DA increases by 50 percent')",
-    "evidence": "LETTER_TEXT"
+    "evidence": "LETTER_TEXT",
+    "first_step": {
+      "effective_from": "2024-01-01",
+      "evidence": "OWNER_CONFIRMED",
+      "confirmed": "2026-10-11",
+      "detail": "The day DA reached 50%. No Army (MoD) letter that pins the date is in hand; the civil order 231-F of 2024 applies the step w.e.f. 2024-01-01 and the owner decided the Army pays it from then. Replace with the MoD letter's date if it turns up (plan 22, P10)."
+    }
   },
   "figures": {
     "food_rate": {
@@ -205,6 +211,182 @@
       },
       "approved": "2026-10-08",
       "mismatch_rule": "If the payslip ratio is a valid rate but not the rate for that class at the payslip DA, the line is hidden (owner 2026-10-08)."
+    },
+    "td_hotel": {
+      "use": "preclaim",
+      "mode": "da_step",
+      "unit": "rupees per night, a ceiling",
+      "assumption": "most the hotel bill can be claimed for a night; the bill itself is claimed, never more than this",
+      "effective_from": "2017-07-01",
+      "authority": "MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017 (Handbook on Travelling Allowances 2023 prints the letter number and the base rates); the +25% per +50% DA step is its para 2(iv)",
+      "evidence": "HANDBOOK_ONLY",
+      "evidence_detail": "Handbook on Travelling Allowances 2023 prints the letter number and the TD lodging ceilings (7500, 4500, 2250 at base). The Army letter text itself was not read. The civil UT Ladakh Finance Dept Order 231-F of 2024 (read in P1) prints the same base and stepped figures w.e.f. 2024-01-01, which makes them very likely right but is not the MoD's own text (register 23).",
+      "bands": [
+        {
+          "levels": [
+            "14",
+            "15",
+            "16",
+            "17",
+            "18"
+          ],
+          "base": 7500
+        },
+        {
+          "levels": [
+            "12",
+            "12A",
+            "12B",
+            "13",
+            "13A",
+            "13B"
+          ],
+          "base": 4500
+        },
+        {
+          "levels": [
+            "9",
+            "10",
+            "10A",
+            "10B",
+            "11"
+          ],
+          "base": 2250
+        }
+      ],
+      "approved": "2026-10-11"
+    },
+    "td_taxi": {
+      "use": "preclaim",
+      "mode": "da_step",
+      "unit": "rupees per day, a cap",
+      "assumption": "local taxi within the city, per day",
+      "effective_from": "2017-07-01",
+      "authority": "MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017 (Handbook on Travelling Allowances 2023 prints the letter number and the base rates); the +25% per +50% DA step is its para 2(iv)",
+      "evidence": "HANDBOOK_ONLY",
+      "evidence_detail": "Handbook on Travelling Allowances 2023 prints the letter number and the non-AC taxi cap for levels 9 to 11 (338 at base). Levels 12 and above have no rupee cap in the handbook or in S4, so those bands carry a limit text and never an amount. The Army letter text itself was not read. The civil UT Ladakh Finance Dept Order 231-F of 2024 (read in P1) prints the same base and stepped figures w.e.f. 2024-01-01, which makes them very likely right but is not the MoD's own text (register 23).",
+      "bands": [
+        {
+          "levels": [
+            "9",
+            "10",
+            "10A",
+            "10B",
+            "11"
+          ],
+          "base": 338
+        },
+        {
+          "levels": [
+            "12",
+            "12A",
+            "12B",
+            "13",
+            "13A",
+            "13B"
+          ],
+          "limit": "AC taxi, up to 50 km a day within the city"
+        },
+        {
+          "levels": [
+            "14",
+            "15",
+            "16",
+            "17",
+            "18"
+          ],
+          "limit": "AC taxi at actual cost, in line with official engagements, within the city"
+        }
+      ],
+      "approved": "2026-10-11"
+    },
+    "baggage_road": {
+      "use": "preclaim",
+      "mode": "da_step",
+      "unit": "rupees per km",
+      "assumption": "personal effects moved by road, per km of road distance",
+      "effective_from": "2017-07-01",
+      "authority": "MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017 (Handbook on Travelling Allowances 2023 prints the letter number and the base rates); the +25% per +50% DA step is its para 2(iv); Handbook para E(a): rates 'will further rise by 25%'",
+      "evidence": "HANDBOOK_ONLY",
+      "evidence_detail": "Handbook on Travelling Allowances 2023 prints the letter number and the road rate for pay levels 10 and above (Rs 50 per km at base). The Army letter text itself was not read. The civil UT Ladakh Finance Dept Order 231-F of 2024 (read in P1) prints the same base and stepped figures w.e.f. 2024-01-01, which makes them very likely right but is not the MoD's own text (register 23).",
+      "bands": [
+        {
+          "levels": [
+            "10",
+            "10A",
+            "10B",
+            "11",
+            "12",
+            "12A",
+            "12B",
+            "13",
+            "13A",
+            "13B",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18"
+          ],
+          "base": 50
+        }
+      ],
+      "approved": "2026-10-11"
+    },
+    "rma": {
+      "use": "preclaim",
+      "mode": "rate_by_state",
+      "unit": "rupees per km",
+      "assumption": "per km of road distance, at the rate of the state the journey starts in",
+      "effective_from": "2024-09-03",
+      "authority": "PCDA(O) Pune Wing Circular no. 10 (T-Wing), 'Road Mileage Allowance: Officers', dt 2024-09-03, from immediate effect, no retrospective effect",
+      "evidence": "LETTER_TEXT",
+      "evidence_detail": "The owner's scan of the circular was read page by page. It is a PCDA(O) wing circular, not an MoD letter, and its own authority (the competent authority's approval) is not cited in the text.",
+      "rule_link": "FAQ: car conveyance on a permanent move is paid at the RMA rate of the originating city, whatever the class of city; RMA on temporary duty needs the Rule 40 Note 2 sanction.",
+      "owner_instruction": "2026-10-11: use these rates; RMA = distance (from to to) x the rate of the originating state.",
+      "not_in_circular": [
+        "Lakshadweep",
+        "Dadra and Nagar Haveli and Daman and Diu"
+      ],
+      "not_in_circular_note": "Owner, 2026-10-11: no Army presence there, so no rate is given. The app's state picker simply does not list them.",
+      "approved_note": "Owner confirmed on 2026-10-11 that Wing Circular no. 10 is still the latest RMA rate table (plan 21, F3b). Re-check whenever DA steps again or the FAQ watcher reports a change.",
+      "rates": {
+        "Andaman & Nicobar": 26,
+        "Andhra Pradesh": 24,
+        "Arunachal Pradesh": 30,
+        "Assam": 30,
+        "Bihar": 28,
+        "Chandigarh (UT)": 18,
+        "Chattisgarh": 20,
+        "Delhi": 22,
+        "Goa": 18,
+        "Gujrat": 18,
+        "Haryana": 22,
+        "Himachal Pradesh": 22,
+        "J&K": 20,
+        "Jharkhand": 28,
+        "Karnataka": 23,
+        "Kerala": 20,
+        "Leh & Ladakh": 20,
+        "Madhya Pradesh": 22,
+        "Maharashtra": 20,
+        "Manipur": 30,
+        "Meghalaya": 20,
+        "Mizoram": 30,
+        "Nagaland": 30,
+        "Odisha": 18,
+        "Puducherry": 19,
+        "Punjab": 12,
+        "Rajasthan": 19,
+        "Sikkim": 26,
+        "Tamilnadu": 24,
+        "Telangana": 17,
+        "Tripura": 15,
+        "Uttar Pradesh": 20,
+        "Uttarakhand": 21,
+        "West Bengal": 19
+      },
+      "approved": "2026-10-11"
     }
   }
 }

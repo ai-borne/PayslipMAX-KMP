@@ -62,7 +62,7 @@ class CardContents(unittest.TestCase):
 
     def test_a_linked_figure_shows_its_evidence_level(self):
         printed = set(block_ids(HTML))
-        fig = next(f for f in FIGURES['figures'].values() if f['card'] in printed)
+        fig = next(f for f in FIGURES['figures'].values() if f.get('card') in printed)
         block = HTML.split(f'id="{fig["card"]}"')[1].split('</article>')[0]
         self.assertIn(fig['evidence'], block)
 
@@ -84,6 +84,13 @@ class CoverPage(unittest.TestCase):
         for c in RULEBOOK['cards']:
             if c['open']:
                 self.assertIn(c['id'], appendix)
+
+    def test_appendix_names_the_pre_claim_figures_without_a_card(self):
+        # The expert re-checks them at the next DA step; they sit in no card block, so the appendix is the only place they show.
+        appendix = HTML.split('id="appendix"')[1]
+        self.assertGreaterEqual(appendix.count(review_pack.rates_report.NO_CARD), 4)
+        for key in ('rma', 'baggage_road', 'td_hotel', 'td_taxi'):
+            self.assertIn(f'<td>{key}</td>', appendix, key)
 
 
 class RuleChanges(unittest.TestCase):
@@ -148,7 +155,7 @@ class Determinism(unittest.TestCase):
 
 class Retired(unittest.TestCase):
     def test_retired_cards_are_excluded_everywhere(self):
-        with_figure = {f['card'] for f in FIGURES['figures'].values()}
+        with_figure = {f['card'] for f in FIGURES['figures'].values() if 'card' in f}
         gone = next(c['id'] for c in CURRENT if c['id'] not in with_figure)
         html = review_pack.build_html(RULEBOOK, FIGURES, DATE, retired={gone})
         self.assertNotIn(gone, html)

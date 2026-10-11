@@ -59,12 +59,20 @@ class Report(unittest.TestCase):
     def test_every_figure_is_in_the_real_report_with_its_card(self):
         rows = rates_report.report(RULEBOOK, FIGURES)['figures']
         self.assertEqual({r['key'] for r in rows}, set(FIGURES['figures']))
-        self.assertEqual({r['key']: r['card'] for r in rows}, {k: f['card'] for k, f in FIGURES['figures'].items()})
+        self.assertEqual({r['key']: r['card'] for r in rows},
+                         {k: f.get('card', rates_report.NO_CARD) for k, f in FIGURES['figures'].items()})
+
+    def test_a_pre_claim_figure_has_no_card_and_flags_none(self):
+        # It feeds the worksheet, not a card, so it must be swept for the 8th CPC re-check without crashing or marking a card.
+        rows = {r['key']: r for r in rates_report.report(RULEBOOK, FIGURES)['figures']}
+        for key in ('rma', 'baggage_road', 'td_hotel', 'td_taxi'):
+            self.assertEqual(rows[key]['card'], rates_report.NO_CARD, key)
+        self.assertIn(rates_report.NO_CARD, rates_report.render_text(rates_report.report(RULEBOOK, FIGURES)))
 
     def test_a_card_with_a_figure_is_listed_even_if_its_text_has_no_number(self):
         rb = copy.deepcopy(RULEBOOK)
         replaced = {c['id'] for c in rb['cards'] if c.get('replaced_by')}
-        key, fig = next((k, f) for k, f in FIGURES['figures'].items() if f['card'] not in replaced)
+        key, fig = next((k, f) for k, f in FIGURES['figures'].items() if 'card' in f and f['card'] not in replaced)
         target = next(c for c in rb['cards'] if c['id'] == fig['card'])
         target.update(chips=[], answer='No numbers', key=['none'], attach=[], watch=[], details='', cite='', title='Plain')
         listed = {r['id']: r for r in rates_report.report(rb, FIGURES)['cards']}

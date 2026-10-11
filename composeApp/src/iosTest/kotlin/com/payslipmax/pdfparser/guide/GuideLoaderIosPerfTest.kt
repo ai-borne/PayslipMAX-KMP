@@ -135,6 +135,8 @@ class GuideLoaderIosPerfTest {
             assertTrue(elapsedMs < FIGURE_BUDGET_MS, "profiles took ${elapsedMs}ms, budget ${FIGURE_BUDGET_MS}ms")
             // The correctness workload, untimed: Native resolves the same amounts as the JVM.
             GuideFiguresContract.assertShippedFiguresMatchTheApprovedLetters(bundle)
+            GuideFiguresContract.assertPreClaimFiguresMatchTheApprovedRegister(bundle)
+            GuideFiguresContract.assertOnlyPersonalCardsResolveAFigure(bundle)
             GuideFiguresContract.assertEveryPayLevelHasARate(bundle)
             GuideFiguresContract.assertTransportBasesMatchPayAudit(bundle)
             GuideFiguresContract.assertHistoryResolvesAllFourCards(bundle, history)

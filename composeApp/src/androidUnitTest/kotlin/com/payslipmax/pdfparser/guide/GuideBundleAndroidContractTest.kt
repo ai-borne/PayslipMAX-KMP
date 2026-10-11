@@ -29,6 +29,8 @@ class GuideBundleAndroidContractTest {
             GuideBundleContract.assertPayAuditLinksPointAtRealCards(bundle)
             GuideBundleContract.assertPinsAndShareNotesMatchDataset(bundle)
             GuideFiguresContract.assertShippedFiguresMatchTheApprovedLetters(bundle)
+            GuideFiguresContract.assertPreClaimFiguresMatchTheApprovedRegister(bundle)
+            GuideFiguresContract.assertOnlyPersonalCardsResolveAFigure(bundle)
             GuideFiguresContract.assertEveryPayLevelHasARate(bundle)
             GuideFiguresContract.assertTransportBasesMatchPayAudit(bundle)
             GuideFiguresContract.assertHistoryResolvesAllFourCards(bundle, GuideFiguresContract.realisticHistory())
