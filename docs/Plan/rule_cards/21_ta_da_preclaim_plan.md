@@ -104,14 +104,15 @@ owner's decisions only.
   **TD has no Re-Employed or Spouse Employed question** (permanent duty does), so P6 asks per move type, not one fixed list.
 - **F7 (closed 2026-10-11, from the owner's dropdown screenshots).** TD **TR Rule**: Rule 4(i) TR; Rule 4(ii) TR; Rule 119 TR;
   Rule 124 TR (DA not admissible). **Mode of Journey** (TD and LTC): Air, Rail, Road, Sea, Multiple. Reading: the handbook calls
-  4(ii) the "special sanction" rule; 4(i) and the portal's use of 119 are not read yet (open, P1). Rule 124 (courses): conveyance
+  4(ii) the "special sanction" rule; P1 read TR 2014: 4(i) is moves ordered by the Appendix III authorities, 119 is the ordinary TD entitlement (readings in `23_*.md`, owner approval pending). Rule 124 (courses): conveyance
   only, no DA (handbook and FAQ), which the dropdown label itself says, so choosing it sets food and lodging to nil.
 - **F8 (partly closed):** the handbook caps course DA at the **first 180 days** and then nil, where free boarding/lodging is not
   provided (Rule 123 TR; also the 180-day continuous-halt rule, Rule 114). The portal's own meaning of the "TD For Long Duration
   Course" tick is **not documented in anything we hold**; assume it relates to that cap, unverified, and show the cap as a note.
   Free boarding/lodging changes the entitlement (the old 25% DA was discontinued, MoD letter 12650 of 2018).
-- **F6 (open): when does the +25% DA step reach the food lump sum?** DA reached 50% from 01-01-2024 but was notified in March 2024;
-  claim A (filed 26-01-2024) used no escalation. P1 reads the letter and pins the effective date.
+- **F6 (partly closed by P1, 2026-10-11): when does the +25% DA step reach the food lump sum?** DA reached 50% from 01-01-2024 but was notified in March 2024;
+  claim A (filed 26-01-2024) used no escalation. A civil order (UT Ladakh Finance Dept Order 231-F of 2024) applies the step **w.e.f. 01-01-2024** and matches every TD figure;
+  the **Army (MoD) letter was not found**, so the Army date is an owner action (P10 of 22, register in `23_*.md`).
 - Lodging design (owner): the officer enters the expected nightly rate and the app caps it at the ceiling for their level
   ("capped at Rs X"); the handbook says hotel bills are mandatory, so the ceiling is a limit, never the amount.
 

@@ -1,6 +1,6 @@
 # TA/DA pre-claim: strict phase-wise execution plan
 
-Status: **P0 built and verified locally (2026-10-11); P1 onward not started. The pending points of P0 are consolidated in P10.** Facts, portal screens, open items and every owner decision live in
+Status: **P0 committed; P1 researched (2026-10-11), its figure approvals are owner actions; P2 onward not started. The pending points of P0 and P1 are consolidated in P10.** Facts, portal screens, open items and every owner decision live in
 `21_ta_da_preclaim_plan.md` (read it first; this file does not repeat them). This file is **how we build**: the rules, the
 handoff protocol and ten phases (P0 to P9). Branch: **one feature branch `feature/ta-da-preclaim`** for the whole plan, one commit
 per phase, made only after the phase's gate is green and the owner says OK. No push, PR or merge unless the owner says so.
@@ -94,6 +94,12 @@ Phase Summary, not a licence to incur it.
 - **Security:** no PDF or letter text copied into the repo beyond short quoted citations; no PII.
 - **R8:** not applicable. **Anticipated debt:** a figure that cannot be sourced; resolve by cutting that line from v1 and recording it in `19_carry_over.md`
   as an owner-visible scope change, never by shipping an unsourced number.
+- **Built (2026-10-11):** `23_ta_da_preclaim_rate_register.md` (one row per figure: base, step value, evidence, authority, effective date, cross-check, approval);
+  `td_rates_sheet.json` note updated. The new primary-text source is a **civil** order (UT Ladakh Finance Dept Order 231-F of 2024, read page by page): it matches
+  every TD hotel, taxi, food and baggage figure and puts the 25% step at 2024-01-01. No MoD (Army) letter was found, so the evidence labels stay `HANDBOOK_ONLY`
+  and nothing was approved by the agent. Outcome per item: F6 date, hotel, taxi, baggage and the rule readings are **researched, approval pending**; RMA was already
+  approved; the long-course tick is **not resolvable from any document**. No figure was cut from v1 and no unsourced number was added. The approvals and the two
+  open items are in P10; P2 may start on a row only once its approval cell holds a date.
 
 ### P2. New figures in the bundle (tools, bundle, models)
 - **Goal:** approved rates reach the app through the existing figures pipeline. **Depends:** P1 approvals.
@@ -161,5 +167,9 @@ Nothing here is allowed to grow silently: a row is removed only by being done.
 | From | Pending point | Why it is not done | What closes it |
 |---|---|---|---|
 | P0 | **Result of the first run (2026-10-11, owner-approved):** on a GitHub-hosted runner the watcher tests passed, then `--check` got `URLError` from the portal and exited 2: the job failed and opened no issue, as designed. The portal does not accept GitHub's IPs, so the workflow is now **manual-only** (schedule removed, header documents the local `--check` fallback). | Resolved per the plan's own fallback. **Still unverified:** the issue-opening step (exit 1) has never run on a runner; its shell logic was only exercised locally. | Done, except: the issue step stays untested until the check runs somewhere the portal answers (self-hosted runner), at which point re-add the schedule. Until then the owner runs `faq_watch.py --check` locally. |
+| P1 | **Approve the proposed figure rows** in `23_*.md`: `td_hotel`, `td_taxi` (L9-11 amount; L12+ km and "at actual" notes), TD food timing 30/70/100%, `baggage_road` (50 x step = 62.50), and the three TR rule picker lines (4(i), 4(ii), 119). | Approval is the owner's, figure by figure (rule: nothing ships unapproved); the agent cannot approve its own research. | The owner writes a date in each row's approval cell (or says "approved" in chat and the agent records the date). **Blocks P2 for those rows only**; RMA and the existing figures are unaffected. |
+| P1 | **F6: the date the Army pays the +25% step on TD lump sums.** Every civil source puts it at 2024-01-01; no MoD letter was found, and claim A (filed 2024-01-26) used no step. | The Army letter is not public; the owner holds claims and units hold the letter. | Owner supplies the MoD letter (or confirms a date, recorded `OWNER_CONFIRMED` with a `confirmed` date). Until then P5 states the step from the date the owner approves; if that is never settled, the TD amounts show "rate as of" and no claim-date logic. |
+| P1 | **"TD For Long Duration Course" tick: meaning unverified.** Not defined in any document we hold; the likely link is the 180-day rule (Rules 114 Note 4, 123). | Only the portal knows. | Owner sends the portal's hint text or a screenshot. Until then the tick is a note marked "unverified against the portal" (already the P3 rule). |
+| P1 | **Evidence upgrade (optional):** hotel, taxi and baggage stay `HANDBOOK_ONLY` because the Army letter text was not read. | Same as F6: the MoD letter is not public. | If the letter turns up, read it and raise the three rows to `LETTER_TEXT`; nothing else changes. |
 | P0 | **Notification churn: resolved 2026-10-11 (owner).** The monthly "Statement of Account for the month of ... has been uploaded" notice is skipped (`IGNORED_NOTIFICATIONS` in `faq_watch.py`, 5 tests; manifest re-seeded, 13 notifications). Other routine items (Form 16, DSOP Fund Statement uploaded) are still reported; add a pattern, with a test, if they become noise. | Done. | Nothing; row kept for the record until P10 is closed. |
 

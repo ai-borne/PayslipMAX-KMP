@@ -8,7 +8,7 @@
     "evidence_detail": "Image read line by line. A third party compiled it after DA passed 50% and it circulated on social media; it carries no order number, issuer or date, and the primary text was not read. Its HRA line (27/18/9) is one DA step behind the approved figure (30/20/10 at DA 50%), so the compiler got at least one line wrong and the sheet is not trusted on its own."
   },
   "approved": null,
-  "approved_note": "Do not approve from this sheet. Approve when the primary MoD letter that applies the 25% step to the TD lump sums is found and its effective date is pinned (plan 21, F6).",
+  "approved_note": "Do not approve from this sheet. Approve when the primary MoD letter that applies the 25% step to the TD lump sums is found and its effective date is pinned (plan 21, F6). P1 update (2026-10-11): the figures were matched line by line against UT Ladakh Finance Dept Order 231-F of 2024 (civil, w.e.f. 01.01.2024); see 23_ta_da_preclaim_rate_register.md. The sheet is still not an approval source.",
   "per_day": "rupees per day",
   "bands": [
     {"levels": ["14 and above"], "hotel_up_to": 9375, "taxi": "AC taxi at actual expenditure, commensurate with official engagements, within the city", "food_up_to": 1500},
