@@ -25,6 +25,8 @@ sealed interface PreClaimUiState {
  */
 data class PreClaimWorksheet(
     val availableMoves: List<PreClaimMoveType>,
+    /** Each available move's title from the bundle (content, not app copy), by move key. */
+    val moveTitles: Map<String, String>,
     val form: PreClaimFormState,
     val sheet: GuidePreClaimMove?,
     val questions: List<GuidePreClaimField>,

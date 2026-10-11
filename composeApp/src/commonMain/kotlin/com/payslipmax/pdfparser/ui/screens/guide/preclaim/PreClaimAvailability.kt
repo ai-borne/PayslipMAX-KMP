@@ -29,3 +29,12 @@ fun preClaimEntry(
         access.isUnlocked -> PreClaimEntry.OPEN
         else -> PreClaimEntry.LOCKED
     }
+
+/**
+ * What the Guide tab is given to open worksheets: [create] while the feature is on, null while it is off. Null removes the Home row,
+ * the card button and the destination, and [create] (the Koin lookup) is never called, so the flag-off build holds no worksheet.
+ */
+fun preClaimFactoryOrNull(
+    enabled: Boolean = isPreClaimEnabled(),
+    create: () -> PreClaimViewModel,
+): (() -> PreClaimViewModel)? = if (enabled) create else null

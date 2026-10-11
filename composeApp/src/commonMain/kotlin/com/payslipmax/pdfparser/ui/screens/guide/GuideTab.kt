@@ -22,6 +22,8 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import org.koin.compose.koinInject
@@ -43,6 +45,8 @@ fun GuideTab(
     platform: GuidePlatform = rememberGuidePlatform(),
     /** The user's notes (M7). The two production entry points pass the Koin one; null means a screen without notes. */
     notesViewModel: GuideNotesViewModel? = null,
+    /** Makes one TA/DA worksheet per screen; null while the dark-launch flag is off, which removes every pre-claim entry (see [preClaimFactoryOrNull]). */
+    preClaim: (() -> PreClaimViewModel)? = null,
 ) {
     LaunchedEffect(viewModel) { viewModel.load() }
     val state by viewModel.uiState.collectAsState()
@@ -58,7 +62,7 @@ fun GuideTab(
             }
             // Android back pops the Guide stack before it leaves the tab; at Guide Home it stays disabled.
             BackHandler(enabled = navState.canPop) { navState.pop() }
-            GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform, notesViewModel)
+            GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform, notesViewModel, rememberPreClaimHost(preClaim, access, navState))
         }
     }
 }
@@ -72,16 +76,18 @@ private fun GuideDestinationContent(
     searchViewModel: GuideSearchViewModel,
     platform: GuidePlatform,
     notes: GuideNotesViewModel?,
+    preClaim: PreClaimHost,
 ) {
     val onBack: () -> Unit = { navState.pop() }
     when (val destination = navState.current) {
-        GuideDestination.Home -> GuideHomeRoute(navState, ready, access, viewModel, searchViewModel, notes)
+        GuideDestination.Home -> GuideHomeRoute(navState, ready, access, viewModel, searchViewModel, notes, preClaim.entry)
         is GuideDestination.Area ->
             viewModel.area(destination.areaId)?.let { area ->
                 GuideAreaScreen(area, onBack, onOpenCase = { navState.push(GuideDestination.Case(it)) }, rememberGuideListState(navState))
             } ?: GuideLoading()
         is GuideDestination.Case -> GuideFeedRoute(navState, destination, viewModel, rememberNotedCards(notes, access))
-        is GuideDestination.Card -> GuideCardLevel(navState, destination, access, viewModel, platform, notes)
+        is GuideDestination.Card -> GuideCardLevel(navState, destination, access, viewModel, platform, notes, preClaim.entry)
+        is GuideDestination.PreClaim -> GuidePreClaimLevel(navState, access, platform, preClaim, rememberGuideListState(navState))
         GuideDestination.Search -> GuideSearchRoute(navState, access, searchViewModel, onBack, rememberNotedCards(notes, access))
         GuideDestination.RemovedNotes -> GuideRemovedNotesRoute(navState, notes, onBack)
         GuideDestination.Changes ->
@@ -99,6 +105,7 @@ private fun GuideHomeRoute(
     viewModel: GuideViewModel,
     searchViewModel: GuideSearchViewModel,
     notes: GuideNotesViewModel?,
+    preClaimEntry: PreClaimEntry,
 ) {
     val pins by viewModel.pins.pins.collectAsState()
     val noteState = rememberGuideNotesState(notes)
@@ -113,6 +120,8 @@ private fun GuideHomeRoute(
         // Notes are the user's own and free for everyone, so these two lines show whatever the entitlement.
         notes = GuideHomeNotes(noteState.unreadable, noteState.removed.size, onOpenRemoved = { navState.push(GuideDestination.RemovedNotes) }),
         notedCards = if (access.isUnlocked) noteState.notedCards else emptySet(),
+        preClaim = preClaimEntry,
+        onOpenPreClaim = { navState.push(GuideDestination.PreClaim()) },
         // Each visit to search starts empty; coming back from a card (a pop) does not pass through here.
         onOpenSearch = {
             searchViewModel.clear()
@@ -129,6 +138,7 @@ private fun GuideCardLevel(
     viewModel: GuideViewModel,
     platform: GuidePlatform,
     notes: GuideNotesViewModel?,
+    preClaimEntry: PreClaimEntry,
 ) {
     val profile = rememberGuideProfile(viewModel, destination.cardId, access.isUnlocked)
     viewModel.card(destination.cardId, access.isUnlocked, profile)?.let { card ->
@@ -143,6 +153,7 @@ private fun GuideCardLevel(
             actions,
             onOpenCard = navState::openCardOrReturn,
             notes = rememberGuideNoteControls(card, notes),
+            prepareClaim = rememberPrepareClaim(navState, viewModel, card.id, preClaimEntry),
         )
     } ?: GuideLoading()
 }

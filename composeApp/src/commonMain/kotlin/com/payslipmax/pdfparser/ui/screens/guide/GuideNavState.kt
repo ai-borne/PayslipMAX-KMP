@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 
 /** A level of the Claim Guide's own stack. Ids stay strings (never enums), so new areas are data-only changes. */
 sealed interface GuideDestination {
@@ -24,6 +25,12 @@ sealed interface GuideDestination {
 
     /** The user's notes on cards the Guide no longer holds (M7). */
     data object RemovedNotes : GuideDestination
+
+    /**
+     * The TA/DA pre-claim worksheet. [move] is the bundle's move key (`PD`, `TD`, `LTC`) to open straight on, or null for the
+     * move chooser. Only the key is kept: the form itself is never saved (plan 22, P6), so a restored stack opens a blank worksheet.
+     */
+    data class PreClaim(val move: String? = null) : GuideDestination
 }
 
 /** A list's place: its first visible item and how far that item is scrolled. Plain ints, so the saver can write it. */
@@ -53,6 +60,19 @@ class GuideNavState(
 
     // Keyed by stack level. Not snapshot state: a level reads it only when it is composed again.
     private val scrolls: MutableMap<Int, GuideScroll> = initialScrolls.filterKeys { it in stack.indices }.toMutableMap()
+
+    /**
+     * The one open TA/DA worksheet, held here because this state sits above the lock screen and outlives the Guide tab's composition:
+     * switching tabs keeps what the officer typed. It is never saved, so process death drops it, and it is discarded by
+     * [discardPreClaim]: when the stack leaves the worksheet, and when `App` sees the app lock.
+     */
+    internal var preClaimModel: PreClaimViewModel? = null
+
+    /** Closes the worksheet's form and forgets it. A no-op when none is open. */
+    fun discardPreClaim() {
+        preClaimModel?.close()
+        preClaimModel = null
+    }
 
     val current: GuideDestination get() = stack.last()
 
@@ -130,6 +150,7 @@ class GuideNavState(
     private fun replaceStack(next: List<GuideDestination>) {
         val keep = minOf(next.size, stack.zip(next).takeWhile { (a, b) -> a == b }.size)
         scrolls.keys.retainAll { it < keep }
+        if (next.none { it is GuideDestination.PreClaim }) discardPreClaim()
         stack = next
     }
 }
@@ -144,4 +165,5 @@ fun GuideBundle.knows(destination: GuideDestination): Boolean =
             nav.any { area -> area.cases.any { it.id == destination.caseId } } &&
                 (destination.facet == null || destination.facet in facets)
         is GuideDestination.Card -> cards.any { it.id == destination.cardId }
+        is GuideDestination.PreClaim -> preclaim?.let { destination.move == null || destination.move in it.moves } == true
     }

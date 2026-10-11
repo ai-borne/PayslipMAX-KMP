@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
@@ -39,6 +40,8 @@ internal fun GuideHomeScreen(
     onOpenWhatsNew: () -> Unit = {},
     notes: GuideHomeNotes = GuideHomeNotes.None,
     notedCards: Set<String> = emptySet(),
+    preClaim: PreClaimEntry = PreClaimEntry.HIDDEN,
+    onOpenPreClaim: () -> Unit = {},
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -61,6 +64,10 @@ internal fun GuideHomeScreen(
             items(pinned, key = { "pinned-${it.cardId}" }) { row ->
                 GuideCardRowView(row, onClick = { onOpenPinned(row.cardId) }, noteMark = if (row.cardId in notedCards) GuideNoteMark.HAS_NOTE else GuideNoteMark.NONE)
             }
+        }
+        // The TA/DA worksheet row: absent while the dark-launch flag is off, a Premium-marked row for a free user, a plain row otherwise.
+        if (preClaim != PreClaimEntry.HIDDEN) {
+            item(key = "preclaim") { PreClaimEntryRow(locked = preClaim == PreClaimEntry.LOCKED, onClick = onOpenPreClaim) }
         }
         items(areas, key = { it.id }) { tile -> GuideAreaTileView(tile, onClick = { onOpenArea(tile.id) }) }
         if (notes.removedCount > 0) {

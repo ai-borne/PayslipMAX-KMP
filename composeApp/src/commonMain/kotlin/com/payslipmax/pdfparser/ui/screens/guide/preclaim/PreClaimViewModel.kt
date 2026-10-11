@@ -45,6 +45,12 @@ class PreClaimViewModel(
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val form = MutableStateFlow(PreClaimFormState())
 
+    /**
+     * The typed form, updated in the same step as a setter, which [state] (combined on another dispatcher) is not. The text boxes bind
+     * to this so a fast typist never sees a box reset to a stale value; everything else the screen draws comes from [state].
+     */
+    val typed: StateFlow<PreClaimFormState> get() = form
+
     init {
         guide.load()
     }

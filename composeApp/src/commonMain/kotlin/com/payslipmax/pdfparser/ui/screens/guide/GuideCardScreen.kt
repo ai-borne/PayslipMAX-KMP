@@ -30,6 +30,8 @@ internal fun GuideCardScreen(
     actions: GuideCardActions? = null,
     onOpenCard: (cardId: String) -> Unit = {},
     notes: GuideNoteControls? = null,
+    /** "Prepare this claim", for a card that leads to a TA/DA worksheet; null for every other card and while the flag is off. */
+    prepareClaim: PrepareClaim? = null,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         GuideLevelHeader(crumbs, onCrumb, title = card.title, subtitle = null, onBack = onBack)
@@ -44,6 +46,7 @@ internal fun GuideCardScreen(
                 item(key = "history") { GuideCardHistoryLinks(card, onOpenCard) }
             }
             actions?.let { item(key = "actions") { GuideCardActionRow(it) } }
+            prepareClaim?.let { item(key = "prepare-claim") { PrepareClaimButton(it) } }
             guideCardSections(card, onUnlock, actions?.onCopyCite)
             notes?.let { guideNoteItems(it) }
             item(key = "disclaimer") {

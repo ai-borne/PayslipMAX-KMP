@@ -29,6 +29,7 @@ internal object PreClaimWorksheetBuilder {
         val estimate = estimate(bundle, form, profile)
         return PreClaimWorksheet(
             availableMoves = PreClaimMoveType.entries.filter { it.key in section.moves },
+            moveTitles = section.moves.mapValues { it.value.title },
             form = form,
             sheet = sheet,
             questions = sheet?.fields?.filter { it.id in PreClaimFieldIds.QUESTIONS }.orEmpty(),

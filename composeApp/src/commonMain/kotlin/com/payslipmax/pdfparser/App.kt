@@ -84,7 +84,6 @@ fun App(
     onboardingManager: OnboardingManager = koinInject(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
     PDFParserTheme(darkTheme = resolveDarkTheme(uiState.appTheme)) {
         if (!uiState.appIntegrityStatus.isAllowedToRun) {
             com.payslipmax.pdfparser.ui.screens.SideloadBlockedScreen(
@@ -95,6 +94,7 @@ fun App(
         } else if (uiState.isLockEnabled && uiState.isAppLocked) {
             // No BackHandler is composed here, so system back falls through to the OS default
             // (backgrounding the app) — locked content can never be revealed via back (decision 5).
+            LaunchedEffect(Unit) { guideNavState?.discardPreClaim() } // a lock drops a half-filled TA/DA worksheet, which the Guide's stack outlives
             LockScreen(
                 onUnlock = { pin -> viewModel.verifyPin(pin) },
                 onPickPdf = onPickPdf,
