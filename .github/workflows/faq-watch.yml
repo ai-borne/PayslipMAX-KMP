@@ -1,21 +1,16 @@
-name: FAQ Watch
-
-# Weekly check of the PCDA(O) Pune public FAQ and notifications feeds against
+# Check of the PCDA(O) Pune public FAQ and notifications feeds against
 # docs/Plan/rule_cards/tools/faq_manifest.json (ids, dates, hashes; never the portal's text).
 # Changed -> one open issue labelled faq-change (a later change is added to it as a comment).
 # Feed unreadable -> the job fails and opens no issue, so a blocked runner is never read as "everything changed".
-# Government sites may block GitHub-hosted IPs; if the first manual run fails with exit 2, leave this manual-only
-# and run `python3 docs/Plan/rule_cards/tools/faq_watch.py --check` locally. After reviewing a change, run
-# `--update` and commit the manifest, which closes the loop.
+#
+# MANUAL-ONLY, on purpose: the first run on a GitHub-hosted runner (2026-10-11) failed with exit 2 (URLError), the portal does not
+# accept connections from GitHub's IPs. A weekly schedule would only fail every week. Run the check where the portal answers:
+#   python3 docs/Plan/rule_cards/tools/faq_watch.py --check     (exit 0 same, 1 changed, 2 unreadable)
+# After reviewing a change, run `--update` and commit the manifest. Re-add a `schedule:` trigger (cron '30 4 * * 1') only on a
+# self-hosted runner or another network the portal accepts; this file's issue step is unchanged and was not reached by that run.
 
 on:
-  schedule:
-    - cron: '30 4 * * 1'
   workflow_dispatch:
-  # TEMPORARY first-run trigger (a workflow cannot be dispatched until it is on the default branch); removed in the next commit.
-  push:
-    branches: [feature/ta-da-preclaim]
-    paths: ['.github/workflows/faq-watch.yml']
 
 # Least privilege: read the repo, write issues. No secrets are used.
 permissions:

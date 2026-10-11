@@ -70,7 +70,7 @@ Phase Summary, not a licence to incur it.
   notification added, HTML-only difference (not a change), malformed JSON, HTTP error, empty list (unreachable, not "all removed"),
   manifest holds no field longer than an id, date or hash. Integration: run `--check` against the seeded manifest through an injected fetcher.
 - **Build:** `tools/faq_watch.py` (`--check` exit 0/1/2, `--update`), `tools/faq_manifest.json` (ids, section, `updatedDate`, sha256 only; **no text**),
-  `.github/workflows/faq-watch.yml` (weekly cron + `workflow_dispatch`; issue labelled `faq-change` on change; fail without an issue on exit 2).
+  `.github/workflows/faq-watch.yml` (`workflow_dispatch` only after the 2026-10-11 first run, the weekly cron was dropped, see P10; issue labelled `faq-change` on change; fail without an issue on exit 2).
   Feeds: `/api/api/faqdetails/getFaqTableData` (251 entries) and `/api/api/homepage/content?locale=en` `newsAndNotifications` (14).
 - **Files and SSOT:** one script under 300 lines, helpers split if needed; one manifest. **Strings and colours:** none (tooling).
 - **Security:** least-privilege workflow, pinned actions, no secrets; no push or workflow run without the owner's OK. First run is manual:
@@ -160,6 +160,6 @@ Nothing here is allowed to grow silently: a row is removed only by being done.
 
 | From | Pending point | Why it is not done | What closes it |
 |---|---|---|---|
-| P0 | **`faq-watch.yml` has never run on a GitHub runner.** Locally verified only: YAML parses, the exit-code logic behaves under `bash -e` for 0/1/2, the issue-body block renders. | Needs a push of the branch and a manual `workflow_dispatch`, which the plan reserves for the owner's OK. | Owner approves a push, then one manual run. Exit 0: done. Exit 2 (government site blocks GitHub IPs): delete the `schedule:` trigger, keep `workflow_dispatch`, and note the local-only fallback in the workflow header. |
+| P0 | **Result of the first run (2026-10-11, owner-approved):** on a GitHub-hosted runner the watcher tests passed, then `--check` got `URLError` from the portal and exited 2: the job failed and opened no issue, as designed. The portal does not accept GitHub's IPs, so the workflow is now **manual-only** (schedule removed, header documents the local `--check` fallback). | Resolved per the plan's own fallback. **Still unverified:** the issue-opening step (exit 1) has never run on a runner; its shell logic was only exercised locally. | Done, except: the issue step stays untested until the check runs somewhere the portal answers (self-hosted runner), at which point re-add the schedule. Until then the owner runs `faq_watch.py --check` locally. |
 | P0 | **Notification churn.** The notifications feed carries routine items (for example "Statement of Account for the month of ... has been uploaded"), so the weekly job will open a `faq-change` issue for items that need no card re-check. | Which notices to ignore is the owner's call; guessing a filter now would hide real ones. | Owner decision: accept the noise, or name title patterns to ignore (then a tested `ignore` list in `faq_watch.py`). |
 
