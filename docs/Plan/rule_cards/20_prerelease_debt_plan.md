@@ -167,8 +167,7 @@ waived by the owner: the Pay Audit "See the rule" link (no finding exists on the
 ### P12. Open items for the owner (final consolidated phase; nothing here is code work this branch can finish)
 - **B19 (owner):** five branches not proven merged into `main`: `docs/rule-cards-dataset`, `docs/rule-cards-nav`, `feature/insightsgemma`,
   `feature/pay_audit_1.0` (39 unique commits), `test/baseline-909f2ef`. Decide per branch: squash-merged (delete) or abandoned (delete) or keep.
-- **P10 (blocked, see P10 result):** the 7 approved remote branch deletions did not go through because the pre-push hook failed on this
-  branch; rerun the delete after the branch is pushed or `main` gets this fix. Also push the branch and open the PR (D10: only when the owner says).
+- **Push and PR (D10):** the branch is not pushed. Push and open the PR only when the owner says. The 7 approved remote branch deletions are done (pre-push gate green, 307 s).
 - **B16 (owner):** iOS UI walkthrough, 13-row checklist in `16_guide_phase_plan.md`. Includes a look at the Settings checkmark badge and
   the Premium screen on iOS (P7 changed `✔` to `✓`).
 - **B4 (owner):** confirm that "Fail loud" is what was meant by "Rule 12". **B5 (owner):** send the regenerated expert review PDF.
@@ -264,6 +263,8 @@ the Kotlin-only scan in `UiResourceUsageSourceTest` could not see them, and `ios
 The P7 claim "gate green" was true for its own gate list but that list did not include the native iOS build. Fixed: both constants restored;
 `UiResourceUsageSourceTest` now counts Swift uses as uses and has `everyStringTheSwiftAppReadsStillExists` (red before the fix, green after).
 Lesson for the gate: any `AppStrings` deletion needs the native XCTest run (`scripts/git-pre-push.sh` step 5).
+
+The 7 approved branch deletions then ran through a green pre-push gate (307 s: Android + common, tools, release + R8, iOS tests, native XCTest, gitleaks).
 
 ## P11 result (2026-10-11, Pixel 9, `minifiedTest` build with real data)
 `scripts/run_guide_minified_smoke.sh` (builds `minifiedTest` itself: P4 path proven): OK (1 test). Walk: card sections render; Share opens the
