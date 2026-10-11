@@ -170,7 +170,7 @@ android {
         applicationId = "in.aiborne.payslipmax"
         minSdk = 26
         targetSdk = 36
-        versionCode = 18
+        versionCode = 19
         versionName = appVersionName
     }
     buildFeatures {
