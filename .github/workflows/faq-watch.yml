@@ -1,0 +1,74 @@
+name: FAQ Watch
+
+# Weekly check of the PCDA(O) Pune public FAQ and notifications feeds against
+# docs/Plan/rule_cards/tools/faq_manifest.json (ids, dates, hashes; never the portal's text).
+# Changed -> one open issue labelled faq-change (a later change is added to it as a comment).
+# Feed unreadable -> the job fails and opens no issue, so a blocked runner is never read as "everything changed".
+# Government sites may block GitHub-hosted IPs; if the first manual run fails with exit 2, leave this manual-only
+# and run `python3 docs/Plan/rule_cards/tools/faq_watch.py --check` locally. After reviewing a change, run
+# `--update` and commit the manifest, which closes the loop.
+
+on:
+  schedule:
+    - cron: '30 4 * * 1'
+  workflow_dispatch:
+
+# Least privilege: read the repo, write issues. No secrets are used.
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: faq-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    name: Check FAQ and notification feeds
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TOOLS: docs/Plan/rule_cards/tools
+    steps:
+      - name: Checkout Code
+        # Pinned to the v4.2.2 commit; the feed text below is untrusted input and never reaches a shell.
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Watcher tests
+        run: python3 -m unittest discover -s "$TOOLS" -p 'test_faq_watch.py'
+
+      - name: Check feeds
+        id: check
+        run: |
+          set +e
+          python3 "$TOOLS/faq_watch.py" --check | tee report.txt
+          code=${PIPESTATUS[0]}
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" -ge 2 ]; then
+            echo "::error::faq_watch could not read or trust the feeds (exit $code); no issue opened."
+            exit "$code"
+          fi
+
+      - name: Open or update the faq-change issue
+        if: steps.check.outputs.code == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "The PCDA(O) Pune public FAQ or notifications feed changed since the manifest was last updated ($RUN_URL)."
+            echo
+            echo "Re-check the affected Claim Guide cards (docs/Plan/rule_cards/18_content_update_runbook.md), then run"
+            echo "\`python3 docs/Plan/rule_cards/tools/faq_watch.py --update\` and commit the manifest to close this."
+            echo
+            echo '```text'
+            cat report.txt
+            echo '```'
+          } > body.md
+          open=$(gh issue list --label faq-change --state open --json number --jq '.[0].number // empty')
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body-file body.md
+          else
+            gh label create faq-change --description "PCDA(O) FAQ or notifications feed changed" --color FBCA04 2>/dev/null || true
+            gh issue create --title "PCDA(O) FAQ or notifications changed" --label faq-change --body-file body.md
+          fi

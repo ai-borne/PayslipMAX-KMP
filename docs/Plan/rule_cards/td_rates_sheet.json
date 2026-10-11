@@ -1,0 +1,32 @@
+{
+  "_note": "Temporary-duty daily allowance table, transcribed from an owner-supplied phone image of a rates sheet on 2026-10-11 (the TD block only). NOT wired to figures.json or the bundle: the sheet shows no letter number, issuer or date, so it is evidence of the numbers, not an authority. Every value equals the handbook base x 1.25 (the da_step rule at DA 50-99%), which is why it is kept as a cross-check for plan 21 (F4, F6) and not as a second source of truth.",
+  "source": {
+    "document": "Unattributed rates sheet (image), block 'Daily Allce on TD'",
+    "issuer": "unknown compiler; shared on social media (owner, 2026-10-11)",
+    "dated": "after DA passed 50% (owner); exact date unknown",
+    "evidence": "WEB_SECONDARY",
+    "evidence_detail": "Image read line by line. A third party compiled it after DA passed 50% and it circulated on social media; it carries no order number, issuer or date, and the primary text was not read. Its HRA line (27/18/9) is one DA step behind the approved figure (30/20/10 at DA 50%), so the compiler got at least one line wrong and the sheet is not trusted on its own."
+  },
+  "approved": null,
+  "approved_note": "Do not approve from this sheet. Approve when the primary MoD letter that applies the 25% step to the TD lump sums is found and its effective date is pinned (plan 21, F6).",
+  "per_day": "rupees per day",
+  "bands": [
+    {"levels": ["14 and above"], "hotel_up_to": 9375, "taxi": "AC taxi at actual expenditure, commensurate with official engagements, within the city", "food_up_to": 1500},
+    {"levels": ["12", "12A", "12B", "13", "13A", "13B"], "hotel_up_to": 5625, "taxi": "AC taxi up to 50 km per day within the city", "food_up_to": 1250},
+    {"levels": ["9", "10", "10A", "10B", "11"], "hotel_up_to": 2812.5, "taxi": "non-AC taxi up to 422.50 per day within the city", "taxi_up_to": 422.5, "food_up_to": 1125}
+  ],
+  "food_timing": {"under_6_hours": 0.3, "6_to_12_hours": 0.7, "over_12_hours": 1.0},
+  "cross_check": {
+    "base_source": "Handbook on Travelling Allowances 2023, 'Rates of Daily Allowance as per 7th CPC w.e.f. 01 July 2017'",
+    "multiplier": 1.25,
+    "rule": "lump sum rises 25% whenever DA rises by 50% (MoD letter 12630/Mov C/242/D(Mov)/2017, para 2(iv); figures.json da_step)",
+    "all_match": true,
+    "pairs_sheet_vs_base": [
+      ["14 and above hotel", 9375, 7500], ["14 and above food", 1500, 1200],
+      ["12-13B hotel", 5625, 4500], ["12-13B food", 1250, 1000],
+      ["9-11 hotel", 2812.5, 2250], ["9-11 non-AC taxi", 422.5, 338], ["9-11 food", 1125, 900]
+    ]
+  },
+  "not_transcribed": "Rows for pay levels 5A to 8 and 5 and below (JCO/OR), and the sheet's other blocks (tele claim, briefcase, newspaper, hospitality, CEA, hostel subsidy, dress allowance, HRA, baggage on permanent move). Not in scope for the officer pre-claim; the baggage block (62.50 per km) agrees with plan F2.",
+  "conflict_noted": "The sheet's 'Road Mileage (RMA): Rs 30/-' disagrees with Wing Circular 10 (rma_rates.json: Rs 12 to 30 by state). The dated, state-wise circular wins; Rs 30 is only its top rate."
+}
