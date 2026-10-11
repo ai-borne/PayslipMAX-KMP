@@ -98,6 +98,13 @@ class RealContent(unittest.TestCase):
         self.assertFalse(group['card_linked'])
         self.assertIn('DA not admissible', group['options'][3]['label'])
 
+    def test_rule_124_hint_names_every_line_the_calculator_makes_nil(self):
+        # The calculator gives food, hotel and local taxi nil under Rule 124 (owner, 2026-10-11); a hint that names fewer lines tells
+        # the officer to expect a taxi cap the estimate then refuses to show.
+        hint = REAL['options']['td_rule']['options'][3]['use_when'].lower()
+        for line in ('food', 'hotel', 'taxi'):
+            self.assertIn(line, hint)
+
     def test_mode_of_journey_is_shared_by_td_and_ltc(self):
         self.assertEqual([o['label'] for o in REAL['options']['mode_of_journey']['options']], ['Air', 'Rail', 'Road', 'Sea', 'Multiple'])
         for move in ('TD', 'LTC'):
