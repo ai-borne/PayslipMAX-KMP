@@ -23,7 +23,7 @@ import kotlin.test.assertNull
  * the 180-day note. Dates here are synthetic; inputs are numbers only.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [34], qualifiers = "w360dp-h6000dp")
+@Config(sdk = [34], qualifiers = "en-rUS-w360dp-h6000dp")
 class PreClaimTemporaryUiTest : PreClaimUiBase() {
     private fun openTemporary() {
         show()
