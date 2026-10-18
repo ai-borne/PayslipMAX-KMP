@@ -1,7 +1,6 @@
 package com.payslipmax.pdfparser.subscription
 
 import kotlin.test.Test
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -16,12 +15,12 @@ class GuideLaunchFlagTest {
 }
 
 /**
- * The Guide paywall is a separate switch from `LaunchFlags.GUIDE_ENABLED`: the owner turns it on only after clearing the open
- * points on the main rate cards, so it cannot ride along with the Guide release by accident.
+ * The Guide paywall is a separate switch from `LaunchFlags.GUIDE_ENABLED`. The owner turned it on 2026-10-18, waiving five
+ * unverified rate cards; this fails if it is switched off again, so that is a deliberate edit to this test as well.
  */
 class GuidePaywallFlagTest {
     @Test
-    fun guidePaywallStaysOffUntilTheOwnerClearsTheOpenRatePoints() {
-        assertFalse(LaunchFlags.GUIDE_PAYWALL_ENABLED)
+    fun guidePaywallIsOnFromTheOwnersFlipOf20261018() {
+        assertTrue(LaunchFlags.GUIDE_PAYWALL_ENABLED)
     }
 }

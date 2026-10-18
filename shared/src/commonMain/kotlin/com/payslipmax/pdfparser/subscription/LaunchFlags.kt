@@ -28,8 +28,9 @@ object LaunchFlags {
     // Claim Guide paywall (owner decision 2026-10-07). false: every user reads the whole Guide; true: only Premium reads
     // key points, authority and details ([FeatureGate.CLAIM_GUIDE]). Flipped only after the owner has cleared the open
     // points on the main rate cards (RP-088 HBA 8.5% and others), because charging for "Unverified point" cards is a
-    // trust risk. The gate and the locked UI ship and are tested either way.
-    const val GUIDE_PAYWALL_ENABLED: Boolean = false
+    // trust risk. The gate and the locked UI ship and are tested either way. Flipped true 2026-10-18 by the owner (the only user),
+    // waiving five unverified rate cards (see GuideBundleContract) so the locked screens can be seen on a real device.
+    const val GUIDE_PAYWALL_ENABLED: Boolean = true
 
     // TA/DA pre-claim worksheet inside the Guide (docs/Plan/rule_cards/22_ta_da_preclaim_execution_plan.md). false removes the entry
     // point, so the ViewModel and calculators ship but nothing reaches a user. Flipped true in P9 (2026-10-18) after the device and

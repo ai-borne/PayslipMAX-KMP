@@ -69,10 +69,17 @@ class RealContent(unittest.TestCase):
         for fid in ('food_charges', 'rma', 'accommodation'):
             self.assertEqual(field(REAL, 'TD', fid)['source'], 'app_suggests', fid)
 
+    def test_marital_status_is_a_yes_no_tick_like_the_other_two_portal_dropdowns(self):
+        # Captured 2026-10-18: the portal's Marital Status, Re-Employed and Spouse Employed dropdowns each offer only Yes and No.
+        for move, move_def in REAL['moves'].items():
+            for fid in ('marital_status', 're_employed', 'spouse_in_army'):
+                f = [x for x in move_def['fields'] if x['id'] == fid]
+                if f:
+                    self.assertEqual(f[0]['kind'], 'tick', f'{move} {fid}')
+
     def test_what_was_not_confirmed_on_the_portal_is_marked_unverified(self):
         unverified = {(m, f['id']) for m, move in REAL['moves'].items() for f in move['fields'] if f.get('unverified')}
-        self.assertEqual(unverified, {('TD', 'long_course'), ('LTC', 'children'), ('LTC', 'dependents'), ('LTC', 'visit_to'), ('LTC', 'year'),
-                                      ('PD', 'marital_status'), ('TD', 'marital_status'), ('LTC', 'marital_status')})
+        self.assertEqual(unverified, {('TD', 'long_course'), ('LTC', 'children'), ('LTC', 'dependents'), ('LTC', 'visit_to'), ('LTC', 'year')})
         for move, fid in unverified:
             self.assertTrue(field(REAL, move, fid)['hint'], f'{move} {fid} must say what is unconfirmed')
 

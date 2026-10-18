@@ -13,7 +13,7 @@ internal fun LazyListScope.preClaimQuestionItems(
     item(key = "questions") { PreClaimQuestionSection(ws, typed, model) }
 }
 
-/** The portal's basic-information questions for this move, labels and order straight from the bundle. Marital status is typed text. */
+/** The portal's basic-information questions for this move, labels and order straight from the bundle. Each is a Yes/No on the portal, so each is a tick. */
 @Composable
 private fun PreClaimQuestionSection(
     ws: PreClaimWorksheet,
@@ -22,11 +22,7 @@ private fun PreClaimQuestionSection(
 ) {
     PreClaimSectionFrame(PreClaimStrings.questionsTitle) {
         ws.questions.forEach { question ->
-            if (question.id == PreClaimFieldIds.MARITAL_STATUS) {
-                PreClaimTextBox(question.label, typed.maritalStatus, model::setMaritalStatus, numeric = false, supporting = question.hint.ifEmpty { null })
-            } else {
-                PreClaimTickRow(question.label, question.id in typed.ticks) { model.setTick(question.id, it) }
-            }
+            PreClaimTickRow(question.label, question.id in typed.ticks) { model.setTick(question.id, it) }
         }
     }
 }

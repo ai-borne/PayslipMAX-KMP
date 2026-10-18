@@ -119,6 +119,3 @@ abstract class PreClaimUiBase {
         const val SETTLE_ROUNDS = 3
     }
 }
-
-/** The text box a question is typed into, found by its label (a tick row shares the label but has no text action). */
-internal fun maritalBox(label: String): SemanticsMatcher = hasSetTextAction() and hasText(label)

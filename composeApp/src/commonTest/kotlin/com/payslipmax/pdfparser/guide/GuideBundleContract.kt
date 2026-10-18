@@ -34,6 +34,9 @@ import kotlin.test.assertTrue
  * [GuideFiguresContract]). Checks that walk every card skip replaced ones: a replaced card has no home and is not searched.
  */
 object GuideBundleContract {
+    private val WAIVED_UNVERIFIED_RATE_CARDS =
+        setOf("RB-C13-01", "RB-C13-14", "RB-RP-052", "RB-RP-053-arrears", "RB-RP-074")
+
     suspend fun readShippedBundleText(): String = Res.readBytes(GUIDE_BUNDLE_PATH).decodeToString()
 
     fun parseShippedBundle(text: String): GuideBundle = assertIs<GuideLoadResult.Loaded>(GuideBundleParser.parse(text)).bundle
@@ -165,10 +168,14 @@ object GuideBundleContract {
      * Owner rule (2026-10-07): charging for key points, cite and details starts only when no card carrying the Rates chip is
      * still an "Unverified point" (RP-088 HBA 8.5% is one). With the paywall off this holds nothing back; the day someone flips
      * [LaunchFlags.GUIDE_PAYWALL_ENABLED] while such a card remains, this fails and names the cards.
+     *
+     * Owner waiver (2026-10-18): the paywall was flipped while the five cards in [WAIVED_UNVERIFIED_RATE_CARDS] were still unverified,
+     * so the owner, the only user, could see the locked screens on a real device. Only those five are waived; any other (or new)
+     * unverified Rates-chip card still fails here. Delete a card from the set when it is verified.
      */
     fun assertPaywallOnlyWhenNoUnverifiedRateCard(bundle: GuideBundle) {
         if (!LaunchFlags.GUIDE_PAYWALL_ENABLED) return
-        val blocking = bundle.cards.filter { "RATES" in it.chips && it.unverified }.map { it.id }
+        val blocking = bundle.cards.filter { "RATES" in it.chips && it.unverified && it.id !in WAIVED_UNVERIFIED_RATE_CARDS }.map { it.id }
         assertTrue(blocking.isEmpty(), "the paywall is on while rate cards are still unverified: $blocking")
     }
 

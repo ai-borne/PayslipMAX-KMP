@@ -24,12 +24,6 @@ internal object PreClaimInput {
         return if ((cleaned.toLongOrNull() ?: 0L) <= maxValue) cleaned else previous
     }
 
-    /** Free text for a worksheet field, without control characters, cut to the bundle's limit. */
-    fun text(
-        raw: String,
-        maxChars: Int,
-    ): String = raw.filterNot { it.isISOControl() }.take(maxChars)
-
     /** A trip away is typed as hours and minutes; the calculator bounds the total at one day. */
     const val MAX_HOURS = 24L
     const val MAX_MINUTES = 59L

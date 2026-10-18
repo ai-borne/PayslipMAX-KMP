@@ -182,15 +182,6 @@ class PreClaimEstimatesViewModelTest : PreClaimViewModelTestBase() {
         }
 
     @Test
-    fun aMaritalStatusTheOfficerTypedIsCopyableAndABlankOneIsNot() =
-        test { model ->
-            model.edit { chooseMove(PreClaimMoveType.TEMPORARY_DUTY) }
-            assertFalse("marital_status" in model.worksheet().copyValues)
-
-            assertEquals("Married", model.edit { setMaritalStatus("Married") }.copyValues["marital_status"])
-        }
-
-    @Test
     fun leaveTravelComputesNothingAndLinksTheChosenRuleToItsCard() =
         test { model ->
             val start = model.edit { chooseMove(PreClaimMoveType.LEAVE_TRAVEL) }

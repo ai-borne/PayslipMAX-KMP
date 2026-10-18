@@ -31,7 +31,6 @@ internal object PreClaimFieldValues {
                 PreClaimFieldIds.BASIC_PAY to profile.basicPay?.toString(),
                 PreClaimFieldIds.NPA to profile.npaAmount?.toString(),
                 PreClaimFieldIds.MSP to profile.mspAmount?.toString(),
-                PreClaimFieldIds.MARITAL_STATUS to form.maritalStatus.ifEmpty { null },
                 PreClaimFieldIds.TOTAL_ABSENCE to days?.toString(),
                 PreClaimFieldIds.FOOD_CHARGES to amount(byElement[PreClaimElement.FOOD]),
                 PreClaimFieldIds.ACCOMMODATION to amount(byElement[PreClaimElement.LODGING]),

@@ -28,8 +28,6 @@ import kotlin.test.assertFalse
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34], qualifiers = "w360dp-h6000dp")
 class PreClaimWorksheetUiTest : PreClaimUiBase() {
-    private val marital = "Marital status"
-
     private fun copyButtons() = composeRule.onAllNodes(hasDescriptionStartingWith("Copy "))
 
     @Test
@@ -37,15 +35,12 @@ class PreClaimWorksheetUiTest : PreClaimUiBase() {
         show()
         openFromHome("Permanent duty")
         composeRule.onAllNodes(isToggleable()).assertCountEquals(QUESTION_TICKS_PD + 1)
-        composeRule.onAllNodes(maritalBox(marital)).assertCountEquals(1)
         tap(PreClaimStrings.changeMove)
         tap("Temporary duty")
-        composeRule.onAllNodes(isToggleable()).assertCountEquals(1)
-        composeRule.onAllNodes(maritalBox(marital)).assertCountEquals(1)
+        composeRule.onAllNodes(isToggleable()).assertCountEquals(2)
         tap(PreClaimStrings.changeMove)
         tap("Leave travel")
         composeRule.onAllNodes(isToggleable()).assertCountEquals(QUESTION_TICKS_PD)
-        composeRule.onAllNodes(maritalBox(marital)).assertCountEquals(1)
     }
 
     @Test
@@ -153,6 +148,6 @@ class PreClaimWorksheetUiTest : PreClaimUiBase() {
     }
 
     private companion object {
-        const val QUESTION_TICKS_PD = 3
+        const val QUESTION_TICKS_PD = 4
     }
 }

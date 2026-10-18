@@ -128,11 +128,6 @@ class PreClaimViewModel(
         form.value = current.copy(ticks = ticks, ctgCase = case)
     }
 
-    fun setMaritalStatus(raw: String) {
-        val limit = section()?.limits?.textChars ?: return
-        form.update { it.copy(maritalStatus = PreClaimInput.text(raw, limit)) }
-    }
-
     fun chooseCtgCase(case: CtgCase) = form.update { it.copy(ctgCase = case, ctgCaseChosen = true) }
 
     // ---- journey ----

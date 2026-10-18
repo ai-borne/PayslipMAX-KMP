@@ -26,7 +26,6 @@ data class PreClaimFormState(
     val edits: ProfileEdits = ProfileEdits(),
     /** Ids of the tick fields that are ticked (SPR, spouse in Army, Andaman Nicobar, ...). */
     val ticks: Set<String> = emptySet(),
-    val maritalStatus: String = "",
     /** The CTG case; [ctgCaseChosen] says the officer set it, so the Andaman Nicobar tick no longer moves it (owner decision 2). */
     val ctgCase: CtgCase = CtgCase.NORMAL,
     val ctgCaseChosen: Boolean = false,

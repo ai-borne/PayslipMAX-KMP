@@ -19,7 +19,7 @@ class PremiumFeaturesCatalogTest {
         val catalog = premiumFeatureCatalog()
         val advertised = FeatureGate.values().filter { isAdvertised(it) }
         assertEquals(advertised, catalog.map { it.gate }, "catalog order follows FeatureGate order, one row per advertised gate")
-        assertEquals(FeatureGate.values().size - 1, catalog.size, "only the Claim Guide is held back while its paywall is off")
+        assertEquals(FeatureGate.values().size, catalog.size, "the paywall is on (2026-10-18), so every gate incl. the Claim Guide is advertised")
     }
 
     @Test

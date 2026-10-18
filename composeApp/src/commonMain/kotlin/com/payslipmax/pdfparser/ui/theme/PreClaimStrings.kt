@@ -42,7 +42,6 @@ object PreClaimStrings {
 
     // Questions and the journey.
     const val questionsTitle = "About you"
-    const val maritalStatus = "Marital status"
     const val journeyTitle = "Your journey"
     const val ctgCaseTitle = "Which transfer grant case applies?"
     const val roadKm = "Road distance (km)"

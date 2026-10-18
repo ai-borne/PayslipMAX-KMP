@@ -15,7 +15,7 @@ object SyntheticPreClaimWorksheet {
     private const val QUESTIONS =
         """{"id":"spr","label":"SPR","kind":"tick","source":"officer_types"},
            {"id":"re_employed","label":"Re-employed","kind":"tick","source":"officer_types"},
-           {"id":"marital_status","label":"Marital status","kind":"text","source":"officer_types","unverified":true,"hint":"Values not confirmed."},
+           {"id":"marital_status","label":"Marital status","kind":"tick","source":"officer_types"},
            {"id":"spouse_in_army","label":"Spouse in Army","kind":"tick","source":"officer_types"}"""
     private const val PAY =
         """{"id":"basic_pay","label":"Basic pay","kind":"amount","source":"officer_types"},
@@ -37,13 +37,13 @@ object SyntheticPreClaimWorksheet {
           "PD":{"title":"Permanent duty","fields":[
             {"id":"pcda_account","label":"Account","kind":"text","source":"portal_filled"},
             $QUESTIONS,$PAY,
-            {"id":"sanction_id","label":"Sanction","kind":"text","source":"officer_types","max_chars":40},
+            {"id":"sanction_id","label":"Sanction","kind":"text","source":"officer_types","max_chars":40,"unverified":true,"hint":"Maximum length not confirmed."},
             {"id":"andaman_nicobar","label":"Destination is Andaman Nicobar","kind":"tick","source":"officer_types"}],
            "documents":[{"id":"order","label":"The posting order"}],"notes":["The portal sets the advance."]},
           "TD":{"title":"Temporary duty","fields":[
             {"id":"pcda_account","label":"Account","kind":"text","source":"portal_filled"},
             {"id":"spr","label":"SPR","kind":"tick","source":"officer_types"},
-            {"id":"marital_status","label":"Marital status","kind":"text","source":"officer_types"},
+            {"id":"marital_status","label":"Marital status","kind":"tick","source":"officer_types"},
             $PAY,
             {"id":"long_course","label":"Long course","kind":"tick","source":"officer_types","unverified":true,"hint":"Meaning not confirmed."},
             {"id":"tr_rule","label":"TR Rule","kind":"choice","source":"officer_types","options":"td_rule"},

@@ -97,7 +97,6 @@ class PreClaimViewModelTest : PreClaimViewModelTestBase() {
             model.edit { chooseMove(PreClaimMoveType.TEMPORARY_DUTY) }
             model.edit {
                 editBasicPay("149000")
-                setMaritalStatus("private words")
                 setRoadKm("2881")
                 setNightlyRate("4500")
             }
@@ -162,17 +161,6 @@ class PreClaimViewModelTest : PreClaimViewModelTestBase() {
 
             val baggage = frame.outcome<Unavailable>(PreClaimElement.BAGGAGE_ROAD)
             assertEquals(PreClaimIssue.KM_OUT_OF_RANGE, baggage.issue, "a slipped digit is said out loud, never silently shortened")
-        }
-
-    @Test
-    fun textIsCutToTheBundlesLimitAndLosesControlCharacters() =
-        test { model ->
-            model.edit { chooseMove(PreClaimMoveType.PERMANENT_DUTY) }
-
-            val frame = model.edit { setMaritalStatus("Married\n\u0007" + "x".repeat(500)) }
-
-            assertEquals(200, frame.form.maritalStatus.length, "text_chars in the shipped limits")
-            assertTrue(frame.form.maritalStatus.none { it.isISOControl() })
         }
 
     @Test

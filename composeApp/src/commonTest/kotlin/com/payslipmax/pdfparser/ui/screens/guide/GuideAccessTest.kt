@@ -1,7 +1,9 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
 import com.payslipmax.pdfparser.subscription.DevOverride
+import com.payslipmax.pdfparser.subscription.LaunchFlags
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -27,7 +29,7 @@ class GuideAccessTest {
     }
 
     @Test
-    fun theShippedDefaultIsThePaywallFlagSoNothingIsLockedBeforeTheOwnerDecides() {
-        assertTrue(guideUnlocked(hasAccess = false, devOverride = DevOverride.FOLLOW_FLAG))
+    fun theShippedDefaultIsThePaywallFlagSoAFreeUserIsLockedOutOnceItIsOn() {
+        assertEquals(!LaunchFlags.GUIDE_PAYWALL_ENABLED, guideUnlocked(hasAccess = false, devOverride = DevOverride.FOLLOW_FLAG))
     }
 }
