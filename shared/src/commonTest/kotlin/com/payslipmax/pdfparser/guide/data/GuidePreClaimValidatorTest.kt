@@ -122,6 +122,15 @@ class GuidePreClaimValidatorTest {
     }
 
     @Test
+    fun aPickerOptionsShortLineIsOptionalAtMostThreeWordsAndPlainText() {
+        fun short(value: String) = valid.with { it.editGroup("mode") { g -> g.copy(options = g.options.map { o -> o.copy(short = value) }) } }
+        assertEquals(emptyList(), GuideBundleValidator.validate(short("")))
+        assertEquals(emptyList(), GuideBundleValidator.validate(short("Course or exam")))
+        assertProblem(short("A course or an exam"), "mode", "short", "words")
+        assertProblem(short("<b>Course</b>"), "mode", "short", "angle brackets")
+    }
+
+    @Test
     fun duplicateIdsAreRefused() {
         assertProblem(valid.with { it.editMove("PD") { m -> m.copy(fields = m.fields + m.fields.first()) } }, "PD", "duplicate", "account")
         assertProblem(valid.with { it.editGroup("mode") { g -> g.copy(options = g.options + g.options.first()) } }, "mode", "duplicate")

@@ -229,6 +229,8 @@ data class GuideOption(
     val label: String,
     /** One line on when to choose this option; required for a card-linked group. */
     @SerialName("use_when") val useWhen: String = "",
+    /** An optional two or three word line shown under the label in the picker's list. */
+    val short: String = "",
     val card: String = "",
 )
 

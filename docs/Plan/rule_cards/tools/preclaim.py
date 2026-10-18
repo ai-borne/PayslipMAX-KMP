@@ -22,7 +22,8 @@ SOURCES = {'portal_filled', 'officer_types', 'app_suggests'}
 LIMITS = {'label': 60, 'hint': 160, 'text_chars': 200}
 ID_MAX = 32
 # Fields the app needs. `provenance` and any other key stay in the repo.
-OPTION_KEYS = ('id', 'label', 'use_when', 'card')
+OPTION_KEYS = ('id', 'label', 'use_when', 'short', 'card')
+MAX_SHORT_WORDS = 3
 FIELD_KEYS = ('id', 'label', 'kind', 'source', 'max_chars', 'options', 'hint', 'unverified')
 DOCUMENT_KEYS = ('id', 'label', 'when')
 
@@ -103,6 +104,9 @@ def _group_problems(gid, group, live_cards, known_cards):
         errs += [] if _is_id(opt.get('id')) else [f'{at}: id must be lowercase letters, digits and underscores']
         errs += _text_problems(at, 'label', opt.get('label'), LIMITS['label'])
         errs += _text_problems(at, 'use_when', opt.get('use_when'), LIMITS['hint'], required=linked)
+        errs += _text_problems(at, 'short', opt.get('short'), LIMITS['label'], required=False)
+        if isinstance(opt.get('short'), str) and len(opt['short'].split()) > MAX_SHORT_WORDS:
+            errs.append(f'{at}: short is over {MAX_SHORT_WORDS} words')
         card = opt.get('card')
         if not linked:
             errs += [f'{at}: names a card but the group is not card_linked'] if card else []
@@ -181,7 +185,7 @@ def texts(data):
     """Every sentence a user reads, for the own-words guard (copycheck.py)."""
     out = []
     for grp in data['options'].values():
-        out += [o['use_when'] for o in grp['options'] if o.get('use_when')]
+        out += [o[k] for o in grp['options'] for k in ('use_when', 'short') if o.get(k)]
     for move in data['moves'].values():
         out += list(move.get('notes', []))
         out += [f['hint'] for f in move['fields'] if f.get('hint')]

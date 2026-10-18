@@ -28,8 +28,8 @@ object SyntheticPreClaimWorksheet {
          "upload":{"files":1,"more_than_kb":50,"less_than_mb":2,"format":"PDF"},
          "options":{
           "td_rule":{"card_linked":false,"options":[
-            {"id":"tr119","label":"Rule 119","use_when":"Ordinary temporary duty."},
-            {"id":"tr124","label":"Rule 124 (no DA)","use_when":"A course."}]},
+            {"id":"tr119","label":"Rule 119","use_when":"Ordinary temporary duty.","short":"Ordinary duty trip"},
+            {"id":"tr124","label":"Rule 124 (no DA)","use_when":"A course.","short":"Course or exam"}]},
           "ltc_rule":{"card_linked":true,"options":[
             {"id":"ltc_home","label":"Home town","use_when":"Your yearly trip.","card":"${SyntheticGuidePreClaim.PICKER_CARD}"},
             {"id":"ltc_any","label":"Any station","use_when":"The alternate-year trip.","card":"RB-T10"}]}},

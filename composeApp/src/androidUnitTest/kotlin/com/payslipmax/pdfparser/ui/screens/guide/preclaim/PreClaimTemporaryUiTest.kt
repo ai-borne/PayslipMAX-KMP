@@ -64,6 +64,14 @@ class PreClaimTemporaryUiTest : PreClaimUiBase() {
     }
 
     @Test
+    fun theRulePickerListsAShortLineUnderEachRuleSoTheyCanBeToldApart() {
+        openTemporary()
+        tap(PreClaimStrings.trRule + ": " + PreClaimStrings.trRuleChoose)
+        composeRule.onNodeWithText("Ordinary duty trip").assertIsDisplayed()
+        composeRule.onNodeWithText("Course or exam").assertIsDisplayed()
+    }
+
+    @Test
     fun rule124MakesFoodHotelAndTaxiNilAndTheirCopyValueIsZero() {
         openTemporary()
         chooseRule("Rule 124 (no DA)")

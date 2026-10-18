@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui.screens.guide.preclaim
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.selection.toggleable
@@ -91,7 +92,7 @@ internal fun <T> PreClaimChipChoice(
     }
 }
 
-/** A long single choice (levels, states, rules) as a button that opens a menu. [selected] is the chosen text or null. */
+/** A long single choice (levels, states, rules) as a button that opens a menu. [selected] is the chosen text or null; [hints] puts a small line under a choice by id. */
 @Composable
 internal fun PreClaimChoiceBox(
     label: String,
@@ -99,6 +100,7 @@ internal fun PreClaimChoiceBox(
     selected: String?,
     choices: List<Pair<String, String>>,
     onChoose: (String) -> Unit,
+    hints: Map<String, String> = emptyMap(),
 ) {
     var open by remember { mutableStateOf(false) }
     Box {
@@ -107,11 +109,22 @@ internal fun PreClaimChoiceBox(
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             choices.forEach { (id, text) ->
-                DropdownMenuItem(text = { Text(text) }, onClick = {
+                DropdownMenuItem(text = { PreClaimChoiceText(text, hints[id]) }, onClick = {
                     open = false
                     onChoose(id)
                 })
             }
         }
+    }
+}
+
+@Composable
+private fun PreClaimChoiceText(
+    text: String,
+    hint: String?,
+) {
+    Column {
+        Text(text)
+        if (!hint.isNullOrEmpty()) Text(hint, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

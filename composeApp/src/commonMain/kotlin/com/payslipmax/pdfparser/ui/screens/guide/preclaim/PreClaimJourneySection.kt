@@ -84,6 +84,7 @@ internal fun PreClaimRulePicker(
         selected = chosen?.label,
         choices = group.options.map { it.id to it.label },
         onChoose = model::chooseTrRule,
+        hints = group.options.filter { it.short.isNotEmpty() }.associate { it.id to it.short },
     )
     chosen?.useWhen?.takeIf { it.isNotEmpty() }?.let { PreClaimQuietText(it) }
 }

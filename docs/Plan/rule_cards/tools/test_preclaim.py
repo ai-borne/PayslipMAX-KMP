@@ -112,6 +112,17 @@ class RealContent(unittest.TestCase):
         for line in ('food', 'hotel', 'taxi'):
             self.assertIn(line, hint)
 
+    def test_every_temporary_duty_rule_has_a_short_line_of_at_most_three_words(self):
+        # Shown under each rule in the picker so the officer can tell the four apart without opening anything.
+        for opt in REAL['options']['td_rule']['options']:
+            self.assertTrue(opt.get('short'), opt['id'])
+            self.assertLessEqual(len(opt['short'].split()), 3, opt['id'])
+
+    def test_a_short_line_over_three_words_is_refused(self):
+        d = copy.deepcopy(REAL)
+        d['options']['td_rule']['options'][0]['short'] = 'Ordered by some authority'
+        self.assertTrue(any('over 3 words' in e for e in preclaim.validate(d, CARDS)))
+
     def test_mode_of_journey_is_shared_by_td_and_ltc(self):
         self.assertEqual([o['label'] for o in REAL['options']['mode_of_journey']['options']], ['Air', 'Rail', 'Road', 'Sea', 'Multiple'])
         for move in ('TD', 'LTC'):

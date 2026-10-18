@@ -15,10 +15,10 @@
    {"id": "multiple", "label": "Multiple"}
   ]},
   "td_rule": {"card_linked": false, "options": [
-   {"id": "tr4i", "label": "Rule 4(i) TR", "use_when": "An authority listed in Appendix III of the Travel Regulations ordered the move."},
-   {"id": "tr4ii", "label": "Rule 4(ii) TR", "use_when": "A special sanction covers a move that no other rule or order covers."},
-   {"id": "tr119", "label": "Rule 119 TR", "use_when": "An ordinary temporary duty journey. The portal's usual choice."},
-   {"id": "tr124", "label": "Rule 124 TR (DA not admissible)", "use_when": "A course or examination: conveyance only, so food, hotel and local taxi are nil."}
+   {"id": "tr4i", "label": "Rule 4(i) TR", "use_when": "An authority listed in Appendix III of the Travel Regulations ordered the move.", "short": "Ordered by authority"},
+   {"id": "tr4ii", "label": "Rule 4(ii) TR", "use_when": "A special sanction covers a move that no other rule or order covers.", "short": "Special sanction"},
+   {"id": "tr119", "label": "Rule 119 TR", "use_when": "An ordinary temporary duty journey. The portal's usual choice.", "short": "Ordinary duty trip"},
+   {"id": "tr124", "label": "Rule 124 TR (DA not admissible)", "use_when": "A course or examination: conveyance only, so food, hotel and local taxi are nil.", "short": "Course or exam"}
   ]},
   "ltc_rule": {"card_linked": true, "options": [
    {"id": "ltc177a_home", "label": "177(A) for Home Town", "use_when": "Your yearly trip to your home town or declared place.", "card": "RB-SS-T088"},

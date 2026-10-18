@@ -20,6 +20,7 @@ internal object GuidePreClaimValidator {
     private const val KIND_CHOICE = "choice"
     private const val KIND_TEXT = "text"
     private const val ID_MAX = 32
+    private const val MAX_SHORT_WORDS = 3
 
     fun validate(bundle: GuideBundle): List<String> {
         val section = bundle.preclaim ?: return emptyList()
@@ -62,6 +63,10 @@ internal object GuidePreClaimValidator {
             if (!isId(option.id)) problems += "$at: id is malformed"
             problems += textProblems(at, "label", option.label, limits.label)
             problems += textProblems(at, "use_when", option.useWhen, limits.hint, required = group.cardLinked)
+            problems += textProblems(at, "short", option.short, limits.label, required = false)
+            if (option.short.isNotBlank() && option.short.trim().split(Regex("\\s+")).size > MAX_SHORT_WORDS) {
+                problems += "$at: short is over $MAX_SHORT_WORDS words"
+            }
             problems +=
                 when {
                     !group.cardLinked -> if (option.card.isEmpty()) emptyList() else listOf("$at: names a card but the group is not card_linked")
