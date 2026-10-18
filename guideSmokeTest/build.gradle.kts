@@ -30,7 +30,7 @@ android {
     }
 }
 
-// The app's UI copy, read from its single source (GuideStrings.kt, AppStringsOnboarding.kt) into a generated Java
+// The app's UI copy, read from its single source (GuideStrings.kt, AppStringsOnboarding.kt, PreClaimStrings.kt) into a generated Java
 // class: self-instrumenting means the app's classes are not on this module's classpath, and a copied string would
 // drift. A constant that disappears fails the build here.
 abstract class GenerateSmokeStrings : DefaultTask() {
@@ -62,8 +62,8 @@ abstract class GenerateSmokeStrings : DefaultTask() {
 
 val generateSmokeStrings by tasks.registering(GenerateSmokeStrings::class) {
     val theme = rootProject.file("composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/theme")
-    sources.from(theme.resolve("GuideStrings.kt"), theme.resolve("AppStringsOnboarding.kt"))
-    names.set(listOf("tabLabel", "homeSection", "loadFailedTitle", "sectionKeyPoints", "searchOpen", "onboardingSkip", "onboardingCoachmarkDismiss"))
+    sources.from(theme.resolve("GuideStrings.kt"), theme.resolve("AppStringsOnboarding.kt"), theme.resolve("PreClaimStrings.kt"))
+    names.set(listOf("tabLabel", "homeSection", "loadFailedTitle", "sectionKeyPoints", "searchOpen", "onboardingSkip", "onboardingCoachmarkDismiss", "entryTitle", "chooseMove", "trRule", "trRuleChoose", "nightlyRate"))
     outputDir.set(layout.buildDirectory.dir("generated/smokeStrings"))
 }
 

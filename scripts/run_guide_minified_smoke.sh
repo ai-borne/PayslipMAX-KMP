@@ -33,6 +33,6 @@ adb install -r --user current "$TEST_APK" >/dev/null 2>&1 || { echo "❌ Could n
 result=$(adb shell am instrument -w -e class "$TEST_CLASS" "$TEST_ID/androidx.test.runner.AndroidJUnitRunner" 2>&1)
 echo "$result"
 case "$result" in
-    *"OK (1 test)"*) echo "✅ Minified Guide smoke passed on the device." ;;
+    *"OK (2 tests)"*) echo "✅ Minified Guide and pre-claim smoke passed on the device." ;;
     *) echo "❌ Minified Guide smoke failed."; exit 1 ;;
 esac

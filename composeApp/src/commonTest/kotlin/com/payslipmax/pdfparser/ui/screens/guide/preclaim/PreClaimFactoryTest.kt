@@ -31,8 +31,8 @@ class PreClaimFactoryTest {
     }
 
     @Test
-    fun theShippedFlagIsOffSoTheDefaultFactoryIsNull() {
-        assertNull(preClaimFactoryOrNull(create = ::lookup))
-        assertEquals(0, lookups)
+    fun theShippedFlagIsOnSoTheDefaultFactoryIsHandedOut() {
+        assertNotNull(preClaimFactoryOrNull(create = ::lookup))
+        assertEquals(0, lookups, "handing out the factory must not build a worksheet")
     }
 }

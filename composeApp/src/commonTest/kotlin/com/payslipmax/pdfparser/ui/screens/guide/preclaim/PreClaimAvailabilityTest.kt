@@ -35,6 +35,6 @@ class PreClaimAvailabilityTest {
     @Test
     fun theShippedDefaultIsTheFlagsAndNothingElse() {
         assertEquals(LaunchFlags.GUIDE_ENABLED && LaunchFlags.PRECLAIM_ENABLED, isPreClaimEnabled())
-        assertEquals(PreClaimEntry.HIDDEN, preClaimEntry(unlocked), "dark in this build: no user reaches the worksheet")
+        assertEquals(PreClaimEntry.OPEN, preClaimEntry(unlocked), "on in this build (P9): an unlocked user reaches the worksheet")
     }
 }

@@ -81,6 +81,39 @@ public class GuideMinifiedSmokeTest {
         await(SmokeStrings.sectionKeyPoints, "the card opened from the search results");
     }
 
+    /**
+     * Plan 22, P9 (the flag-on check the P8 walk did by hand): the pre-claim worksheet works in the minified build. Opens the
+     * entry on Guide Home, chooses Temporary duty, picks the first TR rule, sees it chosen and sees the hotel box, so the bundle's preclaim models,
+     * the Koin factory and the worksheet screens all survived R8. It fails if {@code LaunchFlags.PRECLAIM_ENABLED} is turned off
+     * again (no entry), which is the point: pulling the worksheet is a deliberate edit to this test too.
+     */
+    @Test
+    public void theMinifiedAppOpensThePreClaimWorksheet() throws Exception {
+        JSONObject preclaim = new JSONObject(readBundle()).getJSONObject("preclaim");
+        String moveTitle = preclaim.getJSONObject("moves").getJSONObject("TD").getString("title");
+        String ruleLabel = preclaim.getJSONObject("options").getJSONObject("td_rule").getJSONArray("options")
+                .getJSONObject(0).getString("label");
+
+        launchApp();
+        dismissIfShown(SmokeStrings.onboardingSkip);
+        dismissIfShown(SmokeStrings.onboardingCoachmarkDismiss);
+
+        await(SmokeStrings.tabLabel, "the Guide tab (is the app locked, or blocked by the install guard?)").click();
+        await(SmokeStrings.homeSection, "Guide Home");
+        await(SmokeStrings.entryTitle, "the pre-claim worksheet row (is PRECLAIM_ENABLED off, or the Guide locked?)").click();
+        await(SmokeStrings.chooseMove, "the move chooser");
+        await(moveTitle, "the Temporary duty move").click();
+        scrollTo(SmokeStrings.trRuleChoose, "the TR rule picker").click();
+        UiObject2 option = device.wait(Until.findObject(By.text(ruleLabel)), SHORT_MS);
+        if (option == null) { // the tap can land while the list is still settling; the picker is still closed then
+            scrollTo(SmokeStrings.trRuleChoose, "the TR rule picker").click();
+            option = await(ruleLabel, "the first TR rule option");
+        }
+        option.click();
+        scrollTo(SmokeStrings.trRule + ": " + ruleLabel, "the chosen rule shown on the picker");
+        scrollTo(SmokeStrings.nightlyRate, "the hotel box");
+    }
+
     private static String cardTitle(JSONObject bundle, String cardId) throws Exception {
         JSONArray cards = bundle.getJSONArray("cards");
         for (int i = 0; i < cards.length(); i++) {
@@ -107,6 +140,23 @@ public class GuideMinifiedSmokeTest {
         UiObject2 button = device.wait(Until.findObject(By.text(text)), SHORT_MS);
         if (button != null) button.click();
         device.waitForIdle();
+    }
+
+    /** Swipes the worksheet up until a node whose text contains [text] is on screen (the list only composes what is visible). */
+    private UiObject2 scrollTo(String text, String what) {
+        int w = device.getDisplayWidth();
+        int h = device.getDisplayHeight();
+        for (int i = 0; i < 12; i++) {
+            UiObject2 found = device.wait(Until.findObject(By.textContains(text)), POLL_MS);
+            if (found != null) {
+                device.waitForIdle();
+                return found;
+            }
+            device.swipe(w / 2, h * 7 / 10, w / 2, h * 3 / 10, 20);
+            device.waitForIdle();
+        }
+        assertNotNull("not shown after scrolling: " + what, null);
+        return null;
     }
 
     /** Waits for [text], dismissing the Play asset-pack sheet whenever it appears on top (it can come late). */
