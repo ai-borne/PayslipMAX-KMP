@@ -143,7 +143,6 @@ object PreClaimStrings {
     const val sourcePortal = "The portal fills this"
     const val sourceOfficer = "You type this"
     const val sourceApp = "Suggested from the estimate"
-    const val unverified = "Not confirmed on the portal"
     const val copy = "Copy"
     const val copied = "Copied"
     const val documentsTitle = "Scan and attach"

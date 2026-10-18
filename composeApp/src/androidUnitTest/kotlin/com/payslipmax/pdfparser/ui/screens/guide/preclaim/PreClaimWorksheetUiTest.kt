@@ -66,10 +66,11 @@ class PreClaimWorksheetUiTest : PreClaimUiBase() {
     }
 
     @Test
-    fun theUnconfirmedFieldIsMarkedOnceAndOnlyTheFieldListSaysSo() {
+    fun anUnconfirmedFieldShowsNoUnconfirmedWordingOrHintAndKeepsItsSourceLine() {
         show()
         openFromHome("Permanent duty")
-        composeRule.onAllNodesWithText(PreClaimStrings.unverified).assertCountEquals(1)
+        composeRule.onAllNodesWithText("Not confirmed", substring = true).assertCountEquals(0)
+        composeRule.onAllNodesWithText("Maximum length not confirmed.").assertCountEquals(0)
         composeRule.onAllNodesWithText(PreClaimStrings.sourcePortal).assertCountEquals(1)
     }
 

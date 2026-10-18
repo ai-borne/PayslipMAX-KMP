@@ -48,8 +48,7 @@ private fun PreClaimFieldRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(field.label, style = MaterialTheme.typography.bodyMedium)
             PreClaimQuietText(PreClaimStrings.fieldSource(field.source))
-            if (field.unverified) PreClaimQuietText(PreClaimStrings.unverified)
-            if (field.hint.isNotEmpty()) PreClaimQuietText(field.hint)
+            if (field.hint.isNotEmpty() && !field.unverified) PreClaimQuietText(field.hint)
         }
         value?.let { PreClaimCopyButton(field.label, it, copy) }
     }
