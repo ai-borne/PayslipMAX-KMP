@@ -1,12 +1,12 @@
 # Claim Guide app work: where we are (read this block first; the rest of this file is dataset history)
 
-Updated 2026-10-11. The Claim Guide app work is **done and on `main`**: E0-E9 and the maintenance track M1-M8. `LaunchFlags.GUIDE_ENABLED` is true
-(the one kill switch); `GUIDE_PAYWALL_ENABLED` is false, so the Guide ships free. Nothing is uploaded to a store.
+Updated 2026-10-18. The Claim Guide app work is **done and on `main`**: E0-E9 and the maintenance track M1-M8. `LaunchFlags.GUIDE_ENABLED` is true
+(the one kill switch). **2026-10-18:** `GUIDE_PAYWALL_ENABLED` and `PRECLAIM_ENABLED` are true (owner waiver of five unverified rate cards, plan 22 P9), so the Guide and the TA/DA worksheet are Premium; release 1.4.1 is on TestFlight (build 5) and the Play internal track (versionCode 20), not on production.
 
 - **Open debt, one list:** `19_carry_over.md` (single source of truth; the pre-release plan `20_prerelease_debt_plan.md` closes its rows).
 - **Phase history and results:** `16_guide_phase_plan.md` (E0-E9, M1-M8, EP table, iOS walkthrough checklist).
 - **Changing card content:** `18_content_update_runbook.md` (`authoring/*.txt` is the source; `tools/refresh.py` rebuilds everything).
-- **Dataset now:** 404 cards (220 travel, 184 pay), 37 unverified, 31 no source. RP-088 (HBA 8.5%) blocks the paywall flip; RP-073 TA Allowance has no card.
+- **Dataset now:** 404 cards (220 travel, 184 pay), 37 unverified, 31 no source. The paywall flip is waived by the owner for five unverified Rates cards (see `GuideBundleContract`); RP-073 TA Allowance has no card.
 - **Owner actions open:** iOS walkthrough (checklist in `16_guide_phase_plan.md`); send the regenerated expert review PDF (`review_pack.py --pdf`, git-ignored; regenerate first if cards changed); release prep.
 
 Rules that still bind: no rupee figure in Kotlin; copy only in `GuideStrings.kt`; 300-line files; a locked state must not hold a card's paid half; no PII, card id, pin list, note text or figure in telemetry (`GuideSecurityContractTest`). Gradle: JDK 21 (`export JAVA_HOME=/opt/homebrew/opt/openjdk@21`); never two Gradle commands at once (the commit hook runs Gradle too). The Pixel runs the debug-signed `minifiedTest` build with the owner's payslips: never uninstall.

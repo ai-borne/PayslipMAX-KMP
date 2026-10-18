@@ -629,6 +629,23 @@ Flag `FREE_LAUNCH_MODE_ANDROID` back to `true`, versionCode 17 → 18; commit `c
 - **Not done:** Play Console availability is still 172 countries (restricting to India is a Play Console step, recommended);
   alpha (closed testing) still holds v15.
 
+### versionCode 20 (1.4.1) — on Internal testing (2026-10-18) — TA/DA claim worksheet, Premium Guide
+
+`versionName` 1.4.0 → 1.4.1 (`version.properties`), versionCode 19 → 20 (versionCode 19 / 1.4.0 went to internal on 2026-10-11 and is
+not logged above). Release commit `27cab9e4` on `main` (fast-forward of `feature/ta-da-preclaim`, 24 commits), tags `v1.4.1`,
+`android-1.4.1-vc20`, `ios-1.4.1-b5`. `LaunchFlags.PRECLAIM_ENABLED` and `GUIDE_PAYWALL_ENABLED` are now `true`;
+`FREE_LAUNCH_MODE_ANDROID` stays `true`, so on Android everything is still open, while iOS (free-launch off) shows the real
+Premium locks. The paywall was turned on by the owner on 2026-10-18 with five unverified Rates-chip cards waived (see plan 22, P9).
+- **Gate:** the pre-push hook passed on the `main` push (378 s) and on the tag push (273 s); the minified Guide + worksheet smoke
+  passed on the Pixel (2 tests); `check_r8_guide.py` 21 models kept.
+- **Build/upload:** `bundleRelease` with the real Gemma model (`iosApp/iosApp/gemma-active.litertlm`), 442,658,150 B AAB;
+  `upload_to_track track:internal` released versionCode 20. `track_status`: internal [20], alpha [15], production [18].
+- **On-device (Pixel 9):** the local 1.4.0 build was uninstalled after the owner confirmed a `.pcda` backup, and Play installed
+  1.4.1 (`versionCode=20`, `installerPackageName=com.android.vending`). **Open:** the owner restores the `.pcda`.
+- **iOS counterpart:** TestFlight 1.4.1 (5), processing VALID (the first attempt failed at `exportArchive` because Xcode was not
+  signed in to the Apple account; rerun after sign-in worked). Not submitted to App Review.
+- **Not done:** App Store submission and Android production (still vc18); EP 14 (sandbox purchase unlocks a card on each platform).
+
 ## Next steps
 
 1. **BillDesk KYC (owner only):** submit `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax` with PAN,
