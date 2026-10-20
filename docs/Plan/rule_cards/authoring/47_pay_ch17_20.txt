@@ -74,11 +74,11 @@ A: Officers with units under HQ 760 BRTF Myanmar get the same rates, servant wag
 K: Claim as for Bhutan Compensatory Allowance
 C: AO 31/80; MoD letter 44003/PS3(a)/9621-A/D(PP) dt 07-12-1955
 
-=== topic=RP-084 from=RP-084 chips=GUIDANCE basis=open_source
+=== topic=RP-084 from=RP-084
 T: Claims you must not send to PCDA(O)
 A: Briefcase allowance, bed and linen charges, telephone bills and indoor medical claims go to the Regional Controller.
 K: Submit to the Controller of the unit's region
-O: No primary letter named in the source. Find the CGDA or MoD instruction.
+C: PCDA(O) Handbook 2023, Ch 18 para 8 (Allowances not to be claimed from PCDA(O)), p 177
 
 === topic=RP-086 from=RP-086,RP-087
 T: Which advances remain after the 7th CPC?

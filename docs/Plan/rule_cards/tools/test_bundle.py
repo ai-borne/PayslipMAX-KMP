@@ -73,7 +73,7 @@ class BundleContents(unittest.TestCase):
     def test_guidance_means_no_cite(self):
         for card in BUILT['cards']:
             self.assertEqual('GUIDANCE' in card['chips'], card['cite'] == '', card['id'])
-        self.assertEqual(sum(c['cite'] == '' for c in BUILT['cards']), 31)
+        self.assertEqual(sum(c['cite'] == '' for c in BUILT['cards']), 30)
 
 
 TEXT_FIELDS = ('title', 'answer', 'key', 'attach', 'watch', 'cite', 'details')

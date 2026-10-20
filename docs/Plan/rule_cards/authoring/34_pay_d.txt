@@ -20,15 +20,14 @@ A: Only while you are working full time on technical and upkeep duties and meet 
 K: Re-employment alone does not give the allowance
 C: MoD letter 1(26)/97/XXII/D(Pay/Services) dt 29-02-2000
 
-=== topic=RP-038 from=SS-P027 basis=open_source
+=== topic=RP-038 from=SS-P027
 T: Documents for Technical Allowance Tier I
 A: Part II order GTDTECI with a deployment certificate and a qualification certificate from the line directorate.
 K: Claim goes with the Part II order
 H: Part II order notifying GTDTECI
 H: CO or OC certificate of full-time technical deployment
 H: One-time line directorate certificate with first claim
-C: CGDA letter ARMY/BR/OFF./ALLOW/1223/Misc dt 07-10-2019
-O: Certificate format is in the CGDA letter; confirm the letter is the primary authority.
+C: CGDA letter ARMY/BR/OFF./ALLOW/1223/Misc dt 07-10-2019; PCDA(O) Handbook 2023, Ch 14 para 3 (Technical Allowance, procedure for claiming), p 108
 
 === topic=RP-038 from=SS-P028
 T: Documents for Technical Allowance Tier II
@@ -90,9 +89,8 @@ K: Publish grant and stoppage in the same Part II order
 K: Claim the full month in one order
 C: MoD letter B/26243/AG/PS3(a)401/S/D(Pay/Services) dt 06-05-1982 as amended
 
-=== topic=RP-041 from=SS-P040 basis=open_source
+=== topic=RP-041 from=SS-P040
 T: How much Flying Allowance goes to the DSOP Fund?
 A: Two-fifths of the allowance is credited to your DSOP Fund account.
 K: This is on top of your own DSOP subscription
-C: MoD letter B/26243/AG/PS3(a)401/S/D(Pay/Services) dt 06-05-1982 as amended
-O: DSOP credit authority is in handbook only; primary letter not separately identified.
+C: MoD letter B/26243/AG/PS3(a)401/S/D(Pay/Services) dt 06-05-1982 as amended; PCDA(O) Handbook 2023, Ch 14 para 6 (Flying Allowance, DSOP contribution), p 116

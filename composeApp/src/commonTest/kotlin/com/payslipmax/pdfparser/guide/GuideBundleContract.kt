@@ -48,13 +48,14 @@ object GuideBundleContract {
         assertEquals(9, bundle.nav.size)
         assertEquals(44, bundle.nav.sumOf { it.cases.size })
         assertEquals(setOf("Q", "H", "C", "L"), bundle.facets.keys)
-        // Owner, 2026-10-06: all open-point cards ship, flagged "Unverified point". Owner, 2026-10-20: no card is "Unverified" any more: 24
-        // carry a basis instead (22 on the PCDA(O) FAQ or handbook, 2 on a DoPT OM), 4 were removed and the rest were closed on a mirror read.
+        // Owner, 2026-10-06: all open-point cards ship, flagged "Unverified point". Owner, 2026-10-20: no card is "Unverified" any more: 14
+        // carry a basis instead (12 on the PCDA(O) FAQ, 2 on a DoPT OM), 4 were removed and the rest were closed on a mirror read or
+        // against the PCDA(O) Handbook 2023, whose exact para is then in the cite (owner, 2026-10-20).
         assertEquals(0, bundle.cards.count { it.unverified })
-        assertEquals(22, bundle.cards.count { it.basis == "open_source" })
+        assertEquals(12, bundle.cards.count { it.basis == "open_source" })
         assertEquals(2, bundle.cards.count { it.basis == "dopt_om" })
-        // Owner, 2026-10-07: "No official source" is exactly the 31 cards with no cite.
-        assertEquals(31, bundle.cards.count { it.hasNoOfficialSource })
+        // Owner, 2026-10-07: "No official source" is exactly the 30 cards with no cite (31 until RB-RP-084 got its Handbook para, 2026-10-20).
+        assertEquals(30, bundle.cards.count { it.hasNoOfficialSource })
         // Owner, 2026-10-07: rates current to the DA 60% step.
         assertEquals("2026-01", bundle.ratesAsOf)
         // RP-088 HBA: the 8.5% Army rate was confirmed from the MoD (DMA) letter of 19-06-2023 (owner, 2026-10-20), so no chip.
@@ -152,8 +153,8 @@ object GuideBundleContract {
         val locked = bundle.cards.map { assertNotNull(index.cardContent(it.id, unlocked = false, nowMillis = 0L)) }
         assertTrue(locked.all { it.full == null }, "a locked card holds no key points, cite or details")
         assertEquals(0, locked.count { it.trust.unverified })
-        assertEquals(24, locked.count { it.trust.basis != null })
-        assertEquals(31, locked.count { it.trust.noOfficialSource })
+        assertEquals(14, locked.count { it.trust.basis != null })
+        assertEquals(30, locked.count { it.trust.noOfficialSource })
         assertEquals(bundle.cards.count { "RATES" in it.chips }, locked.count { it.trust.ratesAsOf == bundle.ratesAsOf })
         assertEquals(bundle.cards.count { "AMENDED" in it.chips }, locked.count { it.trust.amended })
         assertTrue(bundle.cards.any { "RATES" in it.chips } && bundle.cards.any { "AMENDED" in it.chips }, "both chips are in use")

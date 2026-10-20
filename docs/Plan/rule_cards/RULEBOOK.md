@@ -2310,7 +2310,7 @@ Cite: none (guidance)
 - *Attach:* Bank details with a cancelled cheque
 - *Attach:* MS branch letter
 
-Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army
+Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army; PCDA(O) Handbook 2023, Ch 2 (Form A, account number), p 4
 
 > Open point: FAQ-only; cite is the form procedure. Confirm authority with domain owner.
 
@@ -2324,7 +2324,7 @@ Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for t
 - *Attach:* PAN card, Form A, MS branch letter
 - *Watch out:* Territorial Army commission also needs the TA number allotment sanction
 
-Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army
+Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army; PCDA(O) Handbook 2023, Ch 2 (Form A, account reactivated), p 4
 
 > Open point: FAQ-only; cite is the form procedure. Confirm with domain owner.
 
@@ -2337,7 +2337,7 @@ Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for t
 - *Attach:* Cancelled cheque, last pay certificate, MS branch letter
 - *Attach:* PAN card and Form A on secondment
 
-Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army
+Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army; PCDA(O) Handbook 2023, Ch 2 (reversion from deputation: last pay certificate), p 4
 
 > Open point: FAQ-only; handbook confirms last pay certificate from the previous audit office is needed.
 
@@ -2359,9 +2359,7 @@ Cite: Rules 1 and 2, Pay and Allowances Regulations for the Army
 
 - Cover the Part II order with the Gazette number and date
 
-Cite: Army Instruction 196/51
-
-> Open point: AI 196/51 is quoted in the handbook; not independently checked.
+Cite: Army Instruction 196/51; PCDA(O) Handbook 2023, Ch 4 (Change of Name), p 16
 
 ##### Pay of Trainees in Service Training Institutions (1)
 
@@ -2423,7 +2421,7 @@ Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion; MoD O
 - No option in time: pay is fixed from the date of promotion
 - No later amendment of an option already exercised
 
-Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
+Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion; PCDA(O) Handbook 2023, Ch 13 (Option for Pay Fixation on Promotion), pp 98-99
 
 > Open point: FAQ-only on finality; primary rule not located.
 
@@ -2452,7 +2450,7 @@ Cite: Army Pay Rules 2017 (7th CPC); SRO 12(E) dt 03-05-2017
 
 - Both documents are forwarded together to PCDA(O)
 
-Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
+Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion; PCDA(O) Handbook 2023, Ch 13 (Option for Pay Fixation on Promotion), pp 98-99
 
 > Open point: FAQ-only; primary rule not located.
 
@@ -2466,11 +2464,9 @@ Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
 - Starts from the 1st of the month after the event
 - Government sanction needed in each case
 
-Cite: MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017 and 24-08-2018, corrigendum dt 17-09-2021
+Cite: MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017 and 24-08-2018, corrigendum dt 17-09-2021; PCDA(O) Handbook 2023, Ch 5 (Special Increments for Excellence in Sports), paras 1-5, pp 19-20
 
 <sub>Details: Referees and umpires accepted by an international federation can get two increments per event, within the same five-increment cap.</sub>
-
-> Open point: FAQ also cites DoPT OM 03-10-2013 and MoD letter 1272 dt 19-08-1996; not read in full.
 
 #### RB-SS-P015 Do sports increments count for pay fixation or allowances?
 
@@ -2536,13 +2532,11 @@ Cite: MoD letter 10(4)/2009/D(Med) dt 22-10-2010; MoD letter 18(1)/2006-D(GS-I) 
 
 - Seniority reduced by the shorter training period
 - Pay re-fixed notionally; new pay from 14-03-2012
-- Retired or deceased before 20-07-2006: notional benefit only
+- Retired, died or invalided on or after 20-07-2006: notional benefit only
 
-Cite: MoD letter B/32314/2011/14/AG/PS-2(a)/CC-148-D(AG-II) dt 10-05-2018; SRO 121 dt 28-10-2005
+Cite: MoD letter B/32314/2011/14/AG/PS-2(a)/CC-148-D(AG-II) dt 10-05-2018; SRO 121 dt 28-10-2005; PCDA(O) Handbook 2023, Ch 6 (Promotion), SSC substantive rank para A, pp 26-28
 
 <sub>Details: Following the Supreme Court order of 29-01-2018. Not applicable to SSC and women officers already given PC. SSC women are considered for PC from 25-02-2019 and opt after 3 years (MoD letter 14(01)/2020-D(AG) dt 16-07-2020).</sub>
-
-> Open point: Financial benefit cut-off is the AFT order of 14-03-2012; verify effect for officers retired after 20-07-2006.
 
 ### Chapter 7
 
@@ -3000,8 +2994,6 @@ Cite: Army Act sections 90, 91 and 93; Para 5, AO 17/01; Para 349, Regulations f
 
 Cite: AO 7/03
 
-> Open point: Handbook gives only the pointer. Authoring a full card needs AO 7/03 text, not available here.
-
 ##### Payment of Maintenance Allowance (1)
 
 #### RB-RP-033 How is maintenance allowance for wife and children paid?
@@ -3030,8 +3022,6 @@ Cite: SRO 17(E) dt 06-07-2017 (Army Officers Pay Rules 2017 pay matrix)
 
 <sub>Details: Military Nursing Service uses its own levels (10, 10A, 10B, 11, 12, 12B, 13B). NCC whole-time lady officers use 10, 10B, 11 and 12. Pay is drawn in the level of the rank held substantively.</sub>
 
-> Open point: Level table copied by meaning from handbook; check against SRO 17(E) Part A.
-
 #### RB-C13-02 Who do the 7th CPC Army pay rules cover?
 
 **Army officers in service on 01-01-2016, including AMC, ADC, RVC, TA when embodied, cadets, and later joiners.**
@@ -3054,8 +3044,6 @@ Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; SRO 21(E) dt 14-07-
 Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017, rule 7
 
 <sub>Details: Basic pay means pay band pay plus grade pay. Example: Major with Rs 32,720 gets 84,090 and is fixed at Rs 85,300 in Level 11. Personal pay is absorbed in future increases.</sub>
-
-> Open point: Level 12A and 13 index of rationalisation raised from 2.57 to 2.67 by MoD resolution 1(6)/2016/D(Pay/Services) dt 22-06-2017; confirm how this affects fixation. A 2018 MoD memo says the 2.57 formula was not changed by the amendment rules; SRO 17(E) text not seen (owner kept as Open Source Info, 2026-10-20).
 
 #### RB-C13-04 Can I still change my 2016 option for revised pay?
 
@@ -3142,11 +3130,9 @@ Cite: Army Pay Rules 2017; MoD OM 1(20)/2017/D(Pay/Services) dt 26-02-2019; MoF 
 - Increments in the antedate period are notional
 - Next increment may fall soon after commission
 
-Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; PCDA(O) Handbook 2023, Ch 13 para 16 (pay of officers commissioned with antedate), p 97
 
 <sub>Details: Example: commissioned 02-03-2016 with two years antedate from 02-03-2014. Notional pay Rs 15,600 rises to 56,100 in 7th CPC; the 01-07-2016 increment takes pay to Rs 57,800.</sub>
-
-> Open point: Rule number not stated in the handbook; cite stays at SRO 12(E) level (owner, 2026-10-20).
 
 #### RB-C13-12 Stepping up pay of a senior drawing less than a junior
 
@@ -3252,9 +3238,7 @@ Cite: MoD letter 1(26)/97/XXII/D(Pay/Services) dt 29-02-2000
 - *Attach:* CO or OC certificate of full-time technical deployment
 - *Attach:* One-time line directorate certificate with first claim
 
-Cite: CGDA letter ARMY/BR/OFF./ALLOW/1223/Misc dt 07-10-2019
-
-> Open point: Certificate format is in the CGDA letter; confirm the letter is the primary authority.
+Cite: CGDA letter ARMY/BR/OFF./ALLOW/1223/Misc dt 07-10-2019; PCDA(O) Handbook 2023, Ch 14 para 3 (Technical Allowance, procedure for claiming), p 108
 
 #### RB-SS-P028 Documents for Technical Allowance Tier II
 
@@ -3344,9 +3328,7 @@ Cite: MoD letter B/26243/AG/PS3(a)401/S/D(Pay/Services) dt 06-05-1982 as amended
 
 - This is on top of your own DSOP subscription
 
-Cite: MoD letter B/26243/AG/PS3(a)401/S/D(Pay/Services) dt 06-05-1982 as amended
-
-> Open point: DSOP credit authority is in handbook only; primary letter not separately identified.
+Cite: MoD letter B/26243/AG/PS3(a)401/S/D(Pay/Services) dt 06-05-1982 as amended; PCDA(O) Handbook 2023, Ch 14 para 6 (Flying Allowance, DSOP contribution), p 116
 
 ##### Test Pilot Allowance (1)
 
@@ -3549,7 +3531,7 @@ Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
 - Check each month from that date to the first payment
 - The rise applies to matrix pay plus MSP and NPA only
 
-Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; PCDA(O) Handbook 2023, Ch 15 para 1 (Dearness Allowance), p 130
 
 > Open point: No source in hand prints an arrears procedure. The handbook says only that DA is payable from 01 January and 01 July, and gives its basis; "difference owed back" is an inference from "payable from". Owner approved shipping with the Unverified chip (2026-10-09).
 
@@ -3663,7 +3645,7 @@ Cite: MoD letter 1(26)97/D(Pay/Services) dt 29-02-2000
 - Record offices and cantonment units also static
 - Hospitals, EME workshops and supply depots count as non-static
 
-Cite: MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994
+Cite: MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994; PCDA(O) Handbook 2023, Ch 15 para 4 (HAFAA, CFAA, CMFAA), pp 134-135
 
 <sub>Details: Base rates from 01-07-2017: HAFAA Rs 16,900, CFAA Rs 10,500, CMFAA Rs 6,300 a month. Each rises 25% when DA rises by 50%.</sub>
 
@@ -3970,15 +3952,13 @@ Cite: AO 31/80; MoD letter 44003/PS3(a)/9621-A/D(PP) dt 07-12-1955
 
 ##### Allowances not to be claimed from PCDA(O) (1)
 
-#### RB-RP-084 Claims you must not send to PCDA(O)  `GUIDANCE`
+#### RB-RP-084 Claims you must not send to PCDA(O)
 
 **Briefcase allowance, bed and linen charges, telephone bills and indoor medical claims go to the Regional Controller.**
 
 - Submit to the Controller of the unit's region
 
-Cite: none (guidance)
-
-> Open point: No primary letter named in the source. Find the CGDA or MoD instruction.
+Cite: PCDA(O) Handbook 2023, Ch 18 para 8 (Allowances not to be claimed from PCDA(O)), p 177
 
 ### Chapter 19
 
@@ -4004,7 +3984,7 @@ Cite: MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018; DoPT OM A-27012/02/20
 - Divyaang children: up to age 22
 - From AY 2023-24: up to three classes before Class 1
 
-Cite: MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018
+Cite: MoD letter 1(23)/2017/D(Pay/Services) dt 15-09-2017 and dt 02-08-2018; PCDA(O) Handbook 2023, Ch 19 paras m, n and p, pp 180-181
 
 > Open point: The handbook says two classes before Class 1; the newer FAQ says three from AY 2023-24. FAQ followed.
 
@@ -4171,7 +4151,7 @@ Cite: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020
 - Needs the new unit's Part II order, certificate and rent receipt
 - *Watch out:* No HRA for the stay; the payment is taxable
 
-Cite: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020
+Cite: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020; PCDA(O) Handbook 2023, Ch 23 para N (Transit Accommodation / Guest Room charges), p 241
 
 > Open point: Six-month cap is from the FAQ (Dec 2025) only; the handbook text, read in full, does not state a cap.
 

@@ -5,12 +5,11 @@ K: MNS officers: pay from date of joining only
 C: Rules 1 and 2, Pay and Allowances Regulations for the Army
 D: Newly commissioned officers who report to a transit camp after 21 days of joining leave are treated as reported for duty. Late reporting after the fixed date must be regularised. Send Form A (AO 03/03) within 7 days of reporting, signed by you and countersigned by the CO or OC.
 
-=== topic=RP-001 id=RB-C4-02 from=RP-001 basis=open_source
+=== topic=RP-001 id=RB-C4-02 from=RP-001
 T: Does a change of name or spelling affect my pay records?
 A: Yes. Even a spelling change counts as a change of name and needs a Gazette notification to be published in Part II.
 K: Cover the Part II order with the Gazette number and date
-C: Army Instruction 196/51
-O: AI 196/51 is quoted in the handbook; not independently checked.
+C: Army Instruction 196/51; PCDA(O) Handbook 2023, Ch 4 (Change of Name), p 16
 
 === topic=RP-002 from=RP-002
 T: Pay of cadets and trainees during pre-commission training
@@ -61,15 +60,14 @@ K: AMC (TA): Captain on commission, Major 7, Lt Col 14, Col 27
 K: Special List: Captain 2, Major 6, Lt Col 13
 C: MoD letter 10(4)/2009/D(Med) dt 22-10-2010; MoD letter 18(1)/2006-D(GS-I) dt 18-04-2006; MoD letter 18(1)/2004-D(GS-I) dt 21-12-2004
 
-=== topic=RP-008 id=RB-C6-04 from=RP-008 basis=open_source
+=== topic=RP-008 id=RB-C6-04 from=RP-008
 T: Substantive rank for SSC officers
 A: Old-term SSC officers are placed on par with permanent officers: Captain at 2 years, Major 6, Lt Col 13.
 K: Seniority reduced by the shorter training period
 K: Pay re-fixed notionally; new pay from 14-03-2012
-K: Retired or deceased before 20-07-2006: notional benefit only
-C: MoD letter B/32314/2011/14/AG/PS-2(a)/CC-148-D(AG-II) dt 10-05-2018; SRO 121 dt 28-10-2005
+K: Retired, died or invalided on or after 20-07-2006: notional benefit only
+C: MoD letter B/32314/2011/14/AG/PS-2(a)/CC-148-D(AG-II) dt 10-05-2018; SRO 121 dt 28-10-2005; PCDA(O) Handbook 2023, Ch 6 (Promotion), SSC substantive rank para A, pp 26-28
 D: Following the Supreme Court order of 29-01-2018. Not applicable to SSC and women officers already given PC. SSC women are considered for PC from 25-02-2019 and opt after 3 years (MoD letter 14(01)/2020-D(AG) dt 16-07-2020).
-O: Financial benefit cut-off is the AFT order of 14-03-2012; verify effect for officers retired after 20-07-2006.
 
 --- retire RB-RP-009 no order after the Jan 2014 re-examination of Colonel in-situ promotion is known; owner decision 2026-10-20
 

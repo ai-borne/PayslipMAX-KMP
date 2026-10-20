@@ -42,7 +42,7 @@ A: Not admissible to static units such as military farms, MES, recruiting office
 K: TA units get it only when embodied
 K: Record offices and cantonment units also static
 K: Hospitals, EME workshops and supply depots count as non-static
-C: MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994
+C: MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994; PCDA(O) Handbook 2023, Ch 15 para 4 (HAFAA, CFAA, CMFAA), pp 134-135
 D: Base rates from 01-07-2017: HAFAA Rs 16,900, CFAA Rs 10,500, CMFAA Rs 6,300 a month. Each rises 25% when DA rises by 50%.
 O: The FAQ static list and the handbook non-static list overlap; confirm with the Corps notification.
 
@@ -99,7 +99,7 @@ A: For a maximum of six months.
 K: Reimbursed in line with how HRA is paid
 K: Needs the new unit's Part II order, certificate and rent receipt
 W: No HRA for the stay; the payment is taxable
-C: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020
+C: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020; PCDA(O) Handbook 2023, Ch 23 para N (Transit Accommodation / Guest Room charges), p 241
 O: Six-month cap is from the FAQ (Dec 2025) only; the handbook text, read in full, does not state a cap.
 
 === topic=RP-091 from=SS-P095,SS-P100

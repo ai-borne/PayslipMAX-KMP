@@ -2,70 +2,40 @@
 
 Cards with an open point. CONFLICT marks a disagreement between sources. Not shown to app users.
 
-## Pay (21 cards)
+## Pay (11 cards)
 ### RB-SS-P086: Which children qualify for CEA?
-- Cite: MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018
+- Cite: MoD letter 1(23)/2017/D(Pay/Services) dt 15-09-2017 and dt 02-08-2018; PCDA(O) Handbook 2023, Ch 19 paras m, n and p, pp 180-181
 - **Open**: The handbook says two classes before Class 1; the newer FAQ says three from AY 2023-24. FAQ followed.
 ### RB-SS-P001: Documents needed for a personal number change or extension of service
 - Cite: (guidance, no cite)
 - **Open**: FAQ-only; no primary authority found. Hold as guidance.
 ### RB-SS-P002: Documents needed to open an account on re-employment
-- Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army
+- Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army; PCDA(O) Handbook 2023, Ch 2 (Form A, account number), p 4
 - **Open**: FAQ-only; cite is the form procedure. Confirm authority with domain owner.
 ### RB-SS-P003: Documents needed to reopen the account on re-commission
-- Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army
+- Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army; PCDA(O) Handbook 2023, Ch 2 (Form A, account reactivated), p 4
 - **Open**: FAQ-only; cite is the form procedure. Confirm with domain owner.
 ### RB-SS-P005: Documents needed on reversion from deputation or secondment
-- Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army
+- Cite: Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army; PCDA(O) Handbook 2023, Ch 2 (reversion from deputation: last pay certificate), p 4
 - **Open**: FAQ-only; handbook confirms last pay certificate from the previous audit office is needed.
 ### RB-SS-P008: Can I change or late-file my promotion pay fixation option?
-- Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
+- Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion; PCDA(O) Handbook 2023, Ch 13 (Option for Pay Fixation on Promotion), pp 98-99
 - **Open**: FAQ-only on finality; primary rule not located.
 ### RB-SS-P011: What document goes with the OPTFXDNI Part II order?
-- Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion
+- Cite: Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion; PCDA(O) Handbook 2023, Ch 13 (Option for Pay Fixation on Promotion), pp 98-99
 - **Open**: FAQ-only; primary rule not located.
-### RB-SS-P018: Special increments for sports: who qualifies and how many?
-- Cite: MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017 and 24-08-2018, corrigendum dt 17-09-2021
-- **Open**: FAQ also cites DoPT OM 03-10-2013 and MoD letter 1272 dt 19-08-1996; not read in full.
-### RB-SS-P027: Documents for Technical Allowance Tier I
-- Cite: CGDA letter ARMY/BR/OFF./ALLOW/1223/Misc dt 07-10-2019
-- **Open**: Certificate format is in the CGDA letter; confirm the letter is the primary authority.
-### RB-SS-P040: How much Flying Allowance goes to the DSOP Fund?
-- Cite: MoD letter B/26243/AG/PS3(a)401/S/D(Pay/Services) dt 06-05-1982 as amended
-- **Open**: DSOP credit authority is in handbook only; primary letter not separately identified.
 ### RB-SS-P078: HAFA, CFA and CMFA in a static unit
-- Cite: MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994
+- Cite: MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994; PCDA(O) Handbook 2023, Ch 15 para 4 (HAFAA, CFAA, CMFAA), pp 134-135
 - **Open**: The FAQ static list and the handbook non-static list overlap; confirm with the Corps notification.
 ### RB-SS-P080: Is field area allowance restored after leave automatically?
 - Cite: MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994
 - **Open**: FAQ-only on the restart procedure.
 ### RB-SS-P098: How long are transit accommodation charges reimbursed?
-- Cite: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020
+- Cite: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020; PCDA(O) Handbook 2023, Ch 23 para N (Transit Accommodation / Guest Room charges), p 241
 - **Open**: Six-month cap is from the FAQ (Dec 2025) only; the handbook text, read in full, does not state a cap.
-### RB-C13-01: Which pay level does each Army rank draw?
-- Cite: SRO 17(E) dt 06-07-2017 (Army Officers Pay Rules 2017 pay matrix)
-- **Open**: Level table copied by meaning from handbook; check against SRO 17(E) Part A.
-### RB-C13-03: How was pay fixed in the 7th CPC matrix on 01-01-2016?
-- Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017, rule 7
-- **Open**: Level 12A and 13 index of rationalisation raised from 2.57 to 2.67 by MoD resolution 1(6)/2016/D(Pay/Services) dt 22-06-2017; confirm how this affects fixation. A 2018 MoD memo says the 2.57 formula was not changed by the amendment rules; SRO 17(E) text not seen (owner kept as Open Source Info, 2026-10-20).
-### RB-C13-11: Pay when commissioned with antedate on or after 01-01-2016
-- Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
-- **Open**: Rule number not stated in the handbook; cite stays at SRO 12(E) level (owner, 2026-10-20).
-### RB-C4-02: Does a change of name or spelling affect my pay records?
-- Cite: Army Instruction 196/51
-- **Open**: AI 196/51 is quoted in the handbook; not independently checked.
-### RB-C6-04: Substantive rank for SSC officers
-- Cite: MoD letter B/32314/2011/14/AG/PS-2(a)/CC-148-D(AG-II) dt 10-05-2018; SRO 121 dt 28-10-2005
-- **Open**: Financial benefit cut-off is the AFT order of 14-03-2012; verify effect for officers retired after 20-07-2006.
-### RB-RP-032: Where are penal deductions explained?
-- Cite: AO 7/03
-- **Open**: Handbook gives only the pointer. Authoring a full card needs AO 7/03 text, not available here.
 ### RB-RP-053-arrears: DA arrears: what are they and what do I check?
-- Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+- Cite: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; PCDA(O) Handbook 2023, Ch 15 para 1 (Dearness Allowance), p 130
 - **Open**: No source in hand prints an arrears procedure. The handbook says only that DA is payable from 01 January and 01 July, and gives its basis; "difference owed back" is an inference from "payable from". Owner approved shipping with the Unverified chip (2026-10-09).
-### RB-RP-084: Claims you must not send to PCDA(O)
-- Cite: (guidance, no cite)
-- **Open**: No primary letter named in the source. Find the CGDA or MoD instruction.
 
 ## Travel (3 cards)
 ### RB-SS-T070: Field or CI posting: what extra LTC do I get?
@@ -109,4 +79,3 @@ Cards with an open point. CONFLICT marks a disagreement between sources. Not sho
 - RB-SS-P122: My medical claim was admitted for less than I claimed
 - RB-SS-P124: Dependents for medical claims
 - RB-SS-P001: Documents needed for a personal number change or extension of service
-- RB-RP-084: Claims you must not send to PCDA(O)

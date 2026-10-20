@@ -111,5 +111,5 @@ A: When a DA rise is announced late, you are owed the difference back to its sta
 K: DA rises from 1 January and 1 July
 K: Check each month from that date to the first payment
 K: The rise applies to matrix pay plus MSP and NPA only
-C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; PCDA(O) Handbook 2023, Ch 15 para 1 (Dearness Allowance), p 130
 O: No source in hand prints an arrears procedure. The handbook says only that DA is payable from 01 January and 01 July, and gives its basis; "difference owed back" is an inference from "payable from". Owner approved shipping with the Unverified chip (2026-10-09).
