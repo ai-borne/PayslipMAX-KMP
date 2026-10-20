@@ -1,5 +1,7 @@
 package com.payslipmax.pdfparser.ui.theme
 
+import com.payslipmax.pdfparser.guide.model.GuideBasis
+
 /**
  * App chrome copy for the Claim Guide (docs/Plan/rule_cards/16_guide_phase_plan.md). Area, case, facet and card
  * text is content from the bundle, never copy here (owner decision 2026-10-07).
@@ -61,6 +63,28 @@ object GuideStrings {
     const val chipUnverified = "Unverified point"
     const val chipNoOfficialSource = "No official source"
     const val unverifiedWarning = "This point is still being checked. Confirm it against the current order before you rely on it."
+    const val chipOpenSourceInfo = "Open Source Info"
+    const val chipDoptOm = "Based on DoPT Office Memorandum"
+    const val openSourceWarning = "This point rests on the PCDA(O) FAQ or handbook, not on an order we could read. Confirm it with your pay office before you rely on it."
+    const val doptOmWarning = "This point rests on a DoPT Office Memorandum; the Army letter adopting it was not seen. Confirm it with your pay office before you rely on it."
+
+    fun basisChip(basis: GuideBasis): String =
+        when (basis) {
+            GuideBasis.OPEN_SOURCE -> chipOpenSourceInfo
+            GuideBasis.DOPT_OM -> chipDoptOm
+        }
+
+    fun shareBasis(basis: GuideBasis): String =
+        when (basis) {
+            GuideBasis.OPEN_SOURCE -> shareOpenSource
+            GuideBasis.DOPT_OM -> shareDoptOm
+        }
+
+    fun basisWarning(basis: GuideBasis): String =
+        when (basis) {
+            GuideBasis.OPEN_SOURCE -> openSourceWarning
+            GuideBasis.DOPT_OM -> doptOmWarning
+        }
 
     // Premium preview: the locked half of a card.
     const val lockedTitle = "Key points, authority and details are in Premium"
@@ -82,6 +106,8 @@ object GuideStrings {
     const val shareAttach = "Attach:"
     const val shareWatchOut = "Watch out:"
     const val shareAuthority = "Authority:"
+    const val shareOpenSource = "Open Source Info: $openSourceWarning"
+    const val shareDoptOm = "Based on a DoPT Office Memorandum: the Army letter adopting it was not seen. Confirm it with your pay office before you rely on it."
     const val shareUnverified = "Unverified point: still being checked. Confirm it against the current order before you rely on it."
 
     // Premium Features catalog row.

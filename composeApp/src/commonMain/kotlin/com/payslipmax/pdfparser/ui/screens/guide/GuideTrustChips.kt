@@ -23,7 +23,8 @@ import com.payslipmax.pdfparser.ui.theme.GuideStrings
 private val ChipShape = RoundedCornerShape(percent = 50)
 
 /**
- * The trust chips wherever a card appears: Replaced on, Updated, Rates as of, Amended, Unverified point and No official
+ * The trust chips wherever a card appears: Replaced on, Updated, Rates as of, Amended, Unverified point, Open Source Info or
+ * Based on DoPT Office Memorandum (a card's basis), and No official
  * source, plus the user's own "Note" / "In your note" marker (M7, shown only to an unlocked user). They are flags and dates, free
  * for everyone, and they wrap on a narrow screen rather than cut a label. Nothing is drawn for a card without a chip.
  */
@@ -45,6 +46,7 @@ internal fun GuideTrustChips(
         trust.ratesAsOf?.let { TrustChip(GuideStrings.chipRatesAsOf(it)) }
         if (trust.amended) TrustChip(GuideStrings.chipAmended)
         if (trust.unverified) TrustChip(GuideStrings.chipUnverified, isWarning = true)
+        trust.basis?.let { TrustChip(GuideStrings.basisChip(it), isWarning = true) }
         if (trust.noOfficialSource) TrustChip(GuideStrings.chipNoOfficialSource)
         when (noteMark) {
             GuideNoteMark.NONE -> Unit
@@ -62,6 +64,7 @@ internal fun GuideTrustNotices(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
         if (trust.unverified) Notice(GuideStrings.unverifiedWarning)
+        trust.basis?.let { Notice(GuideStrings.basisWarning(it)) }
         if (ratesStale) trust.ratesAsOf?.let { Notice(GuideStrings.staleRatesNudge(it)) }
     }
 }

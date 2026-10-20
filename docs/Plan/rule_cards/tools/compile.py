@@ -9,6 +9,7 @@ Outputs: docs/Plan/rule_cards/rulebook.json    (canonical dataset; the app will 
 Authoring format (one block per card; '#' lines are comments):
   === topic=RR-TD-02 from=SS-T020,SS-T021 [id=RB-x] [chips=RATES,AMENDED] [personal=level:food_rate] [status=draft]
       [effective=YYYY-MM-DD] [replaces=RB-x]   (a dated rule; the replaced card leaves the tiles, see changes.py)
+      [basis=open_source|dopt_om]   (why a card with an O: point ships without the "Unverified point" chip; needs an O: line)
   T: question-style title
   A: one-line answer
   K: key point            (up to 3)
@@ -42,6 +43,7 @@ AUTH_DIR = os.path.join(CARDS_DIR, 'authoring')
 LIMITS = {'answer': 25, 'bullets': 3, 'bullet_words': 12, 'visible': 90, 'details': 120, 'title': 14}
 CHANGE_LOG = 'changes.txt'
 CHIPS = {'RATES', 'AMENDED', 'GUIDANCE'}
+BASES = {'open_source', 'dopt_om'}
 CITE_OK = re.compile(r'(MHA|Rule|Para|TR|AO|SAO|SAI|MoD|MoF|DoE|DoPT|IHQ|CGDA|OM|SRO|Pay Rules|Army|Handbook|Regulation|Section|Sec|FR|CCS|GFR|DFPDS|Note|Appx|Order|Advisory)', re.I)
 WORD = re.compile(r"[A-Za-z0-9₹%.,/'()&+-]+")
 
@@ -111,6 +113,10 @@ def validate(card, topics, ssot_ids, errors, warns):
             errors.append(f'{w}: unknown chip {c}')
     if 'effective' in a and not chgmod.is_date(a['effective']):
         errors.append(f'{w}: effective={a["effective"]!r} is not a YYYY-MM-DD date')
+    if 'basis' in a and a['basis'] not in BASES:
+        errors.append(f'{w}: basis={a["basis"]!r} is not one of {", ".join(sorted(BASES))}')
+    elif 'basis' in a and not card['open']:
+        errors.append(f'{w}: basis= needs an O: line saying what is still open')
     if 'replaces' in a and not chgmod.CARD_ID.match(a['replaces']):
         errors.append(f'{w}: replaces={a["replaces"]!r} is not a card id (RB-...)')
     if not card['T']: errors.append(f'{w}: missing T:')
@@ -170,7 +176,7 @@ def main():
         out_cards.append({**dated, 'id': cid, 'domain': 'travel' if card['attrs'].get('topic', '').startswith('RR-') else 'pay',
                           'topic': card['attrs'].get('topic'), 'title': card['T'], 'answer': card['A'], 'key': card['key'],
                           'attach': card['attach'], 'watch': card['watch'], 'cite': card['C'], 'details': card['D'], 'chips': chips,
-                          'personal': card['attrs'].get('personal', ''), 'from': frm, 'open': card['open'],
+                          'personal': card['attrs'].get('personal', ''), 'from': frm, 'open': card['open'], 'basis': card['attrs'].get('basis', ''),
                           'status': card['attrs'].get('status', 'draft')})
     chgmod.apply_replacements(out_cards, errors)
     log = chgmod.load_log(os.path.join(AUTH_DIR, CHANGE_LOG), seen, errors)

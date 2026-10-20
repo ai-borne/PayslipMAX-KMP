@@ -77,7 +77,11 @@ class CommittedLock(unittest.TestCase):
         with open(os.path.join(CARDS_DIR, 'rulebook.json'), encoding='utf-8') as fh:
             shipped = {c['id'] for c in json.load(fh)['cards']}
         self.assertEqual(ids.stale(shipped, ids.load_lock(LOCK_PATH)), [], 'run tools/refresh.py to extend ids_lock.json')
-        self.assertEqual(ids.check(shipped, ids.load_lock(LOCK_PATH), {}), [])
+        # why: a card retired on purpose (a `--- retire` line in an authoring file) stays in the lock for ever, so it is not a gap.
+        retired = {}
+        for path in comp.card_files():
+            retired.update(comp.parse(path, [])[2])
+        self.assertEqual(ids.check(shipped, ids.load_lock(LOCK_PATH), retired), [])
 
 
 if __name__ == '__main__':

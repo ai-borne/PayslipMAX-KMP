@@ -29,6 +29,8 @@ data class GuideShareParts(
     val cite: String,
     val unverified: Boolean,
     val replacedOn: String? = null,
+    /** The share line for a card resting on the FAQ, handbook or a DoPT OM (already worded by the app); null on any other card. */
+    val basisLine: String? = null,
 )
 
 /** Builds the plain-text "claim note" the user may share. Pure and fixed in layout; an empty section is left out. */
@@ -38,7 +40,7 @@ object GuideShareText {
         labels: GuideShareLabels,
     ): String {
         val replaced = parts.replacedOn?.let { "\n${labels.replacedOn} $it. ${labels.replacedApplies}" }.orEmpty()
-        val answer = "${labels.answer} ${parts.answer}" + replaced + if (parts.unverified) "\n${labels.unverified}" else ""
+        val answer = "${labels.answer} ${parts.answer}" + replaced + if (parts.unverified) "\n${labels.unverified}" else parts.basisLine?.let { "\n$it" }.orEmpty()
         val blocks =
             listOf(labels.header, parts.title, answer) +
                 listOfNotNull(

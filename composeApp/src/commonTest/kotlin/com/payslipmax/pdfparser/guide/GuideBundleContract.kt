@@ -10,6 +10,7 @@ import com.payslipmax.pdfparser.guide.domain.GuidePins
 import com.payslipmax.pdfparser.guide.domain.GuideRuleNumberParser
 import com.payslipmax.pdfparser.guide.domain.GuideSearchIndex
 import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
+import com.payslipmax.pdfparser.guide.model.GuideBasis
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.subscription.LaunchFlags
 import com.payslipmax.pdfparser.ui.screens.guide.cardContent
@@ -35,7 +36,7 @@ import kotlin.test.assertTrue
  */
 object GuideBundleContract {
     private val WAIVED_UNVERIFIED_RATE_CARDS =
-        setOf("RB-C13-01", "RB-C13-14", "RB-RP-052", "RB-RP-053-arrears", "RB-RP-074")
+        emptySet<String>()
 
     suspend fun readShippedBundleText(): String = Res.readBytes(GUIDE_BUNDLE_PATH).decodeToString()
 
@@ -43,18 +44,22 @@ object GuideBundleContract {
 
     fun assertMatchesCompiledDataset(bundle: GuideBundle) {
         assertEquals(GuideBundleParser.SUPPORTED_MAJOR, bundle.version)
-        assertEquals(404, bundle.cards.size)
+        assertEquals(400, bundle.cards.size)
         assertEquals(9, bundle.nav.size)
         assertEquals(44, bundle.nav.sumOf { it.cases.size })
         assertEquals(setOf("Q", "H", "C", "L"), bundle.facets.keys)
-        // Owner, 2026-10-06: all open-point cards ship (36, plus the DA arrears card on 2026-10-09 = 37), flagged "Unverified point".
-        assertEquals(37, bundle.cards.count { it.unverified })
-        // Owner, 2026-10-07: "No official source" is exactly the 31 cards with no cite.
-        assertEquals(31, bundle.cards.count { it.hasNoOfficialSource })
+        // Owner, 2026-10-06: all open-point cards ship, flagged "Unverified point". Owner, 2026-10-20: no card is "Unverified" any more: 14
+        // carry a basis instead (12 on the PCDA(O) FAQ, 2 on a DoPT OM), 4 were removed and the rest were closed on a mirror read or
+        // against the PCDA(O) Handbook 2023, whose exact para is then in the cite (owner, 2026-10-20).
+        assertEquals(0, bundle.cards.count { it.unverified })
+        assertEquals(12, bundle.cards.count { it.basis == "open_source" })
+        assertEquals(2, bundle.cards.count { it.basis == "dopt_om" })
+        // Owner, 2026-10-07: "No official source" is exactly the 30 cards with no cite (31 until RB-RP-084 got its Handbook para, 2026-10-20).
+        assertEquals(30, bundle.cards.count { it.hasNoOfficialSource })
         // Owner, 2026-10-07: rates current to the DA 60% step.
         assertEquals("2026-01", bundle.ratesAsOf)
-        // RP-088 HBA ships with the chip until the owner confirms the rate from a primary letter.
-        assertEquals(true, bundle.cards.firstOrNull { it.id == "RB-RP-088" }?.unverified)
+        // RP-088 HBA: the 8.5% Army rate was confirmed from the MoD (DMA) letter of 19-06-2023 (owner, 2026-10-20), so no chip.
+        assertEquals(false, bundle.cards.firstOrNull { it.id == "RB-RP-088" }?.unverified)
         assertRuleChangeMetadataIsSound(bundle)
     }
 
@@ -147,8 +152,9 @@ object GuideBundleContract {
         val index = bundle.toReady().index
         val locked = bundle.cards.map { assertNotNull(index.cardContent(it.id, unlocked = false, nowMillis = 0L)) }
         assertTrue(locked.all { it.full == null }, "a locked card holds no key points, cite or details")
-        assertEquals(37, locked.count { it.trust.unverified })
-        assertEquals(31, locked.count { it.trust.noOfficialSource })
+        assertEquals(0, locked.count { it.trust.unverified })
+        assertEquals(14, locked.count { it.trust.basis != null })
+        assertEquals(30, locked.count { it.trust.noOfficialSource })
         assertEquals(bundle.cards.count { "RATES" in it.chips }, locked.count { it.trust.ratesAsOf == bundle.ratesAsOf })
         assertEquals(bundle.cards.count { "AMENDED" in it.chips }, locked.count { it.trust.amended })
         assertTrue(bundle.cards.any { "RATES" in it.chips } && bundle.cards.any { "AMENDED" in it.chips }, "both chips are in use")
@@ -169,9 +175,9 @@ object GuideBundleContract {
      * still an "Unverified point" (RP-088 HBA 8.5% is one). With the paywall off this holds nothing back; the day someone flips
      * [LaunchFlags.GUIDE_PAYWALL_ENABLED] while such a card remains, this fails and names the cards.
      *
-     * Owner waiver (2026-10-18): the paywall was flipped while the five cards in [WAIVED_UNVERIFIED_RATE_CARDS] were still unverified,
-     * so the owner, the only user, could see the locked screens on a real device. Only those five are waived; any other (or new)
-     * unverified Rates-chip card still fails here. Delete a card from the set when it is verified.
+     * Owner waiver (2026-10-18): the paywall was flipped while the five cards then in [WAIVED_UNVERIFIED_RATE_CARDS] were still unverified,
+     * so the owner, the only user, could see the locked screens on a real device. Owner, 2026-10-20: no card is "Unverified" any more
+     * (each was verified, given a basis label or removed), so the waiver set is empty; any new unverified Rates-chip card fails here.
      */
     fun assertPaywallOnlyWhenNoUnverifiedRateCard(bundle: GuideBundle) {
         if (!LaunchFlags.GUIDE_PAYWALL_ENABLED) return
@@ -193,7 +199,7 @@ object GuideBundleContract {
 
     /**
      * E8: on every real card a pin is accepted (every id is a plain card id, else the pin would silently do nothing), the claim note
-     * builds, holds the title and exactly the cite, carries the warning for the 37 unverified cards and for no other, and never leaks a raw
+     * builds, holds the title and exactly the cite, carries the warning for each unverified card (none now) and for no other, and never leaks a raw
      * placeholder or the card's details block.
      */
     fun assertPinsAndShareNotesMatchDataset(bundle: GuideBundle) {
@@ -209,8 +215,10 @@ object GuideBundleContract {
             assertTrue(!note.contains('{'), card.id)
             if (card.details.isNotBlank()) assertTrue(!note.contains(card.details), card.id)
             if (card.unverified) warned++
+            val basis = GuideBasis.fromKey(card.basis)
+            assertEquals(basis != null, basis?.let { note.contains(GuideStrings.shareBasis(it)) } ?: false, card.id)
         }
-        assertEquals(37, warned)
+        assertEquals(0, warned)
     }
 
     /**

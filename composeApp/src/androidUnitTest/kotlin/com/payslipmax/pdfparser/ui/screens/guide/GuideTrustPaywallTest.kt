@@ -123,6 +123,24 @@ class GuideTrustPaywallTest {
     }
 
     @Test
+    fun aBasisCardShowsItsBasisChipAndLineInsteadOfTheUnverifiedOnes() {
+        // why: a card on the FAQ or a DoPT OM must say so, and must not claim to be merely "still being checked".
+        openCard(SyntheticGuideBundle.OPEN_SOURCE_CARD, unlocked = false)
+
+        composeRule.onNodeWithText(GuideStrings.chipOpenSourceInfo).assertIsDisplayed()
+        composeRule.onNodeWithText(GuideStrings.openSourceWarning).assertIsDisplayed()
+        composeRule.onNodeWithText(GuideStrings.chipUnverified).assertDoesNotExist()
+    }
+
+    @Test
+    fun aDoptOmCardShowsItsBasisChip() {
+        openCard(SyntheticGuideBundle.DOPT_OM_CARD, unlocked = false)
+
+        composeRule.onNodeWithText(GuideStrings.chipDoptOm).assertIsDisplayed()
+        composeRule.onNodeWithText(GuideStrings.doptOmWarning).assertIsDisplayed()
+    }
+
+    @Test
     fun theFeedRowsShowTheChipsOfTheirCards() {
         show(unlocked = false)
         tap("Travel")

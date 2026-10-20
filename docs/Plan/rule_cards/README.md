@@ -4,7 +4,7 @@ Everything for this project lives in this folder, except the extracted source te
 
 | Path | What |
 |---|---|
-| `authoring/*.txt` | Card text: the source of truth. Edit these only. |
+| `authoring/*.txt` | Card text: the source of truth. Edit these only. A card line may carry `basis=open_source` or `basis=dopt_om` (see runbook 2). |
 | `rulebook.json`, `RULEBOOK.md` | Generated. Never hand-edit. |
 | `composeApp/src/commonMain/composeResources/files/guide/guide_bundle.json` | The app bundle, generated from `rulebook.json` by `tools/bundle.py`. Never hand-edit. |
 | `nav.json` | Tile navigation (areas > cases) for the Guide UI. Authored; `compile.py` validates it and writes it into `rulebook.json`. |

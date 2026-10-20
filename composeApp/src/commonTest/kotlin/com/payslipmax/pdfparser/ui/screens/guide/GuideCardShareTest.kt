@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.guide.data.GuideBundleParser
 import com.payslipmax.pdfparser.guide.domain.GuideIndex
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
 import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
+import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -47,6 +48,17 @@ class GuideCardShareTest {
 
         assertTrue(card(SyntheticGuideBundle.UNVERIFIED_CARD).shareNote()!!.contains("\n$warning\n"))
         assertFalse(card("RB-T5").shareNote()!!.contains(warning))
+    }
+
+    @Test
+    fun aBasisCardCarriesItsOwnLineAndNotTheUnverifiedOne() {
+        // why: forwarding a note must not drop the fact that the point rests on the FAQ or a DoPT OM.
+        val open = card(SyntheticGuideBundle.OPEN_SOURCE_CARD).shareNote()!!
+        val dopt = card(SyntheticGuideBundle.DOPT_OM_CARD).shareNote()!!
+
+        assertTrue(open.contains("\n${GuideStrings.shareOpenSource}\n"))
+        assertTrue(dopt.contains("\n${GuideStrings.shareDoptOm}\n"))
+        assertFalse(open.contains(GuideStrings.shareUnverified))
     }
 
     @Test

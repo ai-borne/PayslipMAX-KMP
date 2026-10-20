@@ -6,7 +6,6 @@ K: Vice Chief and Army Commanders: Level 17
 K: Chief of Army Staff: Level 18
 C: SRO 17(E) dt 06-07-2017 (Army Officers Pay Rules 2017 pay matrix)
 D: Military Nursing Service uses its own levels (10, 10A, 10B, 11, 12, 12B, 13B). NCC whole-time lady officers use 10, 10B, 11 and 12. Pay is drawn in the level of the rank held substantively.
-O: Level table copied by meaning from handbook; check against SRO 17(E) Part A.
 
 === topic=RP-034 id=RB-C13-02 from=RP-034
 T: Who do the 7th CPC Army pay rules cover?
@@ -24,7 +23,6 @@ K: AMC, ADC, RVC with NPA: add DA on old NPA before locating
 K: Excess of old pay over new is personal pay
 C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017, rule 7
 D: Basic pay means pay band pay plus grade pay. Example: Major with Rs 32,720 gets 84,090 and is fixed at Rs 85,300 in Level 11. Personal pay is absorbed in future increases.
-O: Level 12A and 13 index of rationalisation raised from 2.57 to 2.67 by MoD resolution 1(6)/2016/D(Pay/Services) dt 22-06-2017; confirm how this affects fixation.
 
 === topic=RP-034 id=RB-C13-04 from=RP-034
 T: Can I still change my 2016 option for revised pay?
@@ -90,9 +88,8 @@ T: Pay when commissioned with antedate on or after 01-01-2016
 A: Pay is fixed notionally from the antedate, with increments added; the result is your pay on commission.
 K: Increments in the antedate period are notional
 K: Next increment may fall soon after commission
-C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; PCDA(O) Handbook 2023, Ch 13 para 16 (pay of officers commissioned with antedate), p 97
 D: Example: commissioned 02-03-2016 with two years antedate from 02-03-2014. Notional pay Rs 15,600 rises to 56,100 in 7th CPC; the 01-07-2016 increment takes pay to Rs 57,800.
-O: Rule number not stated in handbook; find it.
 
 === topic=RP-034 id=RB-C13-12 from=RP-034
 T: Stepping up pay of a senior drawing less than a junior
@@ -120,4 +117,3 @@ K: Counts as pay for DA, pension, retirement benefits
 K: Not counted in basic pay for HRA from 01-07-2017
 C: Rule 171, Pay and Allowances Regulations for the Army; MoD letter 4(10)/2017/D(Med) dt 28-09-2017; MoD letter 3(1)/2015-D(Q&C) dt 11-10-2017
 D: NPA is paid during study leave. It is not calculated on MSP.
-O: MoD letter 4(10)/2017/D(Med) is dated 28-09-2017 here but 29-09-2017 on the DSOP card; one date or two separate letters. Verify.

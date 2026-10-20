@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generated": "2026-10-18",
+ "generated": "2026-10-20",
  "limits": {
   "answer": 25,
   "bullets": 3,
@@ -1332,7 +1332,6 @@
       "RB-RP-011",
       "RB-RP-012",
       "RB-RP-013",
-      "RB-C8-04",
       "RB-RP-014",
       "RB-C8-05",
       "RB-RP-015",
@@ -1761,7 +1760,6 @@
       "RB-C6-02",
       "RB-C6-03",
       "RB-C6-04",
-      "RB-RP-009",
       "RB-RP-010",
       "RB-C7-02",
       "RB-C7-03"
@@ -1904,7 +1902,6 @@
       "RB-RP-048",
       "RB-RP-060",
       "RB-RP-062",
-      "RB-RP-063",
       "RB-RP-084"
      ],
      "also": []
@@ -1927,8 +1924,7 @@
       "RB-RP-054",
       "RB-RP-074",
       "RB-RP-075",
-      "RB-RP-080",
-      "RB-RP-081"
+      "RB-RP-080"
      ],
      "also": []
     }
@@ -2043,6 +2039,7 @@
     "SS-T183"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-da"
@@ -2076,6 +2073,7 @@
     "SS-T188"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "td-ground"
@@ -2105,6 +2103,7 @@
     "SS-T236"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-home"
@@ -2138,6 +2137,7 @@
     "SS-T193"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ctg"
@@ -2170,6 +2170,7 @@
     "SS-T212"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-time"
@@ -2197,6 +2198,7 @@
     "SS-T088"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-home"
@@ -2222,6 +2224,7 @@
     "SS-T089"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-home"
@@ -2254,6 +2257,7 @@
     "SS-T086"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-home"
@@ -2283,6 +2287,7 @@
     "SS-T290"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-home"
@@ -2310,6 +2315,7 @@
     "SS-T110"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-home"
@@ -2336,6 +2342,7 @@
     "SS-T064"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-home"
@@ -2360,6 +2367,7 @@
     "SS-T079"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-rules"
@@ -2384,6 +2392,7 @@
     "SS-T085"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-rules"
@@ -2409,6 +2418,7 @@
     "SS-T077"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-rules"
@@ -2435,6 +2445,7 @@
     "SS-T065"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-rules"
@@ -2460,6 +2471,7 @@
     "SS-T092"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "ltc-rules"
@@ -2488,6 +2500,7 @@
     "SS-T298"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-rules"
@@ -2515,6 +2528,7 @@
     "SS-T121"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-anywhere"
@@ -2546,6 +2560,7 @@
     "SS-T102"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-field"
@@ -2581,6 +2596,7 @@
    "open": [
     "CONFLICT. Owner decision (G2): follow the PCDA(O) FAQ (Dec 2025), which allows 177C with 177B in one year. TR 2014 Rule 177C(a) reads as an option in lieu of 177A/B that lapses the wife and children 177A/B for the year. Authority for the FAQ position not seen."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-field"
@@ -2607,6 +2623,7 @@
     "SS-T293"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-field"
@@ -2638,6 +2655,7 @@
    "open": [
     "DoPT OMs read (09-09-2026 from a mirror copy). No MoD adoption letter for Army officers found; owner had 25-09-2025, now superseded."
    ],
+   "basis": "dopt_om",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-regions"
@@ -2662,6 +2680,7 @@
     "SS-T081"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-home"
@@ -2687,6 +2706,7 @@
     "SS-T084"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-class"
@@ -2713,6 +2733,7 @@
     "SS-T116"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-class"
@@ -2739,6 +2760,7 @@
     "SS-T097"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "ltc-rules"
@@ -2763,6 +2785,7 @@
     "SS-T098"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "ltc-home"
@@ -2787,6 +2810,7 @@
     "SS-T099"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-class"
@@ -2811,6 +2835,7 @@
     "SS-T100"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-anywhere"
@@ -2840,6 +2865,7 @@
     "SS-T133"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-anywhere"
@@ -2869,6 +2895,7 @@
     "SS-T126"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-anywhere"
@@ -2893,6 +2920,7 @@
     "SS-T103"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-anywhere"
@@ -2919,6 +2947,7 @@
     "SS-T123"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-anywhere"
@@ -2943,6 +2972,7 @@
     "SS-T107"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-anywhere"
@@ -2971,6 +3001,7 @@
     "SS-T118"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-anywhere"
@@ -2995,6 +3026,7 @@
     "SS-T120"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-anywhere"
@@ -3020,6 +3052,7 @@
     "SS-T122"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-anywhere"
@@ -3047,6 +3080,7 @@
     "SS-T112"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-anywhere"
@@ -3071,6 +3105,7 @@
     "SS-T113"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-anywhere"
@@ -3094,6 +3129,7 @@
     "SS-T114"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-anywhere"
@@ -3119,6 +3155,7 @@
     "SS-T125"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "ltc-anywhere"
@@ -3144,6 +3181,7 @@
     "SS-T117"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-anywhere"
@@ -3167,6 +3205,7 @@
     "SS-T119"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-anywhere"
@@ -3191,6 +3230,7 @@
     "SS-T127"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-field"
@@ -3216,6 +3256,7 @@
     "SS-T128"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-family"
@@ -3239,6 +3280,7 @@
     "SS-T129"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-rules"
@@ -3267,6 +3309,7 @@
     "SS-T136"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-class"
@@ -3292,6 +3335,7 @@
     "SS-T135"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-class"
@@ -3317,6 +3361,7 @@
     "SS-T137"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-class"
@@ -3340,6 +3385,7 @@
     "SS-T138"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-class"
@@ -3365,6 +3411,7 @@
     "SS-T141"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-class"
@@ -3390,6 +3437,7 @@
     "SS-T142"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-regions"
@@ -3422,6 +3470,7 @@
     "SS-T146"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-regions"
@@ -3449,6 +3498,7 @@
     "SS-T249"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-field"
@@ -3475,6 +3525,7 @@
     "SS-T268"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "move-ta"
@@ -3500,6 +3551,7 @@
     "SS-T255"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ta"
@@ -3526,6 +3578,7 @@
     "SS-T256"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ta"
@@ -3550,6 +3603,7 @@
     "SS-T257"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "move-ta"
@@ -3575,6 +3629,7 @@
     "SS-T263"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "move-ta"
@@ -3601,6 +3656,7 @@
     "SS-T262"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ta"
@@ -3628,6 +3684,7 @@
     "SS-T260"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ctg"
@@ -3655,6 +3712,7 @@
     "SS-T261"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ta"
@@ -3681,6 +3739,7 @@
     "SS-T267"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "move-ta"
@@ -3704,6 +3763,7 @@
     "SS-T265"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-time"
@@ -3728,6 +3788,7 @@
     "SS-T266"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "move-ta"
@@ -3754,6 +3815,7 @@
     "SS-T270"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ta"
@@ -3780,6 +3842,7 @@
     "SS-T269"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ta"
@@ -3804,6 +3867,7 @@
     "SS-T272"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ta"
@@ -3830,6 +3894,7 @@
     "SS-T279"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "move-family"
@@ -3853,6 +3918,7 @@
     "SS-T196"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "move-family"
@@ -3880,6 +3946,7 @@
     "SS-T192"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ctg"
@@ -3910,6 +3977,7 @@
     "SS-T278"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ctg"
@@ -3937,6 +4005,7 @@
     "SS-T151"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ta"
@@ -3963,6 +4032,7 @@
     "SS-T277"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ta"
@@ -3987,6 +4057,7 @@
     "SS-T276"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ta"
@@ -4011,6 +4082,7 @@
     "SS-T278"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "move-ctg"
@@ -4036,6 +4108,7 @@
     "SS-T280"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-family"
@@ -4060,6 +4133,7 @@
     "SS-T281"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-family"
@@ -4085,6 +4159,7 @@
     "SS-T282"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-family"
@@ -4109,6 +4184,7 @@
     "SS-T283"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "move-family"
@@ -4133,6 +4209,7 @@
     "SS-T284"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "move-family"
@@ -4157,6 +4234,7 @@
     "SS-T285"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "td-air"
@@ -4185,6 +4263,7 @@
     "SS-T209"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-family"
@@ -4210,6 +4289,7 @@
     "SS-T184"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-da"
@@ -4235,6 +4315,7 @@
     "SS-T049"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "td-da"
@@ -4260,6 +4341,7 @@
     "SS-T306"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "td-da"
@@ -4283,6 +4365,7 @@
     "SS-T307"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "td-da"
@@ -4311,6 +4394,7 @@
     "SS-T313"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-da"
@@ -4337,6 +4421,7 @@
     "SS-T314"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "td-da"
@@ -4362,6 +4447,7 @@
     "SS-T315"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-da"
@@ -4387,6 +4473,7 @@
     "SS-T012"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-da"
@@ -4410,6 +4497,7 @@
     "SS-T308"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-da"
@@ -4435,6 +4523,7 @@
     "SS-T309"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-da"
@@ -4461,6 +4550,7 @@
     "SS-T157"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-ground"
@@ -4486,6 +4576,7 @@
     "SS-T311"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-ground"
@@ -4511,6 +4602,7 @@
     "SS-T312"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-class"
@@ -4537,6 +4629,7 @@
     "SS-T317"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "td-da"
@@ -4562,6 +4655,7 @@
     "SS-T318"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-da"
@@ -4586,6 +4680,7 @@
     "SS-T320"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "td-course"
@@ -4612,6 +4707,7 @@
     "SS-T323"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-course"
@@ -4638,6 +4734,7 @@
     "SS-T006"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-course"
@@ -4661,6 +4758,7 @@
     "SS-T325"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "td-course"
@@ -4686,6 +4784,7 @@
     "SS-T328"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-course"
@@ -4711,6 +4810,7 @@
     "SS-T329"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-course"
@@ -4735,6 +4835,7 @@
     "SS-T327"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-course"
@@ -4758,6 +4859,7 @@
     "SS-T155"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "move-ctg"
@@ -4782,6 +4884,7 @@
     "SS-T156"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-ground"
@@ -4805,6 +4908,7 @@
     "SS-T158"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "td-air"
@@ -4829,6 +4933,7 @@
     "SS-T185"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-da"
@@ -4858,6 +4963,7 @@
     "SS-T202"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-docs"
@@ -4886,6 +4992,7 @@
     "SS-T190"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-docs"
@@ -4911,6 +5018,7 @@
     "SS-T189"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-ground"
@@ -4937,6 +5045,7 @@
     "SS-T231"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "ltc-rules"
@@ -4961,6 +5070,7 @@
     "SS-T330"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-events"
@@ -4985,6 +5095,7 @@
     "SS-T331"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "td-events"
@@ -5011,6 +5122,7 @@
     "SS-T333"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-events"
@@ -5036,6 +5148,7 @@
     "SS-T334"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "td-events"
@@ -5061,6 +5174,7 @@
     "SS-T336"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-other"
@@ -5088,6 +5202,7 @@
     "SS-T338"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-other"
@@ -5112,6 +5227,7 @@
     "SS-T339"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-other"
@@ -5137,6 +5253,7 @@
     "SS-T340"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-other"
@@ -5162,6 +5279,7 @@
     "SS-T341"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-other"
@@ -5186,6 +5304,7 @@
     "SS-T342"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-other"
@@ -5209,6 +5328,7 @@
     "SS-T343"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-other"
@@ -5234,6 +5354,7 @@
     "SS-T344"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-other"
@@ -5259,6 +5380,7 @@
     "SS-T345"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "td-other"
@@ -5285,6 +5407,7 @@
     "SS-T346"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-other"
@@ -5310,6 +5433,7 @@
     "SS-T001"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-rules"
@@ -5337,6 +5461,7 @@
     "SS-T002"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "claims-who"
@@ -5361,6 +5486,7 @@
     "SS-T003"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "claims-who"
@@ -5385,6 +5511,7 @@
     "SS-T005"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "claims-who"
@@ -5411,6 +5538,7 @@
     "SS-T200"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "td-da"
@@ -5437,6 +5565,7 @@
     "SS-T009"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "claims-who"
@@ -5461,6 +5590,7 @@
     "SS-T008"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-who"
@@ -5486,6 +5616,7 @@
     "SS-T011"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-who"
@@ -5511,6 +5642,7 @@
     "SS-T015"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "claims-time"
@@ -5536,6 +5668,7 @@
     "SS-T016"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-time"
@@ -5564,6 +5697,7 @@
     "SS-T018"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-time"
@@ -5587,6 +5721,7 @@
     "SS-T019"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-time"
@@ -5611,6 +5746,7 @@
     "SS-T020"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-time"
@@ -5637,6 +5773,7 @@
     "SS-T021"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "move-ta"
@@ -5661,6 +5798,7 @@
     "SS-T022"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "claims-who"
@@ -5689,6 +5827,7 @@
     "SS-T030"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-misc"
@@ -5714,6 +5853,7 @@
     "SS-T031"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "claims-misc"
@@ -5740,6 +5880,7 @@
     "SS-T026"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "claims-misc"
@@ -5764,6 +5905,7 @@
     "SS-T032"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "claims-misc"
@@ -5787,6 +5929,7 @@
     "SS-T027"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-misc"
@@ -5810,6 +5953,7 @@
     "SS-T033"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-adv"
@@ -5838,6 +5982,7 @@
     "SS-T040"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "claims-adv"
@@ -5861,6 +6006,7 @@
     "SS-T035"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "claims-adv"
@@ -5886,6 +6032,7 @@
     "SS-T036"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "claims-adv"
@@ -5910,6 +6057,7 @@
     "SS-T037"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "claims-adv"
@@ -5933,6 +6081,7 @@
     "SS-T038"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "claims-adv"
@@ -5959,6 +6108,7 @@
    "open": [
     "CONFLICT (resolved for rail): TR 2014 says 95 days; the later MoD letter says 125. Advance limit for Army air or road LTC not seen; DoPT civil limit is 65 days."
    ],
+   "basis": "dopt_om",
    "status": "draft",
    "facet": "C",
    "nav": "claims-adv"
@@ -5983,6 +6133,7 @@
     "SS-T041"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-adv"
@@ -6006,6 +6157,7 @@
     "SS-T043"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "claims-adv"
@@ -6029,6 +6181,7 @@
     "SS-T044"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "claims-adv"
@@ -6053,6 +6206,7 @@
     "SS-T045"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "claims-misc"
@@ -6083,6 +6237,7 @@
     "SS-T251"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-misc"
@@ -6108,6 +6263,7 @@
     "SS-T052"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "claims-misc"
@@ -6135,6 +6291,7 @@
     "SS-T056"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "claims-misc"
@@ -6158,6 +6315,7 @@
     "SS-T054"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "claims-misc"
@@ -6182,6 +6340,7 @@
     "SS-T057"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "claims-misc"
@@ -6206,6 +6365,7 @@
     "SS-T225"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-ground"
@@ -6231,6 +6391,7 @@
     "SS-T159"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-ground"
@@ -6254,6 +6415,7 @@
     "SS-T160"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-ground"
@@ -6279,6 +6441,7 @@
     "SS-T161"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "td-ground"
@@ -6305,6 +6468,7 @@
     "SS-T295"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ret-ret"
@@ -6330,6 +6494,7 @@
     "SS-T292"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ret-ret"
@@ -6354,6 +6519,7 @@
     "SS-T294"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ret-ret"
@@ -6377,6 +6543,7 @@
     "SS-T296"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ret-ret"
@@ -6401,6 +6568,7 @@
     "SS-T297"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ret-ret"
@@ -6424,6 +6592,7 @@
     "SS-T289"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ret-ret"
@@ -6448,6 +6617,7 @@
     "SS-T299"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ret-ret"
@@ -6474,6 +6644,7 @@
     "SS-T300"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ret-ret"
@@ -6500,6 +6671,7 @@
     "SS-T239"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ret-death"
@@ -6523,6 +6695,7 @@
     "SS-T301"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ret-death"
@@ -6547,6 +6720,7 @@
     "SS-T303"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "ret-death"
@@ -6570,6 +6744,7 @@
     "SS-T195"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "ret-death"
@@ -6596,6 +6771,7 @@
     "SS-T347"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-daily"
@@ -6620,6 +6796,7 @@
     "SS-T347"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-daily"
@@ -6649,6 +6826,7 @@
     "SS-T162"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "td-air"
@@ -6674,6 +6852,7 @@
     "SS-T175"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "td-air"
@@ -6698,6 +6877,7 @@
     "SS-T165"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "td-air"
@@ -6725,6 +6905,7 @@
     "SS-T167"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "td-air"
@@ -6749,6 +6930,7 @@
     "SS-T170"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "td-air"
@@ -6773,6 +6955,7 @@
     "SS-T172"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "td-air"
@@ -6798,6 +6981,7 @@
     "SS-T174"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "td-air"
@@ -6822,6 +7006,7 @@
     "SS-T177"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "td-air"
@@ -6848,6 +7033,7 @@
     "SS-T179"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-air"
@@ -6875,6 +7061,7 @@
     "SS-T180"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-air"
@@ -6898,6 +7085,7 @@
     "SS-T149"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "td-ground"
@@ -6922,6 +7110,7 @@
     "SS-T150"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "td-ground"
@@ -6950,6 +7139,7 @@
     "SS-T153"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "td-ground"
@@ -6976,6 +7166,7 @@
     "SS-T197"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-docs"
@@ -7004,6 +7195,7 @@
     "SS-T198"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "claims-docs"
@@ -7031,6 +7223,7 @@
     "SS-T199"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-docs"
@@ -7057,6 +7250,7 @@
     "SS-T201"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "claims-docs"
@@ -7086,6 +7280,7 @@
     "SS-T205"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-docs"
@@ -7112,6 +7307,7 @@
     "SS-T206"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "claims-docs"
@@ -7138,6 +7334,7 @@
     "SS-T224"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-regions"
@@ -7162,6 +7359,7 @@
     "SS-T208"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-docs"
@@ -7188,6 +7386,7 @@
     "SS-T211"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "claims-time"
@@ -7212,6 +7411,7 @@
     "SS-T214"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-time"
@@ -7239,6 +7439,7 @@
     "SS-T217"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-time"
@@ -7263,6 +7464,7 @@
     "SS-T213"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-field"
@@ -7290,6 +7492,7 @@
     "SS-T218"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-dts"
@@ -7318,6 +7521,7 @@
     "SS-T222"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-dts"
@@ -7344,6 +7548,7 @@
     "SS-T220"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-dts"
@@ -7370,6 +7575,7 @@
     "SS-T221"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "claims-dts"
@@ -7395,6 +7601,7 @@
     "SS-T222"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "td-course"
@@ -7419,6 +7626,7 @@
     "SS-T223"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "claims-dts"
@@ -7444,6 +7652,7 @@
     "SS-T232"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-family"
@@ -7467,6 +7676,7 @@
     "SS-T233"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-family"
@@ -7490,6 +7700,7 @@
     "SS-T234"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-family"
@@ -7513,6 +7724,7 @@
     "SS-T235"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "ltc-family"
@@ -7541,6 +7753,7 @@
     "SS-T240"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "ltc-home"
@@ -7571,6 +7784,7 @@
     "SS-T246"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-regions"
@@ -7595,6 +7809,7 @@
     "SS-T248"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-field"
@@ -7618,6 +7833,7 @@
     "SS-T250"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "ltc-field"
@@ -7647,6 +7863,7 @@
     "SS-P063"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-rh"
@@ -7676,6 +7893,7 @@
     "SS-P063"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "allow-rh"
@@ -7708,6 +7926,7 @@
     "SS-P077"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-rh"
@@ -7733,6 +7952,7 @@
     "SS-P069"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-rh"
@@ -7762,6 +7982,7 @@
     "SS-P071"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-rh"
@@ -7785,6 +8006,7 @@
     "SS-P057"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-rh"
@@ -7808,6 +8030,7 @@
     "SS-P076"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-rh"
@@ -7836,6 +8059,7 @@
     "SS-P073"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-rh"
@@ -7859,6 +8083,7 @@
     "SS-P075"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-rh"
@@ -7887,6 +8112,7 @@
     "SS-P115"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-hra"
@@ -7914,6 +8140,7 @@
     "SS-P116"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "home-hra"
@@ -7939,6 +8166,7 @@
     "SS-P113"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-hra"
@@ -7969,6 +8197,7 @@
     "SS-P112"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "home-hra"
@@ -7992,6 +8221,7 @@
     "SS-P101"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "home-hra"
@@ -8016,6 +8246,7 @@
     "SS-P102"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "home-hra"
@@ -8041,6 +8272,7 @@
     "SS-P106"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-hra"
@@ -8064,6 +8296,7 @@
     "SS-P107"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-hra"
@@ -8088,6 +8321,7 @@
     "SS-P108"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-hra"
@@ -8114,6 +8348,7 @@
     "SS-P109"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-hra"
@@ -8139,6 +8374,7 @@
     "SS-P117"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "home-hra"
@@ -8163,6 +8399,7 @@
     "SS-P114"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "home-hra"
@@ -8187,6 +8424,7 @@
     "SS-P114"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-hra"
@@ -8212,6 +8450,7 @@
     "SS-P114"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "home-hra"
@@ -8237,6 +8476,7 @@
     "SS-P113"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-hra"
@@ -8263,6 +8503,7 @@
     "SS-P110"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "home-hra"
@@ -8290,6 +8531,7 @@
     "SS-P024"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-encash"
@@ -8317,6 +8559,7 @@
     "SS-P021"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "leave-encash"
@@ -8344,6 +8587,7 @@
     "SS-P022"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "leave-encash"
@@ -8369,6 +8613,7 @@
     "SS-P025"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "leave-encash"
@@ -8397,6 +8642,7 @@
     "SS-P093"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "home-cea"
@@ -8414,7 +8660,7 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018",
+   "cite": "MoD letter 1(23)/2017/D(Pay/Services) dt 15-09-2017 and dt 02-08-2018; PCDA(O) Handbook 2023, Ch 19 paras m, n and p, pp 180-181",
    "details": "",
    "chips": [],
    "personal": "",
@@ -8426,6 +8672,7 @@
    "open": [
     "The handbook says two classes before Class 1; the newer FAQ says three from AY 2023-24. FAQ followed."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "Q",
    "nav": "home-cea"
@@ -8454,6 +8701,7 @@
     "SS-P089"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "home-cea"
@@ -8480,6 +8728,7 @@
     "SS-P091"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-cea"
@@ -8504,6 +8753,7 @@
     "SS-P094"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-cea"
@@ -8529,6 +8779,7 @@
     "SS-P094"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "home-cea"
@@ -8558,6 +8809,7 @@
     "SS-P123"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "home-med"
@@ -8583,6 +8835,7 @@
     "SS-P120"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "home-med"
@@ -8608,6 +8861,7 @@
     "SS-P121"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-med"
@@ -8633,6 +8887,7 @@
     "SS-P122"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "home-med"
@@ -8660,6 +8915,7 @@
     "SS-P125"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-med"
@@ -8685,6 +8941,7 @@
     "SS-P127"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "home-med"
@@ -8712,6 +8969,7 @@
     "SS-P051"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-daily"
@@ -8738,6 +8996,7 @@
     "SS-P051"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "allow-daily"
@@ -8764,6 +9023,7 @@
     "SS-P054"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-daily"
@@ -8790,6 +9050,7 @@
     "SS-P048"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-daily"
@@ -8814,6 +9075,7 @@
     "SS-P053"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-daily"
@@ -8838,6 +9100,7 @@
     "SS-P052"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-daily"
@@ -8867,6 +9130,7 @@
    "open": [
     "FAQ-only; no primary authority found. Hold as guidance."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "C",
    "nav": "pay-start"
@@ -8886,7 +9150,7 @@
     "MS branch letter"
    ],
    "watch": [],
-   "cite": "Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army",
+   "cite": "Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army; PCDA(O) Handbook 2023, Ch 2 (Form A, account number), p 4",
    "details": "",
    "chips": [],
    "personal": "",
@@ -8896,6 +9160,7 @@
    "open": [
     "FAQ-only; cite is the form procedure. Confirm authority with domain owner."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "C",
    "nav": "pay-start"
@@ -8917,7 +9182,7 @@
    "watch": [
     "Territorial Army commission also needs the TA number allotment sanction"
    ],
-   "cite": "Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army",
+   "cite": "Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army; PCDA(O) Handbook 2023, Ch 2 (Form A, account reactivated), p 4",
    "details": "",
    "chips": [],
    "personal": "",
@@ -8927,6 +9192,7 @@
    "open": [
     "FAQ-only; cite is the form procedure. Confirm with domain owner."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "C",
    "nav": "pay-start"
@@ -8946,7 +9212,7 @@
     "PAN card and Form A on secondment"
    ],
    "watch": [],
-   "cite": "Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army",
+   "cite": "Form A (AO 03/03) procedure under the Pay and Allowances Regulations for the Army; PCDA(O) Handbook 2023, Ch 2 (reversion from deputation: last pay certificate), p 4",
    "details": "",
    "chips": [],
    "personal": "",
@@ -8957,6 +9223,7 @@
    "open": [
     "FAQ-only; handbook confirms last pay certificate from the previous audit office is needed."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "C",
    "nav": "pay-start"
@@ -8987,6 +9254,7 @@
     "SS-P013"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "pay-promo"
@@ -9003,7 +9271,7 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion",
+   "cite": "Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion; PCDA(O) Handbook 2023, Ch 13 (Option for Pay Fixation on Promotion), pp 98-99",
    "details": "",
    "chips": [],
    "personal": "",
@@ -9014,6 +9282,7 @@
    "open": [
     "FAQ-only on finality; primary rule not located."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "L",
    "nav": "pay-promo"
@@ -9039,6 +9308,7 @@
     "SS-P010"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "pay-promo"
@@ -9063,6 +9333,7 @@
     "SS-P014"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-promo"
@@ -9078,7 +9349,7 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion",
+   "cite": "Army Pay Rules 2017 (7th CPC), option for pay fixation on promotion; PCDA(O) Handbook 2023, Ch 13 (Option for Pay Fixation on Promotion), pp 98-99",
    "details": "",
    "chips": [],
    "personal": "",
@@ -9088,6 +9359,7 @@
    "open": [
     "FAQ-only; primary rule not located."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "C",
    "nav": "pay-promo"
@@ -9105,7 +9377,7 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017 and 24-08-2018, corrigendum dt 17-09-2021",
+   "cite": "MoD letter B/25571/AG/PS-3(b)/3335/D(Pay/Services) dt 04-10-1991; MoD letter 30(13)/2007/D(Pay/Services) dt 30-08-2017 and 24-08-2018, corrigendum dt 17-09-2021; PCDA(O) Handbook 2023, Ch 5 (Special Increments for Excellence in Sports), paras 1-5, pp 19-20",
    "details": "Referees and umpires accepted by an international federation can get two increments per event, within the same five-increment cap.",
    "chips": [],
    "personal": "",
@@ -9113,9 +9385,8 @@
     "SS-P018",
     "SS-P016"
    ],
-   "open": [
-    "FAQ also cites DoPT OM 03-10-2013 and MoD letter 1272 dt 19-08-1996; not read in full."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "pay-incr"
@@ -9140,6 +9411,7 @@
     "SS-P015"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "pay-incr"
@@ -9163,6 +9435,7 @@
     "SS-P017"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "pay-incr"
@@ -9188,9 +9461,8 @@
     "SS-P030",
     "SS-P031"
    ],
-   "open": [
-    "Handbook text prints no DA escalation clause for Technical Allowance; the earlier \"rises 25%\" bullet was removed. Check the 18-09-2017 letter."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-tech"
@@ -9215,6 +9487,7 @@
     "SS-P029"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-tech"
@@ -9238,6 +9511,7 @@
     "SS-P026"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-tech"
@@ -9257,16 +9531,15 @@
     "One-time line directorate certificate with first claim"
    ],
    "watch": [],
-   "cite": "CGDA letter ARMY/BR/OFF./ALLOW/1223/Misc dt 07-10-2019",
+   "cite": "CGDA letter ARMY/BR/OFF./ALLOW/1223/Misc dt 07-10-2019; PCDA(O) Handbook 2023, Ch 14 para 3 (Technical Allowance, procedure for claiming), p 108",
    "details": "",
    "chips": [],
    "personal": "",
    "from": [
     "SS-P027"
    ],
-   "open": [
-    "Certificate format is in the CGDA letter; confirm the letter is the primary authority."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "allow-tech"
@@ -9294,6 +9567,7 @@
     "SS-P028"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "allow-tech"
@@ -9321,6 +9595,7 @@
     "SS-P033"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-tech"
@@ -9345,6 +9620,7 @@
     "SS-P034"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-tech"
@@ -9372,6 +9648,7 @@
     "SS-P036"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-tech"
@@ -9397,6 +9674,7 @@
     "SS-P041"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-air"
@@ -9420,6 +9698,7 @@
     "SS-P037"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-air"
@@ -9443,6 +9722,7 @@
     "SS-P038"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-air"
@@ -9467,6 +9747,7 @@
     "SS-P039"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "allow-air"
@@ -9482,16 +9763,15 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "MoD letter B/26243/AG/PS3(a)401/S/D(Pay/Services) dt 06-05-1982 as amended",
+   "cite": "MoD letter B/26243/AG/PS3(a)401/S/D(Pay/Services) dt 06-05-1982 as amended; PCDA(O) Handbook 2023, Ch 14 para 6 (Flying Allowance, DSOP contribution), p 116",
    "details": "",
    "chips": [],
    "personal": "",
    "from": [
     "SS-P040"
    ],
-   "open": [
-    "DSOP credit authority is in handbook only; primary letter not separately identified."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-air"
@@ -9518,6 +9798,7 @@
     "SS-P042"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-air"
@@ -9541,6 +9822,7 @@
     "SS-P043"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-air"
@@ -9567,6 +9849,7 @@
     "SS-P045"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-air"
@@ -9592,9 +9875,8 @@
    "from": [
     "SS-P055"
    ],
-   "open": [
-    "SAPCS letter is the 2022 procedure on quarterly Part II orders; Rule 174(B) is the base rule. Confirm both with domain owner."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "allow-daily"
@@ -9619,6 +9901,7 @@
     "SS-P056"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-daily"
@@ -9636,7 +9919,7 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994",
+   "cite": "MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994; PCDA(O) Handbook 2023, Ch 15 para 4 (HAFAA, CFAA, CMFAA), pp 134-135",
    "details": "Base rates from 01-07-2017: HAFAA Rs 16,900, CFAA Rs 10,500, CMFAA Rs 6,300 a month. Each rises 25% when DA rises by 50%.",
    "chips": [],
    "personal": "",
@@ -9646,6 +9929,7 @@
    "open": [
     "The FAQ static list and the handbook non-static list overlap; confirm with the Corps notification."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "L",
    "nav": "allow-field"
@@ -9670,6 +9954,7 @@
     "SS-P079"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-field"
@@ -9695,6 +9980,7 @@
    "open": [
     "FAQ-only on the restart procedure."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "C",
    "nav": "allow-field"
@@ -9721,6 +10007,7 @@
     "SS-P083"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-field"
@@ -9748,6 +10035,7 @@
     "SS-P085"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-field"
@@ -9775,6 +10063,7 @@
     "RP-093"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "home-quarters"
@@ -9802,6 +10091,7 @@
     "SS-P097"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "home-quarters"
@@ -9820,7 +10110,7 @@
    "watch": [
     "No HRA for the stay; the payment is taxable"
    ],
-   "cite": "MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020",
+   "cite": "MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020; PCDA(O) Handbook 2023, Ch 23 para N (Transit Accommodation / Guest Room charges), p 241",
    "details": "",
    "chips": [],
    "personal": "",
@@ -9830,6 +10120,7 @@
    "open": [
     "Six-month cap is from the FAQ (Dec 2025) only; the handbook text, read in full, does not state a cap."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "L",
    "nav": "home-quarters"
@@ -9854,6 +10145,7 @@
     "SS-P100"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "home-quarters"
@@ -9880,9 +10172,8 @@
    "from": [
     "RP-034"
    ],
-   "open": [
-    "Level table copied by meaning from handbook; check against SRO 17(E) Part A."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -9907,6 +10198,7 @@
     "RP-034"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "pay-cpc"
@@ -9931,9 +10223,8 @@
    "from": [
     "RP-034"
    ],
-   "open": [
-    "Level 12A and 13 index of rationalisation raised from 2.57 to 2.67 by MoD resolution 1(6)/2016/D(Pay/Services) dt 22-06-2017; confirm how this affects fixation."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -9958,6 +10249,7 @@
     "RP-034"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "pay-cpc"
@@ -9985,6 +10277,7 @@
     "RP-034"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -10010,6 +10303,7 @@
     "RP-034"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -10036,6 +10330,7 @@
     "RP-034"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -10061,6 +10356,7 @@
     "RP-034"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -10086,6 +10382,7 @@
     "RP-034"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -10111,6 +10408,7 @@
     "RP-034"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -10127,16 +10425,15 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017",
+   "cite": "Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; PCDA(O) Handbook 2023, Ch 13 para 16 (pay of officers commissioned with antedate), p 97",
    "details": "Example: commissioned 02-03-2016 with two years antedate from 02-03-2014. Notional pay Rs 15,600 rises to 56,100 in 7th CPC; the 01-07-2016 increment takes pay to Rs 57,800.",
    "chips": [],
    "personal": "",
    "from": [
     "RP-034"
    ],
-   "open": [
-    "Rule number not stated in handbook; find it."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -10162,6 +10459,7 @@
     "RP-034"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -10187,6 +10485,7 @@
     "RP-034"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -10213,9 +10512,8 @@
    "from": [
     "RP-034"
    ],
-   "open": [
-    "MoD letter 4(10)/2017/D(Med) is dated 28-09-2017 here but 29-09-2017 on the DSOP card; one date or two separate letters. Verify."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -10227,9 +10525,7 @@
    "title": "When does pay start on first commission?",
    "answer": "From the date of commission. For NDA, IMA or OTA officers it cannot start more than 30 days before you report for duty.",
    "key": [
-    "MNS officers: pay from date of joining only",
-    "Field-area first posting: date you report to the unit",
-    "Medical officers: date you report for duty, not transit camp"
+    "MNS officers: pay from date of joining only"
    ],
    "attach": [],
    "watch": [],
@@ -10240,9 +10536,8 @@
    "from": [
     "RP-001"
    ],
-   "open": [
-    "Handbook cites AHQ letter 06888/52/MPRS(O) dt 19-01-1967 and CGDA letter 1312/AT-P dt 28-06-1975 for the field-area and medical notes; both are old and unchecked."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-start"
@@ -10258,16 +10553,15 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "Army Instruction 196/51",
+   "cite": "Army Instruction 196/51; PCDA(O) Handbook 2023, Ch 4 (Change of Name), p 16",
    "details": "",
    "chips": [],
    "personal": "",
    "from": [
     "RP-001"
    ],
-   "open": [
-    "AI 196/51 is quoted in the handbook; not independently checked."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "pay-start"
@@ -10293,6 +10587,7 @@
     "RP-002"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-start"
@@ -10316,6 +10611,7 @@
     "RP-003"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-start"
@@ -10341,6 +10637,7 @@
     "RP-004"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "pay-incr"
@@ -10367,6 +10664,7 @@
     "RP-008"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "pay-promo"
@@ -10392,6 +10690,7 @@
     "RP-008"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "pay-promo"
@@ -10416,6 +10715,7 @@
     "RP-008"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "pay-promo"
@@ -10429,49 +10729,21 @@
    "key": [
     "Seniority reduced by the shorter training period",
     "Pay re-fixed notionally; new pay from 14-03-2012",
-    "Retired or deceased before 20-07-2006: notional benefit only"
+    "Retired, died or invalided on or after 20-07-2006: notional benefit only"
    ],
    "attach": [],
    "watch": [],
-   "cite": "MoD letter B/32314/2011/14/AG/PS-2(a)/CC-148-D(AG-II) dt 10-05-2018; SRO 121 dt 28-10-2005",
+   "cite": "MoD letter B/32314/2011/14/AG/PS-2(a)/CC-148-D(AG-II) dt 10-05-2018; SRO 121 dt 28-10-2005; PCDA(O) Handbook 2023, Ch 6 (Promotion), SSC substantive rank para A, pp 26-28",
    "details": "Following the Supreme Court order of 29-01-2018. Not applicable to SSC and women officers already given PC. SSC women are considered for PC from 25-02-2019 and opt after 3 years (MoD letter 14(01)/2020-D(AG) dt 16-07-2020).",
    "chips": [],
    "personal": "",
    "from": [
     "RP-008"
    ],
-   "open": [
-    "Financial benefit cut-off is the AFT order of 14-03-2012; verify effect for officers retired after 20-07-2006."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
-   "nav": "pay-promo"
-  },
-  {
-   "id": "RB-RP-009",
-   "domain": "pay",
-   "topic": "RP-009",
-   "title": "What is in-situ promotion and what does it pay?",
-   "answer": "A senior empanelled officer is promoted in place for at most six months, until posted to the earmarked appointment.",
-   "key": [
-    "For Brigadier and above; extended to Colonel from 01-08-2009",
-    "Pay of the rank of the appointment held",
-    "The officiating incumbent gets no officiating allowance"
-   ],
-   "attach": [],
-   "watch": [],
-   "cite": "MoD ID 19(28)/2009-D(MS) dt 20-05-2009; AHQ MS Branch letters 04477/MS 9B/P dt 07-10-1986 and 04502/MS Policy dt 14-05-2009",
-   "details": "",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "RP-009"
-   ],
-   "open": [
-    "Colonel in-situ was to be re-examined in Jan 2014; no later MoD order known."
-   ],
-   "status": "draft",
-   "facet": "H",
    "nav": "pay-promo"
   },
   {
@@ -10495,6 +10767,7 @@
     "RP-010"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "pay-promo"
@@ -10520,6 +10793,7 @@
     "RP-010"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "pay-promo"
@@ -10545,6 +10819,7 @@
     "RP-010"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "pay-promo"
@@ -10570,6 +10845,7 @@
     "RP-011"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "leave-types"
@@ -10595,6 +10871,7 @@
     "RP-012"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "leave-types"
@@ -10620,35 +10897,9 @@
     "RP-013"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
-   "nav": "leave-types"
-  },
-  {
-   "id": "RB-C8-04",
-   "domain": "pay",
-   "topic": "RP-013",
-   "title": "Special casual leave after sterilisation operations",
-   "answer": "Seven days for a male officer whose wife is operated; up to 14 days for a female officer. Complications and recanalisation have their own limits.",
-   "key": [
-    "IUCD insertion: one day for female officers",
-    "Wife's husband's vasectomy: one day",
-    "Recanalisation: 21 days or hospital stay, whichever is less"
-   ],
-   "attach": [],
-   "watch": [],
-   "cite": "Rule 73, Leave Rules for the Services Vol I (Army); MoD letter B/33927/AG/PS-2(D)/432/D(AG) dt 19-02-1997",
-   "details": "Post-operative complications: whole period of hospitalisation, plus up to 7 days after tubectomy if still unfit though not hospitalised.",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "RP-013"
-   ],
-   "open": [
-    "Sterilisation SCL rules are old; check whether superseded by later MoD or DoPT orders."
-   ],
-   "status": "draft",
-   "facet": "H",
    "nav": "leave-types"
   },
   {
@@ -10672,6 +10923,7 @@
     "RP-014"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "leave-types"
@@ -10697,6 +10949,7 @@
     "RP-014"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-types"
@@ -10722,6 +10975,7 @@
     "RP-015"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "leave-types"
@@ -10747,6 +11001,7 @@
     "RP-016"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-types"
@@ -10772,6 +11027,7 @@
     "RP-016"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "leave-types"
@@ -10797,6 +11053,7 @@
     "RP-017"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "leave-types"
@@ -10822,6 +11079,7 @@
     "RP-018"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "leave-types"
@@ -10847,6 +11105,7 @@
     "RP-019"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "leave-family"
@@ -10872,6 +11131,7 @@
     "RP-020"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-family"
@@ -10897,6 +11157,7 @@
     "RP-020"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "leave-family"
@@ -10922,6 +11183,7 @@
     "RP-021"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-family"
@@ -10948,6 +11210,7 @@
     "RP-023"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-family"
@@ -10973,6 +11236,7 @@
     "RP-024"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-study"
@@ -10998,6 +11262,7 @@
     "RP-024"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-study"
@@ -11023,6 +11288,7 @@
     "RP-024"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "leave-study"
@@ -11047,6 +11313,7 @@
     "RP-025"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-study"
@@ -11073,6 +11340,7 @@
     "RP-027"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "leave-study"
@@ -11098,6 +11366,7 @@
     "RP-028"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "leave-encash"
@@ -11123,6 +11392,7 @@
     "RP-028"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "leave-encash"
@@ -11147,6 +11417,7 @@
     "RP-028"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-encash"
@@ -11172,6 +11443,7 @@
     "RP-030"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "leave-joining"
@@ -11197,6 +11469,7 @@
     "RP-030"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-joining"
@@ -11222,6 +11495,7 @@
     "RP-030"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "leave-joining"
@@ -11247,6 +11521,7 @@
     "RP-031"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "leave-joining"
@@ -11272,6 +11547,7 @@
     "RP-031"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "leave-joining"
@@ -11294,9 +11570,8 @@
    "from": [
     "RP-032"
    ],
-   "open": [
-    "Handbook gives only the pointer. Authoring a full card needs AO 7/03 text, not available here."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "C",
    "nav": "pay-dsop"
@@ -11322,6 +11597,7 @@
     "RP-033"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-dsop"
@@ -11348,6 +11624,7 @@
     "RP-036"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-air"
@@ -11373,6 +11650,7 @@
     "RP-037"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-tech"
@@ -11399,6 +11677,7 @@
     "RP-043"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-air"
@@ -11425,6 +11704,7 @@
     "RP-046"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-air"
@@ -11450,6 +11730,7 @@
     "RP-047"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-air"
@@ -11473,6 +11754,7 @@
     "RP-048"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-tech"
@@ -11496,6 +11778,7 @@
     "RP-050"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-air"
@@ -11514,7 +11797,7 @@
    "attach": [],
    "watch": [],
    "cite": "Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017",
-   "details": "Rates from each date: 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%; 01-01-2025 55%; 01-07-2025 58%; 01-01-2026 60%. Rates of 2020 to mid-2021 were frozen.",
+   "details": "Rates from each date: 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%; 01-01-2025 55%; 01-07-2025 58%. Later rates follow the MoD order for Armed Forces. Rates of 2020 to mid-2021 were frozen.",
    "chips": [
     "RATES"
    ],
@@ -11523,9 +11806,8 @@
     "RP-052",
     "RP-053"
    ],
-   "open": [
-    "53%, 55% and 58% confirmed from MoD DMA letters (1(6)/2021-D(Pay/Services)-Pt-I; 58% letter dt 09-10-2025, MoF OM 06-10-2025). 60% from 01-01-2026 is from MoF DoE OM dt 22-04-2026 (read via a government circular); the MoD letter for 60% was not seen. Next revision (01-07-2026) not yet issued."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -11549,6 +11831,7 @@
     "RP-054"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-daily"
@@ -11574,6 +11857,7 @@
     "RP-057"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-field"
@@ -11599,6 +11883,7 @@
     "RP-059"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "allow-field"
@@ -11617,16 +11902,15 @@
    "attach": [],
    "watch": [],
    "cite": "MoD letter PC-1(16)/2017/D(Pay/Services)/Pt.II dt 28-11-2019; DoPT letter 13024/01/2016-Trg. Ref dt 24-10-2017",
-   "details": "24%: NDC, DSSC, NDA, CDM, IMA, OTA Chennai, Army War College, CAATS, DIQA and ITM. 12%: AFMC, corps centres and schools, and all regimental training centres, as per Appendix B of the 2019 letter. Allowance continues during study or training tours and counts for leave salary.",
+   "details": "Lists as in the 2019 letter. 24%: NDC, DSSC, NDA, CDM, IMA, OTA Chennai, Army War College, CAATS, DIQA and ITM. 12%: AFMC, corps centres and schools, and all regimental training centres, as per Appendix B of the 2019 letter. Allowance continues during study or training tours and counts for leave salary.",
    "chips": [],
    "personal": "",
    "from": [
     "RP-060",
     "RP-061"
    ],
-   "open": [
-    "Check Appendix A and B lists against the current MoD letter; lists change."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-tech"
@@ -11652,34 +11936,7 @@
     "RP-062"
    ],
    "open": [],
-   "status": "draft",
-   "facet": "H",
-   "nav": "allow-tech"
-  },
-  {
-   "id": "RB-RP-063",
-   "domain": "pay",
-   "topic": "RP-063",
-   "title": "Language Allowance and Language Award",
-   "answer": "Language Allowance: Category I Rs 2,025, II Rs 1,689, III Rs 1,350 a month. Language Award has no orders after 31-03-1997.",
-   "key": [
-    "For translators, interpreters and instructors in active use",
-    "Must pass the annual School of Language test",
-    "Rates rise 25% each time DA rises by 50%"
-   ],
-   "attach": [],
-   "watch": [],
-   "cite": "MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018; MoD letter 22(1)/83/D(GS-II) dt 03-02-1984",
-   "details": "Part II order certificate is endorsed by an officer of Lt Col rank or above. Base rates from 01-07-2017.",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "RP-063",
-    "RP-064"
-   ],
-   "open": [
-    "Language Award orders after 31-03-1997 were still awaited per the handbook."
-   ],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-tech"
@@ -11706,6 +11963,7 @@
     "RP-067"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-loc"
@@ -11731,6 +11989,7 @@
     "RP-066"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-air"
@@ -11756,6 +12015,7 @@
     "RP-068"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-field"
@@ -11781,6 +12041,7 @@
     "RP-069"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-field"
@@ -11806,6 +12067,7 @@
     "RP-070"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-air"
@@ -11831,6 +12093,7 @@
     "RP-071"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "home-cea"
@@ -11854,6 +12117,7 @@
     "RP-072"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-air"
@@ -11871,7 +12135,7 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017",
+   "cite": "Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; PCDA(O) Handbook 2023, Ch 15 para 1 (Dearness Allowance), p 130",
    "details": "",
    "chips": [
     "RATES"
@@ -11884,6 +12148,7 @@
    "open": [
     "No source in hand prints an arrears procedure. The handbook says only that DA is payable from 01 January and 01 July, and gives its basis; \"difference owed back\" is an inference from \"payable from\". Owner approved shipping with the Unverified chip (2026-10-09)."
    ],
+   "basis": "open_source",
    "status": "draft",
    "facet": "H",
    "nav": "pay-cpc"
@@ -11910,9 +12175,8 @@
    "from": [
     "RP-074"
    ],
-   "open": [
-    "Escalation clause read in DoE OM 19051/1/2017-E.IV dt 02-08-2017 (para 7). Stepped figures are computed from it; the MoD order applying the step was not seen."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-daily"
@@ -11937,6 +12201,7 @@
     "RP-075"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-daily"
@@ -11962,6 +12227,7 @@
     "RP-077"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-field"
@@ -11979,17 +12245,15 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "MoD letter 1(16)/2017/D(Pay/Services) dt 16-11-2017; DoE OM 3/1/2017-E.II(B) dt 19-07-2017",
+   "cite": "MoD letter PC-1(16)/2017/D(Pay/Services) dt 16-11-2017; DoE OM 3/1/2017-E.II(B) dt 19-07-2017",
    "details": "Whole states: Assam, Meghalaya Part D; Manipur Part C; Nagaland Part B; Sikkim and Lakshadweep Part A. Others are listed by district in the annexure. Rates rise 25% each time DA rises by 50%.",
    "chips": [],
    "personal": "",
    "from": [
     "RP-078"
    ],
-   "open": [
-    "Handbook cites MoD letter 1(16)/2017 dt 16-11-2017 here but the main 7th CPC letter is dt 18-09-2017 and the dress letter is PC-1(16)/2017 dt 16-11-2017; confirm the TLA letter number.",
-    "District-level lists (HP, J&K, Uttarakhand, Mizoram, Tripura, Arunachal, Andaman) are not reproduced; add as lookup data if wanted."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-loc"
@@ -12015,6 +12279,7 @@
     "RP-078"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-loc"
@@ -12040,6 +12305,7 @@
     "RP-079"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-loc"
@@ -12065,31 +12331,7 @@
     "RP-080"
    ],
    "open": [],
-   "status": "draft",
-   "facet": "H",
-   "nav": "allow-daily"
-  },
-  {
-   "id": "RB-RP-081",
-   "domain": "pay",
-   "topic": "RP-081",
-   "title": "Lump sum for bed and table linen for military attachés",
-   "answer": "Military attachés posted abroad receive a prescribed lump sum in place of linen, released by the regional PCDA or CDA.",
-   "key": [
-    "Attachés are borne at DGMI Foreign Division (OA)"
-   ],
-   "attach": [],
-   "watch": [],
-   "cite": "MoD letter 4(1)/2011/D(Pay/Services) dt 19-08-2011; CGDA letter AT/I/0/42/VLL dt 26-02-1991",
-   "details": "",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "RP-081"
-   ],
-   "open": [
-    "The rate is not stated in the handbook; need the prescribed rate from the letter."
-   ],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-daily"
@@ -12115,6 +12357,7 @@
     "RP-082"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-loc"
@@ -12138,6 +12381,7 @@
     "RP-083"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "allow-loc"
@@ -12153,18 +12397,15 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "",
+   "cite": "PCDA(O) Handbook 2023, Ch 18 para 8 (Allowances not to be claimed from PCDA(O)), p 177",
    "details": "",
-   "chips": [
-    "GUIDANCE"
-   ],
+   "chips": [],
    "personal": "",
    "from": [
     "RP-084"
    ],
-   "open": [
-    "No primary letter named in the source. Find the CGDA or MoD instruction."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "L",
    "nav": "allow-tech"
@@ -12190,6 +12431,7 @@
     "RP-087"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "claims-adv"
@@ -12203,7 +12445,7 @@
    "key": [
     "New house: 34 months' basic pay, up to Rs 7 lakh",
     "Expansion: up to Rs 6 lakh; cost cap 139x basic pay",
-    "Interest 8.5% from 2017-18; reviewed every three years"
+    "Army rate 8.5% from 2017-18 (civil rate differs); reviewed every three years"
    ],
    "attach": [],
    "watch": [],
@@ -12215,9 +12457,8 @@
     "RP-088",
     "RP-089"
    ],
-   "open": [
-    "Check later reviews of the 8.5% interest rate."
-   ],
+   "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-dsop"
@@ -12235,7 +12476,7 @@
    ],
    "attach": [],
    "watch": [],
-   "cite": "SAI 1/S/80; SRO 12(E) dt 03-05-2017; MoD letter 4(10)/2017/D(Med) dt 29-09-2017",
+   "cite": "SAI 1/S/80; SRO 12(E) dt 03-05-2017; MoD letter 4(10)/2017/D(Med) dt 28-09-2017",
    "details": "If the account goes into debit the subscription drops to the minimum, restored after clearing. Subscription above 6% cannot exceed what remains after statutory recoveries such as tax and AGIF. Interest has been 7.1% a year since 01-04-2020 (earlier years 7.6% to 8%); the rate is reset each quarter, so show it with its quarter.",
    "chips": [
     "RATES"
@@ -12245,6 +12486,7 @@
     "RP-090"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "pay-dsop"
@@ -12270,6 +12512,7 @@
     "RP-090"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-dsop"
@@ -12295,6 +12538,7 @@
     "RP-090"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-dsop"
@@ -12320,6 +12564,7 @@
     "RP-090"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "Q",
    "nav": "pay-dsop"
@@ -12345,12 +12590,50 @@
     "RP-090"
    ],
    "open": [],
+   "basis": "",
    "status": "draft",
    "facet": "H",
    "nav": "pay-dsop"
   }
  ],
- "changes": [],
+ "changes": [
+  {
+   "date": "2026-10-20",
+   "items": [
+    {
+     "text": "Tough Location Allowance now cites the correct MoD letter number",
+     "cards": [
+      "RB-RP-078"
+     ]
+    },
+    {
+     "text": "The Dearness Allowance table now stops at the last rate confirmed by an MoD order",
+     "cards": [
+      "RB-RP-052"
+     ]
+    },
+    {
+     "text": "The house building advance card says the 8.5% interest is the Army rate, not the civil one",
+     "cards": [
+      "RB-RP-088"
+     ]
+    },
+    {
+     "text": "Pay start on first commission no longer carries two old field-area and medical notes",
+     "cards": [
+      "RB-RP-001"
+     ]
+    },
+    {
+     "text": "Dates and lists tidied on the DSOP Fund and Training Allowance cards",
+     "cards": [
+      "RB-RP-090",
+      "RB-RP-060"
+     ]
+    }
+   ]
+  }
+ ],
  "skipped": [
   {
    "from": "SS-T082",
@@ -12423,19 +12706,23 @@
  ],
  "coverage": {
   "entries_total": 474,
-  "covered": 533,
+  "covered": 529,
   "skipped": 17,
   "uncovered": 0,
-  "cards": 404,
+  "cards": 400,
   "cards_by_domain": {
    "travel": 220,
-   "pay": 184
+   "pay": 180
   },
   "pay_topics_total": 95,
-  "pay_topics_with_cards": 94
+  "pay_topics_with_cards": 90
  },
  "uncovered": [],
  "pay_topics_open": [
-  "RP-073"
+  "RP-009",
+  "RP-063",
+  "RP-064",
+  "RP-073",
+  "RP-081"
  ]
 }

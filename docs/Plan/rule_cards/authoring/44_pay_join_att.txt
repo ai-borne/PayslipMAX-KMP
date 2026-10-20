@@ -48,7 +48,6 @@ T: Where are penal deductions explained?
 A: Penal deductions under sections 90 and 91 of the Army Act are detailed in AO 7/03.
 K: Read AO 7/03 before disputing a deduction
 C: AO 7/03
-O: Handbook gives only the pointer. Authoring a full card needs AO 7/03 text, not available here.
 
 === topic=RP-033 from=RP-033
 T: How is maintenance allowance for wife and children paid?

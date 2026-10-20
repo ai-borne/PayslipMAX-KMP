@@ -5,8 +5,7 @@ K: No other special pay is included
 K: Paid on leave except leave without pay and allowances
 K: Leave DA is based on leave salary actually drawn
 C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
-D: Rates from each date: 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%; 01-01-2025 55%; 01-07-2025 58%; 01-01-2026 60%. Rates of 2020 to mid-2021 were frozen.
-O: 53%, 55% and 58% confirmed from MoD DMA letters (1(6)/2021-D(Pay/Services)-Pt-I; 58% letter dt 09-10-2025, MoF OM 06-10-2025). 60% from 01-01-2026 is from MoF DoE OM dt 22-04-2026 (read via a government circular); the MoD letter for 60% was not seen. Next revision (01-07-2026) not yet issued.
+D: Rates from each date: 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%; 01-01-2025 55%; 01-07-2025 58%. Later rates follow the MoD order for Armed Forces. Rates of 2020 to mid-2021 were frozen.
 
 === topic=RP-054 from=RP-054
 T: What happened to Kit Maintenance Allowance?
@@ -39,8 +38,7 @@ K: Only for faculty on posting who will go back
 K: No Deputation Duty Allowance alongside
 K: Not for permanent or administrative staff
 C: MoD letter PC-1(16)/2017/D(Pay/Services)/Pt.II dt 28-11-2019; DoPT letter 13024/01/2016-Trg. Ref dt 24-10-2017
-D: 24%: NDC, DSSC, NDA, CDM, IMA, OTA Chennai, Army War College, CAATS, DIQA and ITM. 12%: AFMC, corps centres and schools, and all regimental training centres, as per Appendix B of the 2019 letter. Allowance continues during study or training tours and counts for leave salary.
-O: Check Appendix A and B lists against the current MoD letter; lists change.
+D: Lists as in the 2019 letter. 24%: NDC, DSSC, NDA, CDM, IMA, OTA Chennai, Army War College, CAATS, DIQA and ITM. 12%: AFMC, corps centres and schools, and all regimental training centres, as per Appendix B of the 2019 letter. Allowance continues during study or training tours and counts for leave salary.
 
 === topic=RP-062 from=RP-062
 T: Deputation (Duty) Allowance: who gets it and how much?
@@ -51,15 +49,7 @@ K: Without concessions: 5% or 10%, max Rs 4,500 or 9,000
 C: MoD letter 13(1)/87/D(Pay/Services) dt 25-09-1987; MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018
 D: Percent is of basic pay; ceilings rise 25% per 50% DA, from 01-07-2017. Special pays like parachute or flying are not allowed with it unless the sanction says so; Technical, Specialist, NPA and Qualification Pay continue. Also payable to officers in civil employ, Estt 22 (SFF), Coast Guard and Assam Rifles. Not with Training Allowance or Special Security Allowance.
 
-=== topic=RP-063 from=RP-063,RP-064
-T: Language Allowance and Language Award
-A: Language Allowance: Category I Rs 2,025, II Rs 1,689, III Rs 1,350 a month. Language Award has no orders after 31-03-1997.
-K: For translators, interpreters and instructors in active use
-K: Must pass the annual School of Language test
-K: Rates rise 25% each time DA rises by 50%
-C: MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017 and 14-09-2018; MoD letter 22(1)/83/D(GS-II) dt 03-02-1984
-D: Part II order certificate is endorsed by an officer of Lt Col rank or above. Base rates from 01-07-2017.
-O: Language Award orders after 31-03-1997 were still awaited per the handbook.
+--- retire RB-RP-063 Language Award orders after 31-03-1997 were never seen; owner decision 2026-10-20
 
 === topic=RP-065 from=RP-065,RP-067
 T: Special Security Allowance for DG (Security), SFF and NTRO deputation
@@ -115,11 +105,11 @@ A: Rs 16,900 a month for officers of Installation Security Force; Rs 10,500 for 
 K: Rises 25% each time DA rises by 50%
 C: MoD secret letter SFC/TS 2005/3/Ops/(PC-II) dt 28-12-2017
 
-=== topic=RP-053 from=RP-052,RP-053 id=RB-RP-053-arrears chips=RATES
+=== topic=RP-053 from=RP-052,RP-053 id=RB-RP-053-arrears chips=RATES basis=open_source
 T: DA arrears: what are they and what do I check?
 A: When a DA rise is announced late, you are owed the difference back to its start date.
 K: DA rises from 1 January and 1 July
 K: Check each month from that date to the first payment
 K: The rise applies to matrix pay plus MSP and NPA only
-C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; PCDA(O) Handbook 2023, Ch 15 para 1 (Dearness Allowance), p 130
 O: No source in hand prints an arrears procedure. The handbook says only that DA is payable from 01 January and 01 July, and gives its basis; "difference owed back" is an inference from "payable from". Owner approved shipping with the Unverified chip (2026-10-09).

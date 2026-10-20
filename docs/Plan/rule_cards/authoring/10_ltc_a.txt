@@ -110,7 +110,7 @@ K: Family's trip is admitted under 177A or 177B if otherwise admissible
 W: Dependent parents visiting you also lapse your own LTC
 C: Rule 177B(i)(h) and Rule 177A, TR 2014
 
-=== topic=RR-LTC-03 from=SS-T070,SS-T071,SS-T069,SS-T067,SS-T091,SS-T108,SS-T247
+=== topic=RR-LTC-03 from=SS-T070,SS-T071,SS-T069,SS-T067,SS-T091,SS-T108,SS-T247 basis=open_source
 T: Field or CI posting: what extra LTC do I get?
 A: One extra LTC a year under 177C, to where your family lives, on top of 177A or 177B.
 K: 177C: officer only, to the family at home town or SPR
@@ -130,7 +130,7 @@ K: In addition to normal LTC under 177A or 177B
 C: Rule 177C(c), TR 2014; MoD letter 5(3)/07/D(Mov)/2010 dt 28-04-2010
 D: Free sea passage once a year to Kolkata or Chennai is also allowed to officers posted in the islands (older MoD letter, not seen online).
 
-=== topic=RR-ORD-10 from=SS-T062,SS-T080,SS-T176
+=== topic=RR-ORD-10 from=SS-T062,SS-T080,SS-T176 basis=dopt_om
 T: LTC to the North East, J&K or Andaman instead of home town
 A: One Home Town LTC can be converted to air travel there. The scheme now runs to 25-09-2028.
 K: Travel by private airlines in your entitled class, from your HQ

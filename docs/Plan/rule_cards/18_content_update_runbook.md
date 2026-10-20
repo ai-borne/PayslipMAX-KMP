@@ -55,7 +55,9 @@ Card text lives only in `authoring/*.txt`; rupee figures only in `figures.json`.
   its `===` line has `id=`).
 - Edit in our own words (copy guard), keep within the compiler's limits (README and `HANDOFF.md`: title 14 words, answer 25,
   3 bullets of 12 words, visible text 90, details 120), and put the authority in `C:`. If the row settles an open point, delete
-  the card's `O:` line; if the order could not be read, keep it and say so.
+  the card's `O:` line; if the order could not be read, keep it and say so. A card whose point stays open but rests on the FAQ or
+  handbook gets `basis=open_source` on its `===` line, or `basis=dopt_om` if it rests on a DoPT OM (needs an `O:` line; the card then
+  shows "Open Source Info" or "Based on DoPT Office Memorandum" instead of "Unverified point", and the copy lives in `GuideStrings`).
 - A rate on a card: the sentence in the card text **and** the figure in `figures.json` are two places (no templating, EP 22).
   Change both, give the figure its `authority`, `evidence` and, once the owner agrees, `approved` date.
 - A pre-claim figure (`use: preclaim`, no card: `td_hotel`, `td_taxi`, `baggage_road`, `rma`) has no card text to change. Edit `figures.json` only:
@@ -84,7 +86,7 @@ It runs compile, id lock update, `RULEBOOK.md`, the app bundle, the review queue
   commit, and read the diff to be sure the new number is the one you meant:
   `test_bundle.py` `test_matches_the_compiled_dataset` (card counts per domain, areas, cases),
   `test_bundle.py` `test_approved_figures_ship_for_the_four_personal_cards` and `test_figures.py`
-  `test_exactly_the_four_personal_cards_have_a_figure` (the set of figure keys and cards). The unverified-card count (37) and the
+  `test_exactly_the_four_personal_cards_have_a_figure` (the set of figure keys and cards). The unverified-card count (0), the basis counts (22 and 2) and the
   no-cite count (31) in `test_bundle.py` are pins too.
 
 ## 4. Record the change for users
@@ -113,7 +115,7 @@ corpus, the whole iOS suite, a secret scan); never bypass them, never run two Gr
 
 Kotlin tests that read the real bundle pin the dataset too, and fail on purpose when it changes. Rehearsed on 2026-10-10 with a
 405-card bundle (one replaced pair, one change entry, one new figure): `GuideBundleContract.assertMatchesCompiledDataset` pins the card
-total, the travel count (and with it pay), the unverified (37) and no-cite (31) counts and `ratesAsOf`; `GuideFiguresContract`
+total, the travel count (and with it pay), the unverified (0), basis (22 `open_source`, 2 `dopt_om`) and no-cite (31) counts and `ratesAsOf`; `GuideFiguresContract`
 pins the set of figure keys and personal cards and each figure's value against the owner-approved letter, and
 `SyntheticGuideFigures` (shared-test-fixtures) must equal what ships; `assertPermanentDutyEstimatesMatchTheApprovedRules` pins the pre-claim
 estimates of the owner's voucher sample (basic 149000, 2881 km: CTG 119200, baggage 180063, Assam conveyance 86430), and `assertTemporaryDutyEstimatesMatchTheApprovedRules` pins the temporary-duty estimates of the

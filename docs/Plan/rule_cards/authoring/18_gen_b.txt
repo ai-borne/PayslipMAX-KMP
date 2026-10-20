@@ -45,7 +45,7 @@ A: You can draw TA, DA or LTC advance from PCDA(O) under Rule 17.
 K: The advance must be one the rules authorise
 C: Rule 17 TR; MoD letters 1137/D(Pay/Services) dt 15-02-1963 and 84048/AG/PS3(d)/323-S/D(Pay-Services) dt 21-04-1980
 
-=== topic=RR-GEN-07 from=SS-T039
+=== topic=RR-GEN-07 from=SS-T039 basis=dopt_om
 T: LTC advance: how early, and what conditions?
 A: For rail journeys, draw it up to 125 days before the move. Show the outward tickets within 10 days.
 K: Move cancelled: refund the advance at once, in one sum

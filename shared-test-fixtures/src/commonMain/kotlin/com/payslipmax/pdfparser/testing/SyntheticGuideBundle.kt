@@ -8,7 +8,7 @@ import com.payslipmax.pdfparser.guide.model.GuideFigures
 /**
  * A small, valid Claim Guide bundle for logic and UI tests, so a rate edit in the real cards never breaks
  * them. It carries one card of each kind the UI treats differently: a personal card with placeholders, an
- * unverified card, a card with no cite, rate and amended chips, an "also relevant here" link, and one case
+ * unverified card, an Open Source Info card, a DoPT OM card, a card with no cite, rate and amended chips, an "also relevant here" link, and one case
  * with more than 7 cards across several facets.
  */
 object SyntheticGuideBundle {
@@ -17,6 +17,8 @@ object SyntheticGuideBundle {
     const val UNVERIFIED_CARD = "RB-T2"
     const val NO_CITE_CARD = "RB-T3"
     const val AMENDED_CARD = "RB-T4"
+    const val OPEN_SOURCE_CARD = "RB-T6"
+    const val DOPT_OM_CARD = "RB-T8"
     const val BIG_CASE = "td-da"
 
     val JSON: String =
@@ -37,9 +39,9 @@ object SyntheticGuideBundle {
          ${card("RB-T3", BIG_CASE, "C", cite = "", chips = "\"GUIDANCE\"")},
          ${card("RB-T4", BIG_CASE, "Q", chips = "\"AMENDED\"")},
          ${card("RB-T5", BIG_CASE, "Q")},
-         ${card("RB-T6", BIG_CASE, "L")},
+         ${card("RB-T6", BIG_CASE, "L", basis = "open_source")},
          ${card("RB-T7", BIG_CASE, "H")},
-         ${card("RB-T8", BIG_CASE, "C")},
+         ${card("RB-T8", BIG_CASE, "C", basis = "dopt_om")},
          ${card("RB-T9", "ltc-home", "Q")},
          ${card("RB-T10", "ltc-home", "H")},
          ${card("RB-P1", "pay-hra", "Q")},
@@ -69,9 +71,10 @@ object SyntheticGuideBundle {
         personal: String = "",
         key: String = "A short key point for $id",
         unverified: Boolean = false,
+        basis: String = "",
     ): String =
         """{"id":"$id","title":"Synthetic card $id?",""" +
             """"answer":"A one-line answer for $id.","key":["$key"],"attach":["A form"],"watch":[],""" +
             """"cite":"$cite","details":"Longer details for $id.","chips":[$chips],"personal":"$personal",""" +
-            """"facet":"$facet","nav":"$nav","unverified":$unverified}"""
+            """"facet":"$facet","nav":"$nav","unverified":$unverified,"basis":"$basis"}"""
 }

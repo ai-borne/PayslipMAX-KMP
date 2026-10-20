@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.guide.domain
 
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.data.GuideBundleParser
+import com.payslipmax.pdfparser.guide.model.GuideBasis
 import com.payslipmax.pdfparser.testing.SyntheticGuideBundle
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -29,6 +30,23 @@ class GuideTrustTest {
     fun anUnverifiedCardIsFlaggedFromItsUnverifiedFieldOnly() {
         assertTrue(trust(SyntheticGuideBundle.UNVERIFIED_CARD).unverified)
         assertFalse(trust("RB-T5").unverified)
+    }
+
+    @Test
+    fun aBasisCardShowsItsBasisAndIsNotUnverified() {
+        // why: owner decision 2026-10-20: a card resting on the FAQ or a DoPT OM says so instead of claiming to be unchecked.
+        assertEquals(GuideBasis.OPEN_SOURCE, trust(SyntheticGuideBundle.OPEN_SOURCE_CARD).basis)
+        assertEquals(GuideBasis.DOPT_OM, trust(SyntheticGuideBundle.DOPT_OM_CARD).basis)
+        assertFalse(trust(SyntheticGuideBundle.OPEN_SOURCE_CARD).unverified)
+        assertTrue(trust(SyntheticGuideBundle.OPEN_SOURCE_CARD).hasAny)
+        assertNull(trust("RB-T5").basis)
+    }
+
+    @Test
+    fun aBasisKeyFromANewerBundleIsIgnored() {
+        val card = bundle.cards.first { it.id == "RB-T5" }.copy(basis = "something_new")
+
+        assertFalse(GuideTrust.of(card, bundle.ratesAsOf).hasAny)
     }
 
     @Test
