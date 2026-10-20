@@ -4,8 +4,8 @@ A: DA is revised twice a year, from 1 January and 1 July, on matrix pay plus MSP
 K: No other special pay is included
 K: Paid on leave except leave without pay and allowances
 K: Leave DA is based on leave salary actually drawn
-C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017
-D: Rates from each date: 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%; 01-01-2025 55%; 01-07-2025 58%. Later rates follow the MoD order for Armed Forces. Rates of 2020 to mid-2021 were frozen.
+C: Army Officers Pay Rules 2017, SRO 12(E) dt 03-05-2017; MoF DoE OM 1/1(i)/2026-E.II(B) dt 22-04-2026 (60% from 01-01-2026)
+D: Rates from each date: 01-07-2016 2%; 01-01-2017 4%; 01-07-2017 5%; 01-01-2018 7%; 01-07-2018 9%; 01-01-2019 12%; 01-07-2019 17%; 01-01-2020 21%; 01-07-2020 24%; 01-01-2021 28%; 01-07-2021 31%; 01-01-2022 34%; 01-07-2022 38%; 01-01-2023 42%; 01-07-2023 46%; 01-01-2024 50%; 01-07-2024 53%; 01-01-2025 55%; 01-07-2025 58%; 01-01-2026 60%. The 2026 step is from the DoE order; the MoD order for Armed Forces follows. Rates of 2020 to mid-2021 were frozen.
 
 === topic=RP-054 from=RP-054
 T: What happened to Kit Maintenance Allowance?
