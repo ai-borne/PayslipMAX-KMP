@@ -34,6 +34,27 @@ class GuidanceRule(unittest.TestCase):
         self.assertTrue(any('GUIDANCE card has a cite' in e for e in errors_for(card('Rule 114 TR', 'GUIDANCE'))))
 
 
+class BasisAttribute(unittest.TestCase):
+    """`basis=` names why a card with an open point still ships without the "Unverified point" chip (owner decision 2026-10-20)."""
+
+    def basis_card(self, basis, open_points):
+        c = card('Rule 114 TR')
+        c['attrs']['basis'] = basis
+        c['open'] = open_points
+        return c
+
+    def test_known_basis_with_an_open_point_is_clean(self):
+        for basis in ('open_source', 'dopt_om'):
+            self.assertEqual(errors_for(self.basis_card(basis, ['FAQ only'])), [])
+
+    def test_unknown_basis_stops_the_build(self):
+        self.assertTrue(any('basis' in e for e in errors_for(self.basis_card('faq', ['x']))))
+
+    def test_basis_without_an_open_point_stops_the_build(self):
+        # why: a basis explains an unresolved point; with none to explain it would hide nothing and mislead.
+        self.assertTrue(any('basis' in e for e in errors_for(self.basis_card('open_source', []))))
+
+
 class RuleChangeAttributes(unittest.TestCase):
     """M3: `effective=` and `replaces=` on a card line. A malformed value must stop the build, never ship as text."""
 

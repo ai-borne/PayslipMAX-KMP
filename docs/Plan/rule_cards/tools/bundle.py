@@ -2,7 +2,7 @@
 """Turn rulebook.json into the Claim Guide bundle the app ships (config.BUNDLE_PATH).
 
 Only whitelisted fields ship: internal provenance (`from`), reviewer notes (`open`), authoring metadata (`status`,
-`topic`, `domain`) and the coverage bookkeeping stay in the repo. Each card gains `unverified` (it carries an open point) and the bundle gains `rates_as_of`, the owner-approved
+`topic`, `domain`) and the coverage bookkeeping stay in the repo. Each card gains `unverified` (it carries an open point and no `basis`; a card with a `basis` of open_source or dopt_om ships it instead) and the bundle gains `rates_as_of`, the owner-approved
 `figures` (figures.json; authority and evidence stay in the repo) and the `preclaim` worksheet content (preclaim.json; provenance stays).
 Rule-change metadata is additive (BUNDLE_VERSION stays 1): every card gains `rev`, the first 8 hex characters of the SHA-256 of
 its shipped text fields (see card_rev), so a note can tell the card changed since it was written; a dated or replaced card also
@@ -25,7 +25,7 @@ from config import BUNDLE_PATH, BUNDLE_VERSION, CARDS_DIR, RATES_AS_OF
 
 CARD_KEYS = ('id', 'title', 'answer', 'key', 'attach', 'watch', 'cite', 'details', 'chips', 'personal', 'facet', 'nav')
 # Dated-rule fields ship only on the cards that have them, which keeps the bundle small for the 400 that do not.
-OPTIONAL_CARD_KEYS = ('effective', 'replaced_by', 'until')
+OPTIONAL_CARD_KEYS = ('effective', 'replaced_by', 'until', 'basis')
 # The words a user reads. A change to any of them changes `rev`; reviewer notes, source ids and dates do not.
 REV_TEXT_FIELDS = ('title', 'answer', 'key', 'attach', 'watch', 'cite', 'details')
 
@@ -37,7 +37,7 @@ def card_rev(card):
 
 def ship_card(card):
     out = {k: card[k] for k in CARD_KEYS}
-    out.update(rev=card_rev(card), unverified=bool(card['open']))
+    out.update(rev=card_rev(card), unverified=bool(card['open']) and not card.get('basis'))
     out.update({k: card[k] for k in OPTIONAL_CARD_KEYS if card.get(k)})
     return out
 

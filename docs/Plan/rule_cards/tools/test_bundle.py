@@ -38,11 +38,21 @@ class BundleContents(unittest.TestCase):
         rb['cards'][0]['reviewer_note'] = 'internal'
         self.assertNotIn('reviewer_note', bundle.build(rb)['cards'][0])
 
-    def test_every_open_point_becomes_unverified(self):
+    def test_every_open_point_without_a_basis_becomes_unverified(self):
         by_id = {c['id']: c for c in RULEBOOK['cards']}
         for card in BUILT['cards']:
-            self.assertEqual(card['unverified'], bool(by_id[card['id']]['open']), card['id'])
-        self.assertEqual(sum(c['unverified'] for c in BUILT['cards']), 37)
+            src = by_id[card['id']]
+            self.assertEqual(card['unverified'], bool(src['open']) and not src.get('basis'), card['id'])
+        self.assertEqual(sum(c['unverified'] for c in BUILT['cards']), sum(1 for c in RULEBOOK['cards'] if c['open'] and not c.get('basis')))
+
+    def test_a_basis_ships_only_on_the_card_that_has_one_and_clears_the_unverified_flag(self):
+        # why: owner decision 2026-10-20: a card resting on the FAQ or a DoPT OM shows that basis instead of "Unverified point".
+        rb = copy.deepcopy(RULEBOOK)
+        rb['cards'][0]['open'] = ['pending']
+        rb['cards'][0]['basis'] = 'open_source'
+        built = bundle.build(rb)['cards']
+        self.assertEqual((built[0]['unverified'], built[0]['basis']), (False, 'open_source'))
+        self.assertNotIn('basis', built[1])
 
     def test_header_carries_version_and_rates_month(self):
         self.assertEqual(BUILT['version'], BUNDLE_VERSION)
@@ -52,10 +62,10 @@ class BundleContents(unittest.TestCase):
 
     def test_matches_the_compiled_dataset(self):
         cards = BUILT['cards']
-        self.assertEqual(len(cards), 404)
+        self.assertEqual(len(cards), 400)
         # The domain split is pinned on the source rulebook, because the shipped cards no longer carry `domain`.
         self.assertEqual(sum(c['domain'] == 'travel' for c in RULEBOOK['cards']), 220)
-        self.assertEqual(sum(c['domain'] == 'pay' for c in RULEBOOK['cards']), 184)
+        self.assertEqual(sum(c['domain'] == 'pay' for c in RULEBOOK['cards']), 180)
         self.assertEqual(len(BUILT['nav']), 9)
         self.assertEqual(sum(len(a['cases']) for a in BUILT['nav']), 44)
         self.assertEqual(BUILT['facets'], RULEBOOK['facets'])

@@ -87,6 +87,11 @@ data class GuideCard(
     val nav: String,
     /** True when the card carries an open review point: shown as the "Unverified point" chip. */
     val unverified: Boolean = false,
+    /**
+     * Why a card with a still-open point carries no "Unverified point" chip (owner decision 2026-10-20): `open_source` (the point rests
+     * on the PCDA(O) FAQ or handbook) or `dopt_om` (on a DoPT Office Memorandum). Empty on every other card; see [GuideBasis].
+     */
+    val basis: String = "",
     /** First 8 hex characters of the SHA-256 of the card's shipped text; changes when the words a user reads change. */
     val rev: String = "",
     /** Date (YYYY-MM-DD) the rule applies from; empty when the card is undated. */
@@ -104,6 +109,17 @@ data class GuideCard(
 
     /** The "No official source" chip. Owner rule (2026-10-07): exactly the cards with no cite. */
     val hasNoOfficialSource: Boolean get() = cite.isBlank()
+}
+
+/** The two honest labels for a card whose point is open but not unverified; a key this version does not know maps to null. */
+enum class GuideBasis(val key: String) {
+    OPEN_SOURCE("open_source"),
+    DOPT_OM("dopt_om"),
+    ;
+
+    companion object {
+        fun fromKey(key: String): GuideBasis? = entries.firstOrNull { it.key == key }
+    }
 }
 
 enum class GuideChip {

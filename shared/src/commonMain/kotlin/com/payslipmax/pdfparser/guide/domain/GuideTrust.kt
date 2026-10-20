@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.guide.domain
 
+import com.payslipmax.pdfparser.guide.model.GuideBasis
 import com.payslipmax.pdfparser.guide.model.GuideCard
 import com.payslipmax.pdfparser.guide.model.GuideChip
 
@@ -17,8 +18,9 @@ data class GuideTrust(
     val noOfficialSource: Boolean,
     val updated: Boolean = false,
     val replacedUntil: String? = null,
+    val basis: GuideBasis? = null,
 ) {
-    val hasAny: Boolean get() = ratesAsOf != null || amended || unverified || noOfficialSource || updated || replacedUntil != null
+    val hasAny: Boolean get() = ratesAsOf != null || amended || unverified || noOfficialSource || updated || replacedUntil != null || basis != null
 
     companion object {
         fun of(
@@ -31,6 +33,7 @@ data class GuideTrust(
                 amended = GuideChip.AMENDED in chips,
                 unverified = card.unverified,
                 noOfficialSource = card.hasNoOfficialSource,
+                basis = GuideBasis.fromKey(card.basis),
             )
         }
     }

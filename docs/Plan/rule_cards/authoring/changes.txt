@@ -4,3 +4,10 @@
 #   == 2026-11-15
 #   - Food rate raised for the 8th CPC pay commission [RB-SS-T181, RB-SS-T184]
 # Add an entry when a card's meaning changes (a new dated rule, a corrected rate), not for typo fixes.
+
+== 2026-10-20
+- Tough Location Allowance now cites the correct MoD letter number [RB-RP-078]
+- The Dearness Allowance table now stops at the last rate confirmed by an MoD order [RB-RP-052]
+- The house building advance card says the 8.5% interest is the Army rate, not the civil one [RB-RP-088]
+- Pay start on first commission no longer carries two old field-area and medical notes [RB-RP-001]
+- Dates and lists tidied on the DSOP Fund and Training Allowance cards [RB-RP-090, RB-RP-060]

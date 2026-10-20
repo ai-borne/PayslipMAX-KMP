@@ -39,7 +39,7 @@ K: Both can be claimed together
 C: MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018; DoPT OM A-27012/02/2017-Estt(AL) dt 16-07-2018
 D: The base was Rs 2,250 and Rs 6,750 a month. The order says both rise 25% each time DA rises 50%; x1.25 from 01-01-2024 gives the figures above.
 
-=== topic=RP-085 from=SS-P086,SS-P088,SS-P093
+=== topic=RP-085 from=SS-P086,SS-P088,SS-P093 basis=open_source
 T: Which children qualify for CEA?
 A: Your two eldest surviving children, up to age 20 or class 12, whichever is earlier.
 K: Twins or multiple birth at the second birth: all are covered

@@ -732,7 +732,7 @@ and its pinned-ids test, `GuideBundleContract`, `tools/test_bundle.py`, `GuideDa
 | Gap | State at release | Where it is tracked |
 |---|---|---|
 | RP-073 TA Allowance | No card and no search alias (owner decision 10-06). | Post-E9 list |
-| Unverified cards | 37 ship with the "Unverified point" chip (the 36 from 10-06 plus the DA arrears card added 10-09: no source prints an arrears procedure). The `open` text never ships. | Post-E9 list |
+| Unverified cards | (**Superseded 2026-10-20: 0 now; see `HANDOFF.md`.**) 37 shipped with the "Unverified point" chip (the 36 from 10-06 plus the DA arrears card added 10-09: no source prints an arrears procedure). The `open` text never ships. | Post-E9 list |
 | RP-088 HBA 8.5% | Unverified until the owner confirms the rate from a primary letter. It is a Rates-chip card, so it blocks the paywall flip (EP 14). | EP 14 |
 | DA 60% / rates-as-of | `rates_as_of` is 2026-01. The 60% step rests on a MoF OM read via a circular; the MoD letter was not seen. The staleness nudge shows from Oct 2026. | RB-RP-052 `O:` point |
 | iOS walkthrough | Not done in this sprint (owner decision): EP 11, 15, 20, 23, 26. The Release flip reaches iOS through the same constant. | EP table |

@@ -25,15 +25,7 @@ K: Sanctioned by the CoAS or Director level for sport
 C: Rules 72, 74, 75, Leave Rules for the Services Vol I (Army); MoD letter B/25571/AG/PS3(b)/3335/D(Pay/Services) dt 04-10-1991
 D: Sports leave may combine with casual leave or regular leave, not both at once. Trekking expeditions approved by the Indian Mountaineering Foundation also qualify. No TA/DA for IIPA moves. Scientific meeting leave is sanctioned by the casual leave authority, not below Brigadier or Sub Area Commander.
 
-=== topic=RP-013 id=RB-C8-04 from=RP-013
-T: Special casual leave after sterilisation operations
-A: Seven days for a male officer whose wife is operated; up to 14 days for a female officer. Complications and recanalisation have their own limits.
-K: IUCD insertion: one day for female officers
-K: Wife's husband's vasectomy: one day
-K: Recanalisation: 21 days or hospital stay, whichever is less
-C: Rule 73, Leave Rules for the Services Vol I (Army); MoD letter B/33927/AG/PS-2(D)/432/D(AG) dt 19-02-1997
-D: Post-operative complications: whole period of hospitalisation, plus up to 7 days after tubectomy if still unfit though not hospitalised.
-O: Sterilisation SCL rules are old; check whether superseded by later MoD or DoPT orders.
+--- retire RB-C8-04 sterilisation special casual leave limits were cut by a later DoPT order and the Army adoption is unknown; owner decision 2026-10-20
 
 === topic=RP-014 from=RP-014
 T: Annual leave: how many days and when are they credited?

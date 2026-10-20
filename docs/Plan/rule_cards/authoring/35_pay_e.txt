@@ -28,7 +28,6 @@ K: Grant order GTDRSHNA, then cessation STPRSHNA
 K: Long leaves of 180 days or more: unit publishes quarterly in arrears
 H: Certificates: no free ration, no DA or DMA, not hospitalised
 C: Rule 174(B), Defence Service Regulations, Pay and Allowances (Officers); SAPCS letter C/7099/Policy/SAPCS/2022 dt 01-04-2022
-O: SAPCS letter is the 2022 procedure on quarterly Part II orders; Rule 174(B) is the base rule. Confirm both with domain owner.
 
 === topic=RP-051 from=SS-P056
 T: Ration Money Allowance during study leave
@@ -37,7 +36,7 @@ K: Station must be notified by Government
 K: Also payable on annual leave, sick leave on full pay, furlough, maternity
 C: Rule 174(B), Defence Service Regulations, Pay and Allowances (Officers)
 
-=== topic=RP-056 from=SS-P078
+=== topic=RP-056 from=SS-P078 basis=open_source
 T: HAFA, CFA and CMFA in a static unit
 A: Not admissible to static units such as military farms, MES, recruiting offices, training centres and NCC units.
 K: TA units get it only when embodied
@@ -54,7 +53,7 @@ K: Annual, maternity, furlough, study, child care, sick leave: not paid
 K: TD up to 3 months, if you return to field area
 C: MoD letter 1(16)/2017/D(Pay/Services)/Pt.III dt 24-01-2020; MoD letter 37269/AG/PS3(a)/90/D(Pay/Services) dt 13-01-1994
 
-=== topic=RP-056 from=SS-P080
+=== topic=RP-056 from=SS-P080 basis=open_source
 T: Is field area allowance restored after leave automatically?
 A: No. It restarts only after a Part II order granting it is published after you rejoin.
 K: Stopped when you go on leave
@@ -94,7 +93,7 @@ H: NAC from Station HQ
 H: Original rent receipt
 C: MoD letter 1(1)/2019-D(Q&C)/Vol.I dt 04-05-2020
 
-=== topic=RP-091 from=SS-P098
+=== topic=RP-091 from=SS-P098 basis=open_source
 T: How long are transit accommodation charges reimbursed?
 A: For a maximum of six months.
 K: Reimbursed in line with how HRA is paid

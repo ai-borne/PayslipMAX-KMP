@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.guide.domain
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class GuideShareTextTest {
     private val labels =
@@ -53,6 +54,15 @@ class GuideShareTextTest {
             """.trimIndent()
 
         assertEquals(expected, GuideShareText.build(parts, labels))
+    }
+
+    @Test
+    fun aBasisLineSitsDirectlyUnderTheAnswerAndNeverBesideTheUnverifiedWarning() {
+        val basis = GuideShareText.build(parts.copy(basisLine = "Open Source Info: confirm it."), labels)
+        val both = GuideShareText.build(parts.copy(unverified = true, basisLine = "Open Source Info: confirm it."), labels)
+
+        assertTrue(basis.contains("Answer: Rs 900 a day at level 11.\nOpen Source Info: confirm it.\n\nKey points:"))
+        assertFalse(both.contains("Open Source Info"), "a card is unverified or has a basis, never both")
     }
 
     @Test

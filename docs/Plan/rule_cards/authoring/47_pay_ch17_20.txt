@@ -5,7 +5,6 @@ K: Covers only the basic uniform, not special clothing
 K: From 01-01-2024, after the 25% step: Rs 25,000 (MNS Rs 18,750)
 K: Replaces outfit and kit maintenance allowances
 C: MoD letter PC-1(16)/2017/D(Pay/Services) dt 16-11-2017
-O: Escalation clause read in DoE OM 19051/1/2017-E.IV dt 02-08-2017 (para 7). Stepped figures are computed from it; the MoD order applying the step was not seen.
 D: Recovery if you leave in the year: superannuation July-Sept 60%, Oct-Dec 40%, Jan-Mar 25%, Apr-Jun nil. Voluntary retirement or resignation: 80%, 55%, 33%, nil. No recovery on death or invaliding beyond your control (MoD letter 1(4)2019/D(Pay/Services) dt 01-03-2021).
 
 === topic=RP-075 from=RP-075
@@ -28,10 +27,8 @@ A: It replaced SC(RL)A from 01-07-2017: TLA-I Rs 5,300, TLA-II Rs 3,400, TLA-III
 K: Part A or B places: TLA-I; Part C: TLA-II; Part D: TLA-III
 K: A place in two parts gets the higher rate
 K: With field concessions, take the higher of the two
-C: MoD letter 1(16)/2017/D(Pay/Services) dt 16-11-2017; DoE OM 3/1/2017-E.II(B) dt 19-07-2017
+C: MoD letter PC-1(16)/2017/D(Pay/Services) dt 16-11-2017; DoE OM 3/1/2017-E.II(B) dt 19-07-2017
 D: Whole states: Assam, Meghalaya Part D; Manipur Part C; Nagaland Part B; Sikkim and Lakshadweep Part A. Others are listed by district in the annexure. Rates rise 25% each time DA rises by 50%.
-O: Handbook cites MoD letter 1(16)/2017 dt 16-11-2017 here but the main 7th CPC letter is dt 18-09-2017 and the dress letter is PC-1(16)/2017 dt 16-11-2017; confirm the TLA letter number.
-O: District-level lists (HP, J&K, Uttarakhand, Mizoram, Tripura, Arunachal, Andaman) are not reproduced; add as lookup data if wanted.
 
 === topic=RP-078 id=RB-C18-05 from=RP-078
 T: Tough Location Allowance on leave, TD, arrest or suspension
@@ -60,12 +57,7 @@ K: CCG halves next time if tenure was under 18 months
 C: MoD letter B/25987/AG/PS3(a) dt 29-10-1987; MoD letter 4(1)/2011/D(Pay/Services) dt 19-08-2011; CGDA letter AT/IV/4887/VII dt 17-03-1998
 D: Representational grant: Rs 8,600 for Colonel, Lt Col, Major, Captain and Lieutenant equivalents (12-person set), Rs 13,000 for Brigadier and Major General equivalents (18-person set). Head of Mission countersigns a certificate. From 31-12-2008.
 
-=== topic=RP-081 from=RP-081
-T: Lump sum for bed and table linen for military attachés
-A: Military attachés posted abroad receive a prescribed lump sum in place of linen, released by the regional PCDA or CDA.
-K: Attachés are borne at DGMI Foreign Division (OA)
-C: MoD letter 4(1)/2011/D(Pay/Services) dt 19-08-2011; CGDA letter AT/I/0/42/VLL dt 26-02-1991
-O: The rate is not stated in the handbook; need the prescribed rate from the letter.
+--- retire RB-RP-081 no rate in the handbook and the 2011 MoD letter is not published online; owner decision 2026-10-20
 
 === topic=RP-082 from=RP-082
 T: Bhutan Compensatory Allowance at IMTRAT and Dantak
@@ -82,7 +74,7 @@ A: Officers with units under HQ 760 BRTF Myanmar get the same rates, servant wag
 K: Claim as for Bhutan Compensatory Allowance
 C: AO 31/80; MoD letter 44003/PS3(a)/9621-A/D(PP) dt 07-12-1955
 
-=== topic=RP-084 from=RP-084 chips=GUIDANCE
+=== topic=RP-084 from=RP-084 chips=GUIDANCE basis=open_source
 T: Claims you must not send to PCDA(O)
 A: Briefcase allowance, bed and linen charges, telephone bills and indoor medical claims go to the Regional Controller.
 K: Submit to the Controller of the unit's region
@@ -100,7 +92,6 @@ T: House building advance and conveyance advance now
 A: Conveyance and computer advances were discontinued. HBA for Army officers follows the 2017 rules as extended by MoD in June 2023.
 K: New house: 34 months' basic pay, up to Rs 7 lakh
 K: Expansion: up to Rs 6 lakh; cost cap 139x basic pay
-K: Interest 8.5% from 2017-18; reviewed every three years
+K: Army rate 8.5% from 2017-18 (civil rate differs); reviewed every three years
 C: MoD (DMA) letter F.No.15(1)/2017/D(Pay/Services) dt 19-06-2023; MoHUA OM dt 09-11-2017; MoF DoE OM 12(1)/E.II(A)/2016 dt 07-10-2016
 D: Cost cap is at most Rs 60 lakh, relaxable by up to 25% by the head of department. Principal is repaid in up to 180 instalments, then interest in up to 60. The advance is the least of the pay-based limit, cost, or repaying capacity.
-O: Check later reviews of the 8.5% interest rate.
