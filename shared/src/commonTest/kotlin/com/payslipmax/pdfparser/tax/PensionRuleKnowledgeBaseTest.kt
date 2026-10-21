@@ -31,6 +31,7 @@ class PensionRuleKnowledgeBaseTest {
         assertEquals(2_500_000.0, PensionRuleKnowledgeBase.GRATUITY_CEILING)
         assertEquals(0.50, PensionRuleKnowledgeBase.MAX_COMMUTE_FRACTION_DEFENCE)
         assertEquals(300, PensionRuleKnowledgeBase.LEAVE_MAX_DAYS)
+        assertEquals(60, PensionRuleKnowledgeBase.LTC_ENCASH_MAX_DAYS)
         assertEquals(0.30, PensionRuleKnowledgeBase.DISABILITY_100_PERCENT_RATE)
     }
 }

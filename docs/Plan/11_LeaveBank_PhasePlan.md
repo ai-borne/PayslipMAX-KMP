@@ -1,6 +1,6 @@
 # Leave Bank — Phase Plan
 
-Status: agreed 2026-10-21; Phase 1 done, Phase 2 next. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
+Status: agreed 2026-10-21; Phases 1–2 done, Phase 3 next. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
 This file is the plan; phase status is tracked in the table below.
 
 ## Context
@@ -110,8 +110,8 @@ Reused, not rebuilt: `RetirementCalculatorEngine.leaveEncashment`, `PensionRuleK
 | Phase | Status | Commit |
 |---|---|---|
 | 0. Branch, plan doc, baseline | done (signed off 2026-10-21) | `71101f32` |
-| 1. Model + extractor + pipeline hook | done (signed off 2026-10-21) | this commit |
-| 2. Summary SSOT + test fixture | not started | — |
+| 1. Model + extractor + pipeline hook | done (signed off 2026-10-21) | `43325a1f` |
+| 2. Summary SSOT + test fixture | done (2026-10-21) | this commit |
 | 3. ViewModel + kill switch + Leave bank card | not started | — |
 | 4. Payslip view section + teaser | not started | — |
 | 5. Smart Insight | not started | — |
@@ -167,6 +167,11 @@ Exit: all of the above green, corpus 139/139, R8 + mapping grep green.
   - No leave data → null. Ties and out-of-order input are handled.
 - Implement `LeaveBankCalculator` + `LeaveBankSummary`, and add `LTC_ENCASH_MAX_DAYS`.
 - Exit: green gate + R8.
+- Done 2026-10-21. Rules the plan left open, now pinned by `LeaveBankCalculatorTest`:
+  - "Latest" orders by `(year, monthNum)`, then `file`, so same-month duplicates resolve the same way in any input order.
+  - Balance = printed `totalDays` of the latest ACCLVE row by `casDate`; same-date ties go to the later `orderDate`, then printed order.
+  - If the latest leave-bearing statement has no ACCLVE row, the summary is `null`. It never falls back to an older year.
+  - `LeaveAccumulationCorpusTest` now reads balance and LTC through `summarize` (its private balance helper was a second copy of the rule).
 
 ### Phase 3: ViewModel + kill switch + Retirement Calculators Leave bank card (Premium surface)
 Nudge: connect the Pixel 9.
@@ -190,6 +195,11 @@ Nudge: connect the Pixel 9.
   - Developer override "Force Free" → screen stays locked as today.
   - Process death (`adb shell am kill` while backgrounded) → state restores.
 - Exit: green gate + R8 + device screenshots attached to the summary; flag reverted in the diff.
+- Open for the owner, raised in the Phase 2 review (pre-existing code, not changed in Phase 2):
+  - `RetirementPlannerResultBuilder` calls `leaveEncashment(basic, da, leaveDays)` without NPA, but `LeaveBankSummary.valueAtCurrentPay`
+    includes NPA (owner decision). For an officer drawing NPA, the card and the Day-1 corpus "Leave Encashment" row would differ.
+  - `RetirementDay1CorpusCard.kt` hardcodes the label "Leave Encashment (300 Days)". Once the field is pre-filled from the balance
+    (e.g. 222), the label is wrong, and the literal also breaks the strings rule.
 
 ### Phase 4: Payslip view section (free) + teaser
 Nudge: connect the Pixel 9.

@@ -1,9 +1,9 @@
 package com.payslipmax.pdfparser.parser
 
-import com.payslipmax.pdfparser.domain.LeaveAccumulation
 import com.payslipmax.pdfparser.domain.LeaveCasCode
 import com.payslipmax.pdfparser.domain.LeaveEntry
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.insights.LeaveBankCalculator
 import com.payslipmax.pdfparser.parser.corpus.CorpusFixtures
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -38,12 +38,14 @@ class LeaveAccumulationCorpusTest {
     @Test
     fun decemberStatementsYieldThePrintedLeaveTable() {
         for ((id, want) in expected) {
-            val leave = assertNotNull(parse(id).leaveAccumulation, "$id: leave table not found")
+            val payslip = parse(id)
+            val leave = assertNotNull(payslip.leaveAccumulation, "$id: leave table not found")
+            val summary = assertNotNull(LeaveBankCalculator.summarize(listOf(payslip)), "$id: no leave summary")
 
             assertEquals(want.rows, leave.entries.size, "$id: row count")
             assertEquals(want.lastRow, leave.entries.last(), "$id: last row")
-            assertEquals(want.balance, leave.latestAccruedTotal(), "$id: balance")
-            assertEquals(want.ltcDays, leave.entries.filter { it.casCode == LeaveCasCode.LTC_ENCASHED }.sumOf { it.days }, "$id: LTC days")
+            assertEquals(want.balance, summary.balanceDays, "$id: balance")
+            assertEquals(want.ltcDays, summary.ltcDaysUsed, "$id: LTC days")
         }
     }
 
@@ -56,7 +58,4 @@ class LeaveAccumulationCorpusTest {
 
         assertTrue(falseMatches.isEmpty(), "Leave table found where the page is absent: $falseMatches")
     }
-
-    private fun LeaveAccumulation.latestAccruedTotal(): Int? =
-        entries.filter { it.casCode == LeaveCasCode.ACCRUED }.maxByOrNull { it.casDate }?.totalDays
 }

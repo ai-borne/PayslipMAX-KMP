@@ -10,6 +10,7 @@ object PensionRuleKnowledgeBase {
     const val GRATUITY_MAX_EMOLUMENT_MULTIPLE = 16.5
     const val MAX_COMMUTE_FRACTION_DEFENCE = 0.50 // 50% for Armed Forces Officers
     const val LEAVE_MAX_DAYS = 300
+    const val LTC_ENCASH_MAX_DAYS = 60 // Leave encashed with LTC, over a whole career
     const val AGIF_EXTENDED_COVER_DEDUCTION = 160_000.0 // ₹1.6 Lakhs deducted for 26-year extended cover
     const val DISABILITY_100_PERCENT_RATE = 0.30 // 30% of last drawn emoluments for 100% disability
 
