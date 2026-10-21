@@ -6,6 +6,7 @@ import com.payslipmax.pdfparser.database.LedgerRecordEntity
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.insights.DeterministicIntelligenceEngine
 import com.payslipmax.pdfparser.insights.EngineResult
+import com.payslipmax.pdfparser.insights.LeaveBankSummary
 import com.payslipmax.pdfparser.insights.OptimizationResult
 import com.payslipmax.pdfparser.insights.WealthOptimizationEngine
 import com.payslipmax.pdfparser.parser.PayslipPatternConfig
@@ -18,6 +19,8 @@ data class InsightsState(
     val scoreDelta: Int?,
     val optimizationResult: OptimizationResult,
     val previousMonthLabel: String?,
+    /** Today's leave bank (latest statement, latest pay), whatever month is selected; `null` without a leave statement. */
+    val leaveBank: LeaveBankSummary? = null,
 )
 
 fun previousMonthLabel(previousRecord: LedgerRecordEntity?): String? =
@@ -27,6 +30,7 @@ fun previousMonthLabel(previousRecord: LedgerRecordEntity?): String? =
 fun rememberInsightsState(
     selected: ParsedPayslip,
     ledgerRecords: List<LedgerRecordEntity>,
+    leaveBank: LeaveBankSummary?,
 ): InsightsState {
     val currentRecord = remember(ledgerRecords, selected) { findCurrentRecord(selected, ledgerRecords) }
     val previousRecord = remember(ledgerRecords, currentRecord) { findPreviousRecord(currentRecord, ledgerRecords) }
@@ -53,6 +57,7 @@ fun rememberInsightsState(
         scoreDelta,
         optimizationResult,
         monthLabel,
+        leaveBank,
     ) {
         InsightsState(
             currentRecord = currentRecord,
@@ -62,6 +67,7 @@ fun rememberInsightsState(
             scoreDelta = scoreDelta,
             optimizationResult = optimizationResult,
             previousMonthLabel = monthLabel,
+            leaveBank = leaveBank,
         )
     }
 }

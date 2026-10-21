@@ -1,10 +1,15 @@
 package com.payslipmax.pdfparser.ui.screens
 
+import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.database.LedgerRecordEntity
 import com.payslipmax.pdfparser.insights.Anomaly
 import com.payslipmax.pdfparser.insights.EngineResult
+import com.payslipmax.pdfparser.insights.LeaveBankCalculator
 import com.payslipmax.pdfparser.insights.Opportunity
 import com.payslipmax.pdfparser.insights.OptimizationResult
+import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.OVER_CAP_DAYS
+import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.payslip
+import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.table
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -61,10 +66,12 @@ class GatedNavigationInvariantTest {
                 Anomaly("TAX_PROJECTION", "field", 1000.0, "02/2026", "detail"),
             )
         val opportunity = Opportunity(id = "80c", title = "80C Headroom", unusedAmount = 50_000.0, estTaxSaved = 10_000.0, action = "Increase DSOP")
-        val insights = buildSmartInsights(state(anomalies, listOf(opportunity)))
+        val leaveBank = LeaveBankCalculator.summarize(listOf(payslip(2025, 12, table(OVER_CAP_DAYS))))
+        val insights = buildSmartInsights(state(anomalies, listOf(opportunity)).copy(leaveBank = leaveBank), leaveBankEnabled = true)
         val targeted = insights.filter { it.actionTarget != null }
 
         assertTrue(targeted.isNotEmpty(), "test setup must actually exercise targeted cards")
+        assertTrue(targeted.any { it.actionTarget == Screen.RetirementCalculators }, "test setup must exercise the leave-cap card")
         for (card in targeted) {
             assertEquals(
                 gateForScreen(card.actionTarget!!),

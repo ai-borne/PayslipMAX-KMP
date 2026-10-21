@@ -101,7 +101,7 @@ private fun leaveRowUi(entry: LeaveEntry) =
         order = LeaveBankStrings.order(entry.orderNo, leaveDisplayDate(entry.orderDate)),
     )
 
-private fun LeaveBankSummary.statementMonth(): String = formatPayMonth(PayMonth(sourceYear, sourceMonth))
+internal fun LeaveBankSummary.statementMonth(): String = formatPayMonth(PayMonth(sourceYear, sourceMonth))
 
 private const val ISO_PARTS = 3
 private const val YEAR_LENGTH = 4

@@ -1,6 +1,6 @@
 # Leave Bank — Phase Plan
 
-Status: agreed 2026-10-21; Phases 1–4 done, Phase 5 next. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
+Status: agreed 2026-10-21; Phases 1–5 done, Phase 6 next. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
 This file is the plan; phase status is tracked in the table below.
 
 ## Context
@@ -114,8 +114,8 @@ Reused, not rebuilt: `RetirementCalculatorEngine.leaveEncashment`, `PensionRuleK
 | 2. Summary SSOT + test fixture | done (2026-10-21) | `4fb36624` |
 | 2a. Pre-Phase-3 follow-up: leave/DA/NPA formula, Day-1 labels | done (2026-10-21) | `3fb8abb2`, `fb8628d9` |
 | 3. ViewModel + kill switch + Leave bank card | done with open items (2026-10-21); see Pending items | `bb021add` |
-| 4. Payslip view section + teaser | done (2026-10-21); see Pending items | this commit |
-| 5. Smart Insight | not started | — |
+| 4. Payslip view section + teaser | done (2026-10-21); see Pending items | `5bc70f3a` |
+| 5. Smart Insight | done (2026-10-21); see Pending items | this commit |
 | 6. Release hardening, iOS, flip, PR | not started | — |
 | 7. Pending items | open (items 4–8; 1–3 closed) | — |
 
@@ -311,6 +311,33 @@ Nudge: connect the Pixel 9.
   - Copy in `LeaveBankStrings` that states only the lapse fact.
 - Device: the insight shows for 301; it is locked under "Force Free" and opens Retirement Calculators under Pro.
 - Exit: green gate + R8 + screenshots; flag reverted.
+- Owner decisions 2026-10-21 (start of Phase 5):
+  - Copy: title "Leave at the 300-day cap"; body "Your Dec 2025 statement shows 301 days, 1 over the cap. Leave accrued beyond
+    300 days lapses." (at exactly 300: "…shows 300 days, the cap. …"); action "See leave bank"; no amount on the card.
+  - Severity WARNING (chip "Watch"). Order: anomalies → leave card → tax opportunities → free findings.
+  - Every selected month shows it: the summary is today's leave bank (latest statement), and the copy names that statement.
+- Done 2026-10-21 (Phase 5).
+  - `InsightsState.leaveBank` (default `null`) is fed from `viewModel.leaveBankSummary` in `InsightsContent`; `rememberInsightsState`
+    is the only production builder. The first-statement path is the `previousRecord == null` branch inside `buildSmartInsights`,
+    not a separate builder; the card is added there too.
+  - `leaveCapCard()` in `SmartInsightsBuilder.kt` (140 → 167 lines, no split needed). Gate and target from `gateForScreen(Screen.RetirementCalculators)`.
+    The kill switch is a `leaveBankEnabled = isLeaveBankEnabled()` parameter (the `payslipLeaveTable` pattern). Copy and the cap
+    (`PensionRuleKnowledgeBase.LEAVE_MAX_DAYS`) in `LeaveBankStrings`; `statementMonth()` is now `internal`, not copied.
+  - The dedup needed no code: `buildRecommendedActions` drops any candidate whose target a shown card has. Recommended Actions
+    appear only in the free tier's locked Premium hub ("★ Most relevant for you"), so that is where it is visible.
+  - Tests: `LeaveCapInsightTest` 8 (a new file: `SmartInsightsBuilderTest` is at 250 lines and would pass 300),
+    `InsightsLeaveWiringTest` 1 (Robolectric, Insights tab on an older month), and `GatedNavigationInvariantTest` now walks the
+    leave card too. All 8 deliberate breaks were caught, then restored.
+  - Device walk on the Pixel 9 (debug, flag flipped locally, reverted; a flag-off build was reinstalled afterwards):
+    - Premium, Sep 2026: the card shows after the two anomalies with the agreed copy; "See leave bank" opens Retirement
+      Calculators (Leave bank card 301 days); system back and the in-screen arrow return to Insights with the scroll kept.
+    - Dec 2022 (first-statement path): "First Statement Uploaded", then the leave card naming the Dec 2025 statement.
+    - "Force Free": the card shows; its action opens the upgrade sheet and does not navigate. The Premium hub shows no
+      "Most relevant" line; with the flag-off build it reads "★ Most relevant for you: Plan Your Retirement" (the control).
+    - Flag-off build: no leave card on Sep 2026. Override restored to Force Premium, night mode to yes.
+    - Light and dark both checked. Screenshots stay in the session scratchpad (they show real figures).
+    - Seen, pre-existing, debug-only: the night-mode flip recreated the activity and the override came back as Force Premium
+      (the debug default), because recreation builds a fresh ViewModel (item 7).
 
 ### Phase 6: Release hardening, iOS, flip, PR
 Nudge: connect the Pixel 9.
@@ -326,7 +353,7 @@ Nudge: connect the Pixel 9.
 - Pre-push hook (full gate). PR to `main` only when the owner asks.
 
 ### Phase 7: Pending items (consolidated)
-Open points from earlier phases. None blocks Phase 5; each must be closed or explicitly dropped by the owner before Phase 6 flips the flag.
+Open points from earlier phases. None blocks Phase 6's start; each must be closed or explicitly dropped by the owner before Phase 6 flips the flag.
 1. ~~**No automated UI test for the new composables.**~~ Closed in Phase 4 (owner: add Compose tests). The premise was wrong: composeApp
    already had a Robolectric `runComposeUiTest` harness. `LeaveBankComposablesUiTest` covers the section (collapsed by default, teaser
    visible, rows on expand, row tap → order, teaser tap, no teaser) and `LeaveBankCard` (figures, orders collapsed, row → order);
@@ -337,7 +364,9 @@ Open points from earlier phases. None blocks Phase 5; each must be closed or exp
 3. ~~**Older selected month, not walked.**~~ Closed in Phase 4: with Dec 2024 selected, the Day-1 "Leave Encashment (300 Days)" row
    showed ₹21,49,650 (Dec 2024 pay) and the card ₹23,84,000 "at Sep 2026 pay", as the owner decided; on the latest month both
    show ₹23,84,000. See item 8 for a copy issue this walk exposed.
-4. iOS: the Leave bank card has not been seen on an iPhone (iOS UI can't be driven from here). It is in the Phase 6 owner checklist.
+4. iOS: the Leave bank card and (Phase 5) the leave-cap Smart Insight have not been seen on an iPhone (iOS UI can't be driven from
+   here). Both are in the Phase 6 owner checklist: Insights shows the card for 301; Premium opens Retirement Calculators and native
+   back returns to Insights; free opens the upgrade sheet.
 5. **iOS nested native pops don't sync `AppNavState`** (pre-existing, found in Phase 4). `NavCoordinator.shouldNotifyNativePop` fires only
    when the native stack is back at depth 1; its comment says the stack is "exactly one level deep", which stopped being true with
    Premium → Tax Planning and Pay Audit → Guide card (E7), and Phase 4 adds payslip → Retirement Calculators. An edge-swipe from a nested
