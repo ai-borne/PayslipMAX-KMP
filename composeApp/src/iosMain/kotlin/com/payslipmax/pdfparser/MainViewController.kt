@@ -40,8 +40,8 @@ private fun ensureKoin() {
  *    with detail navigation routed to the native stack via [NavBridge.navigateToDetail].
  *  - [detailViewController]: a thin `ComposeUIViewController` per pushed detail screen, reusing
  *    the existing screen composables unchanged (they already take a plain `onBack`).
- *  - [onNativePopObserved]: called by the Swift `UINavigationControllerDelegate` after any native
- *    pop (including an edge-swipe) so [AppNavState] stays in sync without re-triggering a pop.
+ *  - [onNativeStackObserved]: called by the Swift `UINavigationControllerDelegate` after every native
+ *    push or pop (including an edge-swipe) so [AppNavState] stays in sync without re-triggering a pop.
  *
  * @param pushScreen Swift closure that pushes the native VC for a [Screen] name.
  * @param requestPop Swift closure that pops the top native VC.
@@ -157,9 +157,9 @@ class IosNavHost(
             }
         }
 
-    /** Called by the Swift nav delegate after the stack returns to the root (native pop/swipe). */
-    fun onNativePopObserved() {
-        bridge.onNativePopObserved()
+    /** Called by the Swift nav delegate after every native show, with the number of details above the tab root. */
+    fun onNativeStackObserved(detailCount: Int) {
+        bridge.onNativeStackObserved(detailCount)
     }
 }
 

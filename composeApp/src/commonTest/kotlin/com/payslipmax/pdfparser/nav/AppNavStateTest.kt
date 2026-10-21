@@ -132,4 +132,37 @@ class AppNavStateTest {
         assertNull(nav.activeDetail)
         assertEquals(Screen.Guide, nav.currentTab)
     }
+
+    @Test
+    fun truncateToDropsOnlyTheScreensAboveTheNativeDepth() {
+        // iOS item 5: an edge-swipe off Retirement Calculators leaves the native stack on the payslip; the model must land there too,
+        // not on History (one pop too many) and not still on Retirement Calculators (the pre-fix desync).
+        val nav = AppNavState(currentTab = Screen.History, initialDetailStack = listOf(Screen.PayslipReplica, Screen.RetirementCalculators))
+
+        nav.truncateTo(1)
+
+        assertEquals(listOf(Screen.PayslipReplica), nav.detailStack)
+        assertEquals(Screen.History, nav.currentTab)
+    }
+
+    @Test
+    fun truncateToNeverGrowsOrReordersTheStack() {
+        // A native push shows at a depth equal to (or, mid-animation, above) the model's; that must never invent or reorder screens.
+        val nav = AppNavState(currentTab = Screen.Insights, initialDetailStack = listOf(Screen.PayAudit, Screen.GuideCard))
+
+        nav.truncateTo(2)
+        nav.truncateTo(5)
+
+        assertEquals(listOf(Screen.PayAudit, Screen.GuideCard), nav.detailStack)
+    }
+
+    @Test
+    fun truncateToZeroOrBelowReturnsToTheTabRoot() {
+        val nav = AppNavState(currentTab = Screen.Settings, initialDetailStack = listOf(Screen.PremiumFeatures, Screen.TaxPlanning))
+
+        nav.truncateTo(-1)
+
+        assertNull(nav.activeDetail)
+        assertTrue(nav.canExitApp)
+    }
 }
