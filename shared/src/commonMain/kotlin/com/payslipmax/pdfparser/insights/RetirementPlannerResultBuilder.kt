@@ -37,6 +37,9 @@ data class RetirementPlannerResult(
 )
 
 object RetirementPlannerResultBuilder {
+    /** DA rate assumed when there is no payslip, or no Basic to derive it from. */
+    private const val PLACEHOLDER_DA_PERCENT = 50.0
+
     fun build(
         payslip: ParsedPayslip?,
         overrideQualifyingYears: Double? = null,
@@ -47,13 +50,13 @@ object RetirementPlannerResultBuilder {
     ): RetirementPlannerResult {
         val basic = payslip?.earnings?.basicPay ?: 100000.0
         val msp = payslip?.earnings?.militaryServicePay ?: 15500.0
-        val da = payslip?.earnings?.dearnessAllowance ?: 50000.0
+        val da = payslip?.earnings?.dearnessAllowance ?: ((basic + msp) * PLACEHOLDER_DA_PERCENT / 100.0)
         val npa = payslip?.earnings?.nonPracticingAllowance ?: 0.0
         val rawOfficerName = payslip?.officer?.name
 
         val (rank, name) = parseRankAndName(rawOfficerName)
 
-        val daPercentage = if (basic > 0.0) RetirementCalculatorEngine.daPercent(basic, msp, npa, da) else 50.0
+        val daPercentage = if (basic > 0.0) RetirementCalculatorEngine.daPercent(basic, msp, npa, da) else PLACEHOLDER_DA_PERCENT
 
         val ageNextBirthday =
             overrideAgeNextBirthday

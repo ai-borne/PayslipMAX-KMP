@@ -13,6 +13,8 @@ class RetirementPlannerResultBuilderTest {
         assertTrue(result.basicPension > 0.0)
         assertTrue(result.totalDay1Corpus > 0.0)
         assertEquals(3, result.commutationScenarios.size)
+        // The placeholder DA is 50% of the placeholder Basic + MSP, the base PCDA pays DA on.
+        assertEquals(50.0, result.daPercentage, 1e-9)
     }
 
     @Test

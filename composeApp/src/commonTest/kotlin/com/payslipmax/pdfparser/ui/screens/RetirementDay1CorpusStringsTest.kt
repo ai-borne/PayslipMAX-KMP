@@ -21,4 +21,9 @@ class RetirementDay1CorpusStringsTest {
             AppStringsPremium.retCalcLeaveHint,
         )
     }
+
+    @Test
+    fun basisLabelNamesNpaBecauseItCountsTowardPensionGratuityAndLeave() {
+        assertEquals("Based on current pay (Basic + MSP + NPA, if any, + DA)", AppStringsPremium.retCalcBasisLabel)
+    }
 }

@@ -112,7 +112,7 @@ Reused, not rebuilt: `RetirementCalculatorEngine.leaveEncashment`, `PensionRuleK
 | 0. Branch, plan doc, baseline | done (signed off 2026-10-21) | `71101f32` |
 | 1. Model + extractor + pipeline hook | done (signed off 2026-10-21) | `43325a1f` |
 | 2. Summary SSOT + test fixture | done (2026-10-21) | `4fb36624` |
-| 2a. Pre-Phase-3 follow-up: leave/DA/NPA formula, Day-1 labels | done (2026-10-21) | this commit |
+| 2a. Pre-Phase-3 follow-up: leave/DA/NPA formula, Day-1 labels | done (2026-10-21) | `3fb8abb2`, this commit |
 | 3. ViewModel + kill switch + Leave bank card | not started | — |
 | 4. Payslip view section + teaser | not started | — |
 | 5. Smart Insight | not started | — |
@@ -205,6 +205,8 @@ Nudge: connect the Pixel 9.
     Pay + MSP + NPA, if any, for pension, plus DA for gratuity.
   - Day-1 corpus card: move the remaining 4 row titles and the 1 subtitle to `AppStringsPremium`, wording unchanged.
   - Leave-days hint: "(Basic + NPA + DA on them) ÷ 30 × days. MSP and DA on MSP are excluded per PCDA."
+  - Leftovers closed in a second commit: the basis label now reads "Based on current pay (Basic + MSP + NPA, if any, + DA)".
+    The no-payslip placeholder DA is 50% of the placeholder Basic + MSP (`PLACEHOLDER_DA_PERCENT`); it was ₹50,000, which became 43.3%.
   - If the latest leave statement has no accrual row, Leave Bank shows nothing (confirmed; no fallback to an older year).
   - The same-month tie-break on `file` stays as determinism only: storage keys payslips by `dateStr` with REPLACE, so duplicates can't exist.
 - Background, raised in the Phase 2 review (pre-existing code, not changed in Phase 2):
