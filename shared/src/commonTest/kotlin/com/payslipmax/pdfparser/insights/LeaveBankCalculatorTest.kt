@@ -41,6 +41,30 @@ class LeaveBankCalculatorTest {
     }
 
     @Test
+    fun payMonthNamesThePayslipTheValueWasPricedAtNotTheLeaveStatement() {
+        // The card captions its rupee figure with this month; naming the leave statement's month would misstate the basis.
+        val dec2025 = payslip(2025, 12, table(OVER_CAP_DAYS))
+        val mar2026 = payslip(2026, 3, leave = null)
+
+        val result = summary(mar2026, dec2025)
+
+        assertEquals(3, result.payMonth)
+        assertEquals(2026, result.payYear)
+        assertEquals(12, result.sourceMonth)
+    }
+
+    @Test
+    fun entriesAreTheSourceStatementsOwnRowsAndNeverAnOlderYears() {
+        // Statements list different rows each year, so the table shown must be the one the balance came from.
+        val dec2024 = payslip(2024, 12, table(282, ltcDays = listOf(10, 10)))
+        val dec2025Table = table(OVER_CAP_DAYS, asOfDate = "2025-12-31")
+
+        val result = summary(dec2024, payslip(2025, 12, dec2025Table))
+
+        assertEquals(dec2025Table.entries, result.entries)
+    }
+
+    @Test
     fun aLeaveTableOutsideDecemberIsStillTheLatestSource() {
         val dec2025 = payslip(2025, 12, table(OVER_CAP_DAYS))
         val mar2026 = payslip(2026, 3, table(BELOW_CAP_DAYS, asOfDate = "2025-12-31"))

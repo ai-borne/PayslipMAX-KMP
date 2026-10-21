@@ -26,6 +26,7 @@ object AppStringsPremium {
     const val retCalcLeaveDaysLabel = "Encashable leave days (max 300)"
     const val retCalcLeaveHint = "(Basic + NPA + DA on them) ÷ 30 × days. MSP and DA on MSP are excluded per PCDA."
     const val retCalcDsopHint = "100% Tax-Free provident fund balance in Day-1 corpus."
+    const val retCalcDsopBalanceLabel = "DSOP Closing Balance (₹)"
     const val retCalcDisclaimer = "Estimates only, based on your current pay — actual retirement figures depend on last-drawn emoluments and rules in force. Verify with PAO / PCDA(O)."
 
     // Modern Retirement Planner Components

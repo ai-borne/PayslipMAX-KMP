@@ -37,4 +37,9 @@ object LaunchFlags {
     // iPhone walks and the owner's review of preclaim.json, in its own commit. It also needs GUIDE_ENABLED: the worksheet lives in
     // the Guide tab. Premium follows GUIDE_PAYWALL_ENABLED.
     const val PRECLAIM_ENABLED: Boolean = true
+
+    // Leave Bank kill switch (docs/Plan/11_LeaveBank_PhasePlan.md), the only switch: every Leave Bank surface (Retirement
+    // Calculators card, payslip section, Smart Insight) reads it through isLeaveBankEnabled(). The parser always runs. Flipped true
+    // in Phase 6, in its own commit.
+    const val LEAVE_BANK_ENABLED: Boolean = false
 }

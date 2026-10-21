@@ -9,6 +9,7 @@ import com.payslipmax.pdfparser.tax.PensionRuleKnowledgeBase
  * The leave bank as the latest statement prints it, plus what it is worth at today's pay. [balanceDays] is PCDA's printed
  * total and may exceed the cap; [encashableDays] is the part that can be encashed at retirement. [asOfDate] (ISO) is the
  * date of the accrual that total belongs to, which is earlier than the statement month ([sourceMonth]/[sourceYear]).
+ * [entries] are that statement's rows as printed. [payMonth]/[payYear] name the payslip [valueAtCurrentPay] is priced at.
  */
 data class LeaveBankSummary(
     val balanceDays: Int,
@@ -20,6 +21,9 @@ data class LeaveBankSummary(
     val ltcDaysUsed: Int,
     val ltcCapDays: Int,
     val valueAtCurrentPay: Double,
+    val payMonth: Int,
+    val payYear: Int,
+    val entries: List<LeaveEntry>,
 )
 
 /**
@@ -42,7 +46,8 @@ object LeaveBankCalculator {
         val entries = source.leaveAccumulation?.entries.orEmpty()
         val latestAccrual = entries.filter { it.casCode == LeaveCasCode.ACCRUED }.sortedWith(accrualOrder).lastOrNull() ?: return null
         val balance = latestAccrual.totalDays ?: return null
-        val pay = payslips.maxWith(chronological).earnings
+        val latest = payslips.maxWith(chronological)
+        val pay = latest.earnings
         val encashable = RetirementCalculatorEngine.encashableLeaveDays(balance)
 
         return LeaveBankSummary(
@@ -62,6 +67,9 @@ object LeaveBankCalculator {
                     encashable,
                     pay.nonPracticingAllowance,
                 ),
+            payMonth = latest.monthNum,
+            payYear = latest.year,
+            entries = entries,
         )
     }
 }

@@ -21,6 +21,7 @@ fun RetCalcInputsSection(
     onLeaveDaysChange: (String) -> Unit,
     dsopBalance: String = "",
     onDsopBalanceChange: (String) -> Unit = {},
+    leaveDaysSource: String? = null,
 ) {
     Text(
         text = AppStringsPremium.retCalcInputsTitle,
@@ -46,9 +47,12 @@ fun RetCalcInputsSection(
         onValueChange = onLeaveDaysChange,
         supportingText = AppStringsPremium.retCalcLeaveHint,
     )
+    leaveDaysSource?.let {
+        Text(text = it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
     if (dsopBalance.isNotEmpty()) {
         LabeledNumberField(
-            label = "DSOP Closing Balance (₹)",
+            label = AppStringsPremium.retCalcDsopBalanceLabel,
             value = dsopBalance,
             onValueChange = onDsopBalanceChange,
             supportingText = AppStringsPremium.retCalcDsopHint,

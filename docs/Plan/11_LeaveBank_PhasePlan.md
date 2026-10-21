@@ -1,6 +1,6 @@
 # Leave Bank — Phase Plan
 
-Status: agreed 2026-10-21; Phases 1–2 done, Phase 3 next. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
+Status: agreed 2026-10-21; Phases 1–3 done, Phase 4 next. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
 This file is the plan; phase status is tracked in the table below.
 
 ## Context
@@ -68,7 +68,7 @@ PayslipViewModel.leaveBankSummary: StateFlow (one derivation) ──► Payslip 
   It reads the raw `fullText`, not the cleaned text. It never touches earnings, deductions, `needsReview`, Gemma or SchemaValidator.
 - **Summary SSOT** (`shared/.../insights/LeaveBankCalculator.kt`):
   - `summarize(payslips): LeaveBankSummary?` takes the latest payslip that *carries* leave data (not hardcoded to December), and the latest payslip overall for pay.
-  - Output: `balanceDays` (printed), `asOfDate` (latest ACCLVE `casDate`), `sourceMonth/Year`, `daysOverCap`, `encashableDays`, `ltcDaysUsed`, `ltcCapDays`, `valueAtCurrentPay`.
+  - Output: `balanceDays` (printed), `asOfDate` (latest ACCLVE `casDate`), `sourceMonth/Year`, `daysOverCap`, `encashableDays`, `ltcDaysUsed`, `ltcCapDays`, `valueAtCurrentPay`, plus (added in Phase 3) `payMonth`/`payYear` (the payslip the value is priced at) and `entries` (the source statement's rows).
   - Add `LTC_ENCASH_MAX_DAYS = 60` next to `LEAVE_MAX_DAYS` in `tax/PensionRuleKnowledgeBase.kt`.
 - **ViewModel**: `PayslipViewModel.leaveBankSummary = uiState.map { summarize(it.payslips) }.distinctUntilChanged().stateIn(WhileSubscribed(UI_STOP_TIMEOUT_MS))`.
   Derived once, not copied into the 4+ `payslips = …` update sites.
@@ -112,11 +112,12 @@ Reused, not rebuilt: `RetirementCalculatorEngine.leaveEncashment`, `PensionRuleK
 | 0. Branch, plan doc, baseline | done (signed off 2026-10-21) | `71101f32` |
 | 1. Model + extractor + pipeline hook | done (signed off 2026-10-21) | `43325a1f` |
 | 2. Summary SSOT + test fixture | done (2026-10-21) | `4fb36624` |
-| 2a. Pre-Phase-3 follow-up: leave/DA/NPA formula, Day-1 labels | done (2026-10-21) | `3fb8abb2`, this commit |
-| 3. ViewModel + kill switch + Leave bank card | not started | — |
+| 2a. Pre-Phase-3 follow-up: leave/DA/NPA formula, Day-1 labels | done (2026-10-21) | `3fb8abb2`, `fb8628d9` |
+| 3. ViewModel + kill switch + Leave bank card | done with open items (2026-10-21); see Pending items | this commit |
 | 4. Payslip view section + teaser | not started | — |
 | 5. Smart Insight | not started | — |
 | 6. Release hardening, iOS, flip, PR | not started | — |
+| 7. Pending items | open (3 items, from Phase 3) | — |
 
 ### Phase 0: Branch, plan doc, baseline
 - Create `feature/leave-bank` off `main`. Add `docs/Plan/11_LeaveBank_PhasePlan.md` (this plan).
@@ -209,6 +210,17 @@ Nudge: connect the Pixel 9.
     The no-payslip placeholder DA is 50% of the placeholder Basic + MSP (`PLACEHOLDER_DA_PERCENT`); it was ₹50,000, which became 43.3%.
   - If the latest leave statement has no accrual row, Leave Bank shows nothing (confirmed; no fallback to an older year).
   - The same-month tie-break on `file` stays as determinism only: storage keys payslips by `dateStr` with REPLACE, so duplicates can't exist.
+- Owner decisions 2026-10-21 (start of Phase 3):
+  - Rupee basis: the card shows `LeaveBankSummary.valueAtCurrentPay` unchanged, captioned with the pay month ("at Mar 2026 pay").
+    `LeaveBankSummary` gains `payMonth`/`payYear` (the latest payslip overall). On an older selected month the Day-1 row may
+    differ; the caption says which pay the card uses. The card never recomputes the value.
+  - Process death: only the new state is saveable (the table's expanded rows, `rememberSaveable`). The leave field refills to
+    `min(balance, 300)` from the re-derived summary; the other inputs keep today's `remember` behaviour.
+  - Copy as proposed: title "Leave bank"; "301 days" + "1 over cap"; "As of 31 Dec 2025 · Dec 2025 statement";
+    "LTC: 20 of 60 days used"; "Worth ≈ ₹X at Mar 2026 pay (300 days)"; "Leave orders (17)" table (Date · Type · Days · Total;
+    Type = Accrued / LTC encashed / raw code); row tap → "Order 0446/2021 · 15 Jan 2021"; field label
+    "From your Dec 2025 statement (301 days printed)".
+  - Pre-existing literal "DSOP Closing Balance (₹)" in `RetirementCalculatorsComponents.kt` moves to `AppStringsPremium`, wording unchanged.
 - Background, raised in the Phase 2 review (pre-existing code, not changed in Phase 2):
   - `RetirementPlannerResultBuilder` calls `leaveEncashment(basic, da, leaveDays)` without NPA, but `LeaveBankSummary.valueAtCurrentPay`
     includes NPA (owner decision). For an officer drawing NPA, the card and the Day-1 corpus "Leave Encashment" row would differ.
@@ -224,6 +236,14 @@ Nudge: connect the Pixel 9.
   - Done ahead of Phase 3 (2026-10-21): the "Leave Encashment (300 Days)" literal in `RetirementDay1CorpusCard.kt` became
     `AppStringsPremium.retDay1LeaveEncashmentLabel(days)`. Days come from `RetirementPlannerResult.leaveEncashmentDays`, set by the new
     `RetirementCalculatorEngine.encashableLeaveDays` (0..300), which `leaveEncashment` and `LeaveBankCalculator` now also use.
+
+- Done 2026-10-21 (Phase 3). Device walk on the Pixel 9 (debug, flag flipped locally, reverted before the commit), Dec 2025 statement, 33/33 re-parsed:
+  - Card shows 301 days, "1 over cap", "As of 31 Dec 2024 · Dec 2025 statement", "LTC: 20 of 60 days used", "Worth ≈ ₹23,84,000 at Sep 2026 pay (300 days)". The Day-1 "Leave Encashment (300 Days)" row shows the same ₹23,84,000.
+  - The leave field is pre-filled 300 with "From your Dec 2025 statement (301 days printed)". The table lists 17 rows, LTC rows show "—" for Total, and a row tap shows "Order 65 · 6 May 2018". Light and dark both checked.
+  - "Force Free": Insights shows only the Premium pitch; Retirement Calculators is not reachable. Override restored to Force Premium afterwards.
+  - Process death (`am kill` while backgrounded, pid gone, new pid on relaunch): the screen came back on Retirement Calculators with the table open and the order row expanded.
+  - `PayslipViewModel.kt` ended at 287 lines, so no `LeaveBankStateHolder` was needed.
+  - `ExpandableDetailSection` now uses `rememberSaveable` (it is shared; see Pending items).
 
 ### Phase 4: Payslip view section (free) + teaser
 Nudge: connect the Pixel 9.
@@ -271,6 +291,13 @@ Nudge: connect the Pixel 9.
     iOS UI can't be driven from here.
 - Docs: plan status → done; changelog entry in `AI_INSIGHTS_PIPELINE.md`; one bullet in CLAUDE.md "Feature areas" pointing to doc 11 (stays ≤200 lines).
 - Pre-push hook (full gate). PR to `main` only when the owner asks.
+
+### Phase 7: Pending items (consolidated)
+Open points from earlier phases. None blocks Phase 4; each must be closed or explicitly dropped by the owner before Phase 6 flips the flag.
+1. **No automated UI test for the new composables.** `LeaveAccumulationTable` (row open/close, saveable state), `LeaveBankCard` and the Retirement Calculators wiring are covered by the pure `LeaveBankUiModelTest` and by the device walk only; the repo has no Compose UI test harness for these screens. Decide: add a Compose test, or accept the device walk.
+2. **`ExpandableDetailSection` is shared, and its state is now saveable.** Tax Planning's sections therefore also keep their open state across process death. Intended, but not walked on the device and not covered by a test. Walk Tax Planning once in Phase 4's device pass.
+3. **Older selected month, not walked.** Owner decision 2026-10-21: the card keeps pricing at the latest payslip and says which month. On an older selected month the Day-1 "Leave Encashment" row (selected pay) and the card (latest pay) can differ. Verified only on the latest month, where they match. Walk an older month in Phase 4.
+4. iOS: the Leave bank card has not been seen on an iPhone (iOS UI can't be driven from here). It is in the Phase 6 owner checklist.
 
 ## Risks and controls
 
