@@ -71,13 +71,41 @@ class RetirementCalculatorEngineTest {
     }
 
     @Test
-    fun leaveEncashmentExcludesMilitaryServicePayPerPcdaRule() {
-        // (100000 + 30000)/30 * 300 = 1,300,000 (MSP excluded!)
-        assertEquals(1_300_000.0, RetirementCalculatorEngine.leaveEncashment(100000.0, 30000.0, 300), tol)
+    fun leaveEncashmentExcludesMilitaryServicePayAndTheDaOnItPerPcdaRule() {
+        // Handbook P&A 2023 ch. 29 p. 269: Basic + NPA + DA thereon. The printed DA (92,916) is 58% of Basic + MSP, so the
+        // DA on MSP (8,990) must come out: (144,700 + 83,926) / 30 * 300 = 22,86,260, not 23,76,160.
+        assertEquals(2_286_260.0, RetirementCalculatorEngine.leaveEncashment(144_700.0, 15_500.0, 92_916.0, 300), tol)
         // days beyond 300 are capped
         assertEquals(
-            RetirementCalculatorEngine.leaveEncashment(100000.0, 30000.0, 300),
-            RetirementCalculatorEngine.leaveEncashment(100000.0, 30000.0, 400),
+            RetirementCalculatorEngine.leaveEncashment(144_700.0, 15_500.0, 92_916.0, 300),
+            RetirementCalculatorEngine.leaveEncashment(144_700.0, 15_500.0, 92_916.0, 400),
+            tol,
+        )
+    }
+
+    @Test
+    fun leaveEncashmentIncludesNpaAndTheDaOnItForMedicalOfficers() {
+        // DA 50% on Basic + MSP + NPA = 67,750; DA on Basic + NPA = 60,000; (120,000 + 60,000) / 30 * 300 = 18,00,000.
+        assertEquals(1_800_000.0, RetirementCalculatorEngine.leaveEncashment(100_000.0, 15_500.0, 67_750.0, 300, npa = 20_000.0), tol)
+    }
+
+    @Test
+    fun daPercentIsPrintedDaOverBasicMspAndNpa() {
+        // DA is paid on Basic + MSP + NPA (Handbook P&A 2023 ch. 15 p. 130); DA / Basic alone would give 64.2%.
+        assertEquals(58.0, RetirementCalculatorEngine.daPercent(144_700.0, 15_500.0, 0.0, 92_916.0), tol)
+        assertEquals(50.0, RetirementCalculatorEngine.daPercent(100_000.0, 15_500.0, 20_000.0, 67_750.0), tol)
+        assertEquals(0.0, RetirementCalculatorEngine.daPercent(0.0, 0.0, 0.0, 1_000.0), tol)
+    }
+
+    @Test
+    fun encashableLeaveDaysAreTheDaysTheEncashmentPays() {
+        // The Day-1 corpus label and the Leave Bank summary show this count, so it must match what leaveEncashment pays for.
+        assertEquals(222, RetirementCalculatorEngine.encashableLeaveDays(222))
+        assertEquals(300, RetirementCalculatorEngine.encashableLeaveDays(400))
+        assertEquals(0, RetirementCalculatorEngine.encashableLeaveDays(-5))
+        assertEquals(
+            RetirementCalculatorEngine.leaveEncashment(100000.0, 15500.0, 57750.0, 400),
+            RetirementCalculatorEngine.leaveEncashment(100000.0, 15500.0, 57750.0, RetirementCalculatorEngine.encashableLeaveDays(400)),
             tol,
         )
     }
@@ -119,7 +147,7 @@ class RetirementCalculatorEngineTest {
     @Test
     fun zeroOrNegativeInputsProduceZero() {
         assertEquals(0.0, RetirementCalculatorEngine.retirementGratuity(100000.0, 0.0, 0.0), tol)
-        assertEquals(0.0, RetirementCalculatorEngine.leaveEncashment(100000.0, 0.0, 0), tol)
+        assertEquals(0.0, RetirementCalculatorEngine.leaveEncashment(100000.0, 15500.0, 0.0, 0), tol)
         assertTrue(RetirementCalculatorEngine.commutedLumpSum(0.0, 0.5, 8.287) == 0.0)
     }
 }

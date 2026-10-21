@@ -6,6 +6,7 @@ import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.tax.PensionRuleKnowledgeBase
 import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.AT_CAP_DAYS
 import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.BELOW_CAP_DAYS
+import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.MILITARY_SERVICE_PAY
 import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.OVER_CAP_DAYS
 import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.accrued
 import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.ltcEncashed
@@ -36,7 +37,7 @@ class LeaveBankCalculatorTest {
         assertEquals(OVER_CAP_DAYS, result.balanceDays)
         assertEquals(2025, result.sourceYear)
         assertEquals(12, result.sourceMonth)
-        assertEquals(RetirementCalculatorEngine.leaveEncashment(120_000.0, 70_000.0, 300), result.valueAtCurrentPay)
+        assertEquals(RetirementCalculatorEngine.leaveEncashment(120_000.0, MILITARY_SERVICE_PAY, 70_000.0, 300), result.valueAtCurrentPay)
     }
 
     @Test
@@ -118,9 +119,17 @@ class LeaveBankCalculatorTest {
     fun valueIsTheRetirementEngineFormulaOnCurrentBasicDaAndNpa() {
         val pay = payslip(2025, 12, table(BELOW_CAP_DAYS), basicPay = 140_000.0, dearnessAllowance = 81_200.0, npa = 28_000.0)
 
-        val expected = RetirementCalculatorEngine.leaveEncashment(140_000.0, 81_200.0, BELOW_CAP_DAYS, 28_000.0)
+        val expected = RetirementCalculatorEngine.leaveEncashment(140_000.0, MILITARY_SERVICE_PAY, 81_200.0, BELOW_CAP_DAYS, 28_000.0)
 
         assertEquals(expected, summary(pay).valueAtCurrentPay)
+    }
+
+    @Test
+    fun valueLeavesOutTheDaOnMsp() {
+        // Dec 2025 pay: DA 92,916 is 58% of Basic + MSP; only the DA on Basic counts, so 22,86,260 and not 23,76,160.
+        val pay = payslip(2025, 12, table(OVER_CAP_DAYS), basicPay = 144_700.0, dearnessAllowance = 92_916.0)
+
+        assertEquals(2_286_260.0, summary(pay).valueAtCurrentPay, 1e-6)
     }
 
     @Test

@@ -43,7 +43,7 @@ object LeaveBankCalculator {
         val latestAccrual = entries.filter { it.casCode == LeaveCasCode.ACCRUED }.sortedWith(accrualOrder).lastOrNull() ?: return null
         val balance = latestAccrual.totalDays ?: return null
         val pay = payslips.maxWith(chronological).earnings
-        val encashable = minOf(balance, PensionRuleKnowledgeBase.LEAVE_MAX_DAYS)
+        val encashable = RetirementCalculatorEngine.encashableLeaveDays(balance)
 
         return LeaveBankSummary(
             balanceDays = balance,
@@ -55,7 +55,13 @@ object LeaveBankCalculator {
             ltcDaysUsed = entries.filter { it.casCode == LeaveCasCode.LTC_ENCASHED }.sumOf { it.days },
             ltcCapDays = PensionRuleKnowledgeBase.LTC_ENCASH_MAX_DAYS,
             valueAtCurrentPay =
-                RetirementCalculatorEngine.leaveEncashment(pay.basicPay, pay.dearnessAllowance, encashable, pay.nonPracticingAllowance),
+                RetirementCalculatorEngine.leaveEncashment(
+                    pay.basicPay,
+                    pay.militaryServicePay,
+                    pay.dearnessAllowance,
+                    encashable,
+                    pay.nonPracticingAllowance,
+                ),
         )
     }
 }

@@ -111,7 +111,8 @@ Reused, not rebuilt: `RetirementCalculatorEngine.leaveEncashment`, `PensionRuleK
 |---|---|---|
 | 0. Branch, plan doc, baseline | done (signed off 2026-10-21) | `71101f32` |
 | 1. Model + extractor + pipeline hook | done (signed off 2026-10-21) | `43325a1f` |
-| 2. Summary SSOT + test fixture | done (2026-10-21) | this commit |
+| 2. Summary SSOT + test fixture | done (2026-10-21) | `4fb36624` |
+| 2a. Pre-Phase-3 follow-up: leave/DA/NPA formula, Day-1 labels | done (2026-10-21) | this commit |
 | 3. ViewModel + kill switch + Leave bank card | not started | — |
 | 4. Payslip view section + teaser | not started | — |
 | 5. Smart Insight | not started | — |
@@ -195,11 +196,32 @@ Nudge: connect the Pixel 9.
   - Developer override "Force Free" → screen stays locked as today.
   - Process death (`adb shell am kill` while backgrounded) → state restores.
 - Exit: green gate + R8 + device screenshots attached to the summary; flag reverted in the diff.
-- Open for the owner, raised in the Phase 2 review (pre-existing code, not changed in Phase 2):
+- Owner decisions 2026-10-21 (pre-Phase-3 follow-up, one commit on `feature/leave-bank` before Phase 3 starts). All done, see the status table:
+  - Leave encashment = (Basic + NPA + DA on Basic + NPA) / 30 × days, in both the calculator and `LeaveBankSummary`. DA on
+    Basic + NPA = printed DA × (Basic + NPA) / (Basic + MSP + NPA), using the payslip's own DA rate, with no rate table.
+  - DA/DR rate = printed DA / (Basic + MSP + NPA) (was DA / Basic, which gave 64.2% instead of 58% for Dec 2025). One helper in
+    `RetirementCalculatorEngine` is used by every caller.
+  - Pension and gratuity: NPA added in the builder. Verified: Handbook ch. 31 para C(i)–(ii), p. 279, says reckonable emoluments are
+    Pay + MSP + NPA, if any, for pension, plus DA for gratuity.
+  - Day-1 corpus card: move the remaining 4 row titles and the 1 subtitle to `AppStringsPremium`, wording unchanged.
+  - Leave-days hint: "(Basic + NPA + DA on them) ÷ 30 × days. MSP and DA on MSP are excluded per PCDA."
+  - If the latest leave statement has no accrual row, Leave Bank shows nothing (confirmed; no fallback to an older year).
+  - The same-month tie-break on `file` stays as determinism only: storage keys payslips by `dateStr` with REPLACE, so duplicates can't exist.
+- Background, raised in the Phase 2 review (pre-existing code, not changed in Phase 2):
   - `RetirementPlannerResultBuilder` calls `leaveEncashment(basic, da, leaveDays)` without NPA, but `LeaveBankSummary.valueAtCurrentPay`
     includes NPA (owner decision). For an officer drawing NPA, the card and the Day-1 corpus "Leave Encashment" row would differ.
-  - `RetirementDay1CorpusCard.kt` hardcodes the label "Leave Encashment (300 Days)". Once the field is pre-filled from the balance
-    (e.g. 222), the label is wrong, and the literal also breaks the strings rule.
+    Authority (researched 2026-10-21, owner call pending): PCDA(O) Handbook on Pay & Allowances 2023, ch. 29 para 1 (p. 269):
+    "Leave Encashment payment will be equal to Basic Pay + NPA, if any, + DA thereon on the date of retirement/release";
+    formula [Basic + DA + NPA (if any)] / 30 × days, max 300. Ch. 13 para 18 (p. 103): NPA "will be treated as Pay for the purpose of
+    computation of Dearness Allowance, Pension … including calculation of retirement benefits". Both cite GoI MoD letter
+    No. 4(10)/2017/D(Med) dt 28-09-2017. The FAQ (Dec 2025) has no retirement-encashment entry; its LTC entry uses the same
+    formula ("NPA only in the case of medical officers"; "MSP is not included").
+    Related finding: "DA thereon" is DA on Basic + NPA, but the payslip's DA is on Basic + MSP + NPA (handbook ch. 15, p. 130;
+    corpus DA = 58.000% × (Basic + MSP) in Dec 2025). Passing the printed DA counts DA on MSP: about ₹89,900 too high at 300 days
+    (58% × ₹15,500 × 10). This affects both the calculator and `LeaveBankSummary`.
+  - Done ahead of Phase 3 (2026-10-21): the "Leave Encashment (300 Days)" literal in `RetirementDay1CorpusCard.kt` became
+    `AppStringsPremium.retDay1LeaveEncashmentLabel(days)`. Days come from `RetirementPlannerResult.leaveEncashmentDays`, set by the new
+    `RetirementCalculatorEngine.encashableLeaveDays` (0..300), which `leaveEncashment` and `LeaveBankCalculator` now also use.
 
 ### Phase 4: Payslip view section (free) + teaser
 Nudge: connect the Pixel 9.

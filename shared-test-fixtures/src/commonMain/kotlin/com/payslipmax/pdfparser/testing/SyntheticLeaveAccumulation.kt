@@ -21,7 +21,8 @@ object SyntheticLeaveAccumulation {
     const val OVER_CAP_DAYS = 301
     const val AS_OF_DATE = "2024-12-31"
     const val BASIC_PAY = 150_000.0
-    const val DEARNESS_ALLOWANCE = 87_000.0
+    const val MILITARY_SERVICE_PAY = 15_500.0
+    const val DEARNESS_ALLOWANCE = 95_990.0 // 58% of Basic + MSP, as PCDA pays it
 
     private const val ANNUAL_ACCRUAL_DAYS = 30
 
@@ -59,6 +60,7 @@ object SyntheticLeaveAccumulation {
         leave: LeaveAccumulation? = null,
         basicPay: Double = BASIC_PAY,
         dearnessAllowance: Double = DEARNESS_ALLOWANCE,
+        militaryServicePay: Double = MILITARY_SERVICE_PAY,
         npa: Double = 0.0,
         file: String = "synthetic_${year}_$month.pdf",
     ) = ParsedPayslip(
@@ -68,7 +70,13 @@ object SyntheticLeaveAccumulation {
         monthName = "",
         dateStr = "${month.toString().padStart(2, '0')}/$year",
         officer = Officer("N", "A", "P"),
-        earnings = Earnings(basicPay = basicPay, dearnessAllowance = dearnessAllowance, nonPracticingAllowance = npa),
+        earnings =
+            Earnings(
+                basicPay = basicPay,
+                militaryServicePay = militaryServicePay,
+                dearnessAllowance = dearnessAllowance,
+                nonPracticingAllowance = npa,
+            ),
         deductions = Deductions(),
         ledgerBalances = LedgerBalances(),
         summary = PayslipSummary(0.0, 0.0, 0.0),
