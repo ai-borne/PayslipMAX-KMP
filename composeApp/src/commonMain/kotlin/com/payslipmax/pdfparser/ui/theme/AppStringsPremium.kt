@@ -17,7 +17,9 @@ object AppStringsPremium {
     const val retCalcTitle = "Retirement Calculators"
     const val retCalcSubtitle = "Pension, gratuity, commutation & leave estimates"
     const val retCalcNoPayslip = "Select a payslip first — these estimates use your current pay figures."
-    const val retCalcBasisLabel = "Based on current pay (Basic + MSP + NPA, if any, + DA)"
+
+    fun retCalcBasisLabel(payMonth: String): String = "Based on $payMonth pay (Basic + MSP + NPA, if any, + DA)"
+
     const val retCalcInputsTitle = "Your details"
     const val retCalcQualifyingYearsLabel = "Qualifying service (years)"
     const val retCalcQualifyingYearsHint = "Determines Gratuity. Min 20 yrs needed for pension."

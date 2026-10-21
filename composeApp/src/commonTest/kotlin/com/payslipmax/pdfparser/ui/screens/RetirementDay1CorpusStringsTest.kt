@@ -1,10 +1,14 @@
 package com.payslipmax.pdfparser.ui.screens
 
+import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-/** The leave row names the days its amount is for; a fixed "300 Days" was wrong whenever fewer days were entered. */
+/**
+ * The leave row names the days its amount is for; a fixed "300 Days" was wrong whenever fewer days were entered. The basis line names
+ * the month whose pay the figures use, for the same reason.
+ */
 class RetirementDay1CorpusStringsTest {
     @Test
     fun leaveEncashmentLabelNamesTheDaysUsed() {
@@ -24,6 +28,20 @@ class RetirementDay1CorpusStringsTest {
 
     @Test
     fun basisLabelNamesNpaBecauseItCountsTowardPensionGratuityAndLeave() {
-        assertEquals("Based on current pay (Basic + MSP + NPA, if any, + DA)", AppStringsPremium.retCalcBasisLabel)
+        assertEquals("Based on Dec 2024 pay (Basic + MSP + NPA, if any, + DA)", AppStringsPremium.retCalcBasisLabel("Dec 2024"))
+    }
+
+    @Test
+    fun basisLabelNamesTheSelectedMonthNotTheLatest() {
+        // Item 8: the Day-1 figures are priced at the selected payslip's pay. On an older month "current pay" was wrong, and it sat
+        // above a Leave bank card captioned with the latest month, so the line must name the month it actually uses.
+        assertEquals(
+            "Based on Dec 2024 pay (Basic + MSP + NPA, if any, + DA)",
+            retCalcBasisLabel(SyntheticLeaveAccumulation.payslip(2024, 12)),
+        )
+        assertEquals(
+            "Based on Sep 2026 pay (Basic + MSP + NPA, if any, + DA)",
+            retCalcBasisLabel(SyntheticLeaveAccumulation.payslip(2026, 9)),
+        )
     }
 }

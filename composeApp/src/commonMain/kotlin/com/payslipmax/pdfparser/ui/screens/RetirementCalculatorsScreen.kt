@@ -19,6 +19,7 @@ import com.payslipmax.pdfparser.insights.LeaveBankSummary
 import com.payslipmax.pdfparser.insights.RetirementPlannerResult
 import com.payslipmax.pdfparser.insights.RetirementPlannerResultBuilder
 import com.payslipmax.pdfparser.insights.RetirementYearResolver
+import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
@@ -99,6 +100,7 @@ private fun RetirementCalculatorsBody(
         onDsopBalanceChange = { dsopBalance = it },
         result = result,
         leaveBank = leaveBank,
+        basisLabel = remember(payslip) { retCalcBasisLabel(payslip) },
     )
 }
 
@@ -114,9 +116,10 @@ private fun RetinementCalculatorsContent(
     onDsopBalanceChange: (String) -> Unit,
     result: RetirementPlannerResult,
     leaveBank: LeaveBankSummary?,
+    basisLabel: String,
 ) {
     Text(
-        text = AppStringsPremium.retCalcBasisLabel,
+        text = basisLabel,
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -159,3 +162,7 @@ private fun RetCalcEmptyState() {
         )
     }
 }
+
+/** The Day-1 figures are priced at the selected payslip's pay, so the basis line names that month (item 8), not "current" pay. */
+internal fun retCalcBasisLabel(payslip: ParsedPayslip): String =
+    AppStringsPremium.retCalcBasisLabel(formatPayMonth(PayMonth(payslip.year, payslip.monthNum)))
