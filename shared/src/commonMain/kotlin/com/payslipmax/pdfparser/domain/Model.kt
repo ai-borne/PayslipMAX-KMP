@@ -46,6 +46,12 @@ data class ParsedPayslip(
      * fails arithmetic reconciliation. Read-only — never merged into [earnings]/[deductions].
      */
     val diagnosticSuggestion: DiagnosticSuggestion? = null,
+    /**
+     * The statement's leave accumulation table, or null when it prints none (every month but December, and December
+     * before 2022). Filled by [com.payslipmax.pdfparser.parser.LeaveAccumulationExtractor] after Tier 7; it never feeds
+     * earnings, deductions or [needsReview].
+     */
+    val leaveAccumulation: LeaveAccumulation? = null,
 )
 
 @Serializable

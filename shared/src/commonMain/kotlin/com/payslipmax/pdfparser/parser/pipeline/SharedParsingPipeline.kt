@@ -1,12 +1,14 @@
 package com.payslipmax.pdfparser.parser.pipeline
 
 import com.payslipmax.pdfparser.domain.DiagnosticSuggestion
+import com.payslipmax.pdfparser.domain.LeaveAccumulation
 import com.payslipmax.pdfparser.domain.Officer
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.domain.TaxAndSavings
 import com.payslipmax.pdfparser.logging.Logger
 import com.payslipmax.pdfparser.parser.GemmaDiagnosticExtractor
 import com.payslipmax.pdfparser.parser.GemmaFallbackExtractor
+import com.payslipmax.pdfparser.parser.LeaveAccumulationExtractor
 import com.payslipmax.pdfparser.parser.PayslipPatternConfig
 import com.payslipmax.pdfparser.parser.ReconciliationSolver
 import com.payslipmax.pdfparser.parser.SchemaValidationResult
@@ -55,7 +57,9 @@ class SharedParsingPipeline(
             val solved = executeTableReconciliation(descriptor, initialContext, fallbackExtractor, debugCollector)
             val taxAndSavings = extractTaxAndSavings(descriptor, initialContext)
 
-            val finalParsed = assembleAndValidate(initialContext, officer, solved, taxAndSavings, diagnosticExtractor)
+            val finalParsed =
+                assembleAndValidate(initialContext, officer, solved, taxAndSavings, diagnosticExtractor)
+                    .copy(leaveAccumulation = extractLeaveAccumulation(tokenized))
             val finalReport =
                 report.copy(
                     validationStatus = if (finalParsed.needsReview) "NEEDS_REVIEW" else "PASSED",
@@ -98,6 +102,18 @@ class SharedParsingPipeline(
             netRemittance = netRemittance,
         )
     }
+
+    /**
+     * Side extractor after Tier 7: reads the raw text (cleaning would merge the row lines) and feeds nothing back into the
+     * table, totals or review flags. The catch keeps a leave-page defect from failing an otherwise good parse.
+     */
+    private fun extractLeaveAccumulation(tokenized: TokenizedPayslip): LeaveAccumulation? =
+        try {
+            LeaveAccumulationExtractor.extract(tokenized.fullText)
+        } catch (e: Exception) {
+            Logger.w(TAG, "Leave accumulation skipped: ${e::class.simpleName}")
+            null
+        }
 
     private fun extractOfficer(
         descriptor: GrammarDescriptor?,

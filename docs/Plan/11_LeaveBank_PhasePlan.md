@@ -1,6 +1,6 @@
 # Leave Bank — Phase Plan
 
-Status: agreed 2026-10-21; Phase 0 done, Phase 1 next. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
+Status: agreed 2026-10-21; Phase 1 done, Phase 2 next. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
 This file is the plan; phase status is tracked in the table below.
 
 ## Context
@@ -109,8 +109,8 @@ Reused, not rebuilt: `RetirementCalculatorEngine.leaveEncashment`, `PensionRuleK
 
 | Phase | Status | Commit |
 |---|---|---|
-| 0. Branch, plan doc, baseline | done (signed off 2026-10-21) | this commit |
-| 1. Model + extractor + pipeline hook | not started | — |
+| 0. Branch, plan doc, baseline | done (signed off 2026-10-21) | `71101f32` |
+| 1. Model + extractor + pipeline hook | done (signed off 2026-10-21) | this commit |
 | 2. Summary SSOT + test fixture | not started | — |
 | 3. ViewModel + kill switch + Leave bank card | not started | — |
 | 4. Payslip view section + teaser | not started | — |
