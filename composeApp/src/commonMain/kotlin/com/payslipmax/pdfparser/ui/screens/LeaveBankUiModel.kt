@@ -1,7 +1,10 @@
 package com.payslipmax.pdfparser.ui.screens
 
+import com.payslipmax.pdfparser.domain.LeaveAccumulation
 import com.payslipmax.pdfparser.domain.LeaveCasCode
 import com.payslipmax.pdfparser.domain.LeaveEntry
+import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.insights.LeaveBankCalculator
 import com.payslipmax.pdfparser.insights.LeaveBankSummary
 import com.payslipmax.pdfparser.insights.RetirementCalculatorEngine
 import com.payslipmax.pdfparser.insights.timeline.PayMonth
@@ -39,6 +42,36 @@ fun leaveBankCardUi(summary: LeaveBankSummary): LeaveBankCardUi =
         ordersTitle = LeaveBankStrings.ordersTitle(summary.entries.size),
         rows = summary.entries.map(::leaveRowUi),
     )
+
+/**
+ * The payslip view's leave section. [subtitle] and [rows] are that payslip's own statement; [teaser] is today's leave bank from
+ * the summary (latest statement, latest pay), so viewing an older December never prices or labels it with old figures.
+ */
+data class LeaveSectionUi(
+    val subtitle: String?,
+    val rows: List<LeaveRowUi>,
+    val teaser: String?,
+)
+
+/** The table the payslip view shows: the one this payslip printed, and only while the kill switch is on. */
+fun payslipLeaveTable(
+    payslip: ParsedPayslip,
+    enabled: Boolean = isLeaveBankEnabled(),
+): LeaveAccumulation? = payslip.leaveAccumulation?.takeIf { enabled }
+
+/** No teaser without a summary (no value to show) or while editing (leaving the payslip would drop the drafts). */
+fun leaveSectionUi(
+    table: LeaveAccumulation,
+    summary: LeaveBankSummary?,
+    isEditing: Boolean,
+): LeaveSectionUi {
+    val accrual = LeaveBankCalculator.latestAccrual(table.entries)
+    return LeaveSectionUi(
+        subtitle = accrual?.totalDays?.let { LeaveBankStrings.sectionSubtitle(leaveDisplayDate(accrual.casDate), it) },
+        rows = table.entries.map(::leaveRowUi),
+        teaser = summary?.takeUnless { isEditing }?.let { LeaveBankStrings.teaser(formatCurrency(it.valueAtCurrentPay)) },
+    )
+}
 
 /** The leave-days input starts at what can be encashed from the latest statement, or PCDA's 300-day cap without one. */
 fun initialLeaveDays(summary: LeaveBankSummary?): String = (summary?.encashableDays ?: RetirementCalculatorEngine.LEAVE_MAX_DAYS).toString()

@@ -1,6 +1,6 @@
 # Leave Bank — Phase Plan
 
-Status: agreed 2026-10-21; Phases 1–3 done, Phase 4 next. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
+Status: agreed 2026-10-21; Phases 1–4 done, Phase 5 next. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
 This file is the plan; phase status is tracked in the table below.
 
 ## Context
@@ -113,11 +113,11 @@ Reused, not rebuilt: `RetirementCalculatorEngine.leaveEncashment`, `PensionRuleK
 | 1. Model + extractor + pipeline hook | done (signed off 2026-10-21) | `43325a1f` |
 | 2. Summary SSOT + test fixture | done (2026-10-21) | `4fb36624` |
 | 2a. Pre-Phase-3 follow-up: leave/DA/NPA formula, Day-1 labels | done (2026-10-21) | `3fb8abb2`, `fb8628d9` |
-| 3. ViewModel + kill switch + Leave bank card | done with open items (2026-10-21); see Pending items | this commit |
-| 4. Payslip view section + teaser | not started | — |
+| 3. ViewModel + kill switch + Leave bank card | done with open items (2026-10-21); see Pending items | `bb021add` |
+| 4. Payslip view section + teaser | done (2026-10-21); see Pending items | this commit |
 | 5. Smart Insight | not started | — |
 | 6. Release hardening, iOS, flip, PR | not started | — |
-| 7. Pending items | open (3 items, from Phase 3) | — |
+| 7. Pending items | open (items 4–8; 1–3 closed) | — |
 
 ### Phase 0: Branch, plan doc, baseline
 - Create `feature/leave-bank` off `main`. Add `docs/Plan/11_LeaveBank_PhasePlan.md` (this plan).
@@ -258,11 +258,44 @@ Nudge: connect the Pixel 9.
   - Teaser row: "Your leave bank today ≈ ₹X". Today's value comes from the summary; the table comes from this statement.
 - Wire it after `LedgerSection`. Thread `onLeaveBankClick` through `PayslipReplicaDetailScreen` → `NavBridge.navigateToDetail`,
   following the E7 precedent. Reuse `PayslipUpgradeSheet` for the free path.
+- Owner decisions 2026-10-21 (start of Phase 4):
+  - Title "Leave accumulation". The teaser row stays visible while the section is collapsed; only the table collapses.
+  - The subtitle comes from that payslip's own table via `LeaveBankCalculator.latestAccrual(entries)` (the summary's balance rule, made
+    public, not copied). No accrual row → no subtitle. No summary → no teaser. The teaser is hidden in edit mode, so it can't drop drafts.
+  - App.kt is at 300 lines: `PayslipReplicaDetailScreen` takes `onOpenPdf` (the `HistoryScreen` convention) and fetches the PDF once.
+    This also fixes a pre-existing double fetch/decrypt.
+  - iOS edge-swipe gate: `hasActiveUnsavedSubState()` also checks `isEditModeActive`, because a push resets the per-screen flag and
+    the payslip's edit check was lost after returning from Retirement Calculators.
+  - Robolectric Compose tests for the section and `LeaveBankCard` close Phase 7 item 1 (the harness exists).
+  - Pre-existing, logged in Phase 7, not fixed here: nested iOS native pops don't sync `AppNavState`; after process death on a
+    detail pushed from the payslip, Back lands on History (`historyDetailPayslipId` isn't saved).
+  - Tab re-tap: details hide the bottom bar (decision 8), so the check is "bar hidden like other details; History re-tap after Back
+    resets to the root".
 - Device:
   - Dec 2025 shows the section; Jul 2025 does not; Dec 2022 shows the 2022 layout correctly.
   - The teaser opens Retirement Calculators. Back returns to the payslip (system back + edge swipe).
   - With "Force Free", the teaser opens the upgrade sheet. Tab re-tap from the nested screen behaves like the other details.
 - Exit: green gate + R8 + screenshots; flag reverted.
+- Done 2026-10-21 (Phase 4).
+  - Pre-step: `ReplicaSections` and its three private helpers moved to `PayslipReplicaSections.kt`; the only change is
+    `private` → `internal` (diffed against `HEAD`). Jul 2025 screenshots before and after the move are pixel-identical below the
+    status bar, dark and light. `PayslipReplicaScreen.kt` 284 → 155 lines.
+  - Built: `LeaveAccumulationSection.kt` (section, `PayslipLeaveSection`, `openLeaveBankFromTeaser` via `gateForScreen`);
+    `LeaveSectionUi`/`leaveSectionUi`/`payslipLeaveTable` in `LeaveBankUiModel.kt`; public `LeaveBankCalculator.latestAccrual`
+    (the summary uses it too); a nullable `leaveSection` slot on the replica, so a month without a table is laid out exactly as
+    before. App.kt 300 → 297 lines.
+  - Tests: `LeaveBankCalculatorTest` +2, `LeavePayslipSectionTest` 9, `LeaveBankComposablesUiTest` 5 (Robolectric),
+    `PayslipReplicaLeaveWiringTest` 3. All 8 deliberate breaks of the guarded rules were caught, then restored.
+  - Device walk on the Pixel 9 (debug, flag flipped locally, reverted; a flag-off build was reinstalled afterwards):
+    - Dec 2025: "As of 31 Dec 2024 · 301 days", teaser "Your leave bank today ≈ ₹23,84,000"; 17 rows; row tap → order line.
+    - Jul 2025: no section, pixel-identical to the pre-move baseline with the flag on.
+    - Dec 2022 (owner imported it for this walk): 2022 layout, 15 rows / 222 days / LTC 30, "Order 00022 · 10 Mar 2009".
+      Dec 2023: 13 / 252 / 0. Dec 2024: "As of 31 Dec 2023 · 282 days". The teaser stays ₹23,84,000 on each (latest statement).
+    - Teaser → Retirement Calculators; system back, edge swipe and the in-screen arrow return to the payslip with scroll, open table
+      and open row kept. No bottom bar on the nested screen; History re-tap after Back resets to the root.
+    - "Force Free": the teaser opens the upgrade sheet and does not navigate. Override restored to Force Premium.
+    - Edit mode hides the teaser; Discard brings it back.
+    - Light and dark both checked. Screenshots stay in the session scratchpad (they show real figures).
 
 ### Phase 5: Smart Insight (Premium)
 Nudge: connect the Pixel 9.
@@ -293,11 +326,36 @@ Nudge: connect the Pixel 9.
 - Pre-push hook (full gate). PR to `main` only when the owner asks.
 
 ### Phase 7: Pending items (consolidated)
-Open points from earlier phases. None blocks Phase 4; each must be closed or explicitly dropped by the owner before Phase 6 flips the flag.
-1. **No automated UI test for the new composables.** `LeaveAccumulationTable` (row open/close, saveable state), `LeaveBankCard` and the Retirement Calculators wiring are covered by the pure `LeaveBankUiModelTest` and by the device walk only; the repo has no Compose UI test harness for these screens. Decide: add a Compose test, or accept the device walk.
-2. **`ExpandableDetailSection` is shared, and its state is now saveable.** Tax Planning's sections therefore also keep their open state across process death. Intended, but not walked on the device and not covered by a test. Walk Tax Planning once in Phase 4's device pass.
-3. **Older selected month, not walked.** Owner decision 2026-10-21: the card keeps pricing at the latest payslip and says which month. On an older selected month the Day-1 "Leave Encashment" row (selected pay) and the card (latest pay) can differ. Verified only on the latest month, where they match. Walk an older month in Phase 4.
+Open points from earlier phases. None blocks Phase 5; each must be closed or explicitly dropped by the owner before Phase 6 flips the flag.
+1. ~~**No automated UI test for the new composables.**~~ Closed in Phase 4 (owner: add Compose tests). The premise was wrong: composeApp
+   already had a Robolectric `runComposeUiTest` harness. `LeaveBankComposablesUiTest` covers the section (collapsed by default, teaser
+   visible, rows on expand, row tap → order, teaser tap, no teaser) and `LeaveBankCard` (figures, orders collapsed, row → order);
+   `PayslipReplicaLeaveWiringTest` covers the kill switch and the single PDF fetch on the detail screen.
+2. ~~**`ExpandableDetailSection` is shared, and its state is now saveable.**~~ Closed in Phase 4: Tax Planner's "See full calculation"
+   was opened, the app was backgrounded and its process killed (pid gone, new pid on a launcher relaunch); it came back on Tax
+   Planner with the section still open.
+3. ~~**Older selected month, not walked.**~~ Closed in Phase 4: with Dec 2024 selected, the Day-1 "Leave Encashment (300 Days)" row
+   showed ₹21,49,650 (Dec 2024 pay) and the card ₹23,84,000 "at Sep 2026 pay", as the owner decided; on the latest month both
+   show ₹23,84,000. See item 8 for a copy issue this walk exposed.
 4. iOS: the Leave bank card has not been seen on an iPhone (iOS UI can't be driven from here). It is in the Phase 6 owner checklist.
+5. **iOS nested native pops don't sync `AppNavState`** (pre-existing, found in Phase 4). `NavCoordinator.shouldNotifyNativePop` fires only
+   when the native stack is back at depth 1; its comment says the stack is "exactly one level deep", which stopped being true with
+   Premium → Tax Planning and Pay Audit → Guide card (E7), and Phase 4 adds payslip → Retirement Calculators. An edge-swipe from a nested
+   detail leaves `navState` one screen too deep until the stack returns to the root, where it heals. Owner decision (2026-10-21): fix in
+   Phase 6 with the iPhone walk (Swift `didShow` reports the depth; Kotlin truncates `navState` to it; XCTest + commonTest).
+6. **iOS edge-swipe gate change is unverified on an iPhone.** Phase 4 made `IosNavHost.hasActiveUnsavedSubState()` also check
+   `isEditModeActive`, because the push of Retirement Calculators resets the per-screen flag and the payslip's edit would otherwise no
+   longer block the swipe after Back. Linked and compiled only. Phase 6 iPhone checklist: payslip → teaser → Retirement Calculators →
+   Back → Edit → edge-swipe must not leave the payslip.
+7. **Recreation drops the open payslip** (pre-existing, found in Phase 4; logged, no fix planned). `PayslipViewModel` is a Koin
+   `factory` resolved in `MainActivity.onCreate`, and `historyDetailPayslipId` isn't saved, so any activity recreation (a system
+   dark-mode switch, process death) gives a fresh ViewModel; the payslip screen then pops itself to History. With Phase 4's nesting,
+   Back from a restored Retirement Calculators lands on History, not the payslip. Fixing it means a saved-state design for the
+   ViewModel; owner to decide if and when.
+8. **Retirement Calculators doesn't name the month its Day-1 figures use** (pre-existing copy, found in Phase 4's walk; owner
+   decision needed). The Day-1 block is priced at the selected month's pay, but the screen's only basis line reads "Based on current
+   pay (Basic + MSP + NPA, if any, + DA)". With an older month selected that is wrong, and it sits above a Leave bank card that is
+   captioned with a different month. Options: name the selected month in that line, or keep it as is.
 
 ## Risks and controls
 

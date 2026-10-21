@@ -41,10 +41,13 @@ object LeaveBankCalculator {
     /** Two accruals on the same date: the later order is the newer record; a full tie keeps printed order. */
     private val accrualOrder = compareBy<LeaveEntry>({ it.casDate }, { it.orderDate })
 
+    /** The accrual whose printed total is a statement's balance; null when the statement has no accrual row. */
+    fun latestAccrual(entries: List<LeaveEntry>): LeaveEntry? = entries.filter { it.casCode == LeaveCasCode.ACCRUED }.sortedWith(accrualOrder).lastOrNull()
+
     fun summarize(payslips: List<ParsedPayslip>): LeaveBankSummary? {
         val source = payslips.filter { it.leaveAccumulation != null }.maxWithOrNull(chronological) ?: return null
         val entries = source.leaveAccumulation?.entries.orEmpty()
-        val latestAccrual = entries.filter { it.casCode == LeaveCasCode.ACCRUED }.sortedWith(accrualOrder).lastOrNull() ?: return null
+        val latestAccrual = latestAccrual(entries) ?: return null
         val balance = latestAccrual.totalDays ?: return null
         val latest = payslips.maxWith(chronological)
         val pay = latest.earnings

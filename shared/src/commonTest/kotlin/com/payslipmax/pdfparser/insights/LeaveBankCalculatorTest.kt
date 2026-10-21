@@ -205,4 +205,31 @@ class LeaveBankCalculatorTest {
 
         assertEquals(290, summary(payslip(2025, 12, leave)).balanceDays)
     }
+
+    @Test
+    fun latestAccrualIsTheRowTheSummaryBalanceComesFrom() {
+        // The payslip view reads any one statement's balance through latestAccrual; it must be the same rule as the summary's,
+        // or the payslip and Retirement Calculators would print different balances for the same statement.
+        val leave =
+            LeaveAccumulation(
+                listOf(
+                    accrued("2024-12-31", 30, 290, orderNo = "402", orderDate = "2025-05-02"),
+                    ltcEncashed("2025-06-30", 10),
+                    accrued("2023-12-31", 30, 260),
+                    accrued("2024-12-31", 30, 282, orderNo = "401", orderDate = "2025-03-01"),
+                ),
+            )
+
+        val latest = assertNotNull(LeaveBankCalculator.latestAccrual(leave.entries))
+
+        assertEquals("402", latest.orderNo)
+        assertEquals(latest, LeaveBankCalculator.latestAccrual(leave.entries.reversed()))
+        assertEquals(latest.totalDays, summary(payslip(2025, 12, leave)).balanceDays)
+    }
+
+    @Test
+    fun latestAccrualIsNullWhenTheStatementHasNoAccrualRow() {
+        assertNull(LeaveBankCalculator.latestAccrual(listOf(ltcEncashed("2025-06-30", 10))))
+        assertNull(LeaveBankCalculator.latestAccrual(emptyList()))
+    }
 }

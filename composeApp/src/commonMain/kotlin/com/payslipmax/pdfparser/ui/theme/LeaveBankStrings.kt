@@ -6,6 +6,7 @@ package com.payslipmax.pdfparser.ui.theme
  */
 object LeaveBankStrings {
     const val cardTitle = "Leave bank"
+    const val sectionTitle = "Leave accumulation"
     const val typeAccrued = "Accrued"
     const val typeLtcEncashed = "LTC encashed"
     const val columnDate = "Date"
@@ -46,4 +47,11 @@ object LeaveBankStrings {
         statementMonth: String,
         printedDays: Int,
     ): String = "From your $statementMonth statement (${days(printedDays)} printed)"
+
+    fun sectionSubtitle(
+        asOfDate: String,
+        balanceDays: Int,
+    ): String = "As of $asOfDate · ${days(balanceDays)}"
+
+    fun teaser(amount: String): String = "Your leave bank today ≈ $amount"
 }
