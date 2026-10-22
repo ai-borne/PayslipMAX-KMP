@@ -7,7 +7,7 @@ import com.payslipmax.pdfparser.tax.PensionRuleKnowledgeBase.LEAVE_MAX_DAYS
  * states only the days used; it never says how LTC encashment affects retirement encashment (unsettled, see the plan).
  */
 object LeaveBankStrings {
-    const val cardTitle = "Leave bank"
+    const val cardTitle = "Leave accumulation"
     const val sectionTitle = "Leave accumulation"
     const val typeAccrued = "Accrued"
     const val typeLtcEncashed = "LTC encashed"
@@ -43,7 +43,7 @@ object LeaveBankStrings {
     fun order(
         orderNo: String,
         orderDate: String,
-    ): String = "Order $orderNo · $orderDate"
+    ): String = "Pt II Order No $orderNo · $orderDate"
 
     fun leaveDaysSource(
         statementMonth: String,
@@ -55,10 +55,10 @@ object LeaveBankStrings {
         balanceDays: Int,
     ): String = "As of $asOfDate · ${days(balanceDays)}"
 
-    fun teaser(amount: String): String = "Your leave bank today ≈ $amount"
+    fun teaser(amount: String): String = "Your leave accumulation today ≈ $amount"
 
     const val capInsightTitle = "Leave at the $LEAVE_MAX_DAYS-day cap"
-    const val capInsightAction = "See leave bank"
+    const val capInsightAction = "See leave accumulation"
 
     /** The lapse fact only (owner decision 2026-10-21): nothing about LTC or how much is paid at retirement. */
     fun capInsightBody(

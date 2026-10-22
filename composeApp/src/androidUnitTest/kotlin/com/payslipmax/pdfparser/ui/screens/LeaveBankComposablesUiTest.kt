@@ -57,10 +57,10 @@ class LeaveBankComposablesUiTest {
             onNodeWithText(LeaveBankStrings.sectionTitle).performClick()
             onNodeWithText("31 Dec 2023").assertExists()
             onNodeWithText("LTC encashed").assertExists()
-            onNodeWithText("Order 0446/2023 · 15 Jan 2024").assertDoesNotExist()
+            onNodeWithText("Pt II Order No 0446/2023 · 15 Jan 2024").assertDoesNotExist()
 
             onNodeWithText("31 Dec 2023").performClick()
-            onNodeWithText("Order 0446/2023 · 15 Jan 2024").assertExists()
+            onNodeWithText("Pt II Order No 0446/2023 · 15 Jan 2024").assertExists()
         }
 
     @Test
@@ -92,10 +92,10 @@ class LeaveBankComposablesUiTest {
             listOf(card.balance, assertNotNull(card.overCap), card.asOf, card.ltc, card.worth, card.worthBasis).forEach {
                 onNodeWithText(it).assertExists()
             }
-            onNodeWithText("Order 0446/2024 · 15 Jan 2025").assertDoesNotExist()
+            onNodeWithText("Pt II Order No 0446/2024 · 15 Jan 2025").assertDoesNotExist()
 
             onNodeWithText(card.ordersTitle).performClick()
             onNodeWithText("31 Dec 2024").performClick()
-            onNodeWithText("Order 0446/2024 · 15 Jan 2025").assertExists()
+            onNodeWithText("Pt II Order No 0446/2024 · 15 Jan 2025").assertExists()
         }
 }

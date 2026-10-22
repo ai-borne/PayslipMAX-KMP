@@ -45,7 +45,7 @@ class LeavePayslipSectionTest {
     fun theTeaserIsTodaysValueFromTheSummaryWhicheverPayslipIsOpen() {
         val ui = leaveSectionUi(assertNotNull(dec2022.leaveAccumulation), summary, isEditing = false)
 
-        assertEquals("Your leave bank today ≈ ${formatCurrency(summary.valueAtCurrentPay)}", ui.teaser)
+        assertEquals("Your leave accumulation today ≈ ${formatCurrency(summary.valueAtCurrentPay)}", ui.teaser)
     }
 
     @Test

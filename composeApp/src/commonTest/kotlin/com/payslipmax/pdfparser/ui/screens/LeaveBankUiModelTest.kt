@@ -81,7 +81,7 @@ class LeaveBankUiModelTest {
 
         assertEquals("Leave orders (4)", ui.ordersTitle)
         assertEquals(listOf("Accrued", "LTC encashed", "XYZLVE", "Accrued"), ui.rows.map { it.type })
-        assertEquals(LeaveRowUi("31 Dec 2023", "Accrued", "30", "252", "Order 0446/2023 · 15 Jan 2024"), ui.rows.first())
+        assertEquals(LeaveRowUi("31 Dec 2023", "Accrued", "30", "252", "Pt II Order No 0446/2023 · 15 Jan 2024"), ui.rows.first())
         assertEquals("—", ui.rows[1].total)
         assertEquals("10", ui.rows[1].days)
     }
