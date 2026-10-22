@@ -41,5 +41,5 @@ object LaunchFlags {
     // Leave Bank kill switch (docs/Plan/11_LeaveBank_PhasePlan.md), the only switch: every Leave Bank surface (Retirement
     // Calculators card, payslip section, Smart Insight) reads it through isLeaveBankEnabled(). The parser always runs. Flipped true
     // in Phase 6, in its own commit.
-    const val LEAVE_BANK_ENABLED: Boolean = false
+    const val LEAVE_BANK_ENABLED: Boolean = true
 }
