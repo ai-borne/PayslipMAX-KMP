@@ -42,12 +42,13 @@ class NavBridge(
     }
 
     /**
-     * A completed native edge-swipe (or any native pop) — sync [navState] *without* asking
-     * the platform to pop again, breaking the feedback loop the native delegate would
-     * otherwise create. [AppNavState.pop] is idempotent, so a redundant call after
-     * [requestPop] already cleared the detail is a harmless no-op.
+     * The native stack now shows [detailCount] pushed details (after any push or pop, including a
+     * nested edge-swipe) — sync [navState] to it *without* asking the platform to pop again,
+     * breaking the feedback loop the native delegate would otherwise create. Truncation only
+     * drops screens, so the report after a push, or after [requestPop] already popped the
+     * state, is a harmless no-op.
      */
-    fun onNativePopObserved() {
-        navState.pop()
+    fun onNativeStackObserved(detailCount: Int) {
+        navState.truncateTo(detailCount)
     }
 }

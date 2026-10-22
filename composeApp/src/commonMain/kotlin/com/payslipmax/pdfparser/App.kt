@@ -280,11 +280,8 @@ private fun DetailContent(
             com.payslipmax.pdfparser.ui.screens.PayslipReplicaDetailScreen(
                 viewModel = viewModel,
                 onBack = onBack,
-                onOpenOriginal = { payslip ->
-                    viewModel.getPayslipPdf(payslip.dateStr) { bytes ->
-                        if (bytes != null) onOpenPdf(bytes, payslip.file)
-                    }
-                },
+                onOpenPdf = onOpenPdf,
+                onNavigateTo = onNavigateTo,
             )
         Screen.HelpLegal ->
             com.payslipmax.pdfparser.ui.screens.HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)

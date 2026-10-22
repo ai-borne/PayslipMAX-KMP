@@ -51,6 +51,14 @@ class AppNavState(
     }
 
     /**
+     * Keep only the bottom [size] details, dropping any above them. It never adds or reorders screens, so a native stack that
+     * reports a depth at or above the model's (a push being shown) leaves the model unchanged.
+     */
+    fun truncateTo(size: Int) {
+        if (detailStack.size > size) detailStack = detailStack.take(size.coerceAtLeast(0))
+    }
+
+    /**
      * Switch to a different bottom tab. Always clears the entire [detailStack] — leaving a tab
      * discards its pushed details rather than remembering them (decision 3: tabs reset to
      * root on switch-away, so a pushed detail chain is never restored when returning to a tab).

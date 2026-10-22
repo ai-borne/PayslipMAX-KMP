@@ -2,7 +2,8 @@
 //  NavCoordinatorTests.swift
 //  PayslipMaxTests
 //
-//  Covers NavCoordinator.shouldAllowInteractivePop, the edge-swipe-back gate. An edge-swipe
+//  Covers NavCoordinator.shouldAllowInteractivePop, the edge-swipe-back gate, and pushedDetailCount,
+//  which keeps AppNavState in step with the native stack. An edge-swipe
 //  bypasses Compose's BackHandler entirely, so if this gate mis-fires it silently discards an
 //  in-flight draft/correction instead of running the two-step cancel-then-exit path (Phase 5).
 //
@@ -38,28 +39,26 @@ final class NavCoordinatorTests: XCTestCase {
         )
     }
 
-    // MARK: - shouldNotifyNativePop
+    // MARK: - pushedDetailCount
 
-    func test_notifiesPop_whenStackReturnsToRootOnly() {
-        XCTAssertTrue(
-            NavCoordinator.shouldNotifyNativePop(stackDepth: 1),
-            "a detail was popped/swiped away — AppNavState must be synced"
+    func test_pushedDetailCount_isZeroAtTheTabRoot() {
+        XCTAssertEqual(
+            NavCoordinator.pushedDetailCount(stackDepth: 1), 0,
+            "index 0 is always the tab root, so a lone root means no detail is pushed"
         )
     }
 
-    func test_doesNotNotifyPop_whenDetailIsPushed() {
-        XCTAssertFalse(
-            NavCoordinator.shouldNotifyNativePop(stackDepth: 2),
-            "a push must not notify onNativePopObserved(), or it would feed back into the stack " +
-                "Kotlin just asked us to push onto"
-        )
+    func test_pushedDetailCount_reportsANestedPopToTheScreenBelow() {
+        // Item 5: root → payslip → Retirement Calculators, edge-swiped back to the payslip. The old
+        // rule only reported depth 1, so this pop never reached AppNavState.
+        XCTAssertEqual(NavCoordinator.pushedDetailCount(stackDepth: 2), 1)
+        XCTAssertEqual(NavCoordinator.pushedDetailCount(stackDepth: 3), 2)
     }
 
-    func test_doesNotNotifyPop_whenStackIsEmpty() {
-        XCTAssertFalse(
-            NavCoordinator.shouldNotifyNativePop(stackDepth: 0),
-            "an empty stack should never happen in practice (root is always present), but the " +
-                "notification must still only fire at exactly depth 1"
+    func test_pushedDetailCount_neverGoesNegative() {
+        XCTAssertEqual(
+            NavCoordinator.pushedDetailCount(stackDepth: 0), 0,
+            "an empty stack never happens in practice, but Kotlin must never be sent a negative count"
         )
     }
 }

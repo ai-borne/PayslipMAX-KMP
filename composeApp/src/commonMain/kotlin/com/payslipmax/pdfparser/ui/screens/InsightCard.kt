@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -185,8 +184,6 @@ private fun InsightCardFooter(
     ) {
         if (insight.amountLabel != null) {
             Text(text = insight.amountLabel, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
-        } else {
-            Spacer(modifier = Modifier)
         }
         val target = insight.actionTarget
         val gate = insight.gate

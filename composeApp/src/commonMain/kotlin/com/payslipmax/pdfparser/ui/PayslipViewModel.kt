@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -57,6 +59,12 @@ class PayslipViewModel(
 
     val representationDrafts: StateFlow<List<com.payslipmax.pdfparser.database.RepresentationDraftEntity>> =
         financialIntelligenceRepository?.getAllRepresentationDrafts()?.stateIn(viewModelScope, SharingStarted.WhileSubscribed(UI_STOP_TIMEOUT_MS), emptyList()) ?: MutableStateFlow(emptyList())
+
+    // SSOT for every Leave Bank surface (docs/Plan/11_LeaveBank_PhasePlan.md): derived once from the payslip list, so none of
+    // the `payslips = …` update sites has to copy it. Surfaces also check isLeaveBankEnabled().
+    val leaveBankSummary: StateFlow<com.payslipmax.pdfparser.insights.LeaveBankSummary?> =
+        uiState.map { com.payslipmax.pdfparser.insights.LeaveBankCalculator.summarize(it.payslips) }.distinctUntilChanged()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(UI_STOP_TIMEOUT_MS), null)
 
     // SSOT for the Premium yearly price shown across the upgrade sheet, settings card, and Insights
     // hub. The store is the only source of truth for price: this stays null until RevenueCat

@@ -1,0 +1,445 @@
+# Leave Bank — Phase Plan
+
+Status: agreed 2026-10-21; Phases 1–6 done (2026-10-22); `LEAVE_BANK_ENABLED` is on. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
+This file is the plan; phase status is tracked in the table below.
+
+## Context
+
+PCDA(O) December statements (Dec 2022 onward) carry a "Leave Accumulation Details" page: one row per
+Part II order, giving annual leave accrued (ACCLVE) or encashed with LTC (LVELTC), with a running total.
+Officers can encash up to 300 days at retirement, so this balance is worth ~₹20–25 lakh. Today the app
+ignores the page, and Retirement Calculators assumes 300 days. Goal: parse the page once, in shared
+code, and show it in three places: a free table on the payslip, a Premium Leave bank card in Retirement
+Calculators that pre-fills the leave days, and a Premium Smart Insight when the balance is at the cap.
+
+Facts established before planning:
+- Page present in 4 corpus fixtures: `12_dec_2022/2023/2024/2025`. Absent in the other 135.
+- Two layouts. 2022 has `SrNo`, `dd.mm.yyyy` dates, order numbers like `0446/2021`, and a trailing
+  "Leave" column. 2023+ has `dd/mm/yyyy` and no SrNo. On LVELTC rows the first number may be blank or `0`.
+- PDFBox (Android) and macOS PDFKit (iOS) produce identical row-per-line text for the page (checked on
+  the real Dec 2022 and Dec 2025 PDFs). One parser over `TokenizedPayslip.fullText` works on both.
+- Rows differ between years (Dec 2022 lists 3 LVELTC rows, Dec 2023 lists 0, Dec 2024/25 list 2).
+  The latest statement is the only source we trust; years are never merged.
+- PCDA totals are shown as printed and never recalculated.
+- `CorpusFixtures.diff` compares only officer, summary, earnings, deductions and tax, so adding a field
+  to `ParsedPayslip` cannot break the 139/139 gate.
+- `ParsedPayslip` is stored as encrypted JSON (`EncryptedPayslipEntity`, strict `Json`). A new field
+  with a `null` default decodes from old rows, so no Room migration and no schema bump.
+
+## Owner decisions (locked 2026-10-21)
+
+| Topic | Decision |
+|---|---|
+| Paywall | Table + balance free (payslip view). Insights Premium under existing `FeatureGate.RETIREMENT_CALCULATORS`. No new gate. |
+| Payslip teaser | Shows the rupee value. Tap → Retirement Calculators (Premium) or the upgrade sheet (free). |
+| Calculator | Leave days pre-filled `min(balance, 300)`, editable, labelled with the source statement. Falls back to 300. |
+| Over cap | Show the printed figure (301) + "1 over cap". Encashment uses 300. |
+| Rupee basis | Current Basic + DA (+NPA), via `RetirementCalculatorEngine.leaveEncashment`. |
+| Table | Date · Type · Days · Total. Order no./date on row tap. |
+| Smart Insight | At/over-cap warning ships in v1. |
+| LTC | "X of 60 days used" only. No copy about the effect on retirement encashment. |
+| Out of v1 | Cross-year diff of vanished rows, gap-year flags, re-parse prompt for old imports. |
+| Kill switch | `LaunchFlags.LEAVE_BANK_ENABLED`. Hides all three surfaces; the parser always runs. |
+| Model | Nullable `leaveAccumulation` on `ParsedPayslip`. |
+| Release | Next minor release, both platforms. |
+
+## Architecture
+
+```
+fullText ──► LeaveAccumulationExtractor (shared/parser, pure)  ──► ParsedPayslip.leaveAccumulation
+                                                                          │ (encrypted JSON, backups)
+payslips ──► LeaveBankCalculator.summarize (shared/insights, SSOT) ──► LeaveBankSummary
+                                                                          │
+PayslipViewModel.leaveBankSummary: StateFlow (one derivation) ──► Payslip view │ Ret. Calculators │ Smart Insight
+```
+
+- **Model** (`shared/.../domain/LeaveAccumulation.kt`): `@Serializable LeaveAccumulation(entries)` and
+  `LeaveEntry(casDate: String /*ISO*/, casCode: String /*as printed*/, days: Int, totalDays: Int?, orderNo: String, orderDate: String /*ISO*/)`.
+  For ACCLVE, `days` = Accu AL and `totalDays` = Total Accu AL. For LVELTC, `days` = days encashed and `totalDays` = null.
+- **Cas codes SSOT**: `LeaveCasCode` object (`ACCRUED = "ACCLVE"`, `LTC_ENCASHED = "LVELTC"`). Any other code is kept as printed, never dropped.
+- **Extractor** (`shared/.../parser/LeaveAccumulationExtractor.kt`): line-based, `indexOf`/`split` only, no lookaround or backreference regex.
+  - Find "ACCUMULATION DETAILS" (case-insensitive), then the column-header line containing "Cas Date".
+  - Parse rows: optional leading SrNo, a date token, numbers, an all-caps code, order no., order date, optional trailing column.
+  - Stop at the first non-row line.
+  - **Fail closed**: any malformed row inside the section → `null`. Never return a partial table.
+  - Bounds against hostile input: ≤ 200 rows, numbers ≤ 4 digits, valid calendar dates.
+- **Pipeline hook**: in `SharedParsingPipeline.parse`, after `assembleAndValidate`:
+  `finalParsed.copy(leaveAccumulation = runCatching { LeaveAccumulationExtractor.extract(tokenized.fullText) }.getOrNull())`.
+  It reads the raw `fullText`, not the cleaned text. It never touches earnings, deductions, `needsReview`, Gemma or SchemaValidator.
+- **Summary SSOT** (`shared/.../insights/LeaveBankCalculator.kt`):
+  - `summarize(payslips): LeaveBankSummary?` takes the latest payslip that *carries* leave data (not hardcoded to December), and the latest payslip overall for pay.
+  - Output: `balanceDays` (printed), `asOfDate` (latest ACCLVE `casDate`), `sourceMonth/Year`, `daysOverCap`, `encashableDays`, `ltcDaysUsed`, `ltcCapDays`, `valueAtCurrentPay`, plus (added in Phase 3) `payMonth`/`payYear` (the payslip the value is priced at) and `entries` (the source statement's rows).
+  - Add `LTC_ENCASH_MAX_DAYS = 60` next to `LEAVE_MAX_DAYS` in `tax/PensionRuleKnowledgeBase.kt`.
+- **ViewModel**: `PayslipViewModel.leaveBankSummary = uiState.map { summarize(it.payslips) }.distinctUntilChanged().stateIn(WhileSubscribed(UI_STOP_TIMEOUT_MS))`.
+  Derived once, not copied into the 4+ `payslips = …` update sites.
+- **Kill switch**: `LaunchFlags.LEAVE_BANK_ENABLED = false` plus `isLeaveBankEnabled()` (pattern: `GuideAvailability.kt`).
+  Flipped to `true` in Phase 6, in its own commit.
+- **Strings**: new `ui/theme/LeaveBankStrings.kt`. **Colors**: `MaterialTheme.colorScheme`/`CardTint`/`AppDimensions` tokens only.
+
+Reused, not rebuilt: `RetirementCalculatorEngine.leaveEncashment`, `PensionRuleKnowledgeBase.LEAVE_MAX_DAYS`,
+`ExpandableDetailSection`, `FlatBorderedCard`/`CardTint`, `PayslipUpgradeSheet`, `gateForScreen`,
+`NavBridge.navigateToDetail` (precedent: Pay Audit → GuideCard, E7), `rememberHasAccess`, `ParserUtilsIosPerfTest` pattern,
+`CorpusFixtures` loaders, `reparseAllPayslips` (owner re-parses manually; no prompt).
+
+## Rules applied to every phase
+
+- **Build green at phase end, or no next phase.** Gate: `./gradlew check -x iosX64Test -x iosSimulatorArm64Test`
+  + `./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64` + `./gradlew iosSimulatorArm64Test`.
+- **TDD**: tests are written first in each phase. 100% pass, none skipped. Corpus stays 139/139.
+- **300 LOC**: `python3 scripts/check_tech_debt_limits.py --strict <touched .kt>` every phase.
+  A file may exceed 300 only with an SRP comment saying why it isn't split. None are expected.
+  `PayslipReplicaScreen.kt` (284) is split before it grows (Phase 4).
+- **Strings and colors**: no literals in composables. Every string goes in `LeaveBankStrings`; every color is a theme token.
+- **Security**: untrusted PDF text is bounded and parsed with linear algorithms only. Leave values never go into `Logger`,
+  `CrashReporter` or exceptions (`TelemetrySanitizer` untouched). Data stays in the encrypted blob. gitleaks runs via the hooks.
+  Each phase ends with a short OWASP/PII review of its diff.
+- **R8 every phase**: `./gradlew :composeApp:minifyReleaseWithR8 -PallowPlaceholderGemmaModel=true` green.
+  From Phase 1, also grep `composeApp/build/outputs/mapping/release/mapping.txt` for the `LeaveAccumulation`/`LeaveEntry`
+  `$$serializer` classes to prove they survive. Add a keep rule only if one is missing, and keep it narrow.
+  Phase 6 proves it on a release APK on the device.
+- **ADB (Pixel 9)**: phases 3–6 start with a nudge to connect the Pixel 9 and confirm `adb devices`.
+  The `verify` skill recipe applies: back up before any uninstall, `-i com.android.vending` for release installs,
+  uiautomator dump for taps. During device walks before Phase 6, `LEAVE_BANK_ENABLED` is flipped locally,
+  and `git diff` must show it reverted before the commit.
+- **Commits**: one commit per phase, made after the owner accepts that phase's summary. Push/PR only in Phase 6, on request.
+- **Phase Summary** at each end, with (1) tech debt incurred, (2) exact steps taken to resolve it, and
+  (3) build/test/R8 confirmation with commands and counts. The next phase starts only after acceptance.
+
+## Phases
+
+| Phase | Status | Commit |
+|---|---|---|
+| 0. Branch, plan doc, baseline | done (signed off 2026-10-21) | `71101f32` |
+| 1. Model + extractor + pipeline hook | done (signed off 2026-10-21) | `43325a1f` |
+| 2. Summary SSOT + test fixture | done (2026-10-21) | `4fb36624` |
+| 2a. Pre-Phase-3 follow-up: leave/DA/NPA formula, Day-1 labels | done (2026-10-21) | `3fb8abb2`, `fb8628d9` |
+| 3. ViewModel + kill switch + Leave bank card | done with open items (2026-10-21); see Pending items | `bb021add` |
+| 4. Payslip view section + teaser | done (2026-10-21); see Pending items | `5bc70f3a` |
+| 5. Smart Insight | done (2026-10-21); see Pending items | `0a993d7c` |
+| 6. Release hardening, iOS, flip, PR | done (2026-10-22); PR not opened (owner asks) | `3024b36b`, `846a6486`, `1396cf13` (flip), docs commit |
+| 7. Pending items | closed (2026-10-22): 1–6 and 8 closed, 7 dropped by the owner | — |
+
+### Phase 0: Branch, plan doc, baseline
+- Create `feature/leave-bank` off `main`. Add `docs/Plan/11_LeaveBank_PhasePlan.md` (this plan).
+- Baseline, recorded in the summary: full `check` green, corpus 139/139, `iosSimulatorArm64Test` green,
+  `minifyReleaseWithR8` green, plus current line counts of every file to be touched.
+- Exit: doc committed; baseline numbers captured.
+- Baseline recorded 2026-10-21 on `main` @ `21437c8b`:
+  - `check -x iosX64Test -x iosSimulatorArm64Test`: green.
+    - shared debug 1145/1145, release 1145 with 1 skip (pre-existing: `GemmaModelPathsAndroidTest` is debug-only, `assumeTrue(isDebugBuild())`).
+    - composeApp debug 1028/1028, release 1002/1002.
+    - Corpus: `TokenParseCorpusRegressionTest` and `IosTokenParseCorpusRegressionTest` pass.
+  - `iosSimulatorArm64Test`: shared 1100/1100, composeApp 627/627. `linkDebugFrameworkIosSimulatorArm64`: green.
+  - `minifyReleaseWithR8 -PallowPlaceholderGemmaModel=true`: green.
+  - Line counts: `PayslipReplicaScreen.kt` 284, `PayslipViewModel.kt` 279, `SharedParsingPipeline.kt` 224, `Model.kt` 181,
+    `RetirementCalculatorsScreen.kt` 152, `SmartInsightsBuilder.kt` 140, `InsightsState.kt` 108,
+    `RetirementCalculatorsComponents.kt` 75, `PayslipReplicaDetailScreen.kt` 70, `PensionRuleKnowledgeBase.kt` 46,
+    `LaunchFlags.kt` 40, CLAUDE.md 158.
+
+### Phase 1: Model + extractor + pipeline hook (shared)
+Tests first:
+- `commonTest/.../parser/LeaveAccumulationExtractorTest.kt`, synthetic text, no real data:
+  - Each layout: 2023+ and 2022 (SrNo, `dd.mm.yyyy`, `0446/2021`, trailing column).
+  - LVELTC with a blank first number and with `0`.
+  - Mixed-case heading; CRLF line endings; noise lines before the section.
+  - Section absent → null. Malformed row → null. Unknown cas code kept as printed. Row cap enforced.
+- `androidUnitTest/.../parser/LeaveAccumulationCorpusTest.kt` (via `CorpusFixtures`):
+  - Dec 2022 → 15 rows / balance 222 / LTC 30.
+  - Dec 2023 → 13 / 252 / 0.
+  - Dec 2024 → 16 / 282 / 20.
+  - Dec 2025 → 17 / 301 / 20.
+  - All other 135 → `null`. This is the false-positive guard.
+- `iosTest/.../parser/LeaveAccumulationIosPerfTest.kt`, copying the `ParserUtilsIosPerfTest` bounds and linearity check.
+- Serialization test: a payslip with leave data round-trips through `toEncryptedEntity`, and old JSON without the
+  field still decodes. `applyCorrections` keeps the field.
+
+Then implement the model, `LeaveCasCode`, the extractor and the pipeline hook (Architecture above).
+Docs: add a "post-Tier-7 side extractor" section and a changelog entry to `docs/AI_INSIGHTS_PIPELINE.md`.
+Exit: all of the above green, corpus 139/139, R8 + mapping grep green.
+
+### Phase 2: Summary SSOT (shared) + test fixture
+- First, add `shared-test-fixtures/.../testing/SyntheticLeaveAccumulation.kt`. It builds payslips with and without
+  leave data, at or below/over the cap.
+- Tests first, `commonTest/.../insights/LeaveBankCalculatorTest.kt`:
+  - Picks the latest leave-bearing statement and the latest pay, even when they are different payslips.
+  - Balance 301 → over-cap 1, encashable 300. Balance 222 → 0 / 222.
+  - `asOfDate` is the latest ACCLVE `casDate`, not the statement month.
+  - LTC is summed from LVELTC rows only.
+  - Value equals `leaveEncashment(basic, da, encashable, npa)`.
+  - No leave data → null. Ties and out-of-order input are handled.
+- Implement `LeaveBankCalculator` + `LeaveBankSummary`, and add `LTC_ENCASH_MAX_DAYS`.
+- Exit: green gate + R8.
+- Done 2026-10-21. Rules the plan left open, now pinned by `LeaveBankCalculatorTest`:
+  - "Latest" orders by `(year, monthNum)`, then `file`, so same-month duplicates resolve the same way in any input order.
+  - Balance = printed `totalDays` of the latest ACCLVE row by `casDate`; same-date ties go to the later `orderDate`, then printed order.
+  - If the latest leave-bearing statement has no ACCLVE row, the summary is `null`. It never falls back to an older year.
+  - `LeaveAccumulationCorpusTest` now reads balance and LTC through `summarize` (its private balance helper was a second copy of the rule).
+
+### Phase 3: ViewModel + kill switch + Retirement Calculators Leave bank card (Premium surface)
+Nudge: connect the Pixel 9.
+- Tests first:
+  - ViewModel test: `leaveBankSummary` emits from payslips and updates after import or delete (existing ViewModel test harness + `FakePayslipDao`).
+  - Pure UI-model test `LeaveBankUiModelTest`: labels, "N over cap", "X of 60", as-of formatting, rupee formatting
+    with existing formatters. This is the logic-file pattern from `PayAuditFindingsLogic.kt`.
+  - `isLeaveBankEnabled()` test.
+- Implement:
+  - `LaunchFlags.LEAVE_BANK_ENABLED = false`, `ui/screens/LeaveBankAvailability.kt`, `LeaveBankStrings.kt`.
+  - `LeaveBankUiModel.kt` (logic), `LeaveAccumulationTable.kt` (shared table composable with tap-to-expand rows,
+    using `rememberSaveable`), `LeaveBankCard.kt`.
+  - In `RetirementCalculatorsScreen.kt`: the card goes after `RetCalcInputsSection`. `leaveDays` starts at
+    `summary?.encashableDays ?: LEAVE_MAX_DAYS`, with `remember` keyed on `(payslip, summary)`.
+  - In `RetirementCalculatorsComponents.kt`: optional source-label text under the leave field.
+  - `PayslipViewModel.kt` is at 279 lines (Phase 0 baseline). The `leaveBankSummary` StateFlow adds about 4 lines.
+    If it would pass 290, the derivation moves to a small `LeaveBankStateHolder` the ViewModel owns, instead of growing the file.
+- Device (Pixel 9, debug, flag flipped locally):
+  - Re-parse all; Retirement Calculators shows 301 / 1 over cap / LTC 20 of 60 / value; the field is pre-filled 300.
+  - Table expands, and a row tap shows order no./date. Light + dark.
+  - Developer override "Force Free" → screen stays locked as today.
+  - Process death (`adb shell am kill` while backgrounded) → state restores.
+- Exit: green gate + R8 + device screenshots attached to the summary; flag reverted in the diff.
+- Owner decisions 2026-10-21 (pre-Phase-3 follow-up, one commit on `feature/leave-bank` before Phase 3 starts). All done, see the status table:
+  - Leave encashment = (Basic + NPA + DA on Basic + NPA) / 30 × days, in both the calculator and `LeaveBankSummary`. DA on
+    Basic + NPA = printed DA × (Basic + NPA) / (Basic + MSP + NPA), using the payslip's own DA rate, with no rate table.
+  - DA/DR rate = printed DA / (Basic + MSP + NPA) (was DA / Basic, which gave 64.2% instead of 58% for Dec 2025). One helper in
+    `RetirementCalculatorEngine` is used by every caller.
+  - Pension and gratuity: NPA added in the builder. Verified: Handbook ch. 31 para C(i)–(ii), p. 279, says reckonable emoluments are
+    Pay + MSP + NPA, if any, for pension, plus DA for gratuity.
+  - Day-1 corpus card: move the remaining 4 row titles and the 1 subtitle to `AppStringsPremium`, wording unchanged.
+  - Leave-days hint: "(Basic + NPA + DA on them) ÷ 30 × days. MSP and DA on MSP are excluded per PCDA."
+  - Leftovers closed in a second commit: the basis label now reads "Based on current pay (Basic + MSP + NPA, if any, + DA)".
+    The no-payslip placeholder DA is 50% of the placeholder Basic + MSP (`PLACEHOLDER_DA_PERCENT`); it was ₹50,000, which became 43.3%.
+  - If the latest leave statement has no accrual row, Leave Bank shows nothing (confirmed; no fallback to an older year).
+  - The same-month tie-break on `file` stays as determinism only: storage keys payslips by `dateStr` with REPLACE, so duplicates can't exist.
+- Owner decisions 2026-10-21 (start of Phase 3):
+  - Rupee basis: the card shows `LeaveBankSummary.valueAtCurrentPay` unchanged, captioned with the pay month ("at Mar 2026 pay").
+    `LeaveBankSummary` gains `payMonth`/`payYear` (the latest payslip overall). On an older selected month the Day-1 row may
+    differ; the caption says which pay the card uses. The card never recomputes the value.
+  - Process death: only the new state is saveable (the table's expanded rows, `rememberSaveable`). The leave field refills to
+    `min(balance, 300)` from the re-derived summary; the other inputs keep today's `remember` behaviour.
+  - Copy as proposed: title "Leave bank"; "301 days" + "1 over cap"; "As of 31 Dec 2025 · Dec 2025 statement";
+    "LTC: 20 of 60 days used"; "Worth ≈ ₹X at Mar 2026 pay (300 days)"; "Leave orders (17)" table (Date · Type · Days · Total;
+    Type = Accrued / LTC encashed / raw code); row tap → "Order 0446/2021 · 15 Jan 2021"; field label
+    "From your Dec 2025 statement (301 days printed)".
+  - Pre-existing literal "DSOP Closing Balance (₹)" in `RetirementCalculatorsComponents.kt` moves to `AppStringsPremium`, wording unchanged.
+- Background, raised in the Phase 2 review (pre-existing code, not changed in Phase 2):
+  - `RetirementPlannerResultBuilder` calls `leaveEncashment(basic, da, leaveDays)` without NPA, but `LeaveBankSummary.valueAtCurrentPay`
+    includes NPA (owner decision). For an officer drawing NPA, the card and the Day-1 corpus "Leave Encashment" row would differ.
+    Authority (researched 2026-10-21, owner call pending): PCDA(O) Handbook on Pay & Allowances 2023, ch. 29 para 1 (p. 269):
+    "Leave Encashment payment will be equal to Basic Pay + NPA, if any, + DA thereon on the date of retirement/release";
+    formula [Basic + DA + NPA (if any)] / 30 × days, max 300. Ch. 13 para 18 (p. 103): NPA "will be treated as Pay for the purpose of
+    computation of Dearness Allowance, Pension … including calculation of retirement benefits". Both cite GoI MoD letter
+    No. 4(10)/2017/D(Med) dt 28-09-2017. The FAQ (Dec 2025) has no retirement-encashment entry; its LTC entry uses the same
+    formula ("NPA only in the case of medical officers"; "MSP is not included").
+    Related finding: "DA thereon" is DA on Basic + NPA, but the payslip's DA is on Basic + MSP + NPA (handbook ch. 15, p. 130;
+    corpus DA = 58.000% × (Basic + MSP) in Dec 2025). Passing the printed DA counts DA on MSP: about ₹89,900 too high at 300 days
+    (58% × ₹15,500 × 10). This affects both the calculator and `LeaveBankSummary`.
+  - Done ahead of Phase 3 (2026-10-21): the "Leave Encashment (300 Days)" literal in `RetirementDay1CorpusCard.kt` became
+    `AppStringsPremium.retDay1LeaveEncashmentLabel(days)`. Days come from `RetirementPlannerResult.leaveEncashmentDays`, set by the new
+    `RetirementCalculatorEngine.encashableLeaveDays` (0..300), which `leaveEncashment` and `LeaveBankCalculator` now also use.
+
+- Done 2026-10-21 (Phase 3). Device walk on the Pixel 9 (debug, flag flipped locally, reverted before the commit), Dec 2025 statement, 33/33 re-parsed:
+  - Card shows 301 days, "1 over cap", "As of 31 Dec 2024 · Dec 2025 statement", "LTC: 20 of 60 days used", "Worth ≈ ₹23,84,000 at Sep 2026 pay (300 days)". The Day-1 "Leave Encashment (300 Days)" row shows the same ₹23,84,000.
+  - The leave field is pre-filled 300 with "From your Dec 2025 statement (301 days printed)". The table lists 17 rows, LTC rows show "—" for Total, and a row tap shows "Order 65 · 6 May 2018". Light and dark both checked.
+  - "Force Free": Insights shows only the Premium pitch; Retirement Calculators is not reachable. Override restored to Force Premium afterwards.
+  - Process death (`am kill` while backgrounded, pid gone, new pid on relaunch): the screen came back on Retirement Calculators with the table open and the order row expanded.
+  - `PayslipViewModel.kt` ended at 287 lines, so no `LeaveBankStateHolder` was needed.
+  - `ExpandableDetailSection` now uses `rememberSaveable` (it is shared; see Pending items).
+
+### Phase 4: Payslip view section (free) + teaser
+Nudge: connect the Pixel 9.
+- Pre-step (300-LOC rule): move `ReplicaSections` from `PayslipReplicaScreen.kt` (284 lines) into
+  `PayslipReplicaSections.kt` unchanged. Before/after device screenshots of a non-December payslip prove nothing moved.
+- Tests first:
+  - The section shows only when `payslip.leaveAccumulation != null && isLeaveBankEnabled()`, as a pure visibility function.
+  - The teaser routes to `Screen.RetirementCalculators` when `hasAccess(RETIREMENT_CALCULATORS)`, otherwise to the upgrade sheet.
+- Implement `LeaveAccumulationSection.kt`:
+  - `ExpandableDetailSection`, collapsed by default. Subtitle: "As of 31 Dec 2024 · 301 days".
+  - It shows *that* payslip's own table, reusing `LeaveAccumulationTable`.
+  - Teaser row: "Your leave bank today ≈ ₹X". Today's value comes from the summary; the table comes from this statement.
+- Wire it after `LedgerSection`. Thread `onLeaveBankClick` through `PayslipReplicaDetailScreen` → `NavBridge.navigateToDetail`,
+  following the E7 precedent. Reuse `PayslipUpgradeSheet` for the free path.
+- Owner decisions 2026-10-21 (start of Phase 4):
+  - Title "Leave accumulation". The teaser row stays visible while the section is collapsed; only the table collapses.
+  - The subtitle comes from that payslip's own table via `LeaveBankCalculator.latestAccrual(entries)` (the summary's balance rule, made
+    public, not copied). No accrual row → no subtitle. No summary → no teaser. The teaser is hidden in edit mode, so it can't drop drafts.
+  - App.kt is at 300 lines: `PayslipReplicaDetailScreen` takes `onOpenPdf` (the `HistoryScreen` convention) and fetches the PDF once.
+    This also fixes a pre-existing double fetch/decrypt.
+  - iOS edge-swipe gate: `hasActiveUnsavedSubState()` also checks `isEditModeActive`, because a push resets the per-screen flag and
+    the payslip's edit check was lost after returning from Retirement Calculators.
+  - Robolectric Compose tests for the section and `LeaveBankCard` close Phase 7 item 1 (the harness exists).
+  - Pre-existing, logged in Phase 7, not fixed here: nested iOS native pops don't sync `AppNavState`; after process death on a
+    detail pushed from the payslip, Back lands on History (`historyDetailPayslipId` isn't saved).
+  - Tab re-tap: details hide the bottom bar (decision 8), so the check is "bar hidden like other details; History re-tap after Back
+    resets to the root".
+- Device:
+  - Dec 2025 shows the section; Jul 2025 does not; Dec 2022 shows the 2022 layout correctly.
+  - The teaser opens Retirement Calculators. Back returns to the payslip (system back + edge swipe).
+  - With "Force Free", the teaser opens the upgrade sheet. Tab re-tap from the nested screen behaves like the other details.
+- Exit: green gate + R8 + screenshots; flag reverted.
+- Done 2026-10-21 (Phase 4).
+  - Pre-step: `ReplicaSections` and its three private helpers moved to `PayslipReplicaSections.kt`; the only change is
+    `private` → `internal` (diffed against `HEAD`). Jul 2025 screenshots before and after the move are pixel-identical below the
+    status bar, dark and light. `PayslipReplicaScreen.kt` 284 → 155 lines.
+  - Built: `LeaveAccumulationSection.kt` (section, `PayslipLeaveSection`, `openLeaveBankFromTeaser` via `gateForScreen`);
+    `LeaveSectionUi`/`leaveSectionUi`/`payslipLeaveTable` in `LeaveBankUiModel.kt`; public `LeaveBankCalculator.latestAccrual`
+    (the summary uses it too); a nullable `leaveSection` slot on the replica, so a month without a table is laid out exactly as
+    before. App.kt 300 → 297 lines.
+  - Tests: `LeaveBankCalculatorTest` +2, `LeavePayslipSectionTest` 9, `LeaveBankComposablesUiTest` 5 (Robolectric),
+    `PayslipReplicaLeaveWiringTest` 3. All 8 deliberate breaks of the guarded rules were caught, then restored.
+  - Device walk on the Pixel 9 (debug, flag flipped locally, reverted; a flag-off build was reinstalled afterwards):
+    - Dec 2025: "As of 31 Dec 2024 · 301 days", teaser "Your leave bank today ≈ ₹23,84,000"; 17 rows; row tap → order line.
+    - Jul 2025: no section, pixel-identical to the pre-move baseline with the flag on.
+    - Dec 2022 (owner imported it for this walk): 2022 layout, 15 rows / 222 days / LTC 30, "Order 00022 · 10 Mar 2009".
+      Dec 2023: 13 / 252 / 0. Dec 2024: "As of 31 Dec 2023 · 282 days". The teaser stays ₹23,84,000 on each (latest statement).
+    - Teaser → Retirement Calculators; system back, edge swipe and the in-screen arrow return to the payslip with scroll, open table
+      and open row kept. No bottom bar on the nested screen; History re-tap after Back resets to the root.
+    - "Force Free": the teaser opens the upgrade sheet and does not navigate. Override restored to Force Premium.
+    - Edit mode hides the teaser; Discard brings it back.
+    - Light and dark both checked. Screenshots stay in the session scratchpad (they show real figures).
+
+### Phase 5: Smart Insight (Premium)
+Nudge: connect the Pixel 9.
+- Tests first, `SmartInsightsBuilderTest`:
+  - The card appears when `balanceDays >= 300`, at the cap included, because new accrual lapses there. It stays absent below 300.
+  - It appears on the first-statement path too.
+  - `gate == RETIREMENT_CALCULATORS`, and the target is Retirement Calculators.
+  - The existing "no CTA twice" dedup hides the Retirement-calculator Recommended Action while the card shows.
+  - Flag off → no card.
+- Implement:
+  - `InsightsState.leaveBank: LeaveBankSummary?`, fed from `viewModel.leaveBankSummary`.
+  - A `leaveCapCard()` in `SmartInsightsBuilder.kt` (140 lines; if it nears the limit, split into `LeaveInsightCards.kt`).
+  - Copy in `LeaveBankStrings` that states only the lapse fact.
+- Device: the insight shows for 301; it is locked under "Force Free" and opens Retirement Calculators under Pro.
+- Exit: green gate + R8 + screenshots; flag reverted.
+- Owner decisions 2026-10-21 (start of Phase 5):
+  - Copy: title "Leave at the 300-day cap"; body "Your Dec 2025 statement shows 301 days, 1 over the cap. Leave accrued beyond
+    300 days lapses." (at exactly 300: "…shows 300 days, the cap. …"); action "See leave bank"; no amount on the card.
+  - Severity WARNING (chip "Watch"). Order: anomalies → leave card → tax opportunities → free findings.
+  - Every selected month shows it: the summary is today's leave bank (latest statement), and the copy names that statement.
+- Done 2026-10-21 (Phase 5).
+  - `InsightsState.leaveBank` (default `null`) is fed from `viewModel.leaveBankSummary` in `InsightsContent`; `rememberInsightsState`
+    is the only production builder. The first-statement path is the `previousRecord == null` branch inside `buildSmartInsights`,
+    not a separate builder; the card is added there too.
+  - `leaveCapCard()` in `SmartInsightsBuilder.kt` (140 → 167 lines, no split needed). Gate and target from `gateForScreen(Screen.RetirementCalculators)`.
+    The kill switch is a `leaveBankEnabled = isLeaveBankEnabled()` parameter (the `payslipLeaveTable` pattern). Copy and the cap
+    (`PensionRuleKnowledgeBase.LEAVE_MAX_DAYS`) in `LeaveBankStrings`; `statementMonth()` is now `internal`, not copied.
+  - The dedup needed no code: `buildRecommendedActions` drops any candidate whose target a shown card has. Recommended Actions
+    appear only in the free tier's locked Premium hub ("★ Most relevant for you"), so that is where it is visible.
+  - Tests: `LeaveCapInsightTest` 8 (a new file: `SmartInsightsBuilderTest` is at 250 lines and would pass 300),
+    `InsightsLeaveWiringTest` 1 (Robolectric, Insights tab on an older month), and `GatedNavigationInvariantTest` now walks the
+    leave card too. All 8 deliberate breaks were caught, then restored.
+  - Device walk on the Pixel 9 (debug, flag flipped locally, reverted; a flag-off build was reinstalled afterwards):
+    - Premium, Sep 2026: the card shows after the two anomalies with the agreed copy; "See leave bank" opens Retirement
+      Calculators (Leave bank card 301 days); system back and the in-screen arrow return to Insights with the scroll kept.
+    - Dec 2022 (first-statement path): "First Statement Uploaded", then the leave card naming the Dec 2025 statement.
+    - "Force Free": the card shows; its action opens the upgrade sheet and does not navigate. The Premium hub shows no
+      "Most relevant" line; with the flag-off build it reads "★ Most relevant for you: Plan Your Retirement" (the control).
+    - Flag-off build: no leave card on Sep 2026. Override restored to Force Premium, night mode to yes.
+    - Light and dark both checked. Screenshots stay in the session scratchpad (they show real figures).
+    - Seen, pre-existing, debug-only: the night-mode flip recreated the activity and the override came back as Force Premium
+      (the debug default), because recreation builds a fresh ViewModel (item 7).
+
+### Phase 6: Release hardening, iOS, flip, PR
+Nudge: connect the Pixel 9.
+- Flip `LEAVE_BANK_ENABLED = true` in its own commit.
+- Android release on the Pixel 9:
+  - `assembleRelease -PallowPlaceholderGemmaModel=true`. Back up first, then install with `-i com.android.vending`.
+  - Re-parse all, then walk all three surfaces. This proves R8 kept the serializers and the UI. Then `check_r8_guide.py` (unchanged).
+- iOS:
+  - `linkDebugFrameworkIosSimulatorArm64` + full `iosSimulatorArm64Test` (includes the perf test).
+  - An iPhone walk checklist goes to the owner, covering native back from Retirement Calculators to the payslip and a PDFKit-parsed Dec payslip.
+    iOS UI can't be driven from here.
+- Docs: plan status → done; changelog entry in `AI_INSIGHTS_PIPELINE.md`; one bullet in CLAUDE.md "Feature areas" pointing to doc 11 (stays ≤200 lines).
+- Pre-push hook (full gate). PR to `main` only when the owner asks.
+- Owner decisions 2026-10-21 (start of Phase 6, one batch):
+  - Order: item 5 fix, then item 8, each committed with the flag off; the walks; then the flip commit; then the docs commit. On 2026-10-22 the
+    owner moved the Android release walk first (Android proves the shared code; the iPhone walk is then the quicker check). Both walks ran
+    on a tree whose only diff was the flip, so they walked the flip commit's code; no gate task ran on that tree before it was committed.
+  - Item 7 dropped from this plan (pre-existing; needs its own saved-state design). Item 8: name the month. Release walk: Premium path
+    only (the owner is Premium on Play; the free path was walked in debug in Phases 3–5). The Pixel stays on the local release build.
+  - Item 5 design: Swift reports the pushed-detail count, Kotlin truncates `navState` to it.
+- Done 2026-10-22 (Phase 6).
+  - Item 5 (`3024b36b`): `didShow` sends `NavCoordinator.pushedDetailCount` (= stack depth − 1, never below 0) after every show;
+    `NavBridge.onNativeStackObserved` calls the new `AppNavState.truncateTo`, which only drops screens from the top, so the report after a
+    push is a no-op and can't feed back into the native stack. `shouldNotifyNativePop`/`onNativePopObserved` are gone. Tests:
+    `AppNavStateTest` +3, `NavBridgeTest` +2 (one rewritten, one tightened to a two-level stack), `NavCoordinatorTests` (XCTest) 3 replace
+    the old 3. Mutations caught: the old root-only sync, no negative guard, an over-pop on every show, and Swift returning the raw depth.
+    On an iPhone the old mismatch was not visible (the root reads `navState` only for the always-shown bottom bar and the saver), so
+    the walk is a regression check; the tests are the proof.
+  - Item 8 (`846a6486`): `AppStringsPremium.retCalcBasisLabel(payMonth)`, fed by `retCalcBasisLabel(payslip)` with `formatPayMonth`.
+    It names the app's selected month (`uiState.selectedPayslip`, the Insights month), not the payslip opened from History, because that
+    is the pay the Day-1 block uses. Test `basisLabelNamesTheSelectedMonthNotTheLatest`; a fixed-month mutation was caught.
+  - Flip (`1396cf13`): `LEAVE_BANK_ENABLED = true`, nothing else. `PayslipReplicaLeaveWiringTest` and `InsightsLeaveWiringTest` now
+    run their ON branch (section / card exist) and pass. Forcing the payslip table off, then the insight card off, failed each test;
+    both restored.
+  - Android release walk on the Pixel 9 (APK from the flipped tree; the debug build was uninstalled after the owner's `.pcda` backup,
+    the release installed with `-i com.android.vending`, the owner restored and re-parsed 35/35):
+    - Dec 2025: "As of 31 Dec 2024 · 301 days", teaser "≈ ₹23,84,000", 17 rows, row → "Order 22 · 10 Mar 2009". Jul 2025: no section.
+      Dec 2022: "As of 31 Dec 2021 · 222 days", 15 rows, LTC row → "Order 00065 · 6 May 2018".
+    - Teaser → Retirement Calculators: 301 days, 1 over cap, LTC 20 of 60, ₹23,84,000 at Sep 2026 pay; field 300 with the source
+      label; basis line "Based on Sep 2026 pay (…)"; Day-1 leave row ₹23,84,000. System back and the arrow return to the payslip.
+    - Insights (Sep 2026): the leave card after the two alerts; "See leave bank" opens Retirement Calculators; both backs return.
+    - Light and dark both checked. `check_r8_guide.py` green; the release mapping keeps both `$$serializer` classes.
+  - iPhone walk (owner, Xcode Debug, flipped tree, 2026-10-22): the owner reported every step of the A/B/C checklist OK (surfaces and
+    copy, nested native back at each depth, the edge-swipe gate after a nested Back). Closes items 4, 5 (device side) and 6.
+  - Raised, not changed (pre-existing, owner to decide): the Retirement Calculators disclaimer `retCalcDisclaimer` still says "based on
+    your current pay", the wording item 8 removed from the basis line, so on an older selected month it is wrong in the same way.
+
+### Phase 7: Pending items (consolidated)
+Open points from earlier phases. None blocks Phase 6's start; each must be closed or explicitly dropped by the owner before Phase 6 flips the flag.
+All closed or dropped as of 2026-10-22.
+1. ~~**No automated UI test for the new composables.**~~ Closed in Phase 4 (owner: add Compose tests). The premise was wrong: composeApp
+   already had a Robolectric `runComposeUiTest` harness. `LeaveBankComposablesUiTest` covers the section (collapsed by default, teaser
+   visible, rows on expand, row tap → order, teaser tap, no teaser) and `LeaveBankCard` (figures, orders collapsed, row → order);
+   `PayslipReplicaLeaveWiringTest` covers the kill switch and the single PDF fetch on the detail screen.
+2. ~~**`ExpandableDetailSection` is shared, and its state is now saveable.**~~ Closed in Phase 4: Tax Planner's "See full calculation"
+   was opened, the app was backgrounded and its process killed (pid gone, new pid on a launcher relaunch); it came back on Tax
+   Planner with the section still open.
+3. ~~**Older selected month, not walked.**~~ Closed in Phase 4: with Dec 2024 selected, the Day-1 "Leave Encashment (300 Days)" row
+   showed ₹21,49,650 (Dec 2024 pay) and the card ₹23,84,000 "at Sep 2026 pay", as the owner decided; on the latest month both
+   show ₹23,84,000. See item 8 for a copy issue this walk exposed.
+4. ~~iOS: the Leave bank card and (Phase 5) the leave-cap Smart Insight have not been seen on an iPhone (iOS UI can't be driven from
+   here). Both are in the Phase 6 owner checklist: Insights shows the card for 301; Premium opens Retirement Calculators and native
+   back returns to Insights; free opens the upgrade sheet.~~ Closed in Phase 6 by the owner's iPhone walk.
+5. ~~**iOS nested native pops don't sync `AppNavState`** (pre-existing, found in Phase 4). `NavCoordinator.shouldNotifyNativePop` fires only
+   when the native stack is back at depth 1; its comment says the stack is "exactly one level deep", which stopped being true with
+   Premium → Tax Planning and Pay Audit → Guide card (E7), and Phase 4 adds payslip → Retirement Calculators. An edge-swipe from a nested
+   detail leaves `navState` one screen too deep until the stack returns to the root, where it heals. Owner decision (2026-10-21): fix in
+   Phase 6 with the iPhone walk (Swift `didShow` reports the depth; Kotlin truncates `navState` to it; XCTest + commonTest).~~ Fixed in
+   Phase 6 (`3024b36b`).
+6. ~~**iOS edge-swipe gate change is unverified on an iPhone.** Phase 4 made `IosNavHost.hasActiveUnsavedSubState()` also check
+   `isEditModeActive`, because the push of Retirement Calculators resets the per-screen flag and the payslip's edit would otherwise no
+   longer block the swipe after Back. Linked and compiled only. Phase 6 iPhone checklist: payslip → teaser → Retirement Calculators →
+   Back → Edit → edge-swipe must not leave the payslip.~~ Closed in Phase 6 by the owner's iPhone walk.
+7. ~~**Recreation drops the open payslip** (pre-existing, found in Phase 4; logged, no fix planned). `PayslipViewModel` is a Koin
+   `factory` resolved in `MainActivity.onCreate`, and `historyDetailPayslipId` isn't saved, so any activity recreation (a system
+   dark-mode switch, process death) gives a fresh ViewModel; the payslip screen then pops itself to History. With Phase 4's nesting,
+   Back from a restored Retirement Calculators lands on History, not the payslip. Fixing it means a saved-state design for the
+   ViewModel; owner to decide if and when.~~ Dropped by the owner (2026-10-21): pre-existing, outside Leave Bank; it needs its own
+   saved-state design.
+8. ~~**Retirement Calculators doesn't name the month its Day-1 figures use** (pre-existing copy, found in Phase 4's walk; owner
+   decision needed). The Day-1 block is priced at the selected month's pay, but the screen's only basis line reads "Based on current
+   pay (Basic + MSP + NPA, if any, + DA)". With an older month selected that is wrong, and it sits above a Leave bank card that is
+   captioned with a different month. Options: name the selected month in that line, or keep it as is.~~ Fixed in Phase 6 (`846a6486`):
+   the line names the selected month.
+
+## Risks and controls
+
+| Risk | Control |
+|---|---|
+| False match on a non-leave page | Heading + "Cas Date" header + fail-closed rows; the 135-fixture null guard. |
+| Kotlin/Native regex stall | No regex in the hot path; iOS perf test. |
+| R8 strips new serializers | Mapping grep each phase; release APK walk in Phase 6. |
+| Old imports show nothing | Accepted by the owner (re-parse manually). |
+| Downgrade (old app reads new JSON with strict `Json`) | Not possible via the stores; accepted, noted in doc 11. |
+| PCDA adds a new cas code | Kept as printed; Type shows the raw code; logged as a count only. |
+| Copy implies a rule we haven't settled (LTC vs retirement) | Copy limited to "X of 60 used" and the cap fact. |
+
+## Verification (end-to-end)
+
+1. `./gradlew check -x iosX64Test -x iosSimulatorArm64Test` (corpus 139/139 + new suites).
+2. `./gradlew iosSimulatorArm64Test` and `:composeApp:linkDebugFrameworkIosSimulatorArm64`.
+3. `./gradlew :composeApp:minifyReleaseWithR8 -PallowPlaceholderGemmaModel=true` + mapping grep.
+4. Optional real-PDF JVM check: `PlatformPdfParserTest` with `-Dpayslip.localCorpus` on `Pay Slip Elements`.
+5. Pixel 9: debug walk in each of phases 3–5; release APK walk in Phase 6.
+6. Owner iPhone walk in Phase 6.

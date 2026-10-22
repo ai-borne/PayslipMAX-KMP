@@ -23,11 +23,15 @@ fun RetirementDay1CorpusCard(
             color = MaterialTheme.colorScheme.onSurface,
         )
 
-        CorpusRow("DSOP Fund Balance", result.dsopBalance, "Tax-Free Final Balance")
-        CorpusRow("Retirement Gratuity", result.retirementGratuity, PensionRuleKnowledgeBase.TaxExemptions.GRATUITY_SECTION)
-        CorpusRow("Leave Encashment (300 Days)", result.leaveEncashment, PensionRuleKnowledgeBase.TaxExemptions.LEAVE_ENCASHMENT_SECTION)
-        CorpusRow("AGIF Maturity Payout", result.agifMaturity, AppStringsPremium.retAgifNote)
-        CorpusRow("Commuted Lump Sum (50%)", result.commutedLumpSum50, PensionRuleKnowledgeBase.TaxExemptions.COMMUTATION_SECTION)
+        CorpusRow(AppStringsPremium.retDay1DsopLabel, result.dsopBalance, AppStringsPremium.retDay1DsopNote)
+        CorpusRow(AppStringsPremium.retDay1GratuityLabel, result.retirementGratuity, PensionRuleKnowledgeBase.TaxExemptions.GRATUITY_SECTION)
+        CorpusRow(
+            AppStringsPremium.retDay1LeaveEncashmentLabel(result.leaveEncashmentDays),
+            result.leaveEncashment,
+            PensionRuleKnowledgeBase.TaxExemptions.LEAVE_ENCASHMENT_SECTION,
+        )
+        CorpusRow(AppStringsPremium.retDay1AgifLabel, result.agifMaturity, AppStringsPremium.retAgifNote)
+        CorpusRow(AppStringsPremium.retDay1CommutationLabel, result.commutedLumpSum50, PensionRuleKnowledgeBase.TaxExemptions.COMMUTATION_SECTION)
     }
 }
 

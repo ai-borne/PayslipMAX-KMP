@@ -92,7 +92,8 @@ private fun InsightsContent(
     modifier: Modifier = Modifier,
 ) {
     val ledgerRecords by viewModel.ledgerRecords.collectAsState()
-    val state = rememberInsightsState(selected, ledgerRecords)
+    val leaveBank by viewModel.leaveBankSummary.collectAsState()
+    val state = rememberInsightsState(selected, ledgerRecords, leaveBank)
     var wellnessExpanded by remember { mutableStateOf(false) }
     Column(modifier = modifier.fillMaxSize()) {
         InsightsTopBar(

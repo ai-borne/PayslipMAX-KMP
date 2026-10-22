@@ -15,10 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.domain.ParsedPayslip
-import com.payslipmax.pdfparser.insights.RetirementCalculatorEngine
+import com.payslipmax.pdfparser.insights.LeaveBankSummary
 import com.payslipmax.pdfparser.insights.RetirementPlannerResult
 import com.payslipmax.pdfparser.insights.RetirementPlannerResultBuilder
 import com.payslipmax.pdfparser.insights.RetirementYearResolver
+import com.payslipmax.pdfparser.insights.timeline.PayMonth
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.detailScreenSafeArea
@@ -33,6 +34,8 @@ fun RetirementCalculatorsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val selected = uiState.selectedPayslip
+    val leaveBankSummary by viewModel.leaveBankSummary.collectAsState()
+    val leaveBank = leaveBankSummary.takeIf { isLeaveBankEnabled() }
     val scrollState = rememberScrollState()
 
     Column(
@@ -49,13 +52,16 @@ fun RetirementCalculatorsScreen(
         if (selected == null) {
             RetCalcEmptyState()
         } else {
-            RetirementCalculatorsBody(payslip = selected)
+            RetirementCalculatorsBody(payslip = selected, leaveBank = leaveBank)
         }
     }
 }
 
 @Composable
-private fun RetirementCalculatorsBody(payslip: ParsedPayslip) {
+private fun RetirementCalculatorsBody(
+    payslip: ParsedPayslip,
+    leaveBank: LeaveBankSummary?,
+) {
     val basic = payslip.earnings.basicPay
     val initialDsop = payslip.taxAndSavings?.dsopFund?.closingBalance ?: 0.0
 
@@ -65,8 +71,8 @@ private fun RetirementCalculatorsBody(payslip: ParsedPayslip) {
     var ageNextBirthday by remember(payslip) {
         mutableStateOf(RetirementYearResolver.estimateAgeNextBirthday(basic, payslip.officer.name).toString())
     }
-    var leaveDays by remember(payslip) {
-        mutableStateOf(RetirementCalculatorEngine.LEAVE_MAX_DAYS.toString())
+    var leaveDays by remember(payslip, leaveBank) {
+        mutableStateOf(initialLeaveDays(leaveBank))
     }
     var dsopBalance by remember(payslip) {
         mutableStateOf(if (initialDsop > 0.0) initialDsop.toLong().toString() else "")
@@ -93,6 +99,8 @@ private fun RetirementCalculatorsBody(payslip: ParsedPayslip) {
         dsopBalance = dsopBalance,
         onDsopBalanceChange = { dsopBalance = it },
         result = result,
+        leaveBank = leaveBank,
+        basisLabel = remember(payslip) { retCalcBasisLabel(payslip) },
     )
 }
 
@@ -107,9 +115,11 @@ private fun RetinementCalculatorsContent(
     dsopBalance: String,
     onDsopBalanceChange: (String) -> Unit,
     result: RetirementPlannerResult,
+    leaveBank: LeaveBankSummary?,
+    basisLabel: String,
 ) {
     Text(
-        text = AppStringsPremium.retCalcBasisLabel,
+        text = basisLabel,
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -122,7 +132,9 @@ private fun RetinementCalculatorsContent(
         onLeaveDaysChange = onLeaveDaysChange,
         dsopBalance = dsopBalance,
         onDsopBalanceChange = onDsopBalanceChange,
+        leaveDaysSource = leaveDaysNote(leaveBank, isLeaveBankEnabled()),
     )
+    leaveBank?.let { LeaveBankCard(ui = remember(it) { leaveBankCardUi(it) }) }
     RetirementHeroSummaryCard(result = result)
     CaTaxAuditCard(result = result)
     RetirementDay1CorpusCard(result = result)
@@ -150,3 +162,7 @@ private fun RetCalcEmptyState() {
         )
     }
 }
+
+/** The Day-1 figures are priced at the selected payslip's pay, so the basis line names that month (item 8), not "current" pay. */
+internal fun retCalcBasisLabel(payslip: ParsedPayslip): String =
+    AppStringsPremium.retCalcBasisLabel(formatPayMonth(PayMonth(payslip.year, payslip.monthNum)))

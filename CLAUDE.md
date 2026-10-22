@@ -121,6 +121,7 @@ Only after resolving all debt and verifying tests will the next phase begin.
 ### Feature areas beyond the parser (detail lives in the docs, not here)
 
 - **Pay Audit** (Premium, PCDA(O) Army only) — `docs/Plan/09_PayAudit_PhasePlan.md`.
+- **Leave Bank** (December leave table; table free, Retirement Calculators card + cap insight Premium) — `docs/Plan/11_LeaveBank_PhasePlan.md`; kill switch `LaunchFlags.LEAVE_BANK_ENABLED`.
 - **Claim Guide / rule cards** dataset — `docs/Plan/rule_cards/` (start at its `README.md`; to change content follow `18_content_update_runbook.md`; `authoring/*.txt` is the source of truth, `rulebook.json` is generated). `LaunchFlags.GUIDE_ENABLED` is the Guide's one kill switch. The app ships `tools/bundle.py`'s output as a compose resource (`files/guide/guide_bundle.json`); CI fails on a stale bundle, and `scripts/check_r8_guide.py` checks after `assembleRelease` that R8 kept the guide models and the bundle shipped byte-identical; `scripts/run_guide_minified_smoke.sh` builds `minifiedTest` and runs the `:guideSmokeTest` device smoke on it. App plan and phase status: `16_guide_phase_plan.md`.
 - **Monetization** — `docs/Launch/07_platform_monetization_rollout.md`, `08_ios_monetization_phaseplan.md`.
 - **Release tooling** — fastlane lanes in `iosApp/fastlane` (TestFlight/ASC) and `composeApp/fastlane` (Play tracks/listing); project skills `verify` and `ios-monetization-phase` in `.claude/skills/`.

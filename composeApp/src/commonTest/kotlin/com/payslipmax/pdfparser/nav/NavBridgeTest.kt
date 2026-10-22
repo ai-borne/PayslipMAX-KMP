@@ -76,17 +76,47 @@ class NavBridgeTest {
     }
 
     @Test
-    fun onNativePopObservedSyncsStateWithoutRePoppingNative() {
+    fun nativeStackObservedSyncsStateWithoutRePoppingNative() {
         // A completed edge-swipe: state must clear, but we must NOT ask the native stack to pop
         // again (it already did) — otherwise the delegate/bridge form a feedback loop.
         val navState = AppNavState(currentTab = Screen.Settings)
         val (bridge, rec) = bridge(navState)
         bridge.navigateToDetail(Screen.TaxPlanning)
 
-        bridge.onNativePopObserved()
+        bridge.onNativeStackObserved(detailCount = 0)
 
         assertNull(navState.activeDetail)
         assertEquals(0, rec.popCount, "native pop must not be re-triggered from the sync callback")
+    }
+
+    @Test
+    fun nestedEdgeSwipeLandsTheStateOnTheScreenNativeShows() {
+        // Item 5: History → payslip → Retirement Calculators, then an edge-swipe. Native now shows the payslip (one detail); before the
+        // fix only a return to the root was reported, so the state stayed on Retirement Calculators.
+        val navState = AppNavState(currentTab = Screen.History)
+        val (bridge, rec) = bridge(navState)
+        bridge.navigateToDetail(Screen.PayslipReplica)
+        bridge.navigateToDetail(Screen.RetirementCalculators)
+
+        bridge.onNativeStackObserved(detailCount = 1)
+
+        assertEquals(listOf(Screen.PayslipReplica), navState.detailStack)
+        assertEquals(0, rec.popCount)
+    }
+
+    @Test
+    fun pushShownByNativeDoesNotChangeTheState() {
+        // didShow also fires after every push; at the pushed depth it must be a no-op, never a pop or a re-push.
+        val navState = AppNavState(currentTab = Screen.Insights)
+        val (bridge, rec) = bridge(navState)
+        bridge.navigateToDetail(Screen.PayAudit)
+        bridge.navigateToDetail(Screen.GuideCard)
+
+        bridge.onNativeStackObserved(detailCount = 2)
+
+        assertEquals(listOf(Screen.PayAudit, Screen.GuideCard), navState.detailStack)
+        assertEquals(listOf(Screen.PayAudit, Screen.GuideCard), rec.pushed)
+        assertEquals(0, rec.popCount)
     }
 
     @Test
@@ -104,16 +134,17 @@ class NavBridgeTest {
 
     @Test
     fun redundantNativeSyncAfterRequestPopIsHarmless() {
-        // requestPop pops native; the delegate's didShow then also calls onNativePopObserved.
-        // pop() is idempotent, so the second call is a safe no-op (no double state change).
+        // requestPop pops native; the delegate's didShow then also reports the new depth.
+        // The state is already at that depth, so the sync is a safe no-op (no double pop).
         val navState = AppNavState(currentTab = Screen.Settings)
         val (bridge, rec) = bridge(navState)
+        bridge.navigateToDetail(Screen.PremiumFeatures)
         bridge.navigateToDetail(Screen.FAQ)
 
         bridge.requestPop()
-        bridge.onNativePopObserved()
+        bridge.onNativeStackObserved(detailCount = 1)
 
-        assertNull(navState.activeDetail)
+        assertEquals(Screen.PremiumFeatures, navState.activeDetail)
         assertEquals(1, rec.popCount, "only the user-initiated back pops native; the sync is a no-op")
     }
 

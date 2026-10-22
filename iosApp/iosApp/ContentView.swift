@@ -115,7 +115,7 @@ struct ComposeView: UIViewControllerRepresentable {
 
 /// Bridges the Kotlin `IosNavHost` to a native `UINavigationController` (Phase 4).
 /// - Kotlin → Swift: `push`/`pop` execute the requested native stack change.
-/// - Swift → Kotlin: `didShow` syncs `AppNavState` after any native pop (incl. edge-swipe).
+/// - Swift → Kotlin: `didShow` syncs `AppNavState` to the native depth after any push or pop (incl. edge-swipe).
 final class NavCoordinator: NSObject, UINavigationControllerDelegate, UIGestureRecognizerDelegate {
     var navHost: IosNavHost?
     weak var navController: UINavigationController?
@@ -130,20 +130,20 @@ final class NavCoordinator: NSObject, UINavigationControllerDelegate, UIGestureR
         navController?.popViewController(animated: true)
     }
 
-    // The stack is exactly one level deep (a single tab root + at most one pushed detail), so a
-    // return to a single-VC stack means a detail was popped/swiped away — sync AppNavState. On a
-    // push (count == 2) we skip, avoiding a feedback loop back into the native stack.
+    // Details nest (Premium → Tax Planning, Pay Audit → Guide card, payslip → Retirement
+    // Calculators), so every show reports how many details sit above the tab root. Kotlin only
+    // drops screens above that count, so the report after a push is a no-op and can't feed back
+    // into the native stack.
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        if Self.shouldNotifyNativePop(stackDepth: navigationController.viewControllers.count) {
-            navHost?.onNativePopObserved()
-        }
+        navHost?.onNativeStackObserved(
+            detailCount: Int32(Self.pushedDetailCount(stackDepth: navigationController.viewControllers.count))
+        )
     }
 
-    /// Extracted for testability (see `NavCoordinatorTests`) — a stack back at depth 1 means a
-    /// detail was popped/swiped away; depth 2 (a push) must not notify, or it would feed back into
-    /// the native stack Kotlin just asked us to push onto.
-    static func shouldNotifyNativePop(stackDepth: Int) -> Bool {
-        stackDepth == 1
+    /// Extracted for testability (see `NavCoordinatorTests`) — index 0 is always the tab root, so
+    /// the pushed details are everything above it, never fewer than zero.
+    static func pushedDetailCount(stackDepth: Int) -> Int {
+        max(stackDepth - 1, 0)
     }
 
     // Only allow the interactive pop gesture when there is something to pop back to, and never

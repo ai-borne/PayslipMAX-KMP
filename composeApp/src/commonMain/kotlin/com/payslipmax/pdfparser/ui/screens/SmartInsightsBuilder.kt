@@ -6,10 +6,13 @@ import com.payslipmax.pdfparser.insights.Anomaly
 import com.payslipmax.pdfparser.insights.AnomalySeverityMapper
 import com.payslipmax.pdfparser.insights.InsightPrioritizationEngine
 import com.payslipmax.pdfparser.insights.InsightSeverity
+import com.payslipmax.pdfparser.insights.LeaveBankSummary
 import com.payslipmax.pdfparser.insights.Opportunity
 import com.payslipmax.pdfparser.insights.REPRESENTATION_DRAFT_TYPES
 import com.payslipmax.pdfparser.insights.isProven
+import com.payslipmax.pdfparser.tax.PensionRuleKnowledgeBase
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
+import com.payslipmax.pdfparser.ui.theme.LeaveBankStrings
 import kotlin.math.abs
 
 /**
@@ -17,22 +20,46 @@ import kotlin.math.abs
  * Smart Insights section. Wired to [InsightsScreen] via [SmartInsightsSection] — this is presentation
  * logic only, with no I/O and no engine re-computation (anomaly gating/suppression is already the
  * auditors' responsibility; this function is a pass-through + severity/copy mapping).
+ *
+ * The leave-cap card follows the Leave Bank kill switch ([leaveBankEnabled]) and shows on the first-statement path too.
  */
-fun buildSmartInsights(state: InsightsState): List<InsightUiModel> {
+fun buildSmartInsights(
+    state: InsightsState,
+    leaveBankEnabled: Boolean = isLeaveBankEnabled(),
+): List<InsightUiModel> {
+    val leaveCard = state.leaveBank?.takeIf { leaveBankEnabled }?.let(::leaveCapCard)
     if (state.previousRecord == null) {
-        return listOf(
+        return listOfNotNull(
             InsightUiModel(
                 title = InsightsStrings.smartInsightsFirstStatementTitle,
                 explanation = InsightsStrings.smartInsightsFirstStatementBody,
                 severity = InsightSeverity.INFO,
             ),
+            leaveCard,
         )
     }
 
     val anomalyCards =
         InsightPrioritizationEngine.prioritize(state.engineResult.anomalies).map { it.toInsightUiModel() }
     val opportunityCards = state.optimizationResult.opportunities.map { it.toInsightUiModel() }
-    return anomalyCards + opportunityCards + buildFreeFindingCards(state.currentRecord, state.previousRecord)
+    return anomalyCards + listOfNotNull(leaveCard) + opportunityCards + buildFreeFindingCards(state.currentRecord, state.previousRecord)
+}
+
+/**
+ * From PCDA's 300-day cap, not only above it: leave accrued beyond the cap lapses. Its target is Retirement Calculators, so
+ * [buildRecommendedActions]' "no CTA twice" rule drops that screen's Recommended Action while this card shows.
+ */
+private fun leaveCapCard(summary: LeaveBankSummary): InsightUiModel? {
+    if (summary.balanceDays < PensionRuleKnowledgeBase.LEAVE_MAX_DAYS) return null
+    val target = Screen.RetirementCalculators
+    return InsightUiModel(
+        title = LeaveBankStrings.capInsightTitle,
+        explanation = LeaveBankStrings.capInsightBody(summary.statementMonth(), summary.balanceDays, summary.daysOverCap),
+        severity = InsightSeverity.WARNING,
+        actionLabel = LeaveBankStrings.capInsightAction,
+        actionTarget = target,
+        gate = gateForScreen(target),
+    )
 }
 
 /**

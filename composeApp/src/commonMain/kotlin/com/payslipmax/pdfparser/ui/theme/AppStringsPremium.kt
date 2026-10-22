@@ -17,15 +17,18 @@ object AppStringsPremium {
     const val retCalcTitle = "Retirement Calculators"
     const val retCalcSubtitle = "Pension, gratuity, commutation & leave estimates"
     const val retCalcNoPayslip = "Select a payslip first — these estimates use your current pay figures."
-    const val retCalcBasisLabel = "Based on current pay (Basic + MSP + DA)"
+
+    fun retCalcBasisLabel(payMonth: String): String = "Based on $payMonth pay (Basic + MSP + NPA, if any, + DA)"
+
     const val retCalcInputsTitle = "Your details"
     const val retCalcQualifyingYearsLabel = "Qualifying service (years)"
     const val retCalcQualifyingYearsHint = "Determines Gratuity. Min 20 yrs needed for pension."
     const val retCalcAgeNextBirthdayLabel = "Age next birthday at retirement (20–67)"
     const val retCalcAgeHint = "Sets Commutation factor. Younger age = higher lump sum."
     const val retCalcLeaveDaysLabel = "Encashable leave days (max 300)"
-    const val retCalcLeaveHint = "(Basic + DA) ÷ 30 × days. MSP excluded per PCDA."
+    const val retCalcLeaveHint = "(Basic + NPA + DA on them) ÷ 30 × days. MSP and DA on MSP are excluded per PCDA."
     const val retCalcDsopHint = "100% Tax-Free provident fund balance in Day-1 corpus."
+    const val retCalcDsopBalanceLabel = "DSOP Closing Balance (₹)"
     const val retCalcDisclaimer = "Estimates only, based on your current pay — actual retirement figures depend on last-drawn emoluments and rules in force. Verify with PAO / PCDA(O)."
 
     // Modern Retirement Planner Components
@@ -33,6 +36,13 @@ object AppStringsPremium {
     const val retHeroMonthlyPayoutLabel = "Net Monthly Pension (with DR)"
     const val retHeroDay1CorpusLabel = "Total Day-1 Liquid Corpus"
     const val retDay1CorpusTitle = "Day-1 Lump Sum Payout Breakdown"
+    const val retDay1DsopLabel = "DSOP Fund Balance"
+    const val retDay1DsopNote = "Tax-Free Final Balance"
+    const val retDay1GratuityLabel = "Retirement Gratuity"
+    const val retDay1AgifLabel = "AGIF Maturity Payout"
+    const val retDay1CommutationLabel = "Commuted Lump Sum (50%)"
+
+    fun retDay1LeaveEncashmentLabel(days: Int): String = if (days == 1) "Leave Encashment (1 Day)" else "Leave Encashment ($days Days)"
 
     // CA Tax Audit & Commutation Advisory Strings
     const val retCaTaxAuditTitle = "CA Tax Audit & Income Tax Exemptions"

@@ -21,6 +21,7 @@ data class RetirementPlannerResult(
     val commutedLumpSum50: Double,
     val retirementGratuity: Double,
     val leaveEncashment: Double,
+    val leaveEncashmentDays: Int,
     val dsopBalance: Double,
     val agifMaturity: Double,
     val totalDay1Corpus: Double,
@@ -36,6 +37,9 @@ data class RetirementPlannerResult(
 )
 
 object RetirementPlannerResultBuilder {
+    /** DA rate assumed when there is no payslip, or no Basic to derive it from. */
+    private const val PLACEHOLDER_DA_PERCENT = 50.0
+
     fun build(
         payslip: ParsedPayslip?,
         overrideQualifyingYears: Double? = null,
@@ -46,12 +50,13 @@ object RetirementPlannerResultBuilder {
     ): RetirementPlannerResult {
         val basic = payslip?.earnings?.basicPay ?: 100000.0
         val msp = payslip?.earnings?.militaryServicePay ?: 15500.0
-        val da = payslip?.earnings?.dearnessAllowance ?: 50000.0
+        val da = payslip?.earnings?.dearnessAllowance ?: ((basic + msp) * PLACEHOLDER_DA_PERCENT / 100.0)
+        val npa = payslip?.earnings?.nonPracticingAllowance ?: 0.0
         val rawOfficerName = payslip?.officer?.name
 
         val (rank, name) = parseRankAndName(rawOfficerName)
 
-        val daPercentage = if (basic > 0.0) (da / basic) * 100.0 else 50.0
+        val daPercentage = if (basic > 0.0) RetirementCalculatorEngine.daPercent(basic, msp, npa, da) else PLACEHOLDER_DA_PERCENT
 
         val ageNextBirthday =
             overrideAgeNextBirthday
@@ -75,8 +80,8 @@ object RetirementPlannerResultBuilder {
                 else -> DataConfidenceLevel.PRELIMINARY
             }
 
-        val basicPension = RetirementCalculatorEngine.retiringPension(basic, msp)
-        val reckonableEmoluments = basic + msp
+        val basicPension = RetirementCalculatorEngine.retiringPension(basic, msp, npa = npa)
+        val reckonableEmoluments = basic + msp + npa
 
         val fullMonthly = RetirementCalculatorEngine.calculateNetMonthlyPension(basicPension, 0.0, daPercentage)
         val commuted50Monthly = RetirementCalculatorEngine.calculateNetMonthlyPension(basicPension, 0.50, daPercentage)
@@ -84,8 +89,8 @@ object RetirementPlannerResultBuilder {
         val factor = RetirementCalculatorEngine.commutationFactor(ageNextBirthday) ?: 8.678
         val commutedLumpSum50 = RetirementCalculatorEngine.commutedLumpSum(basicPension, 0.50, factor)
 
-        val gratuity = RetirementCalculatorEngine.retirementGratuity(basic, da, qualifyingYears, msp)
-        val leaveEncashment = RetirementCalculatorEngine.leaveEncashment(basic, da, leaveDays)
+        val gratuity = RetirementCalculatorEngine.retirementGratuity(basic, da, qualifyingYears, msp, npa)
+        val leaveEncashment = RetirementCalculatorEngine.leaveEncashment(basic, msp, da, leaveDays, npa)
 
         val agifMaturity = RetirementCalculatorEngine.calculateAgifMaturity(1_000_000.0)
         val totalDay1Corpus = dsopBalance + gratuity + leaveEncashment + agifMaturity + commutedLumpSum50
@@ -107,6 +112,7 @@ object RetirementPlannerResultBuilder {
             commutedLumpSum50 = commutedLumpSum50,
             retirementGratuity = gratuity,
             leaveEncashment = leaveEncashment,
+            leaveEncashmentDays = RetirementCalculatorEngine.encashableLeaveDays(leaveDays),
             dsopBalance = dsopBalance,
             agifMaturity = agifMaturity,
             totalDay1Corpus = totalDay1Corpus,

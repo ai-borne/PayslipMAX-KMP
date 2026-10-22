@@ -91,18 +91,39 @@ object RetirementCalculatorEngine {
     }
 
     /**
-     * Leave Encashment on retirement = (Basic Pay + DA + NPA) / 30 × days, capped at 300 days.
-     * CRITICAL PCDA RULE: Military Service Pay (MSP) is EXCLUDED from Leave Encashment computation!
+     * The DA rate (%) a payslip's printed DA implies. DA is paid on Basic + MSP + NPA (Handbook on Pay & Allowances 2023,
+     * ch. 15, p. 130), so the rate is DA ÷ that base, not DA ÷ Basic. Pension DR is paid at the same rate.
+     */
+    fun daPercent(
+        basicPay: Double,
+        militaryServicePay: Double,
+        npa: Double,
+        dearnessAllowance: Double,
+    ): Double {
+        val base = basicPay + militaryServicePay + npa
+        return if (base > 0.0) dearnessAllowance / base * 100.0 else 0.0
+    }
+
+    /**
+     * Leave Encashment on retirement = (Basic Pay + NPA + DA thereon) / 30 × days, capped at 300 days (Handbook on Pay &
+     * Allowances 2023, ch. 29, p. 269). [dearnessAllowance] is the DA as printed, which is paid on MSP too.
+     * CRITICAL PCDA RULE: Military Service Pay (MSP) and the DA on it are EXCLUDED from Leave Encashment computation!
      */
     fun leaveEncashment(
         basicPay: Double,
+        militaryServicePay: Double,
         dearnessAllowance: Double,
         days: Int,
         npa: Double = 0.0,
     ): Double {
         if (days <= 0) return 0.0
-        return (basicPay + dearnessAllowance + npa) / 30.0 * days.coerceAtMost(LEAVE_MAX_DAYS)
+        val pay = basicPay + npa
+        val daOnPay = pay * daPercent(basicPay, militaryServicePay, npa, dearnessAllowance) / 100.0
+        return (pay + daOnPay) / 30.0 * encashableLeaveDays(days)
     }
+
+    /** The leave days [leaveEncashment] pays for: never negative, capped at [LEAVE_MAX_DAYS]. */
+    fun encashableLeaveDays(days: Int): Int = days.coerceIn(0, LEAVE_MAX_DAYS)
 
     /**
      * Disability Pension = 30% of last drawn emoluments for 100% disability, scaled proportionally

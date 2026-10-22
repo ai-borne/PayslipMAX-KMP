@@ -40,8 +40,8 @@ private fun ensureKoin() {
  *    with detail navigation routed to the native stack via [NavBridge.navigateToDetail].
  *  - [detailViewController]: a thin `ComposeUIViewController` per pushed detail screen, reusing
  *    the existing screen composables unchanged (they already take a plain `onBack`).
- *  - [onNativePopObserved]: called by the Swift `UINavigationControllerDelegate` after any native
- *    pop (including an edge-swipe) so [AppNavState] stays in sync without re-triggering a pop.
+ *  - [onNativeStackObserved]: called by the Swift `UINavigationControllerDelegate` after every native
+ *    push or pop (including an edge-swipe) so [AppNavState] stays in sync without re-triggering a pop.
  *
  * @param pushScreen Swift closure that pushes the native VC for a [Screen] name.
  * @param requestPop Swift closure that pops the top native VC.
@@ -108,18 +108,13 @@ class IosNavHost(
                 Screen.RetirementCalculators -> RetirementCalculatorsScreen(viewModel = viewModel, onBack = onBack)
                 Screen.FAQ -> HelpLegalScreen(screen = Screen.FAQ, onBack = onBack)
                 Screen.PrivacyPolicy -> HelpLegalScreen(screen = Screen.PrivacyPolicy, onBack = onBack)
-                Screen.PayslipReplica -> {
-                    activeDetailHasUnsavedState = { viewModel.uiState.value.isEditModeActive }
+                Screen.PayslipReplica ->
                     PayslipReplicaDetailScreen(
                         viewModel = viewModel,
                         onBack = onBack,
-                        onOpenOriginal = { payslip ->
-                            viewModel.getPayslipPdf(payslip.dateStr) { bytes ->
-                                if (bytes != null) onOpenPdf(bytes, payslip.file)
-                            }
-                        },
+                        onOpenPdf = onOpenPdf,
+                        onNavigateTo = { screen -> bridge.navigateToDetail(screen) },
                     )
-                }
                 Screen.HelpLegal -> HelpLegalScreen(screen = Screen.HelpLegal, onBack = onBack)
                 Screen.GuideCard -> GuideCardRoute(viewModel = viewModel, onBack = onBack)
                 Screen.PayAudit -> PayAuditScreen(viewModel = viewModel, onBack = onBack, onNavigateTo = { screen -> bridge.navigateToDetail(screen) })
@@ -133,8 +128,12 @@ class IosNavHost(
         }
     }
 
-    /** Called by Swift's `gestureRecognizerShouldBegin` to gate the edge-swipe while mid-edit. */
-    fun hasActiveUnsavedSubState(): Boolean = activeDetailHasUnsavedState()
+    /**
+     * Called by Swift's `gestureRecognizerShouldBegin` to gate the edge-swipe while mid-edit. A payslip edit is checked directly,
+     * not through the per-push flag: the payslip can push Retirement Calculators, and that push resets the flag, so after Back the
+     * payslip's edit would no longer block the swipe. Only the payslip view can start edit mode.
+     */
+    fun hasActiveUnsavedSubState(): Boolean = activeDetailHasUnsavedState() || viewModel.uiState.value.isEditModeActive
 
     /**
      * The single approved way to host Compose in a `UIViewController` on iOS: every VC is its own
@@ -158,9 +157,9 @@ class IosNavHost(
             }
         }
 
-    /** Called by the Swift nav delegate after the stack returns to the root (native pop/swipe). */
-    fun onNativePopObserved() {
-        bridge.onNativePopObserved()
+    /** Called by the Swift nav delegate after every native show, with the number of details above the tab root. */
+    fun onNativeStackObserved(detailCount: Int) {
+        bridge.onNativeStackObserved(detailCount)
     }
 }
 
