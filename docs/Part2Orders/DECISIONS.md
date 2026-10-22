@@ -47,11 +47,85 @@ Source: "Documentation Procedure (Officers) – 2026" (ODP-2026), IHQ of MoD (Ar
 | Write-up | This decision record first; a plan later, separately. |
 | Commit/push | Docs-only commit on `main` (this record + the analysis doc); pushed with the next push needed anyway. |
 
+## Round 5: The order-drafting flow (owner's vision; supersedes parts of Rounds 1 and 3)
+
+The owner's flow: the officer returns from leave, opens Guide → Part II Order, searches or taps the Leave
+ribbon, fills in the details, and sees the draft occurrence(s) plus the orders that go with them. He prints
+the draft for the clerk, who types it into HRMS and publishes it. The officer photographs the published
+order into an encrypted vault in the app, and learns the process by using it.
+
+| Topic | Decision |
+|---|---|
+| Output | Occurrence rows only (a "clerk slip"): code, narrative, From/To, Data 1–4 per occurrence. No identity data at all (no name, Pers No, rank, arm, PAN or CDA A/c): the officer hands the slip over in person and the clerk's HRMS has the rest. Not an IAFF-3010 replica. |
+| Clerk | Types the slip into HRMS. |
+| Validation | The manual's computable notes are checked before printing (e.g. GTDAL notes 1, 2, 4, 9, 10: day count, 60-day annual cap, tally, prefix/suffix > 5 days, two years → two occurrences). |
+| Linked orders | Shown in the flow (grant → rejoin / extend / early return / recall); a follow-up order quotes the grant order's no. and date from the vault. |
+| Sharing | Print only, via the system print dialog (which also offers Save as PDF). No in-app share sheet. Pay Audit's letter sharing is unchanged. |
+| Vault | Encrypted photos of the published order, linked to the draft it came from; the officer types only the published order no. and date. No parsing, no OCR. |
+| Inbound | Photo only, taken with an in-app camera (never written to the gallery or cloud photo sync); EXIF/GPS stripped; several pages per order. New camera permission on both platforms. |
+| Lock | Follows the existing app-lock setting. |
+| Backup | Orders travel in the `.pcda` backup (v5), encrypted with the backup password like corrections and Guide notes. |
+| First ribbon | Leave: all 30 Chapter 5 occurrences, including AWL/REJAWL; ACCLVE computed as (a − b + c, max 300) from the year's saved leave orders and cross-checked against Leave Bank's December figure; ENCASH with its year-wise break-up prefilled from Leave Bank. Each code's template and rules are hand-written from the manual and owner-reviewed; the annual leave set is built first. |
+| Paywall | Code lookup free; draft generator and vault Premium (Android stays free while `FREE_LAUNCH_MODE_ANDROID`). |
+
+Superseded: Round 1 "self-check only" (the draft is now printed for the clerk); Round 3 "minimal code page" (the
+generator needs each Leave code's full template, dates, Data 1–4 and notes); Round 3 "all four event groups" (Leave
+is the first ribbon); Round 3 paywall "content free, automation Premium" (now as above).
+
+## Round 6: Roadmap after Round 5
+
+| Topic | Decision |
+|---|---|
+| Reminders | Driven by drafts, replacing "ask once": a draft sets its own follow-ups (e.g. "draft REJOINAL" on the leave's return date, "add the published order" a few weeks after a draft). In-app and OS notification (Round 1). |
+| Payslip nudges | Later, each with the ribbon it opens (field/HAA nudges with a Moves ribbon, promotion with Career). Not in the Leave release. |
+| Payslip check | Dropped. The vault is a record; Pay Audit stays separate. Code-to-payslip-line mapping is no longer needed. |
+| Ribbon layout | Layout and sequencing of ribbons across all codes to be proposed holistically (separate agent, modelled on the Guide's `nav.json`); next ribbon after Leave decided from that proposal. |
+
+## Round 7: What a real HRMS order showed (owner's own order, reviewed in chat; no identifiers recorded)
+
+| Topic | Decision |
+|---|---|
+| Vault and RESTRICTED | Published orders are marked RESTRICTED. Owner keeps the Round 5 decision: photos stored encrypted and carried in the password-encrypted `.pcda` backup ("personal filing" copy). Owner accepts the policy risk. |
+| HRMS draft check | The officer sometimes sees the HRMS draft before signing. Offer an optional "Check the HRMS draft" step that shows the app's slip for a field-by-field comparison; the flow does not depend on it. |
+| Evidence | Real published orders may be used as evidence of which orders go together, shown to the officer labelled "seen in practice", separately from manual-stated links (cited to the page). Only de-identified structure (codes, column use) is kept. Amends Round 2's "manual only". |
+| Slip extras | Besides the occurrence rows: an authority line per occurrence where the manual requires one (e.g. the posting signal no. and date), and the officer's last Part II order no. and date, from the vault. Amends Round 5's "rows only". |
+
+## Round 8: Ribbon layout (agent proposal, 10 ribbons / 48 cases / 303 serials)
+
+| Topic | Decision |
+|---|---|
+| Build order | As proposed: 1 Leave → 2 Postings and moves + Field, high-altitude and hard areas (one release; if too big, R&H, field, HAA and SCCIA first) → 3 Promotion, courses and awards → 4 Family and children → 5 Leaving the Army → 6 Hospital and health → 7 Allowances for your role → 8 Deputation and special postings → 9 Records and unit-only orders. |
+| Leave + field re-grant | ~~"Also publish" link, no draft~~. Superseded by Round 9: drafted in the Leave release. |
+| Tiles | Only built ribbons show tiles, plus the lookup-only Records ribbon. Search reaches all 303 code pages from release 1. |
+| Stop on proceeding on leave | Answered by the owner's HRMS summary: see Round 9. |
+| Awards and TA | Ch 10 (Territorial Army) lookup-only. Ch 7 drafts only 7.9 GALASSPP (monetary allowance); the other 12 are lookup-only. |
+| Tile size | 2 to 16 codes per tile (the Guide uses 4 to 16), so natural pairs such as CANCEL/CANCELS stay together. |
+| Blank groups | 3.28 STPTLA and 11.8 REMAROF show "Group not printed in ODP-2026"; no group is inferred. |
+| Stale note references | Notes that cite old serial numbers are mapped by occurrence name, cited to their page, and listed for owner review. |
+| Layout file | `RIBBON_LAYOUT.md` (this folder) is the agreed layout; where it differs from Rounds 8–9, this record wins. |
+
+## Round 9: What the owner's order summary changed (supersedes Round 8's "also publish" link)
+
+| Topic | Decision |
+|---|---|
+| Ration four | Drafted in the Leave release: the flow asks "Are you on ration strength?"; if yes, the slip adds SORS + GTDRSHNA from the first day away (incl. prefix) and TORS + STPRSHNA from the rejoining date. Manual-backed (ration notes 1.1, 1.5, 3, 4). |
+| Area allowance around leave | Drafted in the Leave release for an officer in an R&H/field/HAA/CI area. R&H: stop from the first day away (incl. prefix) and re-grant from the rejoining date, labelled "seen in practice". HAA/field/SCCIA: re-grant only, cited to the manual (pp. 49, 53, 55) with its casual-leave thresholds; no stop until there is evidence. This pulls the area-allowance templates into the Leave release (about 60 serials in all), so the plan phases it internally: annual leave set + ration + R&H first. |
+| Rejoining code | The slip prints `REJOIN`, as HRMS publishes it; the code page notes that ODP-2026 lists `REJOINAL` (5.23). |
+| Cancellation | CANCEL / CANCELS ship with Leave, offered from any vault order ("this order is wrong → cancel and re-draft", para 11). |
+
 ## Facts established (2026-10-22)
 
-- `part2_occurrences_2026.json`: 289 entries against 302 Annexure II serials. Missing 2.14–2.16, 3.25, 3.26
-  (`STPFIELD`), 3.28, 3.53, 3.67, 3.80, 3.97 (`GTDHARDS`), 3.98, 3.99 (`GTDNTSSA`), 11.8, 13.12 (`BATTLCAS`).
-  Column-wrap damage (3.27 code `GTDTLA1/G`). Serial 9.7 not found in the index text; check by hand.
+- `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
+  carry variants, e.g. 3.53 GTDTRAN1–5). Missing 2.14–2.16, 3.25, 3.26 (`STPFIELD`), 3.28, 3.53, 3.67, 3.80, 3.97
+  (`GTDHARDS`), 3.98, 3.99 (`GTDNTSSA`), 11.8, 13.12 (`BATTLCAS`). Column-wrap damage (3.27 code `GTDTLA1/G`).
+  (An earlier count of 302 and "9.7 not found" were wrong: 9.7 `WTHDPAY` is on p.23, detail p.171.)
+- Two serials have no group printed: 3.28 STPTLA and 11.8 REMAROF. Para 7.1 names a group "D" that is never defined.
+- Rejoining from leave re-grants area allowances: HAA except casual leave under 14 days (p.49), field area
+  allowances except casual leave or hospital under 15 days (p.55), SCCIA (p.53), transport allowance after an
+  absence covering a whole calendar month (p.71). Leave grant is published within 24 hours of proceeding, and
+  rejoining within 24 hours of return (para 6.3).
+- Group B claims (3.96, 8.1–8.10) may not share an order with A/AM/C/CM; all occurrences of one event go in one
+  order in date order (paras 7.1, 6.4).
 - `SOSFRCRS` (cited in the analysis doc) is not in the manual.
 - STPFIELD notes 2–3 (manual p. 56): the stop order is published every time an officer leaves a field area,
   including a move between field area types; "a mere grant of the new allowance will not suffice".
@@ -60,9 +134,50 @@ Source: "Documentation Procedure (Officers) – 2026" (ODP-2026), IHQ of MoD (Ar
   "MARRIAGE + NOKCHNG" bundle is wrong.
 - Part II orders cannot be amended: the order is cancelled and notified afresh (manual para 11).
 - The previous edition was 2014; codes may differ, which matters for a later past-orders stage.
+- Each occurrence has a fill-in-the-blank narrative and per-code date and Data 1–4 rules (Annexure III), so a
+  draft is mechanical once the template is written; the text dump's tables wrap too badly to extract templates.
+- REJOINAL, VOLREJ and RECALL must quote the Part II order no. that granted the leave (col 3 and 7).
+- The unit, not the officer, fills the IAFF-3010 header (SUS No, order nos, formation, authority, signature).
+- In the app today: a PDF builder on both platforms (`PdfLetterFormatter`, `PdfExporter`), an optional app lock,
+  Android `allowBackup="false"`, and `.pcda` backups (v4) encrypted with a user password that already carry PDFs.
 
-## Open, for later stages
+- The payslip's `Officer` holds only name, CDA A/c and a masked PAN: no Pers No, rank or arm. When no PAN is
+  found, `ParserUtils.extractPanNumber` returns a placeholder `"AR*****90G"`, which must never reach a slip.
+- ACCLVE's narrative is arithmetic (previous balance − LTC encashment + this year's accumulation, max 300), and
+  ENCASH needs a year-wise break-up of accumulation over the whole service; Leave Bank parses both figures.
 
-- De-identified samples of the portal's per-order PDF and consolidated report (order-import stage).
-- Mapping from occurrence codes to payslip line items (payslip-check stage).
-- Storage, backup and notification design for "ask once" (stage 3).
+- A real HRMS order (Ver 2.60.15) prints the IAFF-3010 (Revised) layout, marked RESTRICTED, with a barcode of
+  SUS No + order no./year + account digits, and the watermark "For Draft approval & personal filing only. Not to
+  be used for PCDA(O) submissions". The authoritative order is a digitally signed XML; PCDA(O) accepts only
+  digitally signed orders through the OASIS portal.
+- One posting-out order held POSOUT (13.2), SORS (3.86), STPRH (3.12), RELAPPT (4.2) and STPTRAN (3.54) with the same
+  date, under GROUP 'A'/'AM'/'C'. The manual's POSOUT notes do not list this set; note 2 says the TOS date at the new
+  unit equals the SOS date at the old one.
+- Every order's header quotes the officer's last Part II order no. and date; authority is printed per occurrence
+  (only POSOUT had one in that order).
+
+- Practice evidence from the owner's HRMS order summary (Sep 2024 – Oct 2026, one officer in an R&H station;
+  patterns only, no identifiers kept):
+  - Annual leave orders carried, in the same order as the grant: SORS + GTDRSHNA from the first day away, then
+    TORS + STPRSHNA from the rejoining date (ration allowance during leave, manual-backed: ration notes 1.1, 1.5,
+    3, 4), and STPRH from the first day away **including prefix**, re-granted (GTDRH12) from the rejoining date
+    (not stated in the manual's R&H section).
+  - A 9-day casual leave carried the ration four but no R&H stop.
+  - HRMS published rejoining as code `REJOIN` ("Rejoined from CL/AL w.e.f. …, initially granted vide Pt II Order
+    No …"). `REJOIN` is not in ODP-2026, which has only `REJOINAL` (5.23).
+  - Prefix/suffix are printed as lists of dates ("prefix on dd/mm/yyyy, dd/mm/yyyy and suffix on …"), or "-" / "Nil"
+    when none.
+  - Posting in carried POSIN, JNTIME, GTDRSHNA (from TOS, through joining time), TORS + STPRSHNA and ASMAPPT and
+    GTDRHxx (from end of joining time); GTDTRAN1 came in a separate order the next day.
+  - Publication lagged badly: leave published 5–8 months after it was taken (para 6.3 asks for 24 hours).
+  - A wrong order (LAPPROC) was cancelled with CANCEL and republished with corrected data (para 11 in practice).
+  - Group B claims (REIMBCEA) were always single-occurrence orders.
+  - ACCLVE for year Y was published in May of Y+1. Its total "as on 31/12/Y" equals the balance on the PCDA(O)
+    December statement of Y+1 (Leave Bank), e.g. 282 as on 31/12/2023 ↔ Dec 2024 statement, 301 as on 31/12/2024
+    ↔ Dec 2025 statement. The Leave Bank cross-check must compare ACCLVE(Y) with the statement of Y+1.
+  - The latest ACCLVE put the uncapped total in line (a) instead of the previous balance: the published narrative
+    does not always follow the manual's a − b + c = d template.
+
+## Open
+
+- Notification design for draft-driven reminders (new on both platforms).
