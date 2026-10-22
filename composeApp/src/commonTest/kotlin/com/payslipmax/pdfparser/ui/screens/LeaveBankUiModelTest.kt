@@ -13,6 +13,7 @@ import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.accrued
 import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.ltcEncashed
 import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.payslip
 import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.table
+import com.payslipmax.pdfparser.ui.theme.LeaveBankStrings
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -103,5 +104,23 @@ class LeaveBankUiModelTest {
     @Test
     fun theLeaveFieldNamesTheStatementAndThePrintedBalance() {
         assertEquals("From your Dec 2025 statement (301 days printed)", leaveDaysSourceLabel(overCap))
+    }
+
+    @Test
+    fun belowTheCapTheNoteAddsThatLeaveKeepsAccruing() {
+        val note = leaveDaysNote(summary(payslip(2025, 12, table(BELOW_CAP_DAYS))), enabled = true)
+
+        assertEquals("From your Dec 2025 statement (222 days printed). Leave keeps accruing until retirement, up to 300 days.", note)
+    }
+
+    @Test
+    fun atOrOverTheCapTheNoteIsOnlyTheSource() {
+        assertEquals(leaveDaysSourceLabel(overCap), leaveDaysNote(overCap, enabled = true))
+    }
+
+    @Test
+    fun withoutAStatementTheNoteSaysTheCapIsAssumedAndOnlyWhileTheFeatureIsOn() {
+        assertEquals(LeaveBankStrings.noStatementAssumesCap, leaveDaysNote(null, enabled = true))
+        assertNull(leaveDaysNote(null, enabled = false))
     }
 }

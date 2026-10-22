@@ -78,6 +78,20 @@ fun initialLeaveDays(summary: LeaveBankSummary?): String = (summary?.encashableD
 
 fun leaveDaysSourceLabel(summary: LeaveBankSummary): String = LeaveBankStrings.leaveDaysSource(summary.statementMonth(), summary.balanceDays)
 
+/**
+ * The line under Retirement Calculators' leave field. Below the cap it adds that leave keeps accruing; with no summary it says
+ * the cap is assumed, unless the feature is off ([enabled] false), where the field is the plain 300-day default and says nothing.
+ */
+fun leaveDaysNote(
+    summary: LeaveBankSummary?,
+    enabled: Boolean,
+): String? =
+    when {
+        summary == null -> LeaveBankStrings.noStatementAssumesCap.takeIf { enabled }
+        summary.balanceDays < RetirementCalculatorEngine.LEAVE_MAX_DAYS -> "${leaveDaysSourceLabel(summary)}. ${LeaveBankStrings.keepsAccruing()}"
+        else -> leaveDaysSourceLabel(summary)
+    }
+
 /** ISO `yyyy-MM-dd` as "31 Dec 2025". Anything else is shown as stored: a date the app can't read is never guessed at. */
 fun leaveDisplayDate(iso: String): String {
     val parts = iso.split('-')

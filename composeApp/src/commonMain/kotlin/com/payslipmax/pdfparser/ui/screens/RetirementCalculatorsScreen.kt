@@ -132,7 +132,7 @@ private fun RetinementCalculatorsContent(
         onLeaveDaysChange = onLeaveDaysChange,
         dsopBalance = dsopBalance,
         onDsopBalanceChange = onDsopBalanceChange,
-        leaveDaysSource = leaveBank?.let(::leaveDaysSourceLabel),
+        leaveDaysSource = leaveDaysNote(leaveBank, isLeaveBankEnabled()),
     )
     leaveBank?.let { LeaveBankCard(ui = remember(it) { leaveBankCardUi(it) }) }
     RetirementHeroSummaryCard(result = result)

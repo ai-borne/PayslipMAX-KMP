@@ -50,6 +50,12 @@ object LeaveBankStrings {
         printedDays: Int,
     ): String = "From your $statementMonth statement (${days(printedDays)} printed)"
 
+    /** Below the cap the field holds today's balance, not what retirement will pay: leave keeps accruing until then. */
+    fun keepsAccruing(): String = "Leave keeps accruing until retirement, up to $LEAVE_MAX_DAYS days."
+
+    /** No leave table has been imported, so Retirement Calculators assumes the maximum rather than a balance of the officer's own. */
+    val noStatementAssumesCap = "No leave statement found, so the $LEAVE_MAX_DAYS-day maximum is assumed. Import a December statement to use your own balance."
+
     fun sectionSubtitle(
         asOfDate: String,
         balanceDays: Int,
