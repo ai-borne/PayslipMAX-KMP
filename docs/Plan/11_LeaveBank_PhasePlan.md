@@ -1,6 +1,6 @@
 # Leave Bank — Phase Plan
 
-Status: agreed 2026-10-21; Phases 1–5 done, Phase 6 next. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
+Status: agreed 2026-10-21; Phases 1–6 done (2026-10-22); `LEAVE_BANK_ENABLED` is on. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
 This file is the plan; phase status is tracked in the table below.
 
 ## Context
@@ -115,9 +115,9 @@ Reused, not rebuilt: `RetirementCalculatorEngine.leaveEncashment`, `PensionRuleK
 | 2a. Pre-Phase-3 follow-up: leave/DA/NPA formula, Day-1 labels | done (2026-10-21) | `3fb8abb2`, `fb8628d9` |
 | 3. ViewModel + kill switch + Leave bank card | done with open items (2026-10-21); see Pending items | `bb021add` |
 | 4. Payslip view section + teaser | done (2026-10-21); see Pending items | `5bc70f3a` |
-| 5. Smart Insight | done (2026-10-21); see Pending items | this commit |
-| 6. Release hardening, iOS, flip, PR | not started | — |
-| 7. Pending items | open (items 4–8; 1–3 closed) | — |
+| 5. Smart Insight | done (2026-10-21); see Pending items | `0a993d7c` |
+| 6. Release hardening, iOS, flip, PR | done (2026-10-22); PR not opened (owner asks) | `3024b36b`, `846a6486`, `1396cf13` (flip), docs commit |
+| 7. Pending items | closed (2026-10-22): 1–6 and 8 closed, 7 dropped by the owner | — |
 
 ### Phase 0: Branch, plan doc, baseline
 - Create `feature/leave-bank` off `main`. Add `docs/Plan/11_LeaveBank_PhasePlan.md` (this plan).
@@ -351,9 +351,43 @@ Nudge: connect the Pixel 9.
     iOS UI can't be driven from here.
 - Docs: plan status → done; changelog entry in `AI_INSIGHTS_PIPELINE.md`; one bullet in CLAUDE.md "Feature areas" pointing to doc 11 (stays ≤200 lines).
 - Pre-push hook (full gate). PR to `main` only when the owner asks.
+- Owner decisions 2026-10-21 (start of Phase 6, one batch):
+  - Order: item 5 fix, then item 8, each committed with the flag off; the walks; then the flip commit; then the docs commit. On 2026-10-22 the
+    owner moved the Android release walk first (Android proves the shared code; the iPhone walk is then the quicker check). Both walks ran
+    on a tree whose only diff was the flip, so they walked the flip commit's code; no gate task ran on that tree before it was committed.
+  - Item 7 dropped from this plan (pre-existing; needs its own saved-state design). Item 8: name the month. Release walk: Premium path
+    only (the owner is Premium on Play; the free path was walked in debug in Phases 3–5). The Pixel stays on the local release build.
+  - Item 5 design: Swift reports the pushed-detail count, Kotlin truncates `navState` to it.
+- Done 2026-10-22 (Phase 6).
+  - Item 5 (`3024b36b`): `didShow` sends `NavCoordinator.pushedDetailCount` (= stack depth − 1, never below 0) after every show;
+    `NavBridge.onNativeStackObserved` calls the new `AppNavState.truncateTo`, which only drops screens from the top, so the report after a
+    push is a no-op and can't feed back into the native stack. `shouldNotifyNativePop`/`onNativePopObserved` are gone. Tests:
+    `AppNavStateTest` +3, `NavBridgeTest` +2 (one rewritten, one tightened to a two-level stack), `NavCoordinatorTests` (XCTest) 3 replace
+    the old 3. Mutations caught: the old root-only sync, no negative guard, an over-pop on every show, and Swift returning the raw depth.
+    On an iPhone the old mismatch was not visible (the root reads `navState` only for the always-shown bottom bar and the saver), so
+    the walk is a regression check; the tests are the proof.
+  - Item 8 (`846a6486`): `AppStringsPremium.retCalcBasisLabel(payMonth)`, fed by `retCalcBasisLabel(payslip)` with `formatPayMonth`.
+    It names the app's selected month (`uiState.selectedPayslip`, the Insights month), not the payslip opened from History, because that
+    is the pay the Day-1 block uses. Test `basisLabelNamesTheSelectedMonthNotTheLatest`; a fixed-month mutation was caught.
+  - Flip (`1396cf13`): `LEAVE_BANK_ENABLED = true`, nothing else. `PayslipReplicaLeaveWiringTest` and `InsightsLeaveWiringTest` now
+    run their ON branch (section / card exist) and pass. Forcing the payslip table off, then the insight card off, failed each test;
+    both restored.
+  - Android release walk on the Pixel 9 (APK from the flipped tree; the debug build was uninstalled after the owner's `.pcda` backup,
+    the release installed with `-i com.android.vending`, the owner restored and re-parsed 35/35):
+    - Dec 2025: "As of 31 Dec 2024 · 301 days", teaser "≈ ₹23,84,000", 17 rows, row → "Order 22 · 10 Mar 2009". Jul 2025: no section.
+      Dec 2022: "As of 31 Dec 2021 · 222 days", 15 rows, LTC row → "Order 00065 · 6 May 2018".
+    - Teaser → Retirement Calculators: 301 days, 1 over cap, LTC 20 of 60, ₹23,84,000 at Sep 2026 pay; field 300 with the source
+      label; basis line "Based on Sep 2026 pay (…)"; Day-1 leave row ₹23,84,000. System back and the arrow return to the payslip.
+    - Insights (Sep 2026): the leave card after the two alerts; "See leave bank" opens Retirement Calculators; both backs return.
+    - Light and dark both checked. `check_r8_guide.py` green; the release mapping keeps both `$$serializer` classes.
+  - iPhone walk (owner, Xcode Debug, flipped tree, 2026-10-22): the owner reported every step of the A/B/C checklist OK (surfaces and
+    copy, nested native back at each depth, the edge-swipe gate after a nested Back). Closes items 4, 5 (device side) and 6.
+  - Raised, not changed (pre-existing, owner to decide): the Retirement Calculators disclaimer `retCalcDisclaimer` still says "based on
+    your current pay", the wording item 8 removed from the basis line, so on an older selected month it is wrong in the same way.
 
 ### Phase 7: Pending items (consolidated)
 Open points from earlier phases. None blocks Phase 6's start; each must be closed or explicitly dropped by the owner before Phase 6 flips the flag.
+All closed or dropped as of 2026-10-22.
 1. ~~**No automated UI test for the new composables.**~~ Closed in Phase 4 (owner: add Compose tests). The premise was wrong: composeApp
    already had a Robolectric `runComposeUiTest` harness. `LeaveBankComposablesUiTest` covers the section (collapsed by default, teaser
    visible, rows on expand, row tap → order, teaser tap, no teaser) and `LeaveBankCard` (figures, orders collapsed, row → order);
@@ -364,27 +398,30 @@ Open points from earlier phases. None blocks Phase 6's start; each must be close
 3. ~~**Older selected month, not walked.**~~ Closed in Phase 4: with Dec 2024 selected, the Day-1 "Leave Encashment (300 Days)" row
    showed ₹21,49,650 (Dec 2024 pay) and the card ₹23,84,000 "at Sep 2026 pay", as the owner decided; on the latest month both
    show ₹23,84,000. See item 8 for a copy issue this walk exposed.
-4. iOS: the Leave bank card and (Phase 5) the leave-cap Smart Insight have not been seen on an iPhone (iOS UI can't be driven from
+4. ~~iOS: the Leave bank card and (Phase 5) the leave-cap Smart Insight have not been seen on an iPhone (iOS UI can't be driven from
    here). Both are in the Phase 6 owner checklist: Insights shows the card for 301; Premium opens Retirement Calculators and native
-   back returns to Insights; free opens the upgrade sheet.
-5. **iOS nested native pops don't sync `AppNavState`** (pre-existing, found in Phase 4). `NavCoordinator.shouldNotifyNativePop` fires only
+   back returns to Insights; free opens the upgrade sheet.~~ Closed in Phase 6 by the owner's iPhone walk.
+5. ~~**iOS nested native pops don't sync `AppNavState`** (pre-existing, found in Phase 4). `NavCoordinator.shouldNotifyNativePop` fires only
    when the native stack is back at depth 1; its comment says the stack is "exactly one level deep", which stopped being true with
    Premium → Tax Planning and Pay Audit → Guide card (E7), and Phase 4 adds payslip → Retirement Calculators. An edge-swipe from a nested
    detail leaves `navState` one screen too deep until the stack returns to the root, where it heals. Owner decision (2026-10-21): fix in
-   Phase 6 with the iPhone walk (Swift `didShow` reports the depth; Kotlin truncates `navState` to it; XCTest + commonTest).
-6. **iOS edge-swipe gate change is unverified on an iPhone.** Phase 4 made `IosNavHost.hasActiveUnsavedSubState()` also check
+   Phase 6 with the iPhone walk (Swift `didShow` reports the depth; Kotlin truncates `navState` to it; XCTest + commonTest).~~ Fixed in
+   Phase 6 (`3024b36b`).
+6. ~~**iOS edge-swipe gate change is unverified on an iPhone.** Phase 4 made `IosNavHost.hasActiveUnsavedSubState()` also check
    `isEditModeActive`, because the push of Retirement Calculators resets the per-screen flag and the payslip's edit would otherwise no
    longer block the swipe after Back. Linked and compiled only. Phase 6 iPhone checklist: payslip → teaser → Retirement Calculators →
-   Back → Edit → edge-swipe must not leave the payslip.
-7. **Recreation drops the open payslip** (pre-existing, found in Phase 4; logged, no fix planned). `PayslipViewModel` is a Koin
+   Back → Edit → edge-swipe must not leave the payslip.~~ Closed in Phase 6 by the owner's iPhone walk.
+7. ~~**Recreation drops the open payslip** (pre-existing, found in Phase 4; logged, no fix planned). `PayslipViewModel` is a Koin
    `factory` resolved in `MainActivity.onCreate`, and `historyDetailPayslipId` isn't saved, so any activity recreation (a system
    dark-mode switch, process death) gives a fresh ViewModel; the payslip screen then pops itself to History. With Phase 4's nesting,
    Back from a restored Retirement Calculators lands on History, not the payslip. Fixing it means a saved-state design for the
-   ViewModel; owner to decide if and when.
-8. **Retirement Calculators doesn't name the month its Day-1 figures use** (pre-existing copy, found in Phase 4's walk; owner
+   ViewModel; owner to decide if and when.~~ Dropped by the owner (2026-10-21): pre-existing, outside Leave Bank; it needs its own
+   saved-state design.
+8. ~~**Retirement Calculators doesn't name the month its Day-1 figures use** (pre-existing copy, found in Phase 4's walk; owner
    decision needed). The Day-1 block is priced at the selected month's pay, but the screen's only basis line reads "Based on current
    pay (Basic + MSP + NPA, if any, + DA)". With an older month selected that is wrong, and it sits above a Leave bank card that is
-   captioned with a different month. Options: name the selected month in that line, or keep it as is.
+   captioned with a different month. Options: name the selected month in that line, or keep it as is.~~ Fixed in Phase 6 (`846a6486`):
+   the line names the selected month.
 
 ## Risks and controls
 

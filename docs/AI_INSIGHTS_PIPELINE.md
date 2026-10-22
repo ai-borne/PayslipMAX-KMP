@@ -780,6 +780,15 @@ Selected fixes with enough context to explain *why* the current design looks the
     - `LeaveAccumulationPersistenceTest` checks the encrypted round trip, that pre-field rows still decode, and that corrections leave the table alone.
     - `LeaveAccumulationIosPerfTest` is the Native timing gate.
     - The existing corpus gate is unchanged (`CorpusFixtures.diff` doesn't compare the new field).
+- **Leave Bank shipped (Leave Bank Phases 2–6, `docs/Plan/11_LeaveBank_PhasePlan.md`; flag on 2026-10-22).**
+  - **What shipped**: `insights/LeaveBankCalculator.summarize` is the one place the Stage 7.6 table becomes figures (balance as printed,
+    days over the 300 cap, LTC days used, value at the latest pay via `RetirementCalculatorEngine.leaveEncashment`). Three surfaces read it
+    through `PayslipViewModel.leaveBankSummary`: the free "Leave accumulation" section on December payslips, the Premium Leave bank card in
+    Retirement Calculators (pre-fills the leave days), and the Premium "Leave at the 300-day cap" Smart Insight. Kill switch:
+    `LaunchFlags.LEAVE_BANK_ENABLED`; the extractor runs either way.
+  - **Parser impact**: none. Stage 7.6 is unchanged; the corpus gate is unchanged (139 fixtures, 137 passing + 2 documented quarantines).
+  - **Verification**: unit and Robolectric suites per phase; the release APK walked on a Pixel 9 (R8 keeps both `$$serializer` classes);
+    the owner's iPhone walk on a PDFKit-parsed December statement.
 
 ---
 
