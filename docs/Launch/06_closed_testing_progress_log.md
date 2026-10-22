@@ -646,6 +646,21 @@ Premium locks. The paywall was turned on by the owner on 2026-10-18 with five un
   signed in to the Apple account; rerun after sign-in worked). Not submitted to App Review.
 - **Not done:** App Store submission and Android production (still vc18); EP 14 (sandbox purchase unlocks a card on each platform).
 
+### versionCode 21 (1.5.0) — on Internal testing (2026-10-22) — Leave accumulation
+
+`versionName` 1.4.1 → 1.5.0 (`version.properties`), versionCode 20 → 21. Version commit `31ac26e7` and iOS build-number commit
+`9841fc4a` on `main`, tags `v1.5.0`, `android-1.5.0-vc21`, `ios-1.5.0-b6`. Content: PR #23 (Leave accumulation, 14 commits, plan
+`docs/Plan/11_LeaveBank_PhasePlan.md`; `LaunchFlags.LEAVE_BANK_ENABLED = true`) plus the Guide content fixes from PRs #21 and #22
+(37 unverified cards settled, DA 60% restored). `FREE_LAUNCH_MODE_ANDROID` stays `true`; iOS stays free-launch off.
+- **Gate:** PR #23 CI green and the local `minifyReleaseWithR8 -PallowPlaceholderGemmaModel=true` passed before the merge.
+- **Build/upload:** `bundleRelease` with the real Gemma model (`iosApp/iosApp/gemma-active.litertlm`), 442,692,156 B AAB;
+  `upload_to_track track:internal` released versionCode 21. `track_status`: internal [21], alpha [15], production [18].
+- **iOS counterpart:** TestFlight 1.5.0 (6), processing VALID. The first attempt failed at `exportArchive` ("No iOS Distribution
+  signing certificate", Xcode not signed in to the Apple account) and left the build number bumped to 6 in the pbxproj; it was put
+  back to 5 by hand and the rerun after sign-in uploaded build 6. Not submitted to App Review.
+- **Not done:** the iPhone walkthrough of the Leave accumulation card, payslip table and cap insight (owner, not drivable here);
+  App Store submission; Android production (still vc18).
+
 ## Next steps
 
 1. **BillDesk KYC (owner only):** submit `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax` with PAN,

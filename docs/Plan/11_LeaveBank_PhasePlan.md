@@ -1,6 +1,6 @@
 # Leave Bank — Phase Plan
 
-Status: agreed 2026-10-21; Phases 1–6 done (2026-10-22); `LEAVE_BANK_ENABLED` is on. Branch: `feature/leave-bank` (off `main` @ `21437c8b`).
+Status: agreed 2026-10-21; Phases 1–6 done (2026-10-22); `LEAVE_BANK_ENABLED` is on. Merged to `main` as PR #23 (2026-10-22) and released in 1.5.0 (Android vc21 internal, TestFlight build 6). Open: the iPhone walkthrough (owner). Branch `feature/leave-bank` was off `main` @ `21437c8b`.
 This file is the plan; phase status is tracked in the table below.
 
 ## Context
