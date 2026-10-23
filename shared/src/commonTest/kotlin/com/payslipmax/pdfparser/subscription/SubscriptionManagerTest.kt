@@ -193,4 +193,25 @@ class SubscriptionManagerTest {
             SubscriptionManager(isPremiumEnabledProvider = { false }, isDebugBuildProvider = { false }, isFreeLaunchModeProvider = { true })
         assertTrue(freeLaunch.hasAccess(FeatureGate.CLAIM_GUIDE), "free-launch mode opens it like every gate")
     }
+
+    @Test
+    fun thePartTwoOrdersGateFollowsTheSameRulesAsEveryOtherGate() {
+        // Part II plan, phase 1: one FeatureGate value, no special case in hasAccess; drafting is Premium and lookup is not gated at all.
+        var premium = false
+        val release = releaseManager { premium }
+        assertFalse(release.hasAccess(FeatureGate.PART2_ORDERS))
+        premium = true
+        assertTrue(release.hasAccess(FeatureGate.PART2_ORDERS))
+
+        val debug = debugManager { false }
+        assertTrue(debug.hasAccess(FeatureGate.PART2_ORDERS), "FORCE_PRO is the debug default")
+        debug.setDevOverride(DevOverride.FORCE_FREE)
+        assertFalse(debug.hasAccess(FeatureGate.PART2_ORDERS), "FORCE_FREE reaches the locked state")
+        debug.setDevOverride(DevOverride.FORCE_PRO)
+        assertTrue(debug.hasAccess(FeatureGate.PART2_ORDERS))
+
+        val freeLaunch =
+            SubscriptionManager(isPremiumEnabledProvider = { false }, isDebugBuildProvider = { false }, isFreeLaunchModeProvider = { true })
+        assertTrue(freeLaunch.hasAccess(FeatureGate.PART2_ORDERS), "free-launch mode opens it like every gate")
+    }
 }

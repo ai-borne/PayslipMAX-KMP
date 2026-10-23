@@ -62,6 +62,9 @@ object SyntheticGuideBundle {
     /** The same bundle with the synthetic pre-claim worksheet, whose rule picker links to [SyntheticGuidePreClaim.PICKER_CARD]. */
     fun withPreClaim(): GuideBundle = (GuideBundleParser.parse(JSON) as GuideLoadResult.Loaded).bundle.copy(preclaim = SyntheticGuidePreClaim.preClaim)
 
+    /** The same bundle with the synthetic Part II lookup section ([SyntheticGuidePart2]). */
+    fun withPart2(): GuideBundle = SyntheticGuidePart2.bundle()
+
     private fun card(
         id: String,
         nav: String,

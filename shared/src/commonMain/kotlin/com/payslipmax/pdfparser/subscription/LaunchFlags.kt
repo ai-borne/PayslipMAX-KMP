@@ -42,4 +42,9 @@ object LaunchFlags {
     // Calculators card, payslip section, Smart Insight) reads it through isLeaveBankEnabled(). The parser always runs. Flipped true
     // in Phase 6, in its own commit.
     const val LEAVE_BANK_ENABLED: Boolean = true
+
+    // Part II Orders kill switch (docs/Plan/12_Part2Orders_PhasePlan.md), the only switch: every Part II surface (the Guide tile, the
+    // routes, the Koin module, the Premium catalog row) reads it through isPart2Enabled(). The lookup data ships in the Guide bundle either
+    // way. It also needs GUIDE_ENABLED: Part II lives in the Guide tab. Flipped true only in Phase 10, in its own commit, on the owner's word.
+    const val PART2_ENABLED: Boolean = false
 }

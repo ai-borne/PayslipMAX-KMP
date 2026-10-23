@@ -2,6 +2,8 @@ package com.payslipmax.pdfparser.ui.screens
 
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.subscription.FeatureGate
+import com.payslipmax.pdfparser.subscription.LaunchFlags
+import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -19,7 +21,32 @@ class PremiumFeaturesCatalogTest {
         val catalog = premiumFeatureCatalog()
         val advertised = FeatureGate.values().filter { isAdvertised(it) }
         assertEquals(advertised, catalog.map { it.gate }, "catalog order follows FeatureGate order, one row per advertised gate")
-        assertEquals(FeatureGate.values().size, catalog.size, "the paywall is on (2026-10-18), so every gate incl. the Claim Guide is advertised")
+        assertEquals(advertised.size, catalog.size)
+        val dark = if (isPart2Enabled()) 0 else 1
+        assertEquals(FeatureGate.values().size - dark, catalog.size, "the paywall is on (2026-10-18), so every gate but a dark Part II is advertised")
+    }
+
+    @Test
+    fun partTwoOrdersIsCataloguedButAdvertisedOnlyWhilePartTwoIsEnabled() {
+        // Dark launch: a gate that is catalogued but not for sale must stay off the paywall, or the hub promises what is not built.
+        assertFalse(isAdvertised(FeatureGate.PART2_ORDERS, part2Enabled = false))
+        assertTrue(isAdvertised(FeatureGate.PART2_ORDERS, part2Enabled = true))
+        assertEquals(FeatureGate.PART2_ORDERS, featureMeta(FeatureGate.PART2_ORDERS).gate)
+        assertEquals(isPart2Enabled(), FeatureGate.PART2_ORDERS in premiumFeatureCatalog().map { it.gate })
+        assertEquals(LaunchFlags.GUIDE_ENABLED && LaunchFlags.PART2_ENABLED, isAdvertised(FeatureGate.PART2_ORDERS))
+    }
+
+    @Test
+    fun withPartTwoOffThePaywallCatalogIsExactlyWhatItWasBeforePartTwo() {
+        // why: a flag-off build must behave exactly as before; this list is the catalog as shipped in 1.3.0, in order.
+        val before =
+            listOf(
+                FeatureGate.PREMIUM_INTELLIGENCE, FeatureGate.WEALTH_OPTIMIZATION, FeatureGate.TAX_PLANNER, FeatureGate.DSOP_SIMULATOR,
+                FeatureGate.ANOMALY_DETECTION, FeatureGate.CLAIM_GENERATOR, FeatureGate.RETIREMENT_CALCULATORS, FeatureGate.BACKUP_RESTORE,
+                FeatureGate.CLAIM_GUIDE,
+            )
+        val catalog = FeatureGate.values().filter { isAdvertised(it, part2Enabled = false) }
+        assertEquals(before, catalog)
     }
 
     @Test
@@ -28,7 +55,7 @@ class PremiumFeaturesCatalogTest {
         assertFalse(isAdvertised(FeatureGate.CLAIM_GUIDE, guideEnabled = false, guidePaywallEnabled = true))
         assertFalse(isAdvertised(FeatureGate.CLAIM_GUIDE, guideEnabled = true, guidePaywallEnabled = false))
         assertTrue(isAdvertised(FeatureGate.CLAIM_GUIDE, guideEnabled = true, guidePaywallEnabled = true))
-        for (gate in FeatureGate.values().filter { it != FeatureGate.CLAIM_GUIDE }) {
+        for (gate in FeatureGate.values().filter { it != FeatureGate.CLAIM_GUIDE && it != FeatureGate.PART2_ORDERS }) {
             assertTrue(isAdvertised(gate, guideEnabled = false, guidePaywallEnabled = false), "$gate is unaffected by the Guide flags")
         }
     }

@@ -330,7 +330,7 @@ The next phase starts only after the owner accepts this summary.
 | Phase | Status | Commit |
 |---|---|---|
 | 0. Branch, baseline, occurrence dataset (tools only) | done, accepted (2026-10-23) | see git log |
-| 1. Lookup bundle section, models, validator, flag, gate + catalog guard | not started | — |
+| 1. Lookup bundle section, models, validator, flag, gate + catalog guard | built 2026-10-23, awaiting owner acceptance | see git log |
 | 2a. Template format, validators, engine core (synthetic templates), `CivilCalendar` move | not started | — |
 | 2b. Content batch 1: annual set + ration four + R&H; owner review | not started | — |
 | 3. Storage: schema 15, repository, backup v5 with bounded restore | not started | — |
@@ -345,6 +345,7 @@ The next phase starts only after the owner accepts this summary.
 | 8. Rest of Chapter 5, incl. ACCLVE and ENCASH (batch 3) | not started | — |
 | 9. Area re-grants: HAA, SCCIA, field, TPTA (batch 4) | not started | — |
 | 10. Release hardening, owner content sign-off, iPhone walk, docs | not started | — |
+| 11. Pending items (collected from earlier phases) | open: 1 item from Phase 1 | — |
 
 Each phase leaves the app shippable: `PART2_ENABLED` is `false` until Phase 10, so a flag-off build behaves exactly as
 before. Each phase's "Debt watch" lists the debt most likely to appear and how it is cleared inside that phase.
@@ -402,6 +403,29 @@ before. Each phase's "Debt watch" lists the debt most likely to appear and how i
 - R8: `assembleRelease` + `check_r8_guide.py`; the bundle ships byte-identical.
 - Exit: gate green; with the flag off the paywall catalog is unchanged (test).
 - Debt watch: `GuideModels.kt` (285) must not grow; the new models go in their own file.
+- Done 2026-10-23 (Phase 1 summary in the session). Where the build differs from the bullets above:
+  - Case `sub` lines (chapter and pages) are not shipped. Nothing reads them before Phase 4a, which can derive them from the code pages.
+  - The nav limits (title words, ribbon and case sizes) live in `nav.json` and ship in the section, as the Guide's `nav.json` does,
+    so the Kotlin validator holds no second copy. The text limit (300) comes from `part2_codes_check.NAME_MAX`.
+  - `refresh.py` has no new step: `compile.py` runs `part2_nav.check()`, so `refresh.py --check` fails on a broken layout (shown with a
+    deliberate break). `bundle.py` refuses to build from one.
+  - The Kotlin models are in `guide/model/Part2LookupModels.kt`, so the existing R8 gate already covered them. The Part II folder
+    `shared/.../part2/` does not exist yet; `check_r8_guide.py` now walks it with each file's own package, and says so when it is
+    absent. See Phase 11.
+  - `GuideBundle` needed one wiring field (`part2`), which added 2 lines to `GuideModels.kt`. To keep the file from growing, the two
+    change-log models moved to `GuideChangeModels.kt` (same package, no caller change): 285 → 273 lines.
+  - Two helpers that would have been third copies, `isGuideId` and `duplicateIdProblems`, now live in `GuideValidationHelpers.kt`;
+    `GuideBundleValidator` and `GuidePreClaimValidator` call them instead of their private copies (behaviour unchanged, their tests green).
+  - `built` is true only on `leave` and `records`, as the plan says, although no Leave draft exists yet. Tiles are a Phase 4a matter.
+- Owner decisions on the Phase 1 doubts (2026-10-23), all as recommended, so no code changed:
+  - `built` means "tiles show"; each ribbon is flipped as its drafts ship.
+  - The validator keeps reading its limits from the shipped section; the real-bundle contract test pins the agreed values.
+  - The R8 gap for `part2/` stays in Phase 11 with no placeholder model.
+  - Catalog copy stays as is until the Phase 10 paywall-copy review.
+  - The no-group serials (3.28, 11.8) stay mirrored in Python, Kotlin and the contract test, pinned by tests.
+  - The `GuideChangeModels.kt` move and the shared validation helpers are accepted.
+  - The case `sub` line is derived in Phase 4a from the code pages, not authored.
+  - `ack` versus `warn` for the manual's "will be rejected" rules is decided at Phase 2b.
 
 ### Phase 2a: Template format, validators, engine core, `CivilCalendar` move
 - Goal: the engine turns a `LeaveEventInput` into a `Part2Slip` using *synthetic* templates. Content comes in 2b.
@@ -647,6 +671,21 @@ Nudge: connect the Pixel 9.
 - Docs: plan status; a Part II section in `18_content_update_runbook.md`; one bullet in CLAUDE.md "Feature areas"
   (stays ≤ 200 lines); the paywall catalog copy reviewed by the owner.
 - `PART2_ENABLED = true` only on the owner's word, in its own commit. Push/PR only when asked.
+
+### Phase 11: Pending items (collected from earlier phases)
+Each item says what is open, why it was deferred, and how it is closed. Every phase adds its leftovers here instead of leaving
+them in its summary. An item closes with a test or a command output, not a statement.
+
+1. **Phase 1: the R8 gate has no real Part II model folder to check yet.**
+   - What: `check_r8_guide.py` registers `shared/.../part2/` and walks it with each file's own package (unit-tested on a temporary
+     tree), but the folder does not exist, so on the real tree the Part II branch checks nothing. The Part II lookup models are
+     covered through `guide/model`. The `PayslipDatabase_Impl`/`Part2Dao_Impl` and reminder-worker checks named under "Cross-cutting
+     checks" are not written either.
+   - Why deferred: Phase 1 adds no domain, payload or Room code, and a check for a class that does not exist would be a stub that
+     can only pass.
+   - How closed: Phase 2a (first `@Serializable` class in `part2/`) makes the script print "N models" for that folder; add a real-tree
+     test that fails if `part2/` holds `@Serializable` classes the gate does not list. Phase 3 adds the Room `_Impl` check with the
+     DAO, and Phase 7b the worker check. Output of `check_r8_guide.py` on the release build is the evidence.
 
 ## Risks and controls
 

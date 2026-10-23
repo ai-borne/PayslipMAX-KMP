@@ -13,6 +13,8 @@ import unittest
 
 import bundle
 import figures
+import part2_codes_check
+import part2_nav
 from config import BUNDLE_PATH, BUNDLE_VERSION, CARDS_DIR, RATES_AS_OF
 
 RULEBOOK = json.load(open(os.path.join(CARDS_DIR, 'rulebook.json'), encoding='utf-8'))
@@ -191,6 +193,43 @@ class BundleFigures(unittest.TestCase):
         text = bundle.render(BUILT)
         for private in ('evidence', 'HANDBOOK_ONLY', 'LETTER_TEXT', 'decided_by'):
             self.assertNotIn(private, text)
+
+
+class BundlePart2(unittest.TestCase):
+    """The Part II lookup (303 code pages and the 10-ribbon layout) is an additive section: BUNDLE_VERSION stays 1."""
+
+    def test_the_section_ships_the_codes_and_the_layout(self):
+        section = BUILT['part2']
+        self.assertEqual((len(section['serials']), len(section['ribbons'])), (303, 10))
+        self.assertEqual(section, part2_nav.for_bundle(part2_nav.load(), part2_codes_check.load()))
+
+    def test_only_whitelisted_part2_keys_ship_and_the_authoring_source_stays_in_the_repo(self):
+        codes = part2_codes_check.load()
+        codes['serials'][0]['reviewer_note'] = 'internal'
+        built = bundle.build(RULEBOOK, part2_codes=codes)['part2']
+        self.assertNotIn('reviewer_note', built['serials'][0])
+        self.assertNotIn('source', built)
+        self.assertNotIn('Documentation Procedure', json.dumps(BUILT['part2']))
+
+    def test_a_broken_layout_stops_the_build_instead_of_shipping(self):
+        nav = part2_nav.load()
+        nav['ribbons'][0]['cases'][0]['serials'].pop()
+        with self.assertRaises(SystemExit):
+            bundle.build(RULEBOOK, part2_layout=nav)
+
+    def test_a_layout_edit_makes_the_committed_bundle_stale(self):
+        # why: the stale-bundle guard must cover Part II too, or a layout edit ships the old tiles.
+        nav = part2_nav.load()
+        nav['ribbons'][0]['title'] = 'Leave and more'
+        self.assertNotEqual(bundle.render(bundle.build(RULEBOOK, part2_layout=nav)), bundle.render(BUILT))
+
+    def test_the_section_version_is_its_own_and_the_bundle_version_is_unchanged(self):
+        self.assertEqual((BUILT['version'], BUILT['part2']['version']), (1, 1))
+
+    def test_the_committed_bundle_carries_the_section(self):
+        with open(BUNDLE_PATH, encoding='utf-8') as fh:
+            shipped = json.load(fh)
+        self.assertEqual(shipped['part2'], BUILT['part2'])
 
 
 class BundleFile(unittest.TestCase):

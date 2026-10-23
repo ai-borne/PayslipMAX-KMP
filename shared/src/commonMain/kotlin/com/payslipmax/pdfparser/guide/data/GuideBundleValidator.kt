@@ -22,15 +22,16 @@ object GuideBundleValidator {
     fun validate(bundle: GuideBundle): List<String> {
         val problems = mutableListOf<String>()
         if (!isYearMonth(bundle.ratesAsOf)) problems += "rates_as_of '${bundle.ratesAsOf}' is not YYYY-MM"
-        problems += duplicates("area", bundle.nav.map { it.id })
-        problems += duplicates("case", bundle.nav.flatMap { area -> area.cases.map { it.id } })
-        problems += duplicates("card", bundle.cards.map { it.id })
+        problems += duplicateIdProblems("area", bundle.nav.map { it.id })
+        problems += duplicateIdProblems("case", bundle.nav.flatMap { area -> area.cases.map { it.id } })
+        problems += duplicateIdProblems("card", bundle.cards.map { it.id })
         checkHomes(bundle, problems)
         bundle.cards.forEach { checkCard(it, bundle, problems) }
         checkReplacementLoops(bundle, problems)
         checkChangeLog(bundle, problems)
         problems += GuideFigureValidator.validate(bundle)
         problems += GuidePreClaimValidator.validate(bundle)
+        problems += GuidePart2LookupValidator.validate(bundle)
         return problems
     }
 
@@ -107,11 +108,6 @@ object GuideBundleValidator {
     }
 
     private fun GuideCard.allText(): List<String> = listOf(title, answer, cite, details) + key + attach + watch
-
-    private fun duplicates(
-        kind: String,
-        ids: List<String>,
-    ): List<String> = ids.groupingBy { it }.eachCount().filterValues { it > 1 }.keys.map { "duplicate $kind id $it" }
 
     /** `YYYY-MM-DD` with a month of 1-12 and a day of 1-31 (`compile.py` checks the calendar); a plain scan, no regex. */
     private fun isDate(value: String): Boolean {

@@ -25,6 +25,12 @@ enum class FeatureGate {
      * answers and title/rule-number search stay free. Whether it is enforced yet is [LaunchFlags.GUIDE_PAYWALL_ENABLED].
      */
     CLAIM_GUIDE,
+
+    /**
+     * Gates Part II order drafting, printing, the order vault and reminders. Code lookup stays free, and after Premium lapses existing
+     * drafts and vault orders can still be viewed, deleted and backed up. Whether it exists yet is [LaunchFlags.PART2_ENABLED].
+     */
+    PART2_ORDERS,
 }
 
 /**

@@ -89,6 +89,18 @@ class GuideLoaderIosPerfTest {
         }
 
     @Test
+    fun thePart2LookupIsValidatedAndHeldOnNativeToo() =
+        runTest {
+            // Part II phase 1: 303 code pages and 48 cases are validated on every load, with plain scans and no regex; the parse test
+            // above already times that validation, so this proves Native reads the same section the JVM does.
+            val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())
+            Part2LookupContract.assertPart2LookupReachesTheApp(bundle)
+            Part2LookupContract.assertCodePagesCarryTheManualsOwnWords(bundle)
+            Part2LookupContract.assertRibbonsHomeEverySerialOnce(bundle)
+            Part2LookupContract.assertOnlyLeaveAndRecordsAreBuiltAndFiftyThreeSerialsAreLookupOnly(bundle)
+        }
+
+    @Test
     fun payAuditLinksPointAtRealCardsOnNativeToo() =
         runTest {
             // E7: a plain id lookup (no regex), checked on Native so the iOS link can never lead to a missing card.

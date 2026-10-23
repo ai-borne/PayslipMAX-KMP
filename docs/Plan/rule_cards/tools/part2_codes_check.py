@@ -20,6 +20,8 @@ NO_GROUP = frozenset({'3.28', '11.8'})
 SERIAL = re.compile(r'^(\d{1,2})\.(\d{1,3})$')
 CODE = re.compile(r'^[A-Z0-9]{2,12}$')
 NAME_MAX = 300
+# The keys of a serial row the app reads. Anything else in the authoring file stays in the repo.
+SERIAL_KEYS = ('serial', 'chapter', 'codes', 'group', 'name', 'page')
 
 
 def load():
@@ -41,6 +43,13 @@ def problems(data):
         errs += _row(row, seen_serials, seen_codes)
     errs += _counts(rows)
     return errs
+
+
+def for_bundle(data):
+    """The slice the app ships: group meanings and whitelisted serial keys, authored order kept. A group the manual does not print is
+    left out of the row rather than shipped as null. Call problems() first."""
+    return {'groups': dict(data['groups']),
+            'serials': [{k: row[k] for k in SERIAL_KEYS if row.get(k) is not None} for row in data['serials']]}
 
 
 def _text(where, field, value):

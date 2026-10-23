@@ -23,22 +23,10 @@ data class GuideBundle(
     val figures: GuideFigures? = null,
     /** The TA/DA pre-claim worksheet content (plan 22, P3); null in a bundle that carries none. */
     val preclaim: GuidePreClaim? = null,
+    /** The Part II code pages and ribbon layout (docs/Plan/12_Part2Orders_PhasePlan.md); null in a bundle that carries none. */
+    val part2: Part2Lookup? = null,
     /** Hand-written change-log entries (the newest 12, newest first); empty in a bundle that carries none. */
     val changes: List<GuideChange> = emptyList(),
-)
-
-/** One dated entry of the change log (`authoring/changes.txt`): what changed in the Guide on [date] (YYYY-MM-DD). */
-@Serializable
-data class GuideChange(
-    val date: String,
-    val items: List<GuideChangeItem>,
-)
-
-/** One line of a change-log entry, with the cards it concerns (may be empty). Content, not UI copy. */
-@Serializable
-data class GuideChangeItem(
-    val text: String,
-    val cards: List<String> = emptyList(),
 )
 
 /** Word and bullet limits the compiler enforced; the validator rechecks them on every load. */

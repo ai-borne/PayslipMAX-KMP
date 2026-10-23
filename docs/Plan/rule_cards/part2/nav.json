@@ -1,0 +1,74 @@
+{
+ "version": 1,
+ "limits": {"title_words": 7, "ribbons_min": 8, "ribbons_max": 10, "cases_per_ribbon": 8, "case_serials_min": 2, "case_serials_max": 16},
+ "ribbons": [
+  {"id": "leave", "title": "Leave", "built": true, "cases": [
+   {"id": "leave_annual", "title": "Annual and casual leave", "serials": ["5.1", "5.2", "5.3", "5.4", "5.5"], "also": ["6.6", "6.12", "13.5"], "lookup": []},
+   {"id": "leave_back", "title": "Back from leave, early or recalled", "serials": ["5.23", "5.24", "5.25"], "also": ["3.13", "3.14", "3.15", "3.19", "3.20", "3.21", "3.23", "3.24", "3.25", "3.53"], "lookup": []},
+   {"id": "leave_furlough", "title": "Furlough, study, EOL and terminal leave", "serials": ["5.6", "5.18", "5.15", "5.16", "5.17", "5.10", "5.11"], "also": ["3.62", "13.5", "2.2"], "lookup": []},
+   {"id": "leave_family", "title": "Maternity, paternity and child care", "serials": ["5.7", "5.8", "5.9", "5.12", "5.13", "5.14"], "also": ["11.9", "11.14"], "lookup": []},
+   {"id": "leave_late", "title": "Late back or absent without leave", "serials": ["5.19", "5.20", "5.21", "5.22"], "also": [], "lookup": []},
+   {"id": "leave_yearend", "title": "Year-end leave and encashment", "serials": ["5.26", "5.27", "5.28", "5.29", "5.30"], "also": ["2.2"], "lookup": []}
+  ]},
+  {"id": "moves", "title": "Postings and moves", "built": false, "cases": [
+   {"id": "moves_posting", "title": "Posted out, posted in", "serials": ["13.2", "13.1", "13.5", "13.6"], "also": ["3.86", "3.87", "3.12", "3.16", "3.22", "3.26", "3.54", "3.58", "4.1", "4.2", "13.3"], "lookup": []},
+   {"id": "moves_hra", "title": "HRA, SPR, furniture and transit stay", "serials": ["3.55", "3.56", "3.57", "3.58", "13.3", "13.4", "8.1", "8.10"], "also": [], "lookup": []},
+   {"id": "moves_transport", "title": "Transport and ration allowances", "serials": ["3.53", "3.54", "3.82", "3.83", "3.84", "3.85", "3.86", "3.87"], "also": [], "lookup": []},
+   {"id": "moves_duty", "title": "Temporary duty and attachments", "serials": ["13.7", "13.8", "13.9"], "also": ["3.82"], "lookup": []}
+  ]},
+  {"id": "field", "title": "Field, high-altitude and hard areas", "built": false, "cases": [
+   {"id": "field_rh", "title": "Risk and hardship allowance", "serials": ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"], "also": ["13.2", "13.1"], "lookup": []},
+   {"id": "field_haa", "title": "High altitude and Siachen", "serials": ["3.13", "3.14", "3.15", "3.16", "3.17", "3.18"], "also": ["5.23"], "lookup": []},
+   {"id": "field_area", "title": "Field area allowances", "serials": ["3.23", "3.24", "3.25", "3.26"], "also": ["13.2", "13.3", "5.23"], "lookup": []},
+   {"id": "field_sccia", "title": "Counter-insurgency allowance (SCCIA)", "serials": ["3.19", "3.20", "3.21", "3.22"], "also": ["5.23"], "lookup": []},
+   {"id": "field_tough", "title": "Tough location and island postings", "serials": ["3.27", "3.28", "3.80", "3.81"], "also": [], "lookup": []},
+   {"id": "field_hard", "title": "Difficult and hard areas", "serials": ["3.47", "3.48", "3.90", "3.91"], "also": ["3.97", "3.98"], "lookup": []}
+  ]},
+  {"id": "career", "title": "Promotion, courses and awards", "built": false, "cases": [
+   {"id": "career_promotion", "title": "Promotion, appointments and antedates", "serials": ["4.1", "4.2", "4.3", "4.4", "4.5", "13.20", "13.21", "13.22"], "also": ["1.11"], "lookup": []},
+   {"id": "career_course", "title": "Going on a course", "serials": ["12.1", "12.2", "12.4", "12.5", "12.6"], "also": ["3.62", "3.33", "3.34"], "lookup": []},
+   {"id": "career_quals", "title": "Qualifications and achievements", "serials": ["12.3", "13.31", "13.26", "13.27", "3.79"], "also": ["3.71", "3.65", "3.63"], "lookup": []},
+   {"id": "career_gallantry", "title": "Gallantry awards and medals", "serials": ["7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "7.9", "7.10", "7.11", "7.12", "7.13"], "also": [], "lookup": []}
+  ]},
+  {"id": "exit", "title": "Leaving the Army", "built": false, "cases": [
+   {"id": "exit_retire", "title": "Retiring, resigning or released", "serials": ["2.1", "2.2", "2.3", "2.4", "2.5", "2.9"], "also": ["5.11", "5.30", "13.34"], "lookup": []},
+   {"id": "exit_last", "title": "Last orders before you leave", "serials": ["13.19", "13.34"], "also": ["5.30"], "lookup": []},
+   {"id": "exit_stay", "title": "Staying on: extension, PC, re-employment", "serials": ["1.7", "1.11", "1.12", "1.13"], "also": [], "lookup": []},
+   {"id": "exit_missing", "title": "Death, missing or captured", "serials": ["2.6", "2.7", "2.8", "2.10", "1.15", "1.16", "13.15", "13.16"], "also": [], "lookup": ["2.6", "2.7", "2.8", "2.10", "1.15", "1.16", "13.15", "13.16"]}
+  ]},
+  {"id": "family", "title": "Family and children", "built": false, "cases": [
+   {"id": "family_marriage", "title": "Marriage, separation and divorce", "serials": ["11.1", "11.2", "11.5", "11.6", "11.7", "11.8", "11.18"], "also": ["11.4"], "lookup": []},
+   {"id": "family_nok", "title": "Next of kin and nominations", "serials": ["11.3", "11.4", "13.28", "13.29", "13.30"], "also": [], "lookup": []},
+   {"id": "family_children", "title": "Children", "serials": ["11.9", "11.14", "11.15", "11.16", "3.96"], "also": ["5.7", "5.9", "5.12", "5.13", "5.14"], "lookup": []},
+   {"id": "family_education", "title": "Children's education claims", "serials": ["8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9"], "also": [], "lookup": []},
+   {"id": "family_death", "title": "Death in the family", "serials": ["11.10", "11.11", "11.12", "11.13"], "also": ["11.4"], "lookup": []},
+   {"id": "family_details", "title": "Family details and home address", "serials": ["11.17", "11.19", "11.20", "11.21"], "also": [], "lookup": []}
+  ]},
+  {"id": "health", "title": "Hospital and health", "built": false, "cases": [
+   {"id": "health_admitted", "title": "Admitted to hospital", "serials": ["6.1", "6.2", "6.3"], "also": [], "lookup": []},
+   {"id": "health_discharge", "title": "Discharge, sick leave and back to duty", "serials": ["6.4", "6.5", "6.6", "6.7", "6.8", "6.9"], "also": [], "lookup": []},
+   {"id": "health_regularise", "title": "Regularising time in hospital", "serials": ["6.10", "6.11", "6.12", "6.13", "6.14"], "also": ["5.1"], "lookup": []},
+   {"id": "health_category", "title": "Medical category, injury and battle casualty", "serials": ["6.15", "13.11", "13.12", "13.17"], "also": [], "lookup": []}
+  ]},
+  {"id": "role", "title": "Allowances for your role", "built": false, "cases": [
+   {"id": "role_flying", "title": "Flying, para and special forces", "serials": ["3.29", "3.30", "3.31", "3.32", "3.33", "3.34", "3.35", "3.36", "3.37", "3.38", "3.39", "3.40", "3.41", "3.42"], "also": [], "lookup": []},
+   {"id": "role_specialist", "title": "Specialist and instructor allowances", "serials": ["3.59", "3.60", "3.61", "3.62", "3.73", "3.74", "3.75", "3.76", "3.77", "3.78"], "also": [], "lookup": []},
+   {"id": "role_pay", "title": "Qualification, PG, technical and language pay", "serials": ["3.63", "3.64", "3.65", "3.66", "3.67", "3.68", "3.69", "3.70", "3.71", "3.72"], "also": ["12.3", "13.31"], "lookup": []}
+  ]},
+  {"id": "depu", "title": "Deputation and special postings", "built": false, "cases": [
+   {"id": "depu_secondment", "title": "Deputation and secondment", "serials": ["2.11", "2.12", "2.13", "2.14"], "also": ["3.54"], "lookup": []},
+   {"id": "depu_foreign", "title": "UN, embassy and Bhutan postings", "serials": ["2.15", "2.16", "3.51", "3.52"], "also": [], "lookup": []},
+   {"id": "depu_allowance", "title": "Deputation allowance and coming back", "serials": ["3.43", "3.44", "3.45", "3.46", "1.14", "1.17"], "also": [], "lookup": []},
+   {"id": "depu_units", "title": "NSG, SFF, SPIC and other special units", "serials": ["3.49", "3.50", "3.88", "3.89", "3.92", "3.93", "3.94", "3.95", "3.97", "3.98", "3.99", "3.100", "3.101", "3.102"], "also": [], "lookup": []}
+  ]},
+  {"id": "records", "title": "Records and unit-only orders", "built": true, "cases": [
+   {"id": "records_id", "title": "ID, contact and service record", "serials": ["13.23", "13.24", "13.25", "13.10", "13.13", "13.18"], "also": [], "lookup": ["13.13"]},
+   {"id": "records_laptop", "title": "Laptop and IT devices", "serials": ["13.32", "13.33"], "also": ["13.34"], "lookup": ["13.32", "13.33"]},
+   {"id": "records_cancel", "title": "Cancelling a published order", "serials": ["14.1", "14.2"], "also": [], "lookup": []},
+   {"id": "records_commission", "title": "Commissioning and cadet stipend", "serials": ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.8", "1.9", "1.10", "1.18", "1.19", "13.14"], "also": [], "lookup": ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.8", "1.9", "1.10", "1.18", "1.19", "13.14"]},
+   {"id": "records_discipline_susp", "title": "Discipline: suspension and pay withheld", "serials": ["9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"], "also": [], "lookup": ["9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8"]},
+   {"id": "records_discipline_trial", "title": "Discipline: trial, punishment and exit", "serials": ["9.9", "9.10", "9.11", "9.12", "9.13", "9.14", "9.15", "9.16", "9.17", "9.18", "9.19", "9.20"], "also": [], "lookup": ["9.9", "9.10", "9.11", "9.12", "9.13", "9.14", "9.15", "9.16", "9.17", "9.18", "9.19", "9.20"]},
+   {"id": "records_ta", "title": "Territorial Army", "serials": ["10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "10.7", "10.8", "10.9", "10.10"], "also": [], "lookup": ["10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "10.7", "10.8", "10.9", "10.10"]}
+  ]}
+ ]
+}

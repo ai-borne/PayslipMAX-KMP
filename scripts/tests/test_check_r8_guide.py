@@ -22,14 +22,14 @@ enum class GuideChip { RATES }
 """
 
 
-def _mapping(*classes, drop=()):
+def _mapping(*classes, drop=(), pkg=PKG):
     """A minimal R8 mapping where each model keeps its serializer and Companion.serializer()."""
     lines = ["# compiler: R8", "com.example.Other -> a.a:"]
     for name in classes:
         for cls, members in (
-            (f"{PKG}.{name}", ["    int version -> a"]),
-            (f"{PKG}.{name}$$serializer", ["    1:1:void <init>():0:0 -> <init>"]),
-            (f"{PKG}.{name}$Companion", ["    1:1:kotlinx.serialization.KSerializer serializer():12:12 -> serializer"]),
+            (f"{pkg}.{name}", ["    int version -> a"]),
+            (f"{pkg}.{name}$$serializer", ["    1:1:void <init>():0:0 -> <init>"]),
+            (f"{pkg}.{name}$Companion", ["    1:1:kotlinx.serialization.KSerializer serializer():12:12 -> serializer"]),
         ):
             if cls in drop:
                 continue
@@ -55,6 +55,57 @@ class ModelFolderTest(unittest.TestCase):
     def test_the_real_folder_holds_the_pre_claim_models(self):
         self.assertIn("GuidePreClaim", gate.models_in(gate.MODELS_DIR))
         self.assertGreaterEqual(len(gate.models_in(gate.MODELS_DIR)), 20)
+
+
+PART2_PKG = "com.payslipmax.pdfparser.part2.domain"
+
+
+class ModelFoldersTest(unittest.TestCase):
+    """Part II models live outside guide/model (slips, payloads), so the gate must walk every registered folder, with each file's own package."""
+
+    def _tree(self, tmp):
+        for rel, source in (
+            ("guide/model/GuideModels.kt", MODELS_SRC),
+            ("part2/Part2Payload.kt", "@Serializable\ndata class Part2Payload(val v: Int)\n"),
+            ("part2/domain/Part2Slip.kt", "@Serializable\ndata class Part2Slip(val orders: List<String>)\n"),
+            ("other/Ignored.kt", "@Serializable\ndata class NotRegistered(val id: String)\n"),
+        ):
+            path = os.path.join(tmp, *rel.split("/"))
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(source)
+
+    def test_every_registered_folder_is_walked_with_its_own_package(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tree(tmp)
+            found = gate.qualified_models(tmp, ("guide/model", "part2"))
+        self.assertEqual(found, [f"{gate.ROOT_PACKAGE}.guide.model.GuideBundle", f"{gate.ROOT_PACKAGE}.guide.model.GuideCard",
+                                 f"{gate.ROOT_PACKAGE}.part2.Part2Payload", f"{gate.ROOT_PACKAGE}.part2.domain.Part2Slip"])
+
+    def test_a_folder_that_does_not_exist_yet_is_reported_rather_than_skipped_in_silence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._tree(tmp)
+            self.assertEqual(gate.absent_folders(tmp, ("guide/model", "part2", "part2/data")), ["part2/data"])
+
+    def test_the_part_ii_folder_is_registered_next_to_the_guide_models(self):
+        self.assertEqual(gate.MODEL_FOLDERS, ("guide/model", "part2"))
+
+    def test_the_real_tree_yields_the_guide_models_including_the_part_ii_lookup(self):
+        found = gate.qualified_models(gate.KOTLIN_ROOT, gate.MODEL_FOLDERS)
+        self.assertIn(f"{gate.ROOT_PACKAGE}.guide.model.Part2Lookup", found)
+        self.assertIn(f"{gate.ROOT_PACKAGE}.guide.model.GuideBundle", found)
+        self.assertEqual(len(found), len(set(found)), "a model listed twice would hide a missing one")
+
+    def test_a_part_ii_model_that_r8_removed_fails_the_mapping_check(self):
+        models = [f"{PART2_PKG}.Part2Slip"]
+        self.assertEqual(gate.check_mapping(_mapping("Part2Slip", pkg=PART2_PKG), models), [])
+        problems = gate.check_mapping(_mapping("Other", pkg=PART2_PKG), models)
+        self.assertTrue(any("Part2Slip" in p and "removed" in p for p in problems), problems)
+
+    def test_a_part_ii_model_without_its_serializer_fails_the_mapping_check(self):
+        models = [f"{PART2_PKG}.Part2Slip"]
+        mapping = _mapping("Part2Slip", pkg=PART2_PKG, drop=(f"{PART2_PKG}.Part2Slip$$serializer",))
+        self.assertTrue(any("$$serializer" in p for p in gate.check_mapping(mapping, models)))
 
 
 class DefaultsTest(unittest.TestCase):

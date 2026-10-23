@@ -39,5 +39,9 @@ class GuideBundleAndroidContractTest {
             GuidePreClaimContract.assertPreClaimWorksheetReachesTheApp(bundle)
             GuidePreClaimContract.assertRulePickerLinksToRealCards(bundle)
             PreClaimFlowContract.assertTheWorksheetFlowRunsOnTheShippedBundle(bundle)
+            Part2LookupContract.assertPart2LookupReachesTheApp(bundle)
+            Part2LookupContract.assertCodePagesCarryTheManualsOwnWords(bundle)
+            Part2LookupContract.assertRibbonsHomeEverySerialOnce(bundle)
+            Part2LookupContract.assertOnlyLeaveAndRecordsAreBuiltAndFiftyThreeSerialsAreLookupOnly(bundle)
         }
 }
