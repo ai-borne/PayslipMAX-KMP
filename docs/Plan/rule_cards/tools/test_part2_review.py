@@ -61,9 +61,9 @@ class Content(unittest.TestCase):
         self.assertIn('optional, prints "Nil" when left out', text)
         self.assertIn('only for the `cap_days` check, not printed', text)
 
-    def test_the_open_points_the_owner_must_decide_are_listed_first(self):
+    def test_the_judgment_calls_the_owner_settled_are_listed_first(self):
         text = pack()
-        self.assertLess(text.index('## Points to decide'), text.index('## ALPHAGRANT '))
+        self.assertLess(text.index('## Judgment calls to check'), text.index('## ALPHAGRANT '))
         for point in part2_review.OPEN_POINTS:
             self.assertIn(point, text)
 

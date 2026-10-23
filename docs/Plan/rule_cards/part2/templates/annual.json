@@ -125,7 +125,7 @@
   {"code": "RECALL", "page": 132,
    "narrative": "Recalled from {leave_type} from {recalled_on}. Balance of {leave_type} for {cancel_days} days from {cancel_from} to {cancel_to} is hereby cancelled. Annual Leave initially granted vide Pt II Order No {grant.no} dated {grant.date}",
    "slots": [{"id": "leave_type", "kind": "text", "label": "Kind of leave", "help": "The kind of leave this is about, for example annual leave."},
-     {"id": "recalled_on", "kind": "date", "label": "Date of the recall", "help": "The date the recall is dated from. The manual reads it two ways (the signal date, or the day the leave station was left), so check it with the unit."},
+     {"id": "recalled_on", "kind": "date", "label": "Day the leave station was left", "help": "The day the officer actually left the leave station on recall (note 3, p.132); the recall is dated from it."},
      {"id": "cancel_from", "kind": "date", "label": "First day of leave cancelled", "help": "The first day of the balance of leave that is cancelled."},
      {"id": "cancel_to", "kind": "date", "label": "Last day of leave cancelled", "help": "The last day of the balance of leave that is cancelled."},
      {"id": "cancel_days", "kind": "days", "label": "Days cancelled", "help": "Counted for you from the first and last cancelled day, both days included.", "between": ["cancel_from", "cancel_to"]},

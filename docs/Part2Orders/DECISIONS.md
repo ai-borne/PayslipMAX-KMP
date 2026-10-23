@@ -135,6 +135,19 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 | `ack` | An `ack` finding must be ticked before printing; `warn` is only shown. `ack`: annual leave over 60 days a year (note 2, p.115) and casual leave beside another leave (p.117). `warn`: prefix and suffix over 5 days (note 9, p.115) and a grant order not yet quoted on EXTNAL, REJOIN, VOLREJ and RECALL (note 7, p.115; note 2, pp.131-132). |
 | R&H scope | Annual leave only: the stop (from the first day away) and the re-grant under the officer's own GTDRH code (from rejoining) link from GTDAL and GTDALCF, labelled "seen in practice". Casual and special casual leave draft the ration four only. |
 
+## Round 12: Judgment calls in content batch 1 (owner, 2026-10-23, from the review pack)
+
+| Topic | Decision |
+|---|---|
+| 5.5 GTDSPCL narrative | The manual prints its "w.e.f." block twice; the slip prints it once. |
+| Order number "----/----" (5.23, 5.24, 5.25) | Read as the order number and its date; printed "no. dated date" in the narrative and the Data column. |
+| 5.25 RECALL From date | The day the officer actually left the leave station (note 3), not the date of the recall signal. |
+| Ration Money Allowance certificate | Items 1 to 5 print; items 6 and 7 are conditional and left to the clerk. |
+| R&H Data 3 | "Corps, notification no., date", comma-separated, in the column's order. |
+| EXTNAL, VOLREJ, RECALL and the ration and R&H rows | Nothing drafted now (no new rows, no new warning); how to reissue them is decided in phase 8 with evidence, alongside CANCEL (6c). |
+| VOLREJ and RECALL leave kind | The kind the officer picks prints, in place of the manual's "Annual/Furlough Leave". |
+| Link limit | Raised in phase 9 with its reason recorded; no link-group feature. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

@@ -4,7 +4,7 @@
 The owner checks every narrative, column and citation against the printed ODP-2026 page before a batch counts as done. This lays each
 shipped template out next to the page it cites: the serial, group and page, the narrative and certificate as they print, each column
 (From, To, Data 1-4) with what it prints, every slot with its label and help, the checks with their severity and citation, and the
-linked orders with their basis. The points that are judgment calls come first. The pack holds only what ships, so it carries nothing
+linked orders with their basis. The judgment calls (each settled by the owner) come first. The pack holds only what ships, so it carries nothing
 the bundle does not, and part2/part2_review.md is committed so a stale pack fails a test (test_part2_review.py).
 Usage: part2_review.py [--check]    (--check exits non-zero if the committed pack is out of date)
 """
@@ -21,17 +21,18 @@ REVIEW_PATH = os.path.join(CARDS_DIR, 'part2', 'part2_review.md')
 COLUMNS = ('From', 'To', 'Data 1', 'Data 2', 'Data 3', 'Data 4')
 NEED_WORDS = {'required': 'required', 'optional': 'optional', 'none': 'not required'}
 
-# Judgment calls the template author made where the manual is silent, ambiguous or says two things. The owner settles each in review.
+# Judgment calls the template author made where the manual is silent, ambiguous or says two things. The owner settled each on 2026-10-23
+# (DECISIONS Round 11 and 12); they stay here so the review checks that each reads right on the printed page.
 OPEN_POINTS = [
-    'Prefix and suffix (owner decision, 2026-10-23): From and To exclude them; Data 1 holds the first prefix day, Data 2 the last suffix day, both left empty when there is none, and the narrative prints "Nil". The manual says "Required as prefix" for Data 1; a leave with no prefix is common, so the column is optional.',
-    '5.5 GTDSPCL: the manual prints its "w.e.f." block twice in the narrative. The template prints it once.',
-    'Order number "----/----" (5.23, 5.24, 5.25 and the note on 5.3 col 9): read as the order number and its date, printed "no. dated date". The narrative and the Data column both print it this way.',
-    '5.25 RECALL From date: note 1 says the date of the recall letter or signal, note 3 says the day the officer left the leave station. The slot asks for "the date of the recall" and tells the officer to check with the unit.',
-    '5.24 VOLREJ and 5.25 RECALL: the manual writes "Annual/Furlough Leave" in the narrative. The template asks the officer for the kind of leave and prints it, as HRMS does ("Rejoined from CL/AL").',
-    'Ration Money Allowance certificate (note 8, p.99) on GTDRSHNA: items 1 to 5 are printed. Item 6 (posted to a non-military station) and item 7 (prior approval of the Station Commander) are conditional and are left out; the clerk adds them where they apply. Item 1 takes the kind of leave as typed.',
-    'Ration four dates: SORS and GTDRSHNA from the first day away (the earlier of the first prefix day and the first day of leave); TORS and STPRSHNA from the day after the last day away (the later of the last day of leave and the last suffix day). An extension (EXTNAL), voluntary rejoining or recall does not move them; the clerk reissues them.',
-    'R&H (practice only, owner decision 2026-10-23): the stop and the re-grant link from annual leave and annual leave carried forward only, never from casual leave. The re-grant is under the officer\'s own GTDRH code and prints the station, rate, Corps notification and serial from p.46-48. Data 3 prints "Corps, notification no., date" in that order; the manual does not give the exact HRMS format.',
-    'Checks (owner decision 2026-10-23): acknowledged before printing (ack): annual leave over 60 days a year (note 2) and casual leave beside another leave (p.117). Shown only (warn): prefix and suffix over 5 days (note 9) and a grant order not yet quoted (notes 7 and 2).',
+    'Prefix and suffix (settled): From and To exclude them; Data 1 holds the first prefix day, Data 2 the last suffix day, both left empty when there is none, and the narrative prints "Nil". The manual says "Required as prefix" for Data 1; a leave with no prefix is common, so the column is optional.',
+    '5.5 GTDSPCL (settled): the manual prints its "w.e.f." block twice in the narrative. The template prints it once.',
+    'Order number "----/----" (settled; 5.23, 5.24, 5.25 and the note on 5.3 col 9): read as the order number and its date, printed "no. dated date" in the narrative and the Data column.',
+    '5.25 RECALL From date (settled): the day the officer actually left the leave station (note 3 and col 4 of the row), not the date of the recall signal (note 1).',
+    '5.24 VOLREJ and 5.25 RECALL (settled): the manual writes "Annual/Furlough Leave" in the narrative. The template asks the officer for the kind of leave and prints it, as HRMS does ("Rejoined from CL/AL").',
+    'Ration Money Allowance certificate (settled; note 8, p.99) on GTDRSHNA: items 1 to 5 are printed. Item 6 (posted to a non-military station) and item 7 (prior approval of the Station Commander) are conditional and are left out; the clerk adds them where they apply. Item 1 takes the kind of leave as typed.',
+    'Ration four dates: SORS and GTDRSHNA from the first day away (the earlier of the first prefix day and the first day of leave); TORS and STPRSHNA from the day after the last day away (the later of the last day of leave and the last suffix day). An extension (EXTNAL), voluntary rejoining or recall does not move them yet; how to reissue them is settled in phase 8.',
+    'R&H (practice only, settled): the stop and the re-grant link from annual leave and annual leave carried forward only, never from casual leave. The re-grant is under the officer\'s own GTDRH code and prints the station, rate, Corps notification and serial from p.46-48. Data 3 prints "Corps, notification no., date" in that order (settled; the manual does not give the HRMS format).',
+    'Checks (settled): acknowledged before printing (ack): annual leave over 60 days a year (note 2) and casual leave beside another leave (p.117). Shown only (warn): prefix and suffix over 5 days (note 9) and a grant order not yet quoted (notes 7 and 2).',
     'Casual leave beside another leave is checked against the annual set only (GTDAL, GTDALCF, EXTNAL); the rest of Chapter 5 joins the check in phase 8.',
 ]
 
@@ -111,7 +112,7 @@ def render(templates, rules, codes):
            'Generated by `tools/part2_review.py` from `part2/templates/*.json` and `part2/rules.json`; do not edit. Open the PDF at each',
            f'printed page named in a section ({", ".join(str(p) for p in cited_pages(templates, rules))}) and check the narrative, every',
            'column and every citation against it. A correction goes in the template JSON, and its golden test changes in the same commit.',
-           '', '## Points to decide', ''] + [f'- {p}' for p in OPEN_POINTS] + ['']
+           '', '## Judgment calls to check', ''] + [f'- {p}' for p in OPEN_POINTS] + ['']
     for t in templates:
         out += _section(t, rules, codes)
     return '\n'.join(out).rstrip() + '\n'
