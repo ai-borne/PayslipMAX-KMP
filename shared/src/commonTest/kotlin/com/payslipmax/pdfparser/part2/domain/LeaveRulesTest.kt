@@ -23,7 +23,7 @@ class LeaveRulesTest {
     @Test
     fun theFamilyOffersExactlyTheChecksTheTemplatesCite() {
         assertEquals(
-            setOf("al_year_cap", "al_affix_limit", "cl_combination", "grant_quoted_annual", "grant_quoted_rejoin", "grant_quoted_recall"),
+            setOf("al_year_cap", "al_affix_limit", "cl_combination", "spcl_over_30", "grant_quoted_annual", "grant_quoted_rejoin", "grant_quoted_recall"),
             LeaveRules.all.map { it.id }.toSet(),
         )
         assertTrue(LeaveRules.all.all { it is CheckRule }, "the leave family holds checks only")
@@ -63,6 +63,15 @@ class LeaveRulesTest {
             assertTrue(rule.violated(context("GTDCL", others = listOf(other))), other)
         }
         assertFalse(rule.violated(context("GTDCL", others = listOf("SORS", "STPRH"))), "a ration or area order is not leave")
+    }
+
+    @Test
+    fun aSpecialCasualLeaveOverThirtyDaysIsWarnedAbout() {
+        // why: the row itself reads "upto 30 days" (5.5, p.116); a longer count is almost always a typo in the dates.
+        val rule = check(LeaveRules.SPCL_OVER_30)
+        assertFalse(rule.violated(context("GTDSPCL", computed = days(30))), "exactly 30 is allowed")
+        assertTrue(rule.violated(context("GTDSPCL", computed = days(31))))
+        assertFalse(rule.violated(context("GTDSPCL")), "no days worked out yet is not a breach")
     }
 
     @Test

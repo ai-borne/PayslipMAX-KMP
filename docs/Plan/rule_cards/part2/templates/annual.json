@@ -96,7 +96,7 @@
      {"id": "reason", "kind": "text", "label": "Reason for the special casual leave", "help": "Plain words for what follows \"on account of\"."}],
    "from": {"need": "required", "slot": "leave_from"}, "to": {"need": "required", "slot": "leave_to"},
    "data": [{"need": "optional", "slot": "prefix_first"}, {"need": "optional", "slot": "suffix_last"}, {"need": "required", "slot": "days"}, {"need": "required", "slot": "year"}],
-   "rules": [],
+   "rules": ["spcl_over_30"],
    "links": [{"code": "SORS", "basis": "manual", "page": 98, "note": "1.8", "when": "on_ration"},
      {"code": "GTDRSHNA", "basis": "manual", "page": 98, "note": "1.8", "when": "on_ration"},
      {"code": "TORS", "basis": "manual", "page": 98, "note": "1.8", "when": "on_ration"},

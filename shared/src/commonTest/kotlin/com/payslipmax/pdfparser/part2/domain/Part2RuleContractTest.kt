@@ -63,6 +63,6 @@ class Part2RuleContractTest {
         val families = (LeaveRules.all + RationRules.all + AreaRules.all).map { it.id }
         assertEquals(families.toSet(), Part2Rules.shipped().ids)
         assertEquals(families.size, Part2Rules.shipped().ids.size, "no family repeats another's id")
-        assertEquals(19, families.size)
+        assertEquals(20, families.size)
     }
 }

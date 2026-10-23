@@ -514,7 +514,7 @@ before. Each phase's "Debt watch" lists the debt most likely to appear and how i
     optional date, number or text and the word printed without it, "Nil"); `for` (an input only a check reads, printed nowhere); column
     `text` (Data 4 "order no. and date", the fixed R&H rate word, "Corps, notification no., date"); and `CivilCalendar.nextDay`. The engine
     still names no code (`Part2EngineSourceTest`).
-  - **Content:** 24 templates (`annual.json` 8, `ration.json` 4, `rh.json` 12 = STPRH + the 11 GTDRH grant codes), 19 rules (6 checks, 13
+  - **Content:** 24 templates (`annual.json` 8, `ration.json` 4, `rh.json` 12 = STPRH + the 11 GTDRH grant codes), 20 rules (7 checks, 13
     conditions). The R&H re-grant is one link per GTDRH code, each with its own condition (`rh_gtdrh12`, ...), so the officer's own code is
     the only one drafted. `GTDAL` and `GTDALCF` carry 16 links.
   - **Rule families:** `LeaveRules` and `RationRules` as planned, plus `AreaRules.kt` (the R&H conditions), started here instead of in
@@ -734,7 +734,7 @@ them in its summary. An item closes with a test or a command output, not a state
      Phase 3 adds the `PayslipDatabase_Impl`/`Part2Dao_Impl` check with the DAO, and Phase 7b the worker check. Closed by the
      `check_r8_guide.py` output on the release build naming them.
 2. **Phase 2a: the rule contract and the copy check had nothing real to compare.** CLOSED in 2b.
-   - Evidence: `Part2LookupContract.assertRulesMatchTheRegistry` now compares 19 declared rules with 19 implemented (and 24 templates); a
+   - Evidence: `Part2LookupContract.assertRulesMatchTheRegistry` now compares 20 declared rules with 20 implemented (and 24 templates); a
      deliberate break of the shipped registry failed it. `refresh.py` with the local sources present printed `copy check: CLEAN` over the
      real help text and labels (narratives, certificates and column text are the manual's own wording and are skipped on purpose).
 3. **Phase 2a: limits were provisional.** CLOSED in 2b, with one caveat that is item 8.

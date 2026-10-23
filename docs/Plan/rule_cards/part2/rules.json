@@ -5,6 +5,7 @@
   {"id": "al_year_cap", "kind": "check", "severity": "ack", "basis": "manual", "page": 115, "note": "2"},
   {"id": "al_affix_limit", "kind": "check", "severity": "warn", "basis": "manual", "page": 115, "note": "9"},
   {"id": "cl_combination", "kind": "check", "severity": "ack", "basis": "manual", "page": 117, "note": "note under 5.6"},
+  {"id": "spcl_over_30", "kind": "check", "severity": "warn", "basis": "manual", "page": 116, "note": "row 5.5 narrative"},
   {"id": "grant_quoted_annual", "kind": "check", "severity": "warn", "basis": "manual", "page": 115, "note": "7"},
   {"id": "grant_quoted_rejoin", "kind": "check", "severity": "warn", "basis": "manual", "page": 131, "note": "2"},
   {"id": "grant_quoted_recall", "kind": "check", "severity": "warn", "basis": "manual", "page": 132, "note": "2"},

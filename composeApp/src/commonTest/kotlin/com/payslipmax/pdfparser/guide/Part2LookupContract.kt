@@ -60,14 +60,14 @@ object Part2LookupContract {
     /**
      * The rules the real bundle declares and the rules the app implements are one list (Part II plan, phases 2a and 2b): a template
      * citing a check the app does not run would be a silent hole, and the template limits must travel with the templates they bound.
-     * Content batch 1 ships 19 rules (6 checks, 13 conditions) and 24 templates; this fails the day one side gains a rule and the
+     * Content batch 1 ships 20 rules (7 checks, 13 conditions) and 24 templates; this fails the day one side gains a rule and the
      * other does not, and the limits are those confirmed against the longest real text (570 characters of narrative, 36 of label,
      * 156 of help, 14 of note; 8 slots, 16 links, 2 rules on a template).
      */
     fun assertRulesMatchTheRegistry(bundle: GuideBundle) {
         val section = assertNotNull(bundle.part2)
         assertEquals(emptyList(), Part2Rules.shipped().problemsAgainst(section.rules), "bundle rule ids = registry ids, with the same kinds")
-        assertEquals(19, section.rules.size)
+        assertEquals(20, section.rules.size)
         assertEquals(24, section.templates.size)
         assertEquals(
             listOf(600, 40, 160, 10, 16, 4, 20),

@@ -12,12 +12,14 @@ object LeaveRules {
     const val AL_YEAR_CAP = "al_year_cap"
     const val AL_AFFIX_LIMIT = "al_affix_limit"
     const val CL_COMBINATION = "cl_combination"
+    const val SPCL_OVER_30 = "spcl_over_30"
     const val GRANT_QUOTED_ANNUAL = "grant_quoted_annual"
     const val GRANT_QUOTED_REJOIN = "grant_quoted_rejoin"
     const val GRANT_QUOTED_RECALL = "grant_quoted_recall"
 
     private const val ANNUAL_CAP_DAYS = 60
     private const val AFFIX_MAX_DAYS = 5
+    private const val SPECIAL_CASUAL_MAX_DAYS = 30
 
     /** The answers the checks read, by slot id. */
     private const val DAYS = "days"
@@ -36,6 +38,7 @@ object LeaveRules {
             checkRule(AL_YEAR_CAP) { yearTotal(it) > ANNUAL_CAP_DAYS },
             checkRule(AL_AFFIX_LIMIT) { affixDays(it) > AFFIX_MAX_DAYS },
             checkRule(CL_COMBINATION) { context -> context.event.any { it.template.code in otherLeave } },
+            checkRule(SPCL_OVER_30) { (it.occurrence.days(DAYS) ?: 0) > SPECIAL_CASUAL_MAX_DAYS },
             grantQuoted(GRANT_QUOTED_ANNUAL),
             grantQuoted(GRANT_QUOTED_REJOIN),
             grantQuoted(GRANT_QUOTED_RECALL),

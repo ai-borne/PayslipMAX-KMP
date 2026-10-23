@@ -155,6 +155,14 @@ class Part2BatchOneGoldenTest {
     }
 
     @Test
+    fun aSpecialCasualLeaveOverThirtyDaysIsWarnedAboutAndThirtyIsNot() {
+        val thirty = annualLeave + mapOf("reason" to text("a family event"), "leave_to" to date(8, 4)) - "prefix_first"
+        assertEquals(emptyList(), draft(OccurrenceRequest("GTDSPCL", thirty)).findings, "06 Jul to 04 Aug is 30 days")
+        val finding = draft(OccurrenceRequest("GTDSPCL", thirty + mapOf("leave_to" to date(8, 5)))).findings.single()
+        assertEquals(Triple("spcl_over_30", RuleSeverity.WARN, 116), Triple(finding.ruleId, finding.severity, finding.page))
+    }
+
+    @Test
     fun aCasualLeaveBesideAnAnnualLeaveIsAcknowledged() {
         val cl = annualLeave + mapOf("leave_from" to date(9, 1), "leave_to" to date(9, 5)) - "prefix_first"
         val slip = draft(OccurrenceRequest("GTDAL", annualLeave), OccurrenceRequest("GTDCL", cl))

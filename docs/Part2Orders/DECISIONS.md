@@ -147,6 +147,10 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 | EXTNAL, VOLREJ, RECALL and the ration and R&H rows | Nothing drafted now (no new rows, no new warning); how to reissue them is decided in phase 8 with evidence, alongside CANCEL (6c). |
 | VOLREJ and RECALL leave kind | The kind the officer picks prints, in place of the manual's "Annual/Furlough Leave". |
 | Link limit | Raised in phase 9 with its reason recorded; no link-group feature. |
+| GTDALCF cap | No 60-day cap check on a carry-forward (it is carried from earlier years). |
+| GTDSPCL length | `warn` when a special casual leave is over 30 days (row 5.5 reads "upto 30 days"); never blocks printing. |
+| Casual leave beside special casual leave | Only GTDCL beside the annual set is checked; special casual leave beside annual leave raises nothing. |
+| Reissue warning on EXTNAL, VOLREJ, RECALL | None now (confirmed). |
 
 ## Facts established (2026-10-22)
 
