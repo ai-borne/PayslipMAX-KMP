@@ -333,7 +333,7 @@ The next phase starts only after the owner accepts this summary.
 | 0. Branch, baseline, occurrence dataset (tools only) | done, accepted (2026-10-23) | see git log |
 | 1. Lookup bundle section, models, validator, flag, gate + catalog guard | done, accepted (2026-10-23) | 8bcf9065 |
 | 2a. Template format, validators, engine core (synthetic templates), `CivilCalendar` move | done, accepted (2026-10-23) | 534ba5cc |
-| 2b. Content batch 1: annual set + ration four + R&H; owner review | summary accepted 2026-10-23; **owner check against the printed pages not done, so 2b exit is not claimed** (Phase 11 item 7) | ebf6c124, 09bfbf98, 2d192468 |
+| 2b. Content batch 1: annual set + ration four + R&H; owner review | done, accepted (2026-10-23); the check against the printed pages was delegated and is recorded (DECISIONS Round 15, Phase 11 item 7) | ebf6c124, 09bfbf98, 2d192468 |
 | 3. Storage: schema 15, repository, backup v5 with bounded restore | done, accepted (2026-10-23) | 8cb0a40b |
 | 3b. Chunked backup: pages as binary records, one page in memory at a time | done, accepted (2026-10-23) | 32ca5316 |
 | 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | not started | — |
@@ -347,7 +347,7 @@ The next phase starts only after the owner accepts this summary.
 | 8. Rest of Chapter 5, incl. ACCLVE and ENCASH (batch 3) | not started | — |
 | 9. Area re-grants: HAA, SCCIA, field, TPTA (batch 4) | not started | — |
 | 10. Release hardening, owner content sign-off, iPhone walk, docs | not started | — |
-| 11. Pending items (collected from earlier phases) | open: items 6, 7, 8, 10 (items 1-4 and 9 closed; 5 not closable) | — |
+| 11. Pending items (collected from earlier phases) | open: items 6, 8, 10, 11 (items 1-4, 7 and 9 closed; 5 not closable) | — |
 
 Each phase leaves the app shippable: `PART2_ENABLED` is `false` until Phase 10, so a flag-off build behaves exactly as
 before. Each phase's "Debt watch" lists the debt most likely to appear and how it is cleared inside that phase.
@@ -786,10 +786,11 @@ them in its summary. An item closes with a test or a command output, not a state
 6. **Phase 2a: a template's `rev` is shape-checked in Kotlin, not recomputed.** `commonMain` has no SHA-256, and the bundle ships inside the
    signed app, so a changed `rev` needs a changed app. The Python stale-bundle guard is the check. Decide at Phase 10 whether to add a
    recompute (`expect`/`actual` hash) or accept; closed by that decision recorded in the Phase 10 summary.
-7. **Phase 2b: the owner has not reviewed batch 1 against the printed pages.** OPEN. Why: it needs the owner with the PDF; the build is
-   finished and the pack is ready. How closed: the owner works through `part2/part2_review.md` (ten settled judgment calls first, then 24
-   sections each naming its printed page); corrections go in the template JSON and the golden tests in the same commit, and the owner's
-   word is recorded here. Until then 2b's exit ("owner review recorded") is not met.
+7. **Phase 2b: the check of batch 1 against the printed pages.** CLOSED 2026-10-23 (owner delegated it; DECISIONS Round 15). Evidence: all 24
+   templates compared with the rendered pages 46-48, 97-99, 114-118 and 131-132, with Annexure II (serial, name, group) and, mechanically, with every
+   narrative fragment in the page text: no correction needed. The 7 fragments the mechanical pass could not find are explained (the PDF text
+   interleaves the table cells on p.116; "dated" is the owner's "no. dated date" call in Round 12). Two points were put to the owner: REJOINAL keeps the
+   order no. in Data 3 as the row says although note 2 says column 7 (owner: keep), and the NCC / re-employed / retirement-year entitlements (item 11).
 8. **Phase 2b: later batches will need decisions on limits and reissues.** OPEN. `links` is 16 and `GTDAL` uses all 16; Phase 9
    adds the HAA, SCCIA, field and TPTA re-grants to the leave grants, so the limit rises with its reason (owner, Round 12; no link-group feature). `cl_combination` knows only the annual set (GTDAL, GTDALCF, EXTNAL), and an extension, voluntary rejoining or recall
    does not move the ration or R&H dates already drafted; phase 8 adds the rest of Chapter 5 and settles those reissues (owner, Round 12: nothing drafted until then). Closed
@@ -803,6 +804,12 @@ them in its summary. An item closes with a test or a command output, not a state
 10. **Phase 3: skipped restore rows are counted but not shown.** OPEN. `Part2Restore.skipped` counts rows left out (unreadable, oversized, surplus,
    orphaned), but `PayslipBackupService.restore` returns `Result<Unit>` and drops it, so the officer is never told. Why deferred: no screen exists yet.
    How closed: Phase 6b shows "N items could not be restored" and a ViewModel test covers it.
+11. **Phase 2b check: annual leave entitlements the 60-day check does not know.** OPEN, scheduled (owner, Round 15). Note 3 (p.115): NCC officers and
+   re-employed officers get only 30 days of annual leave and extended annual leave in a year (a re-employed officer retired and re-employed in the same
+   year, 60). Note 13 (p.116): officers retiring or released on 31 Jan and in February before the 28/29th get 30 days, those retiring on 28/29 Feb get
+   58/59, those in March or later get 60. `al_year_cap` always uses 60, so a 31-60 day grant for these officers is not flagged. Why deferred: it needs two
+   new questions on the form and rules in the Chapter 5 family. How closed: phase 8 adds the answers and the checks with golden tests; closed by their
+   tests and the owner's review of batch 3.
 
 ## Risks and controls
 

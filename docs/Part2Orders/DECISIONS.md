@@ -172,6 +172,16 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 | Acceptance | Phase 3 (8cb0a40b) and Phase 3b (32ca5316) accepted by the owner, 2026-10-23. The check of the 24 templates against the printed pages is still outstanding (plan Phase 11 item 7). |
 | Shape | Backup v5 is unreleased, so its format changed: with scanned pages the archive is the encrypted metadata document followed by one binary record per page and an authenticated page count; a vault with no pages still writes the old single encrypted document. A restore reads one page at a time and re-encrypts each page only as it is written. |
 
+## Round 15: 2b exit, the check against the printed pages (owner delegated it, 2026-10-23)
+
+| Topic | Decision |
+|---|---|
+| Who and how | The owner asked Claude to do the check. It compared all 24 templates with the rendered ODP-2026 pages 46-48, 97-99, 114-118 and 131-132 (read as images, not from the text dump) and with Annexure II in the PDF text (serial, name, group), plus a fragment-by-fragment check of every narrative against the page text. |
+| Result | No correction needed. Serial, code, name, group, page, narrative, From/To/Data 1-4 rules, certificates (RMA items 1-5, R&H items 1-3) and every note cited by a check or link (p.97 1.1; p.98 1.5, 1.8, 3, 4; p.99 8; p.115 notes 2, 7, 9; p.117 casual leave; p.131 and p.132 note 2) agree with the manual, apart from the settled Round 11 and 12 choices. |
+| REJOINAL (5.23) order no. | The manual is inconsistent: its row puts the grant order no. in Data 3, its note 2 says "column 7" (Data 2). Keep Data 3, as the row says (owner). |
+| NCC and re-employed officers | Note 3 (p.115) limits them to 30 days of annual leave a year, and note 13 sets the retirement-year entitlement (30, 58/59 or 60 days). The 60-day check does not know either. Handled in phase 8 with the rest of Chapter 5 (owner). Plan Phase 11 item 11. |
+| Noted, kept | VOLREJ prints a full stop after "cancelled"; row 5.24 has none (row 5.25 has one). Punctuation only. The review pack's citation text reads "p.117 note note under 5.6" because the stored note already begins with "note"; the data is right, the wording is cosmetic. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
