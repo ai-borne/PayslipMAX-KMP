@@ -45,5 +45,9 @@ class GuideBundleAndroidContractTest {
             Part2LookupContract.assertOnlyLeaveAndRecordsAreBuiltAndFiftyThreeSerialsAreLookupOnly(bundle)
             Part2LookupContract.assertRulesMatchTheRegistry(bundle)
             Part2BatchOneContract.assertBatchOneDraftsOnTheShippedBundle(bundle)
+            Part2BrowseContract.assertTilesShowOnlyForTheBuiltRibbons(bundle)
+            Part2BrowseContract.assertEveryCodePageIsReachableBySerialCodeAndName(bundle)
+            Part2BrowseContract.assertOnlyTheTwoBlankGroupsAreBlankAndEveryOtherGroupHasItsMeaning(bundle)
+            Part2BrowseContract.assertRejoinalIsTheOnlyCodeThePageSaysTheSlipPrintsDifferently(bundle)
         }
 }

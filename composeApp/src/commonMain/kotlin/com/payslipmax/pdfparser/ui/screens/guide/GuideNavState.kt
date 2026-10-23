@@ -166,4 +166,5 @@ fun GuideBundle.knows(destination: GuideDestination): Boolean =
                 (destination.facet == null || destination.facet in facets)
         is GuideDestination.Card -> cards.any { it.id == destination.cardId }
         is GuideDestination.PreClaim -> preclaim?.let { destination.move == null || destination.move in it.moves } == true
+        is Part2Destination -> part2?.knows(destination) == true
     }

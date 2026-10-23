@@ -182,6 +182,20 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 | NCC and re-employed officers | Note 3 (p.115) limits them to 30 days of annual leave a year, and note 13 sets the retirement-year entitlement (30, 58/59 or 60 days). The 60-day check does not know either. Handled in phase 8 with the rest of Chapter 5 (owner). Plan Phase 11 item 11. |
 | Noted, kept | VOLREJ prints a full stop after "cancelled"; row 5.24 has none (row 5.25 has one). Punctuation only. The review pack's citation text reads "p.117 note note under 5.6" because the stored note already begins with "note"; the data is right, the wording is cosmetic. |
 
+## Round 16: Phase 4a, the lookup UI (build-time choices, 2026-10-23; no owner questions were open)
+
+The plan and Rounds 3, 5, 8, 10 and 15 settled everything 4a needed, so no question was asked. These are the choices made while building, for the owner
+to see on the device walk and change if they disagree. The Pixel 9 walk method is the owner's (2026-10-23): back up first, then walk the debug build.
+
+| Topic | Choice |
+|---|---|
+| Where search lives | On the Part II home, under the title (Round 5: "searches or taps the Leave ribbon"). Not in the Guide's own search. Typing replaces the ribbons with matching codes; coming back from a code page keeps the query; each entry from Guide Home starts empty. |
+| What a search matches | Every word must match: a whole serial (`5.1`, never `5.10`), a code (exact first, then by its start; any of a variant serial's codes) or a word start in the manual's name. Case never matters. Two letters or digits are the minimum. It reaches all 303 serials, built ribbon or not. |
+| Code page | The minimal fields of Round 3: HRMS code(s), the manual's name, the group with what it means (or "Group not printed in ODP-2026", nothing inferred), serial, chapter and printed page. REJOINAL's page says the slip prints REJOIN (Round 9). |
+| Tiles | Home lists the built ribbons (Leave, Records). A ribbon lists its cases with the chapters and pages their codes cover ("Ch 5, pp 114-117") and a code count. A case lists its codes, marks the lookup-only ones, and shows the codes listed from elsewhere under "Also see". |
+| Entry | Free for everyone; absent while `PART2_ENABLED` is off or when the bundle has no Part II section. A restored Part II place under a flag-off build is cut back to Guide Home. |
+| Reuse over new look | No new colour or component: the Guide's tile, pill and back header. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

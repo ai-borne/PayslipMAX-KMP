@@ -11,6 +11,7 @@ private const val SEARCH = "search"
 private const val CHANGES = "changes"
 private const val REMOVED_NOTES = "removednotes"
 private const val PRECLAIM = "preclaim"
+private const val PART2 = "part2"
 private const val SCROLL = "scroll"
 
 /**
@@ -51,6 +52,7 @@ private fun encode(destination: GuideDestination): String? =
         is GuideDestination.Case -> listOfNotNull(CASE, destination.caseId, destination.facet).joinToString(SEPARATOR.toString())
         is GuideDestination.Card -> "$CARD$SEPARATOR${destination.cardId}"
         is GuideDestination.PreClaim -> listOfNotNull(PRECLAIM, destination.move).joinToString(SEPARATOR.toString())
+        is Part2Destination -> (listOf(PART2) + encodePart2(destination)).joinToString(SEPARATOR.toString())
     }
 
 private fun decode(entry: String): GuideDestination? {
@@ -64,6 +66,7 @@ private fun decode(entry: String): GuideDestination? {
         CASE -> id?.takeIf { parts.size <= 3 }?.let { GuideDestination.Case(it, parts.getOrNull(2)?.takeIf(String::isNotEmpty)) }
         CARD -> id?.takeIf { parts.size == 2 }?.let(GuideDestination::Card)
         PRECLAIM -> if (parts.size == 1) GuideDestination.PreClaim() else id?.takeIf { parts.size == 2 }?.let { GuideDestination.PreClaim(it) }
+        PART2 -> decodePart2(parts.drop(1))
         else -> null
     }
 }

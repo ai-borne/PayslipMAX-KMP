@@ -336,7 +336,7 @@ The next phase starts only after the owner accepts this summary.
 | 2b. Content batch 1: annual set + ration four + R&H; owner review | done, accepted (2026-10-23); the check against the printed pages was delegated and is recorded (DECISIONS Round 15, Phase 11 item 7) | ebf6c124, 09bfbf98, 2d192468 |
 | 3. Storage: schema 15, repository, backup v5 with bounded restore | done, accepted (2026-10-23) | 8cb0a40b |
 | 3b. Chunked backup: pages as binary records, one page in memory at a time | done, accepted (2026-10-23) | 32ca5316 |
-| 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | not started | — |
+| 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | built 2026-10-23, awaiting owner acceptance; Pixel 9 walk done (Phase 11 item 12) | see git log |
 | 4b. Leave draft flow + slip preview (Premium), autosave | not started | — |
 | 5. Print + "Check the HRMS draft" | not started | — |
 | 6a. Page pipeline: scanner spike, `PageScanner`, `PageEncoder`, merged-manifest guard | not started | — |
@@ -347,7 +347,7 @@ The next phase starts only after the owner accepts this summary.
 | 8. Rest of Chapter 5, incl. ACCLVE and ENCASH (batch 3) | not started | — |
 | 9. Area re-grants: HAA, SCCIA, field, TPTA (batch 4) | not started | — |
 | 10. Release hardening, owner content sign-off, iPhone walk, docs | not started | — |
-| 11. Pending items (collected from earlier phases) | open: items 6, 8, 10, 11 (items 1-4, 7 and 9 closed; 5 not closable) | — |
+| 11. Pending items (collected from earlier phases) | open: items 6, 8, 10, 11, 12, 13, 14 (items 1-4, 7 and 9 closed; 5 not closable) | — |
 
 Each phase leaves the app shippable: `PART2_ENABLED` is `false` until Phase 10, so a flag-off build behaves exactly as
 before. Each phase's "Debt watch" lists the debt most likely to appear and how it is cleared inside that phase.
@@ -603,6 +603,27 @@ Nudge: connect the Pixel 9.
 - Device: browse, search, process death on a code page, tab re-tap, light and dark; flag flipped locally and reverted.
 - Exit: gate green + R8; screenshots kept in the session scratchpad only.
 - Debt watch: `GuideTab.kt` (257) gets at most a delegation line; anything more moves to `GuideTabPart2.kt`.
+- Built 2026-10-23 (Phase 4a summary in the session). Where the build differs from the bullets above:
+  - **Destinations** are a sealed sub-interface, `Part2Destination` (`Home`, `Ribbon(ribbonId)`, `Case(caseId)`, `Code(code)`), in the Guide package (Kotlin
+    requires that of every inheritor of `GuideDestination`), so the Guide's `when` needs one branch for all four. The saver writes `part2|home`,
+    `part2|ribbon|<id>`, `part2|case|<id>`, `part2|code|<CODE>`: ids only. `Code` takes any one of a variant serial's codes and opens the whole serial.
+  - **Logic is in `shared`**: `Part2LookupIndex` (tiles, case, code page, search; pure, no regex) and the content types in `Part2LookupContent.kt`.
+    `Part2LookupViewModel` holds only the typed query (a Koin `single`, like the Guide's own search, so it survives a code page and a tab switch;
+    cleared on each entry from Guide Home; cut at 100 characters; no `CrashReporter`) and reads the loaded Guide. Search ranks an exact code or serial
+    over a code prefix over a name word, needs every word to match, and reaches all 303 serials including those of unbuilt ribbons.
+  - **Entry** has two states, `HIDDEN` and `OPEN` (`part2Entry`): lookup is free, so there is no locked state until 4b. A bundle with no `part2` section
+    also hides it. Off, `part2FactoryOrNull` is null and Koin is never asked for the model. A restored Part II stack under a flag-off build or an old
+    bundle is cut back to Guide Home, every Part II level at once.
+  - **The REJOINAL note** comes from the template's `print` field (`Part2PrintedAs`), not from a name in the UI; `Part2LookupSourceTest` proves the
+    screens name none of the 321 codes. "Group not printed in ODP-2026" shows on the code page and the list row when the group is null.
+  - **No theme token was needed**: the screens reuse the Guide's tile, pill and card components. Part II copy is in `Part2Strings`.
+  - **`GuideTab.kt` grew 257 -> 265** (10 lines added, 2 changed; imports, one parameter, one argument, one `when` branch, one Home argument): not "one
+    delegation line", because a sealed `when` branch, the factory parameter and the Home row cannot share one line. All of it is delegation; the logic is
+    in `GuideTabPart2.kt`. `GuideHomeScreen` hit the 50-line composable limit with its two new parameters, so its two trailing notes rows moved into a
+    private extension (no behaviour change). See Phase 11 item 13.
+  - **Tests**: red first (20 of 20 shared and 36 of 54 composeApp new tests failed on missing behaviour), then 30 deliberate breaks, all killed; three
+    survived the first round and each exposed a test gap that is now closed (`5.1` is not `5.10`; digits in names must not rescue `3.2`; no model is made
+    for a bundle with no section). `Part2BrowseContract` runs on the real bundle on both platforms: 303 serials, 321 codes and 303 names each found.
 
 ### Phase 4b: Leave draft flow + slip preview (Premium), autosave
 Nudge: connect the Pixel 9.
@@ -810,6 +831,24 @@ them in its summary. An item closes with a test or a command output, not a state
    58/59, those in March or later get 60. `al_year_cap` always uses 60, so a 31-60 day grant for these officers is not flagged. Why deferred: it needs two
    new questions on the form and rules in the Chapter 5 family. How closed: phase 8 adds the answers and the checks with golden tests; closed by their
    tests and the owner's review of batch 3.
+12. **Phase 4a: the Pixel 9 walk.** CLOSED 2026-10-23 (owner backed up first). The Play 1.5.0 copy was uninstalled, a debug build with `PART2_ENABLED` flipped locally was
+   installed and driven over adb (uiautomator for taps and text, screenshots kept in the session scratchpad only). Observed: the Part II row on Guide Home;
+   Part II home with Leave and Records tiles only; Leave -> "Annual and casual leave" ("Ch 5, pp 114-116 · 5 codes") -> GTDAL page (Group A, "Financial (other than
+   claims)", chapter 5 page 114, serial 5.1) and the "Also see" row; search by code (`rejoinal`: page 131 with the "slip prints REJOIN" note), by serial (`3.28`: "Group not
+   printed in ODP-2026" on the row and the page; `5.10` gives EOL only), by variant code (`gtdtran3`: one row with GTDTRAN1-5), by name (`location allowance`: 2
+   results), one letter ("Type at least two letters or digits.") and no match; true process death on the EOL page (`run-as ... kill -9`, pid 16037 gone, new pid
+   18838, the same page restored, Back to Part II home with an empty search, as the query is memory-only); the Guide tab re-tap from a deep level to Guide Home; light and dark
+   (the phone started in dark and was put back). Reverted: `LaunchFlags.kt` is byte-identical (sha256 989cf71e9e52262a480b3823c047510270cc552587db7c679c37c861c1ca87a1),
+   the debug build is uninstalled, and the owner reinstalls from Play and restores the `.pcda` backup. Not observed: system Back from the restored page (the on-screen
+   Back was used), TalkBack, and a small-screen or large-font layout.
+13. **Phase 4a: `GuideTab.kt` wiring grows with each feature.** OPEN, needs an owner decision. Pre-claim and Part II each add a host, a parameter and a
+   `when` branch to `GuideTab.kt` (257 -> 265 in 4a). Folding `PreClaimHost` and `Part2Host` into one holder would stop that, but it edits the pre-claim
+   wiring, which the surgical-change rule forbids without a word from the owner. Closed by the owner's call: accept as is, or fold the hosts in 4b with
+   a test that `GuideTab.kt` stays at or under its current length.
+14. **Phase 4a: iOS look and gestures of the Part II screens.** OPEN, a manual gate. Only the framework link, `iosSimulatorArm64Test` (707 tests) and the
+   Native timing of the search walk were observed (794 ms for about 930 searches, budget 1,500 ms). Nothing was driven on an iPhone: the levels are inline in
+   the Guide tab like every other Guide level, with the on-screen back header, and the iOS edge-swipe does not apply to a tab. Closed by the Phase 10
+   iPhone checklist (browse, search, back at each level, light and dark).
 
 ## Risks and controls
 

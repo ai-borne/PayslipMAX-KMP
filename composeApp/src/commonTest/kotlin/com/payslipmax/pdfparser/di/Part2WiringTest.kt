@@ -8,9 +8,13 @@ import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.data.RoomPart2Repository
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.testing.FakeCrashReporter
+import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.testing.SyntheticPart2Drafts
+import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -40,6 +44,21 @@ class Part2WiringTest {
         val koin = koinApplication { modules(appKoinModules(platformModules = listOf(leaves))) }.koin
 
         assertEquals(isPart2Enabled(), koin.getOrNull<Part2Repository>() != null)
+    }
+
+    @Test
+    fun theLookupModelIsBoundExactlyWhereTheFeatureIsEnabled() {
+        val koin = koinApplication { modules(appKoinModules(platformModules = listOf(leaves))) }.koin
+
+        assertEquals(isPart2Enabled(), koin.getOrNull<Part2LookupViewModel>() != null)
+    }
+
+    @Test
+    fun theModuleGivesOneLookupModelSoTheQuerySurvivesATabSwitchLikeTheGuidesOwnSearch() {
+        val guide = module { single { GuideViewModel(FakeGuideRepository(), FakeCrashReporter()) } }
+        val koin = koinApplication { modules(part2Module, leaves, guide) }.koin
+
+        assertSame(koin.get<Part2LookupViewModel>(), koin.get<Part2LookupViewModel>())
     }
 
     @Test

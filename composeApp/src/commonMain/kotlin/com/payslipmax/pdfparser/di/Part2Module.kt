@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.di
 
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.data.RoomPart2Repository
+import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import org.koin.dsl.module
 
 /**
@@ -13,4 +14,6 @@ val part2Module =
     module {
         // One repository, so every screen sees the same drafts and orders.
         single<Part2Repository> { RoomPart2Repository(dao = get()) }
+        // One lookup model, app-scoped like the Guide's own search, so a typed query survives opening a code page and a tab switch.
+        single { Part2LookupViewModel(guide = get()) }
     }

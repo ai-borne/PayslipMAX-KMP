@@ -178,6 +178,24 @@ class GuideLoaderIosPerfTest {
             assertTrue(elapsedMs < DRAFT_BUDGET_MS, "$DRAFT_REPEATS drafts took ${elapsedMs}ms, budget ${DRAFT_BUDGET_MS}ms")
         }
 
+    @Test
+    fun thePart2BrowseAndSearchRunWithinBudgetOnNative() =
+        runTest {
+            val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())
+            Part2BrowseContract.assertTilesShowOnlyForTheBuiltRibbons(bundle)
+            Part2BrowseContract.assertOnlyTheTwoBlankGroupsAreBlankAndEveryOtherGroupHasItsMeaning(bundle)
+            Part2BrowseContract.assertRejoinalIsTheOnlyCodeThePageSaysTheSlipPrintsDifferently(bundle)
+
+            // Part II phase 4a: all 303 code pages found by serial, by each of 321 codes and by name (about 930 searches over 303 entries,
+            // plain scans, no regex): far more than a keystroke ever costs.
+            val mark = TimeSource.Monotonic.markNow()
+            Part2BrowseContract.assertEveryCodePageIsReachableBySerialCodeAndName(bundle)
+            val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+
+            println("part2 browse on Native: every code page found three ways in ${elapsedMs}ms")
+            assertTrue(elapsedMs < SEARCH_BUDGET_MS, "the Part II search walk took ${elapsedMs}ms, budget ${SEARCH_BUDGET_MS}ms")
+        }
+
     private companion object {
         // Generous for a debug simulator build: the first Guide open waits on this, and a quadratic
         // regression in the parser or validator would blow far past it.

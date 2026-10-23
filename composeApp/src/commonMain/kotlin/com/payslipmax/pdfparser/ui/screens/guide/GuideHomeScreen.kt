@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2Entry
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
@@ -42,6 +44,8 @@ internal fun GuideHomeScreen(
     notedCards: Set<String> = emptySet(),
     preClaim: PreClaimEntry = PreClaimEntry.HIDDEN,
     onOpenPreClaim: () -> Unit = {},
+    part2: Part2Entry = Part2Entry.HIDDEN,
+    onOpenPart2: () -> Unit = {},
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -69,13 +73,22 @@ internal fun GuideHomeScreen(
         if (preClaim != PreClaimEntry.HIDDEN) {
             item(key = "preclaim") { PreClaimEntryRow(locked = preClaim == PreClaimEntry.LOCKED, onClick = onOpenPreClaim) }
         }
+        // The Part II Orders row: absent while its dark-launch flag is off (lookup is free for everyone once it is on).
+        if (part2 != Part2Entry.HIDDEN) {
+            item(key = "part2") { Part2EntryRow(onOpenPart2) }
+        }
         items(areas, key = { it.id }) { tile -> GuideAreaTileView(tile, onClick = { onOpenArea(tile.id) }) }
-        if (notes.removedCount > 0) {
-            item(key = "removed-notes") { GuideRemovedNotesRow(notes.removedCount, notes.onOpenRemoved) }
-        }
-        if (notes.unreadable > 0) {
-            item(key = "unreadable-notes") { GuideUnreadableNotesLine(notes.unreadable) }
-        }
+        guideNotesRows(notes)
+    }
+}
+
+/** The user's notes lines at the foot of Home: the removed-cards row and the quiet "could not be read" line, each only when it applies. */
+private fun LazyListScope.guideNotesRows(notes: GuideHomeNotes) {
+    if (notes.removedCount > 0) {
+        item(key = "removed-notes") { GuideRemovedNotesRow(notes.removedCount, notes.onOpenRemoved) }
+    }
+    if (notes.unreadable > 0) {
+        item(key = "unreadable-notes") { GuideUnreadableNotesLine(notes.unreadable) }
     }
 }
 
