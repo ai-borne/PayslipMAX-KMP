@@ -46,6 +46,17 @@ object CivilCalendar {
         to: CalendarDate,
     ): Int? = daysBetween(from, to).takeIf { it >= 0 }?.let { it.toInt() + 1 }
 
+    /** The day after [date], or null when that falls outside the allowed years. The date must [exist]. */
+    fun nextDay(date: CalendarDate): CalendarDate? {
+        val next =
+            when {
+                date.day < lengthOfMonth(date.year, date.month) -> date.copy(day = date.day + 1)
+                date.month < MONTHS -> CalendarDate(date.year, date.month + 1, 1)
+                else -> CalendarDate(date.year + 1, 1, 1)
+            }
+        return next.takeIf { exists(it) }
+    }
+
     /** DD/MM/YYYY, the way HRMS prints a date. */
     fun format(date: CalendarDate): String =
         "${date.day.toString().padStart(PART_DIGITS, '0')}/${date.month.toString().padStart(PART_DIGITS, '0')}/${date.year.toString().padStart(YEAR_DIGITS, '0')}"

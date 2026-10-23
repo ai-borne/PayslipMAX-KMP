@@ -227,7 +227,7 @@ object SyntheticPart2Templates {
                 object : CheckRule {
                     override val id = CAP_DAYS
 
-                    override fun violated(context: RuleContext) = (context.occurrence.days["days"] ?: 0) > ANNUAL_CAP
+                    override fun violated(context: RuleContext) = (context.occurrence.days("days") ?: 0) > ANNUAL_CAP
                 },
                 object : CheckRule {
                     override val id = GRANT_QUOTED

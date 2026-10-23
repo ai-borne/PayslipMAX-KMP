@@ -36,10 +36,11 @@ data class Part2Occurrence(
     val templateRev: String,
 )
 
-/** The occurrences that go in one order, in date order (para 6.4). */
+/** The occurrences that go in one order, in date order (para 6.4), and the distinct group letters they carry, as the order header prints them. */
 data class Part2Order(
     val family: OrderFamily,
     val occurrences: List<Part2Occurrence>,
+    val groups: List<String> = emptyList(),
 )
 
 /** A check that fired, with the citation the officer is shown (the manual's page and note, or practice). */

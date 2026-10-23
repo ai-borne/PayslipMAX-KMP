@@ -4,13 +4,19 @@ import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.guide.model.Part2RuleDecl
 import com.payslipmax.pdfparser.guide.model.Part2Template
 
-/** An occurrence as drafted: its [template], where it falls ([from], [to]) and the day counts the engine computed for `days` slots. */
+/** An occurrence as drafted: its [template], where it falls ([from], [to]) and the values the engine worked out (day counts, computed dates), by slot id. */
 class DraftedOccurrence(
     val template: Part2Template,
     val from: CalendarDate?,
     val to: CalendarDate?,
-    val days: Map<String, Int>,
-)
+    val computed: Map<String, SlotValue>,
+) {
+    /** The day count the engine worked out for a `days` slot, or null when it could not be worked out. */
+    fun days(slot: String): Int? = (computed[slot] as? SlotValue.NumberValue)?.number
+
+    /** A date the engine worked out for a computed date slot, or null. */
+    fun date(slot: String): CalendarDate? = (computed[slot] as? SlotValue.DateValue)?.date
+}
 
 /** What a rule can read: the officer's [request], the [occurrence] it is judging, and every occurrence of the [event] so far. */
 class RuleContext(
@@ -33,6 +39,28 @@ interface CheckRule : Part2Rule {
 interface ConditionRule : Part2Rule {
     fun holds(context: RuleContext): Boolean
 }
+
+/** A check made from [violated], so a rule family is a list of rules and not a class per rule. */
+internal fun checkRule(
+    id: String,
+    violated: (RuleContext) -> Boolean,
+): CheckRule =
+    object : CheckRule {
+        override val id = id
+
+        override fun violated(context: RuleContext) = violated(context)
+    }
+
+/** A condition made from [holds]; see [checkRule]. */
+internal fun conditionRule(
+    id: String,
+    holds: (RuleContext) -> Boolean,
+): ConditionRule =
+    object : ConditionRule {
+        override val id = id
+
+        override fun holds(context: RuleContext) = holds(context)
+    }
 
 /**
  * The rules the app implements, found by id. The bundle declares the same ids (kind, severity, citation) and a contract test keeps the
@@ -68,7 +96,7 @@ class Part2Rules(rules: List<Part2Rule>) {
     }
 
     companion object {
-        /** The rules the app ships. Phase 2a has none: the real rule families arrive with their content batches. */
-        fun shipped(): Part2Rules = Part2Rules(emptyList())
+        /** The rules the app ships. Each content batch adds its rule family here and nowhere else. */
+        fun shipped(): Part2Rules = Part2Rules(LeaveRules.all + RationRules.all + AreaRules.all)
     }
 }

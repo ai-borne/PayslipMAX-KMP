@@ -80,10 +80,36 @@ class GuideSecurityContractTest {
         runTest {
             val text = GuideBundleContract.readShippedBundleText()
 
-            assertFalse(text.contains("\"from\""), "provenance ids must never ship")
+            // The Part II section is exempt from the "from" check: a template's `from` is the manual's From-date column, not provenance
+            // (its own keys are whitelisted by part2_templates.py). Every card, figure and worksheet is still held to it.
+            val withoutPart2 = withoutObject(text, "part2")
+            assertFalse(withoutPart2.contains("\"from\""), "provenance ids must never ship")
             assertFalse(text.contains("\"open\""), "open-point text must never ship")
             assertFalse(text.contains("http", ignoreCase = true), "the bundle holds no links")
         }
+
+    /** [json] with the object under top-level key [key] cut out, scanning strings so a brace inside a narrative never ends it early. */
+    private fun withoutObject(
+        json: String,
+        key: String,
+    ): String {
+        val start = json.indexOf("\"$key\":{")
+        assertTrue(start >= 0, "the bundle has a $key section")
+        var depth = 0
+        var inString = false
+        var i = json.indexOf('{', start)
+        while (i < json.length) {
+            val c = json[i]
+            when {
+                inString && c == '\\' -> i++
+                c == '"' -> inString = !inString
+                !inString && c == '{' -> depth++
+                !inString && c == '}' && --depth == 0 -> return json.removeRange(start, i + 1)
+            }
+            i++
+        }
+        error("the $key section never closes")
+    }
 
     @Test
     fun ruleHistoryAndChangeTextNeverReachTheShareNoteTheClipboardOrTheSavedStack() {

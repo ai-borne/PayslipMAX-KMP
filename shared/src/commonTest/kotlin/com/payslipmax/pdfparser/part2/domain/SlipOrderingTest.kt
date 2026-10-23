@@ -52,10 +52,21 @@ class SlipOrderingTest {
     }
 
     @Test
-    fun severalClaimsShareOneClaimOrderInDateOrder() {
+    fun eachClaimGetsItsOwnOrderInDateOrder() {
+        // why: owner decision (2026-10-23, from practice): Group B claims were always single-occurrence orders, so two claims are two orders.
         val orders = arrange(occurrence("CLAIMB", "B", day(8, 1)), occurrence("CLAIMA", "B", day(7, 1)))
-        assertEquals(listOf(listOf("CLAIMA", "CLAIMB")), orders.map(::codes))
-        assertEquals(OrderFamily.CLAIM, orders.single().family)
+        assertEquals(listOf(listOf("CLAIMA"), listOf("CLAIMB")), orders.map(::codes))
+        assertEquals(listOf(OrderFamily.CLAIM, OrderFamily.CLAIM), orders.map { it.family })
+    }
+
+    @Test
+    fun theOrderHeaderListsEachGroupLetterPresentOnceInTheManualsOrderAndInfersNone() {
+        // why: real orders print "GROUP 'A'/'AM'/'C'" for one order; the letters are those of the occurrences, never a guess.
+        val mixed = arrange(occurrence("X", "C", day(7, 1)), occurrence("Y", "A", day(7, 2)), occurrence("Z", "AM", day(7, 3)), occurrence("W", "A", day(7, 4)))
+        assertEquals(listOf("A", "AM", "C"), mixed.single().groups)
+        assertEquals(listOf("CM"), arrange(occurrence("X", "CM", day(7, 1))).single().groups)
+        assertEquals(emptyList(), arrange(occurrence("NOGROUP", null, day(7, 1))).single().groups, "a serial with no printed group adds no letter")
+        assertEquals(listOf(listOf("A"), listOf("B")), arrange(occurrence("Y", "A", day(7, 2)), occurrence("CLAIM", "B", day(7, 1))).map { it.groups })
     }
 
     @Test

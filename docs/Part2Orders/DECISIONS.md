@@ -125,6 +125,16 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 | TPTA | Drafted with Leave: STPTRAN and GTDTRAN1–5 when leave covers a whole calendar month (p.71 notes iii, v). The release drafts 59 serials. |
 | Branch | `feature/part2-orders` off `main` @ `d9274bdd`. |
 
+## Round 11: Content batch 1 (asked at the start of phase 2b, 2026-10-23)
+
+| Topic | Decision |
+|---|---|
+| Phase 2a | Accepted (534ba5cc). |
+| Engine behaviours left open in 2a | Each Group B claim is an order of its own (practice: claims were single-occurrence orders). The order header lists each group letter its occurrences carry, once, in the manual's order (A, AM, B, C, CM); none is inferred. Two identical rows from two requests stay one row. |
+| Prefix and suffix | The manual's way: From and To exclude them, Data 1 holds the first prefix day, Data 2 the last suffix day (empty when there is none), and the narrative prints "Nil". Ration and R&H start at the earlier of the first prefix day and the first day of leave; the rejoining day is the day after the later of the last day of leave and the last suffix day. The practice date lists are not used. |
+| `ack` | An `ack` finding must be ticked before printing; `warn` is only shown. `ack`: annual leave over 60 days a year (note 2, p.115) and casual leave beside another leave (p.117). `warn`: prefix and suffix over 5 days (note 9, p.115) and a grant order not yet quoted on EXTNAL, REJOIN, VOLREJ and RECALL (note 7, p.115; note 2, pp.131-132). |
+| R&H scope | Annual leave only: the stop (from the first day away) and the re-grant under the officer's own GTDRH code (from rejoining) link from GTDAL and GTDALCF, labelled "seen in practice". Casual and special casual leave draft the ration four only. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

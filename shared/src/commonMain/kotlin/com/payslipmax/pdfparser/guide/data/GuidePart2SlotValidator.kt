@@ -11,9 +11,14 @@ import com.payslipmax.pdfparser.guide.model.Part2TemplateLimits
  * empty names nothing. Problems name template codes, slot ids and field names only, never a word of content.
  */
 internal object GuidePart2SlotValidator {
-    val KINDS = listOf("date", "number", "text", "days", "ref")
+    val KINDS = listOf("date", "number", "text", "days", "ref", "earliest", "latest", "next_day")
+
+    /** Slots the app works out from other dates, and the plain slots an officer answers that may be optional or check-only. */
+    val COMPUTED = listOf("earliest", "latest", "next_day")
+    private val PLAIN = listOf("date", "number", "text")
     private val NEEDS = listOf("required", "optional", "none")
     private const val DATA_COLUMNS = 4
+    private const val MAX_INPUTS = 4
 
     /** Slot problems for one template, and the slot ids it declares (kind recorded in [kinds] for the cross-template check). */
     fun slotProblems(
@@ -34,23 +39,64 @@ internal object GuidePart2SlotValidator {
             kinds.getOrPut(slot.id) { mutableSetOf() }.add(slot.kind)
             problems += textProblems(at, "label", slot.label, limits.label) + textProblems(at, "help", slot.help, limits.help)
         }
-        template.slots.forEach { problems += betweenProblems(it, where, declared) }
+        template.slots.forEachIndexed { i, slot ->
+            problems += betweenProblems(slot, where, declared, template.slots.take(i))
+            problems += optionalProblems(slot, where, limits, template.rules)
+        }
         val used = mutableSetOf<String>()
         problems += textUses(template, where, limits, declared, used)
-        problems += columnUses(template, where, declared, used)
-        used += template.slots.filter { it.kind == "days" }.flatMap { it.between }
+        problems += columnUses(template, where, limits, declared, used)
+        used += template.slots.flatMap { it.between }
+        used += template.slots.filter { it.forRule != null }.map { it.id }
         problems += declared.keys.filter { it !in used }.map { "$where: slot $it declared but never used" }
         return problems
     }
 
+    /**
+     * Inputs of a days or computed slot. days reads two date slots declared anywhere; a computed slot reads only slots declared before
+     * it, so no loop is possible, and they must hold a date: a date slot or an earlier computed date.
+     */
     private fun betweenProblems(
         slot: Part2Slot,
         where: String,
         declared: Map<String, Part2Slot>,
+        before: List<Part2Slot>,
     ): List<String> {
-        if (slot.kind != "days") return if (slot.between.isNotEmpty()) listOf("$where: slot ${slot.id}: only a days slot has between") else emptyList()
-        val ok = slot.between.size == 2 && slot.between[0] != slot.between[1] && slot.between.all { declared[it]?.kind == "date" }
-        return if (ok) emptyList() else listOf("$where: slot ${slot.id}: between must name two different date slots")
+        val at = "$where: slot ${slot.id}"
+        if (slot.kind != "days" && slot.kind !in COMPUTED) return if (slot.between.isNotEmpty()) listOf("$at: only a days or computed slot has between") else emptyList()
+        if (slot.kind == "days") {
+            val ok = slot.between.size == 2 && slot.between[0] != slot.between[1] && slot.between.all { declared[it]?.kind == "date" }
+            return if (ok) emptyList() else listOf("$at: between must name two different date slots")
+        }
+        val earlier = before.associate { it.id to it.kind }
+        val dated = slot.between.all { earlier[it] == "date" || earlier[it] in COMPUTED }
+        return when {
+            slot.kind == "next_day" -> if (dated && slot.between.size == 1) emptyList() else listOf("$at: between must name one date slot")
+            dated && slot.between.size in 2..MAX_INPUTS && slot.between.toSet().size == slot.between.size -> emptyList()
+            else -> listOf("$at: between must name 2 to $MAX_INPUTS different date slots")
+        }
+    }
+
+    /** `if_missing` (optional, and what prints without it) and `for` (an answer only a check reads) belong to plain slots. */
+    private fun optionalProblems(
+        slot: Part2Slot,
+        where: String,
+        limits: Part2TemplateLimits,
+        rules: List<String>,
+    ): List<String> {
+        val at = "$where: slot ${slot.id}"
+        val problems = mutableListOf<String>()
+        slot.ifMissing?.let {
+            if (slot.kind !in PLAIN) problems += "$at: if_missing is only for a date, number or text slot"
+            problems += textProblems(at, "if_missing", it, limits.note)
+        }
+        slot.forRule?.let {
+            when {
+                slot.kind !in PLAIN -> problems += "$at: for is only for a date, number or text slot"
+                it !in rules -> problems += "$at: for names a rule the template does not run"
+            }
+        }
+        return problems
     }
 
     private fun useProblem(
@@ -67,6 +113,26 @@ internal object GuidePart2SlotValidator {
         }
     }
 
+    /** Limits, markup and placeholders of one shipped text; the slots it uses go into [used]. [label] is the field or column named. */
+    private fun oneText(
+        text: String,
+        label: String,
+        where: String,
+        limits: Part2TemplateLimits,
+        declared: Map<String, Part2Slot>,
+        used: MutableSet<String>,
+    ): List<String> {
+        val problems = textProblems(where, label, text, limits.narrative).toMutableList()
+        val (refs, wellFormed) = Part2Placeholders.scan(text)
+        val parsed = refs.map { Part2Placeholders.parse(it) }
+        if (!wellFormed || null in parsed) problems += "$where: $label has a malformed placeholder"
+        for (ref in parsed.filterNotNull()) {
+            used += ref.slot
+            useProblem(ref, where, declared)?.let { problems += it }
+        }
+        return problems
+    }
+
     private fun textUses(
         template: Part2Template,
         where: String,
@@ -74,53 +140,52 @@ internal object GuidePart2SlotValidator {
         declared: Map<String, Part2Slot>,
         used: MutableSet<String>,
     ): List<String> {
-        val problems = mutableListOf<String>()
         val fields = listOf("narrative" to template.narrative, "authority" to template.authority, "certificate" to template.certificate)
-        for ((field, text) in fields) {
-            if (text == null) continue
-            problems += textProblems(where, field, text, limits.narrative)
-            val (refs, wellFormed) = Part2Placeholders.scan(text)
-            val parsed = refs.map { Part2Placeholders.parse(it) }
-            if (!wellFormed || null in parsed) problems += "$where: $field has a malformed placeholder"
-            for (ref in parsed.filterNotNull()) {
-                used += ref.slot
-                useProblem(ref, where, declared)?.let { problems += it }
-            }
-        }
-        return problems
+        return fields.flatMap { (field, text) -> if (text == null) emptyList() else oneText(text, field, where, limits, declared, used) }
     }
 
     private fun columnUses(
         template: Part2Template,
         where: String,
+        limits: Part2TemplateLimits,
         declared: Map<String, Part2Slot>,
         used: MutableSet<String>,
     ): List<String> {
         val problems = mutableListOf<String>()
         if (template.data.size != DATA_COLUMNS) problems += "$where: data must have exactly $DATA_COLUMNS columns"
         val columns = listOf("from" to template.from, "to" to template.to) + template.data.mapIndexed { i, c -> "data${i + 1}" to c }
-        for ((name, column) in columns) problems += columnProblems("$where: column $name", name, column, where, declared, used)
+        for ((name, column) in columns) problems += columnProblems(name, column, where, limits, declared, used)
         return problems
     }
 
     private fun columnProblems(
-        at: String,
         name: String,
         column: Part2Column,
         where: String,
+        limits: Part2TemplateLimits,
         declared: Map<String, Part2Slot>,
         used: MutableSet<String>,
     ): List<String> {
-        val ref = column.slot?.let { Part2Placeholders.parse(it) }
+        val at = "$where: column $name"
+        val slot = column.slot
+        val ref = slot?.let { Part2Placeholders.parse(it) }
         return when {
             column.need !in NEEDS -> listOf("$at need must be required, optional or none")
-            column.need == "none" -> if (column.slot != null) listOf("$at is not required but names a slot") else emptyList()
-            column.slot.isNullOrEmpty() -> listOf("$at needs a slot")
+            column.need == "none" ->
+                listOfNotNull(
+                    if (slot != null) "$at is not required but names a slot" else null,
+                    if (column.text != null) "$at is not required but has text" else null,
+                )
+            !slot.isNullOrEmpty() && column.text != null -> listOf("$at names a slot and text, use one")
+            column.text != null ->
+                if (name == "from" || name == "to") listOf("$at must name a date slot, not text") else oneText(column.text, "column $name", where, limits, declared, used)
+            slot.isNullOrEmpty() -> listOf("$at needs a slot")
             ref == null -> listOf("$at has a malformed slot reference")
             else -> {
                 used += ref.slot
                 val dateOnly = name == "from" || name == "to"
-                val notDate = dateOnly && declared[ref.slot] != null && (declared[ref.slot]?.kind != "date" || ref.part != null)
+                val kind = declared[ref.slot]?.kind
+                val notDate = dateOnly && kind != null && ((kind != "date" && kind !in COMPUTED) || ref.part != null)
                 listOfNotNull(useProblem(ref, where, declared), if (notDate) "$at must name a date slot" else null)
             }
         }

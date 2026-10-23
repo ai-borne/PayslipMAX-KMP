@@ -49,4 +49,17 @@ class CivilCalendarApiTest {
         assertEquals("31/12/2099", CivilCalendar.format(date(2099, 12, 31)))
         assertEquals("01/01/2000", CivilCalendar.format(date(2000, 1, 1)))
     }
+
+    @Test
+    fun theNextDayRollsOverMonthsYearsAndLeapDaysAndStopsAtTheLastAllowedYear() {
+        // why: the rejoining day is the day after the leave ends; a wrong rollover would print a wrong ration and R&H date.
+        assertEquals(date(2026, 9, 5), CivilCalendar.nextDay(date(2026, 9, 4)))
+        assertEquals(date(2026, 10, 1), CivilCalendar.nextDay(date(2026, 9, 30)))
+        assertEquals(date(2027, 1, 1), CivilCalendar.nextDay(date(2026, 12, 31)))
+        assertEquals(date(2024, 2, 29), CivilCalendar.nextDay(date(2024, 2, 28)))
+        assertEquals(date(2023, 3, 1), CivilCalendar.nextDay(date(2023, 2, 28)))
+        assertEquals(date(2100, 12, 31), CivilCalendar.nextDay(date(2100, 12, 30)))
+        assertEquals(null, CivilCalendar.nextDay(date(2100, 12, 31)), "past the last allowed year there is no next day")
+        assertEquals(1L, CivilCalendar.daysBetween(date(2026, 3, 31), CivilCalendar.nextDay(date(2026, 3, 31))!!))
+    }
 }

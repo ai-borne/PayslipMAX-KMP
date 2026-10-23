@@ -168,7 +168,7 @@ class Part2DraftEngineTest {
     @Test
     fun aRuleTheAppDoesNotKnowIsSkippedNeverCrashed() {
         // why: the contract test stops this shipping; at run time an unknown check must not take the draft down with it.
-        val bare = Part2DraftEngine(SyntheticPart2Templates.lookup, Part2Rules.shipped())
+        val bare = Part2DraftEngine(SyntheticPart2Templates.lookup, Part2Rules(emptyList()))
         val result = assertIs<DraftResult.Drafted>(bare.draft(LeaveEventInput(listOf(request(GRANT, leave, SyntheticPart2Templates.ANSWER_RATION)))))
         assertEquals(emptyList(), result.slip.findings)
         assertEquals(listOf(GRANT), rows(result.slip).map { it.code }, "an unknown condition does not hold, so its link is not drafted")

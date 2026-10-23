@@ -162,6 +162,22 @@ class GuideLoaderIosPerfTest {
             PreClaimFlowContract.assertTheWorksheetFlowRunsOnTheShippedBundle(bundle)
         }
 
+    @Test
+    fun batchOneDraftsTheAnnualLeaveEventWithinBudgetOnNative() =
+        runTest {
+            val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())
+            Part2BatchOneContract.assertBatchOneDraftsOnTheShippedBundle(bundle)
+
+            // The leave form redrafts on every change: 200 drafts of the 7-row event (30-day AL with ration and R&H) on the real templates.
+            val engine = Part2BatchOneContract.engine(bundle)
+            val mark = TimeSource.Monotonic.markNow()
+            repeat(DRAFT_REPEATS) { Part2BatchOneContract.draftAnnualLeave(engine) }
+            val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+
+            println("part2 batch one on Native: $DRAFT_REPEATS drafts of the 7-row event ${elapsedMs}ms")
+            assertTrue(elapsedMs < DRAFT_BUDGET_MS, "$DRAFT_REPEATS drafts took ${elapsedMs}ms, budget ${DRAFT_BUDGET_MS}ms")
+        }
+
     private companion object {
         // Generous for a debug simulator build: the first Guide open waits on this, and a quadratic
         // regression in the parser or validator would blow far past it.
@@ -179,5 +195,9 @@ class GuideLoaderIosPerfTest {
         // E6: ten profile builds over a 140-month history (a card open builds one); the same margin again.
         const val FIGURE_REPEATS = 10
         const val FIGURE_BUDGET_MS = 1_500L
+
+        // Part II batch 1: 200 drafts of the 7-row annual-leave event on the real templates (the form redrafts on each change).
+        const val DRAFT_REPEATS = 200
+        const val DRAFT_BUDGET_MS = 3_000L
     }
 }

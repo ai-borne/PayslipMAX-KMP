@@ -208,11 +208,14 @@ class BundlePart2(unittest.TestCase):
         self.assertEqual(section, {**part2_nav.for_bundle(part2_nav.load(), codes),
                                    **part2_templates.for_bundle(part2_templates.load_templates(), part2_rules.load_rules(), codes)})
 
-    def test_the_section_carries_the_template_limits_rules_and_templates_even_before_any_content_exists(self):
+    def test_the_section_carries_the_template_limits_rules_and_templates_as_authored(self):
         # why: the app reads the limits from the section, and an absent key would be a second copy of them in Kotlin.
         section = BUILT['part2']
         self.assertEqual(section['template_limits'], part2_rules.load_rules()['limits'])
-        self.assertEqual((section['rules'], section['templates']), (part2_rules.load_rules()['rules'], part2_templates.load_templates()))
+        self.assertEqual(section['rules'], part2_rules.load_rules()['rules'])
+        authored = part2_templates.load_templates()
+        self.assertEqual([t['code'] for t in section['templates']], [t['code'] for t in authored], 'authored order is kept')
+        self.assertEqual([{k: v for k, v in t.items() if k != 'rev'} for t in section['templates']], [part2_templates._ship(t) for t in authored])
 
     def test_a_template_edit_makes_the_committed_bundle_stale_and_a_broken_one_stops_the_build(self):
         codes, rules = part2_codes_check.load(), part2_synthetic.rules()
@@ -264,9 +267,12 @@ class BundleFile(unittest.TestCase):
         self.assertEqual(committed, bundle.render(BUILT), 'run python3 docs/Plan/rule_cards/tools/bundle.py')
 
     def test_committed_bundle_has_no_internal_keys(self):
+        # why: the part2 section is exempt because a Part II template's `from` is the manual's From-date column, not provenance; its own
+        # keys are whitelisted by part2_templates (TEMPLATE_KEYS, SLOT_KEYS, LINK_KEYS) and tested there.
         with open(BUNDLE_PATH, encoding='utf-8') as fh:
-            text = fh.read()
-        self.assertIsNone(re.search(r'"(from|open)"\s*:', text))
+            shipped = json.load(fh)
+        shipped.pop('part2')
+        self.assertIsNone(re.search(r'"(from|open)"\s*:', json.dumps(shipped, ensure_ascii=False)))
 
     def test_committed_bundle_figures_carry_only_whitelisted_fields(self):
         # An authoring-only field (authority, evidence, owner notes, the rma circular remarks) must never reach the APK.

@@ -44,5 +44,6 @@ class GuideBundleAndroidContractTest {
             Part2LookupContract.assertRibbonsHomeEverySerialOnce(bundle)
             Part2LookupContract.assertOnlyLeaveAndRecordsAreBuiltAndFiftyThreeSerialsAreLookupOnly(bundle)
             Part2LookupContract.assertRulesMatchTheRegistry(bundle)
+            Part2BatchOneContract.assertBatchOneDraftsOnTheShippedBundle(bundle)
         }
 }

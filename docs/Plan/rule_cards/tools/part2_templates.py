@@ -122,10 +122,10 @@ def _template(t, limits, rules, known, seen, kinds):
     if 'print' in t and PRINT_OVERRIDES.get(code) != t['print']:
         errs.append(f'{where}: print override must be REJOINAL to REJOIN')
     slots, slot_errs = slot_table(t, where, limits, kinds)
-    used = {p for s in slots.values() if isinstance(s.get('between'), list) for p in s['between']}
+    used = {p for s in slots.values() if isinstance(s.get('between'), list) for p in s['between']} | {sid for sid, s in slots.items() if 'for' in s}
     errs += slot_errs
     used |= text_uses(t, where, limits, slots, errs)
-    used |= column_uses(t, where, slots, errs)
+    used |= column_uses(t, where, limits, slots, errs)
     errs += [f'{where}: slot {sid} declared but never used' for sid in slots if sid not in used]
     errs += _checks(t, where, limits, rules)
     errs += _links(t, where, limits, rules, known)

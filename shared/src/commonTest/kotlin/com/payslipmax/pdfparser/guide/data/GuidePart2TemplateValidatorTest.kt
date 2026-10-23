@@ -138,7 +138,7 @@ class GuidePart2TemplateValidatorTest {
     fun aSlotIdIsWellFormedAndUniqueAndItsKindIsKnown() {
         assertProblem(section.editTemplate(NOTE) { it.copy(slots = listOf(it.slots[0], it.slots[1].copy(id = "Remark"))) }, "template $NOTE: slot Remark: id must be lowercase letters, digits and underscores")
         assertProblem(section.editTemplate(NOTE) { it.copy(slots = listOf(it.slots[0].copy(id = "remark"), it.slots[1])) }, "template $NOTE: duplicate slot id remark")
-        assertProblem(section.editTemplate(NOTE) { it.copy(slots = listOf(it.slots[0], it.slots[1].copy(kind = "money"))) }, "template $NOTE: slot remark: kind must be date, number, text, days or ref")
+        assertProblem(section.editTemplate(NOTE) { it.copy(slots = listOf(it.slots[0], it.slots[1].copy(kind = "money"))) }, "template $NOTE: slot remark: kind must be date, number, text, days, ref, earliest, latest or next_day")
     }
 
     @Test
@@ -146,7 +146,7 @@ class GuidePart2TemplateValidatorTest {
         val between = "template $GRANT: slot days: between must name two different date slots"
         assertProblem(section.editTemplate(GRANT) { it.copy(slots = it.slots.map { s -> if (s.id == "days") s.copy(between = listOf("leave_from")) else s }) }, between)
         assertProblem(section.editTemplate(GRANT) { it.copy(slots = it.slots.map { s -> if (s.id == "days") s.copy(between = listOf("leave_from", "year")) else s }) }, between)
-        assertProblem(section.editTemplate(NOTE) { it.copy(slots = listOf(it.slots[0], it.slots[1].copy(between = listOf("noted_on", "noted_on")))) }, "template $NOTE: slot remark: only a days slot has between")
+        assertProblem(section.editTemplate(NOTE) { it.copy(slots = listOf(it.slots[0], it.slots[1].copy(between = listOf("noted_on", "noted_on")))) }, "template $NOTE: slot remark: only a days or computed slot has between")
     }
 
     @Test

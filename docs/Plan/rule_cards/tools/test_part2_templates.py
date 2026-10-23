@@ -146,7 +146,7 @@ class Slots(unittest.TestCase):
                       broken(lambda ts, rs: template('DELTANOTE', ts)['slots'][1].update(id='Remark')))
         self.assertIn('template DELTANOTE: duplicate slot id remark',
                       broken(lambda ts, rs: template('DELTANOTE', ts)['slots'][0].update(id='remark')))
-        self.assertIn('template DELTANOTE: slot remark: kind must be date, number, text, days or ref',
+        self.assertIn('template DELTANOTE: slot remark: kind must be date, number, text, days, ref, earliest, latest or next_day',
                       broken(lambda ts, rs: template('DELTANOTE', ts)['slots'][1].update(kind='money')))
 
     def test_a_days_slot_counts_between_two_declared_date_slots(self):
@@ -154,7 +154,7 @@ class Slots(unittest.TestCase):
                       broken(lambda ts, rs: template('ALPHAGRANT', ts)['slots'][2].update(between=['leave_from'])))
         self.assertIn('template ALPHAGRANT: slot days: between must name two different date slots',
                       broken(lambda ts, rs: template('ALPHAGRANT', ts)['slots'][2].update(between=['leave_from', 'year'])))
-        self.assertIn('template DELTANOTE: slot remark: only a days slot has between',
+        self.assertIn('template DELTANOTE: slot remark: only a days or computed slot has between',
                       broken(lambda ts, rs: template('DELTANOTE', ts)['slots'][1].update(between=['noted_on', 'noted_on'])))
 
     def test_an_order_reference_is_used_by_its_number_or_its_date_and_nothing_else_is(self):

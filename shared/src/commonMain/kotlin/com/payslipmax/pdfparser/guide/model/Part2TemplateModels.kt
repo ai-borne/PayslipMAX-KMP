@@ -39,7 +39,9 @@ data class Part2RuleDecl(
 
 /**
  * A question the officer answers once per event. [kind] is `date`, `number`, `text`, `ref` (an order number and date, used as `{id.no}`
- * and `{id.date}`) or `days` (counted for the officer [between] two date slots, both days included).
+ * and `{id.date}`) or one the app works out from other dates, named in [between]: `days` (both days counted), `earliest` / `latest`
+ * (of the dates the officer gave) and `next_day` (the day after). [ifMissing] makes a date, number or text slot optional and is what
+ * prints when it is not answered; [forRule] marks a slot only a check reads, which prints nowhere.
  */
 @Serializable
 data class Part2Slot(
@@ -48,13 +50,19 @@ data class Part2Slot(
     val label: String,
     val help: String,
     val between: List<String> = emptyList(),
+    @SerialName("if_missing") val ifMissing: String? = null,
+    @SerialName("for") val forRule: String? = null,
 )
 
-/** One column of an occurrence row (From, To, Data 1-4). [need] is `required`, `optional` or `none` (the manual leaves it empty). */
+/**
+ * One column of an occurrence row (From, To, Data 1-4). [need] is `required`, `optional` or `none` (the manual leaves it empty). A
+ * column that is not `none` names one [slot] or holds [text] that joins words and placeholders (Data 4 "order no. and date").
+ */
 @Serializable
 data class Part2Column(
     val need: String,
     val slot: String? = null,
+    val text: String? = null,
 )
 
 /** An order that goes with another: [basis] `manual` cites [page] and [note]; `practice` cites none. [condition] names a rule that must hold. */

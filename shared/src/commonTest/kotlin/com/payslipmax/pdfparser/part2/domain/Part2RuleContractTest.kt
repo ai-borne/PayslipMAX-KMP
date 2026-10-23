@@ -58,7 +58,11 @@ class Part2RuleContractTest {
     }
 
     @Test
-    fun theShippedRegistryStartsEmptyBecauseNoRealRuleExistsUntilPhase2b() {
-        assertEquals(emptySet(), Part2Rules.shipped().ids)
+    fun theShippedRegistryHoldsExactlyTheRuleFamiliesOfTheShippedBatches() {
+        // why: Part2Rules.shipped() is the one place a family joins the app; a family left out would leave its declared rules unimplemented.
+        val families = (LeaveRules.all + RationRules.all + AreaRules.all).map { it.id }
+        assertEquals(families.toSet(), Part2Rules.shipped().ids)
+        assertEquals(families.size, Part2Rules.shipped().ids.size, "no family repeats another's id")
+        assertEquals(19, families.size)
     }
 }
