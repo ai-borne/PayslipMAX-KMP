@@ -337,7 +337,7 @@ The next phase starts only after the owner accepts this summary.
 | 3. Storage: schema 15, repository, backup v5 with bounded restore | done, accepted (2026-10-23) | 8cb0a40b |
 | 3b. Chunked backup: pages as binary records, one page in memory at a time | done, accepted (2026-10-23) | 32ca5316 |
 | 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | done, accepted (2026-10-23); Pixel 9 walk done (Phase 11 item 12), hosts folded (item 13) | 19416f6e, 34c2f296 |
-| 4b. Leave draft flow + slip preview (Premium), autosave | built and gate green (2026-10-23); **the Pixel 9 walk is not done** (Phase 11 item 15), so the exit is not met; awaiting the owner | see git log |
+| 4b. Leave draft flow + slip preview (Premium), autosave | built, gate green and Pixel 9 walk done (2026-10-23); awaiting the owner's acceptance | see git log |
 | 5. Print + "Check the HRMS draft" | not started | — |
 | 6a. Page pipeline: scanner spike, `PageScanner`, `PageEncoder`, merged-manifest guard | not started | — |
 | 6b. Vault UI: order no./date, linking, last-order line, follow-up references | not started | — |
@@ -347,7 +347,7 @@ The next phase starts only after the owner accepts this summary.
 | 8. Rest of Chapter 5, incl. ACCLVE and ENCASH (batch 3) | not started | — |
 | 9. Area re-grants: HAA, SCCIA, field, TPTA (batch 4) | not started | — |
 | 10. Release hardening, owner content sign-off, iPhone walk, docs | not started | — |
-| 11. Pending items (collected from earlier phases) | open: items 6, 8, 10, 11, 14, 15 (items 1-4, 7, 9, 12 and 13 closed; 5 not closable) | — |
+| 11. Pending items (collected from earlier phases) | open: items 6, 8, 10, 11, 14 (items 1-4, 7, 9, 12, 13 and 15 closed; 5 not closable) | — |
 
 Each phase leaves the app shippable: `PART2_ENABLED` is `false` until Phase 10, so a flag-off build behaves exactly as
 before. Each phase's "Debt watch" lists the debt most likely to appear and how it is cleared inside that phase.
@@ -860,12 +860,25 @@ them in its summary. An item closes with a test or a command output, not a state
    Native timing of the search walk were observed (794 ms for about 930 searches, budget 1,500 ms). Nothing was driven on an iPhone: the levels are inline in
    the Guide tab like every other Guide level, with the on-screen back header, and the iOS edge-swipe does not apply to a tab. Closed by the Phase 10
    iPhone checklist (browse, search, back at each level, light and dark). Phase 4b adds the draft screens to that list: the form (date picker, chips, order reference), the slip preview, the drafts list with its delete dialog and the upgrade panel.
-15. **Phase 4b: the Pixel 9 walk.** OPEN, needs the owner. The plan's device bullet (draft AL with ration and R&H, kill the process and restore, lock and unlock, check
-   "Force Free") was not done: the phone runs the Play-signed build with the owner's data, so a local debug install first needs `adb uninstall`, which wipes it, and the
-   owner must export a `.pcda` backup and say "done" first. Not observed yet by anything automated either: the real calendar dialog on a Part II date box and the order
-   reference's number and date controls (the Robolectric tests set dates through the model; the dialog itself is `PreClaimDateBox`, driven only by the TA/DA tests),
-   system Back from a restored draft, and a small screen or large font. How closed: the walk (flag flipped locally, `LaunchFlags.kt` restored byte-identical, debug build
-   uninstalled, owner reinstalls from Play and restores the backup), recorded here with what was seen.
+15. **Phase 4b: the Pixel 9 walk.** CLOSED 2026-10-23 (owner: "proceed with phone check"). The Play copy had already been uninstalled after the 4a walk, so no app data was on the
+   phone and no backup was needed. A debug build with `PART2_ENABLED` flipped locally was installed and driven over adb (uiautomator for taps and text, screenshots kept in the
+   session scratchpad only). Observed on the Pixel 9 (Android, dark theme):
+   - Case rows carry "Draft this order"; the GTDAL form shows the ration tick, the R&H chips (None first), the date boxes with the real calendar dialog (dates picked with it), digits and
+     text boxes and the half-filled order reference's error with "Clear"; the footer said "Still needed: Serial in the notification" until it was typed, then "See the slip" opened.
+   - Slip for AL 06-20 Oct with ration and GTDRH12: one order, 7 rows in date order (SORS, GTDRSHNA, STPRH, GTDAL, TORS, STPRSHNA, GTDRH12), 15 days counted inclusively, the practice rows
+     labelled "Seen in practice" and the manual rows "ODP-2026, p 97, note 1.1" etc.
+   - Process death: pid 31096 killed with `run-as ... kill -9` after HOME, new pid 631: the app reopened on the same slip with every row; Edit showed every answer (area details included).
+     An earlier-taken 50 days raised the 60-day `ack` card ("ODP-2026, p 115, note 2") with its tick; ticking it showed "All checks are ticked".
+   - Lock: with the app passcode on, a kill and relaunch showed the lock screen; unlocking returned to the same slip, read back from the database, with the tick cleared (ticks are not saved).
+   - Force Free (the lapsed state, one stored draft): the Part II home still listed "Your drafts"; opening it gave the read-only slip with "Your Premium has ended..." and only "Delete draft"; the
+     case rows carried "Premium" and "Draft this order" opened the upgrade panel; delete asked first, Cancel kept the draft and Delete removed it.
+   - System Back from the form returned to the case; opening a form and leaving it without typing left no draft.
+   Reverted: `LaunchFlags.kt` byte-identical (sha256 989cf71e9e52262a480b3823c047510270cc552587db7c679c37c861c1ca87a1), the debug build uninstalled (the phone had no app when the walk
+   began), the phone still in dark theme. The owner reinstalls from Play and restores the `.pcda` backup.
+   Not observed: the Play upgrade sheet behind "Unlock with Premium" (needs real billing), light theme, TalkBack, a small screen or large font, and the in-process lock (Android locks only on a
+   cold start, so the lock path walked was restore-from-database; the in-process discard is proved by `GuideNavPart2DraftTest` and the iOS lock is the Phase 10 iPhone walk).
+   Seen and not fixed (no Part II defect): the certificate line reads "Certificate: CERTIFICATE: ..." because the manual's own text begins with that word and the row adds its label; and the lock
+   screen showed "Incorrect PIN, please try again" before any PIN was entered (existing lock-screen behaviour, not touched in 4b). Both are for the owner to decide.
 
 ## Risks and controls
 
