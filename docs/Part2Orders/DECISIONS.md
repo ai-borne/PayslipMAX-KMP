@@ -156,7 +156,7 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 
 | Topic | Decision |
 |---|---|
-| Phase 2b | Summary accepted. The owner has NOT yet checked the 24 templates against the printed pages (plan Phase 11 item 7), so 2b's exit is not met. Phase 3 touches no content, so it went ahead. |
+| Phase 2b | Summary accepted. The owner has NOT yet checked the 24 templates against the printed pages (plan Phase 11 item 7), so 2b's exit is not met. Phase 3 touches no content, so it went ahead. (Closed later the same day: Round 15.) |
 | Atomic restore and the DAO | `Part2Dao` holds all Part II reads and per-item writes. `PayslipDao` gains only the bulk inserts and clears for the three tables (the restore and "delete all" must share one transaction with everything else the officer made). It grew 204 -> 233 lines. |
 | Backup MERGE | Match by id; the newer `updatedAt` wins; a tie goes to the backup. A page is immutable, so a page the device already holds is left alone. |
 | Deleting | Deleting a draft keeps its orders. Deleting an order deletes its pages (done in one transaction in code, with no foreign key, because `INSERT OR REPLACE` on a parent row would cascade). |
@@ -169,7 +169,7 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 |---|---|
 | Problem | Measured with a full vault (120 pages of 500 KB, about 61 MB): backing it up needed about 0.8 GB of heap (iOS process peak 1.2 GB), because the archive was one JSON string holding every page as Base64. An Android app heap is 256-512 MB. |
 | Choice | A chunked backup, built before the scanner (6a) can add any page, instead of lowering the 60 MB warning or accepting the risk. The warning and the 100 MB ceiling stay. |
-| Acceptance | Phase 3 (8cb0a40b) and Phase 3b (32ca5316) accepted by the owner, 2026-10-23. The check of the 24 templates against the printed pages is still outstanding (plan Phase 11 item 7). |
+| Acceptance | Phase 3 (8cb0a40b) and Phase 3b (32ca5316) accepted by the owner, 2026-10-23. The check of the 24 templates against the printed pages is still outstanding (plan Phase 11 item 7; closed later the same day: Round 15). |
 | Shape | Backup v5 is unreleased, so its format changed: with scanned pages the archive is the encrypted metadata document followed by one binary record per page and an authenticated page count; a vault with no pages still writes the old single encrypted document. A restore reads one page at a time and re-encrypts each page only as it is written. |
 
 ## Round 15: 2b exit, the check against the printed pages (owner delegated it, 2026-10-23)
