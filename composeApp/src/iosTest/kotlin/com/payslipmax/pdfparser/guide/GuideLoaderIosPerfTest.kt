@@ -7,6 +7,7 @@ import com.payslipmax.pdfparser.guide.domain.GuideSearchScope
 import com.payslipmax.pdfparser.testing.SyntheticGuideRuleChange
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.time.TimeSource
 
@@ -176,6 +177,23 @@ class GuideLoaderIosPerfTest {
 
             println("part2 batch one on Native: $DRAFT_REPEATS drafts of the 7-row event ${elapsedMs}ms")
             assertTrue(elapsedMs < DRAFT_BUDGET_MS, "$DRAFT_REPEATS drafts took ${elapsedMs}ms, budget ${DRAFT_BUDGET_MS}ms")
+        }
+
+    @Test
+    fun theLeaveFormRebuildsItsScreenWithinBudgetOnNative() =
+        runTest {
+            val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())
+            Part2DraftContract.assertEveryCheckAndQuestionHasItsWords(bundle)
+            Part2DraftContract.assertTheFormCompletesEveryOfferedCode(bundle)
+
+            // Phase 4b: the form rebuilds its whole screen (fields, questions, slip, checks) on every change, on the main thread.
+            val builder = Part2DraftContract.newBuilder(bundle)
+            val mark = TimeSource.Monotonic.markNow()
+            repeat(DRAFT_REPEATS) { assertEquals(7, Part2DraftContract.rowsOf(builder)) }
+            val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+
+            println("part2 leave form on Native: $DRAFT_REPEATS rebuilds of the 7-row screen ${elapsedMs}ms")
+            assertTrue(elapsedMs < DRAFT_BUDGET_MS, "$DRAFT_REPEATS rebuilds took ${elapsedMs}ms, budget ${DRAFT_BUDGET_MS}ms")
         }
 
     @Test

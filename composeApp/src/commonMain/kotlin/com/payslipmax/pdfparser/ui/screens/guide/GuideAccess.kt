@@ -13,6 +13,8 @@ import com.payslipmax.pdfparser.ui.rememberHasAccess
 /** What the Guide needs to know about entitlement: whether the paid half is open, and how to offer the upgrade. */
 data class GuideAccess(
     val isUnlocked: Boolean,
+    /** Whether Part II drafting is open: [com.payslipmax.pdfparser.subscription.FeatureGate.PART2_ORDERS], its own gate, independent of the Guide's. */
+    val part2Unlocked: Boolean = isUnlocked,
     val onUnlock: () -> Unit,
 )
 

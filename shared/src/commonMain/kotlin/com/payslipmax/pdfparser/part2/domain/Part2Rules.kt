@@ -67,7 +67,11 @@ internal fun conditionRule(
  * two lists equal ([problemsAgainst]). Each rule family (annual leave, ration, area allowances) is its own set of rules, so a new family
  * is a new list given to the registry, not an edit to the engine.
  */
-class Part2Rules(rules: List<Part2Rule>) {
+class Part2Rules(
+    rules: List<Part2Rule>,
+    /** The form's questions, owned by the rule families that read their answers. */
+    val questions: List<AnswerQuestion> = emptyList(),
+) {
     private val byId: Map<String, Part2Rule>
 
     init {
@@ -96,7 +100,7 @@ class Part2Rules(rules: List<Part2Rule>) {
     }
 
     companion object {
-        /** The rules the app ships. Each content batch adds its rule family here and nowhere else. */
-        fun shipped(): Part2Rules = Part2Rules(LeaveRules.all + RationRules.all + AreaRules.all)
+        /** The rules and form questions the app ships. Each content batch adds its rule family here and nowhere else. */
+        fun shipped(): Part2Rules = Part2Rules(LeaveRules.all + RationRules.all + AreaRules.all, RationRules.questions + AreaRules.questions)
     }
 }

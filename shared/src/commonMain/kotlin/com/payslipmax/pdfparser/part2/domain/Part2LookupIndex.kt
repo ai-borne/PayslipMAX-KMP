@@ -42,6 +42,10 @@ class Part2LookupIndex(private val lookup: Part2Lookup) {
     private val builtRibbons = lookup.ribbons.filter { it.built }
     private val entries = lookup.serials.map { Entry(it, GuideRuleNumberParser.words(it.name).toSet()) }
 
+    /** Every code the officer can start a draft with, in the manual's order: the template codes of the built cases' own serials. */
+    fun draftOptions(): List<Part2DraftOption> =
+        builtRibbons.flatMap { it.cases }.flatMap { case -> case.serials.filter { it !in case.lookup }.mapNotNull { pages[it]?.let(::draftOption) } }.distinctBy { it.code }
+
     fun ribbons(): List<Part2RibbonTile> = builtRibbons.map { Part2RibbonTile(it.id, it.title, it.cases.size) }
 
     fun ribbon(id: String): Part2RibbonContent? = builtRibbons.firstOrNull { it.id == id }?.let { r -> Part2RibbonContent(r.id, r.title, r.cases.map(::tile)) }
@@ -53,7 +57,7 @@ class Part2LookupIndex(private val lookup: Part2Lookup) {
                 id = case.id,
                 title = case.title,
                 span = span(case.serials),
-                rows = case.serials.mapNotNull { pages[it]?.let { page -> row(page, page.serial in lookupOnly) } },
+                rows = case.serials.mapNotNull { pages[it]?.let { page -> row(page, page.serial in lookupOnly, drafts = true) } },
                 also = case.also.mapNotNull { pages[it]?.let { page -> row(page, lookupOnly = false) } },
             )
         }
@@ -119,11 +123,17 @@ class Part2LookupIndex(private val lookup: Part2Lookup) {
         return page.codes.firstOrNull { it.lowercase().startsWith(term) }?.let { CodeHit(it, exact = false) }
     }
 
+    private val templateCodes = lookup.templates.map { it.code }.toSet()
+
+    /** The first of a serial's codes that has a template: the one a draft asks for. */
+    private fun draftOption(page: Part2CodePage): Part2DraftOption? = page.codes.firstOrNull { it in templateCodes }?.let { Part2DraftOption(it, page.name) }
+
     private fun row(
         page: Part2CodePage,
         lookupOnly: Boolean,
         openCode: String? = null,
-    ) = Part2CodeRow(page.serial, page.codes, openCode ?: page.codes.first(), page.name, page.group, lookupOnly)
+        drafts: Boolean = false,
+    ) = Part2CodeRow(page.serial, page.codes, openCode ?: page.codes.first(), page.name, page.group, lookupOnly, if (drafts && !lookupOnly) draftOption(page)?.code else null)
 
     private fun tile(case: Part2Case) = Part2CaseTile(case.id, case.title, span(case.serials), case.serials.size)
 

@@ -11,4 +11,7 @@ object RationRules {
     const val ANSWER_ON_RATION = "ration"
 
     val all: List<Part2Rule> = listOf(conditionRule(ON_RATION) { ANSWER_ON_RATION in it.request.answers })
+
+    /** The form's one ration question; its wording is `Part2Strings`' under this id. */
+    val questions: List<AnswerQuestion> = listOf(AnswerQuestion.YesNo("ration", ANSWER_ON_RATION, setOf(ON_RATION)))
 }

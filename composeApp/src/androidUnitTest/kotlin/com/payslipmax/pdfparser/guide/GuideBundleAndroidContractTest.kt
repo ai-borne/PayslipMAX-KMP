@@ -5,6 +5,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 /**
  * The real bundle is read through Android assets, exactly as production reads it (compose resources are
@@ -45,6 +46,9 @@ class GuideBundleAndroidContractTest {
             Part2LookupContract.assertOnlyLeaveAndRecordsAreBuiltAndFiftyThreeSerialsAreLookupOnly(bundle)
             Part2LookupContract.assertRulesMatchTheRegistry(bundle)
             Part2BatchOneContract.assertBatchOneDraftsOnTheShippedBundle(bundle)
+            Part2DraftContract.assertEveryCheckAndQuestionHasItsWords(bundle)
+            Part2DraftContract.assertTheFormCompletesEveryOfferedCode(bundle)
+            assertEquals(7, Part2DraftContract.rowsOf(Part2DraftContract.newBuilder(bundle)))
             Part2BrowseContract.assertTilesShowOnlyForTheBuiltRibbons(bundle)
             Part2BrowseContract.assertEveryCodePageIsReachableBySerialCodeAndName(bundle)
             Part2BrowseContract.assertOnlyTheTwoBlankGroupsAreBlankAndEveryOtherGroupHasItsMeaning(bundle)

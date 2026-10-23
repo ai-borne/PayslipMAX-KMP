@@ -17,7 +17,12 @@ data class Part2CodeRow(
     val name: String,
     val group: String?,
     val lookupOnly: Boolean,
+    /** The code to draft an order for when this row is one of a built case's own serials that has a template; null on every other row. */
+    val draftCode: String? = null,
 )
+
+/** A code the officer can start a draft with, and the manual's name for it. */
+data class Part2DraftOption(val code: String, val name: String)
 
 /** A code the slip prints differently from the manual's Annexure II (REJOINAL is printed REJOIN, as HRMS publishes it). */
 data class Part2PrintedAs(val code: String, val printed: String)

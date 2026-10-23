@@ -68,7 +68,7 @@ internal object OccurrenceDrafter {
      * is a slot that says what prints without it, nor one only a check reads. A slot used only to work out another is not required
      * either: the slot worked out is, and it needs at least one date to work from.
      */
-    private fun requiredSlots(template: Part2Template): Set<String> {
+    internal fun requiredSlots(template: Part2Template): Set<String> {
         val columns = (listOf(template.from, template.to) + template.data).filter { it.need == "required" }
         val texts = listOfNotNull(template.narrative, template.authority, template.certificate) + columns.mapNotNull { it.text }
         val inTexts = texts.flatMap { text -> Part2Placeholders.scan(text).first.mapNotNull { Part2Placeholders.parse(it)?.slot } }
@@ -185,4 +185,7 @@ internal object OccurrenceDrafter {
 
     /** Slots the app works out rather than asks for. */
     private val WORKED_OUT = listOf("days", "earliest", "latest", "next_day")
+
+    /** Whether a slot of [kind] is worked out by the app, so the form never asks for it. */
+    fun isWorkedOut(kind: String): Boolean = kind in WORKED_OUT
 }

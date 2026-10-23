@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.part2.domain.Part2RibbonTile
 import com.payslipmax.pdfparser.part2.domain.Part2SearchResult
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftList
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.part2DraftItems
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 
@@ -27,6 +29,7 @@ internal fun Part2HomeScreen(
     onOpenRibbon: (String) -> Unit,
     onOpenCode: (String) -> Unit,
     onBack: () -> Unit,
+    drafts: Part2DraftList,
     listState: LazyListState,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -40,6 +43,7 @@ internal fun Part2HomeScreen(
         ) {
             if (result == Part2SearchResult.Idle) {
                 item(key = "hint") { Part2Message(Part2Strings.searchHint) }
+                part2DraftItems(drafts)
                 items(ribbons, key = { it.id }) { Part2TileView(it.title, GuideStrings.topicCount(it.caseCount)) { onOpenRibbon(it.id) } }
             } else {
                 part2SearchItems(result, onOpenCode)

@@ -142,8 +142,8 @@ class PreClaimSecurityContractTest {
     fun theLockDiscardsTheHeldWorksheetAndNothingSavesIt() {
         val appSource = withoutComments(File("src/commonMain/kotlin/com/payslipmax/pdfparser/App.kt"))
         assertTrue(
-            Regex("""isAppLocked\)\s*\{[^}]*LaunchedEffect\(Unit\)\s*\{\s*guideNavState\?\.discardPreClaim\(\)\s*\}""", RegexOption.DOT_MATCHES_ALL).containsMatchIn(appSource),
-            "App must discard the worksheet when the app locks",
+            Regex("""isAppLocked\)\s*\{[^}]*LaunchedEffect\(Unit\)\s*\{\s*guideNavState\?\.discardTransientForms\(\)\s*\}""", RegexOption.DOT_MATCHES_ALL).containsMatchIn(appSource),
+            "App must discard every held form (the worksheet and the Part II draft) when the app locks",
         )
         val nav = withoutComments(File("src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/guide/GuideNavState.kt"))
         assertTrue(nav.contains("if (next.none { it is GuideDestination.PreClaim }) discardPreClaim()"), "leaving the worksheet must drop it")

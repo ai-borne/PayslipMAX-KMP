@@ -1,0 +1,265 @@
+package com.payslipmax.pdfparser.ui.screens.guide.part2.draft
+
+import com.payslipmax.pdfparser.calendar.CalendarDate
+import com.payslipmax.pdfparser.guide.model.Part2Lookup
+import com.payslipmax.pdfparser.part2.data.Part2Repository
+import com.payslipmax.pdfparser.part2.data.Part2WriteResult
+import com.payslipmax.pdfparser.part2.domain.AnswerQuestion
+import com.payslipmax.pdfparser.part2.domain.LeaveEventEditor
+import com.payslipmax.pdfparser.part2.domain.LeaveEventInput
+import com.payslipmax.pdfparser.part2.domain.OrderRef
+import com.payslipmax.pdfparser.part2.domain.Part2Draft
+import com.payslipmax.pdfparser.part2.domain.Part2Limits
+import com.payslipmax.pdfparser.part2.domain.Part2LookupIndex
+import com.payslipmax.pdfparser.part2.domain.Part2Rules
+import com.payslipmax.pdfparser.part2.domain.SlotValue
+import com.payslipmax.pdfparser.part2.domain.VaultOrders
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimInput
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+
+/**
+ * One leave draft: the form that edits it and the slip preview that shows it. A new draft starts from [start]; an existing one passes
+ * null and is read from the repository by [id], so a draft restored after process death looks exactly as it did. The officer's answers
+ * are saved as they go, from the first change (one write after a pause, never one per key), only through [Part2Repository], so they
+ * are encrypted at rest and a lock or process death loses at most the last pause. Closing flushes a pending change; deleting cancels it.
+ *
+ * The screens read [state] and nothing else: the model holds the answers and `LeaveDraftStateBuilder` derives every sentence and slip
+ * row from them, so no message is built in a composable. The model takes no payslip and no platform type, has no telemetry
+ * (nothing typed here is logged, reported or put in an exception), and its answers never leave the repository.
+ */
+class LeaveDraftViewModel(
+    val id: String,
+    section: Part2Lookup,
+    private val repository: Part2Repository,
+    start: LeaveEventInput?,
+    rules: Part2Rules = Part2Rules.shipped(),
+    private val now: () -> Long = { 0L },
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+) {
+    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
+    private val builder = LeaveDraftStateBuilder(section, rules)
+    private val offered = Part2LookupIndex(section).draftOptions().map { it.code }.toSet()
+    private val saveLock = Mutex()
+    private var saveJob: Job? = null
+
+    // Atomic, because the officer's edits (main thread) and a prefill (background) both change it.
+    private val answers = MutableStateFlow(start ?: LeaveEventInput(emptyList()))
+    private val event: LeaveEventInput get() = answers.value
+    private var loaded = start != null
+    private var createdAt: Long? = null
+    private var lastOrder: OrderRef? = null
+    private var acked: Set<String> = emptySet()
+    private var saveFailed = false
+    private var dirty = false
+    private var closed = false
+
+    private val _state = MutableStateFlow(if (loaded) derive() else LeaveDraftUiState.Loading)
+    val state: StateFlow<LeaveDraftUiState> = _state
+
+    init {
+        if (!loaded) scope.launch { load() }
+        scope.launch {
+            repository.observeOrders().collect {
+                lastOrder = VaultOrders.lastOrder(it.items)
+                if (loaded) publish()
+            }
+        }
+    }
+
+    private suspend fun load() {
+        val draft = repository.draft(id)
+        if (draft == null) {
+            _state.value = LeaveDraftUiState.Gone
+            return
+        }
+        answers.value = draft.event
+        createdAt = draft.createdAt
+        loaded = true
+        publish()
+    }
+
+    // ---- the officer's answers: each goes through the editor, so `Part2Limits` holds ----
+
+    fun setDate(
+        index: Int,
+        slot: String,
+        date: CalendarDate?,
+    ) = edit { LeaveEventEditor.setValue(it, index, slot, date?.let(SlotValue::DateValue)) }
+
+    fun setNumber(
+        index: Int,
+        slot: String,
+        raw: String,
+    ) {
+        val digits = PreClaimInput.digits(raw, Part2Limits.NUMBER_MAX.toLong())
+        edit { LeaveEventEditor.setValue(it, index, slot, digits.toIntOrNull()?.let(SlotValue::NumberValue)) }
+    }
+
+    fun setText(
+        index: Int,
+        slot: String,
+        raw: String,
+    ) = edit { LeaveEventEditor.setValue(it, index, slot, raw.takeIf { text -> text.isNotEmpty() }?.let(SlotValue::TextValue)) }
+
+    /** An order number and its date are set together; with neither, the answer is removed. A date not chosen yet is named as such by the engine. */
+    fun setReference(
+        index: Int,
+        slot: String,
+        number: String,
+        date: CalendarDate?,
+    ) {
+        val ref = if (number.isBlank() && date == null) null else SlotValue.RefValue(OrderRef(number, date ?: LeaveEventEditor.UNSET_DATE))
+        edit { LeaveEventEditor.setValue(it, index, slot, ref) }
+    }
+
+    fun setYesNo(
+        index: Int,
+        question: String,
+        yes: Boolean,
+    ) {
+        val asked = askedOf<AnswerQuestion.YesNo>(index, question) ?: return
+        edit { LeaveEventEditor.setYesNo(it, index, asked.answer, yes) }
+    }
+
+    fun choose(
+        index: Int,
+        question: String,
+        option: String?,
+    ) {
+        val asked = askedOf<AnswerQuestion.OneOf>(index, question) ?: return
+        if (option != null && option !in asked.options) return
+        val before = event.requests.getOrNull(index)?.let(builder::fieldIds).orEmpty()
+        edit { LeaveEventEditor.chooseOne(it, index, asked.prefix, option) }
+        if (option != null) prefillFrom(index, asked.prefix + option, before)
+    }
+
+    /**
+     * The inputs a choice newly asks for (the R&H station's area details) are filled from the newest other draft that made the same
+     * choice (plan 12: prefilled from the last draft of the same code, no profile store). Only those inputs, only where empty: never
+     * a date, never an answer, never what the officer already typed. Drafts arrive newest edit first.
+     */
+    private fun prefillFrom(
+        index: Int,
+        answer: String,
+        before: List<String>,
+    ) {
+        val asked = event.requests.getOrNull(index)?.let(builder::fieldIds).orEmpty() - before.toSet()
+        if (asked.isEmpty()) return
+        scope.launch {
+            val source = repository.observeDrafts().first().items.filter { it.id != id }.firstNotNullOfOrNull { draft -> draft.event.requests.firstOrNull { answer in it.answers } } ?: return@launch
+            for (slot in asked) {
+                val value = source.values[slot] ?: continue
+                edit { current ->
+                    val request = current.requests.getOrNull(index)
+                    if (request == null || answer !in request.answers || slot in request.values) current else LeaveEventEditor.setValue(current, index, slot, value)
+                }
+            }
+        }
+    }
+
+    fun addOccurrence(code: String) {
+        if (code in offered) edit { LeaveEventEditor.addRequest(it, code) }
+    }
+
+    fun removeOccurrence(index: Int) = edit { LeaveEventEditor.removeRequest(it, index) }
+
+    /** Ticks a finding the officer has read. Not an edit: ticks are never saved, and any edit to the draft clears them. */
+    fun acknowledge(
+        key: String,
+        ticked: Boolean,
+    ) {
+        if (closed || !loaded) return
+        acked = if (ticked) acked + key else acked - key
+        publish()
+    }
+
+    // ---- life cycle ----
+
+    /** Deletes the draft for good; a change still waiting to be saved is dropped, never written back. [onDone] runs once it is gone. */
+    fun delete(onDone: () -> Unit) {
+        closed = true
+        saveJob?.cancel()
+        scope.launch {
+            saveLock.withLock { repository.deleteDraft(id) }
+            onDone()
+        }
+    }
+
+    /** Leaves the form: a change still waiting is written at once, then the model stops. */
+    fun close() {
+        if (closed) return
+        closed = true
+        saveJob?.cancel()
+        val last = if (dirty) pendingDraft() else null
+        scope.cancel()
+        if (last != null) CoroutineScope(SupervisorJob() + dispatcher).launch { saveLock.withLock { repository.saveDraft(last) } }
+    }
+
+    // ---- internals ----
+
+    private inline fun <reified Q : AnswerQuestion> askedOf(
+        index: Int,
+        question: String,
+    ): Q? {
+        val code = event.requests.getOrNull(index)?.code ?: return null
+        return builder.questionsFor(code).firstOrNull { it.id == question } as? Q
+    }
+
+    private fun edit(change: (LeaveEventInput) -> LeaveEventInput) {
+        if (closed || !loaded) return
+        var changed = false
+        answers.update { current -> change(current).also { changed = it != current } }
+        if (!changed) return
+        acked = emptySet()
+        dirty = true
+        publish()
+        saveJob?.cancel()
+        saveJob =
+            scope.launch {
+                delay(AUTOSAVE_DELAY_MS)
+                save()
+            }
+    }
+
+    private suspend fun save() {
+        val draft = pendingDraft()
+        val result = saveLock.withLock { repository.saveDraft(draft) }
+        dirty = false
+        val failed = result != Part2WriteResult.SAVED
+        if (failed != saveFailed) {
+            saveFailed = failed
+            publish()
+        }
+    }
+
+    private fun pendingDraft(): Part2Draft {
+        val stamp = now()
+        val created = createdAt ?: stamp.also { createdAt = it }
+        val saved = event.copy(lastOrder = lastOrder)
+        return Part2Draft(id, saved, builder.templateRevs(saved), created, stamp)
+    }
+
+    private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saveFailed)
+
+    private fun publish() {
+        _state.value = derive()
+    }
+
+    companion object {
+        /** The pause after the last change before the draft is written: long enough that typing is one write, short enough to lose little. */
+        const val AUTOSAVE_DELAY_MS = 300L
+    }
+}

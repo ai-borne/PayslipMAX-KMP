@@ -197,6 +197,29 @@ to see on the device walk and change if they disagree. The Pixel 9 walk method i
 | Reuse over new look | No new colour or component: the Guide's tile, pill and back header. |
 | Acceptance and the tab wiring | Phase 4a accepted by the owner, 2026-10-23 (19416f6e, 34c2f296). Asked whether `GuideTab.kt`'s growth (257 -> 265) should be accepted or fixed: the owner chose to fold the pre-claim and Part II hosts into one `GuideHosts` holder now (Phase 11 item 13, closed). |
 
+## Round 17: Phase 4b, the leave draft flow (owner answers, 2026-10-23, asked at the start of phase 4b)
+
+Four things the plan did not settle were asked in one batch; the owner took the recommended option each time. The rest was settled by the plan and Rounds 5, 7, 9, 10, 11, 13 and 16.
+
+| Topic | Decision |
+|---|---|
+| Where drafts live | A "Your drafts" section on the Part II home, above the ribbons, shown only when the device holds a draft. Each row opens the draft's slip; each row has "Delete draft" with a confirmation. The Leave cases carry only "Draft this order" rows. |
+| More than one occurrence | The form starts with the chosen code and offers "Add another occurrence", which lists the codes this version drafts (the 8 leave and rejoining codes). Each added occurrence is its own section and can be removed; one always stays. Covers two leave years, AL plus EXTNAL, and REJOIN with its grant, in one order (para 6.4). |
+| `ack` findings | Shown now. An `ack` finding is a prominent card with its citation and a tick box ("I have read this. The order may be rejected."); a `warn` is a plain note with its citation. Ticks live in the model, are never saved, and any edit clears them. The state says whether the slip is ready to print (no `ack` unticked); Phase 5 only adds the Print button. |
+| Prefill | Area details only, as the plan says (station, corps, notification, serial from the newest draft of the same R&H code). The ration answer, the R&H code and every date start empty. Built as: choosing an R&H code fills the inputs that choice newly asks for (the stop's station, the grant's corps, notification and serial) from the newest other draft that chose the same code, only where empty. |
+
+Build-time choices made without a question (change them if you disagree):
+
+| Topic | Choice |
+|---|---|
+| Free user | The case rows carry "Draft this order" marked Premium; a tap opens an upgrade panel (the TA/DA worksheet's pattern). Nothing is read or stored. |
+| Lapsed user | A user with no entitlement who still holds a draft: they see "Your drafts", read each slip (read-only, with a note) and delete; the case rows still lead to the upgrade panel; the form is never drawn for them. No "was Premium" flag is stored: holding a draft is the test. |
+| Android free launch | `hasAccess(PART2_ORDERS)` is true while `FREE_LAUNCH_MODE_ANDROID`, so Android drafts for everyone until it ends; "Force Free" reaches the locked and lapsed states. |
+| Autosave | From the first change, one write 300 ms after the last (never one per key, because every save re-derives the key); leaving the form or a lock writes a pending change at once; nothing is saved until something is typed, so opening and backing out leaves no draft. |
+| Last Part II order | The vault order with the latest date among those with a number the slip can quote and a real date (`VaultOrders.lastOrder`); blank when none. Read live, so a later vault change updates the preview. |
+| Opening a saved draft | From the list it opens on the slip; "Edit" goes to the form (entitled users only). |
+| Gone draft | A restored stack naming a draft the repository no longer holds is cut back to the Part II home once the repository answers. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

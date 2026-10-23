@@ -5,9 +5,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.rememberHasAccess
 import com.payslipmax.pdfparser.ui.screens.PayslipUpgradeSheet
-import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
 import com.payslipmax.pdfparser.ui.screens.guide.part2.part2FactoryOrNull
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.preClaimFactoryOrNull
@@ -25,15 +27,16 @@ fun GuideTabRoute(
 ) {
     var showUpgradeSheet by remember { mutableStateOf(false) }
     val unlocked = viewModel.rememberGuideUnlocked()
+    val part2Unlocked = viewModel.rememberHasAccess(FeatureGate.PART2_ORDERS)
     val koin = getKoin()
     GuideTab(
         navState = navState,
-        access = GuideAccess(unlocked, onUnlock = { showUpgradeSheet = true }),
+        access = GuideAccess(unlocked, part2Unlocked, onUnlock = { showUpgradeSheet = true }),
         notesViewModel = koinInject(),
         // Off by default (LaunchFlags.PRECLAIM_ENABLED): the factory is null, so no pre-claim entry exists and Koin is never asked for the worksheet.
         preClaim = preClaimFactoryOrNull { koin.get<PreClaimViewModel>() },
         // Off by default (LaunchFlags.PART2_ENABLED): the factory is null, so no Part II entry exists and Koin is never asked for the model.
-        part2 = part2FactoryOrNull { koin.get<Part2LookupViewModel>() },
+        part2 = part2FactoryOrNull { koin.get<Part2Models>() },
     )
     if (showUpgradeSheet) PayslipUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
 }

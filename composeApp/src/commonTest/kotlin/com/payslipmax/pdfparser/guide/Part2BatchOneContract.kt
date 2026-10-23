@@ -27,7 +27,7 @@ object Part2BatchOneContract {
         day: Int,
     ) = SlotValue.DateValue(CalendarDate(2026, month, day))
 
-    private val values: Map<String, SlotValue> =
+    internal val values: Map<String, SlotValue> =
         mapOf(
             "leave_from" to day(7, 6),
             "leave_to" to day(8, 4),
@@ -40,7 +40,7 @@ object Part2BatchOneContract {
             "leave_kind" to SlotValue.TextValue("annual leave"),
         )
 
-    private val answers = setOf(RationRules.ANSWER_ON_RATION, AreaRules.ANSWER_RH_PREFIX + "GTDRH12")
+    internal val answers = setOf(RationRules.ANSWER_ON_RATION, AreaRules.ANSWER_RH_PREFIX + "GTDRH12")
 
     /** The engine over the shipped section and shipped rules. Build it once and draft many times when timing. */
     fun engine(bundle: GuideBundle) = Part2DraftEngine(assertNotNull(bundle.part2), Part2Rules.shipped())

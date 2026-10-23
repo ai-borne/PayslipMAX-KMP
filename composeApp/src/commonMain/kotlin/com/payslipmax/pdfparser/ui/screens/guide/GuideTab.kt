@@ -22,7 +22,7 @@ import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
@@ -48,8 +48,8 @@ fun GuideTab(
     notesViewModel: GuideNotesViewModel? = null,
     /** Makes one TA/DA worksheet per screen; null while the dark-launch flag is off, which removes every pre-claim entry (see [preClaimFactoryOrNull]). */
     preClaim: (() -> PreClaimViewModel)? = null,
-    /** Makes the Part II lookup model; null while its dark-launch flag is off, which removes every Part II entry (see `part2FactoryOrNull`). */
-    part2: (() -> Part2LookupViewModel)? = null,
+    /** Makes the Part II models; null while its dark-launch flag is off, which removes every Part II entry (see `part2FactoryOrNull`). */
+    part2: (() -> Part2Models)? = null,
 ) {
     LaunchedEffect(viewModel) { viewModel.load() }
     val state by viewModel.uiState.collectAsState()

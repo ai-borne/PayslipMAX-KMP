@@ -12,15 +12,21 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.part2.domain.Part2Rules
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
+import com.payslipmax.pdfparser.testing.FakePart2Repository
 import com.payslipmax.pdfparser.testing.SyntheticPart2Lookup
+import com.payslipmax.pdfparser.testing.SyntheticPart2Templates
 import com.payslipmax.pdfparser.ui.screens.guide.GuideAccess
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
 import com.payslipmax.pdfparser.ui.screens.guide.GuidePlatform
 import com.payslipmax.pdfparser.ui.screens.guide.GuideSearchViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideTab
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Drafting
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
@@ -37,6 +43,7 @@ abstract class Part2UiBase {
     protected val dispatcher = StandardTestDispatcher()
     protected val crash = FakeCrashReporter()
     protected val models = mutableListOf<Part2LookupViewModel>()
+    protected val repository = FakePart2Repository()
     protected var unlockTaps = 0
 
     protected open fun bundle(): GuideBundle = SyntheticPart2Lookup.bundle()
@@ -44,14 +51,21 @@ abstract class Part2UiBase {
     protected val guide by lazy { GuideViewModel(FakeGuideRepository(GuideLoadResult.Loaded(bundle())), crash, dispatcher) }
     protected val search by lazy { GuideSearchViewModel(guide, dispatcher) }
     protected val platform = GuidePlatform(copy = {}, share = { _, _ -> error("the lookup must never share") })
-    protected val factory: () -> Part2LookupViewModel by lazy { { Part2LookupViewModel(guide).also { models += it } } }
+
+    /** The rules the drafting service runs: the invented ones by default, the shipped ones for a test on the real bundle. */
+    protected open fun rules(): Part2Rules = SyntheticPart2Templates.registry()
+
+    protected val drafting by lazy { Part2Drafting(guide, repository, rules(), { 1_000L }, { "draft-${drafted++}" }, dispatcher) }
+    protected var drafted = 1
+    protected val factory: () -> Part2Models by lazy { { Part2Models(Part2LookupViewModel(guide).also { models += it }, Part2DraftsViewModel(guide, repository, dispatcher), drafting) } }
 
     protected fun show(
         nav: GuideNavState = GuideNavState(),
         unlocked: Boolean = true,
-        part2: (() -> Part2LookupViewModel)? = factory,
+        part2Unlocked: Boolean = unlocked,
+        part2: (() -> Part2Models)? = factory,
     ): GuideNavState {
-        composeRule.setContent { GuideTab(nav, GuideAccess(unlocked) { unlockTaps++ }, guide, search, platform, null, null, part2) }
+        composeRule.setContent { GuideTab(nav, GuideAccess(unlocked, part2Unlocked) { unlockTaps++ }, guide, search, platform, null, null, part2) }
         settle()
         return nav
     }

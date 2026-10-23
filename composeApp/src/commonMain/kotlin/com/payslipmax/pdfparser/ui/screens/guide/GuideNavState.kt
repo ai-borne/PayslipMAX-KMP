@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LeaveDraftViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 
 /** A level of the Claim Guide's own stack. Ids stay strings (never enums), so new areas are data-only changes. */
@@ -72,6 +73,30 @@ class GuideNavState(
     fun discardPreClaim() {
         preClaimModel?.close()
         preClaimModel = null
+    }
+
+    /**
+     * The one open leave draft (its form and its slip preview), held here for the same reason as [preClaimModel]: this state outlives the
+     * Guide tab's composition, so a tab switch keeps the form. The answers are not lost with it: they are saved as the officer types, and a
+     * model dropped by a lock or process death is read back from the encrypted repository. Closed by [discardPart2Draft].
+     */
+    internal var part2Draft: LeaveDraftViewModel? = null
+
+    /** Saves a pending change, closes the open draft's model and forgets it. A no-op when none is open. */
+    fun discardPart2Draft() {
+        part2Draft?.close()
+        part2Draft = null
+    }
+
+    /** What the app lock drops: every half-filled form held above the lock screen. The stack stays, so the officer returns to the same level. */
+    fun discardTransientForms() {
+        discardPreClaim()
+        discardPart2Draft()
+    }
+
+    /** Leaves the draft [id]'s form and preview, which the repository no longer holds. Levels of another draft are left alone. */
+    fun cutDraft(id: String) {
+        while (current.let { (it as? Part2Destination.Draft)?.draftId == id || (it as? Part2Destination.Slip)?.draftId == id } && pop()) Unit
     }
 
     val current: GuideDestination get() = stack.last()
@@ -151,6 +176,7 @@ class GuideNavState(
         val keep = minOf(next.size, stack.zip(next).takeWhile { (a, b) -> a == b }.size)
         scrolls.keys.retainAll { it < keep }
         if (next.none { it is GuideDestination.PreClaim }) discardPreClaim()
+        if (next.none { it is Part2Destination.Draft || it is Part2Destination.Slip }) discardPart2Draft()
         stack = next
     }
 }

@@ -107,7 +107,7 @@ class PreClaimEntryUiTest : PreClaimUiBase() {
         composeRule.onNodeWithText("Composite transfer grant").assertIsDisplayed()
         shown = false
         settle()
-        nav.discardPreClaim() // what App does when the app locks
+        nav.discardTransientForms() // what App does when the app locks
         assertEquals(PreClaimFormState(), first.typed.value, "the lock emptied the form")
         shown = true
         settle()

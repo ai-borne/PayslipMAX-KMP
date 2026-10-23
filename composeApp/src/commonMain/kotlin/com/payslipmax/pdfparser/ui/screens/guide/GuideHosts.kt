@@ -2,7 +2,7 @@ package com.payslipmax.pdfparser.ui.screens.guide
 
 import androidx.compose.runtime.Composable
 import com.payslipmax.pdfparser.guide.model.GuideBundle
-import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 
 /**
@@ -18,8 +18,8 @@ internal class GuideHosts(
 @Composable
 internal fun rememberGuideHosts(
     preClaim: (() -> PreClaimViewModel)?,
-    part2: (() -> Part2LookupViewModel)?,
+    part2: (() -> Part2Models)?,
     access: GuideAccess,
     navState: GuideNavState,
     bundle: GuideBundle,
-): GuideHosts = GuideHosts(rememberPreClaimHost(preClaim, access, navState), rememberPart2Host(part2, bundle))
+): GuideHosts = GuideHosts(rememberPreClaimHost(preClaim, access, navState), rememberPart2Host(part2, bundle, access))

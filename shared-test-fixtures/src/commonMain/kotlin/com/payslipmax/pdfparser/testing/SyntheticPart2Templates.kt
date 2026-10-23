@@ -11,6 +11,7 @@ import com.payslipmax.pdfparser.guide.model.Part2RuleDecl
 import com.payslipmax.pdfparser.guide.model.Part2Slot
 import com.payslipmax.pdfparser.guide.model.Part2Template
 import com.payslipmax.pdfparser.guide.model.Part2TemplateLimits
+import com.payslipmax.pdfparser.part2.domain.AnswerQuestion
 import com.payslipmax.pdfparser.part2.domain.CheckRule
 import com.payslipmax.pdfparser.part2.domain.ConditionRule
 import com.payslipmax.pdfparser.part2.domain.Part2Rules
@@ -223,28 +224,37 @@ object SyntheticPart2Templates {
     /** The rule implementations the synthetic declarations name, so the contract between bundle and registry can be tested. */
     fun registry(): Part2Rules =
         Part2Rules(
-            listOf(
-                object : CheckRule {
-                    override val id = CAP_DAYS
+            questions = questions,
+            rules =
+                listOf(
+                    object : CheckRule {
+                        override val id = CAP_DAYS
 
-                    override fun violated(context: RuleContext) = (context.occurrence.days("days") ?: 0) > ANNUAL_CAP
-                },
-                object : CheckRule {
-                    override val id = GRANT_QUOTED
+                        override fun violated(context: RuleContext) = (context.occurrence.days("days") ?: 0) > ANNUAL_CAP
+                    },
+                    object : CheckRule {
+                        override val id = GRANT_QUOTED
 
-                    override fun violated(context: RuleContext) = context.request.values["grant"] !is SlotValue.RefValue
-                },
-                object : ConditionRule {
-                    override val id = ON_RATION
+                        override fun violated(context: RuleContext) = context.request.values["grant"] !is SlotValue.RefValue
+                    },
+                    object : ConditionRule {
+                        override val id = ON_RATION
 
-                    override fun holds(context: RuleContext) = ANSWER_RATION in context.request.answers
-                },
-                object : ConditionRule {
-                    override val id = IN_HILL_STATION
+                        override fun holds(context: RuleContext) = ANSWER_RATION in context.request.answers
+                    },
+                    object : ConditionRule {
+                        override val id = IN_HILL_STATION
 
-                    override fun holds(context: RuleContext) = ANSWER_HILL in context.request.answers
-                },
-            ),
+                        override fun holds(context: RuleContext) = ANSWER_HILL in context.request.answers
+                    },
+                ),
+        )
+
+    /** The questions the synthetic conditions are answered by: one yes/no each, so a form over these templates asks two. */
+    val questions: List<AnswerQuestion> =
+        listOf(
+            AnswerQuestion.YesNo("ration", ANSWER_RATION, setOf(ON_RATION)),
+            AnswerQuestion.YesNo("hill", ANSWER_HILL, setOf(IN_HILL_STATION)),
         )
 
     private const val ANNUAL_CAP = 60

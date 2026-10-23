@@ -94,7 +94,7 @@ fun App(
         } else if (uiState.isLockEnabled && uiState.isAppLocked) {
             // No BackHandler is composed here, so system back falls through to the OS default
             // (backgrounding the app) — locked content can never be revealed via back (decision 5).
-            LaunchedEffect(Unit) { guideNavState?.discardPreClaim() } // a lock drops a half-filled TA/DA worksheet, which the Guide's stack outlives
+            LaunchedEffect(Unit) { guideNavState?.discardTransientForms() } // a lock drops a half-filled TA/DA worksheet and the open Part II draft, which the Guide's stack outlives
             LockScreen(
                 onUnlock = { pin -> viewModel.verifyPin(pin) },
                 onPickPdf = onPickPdf,

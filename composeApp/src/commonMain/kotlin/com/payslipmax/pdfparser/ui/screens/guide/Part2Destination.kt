@@ -1,13 +1,14 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
 import com.payslipmax.pdfparser.guide.model.Part2Lookup
+import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.part2.domain.knowsCase
 import com.payslipmax.pdfparser.part2.domain.knowsCode
 import com.payslipmax.pdfparser.part2.domain.knowsRibbon
 
 /**
- * The levels of Part II Orders inside the Guide's stack. Ids only: a ribbon id, a case id or a manual code, never a name, a query or
- * anything the officer typed. It is a sealed sub-interface so the Guide's `when` needs one branch for all of them; it must stay in this
+ * The levels of Part II Orders inside the Guide's stack. Ids only: a ribbon id, a case id, a manual code or a draft's random id, never a
+ * name, a query or anything the officer typed. It is a sealed sub-interface so the Guide's `when` needs one branch for all of them; it must stay in this
  * package, which Kotlin requires of every inheritor of [GuideDestination].
  */
 sealed interface Part2Destination : GuideDestination {
@@ -19,12 +20,24 @@ sealed interface Part2Destination : GuideDestination {
 
     /** Any one of a serial's codes; a variant serial opens the same page whichever of its codes is named. */
     data class Code(val code: String) : Part2Destination
+
+    /** What a user without Premium sees when they ask to draft: the upgrade panel. No id, nothing to restore. */
+    data object Locked : Part2Destination
+
+    /** The leave form for one draft. Only its random id is kept; the answers live in the encrypted repository. */
+    data class Draft(val draftId: String) : Part2Destination
+
+    /** The slip preview of one draft. Only its random id is kept. */
+    data class Slip(val draftId: String) : Part2Destination
 }
 
 private const val HOME = "home"
 private const val RIBBON = "ribbon"
 private const val CASE = "case"
 private const val CODE = "code"
+private const val LOCKED = "locked"
+private const val DRAFT = "draft"
+private const val SLIP = "slip"
 
 /** The saved form of a level after the `part2` prefix: its kind, then its one id. Ids only, never a name or a query. */
 internal fun encodePart2(destination: Part2Destination): List<String> =
@@ -33,6 +46,9 @@ internal fun encodePart2(destination: Part2Destination): List<String> =
         is Part2Destination.Ribbon -> listOf(RIBBON, destination.ribbonId)
         is Part2Destination.Case -> listOf(CASE, destination.caseId)
         is Part2Destination.Code -> listOf(CODE, destination.code)
+        Part2Destination.Locked -> listOf(LOCKED)
+        is Part2Destination.Draft -> listOf(DRAFT, destination.draftId)
+        is Part2Destination.Slip -> listOf(SLIP, destination.draftId)
     }
 
 /** Reads [encodePart2] back; anything else (a missing id, an extra part, an unknown kind) is null, which cuts the stack there. */
@@ -43,15 +59,22 @@ internal fun decodePart2(parts: List<String>): Part2Destination? {
         RIBBON -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Ribbon)
         CASE -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Case)
         CODE -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Code)
+        LOCKED -> Part2Destination.Locked.takeIf { parts.size == 1 }
+        DRAFT -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Draft)
+        SLIP -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Slip)
         else -> null
     }
 }
 
-/** Whether this lookup still offers the place: a built ribbon or case, or any code (search reaches every code page). */
+/** Whether this lookup still offers the place: a built ribbon or case, any code (search reaches every code page), or a draft level with a plausible id. */
 internal fun Part2Lookup.knows(destination: Part2Destination): Boolean =
     when (destination) {
         Part2Destination.Home -> true
         is Part2Destination.Ribbon -> knowsRibbon(destination.ribbonId)
         is Part2Destination.Case -> knowsCase(destination.caseId)
         is Part2Destination.Code -> knowsCode(destination.code)
+        Part2Destination.Locked -> true
+        // A draft id is one the app made (a UUID): anything else is never looked up. Whether the repository still holds it is asked later.
+        is Part2Destination.Draft -> Part2Limits.isPlainId(destination.draftId)
+        is Part2Destination.Slip -> Part2Limits.isPlainId(destination.draftId)
     }

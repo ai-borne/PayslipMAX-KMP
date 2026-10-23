@@ -337,7 +337,7 @@ The next phase starts only after the owner accepts this summary.
 | 3. Storage: schema 15, repository, backup v5 with bounded restore | done, accepted (2026-10-23) | 8cb0a40b |
 | 3b. Chunked backup: pages as binary records, one page in memory at a time | done, accepted (2026-10-23) | 32ca5316 |
 | 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | done, accepted (2026-10-23); Pixel 9 walk done (Phase 11 item 12), hosts folded (item 13) | 19416f6e, 34c2f296 |
-| 4b. Leave draft flow + slip preview (Premium), autosave | not started | — |
+| 4b. Leave draft flow + slip preview (Premium), autosave | built and gate green (2026-10-23); **the Pixel 9 walk is not done** (Phase 11 item 15), so the exit is not met; awaiting the owner | see git log |
 | 5. Print + "Check the HRMS draft" | not started | — |
 | 6a. Page pipeline: scanner spike, `PageScanner`, `PageEncoder`, merged-manifest guard | not started | — |
 | 6b. Vault UI: order no./date, linking, last-order line, follow-up references | not started | — |
@@ -347,7 +347,7 @@ The next phase starts only after the owner accepts this summary.
 | 8. Rest of Chapter 5, incl. ACCLVE and ENCASH (batch 3) | not started | — |
 | 9. Area re-grants: HAA, SCCIA, field, TPTA (batch 4) | not started | — |
 | 10. Release hardening, owner content sign-off, iPhone walk, docs | not started | — |
-| 11. Pending items (collected from earlier phases) | open: items 6, 8, 10, 11, 14 (items 1-4, 7, 9, 12 and 13 closed; 5 not closable) | — |
+| 11. Pending items (collected from earlier phases) | open: items 6, 8, 10, 11, 14, 15 (items 1-4, 7, 9, 12 and 13 closed; 5 not closable) | — |
 
 Each phase leaves the app shippable: `PART2_ENABLED` is `false` until Phase 10, so a flag-off build behaves exactly as
 before. Each phase's "Debt watch" lists the debt most likely to appear and how it is cleared inside that phase.
@@ -641,6 +641,17 @@ Nudge: connect the Pixel 9.
 - Debt watch: a validation message must never be built in the composable. Messages come from the rule's id via
   `Part2Strings`.
 
+- Built 2026-10-23 (Phase 4b summary in the session). The owner's answers are DECISIONS Round 17 (drafts list on the Part II home, "Add another occurrence", ack ticks now, prefill of area details only). Where the build differs from the bullets above:
+  - **The form is derived, not written per code.** `LinkExpander` (the engine's link expansion, extracted unchanged under its tests) is read by both the engine and the new `LeaveFormPlanner`, so the form asks exactly the slots the orders on the slip print (`Part2DraftEngine.templatesFor`). Yes/no and one-of questions belong to the rule families (`AnswerQuestion`, `RationRules.questions`, `AreaRules.questions`, registered in `Part2Rules.shipped()`); a contract test proves every condition a real link names is answered by exactly one question. `LeaveEventEditor` makes every edit under `Part2Limits`; `VaultOrders.lastOrder` is the SSOT for "last Part II order"; `Part2DraftSummary` words a list row.
+  - **Destinations** added to `Part2Destination`: `Locked` (the upgrade panel, no id), `Draft(draftId)` and `Slip(draftId)`, saved as `part2|locked`, `part2|draft|<id>`, `part2|slip|<id>`. `knows` checks the id is a plain token. The plan said `retainKnown` cuts an id the repository no longer has; `retainKnown` runs before any repository answers, so the cut is done by the level once its model answers `GONE` (`GuideNavState.cutDraft`); both are tested.
+  - **Held model.** The open draft's model lives in `GuideNavState.part2Draft` like the TA/DA worksheet, closed when the stack leaves the draft levels and by `discardTransientForms()` (which replaced `discardPreClaim()` on the `App.kt` lock line; `PreClaimSecurityContractTest` pins the line and its worksheet half is now proved with a held worksheet).
+  - **`Part2Models`** (lookup + drafts list + draft maker) is what the Guide tab is handed, in place of the lookup model alone; `GuideTab.kt` kept its 263 lines (the factory type changed in place). `GuideAccess` gained `part2Unlocked` (its own gate, `PART2_ORDERS`), placed before `onUnlock` so every trailing-lambda caller is unchanged.
+  - **Entry decision** `part2DraftEntry(unlocked, hasDrafts)`: OPEN, VIEW_ONLY (no entitlement but a stored draft: open, read, delete) or LOCKED. No "was Premium" flag exists.
+  - **Autosave** is one write 300 ms after the last change, from the first change only; leaving the form or a lock writes a pending change at once; delete cancels it. The event is held atomically because the area-details prefill edits from a background coroutine.
+  - **`GatedNavigationInvariantTest`** (named in the bullets) walks Smart Insights cards against the paywall catalog and Part II is not a `Screen`, so it was not edited; the same invariant for Part II (no route reaches the form without OPEN) is `Part2DraftAccessUiTest`, one test per entitlement state and per way in.
+  - **Seams for Phase 5:** `SlipUi.readyToPrint` is the print gate (no `ack` unticked, ticks never saved, cleared by any edit); Phase 5 adds the Print button and the draft's `printed` snapshot. Nothing here prints, shares or writes a file; `Part2DraftSourceTest` forbids all of it.
+  - **Tests**: red first (before the code: 24 of 36 and 3 of 9 new shared tests; 15 of 16 builder, 18 of 19 model, 5 of 6 drafts-list, 7 of 13 navigation and entry, and 17 of 17 screen tests in composeApp, all failing on missing behaviour, none on a compile error), then 77 deliberate breaks (70 planned + 7 for the prefill) with a first-round result of 8 survivors/invalid, each a real gap or a dead line, all closed: answer length and chooseOne cap hidden behind other limits (M06, M08), request code unchecked with room to spare (M10), acknowledge on a gone or closed draft (M50), a lock test that held no worksheet (M51), a held-model test whose model was never made because the Guide had not loaded (M64), an invalid mutant rebuilt (M25) and a prefill case where a stray value would be stored unseen (P06). Two redundant lines were deleted instead (`dirty = false` in `delete`, the `changed == request` shortcut). The `MISSING` status name was a manual code and was caught by `Part2DraftSourceTest` (renamed `GONE`, as in 2a).
+
 ### Phase 5: Print + "Check the HRMS draft"
 Nudge: connect the Pixel 9.
 - Unit tests first:
@@ -848,7 +859,13 @@ them in its summary. An item closes with a test or a command output, not a state
 14. **Phase 4a: iOS look and gestures of the Part II screens.** OPEN, a manual gate. Only the framework link, `iosSimulatorArm64Test` (707 tests) and the
    Native timing of the search walk were observed (794 ms for about 930 searches, budget 1,500 ms). Nothing was driven on an iPhone: the levels are inline in
    the Guide tab like every other Guide level, with the on-screen back header, and the iOS edge-swipe does not apply to a tab. Closed by the Phase 10
-   iPhone checklist (browse, search, back at each level, light and dark).
+   iPhone checklist (browse, search, back at each level, light and dark). Phase 4b adds the draft screens to that list: the form (date picker, chips, order reference), the slip preview, the drafts list with its delete dialog and the upgrade panel.
+15. **Phase 4b: the Pixel 9 walk.** OPEN, needs the owner. The plan's device bullet (draft AL with ration and R&H, kill the process and restore, lock and unlock, check
+   "Force Free") was not done: the phone runs the Play-signed build with the owner's data, so a local debug install first needs `adb uninstall`, which wipes it, and the
+   owner must export a `.pcda` backup and say "done" first. Not observed yet by anything automated either: the real calendar dialog on a Part II date box and the order
+   reference's number and date controls (the Robolectric tests set dates through the model; the dialog itself is `PreClaimDateBox`, driven only by the TA/DA tests),
+   system Back from a restored draft, and a small screen or large font. How closed: the walk (flag flipped locally, `LaunchFlags.kt` restored byte-identical, debug build
+   uninstalled, owner reinstalls from Play and restores the backup), recorded here with what was seen.
 
 ## Risks and controls
 

@@ -15,6 +15,9 @@ import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.testing.SyntheticPart2Drafts
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Drafting
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
 import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -59,6 +62,27 @@ class Part2WiringTest {
         val koin = koinApplication { modules(part2Module, leaves, guide) }.koin
 
         assertSame(koin.get<Part2LookupViewModel>(), koin.get<Part2LookupViewModel>())
+    }
+
+    @Test
+    fun thePartTwoModelsAreBoundExactlyWhereTheFeatureIsEnabled() {
+        val koin = koinApplication { modules(appKoinModules(platformModules = listOf(leaves))) }.koin
+
+        assertEquals(isPart2Enabled(), koin.getOrNull<Part2Models>() != null)
+    }
+
+    @Test
+    fun theModuleHandsTheGuideOneHolderOverTheSameLookupDraftsListAndDraftMaker() {
+        // why: the Guide tab is given one `Part2Models`; if it held its own copies, the drafts list and the open draft would see different state.
+        val guide = module { single { GuideViewModel(FakeGuideRepository(), FakeCrashReporter()) } }
+        val koin = koinApplication { modules(part2Module, leaves, guide) }.koin
+        val models = koin.get<Part2Models>()
+
+        assertSame(koin.get<Part2LookupViewModel>(), models.lookup)
+        assertSame(koin.get<Part2DraftsViewModel>(), models.drafts)
+        assertSame(koin.get<Part2Drafting>(), models.drafting)
+        assertSame(models, koin.get<Part2Models>())
+        assertEquals(null, models.drafting.open("any-id"), "the Guide has not loaded, so there is nothing to draft from and no model")
     }
 
     @Test

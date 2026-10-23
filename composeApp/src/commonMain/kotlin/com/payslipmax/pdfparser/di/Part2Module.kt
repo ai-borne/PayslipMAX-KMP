@@ -3,6 +3,9 @@ package com.payslipmax.pdfparser.di
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.data.RoomPart2Repository
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Drafting
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
 import org.koin.dsl.module
 
 /**
@@ -16,4 +19,8 @@ val part2Module =
         single<Part2Repository> { RoomPart2Repository(dao = get()) }
         // One lookup model, app-scoped like the Guide's own search, so a typed query survives opening a code page and a tab switch.
         single { Part2LookupViewModel(guide = get()) }
+        // The drafts list and the maker of one draft share the repository and the loaded Guide; `Part2Models` is what the Guide tab is handed.
+        single { Part2DraftsViewModel(guide = get(), repository = get()) }
+        single { Part2Drafting(guide = get(), repository = get()) }
+        single { Part2Models(lookup = get(), drafts = get(), drafting = get()) }
     }

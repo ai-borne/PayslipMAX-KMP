@@ -29,10 +29,26 @@ fun part2Entry(
 ): Part2Entry = if (enabled && bundle.part2 != null) Part2Entry.OPEN else Part2Entry.HIDDEN
 
 /**
- * What the Guide tab is given to open the lookup: [create] while the feature is on, null while it is off. Null removes the Guide Home
- * row and every Part II level, and [create] (the Koin lookup) is never called, so the flag-off build holds no lookup model.
+ * What the Guide tab is given to open Part II: [create] (the Koin `Part2Models`) while the feature is on, null while it is off. Null removes
+ * the Guide Home row and every Part II level, and [create] is never called, so the flag-off build holds no Part II model.
  */
-fun part2FactoryOrNull(
+fun <T> part2FactoryOrNull(
     enabled: Boolean = isPart2Enabled(),
-    create: () -> Part2LookupViewModel,
-): (() -> Part2LookupViewModel)? = if (enabled) create else null
+    create: () -> T,
+): (() -> T)? = if (enabled) create else null
+
+/**
+ * What drafting shows. [OPEN] for an entitled user; [VIEW_ONLY] for one whose Premium has ended but who still holds drafts (they can open
+ * and delete them, not create or change one); [LOCKED] for a user with neither, who sees the upgrade panel.
+ */
+enum class Part2DraftEntry { LOCKED, VIEW_ONLY, OPEN }
+
+fun part2DraftEntry(
+    unlocked: Boolean,
+    hasDrafts: Boolean,
+): Part2DraftEntry =
+    when {
+        unlocked -> Part2DraftEntry.OPEN
+        hasDrafts -> Part2DraftEntry.VIEW_ONLY
+        else -> Part2DraftEntry.LOCKED
+    }

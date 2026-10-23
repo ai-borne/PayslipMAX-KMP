@@ -2,7 +2,6 @@ package com.payslipmax.pdfparser.part2.domain
 
 import com.payslipmax.pdfparser.calendar.CivilCalendar
 import com.payslipmax.pdfparser.guide.data.hasAngleBrackets
-import com.payslipmax.pdfparser.guide.model.Part2Link
 import com.payslipmax.pdfparser.guide.model.Part2Lookup
 import com.payslipmax.pdfparser.guide.model.Part2RuleDecl
 import com.payslipmax.pdfparser.guide.model.Part2Template
@@ -20,6 +19,7 @@ class Part2DraftEngine(
     private val templates: Map<String, Part2Template> = section.templates.associateBy { it.code }
     private val groups: Map<String, String?> = section.serials.flatMap { page -> page.codes.map { it to page.group } }.toMap()
     private val declarations: Map<String, Part2RuleDecl> = section.rules.associateBy { it.id }
+    private val expander = LinkExpander(templates, groups, rules)
 
     fun draft(input: LeaveEventInput): DraftResult {
         val requestIssue = requestIssue(input)
@@ -33,13 +33,24 @@ class Part2DraftEngine(
                 issues += DraftIssue(request.code, "", DraftIssueReason.UNKNOWN_CODE)
                 continue
             }
-            expand(request, template, drafted, undrafted)
+            expander.expand(request, template, drafted, undrafted)
         }
         issues += drafted.flatMap { it.second.issues }
         if (issues.isNotEmpty()) return DraftResult.Refused(issues.distinct())
         val rows = drafted.mapNotNull { it.second.occurrence }
         val event = drafted.map { it.second.drafted }
         return DraftResult.Drafted(Part2Slip(input.lastOrder, SlipOrdering.arrange(rows), findings(drafted, event), undrafted.distinct()))
+    }
+
+    /** The shipped template for [code], or null. */
+    fun template(code: String): Part2Template? = templates[code]
+
+    /** The templates [request] drafts now: its own and every linked one whose condition holds. Empty for a code with no template. */
+    fun templatesFor(request: OccurrenceRequest): List<Part2Template> {
+        val first = templates[request.code] ?: return emptyList()
+        val drafted = mutableListOf<Pair<OccurrenceRequest, DraftedTemplate>>()
+        expander.expand(request, first, drafted, mutableListOf())
+        return drafted.map { it.second.drafted.template }
     }
 
     private fun requestIssue(input: LeaveEventInput): DraftIssue? =
@@ -62,41 +73,6 @@ class Part2DraftEngine(
         return listOfNotNull(reason?.let { DraftIssue("", LAST_ORDER, it) })
     }
 
-    /** Drafts [first] and then every template its links bring in, each code once per request (a link that points back is a no-op). */
-    private fun expand(
-        request: OccurrenceRequest,
-        first: Part2Template,
-        drafted: MutableList<Pair<OccurrenceRequest, DraftedTemplate>>,
-        undrafted: MutableList<UndraftedLink>,
-    ) {
-        val seen = mutableSetOf(first.code)
-        val queue = ArrayDeque(listOf(first to (Part2Origin.Requested as Part2Origin)))
-        while (queue.isNotEmpty()) {
-            val (template, origin) = queue.removeFirst()
-            val result = OccurrenceDrafter.draft(template, origin, groups[template.code], request)
-            drafted += request to result
-            for (link in template.links) {
-                if (!applies(link, request, result.drafted)) continue
-                val linked = Part2Origin.Linked(basisOf(link.basis), link.page, link.note)
-                val target = templates[link.code]
-                when {
-                    target == null -> undrafted += UndraftedLink(link.code, linked)
-                    seen.add(target.code) -> queue.addLast(target to linked)
-                }
-            }
-        }
-    }
-
-    /** A link with no condition always applies; one whose condition the app does not know does not (the contract test stops that shipping). */
-    private fun applies(
-        link: Part2Link,
-        request: OccurrenceRequest,
-        parent: DraftedOccurrence,
-    ): Boolean {
-        val id = link.condition ?: return true
-        return rules.condition(id)?.holds(RuleContext(request, parent, listOf(parent))) == true
-    }
-
     private fun findings(
         drafted: List<Pair<OccurrenceRequest, DraftedTemplate>>,
         event: List<DraftedOccurrence>,
@@ -110,8 +86,6 @@ class Part2DraftEngine(
                 RuleFinding(id, if (decl.severity == "ack") RuleSeverity.ACK else RuleSeverity.WARN, printed, basisOf(decl.basis), decl.page, decl.note)
             }
         }.distinctBy { it.ruleId to it.code }
-
-    private fun basisOf(basis: String) = if (basis == "manual") LinkBasis.MANUAL else LinkBasis.PRACTICE
 
     private companion object {
         const val LAST_ORDER = "last_order"
