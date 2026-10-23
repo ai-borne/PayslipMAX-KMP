@@ -330,8 +330,8 @@ The next phase starts only after the owner accepts this summary.
 | Phase | Status | Commit |
 |---|---|---|
 | 0. Branch, baseline, occurrence dataset (tools only) | done, accepted (2026-10-23) | see git log |
-| 1. Lookup bundle section, models, validator, flag, gate + catalog guard | built 2026-10-23, awaiting owner acceptance | see git log |
-| 2a. Template format, validators, engine core (synthetic templates), `CivilCalendar` move | not started | — |
+| 1. Lookup bundle section, models, validator, flag, gate + catalog guard | done, accepted (2026-10-23) | 8bcf9065 |
+| 2a. Template format, validators, engine core (synthetic templates), `CivilCalendar` move | built 2026-10-23, awaiting owner acceptance | see git log |
 | 2b. Content batch 1: annual set + ration four + R&H; owner review | not started | — |
 | 3. Storage: schema 15, repository, backup v5 with bounded restore | not started | — |
 | 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | not started | — |
@@ -345,7 +345,7 @@ The next phase starts only after the owner accepts this summary.
 | 8. Rest of Chapter 5, incl. ACCLVE and ENCASH (batch 3) | not started | — |
 | 9. Area re-grants: HAA, SCCIA, field, TPTA (batch 4) | not started | — |
 | 10. Release hardening, owner content sign-off, iPhone walk, docs | not started | — |
-| 11. Pending items (collected from earlier phases) | open: 1 item from Phase 1 | — |
+| 11. Pending items (collected from earlier phases) | open: 6 items (Phases 1 and 2a) | — |
 
 Each phase leaves the app shippable: `PART2_ENABLED` is `false` until Phase 10, so a flag-off build behaves exactly as
 before. Each phase's "Debt watch" lists the debt most likely to appear and how it is cleared inside that phase.
@@ -453,6 +453,34 @@ before. Each phase's "Debt watch" lists the debt most likely to appear and how i
 - Exit: gate green.
 - Debt watch: the engine must not know any specific code. Code-specific behaviour lives only in templates and rule
   families; a test fails if the engine source names a code.
+- Done 2026-10-23 (Phase 2a summary in the session). Where the build differs from the bullets above:
+  - **Rule model.** `part2/rules.json` declares every rule (`check` with severity `warn` or `ack`, or `condition`; basis `manual` + page, or
+    `practice`) and the template text limits. It ships in the section as `rules` and `template_limits`, so Kotlin holds no second copy.
+    Logic lives in `Part2Rules` (a registry of `CheckRule`/`ConditionRule`). Both severities are supported, so the 2b decision is a
+    one-word JSON edit. The real `rules.json` and `Part2Rules.shipped()` are empty; the bundle grew 299,350 -> 299,476 bytes (three keys).
+  - **Template format.** One template per code: `narrative` with `{slot}` / `{slot.no}` / `{slot.date}` placeholders, slots (`date`,
+    `number`, `text`, `ref`, `days` counted between two date slots), columns `from`/`to`/`data` x4 (`required`, `optional`, `none`),
+    optional `authority` and `certificate`, `rules`, `links` (`manual` + page, or `practice`, with an optional condition rule). The
+    placeholder grammar has one home, `guide/data/Part2Placeholders.kt`, read by the validator and the renderer. Python:
+    `part2_rules.py`, `part2_slots.py`, `part2_templates.py` (split to stay under 300 lines); `part2_synthetic.py` writes the Kotlin
+    integration fixture `shared/src/androidUnitTest/resources/part2/synthetic_section.json` through the real `for_bundle`, and a tool test
+    fails if it is stale. Templates carry a `rev` (8 hex of SHA-256 of the shipped template); Kotlin checks its shape only.
+  - **Engine.** `LeaveEventInput(requests, lastOrder)`: each `OccurrenceRequest` has a code, slot values and yes/no answers; two leave
+    years are two requests. `Part2DraftEngine` expands links (each code once per request; a link whose template does not exist is listed
+    in `Part2Slip.undrafted`, never dropped), drafts through `OccurrenceDrafter`, arranges with `SlipOrdering` (date order; claims in a
+    separate order; family FINANCIAL when any A/AM), and runs the checks. A slot is required when a text or a required column uses it; an
+    order reference is never required and prints `____`. Refusals name the template and slot, never the value.
+  - **CivilCalendar.** `calendar/CivilCalendar.kt` holds `CalendarDate` and the arithmetic. `DutyDays` stays in the pre-claim package as a
+    thin adapter that words refusals as `PreClaimIssue`, and `typealias CalendarDate` keeps every pre-claim import unchanged.
+    `CivilCalendarTest` (7 tests, through the old names) was green before the move and is unchanged after. `PreClaimDates.format` and
+    `.YEARS` now read `CivilCalendar`, removing two copies.
+  - **Shared helper.** `textProblems` and `hasAngleBrackets` moved into `GuideValidationHelpers.kt`; the lookup validator's private copy of
+    `textProblems` was deleted (messages identical, its tests green).
+  - **A guard that paid for itself.** `Part2EngineSourceTest` (no engine file names any of the 321 codes) caught that my enum constant
+    `MISSING` is also a manual code, so it is now `NOT_ANSWERED`.
+  - **Mirrored constants.** `PRINT_OVERRIDES` (REJOINAL -> REJOIN) is held in Python and in the Kotlin validator, pinned by a test on each
+    side, as the no-group serials are.
+  - **Not done in 2a** (see Phase 11): the first real rule/template (2b); no `@Serializable` class lands in `part2/`.
 
 ### Phase 2b: Content batch 1 — annual set + ration four + R&H; owner review
 - Owner decisions at phase start:
@@ -676,16 +704,38 @@ Nudge: connect the Pixel 9.
 Each item says what is open, why it was deferred, and how it is closed. Every phase adds its leftovers here instead of leaving
 them in its summary. An item closes with a test or a command output, not a statement.
 
-1. **Phase 1: the R8 gate has no real Part II model folder to check yet.**
-   - What: `check_r8_guide.py` registers `shared/.../part2/` and walks it with each file's own package (unit-tested on a temporary
-     tree), but the folder does not exist, so on the real tree the Part II branch checks nothing. The Part II lookup models are
-     covered through `guide/model`. The `PayslipDatabase_Impl`/`Part2Dao_Impl` and reminder-worker checks named under "Cross-cutting
-     checks" are not written either.
-   - Why deferred: Phase 1 adds no domain, payload or Room code, and a check for a class that does not exist would be a stub that
-     can only pass.
-   - How closed: Phase 2a (first `@Serializable` class in `part2/`) makes the script print "N models" for that folder; add a real-tree
-     test that fails if `part2/` holds `@Serializable` classes the gate does not list. Phase 3 adds the Room `_Impl` check with the
-     DAO, and Phase 7b the worker check. Output of `check_r8_guide.py` on the release build is the evidence.
+1. **Phases 1 and 2a: the R8 gate and the Part II model folder.** (2a part closed; Room and worker parts open.)
+   - Closed in 2a: `shared/.../part2/` exists. `check_r8_guide.py` now prints the count per folder and fails on any `@Serializable`
+     declaration of a kind it does not prove (sealed class, enum, object, interface, custom serializer);
+     `UnlistedSerializableTest` covers it, including a real-tree test and a deliberate `@Serializable sealed class` that failed it.
+     Release output: `32 models and serializers kept (guide/model: 32 models, part2: 0 models)`.
+   - Still open: no `@Serializable` class landed in `part2/` in 2a (template models live in `guide/model`, covered), so `part2: 0`.
+     Phase 3 adds the `PayslipDatabase_Impl`/`Part2Dao_Impl` check with the DAO, and Phase 7b the worker check. Closed by the
+     `check_r8_guide.py` output on the release build naming them.
+2. **Phase 2a: the rule contract and the copy check have nothing real to compare yet.**
+   - What: `rules.json`, `Part2Rules.shipped()` and `part2/templates/` are empty, so `Part2LookupContract.assertRulesMatchTheRegistry`
+     (real bundle vs registry) and `refresh.py`'s copycheck of template help text pass on empty sets. Both are proven on synthetic data
+     (`Part2RuleContractTest`, a deliberate break of the shipped registry that failed the Android contract test, `test_part2_templates.py`).
+   - Why deferred: no real rule or template may be written before the owner's 2b decisions and review.
+   - How closed: 2b adds the first rules and templates; the Phase 2b summary shows `copycheck: CLEAN` with the local sources present and the
+     contract test green with non-empty lists.
+3. **Phase 2a: limits are provisional.**
+   - What: `template_limits` in `rules.json` (narrative 600, label 60, help 240, slots 12, links 12, rules 6, note 40) and `Part2Limits`
+     (typed text 200, order no. 40, number 9,999, requests 10) were chosen without real content.
+   - How closed: 2b records the longest real narrative, help and note, and tightens or confirms each limit in the same commit; the
+     real-bundle contract test pins the final values.
+4. **Phase 2a: engine behaviours the owner has not seen.** Decide in 2b (or 5 for the print layout), then pin with a test:
+   - Several Group B claims share one claim order in date order. Practice evidence says claims were single-occurrence orders. The Leave
+     release has no Group B code, so this is low risk until the claims ribbons.
+   - `OrderFamily` has no letter. If the print layout needs a group header, the rule for which letter prints is the owner's.
+   - Identical rows from two requests are merged into one.
+5. **Phase 2a: the Kotlin tests were not run red before the implementation.** The Python tests and the R8-gate tests were. The Kotlin
+   tests were written first but first compiled and ran after the code existed, so there is no red run to show. In its place, 12
+   deliberate breaks each failed the intended test and the file was restored byte-identical. Not closable; from 2b on, run each new
+   Kotlin test red before writing the code and show the output.
+6. **Phase 2a: a template's `rev` is shape-checked in Kotlin, not recomputed.** `commonMain` has no SHA-256, and the bundle ships inside the
+   signed app, so a changed `rev` needs a changed app. The Python stale-bundle guard is the check. Decide at Phase 10 whether to add a
+   recompute (`expect`/`actual` hash) or accept; closed by that decision recorded in the Phase 10 summary.
 
 ## Risks and controls
 

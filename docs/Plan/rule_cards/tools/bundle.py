@@ -4,7 +4,8 @@
 Only whitelisted fields ship: internal provenance (`from`), reviewer notes (`open`), authoring metadata (`status`,
 `topic`, `domain`) and the coverage bookkeeping stay in the repo. Each card gains `unverified` (it carries an open point and no `basis`; a card with a `basis` of open_source or dopt_om ships it instead) and the bundle gains `rates_as_of`, the owner-approved
 `figures` (figures.json; authority and evidence stay in the repo) and the `preclaim` worksheet content (preclaim.json; provenance stays) and the `part2` lookup (the 303 ODP-2026 code pages and the 10-ribbon
-layout: part2/codes.json and part2/nav.json; the source line and any other authoring key stay).
+layout: part2/codes.json and part2/nav.json; the source line and any other authoring key stay) with its rule declarations and order
+templates (part2/rules.json, part2/templates/*.json; a template gains a `rev`).
 Rule-change metadata is additive (BUNDLE_VERSION stays 1): every card gains `rev`, the first 8 hex characters of the SHA-256 of
 its shipped text fields (see card_rev), so a note can tell the card changed since it was written; a dated or replaced card also
 gains `effective`, `replaced_by` and `until` (omitted when empty); the bundle gains `changes`, the newest 12 change-log entries.
@@ -23,6 +24,8 @@ import changes
 import figures
 import part2_codes_check
 import part2_nav
+import part2_rules
+import part2_templates
 import preclaim
 from config import BUNDLE_PATH, BUNDLE_VERSION, CARDS_DIR, RATES_AS_OF
 
@@ -45,11 +48,13 @@ def ship_card(card):
     return out
 
 
-def build(rulebook, figures_data=None, preclaim_data=None, part2_codes=None, part2_layout=None):
+def build(rulebook, figures_data=None, preclaim_data=None, part2_codes=None, part2_layout=None, part2_rule_data=None, part2_template_list=None):
     figures_data = figures.load() if figures_data is None else figures_data
     preclaim_data = preclaim.load() if preclaim_data is None else preclaim_data
     part2_codes = part2_codes_check.load() if part2_codes is None else part2_codes
     part2_layout = part2_nav.load() if part2_layout is None else part2_layout
+    part2_rule_data = part2_rules.load_rules() if part2_rule_data is None else part2_rule_data
+    part2_template_list = part2_templates.load_templates() if part2_template_list is None else part2_template_list
     problems = preclaim.validate(preclaim_data, rulebook['cards'])
     if problems:
         sys.exit('preclaim.json is not fit to bundle:\n  ' + '\n  '.join(problems))
@@ -57,7 +62,8 @@ def build(rulebook, figures_data=None, preclaim_data=None, part2_codes=None, par
     return {'version': BUNDLE_VERSION, 'generated': rulebook['generated'], 'rates_as_of': RATES_AS_OF,
             'limits': rulebook['limits'], 'nav': rulebook['nav'], 'facets': rulebook['facets'], 'cards': cards,
             'figures': figures.for_bundle(figures_data), 'preclaim': preclaim.for_bundle(preclaim_data),
-            'part2': part2_nav.for_bundle(part2_layout, part2_codes), 'changes': changes.latest(rulebook.get('changes', []))}
+            'part2': {**part2_nav.for_bundle(part2_layout, part2_codes), **part2_templates.for_bundle(part2_template_list, part2_rule_data, part2_codes)},
+            'changes': changes.latest(rulebook.get('changes', []))}
 
 
 def render(data):

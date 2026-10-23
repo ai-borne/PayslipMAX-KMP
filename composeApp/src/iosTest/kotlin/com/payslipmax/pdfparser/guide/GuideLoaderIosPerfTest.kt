@@ -98,6 +98,7 @@ class GuideLoaderIosPerfTest {
             Part2LookupContract.assertCodePagesCarryTheManualsOwnWords(bundle)
             Part2LookupContract.assertRibbonsHomeEverySerialOnce(bundle)
             Part2LookupContract.assertOnlyLeaveAndRecordsAreBuiltAndFiftyThreeSerialsAreLookupOnly(bundle)
+            Part2LookupContract.assertRulesMatchTheRegistry(bundle)
         }
 
     @Test

@@ -15,6 +15,9 @@ import bundle
 import figures
 import part2_codes_check
 import part2_nav
+import part2_rules
+import part2_synthetic
+import part2_templates
 from config import BUNDLE_PATH, BUNDLE_VERSION, CARDS_DIR, RATES_AS_OF
 
 RULEBOOK = json.load(open(os.path.join(CARDS_DIR, 'rulebook.json'), encoding='utf-8'))
@@ -201,7 +204,25 @@ class BundlePart2(unittest.TestCase):
     def test_the_section_ships_the_codes_and_the_layout(self):
         section = BUILT['part2']
         self.assertEqual((len(section['serials']), len(section['ribbons'])), (303, 10))
-        self.assertEqual(section, part2_nav.for_bundle(part2_nav.load(), part2_codes_check.load()))
+        codes = part2_codes_check.load()
+        self.assertEqual(section, {**part2_nav.for_bundle(part2_nav.load(), codes),
+                                   **part2_templates.for_bundle(part2_templates.load_templates(), part2_rules.load_rules(), codes)})
+
+    def test_the_section_carries_the_template_limits_rules_and_templates_even_before_any_content_exists(self):
+        # why: the app reads the limits from the section, and an absent key would be a second copy of them in Kotlin.
+        section = BUILT['part2']
+        self.assertEqual(section['template_limits'], part2_rules.load_rules()['limits'])
+        self.assertEqual((section['rules'], section['templates']), (part2_rules.load_rules()['rules'], part2_templates.load_templates()))
+
+    def test_a_template_edit_makes_the_committed_bundle_stale_and_a_broken_one_stops_the_build(self):
+        codes, rules = part2_codes_check.load(), part2_synthetic.rules()
+        templates = part2_synthetic.templates()
+        with self.assertRaises(SystemExit):
+            bundle.build(RULEBOOK, part2_template_list=templates)  # synthetic codes are not in the real codes.json
+        real = [dict(code='GTDAL', page=114, narrative='x {d}', slots=[dict(id='d', kind='date', label='Day', help='The day.')],
+                     **{'from': dict(need='required', slot='d'), 'to': dict(need='none'), 'data': [dict(need='none')] * 4})]
+        edited = bundle.render(bundle.build(RULEBOOK, part2_rule_data=rules, part2_template_list=real))
+        self.assertNotEqual(edited, bundle.render(BUILT))
 
     def test_only_whitelisted_part2_keys_ship_and_the_authoring_source_stays_in_the_repo(self):
         codes = part2_codes_check.load()

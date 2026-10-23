@@ -160,20 +160,6 @@ internal object GuidePart2LookupValidator {
             else -> emptyList()
         }
 
-    /** Plain text only: the lookup is drawn as text, so angle brackets are refused rather than escaped. */
-    private fun textProblems(
-        where: String,
-        name: String,
-        value: String,
-        limit: Int,
-    ): List<String> =
-        when {
-            value.isBlank() -> listOf("$where: $name is empty")
-            value.length > limit -> listOf("$where: $name is over $limit characters")
-            '<' in value || '>' in value -> listOf("$where: $name has angle brackets (plain text only)")
-            else -> emptyList()
-        }
-
     private fun repeats(
         where: String,
         key: String,

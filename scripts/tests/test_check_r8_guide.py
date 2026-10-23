@@ -108,6 +108,46 @@ class ModelFoldersTest(unittest.TestCase):
         self.assertTrue(any("$$serializer" in p for p in gate.check_mapping(mapping, models)))
 
 
+class UnlistedSerializableTest(unittest.TestCase):
+    """Phase 11 item 1: the gate lists a model by `@Serializable ... class`; a `@Serializable` sealed class, enum, object or interface in
+    part2/ would be missed in silence. A real-tree test fails the day one appears, so the gate is extended before it ships unchecked."""
+
+    def _write(self, tmp, rel, source):
+        path = os.path.join(tmp, *rel.split("/"))
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write(source)
+
+    def test_a_serializable_that_is_not_a_plain_class_is_reported_with_its_package(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write(tmp, "part2/domain/Listed.kt", "@Serializable\ndata class Listed(val v: Int)\n")
+            self._write(tmp, "part2/domain/Sealed.kt", "@Serializable\nsealed class Shape\n@Serializable\nenum class Kind { A }\n")
+            self._write(tmp, "part2/data/Odd.kt", "@Serializable(with = X::class)\ninternal class Odd\n@Serializable\nobject Single\n@Serializable\ninterface Face\n")
+            found = gate.unlisted_serializables(tmp, ("part2",))
+        base = gate.ROOT_PACKAGE
+        self.assertEqual(found, [f"{base}.part2.data.Odd", f"{base}.part2.data.Single", f"{base}.part2.data.Face",
+                                 f"{base}.part2.domain.Shape", f"{base}.part2.domain.Kind"])
+
+    def test_a_tree_of_only_listed_models_reports_nothing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write(tmp, "part2/Part2Payload.kt", "@Serializable\ndata class Part2Payload(val v: Int)\n@Serializable\nclass Plain\n")
+            self.assertEqual(gate.unlisted_serializables(tmp, ("part2",)), [])
+
+    def test_the_real_part2_tree_has_no_serializable_the_gate_does_not_list(self):
+        self.assertEqual(gate.unlisted_serializables(gate.KOTLIN_ROOT, ("part2",)), [])
+
+    def test_the_real_part2_folder_exists_now_so_the_gate_no_longer_skips_it(self):
+        self.assertEqual(gate.absent_folders(gate.KOTLIN_ROOT, gate.MODEL_FOLDERS), [])
+
+    def test_the_summary_names_the_count_for_every_folder(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._write(tmp, "guide/model/GuideModels.kt", MODELS_SRC)
+            self._write(tmp, "part2/domain/Part2Slip.kt", "@Serializable\ndata class Part2Slip(val v: Int)\n")
+            self.assertEqual(gate.summary(tmp, ("guide/model", "part2")), "guide/model: 2 models, part2: 1 model")
+            self._write(tmp, "part2/domain/Part2Slip.kt", "class NotSerializable\n")
+            self.assertEqual(gate.summary(tmp, ("guide/model", "part2")), "guide/model: 2 models, part2: 0 models")
+
+
 class DefaultsTest(unittest.TestCase):
     """The gate must inspect the build that ships; a minifiedTest-only check can pass while release breaks."""
 

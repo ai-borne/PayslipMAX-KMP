@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens.guide.preclaim
 
+import com.payslipmax.pdfparser.calendar.CivilCalendar
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 
 /**
@@ -8,12 +9,10 @@ import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
  * no platform date library, and the same answer on Android and iOS.
  */
 internal object PreClaimDates {
-    /** The years the picker offers; the calculators accept the same range (`DutyDays`). */
-    val YEARS = 2000..2100
+    /** The years the picker offers; the calculators accept the same range ([CivilCalendar]). */
+    val YEARS = CivilCalendar.FIRST_YEAR..CivilCalendar.LAST_YEAR
 
     private const val MILLIS_PER_DAY = 86_400_000L
-    private const val DAY_DIGITS = 2
-    private const val YEAR_DIGITS = 4
     private const val DAYS_TO_1970 = 719_468L
     private const val DAYS_PER_ERA = 146_097L
     private const val YEARS_PER_ERA = 400L
@@ -35,8 +34,7 @@ internal object PreClaimDates {
 
     fun fromUtcMillis(millis: Long): CalendarDate = civilFromDays(millis.floorDiv(MILLIS_PER_DAY))
 
-    fun format(date: CalendarDate?): String =
-        date?.let { "${it.day.toString().padStart(DAY_DIGITS, '0')}/${it.month.toString().padStart(DAY_DIGITS, '0')}/${it.year.toString().padStart(YEAR_DIGITS, '0')}" }.orEmpty()
+    fun format(date: CalendarDate?): String = date?.let(CivilCalendar::format).orEmpty()
 
     private fun daysFromCivil(date: CalendarDate): Long {
         val year = (if (date.month <= JANUARY_FEBRUARY) date.year - 1 else date.year).toLong()

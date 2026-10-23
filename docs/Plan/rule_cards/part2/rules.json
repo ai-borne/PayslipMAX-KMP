@@ -1,0 +1,5 @@
+{
+ "version": 1,
+ "limits": {"narrative": 600, "label": 60, "help": 240, "slots": 12, "links": 12, "rules": 6, "note": 40},
+ "rules": []
+}

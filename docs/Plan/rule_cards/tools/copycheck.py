@@ -12,6 +12,10 @@ def corpus():
     from sources import faq, txt
     for x in faq.values(): texts.append(txt(x['question']) + ' ' + txt(x['answer']))
     return texts
+def part2_texts(templates=None):
+    """The Part II template words that are ours (slot labels and help). Narratives, authority lines and certificates keep the manual's wording on purpose, so they are not checked."""
+    import part2_templates
+    return part2_templates.texts(part2_templates.load_templates() if templates is None else templates)
 if __name__ == '__main__':
     import os
     G = set()
@@ -33,4 +37,8 @@ if __name__ == '__main__':
     for text in preclaim.texts(preclaim.load()):
         hit = [g for g in grams(words(text)) if g in G]
         if hit: bad += 1; print(f"preclaim.json copies {len(hit)} 8-grams: \"{' '.join(hit[0])}\"")
+    # the Part II template help text (part2/templates/*.json) is ours too; its narratives are the manual's wording
+    for text in part2_texts():
+        hit = [g for g in grams(words(text)) if g in G]
+        if hit: bad += 1; print(f"part2 templates copy {len(hit)} 8-grams: \"{' '.join(hit[0])}\"")
     print('copy check:', 'CLEAN' if not bad else f'{bad} lines overlap sources')

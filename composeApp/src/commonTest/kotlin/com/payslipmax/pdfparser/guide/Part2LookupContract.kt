@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.guide
 
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.part2.domain.Part2Rules
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -54,5 +55,22 @@ object Part2LookupContract {
         assertEquals(53, section.ribbons.sumOf { r -> r.cases.sumOf { it.lookup.size } })
         val cancelling = section.ribbons.flatMap { it.cases }.first { it.serials == listOf("14.1", "14.2") }
         assertTrue(cancelling.lookup.isEmpty(), "CANCEL and CANCELS are drafted with Leave, so they are not lookup-only")
+    }
+
+    /**
+     * The rules the real bundle declares and the rules the app implements are one list (Part II plan, phase 2a): a template citing a
+     * check the app does not run would be a silent hole, and the template limits must travel with the templates they bound. Phase 2a
+     * ships no real rule or template, so both lists are empty and equal; this fails the day one side gains a rule and the other does not.
+     */
+    fun assertRulesMatchTheRegistry(bundle: GuideBundle) {
+        val section = assertNotNull(bundle.part2)
+        assertEquals(emptyList(), Part2Rules.shipped().problemsAgainst(section.rules), "bundle rule ids = registry ids, with the same kinds")
+        assertEquals(
+            listOf(600, 60, 240, 12, 12, 6, 40),
+            assertNotNull(section.templateLimits, "the limits ship with the section").let { listOf(it.narrative, it.label, it.help, it.slots, it.links, it.rules, it.note) },
+            "the agreed template limits (rules.json)",
+        )
+        val known = Part2Rules.shipped().ids
+        assertTrue(section.templates.flatMap { it.rules }.all { it in known }, "every template cites only rules the app implements")
     }
 }

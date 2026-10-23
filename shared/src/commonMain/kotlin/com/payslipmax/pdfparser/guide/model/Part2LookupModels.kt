@@ -18,6 +18,10 @@ data class Part2Lookup(
     val serials: List<Part2CodePage>,
     /** In build order; the Records ribbon, which is lookup by design, is last. */
     val ribbons: List<Part2Ribbon>,
+    /** Phase 2a: the rules, order templates and their limits (`Part2TemplateModels.kt`). Absent in a bundle built before them. */
+    @SerialName("template_limits") val templateLimits: Part2TemplateLimits? = null,
+    val rules: List<Part2RuleDecl> = emptyList(),
+    val templates: List<Part2Template> = emptyList(),
 )
 
 /** The limits `part2_codes_check.py` and `part2_nav.py` enforced and the validator rechecks: their one home, so Kotlin holds no second copy. */

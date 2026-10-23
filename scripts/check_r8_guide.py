@@ -34,6 +34,10 @@ DEFAULT_APK_GLOB = os.path.join(ROOT, "composeApp/build/outputs/apk/release/*.ap
 BUILD_HINT = "Run ./gradlew :composeApp:assembleRelease -PallowPlaceholderGemmaModel=true first"
 
 SERIALIZABLE_CLASS = re.compile(r"@Serializable\s+(?:data\s+)?class\s+(\w+)")
+# Any @Serializable declaration, whatever its kind or modifiers: used to find the ones SERIALIZABLE_CLASS (the kind this gate proves) misses.
+ANY_SERIALIZABLE = re.compile(
+    r"@Serializable(?:\([^)]*\))?\s+(?:(?:public|internal|private|data|sealed|enum|abstract|open|value)\s+)*(?:class|object|interface)\s+(\w+)"
+)
 CLASS_LINE = re.compile(r"^(\S+) -> \S+:$")
 METHOD_NAME = re.compile(r"\s(\w+)\(")
 
@@ -52,18 +56,38 @@ def models_in(directory):
     return models
 
 
+def _declared(kotlin_root, folder, pattern):
+    """Fully qualified name of every declaration `pattern` finds under one folder (subfolders too), each in its own file's package."""
+    found = []
+    base = os.path.join(kotlin_root, *folder.split("/"))
+    for current, dirs, names in os.walk(base):
+        dirs.sort()
+        package = ".".join([ROOT_PACKAGE, *os.path.relpath(current, kotlin_root).split(os.sep)])
+        for name in sorted(n for n in names if n.endswith(".kt")):
+            with open(os.path.join(current, name), encoding="utf-8") as fh:
+                found += [f"{package}.{model}" for model in pattern.findall(fh.read())]
+    return found
+
+
 def qualified_models(kotlin_root, folders):
     """Fully qualified name of every @Serializable model under the folders (subfolders too), each in its own file's package."""
-    found = []
+    return [model for folder in folders for model in _declared(kotlin_root, folder, SERIALIZABLE_CLASS)]
+
+
+def unlisted_serializables(kotlin_root, folders):
+    """@Serializable declarations of a kind this gate does not prove (sealed class, enum, object, interface, custom serializer): they
+    would otherwise ship unchecked, so a test and the gate itself fail until the gate is extended to cover them."""
+    listed = set(qualified_models(kotlin_root, folders))
+    return [name for folder in folders for name in _declared(kotlin_root, folder, ANY_SERIALIZABLE) if name not in listed]
+
+
+def summary(kotlin_root, folders):
+    """"guide/model: 26 models, part2: 1 model": the count the gate proves, per folder."""
+    parts = []
     for folder in folders:
-        base = os.path.join(kotlin_root, *folder.split("/"))
-        for current, dirs, names in os.walk(base):
-            dirs.sort()
-            package = ".".join([ROOT_PACKAGE, *os.path.relpath(current, kotlin_root).split(os.sep)])
-            for name in sorted(n for n in names if n.endswith(".kt")):
-                with open(os.path.join(current, name), encoding="utf-8") as fh:
-                    found += [f"{package}.{model}" for model in serializable_models(fh.read())]
-    return found
+        count = len(_declared(kotlin_root, folder, SERIALIZABLE_CLASS)) if os.path.isdir(os.path.join(kotlin_root, *folder.split("/"))) else 0
+        parts.append(f"{folder}: {count} model{'' if count == 1 else 's'}")
+    return ", ".join(parts)
 
 
 def absent_folders(kotlin_root, folders):
@@ -121,13 +145,14 @@ def main():
         print(f"ℹ️  {folder}/ does not exist yet, so it has no models to check")
     with open(args.mapping, encoding="utf-8") as fh:
         problems = check_mapping(fh.read(), models)
+    problems += [f"{name} is @Serializable but of a kind this gate does not check" for name in unlisted_serializables(KOTLIN_ROOT, MODEL_FOLDERS)]
     with open(BUNDLE_SRC, "rb") as fh:
         problems += check_apk(apks[0], fh.read())
     for p in problems:
         print(f"❌ {p}")
     if problems:
         sys.exit(1)
-    print(f"✅ Guide and Part II R8 gate: {len(models)} models and serializers kept; bundle shipped byte-identical")
+    print(f"✅ Guide and Part II R8 gate: {len(models)} models and serializers kept ({summary(KOTLIN_ROOT, MODEL_FOLDERS)}); bundle shipped byte-identical")
 
 
 if __name__ == "__main__":

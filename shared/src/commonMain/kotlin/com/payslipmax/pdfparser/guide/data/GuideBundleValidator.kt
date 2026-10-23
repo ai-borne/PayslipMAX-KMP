@@ -32,6 +32,7 @@ object GuideBundleValidator {
         problems += GuideFigureValidator.validate(bundle)
         problems += GuidePreClaimValidator.validate(bundle)
         problems += GuidePart2LookupValidator.validate(bundle)
+        problems += GuidePart2TemplateValidator.validate(bundle)
         return problems
     }
 
