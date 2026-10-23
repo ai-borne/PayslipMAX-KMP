@@ -36,6 +36,7 @@ class AppModuleGraphTest {
                     OnboardingStorage::class,
                     Function0::class,
                     Function1::class,
+                    Function2::class,
                     Function3::class,
                 ),
         )

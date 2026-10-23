@@ -63,14 +63,14 @@ class Part2BackupTest {
             source.putOrder(SyntheticPart2Drafts.order("o1"))
             source.putPage("p1", "o1", 0, SyntheticPart2Drafts.jpeg(2000))
 
-            val backup = decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow())
+            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val backup = decodeArchive(archive)
+            assertTrue(PageArchive.metaOf(archive) != null, "an archive with pages is a page archive")
 
             val d = Base64.decode(backup.part2Drafts.single().data)
             assertEquals(draft("d1", 10), Part2DraftEntity("d1", d).toDraft(BACKUP_PASSWORD))
             assertTrue(CryptoHelper.decrypt(d, deviceKey).isFailure, "an archive must not depend on one device's key")
             assertEquals("o1", Part2OrderEntity("o1", Base64.decode(backup.part2Orders.single().data)).toOrder(BACKUP_PASSWORD).id)
-            val page = backup.part2Pages.single()
-            assertEquals(Triple("p1", "o1", 0), Triple(page.id, page.orderId, page.position))
             assertFalse(backup.part2Drafts.single().data.contains(SyntheticPart2Drafts.MARKER_TEXT))
         }
 
@@ -167,7 +167,7 @@ class Part2BackupTest {
                 assertTrue("good" in ids, "the readable draft is restored ($mode)")
                 assertTrue(ids.none { it.startsWith("bad") || it == "moved" }, "no damaged, wrong-key or moved row is restored ($mode)")
             }
-            val result = Part2Backup(FakePayslipDao().part2).restore(decodeArchive(bytes), BACKUP_PASSWORD, RestoreMode.REPLACE)
+            val result = Part2Backup(FakePayslipDao().part2).restore(decodeArchive(bytes), bytes, BACKUP_PASSWORD, RestoreMode.REPLACE)
             assertEquals(4, result.skipped)
             assertEquals(listOf("good"), result.drafts.map { it.id })
         }

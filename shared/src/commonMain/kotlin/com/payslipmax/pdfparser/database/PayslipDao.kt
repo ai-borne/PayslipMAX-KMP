@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import com.payslipmax.pdfparser.part2.data.Part2DraftEntity
 import com.payslipmax.pdfparser.part2.data.Part2OrderEntity
 import com.payslipmax.pdfparser.part2.data.Part2PageEntity
+import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -228,6 +229,6 @@ interface PayslipDao {
         insertGuideNotes(rows.guideNotes)
         insertPart2Drafts(rows.part2Drafts)
         insertPart2Orders(rows.part2Orders)
-        insertPart2Pages(rows.part2Pages)
+        rows.part2Pages.chunked(Part2Limits.PAGE_INSERT_BATCH).forEach { insertPart2Pages(it) }
     }
 }

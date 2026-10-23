@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.logging.Logger
+import com.payslipmax.pdfparser.part2.data.PageArchive
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -60,13 +61,14 @@ class PayslipBackupService(
                         guideNotes = GuideNoteBackup.forExport(payslipDao.getAllGuideNotes().first(), deviceKey, password),
                         part2Drafts = part2?.drafts.orEmpty(),
                         part2Orders = part2?.orders.orEmpty(),
-                        part2Pages = part2?.pages.orEmpty(),
                     )
 
                 val jsonStr = Json.encodeToString(PortableBackup.serializer(), backup)
                 val jsonBytes = jsonStr.encodeToByteArray()
 
-                CryptoHelper.encrypt(jsonBytes, password)
+                // With scanned pages the archive is this document followed by one binary record per page (PageArchive), written straight
+                // into a buffer of the final size, so a full vault is never copied through a JSON string. Without pages it is the one blob.
+                CryptoHelper.encrypt(jsonBytes, password).mapCatching { meta -> part2Backup?.archiveWithPages(meta, password) ?: meta }
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -96,7 +98,7 @@ class PayslipBackupService(
     ): Result<Unit> =
         withContext(dispatcher) {
             try {
-                val decryptResult = CryptoHelper.decrypt(backupBytes, password)
+                val decryptResult = CryptoHelper.decrypt(PageArchive.metaOf(backupBytes) ?: backupBytes, password)
                 if (decryptResult.isFailure) {
                     return@withContext Result.failure(
                         decryptResult.exceptionOrNull() ?: Exception("Decryption failed"),
@@ -124,7 +126,7 @@ class PayslipBackupService(
                         domainModel.toEncryptedEntity(deviceKey)
                     }
                 // Part II rows are size- and count-checked before any is decoded; what fails is skipped and counted, never fatal.
-                val part2 = part2Backup?.restore(backup, password, mode)
+                val part2 = part2Backup?.restore(backup, backupBytes, password, mode)
                 val rows =
                     BackupRows(
                         payslips = databasePayslips,
@@ -135,7 +137,7 @@ class PayslipBackupService(
                         guideNotes = restoredNotes(backup, password, deviceKey, mode),
                         part2Drafts = part2?.drafts.orEmpty(),
                         part2Orders = part2?.orders.orEmpty(),
-                        part2Pages = part2?.pages.orEmpty(),
+                        part2Pages = part2?.pages ?: emptySequence(),
                     )
 
                 // REPLACE makes the device an exact copy of the backup (every user and derived table is

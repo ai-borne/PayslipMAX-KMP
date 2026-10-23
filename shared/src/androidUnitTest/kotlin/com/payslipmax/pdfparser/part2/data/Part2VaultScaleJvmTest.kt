@@ -9,10 +9,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
- * WHY: the plan makes a full vault's backup a measured cost, not a guess. 120 pages of 500 KB export and restore within a bound, and the
- * extra heap each phase takes (above what the source and target databases already hold) is recorded. The bounds are generous ceilings
- * that catch an accidental quadratic or a copy of the whole archive per page, not benchmarks; the measured values are in the Phase 3
- * summary. The JVM heap is not an Android heap; `Part2VaultScaleIosTest` reads the resident size of the real process instead.
+ * WHY: a backup of a full vault (120 pages of 500 KB, about 61 MB) used to need about 0.8 GB of heap because the archive was one JSON
+ * string copied several times. It is now a page archive written into one buffer and read a page at a time, and this test runs in the
+ * 256 MB heap `shared/build.gradle.kts` gives every unit test, with the source database, the target database and the archive all held
+ * at once: running out of memory IS the failure. The sampled peaks (heap in use above the starting point, garbage included) are
+ * recorded and bounded as a second check. The JVM heap is not an Android heap; `Part2VaultScaleIosTest` reads the resident size of the
+ * real process instead.
  */
 class Part2VaultScaleJvmTest {
     private val runtime = Runtime.getRuntime()
@@ -55,6 +57,6 @@ class Part2VaultScaleJvmTest {
         )
         assertEquals(120, result.pages)
         assertTrue(result.exportMs < 120_000 && result.restoreMs < 120_000, "export ${result.exportMs} ms, restore ${result.restoreMs} ms")
-        assertTrue(peaks.values.all { it < 2000 }, "peak extra heap $peaks")
+        assertTrue(peaks.values.all { it < 230 }, "peak extra heap $peaks")
     }
 }

@@ -163,6 +163,14 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 | Lapsed Premium | Drafts, orders and pages stay viewable, deletable, backed up and restorable. The data layer is ungated; the Premium gate stays in the screens and Settings. |
 | Vault size | Measured as the sum of stored page ciphertext bytes. Warning at 60 MB (Phase 6b builds the Settings line). A write that would pass the 100 MB ceiling is refused. |
 
+## Round 14: Backup memory (owner, 2026-10-23, after the phase 3 summary)
+
+| Topic | Decision |
+|---|---|
+| Problem | Measured with a full vault (120 pages of 500 KB, about 61 MB): backing it up needed about 0.8 GB of heap (iOS process peak 1.2 GB), because the archive was one JSON string holding every page as Base64. An Android app heap is 256-512 MB. |
+| Choice | A chunked backup, built before the scanner (6a) can add any page, instead of lowering the 60 MB warning or accepting the risk. The warning and the 100 MB ceiling stay. |
+| Shape | Backup v5 is unreleased, so its format changed: with scanned pages the archive is the encrypted metadata document followed by one binary record per page and an authenticated page count; a vault with no pages still writes the old single encrypted document. A restore reads one page at a time and re-encrypts each page only as it is written. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

@@ -37,23 +37,50 @@ internal fun orderRow(
     password: String = BACKUP_PASSWORD,
 ) = Part2OrderBackup(order.id, text(order.toEntity(password).ciphertext))
 
+/** A page record as an archive carries it: [sealed] is the ciphertext, made for the backup password unless a test crafts otherwise. */
+internal class RawPage(
+    val id: String,
+    val orderId: String,
+    val position: Int,
+    val sealed: ByteArray,
+)
+
 internal fun pageRow(
     id: String,
     orderId: String,
     position: Int,
     jpeg: ByteArray,
     password: String = BACKUP_PASSWORD,
-) = Part2PageBackup(id, orderId, position, text(sealPage(id, orderId, position, jpeg, password).ciphertext))
+) = RawPage(id, orderId, position, sealPage(id, orderId, position, jpeg, password).ciphertext)
 
+/**
+ * An archive by hand. Without pages it is the one encrypted document; with pages it is a `PageArchive` whose trailer says [declared]
+ * pages (the real count unless a test makes the file lie).
+ */
 internal fun archive(
     drafts: List<Part2DraftBackup> = emptyList(),
     orders: List<Part2OrderBackup> = emptyList(),
-    pages: List<Part2PageBackup> = emptyList(),
+    pages: List<RawPage> = emptyList(),
     version: Int = PortableBackup.CURRENT_VERSION,
-): ByteArray = backupBytes(PortableBackup(version, listOf(goodEntity("08/2024")), emptyList(), null, part2Drafts = drafts, part2Orders = orders, part2Pages = pages))
+    declared: Int = pages.size,
+): ByteArray {
+    val backup = PortableBackup(version, listOf(goodEntity("08/2024")), emptyList(), null, part2Drafts = drafts, part2Orders = orders)
+    if (pages.isEmpty()) return backupBytes(backup)
+    val meta = CryptoHelper.encrypt(Json.encodeToString(PortableBackup.serializer(), backup).encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()
+    val writer = PageArchiveWriter(meta.size + pages.sumOf { it.sealed.size + 200 } + 400)
+    writer.begin(meta)
+    pages.forEach { writer.add(it.id, it.orderId, it.position, it.sealed) }
+    return writer.finish(declared, BACKUP_PASSWORD)
+}
 
-internal suspend fun decodeArchive(archive: ByteArray): PortableBackup =
-    Json.decodeFromString(PortableBackup.serializer(), CryptoHelper.decrypt(archive, BACKUP_PASSWORD).getOrThrow().decodeToString())
+/** The metadata document of either kind of archive. */
+internal fun decodeArchive(archive: ByteArray): PortableBackup =
+    Json.decodeFromString(
+        PortableBackup.serializer(),
+        CryptoHelper.decrypt(PageArchive.metaOf(archive) ?: archive, BACKUP_PASSWORD).getOrThrow().decodeToString(),
+    )
 
 /** A row no one can read: it costs nothing to make, so a test can ask for thousands. */
 internal fun junkDraft(i: Int) = Part2DraftBackup("junk-$i", "!!")
+
+internal fun junkPage(i: Int) = RawPage("junk-$i", "o1", 0, ByteArray(2))

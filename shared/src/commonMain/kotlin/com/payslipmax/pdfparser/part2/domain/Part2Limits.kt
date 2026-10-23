@@ -50,6 +50,9 @@ object Part2Limits {
     const val VAULT_WARN_BYTES = 60L * 1024 * 1024
     const val VAULT_BYTES_MAX = 100L * 1024 * 1024
 
+    /** Pages a restore writes per insert: a handful, so the pages in memory at once stay a few megabytes whatever the vault holds. */
+    const val PAGE_INSERT_BATCH = 4
+
     /** What `CryptoHelper.encrypt` adds to the plaintext: salt, IV, GCM tag and the magic header. Pinned against the real helper by a test on both platforms. */
     const val SEAL_OVERHEAD_BYTES = 48
 

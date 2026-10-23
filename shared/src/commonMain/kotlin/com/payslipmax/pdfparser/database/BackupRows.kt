@@ -17,5 +17,6 @@ data class BackupRows(
     val guideNotes: List<GuideNoteEntity> = emptyList(),
     val part2Drafts: List<Part2DraftEntity> = emptyList(),
     val part2Orders: List<Part2OrderEntity> = emptyList(),
-    val part2Pages: List<Part2PageEntity> = emptyList(),
+    /** A sequence, not a list: a restore re-encrypts one page at a time inside the transaction, so no second copy of the vault is held. */
+    val part2Pages: Sequence<Part2PageEntity> = emptySequence(),
 )
