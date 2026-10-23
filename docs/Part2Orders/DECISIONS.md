@@ -113,6 +113,18 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 | Rejoining code | The slip prints `REJOIN`, as HRMS publishes it; the code page notes that ODP-2026 lists `REJOINAL` (5.23). |
 | Cancellation | CANCEL / CANCELS ship with Leave, offered from any vault order ("this order is wrong → cancel and re-draft", para 11). |
 
+## Round 10: Engineering choices for the Leave release (asked with the phase plan, `docs/Plan/12_Part2Orders_PhasePlan.md`)
+
+| Topic | Decision |
+|---|---|
+| Notifications | Local only, on both platforms (Android WorkManager, iOS `UNUserNotificationCenter`); no push. Permission asked the first time a draft sets a reminder; if declined, the in-app Due list only, never asked again. The text is generic and never names a code or date. Drafts are the source of truth; scheduled notifications are rebuilt from them. Cadence: return date at 09:00 ("draft REJOIN"); 14 days after printing, then every 30 days, at most 6 ("add the published order"); 1 March of Y+1 ("ACCLVE for Y", note 7 p.134). |
+| Camera | System document scanners: Android ML Kit Document Scanner (gallery import off), iOS VisionKit. |
+| Vault storage | Every page re-encoded to JPEG (long edge 1600 px, at most 500 KB), which drops EXIF/GPS; one encrypted Room row per page; at most 10 pages per order; in backup v5 as Base64 ciphertext; Settings warns above 60 MB of vault. |
+| Templates | Hand-written `docs/Plan/rule_cards/part2/templates.json`, checked by `tools/part2.py` and again in the app on load; an additive `part2` bundle section (BUNDLE_VERSION stays 1). Narratives keep the manual's wording, so the own-words guard skips them. |
+| Paywall | New `FeatureGate.PART2_ORDERS` for drafting, printing, vault capture and reminders; lookup free; independent of `GUIDE_PAYWALL_ENABLED`. After Premium lapses, existing drafts and vault orders can still be viewed, deleted and backed up. |
+| TPTA | Drafted with Leave: STPTRAN and GTDTRAN1–5 when leave covers a whole calendar month (p.71 notes iii, v). The release drafts 59 serials. |
+| Branch | `feature/part2-orders` off `main` @ `d9274bdd`. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
@@ -180,4 +192,4 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 
 ## Open
 
-- Notification design for draft-driven reminders (new on both platforms).
+- None. Notification design was closed in Round 10.
