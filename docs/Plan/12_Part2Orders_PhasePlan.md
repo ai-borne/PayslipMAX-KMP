@@ -329,7 +329,7 @@ The next phase starts only after the owner accepts this summary.
 
 | Phase | Status | Commit |
 |---|---|---|
-| 0. Branch, baseline, occurrence dataset (tools only) | not started | — |
+| 0. Branch, baseline, occurrence dataset (tools only) | done, accepted (2026-10-23) | see git log |
 | 1. Lookup bundle section, models, validator, flag, gate + catalog guard | not started | — |
 | 2a. Template format, validators, engine core (synthetic templates), `CivilCalendar` move | not started | — |
 | 2b. Content batch 1: annual set + ration four + R&H; owner review | not started | — |
@@ -369,7 +369,10 @@ before. Each phase's "Debt watch" lists the debt most likely to appear and how i
   `tools/test_part2_file_sizes.py` (300-line rule for Part II tool, JSON and Swift files).
 - Owner spot check: 25 seeded random rows with detail pages, checked against the PDF and recorded in the summary.
 - Exit: gate green, app gate unchanged from the baseline.
-- Debt watch: the 13 known column-wrap misses must be an explicit list with line numbers, never a loose tolerance.
+- Debt watch: the known column-wrap misses must be an explicit list, never a loose tolerance.
+- Done 2026-10-23 (see the Phase 0 summary in the session): the explicit list has 12 entries, not 13; each serial has one `page` (its
+  Annexure III row, which is the index's Page column), not two; names are the manual's own Annexure II wording, typos included
+  ("Guest Rom", "Arm Holiday Homes"); a name is capped at 300 characters (a limit chosen here, not the manual's).
 
 ### Phase 1: Lookup bundle section, models, validator, flag, gate + catalog guard (no UI)
 - Goal: the bundle carries all 303 code pages and the 10-ribbon layout; the app reads and validates them; the flag and
