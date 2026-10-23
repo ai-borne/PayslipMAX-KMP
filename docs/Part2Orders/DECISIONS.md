@@ -195,6 +195,7 @@ to see on the device walk and change if they disagree. The Pixel 9 walk method i
 | Tiles | Home lists the built ribbons (Leave, Records). A ribbon lists its cases with the chapters and pages their codes cover ("Ch 5, pp 114-117") and a code count. A case lists its codes, marks the lookup-only ones, and shows the codes listed from elsewhere under "Also see". |
 | Entry | Free for everyone; absent while `PART2_ENABLED` is off or when the bundle has no Part II section. A restored Part II place under a flag-off build is cut back to Guide Home. |
 | Reuse over new look | No new colour or component: the Guide's tile, pill and back header. |
+| Acceptance and the tab wiring | Phase 4a accepted by the owner, 2026-10-23 (19416f6e, 34c2f296). Asked whether `GuideTab.kt`'s growth (257 -> 265) should be accepted or fixed: the owner chose to fold the pre-claim and Part II hosts into one `GuideHosts` holder now (Phase 11 item 13, closed). |
 
 ## Facts established (2026-10-22)
 

@@ -336,7 +336,7 @@ The next phase starts only after the owner accepts this summary.
 | 2b. Content batch 1: annual set + ration four + R&H; owner review | done, accepted (2026-10-23); the check against the printed pages was delegated and is recorded (DECISIONS Round 15, Phase 11 item 7) | ebf6c124, 09bfbf98, 2d192468 |
 | 3. Storage: schema 15, repository, backup v5 with bounded restore | done, accepted (2026-10-23) | 8cb0a40b |
 | 3b. Chunked backup: pages as binary records, one page in memory at a time | done, accepted (2026-10-23) | 32ca5316 |
-| 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | built 2026-10-23, awaiting owner acceptance; Pixel 9 walk done (Phase 11 item 12) | see git log |
+| 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | done, accepted (2026-10-23); Pixel 9 walk done (Phase 11 item 12), hosts folded (item 13) | 19416f6e, 34c2f296 |
 | 4b. Leave draft flow + slip preview (Premium), autosave | not started | — |
 | 5. Print + "Check the HRMS draft" | not started | — |
 | 6a. Page pipeline: scanner spike, `PageScanner`, `PageEncoder`, merged-manifest guard | not started | — |
