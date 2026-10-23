@@ -208,6 +208,8 @@ Four things the plan did not settle were asked in one batch; the owner took the 
 | `ack` findings | Shown now. An `ack` finding is a prominent card with its citation and a tick box ("I have read this. The order may be rejected."); a `warn` is a plain note with its citation. Ticks live in the model, are never saved, and any edit clears them. The state says whether the slip is ready to print (no `ack` unticked); Phase 5 only adds the Print button. |
 | Prefill | Area details only, as the plan says (station, corps, notification, serial from the newest draft of the same R&H code). The ration answer, the R&H code and every date start empty. Built as: choosing an R&H code fills the inputs that choice newly asks for (the stop's station, the grant's corps, notification and serial) from the newest other draft that chose the same code, only where empty. |
 
+Phase 4b was accepted by the owner on 2026-10-23 (bace0c4b, 1ff29b95), after the Pixel 9 walk, with the build-time choices below as built.
+
 Build-time choices made without a question (change them if you disagree):
 
 | Topic | Choice |
