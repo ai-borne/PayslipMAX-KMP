@@ -65,7 +65,7 @@ fun GuideTab(
             }
             // Android back pops the Guide stack before it leaves the tab; at Guide Home it stays disabled.
             BackHandler(enabled = navState.canPop) { navState.pop() }
-            GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform, notesViewModel, rememberPreClaimHost(preClaim, access, navState), rememberPart2Host(part2, current.bundle))
+            GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform, notesViewModel, rememberGuideHosts(preClaim, part2, access, navState, current.bundle))
         }
     }
 }
@@ -79,20 +79,19 @@ private fun GuideDestinationContent(
     searchViewModel: GuideSearchViewModel,
     platform: GuidePlatform,
     notes: GuideNotesViewModel?,
-    preClaim: PreClaimHost,
-    part2: Part2Host,
+    hosts: GuideHosts,
 ) {
     val onBack: () -> Unit = { navState.pop() }
     when (val destination = navState.current) {
-        GuideDestination.Home -> GuideHomeRoute(navState, ready, access, viewModel, searchViewModel, notes, preClaim.entry, part2)
+        GuideDestination.Home -> GuideHomeRoute(navState, ready, access, viewModel, searchViewModel, notes, hosts)
         is GuideDestination.Area ->
             viewModel.area(destination.areaId)?.let { area ->
                 GuideAreaScreen(area, onBack, onOpenCase = { navState.push(GuideDestination.Case(it)) }, rememberGuideListState(navState))
             } ?: GuideLoading()
         is GuideDestination.Case -> GuideFeedRoute(navState, destination, viewModel, rememberNotedCards(notes, access))
-        is GuideDestination.Card -> GuideCardLevel(navState, destination, access, viewModel, platform, notes, preClaim.entry)
-        is GuideDestination.PreClaim -> GuidePreClaimLevel(navState, access, platform, preClaim, rememberGuideListState(navState))
-        is Part2Destination -> GuidePart2Level(navState, part2, rememberGuideListState(navState))
+        is GuideDestination.Card -> GuideCardLevel(navState, destination, access, viewModel, platform, notes, hosts.preClaim.entry)
+        is GuideDestination.PreClaim -> GuidePreClaimLevel(navState, access, platform, hosts.preClaim, rememberGuideListState(navState))
+        is Part2Destination -> GuidePart2Level(navState, hosts.part2, rememberGuideListState(navState))
         GuideDestination.Search -> GuideSearchRoute(navState, access, searchViewModel, onBack, rememberNotedCards(notes, access))
         GuideDestination.RemovedNotes -> GuideRemovedNotesRoute(navState, notes, onBack)
         GuideDestination.Changes ->
@@ -110,8 +109,7 @@ private fun GuideHomeRoute(
     viewModel: GuideViewModel,
     searchViewModel: GuideSearchViewModel,
     notes: GuideNotesViewModel?,
-    preClaimEntry: PreClaimEntry,
-    part2: Part2Host,
+    hosts: GuideHosts,
 ) {
     val pins by viewModel.pins.pins.collectAsState()
     val noteState = rememberGuideNotesState(notes)
@@ -126,10 +124,10 @@ private fun GuideHomeRoute(
         // Notes are the user's own and free for everyone, so these two lines show whatever the entitlement.
         notes = GuideHomeNotes(noteState.unreadable, noteState.removed.size, onOpenRemoved = { navState.push(GuideDestination.RemovedNotes) }),
         notedCards = if (access.isUnlocked) noteState.notedCards else emptySet(),
-        preClaim = preClaimEntry,
+        preClaim = hosts.preClaim.entry,
         onOpenPreClaim = { navState.push(GuideDestination.PreClaim()) },
-        part2 = part2.entry,
-        onOpenPart2 = { part2.open(navState) },
+        part2 = hosts.part2.entry,
+        onOpenPart2 = { hosts.part2.open(navState) },
         // Each visit to search starts empty; coming back from a card (a pop) does not pass through here.
         onOpenSearch = {
             searchViewModel.clear()

@@ -347,7 +347,7 @@ The next phase starts only after the owner accepts this summary.
 | 8. Rest of Chapter 5, incl. ACCLVE and ENCASH (batch 3) | not started | — |
 | 9. Area re-grants: HAA, SCCIA, field, TPTA (batch 4) | not started | — |
 | 10. Release hardening, owner content sign-off, iPhone walk, docs | not started | — |
-| 11. Pending items (collected from earlier phases) | open: items 6, 8, 10, 11, 12, 13, 14 (items 1-4, 7 and 9 closed; 5 not closable) | — |
+| 11. Pending items (collected from earlier phases) | open: items 6, 8, 10, 11, 14 (items 1-4, 7, 9, 12 and 13 closed; 5 not closable) | — |
 
 Each phase leaves the app shippable: `PART2_ENABLED` is `false` until Phase 10, so a flag-off build behaves exactly as
 before. Each phase's "Debt watch" lists the debt most likely to appear and how it is cleared inside that phase.
@@ -617,9 +617,8 @@ Nudge: connect the Pixel 9.
   - **The REJOINAL note** comes from the template's `print` field (`Part2PrintedAs`), not from a name in the UI; `Part2LookupSourceTest` proves the
     screens name none of the 321 codes. "Group not printed in ODP-2026" shows on the code page and the list row when the group is null.
   - **No theme token was needed**: the screens reuse the Guide's tile, pill and card components. Part II copy is in `Part2Strings`.
-  - **`GuideTab.kt` grew 257 -> 265** (10 lines added, 2 changed; imports, one parameter, one argument, one `when` branch, one Home argument): not "one
-    delegation line", because a sealed `when` branch, the factory parameter and the Home row cannot share one line. All of it is delegation; the logic is
-    in `GuideTabPart2.kt`. `GuideHomeScreen` hit the 50-line composable limit with its two new parameters, so its two trailing notes rows moved into a
+  - **`GuideTab.kt` grew 257 -> 265, then the owner had the hosts folded** into `GuideHosts` (Phase 11 item 13): now 263 and pinned by a test. It is not "one
+    delegation line", because a sealed `when` branch and the factory parameter cannot share one line. All of it is delegation; the logic is in `GuideTabPart2.kt`. `GuideHomeScreen` hit the 50-line composable limit with its two new parameters, so its two trailing notes rows moved into a
     private extension (no behaviour change). See Phase 11 item 13.
   - **Tests**: red first (20 of 20 shared and 36 of 54 composeApp new tests failed on missing behaviour), then 30 deliberate breaks, all killed; three
     survived the first round and each exposed a test gap that is now closed (`5.1` is not `5.10`; digits in names must not rescue `3.2`; no model is made
@@ -841,10 +840,11 @@ them in its summary. An item closes with a test or a command output, not a state
    (the phone started in dark and was put back). Reverted: `LaunchFlags.kt` is byte-identical (sha256 989cf71e9e52262a480b3823c047510270cc552587db7c679c37c861c1ca87a1),
    the debug build is uninstalled, and the owner reinstalls from Play and restores the `.pcda` backup. Not observed: system Back from the restored page (the on-screen
    Back was used), TalkBack, and a small-screen or large-font layout.
-13. **Phase 4a: `GuideTab.kt` wiring grows with each feature.** OPEN, needs an owner decision. Pre-claim and Part II each add a host, a parameter and a
-   `when` branch to `GuideTab.kt` (257 -> 265 in 4a). Folding `PreClaimHost` and `Part2Host` into one holder would stop that, but it edits the pre-claim
-   wiring, which the surgical-change rule forbids without a word from the owner. Closed by the owner's call: accept as is, or fold the hosts in 4b with
-   a test that `GuideTab.kt` stays at or under its current length.
+13. **Phase 4a: `GuideTab.kt` wiring grows with each feature.** CLOSED 2026-10-23 (owner: fold the hosts now). `PreClaimHost` and `Part2Host` now sit in one
+   holder, `GuideHosts` (`rememberGuideHosts` builds both), so the tab's `when` branches, `GuideHomeRoute` and `GuideDestinationContent` take one `hosts` argument
+   and a new feature adds a field there instead of lines here. `GuideTab.kt` is 263 lines: 265 after the first 4a build, 257 before 4a (the 6 that remain are the
+   Part II factory parameter, its kdoc, imports and the one `when` branch, which cannot be folded). `GuideTabWiringSourceTest` pins it: at most 263 lines, and the file names
+   neither host type nor either builder. The fold edits only call sites in `GuideTab.kt`; `GuideTabPreClaim.kt` is untouched, and every pre-claim and Part II screen test is green on it.
 14. **Phase 4a: iOS look and gestures of the Part II screens.** OPEN, a manual gate. Only the framework link, `iosSimulatorArm64Test` (707 tests) and the
    Native timing of the search walk were observed (794 ms for about 930 searches, budget 1,500 ms). Nothing was driven on an iPhone: the levels are inline in
    the Guide tab like every other Guide level, with the on-screen back header, and the iOS edge-swipe does not apply to a tab. Closed by the Phase 10
