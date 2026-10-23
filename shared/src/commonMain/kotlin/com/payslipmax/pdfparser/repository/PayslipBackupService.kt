@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.logging.Logger
+import com.payslipmax.pdfparser.part2.data.Part2Backup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -18,10 +19,12 @@ class PayslipBackupService(
     private val dispatcher: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.Default,
     private val payslipRepository: PayslipRepository? = null,
     private val intelligence: FinancialIntelligenceRepository? = null,
+    // Null only in tests that do not care about Part II; the Koin graph always passes it (Part2WiringTest), so a build cannot drop the vault.
+    private val part2Backup: Part2Backup? = null,
 ) {
     /**
      * Exports everything the user created (payslips, PDFs, settings, letters, deleted-letter records,
-     * corrections, private Guide notes) as an encrypted JSON archive. Derived data (ledger, insights) is not exported.
+     * corrections, private Guide notes, Part II drafts, orders and pages) as an encrypted JSON archive. Derived data (ledger, insights) is not exported.
      */
     suspend fun export(password: String): Result<ByteArray> =
         withContext(dispatcher) {
@@ -44,6 +47,7 @@ class PayslipBackupService(
                         }
                     }
 
+                val part2 = part2Backup?.export(password)
                 val backup =
                     PortableBackup(
                         version = PortableBackup.CURRENT_VERSION,
@@ -54,6 +58,9 @@ class PayslipBackupService(
                         dismissedDrafts = payslipDao.getAllDismissedDrafts(),
                         corrections = exportCorrections(deviceKey, password),
                         guideNotes = GuideNoteBackup.forExport(payslipDao.getAllGuideNotes().first(), deviceKey, password),
+                        part2Drafts = part2?.drafts.orEmpty(),
+                        part2Orders = part2?.orders.orEmpty(),
+                        part2Pages = part2?.pages.orEmpty(),
                     )
 
                 val jsonStr = Json.encodeToString(PortableBackup.serializer(), backup)
@@ -116,6 +123,8 @@ class PayslipBackupService(
                             }
                         domainModel.toEncryptedEntity(deviceKey)
                     }
+                // Part II rows are size- and count-checked before any is decoded; what fails is skipped and counted, never fatal.
+                val part2 = part2Backup?.restore(backup, password, mode)
                 val rows =
                     BackupRows(
                         payslips = databasePayslips,
@@ -124,6 +133,9 @@ class PayslipBackupService(
                         dismissedDrafts = backup.dismissedDrafts,
                         corrections = backup.corrections.map { it.toCorrectionList(password).toCorrectionEntity(it.dateStr, deviceKey) },
                         guideNotes = restoredNotes(backup, password, deviceKey, mode),
+                        part2Drafts = part2?.drafts.orEmpty(),
+                        part2Orders = part2?.orders.orEmpty(),
+                        part2Pages = part2?.pages.orEmpty(),
                     )
 
                 // REPLACE makes the device an exact copy of the backup (every user and derived table is

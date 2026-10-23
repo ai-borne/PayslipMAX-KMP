@@ -155,6 +155,9 @@ room {
 // developer-only CorpusCaptureTest / PlatformPdfParserTest can locate real PDFs. These are
 // absent in CI, so the gated tests skip cleanly and no machine-specific paths are committed.
 tasks.withType<Test>().configureEach {
+    // Part2VaultScaleJvmTest backs up a full 120-page vault (about 61 MB), whose archive takes about 0.8 GB of heap to build: Gradle's
+    // default 512 MB test heap runs out. The need is a finding about the archive format (plan 12, Phase 11 item 9), not test waste.
+    maxHeapSize = "3g"
     listOf(
         "payslip.localCorpus",
         "payslip.localCorpus.json",

@@ -152,6 +152,17 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 | Casual leave beside special casual leave | Only GTDCL beside the annual set is checked; special casual leave beside annual leave raises nothing. |
 | Reissue warning on EXTNAL, VOLREJ, RECALL | None now (confirmed). |
 
+## Round 13: Phase 3 storage (owner, 2026-10-23, asked at the start of phase 3)
+
+| Topic | Decision |
+|---|---|
+| Phase 2b | Summary accepted. The owner has NOT yet checked the 24 templates against the printed pages (plan Phase 11 item 7), so 2b's exit is not met. Phase 3 touches no content, so it went ahead. |
+| Atomic restore and the DAO | `Part2Dao` holds all Part II reads and per-item writes. `PayslipDao` gains only the bulk inserts and clears for the three tables (the restore and "delete all" must share one transaction with everything else the officer made). It grew 204 -> 233 lines. |
+| Backup MERGE | Match by id; the newer `updatedAt` wins; a tie goes to the backup. A page is immutable, so a page the device already holds is left alone. |
+| Deleting | Deleting a draft keeps its orders. Deleting an order deletes its pages (done in one transaction in code, with no foreign key, because `INSERT OR REPLACE` on a parent row would cascade). |
+| Lapsed Premium | Drafts, orders and pages stay viewable, deletable, backed up and restorable. The data layer is ungated; the Premium gate stays in the screens and Settings. |
+| Vault size | Measured as the sum of stored page ciphertext bytes. Warning at 60 MB (Phase 6b builds the Settings line). A write that would pass the 100 MB ceiling is refused. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

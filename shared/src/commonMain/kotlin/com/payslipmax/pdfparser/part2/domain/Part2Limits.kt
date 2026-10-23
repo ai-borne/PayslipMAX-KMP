@@ -1,9 +1,10 @@
 package com.payslipmax.pdfparser.part2.domain
 
 /**
- * The bounds on what an officer can type into a Part II draft: the one home for them, so the engine and (later) the form agree. The
- * limits on bundle content ship in the bundle itself (`template_limits`). Storage caps (pages, payloads, backup rows) join here in the
- * storage phase.
+ * The bounds on what an officer can type into a Part II draft and on what the app stores: the one home for them, so the engine, the
+ * form, the repository and the backup restore agree. The limits on bundle content ship in the bundle itself (`template_limits`).
+ * Storage judges sizes and counts only; whether a typed value makes sense (a real date, a day count in range) stays the engine's call,
+ * so a half-filled form can always be saved.
  */
 object Part2Limits {
     /** A typed remark, in characters. */
@@ -17,4 +18,49 @@ object Part2Limits {
 
     /** Occurrence requests in one event; a leave event is a handful, never more than one per leave year. */
     const val REQUESTS_MAX = 10
+
+    /** Answers per request, and the slot values per request (a template declares at most 10 slots; linked templates share ids). */
+    const val VALUES_PER_REQUEST_MAX = 16
+    const val ANSWERS_PER_REQUEST_MAX = 16
+
+    /** One yes/no answer id (a rule family's own token), a slot id, a code, a template revision, an id (UUID-sized), in characters. */
+    const val ANSWER_MAX = 64
+    const val SLOT_ID_MAX = 40
+    const val CODE_MAX = 40
+    const val REV_MAX = 16
+    const val ID_MAX = 64
+
+    /** Template revisions kept with a draft: the requested codes plus every linked template that was drafted. */
+    const val REVS_MAX = 64
+
+    /** A draft or order payload before encryption, in bytes. The longest real draft is about 40 KB; this is the ceiling, not a target. */
+    const val PAYLOAD_MAX_BYTES = 128 * 1024
+
+    /** One re-encoded scanned page (long edge 1600 px, JPEG), in bytes; far under any row limit. */
+    const val PAGE_MAX_BYTES = 500 * 1024
+
+    /** Pages one published order can hold. */
+    const val PAGES_PER_ORDER_MAX = 10
+
+    /** Drafts and vault orders the device holds. A restore adds no more than this many, whatever the file claims. */
+    const val DRAFTS_MAX = 1000
+    const val ORDERS_MAX = 1000
+
+    /** The vault (sum of stored page ciphertext, in bytes): Settings warns above [VAULT_WARN_BYTES]; a write that would pass [VAULT_BYTES_MAX] is refused. */
+    const val VAULT_WARN_BYTES = 60L * 1024 * 1024
+    const val VAULT_BYTES_MAX = 100L * 1024 * 1024
+
+    /** What `CryptoHelper.encrypt` adds to the plaintext: salt, IV, GCM tag and the magic header. Pinned against the real helper by a test on both platforms. */
+    const val SEAL_OVERHEAD_BYTES = 48
+
+    /** Bytes in the frame around a page's JPEG: version, two id lengths and the two ids at their longest. */
+    const val PAGE_FRAME_MAX_BYTES = 3 + 2 * ID_MAX
+
+    /** An id the app made (a UUID) or a slot, code or answer token: letters, digits, `-` and `_` only, so it can never carry markup or a path. */
+    fun isPlainToken(
+        value: String,
+        max: Int,
+    ): Boolean = value.length in 1..max && value.all { it.isLetterOrDigit() && it.code < 128 || it == '-' || it == '_' }
+
+    fun isPlainId(value: String): Boolean = isPlainToken(value, ID_MAX)
 }

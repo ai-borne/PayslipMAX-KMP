@@ -25,6 +25,7 @@ private const val SCHEMA_DIR = "schemas/com.payslipmax.pdfparser.database.Paysli
 private const val FUTURE_VERSION = 99
 private const val V12 = 12
 private const val V13 = 13
+private const val V14 = 14
 
 /**
  * WHY: user payslips exist only in this database (there is no server copy), so the database must
@@ -135,6 +136,39 @@ class PayslipDatabaseUpgradeTest {
             db.execSQL("INSERT INTO guide_notes (cardId, ciphertext) VALUES ('RB-TD-001', 'cafe')")
             db.query("SELECT cardId FROM guide_notes").use { assertEquals(1, it.count) }
         }
+    }
+
+    // WHY: Part II drafts, orders and scanned pages (phase 3) arrive with the v15 tables. The officer's payslips, corrections and notes are
+    // the only copy of their data, so they must come through untouched, and the three new tables must start empty and take a row each.
+    @Test
+    fun `the v14 database gains the three part II tables and keeps payslips corrections and notes`() {
+        helper.createDatabase(PRODUCTION_DB, V14).use {
+            it.insertPayslip("2026-01")
+            it.execSQL("INSERT INTO payslip_corrections (dateStr, ciphertext) VALUES ('2026-01', 'beef')")
+            it.execSQL("INSERT INTO guide_notes (cardId, ciphertext) VALUES ('RB-TD-001', 'cafe')")
+        }
+
+        helper.runMigrationsAndValidate(PRODUCTION_DB, headVersion(), true).use { db ->
+            db.query("SELECT ciphertext FROM encrypted_payslips").use { assertEquals(1, it.count, "the payslip survives the upgrade") }
+            db.query("SELECT ciphertext FROM payslip_corrections").use { assertEquals(1, it.count, "the correction survives the upgrade") }
+            db.query("SELECT ciphertext FROM guide_notes").use { assertEquals(1, it.count, "the note survives the upgrade") }
+            for (table in listOf("part2_drafts", "part2_orders", "part2_pages")) {
+                db.query("SELECT COUNT(*) FROM $table").use { cursor ->
+                    cursor.moveToFirst()
+                    assertEquals(0, cursor.getInt(0), "$table starts empty")
+                }
+            }
+            db.execSQL("INSERT INTO part2_drafts (id, ciphertext) VALUES ('d1', x'0102')")
+            db.execSQL("INSERT INTO part2_orders (id, ciphertext) VALUES ('o1', x'0102')")
+            db.execSQL("INSERT INTO part2_pages (id, orderId, position, ciphertext) VALUES ('p1', 'o1', 0, x'0102')")
+            db.query("SELECT id FROM part2_pages WHERE orderId = 'o1'").use { assertEquals(1, it.count) }
+        }
+    }
+
+    @Test
+    fun `the head version is 15 and its schema file is exported`() {
+        assertEquals(15, headVersion())
+        assertTrue(File("$SCHEMA_DIR/15.json").readText().contains("part2_pages"))
     }
 
     private fun SupportSQLiteDatabase.insertPayslip(dateStr: String) =

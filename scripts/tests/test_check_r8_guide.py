@@ -148,6 +148,73 @@ class UnlistedSerializableTest(unittest.TestCase):
             self.assertEqual(gate.summary(tmp, ("guide/model", "part2")), "guide/model: 2 models, part2: 0 models")
 
 
+class VisibilityModifierTest(unittest.TestCase):
+    """Phase 3 payload models are `internal` (storage detail, not API). A visibility modifier must not hide a model from the gate."""
+
+    def test_internal_public_and_private_models_are_listed_like_plain_ones(self):
+        source = "@Serializable\ninternal class A(val v: Int)\n@Serializable\ninternal data class B(val v: Int)\n@Serializable\npublic class C\n@Serializable\nprivate class D\n"
+        self.assertEqual(gate.serializable_models(source), ["A", "B", "C", "D"])
+
+    def test_an_internal_model_in_the_walked_tree_is_found_and_not_reported_as_unlisted(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "part2", "data", "Payloads.kt")
+            os.makedirs(os.path.dirname(path))
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write("@Serializable\ninternal class DraftPayload(val v: Int)\n")
+            self.assertEqual(gate.qualified_models(tmp, ("part2",)), [f"{gate.ROOT_PACKAGE}.part2.data.DraftPayload"])
+            self.assertEqual(gate.unlisted_serializables(tmp, ("part2",)), [])
+
+
+class RoomClassesTest(unittest.TestCase):
+    """Phase 11 item 1: Room reaches its database and DAO implementations by generated code, so R8 can drop them in release only."""
+
+    DATABASE = f"{gate.ROOT_PACKAGE}.database.PayslipDatabase_Impl"
+    PART2_DAO = f"{gate.ROOT_PACKAGE}.part2.data.Part2Dao_Impl"
+
+    def _mapping(self, *present):
+        return "# compiler: R8\n" + "".join(f"{name} -> a.b{i}:\n    int x -> a\n" for i, name in enumerate(present))
+
+    def test_both_implementations_are_required_by_name(self):
+        self.assertEqual(gate.REQUIRED_CLASSES, (self.DATABASE, self.PART2_DAO))
+
+    def test_a_mapping_that_kept_both_passes(self):
+        self.assertEqual(gate.check_required_classes(self._mapping(self.DATABASE, self.PART2_DAO)), [])
+
+    def test_a_removed_part_ii_dao_fails_and_names_it(self):
+        problems = gate.check_required_classes(self._mapping(self.DATABASE))
+        self.assertEqual(len(problems), 1, problems)
+        self.assertIn("Part2Dao_Impl", problems[0])
+        self.assertIn("removed by R8", problems[0])
+
+    def test_a_removed_database_implementation_fails(self):
+        self.assertTrue(any("PayslipDatabase_Impl" in p for p in gate.check_required_classes(self._mapping(self.PART2_DAO))))
+
+    def test_the_real_sources_declare_the_classes_the_gate_requires(self):
+        """A rename of the DAO must fail here, not pass the gate for a class that no longer exists."""
+        with open(os.path.join(gate.KOTLIN_ROOT, "part2/data/Part2Dao.kt"), encoding="utf-8") as fh:
+            self.assertIn("interface Part2Dao", fh.read())
+        with open(os.path.join(gate.KOTLIN_ROOT, "database/PayslipDatabase.kt"), encoding="utf-8") as fh:
+            self.assertIn("abstract class PayslipDatabase", fh.read())
+
+
+class EmptyFolderTest(unittest.TestCase):
+    """`part2: 0` meant the gate walked nothing. Now that Part II ships payloads, an empty registered folder is a broken walk, not a pass."""
+
+    def test_a_registered_folder_with_no_models_is_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for rel, source in (("guide/model/G.kt", MODELS_SRC), ("part2/domain/P.kt", "class NotSerializable\n")):
+                path = os.path.join(tmp, *rel.split("/"))
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+                with open(path, "w", encoding="utf-8") as fh:
+                    fh.write(source)
+            self.assertEqual(gate.empty_folders(tmp, ("guide/model", "part2")), ["part2"])
+
+    def test_the_real_tree_has_models_in_every_registered_folder(self):
+        self.assertEqual(gate.empty_folders(gate.KOTLIN_ROOT, gate.MODEL_FOLDERS), [])
+        self.assertIn("part2: ", gate.summary(gate.KOTLIN_ROOT, gate.MODEL_FOLDERS))
+        self.assertNotIn("part2: 0 ", gate.summary(gate.KOTLIN_ROOT, gate.MODEL_FOLDERS))
+
+
 class DefaultsTest(unittest.TestCase):
     """The gate must inspect the build that ships; a minifiedTest-only check can pass while release breaks."""
 

@@ -35,6 +35,7 @@ class AppModuleGraphTest {
                     RatingPromptManager::class,
                     OnboardingStorage::class,
                     Function0::class,
+                    Function1::class,
                     Function3::class,
                 ),
         )

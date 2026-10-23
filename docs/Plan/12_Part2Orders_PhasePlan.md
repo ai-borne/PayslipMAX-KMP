@@ -332,8 +332,8 @@ The next phase starts only after the owner accepts this summary.
 | 0. Branch, baseline, occurrence dataset (tools only) | done, accepted (2026-10-23) | see git log |
 | 1. Lookup bundle section, models, validator, flag, gate + catalog guard | done, accepted (2026-10-23) | 8bcf9065 |
 | 2a. Template format, validators, engine core (synthetic templates), `CivilCalendar` move | done, accepted (2026-10-23) | 534ba5cc |
-| 2b. Content batch 1: annual set + ration four + R&H; owner review | built 2026-10-23; **owner review against the PDF not done, so 2b exit is not claimed** | see git log |
-| 3. Storage: schema 15, repository, backup v5 with bounded restore | not started | — |
+| 2b. Content batch 1: annual set + ration four + R&H; owner review | summary accepted 2026-10-23; **owner check against the printed pages not done, so 2b exit is not claimed** (Phase 11 item 7) | ebf6c124, 09bfbf98, 2d192468 |
+| 3. Storage: schema 15, repository, backup v5 with bounded restore | built 2026-10-23; **awaiting owner acceptance; one owner decision open (Phase 11 item 9, backup memory)** | see git log |
 | 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | not started | — |
 | 4b. Leave draft flow + slip preview (Premium), autosave | not started | — |
 | 5. Print + "Check the HRMS draft" | not started | — |
@@ -345,7 +345,7 @@ The next phase starts only after the owner accepts this summary.
 | 8. Rest of Chapter 5, incl. ACCLVE and ENCASH (batch 3) | not started | — |
 | 9. Area re-grants: HAA, SCCIA, field, TPTA (batch 4) | not started | — |
 | 10. Release hardening, owner content sign-off, iPhone walk, docs | not started | — |
-| 11. Pending items (collected from earlier phases) | open: items 1, 6, 7, 8 (items 2-4 closed in 2b; 5 not closable) | — |
+| 11. Pending items (collected from earlier phases) | open: items 6, 7, 8, 9, 10 (items 1-4 closed; 5 not closable) | — |
 
 Each phase leaves the app shippable: `PART2_ENABLED` is `false` until Phase 10, so a flag-off build behaves exactly as
 before. Each phase's "Debt watch" lists the debt most likely to appear and how it is cleared inside that phase.
@@ -550,6 +550,22 @@ before. Each phase's "Debt watch" lists the debt most likely to appear and how i
 - Exit: gate green.
 - Debt watch: `PayslipDao.kt` (204) must not grow — the new DAO is separate; `PayslipBackupService.kt` (180) stays
   under 300 by delegating to `Part2Backup`.
+- Done 2026-10-23 (Phase 3 summary in the session). The owner's decisions are in DECISIONS.md Round 13. Where the build differs from the bullets above:
+  - **Layout:** `shared/.../part2/data/` holds `Part2Entities`, `Part2Dao`, `Part2Payloads` (flat `@Serializable`, `v: 1`), `Part2Codec` (seal/open), `Part2Bounds`
+    (sizes and shapes only; the engine still judges values), `Part2Repository` + `RoomPart2Repository`, `Part2Backup` + `Part2BackupRows`, `Part2Exceptions`;
+    `Part2Draft`/`VaultOrder`/`VaultPageRef` are in `part2/domain`; every cap is in `Part2Limits`.
+  - **Rows:** ciphertext is a BLOB (hex would double a 500 KB page); drafts and orders carry their id inside the ciphertext, a page carries both ids in a
+    binary frame (no JSON/Base64 inside the database). `part2_pages.position` is a plain column beside the plain `orderId` (an ordering, not content).
+    No foreign keys. The order -> draft link, number and date are inside the order's ciphertext.
+  - **Caps:** pages 500 KB, 10 per order, payload 128 KB, 1000 drafts, 1000 orders, vault 100 MB ceiling (a write past it is refused). The count/size checks are
+    inside the DAO's own `@Transaction` methods. A restore examines at most the cap in rows, checks each row's id, text length and the running totals before
+    decoding it, and skips and counts the rest (`Part2Restore.skipped`).
+  - **Backup:** v5 adds `part2Drafts/Orders/Pages` (Base64 ciphertext under the backup password). `PayslipBackupService` gained one constructor argument
+    (`part2Backup`, bound in `sharedModule` whatever the flag says, pinned by `Part2WiringTest`), 180 -> 192 lines. Only `part2Module` (the repository) is flag-gated.
+  - **Pinned by test:** the seal overhead (48 bytes) against the real `CryptoHelper` on both platforms; the owner's numbers by literal (`Part2LimitsPinTest`);
+    the storage folder is blind to codes and logs nothing (`Part2StorageSourceTest`).
+  - **Draft print snapshot:** Phase 5 adds `printed` to the draft payload as an optional field inside `v: 1` (older readers ignore it); no schema change.
+
 
 ### Phase 4a: Lookup UI (free) — Part II home, ribbons, tiles, code pages, search
 Nudge: connect the Pixel 9.
@@ -725,14 +741,11 @@ Nudge: connect the Pixel 9.
 Each item says what is open, why it was deferred, and how it is closed. Every phase adds its leftovers here instead of leaving
 them in its summary. An item closes with a test or a command output, not a statement.
 
-1. **Phases 1 and 2a: the R8 gate and the Part II model folder.** (2a part closed; Room and worker parts open.)
-   - Closed in 2a: `shared/.../part2/` exists. `check_r8_guide.py` now prints the count per folder and fails on any `@Serializable`
-     declaration of a kind it does not prove (sealed class, enum, object, interface, custom serializer);
-     `UnlistedSerializableTest` covers it, including a real-tree test and a deliberate `@Serializable sealed class` that failed it.
-     Release output: `32 models and serializers kept (guide/model: 32 models, part2: 0 models)`.
-   - Still open: no `@Serializable` class landed in `part2/` in 2a (template models live in `guide/model`, covered), so `part2: 0`.
-     Phase 3 adds the `PayslipDatabase_Impl`/`Part2Dao_Impl` check with the DAO, and Phase 7b the worker check. Closed by the
-     `check_r8_guide.py` output on the release build naming them.
+1. **Phases 1 and 2a: the R8 gate and the Part II model folder.** CLOSED in Phase 3 (the worker part moves to 7b, below).
+   - Evidence: after `assembleRelease`, `scripts/check_r8_guide.py` printed `39 models and serializers kept (guide/model: 32 models, part2: 7 models);
+     PayslipDatabase_Impl, Part2Dao_Impl kept; bundle shipped byte-identical`. No keep rule was added. The script now also fails on a registered
+     folder with no model (`part2: 0` can no longer pass), accepts `internal`/`private` models, and requires `REQUIRED_CLASSES`; each was written red first
+     (`RoomClassesTest`, `VisibilityModifierTest`, `EmptyFolderTest`). Phase 7b adds the reminder worker class to `REQUIRED_CLASSES`.
 2. **Phase 2a: the rule contract and the copy check had nothing real to compare.** CLOSED in 2b.
    - Evidence: `Part2LookupContract.assertRulesMatchTheRegistry` now compares 20 declared rules with 20 implemented (and 24 templates); a
      deliberate break of the shipped registry failed it. `refresh.py` with the local sources present printed `copy check: CLEAN` over the
@@ -760,6 +773,19 @@ them in its summary. An item closes with a test or a command output, not a state
    adds the HAA, SCCIA, field and TPTA re-grants to the leave grants, so the limit rises with its reason (owner, Round 12; no link-group feature). `cl_combination` knows only the annual set (GTDAL, GTDALCF, EXTNAL), and an extension, voluntary rejoining or recall
    does not move the ration or R&H dates already drafted; phase 8 adds the rest of Chapter 5 and settles those reissues (owner, Round 12: nothing drafted until then). Closed
    by the phase 8 and 9 summaries.
+9. **Phase 3: a full vault does not fit the memory of a backup.** OPEN, needs an owner decision. Measured with 120 pages of 500 KB (about 61 MB of
+   vault, a 78 MB archive): JVM export takes about 2.0 s and about 0.8 GB of extra heap, restore about 1.5 s and 0.4 to 1.1 GB (heap in use, garbage
+   included); iOS export 5.3 s, restore 2.9 s, process peak resident 190 MB -> 1,221 MB. The cause is the archive format, not Part II: one JSON string
+   is built, copied to bytes, then copied again by `CryptoHelper.encrypt` (about 13 times the vault). An Android app heap is usually 256-512 MB, so a vault
+   near the 60 MB warning could not be backed up, and an `OutOfMemoryError` is an `Error`, not caught by the service's `catch (e: Exception)`. Nothing
+   reaches a user yet (flag off, no way to add a page until 6a), so this is recorded, not shipped. Why deferred: the 60 MB figure is the owner's
+   (Round 10) and was set before this measurement. How closed (owner chooses): (a) lower the warning and the ceiling to what the measured peak fits
+   (about 15 MB); (b) a chunked backup (v5 is not released, so its format can still change): pages in their own encrypted parts, decoded one at a time;
+   (c) keep the numbers and accept the risk. Closed by a re-run of `Part2VaultScaleJvmTest`/`Part2VaultScaleIosTest` at the chosen size and the owner's
+   word recorded in DECISIONS. Until then `shared/build.gradle.kts` gives the test JVM a 3 GB heap so the measurement can run.
+10. **Phase 3: skipped restore rows are counted but not shown.** OPEN. `Part2Restore.skipped` counts rows left out (unreadable, oversized, surplus,
+   orphaned), but `PayslipBackupService.restore` returns `Result<Unit>` and drops it, so the officer is never told. Why deferred: no screen exists yet.
+   How closed: Phase 6b shows "N items could not be restored" and a ViewModel test covers it.
 
 ## Risks and controls
 

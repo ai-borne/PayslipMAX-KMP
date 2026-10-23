@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.database.PayslipDao
 import com.payslipmax.pdfparser.guide.GuideRepository
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.parser.PdfParser
+import com.payslipmax.pdfparser.part2.data.Part2Dao
 import com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
@@ -68,6 +69,8 @@ class AppKoinModulesTest {
     private val testLeaves =
         module {
             single<PayslipDao> { FakePayslipDao() }
+            // The backup service now backs up the Part II rows; this is the one DAO every test that builds it shares (see Part2WiringTest).
+            single<Part2Dao> { GuideKoinTestDao.dao.part2 }
             single<PdfParser> { FakePdfParser() }
         }
 

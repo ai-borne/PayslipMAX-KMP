@@ -7,6 +7,9 @@ import com.payslipmax.pdfparser.database.GuideNoteEntity
 import com.payslipmax.pdfparser.database.PayslipCorrectionEntity
 import com.payslipmax.pdfparser.database.PayslipPdfEntity
 import com.payslipmax.pdfparser.database.RepresentationDraftEntity
+import com.payslipmax.pdfparser.part2.data.Part2DraftBackup
+import com.payslipmax.pdfparser.part2.data.Part2OrderBackup
+import com.payslipmax.pdfparser.part2.data.Part2PageBackup
 import kotlinx.serialization.Serializable
 
 /**
@@ -15,7 +18,7 @@ import kotlinx.serialization.Serializable
  * ledger and insights are derived from payslips and are rebuilt after a restore, never stored.
  *
  * Versions: 1 = payslips under the legacy key; 2 = payslips under the backup password; 3 = adds
- * [drafts], [dismissedDrafts] and [corrections]; 4 = adds [guideNotes]. Added fields default to empty so older files still decode.
+ * [drafts], [dismissedDrafts] and [corrections]; 4 = adds [guideNotes]; 5 = adds the Part II drafts, orders and pages. Added fields default to empty so older files still decode.
  */
 @Serializable
 data class PortableBackup(
@@ -29,9 +32,13 @@ data class PortableBackup(
     val corrections: List<PayslipCorrectionEntity> = emptyList(),
     /** Private Guide notes; like [corrections], each row's ciphertext is encrypted with the backup password, not the device key. */
     val guideNotes: List<GuideNoteEntity> = emptyList(),
+    /** Part II drafts, vault orders and scanned pages (v5); each row's ciphertext is encrypted with the backup password, as Base64 text. */
+    val part2Drafts: List<Part2DraftBackup> = emptyList(),
+    val part2Orders: List<Part2OrderBackup> = emptyList(),
+    val part2Pages: List<Part2PageBackup> = emptyList(),
 ) {
     companion object {
-        const val CURRENT_VERSION = 4
+        const val CURRENT_VERSION = 5
     }
 }
 

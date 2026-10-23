@@ -6,9 +6,10 @@ Green debug tests do not prove the minified app can read the Guide. This checks 
 reachability plus kotlinx-serialization's bundled rules keep the models, and this gate proves it. After
 `:composeApp:assembleRelease`, this fails unless:
   1. every @Serializable class in the model folders (guide/model, which holds the Part II lookup models, and part2/, where the Part II
-     domain and payload models arrive in later phases) survives R8 with its generated `$$serializer` and its
+     payload and backup models live) survives R8 with its generated `$$serializer` and its
      `Companion.serializer()` (read from the R8 mapping; the model list comes from the source, not a copy), and
-  2. the release APK carries the Guide bundle byte-identical to the source file.
+  2. the Room classes generated for the database and the Part II DAO (`PayslipDatabase_Impl`, `Part2Dao_Impl`) survive, and
+  3. the release APK carries the Guide bundle byte-identical to the source file.
 The `minifiedTest` build type exists only for the device smoke (scripts/run_guide_minified_smoke.sh), which builds it.
 
 Usage: check_r8_guide.py [--mapping PATH] [--apk PATH]   (defaults: the release outputs of composeApp)
@@ -33,7 +34,8 @@ DEFAULT_MAPPING = os.path.join(ROOT, "composeApp/build/outputs/mapping/release/m
 DEFAULT_APK_GLOB = os.path.join(ROOT, "composeApp/build/outputs/apk/release/*.apk")
 BUILD_HINT = "Run ./gradlew :composeApp:assembleRelease -PallowPlaceholderGemmaModel=true first"
 
-SERIALIZABLE_CLASS = re.compile(r"@Serializable\s+(?:data\s+)?class\s+(\w+)")
+# A visibility modifier does not hide a model: Part II payloads are `internal` (a storage detail, not API).
+SERIALIZABLE_CLASS = re.compile(r"@Serializable\s+(?:(?:public|internal|private)\s+)?(?:data\s+)?class\s+(\w+)")
 # Any @Serializable declaration, whatever its kind or modifiers: used to find the ones SERIALIZABLE_CLASS (the kind this gate proves) misses.
 ANY_SERIALIZABLE = re.compile(
     r"@Serializable(?:\([^)]*\))?\s+(?:(?:public|internal|private|data|sealed|enum|abstract|open|value)\s+)*(?:class|object|interface)\s+(\w+)"
@@ -122,6 +124,21 @@ def check_mapping(mapping_text, models):
     return problems
 
 
+# Room builds these by generated code, never by a name the compiler sees, so R8 can drop them in release only: the database
+# and the Part II DAO it hands out. A DAO added later joins this list in the phase that adds it.
+REQUIRED_CLASSES = (f"{ROOT_PACKAGE}.database.PayslipDatabase_Impl", f"{ROOT_PACKAGE}.part2.data.Part2Dao_Impl")
+
+
+def check_required_classes(mapping_text):
+    classes = _classes(mapping_text)
+    return [f"{name} was removed by R8" for name in REQUIRED_CLASSES if name not in classes]
+
+
+def empty_folders(kotlin_root, folders):
+    """Registered folders that exist but hold no @Serializable model: a broken walk (a moved folder, a changed pattern), not a pass."""
+    return [f for f in folders if os.path.isdir(os.path.join(kotlin_root, *f.split("/"))) and not _declared(kotlin_root, f, SERIALIZABLE_CLASS)]
+
+
 def check_apk(apk_path, bundle_bytes):
     with zipfile.ZipFile(apk_path) as z:
         entries = [n for n in z.namelist() if n.startswith("assets/composeResources/") and n.endswith(BUNDLE_SUFFIX)]
@@ -144,7 +161,9 @@ def main():
     for folder in absent_folders(KOTLIN_ROOT, MODEL_FOLDERS):
         print(f"ℹ️  {folder}/ does not exist yet, so it has no models to check")
     with open(args.mapping, encoding="utf-8") as fh:
-        problems = check_mapping(fh.read(), models)
+        mapping_text = fh.read()
+    problems = check_mapping(mapping_text, models) + check_required_classes(mapping_text)
+    problems += [f"{folder}/ holds no @Serializable model, so the gate proved nothing there" for folder in empty_folders(KOTLIN_ROOT, MODEL_FOLDERS)]
     problems += [f"{name} is @Serializable but of a kind this gate does not check" for name in unlisted_serializables(KOTLIN_ROOT, MODEL_FOLDERS)]
     with open(BUNDLE_SRC, "rb") as fh:
         problems += check_apk(apks[0], fh.read())
@@ -152,7 +171,10 @@ def main():
         print(f"❌ {p}")
     if problems:
         sys.exit(1)
-    print(f"✅ Guide and Part II R8 gate: {len(models)} models and serializers kept ({summary(KOTLIN_ROOT, MODEL_FOLDERS)}); bundle shipped byte-identical")
+    print(
+        f"✅ Guide and Part II R8 gate: {len(models)} models and serializers kept ({summary(KOTLIN_ROOT, MODEL_FOLDERS)}); "
+        f"{', '.join(c.rsplit('.', 1)[1] for c in REQUIRED_CLASSES)} kept; bundle shipped byte-identical"
+    )
 
 
 if __name__ == "__main__":
