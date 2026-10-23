@@ -334,8 +334,8 @@ The next phase starts only after the owner accepts this summary.
 | 1. Lookup bundle section, models, validator, flag, gate + catalog guard | done, accepted (2026-10-23) | 8bcf9065 |
 | 2a. Template format, validators, engine core (synthetic templates), `CivilCalendar` move | done, accepted (2026-10-23) | 534ba5cc |
 | 2b. Content batch 1: annual set + ration four + R&H; owner review | summary accepted 2026-10-23; **owner check against the printed pages not done, so 2b exit is not claimed** (Phase 11 item 7) | ebf6c124, 09bfbf98, 2d192468 |
-| 3. Storage: schema 15, repository, backup v5 with bounded restore | built 2026-10-23; awaiting owner acceptance | 8cb0a40b |
-| 3b. Chunked backup: pages as binary records, one page in memory at a time | built 2026-10-23; awaiting owner acceptance | see git log |
+| 3. Storage: schema 15, repository, backup v5 with bounded restore | done, accepted (2026-10-23) | 8cb0a40b |
+| 3b. Chunked backup: pages as binary records, one page in memory at a time | done, accepted (2026-10-23) | 32ca5316 |
 | 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | not started | — |
 | 4b. Leave draft flow + slip preview (Premium), autosave | not started | — |
 | 5. Print + "Check the HRMS draft" | not started | — |

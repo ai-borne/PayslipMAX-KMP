@@ -169,6 +169,7 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 |---|---|
 | Problem | Measured with a full vault (120 pages of 500 KB, about 61 MB): backing it up needed about 0.8 GB of heap (iOS process peak 1.2 GB), because the archive was one JSON string holding every page as Base64. An Android app heap is 256-512 MB. |
 | Choice | A chunked backup, built before the scanner (6a) can add any page, instead of lowering the 60 MB warning or accepting the risk. The warning and the 100 MB ceiling stay. |
+| Acceptance | Phase 3 (8cb0a40b) and Phase 3b (32ca5316) accepted by the owner, 2026-10-23. The check of the 24 templates against the printed pages is still outstanding (plan Phase 11 item 7). |
 | Shape | Backup v5 is unreleased, so its format changed: with scanned pages the archive is the encrypted metadata document followed by one binary record per page and an authenticated page count; a vault with no pages still writes the old single encrypted document. A restore reads one page at a time and re-encrypts each page only as it is written. |
 
 ## Facts established (2026-10-22)
