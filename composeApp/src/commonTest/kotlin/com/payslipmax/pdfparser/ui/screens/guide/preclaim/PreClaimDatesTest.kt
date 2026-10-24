@@ -50,6 +50,22 @@ class PreClaimDatesTest {
     }
 
     @Test
+    fun anInstantFallsOnTheDayWhereTheDeviceIs() {
+        val lateUtc = 1_792_785_600_000L // 2026-10-23 20:00 UTC
+        assertEquals(CalendarDate(2026, 10, 24), PreClaimDates.dayOfInstant(lateUtc, 19_800_000L), "India is already on the 24th")
+        assertEquals(CalendarDate(2026, 10, 23), PreClaimDates.dayOfInstant(lateUtc, 0L))
+        assertEquals(CalendarDate(2026, 10, 23), PreClaimDates.dayOfInstant(lateUtc, -14_400_000L))
+        assertEquals(CalendarDate(2026, 10, 23), PreClaimDates.dayOfInstant(1_792_807_200_000L, -18_000_000L - 3_600_000L * 4), "02:00 UTC on the 24th is the evening of the 23rd at -9 hours")
+    }
+
+    @Test
+    fun theLocalMidnightIsTheFirstInstantOfTheNewDay() {
+        val midnightIst = PreClaimDates.toUtcMillis(CalendarDate(2026, 10, 24)) - 19_800_000L
+        assertEquals(CalendarDate(2026, 10, 24), PreClaimDates.dayOfInstant(midnightIst, 19_800_000L))
+        assertEquals(CalendarDate(2026, 10, 23), PreClaimDates.dayOfInstant(midnightIst - 1, 19_800_000L))
+    }
+
+    @Test
     fun aDateIsWrittenWithTwoDigitDayAndMonth() {
         assertEquals("05/03/2026", PreClaimDates.format(CalendarDate(2026, 3, 5)))
         assertEquals("31/12/2100", PreClaimDates.format(CalendarDate(2100, 12, 31)))

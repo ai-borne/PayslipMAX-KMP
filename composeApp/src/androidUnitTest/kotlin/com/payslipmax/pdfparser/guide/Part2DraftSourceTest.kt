@@ -61,10 +61,13 @@ class Part2DraftSourceTest {
 
     @Test
     fun theDraftIsOnlyEverSavedThroughTheRepositoryInterface() {
-        val model = withoutComments(File(folder, "LeaveDraftViewModel.kt").readText())
-        assertTrue("Part2Repository" in model && "Room" !in model && "Dao" !in model && "CryptoHelper" !in model, "autosave writes through Part2Repository, which encrypts; the model never touches storage itself")
-        for (file in files().filter { it.name != "LeaveDraftViewModel.kt" && it.name != "Part2Drafting.kt" && it.name != "Part2DraftsViewModel.kt" }) {
-            assertTrue("saveDraft" !in withoutComments(file.readText()), "${file.name}: only the model saves")
+        // The model decides what to save and the saver writes it; neither touches storage itself, and nothing else saves.
+        for (writer in listOf("LeaveDraftViewModel.kt", "DraftSaver.kt")) {
+            val source = withoutComments(File(folder, writer).readText())
+            assertTrue("Part2Repository" in source && "Room" !in source && "Dao" !in source && "CryptoHelper" !in source, "$writer: autosave writes through Part2Repository, which encrypts; it never touches storage itself")
+        }
+        for (file in files().filter { it.name !in listOf("LeaveDraftViewModel.kt", "DraftSaver.kt", "Part2Drafting.kt", "Part2DraftsViewModel.kt") }) {
+            assertTrue("saveDraft" !in withoutComments(file.readText()), "${file.name}: only the model and its saver save")
         }
     }
 }

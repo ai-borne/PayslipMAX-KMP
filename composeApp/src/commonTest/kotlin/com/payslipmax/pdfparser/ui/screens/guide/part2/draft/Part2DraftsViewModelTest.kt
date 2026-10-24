@@ -50,13 +50,16 @@ class Part2DraftsViewModelTest {
         updatedAt: Long,
     ) = Part2Draft(id, LeaveEventInput(listOf(OccurrenceRequest(GRANT, mapOf("leave_from" to day(7, 5))))), emptyMap(), 1L, updatedAt)
 
-    private fun check(block: suspend TestScope.(Part2DraftsViewModel) -> Unit) =
+    private fun check(
+        offset: Long = 0L,
+        block: suspend TestScope.(Part2DraftsViewModel) -> Unit,
+    ) =
         runTest {
             val dispatcher = StandardTestDispatcher(testScheduler)
             val guide = GuideViewModel(FakeGuideRepository(GuideLoadResult.Loaded(bundle)), FakeCrashReporter(), dispatcher)
             guide.load()
             advanceUntilIdle()
-            val vm = Part2DraftsViewModel(guide, repo, dispatcher)
+            val vm = Part2DraftsViewModel(guide, repo, dispatcher) { offset }
             backgroundScope.launch(dispatcher) { vm.state.collect { } }
             advanceUntilIdle()
             block(vm)
@@ -82,6 +85,25 @@ class Part2DraftsViewModelTest {
             assertEquals(Part2Strings.draftRowLine(Part2Strings.dateSpan("05/07/2026", "04/09/2026"), "14/11/2023"), state.rows[1].line)
         }
 
+    // 2026-10-23 20:00 UTC is already 24 October in India (+5:30) and still 23 October in New York (daylight time, -4).
+    private fun editedLine(
+        offset: Long,
+        day: String,
+    ) = check(offset) { vm ->
+        repo.saveDraft(complete("late", 1_792_785_600_000L))
+        advanceUntilIdle()
+        assertEquals(Part2Strings.draftRowLine(Part2Strings.dateSpan("05/07/2026", "04/09/2026"), day), vm.state.value.rows.single().line)
+    }
+
+    @Test
+    fun theEditedDayInIndiaIsTheNextDayWhenItIsLateInTheEveningInUtc() = editedLine(19_800_000L, "24/10/2026")
+
+    @Test
+    fun theEditedDayInNewYorkIsStillTheSameDay() = editedLine(-14_400_000L, "23/10/2026")
+
+    @Test
+    fun theEditedDayInUtcIsTheUtcDay() = editedLine(0L, "23/10/2026")
+
     @Test
     fun deletingOneLeavesTheOthers() =
         check { vm ->
@@ -105,7 +127,7 @@ class Part2DraftsViewModelTest {
                 }
             val dispatcher = StandardTestDispatcher(testScheduler)
             val guide = GuideViewModel(FakeGuideRepository(GuideLoadResult.Loaded(bundle)), FakeCrashReporter(), dispatcher).also { it.load() }
-            val vm = Part2DraftsViewModel(guide, unreadable, dispatcher)
+            val vm = Part2DraftsViewModel(guide, unreadable, dispatcher) { 0L }
             backgroundScope.launch(dispatcher) { vm.state.collect { } }
             advanceUntilIdle()
             assertTrue(vm.state.value.unreadable)
@@ -118,7 +140,7 @@ class Part2DraftsViewModelTest {
             repo.saveDraft(complete("a", 10L))
             val dispatcher = StandardTestDispatcher(testScheduler)
             val guide = GuideViewModel(FakeGuideRepository(GuideLoadResult.Loaded(bundle)), FakeCrashReporter(), dispatcher)
-            val vm = Part2DraftsViewModel(guide, repo, dispatcher)
+            val vm = Part2DraftsViewModel(guide, repo, dispatcher) { 0L }
             backgroundScope.launch(dispatcher) { vm.state.collect { } }
             advanceUntilIdle()
             assertTrue(vm.state.value.hasAny)
@@ -135,7 +157,7 @@ class Part2DraftsViewModelTest {
             val dispatcher = StandardTestDispatcher(testScheduler)
             val old = bundle.copy(part2 = null)
             val guide = GuideViewModel(FakeGuideRepository(GuideLoadResult.Loaded(old)), FakeCrashReporter(), dispatcher).also { it.load() }
-            val vm = Part2DraftsViewModel(guide, repo, dispatcher)
+            val vm = Part2DraftsViewModel(guide, repo, dispatcher) { 0L }
             backgroundScope.launch(dispatcher) { vm.state.collect { } }
             advanceUntilIdle()
             assertTrue(vm.state.value.hasAny)

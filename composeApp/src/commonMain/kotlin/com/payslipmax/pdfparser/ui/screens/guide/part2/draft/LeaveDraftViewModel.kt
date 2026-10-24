@@ -3,7 +3,6 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2.draft
 import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.guide.model.Part2Lookup
 import com.payslipmax.pdfparser.part2.data.Part2Repository
-import com.payslipmax.pdfparser.part2.data.Part2WriteResult
 import com.payslipmax.pdfparser.part2.domain.AnswerQuestion
 import com.payslipmax.pdfparser.part2.domain.LeaveEventEditor
 import com.payslipmax.pdfparser.part2.domain.LeaveEventInput
@@ -17,20 +16,17 @@ import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.part2.domain.VaultOrders
 import com.payslipmax.pdfparser.part2.print.SlipPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimInput
+import com.payslipmax.pdfparser.utils.localUtcOffsetMillis
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 /**
  * One leave draft: the form that edits it and the slip preview that shows it. A new draft starts from [start]; an existing one passes
@@ -50,12 +46,12 @@ class LeaveDraftViewModel(
     rules: Part2Rules = Part2Rules.shipped(),
     private val now: () -> Long = { 0L },
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    localOffset: (atMillis: Long) -> Long = ::localUtcOffsetMillis,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
-    private val builder = LeaveDraftStateBuilder(section, rules)
+    private val builder = LeaveDraftStateBuilder(section, rules, localOffset)
     private val offered = Part2LookupIndex(section).draftOptions().map { it.code }.toSet()
-    private val saveLock = Mutex()
-    private var saveJob: Job? = null
+    private val saver = DraftSaver(scope, dispatcher, repository, ::pendingDraft, ::publish)
 
     // Atomic, because the officer's edits (main thread) and a prefill (background) both change it.
     private val answers = MutableStateFlow(start ?: LeaveEventInput(emptyList()))
@@ -64,8 +60,6 @@ class LeaveDraftViewModel(
     private var createdAt: Long? = null
     private var lastOrder: OrderRef? = null
     private var acked: Set<String> = emptySet()
-    private var saveFailed = false
-    private var dirty = false
     private var closed = false
 
     // What the clerk was last handed. Kept through every edit (an edit is flagged against it, never erases it) and saved with the draft.
@@ -197,10 +191,8 @@ class LeaveDraftViewModel(
     private suspend fun record(snapshot: PrintedSnapshot) {
         if (closed) return
         printed = snapshot
-        dirty = true
-        saveJob?.cancel()
         publish()
-        save()
+        saver.saveAtOnce()
     }
 
     /** Prints the slip through [printer]; the print is recorded only once the printer reports it completed (see [SlipPrintSession]). */
@@ -214,21 +206,16 @@ class LeaveDraftViewModel(
     /** Deletes the draft for good; a change still waiting to be saved is dropped, never written back. [onDone] runs once it is gone. */
     fun delete(onDone: () -> Unit) {
         closed = true
-        saveJob?.cancel()
-        scope.launch {
-            saveLock.withLock { repository.deleteDraft(id) }
-            onDone()
-        }
+        saver.delete(id, onDone)
     }
 
     /** Leaves the form: a change still waiting is written at once, then the model stops. */
     fun close() {
         if (closed) return
         closed = true
-        saveJob?.cancel()
-        val last = if (dirty) pendingDraft() else null
+        val last = saver.closing()
         scope.cancel()
-        if (last != null) CoroutineScope(SupervisorJob() + dispatcher).launch { saveLock.withLock { repository.saveDraft(last) } }
+        last?.let(saver::writeAfterClose)
     }
 
     // ---- internals ----
@@ -247,25 +234,8 @@ class LeaveDraftViewModel(
         answers.update { current -> change(current).also { changed = it != current } }
         if (!changed) return
         acked = emptySet()
-        dirty = true
         publish()
-        saveJob?.cancel()
-        saveJob =
-            scope.launch {
-                delay(AUTOSAVE_DELAY_MS)
-                save()
-            }
-    }
-
-    private suspend fun save() {
-        val draft = pendingDraft()
-        val result = saveLock.withLock { repository.saveDraft(draft) }
-        dirty = false
-        val failed = result != Part2WriteResult.SAVED
-        if (failed != saveFailed) {
-            saveFailed = failed
-            publish()
-        }
+        saver.changed()
     }
 
     private fun pendingDraft(): Part2Draft {
@@ -275,14 +245,14 @@ class LeaveDraftViewModel(
         return Part2Draft(id, saved, builder.templateRevs(saved), created, stamp, printed)
     }
 
-    private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saveFailed, printed, prints.printing)
+    private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saver.failed, printed, prints.printing)
 
     private fun publish() {
         _state.value = derive()
     }
 
     companion object {
-        /** The pause after the last change before the draft is written: long enough that typing is one write, short enough to lose little. */
-        const val AUTOSAVE_DELAY_MS = 300L
+        /** The pause after the last change before the draft is written (see [DraftSaver]). */
+        const val AUTOSAVE_DELAY_MS = DraftSaver.PAUSE_MS
     }
 }

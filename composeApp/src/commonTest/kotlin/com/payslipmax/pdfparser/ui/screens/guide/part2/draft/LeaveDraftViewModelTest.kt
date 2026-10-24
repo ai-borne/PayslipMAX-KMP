@@ -128,6 +128,20 @@ class LeaveDraftViewModelTest : LeaveDraftTestBase() {
         }
 
     @Test
+    fun leavingAfterTheChangeWasSavedWritesNothingMore() =
+        runTest {
+            val vm = model()
+            vm.setDate(0, "leave_from", from)
+            advanceUntilIdle()
+            assertEquals(1, repo.saves)
+
+            vm.close()
+            advanceUntilIdle()
+
+            assertEquals(1, repo.saves, "everything was already written")
+        }
+
+    @Test
     fun leavingTheFormSavesTheLastChangeAtOnceAndStopsTheModel() =
         runTest {
             val vm = model()

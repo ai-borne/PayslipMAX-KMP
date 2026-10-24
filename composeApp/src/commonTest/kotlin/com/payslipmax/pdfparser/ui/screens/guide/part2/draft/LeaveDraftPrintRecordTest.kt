@@ -109,7 +109,7 @@ class LeaveDraftPrintRecordTest : LeaveDraftTestBase() {
     fun aSavedPrintedDraftIsRestoredWithItsRecord() =
         runTest {
             val event = complete()
-            val snapshot = LeaveDraftStateBuilder(SyntheticPart2Templates.lookup, SyntheticPart2Templates.registry()).snapshotOf(event, at = 86_400_000L * 3)!!
+            val snapshot = LeaveDraftStateBuilder(SyntheticPart2Templates.lookup, SyntheticPart2Templates.registry()) { 0L }.snapshotOf(event, at = 86_400_000L * 3)!!
             repo.saveDraft(Part2Draft("draft-9", event, mapOf(GRANT to "a0000001"), 7L, 8L, snapshot))
 
             val vm = model(start = null, id = "draft-9")

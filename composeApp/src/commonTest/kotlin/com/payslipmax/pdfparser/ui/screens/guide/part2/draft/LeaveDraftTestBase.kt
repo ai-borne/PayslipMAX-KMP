@@ -36,7 +36,7 @@ abstract class LeaveDraftTestBase {
     protected fun TestScope.model(
         start: LeaveEventInput? = LeaveEventEditor.start(GRANT),
         id: String = "draft-1",
-    ) = LeaveDraftViewModel(id, SyntheticPart2Templates.lookup, repo, start, SyntheticPart2Templates.registry(), { clock }, StandardTestDispatcher(testScheduler))
+    ) = LeaveDraftViewModel(id, SyntheticPart2Templates.lookup, repo, start, SyntheticPart2Templates.registry(), { clock }, StandardTestDispatcher(testScheduler)) { 0L }
 
     protected suspend fun saved(id: String = "draft-1") = repo.draft(id)
 

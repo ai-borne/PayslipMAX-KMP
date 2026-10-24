@@ -241,7 +241,7 @@ Build-time choices made without a question (change them if you disagree):
 | Print job name | Fixed: "Part II slip". The system keeps it (the print queue, the saved PDF's name), so it names no code, date or number. |
 | Check the HRMS draft | Reached from the slip preview only: the drafts list opens the slip, so that is the one way in. A level of its own (`part2|hrms|<id>`, ids only), one card per row, each field with its label in HRMS column order (code, narrative, From, To, Data 1-4, authority, certificate), columns the manual leaves empty not listed. No ticks, nothing saved. It is a read, so someone whose Premium ended still has it; Print is for entitled officers only. |
 | Printing and reminders | The printed time starts the Phase 7a "add the published order" reminders. A reprint replaces it, so the reminders run from the latest print. |
-| The day shown | "Printed on" uses the same UTC day the drafts list uses for "edited". Asked after the build: the owner accepted UTC for now (2026-10-24); the time-zone function for every date shown is revisited in Phase 10 (plan Phase 11 item 17). |
+| The day shown | First built as the UTC day the drafts list used for "edited"; the owner accepted that for now, then asked (2026-10-24) for the open items to be fixed. Now the day where the device is: "Printed on" and the drafts list's "edited" use the device's offset at that instant (plan Phase 11 item 17, closed). |
 
 Phase 5 was built, walked on the Pixel 9 and gated on 2026-10-23/24; the owner's acceptance is recorded in the commit that follows it.
 

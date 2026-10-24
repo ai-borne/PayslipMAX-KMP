@@ -26,6 +26,7 @@ import com.payslipmax.pdfparser.part2.domain.RuleSeverity
 import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
+import com.payslipmax.pdfparser.utils.localUtcOffsetMillis
 
 /**
  * Derives what the draft screens draw from the officer's event, and nothing else: the same answers always give the same screen, so a
@@ -36,6 +37,7 @@ import com.payslipmax.pdfparser.ui.theme.Part2Strings
 internal class LeaveDraftStateBuilder(
     section: Part2Lookup,
     private val rules: Part2Rules,
+    private val localOffset: (atMillis: Long) -> Long = ::localUtcOffsetMillis,
 ) {
     private val engine = Part2DraftEngine(section, rules)
     private val planner = LeaveFormPlanner(engine, rules)
@@ -163,7 +165,7 @@ internal class LeaveDraftStateBuilder(
         revs: Map<String, String>,
     ): PrintedUi =
         PrintedUi(
-            Part2Strings.printedOnLine(format(PreClaimDates.fromUtcMillis(printed.at))),
+            Part2Strings.printedOnLine(format(PreClaimDates.dayOfInstant(printed.at, localOffset(printed.at)))),
             when (printed.statusFor(slip, revs)) {
                 PrintedStatus.CURRENT -> null
                 PrintedStatus.CHANGED -> Part2Strings.changedSincePrinted

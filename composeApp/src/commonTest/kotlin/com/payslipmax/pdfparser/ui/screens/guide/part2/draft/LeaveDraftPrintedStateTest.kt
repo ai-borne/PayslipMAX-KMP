@@ -18,7 +18,7 @@ import kotlin.test.assertTrue
  * printed, and says in words (never built in a composable) whether the draft has changed since or the manual's template has moved.
  */
 class LeaveDraftPrintedStateTest {
-    private val builder = LeaveDraftStateBuilder(SyntheticPart2Templates.lookup, SyntheticPart2Templates.registry())
+    private val builder = LeaveDraftStateBuilder(SyntheticPart2Templates.lookup, SyntheticPart2Templates.registry()) { 0L }
 
     private fun event(year: Int = 2026) =
         LeaveEventInput(
@@ -60,6 +60,15 @@ class LeaveDraftPrintedStateTest {
 
         assertEquals(Part2Strings.printedOnLine("10/02/1970"), printed.line)
         assertNull(printed.note)
+    }
+
+    @Test
+    fun theDayPrintedIsTheDayWhereTheOfficerWasNotTheUtcDay() {
+        val late = LeaveDraftStateBuilder(SyntheticPart2Templates.lookup, SyntheticPart2Templates.registry()) { 19_800_000L }
+        val snapshot = late.snapshotOf(event(), 1_792_785_600_000L)!! // 2026-10-23 20:00 UTC
+
+        assertEquals(Part2Strings.printedOnLine("24/10/2026"), late.build(event(), emptySet(), false, snapshot).printed!!.line)
+        assertEquals(Part2Strings.printedOnLine("23/10/2026"), builder.build(event(), emptySet(), false, snapshot).printed!!.line)
     }
 
     @Test

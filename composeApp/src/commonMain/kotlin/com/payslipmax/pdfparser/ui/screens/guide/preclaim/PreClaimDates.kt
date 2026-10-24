@@ -34,6 +34,12 @@ internal object PreClaimDates {
 
     fun fromUtcMillis(millis: Long): CalendarDate = civilFromDays(millis.floorDiv(MILLIS_PER_DAY))
 
+    /** The day an instant ([millis], epoch milliseconds) fell on where the device is: its UTC day moved by [offsetMillis] (east positive). */
+    fun dayOfInstant(
+        millis: Long,
+        offsetMillis: Long,
+    ): CalendarDate = fromUtcMillis(millis + offsetMillis)
+
     fun format(date: CalendarDate?): String = date?.let(CivilCalendar::format).orEmpty()
 
     private fun daysFromCivil(date: CalendarDate): Long {

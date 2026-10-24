@@ -11,6 +11,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.GuideUiState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
+import com.payslipmax.pdfparser.utils.localUtcOffsetMillis
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +51,7 @@ class Part2DraftsViewModel(
     guide: GuideViewModel,
     private val repository: Part2Repository,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val localOffset: (atMillis: Long) -> Long = ::localUtcOffsetMillis,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private var built: Pair<Part2Lookup, Part2DraftEngine>? = null
@@ -77,6 +79,6 @@ class Part2DraftsViewModel(
         val from = summary.from
         val to = summary.to
         val span = if (from != null && to != null) Part2Strings.dateSpan(CivilCalendar.format(from), CivilCalendar.format(to)) else null
-        return DraftRowUi(summary.id, Part2Strings.draftRowTitle(summary.codes), Part2Strings.draftRowLine(span, CivilCalendar.format(PreClaimDates.fromUtcMillis(summary.updatedAt))))
+        return DraftRowUi(summary.id, Part2Strings.draftRowTitle(summary.codes), Part2Strings.draftRowLine(span, CivilCalendar.format(PreClaimDates.dayOfInstant(summary.updatedAt, localOffset(summary.updatedAt)))))
     }
 }
