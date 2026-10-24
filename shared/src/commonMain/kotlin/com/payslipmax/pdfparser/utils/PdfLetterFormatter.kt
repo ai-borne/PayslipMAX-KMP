@@ -51,11 +51,14 @@ object PdfLetterFormatter {
 
     /**
      * Greedy word wrap of [text] to [maxWidth] using [measure] (width of a candidate string). A blank
-     * line is preserved as a single empty line so paragraph spacing in the source survives.
+     * line is preserved as a single empty line so paragraph spacing in the source survives. A word wider
+     * than a line stays whole on its own line, unless [breakLongWords] cuts it into lines that fit (never
+     * between the two halves of a surrogate pair), for text that must not run off the page.
      */
     fun wrapLine(
         text: String,
         maxWidth: Double,
+        breakLongWords: Boolean = false,
         measure: (String) -> Double,
     ): List<String> {
         if (text.isBlank()) return listOf("")
@@ -68,9 +71,29 @@ object PdfLetterFormatter {
             } else {
                 if (current.isNotEmpty()) out.add(current)
                 current = word
+                while (breakLongWords && measure(current) > maxWidth) {
+                    val cut = fittingLength(current, maxWidth, measure)
+                    out.add(current.substring(0, cut))
+                    current = current.substring(cut)
+                }
             }
         }
         if (current.isNotEmpty()) out.add(current)
         return out
+    }
+
+    /** The longest prefix of [word] (at least one character, and never ending inside a surrogate pair) that fits [maxWidth]; widths only grow with length, so a binary search finds it. */
+    private fun fittingLength(
+        word: String,
+        maxWidth: Double,
+        measure: (String) -> Double,
+    ): Int {
+        var low = 1
+        var high = word.length - 1
+        while (low < high) {
+            val middle = (low + high + 1) / 2
+            if (measure(word.substring(0, middle)) <= maxWidth) low = middle else high = middle - 1
+        }
+        return if (low > 1 && word[low - 1].isHighSurrogate()) low - 1 else low
     }
 }

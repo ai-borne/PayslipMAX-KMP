@@ -10,8 +10,8 @@ import kotlin.test.assertTrue
 /**
  * Structural guards on the draft flow (Part II plan, Phase 4b), the twin of `Part2LookupSourceTest`. A draft holds what the officer
  * typed, so these files must stay blind to what a code means (a content batch never needs a UI edit), never log or report anything,
- * never reach for a payslip or an identity (the slip carries none, Round 5 and 7), and never send anything anywhere (printing is
- * Phase 5 and goes through the system dialog only).
+ * never reach for a payslip or an identity (the slip carries none, Round 5 and 7), and never send anything anywhere (printing goes through the system
+ * dialog only, and the print code has its own guard, `Part2PrintSourceTest` in shared).
  */
 class Part2DraftSourceTest {
     private val root = File("src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/guide")
@@ -52,7 +52,7 @@ class Part2DraftSourceTest {
 
     @Test
     fun noDraftFileTouchesAPayslipAnIdentityOrTheOutsideWorld() {
-        val forbidden = listOf("Payslip", "Officer", "panNumber", "accountNumber", "Clipboard", "HttpURLConnection", "NSURLSession", "sharePdf", "ACTION_SEND", "FileProvider", "Regex(", "toRegex")
+        val forbidden = listOf("Payslip", "Officer", "panNumber", "accountNumber", "Clipboard", "HttpURLConnection", "NSURLSession", "sharePdf", "ACTION_SEND", "FileProvider", "Intent", "startActivity", "UIActivityViewController", "Regex(", "toRegex")
         for (file in files()) {
             val found = forbidden.filter { it in withoutComments(file.readText()) }
             assertEquals(emptyList(), found, "${file.name} uses something the draft flow must not: the slip has no identity and goes nowhere yet")

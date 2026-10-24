@@ -222,6 +222,29 @@ Build-time choices made without a question (change them if you disagree):
 | Opening a saved draft | From the list it opens on the slip; "Edit" goes to the form (entitled users only). |
 | Gone draft | A restored stack naming a draft the repository no longer holds is cut back to the Part II home once the repository answers. |
 
+## Round 18: Phase 5, print and "Check the HRMS draft" (owner answers, 2026-10-23, asked at the start of phase 5)
+
+Four things the plan did not settle were asked in one batch; the owner took the recommended option each time. The rest was settled by the plan and Rounds 5, 7, 9, 10, 11, 16 and 17.
+
+| Topic | Decision |
+|---|---|
+| Slip layout | Blocks per occurrence, as in the on-screen preview: the code in bold, the narrative at full width, then From/To, Data 1-4, the authority line and the certificate on their own lines. Not the manual's table of columns (on A4 portrait the narrative column would get about 4 cm and the long certificates cannot sit in a cell). |
+| Certificate | Printed exactly as the manual words it, with no label of ours in front. Every shipped certificate already starts with the word CERTIFICATE, so the row no longer reads "Certificate: CERTIFICATE: ...". The preview, the paper and the HRMS check share the change. |
+| What counts as printed | The system reports the job completed. Android: the `PrintJob` the print manager returns is watched and only `COMPLETED` records (Save as PDF completes within a second); a cancelled or failed job does not, and the watch gives up after 30 minutes. iOS: the print sheet's `completed` flag. A printer that never reports back records nothing and the officer can print again: the cost is a missing reminder, never a wrong one. |
+| After printing | The snapshot (time, template revision of every code, rows as printed) is kept through every edit. The preview shows "Printed on <date>" and, when the rows now differ, "Changed since it was printed" or, when a code's template revision moved, "The manual's template for this order has been updated since it was printed". A new completed print replaces the snapshot. |
+
+Build-time choices made without a question (change them if you disagree):
+
+| Topic | Choice |
+|---|---|
+| What the paper carries | A title, the last Part II order line, one notice ("Draft for your clerk to key into HRMS. It is not a Part II order and carries no name or number of yours."), then each order with its heading and rows, and a page label at the foot of each page. Not on the paper: the checks, the "seen in practice" or manual citations, the ticks, the list of orders not drafted yet. Those are for the officer. |
+| Print job name | Fixed: "Part II slip". The system keeps it (the print queue, the saved PDF's name), so it names no code, date or number. |
+| Check the HRMS draft | Reached from the slip preview only: the drafts list opens the slip, so that is the one way in. A level of its own (`part2|hrms|<id>`, ids only), one card per row, each field with its label in HRMS column order (code, narrative, From, To, Data 1-4, authority, certificate), columns the manual leaves empty not listed. No ticks, nothing saved. It is a read, so someone whose Premium ended still has it; Print is for entitled officers only. |
+| Printing and reminders | The printed time starts the Phase 7a "add the published order" reminders. A reprint replaces it, so the reminders run from the latest print. |
+| The day shown | "Printed on" uses the same UTC day the drafts list uses for "edited". Asked after the build: the owner accepted UTC for now (2026-10-24); the time-zone function for every date shown is revisited in Phase 10 (plan Phase 11 item 17). |
+
+Phase 5 was built, walked on the Pixel 9 and gated on 2026-10-23/24; the owner's acceptance is recorded in the commit that follows it.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

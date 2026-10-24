@@ -37,11 +37,7 @@ private fun SlipRowView(row: SlipRowUi) {
             if (row.source.isNotEmpty()) GuideLabelPill(row.source)
         }
         Text(row.narrative, style = MaterialTheme.typography.bodyMedium)
-        val span = Part2Strings.fromToLine(row.from, row.to)
-        if (span.isNotEmpty()) PreClaimQuietText(span)
-        row.data.forEachIndexed { i, text -> if (text.isNotEmpty()) PreClaimQuietText(Part2Strings.dataLine(i + 1, text)) }
-        row.authority?.let { PreClaimQuietText(Part2Strings.authorityLine(it)) }
-        row.certificate?.let { PreClaimQuietText(Part2Strings.certificateLine(it)) }
+        row.detailLines().forEach { PreClaimQuietText(it) }
     }
 }
 

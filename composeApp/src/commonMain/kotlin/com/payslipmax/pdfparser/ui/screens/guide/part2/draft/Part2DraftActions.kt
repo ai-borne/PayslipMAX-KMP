@@ -16,6 +16,15 @@ class Part2DraftList(
     val onDelete: (id: String) -> Unit,
 )
 
+/** What the slip preview can do: edit, tick a check, delete, print and check the HRMS draft. One function each, so the stateless screen never holds the model. */
+class SlipPreviewActions(
+    val onEdit: () -> Unit,
+    val onTick: (key: String, ticked: Boolean) -> Unit,
+    val onDelete: () -> Unit,
+    val onPrint: () -> Unit,
+    val onHrms: () -> Unit,
+)
+
 /** Everything the form can change, one function each, so a stateless screen never holds the model itself. */
 class LeaveDraftActions(
     val onDate: (index: Int, slot: String, date: CalendarDate?) -> Unit,

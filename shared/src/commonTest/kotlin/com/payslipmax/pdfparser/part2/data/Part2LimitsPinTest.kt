@@ -27,4 +27,14 @@ class Part2LimitsPinTest {
         assertTrue(Part2Limits.PAYLOAD_MAX_BYTES < Part2Limits.PAGE_MAX_BYTES)
         assertTrue(Part2Limits.PAGE_MAX_BYTES * Part2Limits.PAGES_PER_ORDER_MAX < Part2Limits.VAULT_BYTES_MAX)
     }
+
+    @Test
+    fun thePrintSnapshotLimitsFollowFromWhatADraftCanHoldAndHowLongTheAppWaits() {
+        // 10 requests, each with at most 16 linked orders (the bundle's link limit) and itself.
+        assertEquals(Part2Limits.REQUESTS_MAX * (16 + 1), Part2Limits.PRINTED_ROWS_MAX)
+        // A column is a template narrative (at most 600) with typed remarks (at most 200) in it, with room to spare.
+        assertTrue(Part2Limits.PRINTED_TEXT_MAX >= 600 + 10 * Part2Limits.TEXT_MAX)
+        assertEquals(4, Part2Limits.PRINTED_DATA_MAX, "Data 1 to 4")
+        assertEquals(30L * 60 * 1000, Part2Limits.PRINT_WATCH_MS, "the app stops watching a print job after half an hour")
+    }
 }

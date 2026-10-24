@@ -96,7 +96,7 @@ class GuideNavState(
 
     /** Leaves the draft [id]'s form and preview, which the repository no longer holds. Levels of another draft are left alone. */
     fun cutDraft(id: String) {
-        while (current.let { (it as? Part2Destination.Draft)?.draftId == id || (it as? Part2Destination.Slip)?.draftId == id } && pop()) Unit
+        while ((current as? Part2Destination)?.draftId == id && pop()) Unit
     }
 
     val current: GuideDestination get() = stack.last()
@@ -176,7 +176,7 @@ class GuideNavState(
         val keep = minOf(next.size, stack.zip(next).takeWhile { (a, b) -> a == b }.size)
         scrolls.keys.retainAll { it < keep }
         if (next.none { it is GuideDestination.PreClaim }) discardPreClaim()
-        if (next.none { it is Part2Destination.Draft || it is Part2Destination.Slip }) discardPart2Draft()
+        if (next.none { (it as? Part2Destination)?.draftId != null }) discardPart2Draft()
         stack = next
     }
 }

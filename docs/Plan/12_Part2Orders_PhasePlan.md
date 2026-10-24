@@ -338,7 +338,7 @@ The next phase starts only after the owner accepts this summary.
 | 3b. Chunked backup: pages as binary records, one page in memory at a time | done, accepted (2026-10-23) | 32ca5316 |
 | 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | done, accepted (2026-10-23); Pixel 9 walk done (Phase 11 item 12), hosts folded (item 13) | 19416f6e, 34c2f296 |
 | 4b. Leave draft flow + slip preview (Premium), autosave | done, accepted (2026-10-23); Pixel 9 walk done (Phase 11 item 15) | bace0c4b, 1ff29b95 |
-| 5. Print + "Check the HRMS draft" | not started | — |
+| 5. Print + "Check the HRMS draft" | built 2026-10-23, awaiting the owner's acceptance; Pixel 9 walk done (Phase 11 item 16) | see git log |
 | 6a. Page pipeline: scanner spike, `PageScanner`, `PageEncoder`, merged-manifest guard | not started | — |
 | 6b. Vault UI: order no./date, linking, last-order line, follow-up references | not started | — |
 | 6c. CANCEL / CANCELS: content batch 2 and flow | not started | — |
@@ -347,7 +347,7 @@ The next phase starts only after the owner accepts this summary.
 | 8. Rest of Chapter 5, incl. ACCLVE and ENCASH (batch 3) | not started | — |
 | 9. Area re-grants: HAA, SCCIA, field, TPTA (batch 4) | not started | — |
 | 10. Release hardening, owner content sign-off, iPhone walk, docs | not started | — |
-| 11. Pending items (collected from earlier phases) | open: items 6, 8, 10, 11, 14 (items 1-4, 7, 9, 12, 13 and 15 closed; 5 not closable) | — |
+| 11. Pending items (collected from earlier phases) | open: items 6, 8, 10, 11, 14, 17, 18 (items 1-4, 7, 9, 12, 13, 15 and 16 closed; 5 not closable) | — |
 
 Each phase leaves the app shippable: `PART2_ENABLED` is `false` until Phase 10, so a flag-off build behaves exactly as
 before. Each phase's "Debt watch" lists the debt most likely to appear and how it is cleared inside that phase.
@@ -671,6 +671,17 @@ Nudge: connect the Pixel 9.
 - Debt watch: `PdfLetterFormatter.wrapLine` is reused, not copied. If the slip needs a variant, the shared function is
   generalized with its existing tests kept green.
 
+- Built 2026-10-23 (Phase 5 summary in the session). The owner's answers are DECISIONS Round 18 (blocks per occurrence, the certificate as the manual words it, "printed" is the system's completed job, the snapshot kept through edits and flagged). Where the build differs from the bullets above:
+  - **Layout** is `shared/.../part2/print/`: `SlipDocument` (the worded slip, built once by `SlipUi.toDocument()` in composeApp, so the paper and the preview are worded by the same `SlipRowUi.detailLines()`), `SlipLayout` (pure: A4 from `PdfLayoutSpec`, rows kept whole, a heading kept with its first row, a taller-than-a-page row flowing line by line, words wider than the page broken, a page label from a `{page}`/`{pages}` template) and `SlipLayoutSpec` beside `PdfLayoutSpec` in `utils/` (type styles, inks, rule, gaps). The plan's diagram has `Part2Slip -> SlipLayout`; the worded document sits between, because the words are `Part2Strings`' and shared cannot depend on composeApp. `PdfLetterFormatter.wrapLine` was generalized (a `breakLongWords` flag, default off), its old tests untouched; it was not copied.
+  - **Printers** are in `shared` (`AndroidSlipPrinter` + `SlipPrintAdapter` + `SlipPdf` in androidMain; `IosSlipPrinter` + `IosSlipPdf` in iosMain; the `SlipPrinter` interface in commonMain, `FakeSlipPrinter` in `shared-test-fixtures`). composeApp's `rememberSlipPrinter()` (expect/actual) builds the Android one from the Activity under `LocalContext`'s wrappers (`findActivity`, shared with the status-bar code); a test or host can provide its own through `LocalSlipPrinter`. A missing Activity prints nothing.
+  - **Printed** on Android: `PrintJobWatch` polls the `PrintJob` the print manager returns and only `COMPLETED` counts (`onFinish` cannot tell a printed slip from a cancelled dialog); the watch stops the moment the job ends and gives up after `Part2Limits.PRINT_WATCH_MS` (30 minutes). iOS: the sheet's `completed` flag. The view model's `print()` and `SlipPrintSession` (new file; `LeaveDraftViewModel.kt` 265 -> 288 lines) record the snapshot at once on completion, never for a closed or deleted draft, and keep the record in memory (and retry with the next save) if the write fails.
+  - **Snapshot** is `Draft.printed` (`PrintedSnapshot`: time, template revision per code, the rendered rows), an optional field inside payload `v: 1` (two new `@Serializable` classes, so the R8 gate reads `part2: 9 models`); `Part2Bounds` and `Part2Limits` (`PRINTED_ROWS_MAX` 170 = 10 requests x (16 links + 1), `PRINTED_TEXT_MAX` 4000, `PRINTED_DATA_MAX` 4) bound it on the way in and out. No schema or backup version change.
+  - **Check the HRMS draft** is `Part2Destination.Hrms(draftId)` (`part2|hrms|<id>`), reached from the slip preview, with `GuideNavState` holding the draft's model across slip and check.
+  - **The plan's Android integration test** ("the Robolectric `PrintDocumentAdapter` writes a valid PDF") is partly replaced: Robolectric 4.12 has no native PDF code (`PdfDocument` throws "document is closed" there), so the adapter and `SlipPdf` are tested against a recording `SlipPdfDocument` (pages in order and renumbered, ranges, cancel, failure, the document closed) and the real PDF is proven on the Pixel 9 (Phase 11 item 16). iOS builds a real PDF in the simulator (`IosSlipPdfTest`).
+  - **The iOS edge-swipe** needs no Swift: the Part II levels are inline in the Guide tab (stack depth 1, where `shouldAllowInteractivePop` is false) and the print sheet is modal. The iPhone walk confirms it (item 14).
+  - **Counts** (debug / release / iOS): shared 1556 -> 1639 / 1556 -> 1639 (1 known skip) / 1451 -> 1507; composeApp 1237 -> 1294 / 1207 -> 1268 / 775 -> 820; corpus 139/139; scripts tests 50 and tool tests 411 unchanged; bundle 345,327 bytes; R8 gate `41 models and serializers kept (guide/model: 32, part2: 9)` (two new `@Serializable` classes: `PrintedPayload`, `PrintedRowPayload`); Room schema 15 and `.pcda` v5 unchanged. The first gate run failed on a 317-line test file (split) and, with a test JVM left spinning at 100% CPU for 6 hours by a deliberate break (killed), on three iOS timing tests and two Compose-idle tests; each passed on a quiet machine and the final `check` is green.
+  - **Tests**: red first (27 of 74 shared, 15 of 37 Android printer, 4 of 4 iOS and 34 of 67 composeApp new tests failing on missing behaviour, none on a compile error; the `PdfDocument` seam tests were written with the seam after Robolectric ruled out a real PDF, so their red is the mutants'), then 140 deliberate breaks. 19 first-round survivors or invalid mutants each exposed a gap or a dead line and are closed: a page-break guard `!atPageTop` no test reached (a blank first page with an empty header), a block taller than a page leaving a gap, the snapshot's certificate, authority, From and To limits, a word exactly as wide as the line, out-of-order page ranges, the hairline width, a print state published only by chance (`onChange`), printing a draft being deleted, the model held with only the check level on the stack, an HRMS certificate shown under a label, the first order only, the preview's detail lines and an unfinished draft's check level. Four lines were deleted instead: a `minOf` in the heading's keep-with-next (redundant), the single-character guard in the word wrap, the empty-page guard in `newPage` (it made a slip with nothing to draw zero pages, which cannot be written) and `loaded` in `print()`.
+
 ### Phase 6a: Page pipeline — scanner spike, `PageScanner`, `PageEncoder`, merged-manifest guard
 Nudge: connect the Pixel 9.
 - Step 1, before any dependency:
@@ -859,7 +870,7 @@ them in its summary. An item closes with a test or a command output, not a state
 14. **Phase 4a: iOS look and gestures of the Part II screens.** OPEN, a manual gate. Only the framework link, `iosSimulatorArm64Test` (707 tests) and the
    Native timing of the search walk were observed (794 ms for about 930 searches, budget 1,500 ms). Nothing was driven on an iPhone: the levels are inline in
    the Guide tab like every other Guide level, with the on-screen back header, and the iOS edge-swipe does not apply to a tab. Closed by the Phase 10
-   iPhone checklist (browse, search, back at each level, light and dark). Phase 4b adds the draft screens to that list: the form (date picker, chips, order reference), the slip preview, the drafts list with its delete dialog and the upgrade panel.
+   iPhone checklist (browse, search, back at each level, light and dark). Phase 4b adds the draft screens to that list: the form (date picker, chips, order reference), the slip preview, the drafts list with its delete dialog and the upgrade panel. Phase 5 adds: Print (the iOS print sheet, an AirPrint printer and Save to Files; the sheet's `completed` flag after Print and after Cancel), that the edge-swipe cannot dismiss the sheet or leave the slip while it is up, the "Printed on / Changed since printed" lines, and the "Check the HRMS draft" screen, in light and dark.
 15. **Phase 4b: the Pixel 9 walk.** CLOSED 2026-10-23 (owner: "proceed with phone check"). The Play copy had already been uninstalled after the 4a walk, so no app data was on the
    phone and no backup was needed. A debug build with `PART2_ENABLED` flipped locally was installed and driven over adb (uiautomator for taps and text, screenshots kept in the
    session scratchpad only). Observed on the Pixel 9 (Android, dark theme):
@@ -879,6 +890,25 @@ them in its summary. An item closes with a test or a command output, not a state
    cold start, so the lock path walked was restore-from-database; the in-process discard is proved by `GuideNavPart2DraftTest` and the iOS lock is the Phase 10 iPhone walk).
    Seen and not fixed (no Part II defect): the certificate line reads "Certificate: CERTIFICATE: ..." because the manual's own text begins with that word and the row adds its label; and the lock
    screen showed "Incorrect PIN, please try again" before any PIN was entered (existing lock-screen behaviour, not touched in 4b). Both are for the owner to decide.
+
+16. **Phase 5: the Pixel 9 walk and the real PDF.** CLOSED 2026-10-23 (owner connected the phone; the Play copy was not installed, so no data was at risk). The walk used a debug build made in a copy of the working tree with
+   `PART2_ENABLED` flipped, so `LaunchFlags.kt` in the repo was never edited (sha256 989cf71e...a1b3 unchanged); driven over adb (uiautomator for taps and text). Observed on the Pixel 9 (Android, dark theme):
+   - GTDAL 06-20 Oct with ration: the slip's 5 rows, then "Print the slip" opened Android's system print dialog (A4 preview "Page 1 of 1", the same text as the screen). Cancel left no "Printed on" line and the button enabled.
+   - Printing to "Save as PDF" proposed the file name "Part II slip" (the fixed job name) and, once saved, the screen read "Printed on 23/10/2026". The saved file (53,148 bytes) is a valid one-page A4 PDF (Skia/PDF); `pdftotext` and a
+     rendered image matched the preview row for row: title, last-order blank, the notice, "Order 1 · Group A, C", GTDAL with its From/To and Data lines, SORS, GTDRSHNA with the RMA certificate as "CERTIFICATE: RATION MONEY
+     ALLOWANCE 1. ..." (no extra label), TORS, STPRSHNA and "Page 1 of 1". The PDF was pulled to the session scratchpad and deleted from the phone.
+   - "Check the HRMS draft": "Row 1 of 5" ... "Row 5 of 5", each field under its label (Code, Narrative, From, To, Data 3, Data 4), empty columns not listed.
+   - True process death (`run-as ... kill -9`, new pid 14293): the app reopened on the same slip with "Printed on 23/10/2026" read back from the encrypted database.
+   - Edit after printing: "Changed since it was printed. Print it again before you hand it over." appeared; printing again replaced the record and removed the note.
+   Reverted: the debug build uninstalled, the phone's theme untouched (dark), no PDF left, the copy of the tree (with the keystore) deleted.
+   Not observed: a physical printer (the phone offered one), a failed or cancelled job after "Print" was pressed, the lapsed (Force Free) state's slip without Print (proved by `Part2PrintUiTest`), light theme, TalkBack, a small screen or large font.
+17. **Phase 5: "Printed on" is a UTC day.** OPEN, scheduled for Phase 10 (owner, 2026-10-24: accept UTC for now). It uses the same `PreClaimDates.fromUtcMillis` day as the drafts list's "edited": there is no time-zone source in `commonMain` (no kotlinx-datetime), so a print between 00:00 and
+   05:30 IST shows the day before. Why deferred: a local offset needs an `expect`/`actual` and changes the drafts list too, which Phase 4b accepted as it is. How closed: the owner decides between accepting it and a local-offset function with a
+   test (Android `TimeZone`, iOS `NSTimeZone`) used by both.
+18. **Phase 5: `LeaveDraftViewModel.kt` is 288 lines (265 before).** OPEN, a debt watch for the next phase that touches it. The print logic is in `SlipPrintSession.kt` and `SlipDocuments.kt`; what remained in the model is the
+   `printed` field, `record()`, `print()` and their wiring (23 lines). Why deferred: moving the existing autosave (`edit`, `save`, `pendingDraft`) out is a refactor of Phase 4b code that Phase 5 does not need. How closed: the first later phase that
+   must add to this file (6b's order link, 7a's reminders) first extracts the autosave into its own class under the existing `LeaveDraftViewModelTest` and `LeaveDraftEditingTest`; `Part2Strings.kt` (258) is on the same watch.
+   Also noted: `Part2DraftSourceTest` now forbids `Intent`, `startActivity` and `UIActivityViewController` in the draft folder.
 
 ## Risks and controls
 

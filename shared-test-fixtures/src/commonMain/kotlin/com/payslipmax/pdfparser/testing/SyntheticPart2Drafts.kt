@@ -6,6 +6,8 @@ import com.payslipmax.pdfparser.part2.domain.LeaveEventInput
 import com.payslipmax.pdfparser.part2.domain.OccurrenceRequest
 import com.payslipmax.pdfparser.part2.domain.OrderRef
 import com.payslipmax.pdfparser.part2.domain.Part2Draft
+import com.payslipmax.pdfparser.part2.domain.PrintedRow
+import com.payslipmax.pdfparser.part2.domain.PrintedSnapshot
 import com.payslipmax.pdfparser.part2.domain.RationRules
 import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
@@ -48,6 +50,18 @@ object SyntheticPart2Drafts {
             templateRevs = mapOf("SYNCODE1" to "a1b2c3d4", "SYNCODE2" to "e5f6a7b8"),
             createdAt = updatedAt - 1000,
             updatedAt = updatedAt,
+        )
+
+    /** A print snapshot with every column of a row filled and one row with none, so a round trip that loses a column or a null fails. */
+    fun printedSnapshot(at: Long = 1_700_000_500_000L): PrintedSnapshot =
+        PrintedSnapshot(
+            at = at,
+            revs = mapOf("SYNCODE1" to "a1b2c3d4", "SYNCODE2" to "e5f6a7b8"),
+            rows =
+                listOf(
+                    PrintedRow("SYNCODE1", "Granted $MARKER_TEXT w.e.f. 05/07/2026", "05/07/2026", "04/09/2026", listOf("a", "", "", ""), "Authority line", "CERTIFICATE: text"),
+                    PrintedRow("SYNCODE2", "Second", "", "", emptyList(), null, null),
+                ),
         )
 
     fun emptyDraft(

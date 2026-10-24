@@ -159,13 +159,39 @@ object Part2Strings {
     const val fromLabel = "From"
     const val toLabel = "To"
     const val authorityLabel = "Authority"
-    const val certificateLabel = "Certificate"
     const val checksHeading = "Checks against the manual"
     const val ackHeading = "Tick to confirm you have read this"
     const val ackTick = "I have read this. The order may be rejected."
     const val undraftedHeading = "Orders that go with this and are not drafted yet"
-    const val readyToPrint = "All checks are ticked. Printing is added in a later update."
+    const val readyToPrint = "All checks are ticked. You can print the slip."
     const val seenInPractice = "Seen in practice"
+
+    // ---- Printing and the HRMS check ----
+
+    /** The name of the print job: it shows in the system print queue and is the saved PDF's name, so it names no code, date or number. */
+    const val printJobName = "Part II slip"
+    const val slipDocumentTitle = "Part II order slip"
+    const val slipNotice = "Draft for your clerk to key into HRMS. It is not a Part II order and carries no name or number of yours."
+
+    /** The label at the foot of each printed page; `{page}` and `{pages}` are filled in by the layout. */
+    const val pageLabel = "Page {page} of {pages}"
+    const val printButton = "Print the slip"
+    const val printingNow = "Printing..."
+    const val printBlocked = "Tick every check above to print."
+    const val changedSincePrinted = "Changed since it was printed. Print it again before you hand it over."
+    const val templateUpdatedSincePrinted = "The manual's template for this order has been updated since it was printed. Check the slip and print it again."
+    const val hrmsCheckButton = "Check the HRMS draft"
+    const val hrmsTitle = "Check the HRMS draft"
+    const val hrmsSubtitle = "Compare each field with what HRMS shows. This step is optional."
+    const val hrmsCodeLabel = "Code"
+    const val hrmsNarrativeLabel = "Narrative"
+
+    fun printedOnLine(date: String): String = "Printed on $date"
+
+    fun hrmsRowHeading(
+        number: Int,
+        total: Int,
+    ): String = "Row $number of $total"
 
     fun lastOrderLine(
         no: String,
@@ -197,7 +223,8 @@ object Part2Strings {
 
     fun authorityLine(text: String): String = "$authorityLabel: $text"
 
-    fun certificateLine(text: String): String = "$certificateLabel: $text"
+    /** A certificate prints exactly as the manual words it: its own text already starts with the word CERTIFICATE, so no label of ours goes in front. */
+    fun certificateLine(text: String): String = text
 
     fun undraftedLine(
         code: String,

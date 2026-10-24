@@ -67,4 +67,30 @@ class Part2StringsTest {
         assertEquals("Not finished", Part2Strings.unfinishedLine(emptyList()))
         assertEquals("Not finished. Still needed: First day, Year", Part2Strings.unfinishedLine(listOf("First day", "Year")))
     }
+
+    @Test
+    fun theJobNameIsFixedAndNamesNoCodeDateOrNumberBecauseItShowsInThePrintQueue() {
+        // why: the name is the system's to keep (the queue, the saved PDF's name), so nothing about a draft may be in it (Round 18).
+        assertEquals("Part II slip", Part2Strings.printJobName)
+        assertTrue(Part2Strings.printJobName.none { it.isDigit() })
+    }
+
+    @Test
+    fun aCertificatePrintsAsTheManualWordsItWithNoLabelInFront() {
+        // why: every certificate in the manual starts with the word CERTIFICATE (Round 18), so a label of ours would read it twice.
+        assertEquals("CERTIFICATE : CLAIMING RISK AND HARDSHIP ALLOWANCE Certified that:-", Part2Strings.certificateLine("CERTIFICATE : CLAIMING RISK AND HARDSHIP ALLOWANCE Certified that:-"))
+    }
+
+    @Test
+    fun thePageLabelIsATemplateTheLayoutFillsIn() {
+        assertEquals("Page {page} of {pages}", Part2Strings.pageLabel)
+    }
+
+    @Test
+    fun thePrintedAndCheckLinesNameTheirFigures() {
+        assertEquals("Printed on 05/07/2026", Part2Strings.printedOnLine("05/07/2026"))
+        assertEquals("Row 2 of 7", Part2Strings.hrmsRowHeading(2, 7))
+        assertTrue("template" in Part2Strings.templateUpdatedSincePrinted && "printed" in Part2Strings.templateUpdatedSincePrinted)
+        assertTrue("Changed" in Part2Strings.changedSincePrinted)
+    }
 }

@@ -19,9 +19,12 @@ import com.payslipmax.pdfparser.part2.domain.Part2Occurrence
 import com.payslipmax.pdfparser.part2.domain.Part2Origin
 import com.payslipmax.pdfparser.part2.domain.Part2Rules
 import com.payslipmax.pdfparser.part2.domain.Part2Slip
+import com.payslipmax.pdfparser.part2.domain.PrintedSnapshot
+import com.payslipmax.pdfparser.part2.domain.PrintedStatus
 import com.payslipmax.pdfparser.part2.domain.RuleFinding
 import com.payslipmax.pdfparser.part2.domain.RuleSeverity
 import com.payslipmax.pdfparser.part2.domain.SlotValue
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 
 /**
@@ -43,18 +46,29 @@ internal class LeaveDraftStateBuilder(
         event: LeaveEventInput,
         acked: Set<String>,
         saveFailed: Boolean,
+        printed: PrintedSnapshot? = null,
+        printing: Boolean = false,
     ): LeaveDraftUiState {
         val sections = event.requests.mapIndexed { i, request -> section(i, request, event.requests.size) }
         val result = engine.draft(event)
+        val drafted = (result as? DraftResult.Drafted)?.slip
         return LeaveDraftUiState(
             status = DraftStatus.READY,
             sections = sections,
             addable = if (event.requests.size >= Part2Limits.REQUESTS_MAX) emptyList() else options,
             missing = if (result is DraftResult.Drafted) emptyList() else sections.flatMap { s -> s.fields.filter { it.required && it.error == null && s.isUnanswered(it) }.map { it.label } }.distinct(),
-            slip = (result as? DraftResult.Drafted)?.slip?.let { slip(it, acked) },
+            slip = drafted?.let { slip(it, acked) },
             saveFailed = saveFailed,
+            printed = printed?.let { printedUi(it, drafted, templateRevs(event)) },
+            printing = printing,
         )
     }
+
+    /** What the clerk would be handed for [event], or null while the answers are incomplete. */
+    fun snapshotOf(
+        event: LeaveEventInput,
+        at: Long,
+    ): PrintedSnapshot? = (engine.draft(event) as? DraftResult.Drafted)?.let { PrintedSnapshot.of(it.slip, templateRevs(event), at) }
 
     /** The ids of the inputs the form asks for [request] now, in order. */
     fun fieldIds(request: OccurrenceRequest): List<String> = planner.fields(request).map { it.slot.id }
@@ -141,6 +155,21 @@ internal class LeaveDraftStateBuilder(
             readyToPrint = findings.filter { it.ack }.all { it.ticked },
         )
     }
+
+    /** When it was printed (the day as the drafts list dates an edit) and, when the paper no longer matches, why. */
+    private fun printedUi(
+        printed: PrintedSnapshot,
+        slip: Part2Slip?,
+        revs: Map<String, String>,
+    ): PrintedUi =
+        PrintedUi(
+            Part2Strings.printedOnLine(format(PreClaimDates.fromUtcMillis(printed.at))),
+            when (printed.statusFor(slip, revs)) {
+                PrintedStatus.CURRENT -> null
+                PrintedStatus.CHANGED -> Part2Strings.changedSincePrinted
+                PrintedStatus.TEMPLATE_UPDATED -> Part2Strings.templateUpdatedSincePrinted
+            },
+        )
 
     private fun row(row: Part2Occurrence): SlipRowUi =
         SlipRowUi(

@@ -126,7 +126,7 @@ class Part2CodecTest {
 
         assertFailsWith<Part2UnreadableException> { entityFor("""{"v":2,$base}""").toDraft(key) }
         assertFailsWith<Part2UnreadableException> { entityFor("""{"v":0,$base}""").toDraft(key) }
-        assertEquals("draft-1", entityFor("""{"v":1,$base,"printed":{"at":9}}""").toDraft(key).id)
+        assertEquals("draft-1", entityFor("""{"v":1,$base,"futureField":{"at":9}}""").toDraft(key).id)
     }
 
     @Test

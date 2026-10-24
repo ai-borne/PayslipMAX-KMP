@@ -12,8 +12,10 @@ import com.payslipmax.pdfparser.part2.domain.Part2Draft
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.part2.domain.Part2LookupIndex
 import com.payslipmax.pdfparser.part2.domain.Part2Rules
+import com.payslipmax.pdfparser.part2.domain.PrintedSnapshot
 import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.part2.domain.VaultOrders
+import com.payslipmax.pdfparser.part2.print.SlipPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimInput
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -66,6 +68,10 @@ class LeaveDraftViewModel(
     private var dirty = false
     private var closed = false
 
+    // What the clerk was last handed. Kept through every edit (an edit is flagged against it, never erases it) and saved with the draft.
+    private var printed: PrintedSnapshot? = null
+    private val prints = SlipPrintSession(scope, now, ::publish, ::record)
+
     private val _state = MutableStateFlow(if (loaded) derive() else LeaveDraftUiState.Loading)
     val state: StateFlow<LeaveDraftUiState> = _state
 
@@ -87,6 +93,7 @@ class LeaveDraftViewModel(
         }
         answers.value = draft.event
         createdAt = draft.createdAt
+        printed = draft.printed
         loaded = true
         publish()
     }
@@ -186,6 +193,22 @@ class LeaveDraftViewModel(
         publish()
     }
 
+    /** The print just completed: kept and saved at once, unless the officer has already left or deleted the draft. */
+    private suspend fun record(snapshot: PrintedSnapshot) {
+        if (closed) return
+        printed = snapshot
+        dirty = true
+        saveJob?.cancel()
+        publish()
+        save()
+    }
+
+    /** Prints the slip through [printer]; the print is recorded only once the printer reports it completed (see [SlipPrintSession]). */
+    fun print(printer: SlipPrinter) {
+        val request = builder.printRequest(_state.value, event.copy(lastOrder = lastOrder))
+        if (!closed && request != null) prints.start(printer, request)
+    }
+
     // ---- life cycle ----
 
     /** Deletes the draft for good; a change still waiting to be saved is dropped, never written back. [onDone] runs once it is gone. */
@@ -249,10 +272,10 @@ class LeaveDraftViewModel(
         val stamp = now()
         val created = createdAt ?: stamp.also { createdAt = it }
         val saved = event.copy(lastOrder = lastOrder)
-        return Part2Draft(id, saved, builder.templateRevs(saved), created, stamp)
+        return Part2Draft(id, saved, builder.templateRevs(saved), created, stamp, printed)
     }
 
-    private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saveFailed)
+    private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saveFailed, printed, prints.printing)
 
     private fun publish() {
         _state.value = derive()

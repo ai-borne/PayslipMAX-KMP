@@ -43,4 +43,45 @@ class PdfLetterFormatterTest {
         val wrapped = PdfLetterFormatter.wrapLine("short superlongwordthatexceeds", maxWidth = 8.0, measure = charWidth)
         assertEquals(listOf("short", "superlongwordthatexceeds"), wrapped)
     }
+
+    @Test
+    fun breakingLongWordsFitsEveryLineAndKeepsEveryCharacter() {
+        val wrapped = PdfLetterFormatter.wrapLine("ab " + "x".repeat(25), maxWidth = 10.0, breakLongWords = true, measure = charWidth)
+
+        assertEquals(listOf("ab", "xxxxxxxxxx", "xxxxxxxxxx", "xxxxx"), wrapped)
+        assertTrue(wrapped.all { it.length <= 10 })
+    }
+
+    @Test
+    fun breakingLongWordsNeverSplitsASurrogatePair() {
+        val pair = "\uD83D\uDE00"
+        val wrapped = PdfLetterFormatter.wrapLine(pair.repeat(6), maxWidth = 5.0, breakLongWords = true, measure = charWidth)
+
+        assertEquals(pair.repeat(6), wrapped.joinToString(""))
+        assertTrue(wrapped.all { line -> line.none { it.isHighSurrogate() } || line.length % 2 == 0 }, "a pair stays whole: $wrapped")
+        assertTrue(wrapped.all { !it.last().isHighSurrogate() })
+    }
+
+    @Test
+    fun breakingLongWordsLeavesWordsThatFitAlone() {
+        assertEquals(listOf("aaa bbb", "ccc"), PdfLetterFormatter.wrapLine("aaa bbb ccc", maxWidth = 10.0, breakLongWords = true, measure = charWidth))
+    }
+
+    @Test
+    fun aPairThatCannotFitEvenAloneIsSplitRatherThanLoopingForever() {
+        val pair = "\uD83D\uDE00"
+
+        assertEquals(pair, PdfLetterFormatter.wrapLine(pair, maxWidth = 1.0, breakLongWords = true, measure = charWidth).joinToString(""))
+    }
+
+    @Test
+    fun aWordExactlyAsWideAsTheLineIsNotBroken() {
+        assertEquals(listOf("x".repeat(10)), PdfLetterFormatter.wrapLine("x".repeat(10), maxWidth = 10.0, breakLongWords = true, measure = charWidth))
+        assertEquals(listOf("ab", "x".repeat(10)), PdfLetterFormatter.wrapLine("ab " + "x".repeat(10), maxWidth = 10.0, breakLongWords = true, measure = charWidth), "it moves to its own line whole")
+    }
+
+    @Test
+    fun aSingleCharacterWiderThanTheLineIsStillPrintedOnce() {
+        assertEquals(listOf("a", "b"), PdfLetterFormatter.wrapLine("a b", maxWidth = 0.5, breakLongWords = true, measure = charWidth))
+    }
 }

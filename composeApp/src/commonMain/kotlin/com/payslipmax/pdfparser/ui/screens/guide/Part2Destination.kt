@@ -29,7 +29,20 @@ sealed interface Part2Destination : GuideDestination {
 
     /** The slip preview of one draft. Only its random id is kept. */
     data class Slip(val draftId: String) : Part2Destination
+
+    /** The "Check the HRMS draft" screen of one draft. Only its random id is kept. */
+    data class Hrms(val draftId: String) : Part2Destination
 }
+
+/** The draft this level belongs to, for the three draft levels; null for any other level. */
+internal val Part2Destination.draftId: String?
+    get() =
+        when (this) {
+            is Part2Destination.Draft -> draftId
+            is Part2Destination.Slip -> draftId
+            is Part2Destination.Hrms -> draftId
+            else -> null
+        }
 
 private const val HOME = "home"
 private const val RIBBON = "ribbon"
@@ -38,6 +51,7 @@ private const val CODE = "code"
 private const val LOCKED = "locked"
 private const val DRAFT = "draft"
 private const val SLIP = "slip"
+private const val HRMS = "hrms"
 
 /** The saved form of a level after the `part2` prefix: its kind, then its one id. Ids only, never a name or a query. */
 internal fun encodePart2(destination: Part2Destination): List<String> =
@@ -49,6 +63,7 @@ internal fun encodePart2(destination: Part2Destination): List<String> =
         Part2Destination.Locked -> listOf(LOCKED)
         is Part2Destination.Draft -> listOf(DRAFT, destination.draftId)
         is Part2Destination.Slip -> listOf(SLIP, destination.draftId)
+        is Part2Destination.Hrms -> listOf(HRMS, destination.draftId)
     }
 
 /** Reads [encodePart2] back; anything else (a missing id, an extra part, an unknown kind) is null, which cuts the stack there. */
@@ -62,6 +77,7 @@ internal fun decodePart2(parts: List<String>): Part2Destination? {
         LOCKED -> Part2Destination.Locked.takeIf { parts.size == 1 }
         DRAFT -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Draft)
         SLIP -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Slip)
+        HRMS -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Hrms)
         else -> null
     }
 }
@@ -77,4 +93,5 @@ internal fun Part2Lookup.knows(destination: Part2Destination): Boolean =
         // A draft id is one the app made (a UUID): anything else is never looked up. Whether the repository still holds it is asked later.
         is Part2Destination.Draft -> Part2Limits.isPlainId(destination.draftId)
         is Part2Destination.Slip -> Part2Limits.isPlainId(destination.draftId)
+        is Part2Destination.Hrms -> Part2Limits.isPlainId(destination.draftId)
     }

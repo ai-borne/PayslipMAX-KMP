@@ -21,7 +21,8 @@ actual fun ApplyStatusBarIconStyle(style: StatusBarIconStyle) {
     }
 }
 
-private tailrec fun Context.findActivity(): Activity? =
+/** The Activity under any number of context wrappers, or null when there is none. Shared with `rememberSlipPrinter`. */
+internal tailrec fun Context.findActivity(): Activity? =
     when (this) {
         is Activity -> this
         is ContextWrapper -> baseContext.findActivity()

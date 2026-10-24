@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.ui.screens.guide.part2
 
 import androidx.activity.ComponentActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -16,6 +17,7 @@ import com.payslipmax.pdfparser.part2.domain.Part2Rules
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.FakePart2Repository
+import com.payslipmax.pdfparser.testing.FakeSlipPrinter
 import com.payslipmax.pdfparser.testing.SyntheticPart2Lookup
 import com.payslipmax.pdfparser.testing.SyntheticPart2Templates
 import com.payslipmax.pdfparser.ui.screens.guide.GuideAccess
@@ -24,6 +26,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.GuidePlatform
 import com.payslipmax.pdfparser.ui.screens.guide.GuideSearchViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideTab
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LocalSlipPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Drafting
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
@@ -44,6 +47,9 @@ abstract class Part2UiBase {
     protected val crash = FakeCrashReporter()
     protected val models = mutableListOf<Part2LookupViewModel>()
     protected val repository = FakePart2Repository()
+
+    /** What a tap on Print reaches: recorded, never a real print dialog. */
+    protected val printer = FakeSlipPrinter()
     protected var unlockTaps = 0
 
     protected open fun bundle(): GuideBundle = SyntheticPart2Lookup.bundle()
@@ -65,7 +71,9 @@ abstract class Part2UiBase {
         part2Unlocked: Boolean = unlocked,
         part2: (() -> Part2Models)? = factory,
     ): GuideNavState {
-        composeRule.setContent { GuideTab(nav, GuideAccess(unlocked, part2Unlocked) { unlockTaps++ }, guide, search, platform, null, null, part2) }
+        composeRule.setContent {
+            CompositionLocalProvider(LocalSlipPrinter provides printer) { GuideTab(nav, GuideAccess(unlocked, part2Unlocked) { unlockTaps++ }, guide, search, platform, null, null, part2) }
+        }
         settle()
         return nav
     }

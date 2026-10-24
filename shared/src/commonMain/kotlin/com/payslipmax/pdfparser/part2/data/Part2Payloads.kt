@@ -5,6 +5,8 @@ import com.payslipmax.pdfparser.part2.domain.LeaveEventInput
 import com.payslipmax.pdfparser.part2.domain.OccurrenceRequest
 import com.payslipmax.pdfparser.part2.domain.OrderRef
 import com.payslipmax.pdfparser.part2.domain.Part2Draft
+import com.payslipmax.pdfparser.part2.domain.PrintedRow
+import com.payslipmax.pdfparser.part2.domain.PrintedSnapshot
 import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
 import kotlinx.serialization.Serializable
@@ -36,6 +38,26 @@ internal class RequestPayload(
     val answers: List<String> = emptyList(),
 )
 
+/** One printed row: the rendered text of its columns. */
+@Serializable
+internal class PrintedRowPayload(
+    val code: String,
+    val narrative: String,
+    val from: String = "",
+    val to: String = "",
+    val data: List<String> = emptyList(),
+    val authority: String? = null,
+    val certificate: String? = null,
+)
+
+/** What the clerk was last handed: when, the template revisions and the rows. Optional inside `v: 1`: an older app ignores it, a draft never printed has none. */
+@Serializable
+internal class PrintedPayload(
+    val at: Long,
+    val revs: Map<String, String> = emptyMap(),
+    val rows: List<PrintedRowPayload> = emptyList(),
+)
+
 @Serializable
 internal class DraftPayload(
     val v: Int,
@@ -45,6 +67,7 @@ internal class DraftPayload(
     val last: SlotPayload? = null,
     val requests: List<RequestPayload> = emptyList(),
     val revs: Map<String, String> = emptyMap(),
+    val printed: PrintedPayload? = null,
 )
 
 @Serializable
@@ -93,7 +116,14 @@ internal fun Part2Draft.toPayload() =
         last = event.lastOrder?.let(::ref),
         requests = event.requests.map { r -> RequestPayload(r.code, r.values.mapValues { slot(it.value) }, r.answers.toList()) },
         revs = templateRevs,
+        printed = printed?.toPayload(),
     )
+
+private fun PrintedSnapshot.toPayload() =
+    PrintedPayload(at, revs, rows.map { PrintedRowPayload(it.code, it.narrative, it.from, it.to, it.data, it.authority, it.certificate) })
+
+private fun PrintedPayload.toSnapshot() =
+    PrintedSnapshot(at, revs, rows.map { PrintedRow(it.code, it.narrative, it.from, it.to, it.data, it.authority, it.certificate) })
 
 internal fun DraftPayload.toDraft() =
     Part2Draft(
@@ -106,6 +136,7 @@ internal fun DraftPayload.toDraft() =
         templateRevs = revs,
         createdAt = createdAt,
         updatedAt = updatedAt,
+        printed = printed?.toSnapshot(),
     )
 
 internal fun VaultOrder.toPayload() =

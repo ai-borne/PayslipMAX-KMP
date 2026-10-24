@@ -39,6 +39,18 @@ abstract class Part2RepositoryContractTest {
         }
 
     @Test
+    fun aPrintSnapshotIsKeptWithTheDraftAndReplacedWhenSavedAgain() =
+        runTest {
+            val repo = repository()
+            val printed = SyntheticPart2Drafts.fullDraft("d").copy(printed = SyntheticPart2Drafts.printedSnapshot(at = 5))
+            repo.saveDraft(printed)
+            assertEquals(5L, repo.draft("d")?.printed?.at)
+
+            repo.saveDraft(printed.copy(printed = SyntheticPart2Drafts.printedSnapshot(at = 9)))
+            assertEquals(9L, repo.draft("d")?.printed?.at)
+        }
+
+    @Test
     fun savingTheSameIdAgainReplacesTheDraftAsAutosaveDoes() =
         runTest {
             val repo = repository()

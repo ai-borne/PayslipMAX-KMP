@@ -8,9 +8,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2DraftEntry
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.DraftStatus
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.HrmsCheckScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LeaveDraftScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LeaveDraftViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2LockedScreen
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.SlipPreviewActions
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.SlipPreviewScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.actions
 import kotlinx.coroutines.launch
@@ -31,7 +33,7 @@ internal fun Part2DraftLevel(
     val allowed =
         when (destination) {
             is Part2Destination.Draft -> host.draftEntry == Part2DraftEntry.OPEN
-            is Part2Destination.Slip -> host.draftEntry != Part2DraftEntry.LOCKED
+            is Part2Destination.Slip, is Part2Destination.Hrms -> host.draftEntry != Part2DraftEntry.LOCKED
             else -> false
         }
     if (!allowed) {
@@ -40,7 +42,7 @@ internal fun Part2DraftLevel(
         Part2LockedScreen(onBack, host.onUnlock)
         return
     }
-    val id = (destination as? Part2Destination.Draft)?.draftId ?: (destination as Part2Destination.Slip).draftId
+    val id = checkNotNull(destination.draftId)
     val model = rememberDraftModel(navState, host, id) ?: return GuideLoading()
     val state by model.state.collectAsState()
     when (state.status) {
@@ -50,7 +52,12 @@ internal fun Part2DraftLevel(
             LaunchedEffect(id) { navState.cutDraft(id) }
             GuideLoading()
         }
-        DraftStatus.READY -> if (destination is Part2Destination.Draft) DraftForm(navState, model, id, listState) else SlipLevel(navState, host, model, id, listState)
+        DraftStatus.READY ->
+            when (destination) {
+                is Part2Destination.Draft -> DraftForm(navState, model, id, listState)
+                is Part2Destination.Hrms -> HrmsCheckScreen(state, onBack, listState)
+                else -> SlipLevel(navState, host, model, id, listState)
+            }
     }
 }
 
@@ -89,14 +96,14 @@ private fun SlipLevel(
 ) {
     val state by model.state.collectAsState()
     val scope = rememberCoroutineScope()
-    SlipPreviewScreen(
-        state = state,
-        canEdit = host.draftEntry == Part2DraftEntry.OPEN,
-        // Edit goes back to the form below when the officer came from it, so Back never walks a form-preview-form loop.
-        onEdit = { if (navState.stack.getOrNull(navState.stack.size - 2) == Part2Destination.Draft(id)) navState.pop() else navState.push(Part2Destination.Draft(id)) },
-        onTick = model::acknowledge,
-        onDelete = { model.delete { scope.launch { navState.cutDraft(id) } } },
-        onBack = { navState.pop() },
-        listState = listState,
-    )
+    val actions =
+        SlipPreviewActions(
+            // Edit goes back to the form below when the officer came from it, so Back never walks a form-preview-form loop.
+            onEdit = { if (navState.stack.getOrNull(navState.stack.size - 2) == Part2Destination.Draft(id)) navState.pop() else navState.push(Part2Destination.Draft(id)) },
+            onTick = model::acknowledge,
+            onDelete = { model.delete { scope.launch { navState.cutDraft(id) } } },
+            onPrint = { model.print(host.printer) },
+            onHrms = { navState.push(Part2Destination.Hrms(id)) },
+        )
+    SlipPreviewScreen(state, canEdit = host.draftEntry == Part2DraftEntry.OPEN, actions = actions, onBack = { navState.pop() }, listState = listState)
 }

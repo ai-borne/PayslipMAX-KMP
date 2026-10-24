@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens.guide.part2
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,6 +20,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.GuideAccess
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideTab
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LeaveDraftViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LocalSlipPrinter
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 import kotlinx.coroutines.runBlocking
 
@@ -39,7 +41,7 @@ abstract class Part2DraftUiBase : Part2UiBase() {
         unlocked: Boolean = true,
     ): GuideNavState {
         composeRule.setContent {
-            if (!locked) GuideTab(nav, GuideAccess(unlocked, unlocked) { unlockTaps++ }, guide, search, platform, null, null, factory)
+            if (!locked) CompositionLocalProvider(LocalSlipPrinter provides printer) { GuideTab(nav, GuideAccess(unlocked, unlocked) { unlockTaps++ }, guide, search, platform, null, null, factory) }
         }
         settle()
         return nav

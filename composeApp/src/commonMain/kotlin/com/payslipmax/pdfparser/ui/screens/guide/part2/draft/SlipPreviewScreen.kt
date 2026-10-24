@@ -21,16 +21,14 @@ import com.payslipmax.pdfparser.ui.theme.Part2Strings
 
 /**
  * The slip the clerk is handed, as the officer checks it: the orders and rows, then the checks against the manual, then what could not be
- * drafted. A user whose Premium ended ([canEdit] false) reads and deletes it and cannot change it. Until the answers are complete the
- * slip is not drawn: the screen says what is still needed instead. Printing is Phase 5; nothing here prints.
+ * drafted, then printing. A user whose Premium ended ([canEdit] false) reads and deletes it and cannot change or print it. Until the answers
+ * are complete the slip is not drawn: the screen says what is still needed instead. Printing goes through the system dialog only.
  */
 @Composable
 internal fun SlipPreviewScreen(
     state: LeaveDraftUiState,
     canEdit: Boolean,
-    onEdit: () -> Unit,
-    onTick: (key: String, ticked: Boolean) -> Unit,
-    onDelete: () -> Unit,
+    actions: SlipPreviewActions,
     onBack: () -> Unit,
     listState: LazyListState,
 ) {
@@ -39,15 +37,17 @@ internal fun SlipPreviewScreen(
         ScreenBackHeader(title = Part2Strings.slipTitle, subtitle = Part2Strings.slipSubtitle, onBack = onBack)
         LazyColumn(state = listState, modifier = Modifier.fillMaxSize(), contentPadding = Part2ListPadding, verticalArrangement = Part2ListSpacing) {
             if (!canEdit) item(key = "view-only") { PreClaimQuietText(Part2Strings.viewOnlyNote) }
+            state.printed?.let { item(key = "printed") { PrintedView(it) } }
             if (slip == null) {
                 item(key = "unfinished") { PreClaimQuietText(Part2Strings.unfinishedLine(state.missing)) }
             } else {
                 item(key = "last-order") { Text(slip.lastOrder, style = MaterialTheme.typography.bodyMedium) }
                 items(slip.orders, key = { it.title }) { SlipOrderView(it) }
-                if (slip.findings.isNotEmpty()) item(key = "findings") { FindingsView(slip, onTick) }
+                if (slip.findings.isNotEmpty()) item(key = "findings") { FindingsView(slip, actions.onTick) }
                 if (slip.undrafted.isNotEmpty()) item(key = "undrafted") { UndraftedView(slip.undrafted) }
+                item(key = "print") { SlipPrintSection(slip, state.printing, canEdit, actions.onPrint, actions.onHrms) }
             }
-            item(key = "actions") { SlipActions(canEdit, onEdit, onDelete) }
+            item(key = "actions") { SlipActions(canEdit, actions.onEdit, actions.onDelete) }
         }
     }
 }

@@ -19,8 +19,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.part2.print.SlipPrinter
 import com.payslipmax.pdfparser.ui.components.AccentStripeCard
 import com.payslipmax.pdfparser.ui.components.AccentStripeCardShape
+import com.payslipmax.pdfparser.ui.platform.rememberSlipPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2CaseScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2CodeScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2DraftEntry
@@ -29,6 +31,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2HomeScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2RibbonScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.DraftsUiState
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LocalSlipPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftActions
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftList
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
@@ -50,6 +53,7 @@ internal class Part2Host(
     val models: Part2Models?,
     val draftEntry: Part2DraftEntry,
     val onUnlock: () -> Unit,
+    val printer: SlipPrinter,
 ) {
     val model: Part2LookupViewModel? get() = models?.lookup
 
@@ -83,7 +87,7 @@ internal fun rememberPart2Host(
     val models = remember(entry) { if (entry == Part2Entry.OPEN) factory?.invoke() else null }
     val none = remember { MutableStateFlow(DraftsUiState.Empty) }
     val drafts by (models?.drafts?.state ?: none).collectAsState()
-    return Part2Host(entry, models, part2DraftEntry(access.part2Unlocked, drafts.hasAny), access.onUnlock)
+    return Part2Host(entry, models, part2DraftEntry(access.part2Unlocked, drafts.hasAny), access.onUnlock, LocalSlipPrinter.current ?: rememberSlipPrinter())
 }
 
 /** The Guide Home row that opens Part II. */
@@ -131,7 +135,7 @@ internal fun GuidePart2Level(
             model.ribbon(destination.ribbonId)?.let { Part2RibbonScreen(it, onBack, { id -> navState.push(Part2Destination.Case(id)) }, listState) } ?: GuideLoading()
         is Part2Destination.Case -> model.case(destination.caseId)?.let { Part2CaseScreen(it, onBack, onOpenCode, Part2DraftActions(host.draftEntry) { code -> host.startDraft(navState, code) }, listState) } ?: GuideLoading()
         is Part2Destination.Code -> model.code(destination.code)?.let { Part2CodeScreen(it, onBack, listState) } ?: GuideLoading()
-        Part2Destination.Locked, is Part2Destination.Draft, is Part2Destination.Slip -> Part2DraftLevel(navState, host, destination, listState)
+        Part2Destination.Locked, is Part2Destination.Draft, is Part2Destination.Slip, is Part2Destination.Hrms -> Part2DraftLevel(navState, host, destination, listState)
     }
 }
 

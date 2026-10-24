@@ -85,6 +85,9 @@ data class SlipUi(
     val readyToPrint: Boolean,
 )
 
+/** What the preview says of a printed draft: when it was printed, and a [note] when the paper no longer matches the draft (null when it does). */
+data class PrintedUi(val line: String, val note: String?)
+
 /**
  * Everything the draft screens draw. [slip] is null until the answers are complete; then [missing] lists the labels still needed.
  * Built by `LeaveDraftStateBuilder` from the event alone, so the same answers always give the same screen.
@@ -96,6 +99,8 @@ data class LeaveDraftUiState(
     val missing: List<String>,
     val slip: SlipUi?,
     val saveFailed: Boolean,
+    val printed: PrintedUi? = null,
+    val printing: Boolean = false,
 ) {
     /** Hides every answer, like the draft itself. */
     override fun toString(): String = "LeaveDraftUiState($status, sections=${sections.size})"

@@ -33,6 +33,17 @@ object Part2Limits {
     /** Template revisions kept with a draft: the requested codes plus every linked template that was drafted. */
     const val REVS_MAX = 64
 
+    /**
+     * The print snapshot a draft keeps (the rows as last handed to the clerk): rows in it (10 requests, each with at most 16 linked orders, and
+     * the request itself), characters in one rendered column (a template narrative is at most 600 and a typed remark 200), and Data columns a row has.
+     */
+    const val PRINTED_ROWS_MAX = 170
+    const val PRINTED_TEXT_MAX = 4000
+    const val PRINTED_DATA_MAX = 4
+
+    /** How long the app waits for a print job to end before it stops watching it (the job itself is the system's), in milliseconds. */
+    const val PRINT_WATCH_MS = 30L * 60 * 1000
+
     /** A draft or order payload before encryption, in bytes. The longest real draft is about 40 KB; this is the ceiling, not a target. */
     const val PAYLOAD_MAX_BYTES = 128 * 1024
 
