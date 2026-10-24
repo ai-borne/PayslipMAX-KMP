@@ -261,7 +261,16 @@ The plan and Rounds 5, 7, 10, 13, 14 and 18 settled everything 6a needed, so no 
 | Manifest guard | `scripts/check_merged_manifest.py` and a committed baseline with a reason per entry, in CI and the pre-push gate. The baseline today is the release manifest before ML Kit; ML Kit changes none of its entries. |
 | Deferred to 6b | The words and screens for every capture outcome, the entitlement gate on capture, `discardLeftovers()` calls, the 60 MB warning (item 23). |
 
-Phase 6a was built, walked and gated on 2026-10-24; the owner's acceptance is recorded in the commit that follows it.
+Owner answers, 2026-10-24 (asked after the 6a commits, one batch; each took the recommended option):
+
+| Topic | Decision |
+|---|---|
+| First scan on a phone that has never scanned, offline (item 19) | Accept. No pre-download. Phase 6b words the message for `Failed(UNAVAILABLE)` ("needs a connection once"), part of plan Phase 11 item 23. |
+| Colour profile (item 24) | Leave it dropped. Revisit at the 6b walk only if a coloured stamp or seal looks wrong. |
+| Scanner mode | `SCANNER_MODE_FULL`, as walked on the Pixel 9. |
+| Phase 6a | Accepted as built, 2026-10-24 (76404e21, 1b05efea), including the one allow-list entry in `stateful_singleton_guard.py` (`IosPageScanner.Companion`). |
+
+The camera prompt text and the quality ladder (85 down to 40) stay as built; change them freely.
 
 ## Facts established (2026-10-22)
 
