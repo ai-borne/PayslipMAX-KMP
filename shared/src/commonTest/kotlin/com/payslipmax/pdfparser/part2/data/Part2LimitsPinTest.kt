@@ -37,4 +37,15 @@ class Part2LimitsPinTest {
         assertEquals(4, Part2Limits.PRINTED_DATA_MAX, "Data 1 to 4")
         assertEquals(30L * 60 * 1000, Part2Limits.PRINT_WATCH_MS, "the app stops watching a print job after half an hour")
     }
+
+    @Test
+    fun thePageEncodingNumbersAreTheOnesTheOwnerDecidedAndLeaveRoomToStepDown() {
+        assertEquals(1600, Part2Limits.PAGE_LONG_EDGE_PX, "the long edge is at most 1600 px (DECISIONS Round 10)")
+        assertTrue(Part2Limits.PAGE_JPEG_QUALITY_START in Part2Limits.PAGE_JPEG_QUALITY_FLOOR..100)
+        assertTrue(Part2Limits.PAGE_JPEG_QUALITY_STEP in 1..20, "a step small enough to land close under the size cap")
+        assertTrue(Part2Limits.PAGE_JPEG_QUALITY_FLOOR >= 30, "a page below this is unreadable text: refuse it instead")
+        assertTrue(Part2Limits.PAGE_RAW_MAX_BYTES > Part2Limits.PAGE_MAX_BYTES, "a scanner's page may be larger than the stored one")
+        assertTrue(Part2Limits.PAGE_RAW_MAX_BYTES < 64 * 1024 * 1024, "and must fit the 256 MB test heap and a phone's with room to decode")
+        assertTrue(Part2Limits.PAGE_PIXELS_MAX >= 48_000_000L, "a 48 MP phone photo is accepted")
+    }
 }

@@ -255,5 +255,12 @@ object Part2Strings {
             else -> null
         }
 
+    /**
+     * The iOS camera prompt (Info.plist `NSCameraUsageDescription`), the one copy Apple requires in the app's plist. `Part2CameraUsageTest`
+     * keeps the two equal. The Android scanner needs no such text: it runs in Google Play services.
+     */
+    const val cameraUsageDescription =
+        "PayslipMax uses the camera only when you scan a published Part II order into your vault. Pages are stored encrypted on this device and are never added to your Photos."
+
     const val findingUnknown = "This order needs a check the app cannot word yet. Compare it with the manual."
 }

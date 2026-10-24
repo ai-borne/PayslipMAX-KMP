@@ -34,6 +34,8 @@ ALLOWED_STATEFUL_SINGLETONS = frozenset(
         "shared/src/iosMain/kotlin/com/payslipmax/pdfparser/insights/gemma/GemmaEngine.ios.kt::GemmaEngine.Companion",
         "shared/src/iosMain/kotlin/com/payslipmax/pdfparser/telemetry/CrashReporter.ios.kt::IosCrashReporter.Companion",
         "shared/src/iosMain/kotlin/com/payslipmax/pdfparser/telemetry/GemmaInstallTelemetry.ios.kt::IosGemmaInstallTelemetry.Companion",
+        # Part II page scanner (Phase 6a): Swift registers DocumentScanPresenter (VisionKit) at startup; Kotlin/Native shows the camera only through it.
+        "shared/src/iosMain/kotlin/com/payslipmax/pdfparser/part2/pages/IosPageScanner.kt::IosPageScanner.Companion",
     }
 )
 

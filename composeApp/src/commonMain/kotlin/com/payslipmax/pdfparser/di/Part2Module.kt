@@ -2,6 +2,8 @@ package com.payslipmax.pdfparser.di
 
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.data.RoomPart2Repository
+import com.payslipmax.pdfparser.part2.pages.PageEncoder
+import com.payslipmax.pdfparser.part2.pages.providePageEncoder
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Drafting
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
@@ -17,6 +19,8 @@ val part2Module =
     module {
         // One repository, so every screen sees the same drafts and orders.
         single<Part2Repository> { RoomPart2Repository(dao = get()) }
+        // The platform's page encoder (stateless; the vault screens of Phase 6b scan through it). The scanner is not bound here: it needs a screen.
+        single<PageEncoder> { providePageEncoder() }
         // One lookup model, app-scoped like the Guide's own search, so a typed query survives opening a code page and a tab switch.
         single { Part2LookupViewModel(guide = get()) }
         // The drafts list and the maker of one draft share the repository and the loaded Guide; `Part2Models` is what the Guide tab is handed.

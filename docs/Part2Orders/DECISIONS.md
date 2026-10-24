@@ -245,6 +245,24 @@ Build-time choices made without a question (change them if you disagree):
 
 Phase 5 was built, walked on the Pixel 9 and gated on 2026-10-23/24 (32c9617c, ad91c255) and accepted by the owner on 2026-10-24, who then started Phase 6a.
 
+## Round 19: Phase 6a, the page pipeline (build-time choices, 2026-10-24; no owner question was open)
+
+The plan and Rounds 5, 7, 10, 13, 14 and 18 settled everything 6a needed, so no question was asked. These are the choices made while building, for the owner to change if they disagree. The spike ran on the Pixel 9 with the owner's help (plan Phase 11 item 19).
+
+| Topic | Choice |
+|---|---|
+| Spike result | Passed: ML Kit Document Scanner 16.0.0 adds no `CAMERA` permission, no `uses-feature` and no exported component; it scans with the phone offline once its module is on the device; pages are `file://` JPEGs in `<app cache>/mlkit_docscan_ui_client/` and are never deleted by ML Kit. A phone that has never scanned, offline, was not tried (item 19). So the CameraX fallback was not needed. |
+| ML Kit | `play-services-mlkit-document-scanner` 16.0.0 (published 2025-09-29, well past two weeks; no advisory found), pinned in `libs.versions.toml`. Options: gallery import off, JPEG only (no PDF), page limit = the room left in the order, `SCANNER_MODE_FULL` (the scanner's own cleaning, as walked on the device). The scanner's code is delivered by Google Play services outside the app binary. |
+| iOS scanner | VisionKit's document camera in a Swift `DocumentScanPresenter` registered at startup (the crash reporter's pattern); Kotlin reaches it through `IosDocumentScannerDelegate`. Pages go to Kotlin as in-memory JPEG data (quality 0.9, re-encoded again by the shared encoder); nothing is written to disk. VisionKit has no page limit, so Kotlin drops pages beyond the room left and counts them. This needed one entry on the closed allow-list of `stateful_singleton_guard.py` (`IosPageScanner.Companion`, a Swift-set delegate like `IosCrashReporter.Companion`). |
+| Page rules | Long edge at most 1600 px; JPEG quality 85 stepping down by 5 to a floor of 40, the first that fits 500 KB, judged on the bytes that are stored; a page that does not fit at the floor is refused, not degraded further. A scanner page is read only up to 25 MB and decoded only up to 100 megapixels. All in `Part2Limits`. |
+| Metadata | Everything between the start marker and the picture except the JFIF header, the quantisation and Huffman tables and the Adobe segment is cut (Exif, GPS, XMP, IPTC, comments, and any bytes after the end marker), by a byte-level cut shared by both platforms. Side effect: the colour-profile segment goes too (item 24). The Exif orientation is applied to the pixels first, so pages are upright. |
+| Where a page lives | One place, `PageCapture`, holds a page in plaintext; it deletes the scanner's copy of each page as soon as it is stored and on any failure or cancel, and overwrites its byte arrays. The Android scanner also sweeps its folder before a scan, on cancel and on failure; `discardLeftovers()` (called by 6b when the vault opens and on lock) clears what a killed process left. |
+| Camera prompt (iOS) | "PayslipMax uses the camera only when you scan a published Part II order into your vault. Pages are stored encrypted on this device and are never added to your Photos." in `Info.plist`, equal to `Part2Strings.cameraUsageDescription` (a test). Apple reviews this text; change it freely. No other privacy key. |
+| Manifest guard | `scripts/check_merged_manifest.py` and a committed baseline with a reason per entry, in CI and the pre-push gate. The baseline today is the release manifest before ML Kit; ML Kit changes none of its entries. |
+| Deferred to 6b | The words and screens for every capture outcome, the entitlement gate on capture, `discardLeftovers()` calls, the 60 MB warning (item 23). |
+
+Phase 6a was built, walked and gated on 2026-10-24; the owner's acceptance is recorded in the commit that follows it.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

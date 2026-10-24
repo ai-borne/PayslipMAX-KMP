@@ -50,6 +50,19 @@ object Part2Limits {
     /** One re-encoded scanned page (long edge 1600 px, JPEG), in bytes; far under any row limit. */
     const val PAGE_MAX_BYTES = 500 * 1024
 
+    /**
+     * How a scanned page is re-encoded before it is stored (Phase 6a): the long edge in pixels, then JPEG quality stepped down from the
+     * start by the step until the page fits [PAGE_MAX_BYTES], and never below the floor (a page that still does not fit is refused, not
+     * degraded further). A scanner's own file or image is read only up to [PAGE_RAW_MAX_BYTES] and [PAGE_PIXELS_MAX] pixels, so a crafted
+     * or runaway input cannot exhaust memory.
+     */
+    const val PAGE_LONG_EDGE_PX = 1600
+    const val PAGE_JPEG_QUALITY_START = 85
+    const val PAGE_JPEG_QUALITY_STEP = 5
+    const val PAGE_JPEG_QUALITY_FLOOR = 40
+    const val PAGE_RAW_MAX_BYTES = 25 * 1024 * 1024
+    const val PAGE_PIXELS_MAX = 100_000_000L
+
     /** Pages one published order can hold. */
     const val PAGES_PER_ORDER_MAX = 10
 

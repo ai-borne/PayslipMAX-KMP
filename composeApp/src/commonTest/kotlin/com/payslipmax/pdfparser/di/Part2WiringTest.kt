@@ -6,6 +6,7 @@ import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.part2.data.Part2Dao
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.data.RoomPart2Repository
+import com.payslipmax.pdfparser.part2.pages.PageEncoder
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
@@ -47,6 +48,15 @@ class Part2WiringTest {
         val koin = koinApplication { modules(appKoinModules(platformModules = listOf(leaves))) }.koin
 
         assertEquals(isPart2Enabled(), koin.getOrNull<Part2Repository>() != null)
+    }
+
+    @Test
+    fun thePageEncoderIsBoundExactlyWhereTheFeatureIsEnabledAndIsOneSharedInstance() {
+        val koin = koinApplication { modules(appKoinModules(platformModules = listOf(leaves))) }.koin
+        assertEquals(isPart2Enabled(), koin.getOrNull<PageEncoder>() != null)
+
+        val part2 = koinApplication { modules(part2Module, leaves) }.koin
+        assertSame(part2.get<PageEncoder>(), part2.get<PageEncoder>())
     }
 
     @Test

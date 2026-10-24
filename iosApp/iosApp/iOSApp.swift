@@ -61,6 +61,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Bridge iOS Background Assets model delivery progress/completion to KMP.
         GemmaOnDemandResourceBridge.register()
 
+        // Bridge VisionKit's document camera (Part II vault pages) to the shared IosPageScanner.
+        DocumentScanPresenter.register()
+
         return true
     }
 }

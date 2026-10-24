@@ -103,6 +103,8 @@ kotlin {
             implementation(libs.play.asset.delivery.ktx)
             // Play In-App Review — Priority 3 rating prompt (ReviewRequester.android.kt)
             implementation(libs.play.review)
+            // ML Kit Document Scanner — Part II vault pages (AndroidPageScanner)
+            implementation(libs.mlkit.document.scanner)
         }
 
         val androidUnitTest by getting {

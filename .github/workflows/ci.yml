@@ -152,6 +152,10 @@ jobs:
         # Checks the release build that the previous step assembled.
         run: python3 scripts/check_r8_guide.py
 
+      - name: Verify the Release Manifest (permissions, features, exported components)
+        # Compares the merged release manifest of the build above with scripts/merged_manifest_baseline.json.
+        run: python3 scripts/check_merged_manifest.py
+
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
         if: always()

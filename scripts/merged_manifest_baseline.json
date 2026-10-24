@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "about": "The release merged manifest of composeApp (the 1.5.0 release line). Phase 6a added ML Kit Document Scanner 16.0.0 and reviewed the diff: it adds three components (an invisible delegate activity, an init provider and a discovery service), all exported=false, and no permission, feature or exported component, so no entry here changed. check_merged_manifest.py compares the manifest with this file; a change is a reviewed edit here with a reason. Nothing here is camera, storage, media or location.",
+  "application": {
+    "allowBackup": "false",
+    "debuggable": null,
+    "usesCleartextTraffic": null
+  },
+  "permissions": [
+    {
+      "name": "android.permission.INTERNET",
+      "reason": "Firebase Analytics and Crashlytics (sanitized telemetry only) and RevenueCat billing, via play-services-measurement. No payslip data is sent."
+    },
+    {
+      "name": "android.permission.ACCESS_NETWORK_STATE",
+      "reason": "Firebase Analytics (play-services-measurement): sends only when a network exists."
+    },
+    {
+      "name": "android.permission.WAKE_LOCK",
+      "reason": "Firebase Analytics (play-services-measurement): keeps the device awake while it uploads a batch."
+    },
+    {
+      "name": "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE",
+      "reason": "Firebase Analytics (play-services-measurement): reads the Play install referrer."
+    },
+    {
+      "name": "com.google.android.gms.permission.AD_ID",
+      "reason": "Firebase Analytics (play-services-measurement-impl): the advertising-ID permission Play Console asks the app to declare."
+    },
+    {
+      "name": "com.android.vending.BILLING",
+      "reason": "Play Billing (billing 8.3.0, via RevenueCat): Premium purchases."
+    },
+    {
+      "name": "android.permission.FOREGROUND_SERVICE",
+      "reason": "Play Asset Delivery (asset-delivery 2.2.2): the foreground service that extracts the Gemma model pack."
+    },
+    {
+      "name": "android.permission.FOREGROUND_SERVICE_DATA_SYNC",
+      "reason": "Play Asset Delivery: the data-sync foreground service type for the same extraction (targetSdk 34+)."
+    },
+    {
+      "name": "android.permission.ACCESS_ADSERVICES_ATTRIBUTION",
+      "reason": "Firebase Analytics (play-services-measurement-api): Android Privacy Sandbox attribution."
+    },
+    {
+      "name": "android.permission.ACCESS_ADSERVICES_AD_ID",
+      "reason": "Firebase Analytics (play-services-measurement-api): Android Privacy Sandbox advertising ID."
+    },
+    {
+      "name": "in.aiborne.payslipmax.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+      "reason": "androidx.core 1.16: the app's own signature permission that keeps dynamically registered receivers private."
+    }
+  ],
+  "declared_permissions": [
+    {
+      "name": "in.aiborne.payslipmax.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+      "protection_level": "signature",
+      "reason": "androidx.core 1.16: signature level, so only this app can hold it."
+    }
+  ],
+  "features": [],
+  "exported_components": [
+    {
+      "kind": "activity",
+      "name": "com.payslipmax.pdfparser.MainActivity",
+      "permission": null,
+      "enabled": "true",
+      "reason": "The launcher activity (MAIN/LAUNCHER filter): the app's only entry point."
+    },
+    {
+      "kind": "receiver",
+      "name": "androidx.profileinstaller.ProfileInstallReceiver",
+      "permission": "android.permission.DUMP",
+      "enabled": "true",
+      "reason": "androidx.profileinstaller (baseline profiles): exported so adb and Play can trigger profile installation, guarded by android.permission.DUMP, which only the shell and the system hold."
+    },
+    {
+      "kind": "service",
+      "name": "com.google.android.play.core.assetpacks.AssetPackExtractionService",
+      "permission": null,
+      "enabled": "false",
+      "reason": "Play Asset Delivery (asset-delivery 2.2.2): the library ships it exported but disabled; Play turns it on when it extracts an asset pack (the Gemma model pack)."
+    }
+  ]
+}
