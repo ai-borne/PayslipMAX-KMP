@@ -243,7 +243,7 @@ Build-time choices made without a question (change them if you disagree):
 | Printing and reminders | The printed time starts the Phase 7a "add the published order" reminders. A reprint replaces it, so the reminders run from the latest print. |
 | The day shown | First built as the UTC day the drafts list used for "edited"; the owner accepted that for now, then asked (2026-10-24) for the open items to be fixed. Now the day where the device is: "Printed on" and the drafts list's "edited" use the device's offset at that instant (plan Phase 11 item 17, closed). |
 
-Phase 5 was built, walked on the Pixel 9 and gated on 2026-10-23/24; the owner's acceptance is recorded in the commit that follows it.
+Phase 5 was built, walked on the Pixel 9 and gated on 2026-10-23/24 (32c9617c, ad91c255) and accepted by the owner on 2026-10-24, who then started Phase 6a.
 
 ## Facts established (2026-10-22)
 

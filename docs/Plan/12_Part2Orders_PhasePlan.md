@@ -338,7 +338,7 @@ The next phase starts only after the owner accepts this summary.
 | 3b. Chunked backup: pages as binary records, one page in memory at a time | done, accepted (2026-10-23) | 32ca5316 |
 | 4a. Lookup UI (free): Part II home, ribbons, tiles, code pages, search | done, accepted (2026-10-23); Pixel 9 walk done (Phase 11 item 12), hosts folded (item 13) | 19416f6e, 34c2f296 |
 | 4b. Leave draft flow + slip preview (Premium), autosave | done, accepted (2026-10-23); Pixel 9 walk done (Phase 11 item 15) | bace0c4b, 1ff29b95 |
-| 5. Print + "Check the HRMS draft" | built 2026-10-23, awaiting the owner's acceptance; Pixel 9 walk done (Phase 11 item 16) | see git log |
+| 5. Print + "Check the HRMS draft" | done, accepted (2026-10-24); Pixel 9 walk done (Phase 11 item 16); items 17 and 18 closed | 32c9617c, ad91c255 |
 | 6a. Page pipeline: scanner spike, `PageScanner`, `PageEncoder`, merged-manifest guard | not started | — |
 | 6b. Vault UI: order no./date, linking, last-order line, follow-up references | not started | — |
 | 6c. CANCEL / CANCELS: content batch 2 and flow | not started | — |
