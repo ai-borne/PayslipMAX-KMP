@@ -35,11 +35,22 @@ class Part2Drafting
         /** The draft saved under [id], read from the repository; its state is `GONE` when the repository no longer holds it. */
         fun open(id: String): LeaveDraftViewModel? = make(id, null)
 
+        /**
+         * Starts cancelling the vault order [orderId] (see [OrderCancelling]): the cancel slip's draft to open, or why none was made. The
+         * Guide must have loaded; both drafts are saved before this answers.
+         */
+        suspend fun cancel(
+            orderId: String,
+            redraft: Boolean,
+        ): CancelOutcome = OrderCancelling(section(), repository, rules, now, newId).cancel(orderId, redraft)
+
+        private fun section() = ((guide.uiState.value as? GuideUiState.Ready)?.bundle)?.part2
+
         private fun make(
             id: String,
             start: LeaveEventInput?,
         ): LeaveDraftViewModel? {
-            val section = ((guide.uiState.value as? GuideUiState.Ready)?.bundle)?.part2 ?: return null
+            val section = section() ?: return null
             return LeaveDraftViewModel(id, section, repository, start, rules, now, dispatcher)
         }
     }

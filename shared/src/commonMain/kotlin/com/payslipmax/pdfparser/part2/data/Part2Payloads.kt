@@ -68,6 +68,8 @@ internal class DraftPayload(
     val requests: List<RequestPayload> = emptyList(),
     val revs: Map<String, String> = emptyMap(),
     val printed: PrintedPayload? = null,
+    /** The draft this one was made with: a cancel slip and its re-draft point at each other. Optional inside `v: 1`. */
+    val pair: String? = null,
 )
 
 @Serializable
@@ -117,6 +119,7 @@ internal fun Part2Draft.toPayload() =
         requests = event.requests.map { r -> RequestPayload(r.code, r.values.mapValues { slot(it.value) }, r.answers.toList()) },
         revs = templateRevs,
         printed = printed?.toPayload(),
+        pair = pairedWith,
     )
 
 private fun PrintedSnapshot.toPayload() =
@@ -137,6 +140,7 @@ internal fun DraftPayload.toDraft() =
         createdAt = createdAt,
         updatedAt = updatedAt,
         printed = printed?.toSnapshot(),
+        pairedWith = pair,
     )
 
 internal fun VaultOrder.toPayload() =

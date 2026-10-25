@@ -17,7 +17,8 @@ internal object RuleContexts {
         no: String,
         month: Int = 1,
         day: Int = 15,
-    ) = SlotValue.RefValue(OrderRef(no, CalendarDate(2026, month, day)))
+        year: Int = 2026,
+    ) = SlotValue.RefValue(OrderRef(no, CalendarDate(year, month, day)))
 
     /** A drafted occurrence of [code] carrying the worked-out [computed] values. */
     fun occurrence(
@@ -32,8 +33,9 @@ internal object RuleContexts {
         answers: Set<String> = emptySet(),
         computed: Map<String, SlotValue> = emptyMap(),
         others: List<String> = emptyList(),
+        today: CalendarDate? = null,
     ): RuleContext {
         val mine = occurrence(code, computed)
-        return RuleContext(OccurrenceRequest(code, values, answers), mine, listOf(mine) + others.map { occurrence(it) })
+        return RuleContext(OccurrenceRequest(code, values, answers), mine, listOf(mine) + others.map { occurrence(it) }, today)
     }
 }

@@ -82,4 +82,21 @@ class PreClaimDatesTest {
     }
 
     private fun isLeap(year: Int) = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
+
+    @Test
+    fun theLocalDayAsksTheOffsetOfTheInstantItselfAndMovesTheUtcDayByIt() {
+        // 14 Nov 2023 22:13 UTC: the 15th at +5:30, still the 14th in New York.
+        val instant = 1_700_000_000_000L
+        val asked = mutableListOf<Long>()
+
+        assertEquals(
+            CalendarDate(2023, 11, 15),
+            PreClaimDates.localDay(instant) { at ->
+                asked += at
+                19_800_000L
+            },
+        )
+        assertEquals(listOf(instant), asked, "the offset is read at that instant, since daylight saving changes it through the year")
+        assertEquals(CalendarDate(2023, 11, 14), PreClaimDates.localDay(instant) { -18_000_000L })
+    }
 }

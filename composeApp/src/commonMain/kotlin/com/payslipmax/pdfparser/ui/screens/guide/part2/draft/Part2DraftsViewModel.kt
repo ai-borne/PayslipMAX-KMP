@@ -79,6 +79,6 @@ class Part2DraftsViewModel(
         val from = summary.from
         val to = summary.to
         val span = if (from != null && to != null) Part2Strings.dateSpan(CivilCalendar.format(from), CivilCalendar.format(to)) else null
-        return DraftRowUi(summary.id, Part2Strings.draftRowTitle(summary.codes), Part2Strings.draftRowLine(span, CivilCalendar.format(PreClaimDates.dayOfInstant(summary.updatedAt, localOffset(summary.updatedAt)))))
+        return DraftRowUi(summary.id, Part2Strings.draftRowTitle(summary.codes), Part2Strings.draftRowLine(span, CivilCalendar.format(PreClaimDates.localDay(summary.updatedAt, localOffset))))
     }
 }

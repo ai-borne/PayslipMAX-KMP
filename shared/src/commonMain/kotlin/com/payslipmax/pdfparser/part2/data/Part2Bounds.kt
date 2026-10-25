@@ -22,7 +22,8 @@ object Part2Bounds {
                 draft.event.requests.all(::request) &&
                 (draft.event.lastOrder?.let(::ref) ?: true) &&
                 revs(draft.templateRevs) &&
-                (draft.printed?.let(::printed) ?: true)
+                (draft.printed?.let(::printed) ?: true) &&
+                (draft.pairedWith?.let(Part2Limits::isPlainId) ?: true)
         return if (ok) null else Part2WriteResult.REJECTED
     }
 

@@ -28,10 +28,11 @@ import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDateBox
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimQuietText
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimTextBox
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.Part2CancelStrings
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
 
-/** What one order's screen can do: type its number, pick its date, scan more pages, show or delete a page, open its draft or delete it. */
+/** What one order's screen can do: type its number, pick its date, scan more pages, show or delete a page, open its draft, cancel it (with or without a corrected draft) or delete it. */
 class VaultOrderActions(
     val onNumber: (String) -> Unit,
     val onDate: (CalendarDate?) -> Unit,
@@ -40,6 +41,8 @@ class VaultOrderActions(
     val onDeletePage: (pageId: String) -> Unit,
     val onLink: (draftId: String?) -> Unit,
     val onOpenDraft: () -> Unit,
+    val onCancel: () -> Unit,
+    val onRedraft: () -> Unit,
     val onDelete: () -> Unit,
     val onDismissNotice: () -> Unit,
 )
@@ -64,6 +67,7 @@ internal fun VaultOrderScreen(
         LazyColumn(state = listState, modifier = Modifier.fillMaxSize(), contentPadding = Part2ListPadding, verticalArrangement = Part2ListSpacing) {
             if (!canEdit) item(key = "view-only") { PreClaimQuietText(Part2VaultStrings.orderViewOnlyNote) }
             notice?.let { item(key = "notice") { VaultNoticeView(it, actions.onDismissNotice) } }
+            state.cancelNote?.let { note -> item(key = "cancel-note") { Text(note, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) } }
             item(key = "fields") { OrderFields(state, canEdit, actions) }
             item(key = "pages-heading") { Text(Part2VaultStrings.pagesHeading, style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() }) }
             items(state.pages, key = { it.id }) { VaultPageRow(it, state.pages.size == 1, actions.loadPage) { actions.onDeletePage(it.id) } }
@@ -103,6 +107,18 @@ private fun OrderActions(
         if (state.draftId != null) OutlinedButton(onClick = actions.onOpenDraft, modifier = Modifier.fillMaxWidth()) { Text(Part2VaultStrings.openDraft) }
         if (canEdit && state.linked) OutlinedButton(onClick = { actions.onLink(null) }, modifier = Modifier.fillMaxWidth()) { Text(Part2VaultStrings.unlinkDraft) }
         if (canEdit && !state.linked) ChoicePicker(Part2VaultStrings.linkToDraft, drafts, { Part2VaultStrings.linkChoice(it.title, it.line) }) { actions.onLink(it.id) }
+        if (canEdit) CancelActions(state, actions)
         Part2DeleteButton(Part2VaultStrings.deleteOrder, Part2VaultStrings.deleteOrderTitle, Part2VaultStrings.deleteOrderBody, actions.onDelete)
     }
+}
+
+/** Cancelling the order (para 11, p.8): offered once the slip can quote its number and date, and "and re-draft" only while the draft it came from still exists to be copied. */
+@Composable
+private fun CancelActions(
+    state: VaultOrderUiState,
+    actions: VaultOrderActions,
+) {
+    if (!state.quotable) return PreClaimQuietText(Part2CancelStrings.cancelNeedsNumber)
+    OutlinedButton(onClick = actions.onCancel, modifier = Modifier.fillMaxWidth()) { Text(Part2CancelStrings.cancelOrder) }
+    if (state.draftId != null) OutlinedButton(onClick = actions.onRedraft, modifier = Modifier.fillMaxWidth()) { Text(Part2CancelStrings.cancelAndRedraft) }
 }

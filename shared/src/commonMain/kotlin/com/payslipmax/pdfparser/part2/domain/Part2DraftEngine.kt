@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.domain
 
+import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.calendar.CivilCalendar
 import com.payslipmax.pdfparser.guide.data.hasAngleBrackets
 import com.payslipmax.pdfparser.guide.model.Part2Lookup
@@ -21,7 +22,10 @@ class Part2DraftEngine(
     private val declarations: Map<String, Part2RuleDecl> = section.rules.associateBy { it.id }
     private val expander = LinkExpander(templates, groups, rules)
 
-    fun draft(input: LeaveEventInput): DraftResult {
+    fun draft(
+        input: LeaveEventInput,
+        today: CalendarDate? = null,
+    ): DraftResult {
         val requestIssue = requestIssue(input)
         if (requestIssue != null) return DraftResult.Refused(listOf(requestIssue))
         val issues = lastOrderIssues(input.lastOrder).toMutableList()
@@ -39,7 +43,7 @@ class Part2DraftEngine(
         if (issues.isNotEmpty()) return DraftResult.Refused(issues.distinct())
         val rows = drafted.mapNotNull { it.second.occurrence }
         val event = drafted.map { it.second.drafted }
-        return DraftResult.Drafted(Part2Slip(input.lastOrder, SlipOrdering.arrange(rows), findings(drafted, event), undrafted.distinct()))
+        return DraftResult.Drafted(Part2Slip(input.lastOrder, SlipOrdering.arrange(rows), findings(drafted, event, today), undrafted.distinct()))
     }
 
     /** The shipped template for [code], or null. */
@@ -76,13 +80,14 @@ class Part2DraftEngine(
     private fun findings(
         drafted: List<Pair<OccurrenceRequest, DraftedTemplate>>,
         event: List<DraftedOccurrence>,
+        today: CalendarDate?,
     ): List<RuleFinding> =
         drafted.flatMap { (request, result) ->
             val printed = result.drafted.template.let { it.print ?: it.code }
             result.drafted.template.rules.mapNotNull { id ->
                 val decl = declarations[id]
                 val rule = rules.check(id)
-                if (decl == null || rule == null || !rule.violated(RuleContext(request, result.drafted, event))) return@mapNotNull null
+                if (decl == null || rule == null || !rule.violated(RuleContext(request, result.drafted, event, today))) return@mapNotNull null
                 RuleFinding(id, if (decl.severity == "ack") RuleSeverity.ACK else RuleSeverity.WARN, printed, basisOf(decl.basis), decl.page, decl.note)
             }
         }.distinctBy { it.ruleId to it.code }

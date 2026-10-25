@@ -57,6 +57,9 @@ data class GrantChoiceUi(
     val label: String,
 )
 
+/** The draft this one was made with (a cancel slip and its corrected draft): [draftId] to open and the words for the button. */
+data class PairLinkUi(val draftId: String, val label: String)
+
 /** A code the officer can add to the event. */
 data class AddOption(val code: String, val name: String)
 
@@ -109,6 +112,7 @@ data class LeaveDraftUiState(
     val printed: PrintedUi? = null,
     val printing: Boolean = false,
     val grants: List<GrantChoiceUi> = emptyList(),
+    val pair: PairLinkUi? = null,
 ) {
     /** Hides every answer, like the draft itself. */
     override fun toString(): String = "LeaveDraftUiState($status, sections=${sections.size})"

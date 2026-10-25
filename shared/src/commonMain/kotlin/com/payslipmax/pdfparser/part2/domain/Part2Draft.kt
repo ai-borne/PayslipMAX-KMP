@@ -15,6 +15,7 @@ data class Part2Draft(
     val createdAt: Long,
     val updatedAt: Long,
     val printed: PrintedSnapshot? = null,
+    val pairedWith: String? = null,
 ) {
     override fun toString(): String = "Part2Draft(requests=${event.requests.size})"
 }

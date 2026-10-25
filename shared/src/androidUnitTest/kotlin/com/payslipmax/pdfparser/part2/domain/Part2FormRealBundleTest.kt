@@ -14,7 +14,8 @@ import kotlin.test.assertTrue
 class Part2FormRealBundleTest {
     private val rules = Part2Rules.shipped()
     private val planner = LeaveFormPlanner(RealPart2.engine, rules)
-    private val options = Part2LookupIndex(section).draftOptions().map { it.code }
+    private val index = Part2LookupIndex(section)
+    private val options = index.draftOptions(sameRibbonAs = "GTDAL").map { it.code }
 
     private fun request(
         code: String,
@@ -26,6 +27,13 @@ class Part2FormRealBundleTest {
     @Test
     fun theLeaveCasesOfferExactlyTheEightLeaveAndRejoiningCodes() {
         assertEquals(listOf("GTDAL", "GTDALCF", "EXTNAL", "GTDCL", "GTDSPCL", "REJOINAL", "VOLREJ", "RECALL"), options)
+    }
+
+    @Test
+    fun theCancellationCaseOffersTheTwoCancelCodesAndNeverTheLeaveOnes() {
+        assertEquals(listOf("CANCEL", "CANCELS"), index.draftOptions(sameRibbonAs = "CANCEL").map { it.code })
+        assertEquals(listOf("CANCEL", "CANCELS"), index.draftOptions(sameRibbonAs = "CANCELS").map { it.code })
+        assertEquals(false, "CANCEL" in options || "CANCELS" in options, "a leave slip never offers a cancellation")
     }
 
     @Test

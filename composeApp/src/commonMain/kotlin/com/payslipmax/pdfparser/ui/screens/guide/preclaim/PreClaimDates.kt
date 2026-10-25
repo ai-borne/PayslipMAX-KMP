@@ -40,6 +40,12 @@ internal object PreClaimDates {
         offsetMillis: Long,
     ): CalendarDate = fromUtcMillis(millis + offsetMillis)
 
+    /** The day an instant fell on where the device is, [localOffset] giving the device's offset at that instant (it moves with daylight saving). */
+    fun localDay(
+        millis: Long,
+        localOffset: (atMillis: Long) -> Long,
+    ): CalendarDate = dayOfInstant(millis, localOffset(millis))
+
     fun format(date: CalendarDate?): String = date?.let(CivilCalendar::format).orEmpty()
 
     private fun daysFromCivil(date: CalendarDate): Long {

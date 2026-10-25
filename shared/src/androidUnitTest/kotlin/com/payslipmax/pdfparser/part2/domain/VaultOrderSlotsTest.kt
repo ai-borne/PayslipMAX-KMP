@@ -14,12 +14,12 @@ class VaultOrderSlotsTest {
 
     @Test
     fun everyVaultBoxIsAReferenceBoxInTheShippedTemplates() {
-        assertTrue(LeaveRules.VAULT_ORDER_SLOTS.all { it in referenceSlots }, "a vault box that no template has: ${LeaveRules.VAULT_ORDER_SLOTS - referenceSlots}")
+        assertTrue(Part2Rules.VAULT_ORDER_SLOTS.all { it in referenceSlots }, "a vault box that no template has: ${Part2Rules.VAULT_ORDER_SLOTS - referenceSlots}")
     }
 
     @Test
-    fun theGrantAndTheCarryForwardOrdersAreVaultOrdersAndTheCorpsNotificationIsNot() {
-        assertEquals(setOf(LeaveRules.GRANT, LeaveRules.CARRY_ORDER), LeaveRules.VAULT_ORDER_SLOTS)
-        assertEquals(setOf("notif"), referenceSlots - LeaveRules.VAULT_ORDER_SLOTS, "any other reference box needs a decision: is it a Part II order of the vault?")
+    fun theGrantTheCarryForwardAndTheCancelledOrdersAreVaultOrdersAndTheCorpsNotificationIsNot() {
+        assertEquals(setOf(LeaveRules.GRANT, LeaveRules.CARRY_ORDER, CancelRules.CANCELLED), Part2Rules.VAULT_ORDER_SLOTS)
+        assertEquals(setOf("notif"), referenceSlots - Part2Rules.VAULT_ORDER_SLOTS, "any other reference box needs a decision: is it a Part II order of the vault?")
     }
 }

@@ -66,7 +66,10 @@ class Part2DraftSourceTest {
         assertTrue("Part2Repository" in model && "Room" !in model && "Dao" !in model && "CryptoHelper" !in model, "LeaveDraftViewModel.kt: autosave writes through Part2Repository, which encrypts; it never touches storage itself")
         val saver = withoutComments(File(folder, "AutoSaver.kt").readText())
         assertTrue("Part2Repository" !in saver && "Room" !in saver && "Dao" !in saver && "CryptoHelper" !in saver, "AutoSaver.kt is given its write as a function and never touches a repository or storage")
-        for (file in files().filter { it.name !in listOf("LeaveDraftViewModel.kt", "Part2Drafting.kt", "Part2DraftsViewModel.kt") }) {
+        // The cancelling use case is the one other writer: it saves the cancel slip and the corrected draft together, through the same interface.
+        val cancelling = withoutComments(File(folder, "OrderCancelling.kt").readText())
+        assertTrue("Part2Repository" in cancelling && "Room" !in cancelling && "Dao" !in cancelling && "CryptoHelper" !in cancelling, "OrderCancelling.kt writes through Part2Repository, which encrypts; it never touches storage itself")
+        for (file in files().filter { it.name !in listOf("LeaveDraftViewModel.kt", "Part2Drafting.kt", "Part2DraftsViewModel.kt", "OrderCancelling.kt") }) {
             assertTrue("saveDraft" !in withoutComments(file.readText()), "${file.name}: only the model saves")
         }
     }

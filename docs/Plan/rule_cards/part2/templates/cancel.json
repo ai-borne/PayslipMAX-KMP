@@ -1,0 +1,23 @@
+{
+ "version": 1,
+ "templates": [
+  {"code": "CANCEL", "page": 226,
+   "narrative": "Cancelled all occurrence of Part II Order Number {cancelled.no} dated {cancelled.date}",
+   "slots": [{"id": "cancelled", "kind": "ref", "label": "Order being cancelled", "help": "The published order you want cancelled: its number and date. Pick it from your vault or type them. Left blank, the slip prints a blank to fill in."}],
+   "from": {"need": "none"}, "to": {"need": "none"},
+   "data": [{"need": "required", "text": "ALL"}, {"need": "none"}, {"need": "required", "slot": "cancelled.no"}, {"need": "required", "slot": "cancelled.date"}],
+   "certificate": "Certified that the previous status may be restored due to cancellation of Part II Order No {cancelled.no} dated {cancelled.date}",
+   "rules": ["cancel_quoted", "cancel_time_barred"],
+   "links": []},
+  {"code": "CANCELS", "page": 227,
+   "narrative": "Cancelled occurrence at Ser No {cancelled_serial} of Pt II order No {cancelled.no} dated {cancelled.date}",
+   "slots": [{"id": "cancelled", "kind": "ref", "label": "Order being corrected", "help": "The published order that holds the wrong occurrence: its number and date. Pick it from your vault or type them. Left blank, the slip prints a blank to fill in."},
+     {"id": "cancelled_code", "kind": "text", "label": "Code of that occurrence", "help": "The code printed on the occurrence you want cancelled, for example GTDAL."},
+     {"id": "cancelled_serial", "kind": "number", "label": "Its serial in that order", "help": "The serial number the occurrence carries in the published order. Read it off the order, not off your own draft."}],
+   "from": {"need": "none"}, "to": {"need": "none"},
+   "data": [{"need": "required", "slot": "cancelled_code"}, {"need": "required", "slot": "cancelled_serial"}, {"need": "required", "slot": "cancelled.no"}, {"need": "required", "slot": "cancelled.date"}],
+   "certificate": "Certified that the previous status may be restored due to cancellation of Sr No {cancelled_serial} of the Part II Order No {cancelled.no} dated {cancelled.date}",
+   "rules": ["cancels_quoted", "cancels_time_barred"],
+   "links": []}
+ ]
+}

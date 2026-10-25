@@ -3,6 +3,8 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2.vault
 import com.payslipmax.pdfparser.part2.data.Part2WriteResult
 import com.payslipmax.pdfparser.part2.pages.CaptureResult
 import com.payslipmax.pdfparser.part2.pages.ScanFailure
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.CancelRefusal
+import com.payslipmax.pdfparser.ui.theme.Part2CancelStrings
 import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
 
 /**
@@ -16,6 +18,16 @@ internal object VaultNotices {
             CaptureResult.OrderFull -> Part2VaultStrings.orderFull()
             is CaptureResult.Failed -> if (result.reason == ScanFailure.UNAVAILABLE) Part2VaultStrings.scanNeedsConnection else Part2VaultStrings.scanFailed
             is CaptureResult.Saved -> saved(result)
+        }
+
+    /** The words for why a cancel could not start. */
+    fun cancelRefusal(why: CancelRefusal): String =
+        when (why) {
+            CancelRefusal.NOT_READY -> Part2CancelStrings.notReady
+            CancelRefusal.GONE -> Part2VaultStrings.orderGone
+            CancelRefusal.NOT_QUOTABLE -> Part2CancelStrings.notQuotable
+            CancelRefusal.NOTHING_TO_COPY -> Part2CancelStrings.nothingToCopy
+            CancelRefusal.SAVE_FAILED -> Part2CancelStrings.saveFailed
         }
 
     private fun saved(result: CaptureResult.Saved): String? =

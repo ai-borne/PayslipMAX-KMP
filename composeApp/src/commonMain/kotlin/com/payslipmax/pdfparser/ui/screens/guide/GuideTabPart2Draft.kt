@@ -104,6 +104,8 @@ private fun SlipLevel(
             onDelete = { model.delete { scope.launch { navState.cutDraft(id) } } },
             onPrint = { model.print(host.printer) },
             onHrms = { navState.push(Part2Destination.Hrms(id)) },
+            // Hopping between a cancel slip and its corrected draft pops when the partner is the level below, so Back never walks a loop.
+            onOpenPair = { pair -> if (navState.stack.getOrNull(navState.stack.size - 2) == Part2Destination.Slip(pair)) navState.pop() else navState.push(Part2Destination.Slip(pair)) },
         )
     SlipPreviewScreen(state, canEdit = host.draftEntry == Part2DraftEntry.OPEN, actions = actions, orders = rememberSlipOrders(navState, host, id), onBack = { navState.pop() }, listState = listState)
 }

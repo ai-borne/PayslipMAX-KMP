@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.calendar.CivilCalendar
 import com.payslipmax.pdfparser.guide.model.Part2Lookup
 import com.payslipmax.pdfparser.part2.domain.AnswerQuestion
+import com.payslipmax.pdfparser.part2.domain.CancelDrafts
 import com.payslipmax.pdfparser.part2.domain.DraftIssue
 import com.payslipmax.pdfparser.part2.domain.DraftIssueReason
 import com.payslipmax.pdfparser.part2.domain.DraftResult
@@ -26,6 +27,7 @@ import com.payslipmax.pdfparser.part2.domain.RuleFinding
 import com.payslipmax.pdfparser.part2.domain.RuleSeverity
 import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
+import com.payslipmax.pdfparser.ui.theme.Part2CancelStrings
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
 import com.payslipmax.pdfparser.utils.localUtcOffsetMillis
@@ -44,7 +46,6 @@ internal class LeaveDraftStateBuilder(
     private val engine = Part2DraftEngine(section, rules)
     private val planner = LeaveFormPlanner(engine, rules)
     private val index = Part2LookupIndex(section)
-    private val options = index.draftOptions().map { AddOption(it.code, it.name) }
 
     fun build(
         event: LeaveEventInput,
@@ -53,20 +54,23 @@ internal class LeaveDraftStateBuilder(
         printed: PrintedSnapshot? = null,
         printing: Boolean = false,
         grants: List<OrderRef> = emptyList(),
+        today: CalendarDate? = null,
+        pairedWith: String? = null,
     ): LeaveDraftUiState {
         val sections = event.requests.mapIndexed { i, request -> section(i, request, event.requests.size) }
-        val result = engine.draft(event)
+        val result = engine.draft(event, today)
         val drafted = (result as? DraftResult.Drafted)?.slip
         return LeaveDraftUiState(
             status = DraftStatus.READY,
             sections = sections,
-            addable = if (event.requests.size >= Part2Limits.REQUESTS_MAX) emptyList() else options,
+            addable = if (event.requests.size >= Part2Limits.REQUESTS_MAX) emptyList() else options(event).map { AddOption(it.code, it.name) },
             missing = if (result is DraftResult.Drafted) emptyList() else sections.flatMap { s -> s.fields.filter { it.required && it.error == null && s.isUnanswered(it) }.map { it.label } }.distinct(),
             slip = drafted?.let { slip(it, acked) },
             saveFailed = saveFailed,
             printed = printed?.let { printedUi(it, drafted, templateRevs(event)) },
             printing = printing,
             grants = grants.map { GrantChoiceUi(it.orderNo, it.date, Part2VaultStrings.grantChoice(it.orderNo, format(it.date))) },
+            pair = pairedWith?.let { PairLinkUi(it, if (CancelDrafts.isCancel(event)) Part2CancelStrings.openCorrectedDraft else Part2CancelStrings.openCancelSlip) },
         )
     }
 
@@ -75,6 +79,11 @@ internal class LeaveDraftStateBuilder(
         event: LeaveEventInput,
         at: Long,
     ): PrintedSnapshot? = (engine.draft(event) as? DraftResult.Drafted)?.let { PrintedSnapshot.of(it.slip, templateRevs(event), at) }
+
+    /** The codes the form may add to [event]: those of the ribbon its first occurrence belongs to, so a cancel slip is never mixed with leave. */
+    fun offered(event: LeaveEventInput): Set<String> = options(event).map { it.code }.toSet()
+
+    private fun options(event: LeaveEventInput) = event.requests.firstOrNull()?.let { index.draftOptions(sameRibbonAs = it.code) }.orEmpty()
 
     /** The ids of the inputs the form asks for [request] now, in order. */
     fun fieldIds(request: OccurrenceRequest): List<String> = planner.fields(request).map { it.slot.id }
@@ -169,7 +178,7 @@ internal class LeaveDraftStateBuilder(
         revs: Map<String, String>,
     ): PrintedUi =
         PrintedUi(
-            Part2Strings.printedOnLine(format(PreClaimDates.dayOfInstant(printed.at, localOffset(printed.at)))),
+            Part2Strings.printedOnLine(format(PreClaimDates.localDay(printed.at, localOffset))),
             when (printed.statusFor(slip, revs)) {
                 PrintedStatus.CURRENT -> null
                 PrintedStatus.CHANGED -> Part2Strings.changedSincePrinted

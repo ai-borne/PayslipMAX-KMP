@@ -18,11 +18,15 @@ class DraftedOccurrence(
     fun date(slot: String): CalendarDate? = (computed[slot] as? SlotValue.DateValue)?.date
 }
 
-/** What a rule can read: the officer's [request], the [occurrence] it is judging, and every occurrence of the [event] so far. */
+/**
+ * What a rule can read: the officer's [request], the [occurrence] it is judging, every occurrence of the [event] so far, and [today]
+ * (the device's date, handed in so a rule that compares with it stays pure; null when the caller has no date, and such a rule then judges nothing).
+ */
 class RuleContext(
     val request: OccurrenceRequest,
     val occurrence: DraftedOccurrence,
     val event: List<DraftedOccurrence>,
+    val today: CalendarDate? = null,
 )
 
 /** A rule the app implements. Its severity and citation come from the bundle's declaration, never from here. */
@@ -100,7 +104,10 @@ class Part2Rules(
     }
 
     companion object {
+        /** Every reference box that quotes a Part II order of the vault, whichever family owns it: the form offers the vault for exactly these. */
+        val VAULT_ORDER_SLOTS: Set<String> = LeaveRules.VAULT_ORDER_SLOTS + CancelRules.VAULT_ORDER_SLOTS
+
         /** The rules and form questions the app ships. Each content batch adds its rule family here and nowhere else. */
-        fun shipped(): Part2Rules = Part2Rules(LeaveRules.all + RationRules.all + AreaRules.all, RationRules.questions + AreaRules.questions)
+        fun shipped(): Part2Rules = Part2Rules(LeaveRules.all + RationRules.all + AreaRules.all + CancelRules.all, RationRules.questions + AreaRules.questions)
     }
 }

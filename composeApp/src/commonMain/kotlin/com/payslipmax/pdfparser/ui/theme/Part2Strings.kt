@@ -252,7 +252,7 @@ object Part2Strings {
             "cl_combination" -> "Casual leave cannot be combined with annual leave. The manual says such an order will be rejected."
             "spcl_over_30" -> "Special casual leave is granted for up to 30 days."
             "grant_quoted_annual", "grant_quoted_rejoin", "grant_quoted_recall" -> "Quote the order that granted the leave once it is published. Until then it prints blank."
-            else -> null
+            else -> Part2CancelStrings.finding(ruleId)
         }
 
     /**

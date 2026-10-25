@@ -306,6 +306,29 @@ The owner asked for the open items to be fixed in the same sprint and, asked whi
 | Linking later | Built; reverses Round 20's "link at scan time only". An entitled officer can link an order with no draft to one of their drafts ("Link to a draft", a list of drafts) and unlink one ("Unlink from the draft"). An order whose draft is gone shows only "Unlink". |
 | Template revision (plan Phase 11 item 6) | Recomputed in the app: on every load the validator hashes each template (SHA-256 of the shipped template as key-sorted compact JSON, first 8 hex, the Python tool's own rule) and refuses a template whose `rev` is not its own. Pinned against the tool by two known-answer tests (a sample with quotes, a backslash and accented characters; one with every control character) and by all 24 shipped templates. The fixtures keep readable revisions for the tests that print them; the validator suites use sealed copies. |
 
+## Round 22: Phase 6c, CANCEL and CANCELS (owner answers, 2026-10-25, asked at the start of phase 6c)
+
+Phase 6b was accepted by the owner on 2026-10-25 ("accepted & proceed"). Three things the plan did not settle were asked in one batch; the owner took the recommended option each time. The rest was settled by the plan and Rounds 5, 7, 9, 10, 11, 12, 13, 15, 17, 18, 19, 20 and 21.
+
+| Topic | Decision |
+|---|---|
+| "Cancel and re-draft" | Offered only on an order linked to a draft the device still holds. One tap makes the CANCEL slip (the order's number and date filled in) and a corrected draft copied from the linked draft (its codes, dates and answers; not the print record, ticks or last-order line), and opens the cancel slip. The two drafts point at each other ("Open the corrected draft" / "Open the cancel slip"); both stay editable; the old draft and the order are untouched. Either both drafts exist or neither does. An order with no linked draft gets "Cancel this order" only. |
+| What the vault says of a cancelled order | Worked out, never stored (so no payload, schema or backup change). The order's screen, its row in the vault list and its row on the slip it came from show "Cancel slip printed on <date>." once a cancel slip quoting its number and date has been printed, and "Cancelled by order <no.> dated <date>." once the officer has scanned the published cancel order and linked it to that cancel slip. A slip that cancels one occurrence says so ("A slip cancelling one occurrence was printed on ..." / "One occurrence cancelled by order ..."); a CANCEL outranks a CANCELS. Phase 7a reads the same answer (`CancelStatus`) to stop reminders. |
+| Sharing a slip | CANCEL and CANCELS share a slip only with each other (several CANCELS for several occurrences of one order). "Add another occurrence" offers the codes of the ribbon the slip's first code belongs to, read from the layout, so a Leave slip never offers a cancellation and a later batch needs no code. |
+
+Build-time choices made without a question (change them if you disagree):
+
+| Topic | Choice |
+|---|---|
+| Form | CANCEL and CANCELS are drafted in the same form as the Leave codes (the form is derived from the template), with no flow of their own. They start from "Cancel this order" on a vault order, which needs the order's number and date typed first (otherwise the screen says so), and from the Records case "Cancelling a published order". Only an entitled officer sees the offer (it makes drafts); a lapsed officer reads and deletes. The order being cancelled can be picked from the vault or typed. |
+| Which occurrence a CANCELS covers | The officer types the occurrence's code and the serial it carries in the published order. The vault keeps no occurrence rows, and the serial HRMS published need not equal the row's place in the draft, so nothing is guessed. |
+| Columns and wording | As the manual prints them (pp.226-227, notes 2, 3, 5, 7): CANCEL puts "ALL" in col 6, nothing in col 7 and the order's number and date in cols 8 and 9; CANCELS puts the occurrence code in col 6, the serial in col 7 and the order in cols 8 and 9; From and To are not required. The certificate prints as the manual words it, with the order and serial filled in and no full stop. The order is quoted in the narrative too (note 2). |
+| The code's name | Para 12.3 (p.8) misprints the one-occurrence code as "CANCELCS". The annexure (p.227), the code list and HRMS say CANCELS, so the slip prints CANCELS. Listed in the review pack. |
+| Time bar | A `warn`, never an `ack`: notes 4 (p.226) and 6 (p.227) say the sanction "may be enclosed", and an `ack` is kept for "will be rejected" (Round 11). The check fires when the order being cancelled is more than 2 years older than the day where the officer is (29 February turns 2 on 28 February); it judges nothing without a quoted order, a real date or a device date. Para 13 counts the 2 years from the occurrence, which the app does not know, so the copy says the occurrence may be older still. The engine stays pure: the device's day is handed in. |
+| Not quoted | A cancellation with no order yet still drafts and prints blanks for the clerk, with a `warn` (p.226 note 2, p.227 note 2), as a follow-up with no grant order does. |
+| The link between the two drafts | A draft id in an optional field of the encrypted draft payload (`v: 1`), bounded like every id on the way in and out. A deleted partner hides the button; the stored pointer is left. A restored backup keeps it. |
+| Lapsed Premium | No cancel offer and no hint (creating a cancel makes drafts); the status line is shown, because reading is open (Round 13). |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

@@ -59,11 +59,16 @@ class VaultViewModel
 
         init {
             scope.launch {
-                combine(repository.observeOrders(), pagesChanged) { stored, _ -> stored }.collectLatest { stored ->
-                    val rows = stored.items.map { row(it, repository.pages(it.id).size) }
+                combine(repository.observeOrders(), repository.observeDrafts(), pagesChanged) { stored, drafts, _ -> stored to drafts.items }.collectLatest { (stored, drafts) ->
+                    val rows = stored.items.map { row(it, repository.pages(it.id).size, CancelNotes.of(it, drafts, stored.items, localOffset)) }
                     _state.update { it.copy(rows = rows, unreadable = stored.unreadable > 0, hasAny = stored.items.isNotEmpty()) }
                 }
             }
+        }
+
+        /** Shows [text] as the vault's notice (a cancel that could not start says why here); null clears it. */
+        fun say(text: String?) {
+            _notice.value = text
         }
 
         fun dismissNotice() {
@@ -115,7 +120,7 @@ class VaultViewModel
 
         /** The model for one order's screen. The caller closes it when it leaves. */
         fun open(orderId: String): VaultOrderViewModel =
-            VaultOrderViewModel(orderId, repository, encoder, { _notice.value = it }, { pagesChanged.update { n -> n + 1 } }, now, dispatcher)
+            VaultOrderViewModel(orderId, repository, encoder, { _notice.value = it }, { pagesChanged.update { n -> n + 1 } }, now, dispatcher, localOffset)
 
         /**
          * The vault opened: clears what a killed scan left (a page in the scanner's cache, an order with no page and nothing typed). Skipped
@@ -137,9 +142,10 @@ class VaultViewModel
         private fun row(
             order: VaultOrder,
             pages: Int,
+            note: String?,
         ): VaultRowUi {
-            val added = CivilCalendar.format(PreClaimDates.dayOfInstant(order.createdAt, localOffset(order.createdAt)))
-            return VaultRowUi(order.id, order.draftId, title(order), Part2VaultStrings.orderRowLine(pages, added))
+            val added = CivilCalendar.format(PreClaimDates.localDay(order.createdAt, localOffset))
+            return VaultRowUi(order.id, order.draftId, title(order), Part2VaultStrings.orderRowLine(pages, added), note)
         }
 
         private fun title(order: VaultOrder): String {

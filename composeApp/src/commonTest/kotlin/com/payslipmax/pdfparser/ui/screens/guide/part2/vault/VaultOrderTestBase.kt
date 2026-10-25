@@ -29,5 +29,6 @@ internal abstract class VaultOrderTestBase : VaultTestBase() {
     protected fun TestScope.model(
         dispatcher: TestDispatcher,
         id: String = "order-1",
-    ) = VaultOrderViewModel(id, repo, encoder, { notices += it }, { changes++ }, now = { 9_000L }, dispatcher = dispatcher).also { advanceUntilIdle() }
+        offset: Long = 0L,
+    ) = VaultOrderViewModel(id, repo, encoder, { notices += it }, { changes++ }, now = { 9_000L }, dispatcher = dispatcher, localOffset = { offset }).also { advanceUntilIdle() }
 }

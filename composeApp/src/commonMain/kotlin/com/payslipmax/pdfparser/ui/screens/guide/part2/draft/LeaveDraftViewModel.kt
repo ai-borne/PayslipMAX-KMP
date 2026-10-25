@@ -9,12 +9,12 @@ import com.payslipmax.pdfparser.part2.domain.LeaveEventInput
 import com.payslipmax.pdfparser.part2.domain.OrderRef
 import com.payslipmax.pdfparser.part2.domain.Part2Draft
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
-import com.payslipmax.pdfparser.part2.domain.Part2LookupIndex
 import com.payslipmax.pdfparser.part2.domain.Part2Rules
 import com.payslipmax.pdfparser.part2.domain.PrintedSnapshot
 import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.part2.domain.VaultOrders
 import com.payslipmax.pdfparser.part2.print.SlipPrinter
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimInput
 import com.payslipmax.pdfparser.utils.localUtcOffsetMillis
 import kotlinx.coroutines.CoroutineDispatcher
@@ -46,11 +46,10 @@ class LeaveDraftViewModel(
     rules: Part2Rules = Part2Rules.shipped(),
     private val now: () -> Long = { 0L },
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
-    localOffset: (atMillis: Long) -> Long = ::localUtcOffsetMillis,
+    private val localOffset: (atMillis: Long) -> Long = ::localUtcOffsetMillis,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val builder = LeaveDraftStateBuilder(section, rules, localOffset)
-    private val offered = Part2LookupIndex(section).draftOptions().map { it.code }.toSet()
     private val saver = AutoSaver(scope, dispatcher, ::pendingDraft, repository::saveDraft, { repository.deleteDraft(id) }, ::publish)
 
     // Atomic, because the officer's edits (main thread) and a prefill (background) both change it.
@@ -58,6 +57,10 @@ class LeaveDraftViewModel(
     private val event: LeaveEventInput get() = answers.value
     private var loaded = start != null
     private var createdAt: Long? = null
+
+    // The draft this one was made with (a cancel slip and its corrected draft): kept through every save, offered while the partner exists.
+    private var pairedWith: String? = null
+    private var partner: String? = null
     private var lastOrder: OrderRef? = null
     private var grants: List<OrderRef> = emptyList()
     private var acked: Set<String> = emptySet()
@@ -90,6 +93,8 @@ class LeaveDraftViewModel(
         answers.value = draft.event
         createdAt = draft.createdAt
         printed = draft.printed
+        pairedWith = draft.pairedWith
+        partner = draft.pairedWith?.takeIf { repository.draft(it) != null }
         loaded = true
         publish()
     }
@@ -174,7 +179,7 @@ class LeaveDraftViewModel(
     }
 
     fun addOccurrence(code: String) {
-        if (code in offered) edit { LeaveEventEditor.addRequest(it, code) }
+        edit { if (code in builder.offered(it)) LeaveEventEditor.addRequest(it, code) else it }
     }
 
     fun removeOccurrence(index: Int) = edit { LeaveEventEditor.removeRequest(it, index) }
@@ -244,10 +249,13 @@ class LeaveDraftViewModel(
         val stamp = now()
         val created = createdAt ?: stamp.also { createdAt = it }
         val saved = event.copy(lastOrder = lastOrder)
-        return Part2Draft(id, saved, builder.templateRevs(saved), created, stamp, printed)
+        return Part2Draft(id, saved, builder.templateRevs(saved), created, stamp, printed, pairedWith)
     }
 
-    private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saver.failed, printed, prints.printing, grants)
+    private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saver.failed, printed, prints.printing, grants, today(), partner)
+
+    /** The day where the officer is, which the checks that compare with it (a time bar) read; the engine itself holds no clock. */
+    private fun today(): CalendarDate = PreClaimDates.localDay(now(), localOffset)
 
     private fun publish() {
         _state.value = derive()

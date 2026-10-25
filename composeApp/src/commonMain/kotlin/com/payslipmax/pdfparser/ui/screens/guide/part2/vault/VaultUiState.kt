@@ -8,6 +8,8 @@ data class VaultRowUi(
     val draftId: String?,
     val title: String,
     val line: String,
+    /** Where cancelling this order stands in words, or null when nobody has tried to cancel it. */
+    val note: String? = null,
 )
 
 /**
@@ -52,6 +54,10 @@ data class VaultOrderUiState(
     val saveFailed: Boolean,
     val busy: Boolean = false,
     val linked: Boolean = false,
+    /** The order has a number and a real date, so a cancel slip can quote it. */
+    val quotable: Boolean = false,
+    /** Where cancelling this order stands in words, or null when nobody has tried to cancel it. */
+    val cancelNote: String? = null,
 ) {
     override fun toString(): String = "VaultOrderUiState($status, pages=${pages.size})"
 

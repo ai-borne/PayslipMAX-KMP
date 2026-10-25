@@ -39,7 +39,7 @@ object Part2DraftContract {
     fun assertTheFormCompletesEveryOfferedCode(bundle: GuideBundle) {
         val builder = builder(bundle)
         val offered = Part2LookupIndex(assertNotNull(bundle.part2)).draftOptions()
-        assertEquals(8, offered.size, "the Leave release offers the eight leave and rejoining codes")
+        assertEquals(10, offered.size, "the Leave release offers the eight leave and rejoining codes and the two cancellation codes")
         for (option in offered) {
             var event = LeaveEventEditor.start(option.code)
             for (question in builder.questionsFor(option.code)) {

@@ -43,8 +43,13 @@ class Part2LookupIndex(private val lookup: Part2Lookup) {
     private val entries = lookup.serials.map { Entry(it, GuideRuleNumberParser.words(it.name).toSet()) }
 
     /** Every code the officer can start a draft with, in the manual's order: the template codes of the built cases' own serials. */
-    fun draftOptions(): List<Part2DraftOption> =
-        builtRibbons.flatMap { it.cases }.flatMap { case -> case.serials.filter { it !in case.lookup }.mapNotNull { pages[it]?.let(::draftOption) } }.distinctBy { it.code }
+    fun draftOptions(sameRibbonAs: String? = null): List<Part2DraftOption> {
+        val ribbons = if (sameRibbonAs == null) builtRibbons else builtRibbons.filter { ribbon -> ribbon.cases.any { case -> sameRibbonAs in homedCodes(case) } }
+        return ribbons.flatMap { it.cases }.flatMap { case -> case.serials.filter { it !in case.lookup }.mapNotNull { pages[it]?.let(::draftOption) } }.distinctBy { it.code }
+    }
+
+    /** The codes a case homes as its own (not lookup-only, not "also see"). */
+    private fun homedCodes(case: Part2Case): Set<String> = case.serials.filter { it !in case.lookup }.flatMap { pages[it]?.codes.orEmpty() }.toSet()
 
     fun ribbons(): List<Part2RibbonTile> = builtRibbons.map { Part2RibbonTile(it.id, it.title, it.cases.size) }
 

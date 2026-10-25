@@ -2,9 +2,11 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2.vault
 
 import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.part2.data.Part2Repository
+import com.payslipmax.pdfparser.part2.domain.Part2Draft
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
 import com.payslipmax.pdfparser.part2.domain.VaultOrderEditor
+import com.payslipmax.pdfparser.part2.domain.VaultOrders
 import com.payslipmax.pdfparser.part2.domain.VaultPageRef
 import com.payslipmax.pdfparser.part2.pages.PageCapture
 import com.payslipmax.pdfparser.part2.pages.PageEncoder
@@ -12,6 +14,7 @@ import com.payslipmax.pdfparser.part2.pages.PageScanner
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.AutoSaver
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
+import com.payslipmax.pdfparser.utils.localUtcOffsetMillis
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -35,11 +38,14 @@ class VaultOrderViewModel(
     private val pagesChanged: () -> Unit,
     private val now: () -> Long,
     private val dispatcher: CoroutineDispatcher,
+    private val localOffset: (atMillis: Long) -> Long = ::localUtcOffsetMillis,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val order = MutableStateFlow<VaultOrder?>(null)
     private val pages = MutableStateFlow<List<VaultPageRef>>(emptyList())
     private val draftId = MutableStateFlow<String?>(null)
+    private val drafts = MutableStateFlow<List<Part2Draft>>(emptyList())
+    private val orders = MutableStateFlow<List<VaultOrder>>(emptyList())
     private val busy = MutableStateFlow(false)
     private val gone = MutableStateFlow(false)
     private val saver = AutoSaver(scope, dispatcher, { checkNotNull(order.value) }, repository::saveOrder, { repository.deleteOrder(id) }, ::publish)
@@ -50,6 +56,19 @@ class VaultOrderViewModel(
 
     init {
         scope.launch { load() }
+        // The cancel slip is printed and the published cancel order scanned while this screen may stay open, so the note follows both.
+        scope.launch {
+            repository.observeDrafts().collect { stored ->
+                drafts.value = stored.items
+                publish()
+            }
+        }
+        scope.launch {
+            repository.observeOrders().collect { stored ->
+                orders.value = stored.items
+                publish()
+            }
+        }
     }
 
     private suspend fun load() {
@@ -169,6 +188,8 @@ class VaultOrderViewModel(
             saveFailed = saver.failed,
             busy = busy.value,
             linked = current.draftId != null,
+            quotable = VaultOrders.quotable(listOf(current)).isNotEmpty(),
+            cancelNote = CancelNotes.of(current, drafts.value, orders.value, localOffset),
         )
     }
 }

@@ -8,15 +8,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2DraftEntry
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.CancelOutcome
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.DraftsUiState
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.LocalPageImageDecoder
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.Part2VaultList
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.PlatformPageImageDecoder
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.SlipOrders
+import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultNotices
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultOrderActions
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultOrderScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultOrderStatus
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultUiState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -39,6 +43,30 @@ internal fun rememberVaultList(
         onDelete = { vault?.delete(it) },
         onDismissNotice = { vault?.dismissNotice() },
     )
+}
+
+/**
+ * Starts cancelling vault order [orderId] (para 11): opens the cancel slip, which the draft models find saved by its id. Only an entitled
+ * officer can ([Part2Host.draftEntry], the entitlement that lets one draft); a cancel that could not start says why in the vault's notice.
+ */
+internal fun Part2Host.cancelOrder(
+    navState: GuideNavState,
+    scope: CoroutineScope,
+    orderId: String,
+    redraft: Boolean,
+) {
+    val models = models ?: return
+    if (draftEntry != Part2DraftEntry.OPEN) return
+    scope.launch {
+        when (val outcome = models.drafting.cancel(orderId, redraft)) {
+            is CancelOutcome.Started -> {
+                models.vault.say(null)
+                navState.discardPart2Draft()
+                navState.push(Part2Destination.Slip(outcome.draftId))
+            }
+            is CancelOutcome.Refused -> models.vault.say(VaultNotices.cancelRefusal(outcome.why))
+        }
+    }
 }
 
 /** What a draft's slip shows of the vault: the orders linked to [draftId], and adding the published one (scanned, linked, opened). */
@@ -105,6 +133,8 @@ internal fun Part2OrderLevel(
                     onLink = model::setDraft,
                     onDeletePage = { pageId -> model.deletePage(pageId) { scope.launch { navState.cutOrder(id) } } },
                     // From the slip the draft is one step back, so Back never walks a slip-order-slip loop.
+                    onCancel = { host.cancelOrder(navState, scope, id, redraft = false) },
+                    onRedraft = { host.cancelOrder(navState, scope, id, redraft = true) },
                     onOpenDraft = { state.draftId?.let { draft -> if (below == Part2Destination.Slip(draft)) navState.pop() else navState.push(Part2Destination.Slip(draft)) } },
                     onDelete = { model.delete { scope.launch { navState.cutOrder(id) } } },
                     onDismissNotice = vault::dismissNotice,
