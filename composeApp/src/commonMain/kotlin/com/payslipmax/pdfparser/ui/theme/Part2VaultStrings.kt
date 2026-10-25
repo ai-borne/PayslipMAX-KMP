@@ -38,6 +38,18 @@ object Part2VaultStrings {
     const val hidePage = "Hide page"
     const val openDraft = "Open the draft"
     const val deleteOrder = "Delete order"
+    const val linkToDraft = "Link to a draft"
+    const val unlinkDraft = "Unlink from the draft"
+
+    fun linkChoice(
+        title: String,
+        line: String,
+    ): String = "$title · $line"
+
+    const val deletePage = "Delete page"
+    const val deletePageTitle = "Delete this page?"
+    const val deletePageBody = "The page is removed from this device. The order keeps its other pages."
+    const val deleteLastPageBody = "This is the order's only page, so the order is deleted with it."
     const val deleteOrderTitle = "Delete this order?"
     const val deleteOrderBody = "The order and all its pages are removed from this device. A draft it came from is not touched."
     const val orderViewOnlyNote = "Your Premium has ended. You can still read and delete this order, but not change it or add pages."

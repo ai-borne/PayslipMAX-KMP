@@ -76,4 +76,35 @@ class VaultOrderEditorTest {
         assertNull(VaultOrderEditor.numberIssue(VaultOrderEditor.setNumber(start, "N/12", now = 200L)))
         assertNull(VaultOrderEditor.numberIssue(start), "no number is not a refusal: it is just not typed yet")
     }
+
+    @Test
+    fun anOrderIsLinkedToADraftByItsIdAndTheEditTimeMoves() {
+        val linked = VaultOrderEditor.setDraft(VaultOrderEditor.blank("order-1", null, now = 100L), "draft-7", now = 200L)
+        assertEquals("draft-7", linked.draftId)
+        assertEquals(200L, linked.updatedAt)
+        assertEquals(100L, linked.createdAt)
+    }
+
+    @Test
+    fun linkingToAnotherDraftReplacesTheOldOneAndNullUnlinks() {
+        val first = VaultOrderEditor.setDraft(start, "draft-7", now = 200L)
+        assertEquals("draft-8", VaultOrderEditor.setDraft(first, "draft-8", now = 300L).draftId)
+        val unlinked = VaultOrderEditor.setDraft(first, null, now = 300L)
+        assertNull(unlinked.draftId)
+        assertEquals(300L, unlinked.updatedAt)
+    }
+
+    @Test
+    fun linkingToWhatItIsAlreadyLinkedToChangesNothing() {
+        assertEquals(start, VaultOrderEditor.setDraft(start, "draft-1", now = 999L), "the fixture order already belongs to draft-1")
+        val free = VaultOrderEditor.blank("order-2", null, now = 100L)
+        assertEquals(free, VaultOrderEditor.setDraft(free, null, now = 999L))
+    }
+
+    @Test
+    fun anIdTheAppDidNotMakeIsNeverLinked() {
+        for (bad in listOf("", "a b", "<x>", "a|b", "x".repeat(Part2Limits.ID_MAX + 1))) {
+            assertEquals(start, VaultOrderEditor.setDraft(start, bad, now = 999L), "'$bad' is not an id")
+        }
+    }
 }

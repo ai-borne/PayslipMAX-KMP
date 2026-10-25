@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2
 
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -9,6 +10,9 @@ import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.part2.pages.PageScan
 import com.payslipmax.pdfparser.testing.FakeScannedPage
 import com.payslipmax.pdfparser.testing.SyntheticPart2Drafts
+import com.payslipmax.pdfparser.ui.screens.guide.GuideDestination
+import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
+import com.payslipmax.pdfparser.ui.screens.guide.Part2Destination
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
 import kotlinx.coroutines.runBlocking
@@ -60,4 +64,15 @@ abstract class Part2VaultUiBase : Part2DraftUiBase() {
         composeRule.onNodeWithText(text).performClick()
         settle()
     }
+
+    /** Taps the first button whose text contains [part] (a row whose second half names a date that depends on the device's time zone). */
+    protected fun tapContaining(part: String) {
+        composeRule.onAllNodesWithText(part, substring = true).onFirst().performClick()
+        settle()
+    }
+
+    protected fun orderLevel(
+        id: String = "o1",
+        unlocked: Boolean = true,
+    ) = show(GuideNavState(listOf(GuideDestination.Home, Part2Destination.Home, Part2Destination.Order(id))), part2Unlocked = unlocked)
 }

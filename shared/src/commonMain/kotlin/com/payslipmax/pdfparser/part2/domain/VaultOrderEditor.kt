@@ -30,6 +30,13 @@ object VaultOrderEditor {
         now: Long,
     ): VaultOrder = if (date != null && !CivilCalendar.exists(date)) order else changed(order, order.copy(orderDate = date), now)
 
+    /** Links the order to the draft [draftId] (null unlinks). An id the app did not make is refused: nothing changes. */
+    fun setDraft(
+        order: VaultOrder,
+        draftId: String?,
+        now: Long,
+    ): VaultOrder = if (draftId != null && !Part2Limits.isPlainId(draftId)) order else changed(order, order.copy(draftId = draftId), now)
+
     /** Why the typed number cannot be quoted on a slip, or null. */
     fun numberIssue(order: VaultOrder): DraftIssueReason? = if (order.orderNo?.let(::hasAngleBrackets) == true) DraftIssueReason.MARKUP else null
 

@@ -12,6 +12,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimQuietText
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimTextBox
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
+import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
 
 /** One input, drawn by what it holds. The label and help are the bundle's; a refused answer is named under the box, in words the model already chose. */
 @Composable
@@ -28,7 +29,7 @@ internal fun FieldView(
             is FieldValue.Date -> PreClaimDateBox(field.label, value.date) { actions.onDate(index, slot, it) }
             is FieldValue.Digits -> PreClaimTextBox(field.label, value.text, { actions.onNumber(index, slot, it) }, supporting = field.error ?: hint, error = field.error != null)
             is FieldValue.Words -> PreClaimTextBox(field.label, value.text, { actions.onText(index, slot, it) }, numeric = false, supporting = field.error ?: hint, error = field.error != null)
-            is FieldValue.Reference -> ReferenceFields(index, field, value, actions, grants.takeIf { field.slotId == LeaveRules.GRANT }.orEmpty())
+            is FieldValue.Reference -> ReferenceFields(index, field, value, actions, grants.takeIf { field.slotId in LeaveRules.VAULT_ORDER_SLOTS }.orEmpty())
         }
         if (field.value is FieldValue.Date) PreClaimQuietText(hint)
         if (field.value is FieldValue.Date && field.error != null) Text(field.error, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
@@ -52,5 +53,5 @@ private fun ReferenceFields(
     PreClaimTextBox(field.label, value.number, { actions.onReference(index, slot, it, value.date) }, numeric = false, supporting = field.error ?: hint, error = field.error != null)
     PreClaimDateBox(Part2Strings.orderDateLabel, value.date) { actions.onReference(index, slot, value.number, it) }
     if (value.number.isNotEmpty() || value.date != null) TextButton(onClick = { actions.onReference(index, slot, "", null) }) { Text(Part2Strings.clearAnswer) }
-    GrantPicker(grants) { actions.onReference(index, slot, it.orderNo, it.date) }
+    ChoicePicker(Part2VaultStrings.useVaultOrder, grants, { it.label }) { actions.onReference(index, slot, it.orderNo, it.date) }
 }

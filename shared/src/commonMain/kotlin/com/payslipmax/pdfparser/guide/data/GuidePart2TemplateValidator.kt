@@ -17,7 +17,6 @@ internal object GuidePart2TemplateValidator {
     /** The one code the slip prints differently from the manual's Annexure II (Round 9): HRMS publishes REJOIN. */
     val PRINT_OVERRIDES = mapOf("REJOINAL" to "REJOIN")
     private const val PAGE_MAX = 400
-    private const val REV_LENGTH = 8
     private val BASES = listOf("manual", "practice")
 
     fun validate(bundle: GuideBundle): List<String> {
@@ -76,8 +75,10 @@ internal object GuidePart2TemplateValidator {
         if (template.code !in codes) problems += "$where: unknown code"
         if (!validPage(template.page)) problems += "$where: page must be a whole number from 1 to $PAGE_MAX"
         if (template.print != null && PRINT_OVERRIDES[template.code] != template.print) problems += "$where: print override must be REJOINAL to REJOIN"
-        if (template.rev.length != REV_LENGTH || !template.rev.all { it in '0'..'9' || it in 'a'..'f' }) {
-            problems += "$where: rev must be $REV_LENGTH lowercase hex characters"
+        if (template.rev.length != Part2TemplateRev.LENGTH || !template.rev.all { it in '0'..'9' || it in 'a'..'f' }) {
+            problems += "$where: rev must be ${Part2TemplateRev.LENGTH} lowercase hex characters"
+        } else if (template.rev != Part2TemplateRev.of(template)) {
+            problems += "$where: rev is not the revision of this template's words"
         }
         problems += GuidePart2SlotValidator.slotProblems(template, limits, kinds)
         problems += checkProblems(template, where, limits, rules)

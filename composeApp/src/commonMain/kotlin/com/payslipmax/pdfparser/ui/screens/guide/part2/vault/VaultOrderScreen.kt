@@ -21,6 +21,8 @@ import com.payslipmax.pdfparser.calendar.CivilCalendar
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListPadding
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListSpacing
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.ChoicePicker
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.DraftRowUi
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DeleteButton
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDateBox
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimQuietText
@@ -29,19 +31,22 @@ import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
 
-/** What one order's screen can do: type its number, pick its date, scan more pages, show a page, open its draft or delete it. */
+/** What one order's screen can do: type its number, pick its date, scan more pages, show or delete a page, open its draft or delete it. */
 class VaultOrderActions(
     val onNumber: (String) -> Unit,
     val onDate: (CalendarDate?) -> Unit,
     val onAddPages: () -> Unit,
     val loadPage: suspend (pageId: String) -> ImageBitmap?,
+    val onDeletePage: (pageId: String) -> Unit,
+    val onLink: (draftId: String?) -> Unit,
     val onOpenDraft: () -> Unit,
     val onDelete: () -> Unit,
     val onDismissNotice: () -> Unit,
 )
 
 /**
- * One published order: its number and date, its pages (shown one at a time, on request) and what can be done with it. Stateless. An
+ * One published order: its number and date, its pages (shown one at a time, on request) and what can be done with it, including linking it
+ * to one of the officer's [drafts] and unlinking it. Stateless. An
  * officer whose Premium ended ([canEdit] false) reads it and deletes it; they cannot type, scan or change anything.
  */
 @Composable
@@ -49,6 +54,7 @@ internal fun VaultOrderScreen(
     state: VaultOrderUiState,
     notice: String?,
     canEdit: Boolean,
+    drafts: List<DraftRowUi>,
     actions: VaultOrderActions,
     onBack: () -> Unit,
     listState: LazyListState,
@@ -60,8 +66,8 @@ internal fun VaultOrderScreen(
             notice?.let { item(key = "notice") { VaultNoticeView(it, actions.onDismissNotice) } }
             item(key = "fields") { OrderFields(state, canEdit, actions) }
             item(key = "pages-heading") { Text(Part2VaultStrings.pagesHeading, style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() }) }
-            items(state.pages, key = { it.id }) { VaultPageRow(it, actions.loadPage) }
-            item(key = "actions") { OrderActions(state, canEdit, actions) }
+            items(state.pages, key = { it.id }) { VaultPageRow(it, state.pages.size == 1, actions.loadPage) { actions.onDeletePage(it.id) } }
+            item(key = "actions") { OrderActions(state, canEdit, drafts, actions) }
         }
     }
 }
@@ -89,11 +95,14 @@ private fun OrderFields(
 private fun OrderActions(
     state: VaultOrderUiState,
     canEdit: Boolean,
+    drafts: List<DraftRowUi>,
     actions: VaultOrderActions,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
         if (canEdit && state.canAddPages) Button(onClick = actions.onAddPages, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) { Text(Part2VaultStrings.addPages) }
         if (state.draftId != null) OutlinedButton(onClick = actions.onOpenDraft, modifier = Modifier.fillMaxWidth()) { Text(Part2VaultStrings.openDraft) }
+        if (canEdit && state.linked) OutlinedButton(onClick = { actions.onLink(null) }, modifier = Modifier.fillMaxWidth()) { Text(Part2VaultStrings.unlinkDraft) }
+        if (canEdit && !state.linked) ChoicePicker(Part2VaultStrings.linkToDraft, drafts, { Part2VaultStrings.linkChoice(it.title, it.line) }) { actions.onLink(it.id) }
         Part2DeleteButton(Part2VaultStrings.deleteOrder, Part2VaultStrings.deleteOrderTitle, Part2VaultStrings.deleteOrderBody, actions.onDelete)
     }
 }

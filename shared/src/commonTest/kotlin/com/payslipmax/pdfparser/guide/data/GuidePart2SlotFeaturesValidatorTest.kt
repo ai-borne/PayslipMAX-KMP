@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.guide.data
 
+import com.payslipmax.pdfparser.guide.data.SealedSyntheticPart2.sealed
 import com.payslipmax.pdfparser.guide.model.Part2Column
 import com.payslipmax.pdfparser.guide.model.Part2Lookup
 import com.payslipmax.pdfparser.guide.model.Part2Slot
@@ -18,7 +19,7 @@ import kotlin.test.assertTrue
  * print a wrong date or a hole in the order a clerk types, so a bundle carrying one must refuse to load. Invented content only.
  */
 class GuidePart2SlotFeaturesValidatorTest {
-    private val section: Part2Lookup = SyntheticPart2Templates.lookup
+    private val section: Part2Lookup = SealedSyntheticPart2.lookup
 
     private fun slot(
         id: String,
@@ -31,7 +32,7 @@ class GuidePart2SlotFeaturesValidatorTest {
     private val dates = listOf(slot("d1", "date"), slot("d2", "date"))
 
     private fun problems(edit: (Part2Template) -> Part2Template): List<String> {
-        val edited = section.copy(templates = section.templates.map { if (it.code == NOTE) edit(it) else it })
+        val edited = section.copy(templates = section.templates.map { if (it.code == NOTE) edit(it).sealed() else it })
         return GuideBundleValidator.validate(SyntheticPart2Templates.bundle().copy(part2 = edited))
     }
 

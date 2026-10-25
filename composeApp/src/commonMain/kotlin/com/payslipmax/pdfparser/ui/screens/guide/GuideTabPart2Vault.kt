@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.DraftsUiState
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.LocalPageImageDecoder
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.Part2VaultList
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.PlatformPageImageDecoder
@@ -84,6 +85,7 @@ internal fun Part2OrderLevel(
     LaunchedEffect(id) { host.scanner?.discardLeftovers() }
     val state by model.state.collectAsState()
     val notice by vault.notice.collectAsState()
+    val drafts by (host.models?.drafts?.state ?: remember { MutableStateFlow(DraftsUiState.Empty) }).collectAsState()
     val scope = rememberCoroutineScope()
     val decoder = LocalPageImageDecoder.current ?: PlatformPageImageDecoder
     when (state.status) {
@@ -100,12 +102,14 @@ internal fun Part2OrderLevel(
                     onDate = model::setDate,
                     onAddPages = { host.addPages(model) },
                     loadPage = { pageId -> model.view(pageId, decoder::decode) },
+                    onLink = model::setDraft,
+                    onDeletePage = { pageId -> model.deletePage(pageId) { scope.launch { navState.cutOrder(id) } } },
                     // From the slip the draft is one step back, so Back never walks a slip-order-slip loop.
                     onOpenDraft = { state.draftId?.let { draft -> if (below == Part2Destination.Slip(draft)) navState.pop() else navState.push(Part2Destination.Slip(draft)) } },
                     onDelete = { model.delete { scope.launch { navState.cutOrder(id) } } },
                     onDismissNotice = vault::dismissNotice,
                 )
-            VaultOrderScreen(state, notice, canEdit = host.canCapture, actions = actions, onBack = { navState.pop() }, listState = listState)
+            VaultOrderScreen(state, notice, canEdit = host.canCapture, drafts = drafts.rows, actions = actions, onBack = { navState.pop() }, listState = listState)
         }
     }
 }

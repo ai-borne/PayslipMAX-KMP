@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.guide.data
 
 import com.payslipmax.pdfparser.guide.GuideLoadResult
+import com.payslipmax.pdfparser.guide.data.SealedSyntheticPart2.sealed
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.Part2Column
 import com.payslipmax.pdfparser.guide.model.Part2Link
@@ -26,15 +27,17 @@ import kotlin.test.assertTrue
  * bundle was built; the messages name ids and fields only, never a narrative.
  */
 class GuidePart2TemplateValidatorTest {
-    private val valid: GuideBundle = SyntheticPart2Templates.bundle()
-    private val section: Part2Lookup = SyntheticPart2Templates.lookup
+    private val section: Part2Lookup = SealedSyntheticPart2.lookup
+    private val valid: GuideBundle = SealedSyntheticPart2.bundle()
 
     private fun problems(part: Part2Lookup?) = GuideBundleValidator.validate(valid.copy(part2 = part))
 
+    /** Edits one template and recomputes its revision, so the edit is judged on its own merits; [keepRev] leaves the revision as the edit made it. */
     private fun Part2Lookup.editTemplate(
         code: String,
+        keepRev: Boolean = false,
         edit: (Part2Template) -> Part2Template,
-    ) = copy(templates = templates.map { if (it.code == code) edit(it) else it })
+    ) = copy(templates = templates.map { if (it.code == code) edit(it).let { edited -> if (keepRev) edited else edited.sealed() } else it })
 
     private fun Part2Lookup.editRule(
         id: String,
@@ -238,9 +241,23 @@ class GuidePart2TemplateValidatorTest {
     }
 
     @Test
+    fun aTemplateWhoseWordsChangedWithoutItsRevisionChangingIsRefused() {
+        val edited = section.editTemplate(NOTE, keepRev = true) { it.copy(narrative = it.narrative + " and more") }
+        assertProblem(edited, "template $NOTE: rev is not the revision of this template's words")
+        assertEquals(emptyList(), problems(section.editTemplate(NOTE) { it.copy(narrative = it.narrative + " and more") }), "with its revision recomputed the same edit is fine")
+        assertTrue(problems(edited).none { "and more" in it }, "the problem names the code, never the words")
+    }
+
+    @Test
+    fun aRevisionOfTheWrongShapeIsReportedOnceAsAShapeProblem() {
+        val found = problems(section.editTemplate(NOTE, keepRev = true) { it.copy(rev = "zz") })
+        assertEquals(1, found.count { "template $NOTE: rev" in it }, "$found")
+    }
+
+    @Test
     fun theRevisionIsEightHexCharacters() {
         for (bad in listOf("", "a000000", "a00000001", "A0000001", "g0000001")) {
-            assertProblem(section.editTemplate(NOTE) { it.copy(rev = bad) }, "template $NOTE: rev must be 8 lowercase hex characters")
+            assertProblem(section.editTemplate(NOTE, keepRev = true) { it.copy(rev = bad) }, "template $NOTE: rev must be 8 lowercase hex characters")
         }
     }
 

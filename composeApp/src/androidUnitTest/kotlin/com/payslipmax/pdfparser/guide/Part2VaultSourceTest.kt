@@ -69,12 +69,14 @@ class Part2VaultSourceTest {
         for (file in files().filter { it.name != "VaultOrderViewModel.kt" }) {
             assertTrue("readPage" !in code(file), "${file.name}: only VaultOrderViewModel reads a stored page, and zeroes it after")
         }
-        val writes = listOf("saveOrder(", "deleteOrder(", "addPage(", "deletePage(", "saveDraft(", "deleteDraft(")
         for (file in files().filter { it.name !in listOf("VaultViewModel.kt", "VaultOrderViewModel.kt") }) {
             val source = code(file)
-            assertTrue(writes.none { it in source }, "${file.name}: only the two models write")
-            // The Settings line is the one other reader: it asks for the vault's size and nothing else.
-            if (file.name != "VaultSizeWarning.kt") assertTrue("Part2Repository" !in source, "${file.name}: only the two models hold the repository")
+            if (file.name == "VaultSizeWarning.kt") {
+                // The Settings line is the one other reader: it asks for the vault's size and nothing else.
+                assertEquals(listOf("repository.vaultBytes()"), Regex("repository\\.\\w+\\(\\)").findAll(source).map { it.value }.toList(), "the Settings line only asks for the size")
+            } else {
+                assertTrue("repository." !in source && "Part2Repository" !in source, "${file.name}: only the two models hold the repository (a screen goes through its model)")
+            }
         }
         for (name in listOf("VaultViewModel.kt", "VaultOrderViewModel.kt")) {
             val source = code(File(folder, name))

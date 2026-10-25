@@ -67,6 +67,16 @@ class VaultOrderViewModel(
 
     fun setNumber(raw: String) = edit { VaultOrderEditor.setNumber(it, raw, now()) }
 
+    /** Links the order to the draft [to] the device holds, or unlinks it (null). A draft the device does not hold is never linked. */
+    fun setDraft(to: String?) {
+        scope.launch {
+            if (to != null && repository.draft(to) == null) return@launch
+            edit { VaultOrderEditor.setDraft(it, to, now()) }
+            draftId.value = order.value?.draftId
+            publish()
+        }
+    }
+
     fun setDate(date: CalendarDate?) = edit { VaultOrderEditor.setDate(it, date, now()) }
 
     /** Scans more pages into this order through [scanner]; a second call while a scan is open is ignored. */
@@ -94,6 +104,24 @@ class VaultOrderViewModel(
         pageId: String,
         decode: (ByteArray) -> T?,
     ): T? = if (pages.value.none { it.id == pageId }) null else repository.readPage(pageId, decode)
+
+    /**
+     * Deletes one of this order's pages. An order's only page takes the order with it ([onOrderGone] runs once it is gone), because an
+     * order with no page is nothing to keep. Ignored for a page of another order, while a scan is open and after the screen was left.
+     */
+    fun deletePage(
+        pageId: String,
+        onOrderGone: () -> Unit,
+    ) {
+        if (closed || busy.value || pages.value.none { it.id == pageId }) return
+        if (pages.value.size == 1) return delete(onOrderGone)
+        scope.launch {
+            repository.deletePage(pageId)
+            pages.value = repository.pages(id)
+            pagesChanged()
+            publish()
+        }
+    }
 
     /** Deletes the order and its pages; a change still waiting is dropped, never written back. [onDone] runs once it is gone. */
     fun delete(onDone: () -> Unit) {
@@ -140,6 +168,7 @@ class VaultOrderViewModel(
             draftId = draftId.value,
             saveFailed = saver.failed,
             busy = busy.value,
+            linked = current.draftId != null,
         )
     }
 }

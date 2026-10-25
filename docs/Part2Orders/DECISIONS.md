@@ -279,7 +279,7 @@ Three things the plan did not settle were asked in one batch; the owner took the
 | Topic | Decision |
 |---|---|
 | Where the vault is reached | A "Your published orders" section on the Part II home, under "Your drafts", with "Scan a published order" for an entitled officer. It shows for anyone who holds an order (so a lapsed officer still reaches view and delete). Orders can be scanned with no draft, which is the only way an officer who never drafted here gets a "last Part II order" line. "Add the published order" on a slip also scans. There is no separate Part2Vault level: the section is the vault, and `Part2Destination.Order(id)` is the one new level. |
-| Linking | Set once, when the order is scanned from a draft's slip. An order scanned from the vault stays unlinked. The order screen shows "Open the draft" while the draft exists; the slip lists its linked orders. No relinking. |
+| Linking | Set when the order is scanned from a draft's slip (an order scanned from the vault starts unlinked). The order screen shows "Open the draft" while the draft exists; the slip lists its linked orders. Relinking was first left out; Round 21 added it. |
 | Grant order on a follow-up | The officer picks it: the grant box gains "Use an order from my vault", a list of numbered, dated orders (newest first). A pick fills both boxes, which stay editable. Nothing is filled in silently. Only the `grant` box has it (the Corps notification and the sanction signal are not vault orders). |
 
 Build-time choices made without a question (change them if you disagree):
@@ -288,12 +288,23 @@ Build-time choices made without a question (change them if you disagree):
 |---|---|
 | Order no. and date | The draft form's own date box and the order-reference bound (`ORDER_NO_MAX` 40, plain text): a number with `<` or `>` is stored as typed and named, never quoted. Saved as typed (one write 300 ms after the last key, through one shared `AutoSaver`, which the draft form now also uses). |
 | Viewing a page | One page at a time, on request ("View page N" / "Hide page"). It is decrypted only inside the call that builds the picture, the bytes are zeroed when that call returns, and the picture is dropped on hide and when the screen leaves composition (the app lock included). Never to a file, the gallery or the clipboard. |
-| Delete | Asks first, like a draft. An order's delete removes its pages; a draft it came from is not touched. A single page cannot be deleted on its own (a bad scan means deleting the order and scanning again). |
+| Delete | Asks first, like a draft. An order's delete removes its pages; a draft it came from is not touched. A single page could not be deleted on its own at first (Round 21 added it). |
 | A scan that saved nothing | Leaves no order: the empty order made for the pages is deleted, and an order a killed process left with no page and nothing typed is removed when the vault next opens. |
 | Lapsed Premium | Reads and deletes; cannot scan, add pages, type or change anything (the data layer stays ungated; the gate is in the host). |
 | What a scan says | Words for every outcome: needs a connection once (offline, a never-scanned phone), the scan did not work, order full (10 pages), vault full, partly saved with the count, order gone. A cancelled scan says nothing. |
 | Settings | One line, only above 60 MB (rounded up, with the 100 MB ceiling), in the Data management card. |
 | Restore | "Restore Complete! N items could not be restored." in the warning colour when Part II rows were left out. |
+
+## Round 21: Phase 6b follow-ups (owner, 2026-10-25, after the 6b summary)
+
+The owner asked for the open items to be fixed in the same sprint and, asked which, chose all four.
+
+| Topic | Decision |
+|---|---|
+| Delete one page | Built. "Delete page" beside each page, asking first; for an entitled officer and for one whose Premium ended (a delete, as Round 13 allows). An order's only page takes the order with it, and the confirmation says so. Not while a scan is open. |
+| Picker on the carry-forward order | Built. "Order allowing the carry forward" (GTDALCF) offers the vault like the grant boxes. The Corps notification stays out (it is not a Part II order); a test names the one reference box left out, so a new one must be decided. |
+| Linking later | Built; reverses Round 20's "link at scan time only". An entitled officer can link an order with no draft to one of their drafts ("Link to a draft", a list of drafts) and unlink one ("Unlink from the draft"). An order whose draft is gone shows only "Unlink". |
+| Template revision (plan Phase 11 item 6) | Recomputed in the app: on every load the validator hashes each template (SHA-256 of the shipped template as key-sorted compact JSON, first 8 hex, the Python tool's own rule) and refuses a template whose `rev` is not its own. Pinned against the tool by two known-answer tests (a sample with quotes, a backslash and accented characters; one with every control character) and by all 24 shipped templates. The fixtures keep readable revisions for the tests that print them; the validator suites use sealed copies. |
 
 ## Facts established (2026-10-22)
 

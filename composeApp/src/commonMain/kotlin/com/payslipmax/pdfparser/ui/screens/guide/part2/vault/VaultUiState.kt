@@ -51,6 +51,7 @@ data class VaultOrderUiState(
     val draftId: String?,
     val saveFailed: Boolean,
     val busy: Boolean = false,
+    val linked: Boolean = false,
 ) {
     override fun toString(): String = "VaultOrderUiState($status, pages=${pages.size})"
 

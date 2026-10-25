@@ -16,17 +16,19 @@ import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
 
 /**
- * "Use an order from my vault": the numbered orders the vault holds, newest first. Nothing is chosen for the officer (with two leaves in
- * flight the newest order may be the wrong grant); a pick calls [onPick] and closes the list. Drawn only when there is something to pick.
+ * A button that opens a short list of [choices] to pick one from ("Use an order from my vault", "Link to a draft"). Nothing is chosen
+ * for the officer; a pick calls [onPick] and closes the list, and "Close" closes it without one. Drawn only when there is something to pick.
  */
 @Composable
-internal fun GrantPicker(
-    choices: List<GrantChoiceUi>,
-    onPick: (GrantChoiceUi) -> Unit,
+internal fun <T> ChoicePicker(
+    openLabel: String,
+    choices: List<T>,
+    label: (T) -> String,
+    onPick: (T) -> Unit,
 ) {
     if (choices.isEmpty()) return
     var open by remember { mutableStateOf(false) }
-    OutlinedButton(onClick = { open = !open }, modifier = Modifier.fillMaxWidth()) { Text(Part2VaultStrings.useVaultOrder) }
+    OutlinedButton(onClick = { open = !open }, modifier = Modifier.fillMaxWidth()) { Text(openLabel) }
     if (!open) return
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny)) {
         choices.forEach { choice ->
@@ -36,7 +38,7 @@ internal fun GrantPicker(
                     onPick(choice)
                 },
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text(choice.label) }
+            ) { Text(label(choice)) }
         }
         TextButton(onClick = { open = false }) { Text(Part2VaultStrings.closeChoices) }
     }
