@@ -344,6 +344,10 @@ The walk on the Pixel 9 (item 28) found one thing to change, built without a que
 
 Item 27, the check against the printed pages (the owner delegated it, as in Round 15): both templates were compared with pp.226 and 227 read as images and with the page text. Serial, code and group A; the narratives (CANCEL: "Cancelled all occurrence of Part II Order Number ... dated ..."; CANCELS: "Cancelled occurrence at Ser No ... of Pt II order No ... dated ..."); cols 4 and 5 not required; CANCEL Data 1 "ALL", Data 2 not required, Data 3 and 4 the order's number and date; CANCELS Data 1 the occurrence code, Data 2 the serial, Data 3 and 4 the order; both certificates; and notes 1-4 (p.226) and 1-7 (p.227), including note 7 naming the code CANCELS: all agree, no correction. This is a check by Claude, not the owner's own read; the owner's review of `part2_review.md` stays welcome, and the exit is recorded as "checked, not yet read by the owner".
 
+## Round 24: Phase 6c accepted (owner, 2026-10-25)
+
+The owner accepted Phase 6c as built, with its follow-ups (Round 23) and the walk fix (216b14c5, 42b5a46a, d5999a23): "I accept 6c". Still open from it: the owner's own read of `part2_review.md` (plan Phase 11 item 27, checked by Claude but not read by the owner), the 7a hand-off (item 31) and the iPhone walk (items 14 and 20). Phase 7a is next.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

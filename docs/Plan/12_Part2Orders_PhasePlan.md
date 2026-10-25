@@ -341,7 +341,7 @@ The next phase starts only after the owner accepts this summary.
 | 5. Print + "Check the HRMS draft" | done, accepted (2026-10-24); Pixel 9 walk done (Phase 11 item 16); items 17 and 18 closed | 32c9617c, ad91c255 |
 | 6a. Page pipeline: scanner spike, `PageScanner`, `PageEncoder`, merged-manifest guard | done, accepted (2026-10-24); spike and the committed pipeline walked on the Pixel 9 (Phase 11 items 19 and 21) | 76404e21, 1b05efea |
 | 6b. Vault UI: order no./date, linking, last-order line, follow-up references | done, accepted (2026-10-25); walked on the Pixel 9 (Phase 11 item 25); follow-ups added the same day (DECISIONS Round 21); the iPhone walk is Phase 11 items 14 and 20 | 6e2db804, 0daea659 |
-| 6c. CANCEL / CANCELS: content batch 2 and flow | built and gated (2026-10-25), follow-ups the same day (DECISIONS Round 23); batch 2 checked against pp.226-227 by Claude and walked on the Pixel 9 (Phase 11 items 27 and 28); the owner's own read of the review pack is open; waiting for the owner's acceptance | 216b14c5, 42b5a46a, walk fix after it |
+| 6c. CANCEL / CANCELS: content batch 2 and flow | done, accepted (2026-10-25); follow-ups the same day (DECISIONS Round 23); batch 2 checked against pp.226-227 by Claude and walked on the Pixel 9 (Phase 11 items 27 and 28); the owner's own read of the review pack stays open (item 27); the iPhone walk is items 14 and 20 | 216b14c5, 42b5a46a, d5999a23 |
 | 7a. Reminder planner + in-app Due | not started | — |
 | 7b. OS notifications on both platforms | not started | — |
 | 8. Rest of Chapter 5, incl. ACCLVE and ENCASH (batch 3) | not started | — |
