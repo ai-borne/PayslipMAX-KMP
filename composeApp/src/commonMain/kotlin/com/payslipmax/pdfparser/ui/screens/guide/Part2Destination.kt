@@ -32,7 +32,14 @@ sealed interface Part2Destination : GuideDestination {
 
     /** The "Check the HRMS draft" screen of one draft. Only its random id is kept. */
     data class Hrms(val draftId: String) : Part2Destination
+
+    /** One published order of the vault. Only its random id is kept; its number, date and pages live in the encrypted repository. */
+    data class Order(val orderId: String) : Part2Destination
 }
+
+/** The vault order this level shows, for the order level; null for any other level. */
+internal val Part2Destination.orderId: String?
+    get() = (this as? Part2Destination.Order)?.orderId
 
 /** The draft this level belongs to, for the three draft levels; null for any other level. */
 internal val Part2Destination.draftId: String?
@@ -52,6 +59,7 @@ private const val LOCKED = "locked"
 private const val DRAFT = "draft"
 private const val SLIP = "slip"
 private const val HRMS = "hrms"
+private const val ORDER = "order"
 
 /** The saved form of a level after the `part2` prefix: its kind, then its one id. Ids only, never a name or a query. */
 internal fun encodePart2(destination: Part2Destination): List<String> =
@@ -64,6 +72,7 @@ internal fun encodePart2(destination: Part2Destination): List<String> =
         is Part2Destination.Draft -> listOf(DRAFT, destination.draftId)
         is Part2Destination.Slip -> listOf(SLIP, destination.draftId)
         is Part2Destination.Hrms -> listOf(HRMS, destination.draftId)
+        is Part2Destination.Order -> listOf(ORDER, destination.orderId)
     }
 
 /** Reads [encodePart2] back; anything else (a missing id, an extra part, an unknown kind) is null, which cuts the stack there. */
@@ -78,6 +87,7 @@ internal fun decodePart2(parts: List<String>): Part2Destination? {
         DRAFT -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Draft)
         SLIP -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Slip)
         HRMS -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Hrms)
+        ORDER -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Order)
         else -> null
     }
 }
@@ -94,4 +104,5 @@ internal fun Part2Lookup.knows(destination: Part2Destination): Boolean =
         is Part2Destination.Draft -> Part2Limits.isPlainId(destination.draftId)
         is Part2Destination.Slip -> Part2Limits.isPlainId(destination.draftId)
         is Part2Destination.Hrms -> Part2Limits.isPlainId(destination.draftId)
+        is Part2Destination.Order -> Part2Limits.isPlainId(destination.orderId)
     }

@@ -8,8 +8,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.RestoreReport
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
 import com.payslipmax.pdfparser.utils.shareBytes
 
 // A backup is an opaque encrypted archive; octet-stream lets the OS share sheet offer every
@@ -23,7 +25,7 @@ fun BackupRestoreSettingsCard(
     onPasswordChange: (String) -> Unit,
     payslipCount: Int,
     onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
-    onRestore: (ByteArray, String, RestoreMode, (Result<Unit>) -> Unit) -> Unit,
+    onRestore: (ByteArray, String, RestoreMode, (Result<RestoreReport>) -> Unit) -> Unit,
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     canBackup: Boolean,
     onUpgradePrompt: () -> Unit,
@@ -68,7 +70,7 @@ private fun BackupRestoreBottomSheet(
     canBackup: Boolean,
     onLockedBackup: () -> Unit,
     onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
-    onRestore: (ByteArray, String, RestoreMode, (Result<Unit>) -> Unit) -> Unit,
+    onRestore: (ByteArray, String, RestoreMode, (Result<RestoreReport>) -> Unit) -> Unit,
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
@@ -98,7 +100,7 @@ private fun BackupRestoreSheetContent(
     canBackup: Boolean,
     onLockedBackup: () -> Unit,
     onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
-    onRestore: (ByteArray, String, RestoreMode, (Result<Unit>) -> Unit) -> Unit,
+    onRestore: (ByteArray, String, RestoreMode, (Result<RestoreReport>) -> Unit) -> Unit,
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     onCloseClick: () -> Unit,
 ) {
@@ -141,7 +143,7 @@ private fun BackupRestoreSheetContent(
 private fun RestoreCollisionPrompt(
     pendingRestore: ByteArray?,
     password: String,
-    onRestore: (ByteArray, String, RestoreMode, (Result<Unit>) -> Unit) -> Unit,
+    onRestore: (ByteArray, String, RestoreMode, (Result<RestoreReport>) -> Unit) -> Unit,
     onStatus: (BackupStatus) -> Unit,
     onClear: () -> Unit,
 ) {
@@ -226,7 +228,7 @@ private fun runRestorePick(
     password: String,
     payslipCount: Int,
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
-    onRestore: (ByteArray, String, RestoreMode, (Result<Unit>) -> Unit) -> Unit,
+    onRestore: (ByteArray, String, RestoreMode, (Result<RestoreReport>) -> Unit) -> Unit,
     onStatus: (BackupStatus) -> Unit,
     onNeedsChoice: (ByteArray) -> Unit,
 ) {
@@ -243,9 +245,9 @@ private fun runRestorePick(
     }
 }
 
-private fun restoreStatus(result: Result<Unit>): BackupStatus =
-    if (result.isSuccess) {
-        BackupStatus(AppStrings.statusRestoreComplete, isSuccess = true)
-    } else {
-        BackupStatus("${AppStrings.statusRestoreFailed}${result.exceptionOrNull()?.message}", isSuccess = false)
-    }
+/** A restore that left Part II rows out says how many, in the warning colour: those rows are lost, so the count must be noticed. */
+internal fun restoreStatus(result: Result<RestoreReport>): BackupStatus {
+    val report = result.getOrNull() ?: return BackupStatus("${AppStrings.statusRestoreFailed}${result.exceptionOrNull()?.message}", isSuccess = false)
+    if (report.skipped == 0) return BackupStatus(AppStrings.statusRestoreComplete, isSuccess = true)
+    return BackupStatus("${AppStrings.statusRestoreComplete} ${Part2VaultStrings.restoreSkipped(report.skipped)}", isSuccess = false)
+}

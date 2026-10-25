@@ -43,16 +43,24 @@ internal fun LazyListScope.part2DraftItems(drafts: Part2DraftList) {
     }
 }
 
-/** "Delete draft", which asks first: a draft is the officer's work and there is no undo. [onDelete] runs only after "Delete". */
+/**
+ * "Delete draft" (or whatever [label], [title] and [body] say, for a vault order), which asks first: it is the officer's work and there is
+ * no undo. [onDelete] runs only after "Delete".
+ */
 @Composable
-internal fun Part2DeleteButton(onDelete: () -> Unit) {
+internal fun Part2DeleteButton(
+    label: String = Part2Strings.deleteDraft,
+    title: String = Part2Strings.deleteTitle,
+    body: String = Part2Strings.deleteBody,
+    onDelete: () -> Unit,
+) {
     var asking by remember { mutableStateOf(false) }
-    TextButton(onClick = { asking = true }) { Text(Part2Strings.deleteDraft) }
+    TextButton(onClick = { asking = true }) { Text(label) }
     if (!asking) return
     AlertDialog(
         onDismissRequest = { asking = false },
-        title = { Text(Part2Strings.deleteTitle) },
-        text = { Text(Part2Strings.deleteBody) },
+        title = { Text(title) },
+        text = { Text(body) },
         confirmButton = {
             TextButton(onClick = {
                 asking = false

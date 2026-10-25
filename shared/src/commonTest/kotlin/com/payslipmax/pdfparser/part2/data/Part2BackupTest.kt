@@ -173,6 +173,35 @@ class Part2BackupTest {
         }
 
     @Test
+    fun aRestoreTellsTheCallerHowManyRowsItLeftOutSoTheOfficerCanBeTold() =
+        runTest {
+            // why: a skipped row is lost data (plan Phase 11 item 10); the restore must surface the count, not drop it.
+            val rows = listOf(Part2DraftBackup("bad-base64", "not base64 !!"), draftRow(draft("good", 1)), draftRow(draft("bad-key", 1), "some other password"))
+            val orders = listOf(Part2OrderBackup("junk-order", "!!"), orderRow(SyntheticPart2Drafts.order("o1")))
+            val bytes = archive(drafts = rows, orders = orders, pages = listOf(pageRow("p1", "ghost", 0, SyntheticPart2Drafts.jpeg(50))))
+
+            val report = targetService.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+
+            assertEquals(4, report.skipped, "two unreadable drafts, one unreadable order and one page whose order is nowhere")
+        }
+
+    @Test
+    fun aCleanRestoreSkipsNothing() =
+        runTest {
+            val bytes = archive(drafts = listOf(draftRow(draft("good", 1))), orders = listOf(orderRow(SyntheticPart2Drafts.order("o1"))))
+
+            assertEquals(0, targetService.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow().skipped)
+        }
+
+    @Test
+    fun aBackupFromBeforeThePartTwoRowsOrADeviceWithoutThemSkipsNothing() =
+        runTest {
+            val v4 = backupBytes(PortableBackup(4, listOf(goodEntity("08/2024")), emptyList(), null))
+
+            assertEquals(0, targetService.restore(v4, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow().skipped)
+        }
+
+    @Test
     fun aDeviceRowThatCannotBeReadIsLeftOutOfAnExportNotFatalToIt() =
         runTest {
             source.putDraft(draft("d1", 1))

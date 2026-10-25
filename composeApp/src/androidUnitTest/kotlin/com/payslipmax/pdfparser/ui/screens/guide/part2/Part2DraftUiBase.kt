@@ -21,6 +21,8 @@ import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideTab
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LeaveDraftViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LocalSlipPrinter
+import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.LocalPageImageDecoder
+import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.LocalPageScanner
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 import kotlinx.coroutines.runBlocking
 
@@ -41,7 +43,7 @@ abstract class Part2DraftUiBase : Part2UiBase() {
         unlocked: Boolean = true,
     ): GuideNavState {
         composeRule.setContent {
-            if (!locked) CompositionLocalProvider(LocalSlipPrinter provides printer) { GuideTab(nav, GuideAccess(unlocked, unlocked) { unlockTaps++ }, guide, search, platform, null, null, factory) }
+            if (!locked) CompositionLocalProvider(LocalSlipPrinter provides printer, LocalPageScanner provides scanner, LocalPageImageDecoder provides decoder) { GuideTab(nav, GuideAccess(unlocked, unlocked) { unlockTaps++ }, guide, search, platform, null, null, factory) }
         }
         settle()
         return nav

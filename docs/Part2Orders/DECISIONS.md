@@ -272,6 +272,29 @@ Owner answers, 2026-10-24 (asked after the 6a commits, one batch; each took the 
 
 The camera prompt text and the quality ladder (85 down to 40) stay as built; change them freely.
 
+## Round 20: Phase 6b, the vault UI (owner answers, 2026-10-25, asked at the start of phase 6b)
+
+Three things the plan did not settle were asked in one batch; the owner took the recommended option each time. The rest was settled by the plan and Rounds 5, 7, 10, 13, 14, 17, 18 and 19.
+
+| Topic | Decision |
+|---|---|
+| Where the vault is reached | A "Your published orders" section on the Part II home, under "Your drafts", with "Scan a published order" for an entitled officer. It shows for anyone who holds an order (so a lapsed officer still reaches view and delete). Orders can be scanned with no draft, which is the only way an officer who never drafted here gets a "last Part II order" line. "Add the published order" on a slip also scans. There is no separate Part2Vault level: the section is the vault, and `Part2Destination.Order(id)` is the one new level. |
+| Linking | Set once, when the order is scanned from a draft's slip. An order scanned from the vault stays unlinked. The order screen shows "Open the draft" while the draft exists; the slip lists its linked orders. No relinking. |
+| Grant order on a follow-up | The officer picks it: the grant box gains "Use an order from my vault", a list of numbered, dated orders (newest first). A pick fills both boxes, which stay editable. Nothing is filled in silently. Only the `grant` box has it (the Corps notification and the sanction signal are not vault orders). |
+
+Build-time choices made without a question (change them if you disagree):
+
+| Topic | Choice |
+|---|---|
+| Order no. and date | The draft form's own date box and the order-reference bound (`ORDER_NO_MAX` 40, plain text): a number with `<` or `>` is stored as typed and named, never quoted. Saved as typed (one write 300 ms after the last key, through one shared `AutoSaver`, which the draft form now also uses). |
+| Viewing a page | One page at a time, on request ("View page N" / "Hide page"). It is decrypted only inside the call that builds the picture, the bytes are zeroed when that call returns, and the picture is dropped on hide and when the screen leaves composition (the app lock included). Never to a file, the gallery or the clipboard. |
+| Delete | Asks first, like a draft. An order's delete removes its pages; a draft it came from is not touched. A single page cannot be deleted on its own (a bad scan means deleting the order and scanning again). |
+| A scan that saved nothing | Leaves no order: the empty order made for the pages is deleted, and an order a killed process left with no page and nothing typed is removed when the vault next opens. |
+| Lapsed Premium | Reads and deletes; cannot scan, add pages, type or change anything (the data layer stays ungated; the gate is in the host). |
+| What a scan says | Words for every outcome: needs a connection once (offline, a never-scanned phone), the scan did not work, order full (10 pages), vault full, partly saved with the count, order gone. A cancelled scan says nothing. |
+| Settings | One line, only above 60 MB (rounded up, with the 100 MB ceiling), in the Data management card. |
+| Restore | "Restore Complete! N items could not be restored." in the warning colour when Part II rows were left out. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

@@ -99,6 +99,11 @@ class GuideNavState(
         while ((current as? Part2Destination)?.draftId == id && pop()) Unit
     }
 
+    /** Leaves the vault order [id]'s screen, which the repository no longer holds. Levels of another order are left alone. */
+    fun cutOrder(id: String) {
+        while ((current as? Part2Destination)?.orderId == id && pop()) Unit
+    }
+
     val current: GuideDestination get() = stack.last()
 
     /** True when back has a Guide level to return to; false at Home, so Android back leaves the tab. */

@@ -61,4 +61,31 @@ class VaultOrdersTest {
         assertEquals("N/1", VaultOrders.lastOrder(listOf(long, markup, real))?.orderNo)
         assertNull(VaultOrders.lastOrder(listOf(long, markup)))
     }
+
+    @Test
+    fun aNumberOfExactlyTheLimitIsStillQuoted() {
+        val exact = order("a", "n".repeat(Part2Limits.ORDER_NO_MAX), CalendarDate(2026, 9, 9))
+        assertEquals(Part2Limits.ORDER_NO_MAX, VaultOrders.lastOrder(listOf(exact))?.orderNo?.length)
+    }
+
+    @Test
+    fun theOrdersAnOfficerCanQuoteAreListedNewestDateFirstWithTheLastEditedFirstOnATie() {
+        // why: the grant picker offers exactly what a slip could quote, in the order the officer is most likely to want.
+        val old = order("a", "N/1", CalendarDate(2025, 1, 1))
+        val sameDayEarlier = order("b", "N/2", CalendarDate(2026, 3, 1), updatedAt = 10)
+        val sameDayLater = order("c", "N/3", CalendarDate(2026, 3, 1), updatedAt = 20)
+        val unnumbered = order("d", null, CalendarDate(2026, 9, 9))
+        val markup = order("e", "N<5>", CalendarDate(2026, 9, 9))
+        assertEquals(
+            listOf("N/3", "N/2", "N/1"),
+            VaultOrders.quotable(listOf(old, sameDayEarlier, unnumbered, sameDayLater, markup)).map { it.orderNo },
+        )
+        assertEquals(emptyList(), VaultOrders.quotable(emptyList()))
+    }
+
+    @Test
+    fun theLastOrderIsTheFirstQuotableOne() {
+        val orders = listOf(order("a", "N/1", CalendarDate(2025, 1, 1)), order("b", "N/2", CalendarDate(2026, 1, 1)))
+        assertEquals(VaultOrders.quotable(orders).first(), VaultOrders.lastOrder(orders))
+    }
 }

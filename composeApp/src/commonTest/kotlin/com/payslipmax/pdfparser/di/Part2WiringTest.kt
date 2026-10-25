@@ -20,6 +20,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Drafting
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
 import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
+import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.koin.dsl.koinApplication
@@ -27,6 +28,7 @@ import org.koin.dsl.module
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertSame
 
 /**
@@ -91,6 +93,7 @@ class Part2WiringTest {
         assertSame(koin.get<Part2LookupViewModel>(), models.lookup)
         assertSame(koin.get<Part2DraftsViewModel>(), models.drafts)
         assertSame(koin.get<Part2Drafting>(), models.drafting)
+        assertSame(koin.get<VaultViewModel>(), models.vault)
         assertSame(models, koin.get<Part2Models>())
         assertEquals(null, models.drafting.open("any-id"), "the Guide has not loaded, so there is nothing to draft from and no model")
     }
@@ -108,6 +111,18 @@ class Part2WiringTest {
             assertEquals(SyntheticPart2Drafts.fullDraft("wired"), repository.draft("wired"))
             partDao.deleteDraft("wired")
         }
+
+    @Test
+    fun theVaultModelIsBoundOnceOverTheSameRepositoryAndTheShippedEncoderAndOnlyWhereTheFeatureIsEnabled() {
+        // why: the vault list and every open order must see one repository, or a scan in one place would not show in the other.
+        val guide = module { single { GuideViewModel(FakeGuideRepository(), FakeCrashReporter()) } }
+        val on = koinApplication { modules(part2Module, leaves, guide) }.koin
+        assertSame(on.get<VaultViewModel>(), on.get<VaultViewModel>())
+        assertNotNull(on.get<PageEncoder>())
+
+        val production = koinApplication { modules(appKoinModules(platformModules = listOf(leaves))) }.koin
+        assertEquals(isPart2Enabled(), production.getOrNull<VaultViewModel>() != null)
+    }
 
     @Test
     fun theProductionBackupServiceCarriesTheVault() =

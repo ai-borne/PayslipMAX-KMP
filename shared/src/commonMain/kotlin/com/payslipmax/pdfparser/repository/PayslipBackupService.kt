@@ -95,7 +95,7 @@ class PayslipBackupService(
         backupBytes: ByteArray,
         password: String,
         mode: RestoreMode = RestoreMode.REPLACE,
-    ): Result<Unit> =
+    ): Result<RestoreReport> =
         withContext(dispatcher) {
             try {
                 val decryptResult = CryptoHelper.decrypt(PageArchive.metaOf(backupBytes) ?: backupBytes, password)
@@ -157,7 +157,7 @@ class PayslipBackupService(
                 }
 
                 rebuildDerivedData()
-                Result.success(Unit)
+                Result.success(RestoreReport(part2?.skipped ?: 0))
             } catch (e: Exception) {
                 Result.failure(e)
             }

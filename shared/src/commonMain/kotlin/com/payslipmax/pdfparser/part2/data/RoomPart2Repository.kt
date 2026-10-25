@@ -62,6 +62,17 @@ class RoomPart2Repository
         override fun observeOrders(): Flow<StoredPart2<VaultOrder>> =
             dao.observeOrders().map { rows -> read(rows) { it.toOrder(key()) }.let { (items, bad) -> StoredPart2(items.sortedByDescending { it.updatedAt }, bad) } }.flowOn(dispatcher)
 
+        override suspend fun order(id: String): VaultOrder? =
+            withContext(dispatcher) {
+                dao.order(id)?.let { row ->
+                    try {
+                        row.toOrder(key())
+                    } catch (e: Part2UnreadableException) {
+                        null
+                    }
+                }
+            }
+
         override suspend fun saveOrder(order: VaultOrder): Part2WriteResult =
             withContext(dispatcher) {
                 Part2Bounds.check(order) ?: try {

@@ -48,7 +48,7 @@ fun PayslipViewModel.importBackup(
     backupBytes: ByteArray,
     password: String,
     mode: com.payslipmax.pdfparser.repository.RestoreMode,
-    onComplete: (Result<Unit>) -> Unit,
+    onComplete: (Result<com.payslipmax.pdfparser.repository.RestoreReport>) -> Unit,
 ) {
     viewModelScope.launch {
         _uiState.update { it.copy(isLoading = true) }

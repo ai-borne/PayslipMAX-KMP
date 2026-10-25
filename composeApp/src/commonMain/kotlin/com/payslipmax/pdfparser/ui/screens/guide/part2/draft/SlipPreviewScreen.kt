@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListPadding
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListSpacing
+import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.SlipOrders
+import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.SlipOrdersSection
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimQuietText
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
@@ -29,6 +31,7 @@ internal fun SlipPreviewScreen(
     state: LeaveDraftUiState,
     canEdit: Boolean,
     actions: SlipPreviewActions,
+    orders: SlipOrders,
     onBack: () -> Unit,
     listState: LazyListState,
 ) {
@@ -46,6 +49,7 @@ internal fun SlipPreviewScreen(
                 if (slip.findings.isNotEmpty()) item(key = "findings") { FindingsView(slip, actions.onTick) }
                 if (slip.undrafted.isNotEmpty()) item(key = "undrafted") { UndraftedView(slip.undrafted) }
                 item(key = "print") { SlipPrintSection(slip, state.printing, canEdit, actions.onPrint, actions.onHrms) }
+                item(key = "orders") { SlipOrdersSection(orders) }
             }
             item(key = "actions") { SlipActions(canEdit, actions.onEdit, actions.onDelete) }
         }
@@ -60,6 +64,6 @@ private fun SlipActions(
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
         if (canEdit) Button(onClick = onEdit) { Text(Part2Strings.editDraft) }
-        Part2DeleteButton(onDelete)
+        Part2DeleteButton(onDelete = onDelete)
     }
 }

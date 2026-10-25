@@ -42,6 +42,9 @@ interface Part2Repository {
 
     fun observeOrders(): Flow<StoredPart2<VaultOrder>>
 
+    /** The order, or null when there is none or it cannot be read. */
+    suspend fun order(id: String): VaultOrder?
+
     suspend fun saveOrder(order: VaultOrder): Part2WriteResult
 
     /** Deletes the order and all its pages in one step. */

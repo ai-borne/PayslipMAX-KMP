@@ -20,10 +20,11 @@ import com.payslipmax.pdfparser.ui.theme.Part2Strings
 internal fun RequestSectionView(
     section: RequestSection,
     actions: LeaveDraftActions,
+    grants: List<GrantChoiceUi>,
 ) {
     PreClaimSectionFrame(title = section.title, help = section.name) {
         section.questions.forEach { QuestionView(section.index, it, actions) }
-        section.fields.forEach { FieldView(section.index, it, actions) }
+        section.fields.forEach { FieldView(section.index, it, actions, grants) }
         if (section.removable) TextButton(onClick = { actions.onRemove(section.index) }) { Text(Part2Strings.removeOccurrence) }
     }
 }

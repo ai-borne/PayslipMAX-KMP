@@ -51,7 +51,7 @@ class LeaveDraftViewModel(
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val builder = LeaveDraftStateBuilder(section, rules, localOffset)
     private val offered = Part2LookupIndex(section).draftOptions().map { it.code }.toSet()
-    private val saver = DraftSaver(scope, dispatcher, repository, ::pendingDraft, ::publish)
+    private val saver = AutoSaver(scope, dispatcher, ::pendingDraft, repository::saveDraft, { repository.deleteDraft(id) }, ::publish)
 
     // Atomic, because the officer's edits (main thread) and a prefill (background) both change it.
     private val answers = MutableStateFlow(start ?: LeaveEventInput(emptyList()))
@@ -59,6 +59,7 @@ class LeaveDraftViewModel(
     private var loaded = start != null
     private var createdAt: Long? = null
     private var lastOrder: OrderRef? = null
+    private var grants: List<OrderRef> = emptyList()
     private var acked: Set<String> = emptySet()
     private var closed = false
 
@@ -73,6 +74,7 @@ class LeaveDraftViewModel(
         if (!loaded) scope.launch { load() }
         scope.launch {
             repository.observeOrders().collect {
+                grants = VaultOrders.quotable(it.items)
                 lastOrder = VaultOrders.lastOrder(it.items)
                 if (loaded) publish()
             }
@@ -206,7 +208,7 @@ class LeaveDraftViewModel(
     /** Deletes the draft for good; a change still waiting to be saved is dropped, never written back. [onDone] runs once it is gone. */
     fun delete(onDone: () -> Unit) {
         closed = true
-        saver.delete(id, onDone)
+        saver.delete(onDone)
     }
 
     /** Leaves the form: a change still waiting is written at once, then the model stops. */
@@ -245,14 +247,14 @@ class LeaveDraftViewModel(
         return Part2Draft(id, saved, builder.templateRevs(saved), created, stamp, printed)
     }
 
-    private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saver.failed, printed, prints.printing)
+    private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saver.failed, printed, prints.printing, grants)
 
     private fun publish() {
         _state.value = derive()
     }
 
     companion object {
-        /** The pause after the last change before the draft is written (see [DraftSaver]). */
-        const val AUTOSAVE_DELAY_MS = DraftSaver.PAUSE_MS
+        /** The pause after the last change before the draft is written (see [AutoSaver]). */
+        const val AUTOSAVE_DELAY_MS = AutoSaver.PAUSE_MS
     }
 }

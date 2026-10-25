@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.testing
 import com.payslipmax.pdfparser.part2.pages.PageScan
 import com.payslipmax.pdfparser.part2.pages.PageScanner
 import com.payslipmax.pdfparser.part2.pages.ScannedPage
+import kotlinx.coroutines.CompletableDeferred
 
 /**
  * A [ScannedPage] over bytes in memory that records whether it was discarded and how often it was read. [readable] false makes [read] answer
@@ -32,7 +33,7 @@ class FakeScannedPage(
     }
 }
 
-/** A [PageScanner] that answers [next], records the page limits it was asked for and how often leftovers were discarded: no screen, no platform. */
+/** A [PageScanner] that answers [next] (once [gate] is open, when set), records the page limits it was asked for and how often leftovers were discarded: no screen, no platform. */
 class FakePageScanner(
     var next: PageScan = PageScan.Cancelled,
 ) : PageScanner {
@@ -40,8 +41,12 @@ class FakePageScanner(
     var leftoversDiscarded = 0
         private set
 
+    /** When set, [scan] stays open until it is completed, so a test can look at the screen while a scan is in flight. */
+    var gate: CompletableDeferred<Unit>? = null
+
     override suspend fun scan(maxPages: Int): PageScan {
         limits += maxPages
+        gate?.await()
         return next
     }
 

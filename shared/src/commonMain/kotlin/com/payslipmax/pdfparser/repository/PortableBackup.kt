@@ -58,6 +58,11 @@ enum class RestoreMode {
     MERGE,
 }
 
+/** What a restore did besides succeed: how many Part II rows it left out (unreadable, oversized, surplus or orphaned), so the officer can be told. */
+class RestoreReport(
+    val skipped: Int,
+)
+
 /**
  * Thrown when a backup was written by a newer app than this one. Its message is shown to the user as the
  * restore error, so it says what to do.

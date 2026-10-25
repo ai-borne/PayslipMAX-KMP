@@ -8,6 +8,7 @@ import com.payslipmax.pdfparser.rating.currentTimeMillis
 import com.payslipmax.pdfparser.ui.screens.guide.GuideUiState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlin.uuid.ExperimentalUuidApi
@@ -43,9 +44,10 @@ class Part2Drafting
         }
     }
 
-/** The models the Guide's Part II levels draw from: the lookup, the drafts list and the maker of one draft. Plain holder, no logic. */
+/** The models the Guide's Part II levels draw from: the lookup, the drafts list, the maker of one draft and the vault. Plain holder, no logic. */
 class Part2Models(
     val lookup: Part2LookupViewModel,
     val drafts: Part2DraftsViewModel,
     val drafting: Part2Drafting,
+    val vault: VaultViewModel,
 )

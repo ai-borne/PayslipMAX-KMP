@@ -105,5 +105,5 @@ private fun SlipLevel(
             onPrint = { model.print(host.printer) },
             onHrms = { navState.push(Part2Destination.Hrms(id)) },
         )
-    SlipPreviewScreen(state, canEdit = host.draftEntry == Part2DraftEntry.OPEN, actions = actions, onBack = { navState.pop() }, listState = listState)
+    SlipPreviewScreen(state, canEdit = host.draftEntry == Part2DraftEntry.OPEN, actions = actions, orders = rememberSlipOrders(navState, host, id), onBack = { navState.pop() }, listState = listState)
 }

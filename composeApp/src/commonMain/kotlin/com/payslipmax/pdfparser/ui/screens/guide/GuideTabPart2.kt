@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,9 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.part2.pages.PageScanner
 import com.payslipmax.pdfparser.part2.print.SlipPrinter
 import com.payslipmax.pdfparser.ui.components.AccentStripeCard
 import com.payslipmax.pdfparser.ui.components.AccentStripeCardShape
+import com.payslipmax.pdfparser.ui.platform.rememberPageScanner
 import com.payslipmax.pdfparser.ui.platform.rememberSlipPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2CaseScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2CodeScreen
@@ -34,10 +37,11 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.DraftsUiState
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LocalSlipPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftActions
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftList
-import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
 import com.payslipmax.pdfparser.ui.screens.guide.part2.part2DraftEntry
 import com.payslipmax.pdfparser.ui.screens.guide.part2.part2Entry
+import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.LocalPageScanner
+import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultOrderViewModel
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
@@ -46,14 +50,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 /**
  * The Guide's side of Part II Orders. [entry] is what the Guide Home row follows (HIDDEN while the dark-launch flag is off or the bundle
  * ships no Part II section, so nothing is hidden, it is absent). [models] are the lookup, the drafts list and the maker of one draft,
- * null exactly when the entry is hidden. [draftEntry] is what drafting shows this user (see [part2DraftEntry]); [onUnlock] opens the upgrade sheet.
+ * null exactly when the entry is hidden. [draftEntry] is what drafting shows this user (see [part2DraftEntry]); [canCapture] is whether they may scan
+ * an order or add pages (the entitlement; reading and deleting stay open, Round 13); [onUnlock] opens the upgrade sheet.
  */
 internal class Part2Host(
     val entry: Part2Entry,
     val models: Part2Models?,
     val draftEntry: Part2DraftEntry,
+    val canCapture: Boolean,
     val onUnlock: () -> Unit,
     val printer: SlipPrinter,
+    val scanner: PageScanner?,
 ) {
     val model: Part2LookupViewModel? get() = models?.lookup
 
@@ -76,6 +83,24 @@ internal class Part2Host(
     }
 }
 
+/**
+ * Scans a published order in, linked to [draftId] (null from the vault). Only an entitled officer can ([Part2Host.canCapture]): the vault's
+ * list and delete are ungated (Round 13), capture is not. [onSaved] runs on the vault model's dispatcher with the new order's id; a screen hops to its own.
+ */
+internal fun Part2Host.scanOrder(
+    draftId: String?,
+    onSaved: (orderId: String) -> Unit,
+) {
+    val scanner = scanner ?: return
+    if (canCapture) models?.vault?.addOrder(draftId, scanner, onSaved)
+}
+
+/** Scans more pages into the open order, for an entitled officer only. */
+internal fun Part2Host.addPages(order: VaultOrderViewModel) {
+    val scanner = scanner ?: return
+    if (canCapture) order.addPages(scanner)
+}
+
 /** Builds the [Part2Host]. A null [factory] is the flag being off, and then the models are never made. */
 @Composable
 internal fun rememberPart2Host(
@@ -87,7 +112,11 @@ internal fun rememberPart2Host(
     val models = remember(entry) { if (entry == Part2Entry.OPEN) factory?.invoke() else null }
     val none = remember { MutableStateFlow(DraftsUiState.Empty) }
     val drafts by (models?.drafts?.state ?: none).collectAsState()
-    return Part2Host(entry, models, part2DraftEntry(access.part2Unlocked, drafts.hasAny), access.onUnlock, LocalSlipPrinter.current ?: rememberSlipPrinter())
+    val scanner = if (models != null) LocalPageScanner.current ?: rememberPageScanner() else null
+    // The Guide leaving the screen (the app lock included) clears any page a killed scan left in the scanner's cache.
+    DisposableEffect(scanner) { onDispose { scanner?.discardLeftovers() } }
+    val printer = LocalSlipPrinter.current ?: rememberSlipPrinter()
+    return Part2Host(entry, models, part2DraftEntry(access.part2Unlocked, drafts.hasAny), access.part2Unlocked, access.onUnlock, printer, scanner)
 }
 
 /** The Guide Home row that opens Part II. */
@@ -130,12 +159,13 @@ internal fun GuidePart2Level(
     val onBack: () -> Unit = { navState.pop() }
     val onOpenCode: (String) -> Unit = { navState.push(Part2Destination.Code(it)) }
     when (destination) {
-        Part2Destination.Home -> Part2HomeRoute(navState, model, host.models?.drafts, listState)
+        Part2Destination.Home -> Part2HomeRoute(navState, model, host, listState)
         is Part2Destination.Ribbon ->
             model.ribbon(destination.ribbonId)?.let { Part2RibbonScreen(it, onBack, { id -> navState.push(Part2Destination.Case(id)) }, listState) } ?: GuideLoading()
         is Part2Destination.Case -> model.case(destination.caseId)?.let { Part2CaseScreen(it, onBack, onOpenCode, Part2DraftActions(host.draftEntry) { code -> host.startDraft(navState, code) }, listState) } ?: GuideLoading()
         is Part2Destination.Code -> model.code(destination.code)?.let { Part2CodeScreen(it, onBack, listState) } ?: GuideLoading()
         Part2Destination.Locked, is Part2Destination.Draft, is Part2Destination.Slip, is Part2Destination.Hrms -> Part2DraftLevel(navState, host, destination, listState)
+        is Part2Destination.Order -> Part2OrderLevel(navState, host, destination, listState)
     }
 }
 
@@ -143,11 +173,14 @@ internal fun GuidePart2Level(
 private fun Part2HomeRoute(
     navState: GuideNavState,
     model: Part2LookupViewModel,
-    drafts: Part2DraftsViewModel?,
+    host: Part2Host,
     listState: LazyListState,
 ) {
+    val drafts = host.models?.drafts
     val none = remember { MutableStateFlow(DraftsUiState.Empty) }
     val saved by (drafts?.state ?: none).collectAsState()
+    // The vault opens with the Part II home: clear what a killed scan left behind (a page in the scanner's cache, an order with no page).
+    LaunchedEffect(host.scanner) { host.scanner?.let { host.models?.vault?.opened(it) } }
     val query by model.query.collectAsState()
     val ribbons = remember(model) { model.ribbons() }
     val result = remember(query, model) { model.search(query) }
@@ -160,6 +193,7 @@ private fun Part2HomeRoute(
         onOpenCode = { navState.push(Part2Destination.Code(it)) },
         onBack = { navState.pop() },
         drafts = Part2DraftList(saved, onOpen = { navState.push(Part2Destination.Slip(it)) }, onDelete = { drafts?.delete(it) }),
+        vault = rememberVaultList(navState, host),
         listState = listState,
     )
 }

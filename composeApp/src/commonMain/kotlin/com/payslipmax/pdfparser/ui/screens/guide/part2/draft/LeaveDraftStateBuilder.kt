@@ -12,6 +12,7 @@ import com.payslipmax.pdfparser.part2.domain.LeaveEventEditor
 import com.payslipmax.pdfparser.part2.domain.LeaveEventInput
 import com.payslipmax.pdfparser.part2.domain.LeaveFormPlanner
 import com.payslipmax.pdfparser.part2.domain.OccurrenceRequest
+import com.payslipmax.pdfparser.part2.domain.OrderRef
 import com.payslipmax.pdfparser.part2.domain.Part2DraftEngine
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.part2.domain.Part2LookupIndex
@@ -26,6 +27,7 @@ import com.payslipmax.pdfparser.part2.domain.RuleSeverity
 import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
+import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
 import com.payslipmax.pdfparser.utils.localUtcOffsetMillis
 
 /**
@@ -50,6 +52,7 @@ internal class LeaveDraftStateBuilder(
         saveFailed: Boolean,
         printed: PrintedSnapshot? = null,
         printing: Boolean = false,
+        grants: List<OrderRef> = emptyList(),
     ): LeaveDraftUiState {
         val sections = event.requests.mapIndexed { i, request -> section(i, request, event.requests.size) }
         val result = engine.draft(event)
@@ -63,6 +66,7 @@ internal class LeaveDraftStateBuilder(
             saveFailed = saveFailed,
             printed = printed?.let { printedUi(it, drafted, templateRevs(event)) },
             printing = printing,
+            grants = grants.map { GrantChoiceUi(it.orderNo, it.date, Part2VaultStrings.grantChoice(it.orderNo, format(it.date))) },
         )
     }
 

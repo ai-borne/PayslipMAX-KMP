@@ -99,6 +99,20 @@ abstract class Part2RepositoryContractTest {
         }
 
     @Test
+    fun anOrderIsReadBackByIdAndAMissingOneIsNull() =
+        runTest {
+            val repo = repository()
+            repo.saveOrder(SyntheticPart2Drafts.order("o-1", orderNo = "N/1"))
+            repo.saveOrder(SyntheticPart2Drafts.order("o-2", orderNo = "N/2"))
+
+            assertEquals(SyntheticPart2Drafts.order("o-2", orderNo = "N/2"), repo.order("o-2"))
+            assertNull(repo.order("missing"))
+            repo.deleteOrder("o-2")
+            assertNull(repo.order("o-2"))
+            assertNotNull(repo.order("o-1"))
+        }
+
+    @Test
     fun pagesKeepTheirOrderAndANewPageNeverTakesAPositionAlreadyUsed() =
         runTest {
             val repo = repository().withOrder()

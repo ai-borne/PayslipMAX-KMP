@@ -25,6 +25,12 @@ class FakePart2Repository(
     private val orders = MutableStateFlow<Map<String, VaultOrder>>(emptyMap())
     private val pages = MutableStateFlow<Map<String, Pair<VaultPageRef, ByteArray>>>(emptyMap())
 
+    /** When set, [saveOrder] answers this and stores nothing, as a full device would. */
+    var orderWriteResult: Part2WriteResult? = null
+
+    /** How many orders [observeOrders] reports as unreadable (on disk, never listed), as after the device key was lost. */
+    var unreadableOrders = 0
+
     override fun observeDrafts(): Flow<StoredPart2<Part2Draft>> = drafts.map { StoredPart2(it.values.sortedByDescending(Part2Draft::updatedAt)) }
 
     override suspend fun draft(id: String): Part2Draft? = drafts.value[id]
@@ -40,9 +46,12 @@ class FakePart2Repository(
         drafts.value = drafts.value - id
     }
 
-    override fun observeOrders(): Flow<StoredPart2<VaultOrder>> = orders.map { StoredPart2(it.values.sortedByDescending(VaultOrder::updatedAt)) }
+    override fun observeOrders(): Flow<StoredPart2<VaultOrder>> = orders.map { StoredPart2(it.values.sortedByDescending(VaultOrder::updatedAt), unreadableOrders) }
+
+    override suspend fun order(id: String): VaultOrder? = orders.value[id]
 
     override suspend fun saveOrder(order: VaultOrder): Part2WriteResult {
+        orderWriteResult?.let { return it }
         Part2Bounds.check(order)?.let { return it }
         if (order.id !in orders.value && orders.value.size >= Part2Limits.ORDERS_MAX) return Part2WriteResult.TOO_MANY
         orders.value = orders.value + (order.id to order)

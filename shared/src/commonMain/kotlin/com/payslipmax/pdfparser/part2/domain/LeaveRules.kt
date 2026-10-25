@@ -28,7 +28,9 @@ object LeaveRules {
     private const val LEAVE_TO = "leave_to"
     private const val PREFIX_FIRST = "prefix_first"
     private const val SUFFIX_LAST = "suffix_last"
-    private const val GRANT = "grant"
+
+    /** The slot a follow-up order (an extension, a rejoining, a recall) quotes its grant order in: the one reference the form offers from the vault. */
+    const val GRANT = "grant"
 
     /** Leave a casual leave may not be combined with. This batch holds the annual set; the rest of Chapter 5 joins it with its templates. */
     private val otherLeave = setOf("GTDAL", "GTDALCF", "EXTNAL")

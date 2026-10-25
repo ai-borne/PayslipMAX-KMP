@@ -34,7 +34,7 @@ internal fun LeaveDraftScreen(
     Column(modifier = Modifier.fillMaxSize()) {
         ScreenBackHeader(title = Part2Strings.formTitle, subtitle = Part2Strings.formSubtitle, onBack = onBack)
         LazyColumn(state = listState, modifier = Modifier.fillMaxSize(), contentPadding = Part2ListPadding, verticalArrangement = Part2ListSpacing) {
-            items(state.sections, key = { it.index }) { RequestSectionView(it, actions) }
+            items(state.sections, key = { it.index }) { RequestSectionView(it, actions, state.grants) }
             item(key = "add") { AddOccurrenceView(state.addable, actions.onAdd) }
             item(key = "footer") { LeaveDraftFooter(state, onSeeSlip) }
         }

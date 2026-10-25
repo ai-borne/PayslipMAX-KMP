@@ -12,6 +12,8 @@ import com.payslipmax.pdfparser.part2.domain.Part2SearchResult
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftList
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.part2DraftItems
+import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.Part2VaultList
+import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.part2VaultItems
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 
@@ -30,6 +32,7 @@ internal fun Part2HomeScreen(
     onOpenCode: (String) -> Unit,
     onBack: () -> Unit,
     drafts: Part2DraftList,
+    vault: Part2VaultList,
     listState: LazyListState,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -44,6 +47,7 @@ internal fun Part2HomeScreen(
             if (result == Part2SearchResult.Idle) {
                 item(key = "hint") { Part2Message(Part2Strings.searchHint) }
                 part2DraftItems(drafts)
+                part2VaultItems(vault)
                 items(ribbons, key = { it.id }) { Part2TileView(it.title, GuideStrings.topicCount(it.caseCount)) { onOpenRibbon(it.id) } }
             } else {
                 part2SearchItems(result, onOpenCode)

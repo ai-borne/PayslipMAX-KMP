@@ -50,6 +50,13 @@ data class RequestSection(
     val removable: Boolean,
 )
 
+/** A vault order the officer can quote as the grant: its [orderNo] and [date] as the boxes take them, and its [label] already worded. */
+data class GrantChoiceUi(
+    val orderNo: String,
+    val date: CalendarDate,
+    val label: String,
+)
+
 /** A code the officer can add to the event. */
 data class AddOption(val code: String, val name: String)
 
@@ -101,6 +108,7 @@ data class LeaveDraftUiState(
     val saveFailed: Boolean,
     val printed: PrintedUi? = null,
     val printing: Boolean = false,
+    val grants: List<GrantChoiceUi> = emptyList(),
 ) {
     /** Hides every answer, like the draft itself. */
     override fun toString(): String = "LeaveDraftUiState($status, sections=${sections.size})"
