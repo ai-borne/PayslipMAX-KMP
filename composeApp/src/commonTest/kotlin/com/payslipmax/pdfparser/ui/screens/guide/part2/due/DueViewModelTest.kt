@@ -1,25 +1,16 @@
 package com.payslipmax.pdfparser.ui.screens.guide.part2.due
 
-import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.data.StoredPart2
 import com.payslipmax.pdfparser.part2.domain.LeaveEventInput
 import com.payslipmax.pdfparser.part2.domain.OccurrenceRequest
 import com.payslipmax.pdfparser.part2.domain.Part2Draft
 import com.payslipmax.pdfparser.part2.domain.ReminderKind
-import com.payslipmax.pdfparser.part2.domain.ReminderPlanner
 import com.payslipmax.pdfparser.part2.domain.SlotValue
-import com.payslipmax.pdfparser.testing.FakeCrashReporter
-import com.payslipmax.pdfparser.testing.FakeGuideRepository
-import com.payslipmax.pdfparser.testing.SyntheticPart2Templates
-import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
-import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
 import com.payslipmax.pdfparser.ui.theme.Part2DueStrings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -175,11 +166,7 @@ class DueViewModelTest : DueTestBase() {
                 object : Part2Repository by repo {
                     override fun observeDrafts(): Flow<StoredPart2<Part2Draft>> = repo.observeDrafts().map { StoredPart2(it.items, unreadable = 1) }
                 }
-            val dispatcher = StandardTestDispatcher(testScheduler)
-            val guide = GuideViewModel(FakeGuideRepository(GuideLoadResult.Loaded(SyntheticPart2Templates.bundle())), FakeCrashReporter(), dispatcher)
-            val drafts = Part2DraftsViewModel(guide, unreadableDrafts, dispatcher) { india }
-            val vm = DueViewModel(unreadableDrafts, drafts, ReminderPlanner { india }, { at(date(10, 12)) }, dispatcher)
-            backgroundScope.launch(dispatcher) { vm.state.collect { } }
+            val vm = dueOver(unreadableDrafts, at(date(10, 12)))
             advanceUntilIdle()
             assertTrue(vm.state.value.unreadable)
         }

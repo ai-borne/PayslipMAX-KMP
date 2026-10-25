@@ -14,8 +14,8 @@ import com.payslipmax.pdfparser.part2.domain.VaultOrder
 
 /**
  * Invented drafts, orders and pages for storage tests: invented codes, dates and order numbers only, never anything from a real order.
- * [fullDraft] carries one value of every kind (date, number, text, order reference), both kinds of answer and a last order, so a
- * round trip that loses any of them fails.
+ * [fullDraft] carries one value of every kind (date, number, text, order reference), both kinds of answer, a last order and two dismissed
+ * reminders, so a round trip that loses any of them fails.
  */
 object SyntheticPart2Drafts {
     const val MARKER_TEXT = "synthetic-remark-zq9"
@@ -50,6 +50,7 @@ object SyntheticPart2Drafts {
             templateRevs = mapOf("SYNCODE1" to "a1b2c3d4", "SYNCODE2" to "e5f6a7b8"),
             createdAt = updatedAt - 1000,
             updatedAt = updatedAt,
+            dismissed = setOf("return", "year-end-2026"),
         )
 
     /** A print snapshot with every column of a row filled and one row with none, so a round trip that loses a column or a null fails. */

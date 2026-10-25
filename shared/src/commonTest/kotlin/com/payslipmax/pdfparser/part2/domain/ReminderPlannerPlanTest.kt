@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.domain
 
+import com.payslipmax.pdfparser.calendar.CivilCalendar
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -12,11 +13,18 @@ import kotlin.test.assertTrue
 class ReminderPlannerPlanTest : ReminderTestBase() {
     private val printed = at(date(2026, 9, 20))
 
+    /** A one-day leave on [lastDay] of October (returns the next day). Leaves on adjacent days would take each other over, so tests that need many use [spaced]. */
     private fun returning(
         id: String,
         lastDay: Int,
         month: Int = 10,
-    ) = draft(id, request("GTDAL", on("leave_from", date(2026, month, 1)), on("leave_to", date(2026, month, lastDay))), printedAt = printed)
+    ) = draft(id, request("GTDAL", on("leave_from", date(2026, month, lastDay)), on("leave_to", date(2026, month, lastDay))), printedAt = printed)
+
+    /** The one-day leave number [n]: three days after the one before, so none touches another and each returns on its own day (1 Oct + 3n + 1). */
+    private fun spaced(n: Int): Part2Draft {
+        val day = CivilCalendar.fromDayNumber(CivilCalendar.dayNumber(date(2026, 10, 1)) + 3L * n)!!
+        return draft(numbered(n), request("GTDAL", on("leave_from", day), on("leave_to", day)), printedAt = printed)
+    }
 
     private fun numbered(number: Int) = "d${number.toString().padStart(2, '0')}"
 
@@ -41,7 +49,7 @@ class ReminderPlannerPlanTest : ReminderTestBase() {
 
     @Test
     fun onlyTheNearestTwentyUpcomingAreKeptAndTheyAreTheNearest() {
-        val drafts = (1..30).map { returning(numbered(it), lastDay = it) }
+        val drafts = (1..30).map(::spaced)
         val upcoming = planOf(drafts, now = printed).upcoming
         assertEquals(20, upcoming.size)
         assertEquals((1..20).map { "return:${numbered(it)}" }, upcoming.map { it.key })
@@ -49,8 +57,9 @@ class ReminderPlannerPlanTest : ReminderTestBase() {
 
     @Test
     fun theCapCountsOnlyWhatIsComingNotWhatIsDue() {
-        val drafts = (1..30).map { returning(numbered(it), lastDay = it) } + (1..5).map { returning("n$it", lastDay = it, month = 11) }
-        val plan = planOf(drafts, now = at(date(2026, 10, 13)))
+        val drafts = (1..40).map(::spaced)
+        // Just after the twelfth return day (1 Oct + 3 x 12 + 1): twelve are due, twenty-eight are coming, and only twenty of those are kept.
+        val plan = planOf(drafts, now = at(date(2026, 11, 7)))
         assertEquals(12, plan.due.size)
         assertEquals(20, plan.upcoming.size)
     }

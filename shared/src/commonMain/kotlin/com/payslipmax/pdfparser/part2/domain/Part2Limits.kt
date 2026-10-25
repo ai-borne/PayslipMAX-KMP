@@ -30,6 +30,9 @@ object Part2Limits {
     const val REV_MAX = 16
     const val ID_MAX = 64
 
+    /** Reminders one draft can have dismissed: a return, an add-the-order series and a year end for each leave year, with room to spare. Each is a plain token (`ReminderTask`). */
+    const val DISMISSED_MAX = 32
+
     /** Template revisions kept with a draft: the requested codes plus every linked template that was drafted. */
     const val REVS_MAX = 64
 

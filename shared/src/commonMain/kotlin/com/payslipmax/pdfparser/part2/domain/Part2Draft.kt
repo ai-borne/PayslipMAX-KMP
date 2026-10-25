@@ -6,7 +6,8 @@ import com.payslipmax.pdfparser.calendar.CalendarDate
  * A leave draft as the officer left it: their [event] (the requests, answers and last order they typed) and the template revision each
  * drafted code had ([templateRevs], by code), so a later template change can be told from the officer's own. Never rendered text, except
  * [printed]: the rows as the clerk was last handed them, kept to tell a later edit from what was printed.
- * [toString] hides everything: a draft's dates, codes and order numbers must not reach a log through a string template.
+ * [dismissed] names the reminders the officer chose to stop seeing for this draft (`ReminderTask`); a completed print clears them, because a print
+ * starts the reminders afresh. [toString] hides everything: a draft's dates, codes and order numbers must not reach a log through a string template.
  */
 data class Part2Draft(
     val id: String,
@@ -16,6 +17,7 @@ data class Part2Draft(
     val updatedAt: Long,
     val printed: PrintedSnapshot? = null,
     val pairedWith: String? = null,
+    val dismissed: Set<String> = emptySet(),
 ) {
     override fun toString(): String = "Part2Draft(requests=${event.requests.size})"
 }

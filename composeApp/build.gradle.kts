@@ -121,6 +121,11 @@ kotlin {
                 implementation("androidx.compose.ui:ui-test-manifest:1.9.4")
                 // Module.verify() reflects over constructors, so it is JVM-only; never on a release classpath.
                 implementation(libs.koin.test)
+                // The Due screens' test over the real encrypted repository opens the production database (Phase 11 item 36). Test classpath only:
+                // `shared` already ships Room, so nothing is added to the app.
+                implementation(libs.androidx.room.runtime)
+                implementation(libs.androidx.sqlite.bundled)
+                implementation("androidx.test:core:1.6.1")
             }
         }
 

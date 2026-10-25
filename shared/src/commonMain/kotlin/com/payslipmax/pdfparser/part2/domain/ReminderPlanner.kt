@@ -19,6 +19,9 @@ class ReminderPlanner(
     /** One reminder with the number of the day it falls on, counted as `CivilCalendar.dayNumber` counts. */
     private class Dated(val reminder: Reminder, val day: Long)
 
+    /** A leave as far as another leave's return is concerned: its first day and the day the officer returns, counted as days. */
+    private class Span(val from: Long, val back: Long)
+
     /** The reminders one cause gives, in date order, and the instant the last of them stops being due (null: it stays until answered). */
     private class Series(val events: List<Dated>, val endsAt: Long? = null)
 
@@ -33,11 +36,13 @@ class ReminderPlanner(
         val requests = live.flatMap { it.event.requests }
         val rejoined = requests.mapNotNull(ReminderRules::rejoinDay)
         val answeredYears = requests.mapNotNull(ReminderRules::yearEndYear).toSet()
+        val dismissed = live.flatMapTo(HashSet()) { it.dismissed }
         val printed = live.filter { it.printed != null }
+        val spans = printed.flatMap { draft -> draft.event.requests.mapNotNull(::span) }
         val series =
-            printed.mapNotNull { returnSeries(it, rejoined) } +
+            printed.mapNotNull { returnSeries(it, rejoined, spans) } +
                 printed.mapNotNull { addOrderSeries(it, ordersOf[it.id].orEmpty()) } +
-                yearEndSeries(printed, answeredYears)
+                yearEndSeries(printed, answeredYears, dismissed)
         return classify(series, nowMillis)
     }
 
@@ -62,17 +67,30 @@ class ReminderPlanner(
         )
     }
 
-    /** "Draft the rejoining slip" on the day the officer returns, until a rejoining falls between the leave's first day and that day. */
+    private fun span(request: OccurrenceRequest): Span? {
+        val from = ReminderRules.leaveFrom(request) ?: return null
+        val back = ReminderRules.returnDay(request) ?: return null
+        return Span(CivilCalendar.dayNumber(from), CivilCalendar.dayNumber(back))
+    }
+
+    /**
+     * "Draft the rejoining slip" on the day the officer returns, until a rejoining falls between the leave's first day and that day. Not while
+     * another printed leave starts on or before that day and returns after it: the officer is still away, and that leave asks in its turn.
+     */
     private fun returnSeries(
         draft: Part2Draft,
         rejoined: List<CalendarDate>,
+        spans: List<Span>,
     ): Series? {
+        if (ReminderTask.RETURN in draft.dismissed) return null
         val requests = draft.event.requests
         val last = requests.mapNotNull(ReminderRules::returnDay).maxByOrNull(CivilCalendar::dayNumber) ?: return null
         val first = requests.mapNotNull(ReminderRules::leaveFrom).minByOrNull(CivilCalendar::dayNumber)
         val lastDay = CivilCalendar.dayNumber(last)
         val firstDay = first?.let(CivilCalendar::dayNumber) ?: Long.MIN_VALUE
         if (rejoined.any { CivilCalendar.dayNumber(it) in firstDay..lastDay }) return null
+        // A draft's own leaves never return later than its latest return, so only another draft's leave can satisfy this.
+        if (spans.any { it.from <= lastDay && it.back > lastDay }) return null
         return Series(listOfNotNull(dated(ReminderKind.RETURN, draft.id, lastDay)))
     }
 
@@ -82,6 +100,7 @@ class ReminderPlanner(
         linked: List<VaultOrder>,
     ): Series? {
         val printedAt = draft.printed?.at ?: return null
+        if (ReminderTask.ADD_ORDER in draft.dismissed) return null
         if (VaultOrders.quotable(linked).isNotEmpty()) return null
         val start = localDayNumber(printedAt)
         val days = (0 until policy.addOrderMax).map { start + policy.addOrderFirstDays + policy.addOrderEveryDays.toLong() * it }
@@ -93,9 +112,10 @@ class ReminderPlanner(
     private fun yearEndSeries(
         printed: List<Part2Draft>,
         answered: Set<Int>,
+        dismissed: Set<String>,
     ): List<Series> {
         val byYear = printed.flatMap { draft -> draft.event.requests.mapNotNull(ReminderRules::annualYear).distinct().map { it to draft } }.groupBy({ it.first }, { it.second })
-        return byYear.filterKeys { it !in answered }.mapNotNull { (year, drafts) ->
+        return byYear.filterKeys { it !in answered && ReminderTask.yearEnd(it) !in dismissed }.mapNotNull { (year, drafts) ->
             val newest = drafts.minWith(compareByDescending<Part2Draft> { it.printed?.at }.thenBy { it.id })
             // A year whose next 1 March the calendar cannot hold (2100) has no date, so `dated` drops it.
             val day = CivilCalendar.dayNumber(CalendarDate(year + 1, policy.yearEndMonth, policy.yearEndDay))

@@ -373,6 +373,27 @@ Build-time choices made without a question (change them if you disagree):
 | The plan | `due` is what the officer has to do now, oldest first, each marked overdue once its day has passed; `upcoming` is the nearest 20 future reminders, which is all a scheduler (7b) needs. The Due list shows a repeating reminder once, as its next date, and not again under "Coming up" while it is due. |
 | Stale items | Nothing is dismissed or expires: a return or year-end reminder stays until it is answered or its draft is deleted (Phase 11 item 32). |
 
+## Round 26: Phase 7a follow-ups, closing the sprint's open items (owner, 2026-10-25, after the 7a summary)
+
+The owner asked for the open 7a items (Phase 11 items 32-36) to be closed in the same sprint, and answered four questions in one batch, each as recommended.
+
+| Topic | Decision |
+|---|---|
+| Stale items (item 32) | Built. Each item on the Due list, including the ones coming up, has a "Dismiss" button. A dismissal is remembered with the draft (an optional `dismissed` list inside the encrypted draft payload `v: 1`: no schema or backup version change, no new `@Serializable` class, so the R8 gate is unchanged) and stops the whole series of that kind for that draft: the list and what a scheduler is given. |
+| An extended leave (item 34) | Built in the planner now. A printed leave that starts on or before another leave's return day and returns after it takes over that return reminder: the officer is still away, and the later leave asks in its turn. Chains work. A duplicate slip for the same days, a leave that ended before that day, an unprinted draft and a leave whose order was cancelled in full do not take over. |
+| The Due screens over Room (item 36) | Built: a composeApp test runs the list, a dismissal and the Dashboard card over the production schema and the real encrypted repository, including closing and opening the database. It needed Room and the SQLite driver on composeApp's test classpath only (the app already ships Room through `shared`). |
+| The card on a real import (item 35) | The owner imports a payslip on the Pixel 9 and the card is driven then (see the plan). |
+
+Built without a question (change them if you disagree):
+
+| Topic | Choice |
+|---|---|
+| What a dismissal is called | A task name per kind: `return`, `add-order` (every repeat of the series) and `year-end-<year>`. A year end is one reminder per leave year across drafts, so a dismissal on any draft that stands covers it; a dismissal on a draft whose order was cancelled in full does not count. Names are plain tokens, at most 32 per draft, bounded on the way in and out like every stored list. |
+| Undoing it | A completed print of the draft clears its dismissals, because a print starts the reminders afresh (Round 18); a print that did not complete clears nothing. There is no separate "undismiss" button. |
+| What it writes | Only the `dismissed` field. The draft's edit time, answers and print record are untouched, so it does not read as "edited" in the drafts list. |
+| Who can | Dismiss is on the Due list, which is for an entitled officer only (Round 25). |
+| No confirmation | Dismiss acts at once: it hides a reminder and deletes nothing. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

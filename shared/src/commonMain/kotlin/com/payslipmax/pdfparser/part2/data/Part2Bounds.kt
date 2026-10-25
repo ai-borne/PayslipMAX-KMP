@@ -23,7 +23,8 @@ object Part2Bounds {
                 (draft.event.lastOrder?.let(::ref) ?: true) &&
                 revs(draft.templateRevs) &&
                 (draft.printed?.let(::printed) ?: true) &&
-                (draft.pairedWith?.let(Part2Limits::isPlainId) ?: true)
+                (draft.pairedWith?.let(Part2Limits::isPlainId) ?: true) &&
+                dismissed(draft.dismissed)
         return if (ok) null else Part2WriteResult.REJECTED
     }
 
@@ -34,6 +35,9 @@ object Part2Bounds {
                 (order.orderNo?.let { it.length <= Part2Limits.ORDER_NO_MAX } ?: true)
         return if (ok) null else Part2WriteResult.REJECTED
     }
+
+    /** The names of dismissed reminders: a few plain tokens, so a restored file can carry neither a crowd of them nor markup. */
+    private fun dismissed(names: Set<String>): Boolean = names.size <= Part2Limits.DISMISSED_MAX && names.all { Part2Limits.isPlainToken(it, Part2Limits.ANSWER_MAX) }
 
     private fun revs(revs: Map<String, String>): Boolean =
         revs.size <= Part2Limits.REVS_MAX &&

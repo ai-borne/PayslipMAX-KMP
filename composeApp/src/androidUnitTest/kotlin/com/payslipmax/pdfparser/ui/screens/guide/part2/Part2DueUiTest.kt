@@ -90,11 +90,37 @@ class Part2DueUiTest : Part2DueUiBase() {
     @Test
     fun comingUpIsListedUnderItsOwnHeadingBeneathWhatIsDue() {
         hold("d1")
-        hold("d2", lastDay = 20)
+        hold("d2", lastDay = 20, firstDay = 14)
         show(atDue())
         see(Part2DueStrings.dueHeading).assertExists()
         see(Part2DueStrings.upcomingHeading).assertExists()
         see(Part2DueStrings.dueLine("21/10/2026", overdue = false)).assertExists()
+    }
+
+    @Test
+    fun everyItemOffersDismissAndDismissingOneRemovesItForGood() {
+        hold("d1")
+        hold("d2", lastDay = 20, firstDay = 14)
+        show(atDue())
+        assertEquals(2, count(Part2DueStrings.dismiss).fetchSemanticsNodes().size, "one for the item due now and one for the item coming up")
+
+        tap(Part2DueStrings.dismiss)
+
+        assertEquals(setOf("return"), runBlocking { repository.draft("d1")!!.dismissed })
+        assertEquals(emptySet(), runBlocking { repository.draft("d2")!!.dismissed })
+        assertEquals(0, count(Part2DueStrings.dueHeading).fetchSemanticsNodes().size)
+        assertEquals(1, count(Part2DueStrings.dismiss).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun anItemComingUpCanBeDismissedAndTheLastOneLeavesTheEmptyMessage() {
+        hold("d1", lastDay = 20)
+        show(atDue())
+
+        tap(Part2DueStrings.dismiss)
+
+        see(Part2DueStrings.empty).assertExists()
+        assertEquals(setOf("return"), runBlocking { repository.draft("d1")!!.dismissed })
     }
 
     @Test

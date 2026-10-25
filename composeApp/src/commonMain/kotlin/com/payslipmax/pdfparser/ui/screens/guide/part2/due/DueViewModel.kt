@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 /** One line of the Due list: what to do ([action]), which slip ([title]), when ([line]) and the draft that opens ([draftId]). */
 data class DueRowUi(
@@ -27,6 +28,7 @@ data class DueRowUi(
     val title: String,
     val line: String,
     val overdue: Boolean,
+    val task: String,
 )
 
 /** The Due list: what is due now, what comes next (one line per reminder, not one per repeat) and whether something on the device could not be read. */
@@ -48,8 +50,9 @@ data class DueUiState(
 /**
  * The Due list: [ReminderPlanner]'s plan for the drafts and orders on the device, worded for the screen. It does no date arithmetic (the planner
  * says what is due and what is overdue; this only writes a date it is handed) and checks no entitlement (reminders are Premium, but the data layer
- * is ungated, DECISIONS Round 13: the screens decide who sees it). Each draft's title is the drafts list's own wording. No telemetry: nothing
- * about a draft is logged.
+ * is ungated, DECISIONS Round 13: the screens decide who sees it). Each draft's title is the drafts list's own wording. It reads, with one
+ * exception: [dismiss] writes the draft's `dismissed` field and nothing else (not its edit time, answers or print record). No telemetry:
+ * nothing about a draft is logged.
  */
 class DueViewModel(
     private val repository: Part2Repository,
@@ -87,5 +90,17 @@ class DueViewModel(
         title = titles[reminder.draftId]?.title ?: Part2DueStrings.untitled,
         line = Part2DueStrings.dueLine(CivilCalendar.format(reminder.dueOn), overdue),
         overdue = overdue,
+        task = reminder.task,
     )
+
+    /** Dismisses reminder [task] of draft [draftId]: remembered with the draft (the one field this model writes). Nothing happens for a draft that is gone. */
+    fun dismiss(
+        draftId: String,
+        task: String,
+    ) {
+        scope.launch {
+            val draft = repository.draft(draftId) ?: return@launch
+            if (task !in draft.dismissed) repository.saveDraft(draft.copy(dismissed = draft.dismissed + task))
+        }
+    }
 }

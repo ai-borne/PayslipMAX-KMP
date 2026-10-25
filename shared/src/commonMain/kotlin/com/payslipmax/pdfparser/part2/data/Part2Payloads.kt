@@ -70,6 +70,8 @@ internal class DraftPayload(
     val printed: PrintedPayload? = null,
     /** The draft this one was made with: a cancel slip and its re-draft point at each other. Optional inside `v: 1`. */
     val pair: String? = null,
+    /** The reminders the officer dismissed for this draft (`ReminderTask` names). Optional inside `v: 1`. */
+    val dismissed: List<String> = emptyList(),
 )
 
 @Serializable
@@ -120,6 +122,7 @@ internal fun Part2Draft.toPayload() =
         revs = templateRevs,
         printed = printed?.toPayload(),
         pair = pairedWith,
+        dismissed = dismissed.sorted(),
     )
 
 private fun PrintedSnapshot.toPayload() =
@@ -141,6 +144,7 @@ internal fun DraftPayload.toDraft() =
         updatedAt = updatedAt,
         printed = printed?.toSnapshot(),
         pairedWith = pair,
+        dismissed = dismissed.toSet(),
     )
 
 internal fun VaultOrder.toPayload() =

@@ -71,13 +71,16 @@ class Part2DueSourceTest {
     }
 
     @Test
-    fun onlyTheDueModelHoldsTheRepositoryAndItOnlyReads() {
+    fun onlyTheDueModelHoldsTheRepositoryAndItsOneWriteIsADismissal() {
         for (file in files().filter { it.name != "DueViewModel.kt" }) {
             val source = code(file)
             assertTrue("repository." !in source && "Part2Repository" !in source, "${file.name}: a screen goes through the Due model")
         }
         val model = code(File(folder, "DueViewModel.kt"))
-        assertEquals(emptyList(), listOf("saveDraft", "saveOrder", "deleteDraft", "deleteOrder", "addPage", "Room", "Dao", "CryptoHelper").filter { it in model }, "the Due list reads and never writes")
+        assertEquals(emptyList(), listOf("saveOrder", "deleteDraft", "deleteOrder", "addPage", "Room", "Dao", "CryptoHelper").filter { it in model }, "the Due list never touches an order or deletes anything")
+        // The one write is a dismissal: the draft as it was, with one more name in its dismissed set and nothing else changed.
+        assertEquals(1, Regex("saveDraft\\(").findAll(model).count(), "one write, in dismiss")
+        assertTrue("saveDraft(draft.copy(dismissed = draft.dismissed + task))" in model, "the write changes the dismissed field alone")
     }
 
     @Test

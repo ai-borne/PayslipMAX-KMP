@@ -15,6 +15,27 @@ enum class ReminderKind {
 }
 
 /**
+ * The name a reminder is dismissed under (see `Part2Draft.dismissed`): the same for every repeat of "add the published order", and for a
+ * year end the leave year too. Plain tokens, so a restored file can never smuggle markup or a path through one.
+ */
+object ReminderTask {
+    const val RETURN = "return"
+    const val ADD_ORDER = "add-order"
+
+    fun yearEnd(year: Int?): String = "year-end-$year"
+
+    fun of(
+        kind: ReminderKind,
+        year: Int? = null,
+    ): String =
+        when (kind) {
+            ReminderKind.RETURN -> RETURN
+            ReminderKind.ADD_ORDER -> ADD_ORDER
+            ReminderKind.YEAR_END -> yearEnd(year)
+        }
+}
+
+/**
  * One reminder the planner works out from the drafts and the vault: [kind], the draft to open ([draftId]), the instant it is due ([at],
  * epoch milliseconds, [ReminderPolicy.hour] o'clock where the officer is) and that local day ([dueOn]). [sequence] counts the repeats of
  * [ReminderKind.ADD_ORDER] from 0; [year] is the leave year of [ReminderKind.YEAR_END]. [key] names the reminder and survives a rebuild, so a
@@ -28,6 +49,9 @@ data class Reminder(
     val sequence: Int = 0,
     val year: Int? = null,
 ) {
+    /** What the officer dismisses to stop this reminder and its repeats, see [ReminderTask]. */
+    val task: String get() = ReminderTask.of(kind, year)
+
     val key: String
         get() =
             when (kind) {

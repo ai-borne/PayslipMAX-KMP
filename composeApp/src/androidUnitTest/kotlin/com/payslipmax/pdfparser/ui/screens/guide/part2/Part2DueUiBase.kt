@@ -39,8 +39,9 @@ abstract class Part2DueUiBase : Part2UiBase() {
         id: String,
         lastDay: Int = 9,
         published: Boolean = true,
+        firstDay: Int = 5,
     ) {
-        val request = OccurrenceRequest("GTDAL", mapOf("leave_from" to day(10, 5), "leave_to" to day(10, lastDay)))
+        val request = OccurrenceRequest("GTDAL", mapOf("leave_from" to day(10, firstDay), "leave_to" to day(10, lastDay)))
         runBlocking {
             repository.saveDraft(Part2Draft(id, LeaveEventInput(listOf(request)), emptyMap(), 1, 1, PrintedSnapshot(printedAt, emptyMap(), emptyList())))
             if (published) repository.saveOrder(SyntheticPart2Drafts.order("order-$id", id, "A/12", CalendarDate(2026, 6, 20)))

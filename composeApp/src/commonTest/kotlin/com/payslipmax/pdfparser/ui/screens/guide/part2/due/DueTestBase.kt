@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2.due
 
 import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.guide.GuideLoadResult
+import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.domain.LeaveEventInput
 import com.payslipmax.pdfparser.part2.domain.OccurrenceRequest
 import com.payslipmax.pdfparser.part2.domain.Part2Draft
@@ -67,6 +68,18 @@ abstract class DueTestBase {
     ) = VaultOrder(id, draftId, "9/26", date(7, 1), 2, 2)
 
     protected suspend fun publishAll(vararg drafts: Part2Draft) = drafts.forEach { repo.saveOrder(published("o-${it.id}", it.id)) }
+
+    /** A Due model over [over] (a repository a test wraps to count or refuse writes), collected so it stays live; the Guide is not loaded. */
+    protected fun TestScope.dueOver(
+        over: Part2Repository,
+        now: Long,
+    ): DueViewModel {
+        val dispatcher = StandardTestDispatcher(testScheduler)
+        val guide = GuideViewModel(FakeGuideRepository(GuideLoadResult.Loaded(SyntheticPart2Templates.bundle())), FakeCrashReporter(), dispatcher)
+        val vm = DueViewModel(over, Part2DraftsViewModel(guide, over, dispatcher) { india }, ReminderPlanner { india }, { now }, dispatcher)
+        backgroundScope.launch(dispatcher) { vm.state.collect { } }
+        return vm
+    }
 
     protected fun check(
         guideLoaded: Boolean = true,

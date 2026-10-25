@@ -25,7 +25,7 @@ internal fun Part2DueLevel(
         return
     }
     val state by due.state.collectAsState()
-    DueScreen(state, onOpen = { navState.push(Part2Destination.Slip(it)) }, onBack = { navState.pop() }, listState = listState)
+    DueScreen(state, onOpen = { navState.push(Part2Destination.Slip(it)) }, onDismiss = { due.dismiss(it.draftId, it.task) }, onBack = { navState.pop() }, listState = listState)
 }
 
 /** The Part II home's "Due" row: only for an entitled officer, and only while the planner has something to show. */

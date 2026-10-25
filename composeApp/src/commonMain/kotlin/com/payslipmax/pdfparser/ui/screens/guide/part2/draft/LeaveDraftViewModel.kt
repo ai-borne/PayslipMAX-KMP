@@ -61,6 +61,9 @@ class LeaveDraftViewModel(
     // The draft this one was made with (a cancel slip and its corrected draft): kept through every save, offered while the partner exists.
     private var pairedWith: String? = null
     private var partner: String? = null
+
+    // The reminders the officer dismissed (kept through every save; a completed print clears them, as it starts the reminders afresh).
+    private var dismissed: Set<String> = emptySet()
     private var lastOrder: OrderRef? = null
     private var grants: List<OrderRef> = emptyList()
     private var acked: Set<String> = emptySet()
@@ -100,6 +103,7 @@ class LeaveDraftViewModel(
         createdAt = draft.createdAt
         printed = draft.printed
         pairedWith = draft.pairedWith
+        dismissed = draft.dismissed
         partner = draft.pairedWith?.takeIf { repository.draft(it) != null }
         loaded = true
         publish()
@@ -204,6 +208,7 @@ class LeaveDraftViewModel(
     private suspend fun record(snapshot: PrintedSnapshot) {
         if (closed) return
         printed = snapshot
+        dismissed = emptySet()
         publish()
         saver.saveAtOnce()
     }
@@ -255,7 +260,7 @@ class LeaveDraftViewModel(
         val stamp = now()
         val created = createdAt ?: stamp.also { createdAt = it }
         val saved = event.copy(lastOrder = lastOrder)
-        return Part2Draft(id, saved, builder.templateRevs(saved), created, stamp, printed, pairedWith)
+        return Part2Draft(id, saved, builder.templateRevs(saved), created, stamp, printed, pairedWith, dismissed)
     }
 
     private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saver.failed, printed, prints.printing, grants, today(), partner)

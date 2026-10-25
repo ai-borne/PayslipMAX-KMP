@@ -22,6 +22,7 @@ object Part2DueStrings {
     const val upcomingHeading = "Coming up"
     const val unreadable = "Some items on this device could not be read, so reminders for them are not shown."
     const val untitled = "A slip"
+    const val dismiss = "Dismiss"
 
     /** What the officer is asked to do. [year] is the leave year of a year-end reminder. */
     fun action(
