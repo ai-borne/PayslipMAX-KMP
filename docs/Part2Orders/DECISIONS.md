@@ -394,6 +394,10 @@ Built without a question (change them if you disagree):
 | Who can | Dismiss is on the Due list, which is for an entitled officer only (Round 25). |
 | No confirmation | Dismiss acts at once: it hides a reminder and deletes nothing. |
 
+## Round 27: Phase 7a accepted (owner, 2026-10-25)
+
+The owner accepted Phase 7a as built, with its follow-ups (Rounds 25 and 26) and the Pixel 9 walks (aceb6dba, 5d2de477 and the docs commits 99000afa and 642ce3c9): "I accept phase 7a". Still open from it: Phase 11 item 33 (Phase 8's ACCLVE template must use the `year` slot and `ReminderRules.YEAR_END_REQUEST`) and item 35 (only the light theme, accessibility and the iPhone are not walked), besides the older items 8, 11, 14, 20, 22 and 27. Phase 7b (OS notifications on both platforms) is next.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
