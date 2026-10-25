@@ -19,6 +19,7 @@ class VaultCancelRefusalTest {
                 CancelRefusal.GONE to Part2VaultStrings.orderGone,
                 CancelRefusal.NOT_QUOTABLE to Part2CancelStrings.notQuotable,
                 CancelRefusal.NOTHING_TO_COPY to Part2CancelStrings.nothingToCopy,
+                CancelRefusal.CANCEL_SLIP to Part2CancelStrings.cancelSlipSource,
                 CancelRefusal.SAVE_FAILED to Part2CancelStrings.saveFailed,
             )
 

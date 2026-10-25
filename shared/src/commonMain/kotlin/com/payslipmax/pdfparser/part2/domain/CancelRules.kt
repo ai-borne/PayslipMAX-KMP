@@ -20,6 +20,11 @@ object CancelRules {
     const val CANCEL_TIME_BARRED = "cancel_time_barred"
     const val CANCELS_QUOTED = "cancels_quoted"
     const val CANCELS_TIME_BARRED = "cancels_time_barred"
+    const val CANCELS_CODE_UNKNOWN = "cancels_code_unknown"
+
+    /** The slot CANCELS types the occurrence's code in, and the optional date of the occurrence only the time bar reads. */
+    const val CANCELLED_CODE = "cancelled_code"
+    const val OCCURRENCE_ON = "occurrence_on"
 
     /** The two codes that cancel an order; a slip holding either is a cancel slip. */
     val CODES: Set<String> = setOf(ALL_OCCURRENCES, ONE_OCCURRENCE)
@@ -36,15 +41,31 @@ object CancelRules {
             checkRule(CANCEL_TIME_BARRED, ::timeBarred),
             quoted(CANCELS_QUOTED),
             checkRule(CANCELS_TIME_BARRED, ::timeBarred),
+            checkRule(CANCELS_CODE_UNKNOWN, ::codeUnknown),
         )
 
     private fun quoted(id: String) = checkRule(id) { it.request.values[CANCELLED] !is SlotValue.RefValue }
 
-    /** The order being cancelled is more than two years older than [RuleContext.today]. Nothing quoted, no real date or no device date judges nothing. */
+    /**
+     * The occurrence is more than two years older than [RuleContext.today]. Para 13 counts from the occurrence; an order is never published
+     * before it, so the earlier of the occurrence date the officer typed (optional) and the date of the order being cancelled decides.
+     * Nothing to go on, no real date or no device date judges nothing.
+     */
     private fun timeBarred(context: RuleContext): Boolean {
         val today = context.today ?: return false
-        val date = (context.request.values[CANCELLED] as? SlotValue.RefValue)?.ref?.date?.takeIf { CivilCalendar.exists(it) } ?: return false
-        return CivilCalendar.dayNumber(today) > CivilCalendar.dayNumber(anniversary(date))
+        val earliest = listOfNotNull(orderDate(context.request.values[CANCELLED]), dateOf(context.request.values[OCCURRENCE_ON])).minByOrNull { CivilCalendar.dayNumber(it) } ?: return false
+        return CivilCalendar.dayNumber(today) > CivilCalendar.dayNumber(anniversary(earliest))
+    }
+
+    private fun orderDate(value: SlotValue?): CalendarDate? = (value as? SlotValue.RefValue)?.ref?.date?.takeIf { CivilCalendar.exists(it) }
+
+    private fun dateOf(value: SlotValue?): CalendarDate? = (value as? SlotValue.DateValue)?.date?.takeIf { CivilCalendar.exists(it) }
+
+    /** The code the officer typed for CANCELS is not one the manual lists or the slip prints. Nothing typed, not text, or no list judges nothing. */
+    private fun codeUnknown(context: RuleContext): Boolean {
+        val known = context.knownCodes ?: return false
+        val typed = (context.request.values[CANCELLED_CODE] as? SlotValue.TextValue)?.text ?: return false
+        return typed.trim() !in known
     }
 
     /** The same date [TIME_BAR_YEARS] years later; 29 February, which then does not exist, falls on 28 February. */

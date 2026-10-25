@@ -25,12 +25,24 @@ class CancelRulesTest {
         code: String = "CANCEL",
     ) = check(id).violated(context(code, values = listOfNotNull(order?.let { CancelRules.CANCELLED to it }).toMap(), today = on))
 
+    private fun occurrence(
+        id: String,
+        order: SlotValue?,
+        on: SlotValue?,
+        today: CalendarDate? = this.today,
+    ) = check(id).violated(context("X", values = listOfNotNull(order?.let { "cancelled" to it }, on?.let { "occurrence_on" to it }).toMap(), today = today))
+
+    private fun typedCode(
+        value: SlotValue?,
+        known: Set<String>? = setOf("GTDAL", "REJOIN"),
+    ) = check(CancelRules.CANCELS_CODE_UNKNOWN).violated(context("X", values = listOfNotNull(value?.let { "cancelled_code" to it }).toMap(), known = known))
+
     private val timeBarIds = listOf(CancelRules.CANCEL_TIME_BARRED, CancelRules.CANCELS_TIME_BARRED)
 
     @Test
     fun theFamilyOffersExactlyTheChecksTheTemplatesCite() {
         assertEquals(
-            setOf("cancel_quoted", "cancel_time_barred", "cancels_quoted", "cancels_time_barred"),
+            setOf("cancel_quoted", "cancel_time_barred", "cancels_quoted", "cancels_time_barred", "cancels_code_unknown"),
             CancelRules.all.map { it.id }.toSet(),
         )
         assertTrue(CancelRules.all.all { it is CheckRule }, "the cancel family holds checks only")
@@ -85,5 +97,46 @@ class CancelRulesTest {
             assertFalse(barred(id, SlotValue.TextValue("2020")), "$id: not an order reference")
             assertFalse(barred(id, ref("A", 12, 31, 2030)), "$id: an order dated after today is never old")
         }
+    }
+
+    @Test
+    fun theOccurrencesOwnDateCountsAndTheEarlierOfItAndTheOrderDecides() {
+        // why: para 13 counts the 2 years from the occurrence; an order is never published before it, so the earlier date is the safer reading.
+        val old = RuleContexts.date(1, 1, 2020)
+        val recent = RuleContexts.date(6, 20)
+        for (id in timeBarIds) {
+            assertTrue(occurrence(id, ref("A", 6, 20), old), "$id: a young order that holds an old occurrence")
+            assertTrue(occurrence(id, ref("A", 1, 1, 2020), recent), "$id: the order itself is old, whatever date was typed")
+            assertFalse(occurrence(id, ref("A", 6, 20), recent), "$id: both recent")
+            assertTrue(occurrence(id, null, old), "$id: the occurrence alone is enough to judge")
+            assertFalse(occurrence(id, null, RuleContexts.date(10, 25, 2024)), "$id: exactly 2 years")
+            assertTrue(occurrence(id, null, RuleContexts.date(10, 24, 2024)), "$id: a day over")
+        }
+    }
+
+    @Test
+    fun anOccurrenceDateNotChosenYetOrNotADateIsIgnored() {
+        for (id in timeBarIds) {
+            assertFalse(occurrence(id, ref("A", 6, 20), SlotValue.DateValue(CalendarDate(0, 0, 0))), "$id: not chosen yet")
+            assertFalse(occurrence(id, ref("A", 6, 20), SlotValue.TextValue("2020")), "$id: not a date")
+            assertFalse(occurrence(id, null, RuleContexts.date(1, 1, 2020), today = null), "$id: no device date")
+        }
+    }
+
+    @Test
+    fun aTypedCodeNotInTheManualsListIsWarnedAbout() {
+        // why: p.227 note 5 - col 6 carries the occurrence code, and a typo prints as typed, so the officer is told it is not a code the manual lists.
+        assertFalse(typedCode(SlotValue.TextValue("GTDAL")))
+        assertFalse(typedCode(SlotValue.TextValue("REJOIN")), "a code the slip prints, though the manual lists REJOINAL")
+        assertFalse(typedCode(SlotValue.TextValue(" GTDAL ")), "spaces around it do not matter")
+        assertTrue(typedCode(SlotValue.TextValue("GTDALX")))
+        assertTrue(typedCode(SlotValue.TextValue("gtdal")), "HRMS codes are capitals")
+    }
+
+    @Test
+    fun theCodeCheckJudgesNothingWithoutACodeATextOrTheList() {
+        assertFalse(typedCode(null), "not typed yet: the form's own missing-answer list says so")
+        assertFalse(typedCode(SlotValue.NumberValue(3)))
+        assertFalse(typedCode(SlotValue.TextValue("GTDALX"), known = null))
     }
 }

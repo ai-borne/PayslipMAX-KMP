@@ -101,4 +101,25 @@ class Part2CancelGoldenTest {
         assertEquals(emptyList(), findings(cancelAll, CalendarDate(2026, 10, 25)), "a 2026 order")
         assertEquals(emptyList(), findings(OccurrenceRequest("CANCEL", mapOf("cancelled" to ref("0050/24", 1, 1, 2020))), today = null), "no device date, no judgment")
     }
+
+    @Test
+    fun aTypedCodeThatIsNotInTheManualsListRaisesTheWarningAndOneTheSlipPrintsDoesNot() {
+        fun codes(code: String) = findings(OccurrenceRequest("CANCELS", cancelOne().values + ("cancelled_code" to text(code))), today = null).map { it.ruleId }
+
+        assertEquals(listOf("cancels_code_unknown"), codes("GTDALX"))
+        assertEquals(emptyList(), codes("GTDAL"))
+        assertEquals(emptyList(), codes("REJOIN"), "the slip prints REJOIN for REJOINAL, so an officer copying it from HRMS is right")
+        val finding = findings(OccurrenceRequest("CANCELS", cancelOne().values + ("cancelled_code" to text("GTDALX"))), today = null).single()
+        assertEquals(Triple(RuleSeverity.WARN, 227, "5"), Triple(finding.severity, finding.page, finding.note))
+    }
+
+    @Test
+    fun theOccurrenceDateIsNeverPrintedAndNeverRequiredButTheTimeBarReadsIt() {
+        val today = CalendarDate(2026, 10, 25)
+        val withDate = OccurrenceRequest("CANCEL", mapOf("cancelled" to order, "occurrence_on" to RealPart2.date(1, 1, 2020)))
+
+        val slip = (RealPart2.engine.draft(LeaveEventInput(listOf(withDate)), today) as DraftResult.Drafted).slip
+        assertEquals(listOf("cancel_time_barred"), slip.findings.map { it.ruleId }, "a young order, an old occurrence")
+        assertEquals(rows(draft(cancelAll)).single().copy(), rows(draft(withDate)).single().copy(), "the row is the same with or without the date")
+    }
 }

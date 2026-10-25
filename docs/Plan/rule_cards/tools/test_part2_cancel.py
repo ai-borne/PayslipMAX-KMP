@@ -58,9 +58,9 @@ class Cancel(unittest.TestCase):
         self.assertEqual('Certified that the previous status may be restored due to cancellation of Part II Order No {cancelled.no} dated {cancelled.date}',
                          cancel()['certificate'])
 
-    def test_it_asks_for_one_order_reference_and_nothing_else_and_links_nothing(self):
-        # why: the vault fills the reference; a cancel needs no dates of its own and brings no other order with it (the re-draft is a separate draft).
-        self.assertEqual([('cancelled', 'ref')], [(s['id'], s['kind']) for s in cancel()['slots']])
+    def test_it_asks_for_the_order_and_an_optional_occurrence_date_only_the_time_bar_reads_and_links_nothing(self):
+        # why: the vault fills the reference; the occurrence date is optional and prints nowhere; no other order comes with it (the re-draft is a separate draft).
+        self.assertEqual([('cancelled', 'ref'), ('occurrence_on', 'date')], [(s['id'], s['kind']) for s in cancel()['slots']])
         self.assertEqual([], cancel().get('links', []))
 
     def test_it_runs_the_quoted_and_time_bar_checks(self):
@@ -85,18 +85,37 @@ class CancelS(unittest.TestCase):
 
     def test_it_asks_for_the_order_the_code_and_the_serial_of_the_one_occurrence(self):
         # why: note 7 - CANCELS cancels one occurrence only; the officer says which, by the serial the original order published.
-        self.assertEqual([('cancelled', 'ref'), ('cancelled_code', 'text'), ('cancelled_serial', 'number')], [(s['id'], s['kind']) for s in cancels()['slots']])
+        self.assertEqual([('cancelled', 'ref'), ('cancelled_code', 'text'), ('cancelled_serial', 'number'), ('occurrence_on', 'date')], [(s['id'], s['kind']) for s in cancels()['slots']])
         self.assertEqual([], cancels().get('links', []))
 
-    def test_it_runs_the_quoted_and_time_bar_checks(self):
-        self.assertEqual(['cancels_quoted', 'cancels_time_barred'], cancels()['rules'])
+    def test_it_runs_the_quoted_unknown_code_and_time_bar_checks(self):
+        self.assertEqual(['cancels_quoted', 'cancels_code_unknown', 'cancels_time_barred'], cancels()['rules'])
+
+
+class OccurrenceDate(unittest.TestCase):
+    def slot(self, template):
+        return next(s for s in template['slots'] if s['id'] == 'occurrence_on')
+
+    def test_the_occurrence_date_is_read_only_by_the_time_bar_check_and_never_printed(self):
+        # why: para 13 counts the 2 years from the occurrence; the officer may know it. It is optional (`for`), so it prints nowhere and never blocks a draft.
+        self.assertEqual('cancel_time_barred', self.slot(cancel())['for'])
+        self.assertEqual('cancels_time_barred', self.slot(cancels())['for'])
+        for t in (cancel(), cancels()):
+            printed = ' '.join([t['narrative'], t.get('certificate', '')] + [c.get('text', '') + (c.get('slot') or '') for c in t['data']])
+            self.assertNotIn('occurrence_on', printed)
+
+    def test_its_words_say_it_is_optional_and_what_it_is_for(self):
+        for t in (cancel(), cancels()):
+            slot = self.slot(t)
+            self.assertIn('Optional', slot['help'])
+            self.assertIn('time-bar', slot['help'])
 
 
 class Checks(unittest.TestCase):
     def test_each_check_cites_its_page_and_note_and_is_a_warning(self):
         # why: the manual says the time-bar sanction "may be enclosed" and the order "should invariably" be quoted: neither says the order will be
         # rejected, which is what an `ack` is reserved for (DECISIONS Round 11).
-        expected = {'cancel_quoted': (226, '2'), 'cancel_time_barred': (226, '4'), 'cancels_quoted': (227, '2'), 'cancels_time_barred': (227, '6')}
+        expected = {'cancel_quoted': (226, '2'), 'cancel_time_barred': (226, '4'), 'cancels_quoted': (227, '2'), 'cancels_time_barred': (227, '6'), 'cancels_code_unknown': (227, '5')}
         for rid, (page, note) in expected.items():
             rule = RULES[rid]
             self.assertEqual(('check', 'warn', 'manual', page, note), (rule['kind'], rule['severity'], rule['basis'], rule['page'], rule['note']), rid)
@@ -116,7 +135,11 @@ class ReviewPack(unittest.TestCase):
 
     def test_the_judgment_calls_name_the_time_bar_basis(self):
         # why: para 13 counts the two years from the occurrence; the app knows only the cancelled order's date, so the owner must see that it checks that.
-        self.assertTrue(any('time bar' in p.lower() and 'order' in p.lower() and '2 years' in p for p in part2_review.OPEN_POINTS))
+        self.assertTrue(any('time bar' in p.lower() and 'order' in p.lower() and '2 years' in p and 'occurrence date' in p for p in part2_review.OPEN_POINTS))
+
+    def test_the_judgment_calls_name_the_unknown_code_warning(self):
+        # why: the typed code is checked against the manual's list as a warning only; the owner should see that and what it cites.
+        self.assertTrue(any('cancels_code_unknown' in p and 'warn' in p for p in part2_review.OPEN_POINTS))
 
 
 if __name__ == '__main__':

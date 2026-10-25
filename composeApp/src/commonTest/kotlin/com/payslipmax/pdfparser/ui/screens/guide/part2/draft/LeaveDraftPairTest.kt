@@ -1,11 +1,16 @@
 package com.payslipmax.pdfparser.ui.screens.guide.part2.draft
 
+import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.domain.LeaveEventInput
 import com.payslipmax.pdfparser.part2.domain.OccurrenceRequest
 import com.payslipmax.pdfparser.part2.domain.Part2Draft
+import com.payslipmax.pdfparser.testing.FakePart2Repository
+import com.payslipmax.pdfparser.testing.SyntheticPart2Templates
 import com.payslipmax.pdfparser.testing.SyntheticPart2Templates.GRANT
 import com.payslipmax.pdfparser.ui.theme.Part2CancelStrings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -81,5 +86,44 @@ class LeaveDraftPairTest : LeaveDraftTestBase() {
             advanceUntilIdle()
 
             assertNull(saved()?.pairedWith)
+        }
+
+    @Test
+    fun theButtonFollowsThePartnerLiveWhenItIsDeletedOrSavedAfterTheSlipLoaded() =
+        runTest {
+            repo.saveDraft(stored("cancel", "CANCEL", pairedWith = "fix"))
+            val vm = model(start = null, id = "cancel").also { advanceUntilIdle() }
+            assertNull(vm.state.value.pair, "the partner is not on the device yet")
+
+            repo.saveDraft(stored("fix", GRANT, pairedWith = "cancel"))
+            advanceUntilIdle()
+            assertEquals("fix", vm.state.value.pair?.draftId)
+
+            repo.deleteDraft("fix")
+            advanceUntilIdle()
+            assertNull(vm.state.value.pair, "a tap must never lead to a draft that is not there")
+        }
+
+    /** A repository that is slow to read one draft, so the list of drafts answers before the draft itself has loaded. */
+    private class SlowDraftRead(
+        private val inner: FakePart2Repository,
+    ) : Part2Repository by inner {
+        override suspend fun draft(id: String): Part2Draft? {
+            delay(100)
+            return inner.draft(id)
+        }
+    }
+
+    @Test
+    fun theButtonAppearsEvenWhenTheListOfDraftsAnswersBeforeTheSlipHasLoaded() =
+        runTest {
+            val inner = FakePart2Repository()
+            inner.saveDraft(stored("cancel", "CANCEL", pairedWith = "fix"))
+            inner.saveDraft(stored("fix", GRANT, pairedWith = "cancel"))
+
+            val vm = LeaveDraftViewModel("cancel", SyntheticPart2Templates.lookup, SlowDraftRead(inner), null, SyntheticPart2Templates.registry(), { clock }, StandardTestDispatcher(testScheduler)) { 0L }
+            advanceUntilIdle()
+
+            assertEquals("fix", vm.state.value.pair?.draftId, "the list answered first, knowing nothing of the pair; loading the draft must still find the partner")
         }
 }

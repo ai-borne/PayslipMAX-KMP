@@ -329,6 +329,19 @@ Build-time choices made without a question (change them if you disagree):
 | The link between the two drafts | A draft id in an optional field of the encrypted draft payload (`v: 1`), bounded like every id on the way in and out. A deleted partner hides the button; the stored pointer is left. A restored backup keeps it. |
 | Lapsed Premium | No cancel offer and no hint (creating a cancel makes drafts); the status line is shown, because reading is open (Round 13). |
 
+## Round 23: Phase 6c follow-ups (owner, 2026-10-25, after the 6c summary)
+
+The owner asked for the open 6c items (Phase 11 items 27-30) to be fixed in the same sprint. Two needed a decision; the owner took the recommended option each time.
+
+| Topic | Decision |
+|---|---|
+| Time bar from the occurrence (item 29) | Built. Both templates get an optional "Date of the earliest occurrence" box that only the time-bar check reads and nothing prints (the 60-day box's pattern). Built as: the check counts from the earlier of that date and the date of the order being cancelled, since an order is never published before its occurrence (so a young order with an old occurrence warns, and an old order warns whatever was typed); with neither box it judges nothing, as before. It never blocks a slip. |
+| A typed CANCELS code (item 30a) | Built as a warning only. `cancels_code_unknown` (p.227 note 5, where col 6 carries the occurrence code) fires when the typed code, trimmed, is not a code the manual lists or the slip prints (REJOIN), compared as typed (HRMS codes are capitals). The code prints as typed. |
+
+Built without a question: the corrected-draft button follows its partner live (a partner deleted or saved after the slip loaded shows or hides it at once, item 30b); "Cancel and re-draft" is not offered when the order's linked draft is itself a cancel slip, and the host says why if asked (item 30c).
+
+Item 27, the check against the printed pages (the owner delegated it, as in Round 15): both templates were compared with pp.226 and 227 read as images and with the page text. Serial, code and group A; the narratives (CANCEL: "Cancelled all occurrence of Part II Order Number ... dated ..."; CANCELS: "Cancelled occurrence at Ser No ... of Pt II order No ... dated ..."); cols 4 and 5 not required; CANCEL Data 1 "ALL", Data 2 not required, Data 3 and 4 the order's number and date; CANCELS Data 1 the occurrence code, Data 2 the serial, Data 3 and 4 the order; both certificates; and notes 1-4 (p.226) and 1-7 (p.227), including note 7 naming the code CANCELS: all agree, no correction. This is a check by Claude, not the owner's own read; the owner's review of `part2_review.md` stays welcome, and the exit is recorded as "checked, not yet read by the owner".
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

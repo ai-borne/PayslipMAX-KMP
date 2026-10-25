@@ -109,4 +109,44 @@ internal class VaultCancelStateTest : VaultOrderTestBase() {
             assertNull(vault.state.value.cancelNote)
             vault.close()
         }
+
+    private fun plainDraft(id: String) = Part2Draft(id, LeaveEventInput(listOf(OccurrenceRequest("GTDAL"))), emptyMap(), 1, 1)
+
+    @Test
+    fun anOrderCanBeRedraftedOnlyWhileItsLinkedDraftExistsAndIsNotItselfACancelSlip() =
+        check { d ->
+            stored(no = "0123/26", date = date, draftId = "src")
+            val none = model(d)
+            assertFalse(none.state.value.redraftable, "the draft is not on the device")
+            none.close()
+
+            repo.saveDraft(plainDraft("src"))
+            val plain = model(d)
+            assertTrue(plain.state.value.redraftable)
+            plain.close()
+
+            repo.saveDraft(cancelSlip(id = "src", printed = false))
+            val cancel = model(d)
+            assertFalse(cancel.state.value.redraftable, "a cancel slip has no leave order to copy")
+            cancel.close()
+        }
+
+    @Test
+    fun linkingToAnotherDraftChangesWhetherTheOrderCanBeRedrafted() =
+        check { d ->
+            stored(no = "0123/26", date = date, draftId = null)
+            repo.saveDraft(plainDraft("plain"))
+            repo.saveDraft(cancelSlip(id = "slip", printed = false))
+            val vault = model(d)
+            assertFalse(vault.state.value.redraftable)
+
+            vault.setDraft("plain")
+            advanceUntilIdle()
+            assertTrue(vault.state.value.redraftable)
+
+            vault.setDraft("slip")
+            advanceUntilIdle()
+            assertFalse(vault.state.value.redraftable)
+            vault.close()
+        }
 }

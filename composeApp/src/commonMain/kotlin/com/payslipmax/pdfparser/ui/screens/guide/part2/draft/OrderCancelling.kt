@@ -10,7 +10,7 @@ import com.payslipmax.pdfparser.part2.domain.Part2Rules
 import com.payslipmax.pdfparser.part2.domain.VaultOrders
 
 /** Why a cancel could not start; each has its words in `Part2CancelStrings`. */
-enum class CancelRefusal { NOT_READY, GONE, NOT_QUOTABLE, NOTHING_TO_COPY, SAVE_FAILED }
+enum class CancelRefusal { NOT_READY, GONE, NOT_QUOTABLE, NOTHING_TO_COPY, CANCEL_SLIP, SAVE_FAILED }
 
 /** What starting a cancel did: the cancel slip's draft to open, or why nothing was made. */
 sealed interface CancelOutcome {
@@ -40,6 +40,7 @@ class OrderCancelling(
         val order = repository.order(orderId) ?: return CancelOutcome.Refused(CancelRefusal.GONE)
         val ref = VaultOrders.quotable(listOf(order)).firstOrNull() ?: return CancelOutcome.Refused(CancelRefusal.NOT_QUOTABLE)
         val source = if (redraft) order.draftId?.let { repository.draft(it) } ?: return CancelOutcome.Refused(CancelRefusal.NOTHING_TO_COPY) else null
+        if (source != null && CancelDrafts.isCancel(source.event)) return CancelOutcome.Refused(CancelRefusal.CANCEL_SLIP)
         val builder = LeaveDraftStateBuilder(lookup, rules)
         val stamp = now()
 

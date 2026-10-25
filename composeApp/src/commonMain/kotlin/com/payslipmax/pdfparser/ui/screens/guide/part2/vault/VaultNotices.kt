@@ -27,6 +27,7 @@ internal object VaultNotices {
             CancelRefusal.GONE -> Part2VaultStrings.orderGone
             CancelRefusal.NOT_QUOTABLE -> Part2CancelStrings.notQuotable
             CancelRefusal.NOTHING_TO_COPY -> Part2CancelStrings.nothingToCopy
+            CancelRefusal.CANCEL_SLIP -> Part2CancelStrings.cancelSlipSource
             CancelRefusal.SAVE_FAILED -> Part2CancelStrings.saveFailed
         }
 

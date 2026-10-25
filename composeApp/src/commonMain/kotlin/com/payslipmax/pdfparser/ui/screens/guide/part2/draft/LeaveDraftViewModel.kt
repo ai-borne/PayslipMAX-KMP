@@ -76,6 +76,12 @@ class LeaveDraftViewModel(
     init {
         if (!loaded) scope.launch { load() }
         scope.launch {
+            repository.observeDrafts().collect { stored ->
+                partner = pairedWith?.takeIf { id -> stored.items.any { it.id == id } }
+                if (loaded) publish()
+            }
+        }
+        scope.launch {
             repository.observeOrders().collect {
                 grants = VaultOrders.quotable(it.items)
                 lastOrder = VaultOrders.lastOrder(it.items)

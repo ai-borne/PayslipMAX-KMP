@@ -22,6 +22,7 @@ object Part2CancelStrings {
     const val notReady = "Part II is not ready yet. Try again in a moment."
     const val notQuotable = "Type the order's number and date first. The cancel slip quotes both."
     const val nothingToCopy = "The draft this order came from is no longer on this device, so there is nothing to copy. Cancel the order and draft the corrected one by hand."
+    const val cancelSlipSource = "This order came from a cancel slip, so there is no order to copy. Cancel it and draft the corrected order by hand."
     const val saveFailed = "The cancel slip could not be saved on this device."
 
     /** What the vault says of an order a slip has been made to cancel, by how much it covers and how far it has got. */
@@ -50,6 +51,7 @@ object Part2CancelStrings {
             CancelRules.CANCEL_QUOTED, CancelRules.CANCELS_QUOTED -> "Quote the number and date of the order being cancelled. Until you do, they print blank."
             CancelRules.CANCEL_TIME_BARRED, CancelRules.CANCELS_TIME_BARRED ->
                 "The order being cancelled is more than 2 years old. Enclose the time-bar sanction with the cancellation. The manual counts the 2 years from the occurrence, which may be older still."
+            CancelRules.CANCELS_CODE_UNKNOWN -> "The code you typed is not one the manual lists. Check it against the published order; it prints as you typed it."
             else -> null
         }
 }

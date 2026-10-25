@@ -20,13 +20,15 @@ class DraftedOccurrence(
 
 /**
  * What a rule can read: the officer's [request], the [occurrence] it is judging, every occurrence of the [event] so far, and [today]
- * (the device's date, handed in so a rule that compares with it stays pure; null when the caller has no date, and such a rule then judges nothing).
+ * (the device's date, handed in so a rule that compares with it stays pure; null when the caller has no date, and such a rule then judges nothing) and
+ * [knownCodes] (every code the manual lists or the slip prints, for a rule that checks a typed code; null judges nothing).
  */
 class RuleContext(
     val request: OccurrenceRequest,
     val occurrence: DraftedOccurrence,
     val event: List<DraftedOccurrence>,
     val today: CalendarDate? = null,
+    val knownCodes: Set<String>? = null,
 )
 
 /** A rule the app implements. Its severity and citation come from the bundle's declaration, never from here. */

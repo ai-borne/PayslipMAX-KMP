@@ -120,5 +120,5 @@ private fun CancelActions(
 ) {
     if (!state.quotable) return PreClaimQuietText(Part2CancelStrings.cancelNeedsNumber)
     OutlinedButton(onClick = actions.onCancel, modifier = Modifier.fillMaxWidth()) { Text(Part2CancelStrings.cancelOrder) }
-    if (state.draftId != null) OutlinedButton(onClick = actions.onRedraft, modifier = Modifier.fillMaxWidth()) { Text(Part2CancelStrings.cancelAndRedraft) }
+    if (state.redraftable) OutlinedButton(onClick = actions.onRedraft, modifier = Modifier.fillMaxWidth()) { Text(Part2CancelStrings.cancelAndRedraft) }
 }

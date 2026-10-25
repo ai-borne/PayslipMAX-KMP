@@ -34,8 +34,9 @@ internal object RuleContexts {
         computed: Map<String, SlotValue> = emptyMap(),
         others: List<String> = emptyList(),
         today: CalendarDate? = null,
+        known: Set<String>? = null,
     ): RuleContext {
         val mine = occurrence(code, computed)
-        return RuleContext(OccurrenceRequest(code, values, answers), mine, listOf(mine) + others.map { occurrence(it) }, today)
+        return RuleContext(OccurrenceRequest(code, values, answers), mine, listOf(mine) + others.map { occurrence(it) }, today, known)
     }
 }

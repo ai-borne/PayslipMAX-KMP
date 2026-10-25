@@ -12,6 +12,7 @@
   {"id": "cancel_quoted", "kind": "check", "severity": "warn", "basis": "manual", "page": 226, "note": "2"},
   {"id": "cancel_time_barred", "kind": "check", "severity": "warn", "basis": "manual", "page": 226, "note": "4"},
   {"id": "cancels_quoted", "kind": "check", "severity": "warn", "basis": "manual", "page": 227, "note": "2"},
+  {"id": "cancels_code_unknown", "kind": "check", "severity": "warn", "basis": "manual", "page": 227, "note": "5"},
   {"id": "cancels_time_barred", "kind": "check", "severity": "warn", "basis": "manual", "page": 227, "note": "6"},
   {"id": "on_ration", "kind": "condition", "basis": "manual", "page": 97, "note": "1.1, 1.5, 3, 4"},
   {"id": "rh_station", "kind": "condition", "basis": "practice"},

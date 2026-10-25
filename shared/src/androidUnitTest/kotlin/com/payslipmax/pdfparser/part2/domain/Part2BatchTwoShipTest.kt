@@ -17,7 +17,7 @@ class Part2BatchTwoShipTest {
     private val batch = listOf("CANCEL", "CANCELS")
     private val templates get() = section.templates.filter { it.code in batch }.also { assertEquals(batch, it.map { t -> t.code }, "batch two ships CANCEL then CANCELS") }
 
-    private val everything: Map<String, SlotValue> = mapOf("cancelled" to ref("0123/26", 6, 20), "cancelled_code" to text("GTDAL"), "cancelled_serial" to number(3))
+    private val everything: Map<String, SlotValue> = mapOf("cancelled" to ref("0123/26", 6, 20), "cancelled_code" to text("GTDAL"), "cancelled_serial" to number(3), "occurrence_on" to RealPart2.date(1, 1, 2020))
 
     @Test
     fun eachTemplateCitesThePageTheLookupGivesAndSitsInGroupA() {

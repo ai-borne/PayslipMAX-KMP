@@ -56,6 +56,8 @@ data class VaultOrderUiState(
     val linked: Boolean = false,
     /** The order has a number and a real date, so a cancel slip can quote it. */
     val quotable: Boolean = false,
+    /** The draft the order came from still exists and is an order to copy, not itself a cancel slip. */
+    val redraftable: Boolean = false,
     /** Where cancelling this order stands in words, or null when nobody has tried to cancel it. */
     val cancelNote: String? = null,
 ) {

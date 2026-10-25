@@ -153,6 +153,17 @@ class OrderCancellingTest {
         }
 
     @Test
+    fun anOrderThatCameFromACancelSlipHasNothingToRedraftAndNothingIsSaved() =
+        runTest {
+            val repo = FakePart2Repository().apply { seed(withDraft = false) }
+            repo.saveDraft(Part2Draft("src", CancelDrafts.cancelEvent(ref), emptyMap(), 100, 200))
+
+            assertEquals(CancelOutcome.Refused(CancelRefusal.CANCEL_SLIP), cancelling(repo).cancel("o-1", redraft = true))
+            assertEquals(setOf("src"), repo.drafts().keys)
+            assertIs<CancelOutcome.Started>(cancelling(repo).cancel("o-1", redraft = false), "the order can still be cancelled on its own")
+        }
+
+    @Test
     fun ifTheCancelSlipCannotBeSavedTheCorrectedDraftMadeForItIsRemoved() =
         runTest {
             val repo = Refusing(refuse = "d-1").apply { seed() }

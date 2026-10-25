@@ -19,6 +19,7 @@ class Part2DraftEngine(
 ) {
     private val templates: Map<String, Part2Template> = section.templates.associateBy { it.code }
     private val groups: Map<String, String?> = section.serials.flatMap { page -> page.codes.map { it to page.group } }.toMap()
+    private val knownCodes: Set<String> = groups.keys + section.templates.mapNotNull { it.print }
     private val declarations: Map<String, Part2RuleDecl> = section.rules.associateBy { it.id }
     private val expander = LinkExpander(templates, groups, rules)
 
@@ -87,7 +88,7 @@ class Part2DraftEngine(
             result.drafted.template.rules.mapNotNull { id ->
                 val decl = declarations[id]
                 val rule = rules.check(id)
-                if (decl == null || rule == null || !rule.violated(RuleContext(request, result.drafted, event, today))) return@mapNotNull null
+                if (decl == null || rule == null || !rule.violated(RuleContext(request, result.drafted, event, today, knownCodes))) return@mapNotNull null
                 RuleFinding(id, if (decl.severity == "ack") RuleSeverity.ACK else RuleSeverity.WARN, printed, basisOf(decl.basis), decl.page, decl.note)
             }
         }.distinctBy { it.ruleId to it.code }

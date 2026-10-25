@@ -48,9 +48,15 @@ class Part2CancelRealBundleTest {
         offset: Long = 0L,
         code: String = "CANCEL",
         repo: Part2Repository = FakePart2Repository(),
+        occurrence: CalendarDate? = null,
+        codeTyped: String = "GTDAL",
     ): LeaveDraftViewModel {
-        val values = buildMap<String, SlotValue> { order?.let { put("cancelled", SlotValue.RefValue(it)) } }
-        val event = LeaveEventInput(listOf(OccurrenceRequest(code, values + if (code == "CANCELS") mapOf("cancelled_code" to SlotValue.TextValue("GTDAL"), "cancelled_serial" to SlotValue.NumberValue(3)) else emptyMap())))
+        val values =
+            buildMap<String, SlotValue> {
+                order?.let { put("cancelled", SlotValue.RefValue(it)) }
+                occurrence?.let { put("occurrence_on", SlotValue.DateValue(it)) }
+            }
+        val event = LeaveEventInput(listOf(OccurrenceRequest(code, values + if (code == "CANCELS") mapOf("cancelled_code" to SlotValue.TextValue(codeTyped), "cancelled_serial" to SlotValue.NumberValue(3)) else emptyMap())))
         return LeaveDraftViewModel("d", section, repo, event, Part2Rules.shipped(), { evening }, StandardTestDispatcher(testScheduler)) { offset }.also { advanceUntilIdle() }
     }
 
@@ -99,5 +105,29 @@ class Part2CancelRealBundleTest {
     fun aRecentOrderRaisesNothing() =
         runTest {
             assertEquals(emptyList(), cancelModel(OrderRef("A/1", CalendarDate(2026, 6, 20))).findings())
+        }
+
+    @Test
+    fun theOccurrenceDateTheOfficerTypesMakesTheTimeBarWarningExactAndIsAnOptionalBox() =
+        runTest {
+            val young = OrderRef("A/1", CalendarDate(2026, 6, 20))
+            val vm = cancelModel(young, occurrence = CalendarDate(2020, 1, 1))
+
+            assertTrue(vm.findings().any { it.text == barredText }, "a young order that holds an old occurrence")
+            assertTrue(cancelModel(young).findings().none { it.text == barredText })
+            val field = vm.state.value.sections[0].fields.first { it.slotId == "occurrence_on" }
+            assertFalse(field.required, "optional: it never blocks a slip")
+            assertTrue(Part2Strings.fieldHelp(field.help, field.required).isNotBlank())
+        }
+
+    @Test
+    fun aCancelsCodeNotInTheManualsListShowsItsWarningAndATypoDoesNotBlockTheSlip() =
+        runTest {
+            val order = OrderRef("A/1", CalendarDate(2026, 6, 20))
+            val typo = cancelModel(order, code = "CANCELS", codeTyped = "GTDALX")
+
+            assertEquals(Part2CancelStrings.finding("cancels_code_unknown"), typo.findings().single().text)
+            assertTrue(typo.state.value.slip!!.readyToPrint)
+            assertEquals(emptyList(), cancelModel(order, code = "CANCELS").findings())
         }
 }

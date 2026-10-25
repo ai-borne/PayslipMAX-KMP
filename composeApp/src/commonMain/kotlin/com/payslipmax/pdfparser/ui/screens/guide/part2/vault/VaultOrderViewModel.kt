@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2.vault
 
 import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.part2.data.Part2Repository
+import com.payslipmax.pdfparser.part2.domain.CancelDrafts
 import com.payslipmax.pdfparser.part2.domain.Part2Draft
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
@@ -44,6 +45,7 @@ class VaultOrderViewModel(
     private val order = MutableStateFlow<VaultOrder?>(null)
     private val pages = MutableStateFlow<List<VaultPageRef>>(emptyList())
     private val draftId = MutableStateFlow<String?>(null)
+    private val redraftable = MutableStateFlow(false)
     private val drafts = MutableStateFlow<List<Part2Draft>>(emptyList())
     private val orders = MutableStateFlow<List<VaultOrder>>(emptyList())
     private val busy = MutableStateFlow(false)
@@ -79,7 +81,7 @@ class VaultOrderViewModel(
             return
         }
         pages.value = repository.pages(id)
-        draftId.value = loaded.draftId?.takeIf { repository.draft(it) != null }
+        linkedDraft(loaded.draftId)
         order.value = loaded
         publish()
     }
@@ -91,9 +93,16 @@ class VaultOrderViewModel(
         scope.launch {
             if (to != null && repository.draft(to) == null) return@launch
             edit { VaultOrderEditor.setDraft(it, to, now()) }
-            draftId.value = order.value?.draftId
+            linkedDraft(order.value?.draftId)
             publish()
         }
+    }
+
+    /** Notes which draft the order came from while it exists, and whether it is one to copy (a cancel slip has no order to copy). */
+    private suspend fun linkedDraft(id: String?) {
+        val draft = id?.let { repository.draft(it) }
+        draftId.value = draft?.id
+        redraftable.value = draft != null && !CancelDrafts.isCancel(draft.event)
     }
 
     fun setDate(date: CalendarDate?) = edit { VaultOrderEditor.setDate(it, date, now()) }
@@ -189,6 +198,7 @@ class VaultOrderViewModel(
             busy = busy.value,
             linked = current.draftId != null,
             quotable = VaultOrders.quotable(listOf(current)).isNotEmpty(),
+            redraftable = redraftable.value,
             cancelNote = CancelNotes.of(current, drafts.value, orders.value, localOffset),
         )
     }

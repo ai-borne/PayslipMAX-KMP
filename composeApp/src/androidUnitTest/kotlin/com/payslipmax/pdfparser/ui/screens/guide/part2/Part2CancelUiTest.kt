@@ -4,8 +4,10 @@ import androidx.compose.ui.test.assertIsDisplayed
 import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.guide.GuideBundleContract
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.part2.domain.CancelDrafts
 import com.payslipmax.pdfparser.part2.domain.LeaveEventInput
 import com.payslipmax.pdfparser.part2.domain.OccurrenceRequest
+import com.payslipmax.pdfparser.part2.domain.OrderRef
 import com.payslipmax.pdfparser.part2.domain.Part2Draft
 import com.payslipmax.pdfparser.part2.domain.Part2Rules
 import com.payslipmax.pdfparser.part2.domain.SlotValue
@@ -67,6 +69,16 @@ class Part2CancelUiTest : Part2VaultUiBase() {
         orderLevel()
         see(Part2CancelStrings.cancelOrder).assertIsDisplayed()
         see(Part2CancelStrings.cancelAndRedraft).assertIsDisplayed()
+    }
+
+    @Test
+    fun anOrderThatCameFromACancelSlipOffersTheCancelButNotTheRedraft() {
+        runBlocking { repository.saveDraft(Part2Draft("slip", CancelDrafts.cancelEvent(OrderRef("A/1", CalendarDate(2026, 6, 20))), emptyMap(), 1L, 5L)) }
+        heldOrder("o1", draftId = "slip")
+        orderLevel()
+
+        see(Part2CancelStrings.cancelOrder).assertIsDisplayed()
+        assertFalse(has(Part2CancelStrings.cancelAndRedraft))
     }
 
     @Test
