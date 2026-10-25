@@ -21,13 +21,14 @@ object LeaveRules {
     private const val AFFIX_MAX_DAYS = 5
     private const val SPECIAL_CASUAL_MAX_DAYS = 30
 
-    /** The answers the checks read, by slot id. */
+    /** The answers the checks read, by slot id (the leave's own dates and year are also what the reminder rules read). */
     private const val DAYS = "days"
     private const val EARLIER_AL = "earlier_al"
-    private const val LEAVE_FROM = "leave_from"
-    private const val LEAVE_TO = "leave_to"
+    const val LEAVE_FROM = "leave_from"
+    const val LEAVE_TO = "leave_to"
     private const val PREFIX_FIRST = "prefix_first"
-    private const val SUFFIX_LAST = "suffix_last"
+    const val SUFFIX_LAST = "suffix_last"
+    const val YEAR = "year"
 
     /** The slot a follow-up order (an extension, a rejoining, a recall) quotes its grant order in. */
     const val GRANT = "grant"
@@ -36,14 +37,17 @@ object LeaveRules {
     /** The reference boxes that quote a published Part II order of the officer's vault, so the form offers the vault for them (and not for a Corps notification or a signal). */
     val VAULT_ORDER_SLOTS: Set<String> = setOf(GRANT, CARRY_ORDER)
 
-    /** Leave a casual leave may not be combined with. This batch holds the annual set; the rest of Chapter 5 joins it with its templates. */
-    private val otherLeave = setOf("GTDAL", "GTDALCF", "EXTNAL")
+    /** The annual-leave grants. A casual leave may not be combined with them (this batch holds the annual set; the rest of Chapter 5 joins it with its templates). */
+    val ANNUAL_LEAVE: Set<String> = setOf("GTDAL", "GTDALCF", "EXTNAL")
+
+    /** The casual-leave grants, which carry the same dates but no annual-leave year. */
+    val CASUAL_LEAVE: Set<String> = setOf("GTDCL", "GTDSPCL")
 
     val all: List<Part2Rule> =
         listOf(
             checkRule(AL_YEAR_CAP) { yearTotal(it) > ANNUAL_CAP_DAYS },
             checkRule(AL_AFFIX_LIMIT) { affixDays(it) > AFFIX_MAX_DAYS },
-            checkRule(CL_COMBINATION) { context -> context.event.any { it.template.code in otherLeave } },
+            checkRule(CL_COMBINATION) { context -> context.event.any { it.template.code in ANNUAL_LEAVE } },
             checkRule(SPCL_OVER_30) { (it.occurrence.days(DAYS) ?: 0) > SPECIAL_CASUAL_MAX_DAYS },
             grantQuoted(GRANT_QUOTED_ANNUAL),
             grantQuoted(GRANT_QUOTED_REJOIN),

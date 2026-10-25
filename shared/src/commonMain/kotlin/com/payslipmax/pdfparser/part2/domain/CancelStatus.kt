@@ -32,8 +32,9 @@ object CancelStatus {
         orders: List<VaultOrder>,
     ): CancelState? {
         val target = VaultOrders.quotable(listOf(order)).firstOrNull() ?: return null
+        val others = orders.filter { other -> other.id != order.id }
         return drafts
-            .mapNotNull { stateOf(it, target, orders.filter { other -> other.id != order.id }) }
+            .mapNotNull { stateOf(it, target, others) }
             .minWithOrNull(compareBy<CancelState> { it.scope }.thenBy { it !is CancelState.CancelledBy }.thenByDescending { (it as? CancelState.SlipPrinted)?.printedAt ?: 0L })
     }
 

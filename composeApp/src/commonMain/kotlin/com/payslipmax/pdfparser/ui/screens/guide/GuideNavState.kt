@@ -94,6 +94,11 @@ class GuideNavState(
         discardPart2Draft()
     }
 
+    /** Shows what is due: the Guide Home, Part II home and the Due list, whatever the stack held (the Dashboard card's shortcut). */
+    fun openPart2Due() {
+        replaceStack(listOf(GuideDestination.Home, Part2Destination.Home, Part2Destination.Due))
+    }
+
     /** Leaves the draft [id]'s form and preview, which the repository no longer holds. Levels of another draft are left alone. */
     fun cutDraft(id: String) {
         while ((current as? Part2Destination)?.draftId == id && pop()) Unit

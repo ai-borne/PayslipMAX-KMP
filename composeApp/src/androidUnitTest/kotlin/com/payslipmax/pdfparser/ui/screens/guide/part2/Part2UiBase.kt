@@ -12,9 +12,11 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.part2.domain.Part2Rules
+import com.payslipmax.pdfparser.part2.domain.ReminderPlanner
 import com.payslipmax.pdfparser.part2.pages.PageEncoder
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
@@ -33,10 +35,12 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LocalSlipPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Drafting
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
+import com.payslipmax.pdfparser.ui.screens.guide.part2.due.DueViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.LocalPageImageDecoder
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.LocalPageScanner
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.PageImageDecoder
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
@@ -96,7 +100,15 @@ abstract class Part2UiBase {
 
     protected val drafting by lazy { Part2Drafting(guide, repository, rules(), { 1_000L }, { "draft-${drafted++}" }, dispatcher) }
     protected var drafted = 1
-    protected val factory: () -> Part2Models by lazy { { Part2Models(Part2LookupViewModel(guide).also { models += it }, Part2DraftsViewModel(guide, repository, dispatcher), drafting, vault) } }
+    protected val factory: () -> Part2Models by lazy {
+        {
+            val saved = Part2DraftsViewModel(guide, repository, dispatcher)
+            Part2Models(Part2LookupViewModel(guide).also { models += it }, saved, drafting, vault, DueViewModel(repository, saved, ReminderPlanner { OFFICER_OFFSET }, { dueNow }, dispatcher))
+        }
+    }
+
+    /** The instant the Due list is worked out at: 09:00 on 12 October 2026 where the officer is (India), so a leave that ended on the 9th is due and overdue. */
+    protected var dueNow = PreClaimDates.toUtcMillis(CalendarDate(2026, 10, 12)) + 9 * 3_600_000L - OFFICER_OFFSET
 
     protected fun show(
         nav: GuideNavState = GuideNavState(),
@@ -140,5 +152,6 @@ abstract class Part2UiBase {
 
     private companion object {
         const val SETTLE_ROUNDS = 3
+        const val OFFICER_OFFSET = 19_800_000L
     }
 }

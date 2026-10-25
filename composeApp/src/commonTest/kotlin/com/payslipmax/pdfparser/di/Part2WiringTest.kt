@@ -19,6 +19,8 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Drafting
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
+import com.payslipmax.pdfparser.ui.screens.guide.part2.due.DueCardModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.due.DueViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultViewModel
 import kotlinx.coroutines.Dispatchers
@@ -96,6 +98,20 @@ class Part2WiringTest {
         assertSame(koin.get<VaultViewModel>(), models.vault)
         assertSame(models, koin.get<Part2Models>())
         assertEquals(null, models.drafting.open("any-id"), "the Guide has not loaded, so there is nothing to draft from and no model")
+    }
+
+    @Test
+    fun theDueListAndTheDashboardCardShareOneModelEachAndAreBoundOnlyWhereTheFeatureIsEnabled() {
+        // why: the card counts what the Due list shows; two lists would let the card say "2 due" over a list of 3.
+        val guide = module { single { GuideViewModel(FakeGuideRepository(), FakeCrashReporter()) } }
+        val on = koinApplication { modules(part2Module, leaves, guide) }.koin
+        assertSame(on.get<DueViewModel>(), on.get<DueViewModel>())
+        assertSame(on.get<DueViewModel>(), on.get<Part2Models>().due)
+        assertSame(on.get<DueCardModel>(), on.get<DueCardModel>())
+
+        val production = koinApplication { modules(appKoinModules(platformModules = listOf(leaves))) }.koin
+        assertEquals(isPart2Enabled(), production.getOrNull<DueViewModel>() != null)
+        assertEquals(isPart2Enabled(), production.getOrNull<DueCardModel>() != null)
     }
 
     @Test

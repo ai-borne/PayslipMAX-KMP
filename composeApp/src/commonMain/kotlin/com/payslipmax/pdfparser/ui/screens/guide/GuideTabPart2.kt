@@ -166,6 +166,7 @@ internal fun GuidePart2Level(
         is Part2Destination.Code -> model.code(destination.code)?.let { Part2CodeScreen(it, onBack, listState) } ?: GuideLoading()
         Part2Destination.Locked, is Part2Destination.Draft, is Part2Destination.Slip, is Part2Destination.Hrms -> Part2DraftLevel(navState, host, destination, listState)
         is Part2Destination.Order -> Part2OrderLevel(navState, host, destination, listState)
+        Part2Destination.Due -> Part2DueLevel(navState, host, listState)
     }
 }
 
@@ -195,5 +196,6 @@ private fun Part2HomeRoute(
         drafts = Part2DraftList(saved, onOpen = { navState.push(Part2Destination.Slip(it)) }, onDelete = { drafts?.delete(it) }),
         vault = rememberVaultList(navState, host),
         listState = listState,
+        due = rememberDueRow(navState, host),
     )
 }

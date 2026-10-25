@@ -8,6 +8,8 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Drafting
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
+import com.payslipmax.pdfparser.ui.screens.guide.part2.due.DueCardModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.due.DueViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultViewModel
 import org.koin.dsl.module
 
@@ -29,5 +31,8 @@ val part2Module =
         single { Part2Drafting(guide = get(), repository = get()) }
         // The vault list and the maker of one order's model; the scanner is not bound (it needs a screen) and is handed in by the screens.
         single { VaultViewModel(repository = get(), encoder = get()) }
-        single { Part2Models(lookup = get(), drafts = get(), drafting = get(), vault = get()) }
+        // The Due list (the planner's plan, worded) and the Dashboard card's memory of "Not now"; both app-scoped so the card outlives a tab switch.
+        single { DueViewModel(repository = get(), drafts = get()) }
+        single { DueCardModel(due = get()) }
+        single { Part2Models(lookup = get(), drafts = get(), drafting = get(), vault = get(), due = get()) }
     }

@@ -41,6 +41,7 @@ fun DashboardScreen(
     modifier: Modifier = Modifier,
     onboardingManager: OnboardingManager = koinInject(),
     suppressCoachmark: Boolean = false,
+    onOpenDue: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val payslips = uiState.payslips
@@ -61,6 +62,7 @@ fun DashboardScreen(
         showUploadDialog = showUploadDialog,
         onboardingManager = onboardingManager,
         suppressCoachmark = suppressCoachmark,
+        onOpenDue = onOpenDue,
         modifier = modifier,
     )
 
@@ -105,6 +107,7 @@ private fun DashboardContent(
     showUploadDialog: Boolean,
     onboardingManager: OnboardingManager,
     suppressCoachmark: Boolean,
+    onOpenDue: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -121,7 +124,7 @@ private fun DashboardContent(
         } else if (payslips.isEmpty()) {
             EmptyDashboardPlaceholder(Modifier.testTag("dashboard_empty"))
         } else {
-            PopulatedDashboard(payslips, selected, viewModel, Modifier.testTag("dashboard_populated"))
+            PopulatedDashboard(payslips, selected, viewModel, onOpenDue, Modifier.testTag("dashboard_populated"))
         }
         DashboardUploadArea(
             onboardingManager = onboardingManager,
@@ -158,11 +161,11 @@ private fun PopulatedDashboard(
     payslips: List<ParsedPayslip>,
     selected: ParsedPayslip?,
     viewModel: PayslipViewModel,
+    onOpenDue: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberDashboardScrollState(uiState, viewModel)
-
     Column(
         modifier =
             modifier
@@ -171,6 +174,7 @@ private fun PopulatedDashboard(
                 .verticalScroll(scrollState)
                 .padding(AppDimensions.PaddingMedium),
     ) {
+        DashboardDueCard(viewModel, onOpenDue)
         selected?.let { payslip ->
             OfficerInfoBar(
                 payslip = payslip,

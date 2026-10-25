@@ -34,6 +34,21 @@ object CivilCalendar {
         return days + date.day - 1
     }
 
+    /** Days from 1970-01-01 to 2000-01-01, so a [dayNumber] plus this is a Unix day (the planner turns days into instants with it). */
+    const val UNIX_DAYS_TO_2000 = 10_957L
+
+    /** The date [days] after 2000-01-01 (the inverse of [dayNumber]), or null when it falls outside the allowed years. */
+    fun fromDayNumber(days: Long): CalendarDate? {
+        if (days < 0) return null
+        var rest = days
+        var year = FIRST_YEAR
+        while (year <= LAST_YEAR && rest >= lengthOfYear(year)) rest -= lengthOfYear(year++)
+        if (year > LAST_YEAR) return null
+        var month = 1
+        while (rest >= lengthOfMonth(year, month)) rest -= lengthOfMonth(year, month++)
+        return CalendarDate(year, month, rest.toInt() + 1)
+    }
+
     /** [to] minus [from] in days: negative when [to] is earlier. Both dates must [exist]. */
     fun daysBetween(
         from: CalendarDate,
@@ -62,6 +77,8 @@ object CivilCalendar {
         "${date.day.toString().padStart(PART_DIGITS, '0')}/${date.month.toString().padStart(PART_DIGITS, '0')}/${date.year.toString().padStart(YEAR_DIGITS, '0')}"
 
     private fun isLeap(year: Int) = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
+
+    private fun lengthOfYear(year: Int) = if (isLeap(year)) 366 else 365
 
     private fun lengthOfMonth(
         year: Int,

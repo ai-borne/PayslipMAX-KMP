@@ -348,6 +348,31 @@ Item 27, the check against the printed pages (the owner delegated it, as in Roun
 
 The owner accepted Phase 6c as built, with its follow-ups (Round 23) and the walk fix (216b14c5, 42b5a46a, d5999a23): "I accept 6c". Still open from it: the owner's own read of `part2_review.md` (plan Phase 11 item 27, checked by Claude but not read by the owner), the 7a hand-off (item 31) and the iPhone walk (items 14 and 20). Phase 7a is next.
 
+## Round 25: Phase 7a, the reminder planner and the in-app Due list (owner answers, 2026-10-25, asked at the start of phase 7a)
+
+Three things the plan and Rounds 5-24 did not settle were asked in one batch; the owner took the recommended option each time. The rest was settled by Rounds 6, 10, 13, 17, 18, 20, 22, 23 and 24 and the plan's Phase 7a and 7b sections.
+
+| Topic | Decision |
+|---|---|
+| The card after a payslip import | A card at the top of the Dashboard, shown after a payslip import completes while something is due now. Tapping "See what is due" opens Guide, Part II, Due. "Not now" hides it until the next import; it is held in memory only, so nothing is stored (no payload, schema or backup change) and a new launch brings it back. A split of `App.kt` (297 lines) was the price: `DetailContent` moved into `AppDetailContent.kt` unchanged, leaving `App.kt` at 254 lines. |
+| When "draft the rejoining slip" stops | When any draft holds a rejoining request (the rejoining, voluntary rejoining and recall codes) dated from the leave's first day up to its return day, inclusive. Worked out each time, never stored. Until then the item stays on Due, marked overdue after its day. |
+| After the sixth "add the published order" | Each reminder is current until the next one; the sixth stays current for 30 days after its day, then the item leaves Due. The draft and its slip are untouched, and the order can still be added from the slip. |
+
+Build-time choices made without a question (change them if you disagree):
+
+| Topic | Choice |
+|---|---|
+| Where Due lives | Its own level, `Part2Destination.Due` (`part2|due`, no id), reached from a "Due" row at the top of the Part II home. The row shows only for an entitled officer while the planner has something to show ("N things are due." or "Nothing is due right now."). A row on Due opens the draft's slip, which is where the order is added, printed or edited. |
+| Who sees it | Reminders are Premium (Round 10): the row, the card and the list are for an entitled officer. A restored Due level for anyone else shows the upgrade panel, never the list. The planner and the repository are ungated (Round 13); drafts, orders and the vault stay readable and deletable on their own screens. |
+| Printed | A draft sets reminders only once a print job has completed (it has a print snapshot), in line with Round 18: a missing reminder costs less than a wrong one. A reprint restarts "add the published order" from the latest print. |
+| Published | A vault order linked to the draft with a quotable number and a real date (`VaultOrders.quotable`). A scanned order whose number or date is not typed yet does not stop the reminder, because the point of the reminder is a number and date to quote. |
+| Return date | The day after the later of the last day of leave and the last suffix day, from the annual and casual leave grants (those that carry a last day of leave), not from the rejoining, voluntary rejoining or recall codes. One reminder per draft; two leave years in one draft use the later return. |
+| Year end | A printed annual-leave grant of leave year Y gives "draft the year-end accumulation for Y" on 1 March of Y+1, until a draft holds that year-end request for Y (printed or not). ACCLVE has no template until Phase 8, so the request is named by role in `ReminderRules` and found by the `year` slot every annual template shares; Phase 8's template must use that slot (Phase 11 item 33). |
+| Cancelled | A draft whose linked, quotable order is cancelled in full (scope ALL in `CancelStatus`, a printed cancel slip or the published cancel order) is void: it sets no reminder and answers none. A cancel of one occurrence (CANCELS) stops nothing. The corrected draft is an ordinary draft. A published order already ends "add the published order", so a cancel adds nothing further to that one reminder (Phase 11 item 31). |
+| Time | Every reminder is at 09:00 where the officer is (one hour, `ReminderPolicy.hour`; Round 10 gave 09:00 for the return date only). The day is the day where the device is (`localUtcOffsetMillis` at that instant); the planner is handed the clock and the offset. A zone that changes its offset on the day is followed. |
+| The plan | `due` is what the officer has to do now, oldest first, each marked overdue once its day has passed; `upcoming` is the nearest 20 future reminders, which is all a scheduler (7b) needs. The Due list shows a repeating reminder once, as its next date, and not again under "Coming up" while it is due. |
+| Stale items | Nothing is dismissed or expires: a return or year-end reminder stays until it is answered or its draft is deleted (Phase 11 item 32). |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

@@ -33,6 +33,9 @@ sealed interface Part2Destination : GuideDestination {
     /** The "Check the HRMS draft" screen of one draft. Only its random id is kept. */
     data class Hrms(val draftId: String) : Part2Destination
 
+    /** What is due: the reminders the planner works out from the drafts and the vault. No id: it lists what the repository holds. */
+    data object Due : Part2Destination
+
     /** One published order of the vault. Only its random id is kept; its number, date and pages live in the encrypted repository. */
     data class Order(val orderId: String) : Part2Destination
 }
@@ -60,6 +63,7 @@ private const val DRAFT = "draft"
 private const val SLIP = "slip"
 private const val HRMS = "hrms"
 private const val ORDER = "order"
+private const val DUE = "due"
 
 /** The saved form of a level after the `part2` prefix: its kind, then its one id. Ids only, never a name or a query. */
 internal fun encodePart2(destination: Part2Destination): List<String> =
@@ -73,6 +77,7 @@ internal fun encodePart2(destination: Part2Destination): List<String> =
         is Part2Destination.Slip -> listOf(SLIP, destination.draftId)
         is Part2Destination.Hrms -> listOf(HRMS, destination.draftId)
         is Part2Destination.Order -> listOf(ORDER, destination.orderId)
+        Part2Destination.Due -> listOf(DUE)
     }
 
 /** Reads [encodePart2] back; anything else (a missing id, an extra part, an unknown kind) is null, which cuts the stack there. */
@@ -88,6 +93,7 @@ internal fun decodePart2(parts: List<String>): Part2Destination? {
         SLIP -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Slip)
         HRMS -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Hrms)
         ORDER -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Order)
+        DUE -> Part2Destination.Due.takeIf { parts.size == 1 }
         else -> null
     }
 }
@@ -105,4 +111,5 @@ internal fun Part2Lookup.knows(destination: Part2Destination): Boolean =
         is Part2Destination.Slip -> Part2Limits.isPlainId(destination.draftId)
         is Part2Destination.Hrms -> Part2Limits.isPlainId(destination.draftId)
         is Part2Destination.Order -> Part2Limits.isPlainId(destination.orderId)
+        Part2Destination.Due -> true
     }
