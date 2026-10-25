@@ -75,6 +75,7 @@ object Part2Strings {
     const val lockedBody = "Premium drafts the slip for your clerk, checks it against the manual and keeps your drafts safe in the app. Looking codes up stays free."
     const val draftsHeading = "Your drafts"
     const val draftNotFinished = "Not finished"
+    const val draftReady = "Ready"
     const val draftsUnreadable = "Some drafts could not be read on this device."
     const val deleteDraft = "Delete draft"
     const val deleteTitle = "Delete this draft?"

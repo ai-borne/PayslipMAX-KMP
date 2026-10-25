@@ -122,4 +122,15 @@ class Part2CancelGoldenTest {
         assertEquals(listOf("cancel_time_barred"), slip.findings.map { it.ruleId }, "a young order, an old occurrence")
         assertEquals(rows(draft(cancelAll)).single().copy(), rows(draft(withDate)).single().copy(), "the row is the same with or without the date")
     }
+
+    @Test
+    fun aSlipHoldingBothCancelCodesRaisesEachCodesOwnTimeBarWarningWithItsOwnCitation() {
+        // why: found on the Pixel 9 walk, where a CANCEL and a CANCELS for the same old order showed one time-bar line, not two.
+        val old = ref("0050/24", 10, 24, 2024)
+        val event = LeaveEventInput(listOf(OccurrenceRequest("CANCEL", mapOf("cancelled" to old)), OccurrenceRequest("CANCELS", cancelOne().values + ("cancelled" to old))))
+
+        val found = (RealPart2.engine.draft(event, CalendarDate(2026, 10, 25)) as DraftResult.Drafted).slip.findings
+
+        assertEquals(listOf("cancel_time_barred" to 226, "cancels_time_barred" to 227), found.map { it.ruleId to it.page }.filter { it.first.endsWith("time_barred") })
+    }
 }

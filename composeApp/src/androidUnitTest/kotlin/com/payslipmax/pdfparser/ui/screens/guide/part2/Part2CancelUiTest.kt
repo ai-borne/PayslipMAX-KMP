@@ -72,6 +72,19 @@ class Part2CancelUiTest : Part2VaultUiBase() {
     }
 
     @Test
+    fun aFinishedCancelSlipIsReadyInTheDraftsListAndNotNotFinished() {
+        // why: a cancel slip has no dates, so the list used to call a complete one "Not finished" (found on the Pixel 9 walk).
+        runBlocking { repository.saveDraft(Part2Draft("slip", CancelDrafts.cancelEvent(OrderRef("A/1", CalendarDate(2026, 6, 20))), emptyMap(), 1L, 5L)) }
+        runBlocking { repository.saveDraft(Part2Draft("half", LeaveEventInput(listOf(OccurrenceRequest("GTDAL"))), emptyMap(), 1L, 6L)) }
+        show()
+        openPartTwoHome()
+
+        assertTrue(has("${Part2Strings.draftReady} · edited"))
+        assertTrue(has("${Part2Strings.draftNotFinished} · edited"), "the half-filled leave draft still reads Not finished")
+        assertEquals(1, count("${Part2Strings.draftNotFinished} · edited").fetchSemanticsNodes().size)
+    }
+
+    @Test
     fun anOrderThatCameFromACancelSlipOffersTheCancelButNotTheRedraft() {
         runBlocking { repository.saveDraft(Part2Draft("slip", CancelDrafts.cancelEvent(OrderRef("A/1", CalendarDate(2026, 6, 20))), emptyMap(), 1L, 5L)) }
         heldOrder("o1", draftId = "slip")
