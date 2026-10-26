@@ -56,6 +56,7 @@ fun DeveloperOverrideSection(viewModel: PayslipViewModel) {
                 }
             }
         }
+        ReminderDelaySwitch() // debug builds with Part II on only; composes nothing otherwise
     }
 }
 

@@ -22,6 +22,7 @@ import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.FakePageScanner
 import com.payslipmax.pdfparser.testing.FakePart2Repository
+import com.payslipmax.pdfparser.testing.FakeReminderPromptStore
 import com.payslipmax.pdfparser.testing.FakeSlipPrinter
 import com.payslipmax.pdfparser.testing.SyntheticPart2Lookup
 import com.payslipmax.pdfparser.testing.SyntheticPart2Templates
@@ -36,12 +37,14 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Drafting
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
 import com.payslipmax.pdfparser.ui.screens.guide.part2.due.DueViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.reminders.ReminderPromptModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.LocalPageImageDecoder
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.LocalPageScanner
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.PageImageDecoder
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
 
@@ -103,9 +106,12 @@ abstract class Part2UiBase {
     protected val factory: () -> Part2Models by lazy {
         {
             val saved = Part2DraftsViewModel(guide, repository, dispatcher)
-            Part2Models(Part2LookupViewModel(guide).also { models += it }, saved, drafting, vault, DueViewModel(repository, saved, ReminderPlanner { OFFICER_OFFSET }, { dueNow }, dispatcher))
+            Part2Models(Part2LookupViewModel(guide).also { models += it }, saved, drafting, vault, DueViewModel(repository, saved, ReminderPlanner { OFFICER_OFFSET }, { dueNow }, dispatcher), prompt)
         }
     }
+
+    /** The one-time reminder ask the Guide is handed: already settled by default, so no screen test sees a dialog it did not ask for. */
+    protected var prompt = ReminderPromptModel(MutableStateFlow(false), FakeReminderPromptStore(asked = true))
 
     /** The instant the Due list is worked out at: 09:00 on 12 October 2026 where the officer is (India), so a leave that ended on the 9th is due and overdue. */
     protected var dueNow = PreClaimDates.toUtcMillis(CalendarDate(2026, 10, 12)) + 9 * 3_600_000L - OFFICER_OFFSET

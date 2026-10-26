@@ -9,6 +9,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.GuideUiState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.due.DueViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.reminders.ReminderPromptModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -56,11 +57,12 @@ class Part2Drafting
         }
     }
 
-/** The models the Guide's Part II levels draw from: the lookup, the drafts list, the maker of one draft, the vault and the Due list. Plain holder, no logic. */
+/** The models the Guide's Part II levels draw from: the lookup, the drafts list, the maker of one draft, the vault, the Due list and the one-time reminder ask. Plain holder, no logic. */
 class Part2Models(
     val lookup: Part2LookupViewModel,
     val drafts: Part2DraftsViewModel,
     val drafting: Part2Drafting,
     val vault: VaultViewModel,
     val due: DueViewModel,
+    val reminders: ReminderPromptModel,
 )

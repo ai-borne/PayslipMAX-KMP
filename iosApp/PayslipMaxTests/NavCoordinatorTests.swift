@@ -61,4 +61,23 @@ final class NavCoordinatorTests: XCTestCase {
             "an empty stack never happens in practice, but Kotlin must never be sent a negative count"
         )
     }
+
+    // MARK: - popToRoot (a reminder tap closes every pushed detail)
+
+    func test_popToRoot_closesEveryPushedDetailAndKeepsTheTabRoot() {
+        let root = UIViewController()
+        let nav = UINavigationController(rootViewController: root)
+        nav.pushViewController(UIViewController(), animated: false)
+        nav.pushViewController(UIViewController(), animated: false)
+        let coordinator = NavCoordinator()
+        coordinator.navController = nav
+
+        coordinator.popToRoot()
+
+        XCTAssertEqual(nav.viewControllers, [root])
+    }
+
+    func test_popToRoot_withoutANavigationControllerDoesNothing() {
+        NavCoordinator().popToRoot()
+    }
 }

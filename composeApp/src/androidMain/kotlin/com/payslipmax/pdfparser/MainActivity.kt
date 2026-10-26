@@ -1,13 +1,17 @@
 package com.payslipmax.pdfparser
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.payslipmax.pdfparser.di.startPart2Reminders
 import com.payslipmax.pdfparser.insights.gemma.AndroidGemmaBaseModelInstaller
+import com.payslipmax.pdfparser.nav.PendingPart2Link
 import com.payslipmax.pdfparser.rating.ReviewActivityBridge
+import com.payslipmax.pdfparser.reminders.ReminderLinkIntent
 import com.payslipmax.pdfparser.subscription.isDebugBuild
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
@@ -92,6 +96,8 @@ class MainActivity : ComponentActivity() {
         ReviewActivityBridge.activityProvider = { this }
         // PayslipViewModel is a Koin `factory`; resolve once and reuse below to keep one SSOT instance.
         val viewModel = GlobalContext.get().get<PayslipViewModel>()
+        startPart2Reminders(GlobalContext.get(), viewModel) // keeps the system's reminders equal to the drafts; nothing starts with Part II off
+        if (savedInstanceState == null) offerReminderTap(intent) // a recreated activity re-reads the same intent: only a fresh launch is a tap
         splashScreen.setKeepOnScreenCondition { keepSplashOnScreen(viewModel.uiState.value) }
         setContent {
             App(
@@ -110,6 +116,15 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        offerReminderTap(intent)
+    }
+
+    // The extras are untrusted (this activity is exported): PendingPart2Link shape-checks them and the opener checks the database.
+    private fun offerReminderTap(intent: Intent?) = ReminderLinkIntent.offer(intent, GlobalContext.get().getOrNull<PendingPart2Link>())
 
     private fun openPdf(
         bytes: ByteArray,

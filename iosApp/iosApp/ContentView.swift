@@ -92,7 +92,8 @@ struct ComposeView: UIViewControllerRepresentable {
                 }
             },
             pushScreen: { [weak coordinator] name in coordinator?.push(screenName: name) },
-            requestPop: { [weak coordinator] in coordinator?.pop() }
+            requestPop: { [weak coordinator] in coordinator?.pop() },
+            requestPopToRoot: { [weak coordinator] in coordinator?.popToRoot() }
         )
 
         let root = navHost.rootViewController()
@@ -128,6 +129,12 @@ final class NavCoordinator: NSObject, UINavigationControllerDelegate, UIGestureR
 
     func pop() {
         navController?.popViewController(animated: true)
+    }
+
+    /// Closes every pushed detail at once (a reminder tap lands on the Guide tab, which a pushed detail would cover). No animation: the
+    /// screen the officer was on is not the one they are going to.
+    func popToRoot() {
+        navController?.popToRootViewController(animated: false)
     }
 
     // Details nest (Premium → Tax Planning, Pay Audit → Guide card, payslip → Retirement

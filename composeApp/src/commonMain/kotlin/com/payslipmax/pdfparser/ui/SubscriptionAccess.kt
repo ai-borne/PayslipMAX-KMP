@@ -6,7 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import com.payslipmax.pdfparser.subscription.DevOverride
 import com.payslipmax.pdfparser.subscription.FeatureGate
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
  * ViewModel façade over [com.payslipmax.pdfparser.subscription.SubscriptionManager] so composables
@@ -19,6 +22,13 @@ val PayslipViewModel.devOverride: StateFlow<DevOverride>
     get() = subscriptionManager.devOverride
 
 fun PayslipViewModel.setDevOverride(override: DevOverride) = subscriptionManager.setDevOverride(override)
+
+/**
+ * The same verdict as [hasAccess], as a flow, for work that outlives every screen (the Part II reminder sync). It is re-asked whenever one
+ * of the manager's three inputs changes (the premium flag, the dev override, the billing state) and emits only when the answer changes.
+ */
+fun PayslipViewModel.hasAccessFlow(gate: FeatureGate): Flow<Boolean> =
+    combine(uiState, devOverride, billingManager.subscriptionState) { _, _, _ -> hasAccess(gate) }.distinctUntilChanged()
 
 /**
  * Reactive gate read for Compose: observes both the premium flag and the dev override so the caller

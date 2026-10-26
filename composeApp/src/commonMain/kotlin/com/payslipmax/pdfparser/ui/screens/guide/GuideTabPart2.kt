@@ -24,6 +24,7 @@ import com.payslipmax.pdfparser.part2.pages.PageScanner
 import com.payslipmax.pdfparser.part2.print.SlipPrinter
 import com.payslipmax.pdfparser.ui.components.AccentStripeCard
 import com.payslipmax.pdfparser.ui.components.AccentStripeCardShape
+import com.payslipmax.pdfparser.ui.platform.rememberNotificationPermission
 import com.payslipmax.pdfparser.ui.platform.rememberPageScanner
 import com.payslipmax.pdfparser.ui.platform.rememberSlipPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2CaseScreen
@@ -40,6 +41,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftList
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2Models
 import com.payslipmax.pdfparser.ui.screens.guide.part2.part2DraftEntry
 import com.payslipmax.pdfparser.ui.screens.guide.part2.part2Entry
+import com.payslipmax.pdfparser.ui.screens.guide.part2.reminders.ReminderPromptHost
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.LocalPageScanner
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultOrderViewModel
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
@@ -158,6 +160,7 @@ internal fun GuidePart2Level(
     }
     val onBack: () -> Unit = { navState.pop() }
     val onOpenCode: (String) -> Unit = { navState.push(Part2Destination.Code(it)) }
+    host.models?.reminders?.let { ReminderPromptHost(it, rememberNotificationPermission()) } // the one-time ask, the first time a draft sets a reminder
     when (destination) {
         Part2Destination.Home -> Part2HomeRoute(navState, model, host, listState)
         is Part2Destination.Ribbon ->

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Part II reminders (Phase 7b): the notification permission Android 13+ asks for. Asked once, after our own explainer (DECISIONS Round 28). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <queries>
         <intent>
@@ -34,6 +38,29 @@
             android:name="androidx.activity.ComponentActivity"
             android:exported="false"
             android:theme="@android:style/Theme.Material.NoActionBar" />
+
+        <!-- WorkManager (Part II reminders) starts on demand, not at every launch: its automatic initializer is removed here and
+             PayslipApplication supplies the configuration. A build with Part II off then starts exactly as it did before WorkManager. -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
+        <!-- Part II reminders: the system drops queued jobs at a reboot, so the schedule is rebuilt from the drafts when boot completes.
+             Not exported: only the system sends this broadcast, and the receiver checks the action. -->
+        <receiver
+            android:name=".reminders.ReminderBootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"

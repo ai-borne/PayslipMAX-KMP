@@ -9,8 +9,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
 import com.payslipmax.pdfparser.di.appKoinModules
+import com.payslipmax.pdfparser.di.startPart2Reminders
 import com.payslipmax.pdfparser.nav.AppNavState
 import com.payslipmax.pdfparser.nav.NavBridge
+import com.payslipmax.pdfparser.nav.PendingLinkStackReset
+import com.payslipmax.pdfparser.nav.PendingPart2Link
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.HelpLegalScreen
 import com.payslipmax.pdfparser.ui.screens.PayAuditScreen
@@ -23,11 +26,15 @@ import com.payslipmax.pdfparser.ui.screens.TaxPlanningScreen
 import com.payslipmax.pdfparser.ui.screens.guide.GuideCardRoute
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.map
 import org.koin.core.context.startKoin
 import org.koin.mp.KoinPlatformTools
 import platform.UIKit.UIViewController
 
-private fun ensureKoin() {
+internal fun ensureKoin() {
     if (KoinPlatformTools.defaultContext().getOrNull() == null) {
         startKoin { modules(appKoinModules()) }
     }
@@ -45,6 +52,7 @@ private fun ensureKoin() {
  *
  * @param pushScreen Swift closure that pushes the native VC for a [Screen] name.
  * @param requestPop Swift closure that pops the top native VC.
+ * @param requestPopToRoot Swift closure that pops every pushed native VC at once (a reminder tap).
  */
 class IosNavHost(
     private val onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
@@ -52,6 +60,7 @@ class IosNavHost(
     private val onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     pushScreen: (screenName: String) -> Unit,
     requestPop: () -> Unit,
+    requestPopToRoot: () -> Unit,
 ) {
     private val viewModel: PayslipViewModel =
         KoinPlatformTools.defaultContext().get().get()
@@ -62,7 +71,18 @@ class IosNavHost(
             isLocked = { viewModel.uiState.value.isAppLocked },
             pushToNative = { screen -> pushScreen(screen.name) },
             popFromNative = requestPop,
+            popToRootNative = requestPopToRoot,
         )
+
+    init {
+        // Reminders (Part II, Phase 7b): the system's copy follows the drafts and this officer's entitlement; a reminder tap closes every pushed
+        // detail (they are native screens covering the tab tree) before Compose opens Due. Both do nothing while Part II is off.
+        val koin = KoinPlatformTools.defaultContext().get()
+        startPart2Reminders(koin, viewModel)
+        koin.getOrNull<PendingPart2Link>()?.let {
+            PendingLinkStackReset(it, viewModel.uiState.map { state -> state.isAppLocked }, bridge::popToRoot).start(CoroutineScope(SupervisorJob() + Dispatchers.Main))
+        }
+    }
 
     // Backs the edge-swipe gate (Phase 5, Swift side): true while the pushed detail screen has an
     // unsaved sub-state (mid-edit) that the two-step back path must not let a native swipe bypass.
@@ -170,7 +190,8 @@ fun createNavHost(
     onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
     pushScreen: (screenName: String) -> Unit,
     requestPop: () -> Unit,
+    requestPopToRoot: () -> Unit,
 ): IosNavHost {
     ensureKoin()
-    return IosNavHost(onPickPdf, onOpenPdf, onPickBackup, pushScreen, requestPop)
+    return IosNavHost(onPickPdf, onOpenPdf, onPickBackup, pushScreen, requestPop, requestPopToRoot)
 }

@@ -101,6 +101,8 @@ kotlin {
             // registerForActivityResult (lint: InvalidFragmentVersionForActivityResult) — force it
             // up to a version compatible with androidx.activity's activity-result APIs.
             implementation(libs.androidx.fragment)
+            // Part II reminder notifications (Phase 7b): local, deferrable work that survives a reboot; no network, no push.
+            implementation(libs.androidx.work.runtime)
         }
 
         iosMain.dependencies {
@@ -125,6 +127,8 @@ kotlin {
                 // `shared` already ships Room, so nothing is added to the app.
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.androidx.sqlite.bundled)
+                // WorkManager's TestDriver: enqueue -> run -> the notification is posted (Phase 7b).
+                implementation(libs.androidx.work.testing)
                 implementation("androidx.test:core:1.6.1")
             }
         }

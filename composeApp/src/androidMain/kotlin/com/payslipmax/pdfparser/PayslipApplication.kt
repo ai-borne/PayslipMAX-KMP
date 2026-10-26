@@ -1,12 +1,19 @@
 package com.payslipmax.pdfparser
 
 import android.app.Application
+import androidx.work.Configuration
 import com.payslipmax.pdfparser.di.appKoinModules
 import com.payslipmax.pdfparser.di.variantModules
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 
-class PayslipApplication : Application() {
+/**
+ * Also WorkManager's configuration provider: WorkManager starts on demand (see the manifest), so a build with Part II off never starts it, and a
+ * reminder job the system starts in a cold process finds the same configuration.
+ */
+class PayslipApplication : Application(), Configuration.Provider {
+    override val workManagerConfiguration: Configuration = Configuration.Builder().build()
+
     override fun onCreate() {
         super.onCreate()
         com.payslipmax.pdfparser.crypto.ContextHolder.context = this

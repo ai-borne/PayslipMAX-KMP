@@ -8,7 +8,8 @@ reachability plus kotlinx-serialization's bundled rules keep the models, and thi
   1. every @Serializable class in the model folders (guide/model, which holds the Part II lookup models, and part2/, where the Part II
      payload and backup models live) survives R8 with its generated `$$serializer` and its
      `Companion.serializer()` (read from the R8 mapping; the model list comes from the source, not a copy), and
-  2. the Room classes generated for the database and the Part II DAO (`PayslipDatabase_Impl`, `Part2Dao_Impl`) survive, and
+  2. the Room classes generated for the database and the Part II DAO (`PayslipDatabase_Impl`, `Part2Dao_Impl`) survive, and so does
+     the Part II reminder worker, under its own name (WorkManager stores it by name), and
   3. the release APK carries the Guide bundle byte-identical to the source file.
 The `minifiedTest` build type exists only for the device smoke (scripts/run_guide_minified_smoke.sh), which builds it.
 
@@ -26,6 +27,7 @@ ROOT_PACKAGE = "com.payslipmax.pdfparser"
 PACKAGE = f"{ROOT_PACKAGE}.guide.model"
 KOTLIN_ROOT = os.path.join(ROOT, "shared/src/commonMain/kotlin/com/payslipmax/pdfparser")
 MODELS_DIR = os.path.join(KOTLIN_ROOT, "guide/model")
+LAUNCH_FLAGS = os.path.join(KOTLIN_ROOT, "subscription/LaunchFlags.kt")
 # Folders (under KOTLIN_ROOT) whose @Serializable classes must survive R8; a file's package is its folder's path.
 MODEL_FOLDERS = ("guide/model", "part2")
 BUNDLE_SRC = os.path.join(ROOT, "composeApp/src/commonMain/composeResources/files/guide/guide_bundle.json")
@@ -41,6 +43,7 @@ ANY_SERIALIZABLE = re.compile(
     r"@Serializable(?:\([^)]*\))?\s+(?:(?:public|internal|private|data|sealed|enum|abstract|open|value)\s+)*(?:class|object|interface)\s+(\w+)"
 )
 CLASS_LINE = re.compile(r"^(\S+) -> \S+:$")
+CLASS_RENAME = re.compile(r"^(\S+) -> (\S+):$")
 METHOD_NAME = re.compile(r"\s(\w+)\(")
 
 
@@ -125,13 +128,39 @@ def check_mapping(mapping_text, models):
 
 
 # Room builds these by generated code, never by a name the compiler sees, so R8 can drop them in release only: the database
-# and the Part II DAO it hands out. A DAO added later joins this list in the phase that adds it.
-REQUIRED_CLASSES = (f"{ROOT_PACKAGE}.database.PayslipDatabase_Impl", f"{ROOT_PACKAGE}.part2.data.Part2Dao_Impl")
+# and the Part II DAO it hands out. A DAO added later joins this list in the phase that adds it. WorkManager starts the Part II
+# reminder worker from a class NAME it stored, so the worker is required too (and must keep its name: UNRENAMED_CLASSES).
+REMINDER_WORKER = f"{ROOT_PACKAGE}.reminders.ReminderWorker"
+REQUIRED_CLASSES = (f"{ROOT_PACKAGE}.database.PayslipDatabase_Impl", f"{ROOT_PACKAGE}.part2.data.Part2Dao_Impl", REMINDER_WORKER)
+UNRENAMED_CLASSES = (REMINDER_WORKER,)
 
 
-def check_required_classes(mapping_text):
+PART2_FLAG = re.compile(r"const\s+val\s+PART2_ENABLED\s*:\s*Boolean\s*=\s*(true|false)\b")
+
+
+def part2_enabled(launch_flags_text):
+    """Whether LaunchFlags.PART2_ENABLED is on. Unreadable fails loudly: guessing "off" would skip the worker check without a word."""
+    m = PART2_FLAG.search(launch_flags_text)
+    if m is None:
+        raise ValueError("LaunchFlags.PART2_ENABLED not found in the shape this gate reads")
+    return m.group(1) == "true"
+
+
+def _required(part2_on):
+    """The reminder worker is reachable only through part2Module, so a build with the flag off rightly has R8 drop it with the rest of Part II."""
+    return [c for c in REQUIRED_CLASSES if part2_on or c != REMINDER_WORKER]
+
+
+def check_required_classes(mapping_text, part2_enabled=True):
     classes = _classes(mapping_text)
-    return [f"{name} was removed by R8" for name in REQUIRED_CLASSES if name not in classes]
+    return [f"{name} was removed by R8" for name in _required(part2_enabled) if name not in classes]
+
+
+def check_unrenamed_classes(mapping_text, part2_enabled=True):
+    """A class WorkManager stored by name must still have that name after R8 (a rename would strand every reminder scheduled before an update).
+    A removed class is check_required_classes' to report, so it is not reported twice."""
+    renamed = {m.group(1): m.group(2) for m in map(CLASS_RENAME.match, mapping_text.splitlines()) if m}
+    return [f"{name} was renamed to {renamed[name]} by R8, but WorkManager stores it by name" for name in UNRENAMED_CLASSES if (part2_enabled or name != REMINDER_WORKER) and renamed.get(name, name) != name]
 
 
 def empty_folders(kotlin_root, folders):
@@ -162,7 +191,11 @@ def main():
         print(f"ℹ️  {folder}/ does not exist yet, so it has no models to check")
     with open(args.mapping, encoding="utf-8") as fh:
         mapping_text = fh.read()
-    problems = check_mapping(mapping_text, models) + check_required_classes(mapping_text)
+    with open(LAUNCH_FLAGS, encoding="utf-8") as fh:
+        part2_on = part2_enabled(fh.read())
+    if not part2_on:
+        print("ℹ️  PART2_ENABLED is false, so R8 drops the reminder worker with the rest of Part II; run this gate on a flag-on build (Phase 10) to prove it")
+    problems = check_mapping(mapping_text, models) + check_required_classes(mapping_text, part2_on) + check_unrenamed_classes(mapping_text, part2_on)
     problems += [f"{folder}/ holds no @Serializable model, so the gate proved nothing there" for folder in empty_folders(KOTLIN_ROOT, MODEL_FOLDERS)]
     problems += [f"{name} is @Serializable but of a kind this gate does not check" for name in unlisted_serializables(KOTLIN_ROOT, MODEL_FOLDERS)]
     with open(BUNDLE_SRC, "rb") as fh:
@@ -173,7 +206,7 @@ def main():
         sys.exit(1)
     print(
         f"✅ Guide and Part II R8 gate: {len(models)} models and serializers kept ({summary(KOTLIN_ROOT, MODEL_FOLDERS)}); "
-        f"{', '.join(c.rsplit('.', 1)[1] for c in REQUIRED_CLASSES)} kept; bundle shipped byte-identical"
+        f"{', '.join(c.rsplit('.', 1)[1] for c in _required(part2_on))} kept; bundle shipped byte-identical"
     )
 
 

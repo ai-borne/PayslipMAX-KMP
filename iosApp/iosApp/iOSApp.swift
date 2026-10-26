@@ -64,6 +64,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // Bridge VisionKit's document camera (Part II vault pages) to the shared IosPageScanner.
         DocumentScanPresenter.register()
 
+        // Bridge local notifications (Part II reminders) to KMP and take the notification-center delegate before launch ends.
+        ReminderNotificationGateway.register()
+
         return true
     }
 }

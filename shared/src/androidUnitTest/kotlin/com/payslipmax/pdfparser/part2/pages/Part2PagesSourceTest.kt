@@ -73,7 +73,10 @@ class Part2PagesSourceTest {
             assertEquals(emptyList(), found, "${file.name}: the scanner runs in Google Play services, so the app holds no camera permission (the merged-manifest guard enforces it)")
         }
         val manifest = File("../composeApp/src/androidMain/AndroidManifest.xml").readText()
-        assertTrue("uses-permission" !in manifest && "CAMERA" !in manifest)
+        // Phase 7b added the notification permission for Part II reminders; nothing else, and never the camera.
+        val declared = Regex("<uses-permission android:name=\"([^\"]+)\"").findAll(manifest).map { it.groupValues[1] }.toList()
+        assertEquals(listOf("android.permission.POST_NOTIFICATIONS"), declared)
+        assertTrue("CAMERA" !in manifest)
     }
 
     @Test

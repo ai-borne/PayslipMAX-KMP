@@ -16,12 +16,14 @@ import com.payslipmax.pdfparser.Screen
  *   [navigateToDetail] entirely (decision 5, iOS half — never push content while locked).
  * @param pushToNative asks the platform to push a native VC hosting [Screen].
  * @param popFromNative asks the platform to pop the top native VC.
+ * @param popToRootNative asks the platform to pop every pushed native VC at once (a reminder tap, see [popToRoot]).
  */
 class NavBridge(
     private val navState: AppNavState,
     private val isLocked: () -> Boolean = { false },
     private val pushToNative: (Screen) -> Unit = {},
     private val popFromNative: () -> Unit = {},
+    private val popToRootNative: () -> Unit = {},
 ) {
     /**
      * Navigate to a detail [screen]: record it in [navState] and push its native VC.
@@ -39,6 +41,16 @@ class NavBridge(
      */
     fun requestPop() {
         if (navState.pop()) popFromNative()
+    }
+
+    /**
+     * Closes every pushed detail, natively and in the state, so a destination on a tab root (a reminder tap opening Guide, Part II, Due) is
+     * not hidden under a pushed screen. Suppressed while locked, like every push. With no detail open the platform is not asked.
+     */
+    fun popToRoot() {
+        if (isLocked() || navState.activeDetail == null) return
+        navState.truncateTo(0)
+        popToRootNative()
     }
 
     /**

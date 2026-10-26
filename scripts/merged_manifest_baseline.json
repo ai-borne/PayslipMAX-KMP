@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "about": "The release merged manifest of composeApp (the 1.5.0 release line). Phase 6a added ML Kit Document Scanner 16.0.0 and reviewed the diff: it adds three components (an invisible delegate activity, an init provider and a discovery service), all exported=false, and no permission, feature or exported component, so no entry here changed. check_merged_manifest.py compares the manifest with this file; a change is a reviewed edit here with a reason. Nothing here is camera, storage, media or location.",
+  "about": "The release merged manifest of composeApp (the 1.5.0 release line). Phase 6a added ML Kit Document Scanner 16.0.0 and reviewed the diff: it adds three components (an invisible delegate activity, an init provider and a discovery service), all exported=false, and no permission, feature or exported component. Phase 7b (Part II reminders) added WorkManager 2.11.2 and the notification permission and reviewed the diff: two permissions (POST_NOTIFICATIONS, declared by the app; RECEIVE_BOOT_COMPLETED, from WorkManager) and two exported components, both from WorkManager and both guarded by a permission only the system or the shell holds. WorkManager's automatic start-up entry is removed (it starts on demand). check_merged_manifest.py compares the manifest with this file; a change is a reviewed edit here with a reason. Nothing here is camera, storage, media or location.",
   "application": {
     "allowBackup": "false",
     "debuggable": null,
@@ -50,6 +50,14 @@
     {
       "name": "in.aiborne.payslipmax.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
       "reason": "androidx.core 1.16: the app's own signature permission that keeps dynamically registered receivers private."
+    },
+    {
+      "name": "android.permission.POST_NOTIFICATIONS",
+      "reason": "Part II reminders (Phase 7b), declared by the app: the runtime permission Android 13+ asks for before a notification can show. It is asked once, after the app's own explainer and only when a printed slip first sets a reminder (DECISIONS Round 28); a decline is final. The notification is one generic sentence."
+    },
+    {
+      "name": "android.permission.RECEIVE_BOOT_COMPLETED",
+      "reason": "androidx.work (work-runtime 2.11.2): lets WorkManager re-register its pending jobs after a reboot, so a scheduled Part II reminder survives a restart. Only the system sends that broadcast."
     }
   ],
   "declared_permissions": [
@@ -81,6 +89,20 @@
       "permission": null,
       "enabled": "false",
       "reason": "Play Asset Delivery (asset-delivery 2.2.2): the library ships it exported but disabled; Play turns it on when it extracts an asset pack (the Gemma model pack)."
+    },
+    {
+      "kind": "receiver",
+      "name": "androidx.work.impl.diagnostics.DiagnosticsReceiver",
+      "permission": "android.permission.DUMP",
+      "enabled": "true",
+      "reason": "androidx.work (work-runtime 2.11.2): an adb diagnostics broadcast, exported but guarded by android.permission.DUMP, which only the shell and the system hold. It reports WorkManager's own job counts to adb and sends nothing out."
+    },
+    {
+      "kind": "service",
+      "name": "androidx.work.impl.background.systemjob.SystemJobService",
+      "permission": "android.permission.BIND_JOB_SERVICE",
+      "enabled": "@bool/enable_system_job_service_default",
+      "reason": "androidx.work (work-runtime 2.11.2): the JobScheduler service WorkManager runs its jobs on. Exported so the system can bind it, guarded by android.permission.BIND_JOB_SERVICE, which only the system holds. The reminder worker runs inside it."
     }
   ]
 }

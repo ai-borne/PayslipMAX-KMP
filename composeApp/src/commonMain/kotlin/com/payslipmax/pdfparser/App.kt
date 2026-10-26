@@ -143,6 +143,7 @@ internal fun MainScaffold(
         // System back pops a pushed detail; at a tab root it stays disabled so back exits.
         // Never enabled on iOS — the native UINavigationController handles back there.
         BackHandler(enabled = !hostDetailsNatively && navState.activeDetail != null) { navState.pop() }
+        Part2LinkEffect(navState, guideNavState) // a reminder tap that waited behind the lock screen opens Due; nothing is composed with Part II off
         // Scaffold already applies the safe-area inset via paddingValues here; consume it so a
         // screen's own detailScreenSafeArea() resolves to ~0 on this path (no double padding) while
         // still applying on a standalone iOS detail VC, which has no ancestor to consume it.

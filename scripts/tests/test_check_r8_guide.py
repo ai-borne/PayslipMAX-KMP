@@ -174,20 +174,22 @@ class RoomClassesTest(unittest.TestCase):
     def _mapping(self, *present):
         return "# compiler: R8\n" + "".join(f"{name} -> a.b{i}:\n    int x -> a\n" for i, name in enumerate(present))
 
-    def test_both_implementations_are_required_by_name(self):
-        self.assertEqual(gate.REQUIRED_CLASSES, (self.DATABASE, self.PART2_DAO))
+    WORKER = f"{gate.ROOT_PACKAGE}.reminders.ReminderWorker"
 
-    def test_a_mapping_that_kept_both_passes(self):
-        self.assertEqual(gate.check_required_classes(self._mapping(self.DATABASE, self.PART2_DAO)), [])
+    def test_both_implementations_and_the_reminder_worker_are_required_by_name(self):
+        self.assertEqual(gate.REQUIRED_CLASSES, (self.DATABASE, self.PART2_DAO, self.WORKER))
+
+    def test_a_mapping_that_kept_all_three_passes(self):
+        self.assertEqual(gate.check_required_classes(self._mapping(self.DATABASE, self.PART2_DAO, self.WORKER)), [])
 
     def test_a_removed_part_ii_dao_fails_and_names_it(self):
-        problems = gate.check_required_classes(self._mapping(self.DATABASE))
+        problems = gate.check_required_classes(self._mapping(self.DATABASE, self.WORKER))
         self.assertEqual(len(problems), 1, problems)
         self.assertIn("Part2Dao_Impl", problems[0])
         self.assertIn("removed by R8", problems[0])
 
     def test_a_removed_database_implementation_fails(self):
-        self.assertTrue(any("PayslipDatabase_Impl" in p for p in gate.check_required_classes(self._mapping(self.PART2_DAO))))
+        self.assertTrue(any("PayslipDatabase_Impl" in p for p in gate.check_required_classes(self._mapping(self.PART2_DAO, self.WORKER))))
 
     def test_the_real_sources_declare_the_classes_the_gate_requires(self):
         """A rename of the DAO must fail here, not pass the gate for a class that no longer exists."""
