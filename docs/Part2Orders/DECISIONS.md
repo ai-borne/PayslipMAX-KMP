@@ -424,6 +424,10 @@ Built without a question (change them if you disagree):
 | Closing questions (owner, 2026-10-26, asked after the build) | Each took the recommended option. (1) No in-app note after a decline: strictly "Due list only, never asked again" (Phase 11 item 39 keeps it for a later request). (2) A Premium lapse is noticed when the app next opens; the worker does not check Premium (item 38). (3) The `IosReminderBridge.Companion` entry in `scripts/stateful_singleton_guard.py` is approved (item 41, closed). (4) The Pixel 9 walk comes before the 7b commit. (5) A change of time zone is not followed until the app next opens (item 38). (6) WorkManager stays on 2.11.2; 2.12.x waits for a quiet release with its own R8 and manifest check. (7) The iPhone walk closes with the Phase 10 walk, items 14 and 20. (8) The Play Console declarations and privacy-policy wording for the new permissions are Phase 10 (item 40). |
 | Permissions | `POST_NOTIFICATIONS` (declared by the app) and `RECEIVE_BOOT_COMPLETED` (WorkManager), plus two exported WorkManager components guarded by system-only permissions (`SystemJobService`, `DiagnosticsReceiver`): each a reviewed entry in `scripts/merged_manifest_baseline.json` with its reason. The Play listing will show the new permissions. |
 
+## Round 29: Phase 7b accepted (owner, 2026-10-26)
+
+The owner accepted Phase 7b as built (6421b5bb): the notification flow on both platforms, the boot receiver, the three faults the Pixel 9 walk found and their fixes, and the accepted limits of Phase 11 item 38. Still open from it: Phase 11 items 14 and 20 (the iPhone walk, now including the notification checks), 39 (no in-app note after a decline, by the owner's choice), 40 (the Play listing wording, Phase 10) and 42 (the worker proof and a cold worker on the real flag-on release, Phase 10), besides the older items 8, 11, 22, 27, 33 and 35. Phase 8 (rest of Chapter 5, incl. ACCLVE and ENCASH) is next.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
