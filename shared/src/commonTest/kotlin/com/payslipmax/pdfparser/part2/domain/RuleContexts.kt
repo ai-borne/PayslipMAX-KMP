@@ -26,6 +26,13 @@ internal object RuleContexts {
         computed: Map<String, SlotValue> = emptyMap(),
     ) = DraftedOccurrence(SyntheticPart2Templates.templates.first().copy(code = code), null, null, computed)
 
+    /** A drafted occurrence of [code] that falls from [from], with the worked-out [computed] values, for a rule that reads its neighbours in the event. */
+    fun neighbour(
+        code: String,
+        from: CalendarDate?,
+        computed: Map<String, SlotValue> = emptyMap(),
+    ) = DraftedOccurrence(SyntheticPart2Templates.templates.first().copy(code = code), from, null, computed)
+
     /** The context for judging [code] with the officer's [values] and [answers], inside an event that also holds [others] (by code). */
     fun context(
         code: String,
@@ -35,8 +42,9 @@ internal object RuleContexts {
         others: List<String> = emptyList(),
         today: CalendarDate? = null,
         known: Set<String>? = null,
+        neighbours: List<DraftedOccurrence> = emptyList(),
     ): RuleContext {
         val mine = occurrence(code, computed)
-        return RuleContext(OccurrenceRequest(code, values, answers), mine, listOf(mine) + others.map { occurrence(it) }, today, known)
+        return RuleContext(OccurrenceRequest(code, values, answers), mine, listOf(mine) + others.map { occurrence(it) } + neighbours, today, known)
     }
 }

@@ -39,7 +39,7 @@ object Part2DraftContract {
     fun assertTheFormCompletesEveryOfferedCode(bundle: GuideBundle) {
         val builder = builder(bundle)
         val offered = Part2LookupIndex(assertNotNull(bundle.part2)).draftOptions()
-        assertEquals(10, offered.size, "the Leave release offers the eight leave and rejoining codes and the two cancellation codes")
+        assertEquals(32, offered.size, "the Leave release offers the eight leave and rejoining codes, the two cancellation codes and the 22 serials 5.6-5.22 and 5.26-5.30")
         for (option in offered) {
             var event = LeaveEventEditor.start(option.code)
             for (question in builder.questionsFor(option.code)) {
@@ -51,7 +51,7 @@ object Part2DraftContract {
             }
             var day = 1
             for (field in builder.build(event, emptySet(), false).sections[0].fields) {
-                event = LeaveEventEditor.setValue(event, 0, field.slotId, valueFor(field.value, day++))
+                event = LeaveEventEditor.setValue(event, 0, field.slotId, valueFor(field.value, day++, field.slotId))
             }
             val state = builder.build(event, emptySet(), false)
             assertEquals(emptyList(), state.missing, option.code)
@@ -72,11 +72,12 @@ object Part2DraftContract {
     private fun valueFor(
         value: FieldValue,
         day: Int,
+        slotId: String,
     ): SlotValue? =
         when (value) {
             is FieldValue.Date -> SlotValue.DateValue(CalendarDate(2026, 8, day))
             is FieldValue.Digits -> SlotValue.NumberValue(1)
-            is FieldValue.Words -> SlotValue.TextValue("plain")
+            is FieldValue.Words -> SlotValue.TextValue(if (slotId == "breakup") "2011 30; 2013 20" else "plain")
             is FieldValue.Reference -> SlotValue.RefValue(OrderRef("N-1/26", CalendarDate(2026, 3, 2)))
         }
 }

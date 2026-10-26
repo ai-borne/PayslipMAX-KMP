@@ -141,7 +141,7 @@ class GuidePart2TemplateValidatorTest {
     fun aSlotIdIsWellFormedAndUniqueAndItsKindIsKnown() {
         assertProblem(section.editTemplate(NOTE) { it.copy(slots = listOf(it.slots[0], it.slots[1].copy(id = "Remark"))) }, "template $NOTE: slot Remark: id must be lowercase letters, digits and underscores")
         assertProblem(section.editTemplate(NOTE) { it.copy(slots = listOf(it.slots[0].copy(id = "remark"), it.slots[1])) }, "template $NOTE: duplicate slot id remark")
-        assertProblem(section.editTemplate(NOTE) { it.copy(slots = listOf(it.slots[0], it.slots[1].copy(kind = "money"))) }, "template $NOTE: slot remark: kind must be date, number, text, days, ref, earliest, latest or next_day")
+        assertProblem(section.editTemplate(NOTE) { it.copy(slots = listOf(it.slots[0], it.slots[1].copy(kind = "money"))) }, "template $NOTE: slot remark: kind must be date, number, text, days, ref, years, derived, earliest, latest or next_day")
     }
 
     @Test
@@ -280,7 +280,7 @@ class GuidePart2TemplateValidatorTest {
     fun ruleIdsAreUniqueAndWellFormedAndTheKindIsKnown() {
         assertProblem(section.editRule(SyntheticPart2Templates.GRANT_QUOTED) { it.copy(id = "cap_days") }, "duplicate rule id cap_days")
         assertProblem(section.editRule(SyntheticPart2Templates.GRANT_QUOTED) { it.copy(id = "Bad-Id") }, "rule Bad-Id: id must be lowercase letters, digits and underscores")
-        assertProblem(section.editRule(SyntheticPart2Templates.CAP_DAYS) { it.copy(kind = "hint") }, "rule cap_days: kind must be check or condition")
+        assertProblem(section.editRule(SyntheticPart2Templates.CAP_DAYS) { it.copy(kind = "hint") }, "rule cap_days: kind must be check, condition or derive")
     }
 
     @Test

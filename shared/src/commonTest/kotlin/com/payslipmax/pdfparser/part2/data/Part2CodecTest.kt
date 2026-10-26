@@ -132,7 +132,7 @@ class Part2CodecTest {
     @Test
     fun aStoredDraftOutsideTheBoundsIsUnreadableSoARestoredFileCannotExceedThem() {
         val tooManyRequests = (1..11).joinToString(",") { """{"code":"C$it"}""" }
-        val longText = "a".repeat(201)
+        val longText = "a".repeat(601)
 
         assertFailsWith<Part2UnreadableException> { entityFor("""{"v":1,"id":"draft-1","createdAt":1,"updatedAt":2,"requests":[$tooManyRequests]}""").toDraft(key) }
         assertFailsWith<Part2UnreadableException> {
@@ -161,8 +161,8 @@ class Part2CodecTest {
         assertNull(Part2Bounds.check(draft))
         assertNull(Part2Bounds.check(withRequests(List(limits.REQUESTS_MAX) { request() })))
         assertEquals(Part2WriteResult.REJECTED, Part2Bounds.check(withRequests(List(limits.REQUESTS_MAX + 1) { request() })))
-        assertNull(Part2Bounds.check(withRequests(listOf(request("s" to SlotValue.TextValue("a".repeat(limits.TEXT_MAX)))))))
-        assertEquals(Part2WriteResult.REJECTED, Part2Bounds.check(withRequests(listOf(request("s" to SlotValue.TextValue("a".repeat(limits.TEXT_MAX + 1)))))))
+        assertNull(Part2Bounds.check(withRequests(listOf(request("s" to SlotValue.TextValue("a".repeat(limits.BREAKUP_TEXT_MAX)))))), "the longest text a slot may hold is a year-by-year list")
+        assertEquals(Part2WriteResult.REJECTED, Part2Bounds.check(withRequests(listOf(request("s" to SlotValue.TextValue("a".repeat(limits.BREAKUP_TEXT_MAX + 1)))))))
         assertEquals(
             Part2WriteResult.REJECTED,
             Part2Bounds.check(withRequests(listOf(request(*Array(limits.VALUES_PER_REQUEST_MAX + 1) { "s$it" to SlotValue.NumberValue(1) })))),

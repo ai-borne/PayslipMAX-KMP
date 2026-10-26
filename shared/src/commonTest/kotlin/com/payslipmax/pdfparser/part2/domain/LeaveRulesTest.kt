@@ -66,6 +66,18 @@ class LeaveRulesTest {
     }
 
     @Test
+    fun casualLeaveBesideEveryOtherChapterFiveLeaveIsAcknowledgedToo() {
+        // why: Phase 11 item 8 - the check knew only the annual set; p.117 says casual leave cannot join ANY other kind of leave except special casual leave.
+        val rule = check(LeaveRules.CL_COMBINATION)
+        val others = listOf("FURLEV", "EXTNFUR", "MTRNLV", "SPMTRNLV", "GTDCCL", "EOL", "TERLEV", "CHADPLVE", "PTRNLV", "PATLCHAD", "STDLEV", "STDLVAL", "STDLVFUR")
+        for (other in others) assertTrue(rule.violated(context("GTDCL", others = listOf(other))), other)
+        assertEquals(13, others.size)
+        for (notLeave in listOf("REJOINAL", "VOLREJ", "RECALL", "OSL", "REJOSL", "AWL", "REJAWL", "ACCLVE", "ENCASH", "LVELTC")) {
+            assertFalse(rule.violated(context("GTDCL", others = listOf(notLeave))), "$notLeave is not a leave grant")
+        }
+    }
+
+    @Test
     fun aSpecialCasualLeaveOverThirtyDaysIsWarnedAbout() {
         // why: the row itself reads "upto 30 days" (5.5, p.116); a longer count is almost always a typo in the dates.
         val rule = check(LeaveRules.SPCL_OVER_30)

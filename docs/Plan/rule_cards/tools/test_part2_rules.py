@@ -34,7 +34,7 @@ class RuleDeclarations(unittest.TestCase):
     def test_ids_are_unique_and_well_formed_and_the_kind_is_known(self):
         self.assertIn('duplicate rule id cap_days', self.rule_problems(lambda d: d['rules'][1].update(id='cap_days')))
         self.assertIn('rule Bad-Id: id must be lowercase letters, digits and underscores', self.rule_problems(lambda d: d['rules'][1].update(id='Bad-Id')))
-        self.assertIn('rule cap_days: kind must be check or condition', self.rule_problems(lambda d: d['rules'][0].update(kind='hint')))
+        self.assertIn('rule cap_days: kind must be check, condition or derive', self.rule_problems(lambda d: d['rules'][0].update(kind='hint')))
 
     def test_the_limits_are_exactly_the_agreed_keys_and_positive(self):
         self.assertTrue(self.rule_problems(lambda d: d['limits'].pop('help')))

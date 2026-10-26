@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.guide.data
 import com.payslipmax.pdfparser.guide.data.SealedSyntheticPart2.sealed
 import com.payslipmax.pdfparser.guide.model.Part2Column
 import com.payslipmax.pdfparser.guide.model.Part2Lookup
+import com.payslipmax.pdfparser.guide.model.Part2RuleDecl
 import com.payslipmax.pdfparser.guide.model.Part2Slot
 import com.payslipmax.pdfparser.guide.model.Part2Template
 import com.payslipmax.pdfparser.testing.SyntheticPart2Templates
@@ -79,7 +80,7 @@ class GuidePart2SlotFeaturesValidatorTest {
     @Test
     fun onlyDaysAndComputedSlotsHaveBetweenAndTheKindListNamesTheComputedKinds() {
         assertProblem(problems { t -> t.copy(slots = t.slots.map { if (it.id == "remark") it.copy(between = listOf("noted_on")) else it }) }, "slot remark: only a days or computed slot has between")
-        assertProblem(problems { t -> t.copy(slots = t.slots.map { if (it.id == "remark") it.copy(kind = "money") else it }) }, "slot remark: kind must be date, number, text, days, ref, earliest, latest or next_day")
+        assertProblem(problems { t -> t.copy(slots = t.slots.map { if (it.id == "remark") it.copy(kind = "money") else it }) }, "slot remark: kind must be date, number, text, days, ref, years, derived, earliest, latest or next_day")
     }
 
     @Test
@@ -101,7 +102,10 @@ class GuidePart2SlotFeaturesValidatorTest {
         assertEquals(emptyList(), withSlots(listOf(earlier), rules = listOf(CAP_DAYS)))
         assertProblem(withSlots(listOf(slot("earlier", "number", forRule = GRANT_QUOTED)), rules = listOf(CAP_DAYS)), "slot earlier: for names a rule the template does not run")
         assertProblem(withSlots(listOf(earlier)), "slot earlier: for names a rule the template does not run")
-        assertProblem(withSlots(listOf(slot("calc", "next_day", "noted_on", forRule = CAP_DAYS)), rules = listOf(CAP_DAYS)), "slot calc: for is only for a date, number or text slot")
+        assertProblem(withSlots(listOf(slot("calc", "next_day", "noted_on", forRule = CAP_DAYS)), rules = listOf(CAP_DAYS)), "slot calc: for is only for a date, number, text or days slot")
+        val span = slot("span", "days", "d1", "d2", forRule = CAP_DAYS)
+        assertEquals(emptyList(), withSlots(dates + listOf(span), rules = listOf(CAP_DAYS)), "a day count only a check reads needs no other use")
+        assertProblem(withSlots(dates + listOf(slot("span", "days", "d1", "d2", forRule = GRANT_QUOTED)), rules = listOf(CAP_DAYS)), "slot span: for names a rule the template does not run")
     }
 
     @Test
@@ -120,5 +124,61 @@ class GuidePart2SlotFeaturesValidatorTest {
         assertProblem(withText("{remark} {ghost}"), "slot ghost used but not declared")
         assertProblem(withText("<b>{remark}</b>"), "column data1 has angle brackets")
         assertProblem(withText("{remark} " + "x".repeat(SyntheticPart2Templates.limits.narrative)), "column data1 is over ${SyntheticPart2Templates.limits.narrative} characters")
+    }
+
+    private val deriveRule = Part2RuleDecl("sum_it", "derive", null, "manual", 133, "(a)")
+    private val inputs = listOf(slot("first", "number"), slot("second", "number"))
+
+    private fun total(
+        by: String? = "sum_it",
+        vararg reads: String = arrayOf("first", "second"),
+    ) = Part2Slot("total", "derived", "Label total", "Help for total.", by = by, reads = reads.toList())
+
+    private fun derived(
+        extra: List<Part2Slot>,
+        rules: List<Part2RuleDecl> = listOf(deriveRule),
+        narrative: String = "Noted {noted_on} as {remark} total {total}",
+    ): List<String> {
+        val edited = section.copy(rules = section.rules + rules, templates = section.templates.map { if (it.code == NOTE) it.copy(slots = it.slots + extra, narrative = narrative).sealed() else it })
+        return GuideBundleValidator.validate(SyntheticPart2Templates.bundle().copy(part2 = edited))
+    }
+
+    @Test
+    fun aDerivedSlotReadingDeclaredInputsIsValidAndCountsAsUsingThem() {
+        assertEquals(emptyList(), derived(inputs + total()))
+        assertEquals(emptyList(), derived(listOf(Part2Slot("breakup", "years", "Label breakup", "Help for breakup."), Part2Slot("total", "derived", "Label total", "Help.", by = "sum_it", reads = listOf("breakup")))), "a years slot is an input")
+    }
+
+    @Test
+    fun aDeriveRuleIsAThirdKindWithNoSeverity() {
+        assertEquals(emptyList(), derived(emptyList(), rules = listOf(deriveRule.copy(basis = "practice", page = null)), narrative = "Noted {noted_on} as {remark}"))
+        assertProblem(derived(emptyList(), rules = listOf(deriveRule.copy(severity = "warn")), narrative = "Noted {noted_on} as {remark}"), "rule sum_it: a derive rule has no severity")
+    }
+
+    @Test
+    fun aDerivedSlotMustNameADeriveRuleAndReadDeclaredPlainSlots() {
+        assertProblem(derived(inputs + total(by = "ghost")), "slot total: by names an unknown rule")
+        assertProblem(derived(inputs + total(by = CAP_DAYS)), "slot total: by must name a derive rule")
+        assertProblem(derived(inputs + total(by = null)), "slot total: a derived slot needs by")
+        assertProblem(derived(inputs + total(reads = emptyArray())), "slot total: reads must name declared slots")
+        assertProblem(derived(inputs + total(reads = arrayOf("first", "ghost"))), "slot total: reads must name declared slots")
+        assertProblem(derived(inputs + total(reads = arrayOf("total"))), "slot total: reads must name declared slots")
+        val chained = Part2Slot("other", "derived", "Label other", "Help.", by = "sum_it", reads = listOf("total"))
+        assertProblem(derived(inputs + total() + chained, narrative = "Noted {noted_on} as {remark} {total} {other}"), "slot other: reads must name declared slots")
+    }
+
+    @Test
+    fun byAndReadsBelongToDerivedSlotsOnlyAndADerivedSlotTakesNoOtherFeature() {
+        val withBy = Part2Slot("first", "number", "Label first", "Help.", by = "sum_it")
+        assertProblem(derived(listOf(withBy, inputs[1]), narrative = "Noted {noted_on} as {remark} {first} {second}"), "slot first: by is only for a derived slot")
+        val withReads = Part2Slot("first", "number", "Label first", "Help.", reads = listOf("second"))
+        assertProblem(derived(listOf(withReads, inputs[1]), narrative = "Noted {noted_on} as {remark} {first} {second}"), "slot first: reads is only for a derived slot")
+        assertProblem(derived(inputs + total().copy(ifMissing = "Nil")), "slot total: if_missing is only for a date, number or text slot")
+        assertProblem(derived(inputs + total().copy(forRule = CAP_DAYS)), "slot total: for is only for a date, number, text or days slot")
+    }
+
+    @Test
+    fun anInputNothingReadsOrPrintsIsStillRefused() {
+        assertProblem(derived(inputs + total(reads = arrayOf("first")), narrative = "Noted {noted_on} as {remark} total {total} {first}"), "slot second declared but never used")
     }
 }

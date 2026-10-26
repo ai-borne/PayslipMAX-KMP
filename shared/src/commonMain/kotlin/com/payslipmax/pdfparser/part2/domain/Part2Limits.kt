@@ -16,6 +16,14 @@ object Part2Limits {
     /** A typed whole number (a year, a day count). */
     const val NUMBER_MAX = 9999
 
+    /**
+     * A year-by-year list (the break-up of an encashment) as text, in characters, and its rows. An officer with a long service has up to
+     * about 40 years of accumulation; 60 rows of `YYYY DDDD` and a newline come to 600 characters. The list is stored as an ordinary text
+     * answer, so storage bounds that answer by this limit and not by [TEXT_MAX].
+     */
+    const val BREAKUP_TEXT_MAX = 600
+    const val BREAKUP_ROWS_MAX = 60
+
     /** Occurrence requests in one event; a leave event is a handful, never more than one per leave year. */
     const val REQUESTS_MAX = 10
 
@@ -38,7 +46,7 @@ object Part2Limits {
 
     /**
      * The print snapshot a draft keeps (the rows as last handed to the clerk): rows in it (10 requests, each with at most 16 linked orders, and
-     * the request itself), characters in one rendered column (a template narrative is at most 600 and a typed remark 200), and Data columns a row has.
+     * the request itself), characters in one rendered column (a template narrative or certificate is at most 1300 and a typed remark 200), and Data columns a row has.
      */
     const val PRINTED_ROWS_MAX = 170
     const val PRINTED_TEXT_MAX = 4000

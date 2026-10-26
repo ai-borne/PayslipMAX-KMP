@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui.theme
 
 import com.payslipmax.pdfparser.part2.domain.DraftIssueReason
 import com.payslipmax.pdfparser.part2.domain.LinkBasis
+import com.payslipmax.pdfparser.part2.domain.Part2Rules
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -47,6 +48,27 @@ class Part2StringsTest {
         assertEquals("ODP-2026, p 117", Part2Strings.citation(LinkBasis.MANUAL, 117, null))
         assertEquals("Seen in practice", Part2Strings.citation(LinkBasis.PRACTICE, null, null), "practice is never passed off as the manual, whatever page it carries")
         assertEquals("Seen in practice", Part2Strings.citation(LinkBasis.PRACTICE, 49, "ii"))
+    }
+
+    @Test
+    fun theChecksOfTheRestOfChapterFiveAreWordedAndTheAckOnesSayTheManualRejectsTheOrder() {
+        // why: the manual says "will be rejected" only of the 60-day cap and casual leave beside another leave; no new check may claim it.
+        val shipped = Part2Rules.shipped().ids.filter { Part2Strings.finding(it) != null }
+        assertEquals(setOf("al_year_cap", "cl_combination"), shipped.filter { "rejected" in Part2Strings.finding(it)!! }.toSet())
+        assertTrue("not granted" in Part2Strings.finding("furlough_not_ncc")!! && "5 to 30 days" in Part2Strings.finding("ccl_limits")!!)
+        assertTrue("1 March" in Part2Strings.finding("acclve_too_early")!! && "300" in Part2Strings.finding("acclve_over_cap")!!)
+        assertTrue("180 days" in Part2Strings.finding("ration_long_leave")!! && "quarterly" in Part2Strings.finding("ration_long_leave")!!)
+        assertTrue("cannot be amended" in Part2Strings.finding("reissue_allowances")!!)
+        for (id in listOf("grant_quoted_furlough", "grant_quoted_study", "grant_quoted_overstay", "declared_quoted_overstay", "declared_quoted_awl")) {
+            assertTrue("prints blank" in Part2Strings.finding(id)!!, id)
+        }
+        assertTrue("any other kind of leave" in Part2Strings.finding("cl_combination")!!)
+    }
+
+    @Test
+    fun theNewFormQuestionsAreWordedAndAnUnknownOneIsNot() {
+        for (id in listOf("ncc_reemployed", "reemployed_same_year", "earlier_allowances", "acclve_retiring")) assertTrue(Part2Strings.hasQuestion(id), id)
+        assertEquals("Are you an NCC officer or a re-employed officer?", Part2Strings.question("ncc_reemployed"))
     }
 
     @Test

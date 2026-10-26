@@ -28,15 +28,19 @@ internal object OccurrenceDrafter {
         origin: Part2Origin,
         group: String?,
         request: OccurrenceRequest,
+        rules: Part2Rules,
     ): DraftedTemplate {
         val issues = mutableListOf<DraftIssue>()
         val required = requiredSlots(template)
         val computed = mutableMapOf<String, SlotValue>()
-        for (slot in template.slots.filter { it.kind !in WORKED_OUT }) {
+        for (slot in template.slots.filter { it.kind !in WORKED_OUT && it.kind != DERIVED }) {
             issues += slotIssues(template.code, slot, request.values[slot.id], slot.id in required)
         }
         for (slot in template.slots.filter { it.kind in WORKED_OUT }) {
             issues += workedOut(template, slot, request, slot.id in required, issues, computed)
+        }
+        for (slot in template.slots.filter { it.kind == DERIVED }) {
+            issues += derived(template, slot, request, slot.id in required, issues, computed, rules)
         }
         val answers: Map<String, SlotValue> = request.values + computed
         val printed = answers + template.slots.filter { it.ifMissing != null && it.id !in answers }.associate { it.id to SlotValue.TextValue(it.ifMissing.orEmpty()) }
@@ -74,7 +78,9 @@ internal object OccurrenceDrafter {
         val inTexts = texts.flatMap { text -> Part2Placeholders.scan(text).first.mapNotNull { Part2Placeholders.parse(it)?.slot } }
         val inColumns = columns.mapNotNull { column(it) }
         val exempt = template.slots.filter { it.kind == "ref" || it.ifMissing != null || it.forRule != null }.map { it.id }.toSet()
-        return (inTexts + inColumns).toSet() - exempt
+        val used = (inTexts + inColumns).toSet()
+        val readByDerived = template.slots.filter { it.kind == DERIVED && it.id in used }.flatMap { it.reads }
+        return (used + readByDerived) - exempt
     }
 
     private fun column(column: Part2Column): String? = column.slot?.let { Part2Placeholders.parse(it)?.slot }
@@ -92,6 +98,7 @@ internal object OccurrenceDrafter {
             "number" -> if (value is SlotValue.NumberValue) numberIssue(value.number, ::issue) else issue(DraftIssueReason.WRONG_KIND)
             "text" -> if (value is SlotValue.TextValue) textIssue(value.text, ::issue) else issue(DraftIssueReason.WRONG_KIND)
             "ref" -> if (value is SlotValue.RefValue) refIssue(value.ref, ::issue) else issue(DraftIssueReason.WRONG_KIND)
+            "years" -> if (value is SlotValue.TextValue) yearsIssue(value.text, ::issue) else issue(DraftIssueReason.WRONG_KIND)
             else -> issue(DraftIssueReason.WRONG_KIND)
         }
     }
@@ -114,6 +121,31 @@ internal object OccurrenceDrafter {
         text.length > Part2Limits.TEXT_MAX -> issue(DraftIssueReason.TOO_LONG)
         hasAngleBrackets(text) -> issue(DraftIssueReason.MARKUP)
         else -> emptyList()
+    }
+
+    private fun yearsIssue(
+        text: String,
+        issue: (DraftIssueReason) -> List<DraftIssue>,
+    ) = (YearlyBreakup.parse(text) as? BreakupRead.Refused)?.let { issue(it.reason) } ?: emptyList()
+
+    /**
+     * Works out a `derived` slot with the derive rule its template names, from the values known so far. Nothing is worked out for a slot
+     * whose inputs were refused (they are blamed, not the slot); a rule that cannot work the value out, or one the registry lacks, refuses
+     * a slot something prints, on its own id, so a guess is never printed.
+     */
+    private fun derived(
+        template: Part2Template,
+        slot: Part2Slot,
+        request: OccurrenceRequest,
+        required: Boolean,
+        earlier: List<DraftIssue>,
+        computed: MutableMap<String, SlotValue>,
+        rules: Part2Rules,
+    ): List<DraftIssue> {
+        if (earlier.any { it.slot in slot.reads }) return emptyList()
+        val value = slot.by?.let(rules::derivation)?.derive(DeriveContext(request, request.values + computed))
+        if (value != null) computed[slot.id] = value
+        return if (value == null && required) listOf(DraftIssue(template.code, slot.id, DraftIssueReason.NOT_ANSWERED)) else emptyList()
     }
 
     private fun refIssue(
@@ -185,7 +217,8 @@ internal object OccurrenceDrafter {
 
     /** Slots the app works out rather than asks for. */
     private val WORKED_OUT = listOf("days", "earliest", "latest", "next_day")
+    private const val DERIVED = "derived"
 
     /** Whether a slot of [kind] is worked out by the app, so the form never asks for it. */
-    fun isWorkedOut(kind: String): Boolean = kind in WORKED_OUT
+    fun isWorkedOut(kind: String): Boolean = kind in WORKED_OUT || kind == DERIVED
 }

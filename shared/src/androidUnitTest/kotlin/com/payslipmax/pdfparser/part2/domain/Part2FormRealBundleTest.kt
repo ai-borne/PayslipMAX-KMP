@@ -25,8 +25,10 @@ class Part2FormRealBundleTest {
     private fun ids(request: OccurrenceRequest) = planner.fields(request).map { it.slot.id }
 
     @Test
-    fun theLeaveCasesOfferExactlyTheEightLeaveAndRejoiningCodes() {
-        assertEquals(listOf("GTDAL", "GTDALCF", "EXTNAL", "GTDCL", "GTDSPCL", "REJOINAL", "VOLREJ", "RECALL"), options)
+    fun theLeaveCasesOfferTheEightLeaveAndRejoiningCodesThenTheTwentyTwoOfTheRestOfChapterFive() {
+        assertEquals(listOf("GTDAL", "GTDALCF", "EXTNAL", "GTDCL", "GTDSPCL", "REJOINAL", "VOLREJ", "RECALL"), options.take(8))
+        assertEquals(22, options.size - 8)
+        assertEquals(listOf("FURLEV", "EXTNFUR", "STDLEV", "STDLVAL", "STDLVFUR", "EOL", "TERLEV", "MTRNLV", "SPMTRNLV", "GTDCCL", "CHADPLVE", "PTRNLV", "PATLCHAD", "OSL", "REJOSL", "AWL", "REJAWL", "ACCLVE", "LVELTCAD", "LVELTC", "CLVLTCAD", "ENCASH"), options.drop(8))
     }
 
     @Test
@@ -38,9 +40,9 @@ class Part2FormRealBundleTest {
 
     @Test
     fun annualLeaveAlonePromptsForItsDatesTheYearAndTheLeaveAlreadyTaken() {
-        assertEquals(listOf("prefix_first", "leave_from", "leave_to", "suffix_last", "year", "earlier_al"), ids(request("GTDAL")))
+        assertEquals(listOf("prefix_first", "leave_from", "leave_to", "suffix_last", "year", "earlier_al", "retire_on"), ids(request("GTDAL")))
         val required = planner.fields(request("GTDAL")).associate { it.slot.id to it.required }
-        assertEquals(mapOf("prefix_first" to false, "leave_from" to true, "leave_to" to true, "suffix_last" to false, "year" to true, "earlier_al" to false), required)
+        assertEquals(mapOf("prefix_first" to false, "leave_from" to true, "leave_to" to true, "suffix_last" to false, "year" to true, "earlier_al" to false, "retire_on" to false), required)
     }
 
     @Test
@@ -65,11 +67,13 @@ class Part2FormRealBundleTest {
 
     @Test
     fun annualLeaveAsksTheRationAndRhQuestionsAndTheOthersAskWhatTheirLinksNeed() {
-        assertEquals(listOf("ration", "rh_code"), planner.questions("GTDAL").map { it.id })
+        assertEquals(listOf("ration", "rh_code", "ncc_reemployed", "reemployed_same_year"), planner.questions("GTDAL").map { it.id })
         assertEquals(listOf("ration", "rh_code"), planner.questions("GTDALCF").map { it.id })
         assertEquals(listOf("ration"), planner.questions("GTDCL").map { it.id })
         assertEquals(listOf("ration"), planner.questions("GTDSPCL").map { it.id })
-        for (code in listOf("EXTNAL", "REJOINAL", "VOLREJ", "RECALL")) assertEquals(emptyList(), planner.questions(code), code)
+        assertEquals(listOf("ncc_reemployed", "reemployed_same_year", "earlier_allowances"), planner.questions("EXTNAL").map { it.id })
+        for (code in listOf("VOLREJ", "RECALL")) assertEquals(listOf("earlier_allowances"), planner.questions(code).map { it.id }, code)
+        assertEquals(emptyList(), planner.questions("REJOINAL"))
     }
 
     @Test
@@ -78,12 +82,12 @@ class Part2FormRealBundleTest {
         val linked = section.templates.flatMap { t -> t.links.mapNotNull { it.condition } }.toSet()
         assertTrue(linked.isNotEmpty())
         for (condition in linked) assertEquals(1, rules.questions.count { condition in it.rules }, condition)
-        for (question in rules.questions) for (id in question.rules) assertTrue(rules.condition(id) != null, "${question.id} names $id, which is not a condition")
+        for (question in rules.questions) for (id in question.rules) assertTrue(rules.condition(id) != null || rules.check(id) != null, "${question.id} names $id, which is neither a condition nor a check the app runs")
     }
 
     @Test
     fun everyAnswerAQuestionCanGiveAddsTheOrdersItPromises() {
-        val ration = rules.questions.filterIsInstance<AnswerQuestion.YesNo>().single()
+        val ration = rules.questions.filterIsInstance<AnswerQuestion.YesNo>().single { it.id == "ration" }
         assertTrue("SORS" in planner.templates(request("GTDAL", ration.answer)).map { it.code })
         val area = rules.questions.filterIsInstance<AnswerQuestion.OneOf>().single()
         assertEquals(AreaRules.rhCodes, area.options)
@@ -116,6 +120,7 @@ class Part2FormRealBundleTest {
                             "date" -> SlotValue.DateValue(CalendarDate(2026, 8, day++))
                             "number" -> SlotValue.NumberValue(1)
                             "ref" -> SlotValue.RefValue(OrderRef("N-1/26", CalendarDate(2026, 3, 2)))
+                            "years" -> SlotValue.TextValue("2011 30; 2013 20")
                             else -> SlotValue.TextValue("plain")
                         }
                 }

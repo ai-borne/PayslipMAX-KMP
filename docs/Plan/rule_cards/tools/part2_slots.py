@@ -4,9 +4,11 @@ A slot is a question the officer answers once per event: a `date`, a `number`, f
 `{id.no}` or `{id.date}`), or one the app works out from other dates: `days` (counted between two date slots), `earliest` / `latest`
 (of 2 to 4 date slots, using those the officer gave) and `next_day` (the day after one date slot). A computed slot may only read slots
 declared before it, so no loop can exist. `if_missing` makes a date, number or text slot optional and names what prints when it is
-not answered; `for` marks a slot only a check reads (it prints nowhere). Placeholders are `{id}` in the narrative, the authority line
+not answered; `for` marks a slot (or a worked-out day count) only a check reads (it prints nowhere). Placeholders are `{id}` in the narrative, the authority line
 and the certificate; a column (From, To, Data 1-4) names a slot, holds `text` that joins words and placeholders, or is `none` where the
-manual says it is not required. Plain scans, no regex over template text. Problems name ids only.
+manual says it is not required. A `years` slot is a year-by-year list the officer types (the break-up of an encashment); a `derived`
+slot is worked out by the derive rule named in `by` from the plain slots it `reads`, so arithmetic and caps live in Kotlin and never in a
+template. Plain scans, no regex over template text. Problems name ids only.
 """
 import os
 import sys
@@ -14,11 +16,11 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from part2_rules import ID, text_problems
 
-KINDS = ('date', 'number', 'text', 'days', 'ref', 'earliest', 'latest', 'next_day')
+KINDS = ('date', 'number', 'text', 'days', 'ref', 'years', 'derived', 'earliest', 'latest', 'next_day')
 COMPUTED = ('earliest', 'latest', 'next_day')
 PLAIN = ('date', 'number', 'text')
 NEEDS = ('required', 'optional', 'none')
-SLOT_KEYS = ('id', 'kind', 'label', 'help', 'between', 'if_missing', 'for')
+SLOT_KEYS = ('id', 'kind', 'label', 'help', 'between', 'if_missing', 'for', 'by', 'reads')
 REF_PARTS = ('no', 'date')
 
 
@@ -48,7 +50,7 @@ def _split(ref):
     return base, part or None
 
 
-def slot_table(t, where, limits, kinds):
+def slot_table(t, where, limits, kinds, rules=None):
     slots, errs = {}, []
     items = t.get('slots') or []
     if len(items) > limits['slots']:
@@ -67,7 +69,7 @@ def slot_table(t, where, limits, kinds):
         kinds.setdefault(sid, set()).add(kind)
         errs += text_problems(at, 'label', s.get('label'), limits['label']) + text_problems(at, 'help', s.get('help'), limits['help'])
     for i, s in enumerate(items):
-        errs += _between(s, where, slots, items[:i]) + _optional(s, where, limits, t.get('rules') or [])
+        errs += _between(s, where, slots, items[:i]) + _optional(s, where, limits, t.get('rules') or []) + _derived(s, where, slots, rules or {})
     return slots, errs
 
 
@@ -88,17 +90,35 @@ def _between(s, where, slots, before):
 
 
 def _optional(s, where, limits, rules):
-    """`if_missing` (an optional answer and what prints without it) and `for` (an answer only a check reads) belong to plain slots."""
+    """`if_missing` (an optional answer and what prints without it) belongs to plain slots; `for` (an answer, or a day count, only a check reads) to plain and days slots."""
     at, errs = f"{where}: slot {s.get('id')}", []
     if 'if_missing' in s:
         if s.get('kind') not in PLAIN:
             errs.append(f'{at}: if_missing is only for a date, number or text slot')
         errs += text_problems(at, 'if_missing', s['if_missing'], limits['note'])
     if 'for' in s:
-        if s.get('kind') not in PLAIN:
-            errs.append(f'{at}: for is only for a date, number or text slot')
+        if s.get('kind') not in PLAIN + ('days',):
+            errs.append(f'{at}: for is only for a date, number, text or days slot')
         elif s['for'] not in rules:
             errs.append(f'{at}: for names a rule the template does not run')
+    return errs
+
+
+def _derived(s, where, slots, rules):
+    """`by` (the derive rule) and `reads` (the plain slots it works from) belong to a derived slot, which takes none of the other slot features."""
+    at, errs = f"{where}: slot {s.get('id')}", []
+    if s.get('kind') != 'derived':
+        return [f'{at}: {key} is only for a derived slot' for key in ('by', 'reads') if key in s]
+    by, reads = s.get('by'), s.get('reads')
+    if not isinstance(by, str) or not by:
+        errs.append(f'{at}: a derived slot needs by')
+    elif by not in rules:
+        errs.append(f'{at}: by names an unknown rule')
+    elif rules[by].get('kind') != 'derive':
+        errs.append(f'{at}: by must name a derive rule')
+    inputs_ok = isinstance(reads, list) and reads and all(slots.get(r, {}).get('kind') not in (None, 'derived') for r in reads)
+    if not inputs_ok:
+        errs.append(f'{at}: reads must name declared slots')
     return errs
 
 

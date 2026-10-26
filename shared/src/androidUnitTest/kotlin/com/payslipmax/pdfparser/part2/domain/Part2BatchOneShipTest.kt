@@ -22,7 +22,7 @@ class Part2BatchOneShipTest {
     private val everything: Map<String, SlotValue> =
         mapOf(
             "leave_from" to date(7, 6), "leave_to" to date(8, 4), "prefix_first" to date(7, 4), "suffix_last" to date(8, 6),
-            "year" to number(2026), "earlier_al" to number(10), "reason" to text("a reason"), "leave_type" to text("annual leave"),
+            "year" to number(2026), "earlier_al" to number(10), "retire_on" to date(12, 1), "reason" to text("a reason"), "leave_type" to text("annual leave"),
             "leave_kind" to text("annual leave"), "rejoined_on" to date(8, 7), "recalled_on" to date(7, 20), "cancel_from" to date(7, 21),
             "cancel_to" to date(8, 4), "station" to text("ZZ01"), "corps" to text("Alpha"), "serial" to text("12"),
             "grant" to ref("0123/26", 6, 20), "carry_order" to ref("0050/25", 12, 1, 2025), "notif" to ref("N-17/2026", 3, 2),

@@ -71,7 +71,7 @@ class ComputedDates(unittest.TestCase):
                       delta([], slots=[S('noted_on', 'date', 'Noted on', 'The day it was noted.'), S('remark', 'text', 'Remark', 'Words.', between=['noted_on', 'noted_on'])]))
 
     def test_the_kind_list_names_the_computed_kinds(self):
-        self.assertIn('template DELTANOTE: slot remark: kind must be date, number, text, days, ref, earliest, latest or next_day',
+        self.assertIn('template DELTANOTE: slot remark: kind must be date, number, text, days, ref, years, derived, earliest, latest or next_day',
                       delta([], slots=[S('noted_on', 'date', 'Noted on', 'The day.'), S('remark', 'money', 'Remark', 'Words.')]))
 
 
@@ -104,9 +104,19 @@ class CheckOnlySlots(unittest.TestCase):
         self.assertIn('template DELTANOTE: slot earlier: for names a rule the template does not run', delta([slot], rules=['cap_days']))
         self.assertIn('template DELTANOTE: slot earlier: for names a rule the template does not run', delta([slot]))
 
-    def test_a_slot_for_a_rule_is_a_plain_answer_not_a_computed_one(self):
+    def test_a_slot_for_a_rule_is_a_plain_answer_or_a_day_count_not_a_computed_date(self):
         slot = S('calc', 'next_day', 'Worked out', 'Worked out.', between=['noted_on'], **{'for': 'cap_days'})
-        self.assertIn('template DELTANOTE: slot calc: for is only for a date, number or text slot', delta([slot], rules=['cap_days']))
+        self.assertIn('template DELTANOTE: slot calc: for is only for a date, number, text or days slot', delta([slot], rules=['cap_days']))
+
+    def test_a_day_count_only_a_check_reads_needs_no_other_use(self):
+        # why: terminal leave prints a fixed 28, but its dates must still span 28 days (plus any annual leave), so the count is worked out for
+        # the check alone and printed nowhere (phase 8).
+        count = S('span', 'days', 'Days', 'Counted for you.', between=['d1', 'd2'], **{'for': 'cap_days'})
+        self.assertEqual(delta(DATES + [count], rules=['cap_days']), [])
+
+    def test_a_day_count_for_a_rule_the_template_does_not_run_is_refused(self):
+        count = S('span', 'days', 'Days', 'Counted for you.', between=['d1', 'd2'], **{'for': 'grant_quoted'})
+        self.assertIn('template DELTANOTE: slot span: for names a rule the template does not run', delta(DATES + [count], rules=['cap_days']))
 
 
 class ColumnText(unittest.TestCase):

@@ -61,6 +61,20 @@ class ReminderPlannerReturnTest : ReminderTestBase() {
     }
 
     @Test
+    fun theRestOfChapterFiveSetsAReturnReminderTooExceptTerminalLeaveAfterWhichTheOfficerRetires() {
+        // why: Phase 11 item 45 - a furlough, maternity, child-care or study leave ends with a rejoining slip like an annual leave does; terminal leave ends in retirement.
+        for (code in listOf("FURLEV", "EXTNFUR", "MTRNLV", "SPMTRNLV", "GTDCCL", "EOL", "CHADPLVE", "PTRNLV", "PATLCHAD", "STDLEV", "STDLVAL", "STDLVFUR")) {
+            val request = leave(date(2026, 10, 5), date(2026, 10, 9), suffixLast = date(2026, 10, 12), code = code)
+            assertEquals(date(2026, 10, 13), returns(draft("d-$code", request, printedAt = printed)).single().dueOn, code)
+        }
+        val terminal = leave(date(2026, 10, 5), date(2026, 10, 9), code = "TERLEV")
+        assertTrue(returns(draft("d-terminal", terminal, printedAt = printed)).isEmpty(), "terminal leave leads to retirement, not to a rejoining slip")
+        for (code in listOf("OSL", "AWL", "ACCLVE", "ENCASH", "LVELTC")) {
+            assertTrue(returns(draft("d-$code", leave(date(2026, 10, 5), date(2026, 10, 9), code = code), printedAt = printed)).isEmpty(), code)
+        }
+    }
+
+    @Test
     fun aLeaveWithoutAReadableLastDayHasNoReturn() {
         val noEnd = request("GTDAL", on("leave_from", date(2026, 10, 5)))
         val notADate = request("GTDAL", on("leave_from", date(2026, 10, 5)), on("leave_to", date(2026, 4, 31)))

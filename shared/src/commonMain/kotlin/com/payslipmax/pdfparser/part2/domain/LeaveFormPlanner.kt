@@ -29,9 +29,9 @@ class LeaveFormPlanner(
             .map { FormField(it, it.id in required) }
     }
 
-    /** The yes/no and choice questions that decide which orders go with [code], whatever has been answered so far. */
+    /** The yes/no and choice questions that decide which orders go with [code] or which checks it runs, whatever has been answered so far. */
     fun questions(code: String): List<AnswerQuestion> {
-        val conditions = reachable(code).flatMap { template -> template.links.mapNotNull { it.condition } }.toSet()
+        val conditions = reachable(code).flatMap { template -> template.links.mapNotNull { it.condition } + template.rules }.toSet()
         return rules.questions.filter { question -> question.rules.any { it in conditions } }
     }
 

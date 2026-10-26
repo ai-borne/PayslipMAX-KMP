@@ -121,8 +121,8 @@ def _template(t, limits, rules, known, seen, kinds):
         errs.append(f'{where}: page must be a whole number from 1 to {PAGE_MAX}')
     if 'print' in t and PRINT_OVERRIDES.get(code) != t['print']:
         errs.append(f'{where}: print override must be REJOINAL to REJOIN')
-    slots, slot_errs = slot_table(t, where, limits, kinds)
-    used = {p for s in slots.values() if isinstance(s.get('between'), list) for p in s['between']} | {sid for sid, s in slots.items() if 'for' in s}
+    slots, slot_errs = slot_table(t, where, limits, kinds, rules)
+    used = {p for s in slots.values() if isinstance(s.get('between'), list) for p in s['between']} | {sid for sid, s in slots.items() if 'for' in s} | {r for s in slots.values() if isinstance(s.get('reads'), list) for r in s['reads']}
     errs += slot_errs
     used |= text_uses(t, where, limits, slots, errs)
     used |= column_uses(t, where, limits, slots, errs)

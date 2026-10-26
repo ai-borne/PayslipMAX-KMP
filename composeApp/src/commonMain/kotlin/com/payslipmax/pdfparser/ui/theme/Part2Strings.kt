@@ -127,7 +127,7 @@ object Part2Strings {
         when (id) {
             "ration" -> "Are you on ration strength?"
             "rh_code" -> "Which Risk and Hardship rate code do you draw?"
-            else -> id
+            else -> Part2LongLeaveStrings.question(id)
         }
 
     fun hasQuestion(id: String): Boolean = question(id) != id
@@ -250,10 +250,10 @@ object Part2Strings {
         when (ruleId) {
             "al_year_cap" -> "Annual leave, extended annual leave and leave taken earlier this year come to more than 60 days. The manual says such an order will be rejected."
             "al_affix_limit" -> "Prefix and suffix together are more than 5 days. The unit must check this."
-            "cl_combination" -> "Casual leave cannot be combined with annual leave. The manual says such an order will be rejected."
+            "cl_combination" -> "Casual leave cannot be combined with any other kind of leave except special casual leave. The manual says such an order will be rejected."
             "spcl_over_30" -> "Special casual leave is granted for up to 30 days."
             "grant_quoted_annual", "grant_quoted_rejoin", "grant_quoted_recall" -> "Quote the order that granted the leave once it is published. Until then it prints blank."
-            else -> Part2CancelStrings.finding(ruleId)
+            else -> Part2LongLeaveStrings.finding(ruleId) ?: Part2CancelStrings.finding(ruleId)
         }
 
     /**

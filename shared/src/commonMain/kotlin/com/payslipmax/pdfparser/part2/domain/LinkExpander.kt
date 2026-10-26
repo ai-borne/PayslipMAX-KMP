@@ -26,7 +26,7 @@ internal class LinkExpander(
         val queue = ArrayDeque(listOf(first to (Part2Origin.Requested as Part2Origin)))
         while (queue.isNotEmpty()) {
             val (template, origin) = queue.removeFirst()
-            val result = OccurrenceDrafter.draft(template, origin, groups[template.code], request)
+            val result = OccurrenceDrafter.draft(template, origin, groups[template.code], request, rules)
             drafted += request to result
             for (link in template.links) {
                 if (!applies(link, request, result.drafted)) continue

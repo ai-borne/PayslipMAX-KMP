@@ -60,17 +60,17 @@ object Part2LookupContract {
     /**
      * The rules the real bundle declares and the rules the app implements are one list (Part II plan, phases 2a and 2b): a template
      * citing a check the app does not run would be a silent hole, and the template limits must travel with the templates they bound.
-     * Content batches 1 and 2 ship 25 rules (12 checks, 13 conditions) and 26 templates (24 and the two cancellation codes); this fails the day one side gains a rule and the
-     * other does not, and the limits are those confirmed against the longest real text (570 characters of narrative, 36 of label,
-     * 156 of help, 14 of note; 8 slots, 16 links, 2 rules on a template).
+     * Content batches 1 to 3 ship 56 rules (36 checks, 14 conditions, 6 derive rules) and 48 templates (24, the two cancellation codes and the 22 Chapter 5 serials 5.6-5.22, 5.26-5.30); this fails the day one side gains a rule and the
+     * other does not, and the limits are those confirmed against the longest real text (1,237 characters of narrative or certificate, the LTC
+     * certificate of the manual itself, 36 of label, 156 of help, 14 of note; 10 slots, 16 links, 4 rules on a template).
      */
     fun assertRulesMatchTheRegistry(bundle: GuideBundle) {
         val section = assertNotNull(bundle.part2)
         assertEquals(emptyList(), Part2Rules.shipped().problemsAgainst(section.rules), "bundle rule ids = registry ids, with the same kinds")
-        assertEquals(25, section.rules.size)
-        assertEquals(26, section.templates.size)
+        assertEquals(56, section.rules.size)
+        assertEquals(48, section.templates.size)
         assertEquals(
-            listOf(600, 40, 160, 10, 16, 4, 20),
+            listOf(1300, 40, 160, 10, 16, 4, 20),
             assertNotNull(section.templateLimits, "the limits ship with the section").let { listOf(it.narrative, it.label, it.help, it.slots, it.links, it.rules, it.note) },
             "the agreed template limits (rules.json)",
         )

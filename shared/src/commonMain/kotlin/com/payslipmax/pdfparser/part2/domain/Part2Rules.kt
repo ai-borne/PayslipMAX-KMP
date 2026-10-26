@@ -46,6 +46,28 @@ interface ConditionRule : Part2Rule {
     fun holds(context: RuleContext): Boolean
 }
 
+/** What a derive rule reads: the officer's [request] and every value known so far (the request's answers and what was worked out before). */
+class DeriveContext(
+    val request: OccurrenceRequest,
+    val values: Map<String, SlotValue>,
+)
+
+/** Works out the value of a `derived` slot from the slots it reads (an accumulation total, a capped figure), or null when it cannot be worked out. */
+interface DeriveRule : Part2Rule {
+    fun derive(context: DeriveContext): SlotValue?
+}
+
+/** A derive rule made from [derive], so a rule family is a list of rules and not a class per rule. */
+internal fun deriveRule(
+    id: String,
+    derive: (DeriveContext) -> SlotValue?,
+): DeriveRule =
+    object : DeriveRule {
+        override val id = id
+
+        override fun derive(context: DeriveContext) = derive(context)
+    }
+
 /** A check made from [violated], so a rule family is a list of rules and not a class per rule. */
 internal fun checkRule(
     id: String,
@@ -91,6 +113,8 @@ class Part2Rules(
 
     fun condition(id: String): ConditionRule? = byId[id] as? ConditionRule
 
+    fun derivation(id: String): DeriveRule? = byId[id] as? DeriveRule
+
     /** Where this registry and the bundle's [declared] rules disagree: a rule only one side has, or one the two call different kinds. */
     fun problemsAgainst(declared: List<Part2RuleDecl>): List<String> {
         val problems = mutableListOf<String>()
@@ -99,7 +123,12 @@ class Part2Rules(
         byId.keys.filter { it !in declaredIds }.sorted().forEach { problems += "rule $it is implemented in the app but the bundle does not declare it" }
         for (decl in declared) {
             val rule = byId[decl.id] ?: continue
-            val appKind = if (rule is CheckRule) "check" else "condition"
+            val appKind =
+                when (rule) {
+                    is CheckRule -> "check"
+                    is DeriveRule -> "derive"
+                    else -> "condition"
+                }
             if (appKind != decl.kind) problems += "rule ${decl.id} is a ${decl.kind} in the bundle but a $appKind in the app"
         }
         return problems
@@ -107,9 +136,13 @@ class Part2Rules(
 
     companion object {
         /** Every reference box that quotes a Part II order of the vault, whichever family owns it: the form offers the vault for exactly these. */
-        val VAULT_ORDER_SLOTS: Set<String> = LeaveRules.VAULT_ORDER_SLOTS + CancelRules.VAULT_ORDER_SLOTS
+        val VAULT_ORDER_SLOTS: Set<String> = LeaveRules.VAULT_ORDER_SLOTS + CancelRules.VAULT_ORDER_SLOTS + LongLeaveRules.VAULT_ORDER_SLOTS + LtcRules.VAULT_ORDER_SLOTS
 
         /** The rules and form questions the app ships. Each content batch adds its rule family here and nowhere else. */
-        fun shipped(): Part2Rules = Part2Rules(LeaveRules.all + RationRules.all + AreaRules.all + CancelRules.all, RationRules.questions + AreaRules.questions)
+        fun shipped(): Part2Rules =
+            Part2Rules(
+                LeaveRules.all + LongLeaveRules.all + AcclveRules.all + LtcRules.all + EncashRules.all + RationRules.all + AreaRules.all + CancelRules.all,
+                RationRules.questions + AreaRules.questions + LeaveRules.questions + LongLeaveRules.questions + AcclveRules.questions,
+            )
     }
 }

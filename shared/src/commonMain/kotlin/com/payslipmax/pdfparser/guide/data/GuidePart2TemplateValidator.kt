@@ -50,9 +50,10 @@ internal object GuidePart2TemplateValidator {
         val problems = mutableListOf<String>()
         if (!isGuideId(rule.id)) problems += "$where: id must be lowercase letters, digits and underscores"
         when {
-            rule.kind != "check" && rule.kind != "condition" -> problems += "$where: kind must be check or condition"
+            rule.kind != "check" && rule.kind != "condition" && rule.kind != "derive" -> problems += "$where: kind must be check, condition or derive"
             rule.kind == "check" && rule.severity != "warn" && rule.severity != "ack" -> problems += "$where: a check needs severity warn or ack"
             rule.kind == "condition" && rule.severity != null -> problems += "$where: a condition has no severity"
+            rule.kind == "derive" && rule.severity != null -> problems += "$where: a derive rule has no severity"
         }
         when {
             rule.basis !in BASES -> problems += "$where: basis must be manual or practice"
@@ -80,7 +81,7 @@ internal object GuidePart2TemplateValidator {
         } else if (template.rev != Part2TemplateRev.of(template)) {
             problems += "$where: rev is not the revision of this template's words"
         }
-        problems += GuidePart2SlotValidator.slotProblems(template, limits, kinds)
+        problems += GuidePart2SlotValidator.slotProblems(template, limits, kinds, rules.mapValues { it.value.kind })
         problems += checkProblems(template, where, limits, rules)
         problems += linkProblems(template, where, limits, rules, codes)
         return problems

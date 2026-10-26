@@ -9,8 +9,11 @@ import com.payslipmax.pdfparser.calendar.CivilCalendar
  * names a code itself. Every date it hands back is a real date, so the planner can count with it.
  */
 object ReminderRules {
-    /** The requests that carry a leave's dates, so the day the officer returns is known: the annual and the casual grants. */
-    val RETURN_GRANTS: Set<String> = LeaveRules.ANNUAL_LEAVE + LeaveRules.CASUAL_LEAVE
+    /** Terminal leave ends in retirement, so no rejoining slip follows it. */
+    private const val TERMINAL_LEAVE = "TERLEV"
+
+    /** The requests that carry a leave's dates, so the day the officer returns is known: the annual and casual grants and every other Chapter 5 leave but terminal leave (item 45). */
+    val RETURN_GRANTS: Set<String> = LeaveRules.ANNUAL_LEAVE + LeaveRules.CASUAL_LEAVE + (LeaveRules.OTHER_LEAVE - TERMINAL_LEAVE)
 
     /** The requests that bring the officer back, so the return reminder is answered: rejoining, voluntary rejoining and recall. */
     val REJOINING: Set<String> = setOf("REJOINAL", "VOLREJ", "RECALL")

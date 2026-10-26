@@ -19,7 +19,7 @@ class RationAndAreaRulesTest {
 
     @Test
     fun theRationFourApplyOnlyToAnOfficerOnRationStrength() {
-        assertEquals(listOf("on_ration"), RationRules.all.map { it.id })
+        assertEquals(listOf("on_ration", "on_ration_under_180", "ration_long_leave"), RationRules.all.map { it.id })
         val rule = condition(RationRules.all, RationRules.ON_RATION)
         assertTrue(rule.holds(context("X", answers = setOf(RationRules.ANSWER_ON_RATION))))
         assertFalse(rule.holds(context("X")), "not on ration strength: no ration four")

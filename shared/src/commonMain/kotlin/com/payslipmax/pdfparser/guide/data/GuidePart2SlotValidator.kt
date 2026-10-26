@@ -11,7 +11,7 @@ import com.payslipmax.pdfparser.guide.model.Part2TemplateLimits
  * empty names nothing. Problems name template codes, slot ids and field names only, never a word of content.
  */
 internal object GuidePart2SlotValidator {
-    val KINDS = listOf("date", "number", "text", "days", "ref", "earliest", "latest", "next_day")
+    val KINDS = listOf("date", "number", "text", "days", "ref", "years", "derived", "earliest", "latest", "next_day")
 
     /** Slots the app works out from other dates, and the plain slots an officer answers that may be optional or check-only. */
     val COMPUTED = listOf("earliest", "latest", "next_day")
@@ -25,6 +25,7 @@ internal object GuidePart2SlotValidator {
         template: Part2Template,
         limits: Part2TemplateLimits,
         kinds: MutableMap<String, MutableSet<String>>,
+        ruleKinds: Map<String, String> = emptyMap(),
     ): List<String> {
         val where = "template ${template.code}"
         val problems = mutableListOf<String>()
@@ -42,12 +43,14 @@ internal object GuidePart2SlotValidator {
         template.slots.forEachIndexed { i, slot ->
             problems += betweenProblems(slot, where, declared, template.slots.take(i))
             problems += optionalProblems(slot, where, limits, template.rules)
+            problems += derivedProblems(slot, where, declared, ruleKinds)
         }
         val used = mutableSetOf<String>()
         problems += textUses(template, where, limits, declared, used)
         problems += columnUses(template, where, limits, declared, used)
         used += template.slots.flatMap { it.between }
         used += template.slots.filter { it.forRule != null }.map { it.id }
+        used += template.slots.flatMap { it.reads }
         problems += declared.keys.filter { it !in used }.map { "$where: slot $it declared but never used" }
         return problems
     }
@@ -92,10 +95,31 @@ internal object GuidePart2SlotValidator {
         }
         slot.forRule?.let {
             when {
-                slot.kind !in PLAIN -> problems += "$at: for is only for a date, number or text slot"
+                slot.kind !in PLAIN && slot.kind != "days" -> problems += "$at: for is only for a date, number, text or days slot"
                 it !in rules -> problems += "$at: for names a rule the template does not run"
             }
         }
+        return problems
+    }
+
+    /** `by` (the derive rule) and `reads` (the plain slots it works from) belong to a derived slot, which reads no other derived slot. */
+    private fun derivedProblems(
+        slot: Part2Slot,
+        where: String,
+        declared: Map<String, Part2Slot>,
+        ruleKinds: Map<String, String>,
+    ): List<String> {
+        val at = "$where: slot ${slot.id}"
+        if (slot.kind != "derived") return listOfNotNull(slot.by?.let { "$at: by is only for a derived slot" }, if (slot.reads.isNotEmpty()) "$at: reads is only for a derived slot" else null)
+        val problems = mutableListOf<String>()
+        val by = slot.by
+        when {
+            by.isNullOrEmpty() -> problems += "$at: a derived slot needs by"
+            by !in ruleKinds -> problems += "$at: by names an unknown rule"
+            ruleKinds.getValue(by) != "derive" -> problems += "$at: by must name a derive rule"
+        }
+        val readable = slot.reads.isNotEmpty() && slot.reads.all { declared[it] != null && declared.getValue(it).kind != "derived" }
+        if (!readable) problems += "$at: reads must name declared slots"
         return problems
     }
 

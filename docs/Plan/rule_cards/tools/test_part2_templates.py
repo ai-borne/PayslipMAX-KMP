@@ -146,7 +146,7 @@ class Slots(unittest.TestCase):
                       broken(lambda ts, rs: template('DELTANOTE', ts)['slots'][1].update(id='Remark')))
         self.assertIn('template DELTANOTE: duplicate slot id remark',
                       broken(lambda ts, rs: template('DELTANOTE', ts)['slots'][0].update(id='remark')))
-        self.assertIn('template DELTANOTE: slot remark: kind must be date, number, text, days, ref, earliest, latest or next_day',
+        self.assertIn('template DELTANOTE: slot remark: kind must be date, number, text, days, ref, years, derived, earliest, latest or next_day',
                       broken(lambda ts, rs: template('DELTANOTE', ts)['slots'][1].update(kind='money')))
 
     def test_a_days_slot_counts_between_two_declared_date_slots(self):

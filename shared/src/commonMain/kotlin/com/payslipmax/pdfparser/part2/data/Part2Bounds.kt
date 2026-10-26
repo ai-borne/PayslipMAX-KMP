@@ -59,9 +59,10 @@ object Part2Bounds {
             request.answers.size <= Part2Limits.ANSWERS_PER_REQUEST_MAX &&
             request.answers.all { it.length <= Part2Limits.ANSWER_MAX }
 
+    /** A text answer is at most the longest the engine allows any text slot (a year-by-year list); the engine judges the shorter limit of an ordinary one. */
     private fun value(value: SlotValue): Boolean =
         when (value) {
-            is SlotValue.TextValue -> value.text.length <= Part2Limits.TEXT_MAX
+            is SlotValue.TextValue -> value.text.length <= Part2Limits.BREAKUP_TEXT_MAX
             is SlotValue.RefValue -> ref(value.ref)
             is SlotValue.DateValue, is SlotValue.NumberValue -> true
         }

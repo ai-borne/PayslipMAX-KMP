@@ -18,8 +18,11 @@ class VaultOrderSlotsTest {
     }
 
     @Test
-    fun theGrantTheCarryForwardAndTheCancelledOrdersAreVaultOrdersAndTheCorpsNotificationIsNot() {
-        assertEquals(setOf(LeaveRules.GRANT, LeaveRules.CARRY_ORDER, CancelRules.CANCELLED), Part2Rules.VAULT_ORDER_SLOTS)
-        assertEquals(setOf("notif"), referenceSlots - Part2Rules.VAULT_ORDER_SLOTS, "any other reference box needs a decision: is it a Part II order of the vault?")
+    fun thePartIIOrdersAreVaultOrdersAndTheCorpsNotificationTheApprovingLetterAndTheMroAreNot() {
+        assertEquals(
+            setOf(LeaveRules.GRANT, LeaveRules.CARRY_ORDER, CancelRules.CANCELLED, LongLeaveRules.DECLARED, LongLeaveRules.ADOPTION, LtcRules.ADVANCE, LtcRules.LAST_LTC),
+            Part2Rules.VAULT_ORDER_SLOTS,
+        )
+        assertEquals(setOf("notif", "letter", "mro"), referenceSlots - Part2Rules.VAULT_ORDER_SLOTS, "any other reference box needs a decision: is it a Part II order of the vault?")
     }
 }

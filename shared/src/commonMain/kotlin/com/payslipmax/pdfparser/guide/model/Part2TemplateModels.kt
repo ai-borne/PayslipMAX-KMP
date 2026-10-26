@@ -41,7 +41,8 @@ data class Part2RuleDecl(
  * A question the officer answers once per event. [kind] is `date`, `number`, `text`, `ref` (an order number and date, used as `{id.no}`
  * and `{id.date}`) or one the app works out from other dates, named in [between]: `days` (both days counted), `earliest` / `latest`
  * (of the dates the officer gave) and `next_day` (the day after). [ifMissing] makes a date, number or text slot optional and is what
- * prints when it is not answered; [forRule] marks a slot only a check reads, which prints nowhere.
+ * prints when it is not answered; [forRule] marks a slot (or a day count) only a check reads, which prints nowhere. A `years` slot is a
+ * year-by-year list the officer types. A `derived` slot is worked out by the derive rule named in [by] from the plain slots in [reads].
  */
 @Serializable
 data class Part2Slot(
@@ -52,6 +53,8 @@ data class Part2Slot(
     val between: List<String> = emptyList(),
     @SerialName("if_missing") val ifMissing: String? = null,
     @SerialName("for") val forRule: String? = null,
+    val by: String? = null,
+    val reads: List<String> = emptyList(),
 )
 
 /**
