@@ -465,6 +465,10 @@ Built without a question (change them if you disagree). Where the plan or an ear
 | Return reminders for the new leaves (item 45) | Built as proposed: every Chapter 5 leave except terminal leave sets the return reminder; the year-end reminder stays for annual leave only. |
 | Pixel 9 walk of Phase 8 | The owner will connect the phone; the walk covers the new leave codes in the form, the NCC and retirement questions, the 180-day ration note, a reissue warning, the printed slip and the return reminder after a furlough draft. |
 
+## Round 32: Phase 8 accepted (owner, 2026-10-27)
+
+The owner accepted Phase 8 as built (ca2f74a4): the 22 serials, the format additions, the NCC and retirement caps, the reissue warning, the return reminders for the new leaves and the Pixel 9 walk. Item 43 (the Leave Bank prefill screens for ACCLVE and ENCASH) stays open and is scheduled as its own step, **Phase 8b, after Phase 9 and before Phase 10**: Phase 10 walks the whole loop and takes the owner's sign-off on every template, so the two year-end codes must be usable on the phone by then, and it keeps Phase 9 (content) apart from the `LeaveDraftViewModel` split and the new screens. Still open from Phase 8: items 43 (as above), 46 (accepted) and 47 (iPhone), besides the older 8 (the `links` limit, Phase 9), 14, 20, 22, 27, 35, 38, 39, 40 and 42. Phase 9 (area re-grants) is next.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
