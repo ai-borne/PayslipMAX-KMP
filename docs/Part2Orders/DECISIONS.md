@@ -492,6 +492,10 @@ Build-time choices (change them if you disagree):
 | Occurrence removed | A removal drops a fill that is still waiting for a slow Leave Bank, since the places have moved; typing does not. |
 | Walk practice | The owner's real figures are never printed, screenshotted or recorded. A listing filter in the walk script let rounded History-row figures reach the session output once; none of it was written to a file, a document or a commit, and the filter now prints fixed strings only. |
 
+## Round 34: Phase 8b accepted (owner, 2026-10-27)
+
+The owner accepted Phase 8b as built (888945df): the Leave Bank fill button on the ACCLVE and ENCASH forms (empty boxes only, "Refill" asks first), the cap note, the missing-years and statement-total notes, the Leave Bank check line on the ACCLVE slip, the multi-line break-up box, the security fix to `alUsed` and the Pixel 9 walk, with the four build-time choices of Round 33 as built. Phase 11 item 43 is closed; item 48 (b to d: the state with no statement, the owner's own read of the ENCASH lines, light theme, TalkBack, small screens and the iPhone) stays open with items 14, 20 and 47. Phase 9 (area re-grants: HAA, SCCIA, field, TPTA; Phase 11 item 8, the `links` limit) is next, then Phase 10.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
