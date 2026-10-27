@@ -52,11 +52,14 @@ class Part2BatchThreeShipTest {
     @Test
     fun everyRationLinkIsCitedToTheManualAndOnlyTheLeavesTheManualNamesCarryThem() {
         // why: the ration four are manual-backed (p.98 note 1.8, p.99 note 5); a link on any other leave would be a guess presented as a rule.
-        val carrying = templates.filter { it.links.isNotEmpty() }.map { it.code }
-        assertEquals(listOf("FURLEV", "GTDCCL", "MTRNLV", "SPMTRNLV"), carrying.sorted())
-        for (t in templates.filter { it.links.isNotEmpty() }) {
-            assertEquals(listOf("SORS", "GTDRSHNA", "TORS", "STPRSHNA"), t.links.map { it.code }, t.code)
-            assertTrue(t.links.all { it.basis == "manual" && it.condition == RationRules.ON_RATION_UNDER_180 }, t.code)
+        val rationCodes = listOf("SORS", "GTDRSHNA", "TORS", "STPRSHNA")
+
+        fun rationLinks(t: com.payslipmax.pdfparser.guide.model.Part2Template) = t.links.filter { it.code in rationCodes }
+        val carrying = templates.filter { rationLinks(it).isNotEmpty() }
+        assertEquals(listOf("FURLEV", "GTDCCL", "MTRNLV", "SPMTRNLV"), carrying.map { it.code }.sorted())
+        for (t in carrying) {
+            assertEquals(rationCodes, rationLinks(t).map { it.code }, t.code)
+            assertTrue(rationLinks(t).all { it.basis == "manual" && it.condition == RationRules.ON_RATION_UNDER_180 }, t.code)
         }
     }
 

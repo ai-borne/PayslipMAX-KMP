@@ -67,10 +67,11 @@ class Part2FormRealBundleTest {
 
     @Test
     fun annualLeaveAsksTheRationAndRhQuestionsAndTheOthersAskWhatTheirLinksNeed() {
-        assertEquals(listOf("ration", "rh_code", "ncc_reemployed", "reemployed_same_year"), planner.questions("GTDAL").map { it.id })
-        assertEquals(listOf("ration", "rh_code"), planner.questions("GTDALCF").map { it.id })
-        assertEquals(listOf("ration"), planner.questions("GTDCL").map { it.id })
-        assertEquals(listOf("ration"), planner.questions("GTDSPCL").map { it.id })
+        val areas = listOf("haa_code", "sccia_code", "field_code", "tran_code")
+        assertEquals(listOf("ration", "rh_code") + areas + listOf("ncc_reemployed", "reemployed_same_year"), planner.questions("GTDAL").map { it.id })
+        assertEquals(listOf("ration", "rh_code") + areas, planner.questions("GTDALCF").map { it.id })
+        assertEquals(listOf("ration") + areas, planner.questions("GTDCL").map { it.id })
+        assertEquals(listOf("ration") + areas, planner.questions("GTDSPCL").map { it.id })
         assertEquals(listOf("ncc_reemployed", "reemployed_same_year", "earlier_allowances"), planner.questions("EXTNAL").map { it.id })
         for (code in listOf("VOLREJ", "RECALL")) assertEquals(listOf("earlier_allowances"), planner.questions(code).map { it.id }, code)
         assertEquals(emptyList(), planner.questions("REJOINAL"))
@@ -89,11 +90,24 @@ class Part2FormRealBundleTest {
     fun everyAnswerAQuestionCanGiveAddsTheOrdersItPromises() {
         val ration = rules.questions.filterIsInstance<AnswerQuestion.YesNo>().single { it.id == "ration" }
         assertTrue("SORS" in planner.templates(request("GTDAL", ration.answer)).map { it.code })
-        val area = rules.questions.filterIsInstance<AnswerQuestion.OneOf>().single()
-        assertEquals(AreaRules.rhCodes, area.options)
-        for (option in area.options) {
-            val codes = planner.templates(request("GTDAL", area.prefix + option)).map { it.code }
+        val areas = rules.questions.filterIsInstance<AnswerQuestion.OneOf>().associateBy { it.id }
+        assertEquals(listOf("rh_code", "haa_code", "sccia_code", "field_code", "tran_code"), areas.keys.toList())
+        assertEquals(AreaRules.rhCodes, areas.getValue("rh_code").options)
+        for (option in AreaRules.rhCodes) {
+            val codes = planner.templates(request("GTDAL", AreaRules.ANSWER_RH_PREFIX + option)).map { it.code }
             assertTrue(option in codes && "STPRH" in codes, "$option adds its own grant and the stop")
+        }
+        for (id in listOf("haa_code", "sccia_code", "field_code")) {
+            val area = areas.getValue(id)
+            for (option in area.options) assertTrue(option in planner.templates(request("GTDAL", area.prefix + option)).map { it.code }, "$option adds its own grant")
+        }
+        // the Transport Allowance is drafted only once the dates cover a whole month, so the form shows its fields from then on
+        val tran = areas.getValue("tran_code")
+        val longLeave = mapOf("leave_from" to SlotValue.DateValue(CalendarDate(2026, 6, 25)), "leave_to" to SlotValue.DateValue(CalendarDate(2026, 8, 5)))
+        for (option in tran.options) {
+            val codes = planner.templates(request("GTDAL", tran.prefix + option).copy(values = longLeave)).map { it.code }
+            assertTrue(option in codes && "STPTRAN" in codes, "$option adds its own grant and the stop")
+            assertEquals(false, option in planner.templates(request("GTDAL", tran.prefix + option)).map { it.code }, "$option waits for dates that cover a month")
         }
     }
 

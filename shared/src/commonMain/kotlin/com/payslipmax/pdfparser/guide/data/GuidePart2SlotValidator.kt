@@ -8,7 +8,8 @@ import com.payslipmax.pdfparser.guide.model.Part2TemplateLimits
 /**
  * The slot, placeholder and column rechecks of [GuidePart2TemplateValidator], mirroring `part2_slots.py`: every slot a text or a
  * column uses is declared, every declared slot is used, a reference is used by its number or its date, a column the manual leaves
- * empty names nothing. Problems name template codes, slot ids and field names only, never a word of content.
+ * empty names nothing. From and To may name a date, a computed date or a derived slot (whose derive rule works out a date: the Transport
+ * Allowance months, phase 9). Problems name template codes, slot ids and field names only, never a word of content.
  */
 internal object GuidePart2SlotValidator {
     val KINDS = listOf("date", "number", "text", "days", "ref", "years", "derived", "earliest", "latest", "next_day")
@@ -209,7 +210,7 @@ internal object GuidePart2SlotValidator {
                 used += ref.slot
                 val dateOnly = name == "from" || name == "to"
                 val kind = declared[ref.slot]?.kind
-                val notDate = dateOnly && kind != null && ((kind != "date" && kind !in COMPUTED) || ref.part != null)
+                val notDate = dateOnly && kind != null && ((kind != "date" && kind != "derived" && kind !in COMPUTED) || ref.part != null)
                 listOfNotNull(useProblem(ref, where, declared), if (notDate) "$at must name a date slot" else null)
             }
         }

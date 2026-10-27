@@ -23,6 +23,11 @@ class VaultOrderSlotsTest {
             setOf(LeaveRules.GRANT, LeaveRules.CARRY_ORDER, CancelRules.CANCELLED, LongLeaveRules.DECLARED, LongLeaveRules.ADOPTION, LtcRules.ADVANCE, LtcRules.LAST_LTC),
             Part2Rules.VAULT_ORDER_SLOTS,
         )
-        assertEquals(setOf("notif", "letter", "mro"), referenceSlots - Part2Rules.VAULT_ORDER_SLOTS, "any other reference box needs a decision: is it a Part II order of the vault?")
+        // the Corps notifications of R&H (notif), HAA, SCCIA and the field areas are the Corps Commander's, never a Part II order
+        assertEquals(
+            setOf("notif", "haa_notif", "sccia_notif", "field_notif", "letter", "mro"),
+            referenceSlots - Part2Rules.VAULT_ORDER_SLOTS,
+            "any other reference box needs a decision: is it a Part II order of the vault?",
+        )
     }
 }

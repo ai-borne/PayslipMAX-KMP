@@ -27,6 +27,7 @@ import com.payslipmax.pdfparser.part2.domain.RuleFinding
 import com.payslipmax.pdfparser.part2.domain.RuleSeverity
 import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
+import com.payslipmax.pdfparser.ui.theme.Part2AreaStrings
 import com.payslipmax.pdfparser.ui.theme.Part2CancelStrings
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
@@ -125,7 +126,7 @@ internal class LeaveDraftStateBuilder(
                 QuestionUi(
                     question.id,
                     Part2Strings.question(question.id),
-                    question.options.map { OptionUi(it, index.code(it)?.name ?: it) },
+                    question.options.map { OptionUi(it, Part2AreaStrings.optionName(it) ?: index.code(it)?.name ?: it) },
                     false,
                     question.options.firstOrNull { question.prefix + it in request.answers },
                 )

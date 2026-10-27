@@ -127,11 +127,12 @@ class Part2BatchThreeFlowTest {
     }
 
     @Test
-    fun anAnnualLeaveDraftStillDraftsItsSixteenLinksUnchanged() {
-        // why: Phase 8 adds no link to the annual set, so its 16-link template and the limit stay as batch 1 left them (Phase 11 item 8).
+    fun anAnnualLeaveCarriesItsSixteenOlderLinksThenTheFifteenAreaLinksOfPhase9() {
+        // why: batch 1 left GTDAL at 16 links (the limit); Phase 9 adds the 15 area re-grants and raises the limit with its reason (Phase 11 item 8).
         val template = checkNotNull(RealPart2.section.templates.firstOrNull { it.code == "GTDAL" })
-        assertEquals(16, template.links.size)
-        assertTrue(RealPart2.section.templates.filter { it.code in LeaveRules.OTHER_LEAVE }.all { it.links.size <= 4 })
+        assertEquals(31, template.links.size)
+        assertEquals(listOf("SORS", "GTDRSHNA", "STPRH"), template.links.take(3).map { it.code }, "the older links stay first and unchanged")
+        assertTrue(RealPart2.section.templates.filter { it.code in LeaveRules.OTHER_LEAVE }.all { it.links.size <= 4 + 15 })
         assertEquals("GTDAL", rowOf("GTDAL", request("GTDAL", al)).code)
     }
 }

@@ -9,7 +9,8 @@ import kotlin.test.assertTrue
 
 /**
  * Which linked orders apply: the ration four for an officer on ration strength (manual, ration notes 1.1, 1.5, 3, 4) and the R&H stop
- * and re-grant for an officer in an R&H station, with the officer's own rate code (seen in practice). Conditions only.
+ * and re-grant for an officer in an R&H station, with the officer's own rate code (seen in practice). Conditions only; the other
+ * areas are `AreaRulesTest`'s.
  */
 class RationAndAreaRulesTest {
     private fun condition(
@@ -29,8 +30,8 @@ class RationAndAreaRulesTest {
     @Test
     fun theRhFamilyKnowsTheElevenGrantCodesAndOneConditionForEachPlusTheStation() {
         assertEquals(listOf("GTDRH11", "GTDRH12", "GTDRH13", "GTDRH21", "GTDRH22", "GTDRH23", "GTDRH31", "GTDRH32", "GTDRH33", "GTDRH77", "GTDRH60"), AreaRules.rhCodes)
-        assertEquals(setOf("rh_station") + AreaRules.rhCodes.map { "rh_" + it.lowercase() }, AreaRules.all.map { it.id }.toSet())
-        assertTrue(AreaRules.all.all { it is ConditionRule }, "the area family holds conditions only")
+        assertEquals(setOf("rh_station") + AreaRules.rhCodes.map { "rh_" + it.lowercase() }, AreaRules.all.map { it.id }.filter { it.startsWith("rh_") }.toSet())
+        assertTrue(AreaRules.all.filter { it.id.startsWith("rh_") }.all { it is ConditionRule }, "R&H holds conditions only (the Transport Allowance dates are derive rules)")
     }
 
     @Test

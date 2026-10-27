@@ -38,7 +38,7 @@ object LeaveRules {
     const val LEAVE_FROM = "leave_from"
     const val LEAVE_TO = "leave_to"
     private const val RETIRE_ON = "retire_on"
-    private const val PREFIX_FIRST = "prefix_first"
+    const val PREFIX_FIRST = "prefix_first"
     const val SUFFIX_LAST = "suffix_last"
     const val YEAR = "year"
 
@@ -63,8 +63,11 @@ object LeaveRules {
     val OTHER_LEAVE: Set<String> =
         setOf("FURLEV", "EXTNFUR", "MTRNLV", "SPMTRNLV", "GTDCCL", "EOL", "TERLEV", "CHADPLVE", "PTRNLV", "PATLCHAD", "STDLEV", "STDLVAL", "STDLVFUR")
 
+    /** Casual leave proper. The area allowances' casual-leave exceptions name it and not special casual leave (a leave of its own, ration note 1.5 against 1.8). */
+    const val CASUAL = "GTDCL"
+
     /** The casual-leave grants, which carry the same dates but no annual-leave year. */
-    val CASUAL_LEAVE: Set<String> = setOf("GTDCL", "GTDSPCL")
+    val CASUAL_LEAVE: Set<String> = setOf(CASUAL, "GTDSPCL")
 
     val all: List<Part2Rule> =
         listOf(
@@ -127,5 +130,11 @@ object LeaveRules {
     private fun dateOf(
         context: RuleContext,
         slot: String,
-    ): CalendarDate? = (context.request.values[slot] as? SlotValue.DateValue)?.date?.takeIf { CivilCalendar.exists(it) }
+    ): CalendarDate? = dateIn(context.request.values, slot)
+
+    /** A stored date the calendar can hold, or null: storage does not bound a date and the calendar counts years one by one, so every rule checks first. */
+    internal fun dateIn(
+        values: Map<String, SlotValue>,
+        slot: String,
+    ): CalendarDate? = (values[slot] as? SlotValue.DateValue)?.date?.takeIf { CivilCalendar.exists(it) }
 }

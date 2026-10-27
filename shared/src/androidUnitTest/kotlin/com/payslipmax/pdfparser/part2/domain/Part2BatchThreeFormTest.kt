@@ -20,19 +20,23 @@ class Part2BatchThreeFormTest {
 
     @Test
     fun annualLeaveAsksTheNccAndReEmployedQuestionsBesideRationAndRh() {
-        assertEquals(listOf("ration", "rh_code", "ncc_reemployed", "reemployed_same_year"), asked("GTDAL"))
-        assertEquals(listOf("ration", "rh_code"), asked("GTDALCF"), "a carry-forward has no 60-day check (Round 12)")
+        assertEquals(listOf("ration", "rh_code") + areas + listOf("ncc_reemployed", "reemployed_same_year"), asked("GTDAL"))
+        assertEquals(listOf("ration", "rh_code") + areas, asked("GTDALCF"), "a carry-forward has no 60-day check (Round 12)")
     }
+
+    /** The area questions every leave that returns the officer asks (phase 9). */
+    private val areas = listOf("haa_code", "sccia_code", "field_code", "tran_code")
 
     @Test
     fun furloughAsksRationAndTheNccQuestionButNotTheSameYearOne() {
-        assertEquals(listOf("ration", "ncc_reemployed"), asked("FURLEV"))
+        assertEquals(listOf("ration") + areas + "ncc_reemployed", asked("FURLEV"))
     }
 
     @Test
     fun theRationQuestionIsAskedForLongLeavesToo() {
-        for (code in listOf("MTRNLV", "SPMTRNLV", "GTDCCL", "CHADPLVE", "STDLEV")) assertEquals(listOf("ration"), asked(code), code)
-        for (code in listOf("PTRNLV", "PATLCHAD", "EOL", "TERLEV", "OSL", "AWL")) assertEquals(emptyList(), asked(code), code)
+        for (code in listOf("MTRNLV", "SPMTRNLV", "GTDCCL", "CHADPLVE", "STDLEV")) assertEquals(listOf("ration") + areas, asked(code), code)
+        for (code in listOf("PTRNLV", "PATLCHAD", "EOL")) assertEquals(areas, asked(code), "$code asks no ration question, only the area ones")
+        for (code in listOf("TERLEV", "OSL", "AWL")) assertEquals(emptyList(), asked(code), "$code does not return the officer: it asks nothing")
     }
 
     @Test

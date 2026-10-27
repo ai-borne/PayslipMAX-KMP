@@ -127,7 +127,7 @@ object Part2Strings {
         when (id) {
             "ration" -> "Are you on ration strength?"
             "rh_code" -> "Which Risk and Hardship rate code do you draw?"
-            else -> Part2LongLeaveStrings.question(id)
+            else -> Part2AreaStrings.question(id)
         }
 
     fun hasQuestion(id: String): Boolean = question(id) != id

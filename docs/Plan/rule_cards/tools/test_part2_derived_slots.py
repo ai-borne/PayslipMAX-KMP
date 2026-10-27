@@ -80,6 +80,26 @@ class DerivedSlots(unittest.TestCase):
         self.assertEqual(delta(INPUTS + [total()], data=data), [])
 
 
+class DerivedDates(unittest.TestCase):
+    """Phase 9: the Transport Allowance rows are dated by whole calendar months (first of the first month lost, first of the month after
+    the last), which no earliest/latest/next_day slot can say; a derive rule works the date out, so From and To may name a derived slot."""
+
+    def test_from_and_to_may_name_a_derived_slot(self):
+        text = 'Noted {noted_on} {remark} {first} {second}'
+        for column in ('from', 'to'):
+            self.assertEqual(delta(INPUTS + [total()], narrative=text, **{column: {'need': 'required', 'slot': 'total'}}), [], column)
+
+    def test_from_and_to_still_refuse_any_other_kind_of_slot(self):
+        text = 'Noted {noted_on} {remark} {total}'
+        for column in ('from', 'to'):
+            problems = delta(INPUTS + [total()], narrative=text + ' {first} {second}', **{column: {'need': 'required', 'slot': 'first'}})
+            self.assertIn(f'template DELTANOTE: column {column} must name a date slot', problems, column)
+
+    def test_a_derived_slot_in_a_column_cannot_be_a_reference_part(self):
+        problems = delta(INPUTS + [total()], narrative='Noted {noted_on} {remark} {first} {second}', **{'from': {'need': 'required', 'slot': 'total.date'}})
+        self.assertIn('template DELTANOTE: column from must name a date slot', problems)
+
+
 class YearsSlots(unittest.TestCase):
     def test_a_years_slot_is_a_plain_input_a_derived_slot_may_read(self):
         years = S('breakup', 'years', 'Year by year', 'One line per year.')

@@ -31,7 +31,7 @@ object Part2LongLeaveStrings {
             LongLeaveRules.DECLARED_QUOTED_OVERSTAY -> "Quote the order that declared the overstayal $QUOTE_LATER"
             LongLeaveRules.DECLARED_QUOTED_AWL -> "Quote the order that declared the absence $QUOTE_LATER"
             LongLeaveRules.REISSUE_ALLOWANCES ->
-                "An order cannot be amended. The ration or Risk and Hardship rows of the earlier order ran to the old return day, so they are cancelled and notified afresh."
+                "An order cannot be amended. The ration or area allowance rows of the earlier order ran to the old return day, so they are cancelled and notified afresh."
             AcclveRules.ACCRUAL_30 -> "Leave accumulated for a year may not be more than 30 days."
             AcclveRules.YEAR_60 -> "The year's accumulation and the annual leave used in it together may not be more than 60 days."
             AcclveRules.TOO_EARLY -> "This accumulation is published on or after 1 March of the next year, or on retirement. Today is earlier than that."
@@ -51,7 +51,7 @@ object Part2LongLeaveStrings {
         when (id) {
             LeaveRules.ANSWER_NCC_REEMPLOYED -> "Are you an NCC officer or a re-employed officer?"
             LeaveRules.ANSWER_REEMPLOYED_SAME_YEAR -> "Were you retired and re-employed in the same calendar year?"
-            LongLeaveRules.ANSWER_EARLIER_ALLOWANCES -> "Did the earlier order also grant or stop ration or Risk and Hardship allowance?"
+            LongLeaveRules.ANSWER_EARLIER_ALLOWANCES -> "Did the earlier order also grant or stop ration or an area allowance (Risk and Hardship, HAA, SCCIA, field area or Transport)?"
             AcclveRules.ANSWER_RETIRING -> "Is this accumulation published on your retirement?"
             else -> id
         }

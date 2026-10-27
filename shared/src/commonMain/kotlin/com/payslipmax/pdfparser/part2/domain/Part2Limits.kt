@@ -27,8 +27,12 @@ object Part2Limits {
     /** Occurrence requests in one event; a leave event is a handful, never more than one per leave year. */
     const val REQUESTS_MAX = 10
 
-    /** Answers per request, and the slot values per request (a template declares at most 10 slots; linked templates share ids). */
-    const val VALUES_PER_REQUEST_MAX = 16
+    /**
+     * Answers per request, and the slot values per request (a template declares at most 10 slots; linked templates share ids). The values limit is
+     * the typed boxes of the longest real request, GTDAL with R&H, ration and every area re-grant (28, raised from 16 in phase 9 when the area
+     * re-grants made the sixteenth box too few); `Part2LimitsRealBundleTest` measures the shipped bundle against it.
+     */
+    const val VALUES_PER_REQUEST_MAX = 28
     const val ANSWERS_PER_REQUEST_MAX = 16
 
     /** One yes/no answer id (a rule family's own token), a slot id, a code, a template revision, an id (UUID-sized), in characters. */
@@ -45,18 +49,23 @@ object Part2Limits {
     const val REVS_MAX = 64
 
     /**
-     * The print snapshot a draft keeps (the rows as last handed to the clerk): rows in it (10 requests, each with at most 16 linked orders, and
-     * the request itself), characters in one rendered column (a template narrative or certificate is at most 1300 and a typed remark 200), and Data columns a row has.
+     * The print snapshot a draft keeps (the rows as last handed to the clerk): rows in it (10 requests, each with at most 31 linked orders, the bundle's link
+     * limit raised from 16 in phase 9, and the request itself), characters in one rendered column (a template narrative or certificate is at most 1300 and a typed remark 200), and Data columns a row has.
      */
-    const val PRINTED_ROWS_MAX = 170
+    const val PRINTED_ROWS_MAX = 320
     const val PRINTED_TEXT_MAX = 4000
     const val PRINTED_DATA_MAX = 4
 
     /** How long the app waits for a print job to end before it stops watching it (the job itself is the system's), in milliseconds. */
     const val PRINT_WATCH_MS = 30L * 60 * 1000
 
-    /** A draft or order payload before encryption, in bytes. The longest real draft is about 40 KB; this is the ceiling, not a target. */
-    const val PAYLOAD_MAX_BYTES = 128 * 1024
+    /**
+     * A draft or order payload before encryption, in bytes. A typical draft is a few tens of KB; this is the ceiling, not a target. It covers the
+     * largest draft the form can make (10 requests, each with every area re-grant and every box at 200 characters: 204 KB, measured by
+     * `Part2WorstDraftSizeTest`), so storage never refuses what the form accepts. It was 128 KB until phase 9, when the area certificates
+     * made the print snapshot bigger.
+     */
+    const val PAYLOAD_MAX_BYTES = 256 * 1024
 
     /** One re-encoded scanned page (long edge 1600 px, JPEG), in bytes; far under any row limit. */
     const val PAGE_MAX_BYTES = 500 * 1024

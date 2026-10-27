@@ -30,8 +30,10 @@ class Part2LimitsPinTest {
 
     @Test
     fun thePrintSnapshotLimitsFollowFromWhatADraftCanHoldAndHowLongTheAppWaits() {
-        // 10 requests, each with at most 16 linked orders (the bundle's link limit) and itself.
-        assertEquals(Part2Limits.REQUESTS_MAX * (16 + 1), Part2Limits.PRINTED_ROWS_MAX)
+        // 10 requests, each with at most 31 linked orders (the bundle's link limit, raised from 16 in phase 9) and itself.
+        assertEquals(Part2Limits.REQUESTS_MAX * (31 + 1), Part2Limits.PRINTED_ROWS_MAX)
+        assertEquals(256 * 1024, Part2Limits.PAYLOAD_MAX_BYTES, "the largest draft the form can make (10 requests, every area, every box at 200 characters) is 204 KB; raised from 128 KB in phase 9")
+        assertEquals(28, Part2Limits.VALUES_PER_REQUEST_MAX, "the typed boxes of the longest real request (GTDAL with every area), raised from 16 in phase 9")
         // A column is a template narrative or certificate (at most 1,300) with typed remarks (at most 200) in it, with room to spare.
         assertTrue(Part2Limits.PRINTED_TEXT_MAX >= 1300 + 10 * Part2Limits.TEXT_MAX)
         assertEquals(4, Part2Limits.PRINTED_DATA_MAX, "Data 1 to 4")

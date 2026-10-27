@@ -82,8 +82,9 @@ class Part2BatchOneShipTest {
         }
         val linking = templates.filter { it.links.isNotEmpty() }.map { it.code }.toSet()
         assertEquals(setOf("GTDAL", "GTDALCF", "GTDCL", "GTDSPCL"), linking)
-        assertEquals(listOf("SORS", "GTDRSHNA", "STPRH", "TORS", "STPRSHNA") + AreaRules.rhCodes, byCode.getValue("GTDAL").links.map { it.code })
-        assertEquals(listOf("SORS", "GTDRSHNA", "TORS", "STPRSHNA"), byCode.getValue("GTDCL").links.map { it.code }, "ration only on casual leave")
+        val area = AreaRules.haaCodes + AreaRules.scciaCodes + AreaRules.fieldCodes + "STPTRAN" + AreaRules.tranCodes
+        assertEquals(listOf("SORS", "GTDRSHNA", "STPRH", "TORS", "STPRSHNA") + AreaRules.rhCodes + area, byCode.getValue("GTDAL").links.map { it.code })
+        assertEquals(listOf("SORS", "GTDRSHNA", "TORS", "STPRSHNA") + area, byCode.getValue("GTDCL").links.map { it.code }, "ration and the area re-grants on casual leave, never R&H")
     }
 
     private companion object {

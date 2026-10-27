@@ -496,6 +496,17 @@ Build-time choices (change them if you disagree):
 
 The owner accepted Phase 8b as built (888945df): the Leave Bank fill button on the ACCLVE and ENCASH forms (empty boxes only, "Refill" asks first), the cap note, the missing-years and statement-total notes, the Leave Bank check line on the ACCLVE slip, the multi-line break-up box, the security fix to `alUsed` and the Pixel 9 walk, with the four build-time choices of Round 33 as built. Phase 11 item 43 is closed; item 48 (b to d: the state with no statement, the owner's own read of the ENCASH lines, light theme, TalkBack, small screens and the iPhone) stays open with items 14, 20 and 47. Phase 9 (area re-grants: HAA, SCCIA, field, TPTA; Phase 11 item 8, the `links` limit) is next, then Phase 10.
 
+## Round 35: Phase 9 owner answers (owner, 2026-10-27)
+
+Phase 9 (area re-grants, HAA, SCCIA, field area and Transport Allowance, batch 4) as built, before acceptance. The owner's answers:
+
+- **Authority.** ODP 2026 is the official document for this feature and governs wherever a doubt arises. The slip therefore follows the printed ODP numbers (HAA re-granted after casual leave of 14 days or more, p.49 note ii; field areas after 15 days or more, p.55 note 2; SCCIA always; special casual leave always). The handbook and MoD figures (Phase 11 item 50) are recorded only for information; item 50 is closed. The handbooks are used only to fill a gap the ODP leaves.
+- **Transport Allowance dates (item 51): accepted.** STPTRAN is dated the first day of the first calendar month wholly covered by leave, and the re-grant the first day of the month after the last such month; a part month is paid in full. The ODP gives no dates, so a real HRMS order stays the only remaining check.
+- **Hospitalisation and courses (item 49): left open for Phase 11.** The area re-grants are drafted from a leave order only; the owner will name where a hospital or course absence is drafted.
+- **Limits: accepted.** Typed boxes per request 28 (was 16), printed rows 320 (was 170), stored payload 256 KB (was 128 KB), each pinned and measured against the real bundle (item 8 closed).
+- **Batch 4 review pack (items 52, 53): not read by the owner.** The owner asked the agent to read it. Done: the columns of GTDHH11, GTDCIAFD, GTDHAFA, GTDTRAN1-5 and STPTRAN were compared with the printed tables (pp.48-55, 70-71) and match; the certificates cannot be checked because Annexure IV is not in the PDF, so item 52 stays open for the owner's read of them.
+- Phase 9 waits for the owner's acceptance; Phase 10 has not started.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

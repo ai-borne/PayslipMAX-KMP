@@ -8,7 +8,7 @@ not answered; `for` marks a slot (or a worked-out day count) only a check reads 
 and the certificate; a column (From, To, Data 1-4) names a slot, holds `text` that joins words and placeholders, or is `none` where the
 manual says it is not required. A `years` slot is a year-by-year list the officer types (the break-up of an encashment); a `derived`
 slot is worked out by the derive rule named in `by` from the plain slots it `reads`, so arithmetic and caps live in Kotlin and never in a
-template. Plain scans, no regex over template text. Problems name ids only.
+template; a derived slot may be the From or To column when its rule works out a date (the Transport Allowance months, phase 9). Plain scans, no regex over template text. Problems name ids only.
 """
 import os
 import sys
@@ -184,6 +184,6 @@ def column_uses(t, where, limits, slots, errs):
         else:
             sid = _use(_split(slot), where, slots, errs)
             used.add(sid)
-            if name in ('from', 'to') and sid in slots and (slots[sid].get('kind') not in ('date',) + COMPUTED or '.' in slot):
+            if name in ('from', 'to') and sid in slots and (slots[sid].get('kind') not in ('date', 'derived') + COMPUTED or '.' in slot):
                 errs.append(f'{at} must name a date slot')
     return used
