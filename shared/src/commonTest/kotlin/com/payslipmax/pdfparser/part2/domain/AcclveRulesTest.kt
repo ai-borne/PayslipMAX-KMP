@@ -135,4 +135,20 @@ class AcclveRulesTest {
         assertEquals(0, AcclveRules.alUsed(2023, requests))
         assertEquals(0, AcclveRules.alUsed(2025, listOf(OccurrenceRequest("GTDAL", mapOf("year" to number(2025))))), "a grant with no dates yet counts nothing")
     }
+
+    @Test
+    fun aStoredDateThatDoesNotExistCountsNoDaysSoACraftedBackupCannotMakeTheCalendarCountYearsOnEnd() {
+        // why: Storage bounds a draft's size, not a date's value, and the calendar counts years one by one. A date the calendar cannot hold
+        // (a year past 2100, a 13th month, a 31st of April) is refused before anything is counted, as the reminder planner does.
+        fun leave(
+            from: CalendarDate,
+            to: CalendarDate,
+        ) = OccurrenceRequest("GTDAL", mapOf("leave_from" to SlotValue.DateValue(from), "leave_to" to SlotValue.DateValue(to), "year" to number(2025)))
+        val fine = CalendarDate(2025, 7, 1)
+        assertEquals(0, AcclveRules.alUsed(2025, listOf(leave(fine, CalendarDate(5000, 7, 1)))), "a year past 2100")
+        assertEquals(0, AcclveRules.alUsed(2025, listOf(leave(CalendarDate(1999, 7, 1), fine))), "a year before 2000")
+        assertEquals(0, AcclveRules.alUsed(2025, listOf(leave(fine, CalendarDate(2025, 13, 1)))), "a 13th month")
+        assertEquals(0, AcclveRules.alUsed(2025, listOf(leave(CalendarDate(2025, 4, 31), fine))), "a 31st of April")
+        assertEquals(5, AcclveRules.alUsed(2025, listOf(leave(fine, CalendarDate(2025, 7, 5)))), "a real leave still counts, both days")
+    }
 }

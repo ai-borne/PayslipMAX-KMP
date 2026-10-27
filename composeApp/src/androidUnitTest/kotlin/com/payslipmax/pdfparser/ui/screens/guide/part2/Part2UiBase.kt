@@ -17,6 +17,7 @@ import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.part2.domain.Part2Rules
 import com.payslipmax.pdfparser.part2.domain.ReminderPlanner
+import com.payslipmax.pdfparser.part2.leavebank.LeaveBankSource
 import com.payslipmax.pdfparser.part2.pages.PageEncoder
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
@@ -101,7 +102,10 @@ abstract class Part2UiBase {
     /** The rules the drafting service runs: the invented ones by default, the shipped ones for a test on the real bundle. */
     protected open fun rules(): Part2Rules = SyntheticPart2Templates.registry()
 
-    protected val drafting by lazy { Part2Drafting(guide, repository, rules(), { 1_000L }, { "draft-${drafted++}" }, dispatcher) }
+    /** Where the year-end forms fill from: none by default (the Leave Bank is off), a fake source in the tests of the fill. */
+    protected open fun leaveBank(): LeaveBankSource? = null
+
+    protected val drafting by lazy { Part2Drafting(guide, repository, rules(), { 1_000L }, { "draft-${drafted++}" }, dispatcher, leaveBank()) }
     protected var drafted = 1
     protected val factory: () -> Part2Models by lazy {
         {

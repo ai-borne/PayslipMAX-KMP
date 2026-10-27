@@ -6,6 +6,8 @@ import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.part2.data.Part2Dao
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.data.RoomPart2Repository
+import com.payslipmax.pdfparser.part2.leavebank.LeaveBankFeed
+import com.payslipmax.pdfparser.part2.leavebank.LeaveBankSource
 import com.payslipmax.pdfparser.part2.pages.PageEncoder
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.RestoreMode
@@ -23,6 +25,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.due.DueCardModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.due.DueViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
 import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultViewModel
+import com.payslipmax.pdfparser.ui.screens.isLeaveBankEnabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.koin.dsl.koinApplication
@@ -112,6 +115,20 @@ class Part2WiringTest {
         val production = koinApplication { modules(appKoinModules(platformModules = listOf(leaves))) }.koin
         assertEquals(isPart2Enabled(), production.getOrNull<DueViewModel>() != null)
         assertEquals(isPart2Enabled(), production.getOrNull<DueCardModel>() != null)
+    }
+
+    @Test
+    fun theDraftMakerGetsTheOneLeaveBankFeedThroughTheKillSwitchAndItIsBoundOnlyWhereTheFeatureIsEnabled() {
+        // why: the year-end forms fill from the rows of the app's one Leave Bank summary; two feeds, or a maker built without the source, would
+        // leave the button dead or fill from a second copy. The kill switch (LaunchFlags.LEAVE_BANK_ENABLED) is read in `leaveBankFor`.
+        val guide = module { single { GuideViewModel(FakeGuideRepository(), FakeCrashReporter()) } }
+        val on = koinApplication { modules(part2Module, leaves, guide) }.koin
+        assertSame(on.get<LeaveBankFeed>(), on.get<LeaveBankFeed>())
+        assertSame(on.get<LeaveBankFeed>(), on.get<LeaveBankSource>())
+        assertSame(on.get<LeaveBankFeed>().takeIf { isLeaveBankEnabled() }, on.get<Part2Drafting>().leaveBank)
+
+        val production = koinApplication { modules(appKoinModules(platformModules = listOf(leaves))) }.koin
+        assertEquals(isPart2Enabled(), production.getOrNull<LeaveBankFeed>() != null)
     }
 
     @Test

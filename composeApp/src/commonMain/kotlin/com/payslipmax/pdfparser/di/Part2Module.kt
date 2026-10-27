@@ -4,6 +4,8 @@ import com.payslipmax.pdfparser.nav.PendingPart2Link
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.data.RoomPart2Repository
 import com.payslipmax.pdfparser.part2.domain.ReminderPlanner
+import com.payslipmax.pdfparser.part2.leavebank.LeaveBankFeed
+import com.payslipmax.pdfparser.part2.leavebank.LeaveBankSource
 import com.payslipmax.pdfparser.part2.pages.PageEncoder
 import com.payslipmax.pdfparser.part2.pages.providePageEncoder
 import com.payslipmax.pdfparser.part2.reminders.ReminderFireCheck
@@ -40,7 +42,11 @@ val part2Module =
         single { Part2LookupViewModel(guide = get()) }
         // The drafts list and the maker of one draft share the repository and the loaded Guide; `Part2Models` is what the Guide tab is handed.
         single { Part2DraftsViewModel(guide = get(), repository = get()) }
-        single { Part2Drafting(guide = get(), repository = get()) }
+        // The Leave Bank's rows for the year-end forms: one feed, attached to the app's one Leave Bank summary by the Guide tab (`attachPart2LeaveBank`);
+        // the kill switch decides whether the draft maker is given it.
+        single { LeaveBankFeed() }
+        single<LeaveBankSource> { get<LeaveBankFeed>() }
+        single { Part2Drafting(guide = get(), repository = get(), leaveBank = leaveBankFor(get())) }
         // The vault list and the maker of one order's model; the scanner is not bound (it needs a screen) and is handed in by the screens.
         single { VaultViewModel(repository = get(), encoder = get()) }
         // The Due list (the planner's plan, worded) and the Dashboard card's memory of "Not now"; both app-scoped so the card outlives a tab switch.

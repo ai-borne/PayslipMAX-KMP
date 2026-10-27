@@ -185,6 +185,7 @@ class GuideLoaderIosPerfTest {
             val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())
             Part2DraftContract.assertEveryCheckAndQuestionHasItsWords(bundle)
             Part2DraftContract.assertTheFormCompletesEveryOfferedCode(bundle)
+            Part2DraftContract.assertTheLeaveBankFillIsOfferedOnTheYearEndFormsOnly(bundle)
 
             // Phase 4b: the form rebuilds its whole screen (fields, questions, slip, checks) on every change, on the main thread.
             val builder = Part2DraftContract.newBuilder(bundle)

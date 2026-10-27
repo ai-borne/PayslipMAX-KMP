@@ -16,7 +16,7 @@ sealed interface BreakupRead {
 /**
  * The year-by-year list a `years` slot holds (the break-up of an encashment): one line `YYYY D` per year, years strictly ascending. The
  * stored form is that text, so no new stored field exists and a draft keeps its break-up through backup and restore like any answer.
- * A line break or a semicolon ends a line, so a one-line text box can take the whole list ("2011 30; 2013 30"). Reading is strict and plain-scan (no regex): digits only, the year in [FIRST_YEAR]..[LAST_YEAR], the days in 0..[Part2Limits.NUMBER_MAX].
+ * A line break or a semicolon ends a line, so the list can be typed one line a year in a box of several lines or on one line ("2011 30; 2013 30"). Reading is strict and plain-scan (no regex): digits only, the year in [FIRST_YEAR]..[LAST_YEAR], the days in 0..[Part2Limits.NUMBER_MAX].
  */
 object YearlyBreakup {
     const val FIRST_YEAR = 1950

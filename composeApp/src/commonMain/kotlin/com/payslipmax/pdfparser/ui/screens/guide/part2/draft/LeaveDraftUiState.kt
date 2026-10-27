@@ -13,6 +13,9 @@ sealed interface FieldValue {
 
     data class Words(val text: String) : FieldValue
 
+    /** A year-by-year list (the encashment's break-up): one `YYYY D` line a year, typed in a box of several lines. */
+    data class Years(val text: String) : FieldValue
+
     /** An order reference: its number as typed and its date (null while not chosen). */
     data class Reference(val number: String, val date: CalendarDate?) : FieldValue
 }
@@ -39,6 +42,13 @@ data class QuestionUi(
     val chosen: String?,
 )
 
+/** The Leave Bank fill of a section: [refill] when a figure is already there (the button then asks first), the last [message], and the [notes] on its figures. */
+data class FillUi(
+    val refill: Boolean,
+    val message: String?,
+    val notes: List<String>,
+)
+
 /** One occurrence the officer asked for: its code and the manual's name, the questions it raises and the inputs it needs now. */
 data class RequestSection(
     val index: Int,
@@ -48,6 +58,7 @@ data class RequestSection(
     val questions: List<QuestionUi>,
     val fields: List<FieldUi>,
     val removable: Boolean,
+    val fill: FillUi? = null,
 )
 
 /** A vault order the officer can quote as the grant: its [orderNo] and [date] as the boxes take them, and its [label] already worded. */
@@ -93,6 +104,7 @@ data class SlipUi(
     val findings: List<FindingUi>,
     val undrafted: List<String>,
     val readyToPrint: Boolean,
+    val crossChecks: List<String> = emptyList(),
 )
 
 /** What the preview says of a printed draft: when it was printed, and a [note] when the paper no longer matches the draft (null when it does). */

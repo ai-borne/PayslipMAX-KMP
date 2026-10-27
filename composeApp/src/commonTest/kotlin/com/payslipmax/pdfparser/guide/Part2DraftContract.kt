@@ -11,10 +11,12 @@ import com.payslipmax.pdfparser.part2.domain.Part2LookupIndex
 import com.payslipmax.pdfparser.part2.domain.Part2Rules
 import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.FieldValue
+import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LeaveBankView
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.LeaveDraftStateBuilder
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -60,6 +62,21 @@ object Part2DraftContract {
         }
     }
 
+    /**
+     * The Leave Bank fill is offered on exactly the two year-end forms the rule families register it for, and on no other offered code; and
+     * the encashment's break-up is a year list in a box of several lines (plan, phase 8b). Run on each platform.
+     */
+    fun assertTheLeaveBankFillIsOfferedOnTheYearEndFormsOnly(bundle: GuideBundle) {
+        val builder = builder(bundle)
+        val offered = Part2LookupIndex(assertNotNull(bundle.part2)).draftOptions()
+        val view = LeaveBankView(emptyList(), emptyMap())
+        val filled = offered.map { it.code }.filter { code -> builder.build(LeaveEventEditor.start(code), emptySet(), false, leaveBank = view).sections[0].fill != null }
+        assertEquals(listOf("ACCLVE", "ENCASH"), filled.sorted(), "the fill is registered per code by the rule families, not decided by a screen")
+        for (code in offered.map { it.code }) assertNull(builder.build(LeaveEventEditor.start(code), emptySet(), false).sections[0].fill, "$code: no fill without the Leave Bank")
+        val breakup = builder.build(LeaveEventEditor.start("ENCASH"), emptySet(), false).sections[0].fields.single { it.slotId == "breakup" }
+        assertEquals(FieldValue.Years(""), breakup.value)
+    }
+
     /** The builder over the shipped section and rules; build it once and rebuild many times when timing. */
     internal fun newBuilder(bundle: GuideBundle) = builder(bundle)
 
@@ -77,7 +94,8 @@ object Part2DraftContract {
         when (value) {
             is FieldValue.Date -> SlotValue.DateValue(CalendarDate(2026, 8, day))
             is FieldValue.Digits -> SlotValue.NumberValue(1)
-            is FieldValue.Words -> SlotValue.TextValue(if (slotId == "breakup") "2011 30; 2013 20" else "plain")
+            is FieldValue.Words -> SlotValue.TextValue("plain")
+            is FieldValue.Years -> SlotValue.TextValue("2011 30; 2013 20")
             is FieldValue.Reference -> SlotValue.RefValue(OrderRef("N-1/26", CalendarDate(2026, 3, 2)))
         }
 }

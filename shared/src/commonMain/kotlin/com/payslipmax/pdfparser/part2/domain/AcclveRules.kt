@@ -2,6 +2,8 @@ package com.payslipmax.pdfparser.part2.domain
 
 import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.calendar.CivilCalendar
+import com.payslipmax.pdfparser.domain.LeaveEntry
+import com.payslipmax.pdfparser.part2.leavebank.LeaveBankFigures
 
 /**
  * The rule family for the year-end accumulation of annual leave (Part II plan, phase 8; ODP-2026 pp.133-134). A family may name codes and
@@ -20,6 +22,9 @@ object AcclveRules {
 
     /** The yes/no answer for "is this accumulation published on your retirement?", which lifts the 1 March rule (note 7). */
     const val ANSWER_RETIRING = "acclve_retiring"
+
+    /** The code this family drafts: the one the reminder planner answers a year end with. */
+    const val CODE = ReminderRules.YEAR_END_REQUEST
 
     /** The slots the rules read; the leave year is [LeaveRules.YEAR], shared with every annual template (the year-end reminder finds an ACCLVE by it). */
     private const val PREV_TOTAL = "prev_total"
@@ -53,6 +58,9 @@ object AcclveRules {
     /** One question: whether this accumulation is for retirement. Its wording is `Part2Strings`' under this id. */
     val questions: List<AnswerQuestion> = listOf(AnswerQuestion.YesNo("acclve_retiring", ANSWER_RETIRING, setOf(TOO_EARLY)))
 
+    /** What this code fills from the Leave Bank (phase 8b). */
+    val fills: List<LeaveBankFill> = listOf(Fill)
+
     /** The (d) figure an ACCLVE request works out to, or null when its figures are not all answered. */
     fun totalOf(request: OccurrenceRequest): Int? = total(request.values)
 
@@ -62,8 +70,8 @@ object AcclveRules {
         requests: List<OccurrenceRequest>,
     ): Int =
         requests.filter { it.code in ANNUAL_USED && number(it.values, LeaveRules.YEAR) == year }.sumOf { request ->
-            val from = (request.values[LeaveRules.LEAVE_FROM] as? SlotValue.DateValue)?.date
-            val to = (request.values[LeaveRules.LEAVE_TO] as? SlotValue.DateValue)?.date
+            val from = realDate(request, LeaveRules.LEAVE_FROM)
+            val to = realDate(request, LeaveRules.LEAVE_TO)
             if (from != null && to != null) CivilCalendar.inclusiveDays(from, to) ?: 0 else 0
         }
 
@@ -71,6 +79,12 @@ object AcclveRules {
         values: Map<String, SlotValue>,
         slot: String,
     ): Int? = (values[slot] as? SlotValue.NumberValue)?.number
+
+    /** A stored date, only if the calendar can hold it: storage does not bound a date's value and the calendar counts years one by one, so a crafted backup must not reach the count. */
+    private fun realDate(
+        request: OccurrenceRequest,
+        slot: String,
+    ): CalendarDate? = (request.values[slot] as? SlotValue.DateValue)?.date?.takeIf(CivilCalendar::exists)
 
     private fun total(values: Map<String, SlotValue>): Int? {
         val previous = number(values, PREV_TOTAL) ?: return null
@@ -108,4 +122,44 @@ object AcclveRules {
 
     private const val DECEMBER = 12
     private const val LAST_DAY = 31
+
+    /**
+     * What the form fills for the year end (DECISIONS Round 30): the previous total from the statement's row of the year before (else from the
+     * officer's own finished draft for that year), the LTC days from the statement, the leave used from the printed drafts and (c) from it.
+     * The LTC days are filled only when the statement is held, since "0 days encashed" would otherwise be a claim, not a fact.
+     */
+    private object Fill : LeaveBankFill {
+        override val code = CODE
+        override val slots = setOf(PREV_TOTAL, LTC_DAYS, ACCRUED, AL_USED)
+
+        override fun fill(
+            request: OccurrenceRequest,
+            inputs: LeaveBankInputs,
+        ): FillOutcome {
+            val year = number(request.values, LeaveRules.YEAR) ?: return FillOutcome.NeedsYear
+            val earlier = inputs.drafted.firstNotNullOfOrNull { other -> if (other.code == CODE && number(other.values, LeaveRules.YEAR) == year - 1) totalOf(other) else null }
+            val figures = LeaveBankFigures.suggest(year, inputs.rows, earlier, alUsed(year, inputs.printed))
+            val values =
+                buildMap {
+                    figures.previousTotal?.let { put(PREV_TOTAL, it) }
+                    if (inputs.rows.isNotEmpty()) put(LTC_DAYS, figures.ltcDays)
+                    put(AL_USED, figures.alUsed)
+                    put(ACCRUED, figures.accrued)
+                }.mapNotNull { (slot, days) -> days.takeIf { it in 0..Part2Limits.NUMBER_MAX }?.let { slot to SlotValue.NumberValue(it) } }.toMap()
+            return FillOutcome.Values(values)
+        }
+
+        override fun notes(
+            request: OccurrenceRequest,
+            rows: List<LeaveEntry>,
+        ): List<FillNote> = number(request.values, AL_USED)?.let { listOf(FillNote.AccrualLimit(it, AcclveCalculator.accrual(it))) }.orEmpty()
+
+        override fun crossCheck(
+            request: OccurrenceRequest,
+            rows: List<LeaveEntry>,
+        ): YearCheck? {
+            val year = number(request.values, LeaveRules.YEAR) ?: return null
+            return YearCheck(year, LeaveBankFigures.crossCheck(year, totalOf(request) ?: return null, rows))
+        }
+    }
 }

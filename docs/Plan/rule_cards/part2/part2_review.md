@@ -1101,7 +1101,7 @@ Narrative:
 
 | Slot | Asks | Kind |
 | --- | --- | --- |
-| `breakup` | Year-by-year accumulation: One line for each year, the year then the days accumulated, for example 2011 30. Put a semicolon between the years. | years |
+| `breakup` | Year-by-year accumulation: One line for each year, the year then the days accumulated, for example 2011 30. | years |
 | `total` | Days to encash: Worked out for you. | derived |
 | `listing` | The break-up as printed: Worked out for you. | derived |
 

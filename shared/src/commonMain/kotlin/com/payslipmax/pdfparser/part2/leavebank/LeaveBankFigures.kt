@@ -68,6 +68,9 @@ object LeaveBankFigures {
             .mapNotNull { entry -> yearOf(entry)?.takeIf { it in YearlyBreakup.FIRST_YEAR..YearlyBreakup.LAST_YEAR && entry.days in 0..Part2Limits.NUMBER_MAX }?.let { YearDays(it, entry.days) } }
             .associateBy { it.year }.values.sortedBy { it.year }.takeLast(Part2Limits.BREAKUP_ROWS_MAX)
 
+    /** The running total the statement's newest accumulation row prints, or null when it has none. */
+    fun statementTotal(entries: List<LeaveEntry>): Int? = entries.filter { it.casCode == LeaveCasCode.ACCRUED }.maxWithOrNull(newestLast)?.totalDays
+
     /** The years between the first and the last of [rows] that have no row, for the officer to type if they accumulated leave in them. */
     fun missingYears(rows: List<YearDays>): List<Int> {
         if (rows.isEmpty()) return emptyList()

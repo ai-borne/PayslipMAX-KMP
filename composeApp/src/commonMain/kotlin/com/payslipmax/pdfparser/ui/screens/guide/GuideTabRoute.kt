@@ -1,10 +1,12 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.payslipmax.pdfparser.di.attachPart2LeaveBank
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.rememberHasAccess
@@ -29,6 +31,8 @@ fun GuideTabRoute(
     val unlocked = viewModel.rememberGuideUnlocked()
     val part2Unlocked = viewModel.rememberHasAccess(FeatureGate.PART2_ORDERS)
     val koin = getKoin()
+    // The year-end forms read the rows of this same view model's Leave Bank summary (a no-op while Part II is off).
+    LaunchedEffect(viewModel) { attachPart2LeaveBank(koin, viewModel) }
     GuideTab(
         navState = navState,
         access = GuideAccess(unlocked, part2Unlocked, onUnlock = { showUpgradeSheet = true }),

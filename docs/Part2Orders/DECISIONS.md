@@ -469,6 +469,29 @@ Built without a question (change them if you disagree). Where the plan or an ear
 
 The owner accepted Phase 8 as built (ca2f74a4): the 22 serials, the format additions, the NCC and retirement caps, the reissue warning, the return reminders for the new leaves and the Pixel 9 walk. Item 43 (the Leave Bank prefill screens for ACCLVE and ENCASH) stays open and is scheduled as its own step, **Phase 8b**. (Same day, the owner reversed the order: Phase 8b comes **before** Phase 9, then Phase 9, then Phase 10. The reasons for a separate phase stand: Phase 10 walks the whole loop and needs the two year-end codes usable, and Phase 9 stays content only.): Phase 10 walks the whole loop and takes the owner's sign-off on every template, so the two year-end codes must be usable on the phone by then, and it keeps Phase 9 (content) apart from the `LeaveDraftViewModel` split and the new screens. Still open from Phase 8: items 43 (as above), 46 (accepted) and 47 (iPhone), besides the older 8 (the `links` limit, Phase 9), 14, 20, 22, 27, 35, 38, 39, 40 and 42. Phase 9 (area re-grants) is next.
 
+## Round 33: Phase 8b, the Leave Bank fill for the year-end forms (owner, 2026-10-27, asked at the start of phase 8b and after the build)
+
+Phase 8b (plan item 43) was asked in one batch at the start; the rest was settled by Rounds 5, 13, 17, 25, 30, 31 and 32 (the fill sits in the Premium form, obeys the Leave Bank kill switch, uses the printed drafts for the leave used, compares ACCLVE(Y) with the statement and changes nothing on a difference). The owner took the recommended option.
+
+| Topic | Decision |
+|---|---|
+| How the fill behaves | A button, "Fill from your Leave Bank". It fills only the boxes that are still empty and never touches what the officer typed. Once any figure of the fill is there the button reads "Refill from your Leave Bank" and asks before it replaces those figures (Replace or Keep mine). Not automatic when the year is typed. |
+| The build-time choices below | Left to me by the owner ("you pick the correct choices", keeping in mind that officers should be aware of their documentation). All four were kept as built. |
+| How Phase 8b closes | The owner asked for the match case to be retried on the phone rather than accepted open: it was walked the same day and the line read "Matches" (plan item 48a). |
+
+Build-time choices (change them if you disagree):
+
+| Topic | Choice |
+|---|---|
+| Previous total fallback | Round 30 said "otherwise from the last ACCLVE draft". Built as the officer's own finished ACCLVE draft **for the year before**: a total from another year would be a wrong figure filled quietly. The statement's row of the year before wins over any draft. |
+| LTC days | Filled only when a Leave Bank statement is held; otherwise left blank, because "0 days encashed" would be a claim and not a fact. |
+| Figures outside 0 to 9,999 | Never filled (the form's own digit limit); the officer types them. |
+| The cross-check | On the ACCLVE slip, under its checks, worded by year: matches (the statement's figure), differs (both figures, "Nothing was changed. Check both figures before you print."), or not checked ("your Leave Bank has no row for 2025 yet"). It is shown to a lapsed officer on the read-only slip too, never on the printed paper. |
+| The cap note | Under the fill button once "annual leave used" holds a figure, filled or typed: the days used, the days that can be accumulated and the manual's caps (30 a year, 60 together with the leave used, p.134 notes 5 and 6), the numbers read from `AcclveCalculator`. |
+| ENCASH | The break-up is filled one `YYYY D` line a year from the statement's accumulation rows, in a box of several lines (a long list is kept whole: the editor's 200-character cut would have broken a 60-year list). Two notes follow what is in the box: the years with no line, named as short runs, and, when the statement's own running total differs from the sum of the lines, that total. A total above 300 and a year above 30 only warn, as in Round 30. The ENCASH help no longer tells the officer to use semicolons. |
+| Occurrence removed | A removal drops a fill that is still waiting for a slow Leave Bank, since the places have moved; typing does not. |
+| Walk practice | The owner's real figures are never printed, screenshotted or recorded. A listing filter in the walk script let rounded History-row figures reach the session output once; none of it was written to a file, a document or a commit, and the filter now prints fixed strings only. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

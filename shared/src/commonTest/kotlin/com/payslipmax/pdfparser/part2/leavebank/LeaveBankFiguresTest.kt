@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.leavebank
 
+import com.payslipmax.pdfparser.domain.LeaveCasCode
 import com.payslipmax.pdfparser.domain.LeaveEntry
 import com.payslipmax.pdfparser.part2.domain.YearDays
 import com.payslipmax.pdfparser.testing.SyntheticLeaveAccumulation.accrued
@@ -82,5 +83,16 @@ class LeaveBankFiguresTest {
         assertEquals(60, cut.size)
         assertEquals(1960, cut.first().year, "the oldest ten fall off")
         assertEquals(2019, cut.last().year)
+    }
+
+    @Test
+    fun theStatementTotalIsTheRunningTotalOfTheNewestAccumulationRowAndNullWhenThereIsNone() {
+        // why: the break-up of an encashment is compared with what the statement itself prints (a statement can show 301).
+        assertEquals(301, LeaveBankFigures.statementTotal(rows))
+        assertEquals(301, LeaveBankFigures.statementTotal(rows.reversed()), "by date, not by position")
+        assertNull(LeaveBankFigures.statementTotal(listOf(ltcEncashed("2024-04-26", 10))), "an LTC row is not an accumulation")
+        assertEquals(301, LeaveBankFigures.statementTotal(rows + ltcEncashed("2025-04-26", 3)), "a later LTC row (no total) does not hide the accumulation before it")
+        assertNull(LeaveBankFigures.statementTotal(emptyList()))
+        assertNull(LeaveBankFigures.statementTotal(listOf(LeaveEntry("2024-12-31", LeaveCasCode.ACCRUED, 19, null, "1", "2025-01-01"))), "a row that prints no total")
     }
 }

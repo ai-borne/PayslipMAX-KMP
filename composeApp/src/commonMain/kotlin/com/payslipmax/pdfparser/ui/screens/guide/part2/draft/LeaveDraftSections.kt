@@ -24,6 +24,7 @@ internal fun RequestSectionView(
 ) {
     PreClaimSectionFrame(title = section.title, help = section.name) {
         section.questions.forEach { QuestionView(section.index, it, actions) }
+        section.fill?.let { LeaveBankFillView(section.index, it, actions) }
         section.fields.forEach { FieldView(section.index, it, actions, grants) }
         if (section.removable) TextButton(onClick = { actions.onRemove(section.index) }) { Text(Part2Strings.removeOccurrence) }
     }

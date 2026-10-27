@@ -99,12 +99,17 @@ class Part2Rules(
     rules: List<Part2Rule>,
     /** The form's questions, owned by the rule families that read their answers. */
     val questions: List<AnswerQuestion> = emptyList(),
+    /** What each code can fill from the Leave Bank, one per code. */
+    fills: List<LeaveBankFill> = emptyList(),
 ) {
     private val byId: Map<String, Part2Rule>
+    private val fillByCode: Map<String, LeaveBankFill>
 
     init {
         require(rules.map { it.id }.toSet().size == rules.size) { "duplicate Part II rule id" }
         byId = rules.associateBy { it.id }
+        require(fills.map { it.code }.toSet().size == fills.size) { "duplicate Part II fill code" }
+        fillByCode = fills.associateBy { it.code }
     }
 
     val ids: Set<String> get() = byId.keys
@@ -114,6 +119,9 @@ class Part2Rules(
     fun condition(id: String): ConditionRule? = byId[id] as? ConditionRule
 
     fun derivation(id: String): DeriveRule? = byId[id] as? DeriveRule
+
+    /** What [code] can fill from the Leave Bank, or null when it has no fill. */
+    fun fill(code: String): LeaveBankFill? = fillByCode[code]
 
     /** Where this registry and the bundle's [declared] rules disagree: a rule only one side has, or one the two call different kinds. */
     fun problemsAgainst(declared: List<Part2RuleDecl>): List<String> {
@@ -143,6 +151,7 @@ class Part2Rules(
             Part2Rules(
                 LeaveRules.all + LongLeaveRules.all + AcclveRules.all + LtcRules.all + EncashRules.all + RationRules.all + AreaRules.all + CancelRules.all,
                 RationRules.questions + AreaRules.questions + LeaveRules.questions + LongLeaveRules.questions + AcclveRules.questions,
+                AcclveRules.fills + EncashRules.fills,
             )
     }
 }

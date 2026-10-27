@@ -31,12 +31,14 @@ class LeaveDraftActions(
     val onDate: (index: Int, slot: String, date: CalendarDate?) -> Unit,
     val onNumber: (index: Int, slot: String, raw: String) -> Unit,
     val onText: (index: Int, slot: String, raw: String) -> Unit,
+    val onYears: (index: Int, slot: String, raw: String) -> Unit,
     val onReference: (index: Int, slot: String, number: String, date: CalendarDate?) -> Unit,
     val onYesNo: (index: Int, question: String, yes: Boolean) -> Unit,
     val onChoose: (index: Int, question: String, option: String?) -> Unit,
     val onAdd: (code: String) -> Unit,
     val onRemove: (index: Int) -> Unit,
+    val onFill: (index: Int, replace: Boolean) -> Unit,
 )
 
 internal fun LeaveDraftViewModel.actions() =
-    LeaveDraftActions(::setDate, ::setNumber, ::setText, ::setReference, ::setYesNo, ::choose, ::addOccurrence, ::removeOccurrence)
+    LeaveDraftActions(::setDate, ::setNumber, ::setText, ::setYears, ::setReference, ::setYesNo, ::choose, ::addOccurrence, ::removeOccurrence, ::fillFromLeaveBank)

@@ -31,8 +31,7 @@ class ReminderPlanner(
         nowMillis: Long,
     ): ReminderPlan {
         val ordersOf = orders.groupBy { it.draftId }
-        val cancels = drafts.filter { CancelDrafts.isCancel(it.event) }
-        val live = drafts.filterNot { draft -> ordersOf[draft.id].orEmpty().any { CancelStatus.of(it, cancels, orders)?.scope == CancelScope.ALL } }
+        val live = CancelStatus.liveDrafts(drafts, orders)
         val requests = live.flatMap { it.event.requests }
         val rejoined = requests.mapNotNull(ReminderRules::rejoinDay)
         val answeredYears = requests.mapNotNull(ReminderRules::yearEndYear).toSet()

@@ -56,8 +56,9 @@ internal class LeaveDraftStateBuilder(
         grants: List<OrderRef> = emptyList(),
         today: CalendarDate? = null,
         pairedWith: String? = null,
+        leaveBank: LeaveBankView? = null,
     ): LeaveDraftUiState {
-        val sections = event.requests.mapIndexed { i, request -> section(i, request, event.requests.size) }
+        val sections = event.requests.mapIndexed { i, request -> section(i, request, event.requests.size, leaveBank) }
         val result = engine.draft(event, today)
         val drafted = (result as? DraftResult.Drafted)?.slip
         return LeaveDraftUiState(
@@ -65,7 +66,7 @@ internal class LeaveDraftStateBuilder(
             sections = sections,
             addable = if (event.requests.size >= Part2Limits.REQUESTS_MAX) emptyList() else options(event).map { AddOption(it.code, it.name) },
             missing = if (result is DraftResult.Drafted) emptyList() else sections.flatMap { s -> s.fields.filter { it.required && it.error == null && s.isUnanswered(it) }.map { it.label } }.distinct(),
-            slip = drafted?.let { slip(it, acked) },
+            slip = drafted?.let { slip(it, acked, leaveBank?.crossChecks(rules, event.requests).orEmpty()) },
             saveFailed = saveFailed,
             printed = printed?.let { printedUi(it, drafted, templateRevs(event)) },
             printing = printing,
@@ -99,6 +100,7 @@ internal class LeaveDraftStateBuilder(
         i: Int,
         request: OccurrenceRequest,
         count: Int,
+        leaveBank: LeaveBankView?,
     ): RequestSection {
         val issues = ((engine.draft(LeaveEventInput(listOf(request))) as? DraftResult.Refused)?.issues).orEmpty()
         return RequestSection(
@@ -109,6 +111,7 @@ internal class LeaveDraftStateBuilder(
             questions = planner.questions(request.code).map { question(it, request) },
             fields = planner.fields(request).map { field(it, request, issues) },
             removable = count > 1,
+            fill = leaveBank?.fillOf(rules, i, request),
         )
     }
 
@@ -145,6 +148,7 @@ internal class LeaveDraftStateBuilder(
         when (kind) {
             "date" -> FieldValue.Date((value as? SlotValue.DateValue)?.date?.takeIf(LeaveEventEditor::isSet))
             "number" -> FieldValue.Digits((value as? SlotValue.NumberValue)?.number?.toString().orEmpty())
+            "years" -> FieldValue.Years((value as? SlotValue.TextValue)?.text.orEmpty())
             "ref" -> (value as? SlotValue.RefValue)?.ref.let { FieldValue.Reference(it?.orderNo.orEmpty(), it?.date?.takeIf(LeaveEventEditor::isSet)) }
             else -> FieldValue.Words((value as? SlotValue.TextValue)?.text.orEmpty())
         }
@@ -154,12 +158,14 @@ internal class LeaveDraftStateBuilder(
             is FieldValue.Date -> value.date == null
             is FieldValue.Digits -> value.text.isEmpty()
             is FieldValue.Words -> value.text.isBlank()
+            is FieldValue.Years -> value.text.isBlank()
             is FieldValue.Reference -> value.number.isBlank() && value.date == null
         }
 
     private fun slip(
         slip: Part2Slip,
         acked: Set<String>,
+        crossChecks: List<String>,
     ): SlipUi {
         val findings = slip.findings.map { finding(it, ticked = key(it) in acked) }
         return SlipUi(
@@ -168,6 +174,7 @@ internal class LeaveDraftStateBuilder(
             findings = findings,
             undrafted = slip.undrafted.map { Part2Strings.undraftedLine(it.code, Part2Strings.citation(it.origin.basis, it.origin.page, it.origin.note)) },
             readyToPrint = findings.filter { it.ack }.all { it.ticked },
+            crossChecks = crossChecks,
         )
     }
 

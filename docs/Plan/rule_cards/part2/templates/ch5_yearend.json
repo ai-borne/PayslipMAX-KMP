@@ -62,7 +62,7 @@
    "links": []},
   {"code": "ENCASH", "page": 140,
    "narrative": "Allowed to encash {total} days of Annual Leave on retirement. Year-wise break up of Annual Leave accumulation: {listing}",
-   "slots": [{"id": "breakup", "kind": "years", "label": "Year-by-year accumulation", "help": "One line for each year, the year then the days accumulated, for example 2011 30. Put a semicolon between the years."},
+   "slots": [{"id": "breakup", "kind": "years", "label": "Year-by-year accumulation", "help": "One line for each year, the year then the days accumulated, for example 2011 30."},
      {"id": "total", "kind": "derived", "label": "Days to encash", "help": "Worked out for you.", "by": "encash_total", "reads": ["breakup"]},
      {"id": "listing", "kind": "derived", "label": "The break-up as printed", "help": "Worked out for you.", "by": "encash_listing", "reads": ["breakup"]}],
    "from": {"need": "none"},

@@ -15,16 +15,20 @@ object LeaveEventEditor {
     /** A new event with one request for [code]; a code that is not a plain token starts nothing. */
     fun start(code: String): LeaveEventInput = if (isCode(code)) LeaveEventInput(listOf(OccurrenceRequest(code))) else LeaveEventInput(emptyList())
 
-    /** Sets (or, with null, removes) the answer to [slot] on request [index]. Text is cut at the limit, an order number at its own. */
+    /**
+     * Sets (or, with null, removes) the answer to [slot] on request [index]. Text is cut at [textMax] (the ordinary text limit unless the
+     * slot is a year-by-year list, which keeps `Part2Limits.BREAKUP_TEXT_MAX`), an order number at its own.
+     */
     fun setValue(
         event: LeaveEventInput,
         index: Int,
         slot: String,
         value: SlotValue?,
+        textMax: Int = Part2Limits.TEXT_MAX,
     ): LeaveEventInput {
         if (!Part2Limits.isPlainToken(slot, Part2Limits.SLOT_ID_MAX)) return event
         return edit(event, index) { request ->
-            val bounded = value?.let(::bounded)
+            val bounded = value?.let { bounded(it, textMax) }
             when {
                 bounded == null -> request.copy(values = request.values - slot)
                 slot !in request.values && request.values.size >= Part2Limits.VALUES_PER_REQUEST_MAX -> request
@@ -90,9 +94,12 @@ object LeaveEventEditor {
         return event.copy(requests = event.requests.mapIndexed { i, r -> if (i == index) change(request) else r })
     }
 
-    private fun bounded(value: SlotValue): SlotValue =
+    private fun bounded(
+        value: SlotValue,
+        textMax: Int,
+    ): SlotValue =
         when (value) {
-            is SlotValue.TextValue -> SlotValue.TextValue(value.text.take(Part2Limits.TEXT_MAX))
+            is SlotValue.TextValue -> SlotValue.TextValue(value.text.take(textMax))
             is SlotValue.RefValue -> SlotValue.RefValue(value.ref.copy(orderNo = value.ref.orderNo.take(Part2Limits.ORDER_NO_MAX)))
             is SlotValue.DateValue, is SlotValue.NumberValue -> value
         }

@@ -13,6 +13,7 @@ import com.payslipmax.pdfparser.part2.domain.Part2Rules
 import com.payslipmax.pdfparser.part2.domain.PrintedSnapshot
 import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.part2.domain.VaultOrders
+import com.payslipmax.pdfparser.part2.leavebank.LeaveBankSource
 import com.payslipmax.pdfparser.part2.print.SlipPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimInput
@@ -24,7 +25,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -46,11 +46,16 @@ class LeaveDraftViewModel(
     rules: Part2Rules = Part2Rules.shipped(),
     private val now: () -> Long = { 0L },
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    leaveBank: LeaveBankSource? = null,
     private val localOffset: (atMillis: Long) -> Long = ::localUtcOffsetMillis,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val builder = LeaveDraftStateBuilder(section, rules, localOffset)
     private val saver = AutoSaver(scope, dispatcher, ::pendingDraft, repository::saveDraft, { repository.deleteDraft(id) }, ::publish)
+    private val areaPrefill = AreaPrefill(scope, repository, id, { event }, builder::fieldIds, ::edit)
+
+    // The Leave Bank fill (ACCLVE, ENCASH), present only where the Leave Bank is on: the rule families decide which codes it serves.
+    private val filler = leaveBank?.let { LeaveBankFiller(scope, it, repository, rules, id, { event }, ::edit) { if (loaded) publish() } }
 
     // Atomic, because the officer's edits (main thread) and a prefill (background) both change it.
     private val answers = MutableStateFlow(start ?: LeaveEventInput(emptyList()))
@@ -77,6 +82,7 @@ class LeaveDraftViewModel(
     val state: StateFlow<LeaveDraftUiState> = _state
 
     init {
+        filler?.start()
         if (!loaded) scope.launch { load() }
         scope.launch {
             repository.observeDrafts().collect { stored ->
@@ -132,6 +138,13 @@ class LeaveDraftViewModel(
         raw: String,
     ) = edit { LeaveEventEditor.setValue(it, index, slot, raw.takeIf { text -> text.isNotEmpty() }?.let(SlotValue::TextValue)) }
 
+    /** A year-by-year list (the encashment's break-up) keeps the longer limit storage and the reader use, where an ordinary text stops at `Part2Limits.TEXT_MAX`. */
+    fun setYears(
+        index: Int,
+        slot: String,
+        raw: String,
+    ) = edit { LeaveEventEditor.setValue(it, index, slot, raw.takeIf { text -> text.isNotEmpty() }?.let(SlotValue::TextValue), Part2Limits.BREAKUP_TEXT_MAX) }
+
     /** An order number and its date are set together; with neither, the answer is removed. A date not chosen yet is named as such by the engine. */
     fun setReference(
         index: Int,
@@ -161,31 +174,15 @@ class LeaveDraftViewModel(
         if (option != null && option !in asked.options) return
         val before = event.requests.getOrNull(index)?.let(builder::fieldIds).orEmpty()
         edit { LeaveEventEditor.chooseOne(it, index, asked.prefix, option) }
-        if (option != null) prefillFrom(index, asked.prefix + option, before)
+        if (option != null) areaPrefill.after(index, asked.prefix + option, before)
     }
 
-    /**
-     * The inputs a choice newly asks for (the R&H station's area details) are filled from the newest other draft that made the same
-     * choice (plan 12: prefilled from the last draft of the same code, no profile store). Only those inputs, only where empty: never
-     * a date, never an answer, never what the officer already typed. Drafts arrive newest edit first.
-     */
-    private fun prefillFrom(
+    /** Fills the boxes of occurrence [index] from the Leave Bank and the officer's printed drafts: only the empty ones, unless [replace] (a refill the officer confirmed). */
+    fun fillFromLeaveBank(
         index: Int,
-        answer: String,
-        before: List<String>,
+        replace: Boolean,
     ) {
-        val asked = event.requests.getOrNull(index)?.let(builder::fieldIds).orEmpty() - before.toSet()
-        if (asked.isEmpty()) return
-        scope.launch {
-            val source = repository.observeDrafts().first().items.filter { it.id != id }.firstNotNullOfOrNull { draft -> draft.event.requests.firstOrNull { answer in it.answers } } ?: return@launch
-            for (slot in asked) {
-                val value = source.values[slot] ?: continue
-                edit { current ->
-                    val request = current.requests.getOrNull(index)
-                    if (request == null || answer !in request.answers || slot in request.values) current else LeaveEventEditor.setValue(current, index, slot, value)
-                }
-            }
-        }
+        filler?.fill(index, replace)
     }
 
     fun addOccurrence(code: String) {
@@ -249,9 +246,12 @@ class LeaveDraftViewModel(
     private fun edit(change: (LeaveEventInput) -> LeaveEventInput) {
         if (closed || !loaded) return
         var changed = false
+        val before = event.requests.size
         answers.update { current -> change(current).also { changed = it != current } }
         if (!changed) return
         acked = emptySet()
+        filler?.forget()
+        if (event.requests.size < before) filler?.cancel()
         publish()
         saver.changed()
     }
@@ -263,7 +263,7 @@ class LeaveDraftViewModel(
         return Part2Draft(id, saved, builder.templateRevs(saved), created, stamp, printed, pairedWith, dismissed)
     }
 
-    private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saver.failed, printed, prints.printing, grants, today(), partner)
+    private fun derive() = builder.build(event.copy(lastOrder = lastOrder), acked, saver.failed, printed, prints.printing, grants, today(), partner, filler?.let { LeaveBankView(it.rows.orEmpty(), it.messages) })
 
     /** The day where the officer is, which the checks that compare with it (a time bar) read; the engine itself holds no clock. */
     private fun today(): CalendarDate = PreClaimDates.localDay(now(), localOffset)

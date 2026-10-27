@@ -49,6 +49,7 @@ internal fun SlipPreviewScreen(
                 item(key = "last-order") { Text(slip.lastOrder, style = MaterialTheme.typography.bodyMedium) }
                 items(slip.orders, key = { it.title }) { SlipOrderView(it) }
                 if (slip.findings.isNotEmpty()) item(key = "findings") { FindingsView(slip, actions.onTick) }
+                if (slip.crossChecks.isNotEmpty()) item(key = "cross-check") { CrossChecksView(slip.crossChecks) }
                 if (slip.undrafted.isNotEmpty()) item(key = "undrafted") { UndraftedView(slip.undrafted) }
                 item(key = "print") { SlipPrintSection(slip, state.printing, canEdit, actions.onPrint, actions.onHrms) }
                 item(key = "orders") { SlipOrdersSection(orders) }

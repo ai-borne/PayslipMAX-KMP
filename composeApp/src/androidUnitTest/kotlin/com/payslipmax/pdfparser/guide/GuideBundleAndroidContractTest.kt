@@ -48,6 +48,7 @@ class GuideBundleAndroidContractTest {
             Part2BatchOneContract.assertBatchOneDraftsOnTheShippedBundle(bundle)
             Part2DraftContract.assertEveryCheckAndQuestionHasItsWords(bundle)
             Part2DraftContract.assertTheFormCompletesEveryOfferedCode(bundle)
+            Part2DraftContract.assertTheLeaveBankFillIsOfferedOnTheYearEndFormsOnly(bundle)
             assertEquals(7, Part2DraftContract.rowsOf(Part2DraftContract.newBuilder(bundle)))
             Part2BrowseContract.assertTilesShowOnlyForTheBuiltRibbons(bundle)
             Part2BrowseContract.assertEveryCodePageIsReachableBySerialCodeAndName(bundle)

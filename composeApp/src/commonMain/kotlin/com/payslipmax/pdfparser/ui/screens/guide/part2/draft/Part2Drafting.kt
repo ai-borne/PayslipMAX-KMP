@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.domain.LeaveEventEditor
 import com.payslipmax.pdfparser.part2.domain.LeaveEventInput
 import com.payslipmax.pdfparser.part2.domain.Part2Rules
+import com.payslipmax.pdfparser.part2.leavebank.LeaveBankSource
 import com.payslipmax.pdfparser.rating.currentTimeMillis
 import com.payslipmax.pdfparser.ui.screens.guide.GuideUiState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
@@ -30,6 +31,8 @@ class Part2Drafting
         private val now: () -> Long = ::currentTimeMillis,
         private val newId: () -> String = { Uuid.random().toString() },
         private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+        /** Where the year-end forms fill their figures from, or null where the Leave Bank is off (then no draft offers a fill). */
+        val leaveBank: LeaveBankSource? = null,
     ) {
         /** A new draft for [code], not saved until the officer first changes something. */
         fun start(code: String): LeaveDraftViewModel? = make(newId(), LeaveEventEditor.start(code).takeIf { it.requests.isNotEmpty() } ?: return null)
@@ -53,7 +56,7 @@ class Part2Drafting
             start: LeaveEventInput?,
         ): LeaveDraftViewModel? {
             val section = section() ?: return null
-            return LeaveDraftViewModel(id, section, repository, start, rules, now, dispatcher)
+            return LeaveDraftViewModel(id, section, repository, start, rules, now, dispatcher, leaveBank)
         }
     }
 

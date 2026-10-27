@@ -29,6 +29,7 @@ internal fun FieldView(
             is FieldValue.Date -> PreClaimDateBox(field.label, value.date) { actions.onDate(index, slot, it) }
             is FieldValue.Digits -> PreClaimTextBox(field.label, value.text, { actions.onNumber(index, slot, it) }, supporting = field.error ?: hint, error = field.error != null)
             is FieldValue.Words -> PreClaimTextBox(field.label, value.text, { actions.onText(index, slot, it) }, numeric = false, supporting = field.error ?: hint, error = field.error != null)
+            is FieldValue.Years -> YearsBox(field.label, value.text, { actions.onYears(index, slot, it) }, supporting = field.error ?: hint, error = field.error != null)
             is FieldValue.Reference -> ReferenceFields(index, field, value, actions, grants.takeIf { field.slotId in Part2Rules.VAULT_ORDER_SLOTS }.orEmpty())
         }
         if (field.value is FieldValue.Date) PreClaimQuietText(hint)

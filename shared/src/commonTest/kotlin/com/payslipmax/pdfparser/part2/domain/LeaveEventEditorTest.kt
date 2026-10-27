@@ -61,6 +61,18 @@ class LeaveEventEditorTest {
     }
 
     @Test
+    fun aLongerTextLimitKeepsAWholeBreakUpWhileTheDefaultStillCutsAtTwoHundred() {
+        // why: a year-by-year list is up to 600 characters (storage and the reader use that limit); cut at 200 it would end in the middle of a line.
+        val rows = (0 until 60).joinToString("\n") { "${2000 + it} 30" }
+        val whole = LeaveEventEditor.setValue(LeaveEventEditor.start("AAA"), 0, "breakup", SlotValue.TextValue(rows), Part2Limits.BREAKUP_TEXT_MAX)
+        assertEquals(rows, (whole.requests[0].values["breakup"] as SlotValue.TextValue).text)
+        val cut = LeaveEventEditor.setValue(LeaveEventEditor.start("AAA"), 0, "breakup", SlotValue.TextValue(rows))
+        assertEquals(Part2Limits.TEXT_MAX, (cut.requests[0].values["breakup"] as SlotValue.TextValue).text.length)
+        val over = LeaveEventEditor.setValue(LeaveEventEditor.start("AAA"), 0, "breakup", SlotValue.TextValue(rows + "x".repeat(Part2Limits.BREAKUP_TEXT_MAX)), Part2Limits.BREAKUP_TEXT_MAX)
+        assertEquals(Part2Limits.BREAKUP_TEXT_MAX, (over.requests[0].values["breakup"] as SlotValue.TextValue).text.length, "never past the limit it was given")
+    }
+
+    @Test
     fun aNewSlotPastTheValueLimitIsRefusedButAnExistingOneCanStillChange() {
         var event = LeaveEventEditor.start("AAA")
         repeat(Part2Limits.VALUES_PER_REQUEST_MAX) { event = LeaveEventEditor.setValue(event, 0, "s$it", day) }

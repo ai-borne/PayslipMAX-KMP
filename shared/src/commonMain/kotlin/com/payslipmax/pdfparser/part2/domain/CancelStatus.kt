@@ -38,6 +38,16 @@ object CancelStatus {
             .minWithOrNull(compareBy<CancelState> { it.scope }.thenBy { it !is CancelState.CancelledBy }.thenByDescending { (it as? CancelState.SlipPrinted)?.printedAt ?: 0L })
     }
 
+    /** [drafts] without the void ones: a draft whose published order was cancelled in full. */
+    fun liveDrafts(
+        drafts: List<Part2Draft>,
+        orders: List<VaultOrder>,
+    ): List<Part2Draft> {
+        val ordersOf = orders.groupBy { it.draftId }
+        val cancels = drafts.filter { CancelDrafts.isCancel(it.event) }
+        return drafts.filterNot { draft -> ordersOf[draft.id].orEmpty().any { of(it, cancels, orders)?.scope == CancelScope.ALL } }
+    }
+
     private fun stateOf(
         draft: Part2Draft,
         target: OrderRef,
