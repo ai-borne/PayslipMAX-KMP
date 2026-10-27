@@ -507,6 +507,10 @@ Phase 9 (area re-grants, HAA, SCCIA, field area and Transport Allowance, batch 4
 - **Batch 4 review pack (items 52, 53): not read by the owner.** The owner asked the agent to read it. Done: the columns of GTDHH11, GTDCIAFD, GTDHAFA, GTDTRAN1-5 and STPTRAN were compared with the printed tables (pp.48-55, 70-71) and match; the certificates cannot be checked because Annexure IV is not in the PDF, so item 52 stays open for the owner's read of them.
 - Phase 9 waits for the owner's acceptance; Phase 10 has not started.
 
+## Round 36: Phase 9 accepted (owner, 2026-10-27)
+
+The owner accepted Phase 9 as built (dde30a51): the area re-grants for HAA, SCCIA, field area and Transport Allowance on the 15 leave templates, the ODP-governs rule, the raised limits and the Pixel 9 walk, with the Round 35 answers as built. Phase 11 items 49, 51, 52, 53 and 54 stay open; item 8 and item 50 are closed. Phase 10 (release hardening) is next and has not started.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
