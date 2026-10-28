@@ -45,6 +45,6 @@ object LaunchFlags {
 
     // Part II Orders kill switch (docs/Plan/12_Part2Orders_PhasePlan.md), the only switch: every Part II surface (the Guide tile, the
     // routes, the Koin module, the Premium catalog row) reads it through isPart2Enabled(). The lookup data ships in the Guide bundle either
-    // way. It also needs GUIDE_ENABLED: Part II lives in the Guide tab. Flipped true only in Phase 10, in its own commit, on the owner's word.
-    const val PART2_ENABLED: Boolean = false
+    // way. It also needs GUIDE_ENABLED: Part II lives in the Guide tab. Flipped true on 2026-10-28 on the owner's word (DECISIONS Round 40), in its own commit with Part2FlagExpectation.
+    const val PART2_ENABLED: Boolean = true
 }

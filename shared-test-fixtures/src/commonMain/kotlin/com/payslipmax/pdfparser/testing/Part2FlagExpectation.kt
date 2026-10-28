@@ -6,5 +6,5 @@ package com.payslipmax.pdfparser.testing
  * a throwaway copy and runs the suites flag-on with no expected failure.
  */
 object Part2FlagExpectation {
-    const val PART2_ENABLED: Boolean = false
+    const val PART2_ENABLED: Boolean = true
 }
