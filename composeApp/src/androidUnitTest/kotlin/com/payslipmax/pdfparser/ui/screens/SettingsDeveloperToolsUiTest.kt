@@ -13,6 +13,7 @@ import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.testing.WithTestKoin
+import com.payslipmax.pdfparser.testing.part2TestModules
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -73,7 +74,7 @@ class SettingsDeveloperToolsUiTest {
                     factory { FirstSection() } bind DeveloperToolsSection::class
                     factory { SecondSection() } bind DeveloperToolsSection::class
                 }
-            setContent { WithTestKoin(sections) { SettingsScreen(viewModel = viewModel, onNavigateTo = {}) } }
+            setContent { WithTestKoin(sections, *part2TestModules().toTypedArray()) { SettingsScreen(viewModel = viewModel, onNavigateTo = {}) } }
             testDispatcher.scheduler.runCurrent()
 
             onNodeWithText(FIRST_LABEL).performScrollTo().assertIsDisplayed()
@@ -83,7 +84,7 @@ class SettingsDeveloperToolsUiTest {
     @Test
     fun settingsRendersNoDeveloperSectionWhenKoinProvidesNone() =
         runComposeUiTest {
-            setContent { WithTestKoin(module { }) { SettingsScreen(viewModel = viewModel, onNavigateTo = {}) } }
+            setContent { WithTestKoin(module { }, *part2TestModules().toTypedArray()) { SettingsScreen(viewModel = viewModel, onNavigateTo = {}) } }
             testDispatcher.scheduler.runCurrent()
 
             assertEquals(0, onAllNodesWithText("developer section", substring = true).fetchSemanticsNodes().size)

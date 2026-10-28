@@ -23,6 +23,7 @@ import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakeOnboardingStorage
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
+import com.payslipmax.pdfparser.testing.overridePart2WithFakes
 import com.payslipmax.pdfparser.ui.FakeFinancialIntelligenceRepository
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.setPremiumEnabled
@@ -58,6 +59,7 @@ class AppBackNavigationTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        overridePart2WithFakes()
         fakeDao = FakePayslipDao()
         val repository = PayslipRepository(fakeDao, FakePdfParser(), Dispatchers.Unconfined)
         viewModel =

@@ -16,6 +16,7 @@ import com.payslipmax.pdfparser.onboarding.AndroidOnboardingStorage
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
+import com.payslipmax.pdfparser.testing.overridePart2WithFakes
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.theme.PayAuditStrings
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,7 @@ class DashboardHasNoPayAuditEntryTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        overridePart2WithFakes()
         ContextHolder.context = RuntimeEnvironment.getApplication()
         AndroidOnboardingStorage().saveHasSeenUploadCoachmark(true)
         val dao = FakePayslipDao()

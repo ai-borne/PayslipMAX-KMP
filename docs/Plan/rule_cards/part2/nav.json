@@ -4,7 +4,7 @@
  "ribbons": [
   {"id": "leave", "title": "Leave", "built": true, "cases": [
    {"id": "leave_annual", "title": "Annual and casual leave", "serials": ["5.1", "5.2", "5.3", "5.4", "5.5"], "also": ["6.6", "6.12", "13.5"], "lookup": []},
-   {"id": "leave_back", "title": "Back from leave, early or recalled", "serials": ["5.23", "5.24", "5.25"], "also": ["3.13", "3.14", "3.15", "3.19", "3.20", "3.21", "3.23", "3.24", "3.25", "3.53"], "lookup": []},
+   {"id": "leave_back", "title": "Back from leave, early or recalled", "serials": ["5.23", "5.24", "5.25"], "also": ["3.13", "3.14", "3.15", "3.19", "3.20", "3.21", "3.23", "3.24", "3.25", "3.53", "3.54"], "lookup": []},
    {"id": "leave_furlough", "title": "Furlough, study, EOL and terminal leave", "serials": ["5.6", "5.18", "5.15", "5.16", "5.17", "5.10", "5.11"], "also": ["3.62", "13.5", "2.2"], "lookup": []},
    {"id": "leave_family", "title": "Maternity, paternity and child care", "serials": ["5.7", "5.8", "5.9", "5.12", "5.13", "5.14"], "also": ["11.9", "11.14"], "lookup": []},
    {"id": "leave_late", "title": "Late back or absent without leave", "serials": ["5.19", "5.20", "5.21", "5.22"], "also": [], "lookup": []},

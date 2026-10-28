@@ -42,8 +42,9 @@ class Part2EntryTest {
         var calls = 0
         assertNull(part2FactoryOrNull(enabled = false) { model().also { calls++ } })
         assertEquals(0, calls)
-        assertNull(part2FactoryOrNull { model().also { calls++ } }, "the shipped default follows the flag, which ships off")
-        assertEquals(0, calls, "so Koin is never asked for the ViewModel")
+        val shipped = part2FactoryOrNull { model().also { calls++ } }
+        if (isPart2Enabled()) assertNotNull(shipped, "the shipped default follows the flag") else assertNull(shipped, "the shipped default follows the flag")
+        assertEquals(0, calls, "so Koin is never asked for the ViewModel until the factory is called")
     }
 
     @Test

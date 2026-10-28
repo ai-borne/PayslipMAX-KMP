@@ -95,6 +95,22 @@ class RealLayout(unittest.TestCase):
             self.assertFalse(set(case['also']) & set(case['serials']), case['id'])
             self.assertTrue(set(case['also']) <= set(SERIALS), case['id'])
 
+    def test_back_from_leave_lists_every_area_regrant_the_leave_templates_can_link(self):
+        # why: the 15 leave templates link these re-grants (phase 9), so an officer browsing "Back from leave" must find every code one can
+        # print, STPTRAN (3.54) included, even though it is homed in Moves.
+        import json
+        import os
+        from config import CARDS_DIR
+        serial_of = {code: row['serial'] for row in CODES['serials'] for code in row['codes']}
+        granted = set()
+        for name in ('area.json', 'tran.json'):
+            with open(os.path.join(CARDS_DIR, 'part2', 'templates', name), encoding='utf-8') as fh:
+                data = json.load(fh)
+            granted |= {serial_of[t['code']] for t in (data['templates'] if isinstance(data, dict) else data)}
+        back = next(c for c in cases() if c['id'] == 'leave_back')
+        self.assertGreater(len(granted), 9, 'the scan found almost no area templates')
+        self.assertEqual(sorted(granted - set(back['serials']) - set(back['also'])), [])
+
 
 class Rules(unittest.TestCase):
     """Each rule is broken on purpose: a checker that cannot fail would let a bad layout through."""

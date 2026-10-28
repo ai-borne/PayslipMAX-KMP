@@ -13,6 +13,7 @@ import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.testing.WithTestKoin
+import com.payslipmax.pdfparser.testing.part2TestModules
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.SettingsScreen
 import kotlinx.coroutines.Dispatchers
@@ -63,7 +64,7 @@ class DebugSeedWiringUiTest {
                 }
             val viewModel = PayslipViewModel(PayslipRepository(dao, FakePdfParser(), testDispatcher))
             testDispatcher.scheduler.runCurrent()
-            setContent { WithTestKoin(shared, *variantModules.toTypedArray()) { SettingsScreen(viewModel = viewModel, onNavigateTo = {}) } }
+            setContent { WithTestKoin(shared, *variantModules.toTypedArray(), *part2TestModules().toTypedArray()) { SettingsScreen(viewModel = viewModel, onNavigateTo = {}) } }
             testDispatcher.scheduler.runCurrent()
 
             onNodeWithText(DebugSeedStrings.TITLE).performScrollTo().assertIsDisplayed()

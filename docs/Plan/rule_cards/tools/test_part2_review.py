@@ -67,6 +67,16 @@ class Content(unittest.TestCase):
         for point in part2_review.OPEN_POINTS:
             self.assertIn(point, text)
 
+    def test_no_judgment_call_promises_work_a_finished_phase_already_did(self):
+        # why: a pack that says casual leave is checked "against the annual set only" while the rest "joins in phase 8" misleads the owner
+        # who reads it after phase 8 (Phase 11 item 54); cl_combination covers all 13 other Chapter 5 leave grants.
+        for point in part2_review.OPEN_POINTS:
+            self.assertNotIn('joins the check in phase', point)
+            self.assertNotIn('does not move them yet', point)  # phase 8 settled the reissue: it asks, and on Yes warns (para 11)
+        casual = [p for p in part2_review.OPEN_POINTS if p.startswith('Casual leave beside another leave')]
+        self.assertEqual(len(casual), 1)
+        self.assertIn('every other Chapter 5 leave grant', casual[0])
+
     def test_the_pack_is_plain_text_with_no_markup_from_the_templates(self):
         self.assertNotIn('<', pack().replace('<br>', ''))
 

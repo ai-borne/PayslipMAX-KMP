@@ -15,6 +15,7 @@ import com.payslipmax.pdfparser.rating.RatingPromptStorage
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
+import com.payslipmax.pdfparser.testing.overridePart2WithFakes
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.onFilePicked
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,7 @@ class DashboardScreenUiTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        overridePart2WithFakes()
         fakeDao = FakePayslipDao()
         fakeParser = FakePdfParser()
         repository = PayslipRepository(fakeDao, fakeParser, testDispatcher)

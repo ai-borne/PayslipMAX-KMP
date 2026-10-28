@@ -184,3 +184,44 @@ after the steps below `refresh.py` ended `refresh OK` and `copycheck` said CLEAN
 - Run the own-words guard (`refresh.py` on the machine that has the source text).
 - Approve every store upload and submission; run the iOS walkthrough list.
 - Reply to the user who wrote in, if you want to (the app collects no address).
+
+## 9. Part II Orders (the Leave release): templates, rules and the flag
+Part II is not a card dataset. Its content is hand-written, one record per ODP-2026 code, and **ODP 2026 is the official document**:
+where a source disagrees, follow it; the handbooks only fill a gap it leaves (owner, 2026-10-27, `docs/Part2Orders/DECISIONS.md`
+Round 35). Every owner answer is in that file; the phase plan is `docs/Plan/12_Part2Orders_PhasePlan.md`.
+
+**What to edit** (all under `docs/Plan/rule_cards/part2/`): `templates/*.json` (one file per content batch; a template is the narrative,
+its slots, the From/To/Data columns, the checks and the linked orders), `rules.json` (every rule id the app implements, with the page
+behind it, and the limits every text must respect), `codes.json` (the 303 code pages) and `nav.json` (the ribbons). The logic lives in
+Kotlin: a new rule id needs a `*Rules.kt` family in `shared/.../part2/domain/` and a golden test, and the contract test
+`Part2LookupContract` fails until the rule counts on both sides are equal. Only `*Rules.kt` files may name a code
+(`Part2EngineSourceTest`). Screen copy lives in `Part2*Strings.kt`, never in a template or a composable.
+
+**Steps for a template or rule change.**
+1. Edit the JSON. Keep the manual's wording in the narrative and give every row a page (or the word `practice`, which the app labels
+   "Seen in practice"). Write the failing golden test first (a real slip from the real bundle).
+2. `python3 docs/Plan/rule_cards/tools/refresh.py` (section 3). It validates with `part2_templates.py` and `part2_rules.py`, recomputes
+   each template's `rev` in `bundle.py` (the app recomputes it on load and refuses a mismatch) and rebuilds the bundle. If you run it,
+   `git checkout` the three re-dated files `13_review_queue.md`, `RULEBOOK.md` and `rulebook.json`, then rerun `bundle.py` and
+   `part2_review.py` and `refresh.py --check --allow-no-sources`.
+3. `python3 docs/Plan/rule_cards/tools/part2_review.py` rewrites `part2/part2_review.md`, the pack the owner reads against the printed
+   pages (a stale pack fails `test_part2_review.py`). **A changed template is not done until the owner has read its page in the
+   pack** and the reply is recorded in DECISIONS.
+4. Update the pinned counts in the same commit and read the diff: `Part2LookupContract` (rules and templates), `Part2LimitsRealBundleTest`
+   (the limits against the longest real text), and the bundle size and sha in the phase plan.
+5. Gate: section 5, plus `./gradlew :composeApp:minifyReleaseWithR8 -PallowPlaceholderGemmaModel=true`, `assembleRelease`,
+   `python3 scripts/check_r8_guide.py` and `python3 scripts/check_merged_manifest.py` (a change there is a reviewed edit to
+   `scripts/merged_manifest_baseline.json` with a reason).
+
+**The flag.** `LaunchFlags.PART2_ENABLED` is the only switch (it also needs `GUIDE_ENABLED`). Off, the lookup data still ships in the
+bundle but no screen, route, repository, worker or Premium catalog row exists. It is flipped only on the owner's word, in its own
+commit. To try a flag-on build, flip it in a **copy** of the tree (the copy holds the keystore: delete it afterwards), never in the
+repo. A flag-on release must also pass `check_r8_guide.py` (it then requires the reminder worker class to be kept).
+
+**Before a Play upload with Part II on.** The Play Console declarations and the privacy policy are the owner's to change: the app
+declares `POST_NOTIFICATIONS` and `RECEIVE_BOOT_COMPLETED` (reminders) and the document scanner (Google Play services, on-device).
+Photos of orders are encrypted on the device and leave it only inside the owner's own `.pcda` backup.
+
+**What the owner does by hand.** Read each new batch's pack against the printed pages; name any manual note the app should check
+(Phase 11 item 46); walk the iPhone with `docs/Part2Orders/IPHONE_CHECKLIST.md`; approve the paywall catalog line
+(`Part2Strings.catalogDescription`) and every store upload.

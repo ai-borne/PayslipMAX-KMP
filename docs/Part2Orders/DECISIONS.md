@@ -511,6 +511,22 @@ Phase 9 (area re-grants, HAA, SCCIA, field area and Transport Allowance, batch 4
 
 The owner accepted Phase 9 as built (dde30a51): the area re-grants for HAA, SCCIA, field area and Transport Allowance on the 15 leave templates, the ODP-governs rule, the raised limits and the Pixel 9 walk, with the Round 35 answers as built. Phase 11 items 49, 51, 52, 53 and 54 stay open; item 8 and item 50 are closed. Phase 10 (release hardening) is next and has not started.
 
+## Round 37: Phase 10 release hardening, owner answers and acceptance (owner, 2026-10-28)
+
+Phase 10 as built (the plan's Phase 10 notes): the owner's answers, given before the commit.
+
+- **Sign-off.** The owner delegated the page check of all 63 templates to the agent again. It was done mechanically (serial, code and group against Annexure II; every word of every narrative, certificate and authority fragment against the ODP text; all 303 code pages) with no difference found. Certificates stay unverified (Annexure IV is not in the PDF, item 52) and the owner's own read stays open (item 27).
+- **Paywall catalog copy.** Approved as it is: "Draft the order slip for your clerk, check it against the manual and keep published orders in an encrypted vault".
+- **Item 54.** Fix both: the stale review-pack sentence and STPTRAN 3.54 in "Back from leave" (closed).
+- **Phone.** Backed up and uninstall approved; the flag-on RELEASE build stays installed on the Pixel 9 (one wipe only). A debug build goes back at a later phase, with a second backup and restore.
+- **Item 42.** Proof by an overdue draft and a forced job: a cold process started and consumed the job. A real 09:00 banner after a kill stays open.
+- **Item 22.** Closed as an accepted residual (the security review found nothing else).
+- **iPhone.** The owner builds from a copy in Xcode with `IPHONE_CHECKLIST.md` (items 14, 20, 47 stay open).
+- **Item 56 (Back Up refuses with no payslips, found on the release walk).** Fix before the flip, tests first; the flip waits for it.
+- **Item 55 (no flag-on gate).** A CI job on a flag-on copy; not built in Phase 10.
+- **Item 58 (an overdue reminder is not a notification).** As designed; closed.
+- **Phase 10 is accepted** as built. `PART2_ENABLED` stays false and nothing is pushed; the owner will say when to flip it, in its own commit, after item 56. Phase 11 items 14, 20, 27, 35, 38, 39, 40, 42, 46, 47, 48, 49, 51 to 53, 55 to 57 and 59 stay open.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

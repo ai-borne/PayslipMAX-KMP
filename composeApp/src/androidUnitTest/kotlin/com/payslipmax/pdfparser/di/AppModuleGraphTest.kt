@@ -4,10 +4,14 @@ import com.payslipmax.pdfparser.billing.BillingManager
 import com.payslipmax.pdfparser.domain.AppIntegrityChecker
 import com.payslipmax.pdfparser.insights.gemma.GemmaModelStorageManager
 import com.payslipmax.pdfparser.onboarding.OnboardingStorage
+import com.payslipmax.pdfparser.part2.domain.Part2Rules
+import com.payslipmax.pdfparser.part2.domain.ReminderPolicy
+import com.payslipmax.pdfparser.part2.reminders.ReminderPromptStore
 import com.payslipmax.pdfparser.rating.RatingPromptManager
 import com.payslipmax.pdfparser.telemetry.GemmaInstallTelemetry
 import com.payslipmax.pdfparser.telemetry.InstallationIdStorage
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.module
 import org.koin.test.verify.verify
@@ -34,6 +38,10 @@ class AppModuleGraphTest {
                     BillingManager::class,
                     RatingPromptManager::class,
                     OnboardingStorage::class,
+                    Part2Rules::class,
+                    ReminderPolicy::class,
+                    StateFlow::class,
+                    ReminderPromptStore::class,
                     Function0::class,
                     Function1::class,
                     Function2::class,
