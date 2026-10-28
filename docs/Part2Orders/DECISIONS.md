@@ -539,6 +539,12 @@ Phase 10 as built (the plan's Phase 10 notes): the owner's answers, given before
 
 The owner accepted item 56 (Back Up and Restore count Part II data, `9466f82e`) and item 55 (the flag-on CI gate and the pin that follows the committed expectation, `c14bea89`) as built. Every condition the owner set for the flip is met. `PART2_ENABLED` stays false: it is flipped only on the owner's explicit word, in its own commit (`LaunchFlags.kt` and `Part2FlagExpectation.kt` together), and nothing is pushed.
 
+## Round 40: the flag is flipped (owner, 2026-10-28)
+
+The owner said yes to flipping `PART2_ENABLED` and to installing a debug build on the Pixel 9. The flip is its own commit, `4e9c7328`, and edits exactly `LaunchFlags.kt` and `Part2FlagExpectation.kt` (sha256 of `LaunchFlags.kt` 989cf71e... -> 03349a32630f52765a691bde...). Before it, `run_flag_on_tests.py` learned to say "already on" (`5d01750b`) so the new CI job does not fail on the flip. The full gate ran with the flag on in the repo itself (ktlint, check, iOS, XCTest, scripts, tools, schema immutability, refresh --check, tech-debt, R8 with `ReminderWorker` kept, merged manifest 13/1/0/5 unchanged), with identical test counts. Nothing is pushed.
+
+The owner exported a `.pcda` first and approved the uninstall; the flag-on release was removed and a debug build was installed from the repo (`./gradlew :composeApp:installDebug` on a clean tree at `4e9c7328`, no flipped copy, so no keystore copy exists). The owner restores their own backup. Still open: the iPhone walk (items 14, 20, 47), the Play Console and privacy wording before the first Play upload (item 40), and the rest of Phase 11.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
