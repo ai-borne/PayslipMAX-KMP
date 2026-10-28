@@ -172,6 +172,30 @@ jobs:
             **/build/reports/tests/
             **/build/test-results/
 
+  part2-flag-on-ci:
+    name: 🚩 Part II Flag-ON Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x ./gradlew
+
+      - name: Run the shared and composeApp unit tests with PART2_ENABLED on
+        # In a throwaway copy of the tree (scripts/run_flag_on_tests.py): the flag and its committed expectation are switched on there only.
+        # Every other gate runs with the flag off and misses a test that quietly assumes Part II is off (Phase 11 item 55).
+        run: python3 scripts/run_flag_on_tests.py
+
   kmp-ios-ci:
     name: 🍎 KMP iOS CI
     runs-on: macos-latest

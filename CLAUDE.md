@@ -31,6 +31,7 @@ All Gradle commands run from the repo root.
 ./gradlew ktlintCheck                                      # style check, all modules (pre-commit hook mirrors this)
 ./gradlew ktlintFormat                                     # auto-fix style violations
 python3 scripts/check_tech_debt_limits.py --strict <files> # 300-line-file / composable-length audit (pre-commit hook runs this on staged .kt files)
+python3 scripts/run_flag_on_tests.py                       # shared + composeApp debug tests with PART2_ENABLED on, in a throwaway copy (CI job part2-flag-on-ci)
 ./gradlew iosX64Test iosSimulatorArm64Test                  # iOS unit tests (macOS only)
 ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64   # verify iOS framework links cleanly (mirrors Xcode build phase; pre-commit runs this when commonMain/iosMain files are staged)
 ```

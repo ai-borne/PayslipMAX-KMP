@@ -215,8 +215,12 @@ Kotlin: a new rule id needs a `*Rules.kt` family in `shared/.../part2/domain/` a
 
 **The flag.** `LaunchFlags.PART2_ENABLED` is the only switch (it also needs `GUIDE_ENABLED`). Off, the lookup data still ships in the
 bundle but no screen, route, repository, worker or Premium catalog row exists. It is flipped only on the owner's word, in its own
-commit. To try a flag-on build, flip it in a **copy** of the tree (the copy holds the keystore: delete it afterwards), never in the
+commit. To try a flag-on **build**, flip it in a **copy** of the tree (the copy holds the keystore: delete it afterwards), never in the
 repo. A flag-on release must also pass `check_r8_guide.py` (it then requires the reminder worker class to be kept).
+To run the **tests** flag-on, use `python3 scripts/run_flag_on_tests.py`: it copies what git tracks (no keystore, no model) into a temporary
+folder, switches `LaunchFlags.PART2_ENABLED` and its committed expectation (`Part2FlagExpectation`) on there, runs the shared and
+composeApp debug unit tests and deletes the copy. CI runs it as the `part2-flag-on-ci` job. The flip commit edits exactly those two files
+(`LaunchFlags.kt` and `Part2FlagExpectation.kt`); the pin in `Part2AvailabilityTest` fails if only one of them moves.
 
 **Before a Play upload with Part II on.** The Play Console declarations and the privacy policy are the owner's to change: the app
 declares `POST_NOTIFICATIONS` and `RECEIVE_BOOT_COMPLETED` (reminders) and the document scanner (Google Play services, on-device).

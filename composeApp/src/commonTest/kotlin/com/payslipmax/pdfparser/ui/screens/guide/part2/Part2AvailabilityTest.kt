@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.ui.screens.guide.part2
 
 import com.payslipmax.pdfparser.subscription.LaunchFlags
+import com.payslipmax.pdfparser.testing.Part2FlagExpectation
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -25,9 +26,10 @@ class Part2AvailabilityTest {
     }
 
     @Test
-    fun theFlagShipsOffUntilTheOwnerFlipsItInPhase10() {
-        // why: Part II is built over many phases; a flag-off build must behave exactly as before until the owner's content sign-off.
-        assertFalse(LaunchFlags.PART2_ENABLED)
-        assertFalse(isPart2Enabled())
+    fun theFlagIsWhereTheCommittedExpectationSaysAndOnlyAFlipCommitMovesBoth() {
+        // why: a flag changed by accident (a stray edit, a merge) must fail here, while the deliberate flip commit edits LaunchFlags.kt and
+        // Part2FlagExpectation together. scripts/run_flag_on_tests.py flips both in a throwaway copy, so a flag-on run has no expected failure.
+        assertEquals(Part2FlagExpectation.PART2_ENABLED, LaunchFlags.PART2_ENABLED, "flip LaunchFlags.kt and Part2FlagExpectation.kt together")
+        assertEquals(Part2FlagExpectation.PART2_ENABLED && LaunchFlags.GUIDE_ENABLED, isPart2Enabled())
     }
 }
