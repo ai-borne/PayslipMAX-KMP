@@ -44,6 +44,9 @@ fun PayslipViewModel.exportBackup(
     }
 }
 
+/** The Part II drafts and orders a backup would carry, read when Back Up or Restore is pressed; 0 where backup is not wired in. */
+suspend fun PayslipViewModel.part2ItemCount(): Int = backupService?.part2ItemCount() ?: 0
+
 fun PayslipViewModel.importBackup(
     backupBytes: ByteArray,
     password: String,

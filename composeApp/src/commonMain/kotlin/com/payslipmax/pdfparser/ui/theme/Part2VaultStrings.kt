@@ -90,5 +90,10 @@ object Part2VaultStrings {
         maxMb: Long,
     ): String = "Your vault of published orders is using $usedMb MB of the $maxMb MB it can hold. Delete orders you no longer need in Guide, Part II Orders."
 
+    // Backup and restore when the device holds Part II items (Phase 11 item 56).
+    const val restoreExistingTitle = "Part II items already on this device"
+
+    fun backedUpItems(count: Int): String = if (count == 1) "1 Part II item backed up" else "$count Part II items backed up"
+
     fun restoreSkipped(count: Int): String = if (count == 1) "1 item could not be restored." else "$count items could not be restored."
 }

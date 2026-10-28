@@ -42,6 +42,9 @@ class Part2Backup(
     private val decodeText: (String) -> ByteArray = { Base64.decode(it) },
     private val openPage: (Part2PageEntity, String) -> ByteArray = { page, key -> page.openPage(key) },
 ) {
+    /** How many drafts and vault orders this device holds (pages belong to an order, so they add nothing). */
+    suspend fun itemCount(): Int = dao.draftCount() + dao.orderCount()
+
     /** Device drafts and orders re-encrypted under [password]; a row this device cannot read is left out, like an unreadable payslip. */
     suspend fun export(password: String): Part2Export {
         val key = deviceKey()

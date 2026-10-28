@@ -527,6 +527,14 @@ Phase 10 as built (the plan's Phase 10 notes): the owner's answers, given before
 - **Item 58 (an overdue reminder is not a notification).** As designed; closed.
 - **Phase 10 is accepted** as built. `PART2_ENABLED` stays false and nothing is pushed; the owner will say when to flip it, in its own commit, after item 56. Phase 11 items 14, 20, 27, 35, 38, 39, 40, 42, 46, 47, 48, 49, 51 to 53, 55 to 57 and 59 stay open.
 
+## Round 38: after Phase 10, flags and the order of work (owner, 2026-10-28)
+
+- **Flags.** The owner is the only user and asked whether the flags could go. Recommendation: remove only `PART2_ENABLED`. **Decision: keep every flag; only `PART2_ENABLED` is flipped, on the owner's word, in its own commit.**
+- **Item 56 scope.** Back Up works with a payslip or any Part II draft, order or page; Premium-gated as before; restore stays free; the success line names both counts.
+- **Before the flip.** Item 56 and a release walk of it (done in Phase 11a), then item 55's CI flag-on job. The iPhone walk and the owner's own reads (items 27, 52) may follow the flip.
+- **Item 55 design.** The one deliberate "ships off" pin is rewritten to follow a committed expectation, so the flag-on CI run has no expected failure and the flip commit edits `LaunchFlags.kt` plus that one expectation.
+- **Phone.** The new flag-on release was installed over the previous one in place (no wipe); the debug build goes on later from the repo, after the flip. The owner restores their own `.pcda` (Replace all); during the walk only synthetic data was on the phone and the helper printed only fixed strings and counts.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

@@ -23,6 +23,9 @@ class PayslipBackupService(
     // Null only in tests that do not care about Part II; the Koin graph always passes it (Part2WiringTest), so a build cannot drop the vault.
     private val part2Backup: Part2Backup? = null,
 ) {
+    /** How many Part II drafts and vault orders a backup would carry; 0 where Part II is not wired in. */
+    suspend fun part2ItemCount(): Int = withContext(dispatcher) { part2Backup?.itemCount() ?: 0 }
+
     /**
      * Exports everything the user created (payslips, PDFs, settings, letters, deleted-letter records,
      * corrections, private Guide notes, Part II drafts, orders and pages) as an encrypted JSON archive. Derived data (ledger, insights) is not exported.
