@@ -535,6 +535,10 @@ Phase 10 as built (the plan's Phase 10 notes): the owner's answers, given before
 - **Item 55 design.** The one deliberate "ships off" pin is rewritten to follow a committed expectation, so the flag-on CI run has no expected failure and the flip commit edits `LaunchFlags.kt` plus that one expectation.
 - **Phone.** The new flag-on release was installed over the previous one in place (no wipe); the debug build goes on later from the repo, after the flip. The owner restores their own `.pcda` (Replace all); during the walk only synthetic data was on the phone and the helper printed only fixed strings and counts.
 
+## Round 39: Phases 11a and 11b accepted (owner, 2026-10-28)
+
+The owner accepted item 56 (Back Up and Restore count Part II data, `9466f82e`) and item 55 (the flag-on CI gate and the pin that follows the committed expectation, `c14bea89`) as built. Every condition the owner set for the flip is met. `PART2_ENABLED` stays false: it is flipped only on the owner's explicit word, in its own commit (`LaunchFlags.kt` and `Part2FlagExpectation.kt` together), and nothing is pushed.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
