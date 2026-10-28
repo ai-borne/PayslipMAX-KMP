@@ -565,6 +565,14 @@ Built and gated before the questions (the Phase 11d notes in the plan). The owne
 - **Item 42 conditions.** The banner counts only if the phone is not restarted, no `.pcda` is restored over the draft and the app is not force-stopped before 09:00.
 - Nothing is pushed and no flag is touched (`LaunchFlags.kt` sha256 03349a32...97cc).
 
+## Round 43: Phase 11e, accessibility tests (owner, 2026-10-28)
+
+- **Item 62.** The owner tried a wrong password and a file that is not a backup on the Pixel debug build of `915e62a9` and reported it working: closed for Android; the iPhone half stays in `IPHONE_CHECKLIST.md` section 8.
+- **Item 35 (automated half).** Built as Phase 11e; no Part II fault found. The TalkBack reading order, the light theme as drawn, a width below 360dp and the iPhone's Dynamic Type stay with the phone checks.
+- **Item 65 (dark-theme filled-button label 3.68:1).** Accepted for now: keep the brand blue; `Part2ContrastTest` holds the 3:1 large-text floor so it cannot get worse; revisit at the both-themes phone walk.
+- **Commit.** Phase 11e is committed as is (tests, one fixture property, the plan notes). Nothing is pushed and no flag is touched (`LaunchFlags.kt` sha256 03349a32...97cc).
+- **Item 42.** Still waiting for 09:00 on 29 Oct; the Pixel is left as set up.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

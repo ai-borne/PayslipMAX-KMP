@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -12,6 +13,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.unit.Density
 import com.payslipmax.pdfparser.calendar.CalendarDate
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.model.GuideBundle
@@ -66,6 +68,9 @@ abstract class Part2UiBase {
     /** What a tap on Print reaches: recorded, never a real print dialog. */
     protected val printer = FakeSlipPrinter()
     protected var unlockTaps = 0
+
+    /** The phone's font scale for the next [show]: 1 by default; the accessibility tests raise it. */
+    protected var fontScale = 1f
 
     /** What a tap on a scan button reaches: answers [FakePageScanner.next], never a camera. */
     protected val scanner = FakePageScanner()
@@ -127,7 +132,10 @@ abstract class Part2UiBase {
         part2: (() -> Part2Models)? = factory,
     ): GuideNavState {
         composeRule.setContent {
-            CompositionLocalProvider(LocalSlipPrinter provides printer, LocalPageScanner provides scanner, LocalPageImageDecoder provides decoder) { GuideTab(nav, GuideAccess(unlocked, part2Unlocked) { unlockTaps++ }, guide, search, platform, null, null, part2) }
+            // The font scale is the one thing a test may change about the phone it pretends to be; at 1 nothing is wrapped.
+            val density = LocalDensity.current
+            val scaled = if (fontScale == 1f) density else Density(density.density, fontScale)
+            CompositionLocalProvider(LocalDensity provides scaled, LocalSlipPrinter provides printer, LocalPageScanner provides scanner, LocalPageImageDecoder provides decoder) { GuideTab(nav, GuideAccess(unlocked, part2Unlocked) { unlockTaps++ }, guide, search, platform, null, null, part2) }
         }
         settle()
         return nav
