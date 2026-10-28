@@ -556,6 +556,15 @@ Built and gated before the questions (the Phase 11c notes in the plan). The owne
 - **Store wording (items 40 and 64).** The owner enters it; the items stay open until the owner says it is done (default taken: the owner did not ask for changes to `docs/Launch/10_part2_store_wording.md`).
 - Nothing is pushed and no flag is touched (`LaunchFlags.kt` sha256 03349a32...97cc).
 
+## Round 42: Phase 11d, the disk-space declaration and the Help text (owner, 2026-10-28)
+
+Built and gated before the questions (the Phase 11d notes in the plan). The owner's answers:
+
+- **Help text (item 63).** The seventh point is approved as written: "Part II Orders: Your drafts, order numbers and dates, scanned order pages and reminders stay on your device, encrypted, and are never uploaded. A reminder only says that something is due. They are in a backup only if you choose Back Up, and the backup is protected by your password." (`LegalStrings.kt:42`.)
+- **Next.** Wait for the real 09:00 banner on 29 Oct (item 42). The synthetic draft, its reminders and the notification permission are set on the Pixel; the owner tries a wrong password and a non-backup file (item 62) and enters the store wording (items 40 and 64) in the meantime.
+- **Item 42 conditions.** The banner counts only if the phone is not restarted, no `.pcda` is restored over the draft and the app is not force-stopped before 09:00.
+- Nothing is pushed and no flag is touched (`LaunchFlags.kt` sha256 03349a32...97cc).
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

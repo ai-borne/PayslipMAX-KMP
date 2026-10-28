@@ -37,7 +37,9 @@ A8: We collect anonymous telemetry regarding the Gemma AI model installation sta
 
 5. Full Data Ownership: You retain complete ownership of your data and can permanently erase all local records instantly using "Reset App & Clear Data".
 
-6. Anonymous Telemetry: Optional, non-PII diagnostic events regarding Gemma model installation can be toggled on/off under Settings."""
+6. Anonymous Telemetry: Optional, non-PII diagnostic events regarding Gemma model installation can be toggled on/off under Settings.
+
+7. Part II Orders: Your drafts, order numbers and dates, scanned order pages and reminders stay on your device, encrypted, and are never uploaded. A reminder only says that something is due. They are in a backup only if you choose Back Up, and the backup is protected by your password."""
 
     const val settingsHelpAiContent = """To preserve military-grade confidentiality, the app enforces the following AI Privacy Promise:
     

@@ -18,7 +18,7 @@ the phase plan or runbook section 9 stop linking here.
 | What new permissions does the Android release declare? | `POST_NOTIFICATIONS` (the app) and `RECEIVE_BOOT_COMPLETED` (WorkManager). They are in the release **whether or not Part II is on**: the manifest does not follow the flag (`composeApp/src/androidMain/AndroidManifest.xml:6`). |
 | Camera permission on Android? | None. The scanner runs inside Google Play services (`shared/src/androidMain/kotlin/com/payslipmax/pdfparser/part2/pages/MlKitScanSource.kt:25`). |
 | What does the Play Data safety form need? | Probably no new row (section 5). **Console to confirm** against the form as it stands. |
-| What does App Store Connect need? | No new data-type answer (section 7). One thing to look at that is not Part II's: the disk-space API (section 7.4). |
+| What does App Store Connect need? | No new data-type answer (section 7). The manifest now also declares the disk-space API (section 7.4, Phase 11d), which Apple will validate at upload. |
 | What is new for the privacy policy? | One paragraph (section 6). |
 
 ## 2. Permissions (Play Console: App content and the store listing)
@@ -157,8 +157,8 @@ billing are not changed by Part II):
 
 ## 6. Privacy policy paragraph (for https://www.ai-borne.in/privacy-policy)
 
-The page itself is not in this repository; the app links to it (`composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/theme/LegalStrings.kt:58`).
-The in-app Help text says nothing about Part II (`composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/theme/LegalStrings.kt:28-40`, four of its six points). Suggested paragraph to add:
+The page itself is not in this repository; the app links to it (`composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/theme/LegalStrings.kt:60`).
+The in-app Help text now has a seventh point for Part II (Phase 11d, `composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/theme/LegalStrings.kt:42`); it says the same in fewer words. Suggested paragraph for the website:
 
 > **Part II order drafting and the order vault.** PayslipMax can help you draft Part II order slips and keep scanned copies of published
 > orders. Drafts, order numbers and dates, and scanned pages are stored only on your device, encrypted, and are never uploaded to us or
@@ -180,17 +180,20 @@ fails if any other usage key is added). The scan uses Apple's document camera (`
 `UNUserNotificationCenter.requestAuthorization` is called once, after the same in-app explainer (`iosApp/iosApp/ReminderNotificationGateway.swift:5-14`).
 No background mode is declared (`iosApp/iosApp/Info.plist` has no `UIBackgroundModes` key). Reminders are scheduled local notifications.
 
-7.3 **Privacy manifest** (`iosApp/iosApp/PrivacyInfo.xcprivacy`). Required-reason APIs declared today: file timestamps, reason 3B52.1
-(`:16`) and UserDefaults, reason CA92.1 (`:24`). Part II uses UserDefaults for the "already asked about reminders" flag
+7.3 **Privacy manifest** (`iosApp/iosApp/PrivacyInfo.xcprivacy`). Required-reason APIs declared: file timestamps, reason 3B52.1
+(`:16`), disk space, reason E174.1 (`:24`, added in Phase 11d, section 7.4) and UserDefaults, reason CA92.1 (`:32`). Part II uses UserDefaults for the "already asked about reminders" flag
 (`shared/src/iosMain/kotlin/com/payslipmax/pdfparser/part2/reminders/ReminderPromptStore.ios.kt:3-9`), which CA92.1 (app-only access to
 the app's own data) covers; Part II adds no other required-reason API that I found (a search of `iosApp` and `shared/src/iosMain` for
 file-timestamp, boot-time, disk-space and active-keyboard calls found only the item below).
 
-7.4 **Not Part II's, but found: the disk-space API.** `shared/src/iosMain/kotlin/com/payslipmax/pdfparser/insights/gemma/DeviceCapabilityManager.ios.kt:45`
-reads `NSFileSystemFreeSize`, which Apple lists in its required-reason "disk space" category; the manifest above does not declare that
-category. It is the Gemma download check from an earlier release, which went through review. **Console to confirm** (App Store Connect
-and Apple's "Describing use of required reason API" page): whether a declaration (`NSPrivacyAccessedAPICategoryDiskSpace`, probably
-reason E174.1) should be added. I have not changed the manifest: it is outside this phase and an owner decision (batch, Round 41).
+7.4 **Not Part II's, found and fixed in Phase 11d: the disk-space API.** `shared/src/iosMain/kotlin/com/payslipmax/pdfparser/insights/gemma/DeviceCapabilityManager.ios.kt:45`
+reads `NSFileSystemFreeSize` (Apple's "disk space" category) to decide whether the offline model can be installed; the number is neither shown
+nor sent (the screen says the fixed line "Requires 1.5GB free storage", `composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/PayslipViewModelGemmaExtensions.kt:145-146`).
+The manifest now declares `NSPrivacyAccessedAPICategoryDiskSpace` with reason E174.1 (`iosApp/iosApp/PrivacyInfo.xcprivacy:19-26`), and
+`scripts/tests/test_privacy_manifest.py` fails if any first-party code uses a required-reason API (disk space, file timestamps, boot time,
+UserDefaults, active keyboards) without a declaration. **Console to confirm** (Apple's "Describing use of required reason API" page, which
+needs a browser and could not be read here): that E174.1 is the right code for "decide whether there is room to install" and that the value
+may stay on the device; the wording I found in secondary sources matches, 85F4.1 (show it to the person) does not apply.
 
 7.5 **App Privacy "nutrition label".** The label lives only in App Store Connect (App Privacy), which this repository cannot read, so I
 cannot say what it holds today. What the app itself declares is `iosApp/iosApp/PrivacyInfo.xcprivacy:27-66`: Device ID and Product Interaction (analytics)
@@ -217,13 +220,14 @@ Google Play Console (before the first upload with Part II on):
 
 App Store Connect (before the next submission):
 1. App Privacy: check it matches section 7.5; no change for Part II.
-2. Decide section 7.4 (disk-space declaration): add it in `PrivacyInfo.xcprivacy`, or leave it.
+2. Upload as usual: Apple validates the privacy manifest then. If it reports a missing or wrong reason code (ITMS-91053), section 7.4 is where to look.
 3. Paste the review notes in section 7.7.
 
 ## 9. What keeps this true
 
 - `scripts/tests/test_store_wording_doc.py`: every permission, declared permission, feature and exported component in the baseline is named
   here; every citation points at a real line; the plan and runbook link here.
+- `scripts/tests/test_privacy_manifest.py`: the iOS privacy manifest declares every required-reason API the app's own code uses.
 - `scripts/check_merged_manifest.py` (CI and pre-push): the release manifest equals the baseline.
 - `Part2PagesSourceTest`, `Part2StorageSourceTest`, `Part2PrintSourceTest`, `Part2EngineSourceTest`: no network, log, telemetry or
   clipboard in Part II code. `Part2CameraUsageTest`: the iOS camera text, and no other usage key.
