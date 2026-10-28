@@ -3,7 +3,8 @@
 
 Every flag-off gate misses a test that quietly assumes Part II is off; the first run with the flag on found 23 such failures. This copies what
 git tracks into a throwaway directory (no keystore, no model, no build output), switches the flag and its committed expectation
-(Part2FlagExpectation) to true there, runs both suites, and deletes the copy. The repo itself is never touched. Run from anywhere:
+(Part2FlagExpectation) to true there, runs both suites, and deletes the copy. The repo itself is never touched. Once the repo's own flag is on
+(after the flip commit) there is nothing to switch and it says so. Run from anywhere:
 python3 scripts/run_flag_on_tests.py
 """
 import os
@@ -45,6 +46,20 @@ def copy_tracked(src, dst):
     return copied
 
 
+def state(root):
+    """'off' when the flag and its committed expectation are both false under root, 'on' when both are true; a mixed or malformed pair raises."""
+    found = set()
+    for rel in (LAUNCH_FLAGS, EXPECTATION):
+        with open(os.path.join(root, rel), encoding="utf-8") as fh:
+            values = re.findall(r"const val PART2_ENABLED: Boolean = (\w+)", fh.read())
+        if len(values) != 1 or values[0] not in ("true", "false"):
+            raise FlipError(f"{rel} must hold exactly one 'const val PART2_ENABLED: Boolean = true|false' line")
+        found.add(values[0])
+    if len(found) != 1:
+        raise FlipError("LaunchFlags.kt and Part2FlagExpectation.kt disagree: the flip commit edits both together")
+    return "on" if found == {"true"} else "off"
+
+
 def flip(root):
     """Switches the flag and its committed expectation to true under root. Refuses a git checkout, and any file that does not hold the
     flag line exactly once and set to false, so a rename can never turn this into a flag-off run that passes."""
@@ -64,6 +79,9 @@ def flip(root):
 
 
 def main():
+    if state(REPO) == "on":
+        print("PART2_ENABLED is already on in the repo, so every normal suite is the flag-on run; nothing to do", flush=True)
+        return 0
     copy = tempfile.mkdtemp(prefix="part2-flag-on-")
     try:
         names = copy_tracked(REPO, copy)

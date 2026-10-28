@@ -70,6 +70,40 @@ class FlipTest(unittest.TestCase):
             self.assertIn("false", read(root, tool.LAUNCH_FLAGS), "the refused checkout is left as it was")
 
 
+class StateTest(unittest.TestCase):
+    """After the flip commit the repo is flag-on itself: the CI job must say so and stop, not fail on 'nothing to flip'."""
+
+    def test_both_false_is_off(self):
+        with tempfile.TemporaryDirectory() as root:
+            fake_tree(root)
+            self.assertEqual(tool.state(root), "off")
+
+    def test_both_true_is_on(self):
+        with tempfile.TemporaryDirectory() as root:
+            fake_tree(root, flag=FLAG_LINE_OFF.replace("false", "true"), expectation=EXPECT_LINE_OFF.replace("false", "true"))
+            self.assertEqual(tool.state(root), "on")
+
+    def test_a_flag_and_expectation_that_disagree_are_a_loud_failure_either_way_round(self):
+        for flag, expectation in (("true", "false"), ("false", "true")):
+            with tempfile.TemporaryDirectory() as root:
+                fake_tree(root, flag=FLAG_LINE_OFF.replace("false", flag), expectation=EXPECT_LINE_OFF.replace("false", expectation))
+                with self.assertRaises(tool.FlipError):
+                    tool.state(root)
+
+    def test_a_missing_or_duplicated_line_is_a_loud_failure(self):
+        with tempfile.TemporaryDirectory() as root:
+            fake_tree(root, flag="    const val PART2_ENABLED_RENAMED: Boolean = false\n")
+            with self.assertRaises(tool.FlipError):
+                tool.state(root)
+        with tempfile.TemporaryDirectory() as root:
+            fake_tree(root, expectation=EXPECT_LINE_OFF * 2)
+            with self.assertRaises(tool.FlipError):
+                tool.state(root)
+
+    def test_the_real_repo_is_in_one_consistent_state(self):
+        self.assertIn(tool.state(ROOT), ("on", "off"))
+
+
 class RepoContractTest(unittest.TestCase):
     """The script must keep working on the real files: a rename would otherwise turn the CI job into a flag-off run that passes."""
 
