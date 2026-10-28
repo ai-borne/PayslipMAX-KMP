@@ -34,7 +34,7 @@ actual object CryptoHelper {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec)
 
             // Prepend MAGIC header "PCDA" for integrity check
-            val magic = "PCDA".toByteArray(Charsets.UTF_8)
+            val magic = PcdaMark.BYTES
             val prefixedData = ByteArray(magic.size + data.size)
             System.arraycopy(magic, 0, prefixedData, 0, magic.size)
             System.arraycopy(data, 0, prefixedData, magic.size, data.size)
@@ -60,7 +60,7 @@ actual object CryptoHelper {
         return try {
             val prefixSize = SALT_SIZE + IV_SIZE
             if (encryptedData.size < prefixSize + 16) {
-                return Result.failure(IllegalArgumentException("Invalid encrypted data size"))
+                return Result.failure(DecryptionFailedException())
             }
 
             // Extract Salt
@@ -85,22 +85,10 @@ actual object CryptoHelper {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmSpec)
             val plainText = cipher.doFinal(cipherTextWithTag)
 
-            // Verify MAGIC header "PCDA"
-            val magic = "PCDA".toByteArray(Charsets.UTF_8)
-            if (plainText.size < magic.size) {
-                return Result.failure(IllegalArgumentException("Decryption failed: incorrect password or tampered data"))
-            }
-            for (i in magic.indices) {
-                if (plainText[i] != magic[i]) {
-                    return Result.failure(IllegalArgumentException("Decryption failed: incorrect password or tampered data"))
-                }
-            }
-
-            val result = ByteArray(plainText.size - magic.size)
-            System.arraycopy(plainText, magic.size, result, 0, result.size)
-            Result.success(result)
+            // The plaintext must start with the MAGIC header "PCDA"; anything else was not sealed by this app.
+            PcdaMark.open(plainText)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(decryptFailure(e))
         }
     }
 

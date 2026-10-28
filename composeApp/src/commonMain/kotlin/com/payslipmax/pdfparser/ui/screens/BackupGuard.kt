@@ -1,6 +1,10 @@
 package com.payslipmax.pdfparser.ui.screens
 
+import com.payslipmax.pdfparser.crypto.DecryptionFailedException
+import com.payslipmax.pdfparser.part2.data.BackupDamagedException
+import com.payslipmax.pdfparser.repository.UnsupportedBackupVersionException
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.BackupRestoreStrings
 import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
 
 /** What a backup or restore would meet on this device: payslips and Part II items (drafts and vault orders; pages belong to an order). */
@@ -41,3 +45,15 @@ internal fun restoreNeedsChoice(contents: BackupContents): Boolean = !contents.i
 /** The title of the Replace/Merge question: payslips when there are any (the shipped wording), otherwise Part II items. */
 internal fun restoreChoiceTitle(contents: BackupContents): String =
     if (contents.payslips > 0) AppStrings.settingsRestoreExistingTitle else Part2VaultStrings.restoreExistingTitle
+
+/**
+ * The status for a restore that failed, chosen by the failure's type and never by its text: a wrong password or file has its own line, a
+ * damaged archive and a newer backup version keep the fixed message they were written with, and anything else gets one generic line, so no
+ * library, file or row text can reach the screen.
+ */
+internal fun restoreFailedStatus(error: Throwable?): BackupStatus =
+    when (error) {
+        is DecryptionFailedException -> BackupStatus(BackupRestoreStrings.wrongPasswordOrNotABackup, isSuccess = false)
+        is BackupDamagedException, is UnsupportedBackupVersionException -> BackupStatus("${AppStrings.statusRestoreFailed}${error.message}", isSuccess = false)
+        else -> BackupStatus(BackupRestoreStrings.restoreFailedGeneric, isSuccess = false)
+    }

@@ -545,6 +545,17 @@ The owner said yes to flipping `PART2_ENABLED` and to installing a debug build o
 
 The owner exported a `.pcda` first and approved the uninstall; the flag-on release was removed and a debug build was installed from the repo (`./gradlew :composeApp:installDebug` on a clean tree at `4e9c7328`, no flipped copy, so no keystore copy exists). The owner restores their own backup. Still open: the iPhone walk (items 14, 20, 47), the Play Console and privacy wording before the first Play upload (item 40), and the rest of Phase 11.
 
+## Round 41: Phase 11c, the restore error and the store wording (owner, 2026-10-28)
+
+Built and gated before the questions (the Phase 11c notes in the plan). The owner's answers:
+
+- **Restore copy (item 60).** Approved as built: "Wrong password, or this isn't a PayslipMax backup" for a wrong password or a file that is not a backup, and "The backup could not be restored. Try again, or pick another file." for any other unexpected failure. Accepted limit: a real backup with a flipped byte reads like a wrong password (AES-GCM cannot tell them apart); a damaged page archive and a newer backup version keep their own messages.
+- **Disk-space API in the iOS privacy manifest (item 61).** A separate small change next, with the link and XCTest gates; nothing is added in Phase 11c. The reason code is confirmed on Apple's page at that time.
+- **In-app Help privacy text (item 63).** Yes, a seventh point in a later phase (a copy change in `LegalStrings` with a test).
+- **Pixel (item 62).** Install a debug build of the Phase 11c commit over the current debug copy, in place (no uninstall, the owner's data kept); the owner tries a wrong password and a file that is not a backup. Nothing is read from the screen.
+- **Store wording (items 40 and 64).** The owner enters it; the items stay open until the owner says it is done (default taken: the owner did not ask for changes to `docs/Launch/10_part2_store_wording.md`).
+- Nothing is pushed and no flag is touched (`LaunchFlags.kt` sha256 03349a32...97cc).
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

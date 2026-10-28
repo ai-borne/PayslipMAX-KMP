@@ -48,7 +48,7 @@ actual object CryptoHelper {
                 ByteArray(IV_SIZE).apply {
                     usePinned { SecRandomCopyBytes(kSecRandomDefault, IV_SIZE.toULong(), it.addressOf(0).reinterpret<UByteVar>()) }
                 }
-            val magic = "PCDA".encodeToByteArray()
+            val magic = PcdaMark.BYTES
             val prefixedData =
                 ByteArray(magic.size + data.size).apply {
                     magic.copyInto(this, 0)
@@ -106,7 +106,8 @@ actual object CryptoHelper {
     ): Result<ByteArray> {
         return try {
             val prefixSize = SALT_SIZE + IV_SIZE
-            if (encryptedData.size < prefixSize + TAG_SIZE) return Result.failure(IllegalArgumentException("Invalid size"))
+            // Salt, IV and tag around at least the "PCDA" mark: a shorter file cannot be ours (and has no ciphertext to pin).
+            if (encryptedData.size < prefixSize + TAG_SIZE + PcdaMark.BYTES.size) return Result.failure(DecryptionFailedException())
 
             val salt = ByteArray(SALT_SIZE).apply { encryptedData.copyInto(this, 0, 0, SALT_SIZE) }
             val keyBytes = pbkdf2(password, salt)
@@ -117,13 +118,9 @@ actual object CryptoHelper {
             val buffer = ByteArray(cipherTextSize)
 
             val cryptStatus = executeGcmDecrypt(cipherText, keyBytes, iv, buffer, tag)
-            if (cryptStatus != kCCSuccess) return Result.failure(Exception("Decrypt status: $cryptStatus"))
-            val magic = "PCDA".encodeToByteArray()
-            if (buffer.size < magic.size || !buffer.take(magic.size).toByteArray().contentEquals(magic)) {
-                return Result.failure(IllegalArgumentException("Decrypt failed: bad magic/password"))
-            }
-            val finalData = ByteArray(buffer.size - magic.size).apply { buffer.copyInto(this, 0, magic.size, buffer.size) }
-            Result.success(finalData)
+            if (cryptStatus != kCCSuccess) return Result.failure(decryptStatusFailure(cryptStatus) ?: Exception("Decrypt status: $cryptStatus"))
+            // The plaintext must start with the MAGIC header "PCDA"; anything else was not sealed by this app.
+            PcdaMark.open(buffer)
         } catch (e: Exception) {
             Result.failure(e)
         }

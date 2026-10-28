@@ -5,8 +5,11 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performSemanticsAction
+import com.payslipmax.pdfparser.crypto.DecryptionFailedException
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.RestoreReport
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.BackupRestoreStrings
 import com.payslipmax.pdfparser.ui.theme.Part2VaultStrings
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -34,6 +37,7 @@ class BackupRestoreSettingsCardUiTest {
     private fun open(
         contents: BackupContents,
         password: String = "a made-up password",
+        restoreResult: Result<RestoreReport>? = null,
     ) {
         composeRule.setContent {
             BackupRestoreSettingsCard(
@@ -42,7 +46,10 @@ class BackupRestoreSettingsCardUiTest {
                 contents = { contents },
                 // never completes: the share sheet is not under test
                 onExportBackup = { _, _ -> exports++ },
-                onRestore = { _, _, mode, _ -> restores += mode },
+                onRestore = { _, _, mode, done ->
+                    restores += mode
+                    restoreResult?.let(done)
+                },
                 onPickBackup = { onResult -> onResult(byteArrayOf(1)) },
                 canBackup = true,
                 onUpgradePrompt = {},
@@ -107,5 +114,29 @@ class BackupRestoreSettingsCardUiTest {
         composeRule.waitForIdle()
 
         assertEquals(listOf(RestoreMode.REPLACE), restores)
+    }
+
+    /** WHY (item 60): the phone showed "Restore Failed: error:1e000065:...BAD_DECRYPT". The card, not only the mapping, must show our own line. */
+    @Test
+    fun aWrongPasswordShowsOurOwnLineAndNeverTheLibrarysText() {
+        open(BackupContents(payslips = 0, part2Items = 0), restoreResult = Result.failure(DecryptionFailedException()))
+
+        composeRule.onNodeWithText(AppStrings.settingsBackupRestoreBtn).performSemanticsAction(SemanticsActions.OnClick)
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithText(BackupRestoreStrings.wrongPasswordOrNotABackup).assertExists()
+        composeRule.onNodeWithText(AppStrings.statusRestoreFailed, substring = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun anUnexpectedFailureShowsTheGenericLineNotItsOwnText() {
+        val raw = IllegalStateException("error:1e000065:Cipher functions:OPENSSL_internal:BAD_DECRYPT")
+        open(BackupContents(payslips = 0, part2Items = 0), restoreResult = Result.failure(raw))
+
+        composeRule.onNodeWithText(AppStrings.settingsBackupRestoreBtn).performSemanticsAction(SemanticsActions.OnClick)
+        composeRule.waitForIdle()
+
+        composeRule.onNodeWithText(BackupRestoreStrings.restoreFailedGeneric).assertExists()
+        composeRule.onNodeWithText("BAD_DECRYPT", substring = true).assertDoesNotExist()
     }
 }

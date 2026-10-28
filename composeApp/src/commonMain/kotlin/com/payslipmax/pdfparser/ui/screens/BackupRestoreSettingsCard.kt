@@ -264,7 +264,7 @@ private fun runRestorePick(
 
 /** A restore that left Part II rows out says how many, in the warning colour: those rows are lost, so the count must be noticed. */
 internal fun restoreStatus(result: Result<RestoreReport>): BackupStatus {
-    val report = result.getOrNull() ?: return BackupStatus("${AppStrings.statusRestoreFailed}${result.exceptionOrNull()?.message}", isSuccess = false)
+    val report = result.getOrNull() ?: return restoreFailedStatus(result.exceptionOrNull())
     if (report.skipped == 0) return BackupStatus(AppStrings.statusRestoreComplete, isSuccess = true)
     return BackupStatus("${AppStrings.statusRestoreComplete} ${Part2VaultStrings.restoreSkipped(report.skipped)}", isSuccess = false)
 }

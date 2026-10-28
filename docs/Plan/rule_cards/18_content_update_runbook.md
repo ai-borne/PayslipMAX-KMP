@@ -225,6 +225,8 @@ composeApp debug unit tests and deletes the copy. CI runs it as the `part2-flag-
 **Before a Play upload with Part II on.** The Play Console declarations and the privacy policy are the owner's to change: the app
 declares `POST_NOTIFICATIONS` and `RECEIVE_BOOT_COMPLETED` (reminders) and the document scanner (Google Play services, on-device).
 Photos of orders are encrypted on the device and leave it only inside the owner's own `.pcda` backup.
+The wording to enter, with its evidence and the iOS side, is `docs/Launch/10_part2_store_wording.md`; `scripts/tests/test_store_wording_doc.py`
+fails if a permission or exported component in `scripts/merged_manifest_baseline.json` is not named there, so a library change needs its wording too.
 
 **What the owner does by hand.** Read each new batch's pack against the printed pages; name any manual note the app should check
 (Phase 11 item 46); walk the iPhone with `docs/Part2Orders/IPHONE_CHECKLIST.md`; approve the paywall catalog line

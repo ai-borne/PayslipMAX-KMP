@@ -66,6 +66,7 @@ its reminder switch (a few seconds from now) for step 6. A release build has nei
 ## 8. Backup and restore
 - [ ] Settings, back up (.pcda) saves a file; restore into the same app brings the drafts and orders back; the restore message counts
       anything it could not read.
+- [ ] Restore with a wrong password, then with a file that is not a backup (any other file): both read "Wrong password, or this isn't a PayslipMax backup" (Phase 11 item 60). No "error", no code or number, and nothing on the phone changes.
 
 ## 9. A lapsed officer
 - [ ] Set the app to Free: the Part II lookup still works; drafting says it is a Premium feature and opens the upgrade panel; saved
