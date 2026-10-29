@@ -1097,6 +1097,8 @@ command evidence, the tech-debt sweep, any unfinished point consolidated into Ph
 Each item says what is open, why it was deferred, and how it is closed. Every phase adds its leftovers here instead of leaving
 them in its summary. An item closes with a test or a command output, not a statement.
 
+**Goal (owner, 2026-10-29): close every open item below successfully, so that field testing of Part II can begin.** The open items after Phase 12b, by who closes them. *The owner:* 27 (read the CANCEL/CANCELS pack), 52 (read the area certificates), 64 and 40 (enter the Play and App Store wording), 60, 61 and 63 (accept; 61 closes for good when Apple accepts an upload without ITMS-91053). *A phone or walk:* 14, 20 and 47 (the iPhone walk, once every feature is done), 35, 48 and 57 (the walks they list). *The sprint:* 46 (12c: only the ration note, p.98 note 1.9) and 49 (12d: a new Leave case for hospital and courses). *Accepted as they are:* 38, 59 and 65. Each sub-phase now ends by saying which of these it closed and which remain, so the path to field testing stays visible.
+
 1. **Phases 1 and 2a: the R8 gate and the Part II model folder.** CLOSED in Phase 3 (the worker part moves to 7b, below).
    - Evidence: after `assembleRelease`, `scripts/check_r8_guide.py` printed `39 models and serializers kept (guide/model: 32 models, part2: 7 models);
      PayslipDatabase_Impl, Part2Dao_Impl kept; bundle shipped byte-identical`. No keep rule was added. The script now also fails on a registered
