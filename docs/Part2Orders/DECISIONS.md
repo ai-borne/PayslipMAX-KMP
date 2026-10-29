@@ -618,6 +618,8 @@ Asked as a grilling round after Phase 12d, to finalise what "field testing can b
 | Push | The branch `feature/part2-orders` is pushed now as a backup, with no PR and no merge and no flag change. |
 | Pack read | The pack for items 49, 52 and 27 is a short private page of what changed and what to check; `part2_review.md` stays for reference. |
 
+**Later the same day.** (1) The branch `feature/part2-orders` was pushed to `origin` as a backup (the pre-push gate passed; no PR, no merge, no flag change). (2) The owner read the review pack (the nine area templates, their certificates, CANCEL and CANCELS) and replied **"pack read, no corrections"**: items 27 and 52 are closed; item 49 still awaits the owner's acceptance of Phase 12c+12d. (3) The pack read came from a short private page of what changed (not the raw `part2_review.md`).
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
