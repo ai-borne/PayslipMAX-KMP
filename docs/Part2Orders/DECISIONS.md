@@ -620,6 +620,8 @@ Asked as a grilling round after Phase 12d, to finalise what "field testing can b
 
 **Later the same day.** (1) The branch `feature/part2-orders` was pushed to `origin` as a backup (the pre-push gate passed; no PR, no merge, no flag change). (2) The owner read the review pack (the nine area templates, their certificates, CANCEL and CANCELS) and replied **"pack read, no corrections"**: items 27 and 52 are closed; item 49 still awaits the owner's acceptance of Phase 12c+12d. (3) The pack read came from a short private page of what changed (not the raw `part2_review.md`).
 
+**Phase 12e (agent, 2026-10-29).** The emulator walk (synthetic data, never the Pixel, fixed-string checks plus screenshots of synthetic screens only) walked: the new area case end to end (a field-area draft with a first and last day 10 days apart: the form says "absence", the slip is dated the day after, the p.55 warning shows); the light theme; 308dp at font 2.0; a backup with only a Part II draft, a wipe and a restore through the system picker; the empty-device refusal; a lapsed officer; ACCLVE with no statement. Two findings are new Phase 11 items for the owner: 68 (the app-wide "Smart Features Setup Paused" banner breaks at a narrow width with a large font) and 69 (two lines of wording that name a Leave Bank or payslips the officer may not have).
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
