@@ -10,6 +10,7 @@ import com.payslipmax.pdfparser.part2.domain.Part2Draft
 import com.payslipmax.pdfparser.part2.domain.PrintedSnapshot
 import com.payslipmax.pdfparser.part2.domain.SlotValue
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
+import com.payslipmax.pdfparser.testing.FakeLeaveBankSource
 import com.payslipmax.pdfparser.testing.SyntheticPart2Templates.EXTENSION
 import com.payslipmax.pdfparser.testing.SyntheticPart2Templates.GRANT
 import com.payslipmax.pdfparser.ui.theme.Part2LeaveBankStrings
@@ -18,6 +19,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
@@ -50,6 +52,19 @@ internal class LeaveDraftFillTest : LeaveDraftFillBase() {
             assertEquals(FieldValue.Date(CalendarDate(2026, 7, 5)), vm.value("leave_from"), "the typed day stays")
             assertEquals(Part2LeaveBankStrings.filled(1), vm.message())
             assertEquals(true, vm.state.value.sections[0].fill?.refill, "a figure is there now, so the button asks before it replaces")
+        }
+
+    @Test
+    fun withNoStatementRowsTheMessageDoesNotClaimTheLeaveBankGaveTheFigures() =
+        runTest {
+            // Item 69(a), found on the emulator: an officer with no Leave Bank statement was told "from your Leave Bank".
+            val vm = fillModel(source = FakeLeaveBankSource(emptyList()))
+            advanceUntilIdle()
+            vm.setDate(0, "leave_from", CalendarDate(2026, 7, 5))
+            vm.fillFromLeaveBank(0, replace = false)
+            advanceUntilIdle()
+            assertEquals(Part2LeaveBankStrings.filled(1, fromLeaveBank = false), vm.message())
+            assertFalse("Leave Bank" in vm.message().orEmpty(), vm.message())
         }
 
     @Test

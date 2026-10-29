@@ -75,7 +75,7 @@ class BackupRestoreSettingsCardUiTest {
         composeRule.onNodeWithText(AppStrings.settingsBackupSaveBtn).performSemanticsAction(SemanticsActions.OnClick)
         composeRule.waitForIdle()
 
-        composeRule.onNodeWithText(AppStrings.statusNoPayslipsToBackup).assertExists()
+        composeRule.onNodeWithText(AppStrings.statusNothingToBackup).assertExists()
         assertEquals(0, exports)
     }
 

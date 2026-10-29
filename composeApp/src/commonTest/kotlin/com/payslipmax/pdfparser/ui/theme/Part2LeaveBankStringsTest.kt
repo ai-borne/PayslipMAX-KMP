@@ -49,6 +49,15 @@ class Part2LeaveBankStringsTest {
     }
 
     @Test
+    fun withNoLeaveBankStatementTheFillMessageNamesOnlyTheSourceItUsed() {
+        // Item 69(a): the officer with no statement was told figures came from "your Leave Bank", which they do not have.
+        assertEquals("Filled 2 figures from your printed drafts. Check each one before you go on.", Part2LeaveBankStrings.filled(2, fromLeaveBank = false))
+        assertEquals("Filled 1 figure from your printed drafts. Check it before you go on.", Part2LeaveBankStrings.filled(1, fromLeaveBank = false))
+        assertEquals("Filled 2 figures from your Leave Bank and your printed drafts. Check each one before you go on.", Part2LeaveBankStrings.filled(2, fromLeaveBank = true))
+        assertEquals(Part2LeaveBankStrings.filled(3, fromLeaveBank = true), Part2LeaveBankStrings.filled(3), "a statement is the usual case")
+    }
+
+    @Test
     fun theFillMessagesSayWhatHappenedInPlainWordsAndPluralsAreRight() {
         assertTrue(Part2LeaveBankStrings.filled(1).startsWith("Filled 1 figure from"), Part2LeaveBankStrings.filled(1))
         assertTrue(Part2LeaveBankStrings.filled(4).startsWith("Filled 4 figures from"), Part2LeaveBankStrings.filled(4))

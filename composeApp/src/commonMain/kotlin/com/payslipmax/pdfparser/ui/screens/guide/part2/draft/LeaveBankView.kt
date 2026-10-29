@@ -37,7 +37,7 @@ internal class LeaveBankView(
     private fun words(message: FillMessage): String =
         when (message) {
             FillMessage.Waiting -> Part2LeaveBankStrings.waiting
-            is FillMessage.Filled -> Part2LeaveBankStrings.filled(message.count)
+            is FillMessage.Filled -> Part2LeaveBankStrings.filled(message.count, fromLeaveBank = rows.isNotEmpty())
             FillMessage.Unchanged -> Part2LeaveBankStrings.unchanged
             FillMessage.NeedsYear -> Part2LeaveBankStrings.needsYear
             FillMessage.NothingKnown -> Part2LeaveBankStrings.nothingKnown

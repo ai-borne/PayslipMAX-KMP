@@ -23,13 +23,14 @@ object Part2LeaveBankStrings {
     const val needsYear = "Type the leave year first, then fill."
     const val nothingKnown = "Your Leave Bank has nothing to fill this from. Import a December payslip that prints the leave table, or type the figures."
 
-    /** What a fill that changed [count] boxes says. */
-    fun filled(count: Int): String =
-        if (count == 1) {
-            "Filled 1 figure from your Leave Bank and your printed drafts. Check it before you go on."
-        } else {
-            "Filled $count figures from your Leave Bank and your printed drafts. Check each one before you go on."
-        }
+    /** What a fill that changed [count] boxes says; without a statement ([fromLeaveBank] false) it does not claim a Leave Bank gave them. */
+    fun filled(
+        count: Int,
+        fromLeaveBank: Boolean = true,
+    ): String {
+        val source = if (fromLeaveBank) "your Leave Bank and your printed drafts" else "your printed drafts"
+        return if (count == 1) "Filled 1 figure from $source. Check it before you go on." else "Filled $count figures from $source. Check each one before you go on."
+    }
 
     /** The fact a form note states, in words. */
     fun note(note: FillNote): String =

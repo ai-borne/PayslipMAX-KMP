@@ -634,6 +634,17 @@ Asked after the agent listed what is left (13a to 13f, about 196 templates, then
 | Items 68 and 69 | Not answered by the owner. The agent took the default: **accepted as they are for the field test**, to be revisited with its findings (the owner may overrule at any time). |
 | First sideload | A debug build of `2a146867` (flag on in the repo since `4e9c7328`), `installDebug` for the current user only, installed in place over the owner's debug copy on the Pixel 9 (same signature, no uninstall, data kept). Debug rather than a release build, because a release needs a wipe and a restore and the owner keeps the debug copy (memory: keep the debug copy on the Pixel). |
 
+## Round 47: items 68 and 69 fixed (owner, 2026-10-29)
+
+The owner answered "Fix both" after the agent laid out the two items and proposed wording.
+
+| Topic | Decision |
+|---|---|
+| Item 68 | The "Smart Features Setup Paused" banner lays out as a `FlowRow`: the Retry/Resume and close buttons drop under the title when the width or the font needs it, and sit beside it at a usual width. |
+| Item 69(a) | With no Leave Bank rows the fill message reads "Filled N figures from your printed drafts. Check each one before you go on." The trailing check sentence is the existing one, kept. With a statement the message is unchanged. The button and refill dialog still say "Leave Bank" (the feature's name). |
+| Item 69(b) | Back Up on an empty device says "Nothing to back up yet." (constant renamed `statusNothingToBackup`). |
+| Proof | Tests first (the narrow-banner test was red at 10 lines), five deliberate breaks killed with sha-checked restores, full gate green. No data, storage or network surface changed. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

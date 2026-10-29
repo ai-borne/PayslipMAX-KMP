@@ -22,7 +22,7 @@ internal fun backupRefusal(
 ): BackupStatus? =
     when {
         password.isBlank() -> BackupStatus(AppStrings.settingsBackupPasswordRequired, isSuccess = false)
-        contents.isEmpty -> BackupStatus(AppStrings.statusNoPayslipsToBackup, isSuccess = false)
+        contents.isEmpty -> BackupStatus(AppStrings.statusNothingToBackup, isSuccess = false)
         else -> null
     }
 

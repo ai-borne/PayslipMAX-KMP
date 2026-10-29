@@ -23,9 +23,11 @@ class BackupGuardTest {
     }
 
     @Test
-    fun nothingAtAllIsRefusedWithTheNoPayslipsLine() {
+    fun nothingAtAllIsRefusedWithALineThatDoesNotNamePayslipsOnly() {
         val refusal = assertNotNull(backupRefusal("pw", BackupContents(0, 0)))
-        assertEquals(AppStrings.statusNoPayslipsToBackup, refusal.message)
+        assertEquals(AppStrings.statusNothingToBackup, refusal.message)
+        assertEquals("Nothing to back up yet.", refusal.message)
+        assertFalse("payslip" in refusal.message.lowercase(), "item 69(b): drafts, orders and scanned pages are backed up too")
         assertFalse(refusal.isSuccess)
     }
 
