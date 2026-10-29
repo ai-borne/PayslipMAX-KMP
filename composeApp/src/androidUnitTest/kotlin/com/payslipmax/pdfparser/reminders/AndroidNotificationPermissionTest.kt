@@ -73,4 +73,41 @@ class AndroidNotificationPermissionTest {
         runTest {
             permission(34).onResult(true)
         }
+
+    @Test
+    fun beforeAndroid13ReminderAreAllowedExactlyWhenTheOfficerHasNotSwitchedNotificationsOff() =
+        runTest {
+            val permission = permission(32)
+
+            assertTrue(permission.isAllowed())
+            enabled = false
+            assertFalse(permission.isAllowed())
+            assertEquals(0, launched, "asking whether it is allowed shows no dialog")
+        }
+
+    @Test
+    fun onAndroid13ReminderAreAllowedOnlyWithTheGrantAndNotificationsOn() =
+        runTest {
+            val permission = permission(34)
+
+            assertFalse(permission.isAllowed(), "no grant yet")
+            granted = true
+            assertTrue(permission.isAllowed())
+            enabled = false
+            assertFalse(permission.isAllowed(), "granted, then switched off in the settings")
+            granted = false
+            enabled = true
+            assertFalse(permission.isAllowed(), "a declined grant is not allowed whatever the switch says")
+            assertEquals(0, launched)
+        }
+
+    @Test
+    fun onAndroid13ItselfTheGrantIsRequiredToo() =
+        runTest {
+            val permission = permission(33)
+
+            assertFalse(permission.isAllowed(), "the permission exists from 13 on, so 13 needs the grant")
+            granted = true
+            assertTrue(permission.isAllowed())
+        }
 }

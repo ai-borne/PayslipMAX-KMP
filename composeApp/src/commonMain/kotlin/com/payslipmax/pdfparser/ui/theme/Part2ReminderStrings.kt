@@ -24,6 +24,10 @@ object Part2ReminderStrings {
     const val promptAllow = "Allow reminders"
     const val promptNotNow = "Not now"
 
+    // The note on the Due screen once reminders are off (Round 44, plan item 39): the way back after a decline.
+    const val settingsNote = "Reminders are off. You can turn them on in your phone's notification settings."
+    const val settingsOpen = "Open settings"
+
     // The debug-only switch in Settings (debug builds only).
     const val debugDelayTitle = "Bring Part II reminders forward"
     const val debugDelayDesc = "Reminders fall 20 seconds from now instead of on their dates. Debug builds only; resets on every launch."

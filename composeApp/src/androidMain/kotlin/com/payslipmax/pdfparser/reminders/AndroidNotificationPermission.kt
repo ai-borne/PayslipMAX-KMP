@@ -26,6 +26,8 @@ class AndroidNotificationPermission(
         return waiting.await()
     }
 
+    override suspend fun isAllowed(): Boolean = (sdk < PERMISSION_SDK || isGranted()) && areEnabled()
+
     /** The system dialog's answer; ignored when nothing was asked. */
     fun onResult(granted: Boolean) {
         answer?.complete(granted)

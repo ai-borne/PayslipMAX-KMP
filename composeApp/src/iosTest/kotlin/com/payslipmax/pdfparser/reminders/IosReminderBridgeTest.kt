@@ -29,6 +29,9 @@ class IosReminderBridgeTest {
         var answerRequest: Boolean? = true
         var late: IosPermissionListener? = null
         var answerTwice = false
+        var answerAllowed = false
+        var allowedAsks = 0
+        var settingsOpened = 0
 
         override fun replaceAll(requests: List<IosReminderRequest>) {
             sent += requests
@@ -43,6 +46,15 @@ class IosReminderBridgeTest {
             requests++
             answerRequest?.let(listener::onAnswer) ?: run { late = listener }
             if (answerTwice) listener.onAnswer(false)
+        }
+
+        override fun isAllowed(listener: IosPermissionListener) {
+            allowedAsks++
+            listener.onAnswer(answerAllowed)
+        }
+
+        override fun openSettings() {
+            settingsOpened++
         }
     }
 
@@ -113,7 +125,33 @@ class IosReminderBridgeTest {
 
             assertFalse(permission.canAsk())
             assertFalse(permission.request())
+            assertFalse(permission.isAllowed())
         }
+
+    @Test
+    fun isAllowedIsAskedOfTheGatewayEachTimeAndShowsNoDialog() =
+        runTest {
+            val gateway = RecordingGateway()
+            val permission = IosNotificationPermission { gateway }
+
+            assertFalse(permission.isAllowed())
+            gateway.answerAllowed = true
+            assertTrue(permission.isAllowed())
+            assertEquals(2, gateway.allowedAsks)
+            assertEquals(0, gateway.requests, "reading the state never asks the officer")
+        }
+
+    @Test
+    fun theSettingsOpenerAsksTheGatewayToOpenTheAppsSettingsOncePerTapAndToleratesNone() {
+        val gateway = RecordingGateway()
+        val opener = IosNotificationSettingsOpener { gateway }
+
+        opener.open()
+        opener.open()
+        IosNotificationSettingsOpener { null }.open()
+
+        assertEquals(2, gateway.settingsOpened)
+    }
 
     @Test
     fun aSecondAnswerFromSwiftIsIgnoredAndTheFirstWins() =

@@ -35,6 +35,9 @@ class ReminderPromptModel(
         permission.request()
     }
 
+    /** Whether the Due screen should show the "reminders are off" note now (see [ReminderSettingsNote]). Reads only: it asks nothing and records nothing. */
+    suspend fun settingsNoteShown(permission: NotificationPermission): Boolean = ReminderSettingsNote.isShown(store.wasAsked(), permission.isAllowed())
+
     /** "Not now" (or dismissing the explainer): a decline, final. */
     fun notNow() {
         store.markAsked()

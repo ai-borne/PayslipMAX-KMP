@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import UserNotifications
 import composeApp
 
@@ -34,10 +35,25 @@ final class ReminderNotificationGateway: NSObject, IosNotificationGateway {
 
     private let center: ReminderNotificationCenter
     private let now: () -> Date
+    private let openURL: (URL) -> Void
 
-    init(center: ReminderNotificationCenter, now: @escaping () -> Date = Date.init) {
+    init(
+        center: ReminderNotificationCenter,
+        now: @escaping () -> Date = Date.init,
+        openURL: @escaping (URL) -> Void = { UIApplication.shared.open($0) }
+    ) {
         self.center = center
         self.now = now
+        self.openURL = openURL
+    }
+
+    /// Whether a reminder can be shown in this authorization state. Provisional and ephemeral deliver (quietly or for a short time); undecided and denied do not.
+    static func allows(_ status: UNAuthorizationStatus) -> Bool {
+        switch status {
+        case .authorized, .provisional, .ephemeral: return true
+        case .notDetermined, .denied: return false
+        @unknown default: return false
+        }
     }
 
     /// Registers the gateway and the tap router on app startup. Call from AppDelegate.didFinishLaunchingWithOptions: the system needs the
@@ -64,6 +80,18 @@ final class ReminderNotificationGateway: NSObject, IosNotificationGateway {
         center.requestAuthorization { granted in
             DispatchQueue.main.async { listener.onAnswer(allowed: granted) }
         }
+    }
+
+    func isAllowed(listener: IosPermissionListener) {
+        center.authorizationStatus { status in
+            DispatchQueue.main.async { listener.onAnswer(allowed: Self.allows(status)) }
+        }
+    }
+
+    /// Opens this app's page in the Settings app (where notifications are turned back on). The URL is the system's own constant.
+    func openSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        DispatchQueue.main.async { self.openURL(url) }
     }
 
     /// A request for the planner's instant. A past instant still fires, a second from now (the system refuses a zero interval).

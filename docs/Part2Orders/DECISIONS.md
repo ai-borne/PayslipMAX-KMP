@@ -573,6 +573,27 @@ Built and gated before the questions (the Phase 11d notes in the plan). The owne
 - **Commit.** Phase 11e is committed as is (tests, one fixture property, the plan notes). Nothing is pushed and no flag is touched (`LaunchFlags.kt` sha256 03349a32...97cc).
 - **Item 42.** Still waiting for 09:00 on 29 Oct; the Pixel is left as set up.
 
+## Round 44: Phase 12 sprint (12a to 12d), owner answers (owner, 2026-10-29)
+
+- **Item 42 (the 09:00 banner of 29 Oct).** Asked at the start of the sprint, before anything was installed on the Pixel. Answer: **not checked yet.** Nothing is recorded as
+  verified or failed. Evidence recorded: the phone restarted at about 01:30 on 29 Oct (not by us) and the 8 queued jobs survived it (the boot receiver, Phase 7b). The Pixel
+  is not touched and no build is installed on it until the owner reports the banner.
+- **12a (item 39).** A line **and an "Open settings" button** on the Due screen. The note shows **only after the officer was asked and notifications are off**; it never
+  shows before the first ask and goes away once reminders are allowed. The "decline is final, never asked again" rule (Round 28) is unchanged. The copy is mine to write and the
+  owner reads it in the Phase Summary.
+- **12b (items 51 and 53).** Item 51: **accepted as is** (the handbook-based dating stays; a real HRMS order can still reopen it). Item 53(a): **leave as is** (the Transport
+  station is not prefilled from an earlier draft); 53(b) (a date is never brought back) stays. Nothing is built in 12b: it only closes the two items in the plan.
+- **12c (item 46).** The owner was unsure and asked what a senior developer would choose. **Chosen: build only the ration note (p.98 note 1.9)**: study leave in India at a
+  non-military station with no ration drawing facility earns the ration allowance like annual leave (it reuses the `on_ration` pattern; today the three study-leave templates link no
+  ration code). Not built, and left on the manual's own page: the career counts (study leave twice, special maternity twice and 24 months apart, child care 360/180 days), maternity
+  not in spells and the furlough undertaking. Reason: each needs service history the app does not hold, so a check could only repeat what the officer types, and it adds questions and
+  review for no new protection against a missed cessation or credit. The owner can still name any of them later. The changed templates are read by the owner in the review pack
+  before 12c is accepted.
+- **12d (item 49).** A **new case in the Leave ribbon** ("Back from hospital or a course") that homes the area codes (they move out of the unbuilt Field and Moves cases and
+  stay there as "also" links). **A hospital stay of fewer than 15 days follows the p.55 note 2 exception** for the field-area allowances (the same 15, from
+  `AreaRules.FIELD_CASUAL_MIN_DAYS`); HAA keeps its casual-leave rule (14 days, p.49 note ii, which does not name hospital); SCCIA always re-grants.
+- **Phone.** The Pixel may be walked, but only after the owner reports item 42; fixed-string yes/no checks only; the debug copy stays on the phone.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

@@ -24,8 +24,9 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListSpacing
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2Message
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.Part2DueStrings
+import com.payslipmax.pdfparser.ui.theme.Part2ReminderStrings
 
-/** The Due list: what is due now, then what comes next. Stateless; a row opens its draft's slip. */
+/** The Due list: what is due now, then what comes next. Stateless; a row opens its draft's slip. [onOpenSettings] is non-null exactly when the "reminders are off" note is shown. */
 @Composable
 internal fun DueScreen(
     state: DueUiState,
@@ -33,15 +34,26 @@ internal fun DueScreen(
     onDismiss: (DueRowUi) -> Unit,
     onBack: () -> Unit,
     listState: LazyListState,
+    onOpenSettings: (() -> Unit)? = null,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         ScreenBackHeader(title = Part2DueStrings.screenTitle, subtitle = Part2DueStrings.screenSubtitle, onBack = onBack)
         LazyColumn(state = listState, modifier = Modifier.fillMaxSize(), contentPadding = Part2ListPadding, verticalArrangement = Part2ListSpacing) {
+            if (onOpenSettings != null) item(key = "reminders-off") { RemindersOffNote(onOpenSettings) }
             if (state.unreadable) item(key = "unreadable") { Part2Message(Part2DueStrings.unreadable) }
             if (state.isEmpty) item(key = "empty") { Part2Message(Part2DueStrings.empty) }
             dueSection(Part2DueStrings.dueHeading, state.due, onOpen, onDismiss)
             dueSection(Part2DueStrings.upcomingHeading, state.upcoming, onOpen, onDismiss)
         }
+    }
+}
+
+/** The way back after a declined notification permission (Round 44): one line and a button to the system settings. */
+@Composable
+private fun RemindersOffNote(onOpenSettings: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny)) {
+        Text(Part2ReminderStrings.settingsNote, style = MaterialTheme.typography.bodyMedium)
+        TextButton(onClick = onOpenSettings) { Text(Part2ReminderStrings.settingsOpen) }
     }
 }
 

@@ -57,6 +57,10 @@ its reminder switch (a few seconds from now) for step 6. A release build has nei
       "PayslipMax / A Part II reminder is due." Tap it with the app open, with a detail screen pushed (it closes first), with the app
       closed, and while the app is locked (it waits, then opens Due).
 - [ ] Restart the phone: the pending reminder is still delivered. Settings, Notifications, lists PayslipMax.
+- [ ] (Phase 12a, item 39) Decline the notification prompt, then open Part II, Due: the list opens with "Reminders are off. You can turn them on
+      in your phone's notification settings." and an "Open settings" button. The button opens PayslipMax's page in the Settings app. Turn
+      Notifications on there and come back: the note is gone. With reminders allowed (or before the prompt was ever answered) the note is not there.
+      After Allow on the explainer while Due is open, no note should remain (if it does, say so: the check runs when the screen appears and on return to the app).
 
 ## 7. Native back and lock
 - [ ] Back from every Part II screen (form, slip, vault order, Due, check screen) goes where the screen above it is. The edge swipe never

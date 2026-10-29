@@ -10,4 +10,7 @@ interface NotificationPermission {
 
     /** Shows the system dialog and answers whether notifications are now allowed. */
     suspend fun request(): Boolean
+
+    /** True when a reminder could show right now: the permission is granted and the officer has not turned notifications off. Shows nothing. */
+    suspend fun isAllowed(): Boolean
 }

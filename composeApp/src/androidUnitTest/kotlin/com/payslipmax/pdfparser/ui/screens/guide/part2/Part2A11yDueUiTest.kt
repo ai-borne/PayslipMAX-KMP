@@ -1,8 +1,12 @@
 package com.payslipmax.pdfparser.ui.screens.guide.part2
 
+import android.Manifest
+import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import com.payslipmax.pdfparser.ui.theme.Part2Strings
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import kotlin.test.Test
@@ -10,7 +14,8 @@ import kotlin.test.assertEquals
 
 /**
  * WHY (Phase 11 item 35): the Due list is what a reminder opens, so it is the screen an officer reaches in a hurry. Same checks as
- * [Part2A11yUiTest] for the Part II home with its Due row and for the list with an overdue item, on the shipped bundle. Synthetic dates.
+ * [Part2A11yUiTest] for the Part II home with its Due row and for the list with an overdue item, on the shipped bundle. Synthetic dates. The
+ * notification permission is declined, so the list also carries the "reminders are off" note and its button (Phase 12a, plan item 39).
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34], qualifiers = "w360dp-h6000dp")
@@ -19,6 +24,7 @@ class Part2A11yDueUiTest : Part2DueUiBase() {
     private val checks by lazy { Part2A11yChecks(composeRule) }
 
     private fun screens(onScreen: (String) -> Unit) {
+        shadowOf(ApplicationProvider.getApplicationContext<Application>()).denyPermissions(Manifest.permission.POST_NOTIFICATIONS)
         hold("d1")
         hold("d2", firstDay = 14, lastDay = 20)
         show()

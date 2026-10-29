@@ -101,6 +101,8 @@ class ReminderPromptModelTest {
                     override suspend fun canAsk() = true
 
                     override suspend fun request(): Boolean = gate.await()
+
+                    override suspend fun isAllowed() = false
                 }
             val model = model()
             model.onRemindersExist(pending)

@@ -37,6 +37,12 @@ interface IosNotificationGateway {
 
     /** Shows the system's permission dialog and answers whether notifications are allowed afterwards. */
     fun request(listener: IosPermissionListener)
+
+    /** Answers whether notifications are allowed right now (authorized, provisional or ephemeral); shows nothing. */
+    fun isAllowed(listener: IosPermissionListener)
+
+    /** Opens this app's page in the system Settings app. */
+    fun openSettings()
 }
 
 /** The Swift gateway's answer to a permission question; called once, on the main thread. A second call is ignored. */
@@ -77,6 +83,8 @@ class IosNotificationPermission(
     override suspend fun canAsk(): Boolean = ask { listener -> gateway()?.canAsk(listener) ?: listener.onAnswer(false) }
 
     override suspend fun request(): Boolean = ask { listener -> gateway()?.request(listener) ?: listener.onAnswer(false) }
+
+    override suspend fun isAllowed(): Boolean = ask { listener -> gateway()?.isAllowed(listener) ?: listener.onAnswer(false) }
 
     private suspend fun ask(start: (IosPermissionListener) -> Unit): Boolean =
         suspendCancellableCoroutine { continuation ->
