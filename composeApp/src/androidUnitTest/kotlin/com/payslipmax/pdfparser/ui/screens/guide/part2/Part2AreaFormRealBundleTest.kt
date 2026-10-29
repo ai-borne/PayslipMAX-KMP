@@ -66,6 +66,26 @@ class Part2AreaFormRealBundleTest {
         assertTrue("tran_station" in ids(mapOf("leave_from" to day(6, 25), "leave_to" to day(8, 5))), "25 Jun to 05 Aug covers July")
     }
 
+    @Test
+    fun anAreaCodeDraftedOnItsOwnAsksAboutTheAbsenceAndNeverCallsItALeave() {
+        // why (plan item 49): the same templates serve an officer back from hospital or a course, so the form must not say "leave" for them.
+        for (code in AreaRules.haaCodes + AreaRules.scciaCodes + AreaRules.fieldCodes) {
+            val fields = builder.build(LeaveEventInput(listOf(OccurrenceRequest(code))), emptySet(), false).sections[0].fields
+            val labels = fields.map { it.label }
+
+            assertTrue("Last day of the absence" in labels, "$code asks for the last day of the absence")
+            assertTrue(labels.none { it.contains("leave", ignoreCase = true) }, "$code: no label says leave: $labels")
+            assertTrue(fields.first { it.slotId == "leave_to" }.help.contains("hospital stay or course"), code)
+        }
+    }
+
+    @Test
+    fun aFieldAreaCodeDraftedOnItsOwnAlsoAsksForTheFirstDaySoTheStayCanBeCounted() {
+        val labels = builder.build(LeaveEventInput(listOf(OccurrenceRequest("GTDHAFA"))), emptySet(), false).sections[0].fields.map { it.label }
+
+        assertTrue("First day of the absence" in labels)
+    }
+
     private fun draftOf(
         code: String,
         answer: String,

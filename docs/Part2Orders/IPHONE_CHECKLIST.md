@@ -62,6 +62,8 @@ its reminder switch (a few seconds from now) for step 6. A release build has nei
       Notifications on there and come back: the note is gone. With reminders allowed (or before the prompt was ever answered) the note is not there.
       After Allow on the explainer while Due is open, no note should remain (if it does, say so: the check runs when the screen appears and on return to the app).
 
+- [ ] (Phase 12d, item 49) Leave has a seventh case, "Area allowances after hospital or a course": nine "Draft this order" rows (HAA, SCCIA, field areas) and two serials with none. A draft of a field-area code asks for "First day of the absence" and "Last day of the absence" (never "leave"); with fewer than 15 days between them the slip shows the warning about a short hospital stay (p.55); with 15 or more it does not; HAA and SCCIA never show it.
+
 ## 7. Native back and lock
 - [ ] Back from every Part II screen (form, slip, vault order, Due, check screen) goes where the screen above it is. The edge swipe never
       loses a half-typed draft (it is saved on the way out).

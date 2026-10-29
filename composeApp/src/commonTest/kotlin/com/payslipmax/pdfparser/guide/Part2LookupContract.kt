@@ -42,11 +42,12 @@ object Part2LookupContract {
     fun assertRibbonsHomeEverySerialOnce(bundle: GuideBundle) {
         val section = assertNotNull(bundle.part2)
         assertEquals(ribbonOrder, section.ribbons.map { it.id })
-        assertEquals(48, section.ribbons.sumOf { it.cases.size })
+        assertEquals(47, section.ribbons.sumOf { it.cases.size })
         val homed = section.ribbons.flatMap { r -> r.cases.flatMap { it.serials } }
         assertEquals(section.serials.map { it.serial }.sorted(), homed.sorted(), "each of the 303 serials has exactly one home")
         val leave = section.ribbons.first { it.id == "leave" }
-        assertEquals((1..30).map { "5.$it" }.sorted(), leave.cases.flatMap { it.serials }.sorted(), "Leave homes all of Chapter 5")
+        val absence = listOf("3.13", "3.14", "3.15", "3.19", "3.20", "3.21", "3.22", "3.23", "3.24", "3.25", "3.26")
+        assertEquals(((1..30).map { "5.$it" } + absence).sorted(), leave.cases.flatMap { it.serials }.sorted(), "Leave homes all of Chapter 5 and the area re-grants of its absence case (Phase 12)")
     }
 
     fun assertOnlyLeaveAndRecordsAreBuiltAndFiftyThreeSerialsAreLookupOnly(bundle: GuideBundle) {
@@ -60,17 +61,17 @@ object Part2LookupContract {
     /**
      * The rules the real bundle declares and the rules the app implements are one list (Part II plan, phases 2a and 2b): a template
      * citing a check the app does not run would be a silent hole, and the template limits must travel with the templates they bound.
-     * Content batches 1 to 4 ship 73 rules (36 checks, 29 conditions, 8 derive rules) and 63 templates (24, the two cancellation codes, the 22 Chapter 5 serials 5.6-5.22, 5.26-5.30 and the 15 area re-grants of phase 9); this fails the day one side gains a rule and the
+     * Content batches 1 to 4 and Phase 12 ship 74 rules (37 checks, 29 conditions, 8 derive rules) and 63 templates (24, the two cancellation codes, the 22 Chapter 5 serials 5.6-5.22, 5.26-5.30 and the 15 area re-grants of phase 9); this fails the day one side gains a rule and the
      * other does not, and the limits are those confirmed against the longest real text (1,237 characters of narrative or certificate, the LTC
-     * certificate of the manual itself, 36 of label, 156 of help, 14 of note; 10 slots, 31 links (GTDAL's 16 older links and the 15 area re-grants: raised in phase 9, Round 12), 4 rules on a template).
+     * certificate of the manual itself, 36 of label, 156 of help, 14 of note; 11 slots (raised from 10 in Phase 12: the three field-area templates gained an optional first day), 31 links (GTDAL's 16 older links and the 15 area re-grants: raised in phase 9, Round 12), 4 rules on a template).
      */
     fun assertRulesMatchTheRegistry(bundle: GuideBundle) {
         val section = assertNotNull(bundle.part2)
         assertEquals(emptyList(), Part2Rules.shipped().problemsAgainst(section.rules), "bundle rule ids = registry ids, with the same kinds")
-        assertEquals(73, section.rules.size)
+        assertEquals(74, section.rules.size)
         assertEquals(63, section.templates.size)
         assertEquals(
-            listOf(1300, 40, 160, 10, 31, 4, 20),
+            listOf(1300, 40, 160, 11, 31, 4, 20),
             assertNotNull(section.templateLimits, "the limits ship with the section").let { listOf(it.narrative, it.label, it.help, it.slots, it.links, it.rules, it.note) },
             "the agreed template limits (rules.json)",
         )

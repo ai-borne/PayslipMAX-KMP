@@ -149,7 +149,7 @@ class Part2Rules(
         /** The rules and form questions the app ships. Each content batch adds its rule family here and nowhere else. */
         fun shipped(): Part2Rules =
             Part2Rules(
-                LeaveRules.all + LongLeaveRules.all + AcclveRules.all + LtcRules.all + EncashRules.all + RationRules.all + AreaRules.all + CancelRules.all,
+                LeaveRules.all + LongLeaveRules.all + AcclveRules.all + LtcRules.all + EncashRules.all + RationRules.all + AreaRules.all + AbsenceRules.all + CancelRules.all,
                 RationRules.questions + AreaRules.questions + LeaveRules.questions + LongLeaveRules.questions + AcclveRules.questions,
                 AcclveRules.fills + EncashRules.fills,
             )

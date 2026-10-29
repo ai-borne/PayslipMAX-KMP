@@ -25,10 +25,11 @@ class Part2FormRealBundleTest {
     private fun ids(request: OccurrenceRequest) = planner.fields(request).map { it.slot.id }
 
     @Test
-    fun theLeaveCasesOfferTheEightLeaveAndRejoiningCodesThenTheTwentyTwoOfTheRestOfChapterFive() {
+    fun theLeaveCasesOfferTheEightLeaveAndRejoiningCodesThenTheNineAreaRegrantsThenTheTwentyTwoOfTheRestOfChapterFive() {
         assertEquals(listOf("GTDAL", "GTDALCF", "EXTNAL", "GTDCL", "GTDSPCL", "REJOINAL", "VOLREJ", "RECALL"), options.take(8))
-        assertEquals(22, options.size - 8)
-        assertEquals(listOf("FURLEV", "EXTNFUR", "STDLEV", "STDLVAL", "STDLVFUR", "EOL", "TERLEV", "MTRNLV", "SPMTRNLV", "GTDCCL", "CHADPLVE", "PTRNLV", "PATLCHAD", "OSL", "REJOSL", "AWL", "REJAWL", "ACCLVE", "LVELTCAD", "LVELTC", "CLVLTCAD", "ENCASH"), options.drop(8))
+        assertEquals(AreaRules.haaCodes + AreaRules.scciaCodes + AreaRules.fieldCodes, options.drop(8).take(9), "the area case follows Back from leave (Phase 12)")
+        assertEquals(22, options.size - 8 - 9)
+        assertEquals(listOf("FURLEV", "EXTNFUR", "STDLEV", "STDLVAL", "STDLVFUR", "EOL", "TERLEV", "MTRNLV", "SPMTRNLV", "GTDCCL", "CHADPLVE", "PTRNLV", "PATLCHAD", "OSL", "REJOSL", "AWL", "REJAWL", "ACCLVE", "LVELTCAD", "LVELTC", "CLVLTCAD", "ENCASH"), options.drop(8 + 9))
     }
 
     @Test
@@ -131,7 +132,8 @@ class Part2FormRealBundleTest {
                 planner.fields(withAnswers).associate { field ->
                     field.slot.id to
                         when (field.slot.kind) {
-                            "date" -> SlotValue.DateValue(CalendarDate(2026, 8, day++))
+                            // The sanction of a field-area grant must end after the rejoining day, so it is the year's last day; every other date counts up.
+                            "date" -> SlotValue.DateValue(if (field.slot.id == "sanction_to") CalendarDate(2026, 12, 31) else CalendarDate(2026, 8, day++))
                             "number" -> SlotValue.NumberValue(1)
                             "ref" -> SlotValue.RefValue(OrderRef("N-1/26", CalendarDate(2026, 3, 2)))
                             "years" -> SlotValue.TextValue("2011 30; 2013 20")

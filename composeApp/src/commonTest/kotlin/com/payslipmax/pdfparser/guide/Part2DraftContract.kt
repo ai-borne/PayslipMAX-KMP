@@ -41,7 +41,7 @@ object Part2DraftContract {
     fun assertTheFormCompletesEveryOfferedCode(bundle: GuideBundle) {
         val builder = builder(bundle)
         val offered = Part2LookupIndex(assertNotNull(bundle.part2)).draftOptions()
-        assertEquals(32, offered.size, "the Leave release offers the eight leave and rejoining codes, the two cancellation codes and the 22 serials 5.6-5.22 and 5.26-5.30")
+        assertEquals(41, offered.size, "the Leave release offers the eight leave and rejoining codes, the two cancellation codes, the 22 serials 5.6-5.22 and 5.26-5.30 and the nine area re-grants of the absence case (Phase 12)")
         for (option in offered) {
             var event = LeaveEventEditor.start(option.code)
             for (question in builder.questionsFor(option.code)) {
@@ -92,7 +92,8 @@ object Part2DraftContract {
         slotId: String,
     ): SlotValue? =
         when (value) {
-            is FieldValue.Date -> SlotValue.DateValue(CalendarDate(2026, 8, day))
+            // The sanction of a field-area grant must end after the rejoining day, so it is the last day of the year.
+            is FieldValue.Date -> SlotValue.DateValue(if (slotId == "sanction_to") CalendarDate(2026, 12, 31) else CalendarDate(2026, 8, day))
             is FieldValue.Digits -> SlotValue.NumberValue(1)
             is FieldValue.Words -> SlotValue.TextValue("plain")
             is FieldValue.Years -> SlotValue.TextValue("2011 30; 2013 20")

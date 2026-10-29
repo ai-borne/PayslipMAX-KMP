@@ -1,6 +1,6 @@
 {
  "version": 1,
- "limits": {"narrative": 1300, "label": 40, "help": 160, "slots": 10, "links": 31, "rules": 4, "note": 20},
+ "limits": {"narrative": 1300, "label": 40, "help": 160, "slots": 11, "links": 31, "rules": 4, "note": 20},
  "rules": [
   {"id": "al_year_cap", "kind": "check", "severity": "ack", "basis": "manual", "page": 115, "note": "2"},
   {"id": "al_affix_limit", "kind": "check", "severity": "warn", "basis": "manual", "page": 115, "note": "9"},
@@ -28,6 +28,7 @@
   {"id": "declared_quoted_awl", "kind": "check", "severity": "warn", "basis": "manual", "page": 130, "note": "1"},
   {"id": "reissue_allowances", "kind": "check", "severity": "warn", "basis": "manual", "page": 8, "note": "11, 12.3"},
   {"id": "ration_long_leave", "kind": "check", "severity": "warn", "basis": "manual", "page": 99, "note": "5"},
+  {"id": "field_short_absence", "kind": "check", "severity": "warn", "basis": "manual", "page": 55, "note": "2"},
   {"id": "on_ration", "kind": "condition", "basis": "manual", "page": 97, "note": "1.1, 1.5, 3, 4"},
   {"id": "on_ration_under_180", "kind": "condition", "basis": "manual", "page": 99, "note": "5"},
   {"id": "rh_station", "kind": "condition", "basis": "practice"},

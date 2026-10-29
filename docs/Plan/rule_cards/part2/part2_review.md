@@ -417,9 +417,9 @@ Certificate:
 | `haa_corps` | HAA: name of Corps: The Corps whose notification lists the unit for HAA. | text |
 | `haa_notif` | HAA: notification no. and date: Number and date of the Corps notification that lists the unit for HAA. | ref |
 | `haa_serial` | HAA: serial in the notification: The serial at which the unit appears in that notification. | text |
-| `leave_to` | Last day of leave: The last day of the leave itself, not counting any suffix. | date |
-| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the leave. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
-| `last_away` | Last day away: The later of the last day of leave and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
+| `leave_to` | Last day of the absence: The last day of the leave, hospital stay or course itself, not counting any suffix. | date |
+| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the absence. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
+| `last_away` | Last day away: The later of the last day of the absence and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
 | `rejoin_on` | Rejoining day: The day after the last day away. Worked out for you. | worked out: the day after last_away |
 
 ## GTDHH31 — Granted HAA for Cat-II @ R3H1 rate
@@ -449,9 +449,9 @@ Certificate:
 | `haa_corps` | HAA: name of Corps: The Corps whose notification lists the unit for HAA. | text |
 | `haa_notif` | HAA: notification no. and date: Number and date of the Corps notification that lists the unit for HAA. | ref |
 | `haa_serial` | HAA: serial in the notification: The serial at which the unit appears in that notification. | text |
-| `leave_to` | Last day of leave: The last day of the leave itself, not counting any suffix. | date |
-| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the leave. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
-| `last_away` | Last day away: The later of the last day of leave and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
+| `leave_to` | Last day of the absence: The last day of the leave, hospital stay or course itself, not counting any suffix. | date |
+| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the absence. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
+| `last_away` | Last day away: The later of the last day of the absence and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
 | `rejoin_on` | Rejoining day: The day after the last day away. Worked out for you. | worked out: the day after last_away |
 
 ## GTDHH32 — Granted HAA for Cat-I @ R3H2 rate
@@ -481,9 +481,9 @@ Certificate:
 | `haa_corps` | HAA: name of Corps: The Corps whose notification lists the unit for HAA. | text |
 | `haa_notif` | HAA: notification no. and date: Number and date of the Corps notification that lists the unit for HAA. | ref |
 | `haa_serial` | HAA: serial in the notification: The serial at which the unit appears in that notification. | text |
-| `leave_to` | Last day of leave: The last day of the leave itself, not counting any suffix. | date |
-| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the leave. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
-| `last_away` | Last day away: The later of the last day of leave and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
+| `leave_to` | Last day of the absence: The last day of the leave, hospital stay or course itself, not counting any suffix. | date |
+| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the absence. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
+| `last_away` | Last day away: The later of the last day of the absence and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
 | `rejoin_on` | Rejoining day: The day after the last day away. Worked out for you. | worked out: the day after last_away |
 
 ## GTDCIAFD — Granted Special Compensatory Counter Insurgency Allowance in Field Area
@@ -513,9 +513,9 @@ Certificate:
 | `sccia_corps` | SCCIA: name of Corps: The Corps whose notification lists the unit for SCCIA. | text |
 | `sccia_notif` | SCCIA: notification no. and date: Number and date of the Corps notification that lists the unit for SCCIA. | ref |
 | `sccia_serial` | SCCIA: serial in the notification: The serial at which the unit appears in that notification. | text |
-| `leave_to` | Last day of leave: The last day of the leave itself, not counting any suffix. | date |
-| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the leave. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
-| `last_away` | Last day away: The later of the last day of leave and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
+| `leave_to` | Last day of the absence: The last day of the leave, hospital stay or course itself, not counting any suffix. | date |
+| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the absence. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
+| `last_away` | Last day away: The later of the last day of the absence and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
 | `rejoin_on` | Rejoining day: The day after the last day away. Worked out for you. | worked out: the day after last_away |
 
 ## GTDCIAMF — Granted Special Compensatory Counter Insurgency Allowance in modified field area
@@ -545,9 +545,9 @@ Certificate:
 | `sccia_corps` | SCCIA: name of Corps: The Corps whose notification lists the unit for SCCIA. | text |
 | `sccia_notif` | SCCIA: notification no. and date: Number and date of the Corps notification that lists the unit for SCCIA. | ref |
 | `sccia_serial` | SCCIA: serial in the notification: The serial at which the unit appears in that notification. | text |
-| `leave_to` | Last day of leave: The last day of the leave itself, not counting any suffix. | date |
-| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the leave. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
-| `last_away` | Last day away: The later of the last day of leave and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
+| `leave_to` | Last day of the absence: The last day of the leave, hospital stay or course itself, not counting any suffix. | date |
+| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the absence. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
+| `last_away` | Last day away: The later of the last day of the absence and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
 | `rejoin_on` | Rejoining day: The day after the last day away. Worked out for you. | worked out: the day after last_away |
 
 ## GTDCIAPC — Granted Special Compensatory Counter Insurgency Allowance in peace area
@@ -577,9 +577,9 @@ Certificate:
 | `sccia_corps` | SCCIA: name of Corps: The Corps whose notification lists the unit for SCCIA. | text |
 | `sccia_notif` | SCCIA: notification no. and date: Number and date of the Corps notification that lists the unit for SCCIA. | ref |
 | `sccia_serial` | SCCIA: serial in the notification: The serial at which the unit appears in that notification. | text |
-| `leave_to` | Last day of leave: The last day of the leave itself, not counting any suffix. | date |
-| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the leave. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
-| `last_away` | Last day away: The later of the last day of leave and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
+| `leave_to` | Last day of the absence: The last day of the leave, hospital stay or course itself, not counting any suffix. | date |
+| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the absence. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
+| `last_away` | Last day away: The later of the last day of the absence and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
 | `rejoin_on` | Rejoining day: The day after the last day away. Worked out for you. | worked out: the day after last_away |
 
 ## GTDHAFA — Granted Highly Active Field Area Allowance
@@ -611,10 +611,15 @@ Certificate:
 | `field_serial` | Field area: serial in the notification: The serial at which the unit appears in that notification. | text |
 | `sanction_to` | Sanction valid to: The last day of the period the Government sanction covers. It goes in To (note 3, p.55). | date |
 | `field_operation` | Name of the operation, if any: Only if the grant is for an operation: its name, for Data 4 (note 5, p.55). Leave blank otherwise. | text |
-| `leave_to` | Last day of leave: The last day of the leave itself, not counting any suffix. | date |
-| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the leave. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
-| `last_away` | Last day away: The later of the last day of leave and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
+| `leave_from` | First day of the absence: The first day of the leave, hospital stay or course. Optional: only the check for a stay of fewer than 15 days reads it; it is not printed. | date; only for the `field_short_absence` check, not printed |
+| `leave_to` | Last day of the absence: The last day of the leave, hospital stay or course itself, not counting any suffix. | date |
+| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the absence. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
+| `last_away` | Last day away: The later of the last day of the absence and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
 | `rejoin_on` | Rejoining day: The day after the last day away. Worked out for you. | worked out: the day after last_away |
+
+Checks:
+
+- `field_short_absence`: warn, ODP-2026 p.55 note 2
 
 ## GTDCFAA — Granted Compensatory Field Area Allowance
 
@@ -643,10 +648,15 @@ Certificate:
 | `field_corps` | Field area: name of Corps: The Corps whose notification lists the unit for the field-area allowance. | text |
 | `field_notif` | Field area: notification no. and date: Number and date of the Corps notification that lists the unit for the field-area allowance. | ref |
 | `field_serial` | Field area: serial in the notification: The serial at which the unit appears in that notification. | text |
-| `leave_to` | Last day of leave: The last day of the leave itself, not counting any suffix. | date |
-| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the leave. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
-| `last_away` | Last day away: The later of the last day of leave and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
+| `leave_from` | First day of the absence: The first day of the leave, hospital stay or course. Optional: only the check for a stay of fewer than 15 days reads it; it is not printed. | date; only for the `field_short_absence` check, not printed |
+| `leave_to` | Last day of the absence: The last day of the leave, hospital stay or course itself, not counting any suffix. | date |
+| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the absence. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
+| `last_away` | Last day away: The later of the last day of the absence and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
 | `rejoin_on` | Rejoining day: The day after the last day away. Worked out for you. | worked out: the day after last_away |
+
+Checks:
+
+- `field_short_absence`: warn, ODP-2026 p.55 note 2
 
 ## GTDCMFA — Granted Compensatory Modified Field Area Allowance
 
@@ -675,10 +685,15 @@ Certificate:
 | `field_corps` | Field area: name of Corps: The Corps whose notification lists the unit for the field-area allowance. | text |
 | `field_notif` | Field area: notification no. and date: Number and date of the Corps notification that lists the unit for the field-area allowance. | ref |
 | `field_serial` | Field area: serial in the notification: The serial at which the unit appears in that notification. | text |
-| `leave_to` | Last day of leave: The last day of the leave itself, not counting any suffix. | date |
-| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the leave. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
-| `last_away` | Last day away: The later of the last day of leave and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
+| `leave_from` | First day of the absence: The first day of the leave, hospital stay or course. Optional: only the check for a stay of fewer than 15 days reads it; it is not printed. | date; only for the `field_short_absence` check, not printed |
+| `leave_to` | Last day of the absence: The last day of the leave, hospital stay or course itself, not counting any suffix. | date |
+| `suffix_last` | Last suffix day: A weekend or holiday joined to the end of the absence. Enter the last such day, or leave blank; the slip then prints Nil. | date; optional, prints "Nil" when left out |
+| `last_away` | Last day away: The later of the last day of the absence and the last suffix day. Worked out for you. | worked out: latest of leave_to, suffix_last |
 | `rejoin_on` | Rejoining day: The day after the last day away. Worked out for you. | worked out: the day after last_away |
+
+Checks:
+
+- `field_short_absence`: warn, ODP-2026 p.55 note 2
 
 ## CANCEL — Cancellation of all occurrences of a particular Part II Order published earlier (i.e. cancellation of Part II order in Toto, published earlier)
 

@@ -4,7 +4,8 @@
  "ribbons": [
   {"id": "leave", "title": "Leave", "built": true, "cases": [
    {"id": "leave_annual", "title": "Annual and casual leave", "serials": ["5.1", "5.2", "5.3", "5.4", "5.5"], "also": ["6.6", "6.12", "13.5"], "lookup": []},
-   {"id": "leave_back", "title": "Back from leave, early or recalled", "serials": ["5.23", "5.24", "5.25"], "also": ["3.13", "3.14", "3.15", "3.19", "3.20", "3.21", "3.23", "3.24", "3.25", "3.53", "3.54"], "lookup": []},
+   {"id": "leave_back", "title": "Back from leave, early or recalled", "serials": ["5.23", "5.24", "5.25"], "also": ["3.53", "3.54"], "lookup": []},
+   {"id": "leave_absence", "title": "Area allowances after hospital or a course", "serials": ["3.13", "3.14", "3.15", "3.19", "3.20", "3.21", "3.22", "3.23", "3.24", "3.25", "3.26"], "also": ["5.23"], "lookup": []},
    {"id": "leave_furlough", "title": "Furlough, study, EOL and terminal leave", "serials": ["5.6", "5.18", "5.15", "5.16", "5.17", "5.10", "5.11"], "also": ["3.62", "13.5", "2.2"], "lookup": []},
    {"id": "leave_family", "title": "Maternity, paternity and child care", "serials": ["5.7", "5.8", "5.9", "5.12", "5.13", "5.14"], "also": ["11.9", "11.14"], "lookup": []},
    {"id": "leave_late", "title": "Late back or absent without leave", "serials": ["5.19", "5.20", "5.21", "5.22"], "also": [], "lookup": []},
@@ -18,9 +19,7 @@
   ]},
   {"id": "field", "title": "Field, high-altitude and hard areas", "built": false, "cases": [
    {"id": "field_rh", "title": "Risk and hardship allowance", "serials": ["3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"], "also": ["13.2", "13.1"], "lookup": []},
-   {"id": "field_haa", "title": "High altitude and Siachen", "serials": ["3.13", "3.14", "3.15", "3.16", "3.17", "3.18"], "also": ["5.23"], "lookup": []},
-   {"id": "field_area", "title": "Field area allowances", "serials": ["3.23", "3.24", "3.25", "3.26"], "also": ["13.2", "13.3", "5.23"], "lookup": []},
-   {"id": "field_sccia", "title": "Counter-insurgency allowance (SCCIA)", "serials": ["3.19", "3.20", "3.21", "3.22"], "also": ["5.23"], "lookup": []},
+   {"id": "field_haa", "title": "High altitude and Siachen", "serials": ["3.16", "3.17", "3.18"], "also": ["5.23"], "lookup": []},
    {"id": "field_tough", "title": "Tough location and island postings", "serials": ["3.27", "3.28", "3.80", "3.81"], "also": [], "lookup": []},
    {"id": "field_hard", "title": "Difficult and hard areas", "serials": ["3.47", "3.48", "3.90", "3.91"], "also": ["3.97", "3.98"], "lookup": []}
   ]},

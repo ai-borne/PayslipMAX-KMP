@@ -86,4 +86,28 @@ class Part2DraftRealBundleUiTest : Part2DraftUiBase() {
         tap(Part2Strings.ackTick)
         assertTrue(draft.state.value.slip!!.readyToPrint)
     }
+
+    @Test
+    fun anOfficerBackFromHospitalDraftsTheFieldAreaRegrantFromTheAreaCaseAndIsWarnedAboutAShortStay() {
+        // why (plan item 49): the re-grant after hospital or a course had no way in; a stay under 15 days is the p.55 note 2 exception.
+        val nav = show()
+        tap(Part2Strings.entryTitle)
+        tap("Leave")
+        tap("Area allowances after hospital or a course")
+        draftRow(AreaRules.haaCodes.size + AreaRules.scciaCodes.size)
+        assertEquals(Part2Destination.Draft("draft-1"), nav.current)
+        see("Last day of the absence").assertIsDisplayed()
+        val draft = model(nav)
+        draft.setDate(0, "leave_from", day(10, 1))
+        draft.setDate(0, "leave_to", day(10, 10))
+        draft.setText(0, "location", "Testpur")
+        draft.setText(0, "field_corps", "Charlie")
+        draft.setReference(0, "field_notif", "N-33/2026", day(5, 11))
+        draft.setText(0, "field_serial", "41")
+        draft.setDate(0, "sanction_to", day(12, 31))
+        settle()
+        tap(Part2Strings.seeSlip)
+        assertEquals(listOf(AreaRules.fieldCodes.first()), draft.state.value.slip!!.orders.single().rows.map { it.code })
+        see(Part2Strings.finding("field_short_absence")!!).assertIsDisplayed()
+    }
 }

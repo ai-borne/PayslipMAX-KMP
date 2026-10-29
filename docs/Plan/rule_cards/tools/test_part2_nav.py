@@ -16,7 +16,7 @@ NAV = part2_nav.load()
 SERIALS = [row['serial'] for row in CODES['serials']]
 
 # Build order of RIBBON_LAYOUT.md, with (cases, homed serials) per ribbon as its coverage check printed them.
-RIBBONS = {'leave': (6, 30), 'moves': (4, 23), 'field': (6, 34), 'career': (4, 31), 'exit': (4, 20),
+RIBBONS = {'leave': (7, 41), 'moves': (4, 23), 'field': (4, 23), 'career': (4, 31), 'exit': (4, 20),
            'family': (6, 33), 'health': (4, 18), 'role': (3, 34), 'depu': (4, 28), 'records': (7, 52)}
 # Lookup-only marks (DECISIONS Round 8): five cases the officer never drafts from, plus three codes inside draftable cases.
 LOOKUP_CASES = {'exit_missing', 'records_commission', 'records_discipline_susp', 'records_discipline_trial', 'records_ta'}
@@ -47,9 +47,11 @@ class RealLayout(unittest.TestCase):
         self.assertEqual(part2_nav.problems(NAV, CODES), [])
         self.assertEqual(part2_nav.check(), [])
 
-    def test_ten_ribbons_in_build_order_with_forty_eight_cases(self):
+    def test_ten_ribbons_in_build_order_with_forty_seven_cases(self):
+        # why: Phase 12 (plan item 49) gave the Leave ribbon a case for the area re-grants after hospital or a course; its serials came from two Field cases that
+        # then held one serial each, so those cases went (48 - 2 + 1).
         self.assertEqual([r['id'] for r in NAV['ribbons']], list(RIBBONS))
-        self.assertEqual(len(cases()), 48)
+        self.assertEqual(len(cases()), 47)
         for ribbon in NAV['ribbons']:
             counts = (len(ribbon['cases']), sum(len(c['serials']) for c in ribbon['cases']))
             self.assertEqual(counts, RIBBONS[ribbon['id']], ribbon['id'])
@@ -68,9 +70,10 @@ class RealLayout(unittest.TestCase):
             self.assertLessEqual(len(ribbon['cases']), 8, ribbon['id'])
             self.assertLessEqual(len(ribbon['title'].split()), 7, ribbon['id'])
 
-    def test_the_leave_ribbon_homes_all_thirty_chapter_5_serials(self):
+    def test_the_leave_ribbon_homes_all_thirty_chapter_5_serials_and_the_eleven_area_serials_of_its_absence_case(self):
         leave = next(r for r in NAV['ribbons'] if r['id'] == 'leave')
-        self.assertEqual(sorted(s for c in leave['cases'] for s in c['serials']), sorted(f'5.{n}' for n in range(1, 31)))
+        absence = ['3.13', '3.14', '3.15', '3.19', '3.20', '3.21', '3.22', '3.23', '3.24', '3.25', '3.26']
+        self.assertEqual(sorted(s for c in leave['cases'] for s in c['serials']), sorted([f'5.{n}' for n in range(1, 31)] + absence))
 
     def test_only_leave_and_records_are_built(self):
         # why: tiles show only for built ribbons (Round 8). Each later release flips its ribbon here, on purpose.
@@ -108,8 +111,10 @@ class RealLayout(unittest.TestCase):
                 data = json.load(fh)
             granted |= {serial_of[t['code']] for t in (data['templates'] if isinstance(data, dict) else data)}
         back = next(c for c in cases() if c['id'] == 'leave_back')
+        absence = next(c for c in cases() if c['id'] == 'leave_absence')
         self.assertGreater(len(granted), 9, 'the scan found almost no area templates')
-        self.assertEqual(sorted(granted - set(back['serials']) - set(back['also'])), [])
+        # Phase 12: HAA, SCCIA and the field areas are homed in the sibling case that can draft them after hospital or a course.
+        self.assertEqual(sorted(granted - set(back['serials']) - set(back['also']) - set(absence['serials'])), [])
 
 
 class Rules(unittest.TestCase):
@@ -173,7 +178,7 @@ class BundleSection(unittest.TestCase):
     def test_the_section_carries_every_code_page_and_the_layout(self):
         s = self.SECTION
         self.assertEqual((s['version'], len(s['serials']), sum(len(r['codes']) for r in s['serials']), len(s['ribbons'])), (1, 303, 321, 10))
-        self.assertEqual(sum(len(r['cases']) for r in s['ribbons']), 48)
+        self.assertEqual(sum(len(r['cases']) for r in s['ribbons']), 47)
         self.assertEqual(list(s['groups']), ['A', 'AM', 'B', 'C', 'CM'])
 
     def test_the_limits_ship_so_the_app_holds_no_second_copy(self):

@@ -60,9 +60,9 @@ class Part2RuleContractTest {
     @Test
     fun theShippedRegistryHoldsExactlyTheRuleFamiliesOfTheShippedBatches() {
         // why: Part2Rules.shipped() is the one place a family joins the app; a family left out would leave its declared rules unimplemented.
-        val families = (LeaveRules.all + LongLeaveRules.all + AcclveRules.all + LtcRules.all + EncashRules.all + RationRules.all + AreaRules.all + CancelRules.all).map { it.id }
+        val families = (LeaveRules.all + LongLeaveRules.all + AcclveRules.all + LtcRules.all + EncashRules.all + RationRules.all + AreaRules.all + AbsenceRules.all + CancelRules.all).map { it.id }
         assertEquals(families.toSet(), Part2Rules.shipped().ids)
         assertEquals(families.size, Part2Rules.shipped().ids.size, "no family repeats another's id")
-        assertEquals(73, families.size)
+        assertEquals(74, families.size)
     }
 }

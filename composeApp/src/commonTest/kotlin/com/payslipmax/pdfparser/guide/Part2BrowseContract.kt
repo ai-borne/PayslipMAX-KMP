@@ -28,11 +28,14 @@ object Part2BrowseContract {
         val index = index(bundle)
         val tiles = index.ribbons()
         assertEquals(listOf("leave", "records"), tiles.map { it.id }, "Leave and the lookup-only Records ribbon, and no other")
-        assertEquals(listOf(6, 7), tiles.map { it.caseCount })
+        assertEquals(listOf(7, 7), tiles.map { it.caseCount }, "Leave has seven cases since Phase 12 (the area re-grants after hospital or a course)")
         for (hidden in listOf("moves", "field", "career", "exit", "family", "health", "role", "depu")) assertNull(index.ribbon(hidden), hidden)
         val leave = assertNotNull(index.ribbon("leave"))
-        assertEquals(30, leave.cases.sumOf { it.codeCount }, "Leave homes all of Chapter 5")
-        assertTrue(leave.cases.all { it.span.chapters == listOf(5) && it.span.firstPage <= it.span.lastPage }, "Leave is Chapter 5, and its pages read in order")
+        assertEquals(30 + 11, leave.cases.sumOf { it.codeCount }, "Leave homes all of Chapter 5 and the 11 area serials of its absence case")
+        val leaveCases = leave.cases.filter { it.id != "leave_absence" }
+        assertTrue(leaveCases.all { it.span.chapters == listOf(5) && it.span.firstPage <= it.span.lastPage }, "Leave is Chapter 5, and its pages read in order")
+        val absence = leave.cases.first { it.id == "leave_absence" }
+        assertTrue(absence.span.chapters == listOf(3) && absence.span.firstPage <= absence.span.lastPage, "the area re-grants come from Chapter 3 (Phase 12)")
         for (case in leave.cases) {
             val page = assertNotNull(index.case(case.id))
             assertEquals(case.codeCount, page.rows.size)
