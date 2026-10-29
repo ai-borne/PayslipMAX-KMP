@@ -622,6 +622,18 @@ Asked as a grilling round after Phase 12d, to finalise what "field testing can b
 
 **Phase 12e (agent, 2026-10-29).** The emulator walk (synthetic data, never the Pixel, fixed-string checks plus screenshots of synthetic screens only) walked: the new area case end to end (a field-area draft with a first and last day 10 days apart: the form says "absence", the slip is dated the day after, the p.55 warning shows); the light theme; 308dp at font 2.0; a backup with only a Part II draft, a wipe and a restore through the system picker; the empty-device refusal; a lapsed officer; ACCLVE with no statement. Two findings are new Phase 11 items for the owner: 68 (the app-wide "Smart Features Setup Paused" banner breaks at a narrow width with a large font) and 69 (two lines of wording that name a Leave Bank or payslips the officer may not have).
 
+## Round 46: option B, field-test now (owner, 2026-10-29)
+
+Asked after the agent listed what is left (13a to 13f, about 196 templates, then the field test). The owner asked whether the road was dragging on; the agent said yes in part (scope grew in Round 45, every batch carries the full ceremony, each walk adds items) and offered A (keep Round 45), B (field-test now with what is built, build ribbons from what the test shows) or C (13a and 13b first).
+
+| Topic | Decision |
+|---|---|
+| Phase 12c+12d, item 49 | Accepted by the owner. Item 49 closed. |
+| Deferred | Items 40 and 64 (the store wording) and items 14, 20 and 47 (the iPhone walk) wait until after the first Android field test. |
+| Road | **Option B.** Field-test now with the ribbons built (Leave, Records, Cancel, Due, Leave Bank fills, the area re-grants and the new hospital/course case). Round 45's "build every ribbon first" is replaced: Phases 13a to 13f follow the test, in the order its findings show, and may be lighter for pure content. The gates, the flag and the hook are unchanged. |
+| Items 68 and 69 | Not answered by the owner. The agent took the default: **accepted as they are for the field test**, to be revisited with its findings (the owner may overrule at any time). |
+| First sideload | A debug build of `2a146867` (flag on in the repo since `4e9c7328`), `installDebug` for the current user only, installed in place over the owner's debug copy on the Pixel 9 (same signature, no uninstall, data kept). Debug rather than a release build, because a release needs a wipe and a restore and the owner keeps the debug copy (memory: keep the debug copy on the Pixel). |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
