@@ -667,6 +667,10 @@ The owner did their steps on the debug build of `34bea692` while the assistant d
 | 57(f) real printer | Printed on a real printer: fine. |
 | Still open | 35 (TalkBack walked by the owner; the result is not recorded yet; the iPhone's Dynamic Type), 48(d), 57(d), the 12e acceptance. |
 
+## Round 50: 12e accepted; the branch is pushed (owner, 2026-10-29)
+
+The owner accepted Phase 12e (the emulator walk on synthetic data; items 35, 48 and 57 narrowed, items 68 and 69 added and since fixed) and asked for the branch to be pushed as a backup. The push goes through the pre-push hook (full gate), never around it.
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
