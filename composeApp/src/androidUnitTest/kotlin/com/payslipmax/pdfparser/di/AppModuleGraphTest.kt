@@ -11,6 +11,7 @@ import com.payslipmax.pdfparser.rating.RatingPromptManager
 import com.payslipmax.pdfparser.telemetry.GemmaInstallTelemetry
 import com.payslipmax.pdfparser.telemetry.InstallationIdStorage
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.module
@@ -40,6 +41,7 @@ class AppModuleGraphTest {
                     OnboardingStorage::class,
                     Part2Rules::class,
                     ReminderPolicy::class,
+                    Flow::class,
                     StateFlow::class,
                     ReminderPromptStore::class,
                     Function0::class,

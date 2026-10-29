@@ -139,6 +139,12 @@ class ReminderPlanner(
         return local - offsetAt(local)
     }
 
+    /**
+     * Milliseconds from [now] to the next full hour where the officer is (1 ms to 1 hour, never 0). A reminder falls due on the hour and "overdue"
+     * turns over at midnight, so a screen that stays open asks this when to read the clock again.
+     */
+    fun millisUntilNextHour(now: Long): Long = MILLIS_PER_HOUR - (now + offsetAt(now)).mod(MILLIS_PER_HOUR)
+
     private fun localDayNumber(millis: Long): Long = (millis + offsetAt(millis)).floorDiv(MILLIS_PER_DAY) - CivilCalendar.UNIX_DAYS_TO_2000
 
     private companion object {

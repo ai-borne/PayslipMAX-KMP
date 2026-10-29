@@ -14,9 +14,11 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -50,7 +52,7 @@ data class DueUiState(
 /**
  * The Due list: [ReminderPlanner]'s plan for the drafts and orders on the device, worded for the screen. It does no date arithmetic (the planner
  * says what is due and what is overdue; this only writes a date it is handed) and checks no entitlement (reminders are Premium, but the data layer
- * is ungated, DECISIONS Round 13: the screens decide who sees it). Each draft's title is the drafts list's own wording. It reads, with one
+ * is ungated, DECISIONS Round 13: the screens decide who sees it). It is rebuilt when a draft or an order changes and at every local hour ([hourlyTicks]), so a list left open follows the clock (Phase 11 item 35). Each draft's title is the drafts list's own wording. It reads, with one
  * exception: [dismiss] writes the draft's `dismissed` field and nothing else (not its edit time, answers or print record). No telemetry:
  * nothing about a draft is logged.
  */
@@ -60,11 +62,12 @@ class DueViewModel(
     private val planner: ReminderPlanner = ReminderPlanner(offsetAt = ::localUtcOffsetMillis),
     private val now: () -> Long = ::currentTimeMillis,
     dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    clockTicks: Flow<Unit> = hourlyTicks(planner, now),
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
 
     val state: StateFlow<DueUiState> =
-        combine(repository.observeDrafts(), repository.observeOrders(), drafts.state) { saved, vault, listed ->
+        combine(repository.observeDrafts(), repository.observeOrders(), drafts.state, clockTicks.onStart { emit(Unit) }) { saved, vault, listed, _ ->
             val plan = planner.plan(saved.items, vault.items, now())
             val titles = listed.rows.associateBy { it.id }
             val dueTasks = plan.due.map { task(it.reminder) }.toSet()

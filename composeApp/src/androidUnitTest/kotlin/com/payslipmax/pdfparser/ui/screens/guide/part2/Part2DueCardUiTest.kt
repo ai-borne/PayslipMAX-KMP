@@ -29,6 +29,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.due.DueImportCard
 import com.payslipmax.pdfparser.ui.screens.guide.part2.due.DueViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.Part2DueStrings
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
@@ -60,7 +61,7 @@ class Part2DueCardUiTest {
     private val model: DueCardModel by lazy {
         val guide = GuideViewModel(FakeGuideRepository(GuideLoadResult.Loaded(SyntheticPart2Templates.bundle())), FakeCrashReporter(), dispatcher)
         val drafts = Part2DraftsViewModel(guide, repository, dispatcher) { india }
-        DueCardModel(DueViewModel(repository, drafts, ReminderPlanner { india }, { now }, dispatcher))
+        DueCardModel(DueViewModel(repository, drafts, ReminderPlanner { india }, { now }, dispatcher, emptyFlow()))
     }
 
     private fun dueSlip(id: String = "d1") =

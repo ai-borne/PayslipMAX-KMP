@@ -48,6 +48,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.vault.VaultViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
 
@@ -115,7 +116,7 @@ abstract class Part2UiBase {
     protected val factory: () -> Part2Models by lazy {
         {
             val saved = Part2DraftsViewModel(guide, repository, dispatcher)
-            Part2Models(Part2LookupViewModel(guide).also { models += it }, saved, drafting, vault, DueViewModel(repository, saved, ReminderPlanner { OFFICER_OFFSET }, { dueNow }, dispatcher), prompt)
+            Part2Models(Part2LookupViewModel(guide).also { models += it }, saved, drafting, vault, DueViewModel(repository, saved, ReminderPlanner { OFFICER_OFFSET }, { dueNow }, dispatcher, emptyFlow()), prompt)
         }
     }
 

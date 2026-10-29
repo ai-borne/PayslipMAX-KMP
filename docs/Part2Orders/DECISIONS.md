@@ -645,6 +645,16 @@ The owner answered "Fix both" after the agent laid out the two items and propose
 | Item 69(b) | Back Up on an empty device says "Nothing to back up yet." (constant renamed `statusNothingToBackup`). |
 | Proof | Tests first (the narrow-banner test was red at 10 lines), five deliberate breaks killed with sha-checked restores, full gate green. No data, storage or network surface changed. |
 
+## Round 48: the Due list follows the clock (owner, 2026-10-29)
+
+Asked while closing the three Android points. The code showed that `DueViewModel` rebuilt its list only when a draft or an order changed (or the screen was re-entered), so a Due screen left open kept yesterday's labels. The owner chose **fix it** (over accepting it as a known limit); for the cancel scan (item 57a) the owner chose to **test on the installed debug build**, not a release.
+
+| Topic | Decision |
+|---|---|
+| Fix | `DueViewModel` takes a clock tick (default `hourlyTicks`) and rebuilds at every local hour: a reminder falls due on the hour and "overdue" turns over at midnight. `ReminderPlanner.millisUntilNextHour` keeps the hour arithmetic in the planner, in the officer's zone (1 ms to 1 hour, never 0). No timer runs while nobody collects the list. |
+| Proof | Tests first (both clock tests red), six deliberate breaks (five failed the tests, the sixth, a negative wait, hung the run and was stopped and restored by hand), full gate green after one real finding: the Koin graph test needed `Flow` listed as a type the class defaults. Test harnesses that wait for idle pass an empty clock, because an endless tick would never go idle; `DueViewModelClockTest` uses the real default. |
+| Item 57(a) | Tested on the debug build the Pixel holds. The release-only risk (R8) stays covered by the release gates and the Phase 10 release walk of scanning. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials

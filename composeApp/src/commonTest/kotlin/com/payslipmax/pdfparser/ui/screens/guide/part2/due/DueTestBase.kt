@@ -18,6 +18,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.draft.Part2DraftsViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -76,7 +77,7 @@ abstract class DueTestBase {
     ): DueViewModel {
         val dispatcher = StandardTestDispatcher(testScheduler)
         val guide = GuideViewModel(FakeGuideRepository(GuideLoadResult.Loaded(SyntheticPart2Templates.bundle())), FakeCrashReporter(), dispatcher)
-        val vm = DueViewModel(over, Part2DraftsViewModel(guide, over, dispatcher) { india }, ReminderPlanner { india }, { now }, dispatcher)
+        val vm = DueViewModel(over, Part2DraftsViewModel(guide, over, dispatcher) { india }, ReminderPlanner { india }, { now }, dispatcher, emptyFlow())
         backgroundScope.launch(dispatcher) { vm.state.collect { } }
         return vm
     }
@@ -93,7 +94,7 @@ abstract class DueTestBase {
             if (guideLoaded) guide.load()
             advanceUntilIdle()
             val drafts = Part2DraftsViewModel(guide, repo, dispatcher) { india }
-            val vm = DueViewModel(repo, drafts, ReminderPlanner { india }, { nowMillis }, dispatcher)
+            val vm = DueViewModel(repo, drafts, ReminderPlanner { india }, { nowMillis }, dispatcher, emptyFlow())
             backgroundScope.launch(dispatcher) { drafts.state.collect { } }
             backgroundScope.launch(dispatcher) { vm.state.collect { } }
             advanceUntilIdle()
