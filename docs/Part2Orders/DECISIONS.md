@@ -655,6 +655,18 @@ Asked while closing the three Android points. The code showed that `DueViewModel
 | Proof | Tests first (both clock tests red), six deliberate breaks (five failed the tests, the sixth, a negative wait, hung the run and was stopped and restored by hand), full gate green after one real finding: the Koin graph test needed `Flow` listed as a type the class defaults. Test harnesses that wait for idle pass an empty clock, because an endless tick would never go idle; `DueViewModelClockTest` uses the real default. |
 | Item 57(a) | Tested on the debug build the Pixel holds. The release-only risk (R8) stays covered by the release gates and the Phase 10 release walk of scanning. |
 
+## Round 49: the owner's three Android points (owner, 2026-10-29)
+
+The owner did their steps on the debug build of `34bea692` while the assistant drove the phone over adb (fixed labels only, no figures printed, no real payslip screen opened).
+
+| Item | Result |
+|---|---|
+| 48(c) ENCASH lines | The owner compared each year with the Leave Bank statement: all match. The fill's note about the statement's total against the lines' total appeared and changed nothing; the owner says the statement's figure is right and the payslip data behind the lines was wrong. |
+| 57(a) cancel scan and flow | Scan saved an encrypted vault order; the cancel slip opened and reads right (same number and date in all five places, nothing of the officer's). |
+| 57(e) scanner cache | 0 files after the scan; no image or PDF in the app's cache or files (`run-as`, debug build). |
+| 57(f) real printer | Printed on a real printer: fine. |
+| Still open | 35 (TalkBack walked by the owner; the result is not recorded yet; the iPhone's Dynamic Type), 48(d), 57(d), the 12e acceptance. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
