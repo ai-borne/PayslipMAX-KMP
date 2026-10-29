@@ -592,6 +592,7 @@ Built and gated before the questions (the Phase 11d notes in the plan). The owne
 - **12d (item 49).** A **new case in the Leave ribbon** ("Back from hospital or a course") that homes the area codes (they move out of the unbuilt Field and Moves cases and
   stay there as "also" links). **A hospital stay of fewer than 15 days follows the p.55 note 2 exception** for the field-area allowances (the same 15, from
   `AreaRules.FIELD_CASUAL_MIN_DAYS`); HAA keeps its casual-leave rule (14 days, p.49 note ii, which does not name hospital); SCCIA always re-grants.
+- **Item 42, later the same day (09:17).** At the owner's request the Pixel's notification state was read over adb (read-only, fixed-string checks and counts). Result: one active notification of ours with the fixed title and body, posted 09:05:39 (the job's earliest run was 09:00:01, so about 5 min 38 s late: the accepted inexact delivery, item 38a); WorkManager holds 1 SUCCEEDED and 7 ENQUEUED jobs, so all 8 survived the 01:30 restart and only the due one ran. Importance DEFAULT: sound and shade, no pop-up (heads-up needs HIGH). Closing item 42 waits for the owner's own confirmation and their answer on the pop-up.
 - **Phone.** The Pixel may be walked, but only after the owner reports item 42; fixed-string yes/no checks only; the debug copy stays on the phone.
 
 ## Facts established (2026-10-22)
