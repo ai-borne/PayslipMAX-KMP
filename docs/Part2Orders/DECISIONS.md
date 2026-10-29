@@ -602,6 +602,22 @@ Built and gated before the questions (the Phase 11d notes in the plan). The owne
 - **Owner answers on 12d (2026-10-29).** (1) **Item 67(a): a warning is fine** for a hospital stay of fewer than 15 days (not a hard stop). (2) **Item 67(b): the slot limit 10 to 11 is accepted.** (3) **Item 66: the Transport Allowance stays as it is** (drafted from a leave order only). (4) **Item 46: the other five notes stay on the manual's own page.** Items 46, 66 and 67 are closed. Item 49 is built and awaits the owner's acceptance and his read of the review pack (which also holds items 27 and 52).
 - **Phone.** The Pixel may be walked, but only after the owner reports item 42; fixed-string yes/no checks only; the debug copy stays on the phone.
 
+## Round 45: field-test scope and the road to it (owner, 2026-10-29)
+
+Asked as a grilling round after Phase 12d, to finalise what "field testing can begin" means.
+
+| Topic | Decision |
+|---|---|
+| Distribution | The owner's own phones, sideloaded. Android only for the first round; the iPhone walk (items 14, 20, 47) follows, not before. The store wording (64, 40) and the Apple proof (61) therefore do not block the first round; they block a Play or TestFlight round. |
+| Gating | Exactly as today (no monetization change for the field test). |
+| Scope | **Every remaining ribbon first**: Postings and moves + Field, Promotion/courses/awards (Career), Family and children, Leaving the Army (Exit), Hospital and health, Allowances for your role (Role), Deputation. About 196 templates (Moves 17, Field 16, Career 31, Family 33, Exit 12, Health 18, Role 38, Deputation 31), against 63 built so far. **Every code in every ribbon**, not only the cases the owner meets. |
+| Order | The layout's own order: Moves + Field, Career, Family, Exit + Health, Role, Deputation. |
+| When the field test starts | After all chosen ribbons exist and the open Phase 11 items are closed (the owner chose to hold, not to start with Leave early). |
+| Page check | Delegated to the agent again for every new batch (serial, code, group, every narrative word, the code pages), recorded in DECISIONS; the owner reads only the judgment calls in each pack (Rounds 15, 23, 37). |
+| Phase 12e | Runs now: the emulator walk (synthetic data) of the existing Leave and Records screens for items 35, 48 and 57. |
+| Push | The branch `feature/part2-orders` is pushed now as a backup, with no PR and no merge and no flag change. |
+| Pack read | The pack for items 49, 52 and 27 is a short private page of what changed and what to check; `part2_review.md` stays for reference. |
+
 ## Facts established (2026-10-22)
 
 - `part2_occurrences_2026.json`: 289 entries against 303 Annexure II serials (321 distinct HRMS codes: 8 serials
