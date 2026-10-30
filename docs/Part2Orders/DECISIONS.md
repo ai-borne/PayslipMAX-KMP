@@ -181,3 +181,22 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 ## Open
 
 - Notification design for draft-driven reminders (new on both platforms).
+
+## Orders Bank, Phase 1 (branch `feature/orders-bank`, 2026-10-30): the columns table and its spot-check
+
+- Extraction: the ODP PDF has a text layer and drawn table rules, so `columns.json` is built from the PDF's own cell borders, not from
+  image reading. 303 rows, serials and codes identical to `codes.json`. Local reader: `tools/part2_columns_extract.py` (not in CI).
+- Rules: a blank cell or any "Not required" is `none`; "Required as ..." is `required`; a cell asking for the prefix or suffix days, or
+  marked "(Optional)", is `optional`. The prefix/suffix rule was confirmed on 13 casualties (24 cells) against the old templates, which were built apart.
+- Rows read by hand (page and notes), always on the spot-check: 3.53, 5.26, 13.31, 13.32, 13.33, 13.34. 22 rows in all carry a `hand`
+  reason (the rest print an example figure where a caption belongs; the caption is left blank).
+- The 63 built casualties against the oracle: 56 of 63 casualties agree in every column; 8 cells in 7 casualties differ, listed with their reason in
+  `tools/part2_columns_hand.py` (`KNOWN_DISAGREEMENTS`). In each the printed page wins (owner decision 10). Listing is exact: a stale entry fails.
+- Spot-check draw (owner decision 11): seed 20261030, `random.Random(seed).sample` over the sorted pool after the oddest rows are put in.
+  Owner's 30 pages (10): 3.1, 3.53, 3.82, 4.1, 4.2, 5.26, 5.27, 8.6, 11.9, 13.7 (3.53, 5.26, 5.27 forced as odd).
+  Rest (15): 2.13, 3.23, 3.46, 3.48, 3.52, 3.69, 6.11, 7.7, 8.10, 9.14, 11.20, 13.31, 13.32, 13.33, 13.34
+  (3.23, 9.14, 13.31-13.34 forced as odd). Sheet: a local text file beside the ODP PDF, never published.
+- Result (owner, 2026-10-30, after this draw): read all 25 rows against the pages, "seems okay", no wrong cell reported = PASS. Pass rule was: zero wrong cells; otherwise that chapter is re-extracted and 10 more of its rows are checked.
+
+- Owner decisions after the spot-check (2026-10-30): (a) the printed ODP wins over the old templates in all 8 oracle disagreements; (b) about.json is our own simple language, culled from the ODP and PCDA handbooks, with no quotes and no citations shipped; sources go in a local audit sheet only.
+- The owner read the 30 pages in about.json once (2026-10-30): "all fine", no change asked.

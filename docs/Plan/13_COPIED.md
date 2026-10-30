@@ -40,3 +40,21 @@ Pre-existing skip (main, not this work): `GemmaModelPathsAndroidTest`, one test,
 | `part2/data/Part2Entities.kt` | same path | `Part2OrderEntity`, `Part2PageEntity` unchanged; `Part2DraftEntity` replaced by `Part2EntryEntity` |
 
 Not copied in Phase 0 on purpose: `Part2Dao.kt` (no caller until Phases 3 and 4; it arrives with its first use).
+
+## Phase 1 (content tools, the columns table, about, related, bundle section, validators)
+
+| File here | From the old branch | How |
+|---|---|---|
+| `rule_cards/tools/part2_codes.py`, `part2_codes_check.py`, `part2_nav.py` | same paths | verbatim |
+| `rule_cards/tools/test_part2_codes.py`, `test_part2_file_sizes.py` | same paths | verbatim, except `columns.json` is added to `ONE_ROW_PER_LINE` |
+| `rule_cards/tools/test_part2_nav.py` | same path | verbatim minus one test (`test_back_from_leave_lists_every_area_regrant_the_leave_templates_can_link`): it reads the 63 slip templates, which this branch does not have |
+| `rule_cards/part2/codes.json`, `nav.json` | same paths | byte-identical |
+| `rule_cards/tools/fixtures/part2_columns_oracle.json` | the 63 templates `part2/templates/*.json` | needs only (from, to, data 1-4 per code), exported once; no text |
+| `part2_columns*.py`, `test_part2_columns*.py`, `part2/README.md` | new on this branch | not copied |
+| `rule_cards/part2/related.json` | links of the 15 leave templates in `part2/templates/*.json` | exported once and deduplicated by target (281 links, manual wins over practice); `part2_related_check.py` guards it. The nav `also` links stay in `nav.json` (one source, not copied) |
+| `rule_cards/part2/about.json` | new | 30 pages written on this branch from the ODP and PCDA handbooks; sources in a local sheet only |
+| `shared/.../guide/model/Part2LookupModels.kt` | same path | copied, trimmed (no rule or template fields), gained `columns`, `about`, `related`; limits gained `caption` and `about_part` |
+| `shared/.../guide/data/GuidePart2LookupValidator.kt`, `GuideValidationHelpers.kt`, `model/GuideChangeModels.kt` | same paths | verbatim; `GuideBundleValidator` and `GuidePreClaimValidator` now use the helpers (as on the old branch); the change-log models moved out of `GuideModels.kt` (273 lines, pin 285) |
+| `shared/.../GuidePart2LookupValidatorTest.kt`, `SyntheticGuidePart2.kt`, `SyntheticGuideBundle.withPart2()` | same paths | test verbatim; fixture trimmed of templates and given the casualty data |
+| `GuideSecurityContractTest.kt` | same path | the old part2 exemption from the `"from"` check (a column row's `from` is the manual's From column) |
+| `GuidePart2CasualtyValidator.kt`, `Part2CasualtyModels.kt`, `GuidePart2CasualtyValidatorTest.kt`, `Part2CasualtyContract.kt` | new on this branch | not copied |

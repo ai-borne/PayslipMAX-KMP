@@ -13,6 +13,12 @@ import unittest
 
 import bundle
 import figures
+import part2_about_check
+import part2_casualty
+import part2_codes_check
+import part2_columns_check
+import part2_nav
+import part2_related_check
 from config import BUNDLE_PATH, BUNDLE_VERSION, CARDS_DIR, RATES_AS_OF
 
 RULEBOOK = json.load(open(os.path.join(CARDS_DIR, 'rulebook.json'), encoding='utf-8'))
@@ -193,6 +199,54 @@ class BundleFigures(unittest.TestCase):
             self.assertNotIn(private, text)
 
 
+class BundlePart2(unittest.TestCase):
+    """The Part II section (303 code pages, the 10-ribbon layout and the casualty data) is additive: BUNDLE_VERSION stays 1."""
+
+    def test_the_section_ships_the_codes_the_layout_and_the_casualty_slice(self):
+        section = BUILT['part2']
+        self.assertEqual((len(section['serials']), len(section['ribbons'])), (303, 10))
+        self.assertEqual((len(section['columns']), len(section['about']), len(section['related'])), (303, 30, 15))
+        codes = part2_codes_check.load()
+        casualty = part2_casualty.for_bundle(part2_columns_check.load(), part2_about_check.load(), part2_related_check.load(), codes)
+        base = part2_nav.for_bundle(part2_nav.load(), codes)
+        self.assertEqual(section, {**base, 'limits': {**base['limits'], **part2_casualty.limits()}, **casualty})
+
+    def test_only_whitelisted_part2_keys_ship_and_the_authoring_source_stays_in_the_repo(self):
+        codes = part2_codes_check.load()
+        codes['serials'][0]['reviewer_note'] = 'internal'
+        built = bundle.build(RULEBOOK, part2_codes=codes)['part2']
+        self.assertNotIn('reviewer_note', built['serials'][0])
+        self.assertNotIn('source', built)
+        self.assertNotIn('Documentation Procedure', json.dumps(BUILT['part2']))
+
+    def test_a_broken_layout_or_casualty_file_stops_the_build_instead_of_shipping(self):
+        nav = part2_nav.load()
+        nav['ribbons'][0]['cases'][0]['serials'].pop()
+        with self.assertRaises(SystemExit):
+            bundle.build(RULEBOOK, part2_layout=nav)
+        columns = copy.deepcopy(part2_columns_check.load())
+        columns['rows'][0]['from']['need'] = 'maybe'
+        with self.assertRaises(SystemExit):
+            bundle.build(RULEBOOK, part2_columns=columns)
+
+    def test_a_layout_or_column_edit_makes_the_committed_bundle_stale(self):
+        # why: the stale-bundle guard must cover Part II too, or an edit ships the old tiles or the old form fields.
+        nav = part2_nav.load()
+        nav['ribbons'][0]['title'] = 'Leave and more'
+        self.assertNotEqual(bundle.render(bundle.build(RULEBOOK, part2_layout=nav)), bundle.render(BUILT))
+        columns = copy.deepcopy(part2_columns_check.load())
+        columns['rows'][0]['from']['caption'] = 'changed'
+        self.assertNotEqual(bundle.render(bundle.build(RULEBOOK, part2_columns=columns)), bundle.render(BUILT))
+
+    def test_the_section_version_is_its_own_and_the_bundle_version_is_unchanged(self):
+        self.assertEqual((BUILT['version'], BUILT['part2']['version']), (1, 1))
+
+    def test_the_committed_bundle_carries_the_section(self):
+        with open(BUNDLE_PATH, encoding='utf-8') as fh:
+            shipped = json.load(fh)
+        self.assertEqual(shipped['part2'], BUILT['part2'])
+
+
 class BundleFile(unittest.TestCase):
     def test_render_is_deterministic(self):
         self.assertEqual(bundle.render(BUILT), bundle.render(bundle.build(copy.deepcopy(RULEBOOK))))
@@ -204,9 +258,12 @@ class BundleFile(unittest.TestCase):
         self.assertEqual(committed, bundle.render(BUILT), 'run python3 docs/Plan/rule_cards/tools/bundle.py')
 
     def test_committed_bundle_has_no_internal_keys(self):
+        # why: the part2 section is exempt because a column row's `from` is the manual's From-date column, not provenance; its own keys
+        # are whitelisted by part2_casualty (ROW_KEYS) and tested there.
         with open(BUNDLE_PATH, encoding='utf-8') as fh:
-            text = fh.read()
-        self.assertIsNone(re.search(r'"(from|open)"\s*:', text))
+            shipped = json.load(fh)
+        shipped.pop('part2')
+        self.assertIsNone(re.search(r'"(from|open)"\s*:', json.dumps(shipped, ensure_ascii=False)))
 
     def test_committed_bundle_figures_carry_only_whitelisted_fields(self):
         # An authoring-only field (authority, evidence, owner notes, the rma circular remarks) must never reach the APK.

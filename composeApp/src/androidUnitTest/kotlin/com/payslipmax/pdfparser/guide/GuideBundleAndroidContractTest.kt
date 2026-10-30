@@ -37,6 +37,7 @@ class GuideBundleAndroidContractTest {
             GuideFiguresContract.assertTransportBasesMatchPayAudit(bundle)
             GuideFiguresContract.assertHistoryResolvesAllFourCards(bundle, GuideFiguresContract.realisticHistory())
             GuidePreClaimContract.assertPreClaimWorksheetReachesTheApp(bundle)
+            Part2CasualtyContract.assertCasualtyDataReachesTheApp(bundle)
             GuidePreClaimContract.assertRulePickerLinksToRealCards(bundle)
             PreClaimFlowContract.assertTheWorksheetFlowRunsOnTheShippedBundle(bundle)
         }

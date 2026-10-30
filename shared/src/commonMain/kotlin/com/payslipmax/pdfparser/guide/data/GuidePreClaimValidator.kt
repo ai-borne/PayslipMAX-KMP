@@ -19,7 +19,6 @@ internal object GuidePreClaimValidator {
     private val SOURCES = setOf("portal_filled", "officer_types", "app_suggests")
     private const val KIND_CHOICE = "choice"
     private const val KIND_TEXT = "text"
-    private const val ID_MAX = 32
     private const val MAX_SHORT_WORDS = 3
 
     fun validate(bundle: GuideBundle): List<String> {
@@ -55,12 +54,12 @@ internal object GuidePreClaimValidator {
     ): List<String> {
         val where = "preclaim: options $id"
         val problems = mutableListOf<String>()
-        if (!isId(id)) problems += "$where: group id is malformed"
+        if (!isGuideId(id)) problems += "$where: group id is malformed"
         if (group.options.isEmpty()) problems += "$where: no options"
         problems += duplicates(where, group.options.map { it.id })
         for (option in group.options) {
             val at = "$where option ${option.id}"
-            if (!isId(option.id)) problems += "$at: id is malformed"
+            if (!isGuideId(option.id)) problems += "$at: id is malformed"
             problems += textProblems(at, "label", option.label, limits.label)
             problems += textProblems(at, "use_when", option.useWhen, limits.hint, required = group.cardLinked)
             problems += textProblems(at, "short", option.short, limits.label, required = false)
@@ -95,7 +94,7 @@ internal object GuidePreClaimValidator {
         move.fields.forEach { problems += fieldProblems("$where field ${it.id}", it, limits, groups) }
         for (doc in move.documents) {
             val at = "$where document ${doc.id}"
-            if (!isId(doc.id)) problems += "$at: id is malformed"
+            if (!isGuideId(doc.id)) problems += "$at: id is malformed"
             problems += textProblems(at, "label", doc.label, limits.hint)
             problems += textProblems(at, "when", doc.whenNeeded, limits.hint, required = false)
         }
@@ -110,7 +109,7 @@ internal object GuidePreClaimValidator {
         groups: Map<String, GuideOptionGroup>,
     ): List<String> {
         val problems = mutableListOf<String>()
-        if (!isId(field.id)) problems += "$at: id is malformed"
+        if (!isGuideId(field.id)) problems += "$at: id is malformed"
         problems += textProblems(at, "label", field.label, limits.label)
         problems += textProblems(at, "hint", field.hint, limits.hint, required = field.unverified)
         if (field.kind !in KINDS) problems += "$at: kind is not one the app knows"
@@ -142,8 +141,4 @@ internal object GuidePreClaimValidator {
         where: String,
         ids: List<String>,
     ): List<String> = ids.groupingBy { it }.eachCount().filterValues { it > 1 }.keys.map { "$where: duplicate id $it" }
-
-    /** Lowercase letters, digits and underscores, starting with a letter, at most [ID_MAX] long. */
-    private fun isId(value: String): Boolean =
-        value.isNotEmpty() && value.length <= ID_MAX && value[0] in 'a'..'z' && value.all { it in 'a'..'z' || it in '0'..'9' || it == '_' }
 }

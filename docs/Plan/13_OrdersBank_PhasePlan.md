@@ -144,7 +144,7 @@ protocol and the template in plan 12) and waits for the owner before the next ph
 | Phase | Status | Size (estimate) |
 |---|---|---|
 | 0. Branch, baseline, general fixes, storage proof | planned | small |
-| 1. ODP content: the 303-row column table, descriptions, related, bundle | planned | large |
+| 1. ODP content: the 303-row column table, descriptions, related, bundle | done 2026-10-30 (owner: spot-check passed, 30 pages read) | large |
 | 2. Learn about Part II (free) | planned | medium |
 | 3. Orders Bank: note it | planned | medium |
 | 4. Orders Bank: prove it (scan, attach, counter, chain, shelf) | planned | large |
@@ -233,8 +233,27 @@ protocol and the template in plan 12) and waits for the owner before the next ph
 | 2 | General fixes | The four fixes are the first commits of `feature/orders-bank` (no separate PR to main). |
 | 3 | Old branch | Local tag `archive/part2-orders-2026-10-30` created on `22554101`. Pushed to origin on 2026-10-30 together with `main` (one pre-push gate run, 229 s, passed); no workflow triggers on tags. |
 | 4 | Names | Reuse `FeatureGate.PART2_ORDERS` and `LaunchFlags.PART2_ENABLED`; the flag defaults to `false` and is flipped only on the owner's word, in its own commit. |
-| 5 | Plain-English descriptions | About 30, taken from four groups: leave and ration / R&H; postings and moves; year-end leave, claims and cancels; career and family. The exact list is fixed with the owner at the start of Phase 1. |
+| 5 | Plain-English descriptions | Exactly 30 pages, taken from four groups: leave and ration / R&H; postings and moves; year-end leave, claims and cancels; career and family. The list was fixed by the owner on 2026-10-30 and is in the appendix below. |
 | 6 | Gate cadence | The full gate at every phase end. `assembleRelease` and the R8 keep-check run in the phases that add serialized models or Room tables (0, 1, 3, 4) and at release (6); phases 2 and 5 run R8 minify only. |
 | 7 | Entry point | The "Insights ribbon" is the Part II row on the Guide home. The old Dashboard "Due" card is dropped. |
 
-Still to be answered when the phase starts: nothing blocking Phase 0.
+| 8 | Sibling serials | Serials that differ only by a rate or class share one plain-English page, counted once: R&H grants 3.1 to 3.11, HRA 3.55 to 3.57, children's education 8.2 to 8.5, hostel subsidy 8.6 to 8.9. The 30 pages cover 48 serials. Every other serial shows manual data only. |
+| 9 | Page shape | Four short parts, about 90 words: what it is; when you will see it; what to keep ready (the columns); one thing to watch. No rates or amounts. |
+| 10 | Sources | ODP 2026 for the order wording, the columns and every rule. The 2023 Pay and Allowances Handbook only for what an allowance is, and each such sentence carries the handbook page. Nothing from memory or common practice. |
+| 11 | Column spot-check | 25 rows: 10 from the 30 pages plus 15 seeded-random from the rest, with the oddest wording (long "Required as ..." cells, blank cells) guaranteed in. Seed and draw recorded in DECISIONS. Done on a local text sheet beside the ODP PDF; ODP page images are never published. Pass rule: zero wrong cells, otherwise the chapter is re-extracted and 10 more of its rows are checked. |
+| 10a | Sources, amended (owner, 2026-10-30) | The app quotes no book. The 30 pages are written in our own simple language, culled from the ODP and the PCDA handbooks; no quoted sentences and no page citations ship in the app. For the owner's reading, each page's sources (ODP page, handbook page) are kept in a local audit sheet that is never shipped. Nothing from memory. |
+| 10b | ODP vs old templates (owner, 2026-10-30) | Where the printed ODP and the old hand-built templates differ (8 cells in 7 casualties), the ODP page wins. |
+| 12 | Column captions | The manual's own words minus the "Required as" boilerplate (for example "Prefix (dd/mm/yyyy)", "No. of days"). Required, optional or none is a separate field. No paraphrase. |
+
+## Appendix: the 30 plain-English pages (owner, 2026-10-30)
+
+Leave and ration / R&H (10): 5.1 GTDAL, 5.2 GTDALCF, 5.4 GTDCL, 5.6 FURLEV, 5.11 TERLEV, 3.82 GTDRSHNA, 3.86 SORS, 3.87 TORS, 3.1 (R&H, shared with 3.2 to 3.11), 3.12 STPRH.
+Postings and moves (7): 13.1 POSIN, 13.2 POSOUT, 13.5 JNTIME, 13.3 SPR, 13.7 TYDUTY, 3.53 GTDTRAN1, 3.55 (HRA, shared with 3.56 and 3.57).
+Year-end leave, claims and cancels (7): 5.26 ACCLVE, 5.27 LVELTCAD, 5.28 LVELTC, 14.1 CANCEL, 14.2 CANCELS, 8.2 (children's education, shared with 8.3 to 8.5), 8.6 (hostel subsidy, shared with 8.7 to 8.9).
+Career and family (6): 4.1 ASMAPPT, 4.2 RELAPPT, 4.3 SUBPROM, 12.1 PROCRS, 11.1 MARRIAGE, 11.9 BTHCHL.
+
+Held back as backlog candidates: 3.58 STPHRA, 5.30 ENCASH, 5.19 OSL, 5.7 MTRNLV, 5.13 PTRNLV, 11.4 NOKCHNG, 12.2 REJCRS, 2.2 RETIRE.
+
+Verified 2026-10-30: the ODP PDF's page numbers equal its printed page numbers (PDF page 114 is printed page 114), and Annexure III is legible there with all nine columns. Only that page was checked; Phase 1 extraction checks the rest.
+
+Still to be answered when Phase 1 starts: nothing blocking.
