@@ -1,0 +1,9 @@
+What's new in 1.5.0:
+
+• Claim Guide (new Guide tab): short answers to common service-pay and claim questions for PCDA(O) officers, each with the rule it comes from. The title and the one-line answer are free; key points, the authority and the details are in Premium. You can also keep your own private notes on any card.
+• TA/DA claim worksheet (Premium): work through a TA/DA claim step by step, with the documents to attach and the rates for your case, before you submit it.
+• Leave accumulation: the December leave table in your payslip is now read and shown. The Retirement Calculators card uses it, and Smart Insights warns you when your leave is at the 300-day cap (Premium).
+• Clearer layout at large font sizes, and a Guide that follows the app's light and dark theme.
+• Backups now also carry your Guide notes.
+
+Everything still runs 100% on your device. Your payslips are never uploaded.
