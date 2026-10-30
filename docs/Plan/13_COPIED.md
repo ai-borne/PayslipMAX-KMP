@@ -58,3 +58,30 @@ Not copied in Phase 0 on purpose: `Part2Dao.kt` (no caller until Phases 3 and 4;
 | `shared/.../GuidePart2LookupValidatorTest.kt`, `SyntheticGuidePart2.kt`, `SyntheticGuideBundle.withPart2()` | same paths | test verbatim; fixture trimmed of templates and given the casualty data |
 | `GuideSecurityContractTest.kt` | same path | the old part2 exemption from the `"from"` check (a column row's `from` is the manual's From column) |
 | `GuidePart2CasualtyValidator.kt`, `Part2CasualtyModels.kt`, `GuidePart2CasualtyValidatorTest.kt`, `Part2CasualtyContract.kt` | new on this branch | not copied |
+
+## Phase 2 (Learn about Part II)
+
+Characterization first: the lookup domain and its tests were copied and trimmed only as far as the Phase 1 models require (this branch has
+no `templates`, `rules` or draft types), then run green on the new data before any behaviour change: `Part2LookupIndexTest` 19 tests,
+and `GuideNavPart2Test`, `Part2LookupViewModelTest`, the real-bundle contracts (303 serials, 321 codes, 10 ribbons) 47 tests in all.
+Not run green unchanged (not verified, by design): the old `Part2LookupUiTest`. Its screens (a case level, draft buttons, vault and due
+rows) are replaced, so the UI tests were written new against the new screens, red first.
+
+| File here | From the old branch | How |
+|---|---|---|
+| `shared/.../part2/domain/Part2LookupIndex.kt` | same path | copied, trimmed (no draft options, templates or printed-as); then changed: every ribbon is a tile, a ribbon is one flat list under its case names, a page gained columns, the plain-English page and the companions; `knowsCase` removed |
+| `shared/.../part2/domain/Part2LookupContent.kt` | same path | copied, trimmed; then changed (new content types, no case or span types) |
+| `shared/.../part2/domain/Part2LookupIndexTest.kt` (commonTest) | same path | copied, rewritten for `SyntheticGuidePart2` and the new behaviour |
+| `composeApp/.../ui/screens/guide/Part2Destination.kt` | same path | copied, cut to `Home`, `Ribbon`, `Code` (no `Case`, `Locked`, `Draft`, `Slip`, `Hrms`, `Order`, `Due`) |
+| `composeApp/.../ui/screens/guide/part2/Part2LookupViewModel.kt` | same path | copied; `case(id)` removed |
+| `.../part2/Part2Availability.kt` | same path (`Part2Entry`, `part2Entry`, `part2FactoryOrNull`) | the Phase 0 file gained the entry decision and the factory; no draft entry |
+| `.../part2/Part2HomeScreen.kt`, `Part2RibbonScreen.kt`, `Part2CodeScreen.kt`, `Part2Rows.kt`, `Part2SearchField.kt` | same paths | copied and rewritten: no drafts, vault or due rows, no case screen; `Part2CaseScreen` is not copied |
+| `.../part2/Part2CodeSections.kt` | new | the columns, plain-English and "Usually published with" sections |
+| `composeApp/.../ui/screens/guide/GuideTabPart2.kt` | same path | rewritten: `Part2Host(entry, model)`, the entry row and the level switch; no drafts, scanner, printer or reminders |
+| `composeApp/.../di/Part2Module.kt` | same path | rewritten: one `single` (the Learn model) |
+| `composeApp/.../ui/theme/LearnStrings.kt` | `Part2Strings.kt` | new object, only the search, list and page strings Learn needs; nothing else of `Part2Strings` is copied |
+| `GuideLoadStates.kt` | extracted from `GuideTab.kt` | `GuideLoading` and `GuideLoadFailed` moved (no change) to keep `GuideTab.kt` under its pin |
+| tests: `GuideNavPart2Test`, `Part2LookupViewModelTest`, `Part2BrowseContract`, `Part2LookupContract`, `Part2EntryTest` | same paths | copied, rewritten for the flat ribbon and `SyntheticGuidePart2`; `Part2LookupContract.assertRulesMatchTheRegistry` and `Part2BrowseContract.assertRejoinalIs...` dropped (no rules or templates here) |
+| tests: `Part2UiBase`, `Part2LookupUiTest` | same paths | rewritten for Learn; `Part2LookupRestoreUiTest`, `Part2LookupRealBundleUiTest` not copied (their cases are inside the new tests) |
+| tests: `Part2CasualtyPageUiTest`, `Part2LearnA11yUiTest`, `Part2LearnRealBundleUiTest`, `Part2LearnSecurityContractTest`, `Part2WiringTest`, `LearnContrastTest` | new | not copied |
+| `GuideHomeScreen.kt` | main | edited by hand: the Learn row moved below the areas under its own heading (owner, 2026-10-30, option A) |

@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 
 /** A level of the Claim Guide's own stack. Ids stay strings (never enums), so new areas are data-only changes. */
@@ -72,6 +73,15 @@ class GuideNavState(
     fun discardPreClaim() {
         preClaimModel?.close()
         preClaimModel = null
+    }
+
+    /** The Learn model whose search text a lock must drop (see [discardTransientForms]); set by the Guide tab while Part II is on. */
+    internal var part2Lookup: Part2LookupViewModel? = null
+
+    /** What the app lock drops: the open TA/DA worksheet and any Learn search text. The stack stays, so the officer returns to the same level. */
+    fun discardTransientForms() {
+        discardPreClaim()
+        part2Lookup?.clear()
     }
 
     val current: GuideDestination get() = stack.last()
@@ -166,4 +176,5 @@ fun GuideBundle.knows(destination: GuideDestination): Boolean =
                 (destination.facet == null || destination.facet in facets)
         is GuideDestination.Card -> cards.any { it.id == destination.cardId }
         is GuideDestination.PreClaim -> preclaim?.let { destination.move == null || destination.move in it.moves } == true
+        is Part2Destination -> part2?.knows(destination) == true
     }

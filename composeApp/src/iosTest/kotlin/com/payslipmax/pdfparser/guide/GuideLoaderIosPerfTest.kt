@@ -145,9 +145,34 @@ class GuideLoaderIosPerfTest {
             // Plan 22, P3: the worksheet decodes and validates on Native exactly as on the JVM.
             GuidePreClaimContract.assertPreClaimWorksheetReachesTheApp(bundle)
             Part2CasualtyContract.assertCasualtyDataReachesTheApp(bundle)
+            Part2LookupContract.assertPart2LookupReachesTheApp(bundle)
+            Part2LookupContract.assertCodePagesCarryTheManualsOwnWords(bundle)
+            Part2LookupContract.assertRibbonsHomeEverySerialOnce(bundle)
+            Part2LookupContract.assertOnlyLeaveAndRecordsAreBuiltAndFiftyThreeSerialsAreLookupOnly(bundle)
             GuidePreClaimContract.assertRulePickerLinksToRealCards(bundle)
             // Plan 22, P6: the worksheet flow does the same sums on Native.
             PreClaimFlowContract.assertTheWorksheetFlowRunsOnTheShippedBundle(bundle)
+        }
+
+    @Test
+    fun learnBrowseAndSearchRunWithinBudgetOnNative() =
+        runTest {
+            val bundle = GuideBundleContract.parseShippedBundle(GuideBundleContract.readShippedBundleText())
+            Part2BrowseContract.assertEveryRibbonIsOneFlatListOfItsCasualtiesUnderItsCaseNames(bundle)
+            Part2BrowseContract.assertOnlyTheTwoBlankGroupsAreBlankAndEveryOtherGroupHasItsMeaning(bundle)
+
+            // Learn: all 303 casualty pages found by serial, by each of 321 codes and by name (about 930 searches over 303 entries, plain scans,
+            // no regex), and each page built with its columns, plain-English page and companions: far more than a keystroke ever costs.
+            // Best of three: the same code took 649 to 2,279 ms on a busy simulator host, while a quadratic regression is slow on every pass.
+            val elapsedMs =
+                (1..LEARN_PASSES).minOf {
+                    val mark = TimeSource.Monotonic.markNow()
+                    Part2BrowseContract.assertEveryCodePageIsReachableBySerialCodeAndName(bundle)
+                    mark.elapsedNow().inWholeMilliseconds
+                }
+
+            println("learn browse on Native: every casualty page found three ways in ${elapsedMs}ms (best of $LEARN_PASSES)")
+            assertTrue(elapsedMs < SEARCH_BUDGET_MS, "the Learn search walk took ${elapsedMs}ms, budget ${SEARCH_BUDGET_MS}ms")
         }
 
     private companion object {
@@ -160,6 +185,7 @@ class GuideLoaderIosPerfTest {
 
         // E4 search, for the index build and for the realistic queries each: the same margin again.
         const val SEARCH_BUDGET_MS = 1_500L
+        const val LEARN_PASSES = 3
 
         // M4: ten passes of every card's chips (a feed asks for its rows, search for its hits); the same margin again.
         const val CHIP_REPEATS = 10

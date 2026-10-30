@@ -7,6 +7,7 @@ import com.payslipmax.pdfparser.guide.model.Part2ColumnRow
 import com.payslipmax.pdfparser.guide.model.Part2Lookup
 import com.payslipmax.pdfparser.guide.model.Part2RelatedLink
 import com.payslipmax.pdfparser.guide.model.Part2RelatedRow
+import com.payslipmax.pdfparser.guide.model.Part2Words
 
 /**
  * Rechecks on every load what `part2_columns_check.py`, `part2_about_check.py` and `part2_related_check.py` enforced when the bundle was
@@ -16,7 +17,7 @@ import com.payslipmax.pdfparser.guide.model.Part2RelatedRow
  * never a caption or page text, and must never be logged or reported. Plain scans, no regex, so it stays linear on Kotlin/Native.
  */
 internal object GuidePart2CasualtyValidator {
-    private val NEEDS = setOf("required", "optional", "none")
+    private val NEEDS = setOf(Part2Words.REQUIRED, Part2Words.OPTIONAL, Part2Words.NONE)
     private const val DATA_COLUMNS = 4
     private const val PAGE_MAX = 400
 
@@ -65,7 +66,7 @@ internal object GuidePart2CasualtyValidator {
     ): List<String> {
         val problems = mutableListOf<String>()
         if (column.need !in NEEDS) problems += "$where: need must be required, optional or none"
-        if (column.need == "none" && column.caption.isNotEmpty()) problems += "$where: a none column carries no caption"
+        if (column.need == Part2Words.NONE && column.caption.isNotEmpty()) problems += "$where: a none column carries no caption"
         if (column.caption.length > limit) problems += "$where: caption is over $limit characters"
         if (hasAngleBrackets(column.caption)) problems += "$where: caption has angle brackets (plain text only)"
         return problems
@@ -132,8 +133,8 @@ internal object GuidePart2CasualtyValidator {
         link: Part2RelatedLink,
     ): List<String> =
         when (link.basis) {
-            "manual" -> if (link.page == null || link.page !in 1..PAGE_MAX) listOf("$where: a manual link needs a printed page") else emptyList()
-            "practice" -> if (link.page != null) listOf("$where: a practice link carries no page") else emptyList()
+            Part2Words.MANUAL -> if (link.page == null || link.page !in 1..PAGE_MAX) listOf("$where: a manual link needs a printed page") else emptyList()
+            Part2Words.PRACTICE -> if (link.page != null) listOf("$where: a practice link carries no page") else emptyList()
             else -> listOf("$where: basis must be manual or practice")
         }
 }

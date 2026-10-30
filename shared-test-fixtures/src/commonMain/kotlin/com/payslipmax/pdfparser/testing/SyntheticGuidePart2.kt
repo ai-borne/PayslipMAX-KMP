@@ -59,6 +59,12 @@ object SyntheticGuidePart2 {
             )
         }
 
+    /** The same rows with every caption missing, as 19 real casualties print them: the screen must point to the manual's page instead. */
+    fun bareColumns(): List<Part2ColumnRow> =
+        base.serials.map {
+            Part2ColumnRow(it.serial, column("required"), column("none"), listOf(column("none"), column("none"), column("none"), column("none")))
+        }
+
     val about: List<Part2AboutPage> =
         listOf(
             Part2AboutPage("1.1", listOf("1.1"), "What it is.", "When you see it.", "What to keep ready.", "One thing to watch."),

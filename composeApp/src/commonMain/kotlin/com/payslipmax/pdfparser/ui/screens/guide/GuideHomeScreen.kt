@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -20,9 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2Entry
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
+import com.payslipmax.pdfparser.ui.theme.LearnStrings
 
 /**
  * Guide Home: a search icon, then the "What's new" row when [whatsNewDate] is set, then the user's pinned cards when there are any (newest first; no section at all when
@@ -42,6 +45,8 @@ internal fun GuideHomeScreen(
     notedCards: Set<String> = emptySet(),
     preClaim: PreClaimEntry = PreClaimEntry.HIDDEN,
     onOpenPreClaim: () -> Unit = {},
+    part2: Part2Entry = Part2Entry.HIDDEN,
+    onOpenPart2: () -> Unit = {},
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -65,11 +70,9 @@ internal fun GuideHomeScreen(
                 GuideCardRowView(row, onClick = { onOpenPinned(row.cardId) }, noteMark = if (row.cardId in notedCards) GuideNoteMark.HAS_NOTE else GuideNoteMark.NONE)
             }
         }
-        // The TA/DA worksheet row: absent while the dark-launch flag is off, a Premium-marked row for a free user, a plain row otherwise.
-        if (preClaim != PreClaimEntry.HIDDEN) {
-            item(key = "preclaim") { PreClaimEntryRow(locked = preClaim == PreClaimEntry.LOCKED, onClick = onOpenPreClaim) }
-        }
+        guideFeatureRows(preClaim, onOpenPreClaim)
         items(areas, key = { it.id }) { tile -> GuideAreaTileView(tile, onClick = { onOpenArea(tile.id) }) }
+        guidePart2Section(part2, onOpenPart2)
         if (notes.removedCount > 0) {
             item(key = "removed-notes") { GuideRemovedNotesRow(notes.removedCount, notes.onOpenRemoved) }
         }
@@ -77,6 +80,34 @@ internal fun GuideHomeScreen(
             item(key = "unreadable-notes") { GuideUnreadableNotesLine(notes.unreadable) }
         }
     }
+}
+
+/** The TA/DA worksheet row above the areas: absent while its flag is off, a Premium-marked row for a free user, a plain row otherwise. */
+private fun LazyListScope.guideFeatureRows(
+    preClaim: PreClaimEntry,
+    onOpenPreClaim: () -> Unit,
+) {
+    if (preClaim != PreClaimEntry.HIDDEN) {
+        item(key = "preclaim") { PreClaimEntryRow(locked = preClaim == PreClaimEntry.LOCKED, onClick = onOpenPreClaim) }
+    }
+}
+
+/**
+ * The Part II section below the handbook areas: its own heading and a line saying it comes from a different manual (ODP 2026, not the PCDA
+ * handbook), then the Learn row. Absent while its flag is off; free for everyone once it is on.
+ */
+private fun LazyListScope.guidePart2Section(
+    part2: Part2Entry,
+    onOpenPart2: () -> Unit,
+) {
+    if (part2 == Part2Entry.HIDDEN) return
+    item(key = "part2section") {
+        Column {
+            Text(LearnStrings.sectionHeading, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+            Text(LearnStrings.sectionSubtext, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+    item(key = "part2") { Part2EntryRow(onOpenPart2) }
 }
 
 @Composable

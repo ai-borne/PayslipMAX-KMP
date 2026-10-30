@@ -3,6 +3,15 @@ package com.payslipmax.pdfparser.guide.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/** The words the bundle uses for a column's need and a link's basis: their one home, so the validator and the Learn index cannot drift apart. */
+object Part2Words {
+    const val REQUIRED = "required"
+    const val OPTIONAL = "optional"
+    const val NONE = "none"
+    const val MANUAL = "manual"
+    const val PRACTICE = "practice"
+}
+
 /**
  * What one Annexure III column of an order needs, in the manual's own words (`part2/columns.json`, built by `part2_columns*.py`).
  * [need] is `required`, `optional` or `none`; a `none` column has an empty [caption]. Content, not UI copy. Plain strings only, so the

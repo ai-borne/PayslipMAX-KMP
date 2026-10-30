@@ -1,31 +1,17 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextAlign
+import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
-import com.payslipmax.pdfparser.ui.theme.AppDimensions
-import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import org.koin.compose.koinInject
 
 /**
@@ -47,6 +33,8 @@ fun GuideTab(
     notesViewModel: GuideNotesViewModel? = null,
     /** Makes one TA/DA worksheet per screen; null while the dark-launch flag is off, which removes every pre-claim entry (see [preClaimFactoryOrNull]). */
     preClaim: (() -> PreClaimViewModel)? = null,
+    /** Makes the Learn model; null while the Part II dark-launch flag is off, which removes every Part II entry (see `part2FactoryOrNull`). */
+    part2: (() -> Part2LookupViewModel)? = null,
 ) {
     LaunchedEffect(viewModel) { viewModel.load() }
     val state by viewModel.uiState.collectAsState()
@@ -62,7 +50,7 @@ fun GuideTab(
             }
             // Android back pops the Guide stack before it leaves the tab; at Guide Home it stays disabled.
             BackHandler(enabled = navState.canPop) { navState.pop() }
-            GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform, notesViewModel, rememberPreClaimHost(preClaim, access, navState))
+            GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform, notesViewModel, rememberPreClaimHost(preClaim, access, navState), rememberPart2Host(part2, current.bundle, navState))
         }
     }
 }
@@ -77,10 +65,11 @@ private fun GuideDestinationContent(
     platform: GuidePlatform,
     notes: GuideNotesViewModel?,
     preClaim: PreClaimHost,
+    part2: Part2Host,
 ) {
     val onBack: () -> Unit = { navState.pop() }
     when (val destination = navState.current) {
-        GuideDestination.Home -> GuideHomeRoute(navState, ready, access, viewModel, searchViewModel, notes, preClaim.entry)
+        GuideDestination.Home -> GuideHomeRoute(navState, ready, access, viewModel, searchViewModel, notes, preClaim.entry, part2)
         is GuideDestination.Area ->
             viewModel.area(destination.areaId)?.let { area ->
                 GuideAreaScreen(area, onBack, onOpenCase = { navState.push(GuideDestination.Case(it)) }, rememberGuideListState(navState))
@@ -88,6 +77,7 @@ private fun GuideDestinationContent(
         is GuideDestination.Case -> GuideFeedRoute(navState, destination, viewModel, rememberNotedCards(notes, access))
         is GuideDestination.Card -> GuideCardLevel(navState, destination, access, viewModel, platform, notes, preClaim.entry)
         is GuideDestination.PreClaim -> GuidePreClaimLevel(navState, access, platform, preClaim, rememberGuideListState(navState))
+        is Part2Destination -> GuidePart2Level(navState, part2, rememberGuideListState(navState))
         GuideDestination.Search -> GuideSearchRoute(navState, access, searchViewModel, onBack, rememberNotedCards(notes, access))
         GuideDestination.RemovedNotes -> GuideRemovedNotesRoute(navState, notes, onBack)
         GuideDestination.Changes ->
@@ -106,6 +96,7 @@ private fun GuideHomeRoute(
     searchViewModel: GuideSearchViewModel,
     notes: GuideNotesViewModel?,
     preClaimEntry: PreClaimEntry,
+    part2: Part2Host,
 ) {
     val pins by viewModel.pins.pins.collectAsState()
     val noteState = rememberGuideNotesState(notes)
@@ -122,6 +113,8 @@ private fun GuideHomeRoute(
         notedCards = if (access.isUnlocked) noteState.notedCards else emptySet(),
         preClaim = preClaimEntry,
         onOpenPreClaim = { navState.push(GuideDestination.PreClaim()) },
+        part2 = part2.entry,
+        onOpenPart2 = { part2.open(navState) },
         // Each visit to search starts empty; coming back from a card (a pop) does not pass through here.
         onOpenSearch = {
             searchViewModel.clear()
@@ -225,33 +218,4 @@ private fun rememberGuideListState(navState: GuideNavState): LazyListState {
             .collect { navState.saveScroll(it, level) }
     }
     return listState
-}
-
-@Composable
-internal fun GuideLoading() {
-    Column(
-        modifier = Modifier.fillMaxSize().semantics { contentDescription = GuideStrings.loading },
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-private fun GuideLoadFailed(onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(AppDimensions.PaddingLarge),
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(GuideStrings.loadFailedTitle, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center)
-        Text(
-            GuideStrings.loadFailedBody,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        Button(onClick = onRetry) { Text(GuideStrings.retry) }
-    }
 }

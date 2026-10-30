@@ -145,11 +145,12 @@ protocol and the template in plan 12) and waits for the owner before the next ph
 |---|---|---|
 | 0. Branch, baseline, general fixes, storage proof | planned | small |
 | 1. ODP content: the 303-row column table, descriptions, related, bundle | done 2026-10-30 (owner: spot-check passed, 30 pages read) | large |
-| 2. Learn about Part II (free) | planned | medium |
+| 2. Learn about Part II (free) | built and committed 2026-10-30; owner walked it on the Pixel; open points in phase 7 | medium |
 | 3. Orders Bank: note it | planned | medium |
 | 4. Orders Bank: prove it (scan, attach, counter, chain, shelf) | planned | large |
 | 5. Print or PDF of the index | planned | medium |
 | 6. Release: hardening, walks, store wording | planned | medium |
+| 7. Phase 2 close-out (all pending points of Phase 2, in one place) | open | small |
 
 ### Phase 0: Branch, baseline, general fixes, storage proof
 - Goal: a green branch from main with the four fixes main benefits from, and a proven migration path.
@@ -213,6 +214,19 @@ protocol and the template in plan 12) and waits for the owner before the next ph
   `iosApp/fastlane` that refuses an upload while the Part II flag is on and no walk marker exists); store wording rewritten for the smaller
   feature (no notification permission); the owner enters Play and App Store Connect. The flag is flipped only on the owner's word, in its own commit.
 - The owner's own check: scan one real, old, yellowed order and say whether it reads (nothing is read or recorded by me).
+
+### Phase 7: Phase 2 close-out (everything Phase 2 left open)
+Phase 2 is committed and its gate is green. Owner decisions made on the Pixel walk (2026-10-30): the search box does not take focus by
+itself; the Learn row sits in its own section "Part II orders (ODP 2026)" below the handbook areas, with a line saying it is a different
+manual. Still open:
+1. Owner: finish reading the casualty pages on the phone (light and dark, process death, 2x font) and report any wording to change.
+2. Characterization gap: the old `Part2LookupUiTest` was not run green unchanged (its screens are replaced); the UI tests were written new.
+3. Debt kept: `Part2Ribbon.built` and `Part2Case.lookup` are no longer read by Learn but still ship in `nav.json`, the models and the lookup
+   validator. Removing them means editing `part2_nav.py`, its tests, the models, the validator and the bundle in one data phase.
+4. Native timing: the Learn search walk measured 649 to 2,279 ms on a loaded host (budget 1,500); the test takes the best of three. Raise
+   the budget only if CI flakes.
+5. iPhone walk of Learn: per the standing rule, only when all features are ready.
+6. Push: only on the owner's word (after Phase 2, per the owner).
 
 ## Risks and controls
 

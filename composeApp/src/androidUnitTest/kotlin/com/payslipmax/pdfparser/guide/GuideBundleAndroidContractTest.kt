@@ -38,6 +38,13 @@ class GuideBundleAndroidContractTest {
             GuideFiguresContract.assertHistoryResolvesAllFourCards(bundle, GuideFiguresContract.realisticHistory())
             GuidePreClaimContract.assertPreClaimWorksheetReachesTheApp(bundle)
             Part2CasualtyContract.assertCasualtyDataReachesTheApp(bundle)
+            Part2LookupContract.assertPart2LookupReachesTheApp(bundle)
+            Part2LookupContract.assertCodePagesCarryTheManualsOwnWords(bundle)
+            Part2LookupContract.assertRibbonsHomeEverySerialOnce(bundle)
+            Part2LookupContract.assertOnlyLeaveAndRecordsAreBuiltAndFiftyThreeSerialsAreLookupOnly(bundle)
+            Part2BrowseContract.assertEveryRibbonIsOneFlatListOfItsCasualtiesUnderItsCaseNames(bundle)
+            Part2BrowseContract.assertEveryCodePageIsReachableBySerialCodeAndName(bundle)
+            Part2BrowseContract.assertOnlyTheTwoBlankGroupsAreBlankAndEveryOtherGroupHasItsMeaning(bundle)
             GuidePreClaimContract.assertRulePickerLinksToRealCards(bundle)
             PreClaimFlowContract.assertTheWorksheetFlowRunsOnTheShippedBundle(bundle)
         }

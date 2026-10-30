@@ -18,6 +18,8 @@ import com.payslipmax.pdfparser.ui.screens.PayAuditViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuidePinsModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
+import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.isPreClaimEnabled
 import kotlinx.coroutines.Dispatchers
@@ -121,6 +123,12 @@ class AppKoinModulesTest {
     fun preClaimBindingExistsExactlyWhereThePreClaimFlagIsOn() {
         // Dark launch: with the flag off nothing binds the worksheet, so no user can reach it and R8 drops its code from release.
         assertEquals(isPreClaimEnabled(), start().getOrNull<PreClaimViewModel>() != null)
+    }
+
+    @Test
+    fun learnBindingExistsExactlyWhereThePart2FlagIsOn() {
+        // Dark launch: with the flag off nothing binds the Learn model, so no user can reach it and R8 drops its code from release.
+        assertEquals(isPart2Enabled(), start().getOrNull<Part2LookupViewModel>() != null)
     }
 
     @Test

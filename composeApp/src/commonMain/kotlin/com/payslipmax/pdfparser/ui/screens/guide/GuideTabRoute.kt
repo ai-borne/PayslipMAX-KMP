@@ -7,6 +7,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.PayslipUpgradeSheet
+import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.part2FactoryOrNull
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.preClaimFactoryOrNull
 import org.koin.compose.getKoin
@@ -30,6 +32,8 @@ fun GuideTabRoute(
         notesViewModel = koinInject(),
         // Off by default (LaunchFlags.PRECLAIM_ENABLED): the factory is null, so no pre-claim entry exists and Koin is never asked for the worksheet.
         preClaim = preClaimFactoryOrNull { koin.get<PreClaimViewModel>() },
+        // Off by default (LaunchFlags.PART2_ENABLED): the factory is null, so no Learn entry exists and Koin is never asked for the model.
+        part2 = part2FactoryOrNull { koin.get<Part2LookupViewModel>() },
     )
     if (showUpgradeSheet) PayslipUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
 }
