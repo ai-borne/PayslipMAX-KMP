@@ -200,3 +200,4 @@ is the first ribbon); Round 3 paywall "content free, automation Premium" (now as
 
 - Owner decisions after the spot-check (2026-10-30): (a) the printed ODP wins over the old templates in all 8 oracle disagreements; (b) about.json is our own simple language, culled from the ODP and PCDA handbooks, with no quotes and no citations shipped; sources go in a local audit sheet only.
 - The owner read the 30 pages in about.json once (2026-10-30): "all fine", no change asked.
+- Owner answers for Phase 2 (2026-10-30): entry row after the existing Insights Part II ribbon; captionless required columns show "required (see ODP page N)" now, manual-note wording later as backlog; related links only where data exists; push after Phase 2.

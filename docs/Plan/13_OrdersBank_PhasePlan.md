@@ -34,7 +34,7 @@ Part II Orders Bank (Premium; in the `.pcda` backup):
 Home: the existing Insights Part II card opens two rows, Learn about Part II and Part II Orders Bank.
 Android first; one iPhone walk; then the stores. Dark-launched behind `LaunchFlags.PART2_ENABLED` (default `false`).
 
-Backlog (not v1): order photo thumbnails, scanner quality for yellowed paper, PDF/image import, HRMS summary-sheet back-fill, OCR,
+Backlog (not v1): the manual's note wording for the 19 captionless required columns (Version B), order photo thumbnails, scanner quality for yellowed paper, PDF/image import, HRMS summary-sheet back-fill, OCR,
 reminders, smart checks, drafting and printing slips, CANCEL as a special flow (it is an ordinary casualty), order-to-order links.
 
 ## Facts established before planning (read 2026-10-30)
@@ -244,6 +244,7 @@ protocol and the template in plan 12) and waits for the owner before the next ph
 | 10a | Sources, amended (owner, 2026-10-30) | The app quotes no book. The 30 pages are written in our own simple language, culled from the ODP and the PCDA handbooks; no quoted sentences and no page citations ship in the app. For the owner's reading, each page's sources (ODP page, handbook page) are kept in a local audit sheet that is never shipped. Nothing from memory. |
 | 10b | ODP vs old templates (owner, 2026-10-30) | Where the printed ODP and the old hand-built templates differ (8 cells in 7 casualties), the ODP page wins. |
 | 12 | Column captions | The manual's own words minus the "Required as" boilerplate (for example "Prefix (dd/mm/yyyy)", "No. of days"). Required, optional or none is a separate field. No paraphrase. |
+| 13 | Phase 2 answers (owner, 2026-10-30) | Learn entry row sits after the existing Insights Part II ribbon on the Guide home. A required column with no printed caption (19 casualties) shows "required (see ODP page N)"; the manual's own note wording for those columns is backlog (Version B, casualty by casualty, owner reads). "Usually published with" shows only where data exists (15 casualties). The branch is not pushed until after Phase 2. |
 
 ## Appendix: the 30 plain-English pages (owner, 2026-10-30)
 
