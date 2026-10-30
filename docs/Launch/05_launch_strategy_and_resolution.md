@@ -162,7 +162,7 @@ launch-neutral copy, same one-flag pattern as the rest of this plan:
   the Play Store URL is live, so doc 07 §4 step 5 (submit the live URL to BillDesk) is the **next
   action**, not a new Play-side blocker.
   **Update 2026-10-30:** BillDesk approved the application (2026-10-29) and Play Console shows the payments
-  profile verified. The blocker is cleared; see doc 07 Section 0 and Section 4 step 8 for what remains.
+  profile verified. The blocker is cleared and the Android paywall shipped to production on 2026-10-30 (versionCode 22); see doc 07 Section 0 and Section 4 step 8, and doc 06.
 - **Original blocker (historical, now resolved):** Day 1 of mandatory 14-day Closed Testing track;
   Google Play Payments Profile required mandatory RBI/PA-CB Merchant Identity Verification handled via
   **BillDesk**, which in turn required a live public Play Store URL that didn't exist yet while in

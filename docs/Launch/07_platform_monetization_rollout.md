@@ -29,10 +29,7 @@ current state after [06_closed_testing_progress_log.md](06_closed_testing_progre
   (email from BillDesk Onboarding, 2026-10-29). Play Console confirmed it on 2026-10-30: neither payments account
   (cross-border, India-only) shows "Issue with account" any more, the PA-CB "verification in progress" banner is
   gone, and the account page reads "Your verification is complete". Payouts go through BillDesk (monthly, ₹100
-  threshold); earnings ₹0.00, no transactions yet. **Not yet verified:** a real-money purchase from a non-tester
-  account (the gate in Section 4 step 7). **Owner decision (2026-10-30):** the paywall-enabled Android release
-  ships later, not immediately, so `FREE_LAUNCH_MODE_ANDROID` stays `true` until then. iOS is already
-  paywall-enabled (`FREE_LAUNCH_MODE_IOS = false`), so nothing changes there. The 11 Play devices in the
+  threshold); earnings ₹0.00, no transactions yet. **Update (same day):** the owner chose to ship the paywall in this sprint, paired with iOS 1.5.0. A real-money purchase from a non-license-tester account passed (INR 999, `payslipmax_yearly_premium:yearly`; the app showed Premium active and RevenueCat's production view shows `PayslipMax Premium` Active), and **versionCode 22 (1.5.0, `FREE_LAUNCH_MODE_ANDROID = false`) was promoted to production at 100%**. iOS 1.5.0 (6) was submitted to App Review the same day (`WAITING_FOR_REVIEW`, publishes on approval). iOS is already paywall-enabled (`FREE_LAUNCH_MODE_IOS = false`). The 11 Play devices in the
   dashboard are closed testers (owner included), not real users.
 
 ## 1. Core decision: decouple the two platforms' monetization timing
@@ -175,22 +172,9 @@ closed-testing days, without touching the unverified merchant profile:
    real-money purchase from a non-tester account is verified in RevenueCat; consider restricting the listing and the
    subscription to India first. See doc 06, versionCode 18.
 
-8. **Done 2026-10-29/30: BillDesk KYC cleared** (about 26 days after the 2026-10-03 estimate's start; see the
-   Section 0 update for what was seen). Remaining, in order, when the owner decides to ship the paywall
-   (owner: "in a while", 2026-10-30): (a) one real-money purchase from a non-tester account, confirming the
-   `PayslipMax Premium` entitlement in RevenueCat; (b) decide whether to restrict the listing and subscription
-   to India first (step 7, unchanged); (c) set `FREE_LAUNCH_MODE_ANDROID = false`, bump versionCode, run
-   `validate_production_release`, promote through internal first. Until then Android stays free.
-
-## 5. Why this order doesn't create a grandfathering problem on Android
-
-Android has **zero production users today** (updated 2026-09-24: versionCode 15 just went live, so a
-small real install base starts accumulating from here) — only closed testers. If steps in Section 4 are front-loaded correctly, the
-free-in-production window is short and BillDesk-processing-time-bound only. There is no large free install base to grandfather on Android by the time the paywall ships,
-unlike iOS (which already has real free users from v1.0). Re-evaluate this only if the free
-production window ends up stretching for weeks — if a meaningful Android install base accumulates
-before BillDesk clears, revisit the grandfather-clause question the same way doc 05 flagged for iOS.
-
-## 6. On Branching
-
-We don't need separate branches — that would actually be the wrong fix. The real issue isn't branch structure, it's that FREE_LAUNCH_MODE is currently one shared const val. Split it into two — FREE_LAUNCH_MODE_IOS and FREE_LAUNCH_MODE_ANDROID — both still living in the same commonMain file, same branch, same commit. Each platform's build only reads its own constant, so you can flip iOS to false while Android stays true, from identical source. SSOT is fully preserved — there's still exactly one RevenueCatBillingManager, one entitlement mapping, one gating function; only the release-timing knob is now per-platform instead of global. A temporary release branch (like your existing release/ios-1.0.0-v6) is fine and unrelated to this — what would actually defeat SSOT is a permanent, never-merged platform fork that duplicates billing logic, which nothing here calls for. Make the LaunchFlags split, so as to launch iOS app monetization.
+8. **Done 2026-10-29/30: BillDesk KYC cleared, then the Android paywall shipped.** KYC cleared about 26 days after the 2026-10-03
+   estimate's start (see the Section 0 update). The remaining steps all ran on 2026-10-30: (a) one real-money purchase from a non-tester account,
+   with the `PayslipMax Premium` entitlement confirmed in RevenueCat; (b) the India-only restriction was skipped, since verification is cleared;
+   (c) `FREE_LAUNCH_MODE_ANDROID = false`, versionCode 22 (commit `681c87bc`, tag `android-1.5.0-vc22`), `validate_production_release` passed,
+   internal first, then promoted to production at 100%. Android and iOS are now on the same 1.5.0 release and both monetized once Apple approves 1.5.0.
+   Doc 06, "versionCode 22", has the evidence.

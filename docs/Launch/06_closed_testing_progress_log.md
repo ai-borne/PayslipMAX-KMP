@@ -5,26 +5,23 @@ checks, track state). Update it at every release bump; don't batch. Releases lan
 are promoted to Closed testing (`alpha`) once verified, then to production; each release's heading states
 which track it is on. The 14-day closed-testing gate was completed on 2026-09-24.
 
-## Current status (2026-10-03)
+## Current status (2026-10-30)
 
 | Track | versionCode | Free-launch flag | State |
 |---|---|---|---|
-| `production` | 18 (1.3.0) | **on** | **Live**, 100% rollout, promoted 2026-10-03 (replaces v15) |
+| `production` | 22 (1.5.0) | **off (paywall on)** | **Live**, 100% rollout, promoted 2026-10-30 (replaces v18) |
 | `alpha` (closed testing) | 15 (1.0.0) | on | Passed the 14-day gate; production access granted 2026-09-24 |
-| `internal` | 18 (1.3.0) | **on** | Same build as production |
+| `internal` | 22 (1.5.0) | **off** | Same build as production |
 
-Confirmed with `fastlane android track_status`. v16 and v17 were paywall builds (flag off) and never left internal testing.
-v18 is Pay Audit with `FREE_LAUNCH_MODE_ANDROID = true` again, because BillDesk merchant KYC needs another 20-30 days and
-Google Play sales may be paused or fail until then (official payments page: sales outside India paused until verified;
-India behaviour not documented). Next flag flip (to `false`) only after KYC clears and a real-money purchase from a
-non-tester account succeeds (docs/Launch/07, section 4). The fastlane service account holds "Release to production"
-(confirmed in Play Console, 2026-10-03).
+Confirmed with `fastlane android track_status` (2026-10-30). History: v16 and v17 were earlier paywall builds (flag off) that never
+left internal testing; v18 to v21 shipped with `FREE_LAUNCH_MODE_ANDROID = true` while BillDesk merchant KYC was pending. KYC cleared
+on 2026-10-29, and v22 (1.5.0) is the first production build with the paywall on (see "versionCode 22" below). The fastlane service
+account holds "Release to production" (confirmed in Play Console, 2026-10-03).
 
 **BillDesk KYC cleared (2026-10-29/30).** BillDesk approved application `2608287529` (2026-10-29); Play Console shows
-both payments accounts clear of "Issue with account" and "Your verification is complete" (2026-10-30). Track state and
-flags above are unchanged. The owner will ship the paywall-enabled Android release later (not immediately), so
-`FREE_LAUNCH_MODE_ANDROID` stays `true` for now. Still unverified: a real-money purchase from a non-tester account.
-See doc 07, Section 0 and Section 4 step 8.
+both payments accounts clear of "Issue with account" and "Your verification is complete" (2026-10-30). The same day the owner
+chose to ship the paywall in this sprint, paired with iOS 1.5.0; a real-money purchase passed and v22 went to production
+(see "versionCode 22" below, and doc 07, Section 0 and Section 4 step 8).
 
 **Release path.** v15 was promoted alpha → production on 2026-09-24 (`promote_release version_code:15
 to:production from:alpha`, 100% rollout) and cleared Google's first-production-release review. The store
@@ -667,6 +664,22 @@ Premium locks. The paywall was turned on by the owner on 2026-10-18 with five un
 - **Not done:** the iPhone walkthrough of the Leave accumulation card, payslip table and cap insight (owner, not drivable here);
   App Store submission; Android production (still vc18).
 
+### versionCode 22 (1.5.0) — PRODUCTION at 100% (2026-10-30) — Android paywall on
+
+versionCode 21 → 22; `versionName` stays 1.5.0 (the same release as iOS 1.5.0 (6)). Commit `681c87bc`, tag `android-1.5.0-vc22`; `LaunchFlags.FREE_LAUNCH_MODE_ANDROID`
+`true` → `false` is the only code change. Content is the 1.5.0 line (Leave accumulation, Guide, TA/DA worksheet), now behind Premium on Android as on iOS.
+- **Gate:** pre-commit hook (ktlint, shared tests, iOS framework link) passed; `bundleRelease` with the real Gemma model built a 442,045,575 B AAB;
+  `upload_to_track track:internal` released versionCode 22; `validate_production_release version_code:22` found no blockers.
+- **Real-money test (owner, Pixel 9, Play internal build):** the license-tester list "PayslipMax Team" was unticked in Play Console (License testing) so the
+  purchase was not a test purchase. The owner bought `payslipmax_yearly_premium:yearly` for INR 999. The app showed "Premium Plan Activated (Auto-Renewing
+  Subscription Active)"; RevenueCat (production view) shows a New Sub from the Play Store and the `PayslipMax Premium` entitlement Active, renewing in 1 year.
+  The owner keeps the subscription. The list was re-ticked afterwards.
+- **Promotion:** `promote_release version_code:22 to:production from:internal` with `en-IN` notes
+  (`composeApp/fastlane/release_notes/1.5.0/whats_new_en-IN.txt`); `track_status`: production [22], alpha [15], internal [22].
+- **iOS counterpart:** 1.5.0 (6) was submitted to App Review on 2026-10-30 (`WAITING_FOR_REVIEW`; `AFTER_APPROVAL`, so it publishes on approval). Notes in
+  `iosApp/fastlane/release_notes/1.5.0/`.
+- **Not done:** Apple's decision on 1.5.0; a Google "in review" state for this production release was not checked; the 11 Play devices are closed testers, not real users.
+
 ## Next steps
 
 1. ~~**BillDesk KYC (owner only):** submit `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax` with PAN,
@@ -676,8 +689,7 @@ Premium locks. The paywall was turned on by the owner on 2026-10-18 with five un
    Gemma banner run through to Installed.
 3. ~~After a few days on internal: promote v16 to alpha.~~ **Superseded 2026-10-03:** v16/v17 (paywall builds) never left internal;
    v18 (Pay Audit, free-launch flag on) went straight to production at 100% (see versionCode 18). Closed testing (`alpha`) still holds v15.
-4. **BillDesk KYC (20-30 days from 2026-10-03) — cleared 2026-10-29/30; the owner ships the paywall later, so this step is now open and
-   waiting on the owner:** make one real-money purchase from a non-tester account and confirm the
+4. ~~**BillDesk KYC (20-30 days from 2026-10-03)**~~ **Done 2026-10-30:** KYC cleared, the real-money purchase passed and v22 shipped with the paywall on (see versionCode 22). Original text: make one real-money purchase from a non-tester account and confirm the
    `PayslipMax Premium` entitlement in RevenueCat; then set `FREE_LAUNCH_MODE_ANDROID = false`, bump versionCode, run
    `validate_production_release`, and promote. Consider restricting the listing and the subscription to India first (Play Console).
 5. **Apple server notification:** confirm a first event reaches RevenueCat (needs a signed-in App Store Connect session or a
