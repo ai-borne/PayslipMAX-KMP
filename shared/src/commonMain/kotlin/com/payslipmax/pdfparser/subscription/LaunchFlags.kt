@@ -6,7 +6,7 @@ package com.payslipmax.pdfparser.subscription
  * `docs/Launch/08_ios_monetization_phaseplan.md` Phase 1 so iOS and Android can flip
  * independently — Android is still blocked by Google Play's mandatory 14-day closed-testing
  * window before BillDesk merchant KYC can be completed, while iOS's RevenueCat/StoreKit
- * rollout proceeds separately. Call sites read the platform-specific constant via
+ * rollout proceeds separately (both are now live). Call sites read the platform-specific constant via
  * [isFreeLaunchModePlatform] rather than either constant directly.
  */
 object LaunchFlags {
@@ -14,11 +14,11 @@ object LaunchFlags {
     // is live from v1.2: gates now follow the real RevenueCat entitlement.
     const val FREE_LAUNCH_MODE_IOS: Boolean = false
 
-    // true again from versionCode 18 (2026-10-03): BillDesk merchant KYC is still pending (about 20-30 days), so
-    // Google Play sales may be paused or fail and a paywall could not be passed. Android stays free until KYC
-    // clears and a real-money purchase succeeds; then flip to false (docs/Launch/07, section 4). versionCodes
-    // 16 and 17 were the paywall builds (internal testing only).
-    const val FREE_LAUNCH_MODE_ANDROID: Boolean = true
+    // Flipped false in versionCode 22 (2026-10-30): BillDesk merchant KYC cleared (2026-10-29) and Play Console shows the
+    // payments profile verified, so Android monetization goes live with 1.5.0, paired with iOS (docs/Launch/07, section 4
+    // step 8). It was true in versionCodes 18 to 21 while KYC was pending; versionCodes 16 and 17 were earlier paywall
+    // builds (internal testing only).
+    const val FREE_LAUNCH_MODE_ANDROID: Boolean = false
 
     // Claim Guide kill switch (docs/Plan/rule_cards/16_guide_phase_plan.md), the only switch: every Guide entry point
     // reads it through isGuideEnabled(), in every build type. false removes the tab, routes and Pay Audit link.
