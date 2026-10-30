@@ -161,6 +161,8 @@ launch-neutral copy, same one-flag pattern as the rest of this plan:
   section for the full record. The BillDesk merchant-KYC blocker below is now actionable:
   the Play Store URL is live, so doc 07 §4 step 5 (submit the live URL to BillDesk) is the **next
   action**, not a new Play-side blocker.
+  **Update 2026-10-30:** BillDesk approved the application (2026-10-29) and Play Console shows the payments
+  profile verified. The blocker is cleared; see doc 07 Section 0 and Section 4 step 8 for what remains.
 - **Original blocker (historical, now resolved):** Day 1 of mandatory 14-day Closed Testing track;
   Google Play Payments Profile required mandatory RBI/PA-CB Merchant Identity Verification handled via
   **BillDesk**, which in turn required a live public Play Store URL that didn't exist yet while in
@@ -309,10 +311,12 @@ whole document exists to avoid. Track Step 4 and Step 5 as the two v1.1 workstre
       [06_closed_testing_progress_log.md](06_closed_testing_progress_log.md) for the full record.
 
 ### Step 3: Clear BillDesk KYC Verification
-- [ ] **3.1** **(next action)** Copy the live public Google Play URL: `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax`.
-- [ ] **3.2** Open BillDesk verification form / respond to `onboarding@billdesk.com`.
-- [ ] **3.3** Submit live Play Store link along with PAN, bank account proof, and complete Video KYC.
-- [ ] **3.4** Receive BillDesk Merchant Approval for Google Play Payments Profile.
+- [x] **3.1** Copy the live public Google Play URL: `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax`.
+- [x] **3.2** Open BillDesk verification form / respond to `onboarding@billdesk.com`.
+- [x] **3.3** Submit live Play Store link along with PAN, bank account proof, and complete Video KYC.
+- [x] **3.4** Receive BillDesk Merchant Approval for Google Play Payments Profile. **Done 2026-10-29:** application
+  `2608287529` approved; Play Console showed the profile verified on 2026-10-30. (3.1 to 3.3 are ticked because
+  the approval implies them; the submission date was not recorded here.)
 
 ### Step 4: Configure Full RevenueCat & StoreKit Pipeline (Release 2 / v1.2)
 - [ ] **4.1** In App Store Connect > **Subscriptions**, create Auto-Renewable Subscription (`payslipmax_yearly_premium`), set ₹999/yr pricing, and attach review screenshot.

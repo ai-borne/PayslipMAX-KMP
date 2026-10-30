@@ -4,7 +4,7 @@
 **Scope**: iOS only. Executes Section 3 of
 [07_platform_monetization_rollout.md](07_platform_monetization_rollout.md) as an explicit,
 gated, phase-by-phase plan per this repo's non-negotiable execution rules (CLAUDE.md §0–2).
-Android is untouched by this plan (still blocked on BillDesk KYC per doc 07 §4).
+Android is untouched by this plan (it was blocked on BillDesk KYC per doc 07 §4; cleared 2026-10-29/30, see doc 07 §4 step 8).
 
 **Starting state**: `v1.1.0` free, live in App Store production. `v1.1.1` (UI changes only, no
 monetization) is currently in App Review. `FREE_LAUNCH_MODE` is a single shared `const val = true`

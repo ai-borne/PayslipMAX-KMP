@@ -25,6 +25,15 @@ current state after [06_closed_testing_progress_log.md](06_closed_testing_progre
   with `fastlane android subscription_status` (read-only). Remaining: attach the product in RevenueCat
   (`payslipmax_yearly_premium:yearly` → `premium` entitlement / `yearly` package), add license testers,
   test on the Pixel with a debug paywall override.
+- **Android, update 2026-10-30: BillDesk merchant KYC is cleared.** BillDesk approved application `2608287529`
+  (email from BillDesk Onboarding, 2026-10-29). Play Console confirmed it on 2026-10-30: neither payments account
+  (cross-border, India-only) shows "Issue with account" any more, the PA-CB "verification in progress" banner is
+  gone, and the account page reads "Your verification is complete". Payouts go through BillDesk (monthly, ₹100
+  threshold); earnings ₹0.00, no transactions yet. **Not yet verified:** a real-money purchase from a non-tester
+  account (the gate in Section 4 step 7). **Owner decision (2026-10-30):** the paywall-enabled Android release
+  ships later, not immediately, so `FREE_LAUNCH_MODE_ANDROID` stays `true` until then. iOS is already
+  paywall-enabled (`FREE_LAUNCH_MODE_IOS = false`), so nothing changes there. The 11 Play devices in the
+  dashboard are closed testers (owner included), not real users.
 
 ## 1. Core decision: decouple the two platforms' monetization timing
 
@@ -47,6 +56,11 @@ completely different things:
   **Status (2026-09-24): the first two arrows are done.** Production promotion happened (versionCode 15,
   100% rollout) and the app is live on Google Play, so the public URL exists. The chain is unblocked;
   the next step is the BillDesk submission — this is no longer a deadlock, just a queue.
+
+  **Status (2026-10-30): the BillDesk arrow is done too.** BillDesk approved the application (2026-10-29)
+  and Play Console shows the payments profile verified (2026-10-30). What is left is the last arrow: ship a
+  release with the paywall enabled, after a real-money purchase from a non-tester account is verified
+  (Section 4 steps 7 and 8).
 
   Android **cannot** launch to production already paid — Google Play has no verified payments
   merchant profile behind it until BillDesk clears, and BillDesk cannot verify until a live public
@@ -160,6 +174,13 @@ closed-testing days, without touching the unverified merchant profile:
    production at 100% with `FREE_LAUNCH_MODE_ANDROID = true`** (flag back on). Flip to `false` only after KYC clears and a
    real-money purchase from a non-tester account is verified in RevenueCat; consider restricting the listing and the
    subscription to India first. See doc 06, versionCode 18.
+
+8. **Done 2026-10-29/30: BillDesk KYC cleared** (about 26 days after the 2026-10-03 estimate's start; see the
+   Section 0 update for what was seen). Remaining, in order, when the owner decides to ship the paywall
+   (owner: "in a while", 2026-10-30): (a) one real-money purchase from a non-tester account, confirming the
+   `PayslipMax Premium` entitlement in RevenueCat; (b) decide whether to restrict the listing and subscription
+   to India first (step 7, unchanged); (c) set `FREE_LAUNCH_MODE_ANDROID = false`, bump versionCode, run
+   `validate_production_release`, promote through internal first. Until then Android stays free.
 
 ## 5. Why this order doesn't create a grandfathering problem on Android
 

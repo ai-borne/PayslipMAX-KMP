@@ -20,6 +20,12 @@ India behaviour not documented). Next flag flip (to `false`) only after KYC clea
 non-tester account succeeds (docs/Launch/07, section 4). The fastlane service account holds "Release to production"
 (confirmed in Play Console, 2026-10-03).
 
+**BillDesk KYC cleared (2026-10-29/30).** BillDesk approved application `2608287529` (2026-10-29); Play Console shows
+both payments accounts clear of "Issue with account" and "Your verification is complete" (2026-10-30). Track state and
+flags above are unchanged. The owner will ship the paywall-enabled Android release later (not immediately), so
+`FREE_LAUNCH_MODE_ANDROID` stays `true` for now. Still unverified: a real-money purchase from a non-tester account.
+See doc 07, Section 0 and Section 4 step 8.
+
 **Release path.** v15 was promoted alpha → production on 2026-09-24 (`promote_release version_code:15
 to:production from:alpha`, 100% rollout) and cleared Google's first-production-release review. The store
 listing is en-IN only (172 countries), so release notes default to `en-IN` (`notes_locale:`). A dry-run
@@ -663,13 +669,15 @@ Premium locks. The paywall was turned on by the owner on 2026-10-18 with five un
 
 ## Next steps
 
-1. **BillDesk KYC (owner only):** submit `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax` with PAN,
-   bank proof and video KYC. This is the only real blocker to charging money.
+1. ~~**BillDesk KYC (owner only):** submit `https://play.google.com/store/apps/details?id=in.aiborne.payslipmax` with PAN,
+   bank proof and video KYC. This is the only real blocker to charging money.~~ **Done 2026-10-29/30:** BillDesk approved
+   application `2608287529` and Play Console shows the payments profile verified.
 2. **Still open from v15:** import a real payslip to exercise parse → persist and an in-place Room upgrade; watch the
    Gemma banner run through to Installed.
 3. ~~After a few days on internal: promote v16 to alpha.~~ **Superseded 2026-10-03:** v16/v17 (paywall builds) never left internal;
    v18 (Pay Audit, free-launch flag on) went straight to production at 100% (see versionCode 18). Closed testing (`alpha`) still holds v15.
-4. **BillDesk KYC (20-30 days from 2026-10-03):** when it clears, make one real-money purchase from a non-tester account and confirm the
+4. **BillDesk KYC (20-30 days from 2026-10-03) — cleared 2026-10-29/30; the owner ships the paywall later, so this step is now open and
+   waiting on the owner:** make one real-money purchase from a non-tester account and confirm the
    `PayslipMax Premium` entitlement in RevenueCat; then set `FREE_LAUNCH_MODE_ANDROID = false`, bump versionCode, run
    `validate_production_release`, and promote. Consider restricting the listing and the subscription to India first (Play Console).
 5. **Apple server notification:** confirm a first event reaches RevenueCat (needs a signed-in App Store Connect session or a
