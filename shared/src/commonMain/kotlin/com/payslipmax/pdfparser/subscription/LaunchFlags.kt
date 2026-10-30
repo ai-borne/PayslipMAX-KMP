@@ -42,4 +42,9 @@ object LaunchFlags {
     // Calculators card, payslip section, Smart Insight) reads it through isLeaveBankEnabled(). The parser always runs. Flipped true
     // in Phase 6, in its own commit.
     const val LEAVE_BANK_ENABLED: Boolean = true
+
+    // Part II Orders Bank kill switch (docs/Plan/13_OrdersBank_PhasePlan.md), the only switch: every Part II surface (the Guide row, the
+    // routes, the Koin module, the Premium catalog row) reads it through isPart2Enabled(). It also needs GUIDE_ENABLED: Part II lives in
+    // the Guide tab. Dark launch: false until the owner says to flip it, in its own commit together with Part2FlagExpectation.
+    const val PART2_ENABLED: Boolean = false
 }

@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.DecryptionFailedException
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.logging.Logger
@@ -144,6 +145,9 @@ class PayslipBackupService(
 
                 rebuildDerivedData()
                 Result.success(Unit)
+            } catch (e: DecryptionFailedException) {
+                // The outer layer opened (a wrong password was returned above), so a row inside that will not open is a damaged file.
+                Result.failure(BackupDamagedException())
             } catch (e: Exception) {
                 Result.failure(e)
             }

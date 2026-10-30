@@ -48,7 +48,8 @@ Phase N — <name>                                         Commit: <sha after ac
 
 1. `./gradlew check -x iosX64Test -x iosSimulatorArm64Test` (debug and release unit tests, ktlint, `checkFileSizes`, corpus).
 2. `./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64`, then `./gradlew iosSimulatorArm64Test`; XCTest alone, never beside Gradle.
-3. `python3 docs/Plan/rule_cards/tools/refresh.py`, then `refresh.py --check --allow-no-sources`.
+3. `python3 docs/Plan/rule_cards/tools/refresh.py --check --allow-no-sources` (check only: a plain `refresh.py` rewrites date stamps in four
+   generated files, which is churn outside the phase; run it, and commit its output, only in a phase that changes the Guide content).
 4. `python3 scripts/check_tech_debt_limits.py --strict <touched .kt>`, `python3 -m unittest discover -s scripts/tests`,
    `python3 -m unittest discover -s docs/Plan/rule_cards/tools`, `check_schema_immutability.py`.
 5. `./gradlew :composeApp:minifyReleaseWithR8 -PallowPlaceholderGemmaModel=true`; in phases marked R8+ also `assembleRelease`,

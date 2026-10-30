@@ -56,3 +56,6 @@ enum class RestoreMode {
 class UnsupportedBackupVersionException(
     val backupVersion: Int,
 ) : Exception("This backup was made by a newer version of PayslipMax. Update the app, then restore again.")
+
+/** An archive that opened with the right password but whose rows cannot be read. Fixed message: no path, no content. */
+class BackupDamagedException : Exception("This backup file is damaged and cannot be restored.")

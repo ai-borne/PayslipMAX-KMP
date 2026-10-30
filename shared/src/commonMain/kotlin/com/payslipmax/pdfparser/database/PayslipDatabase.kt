@@ -8,12 +8,18 @@ import androidx.room.DeleteTable
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.migration.AutoMigrationSpec
+import com.payslipmax.pdfparser.part2.data.Part2EntryEntity
+import com.payslipmax.pdfparser.part2.data.Part2OrderEntity
+import com.payslipmax.pdfparser.part2.data.Part2PageEntity
 
 @Database(
     entities = [
         EncryptedPayslipEntity::class,
         PayslipCorrectionEntity::class,
         GuideNoteEntity::class,
+        Part2EntryEntity::class,
+        Part2OrderEntity::class,
+        Part2PageEntity::class,
         PayslipPdfEntity::class,
         AppSettingsEntity::class,
         LedgerRecordEntity::class,
@@ -21,7 +27,7 @@ import androidx.room.migration.AutoMigrationSpec
         RepresentationDraftEntity::class,
         DismissedDraftEntity::class,
     ],
-    version = 14,
+    version = 16,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 5, to = 6, spec = PayslipDatabase.DeleteGeminiApiKeySpec::class),
@@ -33,6 +39,8 @@ import androidx.room.migration.AutoMigrationSpec
         AutoMigration(from = 11, to = 12),
         AutoMigration(from = 12, to = 13),
         AutoMigration(from = 13, to = 14),
+        AutoMigration(from = 14, to = 15),
+        AutoMigration(from = 15, to = 16, spec = PayslipDatabase.DropPart2DraftsSpec::class),
     ],
 )
 @ConstructedBy(PayslipDatabaseConstructor::class)
@@ -53,6 +61,14 @@ abstract class PayslipDatabase : RoomDatabase() {
      */
     @DeleteTable(tableName = "ai_insight_reports")
     class DeleteAiInsightReportsTableSpec : AutoMigrationSpec
+
+    /**
+     * AutoMigration spec for v15→v16:
+     * Marks the frozen feature/part2-orders branch's `part2_drafts` table as deleted (the Orders Bank keeps `part2_orders` and
+     * `part2_pages` untouched and adds `part2_entries`). Only synthetic drafts from development phones were ever written to it.
+     */
+    @DeleteTable(tableName = "part2_drafts")
+    class DropPart2DraftsSpec : AutoMigrationSpec
 }
 
 // expect object constructor required for Room KMP database instantiation

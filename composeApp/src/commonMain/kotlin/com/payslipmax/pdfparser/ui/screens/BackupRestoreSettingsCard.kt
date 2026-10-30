@@ -242,10 +242,3 @@ private fun runRestorePick(
         }
     }
 }
-
-private fun restoreStatus(result: Result<Unit>): BackupStatus =
-    if (result.isSuccess) {
-        BackupStatus(AppStrings.statusRestoreComplete, isSuccess = true)
-    } else {
-        BackupStatus("${AppStrings.statusRestoreFailed}${result.exceptionOrNull()?.message}", isSuccess = false)
-    }
