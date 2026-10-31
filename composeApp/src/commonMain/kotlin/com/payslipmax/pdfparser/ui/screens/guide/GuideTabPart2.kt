@@ -27,10 +27,12 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2Entry
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2HomeScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2RibbonScreen
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.part2Entry
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.LearnStrings
+import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 
 /**
  * The Guide's side of Learn about Part II. [entry] is what the Guide Home row follows (HIDDEN while the dark-launch flag is off or the
@@ -39,7 +41,14 @@ import com.payslipmax.pdfparser.ui.theme.LearnStrings
 internal class Part2Host(
     val entry: Part2Entry,
     val model: Part2LookupViewModel?,
+    val bank: BankViewModel? = null,
+    val access: BankAccess = BankAccess.Locked,
 ) {
+    /** Opens the Orders Bank from Guide Home. */
+    fun openBank(navState: GuideNavState) {
+        navState.push(Part2Destination.Bank)
+    }
+
     /** Opens Learn from Guide Home with an empty search. */
     fun open(navState: GuideNavState) {
         model?.clear()
@@ -54,18 +63,36 @@ internal class Part2Host(
 @Composable
 internal fun rememberPart2Host(
     factory: (() -> Part2LookupViewModel)?,
+    bankFactory: (() -> BankViewModel)?,
+    access: BankAccess,
     bundle: GuideBundle,
     navState: GuideNavState,
 ): Part2Host {
     val entry = part2Entry(enabled = factory != null, bundle = bundle)
     val model = remember(entry) { if (entry == Part2Entry.OPEN) factory?.invoke() else null }
-    SideEffect { navState.part2Lookup = model }
-    return Part2Host(entry, model)
+    val bank = remember(entry) { if (entry == Part2Entry.OPEN) bankFactory?.invoke() else null }
+    SideEffect {
+        navState.part2Lookup = model
+        navState.part2Bank = bank
+    }
+    return Part2Host(entry, model, bank, access)
 }
 
 /** The Guide Home row that opens Learn. */
 @Composable
-internal fun Part2EntryRow(onClick: () -> Unit) {
+internal fun Part2EntryRow(onClick: () -> Unit) = Part2EntryCard(LearnStrings.entryEmoji, LearnStrings.entryTitle, LearnStrings.entrySubtitle, onClick)
+
+/** The Guide Home row that opens the Orders Bank, drawn like the Learn row. */
+@Composable
+internal fun BankEntryRow(onClick: () -> Unit) = Part2EntryCard(OrdersBankStrings.entryEmoji, OrdersBankStrings.entryTitle, OrdersBankStrings.entrySubtitle, onClick)
+
+@Composable
+private fun Part2EntryCard(
+    emoji: String,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+) {
     AccentStripeCard(
         accent = MaterialTheme.colorScheme.primary,
         modifier = Modifier.clip(AccentStripeCardShape).clickable(role = Role.Button, onClick = onClick),
@@ -75,10 +102,10 @@ internal fun Part2EntryRow(onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
-            Decoration(LearnStrings.entryEmoji, AppDimensions.TextSizeHuge)
+            Decoration(emoji, AppDimensions.TextSizeHuge)
             Column(modifier = Modifier.weight(1f)) {
-                Text(LearnStrings.entryTitle, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
-                Text(LearnStrings.entrySubtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+                Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Decoration(AppStrings.rowArrow, AppDimensions.TextSizeLarge, MaterialTheme.colorScheme.onSurfaceVariant)
         }
@@ -102,11 +129,24 @@ internal fun GuidePart2Level(
     }
     val onBack: () -> Unit = { navState.pop() }
     val onOpenCode: (String) -> Unit = { navState.push(Part2Destination.Code(it)) }
+    val bank = host.bank
     when (destination) {
         Part2Destination.Home -> Part2HomeRoute(navState, model, listState)
         is Part2Destination.Ribbon -> model.ribbon(destination.ribbonId)?.let { Part2RibbonScreen(it, onBack, onOpenCode, listState) } ?: GuideLoading()
-        is Part2Destination.Code -> model.code(destination.code)?.let { Part2CodeScreen(it, onBack, onOpenCode, listState) } ?: GuideLoading()
+        is Part2Destination.Code -> model.code(destination.code)?.let { Part2CodeScreen(it, onBack, onOpenCode, { addToBank(navState, host, destination.code) }, listState) } ?: GuideLoading()
+        Part2Destination.Bank -> if (bank == null) GuideLoading() else GuideBankLevel(navState, host, bank, listState)
+        is Part2Destination.Entry -> if (bank == null) GuideLoading() else GuideEntryLevel(navState, bank, destination.entryId, host.access)
     }
+}
+
+/** The casualty page's Add: a new entry for that code when the officer may add, the upgrade offer when not. */
+private fun addToBank(
+    navState: GuideNavState,
+    host: Part2Host,
+    code: String,
+) {
+    if (!host.access.canAdd) return host.access.onUnlock()
+    host.bank?.beginNew(code)?.let { navState.push(Part2Destination.Entry(it)) }
 }
 
 @Composable

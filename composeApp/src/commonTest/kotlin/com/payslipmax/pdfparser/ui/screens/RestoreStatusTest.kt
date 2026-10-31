@@ -2,9 +2,11 @@ package com.payslipmax.pdfparser.ui.screens
 
 import com.payslipmax.pdfparser.crypto.DecryptionFailedException
 import com.payslipmax.pdfparser.repository.BackupDamagedException
+import com.payslipmax.pdfparser.repository.RestoreReport
 import com.payslipmax.pdfparser.repository.UnsupportedBackupVersionException
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.BackupRestoreStrings
+import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -18,9 +20,17 @@ import kotlin.test.assertTrue
 class RestoreStatusTest {
     @Test
     fun aCleanRestoreReadsAsItAlwaysDid() {
-        val status = restoreStatus(Result.success(Unit))
+        val status = restoreStatus(Result.success(RestoreReport(0)))
         assertEquals(AppStrings.statusRestoreComplete, status.message)
         assertTrue(status.isSuccess)
+    }
+
+    @Test
+    fun aRestoreThatLeftRowsOutSaysHowManyAndIsNotShownAsAPlainSuccess() {
+        val status = restoreStatus(Result.success(RestoreReport(3)))
+        assertEquals("${AppStrings.statusRestoreComplete} ${OrdersBankStrings.restoreSkipped(3)}", status.message)
+        assertFalse(status.isSuccess, "lost rows must be noticed, so the line takes the warning colour")
+        assertEquals("1 item could not be restored.", OrdersBankStrings.restoreSkipped(1))
     }
 
     @Test

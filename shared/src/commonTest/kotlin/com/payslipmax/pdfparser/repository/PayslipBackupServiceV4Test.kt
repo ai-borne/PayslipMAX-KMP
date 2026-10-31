@@ -53,11 +53,12 @@ class PayslipBackupServiceV4Test {
     private suspend fun storedNotes() = target.getAllGuideNotes().first().associate { it.cardId to it.toNote(deviceKey) }
 
     @Test
-    fun theCurrentVersionIsFourAndExportsWriteIt() =
+    fun theNotesVersionIsStillCurrentOrOlderAndExportsWriteTheCurrentOne() =
         runTest {
-            assertEquals(4, PortableBackup.CURRENT_VERSION)
+            // v4 added the notes; the exact current number is pinned by Part2BackupTest, which owns the latest bump.
+            assertTrue(PortableBackup.CURRENT_VERSION >= 4)
 
-            assertEquals(4, decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow()).version)
+            assertEquals(PortableBackup.CURRENT_VERSION, decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow()).version)
         }
 
     @Test

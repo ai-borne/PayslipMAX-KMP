@@ -25,6 +25,12 @@ enum class FeatureGate {
      * answers and title/rule-number search stay free. Whether it is enforced yet is [LaunchFlags.GUIDE_PAYWALL_ENABLED].
      */
     CLAIM_GUIDE,
+
+    /**
+     * Gates adding to the Part II Orders Bank (no free allowance). Learn about Part II stays free, and after Premium lapses existing
+     * entries and scanned orders can still be viewed, deleted and backed up. Whether it exists yet is [LaunchFlags.PART2_ENABLED].
+     */
+    PART2_ORDERS,
 }
 
 /**

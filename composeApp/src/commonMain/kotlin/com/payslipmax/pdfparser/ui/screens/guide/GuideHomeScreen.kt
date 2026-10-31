@@ -47,6 +47,7 @@ internal fun GuideHomeScreen(
     onOpenPreClaim: () -> Unit = {},
     part2: Part2Entry = Part2Entry.HIDDEN,
     onOpenPart2: () -> Unit = {},
+    onOpenBank: () -> Unit = {},
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -72,7 +73,7 @@ internal fun GuideHomeScreen(
         }
         guideFeatureRows(preClaim, onOpenPreClaim)
         items(areas, key = { it.id }) { tile -> GuideAreaTileView(tile, onClick = { onOpenArea(tile.id) }) }
-        guidePart2Section(part2, onOpenPart2)
+        guidePart2Section(part2, onOpenPart2, onOpenBank)
         if (notes.removedCount > 0) {
             item(key = "removed-notes") { GuideRemovedNotesRow(notes.removedCount, notes.onOpenRemoved) }
         }
@@ -94,11 +95,12 @@ private fun LazyListScope.guideFeatureRows(
 
 /**
  * The Part II section below the handbook areas: its own heading and a line saying it comes from a different manual (ODP 2026, not the PCDA
- * handbook), then the Learn row. Absent while its flag is off; free for everyone once it is on.
+ * handbook), then the Learn row and the Orders Bank row. Absent while its flag is off; Learn is free for everyone once it is on, and the Bank opens for everyone (adding is Premium).
  */
 private fun LazyListScope.guidePart2Section(
     part2: Part2Entry,
     onOpenPart2: () -> Unit,
+    onOpenBank: () -> Unit,
 ) {
     if (part2 == Part2Entry.HIDDEN) return
     item(key = "part2section") {
@@ -108,6 +110,7 @@ private fun LazyListScope.guidePart2Section(
         }
     }
     item(key = "part2") { Part2EntryRow(onOpenPart2) }
+    item(key = "part2bank") { BankEntryRow(onOpenBank) }
 }
 
 @Composable

@@ -85,3 +85,30 @@ rows) are replaced, so the UI tests were written new against the new screens, re
 | tests: `Part2UiBase`, `Part2LookupUiTest` | same paths | rewritten for Learn; `Part2LookupRestoreUiTest`, `Part2LookupRealBundleUiTest` not copied (their cases are inside the new tests) |
 | tests: `Part2CasualtyPageUiTest`, `Part2LearnA11yUiTest`, `Part2LearnRealBundleUiTest`, `Part2LearnSecurityContractTest`, `Part2WiringTest`, `LearnContrastTest` | new | not copied |
 | `GuideHomeScreen.kt` | main | edited by hand: the Learn row moved below the areas under its own heading (owner, 2026-10-30, option A) |
+
+## Phase 3 (Orders Bank: note it)
+
+Characterization, closed after the fact (2026-10-31): the old branch's own `part2.data` tests were run unchanged against its own untouched
+sources in a scratch export (141 tests, all green, the export deleted afterwards). The storage layer here was copied and adapted before its
+old tests were ported, so the ported tests run against adapted code (drafts replaced by entries); the page archive, page codec and page
+restore are byte-for-byte the old sources and their tests changed only the fixture name.
+
+| File here | From the old branch | How |
+|---|---|---|
+| `shared/.../part2/data/PageArchive.kt`, `Part2PageRestore.kt`, `Part2Exceptions.kt` | same paths | verbatim, except `Part2PageRestore` imports `BackupDamagedException` from the repository package (Phase 0 moved it) |
+| `shared/.../part2/data/Part2Dao.kt`, `Part2Repository.kt`, `RoomPart2Repository.kt`, `Part2RowPass.kt`, `Part2Backup.kt`, `Part2BackupRows.kt` | same paths | copied, drafts replaced by entries; one `Part2RowBackup` replaces the two identical row classes; `Part2LegacyDraft` is new (counts a frozen-branch draft as skipped) |
+| `Part2Codec.kt`, `Part2Payloads.kt`, `Part2Bounds.kt` | same paths | copied; entries and orders only (no slot, request or printed payloads); the order's `date` stays readable as the old slot shape, its `draftId` is ignored |
+| `shared/.../part2/domain/Part2Limits.kt` | same path | trimmed to what storage and the form use; `ENTRIES_MAX` 2000 and `DATA_COLUMNS` 4 are new, `PAYLOAD_MAX_BYTES` 16 KB (was 256 KB, for drafts) |
+| `shared/.../part2/domain/VaultOrder.kt` | `Part2Draft.kt` (`VaultOrder`, `VaultPageRef`) | the two types only; `draftId` removed |
+| `BankEntry.kt`, `EntryForm.kt`, `BankStatus.kt`, `BankIndex.kt`, `LastBackupStorage.kt` (+ android, ios actuals) | new | not copied |
+| `shared/.../utils/LocalTimeOffset.kt` (+ android, ios actuals) and its two tests | same paths | verbatim (the day the officer lives in, for ages and the last-backup line) |
+| `PortableBackup.kt`, `PayslipBackupService.kt`, `PayslipDao.kt`, `BackupRows.kt`, `Koin.kt`, `PayslipDatabase.kt` (`part2Dao()`) | same paths | the old diff, applied by hand and adapted: version 5, `part2Entries`, `part2Orders`, `part2Drafts` read only; restore returns a `RestoreReport`; the export records the time of the last backup |
+| `SubscriptionManager.kt` (`FeatureGate.PART2_ORDERS`) | same path | the enum entry, with its own KDoc |
+| `shared-test-fixtures/.../FakePart2Dao.kt`, `FakePart2Repository.kt`, `SyntheticPart2Backups.kt`, `FakePayslipDao.kt` | same paths | drafts replaced by entries; `SyntheticBank.kt` replaces `SyntheticPart2Drafts.kt` |
+| `composeApp/.../ui/screens/BackupGuard.kt`, `BackupRestoreSettingsCard.kt`, `PayslipViewModelExtensions.kt`, `SettingsSectionComponents.kt` | same paths | the old diff, with Part II vault wording replaced by `OrdersBankStrings`; the vault-size settings row is not copied (Phase 4) |
+| `composeApp/.../ui/screens/PremiumFeaturesCatalog.kt` | same path | the `PART2_ORDERS` entry and the flag-aware `isAdvertised` |
+| tests: `BackupGuardTest`, `PayslipViewModelPart2ItemCountTest`, `PayslipViewModelRestoreReportTest`, `RestoreStatusTest` | same paths | ported (entries; the owner's wording) |
+| `scripts/check_r8_guide.py` and `scripts/tests/test_check_r8_guide.py` | same paths | the old script and its tests minus the reminder worker: it now walks `part2/` too, finds `internal` models, and requires `PayslipDatabase_Impl` and `Part2Dao_Impl` |
+| `DutyDays.kt` | main | two functions made `internal` (`exists`, `dayNumber`): the Bank's dates use the pre-claim's one calendar |
+| `ui/screens/guide/part2/bank/*`, `GuideTabBank.kt`, `OrdersBankStrings.kt`, `BankColors` in `Theme.kt` | new | not copied |
+| `GuideHomeScreen.kt`, `GuideTab.kt`, `GuideTabPart2.kt`, `GuideTabRoute.kt`, `GuideNavState.kt`, `GuideNavStateSaver.kt`, `Part2Destination.kt`, `Part2CodeScreen.kt`, `Part2Module.kt` | main (Phase 2 versions) | edited by hand for the Bank |

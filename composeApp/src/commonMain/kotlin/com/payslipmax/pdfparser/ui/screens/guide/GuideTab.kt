@@ -10,6 +10,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 import org.koin.compose.koinInject
@@ -35,6 +36,9 @@ fun GuideTab(
     preClaim: (() -> PreClaimViewModel)? = null,
     /** Makes the Learn model; null while the Part II dark-launch flag is off, which removes every Part II entry (see `part2FactoryOrNull`). */
     part2: (() -> Part2LookupViewModel)? = null,
+    /** Makes the Orders Bank model, with who may add to it; null with the flag off, like [part2]. */
+    part2Bank: (() -> BankViewModel)? = null,
+    bankAccess: BankAccess = BankAccess.Locked,
 ) {
     LaunchedEffect(viewModel) { viewModel.load() }
     val state by viewModel.uiState.collectAsState()
@@ -50,7 +54,7 @@ fun GuideTab(
             }
             // Android back pops the Guide stack before it leaves the tab; at Guide Home it stays disabled.
             BackHandler(enabled = navState.canPop) { navState.pop() }
-            GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform, notesViewModel, rememberPreClaimHost(preClaim, access, navState), rememberPart2Host(part2, current.bundle, navState))
+            GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform, notesViewModel, rememberPreClaimHost(preClaim, access, navState), rememberPart2Host(part2, part2Bank, bankAccess, current.bundle, navState))
         }
     }
 }
@@ -115,6 +119,7 @@ private fun GuideHomeRoute(
         onOpenPreClaim = { navState.push(GuideDestination.PreClaim()) },
         part2 = part2.entry,
         onOpenPart2 = { part2.open(navState) },
+        onOpenBank = { part2.openBank(navState) },
         // Each visit to search starts empty; coming back from a card (a pop) does not pass through here.
         onOpenSearch = {
             searchViewModel.clear()

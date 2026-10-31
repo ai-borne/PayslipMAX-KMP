@@ -2,7 +2,7 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2
 
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.payslipmax.pdfparser.testing.SyntheticGuidePart2
@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
  * WHY: the casualty page is what the officer reads on the phone before he notes an event. It must say what the manual says (name, group
  * and its meaning, chapter, page), what the order needs in each column with the manual's own caption, the plain-English page where one was
  * written, and which casualties are usually published with it, labelled by whether the manual or practice says so. Where there is no data
- * there is no heading, and the one action it offers (Add to Orders Bank) is off until the Bank exists.
+ * there is no heading, and the one action it offers (Add to Orders Bank) opens the form for a Premium officer and the upgrade offer for any other.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34], qualifiers = "w360dp-h6000dp")
@@ -106,11 +106,11 @@ class Part2CasualtyPageUiTest : Part2UiBase() {
     }
 
     @Test
-    fun addToOrdersBankIsShownButOffUntilTheBankExists() {
+    fun addToOrdersBankOffersPremiumWhenTheOfficerMayNotAddAndGoesNowhere() {
         val nav = open("FIRSTCODE")
-        composeRule.onNodeWithText(LearnStrings.addToBank).assertIsDisplayed().assertIsNotEnabled()
+        composeRule.onNodeWithText(LearnStrings.addToBank).assertIsDisplayed().assertIsEnabled()
         composeRule.onNodeWithText(LearnStrings.addToBank).performClick()
         settle()
-        assertEquals(Part2Destination.Code("FIRSTCODE"), nav.current, "a disabled action goes nowhere")
+        assertEquals(Part2Destination.Code("FIRSTCODE"), nav.current, "no form opens for a lapsed or free officer")
     }
 }

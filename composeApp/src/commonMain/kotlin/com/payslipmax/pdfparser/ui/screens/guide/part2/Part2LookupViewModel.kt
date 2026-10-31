@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.ui.screens.guide.part2
 
 import com.payslipmax.pdfparser.guide.model.Part2Lookup
+import com.payslipmax.pdfparser.part2.domain.EntryForm
 import com.payslipmax.pdfparser.part2.domain.Part2CodeContent
 import com.payslipmax.pdfparser.part2.domain.Part2LookupIndex
 import com.payslipmax.pdfparser.part2.domain.Part2RibbonContent
@@ -39,6 +40,9 @@ class Part2LookupViewModel(private val guide: GuideViewModel) {
     fun ribbon(id: String): Part2RibbonContent? = index()?.ribbon(id)
 
     fun code(code: String): Part2CodeContent? = index()?.code(code)
+
+    /** The form for adding [code] to the Orders Bank, or null when the loaded bundle does not know the code. */
+    fun entryForm(code: String): EntryForm? = index()?.let { EntryForm.of(it, code) }
 
     fun search(query: String = _query.value): Part2SearchResult = index()?.search(query) ?: Part2SearchResult.Idle
 

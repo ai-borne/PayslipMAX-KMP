@@ -38,6 +38,25 @@ fun severityColor(severity: InsightSeverity): Color =
         InsightSeverity.OPPORTUNITY -> MaterialTheme.colorScheme.secondary
     }
 
+/**
+ * The Orders Bank's two status colours, each with a light and a dark value so the label reads on either surface: orange while a casualty
+ * waits for its order copy, blue once the copy is attached. Plain values by theme, so a test can check them against both schemes.
+ */
+object BankColors {
+    val WaitingLight = Color(0xFFC2410C)
+    val WaitingDark = Color(0xFFFDBA74)
+    val AttachedLight = Color(0xFF1D4ED8)
+    val AttachedDark = Color(0xFF93C5FD)
+
+    @Composable
+    fun waiting(): Color = if (MaterialTheme.colorScheme.surface.luminance() < HALF_LUMINANCE) WaitingDark else WaitingLight
+
+    @Composable
+    fun attached(): Color = if (MaterialTheme.colorScheme.surface.luminance() < HALF_LUMINANCE) AttachedDark else AttachedLight
+
+    private const val HALF_LUMINANCE = 0.5f
+}
+
 /** Claim Guide colours with no Material role: a light and a dark value, picked by the active scheme. */
 object GuideColors {
     private val WatchOutLight = Color(0xFFB45309)

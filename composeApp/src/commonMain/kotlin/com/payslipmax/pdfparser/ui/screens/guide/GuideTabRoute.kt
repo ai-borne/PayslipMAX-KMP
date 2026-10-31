@@ -5,9 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.rememberHasAccess
 import com.payslipmax.pdfparser.ui.screens.PayslipUpgradeSheet
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.part2FactoryOrNull
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.preClaimFactoryOrNull
@@ -34,6 +37,8 @@ fun GuideTabRoute(
         preClaim = preClaimFactoryOrNull { koin.get<PreClaimViewModel>() },
         // Off by default (LaunchFlags.PART2_ENABLED): the factory is null, so no Learn entry exists and Koin is never asked for the model.
         part2 = part2FactoryOrNull { koin.get<Part2LookupViewModel>() },
+        part2Bank = part2FactoryOrNull { koin.get<BankViewModel>() },
+        bankAccess = BankAccess(viewModel.rememberHasAccess(FeatureGate.PART2_ORDERS), onUnlock = { showUpgradeSheet = true }),
     )
     if (showUpgradeSheet) PayslipUpgradeSheet(viewModel, onDismiss = { showUpgradeSheet = false })
 }

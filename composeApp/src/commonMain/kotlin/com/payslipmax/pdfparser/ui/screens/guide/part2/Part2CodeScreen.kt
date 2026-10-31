@@ -29,6 +29,7 @@ internal fun Part2CodeScreen(
     page: Part2CodeContent,
     onBack: () -> Unit,
     onOpenCode: (String) -> Unit,
+    onAddToBank: () -> Unit,
     listState: LazyListState,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -46,8 +47,7 @@ internal fun Part2CodeScreen(
             part2ColumnItems(page)
             part2AboutItems(page.about)
             part2RelatedItems(page.related, onOpenCode)
-            // Off until the Orders Bank exists (Phase 3): shown so the officer sees where the page leads, never a dead tap.
-            item(key = "add") { Button(onClick = {}, enabled = false, modifier = Modifier.fillMaxWidth()) { Text(LearnStrings.addToBank) } }
+            item(key = "add") { Button(onClick = onAddToBank, modifier = Modifier.fillMaxWidth()) { Text(LearnStrings.addToBank) } }
         }
     }
 }

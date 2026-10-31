@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 
 /** A level of the Claim Guide's own stack. Ids stay strings (never enums), so new areas are data-only changes. */
@@ -78,10 +79,20 @@ class GuideNavState(
     /** The Learn model whose search text a lock must drop (see [discardTransientForms]); set by the Guide tab while Part II is on. */
     internal var part2Lookup: Part2LookupViewModel? = null
 
-    /** What the app lock drops: the open TA/DA worksheet and any Learn search text. The stack stays, so the officer returns to the same level. */
+    /** The Orders Bank model, whose open entry form a lock must drop; set by the Guide tab while Part II is on. Also asked which entry ids are not saved yet. */
+    internal var part2Bank: BankViewModel? = null
+
+    /** What the app lock drops: the open TA/DA worksheet, any Learn search text and any open Orders Bank entry form. The stack stays, so the officer returns to the same level. */
     fun discardTransientForms() {
         discardPreClaim()
         part2Lookup?.clear()
+        part2Bank?.discardForms()
+    }
+
+    /** Cuts the stack at the first Orders Bank entry [exists] denies, and everything above it: the entry was deleted, or a restore did not bring it back. */
+    fun retainKnownEntries(exists: (String) -> Boolean) {
+        val kept = stack.takeWhile { it !is Part2Destination.Entry || exists(it.entryId) }
+        if (kept.size != stack.size) replaceStack(kept.ifEmpty { listOf(GuideDestination.Home) })
     }
 
     val current: GuideDestination get() = stack.last()

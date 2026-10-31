@@ -2,16 +2,18 @@ package com.payslipmax.pdfparser.ui.screens
 
 import com.payslipmax.pdfparser.crypto.DecryptionFailedException
 import com.payslipmax.pdfparser.repository.BackupDamagedException
+import com.payslipmax.pdfparser.repository.RestoreReport
 import com.payslipmax.pdfparser.repository.UnsupportedBackupVersionException
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.BackupRestoreStrings
+import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 
-internal fun restoreStatus(result: Result<Unit>): BackupStatus =
-    if (result.isSuccess) {
-        BackupStatus(AppStrings.statusRestoreComplete, isSuccess = true)
-    } else {
-        restoreFailedStatus(result.exceptionOrNull())
-    }
+/** A restore that left Part II rows out says how many, in the warning colour: those rows are lost, so the count must be noticed. */
+internal fun restoreStatus(result: Result<RestoreReport>): BackupStatus {
+    val report = result.getOrNull() ?: return restoreFailedStatus(result.exceptionOrNull())
+    if (report.skipped == 0) return BackupStatus(AppStrings.statusRestoreComplete, isSuccess = true)
+    return BackupStatus("${AppStrings.statusRestoreComplete} ${OrdersBankStrings.restoreSkipped(report.skipped)}", isSuccess = false)
+}
 
 /**
  * The status for a restore that failed, chosen by the failure's type and never by its text: a wrong password or file has its own line, a

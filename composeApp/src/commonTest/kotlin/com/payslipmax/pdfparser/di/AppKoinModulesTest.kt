@@ -5,6 +5,8 @@ import com.payslipmax.pdfparser.database.PayslipDao
 import com.payslipmax.pdfparser.guide.GuideRepository
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.parser.PdfParser
+import com.payslipmax.pdfparser.part2.data.Part2Dao
+import com.payslipmax.pdfparser.part2.data.Part2EntryEntity
 import com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
@@ -70,6 +72,8 @@ class AppKoinModulesTest {
     private val testLeaves =
         module {
             single<PayslipDao> { FakePayslipDao() }
+            // The backup service backs up the Part II rows too; this is the one DAO every test that builds it shares (see GuideKoinTestDao).
+            single<Part2Dao> { GuideKoinTestDao.dao.part2 }
             single<PdfParser> { FakePdfParser() }
         }
 
@@ -99,6 +103,18 @@ class AppKoinModulesTest {
         // nothing else in the graph would notice: the field is nullable so older call sites still compile.
         assertSame(koin.get<PayslipBackupService>(), koin.payslipViewModel().backupService)
     }
+
+    @Test
+    fun theBackupServiceIsWiredToTheOrdersBankRowsSoABuildCannotDropThem() =
+        runBlocking {
+            val koin = start()
+            val rows = GuideKoinTestDao.dao.part2
+            val before = rows.entryCount() + rows.orderCount()
+            rows.upsertEntry(Part2EntryEntity("wired-entry", byteArrayOf(1)))
+
+            // Unwired, this stays 0 whatever the device holds: a backup would silently leave the officer's Bank out of the file.
+            assertEquals(before + 1, koin.get<PayslipBackupService>().part2ItemCount())
+        }
 
     @Test
     fun onboardingStateIsOneInstanceSoEveryScreenSeesTheSameFlags() {

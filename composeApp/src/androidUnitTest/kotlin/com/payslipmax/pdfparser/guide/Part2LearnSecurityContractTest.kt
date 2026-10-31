@@ -26,7 +26,8 @@ class Part2LearnSecurityContractTest {
             "Part2SearchField.kt",
         )
     private val logicFiles = listOf("Part2Availability.kt", "Part2LookupViewModel.kt")
-    private val domainFiles = listOf("Part2LookupContent.kt", "Part2LookupIndex.kt")
+    private val domainFiles =
+        listOf("BankEntry.kt", "BankIndex.kt", "BankStatus.kt", "EntryForm.kt", "Part2Limits.kt", "Part2LookupContent.kt", "Part2LookupIndex.kt", "VaultOrder.kt")
 
     private fun withoutComments(file: File): String = file.readText().replace(Regex("""/\*.*?\*/""", RegexOption.DOT_MATCHES_ALL), "").lines().joinToString("\n") { it.substringBefore("//") }
 

@@ -44,11 +44,14 @@ fun PayslipViewModel.exportBackup(
     }
 }
 
+/** The Orders Bank entries and orders a backup would carry, read when Back Up or Restore is pressed; 0 where backup is not wired in. */
+suspend fun PayslipViewModel.part2ItemCount(): Int = backupService?.part2ItemCount() ?: 0
+
 fun PayslipViewModel.importBackup(
     backupBytes: ByteArray,
     password: String,
     mode: com.payslipmax.pdfparser.repository.RestoreMode,
-    onComplete: (Result<Unit>) -> Unit,
+    onComplete: (Result<com.payslipmax.pdfparser.repository.RestoreReport>) -> Unit,
 ) {
     viewModelScope.launch {
         _uiState.update { it.copy(isLoading = true) }

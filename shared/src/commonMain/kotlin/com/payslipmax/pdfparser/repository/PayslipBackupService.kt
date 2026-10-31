@@ -5,6 +5,10 @@ import com.payslipmax.pdfparser.crypto.DecryptionFailedException
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.logging.Logger
+import com.payslipmax.pdfparser.part2.data.LastBackupStorage
+import com.payslipmax.pdfparser.part2.data.PageArchive
+import com.payslipmax.pdfparser.part2.data.Part2Backup
+import com.payslipmax.pdfparser.rating.currentTimeMillis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -19,10 +23,18 @@ class PayslipBackupService(
     private val dispatcher: kotlinx.coroutines.CoroutineDispatcher = Dispatchers.Default,
     private val payslipRepository: PayslipRepository? = null,
     private val intelligence: FinancialIntelligenceRepository? = null,
+    // Null only in tests that do not care about Part II; the Koin graph always passes it (Part2WiringTest), so a build cannot drop the Bank.
+    private val part2Backup: Part2Backup? = null,
+    // Where the time of the last successful export is kept (device-local, never in the archive); null where nobody shows it.
+    private val lastBackup: LastBackupStorage? = null,
+    private val now: () -> Long = { currentTimeMillis() },
 ) {
+    /** How many Orders Bank entries and vault orders a backup would carry; 0 where Part II is not wired in. */
+    suspend fun part2ItemCount(): Int = withContext(dispatcher) { part2Backup?.itemCount() ?: 0 }
+
     /**
      * Exports everything the user created (payslips, PDFs, settings, letters, deleted-letter records,
-     * corrections, private Guide notes) as an encrypted JSON archive. Derived data (ledger, insights) is not exported.
+     * corrections, private Guide notes, Orders Bank entries, orders and pages) as an encrypted archive. Derived data (ledger, insights) is not exported.
      */
     suspend fun export(password: String): Result<ByteArray> =
         withContext(dispatcher) {
@@ -45,6 +57,7 @@ class PayslipBackupService(
                         }
                     }
 
+                val part2 = part2Backup?.export(password)
                 val backup =
                     PortableBackup(
                         version = PortableBackup.CURRENT_VERSION,
@@ -55,12 +68,18 @@ class PayslipBackupService(
                         dismissedDrafts = payslipDao.getAllDismissedDrafts(),
                         corrections = exportCorrections(deviceKey, password),
                         guideNotes = GuideNoteBackup.forExport(payslipDao.getAllGuideNotes().first(), deviceKey, password),
+                        part2Entries = part2?.entries.orEmpty(),
+                        part2Orders = part2?.orders.orEmpty(),
                     )
 
                 val jsonStr = Json.encodeToString(PortableBackup.serializer(), backup)
                 val jsonBytes = jsonStr.encodeToByteArray()
 
+                // With scanned pages the archive is this document followed by one binary record per page (PageArchive), written straight
+                // into a buffer of the final size, so a full vault is never copied through a JSON string. Without pages it is the one blob.
                 CryptoHelper.encrypt(jsonBytes, password)
+                    .mapCatching { meta -> part2Backup?.archiveWithPages(meta, password) ?: meta }
+                    .onSuccess { lastBackup?.save(now()) }
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -87,10 +106,10 @@ class PayslipBackupService(
         backupBytes: ByteArray,
         password: String,
         mode: RestoreMode = RestoreMode.REPLACE,
-    ): Result<Unit> =
+    ): Result<RestoreReport> =
         withContext(dispatcher) {
             try {
-                val decryptResult = CryptoHelper.decrypt(backupBytes, password)
+                val decryptResult = CryptoHelper.decrypt(PageArchive.metaOf(backupBytes) ?: backupBytes, password)
                 if (decryptResult.isFailure) {
                     return@withContext Result.failure(
                         decryptResult.exceptionOrNull() ?: Exception("Decryption failed"),
@@ -117,6 +136,8 @@ class PayslipBackupService(
                             }
                         domainModel.toEncryptedEntity(deviceKey)
                     }
+                // Part II rows are size- and count-checked before any is decoded; what fails is skipped and counted, never fatal.
+                val part2 = part2Backup?.restore(backup, backupBytes, password, mode)
                 val rows =
                     BackupRows(
                         payslips = databasePayslips,
@@ -125,6 +146,9 @@ class PayslipBackupService(
                         dismissedDrafts = backup.dismissedDrafts,
                         corrections = backup.corrections.map { it.toCorrectionList(password).toCorrectionEntity(it.dateStr, deviceKey) },
                         guideNotes = restoredNotes(backup, password, deviceKey, mode),
+                        part2Entries = part2?.entries.orEmpty(),
+                        part2Orders = part2?.orders.orEmpty(),
+                        part2Pages = part2?.pages ?: emptySequence(),
                     )
 
                 // REPLACE makes the device an exact copy of the backup (every user and derived table is
@@ -144,7 +168,7 @@ class PayslipBackupService(
                 }
 
                 rebuildDerivedData()
-                Result.success(Unit)
+                Result.success(RestoreReport(part2?.skipped ?: 0))
             } catch (e: DecryptionFailedException) {
                 // The outer layer opened (a wrong password was returned above), so a row inside that will not open is a damaged file.
                 Result.failure(BackupDamagedException())

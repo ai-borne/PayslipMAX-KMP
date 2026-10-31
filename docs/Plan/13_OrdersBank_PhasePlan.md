@@ -146,11 +146,11 @@ protocol and the template in plan 12) and waits for the owner before the next ph
 | 0. Branch, baseline, general fixes, storage proof | planned | small |
 | 1. ODP content: the 303-row column table, descriptions, related, bundle | done 2026-10-30 (owner: spot-check passed, 30 pages read) | large |
 | 2. Learn about Part II (free) | built and committed 2026-10-30; owner walked it on the Pixel; open points in phase 7 | medium |
-| 3. Orders Bank: note it | planned | medium |
+| 3. Orders Bank: note it | built 2026-10-30, gate green; NOT committed: waits for the owner's Pixel walk (open points in phase 7) | medium |
 | 4. Orders Bank: prove it (scan, attach, counter, chain, shelf) | planned | large |
 | 5. Print or PDF of the index | planned | medium |
 | 6. Release: hardening, walks, store wording | planned | medium |
-| 7. Phase 2 close-out (all pending points of Phase 2, in one place) | open | small |
+| 7. Close-out (every pending point of Phases 2 and 3, in one place) | open | small |
 
 ### Phase 0: Branch, baseline, general fixes, storage proof
 - Goal: a green branch from main with the four fixes main benefits from, and a proven migration path.
@@ -215,7 +215,7 @@ protocol and the template in plan 12) and waits for the owner before the next ph
   feature (no notification permission); the owner enters Play and App Store Connect. The flag is flipped only on the owner's word, in its own commit.
 - The owner's own check: scan one real, old, yellowed order and say whether it reads (nothing is read or recorded by me).
 
-### Phase 7: Phase 2 close-out (everything Phase 2 left open)
+### Phase 7: Close-out (everything Phases 2 and 3 left open)
 Phase 2 is committed and its gate is green. Owner decisions made on the Pixel walk (2026-10-30): the search box does not take focus by
 itself; the Learn row sits in its own section "Part II orders (ODP 2026)" below the handbook areas, with a line saying it is a different
 manual. Still open:
@@ -226,7 +226,19 @@ manual. Still open:
 4. Native timing: the Learn search walk measured 649 to 2,279 ms on a loaded host (budget 1,500); the test takes the best of three. Raise
    the budget only if CI flakes.
 5. iPhone walk of Learn: per the standing rule, only when all features are ready.
-6. Push: only on the owner's word (after Phase 2, per the owner).
+6. Push: only on the owner's word (after Phase 3, per the owner).
+
+Phase 3 open points (2026-10-30; the Phase 3 commit waits for 1 and 2):
+1. Owner: the Pixel walk on synthetic data (add, edit, delete, kill the process, lapse to Free, backup and restore through the picker).
+2. Owner: read the Bank screens and wording on the phone: the empty state, the "last backup" line, "Add a casualty", the lapsed note.
+3. Owner decisions taken 2026-10-31 (closed): the form follows ODP 2026 (To only where the ODP prints a To column; From always required, labelled "Date" for the 6 casualties with no From column); a lapsed officer sees a read-only form with Delete only; anyone opens the Bank, newest From first; last-backup line on the Bank screen only; commit after the owner's walk, then push feature/orders-bank (no PR).
+4. Characterization gap closed: the old branch's 141 `part2.data` tests ran green unchanged against its own sources.
+5. TDD gap closed by 12 more deliberate breaks of the view models, navigation and screens (30 breaks in all, each caught by an assertion, each file restored and its sha256 checked). The first view-model and screen tests were still red only as missing declarations.
+6. Not broken on purpose: the generic `SubscriptionManager.hasAccess` (no Part II special case exists), the restore "never decoded" counting test, the export of unreadable rows.
+7. iOS: the XCTest target was not run (no Swift changed); the Bank timing test and the two ported storage twins passed on the simulator. The iPhone walk stays with the other features (standing rule).
+8. Not copied on purpose: the vault-size settings row and its warning (Phase 4); `Part2Limits.VAULT_WARN_BYTES` was removed as unused and returns with it.
+9. Final checks before the commit (owner chose to run all): full `check`, iOS tests, XCTest alone.
+10. Debt kept: `Part2Ribbon.built` and `Part2Case.lookup` (point 3 above).
 
 ## Risks and controls
 

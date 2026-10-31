@@ -114,7 +114,7 @@ fun DataManagementSection(
         BackupRestoreSettingsCard(
             password = password,
             onPasswordChange = onPasswordChange,
-            payslipCount = uiState.payslips.size,
+            contents = { BackupContents(payslips = uiState.payslips.size, part2Items = viewModel.part2ItemCount()) },
             onExportBackup = { pw, onComplete -> viewModel.exportBackup(pw, onComplete) },
             onRestore = { bytes, pw, mode, onComplete -> viewModel.importBackup(bytes, pw, mode, onComplete) },
             onPickBackup = onPickBackup,

@@ -8,6 +8,7 @@ import androidx.room.DeleteTable
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.migration.AutoMigrationSpec
+import com.payslipmax.pdfparser.part2.data.Part2Dao
 import com.payslipmax.pdfparser.part2.data.Part2EntryEntity
 import com.payslipmax.pdfparser.part2.data.Part2OrderEntity
 import com.payslipmax.pdfparser.part2.data.Part2PageEntity
@@ -46,6 +47,8 @@ import com.payslipmax.pdfparser.part2.data.Part2PageEntity
 @ConstructedBy(PayslipDatabaseConstructor::class)
 abstract class PayslipDatabase : RoomDatabase() {
     abstract fun payslipDao(): PayslipDao
+
+    abstract fun part2Dao(): Part2Dao
 
     /**
      * AutoMigration spec for v5→v6:

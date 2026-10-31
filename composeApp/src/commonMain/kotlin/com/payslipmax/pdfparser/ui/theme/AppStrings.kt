@@ -160,7 +160,7 @@ object AppStrings {
     const val statusRestoreComplete = "Restore Complete!"
     const val statusBackupFailed = "Backup Failed: "
     const val labelPayslipsBackedUp = "payslips backed up"
-    const val statusNoPayslipsToBackup = "No payslips to back up yet."
+    const val statusNothingToBackup = "Nothing to back up yet."
     const val settingsDataManagementHeader = "Data Management"
     const val settingsSecurityEncryptionStatusLabel = "Local Encryption Status"
     const val settingsSecurityEncryptionStatusSubtitle = "100% Offline & Encrypted"

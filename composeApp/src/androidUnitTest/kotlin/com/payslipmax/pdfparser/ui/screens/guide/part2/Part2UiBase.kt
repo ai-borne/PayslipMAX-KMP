@@ -18,12 +18,14 @@ import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.SyntheticGuidePart2
+import com.payslipmax.pdfparser.ui.screens.guide.BankAccess
 import com.payslipmax.pdfparser.ui.screens.guide.GuideAccess
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
 import com.payslipmax.pdfparser.ui.screens.guide.GuidePlatform
 import com.payslipmax.pdfparser.ui.screens.guide.GuideSearchViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideTab
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
@@ -59,12 +61,14 @@ abstract class Part2UiBase {
         nav: GuideNavState = GuideNavState(),
         unlocked: Boolean = true,
         part2: (() -> Part2LookupViewModel)? = factory,
+        part2Bank: (() -> BankViewModel)? = null,
+        bankAccess: BankAccess = BankAccess.Locked,
     ): GuideNavState {
         composeRule.setContent {
             // The font scale is the one thing a test may change about the phone it pretends to be; at 1 nothing is wrapped.
             val density = LocalDensity.current
             val scaled = if (fontScale == 1f) density else Density(density.density, fontScale)
-            CompositionLocalProvider(LocalDensity provides scaled) { GuideTab(nav, GuideAccess(unlocked) { unlockTaps++ }, guide, search, platform, null, null, part2) }
+            CompositionLocalProvider(LocalDensity provides scaled) { GuideTab(nav, GuideAccess(unlocked) { unlockTaps++ }, guide, search, platform, null, null, part2, part2Bank, bankAccess) }
         }
         settle()
         return nav
