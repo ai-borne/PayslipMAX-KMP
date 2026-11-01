@@ -141,16 +141,19 @@ protocol and the template in plan 12) and waits for the owner before the next ph
 
 ## Phases
 
+**Execution order from here (owner, 2026-11-01): Phase 7 remnants (the split page backup first), then Phase 8 (UX pass), then Phase 6 (release).** Phases 0 to 5 are committed. Numbers are kept so other documents still refer to the right phase; the sections below are in the order they run.
+
 | Phase | Status | Size (estimate) |
 |---|---|---|
-| 0. Branch, baseline, general fixes, storage proof | planned | small |
-| 1. ODP content: the 303-row column table, descriptions, related, bundle | done 2026-10-30 (owner: spot-check passed, 30 pages read) | large |
-| 2. Learn about Part II (free) | built and committed 2026-10-30; owner walked it on the Pixel; open points in phase 7 | medium |
-| 3. Orders Bank: note it | built 2026-10-30, gate green; NOT committed: waits for the owner's Pixel walk (open points in phase 7) | medium |
-| 4. Orders Bank: prove it (scan, attach, counter, chain, shelf) | planned | large |
-| 5. Print or PDF of the index | planned | medium |
-| 6. Release: hardening, walks, store wording | planned | medium |
-| 7. Close-out (every pending point of Phases 2 and 3, in one place) | open | small |
+| 0. Branch, baseline, general fixes, storage proof | committed f72cc6c4 | small |
+| 1. ODP content: the 303-row column table, descriptions, related, bundle | committed ef80fc4f (owner: spot-check passed, 30 pages read) | large |
+| 2. Learn about Part II (free) | committed d94e7704; owner walked it on the Pixel | medium |
+| 3. Orders Bank: note it | committed cbae8f74; owner walked it on the Pixel | medium |
+| 4. Orders Bank: prove it (scan, attach, counter, chain, shelf) | committed 2cd3761a (pushed); owner walked it, a real yellowed order reads well | large |
+| 5. Print or PDF of the index | committed db7a9ce4 (not pushed); owner walked the print: working as intended | medium |
+| 7. Close-out and the split, incremental page backup (every pending point, in one place) | NEXT, open | large |
+| 8. UX pass (the owner's list of minor issues) | after 7, list not yet given | small |
+| 6. Release: hardening, walks, store wording | LAST, after 7 and 8 | medium |
 
 ### Phase 0: Branch, baseline, general fixes, storage proof
 - Goal: a green branch from main with the four fixes main benefits from, and a proven migration path.
@@ -208,13 +211,6 @@ protocol and the template in plan 12) and waits for the owner before the next ph
 - Work: `IndexPrinter` built from the old slip printer infrastructure; one entry point on the Bank.
 - Exit: gate green; Pixel print to PDF and a real printer if the owner has one at hand.
 
-### Phase 6: Release
-- Work: full gate on the final commit; `assembleRelease`, R8 and manifest checks; a release-APK walk on the Pixel (after the owner's
-  `.pcda` backup); one iPhone walk from a new `IPHONE_CHECKLIST.md` for this feature (no TestFlight before it, and a lane guard in
-  `iosApp/fastlane` that refuses an upload while the Part II flag is on and no walk marker exists); store wording rewritten for the smaller
-  feature (no notification permission); the owner enters Play and App Store Connect. The flag is flipped only on the owner's word, in its own commit.
-- The owner's own check: scan one real, old, yellowed order and say whether it reads (nothing is read or recorded by me).
-
 ### Phase 7: Close-out (everything Phases 2 and 3 left open)
 Phase 2 is committed and its gate is green. Owner decisions made on the Pixel walk (2026-10-30): the search box does not take focus by
 itself; the Learn row sits in its own section "Part II orders (ODP 2026)" below the handbook areas, with a line saying it is a different
@@ -240,6 +236,14 @@ Phase 3 open points (2026-10-30; the Phase 3 commit waits for 1 and 2):
 9. Final checks before the commit (owner chose to run all): full `check`, iOS tests, XCTest alone.
 10. Debt kept: `Part2Ribbon.built` and `Part2Case.lookup` (point 3 above).
 
+Phase 7 REVISION by the owner (2026-11-01), replacing the split in point 11: (1) the vault ceiling becomes 250 MB (was a fixed 100 MB), with a usage meter and a warning at 80% (200 MB); the counts (1,000 orders, 2,000 casualties) stay the brake; measured on one real yellowed page: 211 KB stored, so 250 MB holds about 1,200 pages. (2) The `.pcda` backup stays ONE file carrying data and pages: no second pages file, no split, no incremental file (point 11 b and c are dropped), so there is one backup format and one place that defines it. Consequence found while planning (2026-11-01): the file is already one archive (`PageArchive`, "PCDB"), but `export` returns one `ByteArray` of the whole vault and `restore` takes one `ByteArray`; a normal Android app heap on the Pixel is 256 MB (`dalvik.vm.heapgrowthlimit`), so a 250 MB vault cannot be built or read that way (not measured; the arithmetic alone exceeds the heap). Android's own device backup is off (`allowBackup="false"`), so the `.pcda` is the only backup on Android; iCloud device backup on iOS is not verified. Open owner question: how memory stays flat at 250 MB (streaming the one file is the recommendation).
+
+Phase 7 execution plan (2026-11-01; owner: "go" on streaming the one file, 250 MB ceiling, warn below 500 MB free and refuse below 100 MB, no format version bump). Order matters: the ceiling is raised LAST, because 250 MB cannot be exported or restored while a backup is one `ByteArray` on a 256 MB heap.
+- 7a Streaming core (shared, both platforms' common code): `BackupSink` (write in order) and `BackupSource` (read by offset) in `repository`; a memory pair for small files and tests; `PageArchiveWriter` writes to a sink (no final-size buffer), `PageArchive.layout`/`restorePages` read from a source (header windows and one sealed page at a time); `PayslipBackupService.exportTo(sink)` and `restore(source)`, with the `ByteArray` forms kept as thin wrappers until 7b. Same bytes as before (no format change), proven by round-trip and by the old archive tests running green unchanged. Red test first: the 120-page scale scenario through file sink/source must stay under a small extra heap (the old path needs about the vault's size).
+- 7b Platform files: Android `RandomAccessFile`/`FileOutputStream` and iOS `NSFileHandle` sinks and sources; export writes a cache file and shares it, the picker copies the chosen file by stream to a cache file and restores from it; both temp files are deleted in a `finally` (the contents are password-encrypted); `shareBytes` and `onPickBackup` stop carrying a `ByteArray`. R8 and iOS timing checks; Pixel walk of backup and restore with the owner's data (a fresh `.pcda` first).
+- 7c Ceiling and warnings: `VAULT_BYTES_MAX` 250 MB, warning at 200 MB (80%), free-space warning below 500 MB and refusal below 100 MB before a scan or an attach, one text function for the meter (Settings always, Bank past the warning); tests with a fake free-space reader; a 250 MB synthetic restore memory test on both platforms.
+- Then the rest of this Phase 7 list (owner items) and Phase 8, then Phase 6.
+
 Phase 4 owner decision (2026-11-01), the split page backup (open, before release; owner decided it is in):
 11. Real use means 100+ orders and 300+ pages, so the 100 MB vault cap and a single `.pcda` carrying every page will not hold. Plan: (a) a per-page size budget (about 250 KB, grayscale, fixed long edge) chosen from a readability test on the owner's yellowed-order scan, not guessed; (b) `.pcda` keeps entries, order metadata, notes and the page index (ids and content hashes) and restores without the images, orders then show "pages not restored"; (c) a separate, incremental pages backup, pages named by content hash, only new pages added per backup, verified one by one on restore, resumable, size and count checked before any decode; (d) the fixed 100 MB cap replaced by a usage meter, a free-device-space warning and a generous safety ceiling; (e) check whether Android Auto Backup and iCloud device backup already carry the database (not verified); (f) backup format v5 to v6 with restore tests for partial, interrupted and mismatched files. No real users yet, so the format may change freely now.
 
@@ -248,6 +252,7 @@ Phase 4 open points (2026-11-01; the Phase 4 commit waits for 1 and 2):
 1a. DECIDED by the owner (2026-11-01): a lapsed officer may delete a page ("Delete page" is shown when lapsed, with its confirmation), as well as the order; Add pages and Remove from this order stay hidden. Done, with two tests.
 2. Owner: read the new screens and wording on the phone (attach form, order screen with the "Personal reference copy" label, shelf, Settings size line, backup note, entry-screen buttons). One wording to confirm: the counter counts CASUALTIES (the order's printed "No. of Occurrences"), not pages as the Phase 4 question said.
 3. Owner: your own scan of one old yellowed order after the phase, and your word on whether it reads (nothing is read or recorded by me). It also sets the real per-page budget: the 250 KB (`PAGE_BUDGET_BYTES`) was measured on a synthetic page only.
+   DONE 2026-11-01: the owner scanned one real yellowed order and says it reads well. The stored page is 211 KB (byte length of its row only; nothing else was read), under the 250 KB budget, so `PAGE_BUDGET_BYTES` stays 250 KB. Measured on one page only; a second page was not measured.
 4. Not verified on a device: the ML Kit scanner itself, VisionKit (no iPhone walk, per the standing rule), the `GmsDocumentScanningDelegateActivity` entry in the installed manifest, and the camera prompt text on a phone.
 5. iOS: the Swift presenter is the old one verbatim and its 9 XCTest cases pass; `registerPresenter` runs at launch but has not been exercised on a phone. Disk-space privacy-manifest entry from the old branch not copied (nothing here reads disk space yet; add it with the free-space warning in the split-backup phase).
 6. Characterization gaps: none left; the old tests ran green unchanged against a scratch export of the frozen branch (108 JVM, 26 iOS Kotlin, Swift XCTest) before porting.
@@ -265,6 +270,16 @@ Phase 5 open points (2026-11-01). The owner walked the print on the Pixel and sa
 7. Debt kept: `PrintOutcome.COMPLETED` is returned by the printers but production code ignores it (the call returning is what re-enables the button; nothing is recorded); the Android 30-minute `PRINT_WATCH_MS` keeps the button off for as long as a printer never answers; `IndexPdf`/`IosIndexPdf` duplicate the page model's drawing (one per platform, as in the slip printer); the index has no sort other than newest From first.
 8. Native timing: `IosIndexPdfTest` renders 2000 rows (the Bank ceiling) with a 3 s budget, best of three; the figure is printed in the test log.
 9. Still ahead: the split, incremental page backup and storage-based cap (point 11 above); Phase 6 release (full gate on the final commit, release-APK walk including print, one iPhone walk that must include the print sheet and Dynamic Type, store wording, lane guard).
+
+### Phase 8: UX pass (owner, 2026-11-01)
+The owner found a few minor UX issues while walking Phases 4 and 5 and will list them all together. They are addressed in one pass, after the remnants of Phase 7 (the split page backup and the rest of its open points), not scattered through earlier phases. Nothing is written down here until the owner gives the list. DECIDED by the owner (2026-11-01): the order is Phase 7, then Phase 8, then Phase 6 (release), so the release walk and the one iPhone walk cover the final screens once.
+
+### Phase 6: Release (runs LAST: after Phases 7 and 8; owner, 2026-11-01)
+- Work: full gate on the final commit; `assembleRelease`, R8 and manifest checks; a release-APK walk on the Pixel (after the owner's
+  `.pcda` backup); one iPhone walk from a new `IPHONE_CHECKLIST.md` for this feature (no TestFlight before it, and a lane guard in
+  `iosApp/fastlane` that refuses an upload while the Part II flag is on and no walk marker exists); store wording rewritten for the smaller
+  feature (no notification permission); the owner enters Play and App Store Connect. The flag is flipped only on the owner's word, in its own commit.
+- The owner's own check: scan one real, old, yellowed order and say whether it reads (nothing is read or recorded by me).
 
 ## Risks and controls
 

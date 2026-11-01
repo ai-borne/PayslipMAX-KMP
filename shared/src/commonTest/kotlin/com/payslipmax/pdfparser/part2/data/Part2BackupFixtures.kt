@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.part2.domain.BankEntry
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
+import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.repository.backupBytes
 import com.payslipmax.pdfparser.repository.goodEntity
@@ -67,10 +68,12 @@ internal fun archive(
     val backup = PortableBackup(version, listOf(goodEntity("08/2024")), emptyList(), null, part2Entries = entries, part2Orders = orders)
     if (pages.isEmpty()) return backupBytes(backup)
     val meta = CryptoHelper.encrypt(Json.encodeToString(PortableBackup.serializer(), backup).encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()
-    val writer = PageArchiveWriter(meta.size + pages.sumOf { it.sealed.size + 200 } + 400)
+    val sink = MemoryBackupSink()
+    val writer = PageArchiveWriter(sink)
     writer.begin(meta)
     pages.forEach { writer.add(it.id, it.orderId, it.position, it.sealed) }
-    return writer.finish(declared, BACKUP_PASSWORD)
+    writer.finish(declared, BACKUP_PASSWORD)
+    return sink.toByteArray()
 }
 
 /** The metadata document of either kind of archive. */

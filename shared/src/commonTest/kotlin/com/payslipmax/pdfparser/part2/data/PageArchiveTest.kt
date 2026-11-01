@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
+import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -22,10 +23,12 @@ class PageArchiveTest {
     private val page = pageRow("p1", "o1", 0, SyntheticBank.jpeg(3000))
 
     private fun built(vararg pages: RawPage): ByteArray {
-        val writer = PageArchiveWriter(meta.size + pages.sumOf { it.sealed.size + 200 } + 400)
+        val sink = MemoryBackupSink()
+        val writer = PageArchiveWriter(sink)
         writer.begin(meta)
         pages.forEach { writer.add(it.id, it.orderId, it.position, it.sealed) }
-        return writer.finish(pages.size, BACKUP_PASSWORD)
+        writer.finish(pages.size, BACKUP_PASSWORD)
+        return sink.toByteArray()
     }
 
     @Test
@@ -85,11 +88,7 @@ class PageArchiveTest {
     }
 
     @Test
-    fun theWriterRefusesARecordBeforeTheDocumentAndAnythingPastItsBuffer() {
-        assertFailsWith<IllegalStateException> { PageArchiveWriter(1000).add("p1", "o1", 0, ByteArray(4)) }
-
-        val small = PageArchiveWriter(meta.size + 40)
-        small.begin(meta)
-        assertFailsWith<IllegalStateException> { small.add("p1", "o1", 0, ByteArray(500)) }
+    fun theWriterRefusesARecordBeforeTheDocument() {
+        assertFailsWith<IllegalStateException> { PageArchiveWriter(MemoryBackupSink()).add("p1", "o1", 0, ByteArray(4)) }
     }
 }

@@ -2,6 +2,9 @@ package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
+import com.payslipmax.pdfparser.repository.BackupSink
+import com.payslipmax.pdfparser.repository.BackupSource
+import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.repository.RestoreMode
 import kotlin.io.encoding.Base64
@@ -51,18 +54,19 @@ class Part2Backup(
     }
 
     /**
-     * The finished archive when the vault has pages ([meta] is the encrypted metadata document), or null when it has none. The archive is
-     * written into one buffer of its final size, one page at a time: a page's row, its plaintext and its new ciphertext are all that is
-     * ever held besides the output.
+     * Writes the archive to [sink] when the vault has pages ([meta] is the encrypted metadata document) and returns true, or writes nothing
+     * and returns false when it has none. One page at a time: a page's row, its plaintext and its new ciphertext are all that is ever held,
+     * so the vault can be any size the ceiling allows. A vault whose pages are all unreadable writes an archive that counts none.
      */
-    suspend fun archiveWithPages(
+    suspend fun writeArchive(
+        sink: BackupSink,
         meta: ByteArray,
         password: String,
-    ): ByteArray? {
+    ): Boolean {
         val refs = dao.allPageRefs()
-        if (refs.isEmpty()) return null
+        if (refs.isEmpty()) return false
         val key = deviceKey()
-        val writer = PageArchiveWriter(PageArchive.capacity(meta.size, refs, dao.vaultBytes(), refs.size))
+        val writer = PageArchiveWriter(sink)
         writer.begin(meta)
         var written = 0
         for (ref in refs) {
@@ -75,13 +79,22 @@ class Part2Backup(
                 jpeg.fill(0)
             }
         }
-        return if (written == 0) null else writer.finish(written, password)
+        writer.finish(written, password)
+        return true
     }
 
-    /** [archive] is the whole file; [backup] is its decoded metadata document. A damaged page archive throws `BackupDamagedException`. */
+    /** [archive] is the whole file in memory (small files and tests); see the [BackupSource] form. */
     suspend fun restore(
         backup: PortableBackup,
         archive: ByteArray,
+        password: String,
+        mode: RestoreMode,
+    ): Part2Restore = restore(backup, MemoryBackupSource(archive), password, mode)
+
+    /** [source] is the whole file, read by range; [backup] is its decoded metadata document. A damaged page archive throws `BackupDamagedException`. */
+    suspend fun restore(
+        backup: PortableBackup,
+        source: BackupSource,
         password: String,
         mode: RestoreMode,
     ): Part2Restore {
@@ -89,7 +102,7 @@ class Part2Backup(
         val merge = mode == RestoreMode.MERGE
         val entries = restoreRows(entryKind, backup.part2Entries, if (merge) dao.allEntries() else emptyList(), password, key, merge, decodeText)
         val orders = restoreRows(orderKind, backup.part2Orders, if (merge) dao.allOrders() else emptyList(), password, key, merge, decodeText)
-        val pages = restorePages(dao, archive, orders.kept + orders.heldIds, password, key, merge, vaultBytesMax, openPage)
+        val pages = restorePages(dao, source, orders.kept + orders.heldIds, password, key, merge, vaultBytesMax, openPage)
         return Part2Restore(entries.rows, orders.rows, pages.pages, entries.skipped + orders.skipped + pages.skipped + backup.part2Drafts.size)
     }
 }

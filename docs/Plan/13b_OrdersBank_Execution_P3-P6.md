@@ -91,7 +91,7 @@ adapted from the slip printer, one button on the Bank (Premium, view-only for a 
 Files: `IndexLayout` under 150; each platform printer under 100. Security: nothing is shared through a share sheet, no file is left on disk, the job name is fixed.
 Gate: sections 3 items 1 to 6; R8 minify. Debt watch: copied slip names that still say "slip". Exit: Pixel print to PDF and, if available, a real printer.
 
-## Phase 6: Release (size: medium)
+## Phase 6: Release (size: medium; runs LAST, after Phases 7 and 8, owner 2026-11-01)
 
 Objective: a release the owner can put on the Android internal track and an iPhone walk that closes the iOS side.
 Read first: `docs/Launch/10_part2_store_wording.md`, `iosApp/fastlane` and `composeApp/fastlane` lanes, `project_release_1_3_0.md` procedure, `Info.plist`,

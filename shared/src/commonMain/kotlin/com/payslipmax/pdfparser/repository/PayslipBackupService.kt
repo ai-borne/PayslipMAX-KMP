@@ -36,7 +36,19 @@ class PayslipBackupService(
      * Exports everything the user created (payslips, PDFs, settings, letters, deleted-letter records,
      * corrections, private Guide notes, Orders Bank entries, orders and pages) as an encrypted archive. Derived data (ledger, insights) is not exported.
      */
-    suspend fun export(password: String): Result<ByteArray> =
+    suspend fun export(password: String): Result<ByteArray> {
+        val sink = MemoryBackupSink()
+        return exportTo(sink, password).map { sink.toByteArray() }
+    }
+
+    /**
+     * The same archive written to [sink] piece by piece, so a backup of any size never exists as one array. The file is written as it goes:
+     * when this returns a failure the sink holds a partial file, which the caller discards, and no backup time is recorded.
+     */
+    suspend fun exportTo(
+        sink: BackupSink,
+        password: String,
+    ): Result<Unit> =
         withContext(dispatcher) {
             try {
                 val payslips = payslipDao.getAllPayslips().first()
@@ -75,10 +87,10 @@ class PayslipBackupService(
                 val jsonStr = Json.encodeToString(PortableBackup.serializer(), backup)
                 val jsonBytes = jsonStr.encodeToByteArray()
 
-                // With scanned pages the archive is this document followed by one binary record per page (PageArchive), written straight
-                // into a buffer of the final size, so a full vault is never copied through a JSON string. Without pages it is the one blob.
+                // With scanned pages the archive is this document followed by one binary record per page (PageArchive), streamed to the sink
+                // a page at a time, so a full vault is never copied through a JSON string or held in one array. Without pages it is the one blob.
                 CryptoHelper.encrypt(jsonBytes, password)
-                    .mapCatching { meta -> part2Backup?.archiveWithPages(meta, password) ?: meta }
+                    .mapCatching { meta -> if (part2Backup?.writeArchive(sink, meta, password) != true) sink.write(meta) }
                     .onSuccess { lastBackup?.save(now()) }
             } catch (e: Exception) {
                 Result.failure(e)
@@ -106,10 +118,17 @@ class PayslipBackupService(
         backupBytes: ByteArray,
         password: String,
         mode: RestoreMode = RestoreMode.REPLACE,
+    ): Result<RestoreReport> = restore(MemoryBackupSource(backupBytes), password, mode)
+
+    /** The same restore from a file read by range: only the document and one page at a time are ever in memory. The caller closes [source] afterwards. */
+    suspend fun restore(
+        source: BackupSource,
+        password: String,
+        mode: RestoreMode = RestoreMode.REPLACE,
     ): Result<RestoreReport> =
         withContext(dispatcher) {
             try {
-                val decryptResult = CryptoHelper.decrypt(PageArchive.metaOf(backupBytes) ?: backupBytes, password)
+                val decryptResult = CryptoHelper.decrypt(PageArchive.metaOf(source) ?: wholeBlob(source), password)
                 if (decryptResult.isFailure) {
                     return@withContext Result.failure(
                         decryptResult.exceptionOrNull() ?: Exception("Decryption failed"),
@@ -137,7 +156,7 @@ class PayslipBackupService(
                         domainModel.toEncryptedEntity(deviceKey)
                     }
                 // Part II rows are size- and count-checked before any is decoded; what fails is skipped and counted, never fatal.
-                val part2 = part2Backup?.restore(backup, backupBytes, password, mode)
+                val part2 = part2Backup?.restore(backup, source, password, mode)
                 val rows =
                     BackupRows(
                         payslips = databasePayslips,
@@ -177,6 +196,12 @@ class PayslipBackupService(
             }
         }
 
+    /** A file that is not a page archive is the one encrypted blob (payslips and their PDFs), which is read whole; no real one is this large. */
+    private fun wholeBlob(source: BackupSource): ByteArray {
+        if (source.size > BLOB_MAX_BYTES) throw BackupDamagedException()
+        return source.read(0, source.size.toInt())
+    }
+
     /** An unreadable note is skipped (see [GuideNoteBackup]); only a MERGE needs the notes the device holds now. */
     private suspend fun restoredNotes(
         backup: PortableBackup,
@@ -203,6 +228,9 @@ class PayslipBackupService(
         }
     }
 }
+
+/** The most a backup without scanned pages may be: payslips and their PDFs, a few megabytes in real use. */
+private const val BLOB_MAX_BYTES = 128L * 1024 * 1024
 
 /** Tolerates fields added by a later app version, so an older build still restores what it understands. */
 private val lenientJson = Json { ignoreUnknownKeys = true }
