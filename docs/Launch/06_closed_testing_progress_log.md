@@ -678,7 +678,8 @@ versionCode 21 → 22; `versionName` stays 1.5.0 (the same release as iOS 1.5.0 
   (`composeApp/fastlane/release_notes/1.5.0/whats_new_en-IN.txt`); `track_status`: production [22], alpha [15], internal [22].
 - **iOS counterpart:** 1.5.0 (6) was submitted to App Review on 2026-10-30 (`WAITING_FOR_REVIEW`; `AFTER_APPROVAL`, so it publishes on approval). Notes in
   `iosApp/fastlane/release_notes/1.5.0/`.
-- **Not done:** Apple's decision on 1.5.0; a Google "in review" state for this production release was not checked; the 11 Play devices are closed testers, not real users.
+- **Closed 2026-11-01 (owner):** iOS 1.5.0 is live in production. Android versionCode 22 and iOS 1.5.0 are both live and both monetized (sprint goal met).
+- **Not done at the time:** Apple's decision on 1.5.0 (now approved, see above); a Google "in review" state for this production release was not checked; the 11 Play devices are closed testers, not real users.
 
 ## Next steps
 
