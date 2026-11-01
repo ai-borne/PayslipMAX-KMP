@@ -57,6 +57,8 @@ private fun encode(
         is GuideDestination.PreClaim -> listOfNotNull(PRECLAIM, destination.move).joinToString(SEPARATOR.toString())
         // A new entry's id exists only in memory until Add: after process death the stack ends at the casualty page it was opened from.
         is Part2Destination.Entry -> if (state.part2Bank?.isPending(destination.entryId) == true) null else part2Entry(destination)
+        // The attach flow holds a scan that does not survive the process, so it is left out and the stack ends at the level under it.
+        is Part2Destination.Attach -> null
         is Part2Destination -> part2Entry(destination)
     }
 

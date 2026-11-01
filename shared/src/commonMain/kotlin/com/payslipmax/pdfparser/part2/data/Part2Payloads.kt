@@ -48,6 +48,8 @@ internal class OrderPayload(
     val date: DatePayload? = null,
     val createdAt: Long,
     val updatedAt: Long,
+    val expectedCount: Int? = null,
+    val lastOrderNo: String? = null,
 )
 
 private fun date(date: CalendarDate) = DatePayload(date.year, date.month, date.day)
@@ -72,6 +74,6 @@ internal fun EntryPayload.toEntry() =
         updatedAt = updatedAt,
     )
 
-internal fun VaultOrder.toPayload() = OrderPayload(PAYLOAD_VERSION, id, orderNo, orderDate?.let(::date), createdAt, updatedAt)
+internal fun VaultOrder.toPayload() = OrderPayload(PAYLOAD_VERSION, id, orderNo, orderDate?.let(::date), createdAt, updatedAt, expectedCount, lastOrderNo)
 
-internal fun OrderPayload.toOrder() = VaultOrder(id, orderNo, date?.toDate(), createdAt, updatedAt)
+internal fun OrderPayload.toOrder() = VaultOrder(id, orderNo, date?.toDate(), createdAt, updatedAt, expectedCount, lastOrderNo)

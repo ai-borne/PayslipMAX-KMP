@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "about": "The release merged manifest of composeApp on main (the 1.5.0 release line), before any Orders Bank change. check_merged_manifest.py compares the manifest with this file after assembleRelease; a change is a reviewed edit here with a reason. Phase 4 of docs/Plan/13_OrdersBank_PhasePlan.md adds the ML Kit Document Scanner and must review that diff. Nothing here is camera, storage, media or location.",
+  "about": "The release merged manifest of composeApp on main (the 1.5.0 release line), before any Orders Bank change. check_merged_manifest.py compares the manifest with this file after assembleRelease; a change is a reviewed edit here with a reason. Phase 4 of docs/Plan/13_OrdersBank_PhasePlan.md adds the ML Kit Document Scanner and must review that diff. Nothing here is camera, storage, media or location. Phase 4 (Orders Bank) reviewed play-services-mlkit-document-scanner 16.0.0: it adds no permission, no feature and no exported component. It adds three components, all android:exported=false: GmsDocumentScanningDelegateActivity (the scanner's host activity, portrait, no filter), MlKitInitProvider (library init) and MlKitComponentDiscoveryService (component registry). The app requests no CAMERA permission; the scanner runs in Google Play services.",
   "application": {
     "allowBackup": "false",
     "debuggable": null,

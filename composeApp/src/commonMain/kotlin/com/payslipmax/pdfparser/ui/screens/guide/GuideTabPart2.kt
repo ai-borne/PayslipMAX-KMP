@@ -136,6 +136,9 @@ internal fun GuidePart2Level(
         is Part2Destination.Code -> model.code(destination.code)?.let { Part2CodeScreen(it, onBack, onOpenCode, { addToBank(navState, host, destination.code) }, listState) } ?: GuideLoading()
         Part2Destination.Bank -> if (bank == null) GuideLoading() else GuideBankLevel(navState, host, bank, listState)
         is Part2Destination.Entry -> if (bank == null) GuideLoading() else GuideEntryLevel(navState, bank, destination.entryId, host.access)
+        is Part2Destination.Attach -> if (bank == null) GuideLoading() else GuideAttachLevel(navState, host, bank, destination)
+        is Part2Destination.Order -> if (bank == null) GuideLoading() else GuideOrderLevel(navState, bank, destination.orderId, host.access)
+        Part2Destination.Shelf -> if (bank == null) GuideLoading() else GuideShelfLevel(navState, bank, listState)
     }
 }
 

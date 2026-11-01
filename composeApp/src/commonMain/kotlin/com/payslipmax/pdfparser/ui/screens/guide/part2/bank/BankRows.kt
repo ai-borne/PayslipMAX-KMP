@@ -27,6 +27,10 @@ import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 @Composable
 internal fun statusTint(status: BankStatus): Color = if (status == BankStatus.NOT_ATTACHED) BankColors.waiting() else BankColors.attached()
 
+/** The chain flag's colour: the waiting tone, because a missing order in the chain is a thing still to do. */
+@Composable
+internal fun chainTint(): Color = BankColors.waiting()
+
 /** The three chips, each with the count behind it (always over the whole Bank). */
 @Composable
 internal fun BankChips(

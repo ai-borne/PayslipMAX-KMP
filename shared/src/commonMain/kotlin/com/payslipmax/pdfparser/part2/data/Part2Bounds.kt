@@ -22,7 +22,11 @@ object Part2Bounds {
     }
 
     fun check(order: VaultOrder): Part2WriteResult? {
-        val ok = Part2Limits.isPlainId(order.id) && (order.orderNo?.let { it.length <= Part2Limits.ORDER_NO_MAX } ?: true)
+        val ok =
+            Part2Limits.isPlainId(order.id) &&
+                (order.orderNo?.let { it.length <= Part2Limits.ORDER_NO_MAX } ?: true) &&
+                (order.lastOrderNo?.let { it.length <= Part2Limits.ORDER_NO_MAX } ?: true) &&
+                (order.expectedCount?.let { it in 1..Part2Limits.EXPECTED_COUNT_MAX } ?: true)
         return if (ok) null else Part2WriteResult.REJECTED
     }
 }

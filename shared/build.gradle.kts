@@ -103,6 +103,8 @@ kotlin {
             implementation(libs.play.asset.delivery.ktx)
             // Play In-App Review — Priority 3 rating prompt (ReviewRequester.android.kt)
             implementation(libs.play.review)
+            // Orders Bank page scanner (MlKitScanSource): the one new library of Phase 4, 16.0.0 released 2025-09-29
+            implementation(libs.mlkit.document.scanner)
         }
 
         val androidUnitTest by getting {

@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.payslipmax.pdfparser.ui.platform.rememberPageScanner
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankActions
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
@@ -16,6 +17,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.EntryActions
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.EntryEditViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.EntryScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.SaveOutcome
+import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.LocalPageScanner
 import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 
 /** Who may add to the Orders Bank (Premium, no free allowance) and how to offer the upgrade. A lapsed officer can still view, delete and back up. */
@@ -37,12 +39,20 @@ internal fun GuideBankLevel(
     listState: LazyListState,
 ) {
     val state by bank.state.collectAsState()
+    val scanner = LocalPageScanner.current ?: rememberPageScanner()
+    // Any leftover scan is deleted whenever the Bank is the level on top: the attach flow is then not open, whatever its form held.
+    LaunchedEffect(Unit) {
+        bank.attach.close()
+        scanner.discardLeftovers()
+    }
     val actions =
         BankActions(
             canAdd = host.access.canAdd,
             onAdd = { host.open(navState) },
             onUnlock = host.access.onUnlock,
             onOpenEntry = { navState.push(Part2Destination.Entry(it)) },
+            onAttach = { navState.push(Part2Destination.Attach()) },
+            onShelf = { navState.push(Part2Destination.Shelf) },
             onFilter = bank::setFilter,
             onBack = { navState.pop() },
         )
@@ -85,6 +95,7 @@ private fun EntryLevelContent(
     access: BankAccess,
 ) {
     val state by editor.state.collectAsState()
+    val orderId = bank.state.collectAsState().value.attachedTo[editor.id]
     var message by remember { mutableStateOf<String?>(null) }
     val actions =
         EntryActions(
@@ -103,6 +114,8 @@ private fun EntryLevelContent(
             },
             onDelete = { editor.delete { bank.markSaved(editor.id).also { navState.pop() } } },
             onBack = { navState.pop() },
+            onAttach = if (access.canAdd && !editor.isNew && orderId == null) ({ navState.push(Part2Destination.Attach(editor.id)) }) else null,
+            onViewOrder = orderId?.let { id -> { navState.push(Part2Destination.Order(id)) } },
         )
     EntryScreen(editor, state, actions)
 }

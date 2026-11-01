@@ -112,3 +112,30 @@ restore are byte-for-byte the old sources and their tests changed only the fixtu
 | `DutyDays.kt` | main | two functions made `internal` (`exists`, `dayNumber`): the Bank's dates use the pre-claim's one calendar |
 | `ui/screens/guide/part2/bank/*`, `GuideTabBank.kt`, `OrdersBankStrings.kt`, `BankColors` in `Theme.kt` | new | not copied |
 | `GuideHomeScreen.kt`, `GuideTab.kt`, `GuideTabPart2.kt`, `GuideTabRoute.kt`, `GuideNavState.kt`, `GuideNavStateSaver.kt`, `Part2Destination.kt`, `Part2CodeScreen.kt`, `Part2Module.kt` | main (Phase 2 versions) | edited by hand for the Bank |
+
+## Phase 4 (Orders Bank: prove it)
+
+Characterization first (2026-11-01): the old branch (`archive/part2-orders-2026-10-30`) was exported to a scratch directory (git archive, nothing edited)
+and its page-pipeline tests ran green against its own untouched sources before anything was copied: 108 JVM tests (`PageCaptureTest`, `PageCaptureCleanupTest`,
+`JpegMetadataTest`, `JpegFitTest`, `PageGeometryTest`, `PageArchiveTest`, `AndroidPageEncoderTest`, `AndroidPageScannerTest`, `MlKitScanSourceTest`,
+`ScanResultBridgeTest`), 26 iOS simulator Kotlin tests (`IosPageEncoderTest`, `IosPageScannerTest`) and the Swift `DocumentScanPresenterTests` (TEST SUCCEEDED; the
+export needed a symlink to the git-ignored `gemma-active.litertlm`). The export is deleted at the end of the phase.
+
+| File here | From the old branch | How |
+|---|---|---|
+| `shared/.../part2/pages/` (`JpegMetadata`, `PageEncoder`, `PageGeometry`, `PageScanner`), androidMain (`AndroidPageEncoder`, `AndroidPageScanner`, `MlKitScanSource`, `ScanResultBridge`), iosMain (`IosPageEncoder`, `IosPageScanner`) | same paths | verbatim |
+| `shared/.../part2/pages/PageCapture.kt` | same path | split: the encode-and-store half is now `PageStore.kt` (new file, same code, `store` public and returning `CaptureResult.Saved`); `PageCapture` keeps both constructors so the old tests run unchanged |
+| `shared/.../part2/domain/Part2Limits.kt` | same path | the `PAGE_*` encoding constants returned (dropped in Phase 3 as unused); `EXPECTED_COUNT_MAX` and `VAULT_WARN_BYTES` (80% of the cap) are new |
+| tests: `PageCaptureTest`, `PageCaptureCleanupTest`, `JpegMetadataTest`, `JpegFitTest`, `PageGeometryTest`, `AndroidPageEncoderTest`, `AndroidPageScannerTest`, `AndroidPageScannerCleanupTest`, `MlKitScanSourceTest`, `MlKitPagePathsTest`, `MlKitScanOptionsTest`, `ScanResultBridgeTest`, `PageCaptureFixture`, `PageRoundTrip`, `PageBitmaps`, `ScanDirFixture`, `IosPageEncoderTest`, `IosPageScannerTest`, `IosTestImages` | same paths | verbatim; `SyntheticPart2Drafts` became `SyntheticBank` in two fixtures |
+| `Part2PagesSourceTest.kt` | same path | two edits that encode this branch's rules: the app's manifest declares no permission (no reminders), and the single caller of `addPage` is `PageStore.kt` |
+| `PageChainAndroidTest.kt` | same path | copied; only the fixture name changed (`SyntheticBank`). The new end-to-end test over the attach flow is `OrderAttachEndToEndTest` (composeApp) |
+| `shared-test-fixtures/.../FakePageScanner.kt`, `JpegProbe.kt` | same paths | verbatim; `FakePageEncoder.kt` is new |
+| `composeApp/.../ui/platform/PageScannerProvider.kt` (common, android, iosMain) | same paths | verbatim; `findActivity` made `internal` as on the old branch |
+| `composeApp/.../orders/LocalPageScanner.kt` | `vault/LocalPageScanner.kt` | moved to the `orders` package, otherwise verbatim |
+| `iosApp/iosApp/DocumentScanPresenter.swift`, `iosApp/PayslipMaxTests/DocumentScanPresenterTests.swift` | same paths | verbatim |
+| `iosApp/iosApp/iOSApp.swift`, `Info.plist` | same paths | the `DocumentScanPresenter.register()` line and `NSCameraUsageDescription` (wording says Orders Bank). The old `PrivacyInfo.xcprivacy` disk-space entry and the reminder gateways are NOT copied |
+| `PageSizeBudgetTest.kt`, `Part2Limits.PAGE_BUDGET_BYTES`, `JpegFit.fitToBudget` (+ `budgetBytes` on both encoders) | new | the encoders aim for 250 KB per page and fall back to the 500 KB refusal limit; measured on a synthetic text page only |
+| `gradle/libs.versions.toml`, `shared/build.gradle.kts` | same paths | `play-services-mlkit-document-scanner` 16.0.0 (released 2025-09-29, latest) |
+| `scripts/stateful_singleton_guard.py` | same path | `IosPageScanner.Companion` allow-listed again (the Swift-set presenter) |
+| `OrderCompleteness`, `ChainCheck`, `OrderLink`, `OrderShelf`, `AttachOrderViewModel`, `AttachState`, `OrderViewModel`, `OrderNotices`, `VaultSize`, `VaultSizeSettings`, `AttachOrderScreen`, `OrderScreen`, `OrderPages`, `OrdersShelfScreen`, `OrdersLens`, `GuideTabOrders`, `OrderStrings` | new | not copied (the old `VaultOrderViewModel`, `VaultSection`, `VaultOrderScreen`, `VaultNotices`, `VaultSizeWarning` were read, not copied: their model is the old draft) |
+| `VaultOrder.kt`, `Part2Payloads.kt`, `Part2Bounds.kt`, `BankViewModel.kt`, `BankScreen.kt`, `BankRows.kt`, `Part2Destination.kt`, `GuideNavStateSaver.kt`, `GuideTabBank.kt`, `GuideTabPart2.kt`, `Part2Module.kt`, `SettingsSectionComponents.kt`, `BackupRestoreSettingsCard.kt` | this branch (Phase 3) | edited by hand for orders |

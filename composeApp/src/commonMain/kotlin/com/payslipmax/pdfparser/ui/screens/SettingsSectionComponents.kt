@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.subscription.isFreeLaunchModePlatform
 import com.payslipmax.pdfparser.ui.*
+import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.VaultSizeSettings
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
@@ -121,6 +122,7 @@ fun DataManagementSection(
             canBackup = viewModel.rememberHasAccess(com.payslipmax.pdfparser.subscription.FeatureGate.BACKUP_RESTORE),
             onUpgradePrompt = onUpgradePrompt,
         )
+        VaultSizeSettings()
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         ReparseAllCard(
             onReparseClick = { pw, onComplete -> viewModel.reparseAllPayslips(pw, onComplete) },

@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,8 +18,11 @@ import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.part2.domain.BankFilter
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListPadding
+import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.OrdersLens
+import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.VaultSize
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.OrderStrings
 import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 
 /** What the Bank list needs from outside: who may add, and where each tap goes. */
@@ -27,6 +31,8 @@ internal class BankActions(
     val onAdd: () -> Unit,
     val onUnlock: () -> Unit,
     val onOpenEntry: (String) -> Unit,
+    val onAttach: () -> Unit,
+    val onShelf: () -> Unit,
     val onFilter: (BankFilter) -> Unit,
     val onBack: () -> Unit,
 )
@@ -51,6 +57,9 @@ internal fun BankScreen(
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             item(key = "add") { AddButton(actions) }
+            if (actions.canAdd) item(key = "attach") { OutlinedButton(onClick = actions.onAttach, modifier = Modifier.fillMaxWidth()) { Text(OrderStrings.attachTitle) } }
+            item(key = "lens") { OrdersLens(ordersSelected = false, onSelect = { actions.onShelf() }) }
+            VaultSize.warning(state.vaultBytes)?.let { warning -> item(key = "vault") { Text(warning, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error) } }
             if (!actions.canAdd) item(key = "locked") { Text(OrdersBankStrings.lockedNote, style = MaterialTheme.typography.bodyMedium) }
             if (state.loaded) bankBody(state, nameOf, actions)
             item(key = "backup") { Text(backupLine(state.lastBackup), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }

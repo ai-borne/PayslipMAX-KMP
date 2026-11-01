@@ -9,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.repository.RestoreReport
+import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
+import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.BackupCloudNote
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.utils.shareBytes
@@ -121,6 +123,7 @@ private fun BackupRestoreSheetContent(
     ) {
         BackupRestoreHeader(onCloseClick = onCloseClick)
         BackupRestorePasswordField(password = password, onPasswordChange = onPasswordChange)
+        BackupCloudNote(visible = isPart2Enabled())
         BackupRestoreButtonsRow(
             canBackup = canBackup,
             onBackUp = { scope.launch { runBackup(canBackup, password, contents(), onLockedBackup, onExportBackup) { status = it } } },

@@ -4,6 +4,8 @@ import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.part2.data.InMemoryLastBackupStorage
 import com.payslipmax.pdfparser.part2.domain.EntryForm
 import com.payslipmax.pdfparser.part2.domain.Part2LookupIndex
+import com.payslipmax.pdfparser.part2.pages.PageStore
+import com.payslipmax.pdfparser.testing.FakePageEncoder
 import com.payslipmax.pdfparser.testing.FakePart2Repository
 import com.payslipmax.pdfparser.testing.SyntheticGuidePart2
 import kotlinx.coroutines.CoroutineDispatcher
@@ -27,6 +29,7 @@ open class BankTestBase {
             formFor = { EntryForm.of(index, it) },
             nameOf = { index.code(it)?.name },
             lastBackup = lastBackup,
+            pageStore = PageStore(FakePageEncoder(), repository, dispatcher),
             today = { today },
             clock = { now },
             newId = { "new-${++ids}" },

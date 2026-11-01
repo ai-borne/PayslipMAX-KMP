@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListPadding
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.OrderStrings
 import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 
 /** What the entry form needs from outside. [canEdit] is false for a lapsed officer: the entry is shown and can be deleted, nothing more. */
@@ -32,6 +33,8 @@ internal class EntryActions(
     val onSave: () -> Unit,
     val onDelete: () -> Unit,
     val onBack: () -> Unit,
+    val onAttach: (() -> Unit)? = null,
+    val onViewOrder: (() -> Unit)? = null,
 )
 
 /**
@@ -78,6 +81,8 @@ private fun CasualtyHeading(
 private fun EntryButtons(actions: EntryActions) {
     var confirming by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
+        actions.onAttach?.let { OutlinedButton(onClick = it, modifier = Modifier.fillMaxWidth()) { Text(OrderStrings.attachThisCasualty) } }
+        actions.onViewOrder?.let { OutlinedButton(onClick = it, modifier = Modifier.fillMaxWidth()) { Text(OrderStrings.viewOrder) } }
         if (actions.canEdit) Button(onClick = actions.onSave, modifier = Modifier.fillMaxWidth()) { Text(if (actions.isNew) OrdersBankStrings.add else OrdersBankStrings.save) }
         if (!actions.isNew) OutlinedButton(onClick = { confirming = true }, modifier = Modifier.fillMaxWidth()) { Text(OrdersBankStrings.delete) }
     }
