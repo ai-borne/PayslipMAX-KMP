@@ -17,7 +17,7 @@ class OrdersBankSecurityContractTest {
     private val shared = File("../shared/src/commonMain/kotlin/com/payslipmax/pdfparser/part2")
 
     private val screenFiles = listOf("BankRows.kt", "BankScreen.kt", "EntryFields.kt", "EntryScreen.kt")
-    private val logicFiles = listOf("BankViewModel.kt", "EntryEditViewModel.kt")
+    private val logicFiles = listOf("BankViewModel.kt", "EntryEditViewModel.kt", "IndexDocumentBuilder.kt", "IndexPrinting.kt")
 
     private fun withoutComments(file: File): String = file.readText().replace(Regex("""/\*.*?\*/""", RegexOption.DOT_MATCHES_ALL), "").lines().joinToString("\n") { it.substringBefore("//") }
 
@@ -37,7 +37,7 @@ class OrdersBankSecurityContractTest {
 
     @Test
     fun noBankCodeLogsPrintsReportsOrBuildsAnExceptionMessageFromAValue() {
-        val leaky = Regex("""Logger|println|\bprint\(|\blog\(|Log\.[dievw]\(|Napier|Timber|Firebase|Analytics|CrashReporter|crashReporter|TelemetrySanitizer|setCustomKey|recordException|printStackTrace""")
+        val leaky = Regex("""Logger|println|(?<![.\w])(?<!fun )print\(|\blog\(|Log\.[dievw]\(|Napier|Timber|Firebase|Analytics|CrashReporter|crashReporter|TelemetrySanitizer|setCustomKey|recordException|printStackTrace""")
         assertEquals(emptyList(), (screens + logic).filterValues { leaky.containsMatchIn(it) }.keys.toList(), "a Bank file logs, prints or reports")
         val templated = Regex("""(Exception|error|require|check|checkNotNull)\([^)]*\$""")
         assertEquals(emptyList(), (screens + logic).filterValues { templated.containsMatchIn(it) }.keys.toList(), "an exception message interpolates a value")

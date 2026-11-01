@@ -139,3 +139,28 @@ export needed a symlink to the git-ignored `gemma-active.litertlm`). The export 
 | `scripts/stateful_singleton_guard.py` | same path | `IosPageScanner.Companion` allow-listed again (the Swift-set presenter) |
 | `OrderCompleteness`, `ChainCheck`, `OrderLink`, `OrderShelf`, `AttachOrderViewModel`, `AttachState`, `OrderViewModel`, `OrderNotices`, `VaultSize`, `VaultSizeSettings`, `AttachOrderScreen`, `OrderScreen`, `OrderPages`, `OrdersShelfScreen`, `OrdersLens`, `GuideTabOrders`, `OrderStrings` | new | not copied (the old `VaultOrderViewModel`, `VaultSection`, `VaultOrderScreen`, `VaultNotices`, `VaultSizeWarning` were read, not copied: their model is the old draft) |
 | `VaultOrder.kt`, `Part2Payloads.kt`, `Part2Bounds.kt`, `BankViewModel.kt`, `BankScreen.kt`, `BankRows.kt`, `Part2Destination.kt`, `GuideNavStateSaver.kt`, `GuideTabBank.kt`, `GuideTabPart2.kt`, `Part2Module.kt`, `SettingsSectionComponents.kt`, `BackupRestoreSettingsCard.kt` | this branch (Phase 3) | edited by hand for orders |
+
+## Phase 5 (Orders Bank: print or PDF of the index)
+
+Nothing in the slip printer exists on `main`; every print file was read from the frozen branch (`origin/feature/part2-orders`, `22554101`) and ported with
+its tests. The "slip" names were dropped on the way (debt watch): `SlipX` became `IndexX` in every class, test and comment. `PdfLayoutSpec` and
+`PdfLetterFormatter` are already on main; `SlipLayoutSpec` is replaced by the new `IndexLayoutSpec`.
+
+| File here | From the old branch | How |
+|---|---|---|
+| `shared/.../part2/print/IndexLayout.kt` | `SlipLayout.kt` | ported and renamed (`IndexTextMeasurer`, `IndexText`, `IndexRule`, `IndexPage`); the order heading becomes a year heading with `YEAR_GAP`, a document with no rows has no pages (new), the block flow is unchanged |
+| `shared/.../part2/print/IndexPrinter.kt` (`PrintOutcome`) | `SlipPrinter.kt` | renamed |
+| `shared/.../part2/print/IndexDocument.kt` | `SlipDocument.kt` | rewritten: title, printed-on line, notice, years of rows (code and name, detail lines); `toString` hides everything |
+| `shared/.../utils/IndexLayoutSpec.kt` | `SlipLayoutSpec.kt` | rewritten: five type styles (no BODY), `ROW_GAP` 6, `YEAR_GAP` 12 |
+| `shared/.../utils/PdfLetterFormatter.kt` (`breakLongWords`, `fittingLength`) | same path | the old diff, verbatim, with its 6 tests |
+| `Part2Limits.PRINT_WATCH_MS` | same path | the one constant, verbatim |
+| `shared/.../androidMain/.../part2/print/` (`AndroidIndexPrinter`, `IndexPdf`, `IndexPrintAdapter`, `PrintJobWatch`) | `AndroidSlipPrinter`, `SlipPdf`, `SlipPrintAdapter`, `PrintJobWatch` | renamed; `AndroidIndexPrinter` returns NOT_PRINTED for an index with no pages before it asks the print manager (new); `PrintJobWatch` comments no longer mention a reminder |
+| `shared/.../iosMain/.../part2/print/` (`IosIndexPdf`, `IosIndexPrinter`) | `IosSlipPdf`, `IosSlipPrinter` | renamed; `render` returns null for no pages and the printer then prints nothing (new) |
+| tests: `AndroidIndexPrinterTest`, `PrintJobWatchTest`, `IndexPdfTest`, `IndexPrintAdapterTest`, `IndexPrintFixtures` (the recording PDF document), `IosIndexPdfTest`, `IndexLayoutSpecTest`, `PdfLetterFormatterTest` | the Slip equivalents | ported and renamed; new cases: an index with no rows never opens the dialog, an empty Bank has no PDF, the iOS timing test takes the best of three |
+| `IndexLayoutTest`, `IndexFixtures` | `SlipLayoutTest`, `SlipLayoutPagingTest` | new (the slip's order-and-rows model does not apply) |
+| `composeApp/.../ui/platform/IndexPrinterProvider.kt` (common, android, ios) | `SlipPrinterProvider.kt` | renamed; `findActivity` was already on this branch (Phase 4) |
+| `composeApp/.../ui/platform/IndexPrinterProviderTest.kt` | `SlipPrinterProviderTest.kt` | renamed (it tests `findActivity`, which had no test here) |
+| `LocalIndexPrinter` (in `IndexPrinting.kt`) | `LocalSlipPrinter.kt` | renamed; lives beside its only user |
+| `IndexDocumentBuilder`, `IndexPrinting`, `IndexStrings`, the Print button on `BankScreen`/`GuideTabBank`, `IndexPrintSecurityContractTest`, `Part2BankPrintUiTest`, `IndexDocumentBuilderTest`, `IndexPrintingTest` | new | not copied. The old `SlipPrintSession` recorded a printed snapshot to start a reminder; this branch records nothing |
+| `OrdersBankSecurityContractTest` | this branch (Phase 3) | two new sources listed; the print scan became `(?<![.\w])(?<!fun )print\(` (a bare `print(` call, not `printer.print(` or the declaration) |
+| `BankRows.dateRange` | this branch | `private` to `internal`, so the paper words dates as the Bank does |

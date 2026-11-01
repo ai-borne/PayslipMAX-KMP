@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.payslipmax.pdfparser.ui.platform.rememberIndexPrinter
 import com.payslipmax.pdfparser.ui.platform.rememberPageScanner
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankActions
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankScreen
@@ -16,6 +17,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.EntryActions
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.EntryEditViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.EntryScreen
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.LocalIndexPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.SaveOutcome
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.LocalPageScanner
 import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
@@ -40,6 +42,8 @@ internal fun GuideBankLevel(
 ) {
     val state by bank.state.collectAsState()
     val scanner = LocalPageScanner.current ?: rememberPageScanner()
+    val printer = LocalIndexPrinter.current ?: rememberIndexPrinter()
+    val printing by bank.indexPrint.printing.collectAsState()
     // Any leftover scan is deleted whenever the Bank is the level on top: the attach flow is then not open, whatever its form held.
     LaunchedEffect(Unit) {
         bank.attach.close()
@@ -52,6 +56,8 @@ internal fun GuideBankLevel(
             onUnlock = host.access.onUnlock,
             onOpenEntry = { navState.push(Part2Destination.Entry(it)) },
             onAttach = { navState.push(Part2Destination.Attach()) },
+            printing = printing,
+            onPrint = { bank.indexPrint.print(printer) },
             onShelf = { navState.push(Part2Destination.Shelf) },
             onFilter = bank::setFilter,
             onBack = { navState.pop() },

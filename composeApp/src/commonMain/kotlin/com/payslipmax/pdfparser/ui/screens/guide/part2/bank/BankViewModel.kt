@@ -76,6 +76,9 @@ class BankViewModel
         /** The attach flow: one at a time, closed (its scan deleted) by [discardForms]. */
         val attach = AttachOrderViewModel(repository, pageStore, clock, newId, dispatcher)
 
+        /** The index print: reads the whole Bank when asked, prints it, keeps nothing. */
+        val indexPrint = IndexPrinting(repository, nameOf, today, scope)
+
         /** The model for scanned order [id], kept while it stays the open one. */
         fun orderModel(id: String): OrderViewModel = order?.takeIf { it.orderId == id } ?: OrderViewModel(repository, pageStore, id, dispatcherInUse, clock).also { order = it }
 

@@ -22,6 +22,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.OrdersLens
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.VaultSize
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.IndexStrings
 import com.payslipmax.pdfparser.ui.theme.OrderStrings
 import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 
@@ -32,6 +33,8 @@ internal class BankActions(
     val onUnlock: () -> Unit,
     val onOpenEntry: (String) -> Unit,
     val onAttach: () -> Unit,
+    val printing: Boolean,
+    val onPrint: () -> Unit,
     val onShelf: () -> Unit,
     val onFilter: (BankFilter) -> Unit,
     val onBack: () -> Unit,
@@ -58,6 +61,7 @@ internal fun BankScreen(
         ) {
             item(key = "add") { AddButton(actions) }
             if (actions.canAdd) item(key = "attach") { OutlinedButton(onClick = actions.onAttach, modifier = Modifier.fillMaxWidth()) { Text(OrderStrings.attachTitle) } }
+            if (state.view.all > 0) item(key = "print") { PrintButton(actions) }
             item(key = "lens") { OrdersLens(ordersSelected = false, onSelect = { actions.onShelf() }) }
             VaultSize.warning(state.vaultBytes)?.let { warning -> item(key = "vault") { Text(warning, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error) } }
             if (!actions.canAdd) item(key = "locked") { Text(OrdersBankStrings.lockedNote, style = MaterialTheme.typography.bodyMedium) }
@@ -65,6 +69,12 @@ internal fun BankScreen(
             item(key = "backup") { Text(backupLine(state.lastBackup), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     }
+}
+
+/** Print or save the whole Bank as PDF: offered whenever there is something to print, to a lapsed officer too (it is their own data). */
+@Composable
+private fun PrintButton(actions: BankActions) {
+    OutlinedButton(onClick = actions.onPrint, enabled = !actions.printing, modifier = Modifier.fillMaxWidth()) { Text(IndexStrings.printButton) }
 }
 
 @Composable

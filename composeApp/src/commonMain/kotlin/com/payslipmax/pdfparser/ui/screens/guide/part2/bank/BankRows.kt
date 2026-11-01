@@ -69,7 +69,7 @@ internal fun BankRowView(
     }
 }
 
-private fun dateRange(
+internal fun dateRange(
     from: CalendarDate,
     to: CalendarDate?,
 ): String = PreClaimDates.format(from) + (to?.let { " – ${PreClaimDates.format(it)}" } ?: "")

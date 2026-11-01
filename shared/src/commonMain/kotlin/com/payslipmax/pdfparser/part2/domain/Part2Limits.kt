@@ -60,6 +60,9 @@ object Part2Limits {
     /** Past this the Bank warns, so the officer hears it before a scan is refused (80% of [VAULT_BYTES_MAX]). */
     const val VAULT_WARN_BYTES = VAULT_BYTES_MAX / 5 * 4
 
+    /** How long the app waits for a print job to end before it stops watching it (the job itself is the system's), in milliseconds. */
+    const val PRINT_WATCH_MS = 30L * 60 * 1000
+
     /** Pages a restore writes per insert: a handful, so the pages in memory at once stay a few megabytes whatever the vault holds. */
     const val PAGE_INSERT_BATCH = 4
 
