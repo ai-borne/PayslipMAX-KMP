@@ -6,7 +6,7 @@ import java.io.FileOutputStream
 import java.io.RandomAccessFile
 
 /** Writes a backup to [file], starting it afresh. Close it to flush and release the file. */
-class FileBackupSink(file: File) : BackupSink, AutoCloseable {
+class FileBackupSink(file: File) : ClosableBackupSink {
     private val out = BufferedOutputStream(FileOutputStream(file), BUFFER_BYTES)
 
     override fun write(bytes: ByteArray) = out.write(bytes)
@@ -19,7 +19,7 @@ class FileBackupSink(file: File) : BackupSink, AutoCloseable {
 }
 
 /** Reads a backup from [file] by range. Close it to release the file. */
-class FileBackupSource(file: File) : BackupSource, AutoCloseable {
+class FileBackupSource(file: File) : ClosableBackupSource {
     private val input = RandomAccessFile(file, "r")
 
     override val size: Long = input.length()

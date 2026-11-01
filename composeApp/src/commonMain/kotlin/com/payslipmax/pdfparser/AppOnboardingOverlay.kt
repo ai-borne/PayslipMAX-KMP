@@ -28,7 +28,7 @@ internal fun MainContentWithOnboarding(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
     nativeDetailNavigator: ((Screen) -> Unit)?,
     onboardingManager: OnboardingManager,
 ) {

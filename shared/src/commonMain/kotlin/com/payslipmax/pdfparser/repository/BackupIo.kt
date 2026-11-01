@@ -21,6 +21,12 @@ interface BackupSource {
     ): ByteArray
 }
 
+/** A sink that holds a file open: close it to flush and release the file before the file is shared or deleted. */
+interface ClosableBackupSink : BackupSink, AutoCloseable
+
+/** A source that holds a file open: close it to release the file before the file is deleted. */
+interface ClosableBackupSource : BackupSource, AutoCloseable
+
 /** Collects what is written, in chunks, and joins them once in [toByteArray]. */
 class MemoryBackupSink : BackupSink {
     private val chunks = mutableListOf<ByteArray>()

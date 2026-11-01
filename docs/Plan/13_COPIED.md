@@ -164,3 +164,8 @@ its tests. The "slip" names were dropped on the way (debt watch): `SlipX` became
 | `IndexDocumentBuilder`, `IndexPrinting`, `IndexStrings`, the Print button on `BankScreen`/`GuideTabBank`, `IndexPrintSecurityContractTest`, `Part2BankPrintUiTest`, `IndexDocumentBuilderTest`, `IndexPrintingTest` | new | not copied. The old `SlipPrintSession` recorded a printed snapshot to start a reminder; this branch records nothing |
 | `OrdersBankSecurityContractTest` | this branch (Phase 3) | two new sources listed; the print scan became `(?<![.\w])(?<!fun )print\(` (a bare `print(` call, not `printer.print(` or the declaration) |
 | `BankRows.dateRange` | this branch | `private` to `internal`, so the paper words dates as the Bank does |
+| `BackupFiles`, `FileBackupFiles`, `AndroidBackupFiles`, `IosBackupFiles`, iOS `FileBackupSink`/`FileBackupSource`, `FakeBackupFiles` (Phase 7b) | new | not copied; nothing of the frozen branch's backup carried files |
+| `shareBackupFile` (androidMain `ShareUtils.kt`) | the removed `shareBytes` in this branch | the FileProvider share intent kept, now for a file and never writing bytes itself |
+| `presentIosShare(items, onDone)` | this branch | gains a completion handler (Phase 7b) |
+| `BackupPickerDelegate` (`ContentView.swift`) | this branch | now hands over the path of the OS's own copy (`asCopy`) instead of reading the bytes |
+| `BackupFilesSecurityContractTest`, `FileBackupFilesTest`, `AndroidBackupFilesTest`, `IosBackupFilesTest`, `PayslipViewModelBackupFilesTest` | new | not copied |

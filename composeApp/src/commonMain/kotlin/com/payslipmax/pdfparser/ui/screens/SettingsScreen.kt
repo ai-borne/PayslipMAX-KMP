@@ -17,7 +17,7 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 fun SettingsScreen(
     viewModel: PayslipViewModel,
     onNavigateTo: (Screen) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
+    onPickBackup: (onResult: (String) -> Unit) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var password by remember { mutableStateOf("") }
@@ -67,7 +67,7 @@ private fun SettingsContent(
     devModeEnabled: Boolean,
     onHeaderClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState(uiState.settingsScrollValue)
@@ -132,7 +132,7 @@ private fun SecondarySettingsGroup(
     onUpgradePrompt: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
     devModeEnabled: Boolean,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
 ) {
     // 5. Data Management
     DataManagementSection(

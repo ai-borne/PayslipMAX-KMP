@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.payslipmax.pdfparser.insights.gemma.AndroidGemmaBaseModelInstaller
 import com.payslipmax.pdfparser.rating.ReviewActivityBridge
+import com.payslipmax.pdfparser.repository.copyPickedBackup
 import com.payslipmax.pdfparser.subscription.isDebugBuild
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
@@ -24,7 +25,7 @@ internal fun shouldApplyFlagSecure(isDebug: Boolean): Boolean = false
 
 class MainActivity : ComponentActivity() {
     private var filePickCallback: ((ByteArray, String) -> Unit)? = null
-    private var backupPickCallback: ((ByteArray) -> Unit)? = null
+    private var backupPickCallback: ((String) -> Unit)? = null
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
@@ -57,9 +58,9 @@ class MainActivity : ComponentActivity() {
             ActivityResultContracts.GetContent(),
         ) { uri: Uri? ->
             uri?.let {
-                val bytes = readBytes(uri)
-                if (bytes != null) {
-                    backupPickCallback?.invoke(bytes)
+                val picked = copyPickedBackupOrNull(uri)
+                if (picked != null) {
+                    backupPickCallback?.invoke(picked)
                 }
             }
         }
@@ -136,6 +137,14 @@ class MainActivity : ComponentActivity() {
             e.printStackTrace()
         }
     }
+
+    // The backup is copied into a private cache file by stream, never held as one array; null when it cannot be read.
+    private fun copyPickedBackupOrNull(uri: Uri): String? =
+        try {
+            contentResolver.openInputStream(uri)?.use { copyPickedBackup(cacheDir, it) }
+        } catch (e: Exception) {
+            null
+        }
 
     private fun readBytes(uri: Uri): ByteArray? {
         return try {

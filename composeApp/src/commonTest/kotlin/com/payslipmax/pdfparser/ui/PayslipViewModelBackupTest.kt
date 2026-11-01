@@ -12,6 +12,7 @@ import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.repository.RestoreReport
+import com.payslipmax.pdfparser.testing.FakeBackupFiles
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,7 @@ class PayslipViewModelBackupTest {
     private lateinit var fakeDao: FakePayslipDao
     private lateinit var fakeParser: FakePdfParser
     private lateinit var repository: PayslipRepository
+    private val files = FakeBackupFiles()
     private lateinit var viewModel: PayslipViewModel
 
     @BeforeTest
@@ -47,6 +49,7 @@ class PayslipViewModelBackupTest {
             PayslipViewModel(
                 repository,
                 backupService = PayslipBackupService(fakeDao, Dispatchers.Unconfined),
+                backupFiles = files,
             )
     }
 
@@ -62,13 +65,13 @@ class PayslipViewModelBackupTest {
             repository.importPayslip(byteArrayOf(1, 2, 3), "test-pw", "08-2024.pdf")
             runCurrent()
 
-            var exportResult: Result<ByteArray>? = null
+            var exportResult: Result<Unit>? = null
             viewModel.exportBackup("BackupPass#2026") { exportResult = it }
             runCurrent()
 
             assertNotNull(exportResult)
             assertTrue(exportResult.isSuccess)
-            val backupBytes = exportResult.getOrThrow()
+            val backupBytes = assertNotNull(files.exportedBytes)
             assertTrue(backupBytes.size > 44, "Backup bytes must be non-empty and exceed header overhead")
 
             repository.clearAll()
@@ -79,7 +82,7 @@ class PayslipViewModelBackupTest {
             assertEquals("01/2025", viewModel.uiState.value.payslips.first().dateStr)
 
             var importResult: Result<RestoreReport>? = null
-            viewModel.importBackup(backupBytes, "BackupPass#2026", RestoreMode.REPLACE) { importResult = it }
+            viewModel.importBackup(files.stage(backupBytes), "BackupPass#2026", RestoreMode.REPLACE) { importResult = it }
             runCurrent()
 
             assertNotNull(importResult)
@@ -92,17 +95,17 @@ class PayslipViewModelBackupTest {
     @Test
     fun testExportBackupEmptyRepositoryProducesValidArchive() =
         runTest {
-            var exportResult: Result<ByteArray>? = null
+            var exportResult: Result<Unit>? = null
             viewModel.exportBackup("EmptyPass123!") { exportResult = it }
             runCurrent()
 
             assertNotNull(exportResult)
             assertTrue(exportResult.isSuccess)
-            val backupBytes = exportResult.getOrThrow()
+            val backupBytes = assertNotNull(files.exportedBytes)
             assertTrue(backupBytes.isNotEmpty())
 
             var importResult: Result<RestoreReport>? = null
-            viewModel.importBackup(backupBytes, "EmptyPass123!", RestoreMode.REPLACE) { importResult = it }
+            viewModel.importBackup(files.stage(backupBytes), "EmptyPass123!", RestoreMode.REPLACE) { importResult = it }
             runCurrent()
 
             assertNotNull(importResult)
@@ -117,10 +120,10 @@ class PayslipViewModelBackupTest {
             repository.importPayslip(byteArrayOf(1), "pw", "a.pdf")
             runCurrent()
 
-            var exportResult: Result<ByteArray>? = null
+            var exportResult: Result<Unit>? = null
             viewModel.exportBackup("MergePass123") { exportResult = it }
             runCurrent()
-            val backupBytes = exportResult!!.getOrThrow()
+            val backupBytes = assertNotNull(files.exportedBytes)
 
             repository.clearAll()
             fakeParser.result = Result.success(createMockPayslip("12/2024"))
@@ -128,7 +131,7 @@ class PayslipViewModelBackupTest {
             runCurrent()
 
             var importResult: Result<RestoreReport>? = null
-            viewModel.importBackup(backupBytes, "MergePass123", RestoreMode.MERGE) { importResult = it }
+            viewModel.importBackup(files.stage(backupBytes), "MergePass123", RestoreMode.MERGE) { importResult = it }
             runCurrent()
 
             assertNotNull(importResult)
@@ -144,13 +147,13 @@ class PayslipViewModelBackupTest {
             repository.importPayslip(byteArrayOf(1), "pw", "a.pdf")
             runCurrent()
 
-            var exportResult: Result<ByteArray>? = null
+            var exportResult: Result<Unit>? = null
             viewModel.exportBackup("CorrectPass#1") { exportResult = it }
             runCurrent()
-            val backupBytes = exportResult!!.getOrThrow()
+            val backupBytes = assertNotNull(files.exportedBytes)
 
             var importResult: Result<RestoreReport>? = null
-            viewModel.importBackup(backupBytes, "WrongPass#2", RestoreMode.REPLACE) { importResult = it }
+            viewModel.importBackup(files.stage(backupBytes), "WrongPass#2", RestoreMode.REPLACE) { importResult = it }
             runCurrent()
 
             assertNotNull(importResult)
@@ -164,7 +167,7 @@ class PayslipViewModelBackupTest {
         runTest {
             val garbageBytes = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8)
             var importResult: Result<RestoreReport>? = null
-            viewModel.importBackup(garbageBytes, "AnyPassword", RestoreMode.REPLACE) { importResult = it }
+            viewModel.importBackup(files.stage(garbageBytes), "AnyPassword", RestoreMode.REPLACE) { importResult = it }
             runCurrent()
 
             assertNotNull(importResult)
@@ -179,17 +182,17 @@ class PayslipViewModelBackupTest {
             repository.importPayslip(byteArrayOf(1, 2), "pw", "c.pdf")
             runCurrent()
 
-            var exportResult: Result<ByteArray>? = null
+            var exportResult: Result<Unit>? = null
             viewModel.exportBackup(unicodePassword) { exportResult = it }
             runCurrent()
-            val backupBytes = exportResult!!.getOrThrow()
+            val backupBytes = assertNotNull(files.exportedBytes)
 
             repository.clearAll()
             runCurrent()
             assertTrue(viewModel.uiState.value.payslips.isEmpty())
 
             var importResult: Result<RestoreReport>? = null
-            viewModel.importBackup(backupBytes, unicodePassword, RestoreMode.REPLACE) { importResult = it }
+            viewModel.importBackup(files.stage(backupBytes), unicodePassword, RestoreMode.REPLACE) { importResult = it }
             runCurrent()
 
             assertNotNull(importResult)

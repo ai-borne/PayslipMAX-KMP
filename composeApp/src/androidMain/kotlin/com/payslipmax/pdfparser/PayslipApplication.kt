@@ -38,6 +38,13 @@ class PayslipApplication : Application() {
         }
 
         try {
+            // A backup file the share sheet or a killed process left in the private cache is cleared once per process.
+            GlobalContext.get().get<com.payslipmax.pdfparser.repository.BackupFiles>().sweep()
+        } catch (_: Exception) {
+            // Safe guard during unit tests
+        }
+
+        try {
             val installationIdManager = GlobalContext.get().get<com.payslipmax.pdfparser.telemetry.InstallationIdManager>()
             val anonId = installationIdManager.getOrCreateInstallationId()
             val crashReporter = GlobalContext.get().get<com.payslipmax.pdfparser.telemetry.CrashReporter>()

@@ -8,8 +8,10 @@ import com.payslipmax.pdfparser.part2.data.LastBackupStorage
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.part2.data.Part2Dao
 import com.payslipmax.pdfparser.part2.data.provideLastBackupStorage
+import com.payslipmax.pdfparser.repository.BackupFiles
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.repository.provideBackupFiles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.core.module.Module
@@ -54,6 +56,7 @@ val sharedModule: Module =
             com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository(get())
         }
 
+        single<BackupFiles> { provideBackupFiles() }
         single {
             PayslipBackupService(get(), payslipRepository = get(), intelligence = get(), part2Backup = get(), lastBackup = get())
         }

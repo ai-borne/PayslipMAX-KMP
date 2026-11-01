@@ -81,9 +81,10 @@ struct ComposeView: UIViewControllerRepresentable {
                 DispatchQueue.main.async {
                     // Registered UTType: com.payslipmax.backup (extension .pcda), with generic fallbacks.
                     let backupType = UTType("com.payslipmax.backup") ?? .data
-                    let picker = UIDocumentPickerViewController(forOpeningContentTypes: [backupType, .data, .item])
-                    let delegate = BackupPickerDelegate(onResult: { bytes in
-                        _ = onResult(bytes)
+                    // asCopy: iOS copies the chosen file into the app's own temporary folder; the app reads it by range and deletes it.
+                    let picker = UIDocumentPickerViewController(forOpeningContentTypes: [backupType, .data, .item], asCopy: true)
+                    let delegate = BackupPickerDelegate(onResult: { path in
+                        _ = onResult(path)
                     })
 
                     objc_setAssociatedObject(picker, &AssociatedKeys.backupDelegate, delegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -229,25 +230,17 @@ class DocumentPickerDelegate: NSObject, UIDocumentPickerDelegate {
     }
 }
 
-/// Reads a picked encrypted backup archive (.pcda) and hands its raw bytes back to Kotlin.
+/// Hands the path of the private copy of a picked encrypted backup archive (.pcda) to Kotlin, which reads it by range and deletes it.
 class BackupPickerDelegate: NSObject, UIDocumentPickerDelegate {
-    let onResult: (KotlinByteArray) -> Void
+    let onResult: (String) -> Void
 
-    init(onResult: @escaping (KotlinByteArray) -> Void) {
+    init(onResult: @escaping (String) -> Void) {
         self.onResult = onResult
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let url = urls.first else { return }
-        guard url.startAccessingSecurityScopedResource() else { return }
-        defer { url.stopAccessingSecurityScopedResource() }
-
-        do {
-            let data = try Data(contentsOf: url)
-            onResult(data.toKotlinByteArray())
-        } catch {
-            print("Error reading backup file: \(error)")
-        }
+        onResult(url.path)
     }
 
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {

@@ -30,6 +30,8 @@ import platform.UIKit.UIViewController
 private fun ensureKoin() {
     if (KoinPlatformTools.defaultContext().getOrNull() == null) {
         startKoin { modules(appKoinModules()) }
+        // A backup file a killed process left in the temporary directory is cleared once per launch.
+        KoinPlatformTools.defaultContext().get().get<com.payslipmax.pdfparser.repository.BackupFiles>().sweep()
     }
 }
 
@@ -49,7 +51,7 @@ private fun ensureKoin() {
 class IosNavHost(
     private val onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     private val onOpenPdf: (ByteArray, String) -> Unit,
-    private val onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    private val onPickBackup: (onResult: (String) -> Unit) -> Unit,
     pushScreen: (screenName: String) -> Unit,
     requestPop: () -> Unit,
 ) {
@@ -167,7 +169,7 @@ class IosNavHost(
 fun createNavHost(
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (ByteArray, String) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
     pushScreen: (screenName: String) -> Unit,
     requestPop: () -> Unit,
 ): IosNavHost {

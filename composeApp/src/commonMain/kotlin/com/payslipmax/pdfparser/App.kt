@@ -75,7 +75,7 @@ fun App(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
+    onPickBackup: (onResult: (String) -> Unit) -> Unit = {},
     navState: AppNavState = rememberSaveable(saver = AppNavStateSaver) { AppNavState() },
     // Hoisted here, above the lock screen, so locking and switching tabs keep the user's place in the Guide. Null
     // while the kill switch is off: no Guide tab or route, and R8 drops all Guide code.
@@ -128,7 +128,7 @@ internal fun MainScaffold(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
     nativeDetailNavigator: ((Screen) -> Unit)?,
     suppressUploadCoachmark: Boolean = false,
 ) {
@@ -189,7 +189,7 @@ private fun ScreenContent(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
     nativeDetailNavigator: ((Screen) -> Unit)?,
     suppressUploadCoachmark: Boolean,
 ) {
@@ -226,7 +226,7 @@ private fun TabRootContent(
     onNavigate: (Screen) -> Unit,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
     suppressUploadCoachmark: Boolean,
 ) {
     when (tab) {

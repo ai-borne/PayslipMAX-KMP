@@ -9,13 +9,18 @@ import platform.UIKit.UIWindow
 import platform.UIKit.popoverPresentationController
 
 @OptIn(ExperimentalForeignApi::class)
-internal fun presentIosShare(items: List<Any>) {
+/** Opens the share sheet for [items]; [onDone] runs when the sheet closes, whether or not anything was shared. */
+internal fun presentIosShare(
+    items: List<Any>,
+    onDone: () -> Unit = {},
+) {
     val keyWindow =
         UIApplication.sharedApplication.keyWindow
             ?: UIApplication.sharedApplication.windows.firstOrNull() as? UIWindow
     val rootViewController = keyWindow?.rootViewController ?: return
 
     val activityController = UIActivityViewController(items, null)
+    activityController.completionWithItemsHandler = { _, _, _, _ -> onDone() }
     activityController.popoverPresentationController?.let { popover ->
         popover.sourceView = rootViewController.view
         val (width, height) = rootViewController.view.bounds.useContents { size.width to size.height }

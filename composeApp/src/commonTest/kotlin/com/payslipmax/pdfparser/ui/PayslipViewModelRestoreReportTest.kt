@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.repository.RestoreReport
+import com.payslipmax.pdfparser.testing.FakeBackupFiles
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.testing.SyntheticPart2Backups
@@ -28,6 +29,7 @@ import kotlin.test.assertNotNull
 @OptIn(ExperimentalCoroutinesApi::class)
 class PayslipViewModelRestoreReportTest {
     private val dispatcher = UnconfinedTestDispatcher()
+    private val files = FakeBackupFiles()
     private lateinit var viewModel: PayslipViewModel
 
     @BeforeTest
@@ -38,6 +40,7 @@ class PayslipViewModelRestoreReportTest {
             PayslipViewModel(
                 PayslipRepository(dao, FakePdfParser(), Dispatchers.Unconfined),
                 backupService = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2)),
+                backupFiles = files,
             )
     }
 
@@ -48,7 +51,7 @@ class PayslipViewModelRestoreReportTest {
 
     private fun restore(bytes: ByteArray): Result<RestoreReport> {
         var result: Result<RestoreReport>? = null
-        viewModel.importBackup(bytes, PASSWORD, RestoreMode.REPLACE) { result = it }
+        viewModel.importBackup(files.stage(bytes), PASSWORD, RestoreMode.REPLACE) { result = it }
         return assertNotNull(result)
     }
 
