@@ -5,7 +5,7 @@ checks, track state). Update it at every release bump; don't batch. Releases lan
 are promoted to Closed testing (`alpha`) once verified, then to production; each release's heading states
 which track it is on. The 14-day closed-testing gate was completed on 2026-09-24.
 
-## Current status (2026-10-30)
+## Current status (2026-11-01)
 
 | Track | versionCode | Free-launch flag | State |
 |---|---|---|---|
@@ -13,7 +13,7 @@ which track it is on. The 14-day closed-testing gate was completed on 2026-09-24
 | `alpha` (closed testing) | 15 (1.0.0) | on | Passed the 14-day gate; production access granted 2026-09-24 |
 | `internal` | 22 (1.5.0) | **off** | Same build as production |
 
-Confirmed with `fastlane android track_status` (2026-10-30). History: v16 and v17 were earlier paywall builds (flag off) that never
+**iOS 1.5.0 is also live in production (owner, 2026-11-01), so both platforms ship 1.5.0 with the paywall on.** Confirmed with `fastlane android track_status` (2026-10-30). History: v16 and v17 were earlier paywall builds (flag off) that never
 left internal testing; v18 to v21 shipped with `FREE_LAUNCH_MODE_ANDROID = true` while BillDesk merchant KYC was pending. KYC cleared
 on 2026-10-29, and v22 (1.5.0) is the first production build with the paywall on (see "versionCode 22" below). The fastlane service
 account holds "Release to production" (confirmed in Play Console, 2026-10-03).
@@ -676,7 +676,7 @@ versionCode 21 → 22; `versionName` stays 1.5.0 (the same release as iOS 1.5.0 
   The owner keeps the subscription. The list was re-ticked afterwards.
 - **Promotion:** `promote_release version_code:22 to:production from:internal` with `en-IN` notes
   (`composeApp/fastlane/release_notes/1.5.0/whats_new_en-IN.txt`); `track_status`: production [22], alpha [15], internal [22].
-- **iOS counterpart:** 1.5.0 (6) was submitted to App Review on 2026-10-30 (`WAITING_FOR_REVIEW`; `AFTER_APPROVAL`, so it publishes on approval). Notes in
+- **iOS counterpart:** 1.5.0 (6) was submitted to App Review on 2026-10-30 (`WAITING_FOR_REVIEW`; `AFTER_APPROVAL`, so it publishes on approval) and is now live in production (owner, 2026-11-01). Notes in
   `iosApp/fastlane/release_notes/1.5.0/`.
 - **Closed 2026-11-01 (owner):** iOS 1.5.0 is live in production. Android versionCode 22 and iOS 1.5.0 are both live and both monetized (sprint goal met).
 - **Not done at the time:** Apple's decision on 1.5.0 (now approved, see above); a Google "in review" state for this production release was not checked; the 11 Play devices are closed testers, not real users.

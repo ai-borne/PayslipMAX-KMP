@@ -785,3 +785,10 @@ Build 1.3.0 (3), TestFlight `VALID`, submitted by the user in App Store Connect 
   review attachment were copied from 1.2.3; the API reported all `COMPLETE` and a page reload cleared it.
 - **Not verified:** Pay Audit on iOS had only been checked on the user's real iPhone through TestFlight (reported working), not by an agent;
   a reviewer without a PCDA(O) payslip PDF sees only the locked or empty state (stated in the review notes).
+
+## v1.5.0 live in production (2026-11-01)
+
+Build 1.5.0 (6) was submitted to App Review on 2026-10-30 (`WAITING_FOR_REVIEW`, `AFTER_APPROVAL`) and, per the owner, is live in the
+App Store. No IAP change (`FREE_LAUNCH_MODE_IOS` stays `false`). Android versionCode 22 (same 1.5.0, paywall on) went to production on
+2026-10-30, so both platforms ship the same release and both are monetized (sprint goal met). Notes: `iosApp/fastlane/release_notes/1.5.0/`;
+Android side: doc 06, "versionCode 22".
