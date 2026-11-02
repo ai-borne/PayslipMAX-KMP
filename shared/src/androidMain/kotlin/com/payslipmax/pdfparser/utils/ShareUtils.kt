@@ -45,12 +45,20 @@ actual fun shareText(
 }
 
 /** Offers [file] (in the app's cache) to the share sheet by a FileProvider URI; the app never uploads it itself. */
-fun shareBackupFile(file: File) {
+fun shareBackupFile(file: File) = shareCacheFile(file, "application/octet-stream")
+
+/** Offers one scanned order page ([file], a JPEG in the app's cache) to the share sheet; the officer picks the gallery, Files or any app. */
+fun shareImageFile(file: File) = shareCacheFile(file, "image/jpeg")
+
+private fun shareCacheFile(
+    file: File,
+    mimeType: String,
+) {
     val context = ContextHolder.context ?: throw IllegalStateException("No context")
     val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     val send =
         Intent(Intent.ACTION_SEND).apply {
-            type = "application/octet-stream"
+            type = mimeType
             putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }

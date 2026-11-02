@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 /**
  * Security and resource evidence for scanned orders (plan 13, Phase 4), read from the sources because the property is "this code does not
  * exist": nothing about an order number, a date, a quoted order or a page reaches a log, telemetry, an exception message, the clipboard, a
- * share sheet or the network; what is typed is never persisted by the UI layer; the attach level is never saved with the Guide stack; a
+ * share sheet (but for the one page the officer taps Share or save on, pinned below) or the network; what is typed is never persisted by the UI layer; the attach level is never saved with the Guide stack; a
  * lock closes the attach flow (which deletes the scanner's pages); and no screen holds a literal of copy or a colour. File lists are
  * explicit so a moved source fails loudly instead of making a scan vacuous.
  */
@@ -28,6 +28,13 @@ class OrdersAttachSecurityContractTest {
     fun theScansReadTheRealFilesSoTheyAreNotVacuous() {
         assertTrue(screens.values.all { it.length > 200 } && logic.values.all { it.length > 100 })
         assertEquals((screenFiles + logicFiles).toSet(), orders.listFiles { f -> f.extension == "kt" }.orEmpty().map { it.name }.toSet(), "a source was added or moved; list it here so the scans cover it")
+    }
+
+    @Test
+    fun onlyTheOfficersTapOnOnePageReachesTheShareSheetAndThroughOnePath() {
+        val users = (screens + logic).filterValues { it.contains("PageShare") || it.contains("pageShare") }.keys
+        assertEquals(setOf("GuideTabOrders.kt", "LocalPageScanner.kt"), users, "only the order level uses the page share; LocalPageScanner.kt just declares the test seam")
+        assertEquals(1, Regex("""pageShare\.share\(""").findAll(screens.getValue("GuideTabOrders.kt")).count(), "one call: the one Share or save makes for one page")
     }
 
     @Test

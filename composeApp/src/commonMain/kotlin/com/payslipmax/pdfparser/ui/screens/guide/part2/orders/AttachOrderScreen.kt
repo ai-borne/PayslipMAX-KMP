@@ -27,6 +27,7 @@ import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.aboveKeyboard
 import com.payslipmax.pdfparser.ui.components.scrollToWhenFocused
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListPadding
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.bankShortcut
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDateBox
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
@@ -41,6 +42,7 @@ internal class AttachActions(
     val onAddCasualty: () -> Unit,
     val onSave: () -> Unit,
     val onBack: () -> Unit,
+    val onBank: (() -> Unit)? = null,
 )
 
 /** Scan, type the order's number and date, its count and the order it quotes, tick the casualties it covers, save. */
@@ -51,7 +53,7 @@ internal fun AttachOrderScreen(
     actions: AttachActions,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        ScreenBackHeader(title = OrderStrings.attachTitle, onBack = actions.onBack)
+        ScreenBackHeader(title = OrderStrings.attachTitle, onBack = actions.onBack, trailing = bankShortcut(actions.onBank))
         LazyColumn(modifier = Modifier.fillMaxSize().aboveKeyboard(), contentPadding = Part2ListPadding, verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
             item(key = "scan") { ScanSection(state, actions) }
             orderFields(vm, state)

@@ -49,6 +49,9 @@ object OrdersBankStrings {
 
     // The Bank list.
     const val title = "Part II Orders Bank"
+
+    /** The shortcut in the header of the entry, attach and order screens: straight to the Bank list. */
+    const val toBank = "Orders Bank"
     const val addButton = "Add a casualty"
     const val emptyTitle = "Nothing noted yet"
     const val emptyBody = "When a Part II casualty happens to you, add it here. Later you can keep the copy of its order beside it."

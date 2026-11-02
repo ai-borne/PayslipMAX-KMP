@@ -36,6 +36,7 @@ internal class EntryActions(
     val onBack: () -> Unit,
     val onAttach: (() -> Unit)? = null,
     val onViewOrder: (() -> Unit)? = null,
+    val onBank: (() -> Unit)? = null,
 )
 
 /**
@@ -57,7 +58,7 @@ internal fun EntryScreen(
             } else {
                 OrdersBankStrings.viewTitle
             }
-        ScreenBackHeader(title = title, onBack = actions.onBack)
+        ScreenBackHeader(title = title, onBack = actions.onBack, trailing = bankShortcut(actions.onBank))
         LazyColumn(modifier = Modifier.fillMaxSize().aboveKeyboard(), contentPadding = Part2ListPadding, verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
             item(key = "casualty") { CasualtyHeading(editor.form.code, actions.name) }
             entryFields(editor, state, actions.canEdit)

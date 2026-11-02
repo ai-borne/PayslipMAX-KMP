@@ -40,6 +40,7 @@ internal fun LazyListScope.pagesFooter(
     state: OrderState,
     actions: OrderActions,
 ) {
+    actions.shareMessage?.let { note -> item(key = "share") { Text(note, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium) } }
     if (state.lowSpace) item(key = "lowSpace") { Text(OrderStrings.lowSpace(), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium) }
     OrderNotices.of(state.capture)?.let { note -> item(key = "capture") { Text(note, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium) } }
     if (actions.canEdit) item(key = "addPages") { Button(onClick = actions.onAddPages, modifier = Modifier.fillMaxWidth()) { Text(OrderStrings.addPages) } }
@@ -58,6 +59,8 @@ private fun PageRow(
         Text(OrderStrings.page(ref.position + 1, total), style = MaterialTheme.typography.titleSmall)
         Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
             TextButton(onClick = { shown = !shown }) { Text(if (shown) OrderStrings.hidePage else OrderStrings.showPage) }
+            // Only the officer's own tap sends a page anywhere: the share sheet (gallery, Files, Drive) is theirs to choose from.
+            actions.onSharePage?.let { share -> TextButton(onClick = { share(ref.id) }) { Text(OrderStrings.sharePage) } }
             // A delete, like Delete order: a lapsed officer may still view, delete and back up.
             TextButton(onClick = { confirming = true }) { Text(OrderStrings.deletePage) }
         }

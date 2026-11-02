@@ -32,6 +32,7 @@ private fun ensureKoin() {
         startKoin { modules(appKoinModules()) }
         // A backup file a killed process left in the temporary directory is cleared once per launch.
         KoinPlatformTools.defaultContext().get().get<com.payslipmax.pdfparser.repository.BackupFiles>().sweep()
+        KoinPlatformTools.defaultContext().get().get<com.payslipmax.pdfparser.repository.PageShare>().sweep()
     }
 }
 

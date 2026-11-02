@@ -141,6 +141,7 @@ private fun EntryLevelContent(
                 }
             },
             onBack = { navState.pop() },
+            onBank = { navState.backToBank() },
             onAttach = if (access.canAdd && !editor.isNew && orderId == null) ({ navState.push(Part2Destination.Attach(editor.id)) }) else null,
             onViewOrder = orderId?.let { id -> { navState.push(Part2Destination.Order(id)) } },
         )

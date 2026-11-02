@@ -66,6 +66,8 @@ object OrderStrings {
     const val showPage = "Show page"
     const val hidePage = "Hide page"
     const val deletePage = "Delete page"
+    const val sharePage = "Share or save"
+    const val shareFailed = "The page could not be shared."
     const val deleteOrder = "Delete order"
     const val deleteOrderBody = "The scan and its pages are deleted. Your casualties stay in the Bank and go back to Not attached."
     const val deletePageBody = "This page is deleted from the order."

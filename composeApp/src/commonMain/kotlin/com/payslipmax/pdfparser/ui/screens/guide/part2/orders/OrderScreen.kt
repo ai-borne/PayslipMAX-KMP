@@ -24,6 +24,7 @@ import com.payslipmax.pdfparser.part2.domain.BankEntry
 import com.payslipmax.pdfparser.part2.domain.ChainState
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListPadding
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.bankShortcut
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.chainTint
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
@@ -40,6 +41,9 @@ internal class OrderActions(
     val onOpenEntry: (String) -> Unit,
     val onBack: () -> Unit,
     val readPage: PageReader,
+    val onBank: (() -> Unit)? = null,
+    val onSharePage: ((String) -> Unit)? = null,
+    val shareMessage: String? = null,
 )
 
 /** One scanned order: the label, its number and date, the counter and chain check, its pages, the casualties on it and Delete. */
@@ -49,7 +53,7 @@ internal fun OrderScreen(
     actions: OrderActions,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        ScreenBackHeader(title = OrderStrings.orderTitle, onBack = actions.onBack)
+        ScreenBackHeader(title = OrderStrings.orderTitle, onBack = actions.onBack, trailing = bankShortcut(actions.onBank))
         LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = Part2ListPadding, verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
             item(key = "label") { Text(OrderStrings.referenceCopy, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
             item(key = "summary") { Summary(state) }

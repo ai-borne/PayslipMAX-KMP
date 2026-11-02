@@ -137,6 +137,15 @@ class GuideNavState(
         replaceStack(if (base.lastOrNull() == Part2Destination.Bank) base else base + Part2Destination.Bank)
     }
 
+    /**
+     * The "Orders Bank" shortcut: pops straight to the Bank level when it is on the stack (Bank, entry, attach and order levels above it
+     * are dropped); without one (the entry was opened from the Learn pages) the Learn trail is dropped and a Bank level is put on top.
+     */
+    fun backToBank() {
+        val at = stack.lastIndexOf(Part2Destination.Bank)
+        if (at >= 0) replaceStack(stack.take(at + 1)) else landOnBank()
+    }
+
     private fun GuideDestination.isLearnTrail(): Boolean =
         this == Part2Destination.Home || this is Part2Destination.Ribbon || this is Part2Destination.Code || this is Part2Destination.Entry
 

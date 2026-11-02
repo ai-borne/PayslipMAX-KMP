@@ -17,6 +17,7 @@ import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.part2.pages.PageScanner
 import com.payslipmax.pdfparser.part2.print.IndexPrinter
+import com.payslipmax.pdfparser.repository.PageShare
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.SyntheticGuidePart2
@@ -31,6 +32,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.LocalIndexPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.LocalPageImageDecoder
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.LocalPageScanner
+import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.LocalPageShare
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.PageImageDecoder
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.LearnStrings
@@ -73,12 +75,13 @@ abstract class Part2UiBase {
         scanner: PageScanner? = null,
         decoder: PageImageDecoder? = null,
         indexPrinter: IndexPrinter? = null,
+        pageShare: PageShare? = null,
     ): GuideNavState {
         composeRule.setContent {
             // The font scale is the one thing a test may change about the phone it pretends to be; at 1 nothing is wrapped.
             val density = LocalDensity.current
             val scaled = if (fontScale == 1f) density else Density(density.density, fontScale)
-            CompositionLocalProvider(LocalDensity provides scaled, LocalPageScanner provides scanner, LocalPageImageDecoder provides decoder, LocalIndexPrinter provides indexPrinter) { GuideTab(nav, GuideAccess(unlocked) { unlockTaps++ }, guide, search, platform, null, null, part2, part2Bank, bankAccess) }
+            CompositionLocalProvider(LocalDensity provides scaled, LocalPageScanner provides scanner, LocalPageImageDecoder provides decoder, LocalIndexPrinter provides indexPrinter, LocalPageShare provides pageShare) { GuideTab(nav, GuideAccess(unlocked) { unlockTaps++ }, guide, search, platform, null, null, part2, part2Bank, bankAccess) }
         }
         settle()
         return nav

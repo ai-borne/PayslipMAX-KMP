@@ -57,6 +57,7 @@ val sharedModule: Module =
         }
 
         single<BackupFiles> { provideBackupFiles() }
+        single<com.payslipmax.pdfparser.repository.PageShare> { com.payslipmax.pdfparser.repository.providePageShare() }
         single {
             PayslipBackupService(get(), payslipRepository = get(), intelligence = get(), part2Backup = get(), lastBackup = get())
         }

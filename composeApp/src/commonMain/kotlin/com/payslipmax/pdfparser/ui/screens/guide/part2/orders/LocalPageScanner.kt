@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2.orders
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.ImageBitmap
 import com.payslipmax.pdfparser.part2.pages.PageScanner
+import com.payslipmax.pdfparser.repository.PageShare
 import org.jetbrains.compose.resources.decodeToImageBitmap
 
 /** A scanner a test (or a host with its own) provides in place of the platform's; null means the platform's own, built from the screen. */
@@ -18,6 +19,9 @@ internal fun interface PageImageDecoder {
 
 /** The decoder a test provides in place of the platform's; null means the platform's own. */
 internal val LocalPageImageDecoder = compositionLocalOf<PageImageDecoder?> { null }
+
+/** The page share a test provides in place of the app's own (from Koin); null means the app's own. */
+internal val LocalPageShare = compositionLocalOf<PageShare?> { null }
 
 /** The platform decoder: a stored page is a plain JPEG, so anything it cannot read is simply not shown. */
 internal val PlatformPageImageDecoder =

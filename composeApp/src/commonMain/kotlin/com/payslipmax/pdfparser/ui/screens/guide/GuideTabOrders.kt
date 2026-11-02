@@ -17,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.part2.pages.CaptureResult
+import com.payslipmax.pdfparser.repository.PageShare
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.platform.rememberPageScanner
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListPadding
@@ -26,6 +27,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.AttachOrderScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.AttachOutcome
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.LocalPageImageDecoder
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.LocalPageScanner
+import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.LocalPageShare
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.OrderActions
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.OrderNotices
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.OrderScreen
@@ -35,6 +37,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.PlatformPageImageD
 import com.payslipmax.pdfparser.ui.theme.OrderStrings
 import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 /** The attach flow. A lapsed officer is offered Premium instead: attaching adds data, and the Bank's rule is view, delete and back up only. */
 @Composable
@@ -67,6 +70,10 @@ internal fun GuideAttachLevel(
             onBack = {
                 vm.close()
                 navState.pop()
+            },
+            onBank = {
+                vm.close()
+                navState.backToBank()
             },
         )
     AttachOrderScreen(vm, state, actions)
@@ -111,6 +118,8 @@ internal fun GuideOrderLevel(
     val scope = rememberCoroutineScope()
     val decoder = LocalPageImageDecoder.current ?: PlatformPageImageDecoder
     val state by vm.state.collectAsState()
+    val pageShare: PageShare = LocalPageShare.current ?: koinInject()
+    var shareMessage by remember(orderId) { mutableStateOf<String?>(null) }
     // A restored order level may sit over a scan the dead process left behind.
     LaunchedEffect(orderId) { if (!bank.attach.holdsScan()) scanner.discardLeftovers() }
     LaunchedEffect(state.loaded, state.order) { if (state.loaded && state.order == null) navState.pop() }
@@ -125,7 +134,16 @@ internal fun GuideOrderLevel(
             onDeleteOrder = { vm.deleteOrder { navState.pop() } },
             onOpenEntry = { navState.push(Part2Destination.Entry(it)) },
             onBack = { navState.pop() },
+            onBank = { navState.backToBank() },
             readPage = PageReader { id -> vm.page(id) { decoder.decode(it) } },
+            onSharePage = { id ->
+                scope.launch {
+                    shareMessage = null
+                    val shared = vm.page(id) { pageShare.share(it) }
+                    if (shared == null || shared.isFailure) shareMessage = OrderStrings.shareFailed
+                }
+            },
+            shareMessage = shareMessage,
         )
     OrderScreen(state, actions)
 }
