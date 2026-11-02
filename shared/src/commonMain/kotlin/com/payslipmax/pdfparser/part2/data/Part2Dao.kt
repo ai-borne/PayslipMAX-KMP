@@ -73,6 +73,9 @@ interface Part2Dao {
     @Query("SELECT COALESCE(SUM(LENGTH(ciphertext)), 0) FROM part2_pages")
     suspend fun vaultBytes(): Long
 
+    @Query("SELECT COALESCE(SUM(LENGTH(ciphertext)), 0) FROM part2_pages")
+    fun observeVaultBytes(): Flow<Long>
+
     @Query("DELETE FROM part2_pages WHERE id = :id")
     suspend fun deletePage(id: String)
 

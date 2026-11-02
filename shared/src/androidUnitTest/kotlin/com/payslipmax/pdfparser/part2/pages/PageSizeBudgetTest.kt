@@ -55,6 +55,6 @@ class PageSizeBudgetTest {
     @Test
     fun theBudgetSitsInsideTheRefusalLimitAndTheVaultArithmeticFollowsFromIt() {
         assertTrue(Part2Limits.PAGE_BUDGET_BYTES < Part2Limits.PAGE_MAX_BYTES, "the budget is a target; the maximum is what refuses")
-        assertEquals(409L, Part2Limits.VAULT_BYTES_MAX / Part2Limits.PAGE_BUDGET_BYTES, "the cap holds about 409 budget-sized pages")
+        assertEquals(1024L, Part2Limits.VAULT_BYTES_MAX / Part2Limits.PAGE_BUDGET_BYTES, "the cap holds about 1,024 budget-sized pages")
     }
 }

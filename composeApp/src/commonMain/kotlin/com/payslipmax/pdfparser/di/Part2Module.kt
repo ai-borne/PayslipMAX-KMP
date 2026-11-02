@@ -5,6 +5,9 @@ import com.payslipmax.pdfparser.part2.data.RoomPart2Repository
 import com.payslipmax.pdfparser.part2.pages.PageEncoder
 import com.payslipmax.pdfparser.part2.pages.PageStore
 import com.payslipmax.pdfparser.part2.pages.providePageEncoder
+import com.payslipmax.pdfparser.part2.space.FreeSpaceGate
+import com.payslipmax.pdfparser.part2.space.FreeSpaceReader
+import com.payslipmax.pdfparser.part2.space.provideFreeSpaceReader
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import org.koin.core.module.Module
@@ -23,7 +26,9 @@ fun part2Module(): Module =
         // The encrypted Bank store and its list model, app-scoped: an entry form held open survives a tab switch, never a lock or process death.
         single<Part2Repository> { RoomPart2Repository(get()) }
         single<PageEncoder> { providePageEncoder() }
-        single { PageStore(get(), get()) }
+        single<FreeSpaceReader> { provideFreeSpaceReader() }
+        single { FreeSpaceGate(get()) }
+        single { PageStore(get(), get(), space = get()) }
         single {
             val learn = get<Part2LookupViewModel>()
             BankViewModel(repository = get(), formFor = learn::entryForm, nameOf = { learn.code(it)?.name }, lastBackup = get(), pageStore = get())

@@ -29,7 +29,7 @@ object Part2Limits {
 
     /**
      * What one readable text page should weigh once re-encoded (a design target, not a refusal limit: [PAGE_MAX_BYTES] still refuses). The
-     * vault cap is planned from it: at this size [VAULT_BYTES_MAX] holds about 409 pages. The encoders aim for it (`JpegFit.fitToBudget`) and fall back to [PAGE_MAX_BYTES]. A test measures the encoder against it; the
+     * vault cap is planned from it: at this size [VAULT_BYTES_MAX] holds about 1,000 pages. The encoders aim for it (`JpegFit.fitToBudget`) and fall back to [PAGE_MAX_BYTES]. A test measures the encoder against it; the
      * final figure is set from a scan of the owner's own old, yellowed order, not guessed.
      */
     const val PAGE_BUDGET_BYTES = 250 * 1024
@@ -54,11 +54,19 @@ object Part2Limits {
     const val ENTRIES_MAX = 2000
     const val ORDERS_MAX = 1000
 
-    /** The vault (sum of stored page ciphertext, in bytes): a write that would pass [VAULT_BYTES_MAX] is refused. */
-    const val VAULT_BYTES_MAX = 100L * 1024 * 1024
+    /**
+     * The vault (sum of stored page ciphertext, in bytes): a write that would pass [VAULT_BYTES_MAX] is refused. 250 MB is safe on a phone
+     * whose app heap is 256 MB only because nothing holds the vault: export and restore stream one page at a time (Phase 7a and 7b). The
+     * counts ([ORDERS_MAX], [ENTRIES_MAX]) stay the first brake.
+     */
+    const val VAULT_BYTES_MAX = 250L * 1024 * 1024
 
     /** Past this the Bank warns, so the officer hears it before a scan is refused (80% of [VAULT_BYTES_MAX]). */
     const val VAULT_WARN_BYTES = VAULT_BYTES_MAX / 5 * 4
+
+    /** Free device space below which a scan or an attach warns (500 MB) and below which it is refused (100 MB). */
+    const val FREE_SPACE_WARN_BYTES = 500L * 1024 * 1024
+    const val FREE_SPACE_REFUSE_BYTES = 100L * 1024 * 1024
 
     /** How long the app waits for a print job to end before it stops watching it (the job itself is the system's), in milliseconds. */
     const val PRINT_WATCH_MS = 30L * 60 * 1000

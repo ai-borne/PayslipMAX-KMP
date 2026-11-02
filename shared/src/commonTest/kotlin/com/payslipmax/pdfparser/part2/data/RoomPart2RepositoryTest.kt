@@ -6,12 +6,16 @@ import com.payslipmax.pdfparser.testing.FakePart2Dao
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * WHY: what only the Room repository can get wrong: rows that cannot be read are counted but never shown or deleted, what reaches
@@ -135,7 +139,23 @@ class RoomPart2RepositoryTest {
         }
 
     @Test
-    fun theVaultCeilingIsOneHundredMegabytes() {
-        assertEquals(100L * 1024 * 1024, Part2Limits.VAULT_BYTES_MAX)
+    fun theVaultCeilingIsTwoHundredAndFiftyMegabytes() {
+        assertEquals(250L * 1024 * 1024, Part2Limits.VAULT_BYTES_MAX)
     }
+
+    @Test
+    fun theVaultSizeIsReportedAgainAtEveryPageAddedOrDeleted() =
+        runTest {
+            repo.saveOrder(SyntheticBank.order("order-1"))
+            val seen = mutableListOf<Long>()
+            val watcher = launch(UnconfinedTestDispatcher(testScheduler)) { repo.observeVaultBytes().toList(seen) }
+
+            repo.addPage("order-1", SyntheticBank.jpeg(3000))
+            val stored = dao.vaultBytes()
+            dao.deletePage("page-x")
+            watcher.cancel()
+
+            assertTrue(stored > 0, "a stored page counts")
+            assertEquals(listOf(0L, stored, 0L), seen, "one subscription sees the size at the start, after the add and after the delete")
+        }
 }

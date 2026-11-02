@@ -2,6 +2,8 @@ package com.payslipmax.pdfparser.part2.pages
 
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.data.Part2WriteResult
+import com.payslipmax.pdfparser.part2.space.FreeSpaceGate
+import com.payslipmax.pdfparser.part2.space.SpaceVerdict
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +19,11 @@ class PageStore(
     private val encoder: PageEncoder,
     private val repository: Part2Repository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val space: FreeSpaceGate = FreeSpaceGate.Unknown,
 ) {
+    /** Whether the device has room for a scan and an attach; asked before the scanner opens. */
+    fun spaceVerdict(): SpaceVerdict = space.verdict()
+
     /** Stores every page of [scan] in [orderId] and discards them all, whatever happens. */
     suspend fun store(
         orderId: String,

@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.part2.data.InMemoryLastBackupStorage
 import com.payslipmax.pdfparser.part2.data.LastBackupStorage
 import com.payslipmax.pdfparser.part2.data.Part2Dao
 import com.payslipmax.pdfparser.part2.data.Part2Repository
+import com.payslipmax.pdfparser.part2.space.FreeSpaceReader
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.FakePart2Dao
@@ -44,6 +45,7 @@ class Part2BankWiringTest {
                         },
                     )
                 }.koin
+            assertNotNull(koin.getOrNull<FreeSpaceReader>(), "the free-space reader is bound: a scan is gated on it")
             assertSame(koin.get<BankViewModel>(), koin.get<BankViewModel>(), "one model, so an open form survives a tab switch")
             guide.load()
             testScheduler.advanceUntilIdle()

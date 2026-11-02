@@ -169,3 +169,21 @@ its tests. The "slip" names were dropped on the way (debt watch): `SlipX` became
 | `presentIosShare(items, onDone)` | this branch | gains a completion handler (Phase 7b) |
 | `BackupPickerDelegate` (`ContentView.swift`) | this branch | now hands over the path of the OS's own copy (`asCopy`) instead of reading the bytes |
 | `BackupFilesSecurityContractTest`, `FileBackupFilesTest`, `AndroidBackupFilesTest`, `IosBackupFilesTest`, `PayslipViewModelBackupFilesTest` | new | not copied |
+
+## Phase 7c (ceiling, meter, free-space checks)
+
+Nothing was copied from the frozen branch; its disk-space reader was read, not copied.
+
+| File here | From the old branch | How |
+|---|---|---|
+| `shared/.../part2/space/FreeSpace.kt` (`FreeSpaceReader`, `SpaceVerdict`, `FreeSpaceGate`, `expect provideFreeSpaceReader`), androidMain `AndroidFreeSpaceReader`, iosMain `IosFreeSpaceReader` | new | not copied; own package so `part2/pages` keeps its no-`filesDir` guard |
+| `Part2Limits.VAULT_BYTES_MAX` (250 MB), `FREE_SPACE_WARN_BYTES`, `FREE_SPACE_REFUSE_BYTES` | this branch | edited by hand |
+| `PageStore`, `PageCapture` (`CaptureResult.NoSpace`) | this branch (Phase 4) | edited by hand: the gate is the last constructor parameter |
+| `AttachOrderViewModel`, `AttachState`, `OrderViewModel`, `OrderNotices`, `OrderPages`, `AttachOrderScreen`, `OrderStrings` | this branch (Phase 4) | edited by hand for the two new lines |
+| `Part2Module.kt` | this branch | binds `FreeSpaceReader` and `FreeSpaceGate` |
+| `iosMain/.../repository/FileBackupIo.kt` | this branch (Phase 7b) | `autoreleasepool` around the file read and write (fixes the leak found by the 250 MB test) |
+| `shared-test-fixtures/.../FakeFreeSpaceReader.kt`, `FakePart2Dao` (`keepPageBytes`, `droppedPages`, `droppedBytes`) | new / this branch | fake reader new; the DAO fake gained drop counters |
+| `FreeSpaceGateTest`, `AndroidFreeSpaceReaderTest`, `IosFreeSpaceReaderTest`, `FreeSpaceFlowTest`, `Part2FreeSpaceUiTest`, `Part2VaultHuge`, `Part2VaultHugeJvmTest`, `Part2VaultHugeIosTest` | new | not copied |
+| `VaultSizeTest`, `PageSizeBudgetTest`, `RoomPart2RepositoryTest`, `AttachTestBase`, `BankTestBase`, `Part2BankWiringTest` | this branch | figures updated to 250 MB and the reader bound; assertions otherwise unchanged |
+| `iosApp/iosApp/PrivacyInfo.xcprivacy` | this branch | unchanged: DiskSpace E174.1 is already declared |
+| `Part2Repository.observeVaultBytes`, `Part2Dao.observeVaultBytes`, `RoomPart2Repository`, `FakePart2Dao`, `FakePart2Repository` | this branch | new method (stale-meter fix found on the Pixel walk); `vaultBytesOrZero` became a Flow; `BankViewModel` and `VaultSizeSettingsLine` read it |

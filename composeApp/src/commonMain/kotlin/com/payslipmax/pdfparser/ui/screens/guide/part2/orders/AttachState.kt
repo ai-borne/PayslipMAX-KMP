@@ -7,7 +7,7 @@ import com.payslipmax.pdfparser.part2.domain.BankEntry
 enum class AttachProblem { NO_PAGES, NO_CASUALTY, ORDER_NO_LONG, LAST_NO_LONG, BAD_COUNT }
 
 /** Why the last scan produced nothing to show; the words are UI copy. A cancel is not a notice. */
-enum class AttachNotice { SCAN_UNAVAILABLE, SCAN_FAILED, ORDER_FULL }
+enum class AttachNotice { SCAN_UNAVAILABLE, SCAN_FAILED, ORDER_FULL, NO_SPACE }
 
 /** How Save ended. [Saved.notSaved] counts pages the order did not keep (an unreadable page, a full vault). */
 sealed interface AttachOutcome {
@@ -38,6 +38,8 @@ data class AttachState(
     val ticked: Set<String> = emptySet(),
     val problems: Set<AttachProblem> = emptySet(),
     val notice: AttachNotice? = null,
+    /** The device is under the warning line for free space: shown beside the scan button, the scan still opens. */
+    val lowSpace: Boolean = false,
     val busy: Boolean = false,
 ) {
     /** Counts only: what was typed is the officer's private data. */

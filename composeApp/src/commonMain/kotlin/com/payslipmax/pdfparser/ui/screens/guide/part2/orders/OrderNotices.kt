@@ -12,6 +12,7 @@ internal object OrderNotices {
             AttachNotice.SCAN_UNAVAILABLE -> OrderStrings.scanUnavailable
             AttachNotice.SCAN_FAILED -> OrderStrings.scanFailed
             AttachNotice.ORDER_FULL -> OrderStrings.orderFull()
+            AttachNotice.NO_SPACE -> OrderStrings.noSpace()
         }
 
     fun problem(problem: AttachProblem): String =
@@ -37,6 +38,7 @@ internal object OrderNotices {
         when (result) {
             null, CaptureResult.Cancelled -> null
             CaptureResult.OrderFull -> OrderStrings.orderFull()
+            CaptureResult.NoSpace -> OrderStrings.noSpace()
             is CaptureResult.Failed -> if (result.reason == ScanFailure.UNAVAILABLE) OrderStrings.scanUnavailable else OrderStrings.scanFailed
             is CaptureResult.Saved -> saved(result)
         }

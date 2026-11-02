@@ -40,6 +40,7 @@ internal fun LazyListScope.pagesFooter(
     state: OrderState,
     actions: OrderActions,
 ) {
+    if (state.lowSpace) item(key = "lowSpace") { Text(OrderStrings.lowSpace(), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium) }
     OrderNotices.of(state.capture)?.let { note -> item(key = "capture") { Text(note, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium) } }
     if (actions.canEdit) item(key = "addPages") { Button(onClick = actions.onAddPages, modifier = Modifier.fillMaxWidth()) { Text(OrderStrings.addPages) } }
 }

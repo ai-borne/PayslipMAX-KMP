@@ -5,6 +5,8 @@ import com.payslipmax.pdfparser.part2.data.InMemoryLastBackupStorage
 import com.payslipmax.pdfparser.part2.domain.EntryForm
 import com.payslipmax.pdfparser.part2.domain.Part2LookupIndex
 import com.payslipmax.pdfparser.part2.pages.PageStore
+import com.payslipmax.pdfparser.part2.space.FreeSpaceGate
+import com.payslipmax.pdfparser.testing.FakeFreeSpaceReader
 import com.payslipmax.pdfparser.testing.FakePageEncoder
 import com.payslipmax.pdfparser.testing.FakePart2Repository
 import com.payslipmax.pdfparser.testing.SyntheticGuidePart2
@@ -16,6 +18,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 @OptIn(ExperimentalCoroutinesApi::class)
 open class BankTestBase {
     val repository = FakePart2Repository()
+    val space = FakeFreeSpaceReader()
     val lastBackup = InMemoryLastBackupStorage()
     val dispatcher: CoroutineDispatcher = UnconfinedTestDispatcher()
     val today = CalendarDate(2026, 10, 30)
@@ -29,7 +32,7 @@ open class BankTestBase {
             formFor = { EntryForm.of(index, it) },
             nameOf = { index.code(it)?.name },
             lastBackup = lastBackup,
-            pageStore = PageStore(FakePageEncoder(), repository, dispatcher),
+            pageStore = PageStore(FakePageEncoder(), repository, dispatcher, FreeSpaceGate(space)),
             today = { today },
             clock = { now },
             newId = { "new-${++ids}" },

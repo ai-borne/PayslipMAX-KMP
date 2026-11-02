@@ -3,6 +3,8 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2.orders
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.pages.PageScan
 import com.payslipmax.pdfparser.part2.pages.PageStore
+import com.payslipmax.pdfparser.part2.space.FreeSpaceGate
+import com.payslipmax.pdfparser.testing.FakeFreeSpaceReader
 import com.payslipmax.pdfparser.testing.FakePageEncoder
 import com.payslipmax.pdfparser.testing.FakePageScanner
 import com.payslipmax.pdfparser.testing.FakePart2Repository
@@ -16,6 +18,7 @@ open class AttachTestBase {
     val fake = FakePart2Repository()
     var repository: Part2Repository = fake
     val scanner = FakePageScanner()
+    val space = FakeFreeSpaceReader()
     val dispatcher = UnconfinedTestDispatcher()
     var refuseMarker: Byte? = null
     private var ids = 0
@@ -29,7 +32,7 @@ open class AttachTestBase {
     fun attach(): AttachOrderViewModel =
         AttachOrderViewModel(
             repository = repository,
-            pageStore = PageStore(FakePageEncoder { raw -> refuseMarker != null && raw.last() == refuseMarker }, repository, dispatcher),
+            pageStore = PageStore(FakePageEncoder { raw -> refuseMarker != null && raw.last() == refuseMarker }, repository, dispatcher, FreeSpaceGate(space)),
             clock = { 5_000L },
             newId = { "order-${++ids}" },
             dispatcher = dispatcher,

@@ -12,6 +12,7 @@ import com.payslipmax.pdfparser.part2.pages.PageScan
 import com.payslipmax.pdfparser.part2.pages.PageScanner
 import com.payslipmax.pdfparser.part2.pages.PageStore
 import com.payslipmax.pdfparser.part2.pages.ScanFailure
+import com.payslipmax.pdfparser.part2.space.SpaceVerdict
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -78,6 +79,9 @@ class AttachOrderViewModel(
     suspend fun scan(scanner: PageScanner) {
         val room = Part2Limits.PAGES_PER_ORDER_MAX - held.size
         if (room <= 0) return _state.update { it.copy(notice = AttachNotice.ORDER_FULL) }
+        val space = pageStore.spaceVerdict()
+        _state.update { it.copy(lowSpace = space == SpaceVerdict.LOW) }
+        if (space == SpaceVerdict.REFUSED) return _state.update { it.copy(notice = AttachNotice.NO_SPACE) }
         when (val result = scanner.scan(room)) {
             PageScan.Cancelled -> _state.update { it.copy(notice = null) }
             is PageScan.Failed -> _state.update { it.copy(notice = if (result.reason == ScanFailure.UNAVAILABLE) AttachNotice.SCAN_UNAVAILABLE else AttachNotice.SCAN_FAILED) }

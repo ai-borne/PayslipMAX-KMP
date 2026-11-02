@@ -117,7 +117,7 @@ private fun Messages(
     state: AttachState,
     message: String?,
 ) {
-    val lines = listOfNotNull(state.notice?.let(OrderNotices::of), message) + state.problems.map(OrderNotices::problem).distinct()
+    val lines = listOfNotNull(state.notice?.let(OrderNotices::of), OrderStrings.lowSpace().takeIf { state.lowSpace }, message) + state.problems.map(OrderNotices::problem).distinct()
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny)) {
         lines.forEach { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium) }
     }

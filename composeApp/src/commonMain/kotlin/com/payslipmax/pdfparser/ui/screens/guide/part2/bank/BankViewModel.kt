@@ -87,7 +87,8 @@ class BankViewModel
                 repository.observeEntries().catch { emit(com.payslipmax.pdfparser.part2.data.StoredPart2(emptyList())) },
                 repository.observeOrders().catch { emit(com.payslipmax.pdfparser.part2.data.StoredPart2(emptyList())) },
                 filter,
-            ) { entries, orders, chosen ->
+                repository.vaultBytesOrZero(),
+            ) { entries, orders, chosen, vaultBytes ->
                 BankUiState(
                     loaded = true,
                     view = BankIndex.view(entries.items, orders.items.map { it.id }.toSet(), chosen, today()),
@@ -95,7 +96,7 @@ class BankViewModel
                     unreadable = entries.unreadable + orders.unreadable,
                     lastBackup = lastBackup.load()?.let(::localDate),
                     shelf = OrderShelf.view(orders.items, entries.items),
-                    vaultBytes = repository.vaultBytesOrZero(),
+                    vaultBytes = vaultBytes,
                     attachedTo = attachments(entries.items, orders.items.map { it.id }.toSet()),
                 )
             }.stateIn(scope, SharingStarted.WhileSubscribed(UI_STOP_TIMEOUT_MS), BankUiState(filter = BankFilter.ALL))

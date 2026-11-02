@@ -12,6 +12,7 @@ import com.payslipmax.pdfparser.part2.pages.CaptureResult
 import com.payslipmax.pdfparser.part2.pages.PageCapture
 import com.payslipmax.pdfparser.part2.pages.PageScanner
 import com.payslipmax.pdfparser.part2.pages.PageStore
+import com.payslipmax.pdfparser.part2.space.SpaceVerdict
 import com.payslipmax.pdfparser.rating.currentTimeMillis
 import com.payslipmax.pdfparser.ui.UI_STOP_TIMEOUT_MS
 import kotlinx.coroutines.CancellationException
@@ -39,6 +40,7 @@ data class OrderState(
     val chain: ChainState = ChainState.NO_QUOTE,
     val canUnlink: Boolean = false,
     val capture: CaptureResult? = null,
+    val lowSpace: Boolean = false,
 ) {
     override fun toString(): String = "OrderState(pages=${pages.size}, casualties=${casualties.size})"
 }
@@ -58,6 +60,7 @@ class OrderViewModel(
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val pageVersion = MutableStateFlow(0)
     private val capture = MutableStateFlow<CaptureResult?>(null)
+    private val lowSpace = MutableStateFlow(false)
 
     val state: StateFlow<OrderState> =
         combine(
@@ -65,7 +68,8 @@ class OrderViewModel(
             repository.observeEntries().catch { emit(com.payslipmax.pdfparser.part2.data.StoredPart2(emptyList())) },
             pageVersion,
             capture,
-        ) { orders, entries, _, lastCapture ->
+            lowSpace,
+        ) { orders, entries, _, lastCapture, low ->
             val order = orders.items.firstOrNull { it.id == orderId }
             val covered = OrderLink.covered(orderId, entries.items)
             OrderState(
@@ -77,6 +81,7 @@ class OrderViewModel(
                 chain = order?.let { ChainCheck.of(it, orders.items) } ?: ChainState.NO_QUOTE,
                 canUnlink = OrderLink.canUnlink(orderId, entries.items),
                 capture = lastCapture,
+                lowSpace = low,
             )
         }.stateIn(scope, SharingStarted.WhileSubscribed(UI_STOP_TIMEOUT_MS), OrderState())
 
@@ -88,6 +93,7 @@ class OrderViewModel(
     /** Scans for the room the order has left and stores what comes back. A cancel leaves nothing and says nothing. */
     suspend fun addPages(scanner: PageScanner) {
         capture.value = null
+        lowSpace.value = pageStore.spaceVerdict() == SpaceVerdict.LOW
         val result = PageCapture(scanner, pageStore, repository).capture(orderId)
         capture.value = result.takeUnless { it == CaptureResult.Cancelled }
         pageVersion.update { it + 1 }

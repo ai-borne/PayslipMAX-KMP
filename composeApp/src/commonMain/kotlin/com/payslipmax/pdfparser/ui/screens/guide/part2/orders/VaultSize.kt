@@ -3,20 +3,14 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2.orders
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.ui.theme.OrderStrings
-import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 
 /**
- * The vault's size, or 0 when the store cannot be read. The lists beside it swallow the same failures through Flow's `.catch`, which takes
- * any Throwable: a screen shows an unreadable store as empty and never crashes. Cancellation still propagates.
+ * The vault's size, again at every change to a stored page, and 0 when the store cannot be read. The lists beside it swallow the same
+ * failures through Flow's `.catch`, which takes any Throwable: a screen shows an unreadable store as empty and never crashes.
  */
-internal suspend fun Part2Repository.vaultBytesOrZero(): Long =
-    try {
-        vaultBytes()
-    } catch (e: CancellationException) {
-        throw e
-    } catch (e: Throwable) {
-        0L
-    }
+internal fun Part2Repository.vaultBytesOrZero(): Flow<Long> = observeVaultBytes().catch { emit(0L) }
 
 /** The one place that words the vault's size, for Settings (always) and the Bank (only past the warning). Whole megabytes, rounded up. */
 internal object VaultSize {

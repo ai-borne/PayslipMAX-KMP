@@ -127,6 +127,8 @@ class RoomPart2Repository
 
         override suspend fun vaultBytes(): Long = withContext(dispatcher) { dao.vaultBytes() }
 
+        override fun observeVaultBytes(): Flow<Long> = dao.observeVaultBytes().flowOn(dispatcher)
+
         private fun <R, T> read(
             rows: List<R>,
             open: (R) -> T,

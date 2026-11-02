@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
@@ -17,7 +17,7 @@ import org.koin.compose.getKoin
 @Composable
 internal fun VaultSizeSettingsLine(repository: Part2Repository?) {
     if (repository == null) return
-    val bytes by produceState(0L, repository) { value = repository.vaultBytesOrZero() }
+    val bytes by repository.vaultBytesOrZero().collectAsState(0L)
     val warning = VaultSize.warning(bytes)
     Text(
         warning ?: VaultSize.usage(bytes),

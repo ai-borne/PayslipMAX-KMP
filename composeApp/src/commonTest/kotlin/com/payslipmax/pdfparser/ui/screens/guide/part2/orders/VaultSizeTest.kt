@@ -3,6 +3,9 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2.orders
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.testing.FakePart2Repository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -15,21 +18,22 @@ class VaultSizeTest {
 
     @Test
     fun theUsageLineRoundsUpSoItNeverUnderstates() {
-        assertEquals("Order pages use 1 MB of 100 MB", VaultSize.usage(1))
-        assertEquals("Order pages use 0 MB of 100 MB", VaultSize.usage(0))
-        assertEquals("Order pages use 13 MB of 100 MB", VaultSize.usage(12 * mb + 1))
+        assertEquals("Order pages use 1 MB of 250 MB", VaultSize.usage(1))
+        assertEquals("Order pages use 0 MB of 250 MB", VaultSize.usage(0))
+        assertEquals("Order pages use 13 MB of 250 MB", VaultSize.usage(12 * mb + 1))
     }
 
     @Test
     fun noWarningUntilEightyPercentThenOneWithTheFigures() {
         assertNull(VaultSize.warning(Part2Limits.VAULT_WARN_BYTES))
         val text = VaultSize.warning(Part2Limits.VAULT_WARN_BYTES + 1)
-        assertTrue(text != null && text.startsWith("Order pages use 81 MB of 100 MB"), text)
+        assertTrue(text != null && text.startsWith("Order pages use 201 MB of 250 MB"), text)
     }
 
     @Test
     fun theWarnThresholdIsEightyPercentOfTheCap() {
-        assertEquals(80L * mb, Part2Limits.VAULT_WARN_BYTES)
+        assertEquals(200L * mb, Part2Limits.VAULT_WARN_BYTES)
+        assertEquals(250L * mb, Part2Limits.VAULT_BYTES_MAX)
     }
 
     @Test
@@ -37,9 +41,9 @@ class VaultSizeTest {
         runTest {
             val broken =
                 object : Part2Repository by FakePart2Repository() {
-                    override suspend fun vaultBytes(): Long = throw Error("no native library")
+                    override fun observeVaultBytes(): Flow<Long> = flow { throw Error("no native library") }
                 }
 
-            assertEquals(0L, broken.vaultBytesOrZero())
+            assertEquals(0L, broken.vaultBytesOrZero().first())
         }
 }

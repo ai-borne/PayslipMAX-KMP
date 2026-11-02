@@ -67,4 +67,7 @@ interface Part2Repository {
 
     /** Stored page ciphertext in bytes. */
     suspend fun vaultBytes(): Long
+
+    /** The vault's size, again at every change to a stored page, so a screen never shows a figure older than the pages. */
+    fun observeVaultBytes(): Flow<Long>
 }

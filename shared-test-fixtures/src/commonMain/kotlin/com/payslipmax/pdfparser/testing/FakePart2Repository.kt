@@ -101,4 +101,6 @@ class FakePart2Repository(
     }
 
     override suspend fun vaultBytes(): Long = pages.value.values.sumOf { it.second.size.toLong() }
+
+    override fun observeVaultBytes(): Flow<Long> = pages.map { rows -> rows.values.sumOf { it.second.size.toLong() } }
 }

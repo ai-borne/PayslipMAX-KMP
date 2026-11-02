@@ -13,7 +13,16 @@ import kotlinx.coroutines.flow.map
  * In-memory [Part2Dao]. The `@Transaction` cap checks are the interface's own default bodies, so they run here as in Room.
  * [FakePayslipDao] shares one of these, so the bulk restore writes and the per-row reads see the same rows, as the real tables do.
  */
-class FakePart2Dao : Part2Dao {
+class FakePart2Dao(
+    /** False makes bulk page writes count their bytes and drop them, so a test can restore a vault larger than its heap. */
+    private val keepPageBytes: Boolean = true,
+) : Part2Dao {
+    /** What the bulk writes saw when [keepPageBytes] is false: every page, and the bytes it carried. */
+    var droppedPages = 0
+        private set
+    var droppedBytes = 0L
+        private set
+
     private val entries = MutableStateFlow<Map<String, Part2EntryEntity>>(emptyMap())
     private val orders = MutableStateFlow<Map<String, Part2OrderEntity>>(emptyMap())
     private val pages = MutableStateFlow<Map<String, Part2PageEntity>>(emptyMap())
@@ -67,6 +76,8 @@ class FakePart2Dao : Part2Dao {
 
     override suspend fun vaultBytes(): Long = pages.value.values.sumOf { it.ciphertext.size.toLong() }
 
+    override fun observeVaultBytes(): Flow<Long> = pages.map { rows -> rows.values.sumOf { it.ciphertext.size.toLong() } }
+
     override suspend fun deletePage(id: String) {
         pages.value = pages.value - id
     }
@@ -83,7 +94,12 @@ class FakePart2Dao : Part2Dao {
     ) {
         entries.value = entries.value + newEntries.associateBy { it.id }
         orders.value = orders.value + newOrders.associateBy { it.id }
-        pages.value = pages.value + newPages.associateBy { it.id }
+        if (keepPageBytes) {
+            pages.value = pages.value + newPages.associateBy { it.id }
+        } else {
+            droppedPages += newPages.size
+            droppedBytes += newPages.sumOf { it.ciphertext.size.toLong() }
+        }
     }
 
     fun clearEntries() {

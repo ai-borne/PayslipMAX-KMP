@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.part2.pages
 import com.payslipmax.pdfparser.part2.data.Part2Repository
 import com.payslipmax.pdfparser.part2.data.Part2WriteResult
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
+import com.payslipmax.pdfparser.part2.space.SpaceVerdict
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
@@ -17,6 +18,9 @@ sealed interface CaptureResult {
 
     /** The order already holds `Part2Limits.PAGES_PER_ORDER_MAX` pages, so the scanner was not opened. */
     data object OrderFull : CaptureResult
+
+    /** The device is below the refusal line for free space, so the scanner was not opened. */
+    data object NoSpace : CaptureResult
 
     class Failed(val reason: ScanFailure) : CaptureResult
 }
@@ -40,6 +44,7 @@ class PageCapture(
     suspend fun capture(orderId: String): CaptureResult {
         val room = Part2Limits.PAGES_PER_ORDER_MAX - repository.pages(orderId).size
         if (room <= 0) return CaptureResult.OrderFull
+        if (pageStore.spaceVerdict() == SpaceVerdict.REFUSED) return CaptureResult.NoSpace
         return when (val scan = scanner.scan(room)) {
             PageScan.Cancelled -> CaptureResult.Cancelled
             is PageScan.Failed -> CaptureResult.Failed(scan.reason)

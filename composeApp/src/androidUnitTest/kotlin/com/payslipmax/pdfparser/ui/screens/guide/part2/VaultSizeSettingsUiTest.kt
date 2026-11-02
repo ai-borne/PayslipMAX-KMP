@@ -55,6 +55,18 @@ class VaultSizeSettingsUiTest {
     }
 
     @Test
+    fun theSettingsLineMovesWhenPagesChangeWhileItIsOnScreen() {
+        val repository = vaultOf(300 * 1024)
+        composeRule.setContent { KoinApplication(application = { modules(module { single<Part2Repository> { repository } }) }) { VaultSizeSettings() } }
+        composeRule.onNodeWithText(VaultSize.usage(300L * 1024)).assertIsDisplayed()
+
+        val page = 400L * 1024
+        runBlocking { repeat(3) { repository.addPage("o1", ByteArray(page.toInt()).also { it[0] = 0xFF.toByte() }) } }
+
+        composeRule.waitUntil(5_000) { composeRule.onAllNodesWithText(VaultSize.usage(300L * 1024 + 3 * page)).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    @Test
     fun withPartTwoOffNothingIsShown() {
         composeRule.setContent { KoinApplication(application = { modules(module { }) }) { VaultSizeSettings() } }
 

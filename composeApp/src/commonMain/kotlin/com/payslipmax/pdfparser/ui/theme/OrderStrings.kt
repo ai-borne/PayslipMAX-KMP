@@ -34,6 +34,13 @@ object OrderStrings {
 
     fun orderFull(): String = "An order holds at most ${Part2Limits.PAGES_PER_ORDER_MAX} pages."
 
+    // Free device space (the lines are Part2Limits.FREE_SPACE_*, said in whole megabytes)
+    fun noSpace(): String = "Your device has less than ${Part2Limits.FREE_SPACE_REFUSE_BYTES / MEGABYTE} MB free, so nothing was scanned. Free some space, then try again."
+
+    fun lowSpace(): String = "Your device has less than ${Part2Limits.FREE_SPACE_WARN_BYTES / MEGABYTE} MB free. Free some space soon so scans can be saved."
+
+    private const val MEGABYTE = 1024L * 1024
+
     const val vaultFull = "Your order pages are full. Delete an order you no longer need, then try again."
     const val orderGone = "This order is no longer here."
     const val saveFailed = "The order could not be saved. Nothing was changed."

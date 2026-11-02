@@ -7,6 +7,7 @@ import com.payslipmax.pdfparser.part2.domain.WaitingAge
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -143,5 +144,18 @@ class BankViewModelTest : BankTestBase() {
 
             assertTrue(done)
             assertNull(repository.entry("e1"))
+        }
+
+    @Test
+    fun theVaultSizeFollowsPagesAddedToAnOrderThatAlreadyExists() =
+        runTest {
+            repository.saveOrder(SyntheticBank.order("o1"))
+            val model = bank()
+            assertEquals(0L, model.state.first { it.loaded }.vaultBytes)
+
+            repository.addPage("o1", SyntheticBank.jpeg(4000))
+
+            val after = withTimeoutOrNull(1_000) { model.state.first { it.vaultBytes > 0 } }
+            assertEquals(4000L, after?.vaultBytes, "no entry and no order changed, only the pages: the figure must still move")
         }
 }
