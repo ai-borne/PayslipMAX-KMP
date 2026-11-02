@@ -77,6 +77,19 @@ class Part2SaveNoticeUiTest : Part2UiBase() {
     }
 
     @Test
+    fun theMessageLeavesByItselfAfterAboutFourSeconds() {
+        val nav = open(Part2Destination.Hub, Part2Destination.Home, Part2Destination.Code("FIRSTCODE"))
+        addFromTheCasualtyPage(nav)
+        shown(OrdersBankStrings.noticeAdded("FIRSTCODE")).assertIsDisplayed()
+
+        // WHY: a notice that stays for ten seconds covers the foot of the list the officer is reading; four is enough to read it.
+        composeRule.mainClock.advanceTimeBy(3_000)
+        shown(OrdersBankStrings.noticeAdded("FIRSTCODE")).assertIsDisplayed()
+        composeRule.mainClock.advanceTimeBy(2_000)
+        assertEquals(0, composeRule.onAllNodesWithText(OrdersBankStrings.noticeAdded("FIRSTCODE")).fetchSemanticsNodes().size, "gone by 5 s")
+    }
+
+    @Test
     fun theMessageNeverCarriesWhatWasTyped() {
         val nav = open(Part2Destination.Hub, Part2Destination.Home, Part2Destination.Code("FIRSTCODE"))
         addFromTheCasualtyPage(nav)

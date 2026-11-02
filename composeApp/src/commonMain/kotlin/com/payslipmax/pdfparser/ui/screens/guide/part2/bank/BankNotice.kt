@@ -47,7 +47,7 @@ internal fun BankNoticeHost(
     LaunchedEffect(bank) {
         bank.notice.filterNotNull().collect { notice ->
             bank.noticeTaken()
-            val result = host.showSnackbar(notice.message, notice.actionLabel, duration = SnackbarDuration.Long)
+            val result = host.showSnackbar(notice.message, notice.actionLabel, duration = SnackbarDuration.Short)
             if (result == SnackbarResult.ActionPerformed) onAttach(notice.entryId)
         }
     }
