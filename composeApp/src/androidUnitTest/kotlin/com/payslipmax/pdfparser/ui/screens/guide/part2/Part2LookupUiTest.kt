@@ -18,7 +18,9 @@ import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavStateSaver
 import com.payslipmax.pdfparser.ui.screens.guide.GuideUiState
 import com.payslipmax.pdfparser.ui.screens.guide.Part2Destination
+import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import com.payslipmax.pdfparser.ui.theme.LearnStrings
+import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -49,9 +51,38 @@ class Part2LookupUiTest : Part2UiBase() {
         see(LearnStrings.sectionSubtext).assertIsDisplayed()
 
         fun top(text: String) = composeRule.onAllNodesWithText(text)[0].fetchSemanticsNode().boundsInRoot.top
-        val lastArea = (guide.uiState.value as GuideUiState.Ready).areas.map { it.title }.maxOf { top(it) }
+        val lastArea = (guide.uiState.value as GuideUiState.Ready).areas.map { GuideStrings.areaTileLabel(it.id) ?: it.title }.maxOf { top(it) }
         assertTrue(top(LearnStrings.sectionHeading) > lastArea, "the heading is below the last handbook area")
-        assertTrue(top(LearnStrings.entryTitle) > top(LearnStrings.sectionHeading), "the row is under the heading")
+        assertTrue(top(LearnStrings.hubTitle) > top(LearnStrings.sectionHeading), "the tile is under the heading")
+    }
+
+    @Test
+    fun guideHomeIsAGridWithOneWidePartTwoTileSoPartTwoIsNotBuriedUnderALongListOfRows() {
+        // WHY: twelve one-per-row ribbons pushed Part II below the fold; two area tiles per row and ONE Part II tile keeps it close.
+        // Learn and the Bank live one tap down, on the hub, never on Home.
+        show()
+
+        fun bounds(text: String) = composeRule.onAllNodesWithText(text)[0].fetchSemanticsNode().boundsInRoot
+        val areas = (guide.uiState.value as GuideUiState.Ready).areas.map { bounds(GuideStrings.areaTileLabel(it.id) ?: it.title) }
+        assertTrue(areas.size >= 2 && areas[0].top == areas[1].top && areas[0].left < areas[1].left, "the first two areas share a row")
+        composeRule.onAllNodesWithText(LearnStrings.entryTitle).assertCountEquals(0)
+        composeRule.onAllNodesWithText(OrdersBankStrings.entryTitle).assertCountEquals(0)
+        assertTrue(composeRule.onAllNodesWithText(LearnStrings.hubTitle)[0].fetchSemanticsNode().boundsInRoot.left <= areas[0].left, "the Part II tile starts at the left edge")
+    }
+
+    @Test
+    fun thePartTwoTileOpensAHubWithLearnAndTheBankAndBackReturnsToGuideHome() {
+        val nav = show()
+        tap(LearnStrings.hubTitle)
+        assertEquals(Part2Destination.Hub, nav.current)
+        see(LearnStrings.entryTitle).assertIsDisplayed()
+        see(OrdersBankStrings.entryTitle).assertIsDisplayed()
+        tap(LearnStrings.entryTitle)
+        assertEquals(Part2Destination.Home, nav.current)
+        nav.pop()
+        assertEquals(Part2Destination.Hub, nav.current)
+        nav.pop()
+        assertEquals(com.payslipmax.pdfparser.ui.screens.guide.GuideDestination.Home, nav.current)
     }
 
     @Test
@@ -63,7 +94,7 @@ class Part2LookupUiTest : Part2UiBase() {
     @Test
     fun withTheFlagOnTheRowIsThereForAFreeUserAndOpensTheHomeWithEveryRibbon() {
         show(unlocked = false)
-        tap(LearnStrings.entryTitle)
+        openLearn()
         composeRule.onNodeWithText("The first ribbon").assertIsDisplayed()
         composeRule.onNodeWithText("The second ribbon").assertIsDisplayed()
         assertEquals(0, unlockTaps, "Learn is free: no upgrade prompt anywhere")
@@ -72,7 +103,7 @@ class Part2LookupUiTest : Part2UiBase() {
     @Test
     fun theWholePathDownToACasualtyPageAndBackUpExactlyOneLevelAtATime() {
         val nav = show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         tap("The first ribbon")
         assertEquals(Part2Destination.Ribbon("leave"), nav.current)
         tap("Granted the fourth thing")
@@ -83,13 +114,15 @@ class Part2LookupUiTest : Part2UiBase() {
         back()
         assertEquals(Part2Destination.Home, nav.current)
         back()
+        assertEquals(Part2Destination.Hub, nav.current)
+        back()
         assertEquals(GuideDestination.Home, nav.current)
     }
 
     @Test
     fun aRibbonIsOneFlatListWithTheCaseNamesAsHeadingsAndNoCaseLevel() {
         val nav = show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         tap("The first ribbon")
         val heading = SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading)
         composeRule.onNodeWithText("First case").assert(heading).assertIsDisplayed()
@@ -103,7 +136,7 @@ class Part2LookupUiTest : Part2UiBase() {
     @Test
     fun aRibbonRowForAVariantSerialOpensItsPageOnTheFirstCodeAndShowsAllOfThem() {
         val nav = show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         tap("The second ribbon")
         tap("Granted a variant thing")
         assertEquals(Part2Destination.Code("VARIANT1"), nav.current, "a row with no search behind it opens on the first code")
@@ -113,7 +146,7 @@ class Part2LookupUiTest : Part2UiBase() {
     @Test
     fun searchFindsByCodeBySerialAndByNameAndOpensThePage() {
         val nav = show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         type("firstcode")
         composeRule.onNodeWithText("Granted the first thing").assertIsDisplayed()
         type("x") // "firstcodex" matches nothing
@@ -130,7 +163,7 @@ class Part2LookupUiTest : Part2UiBase() {
     @Test
     fun aVariantSerialsPageShowsAllItsCodesWhicheverOneWasSearched() {
         val nav = show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         type("variant2")
         tap("Granted a variant thing")
         assertEquals(Part2Destination.Code("VARIANT2"), nav.current)
@@ -140,7 +173,7 @@ class Part2LookupUiTest : Part2UiBase() {
     @Test
     fun backFromAPageKeepsTheQueryAndEachVisitFromGuideHomeStartsEmpty() {
         val nav = show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         type("fourth")
         tap("Granted the fourth thing")
         back()
@@ -148,7 +181,7 @@ class Part2LookupUiTest : Part2UiBase() {
         assertEquals("fourth", model.query.value, "coming back from a page keeps the search")
         nav.popToHome()
         settle()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         assertEquals("", model.query.value)
         see(LearnStrings.searchHint).assertIsDisplayed()
     }
@@ -156,7 +189,7 @@ class Part2LookupUiTest : Part2UiBase() {
     @Test
     fun theSearchBoxDoesNotTakeFocusSoTheKeyboardStaysDownUntilTheOfficerTapsIt() {
         show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         composeRule.onNode(hasSetTextAction()).assertIsNotFocused()
         composeRule.onNode(hasSetTextAction()).performClick()
         composeRule.onNode(hasSetTextAction()).assertIsFocused()
@@ -165,7 +198,7 @@ class Part2LookupUiTest : Part2UiBase() {
     @Test
     fun searchSaysWhatToDoForNothingTooLittleAndNoMatch() {
         show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         see(LearnStrings.searchHint).assertIsDisplayed()
         type("a")
         see(LearnStrings.searchTooShort).assertIsDisplayed()
@@ -177,7 +210,7 @@ class Part2LookupUiTest : Part2UiBase() {
     @Test
     fun aLockDropsTheTypedSearchAndTheOfficerComesBackToTheSameLevel() {
         val nav = show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         type("fourth")
         nav.discardTransientForms() // what App does when the app locks
         settle()

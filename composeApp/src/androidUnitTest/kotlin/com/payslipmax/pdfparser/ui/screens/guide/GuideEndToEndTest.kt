@@ -87,7 +87,7 @@ class GuideEndToEndTest {
         }
         settle()
 
-        tap("My pay")
+        tap(GuideStrings.areaTileLabel("pay")!!)
         tap("7th CPC pay structure")
         tap(MSP_TITLE)
         composeRule.onNodeWithText(GuideStrings.sectionKeyPoints).assertIsDisplayed()

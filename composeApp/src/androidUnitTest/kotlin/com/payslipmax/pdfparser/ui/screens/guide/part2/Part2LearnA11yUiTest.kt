@@ -54,7 +54,7 @@ class Part2LearnA11yUiTest : Part2UiBase() {
     fun theHomeTheRibbonAndTheCasualtyPageAreWholeAtTwiceTheFontOnASmallPhone() {
         fontScale = 2f
         val nav = show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         assertEveryTextIsWhole(listOf(LearnStrings.entryTitle, LearnStrings.homeSubtitle, LearnStrings.searchHint, "The first ribbon", "The second ribbon"))
         tap("The first ribbon")
         assertEveryTextIsWhole(listOf("First case", "Second case", "Granted the first thing", "Reported for the second thing", "Released from the third thing"))
@@ -71,7 +71,7 @@ class Part2LearnA11yUiTest : Part2UiBase() {
     @Test
     fun everyControlOnTheLearnScreensHasANameAScreenReaderCanSpeak() {
         show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         composeRule.onNodeWithText(LearnStrings.searchPlaceholder).assertIsDisplayed()
         type("fourth")
         composeRule.onAllNodesWithContentDescription(LearnStrings.searchClear).assertCountEquals(1)
@@ -92,7 +92,7 @@ class Part2LearnA11yUiTest : Part2UiBase() {
     @Test
     fun aListRowReadsAsOneButtonWithTheCasualtysNameInIt() {
         show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         tap("The first ribbon")
         composeRule.onNode(hasText("Granted the first thing") and hasClickAction()).assertIsDisplayed()
     }

@@ -58,7 +58,7 @@ class GuideTabTest {
         composeRule.onNodeWithText(GuideStrings.homeTitle).assertIsDisplayed()
         composeRule.onNodeWithText("Travel").assertIsDisplayed()
         composeRule.onNodeWithText(GuideStrings.topicCount(2)).assertIsDisplayed()
-        composeRule.onNodeWithText("Pay").assertIsDisplayed()
+        composeRule.onNodeWithText(GuideStrings.areaTileLabel("pay")!!).assertIsDisplayed()
         composeRule.onNodeWithText(GuideStrings.topicCount(1)).assertIsDisplayed()
     }
 

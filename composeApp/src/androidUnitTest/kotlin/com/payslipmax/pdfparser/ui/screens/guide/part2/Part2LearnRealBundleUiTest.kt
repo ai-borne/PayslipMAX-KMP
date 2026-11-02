@@ -46,7 +46,7 @@ class Part2LearnRealBundleUiTest : Part2UiBase() {
     @Test
     fun theHomeListsAllTenRibbonsOfTheShippedManual() {
         show()
-        tap(LearnStrings.entryTitle)
+        openLearn()
         assertTrue(lookup.ribbons.size == 10)
         lookup.ribbons.forEach { see(it.title).assertIsDisplayed() }
     }

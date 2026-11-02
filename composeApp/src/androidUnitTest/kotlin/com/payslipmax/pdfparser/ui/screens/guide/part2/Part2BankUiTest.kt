@@ -207,9 +207,11 @@ class Part2BankUiTest : Part2UiBase() {
     }
 
     @Test
-    fun theGuideHomeOffersTheBankRowAfterTheLearnRowAndItOpens() {
+    fun thePartTwoHubOffersTheBankRowAndItOpens() {
         val nav = show(GuideNavState(), part2Bank = { bank }, bankAccess = BankAccess(true) {})
 
+        tap(LearnStrings.hubTitle)
+        assertEquals(Part2Destination.Hub, nav.current)
         see(OrdersBankStrings.entryTitle).assertIsDisplayed()
         tap(OrdersBankStrings.entryTitle)
 

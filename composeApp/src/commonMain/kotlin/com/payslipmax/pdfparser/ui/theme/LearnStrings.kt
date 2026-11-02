@@ -10,7 +10,12 @@ import com.payslipmax.pdfparser.part2.domain.Part2ColumnPosition
 object LearnStrings {
     // Guide Home: the section the entry row sits in, below the handbook areas (a different manual).
     const val sectionHeading = "Part II orders (ODP 2026)"
-    const val sectionSubtext = "From a different manual than the topics above"
+    const val sectionSubtext = "Learn what each order needs, then keep its copy"
+
+    // Guide Home's one Part II tile, and the hub screen it opens (Learn and the Orders Bank).
+    const val hubEmoji = "📜"
+    const val hubTitle = "Part II Orders"
+    const val hubTileSubtitle = "Manage your Part II Orders"
 
     // Guide Home entry and the Learn home.
     const val entryEmoji = "📖"

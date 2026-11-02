@@ -26,10 +26,11 @@ import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import com.payslipmax.pdfparser.ui.theme.LearnStrings
+import com.payslipmax.pdfparser.ui.theme.PreClaimStrings
 
 /**
  * Guide Home: a search icon, then the "What's new" row when [whatsNewDate] is set, then the user's pinned cards when there are any (newest first; no section at all when
- * [pinned] is empty or the user is locked), then one accent-striped row per area, in bundle order (owner decision 2026-10-10: one column, like Smart Insights). Last come the
+ * [pinned] is empty or the user is locked), then a two-column grid of area tiles in bundle order, with the TA/DA worksheet tile after them (owner decision 2026-11-02, Phase 8: one overview instead of a long list of rows). Last come the
  * user's notes lines ([notes]): the removed-cards row and the quiet "could not be read" line, each only when it applies.
  */
 @Composable
@@ -46,8 +47,7 @@ internal fun GuideHomeScreen(
     preClaim: PreClaimEntry = PreClaimEntry.HIDDEN,
     onOpenPreClaim: () -> Unit = {},
     part2: Part2Entry = Part2Entry.HIDDEN,
-    onOpenPart2: () -> Unit = {},
-    onOpenBank: () -> Unit = {},
+    onOpenPart2Hub: () -> Unit = {},
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -71,9 +71,9 @@ internal fun GuideHomeScreen(
                 GuideCardRowView(row, onClick = { onOpenPinned(row.cardId) }, noteMark = if (row.cardId in notedCards) GuideNoteMark.HAS_NOTE else GuideNoteMark.NONE)
             }
         }
-        guideFeatureRows(preClaim, onOpenPreClaim)
-        items(areas, key = { it.id }) { tile -> GuideAreaTileView(tile, onClick = { onOpenArea(tile.id) }) }
-        guidePart2Section(part2, onOpenPart2, onOpenBank)
+        guideSectionIntro("guide", GuideStrings.homeOverview)
+        guideTileGrid(guideAreaItems(areas, onOpenArea, preClaim, onOpenPreClaim))
+        guidePart2Section(part2, onOpenPart2Hub)
         if (notes.removedCount > 0) {
             item(key = "removed-notes") { GuideRemovedNotesRow(notes.removedCount, notes.onOpenRemoved) }
         }
@@ -83,34 +83,38 @@ internal fun GuideHomeScreen(
     }
 }
 
-/** The TA/DA worksheet row above the areas: absent while its flag is off, a Premium-marked row for a free user, a plain row otherwise. */
-private fun LazyListScope.guideFeatureRows(
+/** The handbook areas as tiles, then the TA/DA worksheet tile (absent while its flag is off, Premium-marked for a free user). */
+private fun guideAreaItems(
+    areas: List<GuideAreaTile>,
+    onOpenArea: (String) -> Unit,
     preClaim: PreClaimEntry,
     onOpenPreClaim: () -> Unit,
-) {
-    if (preClaim != PreClaimEntry.HIDDEN) {
-        item(key = "preclaim") { PreClaimEntryRow(locked = preClaim == PreClaimEntry.LOCKED, onClick = onOpenPreClaim) }
-    }
+): List<GuideGridItem> {
+    val tiles = areas.map { GuideGridItem("area-${it.id}", GuideStrings.areaEmoji(it.id), GuideStrings.areaTileLabel(it.id) ?: it.title, GuideStrings.topicCount(it.caseCount), { onOpenArea(it.id) }) }
+    if (preClaim == PreClaimEntry.HIDDEN) return tiles
+    val worksheet =
+        GuideGridItem(
+            "preclaim",
+            PreClaimStrings.entryEmoji,
+            PreClaimStrings.tileTitle,
+            PreClaimStrings.entrySubtitle,
+            onOpenPreClaim,
+            badge = PreClaimStrings.entryPremium.takeIf { preClaim == PreClaimEntry.LOCKED },
+        )
+    return tiles + worksheet
 }
 
 /**
- * The Part II section below the handbook areas: its own heading and a line saying it comes from a different manual (ODP 2026, not the PCDA
- * handbook), then the Learn row and the Orders Bank row. Absent while its flag is off; Learn is free for everyone once it is on, and the Bank opens for everyone (adding is Premium).
+ * The Part II section below the handbook areas: a grey divider, its heading with a one-line overview (it comes from ODP 2026, not the PCDA
+ * handbook), then one full-width Part II Orders tile that opens the hub with Learn and the Orders Bank. Absent while its flag is off.
  */
 private fun LazyListScope.guidePart2Section(
     part2: Part2Entry,
-    onOpenPart2: () -> Unit,
-    onOpenBank: () -> Unit,
+    onOpenPart2Hub: () -> Unit,
 ) {
     if (part2 == Part2Entry.HIDDEN) return
-    item(key = "part2section") {
-        Column {
-            Text(LearnStrings.sectionHeading, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
-            Text(LearnStrings.sectionSubtext, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
-    item(key = "part2") { Part2EntryRow(onOpenPart2) }
-    item(key = "part2bank") { BankEntryRow(onOpenBank) }
+    guideSectionIntro("part2", LearnStrings.sectionSubtext, heading = LearnStrings.sectionHeading)
+    guideTileGrid(listOf(GuideGridItem("part2", LearnStrings.hubEmoji, LearnStrings.hubTitle, LearnStrings.hubTileSubtitle, onOpenPart2Hub)), fullRow = true)
 }
 
 @Composable

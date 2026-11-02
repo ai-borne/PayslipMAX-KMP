@@ -10,6 +10,7 @@ object GuideStrings {
     const val tabLabel = "Guide"
     const val homeTitle = "Guide"
     const val homeSection = "What do you need help with?"
+    const val homeOverview = "Handbook rules, limits and claim steps, by topic"
     const val loading = "Opening the Claim Guide…"
     const val loadFailedTitle = "The Claim Guide could not open"
     const val loadFailedBody = "Your payslips are not affected. Try again. If it keeps failing, update the app."
@@ -31,6 +32,22 @@ object GuideStrings {
             "allow" -> "💵"
             "home" -> "🏠"
             else -> areaEmojiFallback
+        }
+
+    // The short name on a Guide Home tile, keyed by the bundle's area id. Tiles only: the area screen, breadcrumbs and search keep the
+    // bundle's full title (owner decision 2026-11-02, Phase 8). Null for an area added later, which shows its bundle title until named here.
+    fun areaTileLabel(areaId: String): String? =
+        when (areaId) {
+            "ltc" -> "LTC"
+            "leave" -> "Leave"
+            "td" -> "TD"
+            "move" -> "Postings"
+            "claims" -> "Claims"
+            "ret" -> "Retire"
+            "pay" -> "Payments"
+            "allow" -> "Allowances"
+            "home" -> "House, Health, Family"
+            else -> null
         }
 
     // Search.

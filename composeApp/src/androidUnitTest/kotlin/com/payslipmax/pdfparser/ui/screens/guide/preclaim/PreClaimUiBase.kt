@@ -111,7 +111,7 @@ abstract class PreClaimUiBase {
     }
 
     protected fun openFromHome(move: String) {
-        tap(PreClaimStrings.entryTitle)
+        tap(PreClaimStrings.tileTitle)
         tap(move)
     }
 

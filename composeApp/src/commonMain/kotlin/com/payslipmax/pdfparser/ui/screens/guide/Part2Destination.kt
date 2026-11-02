@@ -11,6 +11,9 @@ import com.payslipmax.pdfparser.part2.domain.knowsRibbon
  * package, which Kotlin requires of every inheritor of [GuideDestination].
  */
 sealed interface Part2Destination : GuideDestination {
+    /** The Part II Orders hub: the Guide Home tile opens it, and it offers Learn and the Orders Bank. */
+    data object Hub : Part2Destination
+
     data object Home : Part2Destination
 
     data class Ribbon(val ribbonId: String) : Part2Destination
@@ -34,6 +37,7 @@ sealed interface Part2Destination : GuideDestination {
     data object Shelf : Part2Destination
 }
 
+private const val HUB = "hub"
 private const val HOME = "home"
 private const val RIBBON = "ribbon"
 private const val CODE = "code"
@@ -45,6 +49,7 @@ private const val SHELF = "shelf"
 /** The saved form of a level after the `part2` prefix: its kind, then its one id. Ids only, never a name or a query. */
 internal fun encodePart2(destination: Part2Destination): List<String> =
     when (destination) {
+        Part2Destination.Hub -> listOf(HUB)
         Part2Destination.Home -> listOf(HOME)
         is Part2Destination.Ribbon -> listOf(RIBBON, destination.ribbonId)
         is Part2Destination.Code -> listOf(CODE, destination.code)
@@ -60,6 +65,7 @@ internal fun encodePart2(destination: Part2Destination): List<String> =
 internal fun decodePart2(parts: List<String>): Part2Destination? {
     val id = parts.getOrNull(1)?.takeIf { it.isNotEmpty() }
     return when (parts.firstOrNull()) {
+        HUB -> Part2Destination.Hub.takeIf { parts.size == 1 }
         HOME -> Part2Destination.Home.takeIf { parts.size == 1 }
         RIBBON -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Ribbon)
         CODE -> id?.takeIf { parts.size == 2 }?.let(Part2Destination::Code)
@@ -74,7 +80,7 @@ internal fun decodePart2(parts: List<String>): Part2Destination? {
 /** Whether this lookup still offers the place: any ribbon, any code (search reaches every code page), the Bank, or an entry level with a plausible id (the store is asked separately). */
 internal fun Part2Lookup.knows(destination: Part2Destination): Boolean =
     when (destination) {
-        Part2Destination.Home -> true
+        Part2Destination.Hub, Part2Destination.Home -> true
         is Part2Destination.Ribbon -> knowsRibbon(destination.ribbonId)
         is Part2Destination.Code -> knowsCode(destination.code)
         Part2Destination.Bank -> true

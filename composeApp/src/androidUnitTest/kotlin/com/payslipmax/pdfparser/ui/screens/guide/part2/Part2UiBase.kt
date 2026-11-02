@@ -33,6 +33,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.LocalPageImageDeco
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.LocalPageScanner
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.PageImageDecoder
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.LearnStrings
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Rule
 
@@ -89,6 +90,12 @@ abstract class Part2UiBase {
             dispatcher.scheduler.advanceUntilIdle()
             composeRule.waitForIdle()
         }
+    }
+
+    /** Guide Home to Learn: the Part II Orders tile opens the hub, and the hub's Learn row opens Learn. */
+    protected fun openLearn() {
+        tap(LearnStrings.hubTitle)
+        tap(LearnStrings.entryTitle)
     }
 
     protected fun tap(text: String) {

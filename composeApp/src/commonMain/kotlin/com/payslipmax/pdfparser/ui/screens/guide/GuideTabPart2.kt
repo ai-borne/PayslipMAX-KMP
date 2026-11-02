@@ -1,27 +1,13 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.guide.model.GuideBundle
-import com.payslipmax.pdfparser.ui.components.AccentStripeCard
-import com.payslipmax.pdfparser.ui.components.AccentStripeCardShape
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2CodeScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2Entry
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2HomeScreen
@@ -29,10 +15,6 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2RibbonScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.part2Entry
-import com.payslipmax.pdfparser.ui.theme.AppDimensions
-import com.payslipmax.pdfparser.ui.theme.AppStrings
-import com.payslipmax.pdfparser.ui.theme.LearnStrings
-import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 
 /**
  * The Guide's side of Learn about Part II. [entry] is what the Guide Home row follows (HIDDEN while the dark-launch flag is off or the
@@ -44,12 +26,17 @@ internal class Part2Host(
     val bank: BankViewModel? = null,
     val access: BankAccess = BankAccess.Locked,
 ) {
-    /** Opens the Orders Bank from Guide Home. */
+    /** Opens the Part II Orders hub from Guide Home. */
+    fun openHub(navState: GuideNavState) {
+        navState.push(Part2Destination.Hub)
+    }
+
+    /** Opens the Orders Bank from the hub. */
     fun openBank(navState: GuideNavState) {
         navState.push(Part2Destination.Bank)
     }
 
-    /** Opens Learn from Guide Home with an empty search. */
+    /** Opens Learn from the hub with an empty search. */
     fun open(navState: GuideNavState) {
         model?.clear()
         navState.push(Part2Destination.Home)
@@ -78,40 +65,6 @@ internal fun rememberPart2Host(
     return Part2Host(entry, model, bank, access)
 }
 
-/** The Guide Home row that opens Learn. */
-@Composable
-internal fun Part2EntryRow(onClick: () -> Unit) = Part2EntryCard(LearnStrings.entryEmoji, LearnStrings.entryTitle, LearnStrings.entrySubtitle, onClick)
-
-/** The Guide Home row that opens the Orders Bank, drawn like the Learn row. */
-@Composable
-internal fun BankEntryRow(onClick: () -> Unit) = Part2EntryCard(OrdersBankStrings.entryEmoji, OrdersBankStrings.entryTitle, OrdersBankStrings.entrySubtitle, onClick)
-
-@Composable
-private fun Part2EntryCard(
-    emoji: String,
-    title: String,
-    subtitle: String,
-    onClick: () -> Unit,
-) {
-    AccentStripeCard(
-        accent = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.clip(AccentStripeCardShape).clickable(role = Role.Button, onClick = onClick),
-    ) {
-        Row(
-            modifier = Modifier.weight(1f).padding(AppDimensions.PaddingMedium),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-        ) {
-            Decoration(emoji, AppDimensions.TextSizeHuge)
-            Column(modifier = Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
-                Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            Decoration(AppStrings.rowArrow, AppDimensions.TextSizeLarge, MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
-}
-
 /** The Part II level on top of the stack. With the entry hidden (flag off after a restore) every Part II level is cut instead of showing anything. */
 @Composable
 internal fun GuidePart2Level(
@@ -131,6 +84,7 @@ internal fun GuidePart2Level(
     val onOpenCode: (String) -> Unit = { navState.push(Part2Destination.Code(it)) }
     val bank = host.bank
     when (destination) {
+        Part2Destination.Hub -> Part2HubScreen(onBack, { host.open(navState) }, { host.openBank(navState) })
         Part2Destination.Home -> Part2HomeRoute(navState, model, listState)
         is Part2Destination.Ribbon -> model.ribbon(destination.ribbonId)?.let { Part2RibbonScreen(it, onBack, onOpenCode, listState) } ?: GuideLoading()
         is Part2Destination.Code -> model.code(destination.code)?.let { Part2CodeScreen(it, onBack, onOpenCode, { addToBank(navState, host, destination.code) }, listState) } ?: GuideLoading()

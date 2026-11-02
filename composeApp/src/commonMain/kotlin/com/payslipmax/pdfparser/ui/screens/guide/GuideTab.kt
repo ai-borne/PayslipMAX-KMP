@@ -118,8 +118,7 @@ private fun GuideHomeRoute(
         preClaim = preClaimEntry,
         onOpenPreClaim = { navState.push(GuideDestination.PreClaim()) },
         part2 = part2.entry,
-        onOpenPart2 = { part2.open(navState) },
-        onOpenBank = { part2.openBank(navState) },
+        onOpenPart2Hub = { part2.openHub(navState) },
         // Each visit to search starts empty; coming back from a card (a pop) does not pass through here.
         onOpenSearch = {
             searchViewModel.clear()

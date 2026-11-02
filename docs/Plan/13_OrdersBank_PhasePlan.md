@@ -298,6 +298,20 @@ Phase 5 open points (2026-11-01). The owner walked the print on the Pixel and sa
 9. Still ahead: the split, incremental page backup and storage-based cap (point 11 above); Phase 6 release (full gate on the final commit, release-APK walk including print, one iPhone walk that must include the print sheet and Dynamic Type, store wording, lane guard).
 
 ### Phase 8: UX pass (owner, 2026-11-01)
+Phase 8 starts now (owner, 2026-11-02). The owner's UX list has NOT been given yet; nothing below is a Phase 8 item until it is.
+
+**Rules for every Phase 8 update or improvement (owner, 2026-11-02):**
+1. TDD: unit and integration tests are written before or alongside the implementation; 100% of tests pass before a phase is marked complete.
+2. Architecture and clean code: MVVM, SOLID, DRY and SSOT. No file over 300 lines unless the Single Responsibility Principle requires it; then a comment in the file says why it must not be split. Otherwise split it under 300.
+3. Resource management: no hardcoded strings or colors. Copy goes in the strings objects (`AppStrings` family) and colors come from the established theme tokens, to avoid UI/UX debt.
+4. Cybersecurity: the codebase stays 100% secure; every addition or update is checked for vulnerabilities (OWASP top 10, PII leakage).
+
+**Phase 8 item 1 (owner, 2026-11-02): Guide Home as a grid, one screen.** The 12 one-per-row ribbons hid Part II below the fold. Guide Home is now: title + search, sub text, grey divider, one-line Guide overview, two-column compact tiles (emoji beside the title, topic count under it), grey divider, Part II heading + one-line overview, ONE full-width "Part II Orders" tile ("Manage your Part II Orders") that opens a hub screen with Learn about Part II and the Orders Bank stacked. All ten tiles and the Part II tile fit one Pixel 9 screen.
+- Short tile labels (tile only; area screens, breadcrumbs and search keep the bundle titles, bundle untouched): LTC, Leave, TD, Postings, Claims, Retire, Payments, Allowances, House, Health, Family, TA/DA Claim (subtitle "Advance calculator"). Source of truth: `GuideStrings.areaTileLabel`, `PreClaimStrings.tileTitle`.
+- Code: `GuideHomeGrid.kt`, `GuideHomeScreen.kt`, `Part2HubScreen.kt`, new `Part2Destination.Hub` (saved as `hub`). Tests: `Part2LookupUiTest` (wide tile, hub, back one level at a time) plus the Guide and PreClaim tests moved to the new labels.
+- Walked on the Pixel 9 (debug build with `PART2_ENABLED` on locally; the flag stays false in source). iPhone walk is the Phase 6 one.
+PENDING FROM 7c, owner's word given ("clear your synthetic data from app"), NOT DONE: the 50 synthetic orders (order number SYN/0001/2026, date 20 March 2026, 500 pages) merged into the owner's vault on the Pixel. Plan: match only that marker on the shelf and delete those orders one at a time (Delete order); never "Reset App & Clear Data"; real orders are never opened or read. Alternative: Replace-restore the owner's own backup (owner's password, owner's hands). The walk was stopped before any deletion; no order has been deleted yet.
+
 The owner found a few minor UX issues while walking Phases 4 and 5 and will list them all together. They are addressed in one pass, after the remnants of Phase 7 (the split page backup and the rest of its open points), not scattered through earlier phases. Nothing is written down here until the owner gives the list. DECIDED by the owner (2026-11-01): the order is Phase 7, then Phase 8, then Phase 6 (release), so the release walk and the one iPhone walk cover the final screens once.
 
 ### Phase 6: Release (runs LAST: after Phases 7 and 8; owner, 2026-11-01)

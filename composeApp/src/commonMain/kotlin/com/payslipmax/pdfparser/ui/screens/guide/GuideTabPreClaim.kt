@@ -1,33 +1,19 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
-import com.payslipmax.pdfparser.ui.components.AccentStripeCard
-import com.payslipmax.pdfparser.ui.components.AccentStripeCardShape
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimMoveType
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimRelatedCards
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimRoute
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.preClaimEntry
-import com.payslipmax.pdfparser.ui.theme.AppDimensions
-import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.PreClaimStrings
 
 /**
@@ -56,34 +42,6 @@ internal fun rememberPreClaimHost(
         navState.preClaimModel = factory().also { created -> PreClaimMoveType.entries.firstOrNull { it.key == level.move }?.let(created::chooseMove) }
     }
     return PreClaimHost(entry, navState.preClaimModel)
-}
-
-/** The Guide Home row that opens the worksheet; a free user sees the same row marked Premium and lands on the upgrade panel. */
-@Composable
-internal fun PreClaimEntryRow(
-    locked: Boolean,
-    onClick: () -> Unit,
-) {
-    AccentStripeCard(
-        accent = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.clip(AccentStripeCardShape).clickable(role = Role.Button, onClick = onClick),
-    ) {
-        Row(
-            modifier = Modifier.weight(1f).padding(AppDimensions.PaddingMedium),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-        ) {
-            Decoration(PreClaimStrings.entryEmoji, AppDimensions.TextSizeHuge)
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(PreClaimStrings.entryTitle, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-                    if (locked) Text(PreClaimStrings.entryPremium, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-                }
-                Text(PreClaimStrings.entrySubtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            Decoration(AppStrings.rowArrow, AppDimensions.TextSizeLarge, MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
 }
 
 /** What a related card's button does: open the worksheet straight on the card's move. */
