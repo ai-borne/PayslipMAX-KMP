@@ -8,6 +8,7 @@ import com.payslipmax.pdfparser.part2.domain.EntryForm
 import com.payslipmax.pdfparser.part2.domain.EntryInput
 import com.payslipmax.pdfparser.part2.domain.EntryProblem
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -60,11 +61,17 @@ class EntryEditViewModel(
         text: String,
     ) = change { input -> input.copy(data = input.data.mapIndexed { i, old -> if (i == index) text.take(Part2Limits.TEXT_MAX + 1) else old }) }
 
+    /** A date box for a Data column: kept as dd/mm/yyyy text, the same form the picker shows; null clears it. */
+    fun setDataDate(
+        index: Int,
+        date: CalendarDate?,
+    ) = setData(index, PreClaimDates.format(date))
+
     fun setNote(text: String) = change { it.copy(note = text.take(Part2Limits.TEXT_MAX + 1)) }
 
     private fun change(edit: (EntryInput) -> EntryInput) {
         _state.update { current ->
-            val next = edit(current.input)
+            val next = form.withSpanDays(current.input, edit(current.input))
             current.copy(input = next, problems = if (current.problems.isEmpty()) current.problems else form.check(next))
         }
     }

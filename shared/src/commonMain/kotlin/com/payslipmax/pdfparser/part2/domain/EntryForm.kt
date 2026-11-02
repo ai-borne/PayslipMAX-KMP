@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.part2.domain
 
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.guide.preclaim.DutyDays
+import com.payslipmax.pdfparser.guide.preclaim.DutySpan
 
 /** Field positions beyond the six columns of [Part2ColumnPosition]. */
 object EntryPosition {
@@ -42,6 +43,7 @@ class EntryForm(
             when {
                 text.length > Part2Limits.TEXT_MAX -> problems[field.position] = EntryProblem.TOO_LONG
                 field.required && text.isEmpty() -> problems[field.position] = EntryProblem.MISSING
+                EntryDataRules.isDate(field.caption) && text.isNotEmpty() && EntryDataRules.parse(text) == null -> problems[field.position] = EntryProblem.INVALID_DATE
             }
         }
         if (input.note.trim().length > Part2Limits.TEXT_MAX) problems[EntryPosition.NOTE] = EntryProblem.TOO_LONG
@@ -67,6 +69,31 @@ class EntryForm(
         if (from != null && to != null && problems.isEmpty() && DutyDays.dayNumber(from) > DutyDays.dayNumber(to)) {
             problems[Part2ColumnPosition.FROM] = EntryProblem.AFTER_TO
         }
+    }
+
+    /** The Data index of the casualty's day-count box, if it has one. */
+    private val dayCountIndex: Int? =
+        fields.firstOrNull { it.position >= Part2ColumnPosition.DATA_FIRST && EntryDataRules.isDayCount(it.caption) }?.let { it.position - Part2ColumnPosition.DATA_FIRST }
+
+    /**
+     * When the From or To date changes, the day-count box follows the new span. It is only replaced while it still holds the span from the
+     * old dates (or is empty), so a count the officer typed is never overwritten by a date change, and clearing the box stays cleared.
+     */
+    fun withSpanDays(
+        before: EntryInput,
+        after: EntryInput,
+    ): EntryInput {
+        val index = dayCountIndex ?: return after
+        if (before.from == after.from && before.to == after.to) return after
+        val current = after.data.getOrElse(index) { "" }
+        if (current.isNotEmpty() && current != span(before)) return after
+        return after.copy(data = after.data.mapIndexed { i, old -> if (i == index) span(after) else old })
+    }
+
+    /** The days the From-To span covers, both ends counted (as the portal counts it), or "" while the dates do not make a span. */
+    private fun span(input: EntryInput): String {
+        val to = input.to.takeIf { fields.any { it.position == Part2ColumnPosition.TO } }
+        return (DutyDays.inclusive(input.from, to) as? DutySpan.Days)?.count?.toString().orEmpty()
     }
 
     /** The entry for a clean [input] (trimmed, with a column the casualty does not use dropped), or null while anything is wrong. */

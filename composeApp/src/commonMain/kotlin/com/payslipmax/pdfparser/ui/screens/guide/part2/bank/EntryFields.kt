@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
-import com.payslipmax.pdfparser.part2.domain.EntryField
+import com.payslipmax.pdfparser.part2.domain.EntryDataRules
 import com.payslipmax.pdfparser.part2.domain.EntryPosition
 import com.payslipmax.pdfparser.part2.domain.EntryProblem
 import com.payslipmax.pdfparser.part2.domain.Part2ColumnPosition
@@ -29,12 +29,20 @@ internal fun LazyListScope.entryFields(
     form.fields.forEach { field ->
         item(key = "field-${field.position}") {
             when (field.position) {
-                Part2ColumnPosition.FROM -> DateField(if (form.fromPrinted) OrdersBankStrings.fromLabel else OrdersBankStrings.dateLabel, field, state.input.from, state.problems[field.position], canEdit, editor::setFrom)
-                Part2ColumnPosition.TO -> DateField(OrdersBankStrings.toLabel(field.required), field, state.input.to, state.problems[field.position], canEdit, editor::setTo)
+                Part2ColumnPosition.FROM -> {
+                    val label = if (form.fromPrinted) OrdersBankStrings.fromLabel else OrdersBankStrings.dateLabel
+                    DateField(dateShown(label, field.caption), state.input.from, state.problems[field.position], canEdit, editor::setFrom)
+                }
+                Part2ColumnPosition.TO -> DateField(dateShown(OrdersBankStrings.toLabel(field.required), field.caption), state.input.to, state.problems[field.position], canEdit, editor::setTo)
                 else -> {
                     val index = field.position - Part2ColumnPosition.DATA_FIRST
                     val label = OrdersBankStrings.columnLabel(field.caption, field.required, form.manualPage)
-                    TextField(label, state.input.data[index], state.problems[field.position], canEdit, last = false) { editor.setData(index, it) }
+                    if (EntryDataRules.isDate(field.caption)) {
+                        // A box the manual prints as dd/mm/yyyy (prefix, suffix, ...): the same picker as From and To, kept as text.
+                        DateField(label, EntryDataRules.parse(state.input.data[index]), state.problems[field.position], canEdit) { editor.setDataDate(index, it) }
+                    } else {
+                        TextField(label, state.input.data[index], state.problems[field.position], canEdit, last = false) { editor.setData(index, it) }
+                    }
                 }
             }
         }
@@ -42,17 +50,20 @@ internal fun LazyListScope.entryFields(
     item(key = "note") { TextField(OrdersBankStrings.noteLabel, state.input.note, state.problems[EntryPosition.NOTE], canEdit, last = true, editor::setNote) }
 }
 
+/** The manual's caption (for example dd/mm/yyyy) is the hint for a date; the picker itself needs no typing. */
+private fun dateShown(
+    label: String,
+    caption: String,
+): String = if (caption.isEmpty()) label else "$label ($caption)"
+
 @Composable
 private fun DateField(
-    label: String,
-    field: EntryField,
+    shown: String,
     date: CalendarDate?,
     problem: EntryProblem?,
     canEdit: Boolean,
     onDate: (CalendarDate?) -> Unit,
 ) {
-    // The manual's caption (for example dd/mm/yyyy) is the hint for the date; the picker itself needs no typing.
-    val shown = if (field.caption.isEmpty()) label else "$label (${field.caption})"
     if (canEdit) PreClaimDateBox(shown, date, onDate) else Text("$shown: ${PreClaimDates.format(date)}")
     problem?.let { Text(OrdersBankStrings.problem(it), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
 }
