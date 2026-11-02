@@ -16,6 +16,32 @@ object OrdersBankStrings {
     const val entryTitle = "Part II Orders Bank"
     const val entrySubtitle = "Note each casualty and keep its order copy"
 
+    // The Part II hub's top card (docs/Plan/13_OrdersBank_PhasePlan.md, Phase 8 item 2). Drafts for the owner to read on the phone.
+    const val hubEmptyTitle = "Start your Part II file"
+    const val hubEmptyBody = "Nothing stored yet. Learn what each order needs, then note your first casualty."
+    const val hubAddFirst = "Add first casualty"
+    const val hubLockEmoji = "🔒"
+    const val hubPrivacy = "Encrypted and kept on this phone. Nothing is sent anywhere."
+    const val hubFileTitle = "Your Part II file"
+    const val hubHowTitle = "How it works"
+
+    fun hubNoted(total: Int): String = "${LearnStrings.casualtyCount(total)} noted"
+
+    fun hubAttachedLine(
+        attached: Int,
+        total: Int,
+    ): String = if (attached == total) "Every order copy is attached" else "$attached of $total have their order copy attached"
+
+    fun hubNotAttached(count: Int): String = if (count == 1) "1 order copy not attached" else "$count order copies not attached"
+
+    /** The three steps of "How it works", numbered from 1. */
+    fun hubStep(number: Int): String =
+        when (number) {
+            1 -> "1. Note the casualty: pick its code and add the dates"
+            2 -> "2. Attach its order: scan the paper order beside the entry"
+            else -> "3. Retire with a full file: in date order, ready to print"
+        }
+
     // Premium catalog.
     const val catalogIcon = "🗂️"
     const val catalogTitle = "Part II Orders Bank"
@@ -82,7 +108,10 @@ object OrdersBankStrings {
     const val viewTitle = "Your entry (view only)"
     const val fromLabel = "From"
     const val dateLabel = "Date"
-    const val toLabel = "To (optional)"
+
+    /** To follows the casualty's own row: plain when the manual requires it, "(optional)" only when it does not. */
+    fun toLabel(required: Boolean): String = if (required) "To" else "To (optional)"
+
     const val noteLabel = "Note (one line, optional)"
     const val add = "Add"
     const val save = "Save"

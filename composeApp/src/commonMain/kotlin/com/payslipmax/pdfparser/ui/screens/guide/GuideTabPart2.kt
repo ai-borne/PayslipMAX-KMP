@@ -8,6 +8,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.part2.domain.BankFilter
+import com.payslipmax.pdfparser.part2.domain.HubStatus
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2CodeScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2Entry
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2HomeScreen
@@ -15,6 +17,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2RibbonScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.part2Entry
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * The Guide's side of Learn about Part II. [entry] is what the Guide Home row follows (HIDDEN while the dark-launch flag is off or the
@@ -31,8 +34,12 @@ internal class Part2Host(
         navState.push(Part2Destination.Hub)
     }
 
-    /** Opens the Orders Bank from the hub. */
-    fun openBank(navState: GuideNavState) {
+    /** Opens the Orders Bank from the hub on [filter]: the whole list for the card, the chip's own list for the chip, never a filter left over from before. */
+    fun openBank(
+        navState: GuideNavState,
+        filter: BankFilter = BankFilter.ALL,
+    ) {
+        bank?.setFilter(filter)
         navState.push(Part2Destination.Bank)
     }
 
@@ -84,7 +91,7 @@ internal fun GuidePart2Level(
     val onOpenCode: (String) -> Unit = { navState.push(Part2Destination.Code(it)) }
     val bank = host.bank
     when (destination) {
-        Part2Destination.Hub -> Part2HubScreen(onBack, { host.open(navState) }, { host.openBank(navState) })
+        Part2Destination.Hub -> Part2HubLevel(navState, host, onBack)
         Part2Destination.Home -> Part2HomeRoute(navState, model, listState)
         is Part2Destination.Ribbon -> model.ribbon(destination.ribbonId)?.let { Part2RibbonScreen(it, onBack, onOpenCode, listState) } ?: GuideLoading()
         is Part2Destination.Code -> model.code(destination.code)?.let { Part2CodeScreen(it, onBack, onOpenCode, { addToBank(navState, host, destination.code) }, listState) } ?: GuideLoading()
@@ -94,6 +101,27 @@ internal fun GuidePart2Level(
         is Part2Destination.Order -> if (bank == null) GuideLoading() else GuideOrderLevel(navState, bank, destination.orderId, host.access)
         Part2Destination.Shelf -> if (bank == null) GuideLoading() else GuideShelfLevel(navState, bank, listState)
     }
+}
+
+/** The hub: with the Bank present it shows where the file stands; without it (flag off) it is the two rows alone. */
+@Composable
+private fun Part2HubLevel(
+    navState: GuideNavState,
+    host: Part2Host,
+    onBack: () -> Unit,
+) {
+    val bank = host.bank
+    val status by (bank?.hub ?: remember { MutableStateFlow(HubStatus.Unknown) }).collectAsState()
+    val hero =
+        bank?.let {
+            HubHeroActions(
+                canAdd = host.access.canAdd,
+                onAdd = { host.open(navState) },
+                onUnlock = host.access.onUnlock,
+                onOpenMissing = { host.openBank(navState, BankFilter.NOT_ATTACHED) },
+            )
+        }
+    Part2HubScreen(onBack, { host.open(navState) }, { host.openBank(navState) }, status, hero)
 }
 
 /** The casualty page's Add: a new entry for that code when the officer may add, the upgrade offer when not. */

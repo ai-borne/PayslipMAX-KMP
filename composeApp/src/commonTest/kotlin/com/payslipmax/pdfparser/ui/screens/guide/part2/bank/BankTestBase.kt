@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens.guide.part2.bank
 
+import com.payslipmax.pdfparser.guide.model.Part2Lookup
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.part2.data.InMemoryLastBackupStorage
 import com.payslipmax.pdfparser.part2.domain.EntryForm
@@ -16,7 +17,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 
 /** The Bank's view models over the in-memory repository and the synthetic Part II lookup, with a fixed day and clock so ages are exact. */
 @OptIn(ExperimentalCoroutinesApi::class)
-open class BankTestBase {
+open class BankTestBase(lookup: Part2Lookup = SyntheticGuidePart2.lookup) {
     val repository = FakePart2Repository()
     val space = FakeFreeSpaceReader()
     val lastBackup = InMemoryLastBackupStorage()
@@ -24,7 +25,7 @@ open class BankTestBase {
     val today = CalendarDate(2026, 10, 30)
     var now = 1_000_000L
     private var ids = 0
-    private val index = Part2LookupIndex(SyntheticGuidePart2.lookup)
+    private val index = Part2LookupIndex(lookup)
 
     fun bank(): BankViewModel =
         BankViewModel(

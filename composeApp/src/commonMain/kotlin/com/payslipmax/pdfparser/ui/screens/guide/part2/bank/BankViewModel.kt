@@ -9,6 +9,7 @@ import com.payslipmax.pdfparser.part2.domain.BankIndex
 import com.payslipmax.pdfparser.part2.domain.BankStatus
 import com.payslipmax.pdfparser.part2.domain.BankView
 import com.payslipmax.pdfparser.part2.domain.EntryForm
+import com.payslipmax.pdfparser.part2.domain.HubStatus
 import com.payslipmax.pdfparser.part2.domain.OrderShelf
 import com.payslipmax.pdfparser.part2.domain.ShelfYear
 import com.payslipmax.pdfparser.part2.pages.PageStore
@@ -29,6 +30,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -100,6 +103,13 @@ class BankViewModel
                     attachedTo = attachments(entries.items, orders.items.map { it.id }.toSet()),
                 )
             }.stateIn(scope, SharingStarted.WhileSubscribed(UI_STOP_TIMEOUT_MS), BankUiState(filter = BankFilter.ALL))
+
+        /** Where the file stands, for the Part II hub: the same counts as [state], with the list's chip left out. */
+        val hub: StateFlow<HubStatus> =
+            state
+                .map { HubStatus.of(it.loaded, it.view) }
+                .distinctUntilChanged()
+                .stateIn(scope, SharingStarted.WhileSubscribed(UI_STOP_TIMEOUT_MS), HubStatus.Unknown)
 
         fun setFilter(next: BankFilter) {
             filter.value = next

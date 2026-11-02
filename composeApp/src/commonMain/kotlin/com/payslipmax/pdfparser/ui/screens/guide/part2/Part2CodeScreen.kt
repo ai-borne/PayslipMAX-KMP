@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Button
@@ -23,6 +24,7 @@ import com.payslipmax.pdfparser.ui.theme.LearnStrings
  * A casualty page, with the manual's own wording: the code(s), the name, the group and what it means (or that the manual prints none:
  * no group is inferred), the serial, the chapter and the printed page. Then what the order needs in each column, the plain-English page
  * where one was written, and what is usually published with it. Each of the last two has no heading at all where there is no data.
+ * Add to Orders Bank is pinned under the list, not the last item in it.
  */
 @Composable
 internal fun Part2CodeScreen(
@@ -36,7 +38,7 @@ internal fun Part2CodeScreen(
         ScreenBackHeader(title = LearnStrings.codesLine(page.codes), onBack = onBack)
         LazyColumn(
             state = listState,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.weight(1f),
             contentPadding = Part2ListPadding,
             verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingLarge),
         ) {
@@ -47,8 +49,9 @@ internal fun Part2CodeScreen(
             part2ColumnItems(page)
             part2AboutItems(page.about)
             part2RelatedItems(page.related, onOpenCode)
-            item(key = "add") { Button(onClick = onAddToBank, modifier = Modifier.fillMaxWidth()) { Text(LearnStrings.addToBank) } }
         }
+        // Pinned under the list: the officer comes to a casualty page to note it, so Add never scrolls away.
+        Button(onClick = onAddToBank, modifier = Modifier.fillMaxWidth().padding(AppDimensions.PaddingMedium)) { Text(LearnStrings.addToBank) }
     }
 }
 

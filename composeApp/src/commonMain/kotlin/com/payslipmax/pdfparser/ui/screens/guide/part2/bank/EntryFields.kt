@@ -27,7 +27,7 @@ internal fun LazyListScope.entryFields(
         item(key = "field-${field.position}") {
             when (field.position) {
                 Part2ColumnPosition.FROM -> DateField(if (form.fromPrinted) OrdersBankStrings.fromLabel else OrdersBankStrings.dateLabel, field, state.input.from, state.problems[field.position], canEdit, editor::setFrom)
-                Part2ColumnPosition.TO -> DateField(OrdersBankStrings.toLabel, field, state.input.to, state.problems[field.position], canEdit, editor::setTo)
+                Part2ColumnPosition.TO -> DateField(OrdersBankStrings.toLabel(field.required), field, state.input.to, state.problems[field.position], canEdit, editor::setTo)
                 else -> {
                     val index = field.position - Part2ColumnPosition.DATA_FIRST
                     val label = OrdersBankStrings.columnLabel(field.caption, field.required, form.manualPage)
