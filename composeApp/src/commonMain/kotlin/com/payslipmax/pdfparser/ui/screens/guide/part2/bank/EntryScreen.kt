@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
+import com.payslipmax.pdfparser.ui.components.aboveKeyboard
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListPadding
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.OrderStrings
@@ -57,7 +58,7 @@ internal fun EntryScreen(
                 OrdersBankStrings.viewTitle
             }
         ScreenBackHeader(title = title, onBack = actions.onBack)
-        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = Part2ListPadding, verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
+        LazyColumn(modifier = Modifier.fillMaxSize().aboveKeyboard(), contentPadding = Part2ListPadding, verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
             item(key = "casualty") { CasualtyHeading(editor.form.code, actions.name) }
             entryFields(editor, state, actions.canEdit)
             actions.message?.let { message -> item(key = "message") { Text(message, color = MaterialTheme.colorScheme.error) } }

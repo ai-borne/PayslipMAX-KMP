@@ -2,16 +2,19 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2.bank
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.part2.domain.EntryField
 import com.payslipmax.pdfparser.part2.domain.EntryPosition
 import com.payslipmax.pdfparser.part2.domain.EntryProblem
 import com.payslipmax.pdfparser.part2.domain.Part2ColumnPosition
+import com.payslipmax.pdfparser.ui.components.scrollToWhenFocused
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDateBox
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
 import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
@@ -31,12 +34,12 @@ internal fun LazyListScope.entryFields(
                 else -> {
                     val index = field.position - Part2ColumnPosition.DATA_FIRST
                     val label = OrdersBankStrings.columnLabel(field.caption, field.required, form.manualPage)
-                    TextField(label, state.input.data[index], state.problems[field.position], canEdit) { editor.setData(index, it) }
+                    TextField(label, state.input.data[index], state.problems[field.position], canEdit, last = false) { editor.setData(index, it) }
                 }
             }
         }
     }
-    item(key = "note") { TextField(OrdersBankStrings.noteLabel, state.input.note, state.problems[EntryPosition.NOTE], canEdit, editor::setNote) }
+    item(key = "note") { TextField(OrdersBankStrings.noteLabel, state.input.note, state.problems[EntryPosition.NOTE], canEdit, last = true, editor::setNote) }
 }
 
 @Composable
@@ -60,6 +63,7 @@ private fun TextField(
     value: String,
     problem: EntryProblem?,
     canEdit: Boolean,
+    last: Boolean,
     onChange: (String) -> Unit,
 ) {
     OutlinedTextField(
@@ -70,6 +74,7 @@ private fun TextField(
         enabled = canEdit,
         isError = problem != null,
         supportingText = problem?.let { { Text(OrdersBankStrings.problem(it)) } },
-        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(imeAction = if (last) ImeAction.Done else ImeAction.Next),
+        modifier = Modifier.fillMaxWidth().scrollToWhenFocused(),
     )
 }

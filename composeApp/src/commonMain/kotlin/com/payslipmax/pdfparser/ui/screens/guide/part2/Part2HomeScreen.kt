@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.part2.domain.Part2RibbonTile
 import com.payslipmax.pdfparser.part2.domain.Part2SearchResult
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
+import com.payslipmax.pdfparser.ui.components.aboveKeyboard
 import com.payslipmax.pdfparser.ui.theme.LearnStrings
 
 /**
@@ -33,7 +34,7 @@ internal fun Part2HomeScreen(
         Part2SearchField(query, onQueryChange)
         LazyColumn(
             state = listState,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().aboveKeyboard(),
             contentPadding = Part2ListPadding,
             verticalArrangement = Part2ListSpacing,
         ) {

@@ -1,5 +1,7 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -7,6 +9,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.part2.domain.BankFilter
 import com.payslipmax.pdfparser.part2.domain.HubStatus
@@ -15,6 +19,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2Entry
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2HomeScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2RibbonScreen
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankNoticeHost
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.part2Entry
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -70,6 +75,19 @@ internal fun rememberPart2Host(
         navState.part2Bank = bank
     }
     return Part2Host(entry, model, bank, access)
+}
+
+/** The Part II level on top, with the Bank's save and delete messages over its foot. */
+@Composable
+internal fun Part2LevelWithNotices(
+    navState: GuideNavState,
+    host: Part2Host,
+    listState: LazyListState,
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        GuidePart2Level(navState, host, listState)
+        host.bank?.let { bank -> BankNoticeHost(bank, onAttach = { navState.push(Part2Destination.Attach(it)) }, modifier = Modifier.align(Alignment.BottomCenter)) }
+    }
 }
 
 /** The Part II level on top of the stack. With the entry hidden (flag off after a restore) every Part II level is cut instead of showing anything. */

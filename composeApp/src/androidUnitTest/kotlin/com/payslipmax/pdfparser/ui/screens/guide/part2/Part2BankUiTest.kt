@@ -122,7 +122,7 @@ class Part2BankUiTest : Part2UiBase() {
         }
         exact(OrdersBankStrings.add).performClick().also { settle() }
 
-        assertEquals(Part2Destination.Code("FIRSTCODE"), nav.current, "back on the casualty page it was added from")
+        assertEquals(Part2Destination.Bank, nav.current, "a saved Add lands on the Bank (Phase 8 item 3)")
         assertEquals("FIRSTCODE", runBlocking { data.repository.entry(entry.entryId)!!.code })
     }
 

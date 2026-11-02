@@ -81,7 +81,7 @@ private fun GuideDestinationContent(
         is GuideDestination.Case -> GuideFeedRoute(navState, destination, viewModel, rememberNotedCards(notes, access))
         is GuideDestination.Card -> GuideCardLevel(navState, destination, access, viewModel, platform, notes, preClaim.entry)
         is GuideDestination.PreClaim -> GuidePreClaimLevel(navState, access, platform, preClaim, rememberGuideListState(navState))
-        is Part2Destination -> GuidePart2Level(navState, part2, rememberGuideListState(navState))
+        is Part2Destination -> Part2LevelWithNotices(navState, part2, rememberGuideListState(navState))
         GuideDestination.Search -> GuideSearchRoute(navState, access, searchViewModel, onBack, rememberNotedCards(notes, access))
         GuideDestination.RemovedNotes -> GuideRemovedNotesRoute(navState, notes, onBack)
         GuideDestination.Changes ->

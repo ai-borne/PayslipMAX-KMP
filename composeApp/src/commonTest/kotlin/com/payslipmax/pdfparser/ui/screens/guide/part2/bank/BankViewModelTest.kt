@@ -110,6 +110,24 @@ class BankViewModelTest : BankTestBase() {
         }
 
     @Test
+    fun anEntryJustAddedReopensAsAStoredEntryNotAsTheNewEntryFormItCameFrom() =
+        runTest {
+            val model = bank()
+            val id = model.beginNew("FIRSTCODE")!!
+            val form = model.openEditor(id)!!
+            form.setFrom(CalendarDate(2026, 3, 1))
+            form.setTo(CalendarDate(2026, 3, 9))
+            form.setData(1, "Ravi")
+            form.save { }
+            model.markSaved(id)
+
+            val reopened = model.openEditor(id)!!
+
+            assertFalse(reopened.isNew, "it is on the Bank now: opening it is an edit, with Save and Delete, not Add again")
+            assertEquals(CalendarDate(2026, 3, 1), reopened.state.value.input.from, "and it holds what was saved")
+        }
+
+    @Test
     fun aLockDropsWhatWasTypedAndKeepsOnlyTheCasualtyOfANewEntry() =
         runTest {
             val model = bank()

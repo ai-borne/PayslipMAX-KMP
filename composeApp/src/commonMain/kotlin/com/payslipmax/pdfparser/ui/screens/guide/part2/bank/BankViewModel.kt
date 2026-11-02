@@ -115,6 +115,36 @@ class BankViewModel
             filter.value = next
         }
 
+        private val _reveal = MutableStateFlow<String?>(null)
+
+        /** The entry the Bank list should scroll to once it shows it: the one just added. An id only, never a code or a date. */
+        val reveal: StateFlow<String?> = _reveal
+
+        /** Asks the Bank to show [id] with the whole list (a chip left on Attached would hide a new, unattached row). */
+        fun revealEntry(id: String) {
+            filter.value = BankFilter.ALL
+            _reveal.value = id
+        }
+
+        private val _notice = MutableStateFlow<BankNotice?>(null)
+
+        /** What the officer should be told next (see [BankNotice]); null once the screen has taken it. In memory only, never saved or sent. */
+        val notice: StateFlow<BankNotice?> = _notice
+
+        fun announce(notice: BankNotice) {
+            _notice.value = notice
+        }
+
+        /** The screen has taken the notice and is showing it. */
+        fun noticeTaken() {
+            _notice.value = null
+        }
+
+        /** The list has scrolled to the revealed entry. */
+        fun revealed() {
+            _reveal.value = null
+        }
+
         /** The manual's name for a casualty, or null when the loaded bundle does not know it. */
         fun nameOf(code: String): String? = nameOf.invoke(code)
 
@@ -139,9 +169,10 @@ class BankViewModel
             }
         }
 
-        /** A saved entry is no longer pending. */
+        /** A saved (or deleted) entry is no longer pending, and its form is let go: opening it again reads the store, so a new entry reopens as an edit. */
         fun markSaved(id: String) {
             pending.remove(id)
+            if (editor?.id == id) editor = null
         }
 
         /** Drops the open form (the lock): what was typed is gone; a new entry keeps only its casualty, so unlocking shows a blank form. A held scan is deleted. */

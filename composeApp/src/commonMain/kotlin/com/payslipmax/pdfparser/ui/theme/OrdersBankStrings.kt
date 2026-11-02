@@ -120,6 +120,15 @@ object OrdersBankStrings {
     const val deleteTitle = "Delete this entry?"
     const val deleteBody = "It is removed from this phone. A copy of the order, if you attached one, stays."
     const val saveFailed = "Could not save. Please try again."
+
+    // The snackbar after a save or a delete: the casualty code only, never a date or a note.
+    fun noticeAdded(code: String) = "$code added. Order copy not attached yet"
+
+    fun noticeSaved(code: String) = "$code saved"
+
+    fun noticeDeleted(code: String) = "$code deleted"
+
+    const val noticeAttach = "Attach order"
     const val bankFull = "The Orders Bank is full. Delete an entry first."
 
     /** A column's label: its caption from the manual, or a pointer to the manual's page for a required column that prints none. */

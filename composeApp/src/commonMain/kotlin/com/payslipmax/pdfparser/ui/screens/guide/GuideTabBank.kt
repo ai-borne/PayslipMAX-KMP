@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import com.payslipmax.pdfparser.ui.platform.rememberIndexPrinter
 import com.payslipmax.pdfparser.ui.platform.rememberPageScanner
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankActions
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankNotice
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.EntryActions
@@ -19,6 +20,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.EntryEditViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.EntryScreen
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.LocalIndexPrinter
 import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.SaveOutcome
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.bankRowIndex
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.LocalPageScanner
 import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 
@@ -48,6 +50,13 @@ internal fun GuideBankLevel(
     LaunchedEffect(Unit) {
         bank.attach.close()
         scanner.discardLeftovers()
+    }
+    // A saved Add lands here: the new row is scrolled to once the list holds it (the Bank is sorted by From, so it can be far down).
+    val reveal by bank.reveal.collectAsState()
+    LaunchedEffect(reveal, state) {
+        val index = reveal?.let { bankRowIndex(state, host.access.canAdd, it) } ?: return@LaunchedEffect
+        listState.scrollToItem(index)
+        bank.revealed()
     }
     val actions =
         BankActions(
@@ -114,11 +123,23 @@ private fun EntryLevelContent(
                     message = saveMessage(outcome)
                     if (outcome == SaveOutcome.SAVED) {
                         bank.markSaved(editor.id)
-                        navState.pop()
+                        bank.announce(BankNotice(if (editor.isNew) BankNotice.Kind.ADDED else BankNotice.Kind.SAVED, editor.form.code, editor.id))
+                        if (editor.isNew) {
+                            bank.revealEntry(editor.id)
+                            navState.landOnBank()
+                        } else {
+                            navState.pop()
+                        }
                     }
                 }
             },
-            onDelete = { editor.delete { bank.markSaved(editor.id).also { navState.pop() } } },
+            onDelete = {
+                editor.delete {
+                    bank.markSaved(editor.id)
+                    bank.announce(BankNotice(BankNotice.Kind.DELETED, editor.form.code, editor.id))
+                    navState.pop()
+                }
+            },
             onBack = { navState.pop() },
             onAttach = if (access.canAdd && !editor.isNew && orderId == null) ({ navState.push(Part2Destination.Attach(editor.id)) }) else null,
             onViewOrder = orderId?.let { id -> { navState.push(Part2Destination.Order(id)) } },

@@ -20,9 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.payslipmax.pdfparser.part2.domain.BankEntry
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
+import com.payslipmax.pdfparser.ui.components.aboveKeyboard
+import com.payslipmax.pdfparser.ui.components.scrollToWhenFocused
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListPadding
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDateBox
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
@@ -49,7 +52,7 @@ internal fun AttachOrderScreen(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         ScreenBackHeader(title = OrderStrings.attachTitle, onBack = actions.onBack)
-        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = Part2ListPadding, verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
+        LazyColumn(modifier = Modifier.fillMaxSize().aboveKeyboard(), contentPadding = Part2ListPadding, verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
             item(key = "scan") { ScanSection(state, actions) }
             orderFields(vm, state)
             choices(vm, state, actions)
@@ -80,7 +83,7 @@ private fun LazyListScope.orderFields(
     item(key = "orderNo") { Field(OrderStrings.orderNoLabel, state.orderNo, AttachProblem.ORDER_NO_LONG in state.problems, vm::setOrderNo) }
     item(key = "date") { PreClaimDateBox(OrderStrings.orderDateLabel, state.date, vm::setDate) }
     item(key = "expected") { Field(OrderStrings.expectedLabel, state.expected, AttachProblem.BAD_COUNT in state.problems, vm::setExpected, KeyboardType.Number) }
-    item(key = "last") { Field(OrderStrings.lastOrderLabel, state.lastOrderNo, AttachProblem.LAST_NO_LONG in state.problems, vm::setLastOrderNo) }
+    item(key = "last") { Field(OrderStrings.lastOrderLabel, state.lastOrderNo, AttachProblem.LAST_NO_LONG in state.problems, vm::setLastOrderNo, last = true) }
 }
 
 private fun LazyListScope.choices(
@@ -130,6 +133,7 @@ private fun Field(
     isError: Boolean,
     onChange: (String) -> Unit,
     keyboard: KeyboardType = KeyboardType.Text,
+    last: Boolean = false,
 ) {
     OutlinedTextField(
         value = value,
@@ -137,7 +141,7 @@ private fun Field(
         label = { Text(label) },
         singleLine = true,
         isError = isError,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboard),
-        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboard, imeAction = if (last) ImeAction.Done else ImeAction.Next),
+        modifier = Modifier.fillMaxWidth().scrollToWhenFocused(),
     )
 }

@@ -126,6 +126,20 @@ class GuideNavState(
         return true
     }
 
+    /**
+     * After a saved Add: drops the Learn trail on top (search, ribbon, casualty pages and the new entry's form) and leaves the Orders Bank
+     * on top, so Back is whatever led to the Bank. Entered from the Bank, that Bank level is kept as it was; entered from the hub, a Bank
+     * level goes on the hub. Not for an edit: that form was opened from the Bank or an order and simply pops.
+     */
+    fun landOnBank() {
+        val trailStart = stack.indexOfLast { !it.isLearnTrail() } + 1
+        val base = stack.take(trailStart)
+        replaceStack(if (base.lastOrNull() == Part2Destination.Bank) base else base + Part2Destination.Bank)
+    }
+
+    private fun GuideDestination.isLearnTrail(): Boolean =
+        this == Part2Destination.Home || this is Part2Destination.Ribbon || this is Part2Destination.Code || this is Part2Destination.Entry
+
     fun popToHome() {
         replaceStack(listOf(GuideDestination.Home))
     }
