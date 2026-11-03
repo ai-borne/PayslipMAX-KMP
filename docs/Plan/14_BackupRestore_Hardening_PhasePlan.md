@@ -85,3 +85,7 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
 
 ## Changelog
 - 2026-11-03 — plan drafted; D1–D4 recorded; F7–F9 found while writing 14a.
+- 2026-11-03 — **P0 done (accepted)**: golden harness (`golden-backups/` + `manifest.json`, disk reader on JVM and iOS, generated path
+  constant, goldens declared as test inputs); 7 goldens (v1–v3 converted byte-identical, hex file deleted; 1.5.0 v4 from `9841fc4a` on JVM
+  and iOS; v5 with Orders Bank on JVM and iOS); local-only `LocalBackupRestoreTest` on the owner's 4 real files. Every golden restores; no
+  production fix needed. Gate green: shared 1698 → 1703, iOS shared 1549 → 1553, composeApp 1440; 6/6 mutations caught; no security findings.

@@ -13,8 +13,9 @@ import kotlin.test.assertTrue
 
 /**
  * Backups are the only copy of an officer's data if a phone is lost, and they outlive app versions. These
- * tests restore archives that were written once and committed ([GoldenBackups]), so a change that drifts
- * from the real on-disk format fails here even if a backup built by today's test code would still pass.
+ * tests restore archives that were written once and committed (`golden-backups/`, see [GoldenBackupCatalog]), so a change that
+ * drifts from the real on-disk format fails here even if a backup built by today's test code would still pass. [GoldenBackupRestoreTest]
+ * checks every golden's counts; these check the content of the oldest three.
  */
 class PayslipBackupGoldenTest {
     private val dao = FakePayslipDao()
@@ -25,7 +26,7 @@ class PayslipBackupGoldenTest {
     @Test
     fun theCommittedVersion1ArchiveStillRestores() =
         runTest {
-            restore(GoldenBackups.v1LegacyKey)
+            restore(GoldenBackupCatalog.bytes("jvm-legacy-v1.pcda"))
 
             assertEquals(listOf("08/2024"), dao.getAllPayslips().first().map { it.dateStr })
             assertTrue(dao.getAllRepresentationDrafts().first().isEmpty())
@@ -34,7 +35,7 @@ class PayslipBackupGoldenTest {
     @Test
     fun theCommittedVersion2ArchiveStillRestores() =
         runTest {
-            restore(GoldenBackups.v2)
+            restore(GoldenBackupCatalog.bytes("jvm-legacy-v2.pcda"))
 
             assertEquals(listOf("08/2024"), dao.getAllPayslips().first().map { it.dateStr })
             assertEquals(listOf("08/2024"), dao.getAllPdfs().map { it.dateStr })
@@ -44,7 +45,7 @@ class PayslipBackupGoldenTest {
     @Test
     fun theCommittedVersion3ArchiveRestoresEverythingItCarries() =
         runTest {
-            restore(GoldenBackups.v3)
+            restore(GoldenBackupCatalog.bytes("jvm-legacy-v3.pcda"))
 
             assertEquals(listOf("08/2024"), dao.getAllPayslips().first().map { it.dateStr })
             assertEquals("Golden body", dao.getAllRepresentationDrafts().first().single().bodyText)

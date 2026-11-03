@@ -1,0 +1,2 @@
+# Golden backups are encrypted archives: never diff, merge or convert line endings (one changed byte breaks the file).
+*.pcda binary

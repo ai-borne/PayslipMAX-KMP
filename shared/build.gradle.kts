@@ -9,6 +9,29 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
 }
 
+// Golden backups (docs/Plan/14a, section 6): committed `.pcda` files every target's tests read from disk. The absolute path is
+// generated, so no machine path is committed, and the iOS simulator test binary (which can read host files) gets the same one.
+val goldenBackupDir: String = layout.projectDirectory.dir("src/commonTest/resources/golden-backups").asFile.absolutePath
+val generateGoldenBackupDir by tasks.registering {
+    val out = layout.buildDirectory.dir("generated/goldenBackups/kotlin")
+    inputs.property("dir", goldenBackupDir)
+    outputs.dir(out)
+    val source =
+        "package com.payslipmax.pdfparser.repository\n\n" +
+            "internal const val GOLDEN_BACKUP_DIR = \"${goldenBackupDir.replace("\\", "\\\\").replace("\"", "\\\"")}\"\n"
+    doLast {
+        out.get().file("com/payslipmax/pdfparser/repository/GoldenBackupDir.kt").asFile.apply {
+            parentFile.mkdirs()
+            writeText(source)
+        }
+    }
+}
+
+// The goldens are read from disk, not the classpath, so every test task (JVM and iOS) declares them: a changed golden reruns the tests.
+tasks.withType<AbstractTestTask>().configureEach {
+    inputs.dir(goldenBackupDir).withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("goldenBackups")
+}
+
 kotlin {
     androidTarget {
         compilerOptions {
@@ -91,6 +114,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(project(":shared-test-fixtures"))
         }
+        commonTest.configure { kotlin.srcDir(generateGoldenBackupDir) }
 
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
@@ -163,6 +187,9 @@ tasks.withType<Test>().configureEach {
         "payslip.localCorpus.password",
         "payslip.localCorpus.minYear",
         "payslip.localCorpus.out",
+        // LocalBackupRestoreTest: the owner's real `.pcda` backups, restored on this machine only (docs/Plan/14a, D7).
+        "payslip.localBackups",
+        "payslip.localBackups.password",
     ).forEach { key ->
         System.getProperty(key)?.let { systemProperty(key, it) }
     }
