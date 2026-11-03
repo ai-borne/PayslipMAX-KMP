@@ -6,10 +6,8 @@ import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.logging.Logger
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-@Serializable
 @Entity(tableName = "encrypted_payslips")
 data class EncryptedPayslipEntity(
     @PrimaryKey val dateStr: String,

@@ -1,14 +1,15 @@
 package com.payslipmax.pdfparser.repository
 
-import com.payslipmax.pdfparser.database.AppSettingsEntity
-import com.payslipmax.pdfparser.database.DismissedDraftEntity
-import com.payslipmax.pdfparser.database.EncryptedPayslipEntity
-import com.payslipmax.pdfparser.database.GuideNoteEntity
-import com.payslipmax.pdfparser.database.PayslipCorrectionEntity
-import com.payslipmax.pdfparser.database.PayslipPdfEntity
-import com.payslipmax.pdfparser.database.RepresentationDraftEntity
 import com.payslipmax.pdfparser.part2.data.Part2LegacyDraft
 import com.payslipmax.pdfparser.part2.data.Part2RowBackup
+import com.payslipmax.pdfparser.repository.backup.CorrectionBackupRow
+import com.payslipmax.pdfparser.repository.backup.DismissedDraftBackupRow
+import com.payslipmax.pdfparser.repository.backup.DraftBackupRow
+import com.payslipmax.pdfparser.repository.backup.GuideNoteBackupRow
+import com.payslipmax.pdfparser.repository.backup.PayslipBackupRow
+import com.payslipmax.pdfparser.repository.backup.PdfBackupRow
+import com.payslipmax.pdfparser.repository.backup.SettingsBackup
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -16,31 +17,34 @@ import kotlinx.serialization.Serializable
  * their PDFs, settings, letters (with edits), deleted-letter records, per-field corrections and private Claim Guide notes. The
  * ledger and insights are derived from payslips and are rebuilt after a restore, never stored.
  *
+ * It holds backup rows only (`repository/backup`), never Room entities, so the database schema is not the file format (F1); every key is
+ * pinned with @SerialName (BackupWireKeysTest).
+ *
  * Versions: 1 = payslips under the legacy key; 2 = payslips under the backup password; 3 = adds
  * [drafts], [dismissedDrafts] and [corrections]; 4 = adds [guideNotes]; 5 = adds the Orders Bank entries and orders (scanned pages travel
  * beside this document, see `PageArchive`). Added fields default to empty so older files still decode: a v4 file restores with an empty Bank.
  */
 @Serializable
 data class PortableBackup(
-    val version: Int = 1,
-    val encryptedPayslips: List<EncryptedPayslipEntity>,
-    val pdfs: List<PayslipPdfEntity>,
-    val settings: AppSettingsEntity?,
-    val drafts: List<RepresentationDraftEntity> = emptyList(),
-    val dismissedDrafts: List<DismissedDraftEntity> = emptyList(),
+    @SerialName("version") val version: Int = 1,
+    @SerialName("encryptedPayslips") val encryptedPayslips: List<PayslipBackupRow>,
+    @SerialName("pdfs") val pdfs: List<PdfBackupRow>,
+    @SerialName("settings") val settings: SettingsBackup?,
+    @SerialName("drafts") val drafts: List<DraftBackupRow> = emptyList(),
+    @SerialName("dismissedDrafts") val dismissedDrafts: List<DismissedDraftBackupRow> = emptyList(),
     /** Each row's ciphertext is encrypted with the backup password, not the device key. */
-    val corrections: List<PayslipCorrectionEntity> = emptyList(),
+    @SerialName("corrections") val corrections: List<CorrectionBackupRow> = emptyList(),
     /** Private Guide notes; like [corrections], each row's ciphertext is encrypted with the backup password, not the device key. */
-    val guideNotes: List<GuideNoteEntity> = emptyList(),
+    @SerialName("guideNotes") val guideNotes: List<GuideNoteBackupRow> = emptyList(),
     /**
      * Orders Bank entries and vault orders (v5); each row's ciphertext is encrypted with the backup password, as Base64 text. Scanned pages
      * are not here: they would be a copy of the vault inside one JSON string. When the vault has pages the archive is a `PageArchive`
      * (this document, then one binary record per page); see there.
      */
-    val part2Entries: List<Part2RowBackup> = emptyList(),
-    val part2Orders: List<Part2RowBackup> = emptyList(),
+    @SerialName("part2Entries") val part2Entries: List<Part2RowBackup> = emptyList(),
+    @SerialName("part2Orders") val part2Orders: List<Part2RowBackup> = emptyList(),
     /** Drafts written by the frozen feature/part2-orders branch's v5 files: counted as skipped on restore, never decoded and never written. */
-    val part2Drafts: List<Part2LegacyDraft> = emptyList(),
+    @SerialName("part2Drafts") val part2Drafts: List<Part2LegacyDraft> = emptyList(),
 ) {
     companion object {
         const val CURRENT_VERSION = 5
@@ -51,7 +55,8 @@ data class PortableBackup(
  * How a restore reconciles a backup against payslips already on the device.
  *
  * - [REPLACE] wipes the device's existing payslips/PDFs first, then restores the backup — the target
- *   ends up as an exact copy of the backup (a fresh install effectively always behaves this way).
+ *   ends up as an exact copy of the backup (a fresh install effectively always behaves this way), except the
+ *   device-only settings (lock, PIN hash, telemetry consent, Premium), which a backup never carries (D5).
  * - [MERGE] keeps the device's existing payslips and adds the backup's on top; a payslip present in
  *   both (same `dateStr`) is overwritten by the backup's copy. The device's own settings/entitlement
  *   are left untouched.

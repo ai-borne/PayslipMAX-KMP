@@ -186,3 +186,22 @@ archive). The owner's Android file is a `PCDB` v5 archive, so it came from a `fe
 from production. The iOS file is a genuine App Store (build 6, `9841fc4a`) v4 file. A genuine production Android v4 file was then made
 on the Pixel (Play vc22, iOS data restored, backed up) and saved to the same folder; all four files restore on this branch (JVM).
 Production 1.5.0 given the v5 file shows a raw BAD_DECRYPT error (F10). Phone copies deleted; the debug build is back with the owner's data.
+
+---
+
+## P10 — Consolidated pending items
+
+From P1 (2026-11-03):
+1. **Owner to confirm a test reading.** P1 asked for "a DB-only field added to a test entity does not change the exported keys". A test cannot
+   add a column to a production entity, so it is proven in two parts. `BackupWireKeysTest.theWireFormatIsMadeOfBackupRowsWithPinnedKeysAndNoDatabaseType`
+   walks the serializer descriptors and finds no Room type in the wire format, with every class's keys pinned; it was RED before P1.
+   `everyExportedRowCarriesExactlyItsPinnedKeys` exports with the settings row's DB-only columns (`id`, Premium, lock, PIN hash, telemetry)
+   set away from their defaults, and shows that they add no key. If the owner wants the literal form, it needs a test-only entity and mapper,
+   so it would test test code.
+2. **Pre-existing log of a payslip month.** When a row can't be decrypted, `PayslipBackupService` calls `Logger.e(..., "... ${entity.dateStr} ...")`
+   on export (payslips and corrections). That call writes a Crashlytics breadcrumb. It was not changed in P1. **Owner: P6** (classified failures
+   and telemetry); fixed-code messages only.
+3. **Older apps reading a P1+ file.** A shipped app (1.5.0 or earlier) that does a REPLACE restore of a file written from P1 on finds no
+   lock/PIN/telemetry keys in it. It then writes its defaults on that old device: lock off, no PIN, telemetry on. Shipped code can't be changed.
+   Format v6 (P3) and its "update the app" answer reach older readers only through new releases, so release notes for the build that ships
+   this should say: "restore backups on the latest version".

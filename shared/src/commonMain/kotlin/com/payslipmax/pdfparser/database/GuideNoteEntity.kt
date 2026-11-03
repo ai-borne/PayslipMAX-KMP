@@ -14,7 +14,6 @@ import kotlinx.serialization.json.Json
  * AES-256-GCM ciphertext made with [CryptoHelper], so no note text, revision or time is readable in the database file.
  * The card id is the key and the only plaintext (it says which card was annotated, never what was written).
  */
-@Serializable
 @Entity(tableName = "guide_notes")
 data class GuideNoteEntity(
     @PrimaryKey val cardId: String,

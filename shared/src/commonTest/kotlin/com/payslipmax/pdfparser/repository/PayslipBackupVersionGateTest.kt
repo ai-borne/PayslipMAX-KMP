@@ -1,8 +1,8 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
-import com.payslipmax.pdfparser.database.EncryptedPayslipEntity
-import com.payslipmax.pdfparser.database.PayslipPdfEntity
+import com.payslipmax.pdfparser.repository.backup.PayslipBackupRow
+import com.payslipmax.pdfparser.repository.backup.PdfBackupRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -28,8 +28,8 @@ class PayslipBackupVersionGateTest {
         val json =
             buildJsonObject {
                 put("version", version)
-                put("encryptedPayslips", Json.encodeToJsonElement(ListSerializer(EncryptedPayslipEntity.serializer()), listOf(goodEntity("08/2024"))))
-                put("pdfs", Json.encodeToJsonElement(ListSerializer(PayslipPdfEntity.serializer()), emptyList()))
+                put("encryptedPayslips", Json.encodeToJsonElement(ListSerializer(PayslipBackupRow.serializer()), listOf(goodRow("08/2024"))))
+                put("pdfs", Json.encodeToJsonElement(ListSerializer(PdfBackupRow.serializer()), emptyList()))
                 put("settings", JsonNull)
             }
         return CryptoHelper.encrypt(json.toString().encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()

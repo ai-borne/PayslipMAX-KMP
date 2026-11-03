@@ -3,14 +3,17 @@ package com.payslipmax.pdfparser.repository
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.guide.domain.GuideNote
+import com.payslipmax.pdfparser.repository.backup.PdfBackupRow
+import com.payslipmax.pdfparser.repository.backup.toBackupRow
 
 const val BACKUP_PASSWORD = "BackupPass#1"
 
-fun goodEntity(dateStr: String) = createMockPayslip(dateStr).toEncryptedEntity(BACKUP_PASSWORD)
+/** One synthetic payslip as a backup carries it: encrypted with the backup password. */
+fun goodRow(dateStr: String) = createMockPayslip(dateStr).toEncryptedEntity(BACKUP_PASSWORD).toBackupRow()
 
 fun backupOf(dateStr: String): ByteArray =
     backupBytes(
-        PortableBackup(2, listOf(goodEntity(dateStr)), listOf(PayslipPdfEntity(dateStr, byteArrayOf(9))), null),
+        PortableBackup(2, listOf(goodRow(dateStr)), listOf(PdfBackupRow(dateStr, byteArrayOf(9))), null),
     )
 
 fun backupBytes(backup: PortableBackup): ByteArray =

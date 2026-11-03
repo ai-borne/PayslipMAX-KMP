@@ -6,6 +6,11 @@ import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.domain.CorrectionType
 import com.payslipmax.pdfparser.domain.EntryCategory
 import com.payslipmax.pdfparser.domain.SingleCorrection
+import com.payslipmax.pdfparser.repository.backup.CorrectionBackupRow
+import com.payslipmax.pdfparser.repository.backup.PayslipBackupRow
+import com.payslipmax.pdfparser.repository.backup.PdfBackupRow
+import com.payslipmax.pdfparser.repository.backup.toBackupRow
+import com.payslipmax.pdfparser.repository.backup.toEntity
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -88,7 +93,7 @@ class PayslipBackupServiceV3Test {
             val backup = decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow())
 
             assertEquals(PortableBackup.CURRENT_VERSION, backup.version)
-            assertEquals(listOf(editedLetter), backup.drafts)
+            assertEquals(listOf(editedLetter.toBackupRow()), backup.drafts)
             assertEquals(1, backup.dismissedDrafts.size)
             assertEquals(1, backup.corrections.size)
             val archiveText = Json.encodeToString(PortableBackup.serializer(), backup)
@@ -104,7 +109,7 @@ class PayslipBackupServiceV3Test {
             val backup = decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow())
 
             val stored = backup.corrections.single()
-            assertEquals(listOf(correction), stored.toCorrectionList(BACKUP_PASSWORD))
+            assertEquals(listOf(correction), stored.toEntity().toCorrectionList(BACKUP_PASSWORD))
             val underDeviceKey = CryptoHelper.decrypt(stored.ciphertext.hexToByteArray(), CryptoHelper.getDatabaseSecretKey())
             assertTrue(underDeviceKey.isFailure, "an archive must not depend on one device's key")
         }
@@ -130,9 +135,9 @@ class PayslipBackupServiceV3Test {
                     put("version", 2)
                     put(
                         "encryptedPayslips",
-                        Json.encodeToJsonElement(ListSerializer(EncryptedPayslipEntity.serializer()), listOf(goodEntity("08/2024"))),
+                        Json.encodeToJsonElement(ListSerializer(PayslipBackupRow.serializer()), listOf(goodRow("08/2024"))),
                     )
-                    put("pdfs", Json.encodeToJsonElement(ListSerializer(PayslipPdfEntity.serializer()), emptyList()))
+                    put("pdfs", Json.encodeToJsonElement(ListSerializer(PdfBackupRow.serializer()), emptyList()))
                     put("settings", JsonNull)
                 }
             target.seedDeviceMonth("01/2023")
@@ -152,8 +157,8 @@ class PayslipBackupServiceV3Test {
             // A v1 file has no "version" key at all (it was the default) and no letter or correction lists.
             val v1 =
                 buildJsonObject {
-                    put("encryptedPayslips", Json.encodeToJsonElement(ListSerializer(EncryptedPayslipEntity.serializer()), listOf(legacyPayslip)))
-                    put("pdfs", Json.encodeToJsonElement(ListSerializer(PayslipPdfEntity.serializer()), emptyList()))
+                    put("encryptedPayslips", Json.encodeToJsonElement(ListSerializer(PayslipBackupRow.serializer()), listOf(legacyPayslip.toBackupRow())))
+                    put("pdfs", Json.encodeToJsonElement(ListSerializer(PdfBackupRow.serializer()), emptyList()))
                     put("settings", JsonNull)
                 }
 
@@ -172,9 +177,9 @@ class PayslipBackupServiceV3Test {
                     put("version", 3)
                     put(
                         "encryptedPayslips",
-                        Json.encodeToJsonElement(ListSerializer(EncryptedPayslipEntity.serializer()), listOf(goodEntity("08/2024"))),
+                        Json.encodeToJsonElement(ListSerializer(PayslipBackupRow.serializer()), listOf(goodRow("08/2024"))),
                     )
-                    put("pdfs", Json.encodeToJsonElement(ListSerializer(PayslipPdfEntity.serializer()), emptyList()))
+                    put("pdfs", Json.encodeToJsonElement(ListSerializer(PdfBackupRow.serializer()), emptyList()))
                     put("settings", JsonNull)
                     put("somethingFromTheFuture", "x")
                 }
@@ -213,9 +218,9 @@ class PayslipBackupServiceV3Test {
     fun anUnreadableCorrectionInTheBackupChangesNothingOnTheDevice() =
         runTest {
             target.seedDeviceMonth("01/2023")
-            val corrupt = PayslipCorrectionEntity("03/2024", ciphertext = "deadbeef")
+            val corrupt = CorrectionBackupRow("03/2024", ciphertext = "deadbeef")
             val backup =
-                backupBytes(PortableBackup(3, listOf(goodEntity("08/2024")), emptyList(), null, listOf(editedLetter), emptyList(), listOf(corrupt)))
+                backupBytes(PortableBackup(3, listOf(goodRow("08/2024")), emptyList(), null, listOf(editedLetter.toBackupRow()), emptyList(), listOf(corrupt)))
 
             val result = targetService.restore(backup, BACKUP_PASSWORD, RestoreMode.REPLACE)
 

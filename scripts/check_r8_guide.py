@@ -6,7 +6,7 @@ Green debug tests do not prove the minified app can read the Guide. This checks 
 reachability plus kotlinx-serialization's bundled rules keep the models, and this gate proves it. After
 `:composeApp:assembleRelease`, this fails unless:
   1. every @Serializable class in the model folders (guide/model, which holds the Part II lookup models, and part2/, where the Part II
-     payload and backup models live) survives R8 with its generated `$$serializer` and its
+     payload and backup models live, and repository/backup, the `.pcda` wire rows) survives R8 with its generated `$$serializer` and its
      `Companion.serializer()` (read from the R8 mapping; the model list comes from the source, not a copy), and
   2. the Room classes generated for the database and the Part II DAO (`PayslipDatabase_Impl`, `Part2Dao_Impl`) survive, and
   3. the release APK carries the Guide bundle byte-identical to the source file.
@@ -27,7 +27,7 @@ PACKAGE = f"{ROOT_PACKAGE}.guide.model"
 KOTLIN_ROOT = os.path.join(ROOT, "shared/src/commonMain/kotlin/com/payslipmax/pdfparser")
 MODELS_DIR = os.path.join(KOTLIN_ROOT, "guide/model")
 # Folders (under KOTLIN_ROOT) whose @Serializable classes must survive R8; a file's package is its folder's path.
-MODEL_FOLDERS = ("guide/model", "part2")
+MODEL_FOLDERS = ("guide/model", "part2", "repository/backup")
 BUNDLE_SRC = os.path.join(ROOT, "composeApp/src/commonMain/composeResources/files/guide/guide_bundle.json")
 BUNDLE_SUFFIX = "/files/guide/guide_bundle.json"
 DEFAULT_MAPPING = os.path.join(ROOT, "composeApp/build/outputs/mapping/release/mapping.txt")

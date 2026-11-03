@@ -89,3 +89,9 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
   constant, goldens declared as test inputs); 7 goldens (v1–v3 converted byte-identical, hex file deleted; 1.5.0 v4 from `9841fc4a` on JVM
   and iOS; v5 with Orders Bank on JVM and iOS); local-only `LocalBackupRestoreTest` on the owner's 4 real files. Every golden restores; no
   production fix needed. Gate green: shared 1698 → 1703, iOS shared 1549 → 1553, composeApp 1440; 6/6 mutations caught; no security findings.
+- 2026-11-03 — **P1 done**: wire rows in `repository/backup/` (`PayslipBackupRow`, `PdfBackupRow`, `SettingsBackup`, `DraftBackupRow`,
+  `DismissedDraftBackupRow`, `CorrectionBackupRow`, `GuideNoteBackupRow`; every key `@SerialName`-pinned, same keys and defaults as before) and
+  `BackupRowMappers.kt`; `PortableBackup` holds rows only; `@Serializable` removed from all 7 entities (grep: no other serializer use).
+  D5 at the type level: `SettingsBackup` has no Premium/lock/PIN/telemetry; REPLACE lays the backup's preferences over the device's own row
+  (F8 closed). `Part2RowBackup`/`Part2LegacyDraft` keys pinned too. R8 gate walks `repository/backup` (7 models kept). Gate green: shared
+  1703 → 1708, iOS shared 1553 → 1558, composeApp 1440/856; 7/7 mutations caught; local real backups restore; security review: no findings.

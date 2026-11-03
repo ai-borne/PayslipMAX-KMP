@@ -6,6 +6,8 @@ import com.payslipmax.pdfparser.database.hexToByteArray
 import com.payslipmax.pdfparser.database.toEntity
 import com.payslipmax.pdfparser.database.toNote
 import com.payslipmax.pdfparser.guide.domain.GuideNote
+import com.payslipmax.pdfparser.repository.backup.toBackupRow
+import com.payslipmax.pdfparser.repository.backup.toEntity
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -69,7 +71,7 @@ class PayslipBackupServiceV4Test {
             val backup = decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow())
 
             val stored = backup.guideNotes.single()
-            assertEquals("my secret doubt about DA", stored.toNote(BACKUP_PASSWORD).text)
+            assertEquals("my secret doubt about DA", stored.toEntity().toNote(BACKUP_PASSWORD).text)
             assertTrue(CryptoHelper.decrypt(stored.ciphertext.hexToByteArray(), deviceKey).isFailure, "an archive must not depend on one device's key")
             assertFalse(stored.ciphertext.contains("secret"))
         }
@@ -136,10 +138,10 @@ class PayslipBackupServiceV4Test {
                 backupBytes(
                     PortableBackup(
                         version = 4,
-                        encryptedPayslips = listOf(goodEntity("08/2024")),
+                        encryptedPayslips = listOf(goodRow("08/2024")),
                         pdfs = emptyList(),
                         settings = null,
-                        guideNotes = listOf(garbage, good, wrongKey, movedRow),
+                        guideNotes = listOf(garbage, good, wrongKey, movedRow).map { it.toBackupRow() },
                     ),
                 )
 
@@ -170,7 +172,7 @@ class PayslipBackupServiceV4Test {
     @Test
     fun aVersion3BackupStillRestoresAndNeedsNoNotesField() =
         runTest {
-            val v3 = backupBytes(PortableBackup(3, listOf(goodEntity("08/2024")), emptyList(), null))
+            val v3 = backupBytes(PortableBackup(3, listOf(goodRow("08/2024")), emptyList(), null))
             val json = CryptoHelper.decrypt(v3, BACKUP_PASSWORD).getOrThrow().decodeToString()
             assertFalse(json.contains("\"guideNotes\":[{"), "no notes in this archive")
 
@@ -184,7 +186,7 @@ class PayslipBackupServiceV4Test {
     fun aVersion3BackupInMergeModeLeavesTheDevicesNotesAlone() =
         runTest {
             target.insertGuideNote(note("RB-TD-001").toEntity(deviceKey))
-            val v3 = backupBytes(PortableBackup(3, listOf(goodEntity("08/2024")), emptyList(), null))
+            val v3 = backupBytes(PortableBackup(3, listOf(goodRow("08/2024")), emptyList(), null))
 
             targetService.restore(v3, BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
 
@@ -196,7 +198,7 @@ class PayslipBackupServiceV4Test {
         runTest {
             // Same rule as corrections and letters: REPLACE means "exactly this archive". Pinned so a change is deliberate.
             target.insertGuideNote(note("RB-TD-001").toEntity(deviceKey))
-            val v3 = backupBytes(PortableBackup(3, listOf(goodEntity("08/2024")), emptyList(), null))
+            val v3 = backupBytes(PortableBackup(3, listOf(goodRow("08/2024")), emptyList(), null))
 
             targetService.restore(v3, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
 

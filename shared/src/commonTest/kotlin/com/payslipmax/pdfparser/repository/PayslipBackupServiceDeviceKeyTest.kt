@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.repository
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.database.hexToByteArray
 import com.payslipmax.pdfparser.database.toEncryptedEntity
+import com.payslipmax.pdfparser.repository.backup.toBackupRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import kotlinx.coroutines.flow.first
@@ -77,7 +78,7 @@ class PayslipBackupServiceDeviceKeyTest {
             val backup =
                 PortableBackup(
                     version = 2,
-                    encryptedPayslips = listOf(encryptedEntity),
+                    encryptedPayslips = listOf(encryptedEntity.toBackupRow()),
                     pdfs = emptyList(),
                     settings = null,
                 )

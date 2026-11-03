@@ -7,7 +7,7 @@ import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.repository.backupBytes
-import com.payslipmax.pdfparser.repository.goodEntity
+import com.payslipmax.pdfparser.repository.goodRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
@@ -65,7 +65,7 @@ internal fun archive(
     version: Int = PortableBackup.CURRENT_VERSION,
     declared: Int = pages.size,
 ): ByteArray {
-    val backup = PortableBackup(version, listOf(goodEntity("08/2024")), emptyList(), null, part2Entries = entries, part2Orders = orders)
+    val backup = PortableBackup(version, listOf(goodRow("08/2024")), emptyList(), null, part2Entries = entries, part2Orders = orders)
     if (pages.isEmpty()) return backupBytes(backup)
     val meta = CryptoHelper.encrypt(Json.encodeToString(PortableBackup.serializer(), backup).encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()
     val sink = MemoryBackupSink()

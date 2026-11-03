@@ -7,7 +7,7 @@ import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.repository.UnsupportedBackupVersionException
 import com.payslipmax.pdfparser.repository.backupBytes
-import com.payslipmax.pdfparser.repository.goodEntity
+import com.payslipmax.pdfparser.repository.goodRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlinx.coroutines.Dispatchers
@@ -196,7 +196,7 @@ class Part2BackupTest {
     @Test
     fun aBackupFromBeforeThePartTwoRowsOrADeviceWithoutThemSkipsNothing() =
         runTest {
-            val v4 = backupBytes(PortableBackup(4, listOf(goodEntity("08/2024")), emptyList(), null))
+            val v4 = backupBytes(PortableBackup(4, listOf(goodRow("08/2024")), emptyList(), null))
 
             assertEquals(0, targetService.restore(v4, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow().skipped)
         }
@@ -216,7 +216,7 @@ class Part2BackupTest {
     @Test
     fun aVersion4BackupRestoresWithAnEmptyVaultOnReplaceAndLeavesTheDevicesVaultAloneOnMerge() =
         runTest {
-            val v4 = backupBytes(PortableBackup(4, listOf(goodEntity("08/2024")), emptyList(), null))
+            val v4 = backupBytes(PortableBackup(4, listOf(goodRow("08/2024")), emptyList(), null))
             target.putEntry(entry("d1", 1))
             targetService.restore(v4, BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
             assertEquals(setOf("d1"), targetEntries().keys)

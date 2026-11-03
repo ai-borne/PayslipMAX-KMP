@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.database.*
+import com.payslipmax.pdfparser.repository.backup.PayslipBackupRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -63,8 +64,8 @@ class PayslipBackupServiceReplaceTest {
         runTest {
             dao.seedDeviceMonth("01/2023")
             dao.insertSettings(AppSettingsEntity(appTheme = "dark", isPremiumEnabled = true))
-            val corrupt = EncryptedPayslipEntity("09/2014", 2014, 9, "September", ciphertext = "deadbeef")
-            val backup = backupBytes(PortableBackup(2, listOf(goodEntity("08/2024"), corrupt), emptyList(), null))
+            val corrupt = PayslipBackupRow("09/2014", 2014, 9, "September", ciphertext = "deadbeef")
+            val backup = backupBytes(PortableBackup(2, listOf(goodRow("08/2024"), corrupt), emptyList(), null))
 
             val result = service.restore(backup, BACKUP_PASSWORD, RestoreMode.REPLACE)
 
@@ -84,8 +85,8 @@ class PayslipBackupServiceReplaceTest {
     @Test
     fun aBackupWithAnUnreadablePayslipAddsNothingInMergeMode() =
         runTest {
-            val corrupt = EncryptedPayslipEntity("09/2014", 2014, 9, "September", ciphertext = "deadbeef")
-            val backup = backupBytes(PortableBackup(2, listOf(goodEntity("08/2024"), corrupt), emptyList(), null))
+            val corrupt = PayslipBackupRow("09/2014", 2014, 9, "September", ciphertext = "deadbeef")
+            val backup = backupBytes(PortableBackup(2, listOf(goodRow("08/2024"), corrupt), emptyList(), null))
 
             val result = service.restore(backup, BACKUP_PASSWORD, RestoreMode.MERGE)
 

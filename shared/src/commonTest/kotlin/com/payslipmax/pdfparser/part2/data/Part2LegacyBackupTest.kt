@@ -6,7 +6,7 @@ import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.repository.RestoreMode
-import com.payslipmax.pdfparser.repository.goodEntity
+import com.payslipmax.pdfparser.repository.goodRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,7 @@ class Part2LegacyBackupTest {
         drafts: Int,
         pages: List<RawPage>,
     ): ByteArray {
-        val current = PortableBackup(5, listOf(goodEntity("08/2024")), emptyList(), null, part2Orders = listOf(orderRow(SyntheticBank.order("o1"))))
+        val current = PortableBackup(5, listOf(goodRow("08/2024")), emptyList(), null, part2Orders = listOf(orderRow(SyntheticBank.order("o1"))))
         val json = Json.encodeToString(PortableBackup.serializer(), current)
         val oldDrafts = (1..drafts).joinToString(",") { """{"id":"old-$it","data":"QUJD"}""" }
         val withDrafts = "{\"part2Drafts\":[$oldDrafts]," + json.removePrefix("{")

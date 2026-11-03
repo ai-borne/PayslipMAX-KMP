@@ -8,7 +8,6 @@ import com.payslipmax.pdfparser.domain.CorrectionType
 import com.payslipmax.pdfparser.domain.EntryCategory
 import com.payslipmax.pdfparser.domain.SingleCorrection
 import com.payslipmax.pdfparser.parser.PayslipPatternConfig
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -19,7 +18,6 @@ import kotlinx.serialization.json.Json
  * an AES-256-encrypted JSON `List<SingleCorrection>`, encrypted at rest with [CryptoHelper] exactly like
  * [EncryptedPayslipEntity] (no plaintext financial data on disk).
  */
-@Serializable
 @Entity(tableName = "payslip_corrections")
 data class PayslipCorrectionEntity(
     @PrimaryKey val dateStr: String,

@@ -13,8 +13,9 @@ import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.backup.toBackupRow
 import com.payslipmax.pdfparser.repository.backupBytes
-import com.payslipmax.pdfparser.repository.goodEntity
+import com.payslipmax.pdfparser.repository.goodRow
 import com.payslipmax.pdfparser.repository.seedDeviceMonth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -125,10 +126,10 @@ class GuideNotesRoomTest {
                 backupBytes(
                     PortableBackup(
                         version = 4,
-                        encryptedPayslips = listOf(goodEntity("08/2024")),
+                        encryptedPayslips = listOf(goodRow("08/2024")),
                         pdfs = emptyList(),
                         settings = null,
-                        guideNotes = listOf(note.toEntity(BACKUP_PASSWORD)),
+                        guideNotes = listOf(note.toEntity(BACKUP_PASSWORD).toBackupRow()),
                     ),
                 )
 

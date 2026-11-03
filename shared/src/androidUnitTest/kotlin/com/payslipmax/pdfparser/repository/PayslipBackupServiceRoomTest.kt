@@ -7,11 +7,13 @@ import androidx.test.core.app.ApplicationProvider
 import com.payslipmax.pdfparser.crypto.ContextHolder
 import com.payslipmax.pdfparser.database.DismissedDraftEntity
 import com.payslipmax.pdfparser.database.PayslipDatabase
-import com.payslipmax.pdfparser.database.PayslipPdfEntity
-import com.payslipmax.pdfparser.database.RepresentationDraftEntity
 import com.payslipmax.pdfparser.database.getDatabaseBuilder
 import com.payslipmax.pdfparser.database.toCorrectionEntity
 import com.payslipmax.pdfparser.database.toCorrectionList
+import com.payslipmax.pdfparser.repository.backup.DismissedDraftBackupRow
+import com.payslipmax.pdfparser.repository.backup.DraftBackupRow
+import com.payslipmax.pdfparser.repository.backup.PdfBackupRow
+import com.payslipmax.pdfparser.repository.backup.toBackupRow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -85,12 +87,12 @@ class PayslipBackupServiceRoomTest {
                 backupBytes(
                     PortableBackup(
                         version = 3,
-                        encryptedPayslips = listOf(goodEntity("08/2024")),
-                        pdfs = listOf(PayslipPdfEntity("08/2024", byteArrayOf(9))),
+                        encryptedPayslips = listOf(goodRow("08/2024")),
+                        pdfs = listOf(PdfBackupRow("08/2024", byteArrayOf(9))),
                         settings = null,
-                        drafts = listOf(RepresentationDraftEntity("d-new", "08/2024", "MISSING_HRA", "PCDA_O_PUNE", "s", "b", 1L)),
-                        dismissedDrafts = listOf(DismissedDraftEntity("08/2024", "SALARY_DROP")),
-                        corrections = listOf(mapOf("basicPay" to 2.0).toCorrectionEntity("08/2024", BACKUP_PASSWORD)),
+                        drafts = listOf(DraftBackupRow("d-new", "08/2024", "MISSING_HRA", "PCDA_O_PUNE", "s", "b", 1L)),
+                        dismissedDrafts = listOf(DismissedDraftBackupRow("08/2024", "SALARY_DROP")),
+                        corrections = listOf(mapOf("basicPay" to 2.0).toCorrectionEntity("08/2024", BACKUP_PASSWORD).toBackupRow()),
                     ),
                 )
 

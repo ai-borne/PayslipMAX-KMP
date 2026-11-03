@@ -1,15 +1,17 @@
 package com.payslipmax.pdfparser.part2.data
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
  * One Part II entry or order as a `.pcda` archive carries it (backup v5). [data] is the row's ciphertext, made with the backup password
- * rather than the device key, as Base64 text: a `ByteArray` would serialize as a JSON number array (about 3.5 times the size).
+ * rather than the device key, as Base64 text: a `ByteArray` would serialize as a JSON number array (about 3.5 times the size). Keys are
+ * pinned with @SerialName like the other backup rows (`repository/backup`, BackupWireKeysTest).
  */
 @Serializable
 class Part2RowBackup(
-    val id: String,
-    val data: String,
+    @SerialName("id") val id: String,
+    @SerialName("data") val data: String,
 )
 
 /**
@@ -18,5 +20,5 @@ class Part2RowBackup(
  */
 @Serializable
 class Part2LegacyDraft(
-    val id: String = "",
+    @SerialName("id") val id: String = "",
 )

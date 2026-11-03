@@ -9,6 +9,12 @@ import com.payslipmax.pdfparser.part2.data.LastBackupStorage
 import com.payslipmax.pdfparser.part2.data.PageArchive
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.rating.currentTimeMillis
+import com.payslipmax.pdfparser.repository.backup.CorrectionBackupRow
+import com.payslipmax.pdfparser.repository.backup.SettingsBackup
+import com.payslipmax.pdfparser.repository.backup.applyTo
+import com.payslipmax.pdfparser.repository.backup.toBackupRow
+import com.payslipmax.pdfparser.repository.backup.toEntity
+import com.payslipmax.pdfparser.repository.backup.toSettingsBackup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -62,7 +68,7 @@ class PayslipBackupService(
                 val exportedPayslips =
                     payslips.mapNotNull { entity ->
                         try {
-                            entity.toDomain(deviceKey).toEncryptedEntity(password)
+                            entity.toDomain(deviceKey).toEncryptedEntity(password).toBackupRow()
                         } catch (e: Exception) {
                             Logger.e("PayslipBackupService", "Skipping undecryptable payslip ${entity.dateStr} during backup", e)
                             null
@@ -74,12 +80,16 @@ class PayslipBackupService(
                     PortableBackup(
                         version = PortableBackup.CURRENT_VERSION,
                         encryptedPayslips = exportedPayslips,
-                        pdfs = pdfs,
-                        settings = settings,
-                        drafts = payslipDao.getAllRepresentationDrafts().first(),
-                        dismissedDrafts = payslipDao.getAllDismissedDrafts(),
+                        pdfs = pdfs.map { it.toBackupRow() },
+                        // Preferences only: the device-only settings (D5) are not on SettingsBackup, so they cannot be exported.
+                        settings = settings?.toSettingsBackup(),
+                        drafts = payslipDao.getAllRepresentationDrafts().first().map { it.toBackupRow() },
+                        dismissedDrafts = payslipDao.getAllDismissedDrafts().map { it.toBackupRow() },
                         corrections = exportCorrections(deviceKey, password),
-                        guideNotes = GuideNoteBackup.forExport(payslipDao.getAllGuideNotes().first(), deviceKey, password),
+                        guideNotes =
+                            GuideNoteBackup
+                                .forExport(payslipDao.getAllGuideNotes().first(), deviceKey, password)
+                                .map { it.toBackupRow() },
                         part2Entries = part2?.entries.orEmpty(),
                         part2Orders = part2?.orders.orEmpty(),
                     )
@@ -101,10 +111,10 @@ class PayslipBackupService(
     private suspend fun exportCorrections(
         deviceKey: String,
         password: String,
-    ): List<PayslipCorrectionEntity> =
+    ): List<CorrectionBackupRow> =
         payslipDao.getAllCorrections().first().mapNotNull { entity ->
             try {
-                entity.toCorrectionList(deviceKey).toCorrectionEntity(entity.dateStr, password)
+                entity.toCorrectionList(deviceKey).toCorrectionEntity(entity.dateStr, password).toBackupRow()
             } catch (e: Exception) {
                 Logger.e("PayslipBackupService", "Skipping undecryptable corrections for ${entity.dateStr} during backup", e)
                 null
@@ -145,7 +155,8 @@ class PayslipBackupService(
                 // then fails the restore with the device's data untouched, instead of after a wipe.
                 val deviceKey = CryptoHelper.getDatabaseSecretKey()
                 val databasePayslips =
-                    backup.encryptedPayslips.map { entity ->
+                    backup.encryptedPayslips.map { row ->
+                        val entity = row.toEntity()
                         val domainModel =
                             try {
                                 entity.toDomain(password)
@@ -160,10 +171,11 @@ class PayslipBackupService(
                 val rows =
                     BackupRows(
                         payslips = databasePayslips,
-                        pdfs = backup.pdfs,
-                        drafts = backup.drafts,
-                        dismissedDrafts = backup.dismissedDrafts,
-                        corrections = backup.corrections.map { it.toCorrectionList(password).toCorrectionEntity(it.dateStr, deviceKey) },
+                        pdfs = backup.pdfs.map { it.toEntity() },
+                        drafts = backup.drafts.map { it.toEntity() },
+                        dismissedDrafts = backup.dismissedDrafts.map { it.toEntity() },
+                        corrections =
+                            backup.corrections.map { it.toEntity().toCorrectionList(password).toCorrectionEntity(it.dateStr, deviceKey) },
                         guideNotes = restoredNotes(backup, password, deviceKey, mode),
                         part2Entries = part2?.entries.orEmpty(),
                         part2Orders = part2?.orders.orEmpty(),
@@ -174,14 +186,10 @@ class PayslipBackupService(
                 // emptied first); MERGE keeps the device's existing data and its own settings and layers
                 // the backup on top, overwriting only same-date payslips. Either way it is one transaction.
                 if (mode == RestoreMode.REPLACE) {
-                    // Capture this device's own entitlement before the swap so a restored backup can
-                    // never grant (or revoke) PRO — entitlement must never travel inside a backup file.
-                    val deviceEntitlement = payslipDao.getSettings()?.isPremiumEnabled ?: false
-                    val restoredSettings = backup.settings ?: AppSettingsEntity()
-                    payslipDao.replaceWithBackup(
-                        rows,
-                        restoredSettings.copy(isPremiumEnabled = deviceEntitlement),
-                    )
+                    // The backup's preferences go on top of this device's own settings row, so the lock, PIN hash, telemetry consent
+                    // and entitlement stay the device's (D5); a file without settings resets the preferences to their defaults.
+                    val device = payslipDao.getSettings() ?: AppSettingsEntity()
+                    payslipDao.replaceWithBackup(rows, (backup.settings ?: SettingsBackup()).applyTo(device))
                 } else {
                     payslipDao.mergeBackup(rows)
                 }
@@ -210,7 +218,7 @@ class PayslipBackupService(
         mode: RestoreMode,
     ): List<GuideNoteEntity> {
         val existing = if (mode == RestoreMode.MERGE) payslipDao.getAllGuideNotes().first() else emptyList()
-        return GuideNoteBackup.forRestore(backup.guideNotes, password, deviceKey, existing, mode)
+        return GuideNoteBackup.forRestore(backup.guideNotes.map { it.toEntity() }, password, deviceKey, existing, mode)
     }
 
     /**

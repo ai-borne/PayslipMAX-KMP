@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.repository
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.DecryptionFailedException
 import com.payslipmax.pdfparser.database.toEncryptedEntity
+import com.payslipmax.pdfparser.repository.backup.toBackupRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -78,7 +79,7 @@ class PayslipBackupWrongPasswordTest {
             dao.seedDeviceMonth("01/2023")
             val before = snapshot()
             // The outer layer opens with the right password, but this payslip was sealed under another one and under no legacy key.
-            val foreignRow = createMockPayslip("08/2024").toEncryptedEntity("Another-Password#3")
+            val foreignRow = createMockPayslip("08/2024").toEncryptedEntity("Another-Password#3").toBackupRow()
             val bytes = backupBytes(PortableBackup(PortableBackup.CURRENT_VERSION, listOf(foreignRow), emptyList(), null))
 
             val error = service.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).exceptionOrNull()
