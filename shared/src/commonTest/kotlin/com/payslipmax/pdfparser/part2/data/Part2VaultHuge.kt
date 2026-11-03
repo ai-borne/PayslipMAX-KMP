@@ -59,5 +59,5 @@ internal suspend fun restoreHuge(source: BackupSource): HugeRestore {
     val service = PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = Part2Backup(part2))
     val start = TimeSource.Monotonic.markNow()
     val report = service.restore(source, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
-    return HugeRestore(part2.droppedPages, part2.droppedBytes, report.skipped, start.elapsedNow().inWholeMilliseconds)
+    return HugeRestore(part2.droppedPages, part2.droppedBytes, report.skipped.total, start.elapsedNow().inWholeMilliseconds)
 }

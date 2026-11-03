@@ -71,7 +71,7 @@ class BackupPrepareCommitTest {
                 prepared.use {
                     assertEquals(golden.counts(), it.preview.counts(), golden.file)
                     assertEquals(golden.format, it.preview.formatVersion, golden.file)
-                    assertEquals(0, it.preview.skipped, golden.file)
+                    assertEquals(SkippedRows.NONE, it.preview.skipped, golden.file)
                 }
                 assertTrue(dao.isEmpty(), "${golden.file}: a preview wrote to the database")
             }

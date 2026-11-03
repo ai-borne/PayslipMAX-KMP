@@ -8,11 +8,12 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.BackupRestoreStrings
 import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 
-/** A restore that left Part II rows out says how many, in the warning colour: those rows are lost, so the count must be noticed. */
+/** A restore that left rows out says how many (every kind, one total), in the warning colour: those rows are lost, so the count must be noticed. */
 internal fun restoreStatus(result: Result<RestoreReport>): BackupStatus {
     val report = result.getOrNull() ?: return restoreFailedStatus(result.exceptionOrNull())
-    if (report.skipped == 0) return BackupStatus(AppStrings.statusRestoreComplete, isSuccess = true)
-    return BackupStatus("${AppStrings.statusRestoreComplete} ${OrdersBankStrings.restoreSkipped(report.skipped)}", isSuccess = false)
+    val skipped = report.skipped.total
+    if (skipped == 0) return BackupStatus(AppStrings.statusRestoreComplete, isSuccess = true)
+    return BackupStatus("${AppStrings.statusRestoreComplete} ${OrdersBankStrings.restoreSkipped(skipped)}", isSuccess = false)
 }
 
 /**

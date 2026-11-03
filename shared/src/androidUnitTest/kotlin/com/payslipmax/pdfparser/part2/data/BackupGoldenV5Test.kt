@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +43,7 @@ class BackupGoldenV5Test {
 
             val report = restoreInto(dao, viaSource)
 
-            assertEquals(0, report.skipped, "nothing skipped (viaSource=$viaSource)")
+            assertEquals(SkippedRows.NONE, report.skipped, "nothing skipped (viaSource=$viaSource)")
             runBlocking {
                 assertEquals(setOf("e1", "e2"), dao.part2.allEntries().map { it.id }.toSet())
                 assertEquals(listOf("o1"), dao.part2.allOrders().map { it.id })

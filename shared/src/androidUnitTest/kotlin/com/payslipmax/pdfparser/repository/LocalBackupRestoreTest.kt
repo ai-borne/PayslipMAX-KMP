@@ -33,7 +33,7 @@ class LocalBackupRestoreTest {
                         .restore(file.readBytes(), password, RestoreMode.REPLACE)
                         .getOrElse { fail("local backup #$i did not restore: ${it::class.simpleName}") }
                 assertTrue(dao.getAllPayslips().first().isNotEmpty(), "local backup #$i restored no payslips")
-                assertEquals(0, report.skipped, "local backup #$i skipped rows")
+                assertEquals(SkippedRows.NONE, report.skipped, "local backup #$i skipped rows")
             }
         }
 }

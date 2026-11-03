@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.repository.RestoreReport
+import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.testing.FakeBackupFiles
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
@@ -23,8 +24,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 /**
- * WHY: the Settings restore must be able to tell the officer how many Part II rows a restore left out (plan Phase 11 item 10), so the
- * count has to reach the view model's callback. A file with unreadable rows is made by hand; the production restore decides what is skipped.
+ * WHY: the Settings restore must be able to tell the officer how many rows a restore left out, per kind (plan Phase 11 item 10, 14a P5), so
+ * the counts have to reach the view model's callback. A file with unreadable rows is made by hand; the production restore decides what is skipped.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class PayslipViewModelRestoreReportTest {
@@ -61,7 +62,7 @@ class PayslipViewModelRestoreReportTest {
             runCurrent()
             val bytes = SyntheticPart2Backups.withUnreadableRows(PASSWORD, unreadableEntries = 2, unreadableOrders = 1)
 
-            assertEquals(3, restore(bytes).getOrThrow().skipped)
+            assertEquals(SkippedRows(part2Entries = 2, part2Orders = 1), restore(bytes).getOrThrow().skipped)
         }
 
     @Test
@@ -69,7 +70,7 @@ class PayslipViewModelRestoreReportTest {
         runTest {
             runCurrent()
 
-            assertEquals(0, restore(SyntheticPart2Backups.withUnreadableRows(PASSWORD, 0, 0)).getOrThrow().skipped)
+            assertEquals(SkippedRows.NONE, restore(SyntheticPart2Backups.withUnreadableRows(PASSWORD, 0, 0)).getOrThrow().skipped)
         }
 
     private companion object {

@@ -28,9 +28,10 @@ data class ParsedPayslip(
      * Provenance sidecar (SSOT, [FieldSource]). Maps a field key to which tier produced it —
      * `GEOMETRY` (the deterministic solver) or `GEMMA_FALLBACK` (Tier 6 on-device LLM, Android-only).
      * Empty until the solver/fallback populate it; lets the UI distinguish "solver was certain" from
-     * "Gemma inferred this" instead of both collapsing into the same `fieldConfidence` number.
+     * "Gemma inferred this" instead of both collapsing into the same `fieldConfidence` number. A value a later app adds is dropped
+     * on read ([FieldSourceMapSerializer], D16), so such a payslip still reads.
      */
-    val fieldSource: Map<String, FieldSource> = emptyMap(),
+    @Serializable(with = FieldSourceMapSerializer::class) val fieldSource: Map<String, FieldSource> = emptyMap(),
     /** True when at least one field is below the review threshold and should be surfaced for user correction. */
     val needsReview: Boolean = false,
     /**

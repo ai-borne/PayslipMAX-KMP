@@ -7,6 +7,7 @@ import com.payslipmax.pdfparser.repository.BackupSource
 import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.SkippedRows
 import kotlin.io.encoding.Base64
 
 /** The entries and orders that go into an archive's metadata document. */
@@ -16,15 +17,15 @@ class Part2Export(
 )
 
 /**
- * What a restore will write, re-encrypted for this device, and how many rows it left out (unreadable, oversized, surplus, orphaned or a
- * draft from the frozen branch). [pages] is lazy: each page is re-encrypted as the transaction inserts it, so the vault is never in memory
+ * What a restore will write, re-encrypted for this device, and the rows it left out per kind (unreadable, oversized, surplus, orphaned or a
+ * draft from the frozen branch, counted as an entry: entries replaced the drafts). [pages] is lazy: each page is re-encrypted as the transaction inserts it, so the vault is never in memory
  * twice; [pageCount] is how many it will yield (each one already checked).
  */
 class Part2Restore(
     val entries: List<Part2EntryEntity>,
     val orders: List<Part2OrderEntity>,
     val pages: Sequence<Part2PageEntity>,
-    val skipped: Int,
+    val skipped: SkippedRows,
     val pageCount: Int,
 )
 
@@ -104,6 +105,7 @@ class Part2Backup(
         val entries = restoreRows(entryKind, backup.part2Entries, if (merge) dao.allEntries() else emptyList(), backupKey, key, merge, decodeText)
         val orders = restoreRows(orderKind, backup.part2Orders, if (merge) dao.allOrders() else emptyList(), backupKey, key, merge, decodeText)
         val pages = restorePages(dao, source, orders.kept + orders.heldIds, backupKey, key, merge, vaultBytesMax, openPage)
-        return Part2Restore(entries.rows, orders.rows, pages.pages, entries.skipped + orders.skipped + pages.skipped + backup.part2Drafts.size, pages.count)
+        val skipped = SkippedRows(part2Entries = entries.skipped + backup.part2Drafts.size, part2Orders = orders.skipped, part2Pages = pages.skipped)
+        return Part2Restore(entries.rows, orders.rows, pages.pages, skipped, pages.count)
     }
 }

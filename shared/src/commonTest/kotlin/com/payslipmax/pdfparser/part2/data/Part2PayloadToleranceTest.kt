@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PortableBackup
+import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.repository.goodRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -60,7 +61,7 @@ class Part2PayloadToleranceTest {
 
             val report = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2)).restore(sink.toByteArray(), BACKUP_PASSWORD).getOrThrow()
 
-            assertEquals(0, report.skipped)
+            assertEquals(SkippedRows.NONE, report.skipped)
             assertEquals(listOf("page-1"), dao.part2.allPageRefs().map { it.id })
         }
 }

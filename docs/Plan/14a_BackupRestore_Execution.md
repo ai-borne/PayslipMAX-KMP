@@ -264,3 +264,43 @@ From P4 (2026-11-03):
    2.97 s a whole 250 MB restore takes on the iOS simulator (P3), so the P8 spinner covers it. **Owner: P8** decides if it needs a bar.
 4. **A `PreparedRestore` holds the archive key and the open file until it is closed.** P7's ViewModel keeps it while the preview is on
    screen, so every exit (Cancel, sheet dismissed, `onCleared`, a failed commit) must close it; P7's tests must cover each one.
+
+From P5 (2026-11-03):
+1. **Not built, as asked: PDFs, letters, deleted-letter records and settings can't be skipped one at a time.** They are plain JSON inside
+   the authenticated document, so once it opens they come back whole, and if it doesn't open the restore fails as before. `SkippedRows`
+   has no field for them. 14a P5's "PDFs … and drafts … skipped and counted" is therefore met only for the kinds that are opened one
+   row at a time: payslips, corrections, notes, Bank entries, orders and pages.
+2. **Decision taken, owner to confirm: a skipped payslip's PDF and corrections still restore.** Each row stands alone: they are readable,
+   the officer still holds the unchanged file, and a correction applies on read by month, so it rejoins its payslip if a later app
+   restores that payslip or the month is imported again. Dropping them would lose readable rows for nothing. The other option is to drop
+   them and count them as skipped. On MERGE the backup's PDF and corrections for that month replace the device's, as for any month the
+   backup holds. Test: `BackupSkipCountTest.aSkippedPayslipsPdfAndCorrectionsStillRestoreBecauseEachRowStandsAlone`.
+3. **Decision taken, owner to confirm: what "every row unreadable" means.** At least one row that is opened one at a time (payslips,
+   corrections, notes, Bank entries, orders, page records), and all of them skipped → `BackupDamagedException`, database untouched
+   (`BackupSkipCountTest`'s WHY, `BackupRestoreEngine.requireARowThatOpened`). Frozen-branch drafts don't count: they are never restored.
+   Consequence: a file in which every payslip fails but one note opens is **not** damaged. It restores the note and reports the
+   payslips as skipped. On REPLACE that empties the device's payslips, so **P8 must show D11's second confirm**, which names what will
+   be lost, before such a commit.
+4. **Decision taken: frozen-branch drafts count as `part2Entries`**, the kind that replaced them (13b item 3: "`entries` in place of
+   `drafts`").
+5. **The status line's copy.** `restoreStatus` shows `SkippedRows.total` through `OrdersBankStrings.restoreSkipped` ("N items could not be
+   restored."), which now counts payslips, corrections and notes too, yet still lives in the Part II strings object. **Owner: P8** decides
+   the per-kind wording and moves it into `BackupRestoreStrings` (D13 copy review).
+6. **Pre-existing log, now reached once per skipped payslip.** When a payslip will not open, `EncryptedPayslipEntity.toDomain` calls
+   `Logger.w` with the row's month and the crypto exception's message. That call is a Crashlytics breadcrumb. Before P5 the first such row
+   ended the restore; now every skipped row reaches it. The month is plaintext row metadata (it travels in clear beside the ciphertext), not
+   decrypted content, and the message is the crypto library's. **Owner: P6**, with P1 item 2: fixed codes only.
+7. **P10 "From P2" item 2 is partly closed.** A payslip or correction that fails to decode is now skipped, and its exception (which can
+   quote the JSON) is dropped (`openedOrNull`): it no longer reaches `Result.failure`. The document's own decode can still put kotlinx text
+   in a failure. **Owner: P6** (one mapper to fixed codes).
+8. **P10 "From P2" item 1 is closed by D16.** `FieldSourceMapSerializer` drops a `FieldSource` value this app does not know (it reads
+   the enum's serial names), and the write path is unchanged. A value that is not text (a number or an object) is still a damaged
+   payslip, so it is skipped and counted. The goldens carry no `fieldSource` values (`createMockPayslip` sets none), so wire identity is
+   pinned by `FieldSourceWireTest`'s literals, not by a golden. A golden that carries both values would need a new file, since goldens
+   are never regenerated. **Owner to decide** whether P9's release golden should include them.
+9. **Owner to confirm a test reading: "a fresh backup with a skip fails verify".** Under v6 the document is sealed whole, so a real export
+   can't contain an unreadable row, and a corrupted byte fails the whole file (P4's tests). The per-kind test
+   (`BackupVerifyAfterWriteTest.aFileThatReadsBackWithOneRowSkippedOfAnyKindIsNotKept`) therefore uses `FakeBackupFiles.readBackInstead`:
+   the read-back gets another complete backup that has one skip of each kind (payslip, correction, note, entry, order, page). Before P5 it
+   was RED for the note, which was skipped silently. The payslip and correction cases failed verify because the whole prepare failed, and
+   the Part II kinds were already counted. Mutation M9 (verify checks pages only) proves the per-kind check.

@@ -45,7 +45,7 @@ data class PortableBackup(
      */
     @SerialName("part2Entries") val part2Entries: List<Part2RowBackup> = emptyList(),
     @SerialName("part2Orders") val part2Orders: List<Part2RowBackup> = emptyList(),
-    /** Drafts written by the frozen feature/part2-orders branch's v5 files: counted as skipped on restore, never decoded and never written. */
+    /** Drafts written by the frozen feature/part2-orders branch's v5 files: counted as skipped entries on restore, never decoded and never written. */
     @SerialName("part2Drafts") val part2Drafts: List<Part2LegacyDraft> = emptyList(),
     /** When the backup was made (epoch millis), shown in the restore preview; written from format 6, null in older files (D15). */
     @SerialName("exportedAt") val exportedAt: Long? = null,
@@ -70,9 +70,9 @@ enum class RestoreMode {
     MERGE,
 }
 
-/** What a restore did besides succeed: how many Part II rows it left out (unreadable, oversized, surplus, orphaned or a draft), so the officer can be told. */
+/** What a restore did besides succeed: the rows it left out, per kind (unreadable, oversized, surplus, orphaned or a draft), so the officer can be told. */
 class RestoreReport(
-    val skipped: Int,
+    val skipped: SkippedRows,
 )
 
 /**

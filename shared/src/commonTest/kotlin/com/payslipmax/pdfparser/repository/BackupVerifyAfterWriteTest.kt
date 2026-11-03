@@ -2,9 +2,17 @@ package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.part2.data.InMemoryLastBackupStorage
 import com.payslipmax.pdfparser.part2.data.Part2Backup
+import com.payslipmax.pdfparser.part2.data.Part2RowBackup
+import com.payslipmax.pdfparser.part2.data.archive
+import com.payslipmax.pdfparser.part2.data.junkEntry
+import com.payslipmax.pdfparser.part2.data.orderRow
+import com.payslipmax.pdfparser.part2.data.pageRow
 import com.payslipmax.pdfparser.part2.data.putOrder
 import com.payslipmax.pdfparser.part2.data.putPage
 import com.payslipmax.pdfparser.repository.backup.BackupEnvelope
+import com.payslipmax.pdfparser.repository.backup.CorrectionBackupRow
+import com.payslipmax.pdfparser.repository.backup.GuideNoteBackupRow
+import com.payslipmax.pdfparser.repository.backup.PayslipBackupRow
 import com.payslipmax.pdfparser.testing.FakeBackupFiles
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -76,6 +84,30 @@ class BackupVerifyAfterWriteTest {
             val restored = PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = Part2Backup(target.part2))
             restored.restore(files.exportedBytes!!, BACKUP_PASSWORD).getOrThrow()
             assertEquals(listOf("p0", "p1"), target.part2.allPageRefs().map { it.id }.sorted())
+        }
+
+    /** WHY (14a P5): a restore now skips an unreadable row instead of failing, so a fresh backup that reads back with ANY row skipped is bad. */
+    @Test
+    fun aFileThatReadsBackWithOneRowSkippedOfAnyKindIsNotKept() =
+        runTest {
+            seed()
+            val bad = PayslipBackupRow("09/2014", 2014, 9, "September", ciphertext = "deadbeef")
+            val order = orderRow(SyntheticBank.order("o1"))
+            val oneSkipEach =
+                mapOf(
+                    "payslip" to backupBytes(PortableBackup(5, listOf(goodRow("08/2024"), bad), emptyList(), null)),
+                    "correction" to backupBytes(PortableBackup(5, listOf(goodRow("08/2024")), emptyList(), null, corrections = listOf(CorrectionBackupRow("08/2024", "beef")))),
+                    "note" to backupBytes(PortableBackup(5, listOf(goodRow("08/2024")), emptyList(), null, guideNotes = listOf(GuideNoteBackupRow("RB-NOTE-1", "beef")))),
+                    "entry" to archive(entries = listOf(junkEntry(1))),
+                    "order" to archive(orders = listOf(Part2RowBackup("o2", "!!"))),
+                    "page" to archive(orders = listOf(order), pages = listOf(pageRow("p1", "o1", 0, SyntheticBank.jpeg(500), password = "other"))),
+                )
+            for ((kind, file) in oneSkipEach) {
+                files.readBackInstead = file
+
+                assertIs<BackupVerifyException>(service.backUp(files, BACKUP_PASSWORD).exceptionOrNull(), kind)
+                assertNull(files.exportedBytes, kind)
+            }
         }
 
     @Test

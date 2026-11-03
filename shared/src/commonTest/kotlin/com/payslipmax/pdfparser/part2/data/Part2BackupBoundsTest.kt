@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.crypto.PasswordKey
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlinx.coroutines.test.runTest
@@ -52,9 +53,9 @@ class Part2BackupBoundsTest {
             val over = restore(entries = listOf(sealedRow("big", validJson(Part2Limits.PAYLOAD_MAX_BYTES))))
 
             assertEquals(listOf("big"), within.entries.map { it.id })
-            assertEquals(0, within.skipped)
+            assertEquals(SkippedRows.NONE, within.skipped)
             assertEquals(emptyList(), over.entries.map { it.id })
-            assertEquals(1, over.skipped)
+            assertEquals(SkippedRows(part2Entries = 1), over.skipped)
         }
 
     @Test
@@ -67,7 +68,7 @@ class Part2BackupBoundsTest {
 
             assertEquals(listOf("p1"), ok.pages.map { it.id }.toList())
             assertEquals(emptyList(), over.pages.map { it.id }.toList())
-            assertEquals(1, over.skipped)
+            assertEquals(SkippedRows(part2Pages = 1), over.skipped)
         }
 
     @Test
@@ -80,9 +81,9 @@ class Part2BackupBoundsTest {
             val firstValid = restore(entries = first)
 
             assertEquals(emptyList(), lastValid.entries.map { it.id })
-            assertEquals(Part2Limits.ENTRIES_MAX + 1, lastValid.skipped)
+            assertEquals(SkippedRows(part2Entries = Part2Limits.ENTRIES_MAX + 1), lastValid.skipped)
             assertEquals(listOf("first-valid"), firstValid.entries.map { it.id })
-            assertEquals(Part2Limits.ENTRIES_MAX, firstValid.skipped)
+            assertEquals(SkippedRows(part2Entries = Part2Limits.ENTRIES_MAX), firstValid.skipped)
         }
 
     @Test
@@ -97,7 +98,7 @@ class Part2BackupBoundsTest {
 
             assertEquals(emptyList(), surplusOrder.orders.map { it.id })
             assertEquals(emptyList(), surplusPage.pages.map { it.id }.toList())
-            assertEquals(junkPages.size + 1, surplusPage.skipped)
+            assertEquals(SkippedRows(part2Pages = junkPages.size + 1), surplusPage.skipped)
         }
 
     @Test
@@ -108,7 +109,7 @@ class Part2BackupBoundsTest {
             val result = restore(entries = listOf(entryRow(SyntheticBank.entry("n1")), entryRow(SyntheticBank.entry("n2"))), mode = RestoreMode.MERGE)
 
             assertEquals(listOf("n1"), result.entries.map { it.id })
-            assertEquals(1, result.skipped)
+            assertEquals(SkippedRows(part2Entries = 1), result.skipped)
         }
 
     @Test
@@ -121,7 +122,7 @@ class Part2BackupBoundsTest {
             val result = restore(pages = pages, mode = RestoreMode.MERGE)
 
             assertEquals(listOf("new-1"), result.pages.map { it.id }.toList())
-            assertEquals(2, result.skipped)
+            assertEquals(SkippedRows(part2Pages = 2), result.skipped)
         }
 
     @Test
@@ -130,7 +131,7 @@ class Part2BackupBoundsTest {
             val result = restore(pages = listOf(pageRow("p1", "ghost", 0, SyntheticBank.jpeg(50))))
 
             assertEquals(emptyList(), result.pages.map { it.id }.toList())
-            assertEquals(1, result.skipped)
+            assertEquals(SkippedRows(part2Pages = 1), result.skipped)
         }
 
     @Test
@@ -143,7 +144,7 @@ class Part2BackupBoundsTest {
                 )
 
             assertEquals(emptyList(), result.pages.map { it.id }.toList())
-            assertEquals(2, result.skipped)
+            assertEquals(SkippedRows(part2Orders = 1, part2Pages = 1), result.skipped)
         }
 
     @Test
@@ -155,13 +156,13 @@ class Part2BackupBoundsTest {
 
             val replace = restore(orders = listOf(order), pages = pages, using = small)
             assertEquals(listOf("p1", "p2"), replace.pages.map { it.id }.toList())
-            assertEquals(1, replace.skipped)
+            assertEquals(SkippedRows(part2Pages = 1), replace.skipped)
 
             device.putOrder(SyntheticBank.order("o1"))
             device.putPage("held", "o1", 0, SyntheticBank.jpeg(1000, 9))
             val merge = restore(pages = pages, mode = RestoreMode.MERGE, using = small)
             assertEquals(listOf("p1"), merge.pages.map { it.id }.toList())
-            assertEquals(2, merge.skipped)
+            assertEquals(SkippedRows(part2Pages = 2), merge.skipped)
         }
 
     @Test

@@ -33,6 +33,9 @@ class FakeBackupFiles : BackupFiles {
     /** When set, this byte of the written file is flipped before it is read back: a disk that did not keep what was written. */
     var corruptWrittenByteAt: Int? = null
 
+    /** When set, the read-back sees these bytes in place of the written file: a disk that handed back another (whole) backup. */
+    var readBackInstead: ByteArray? = null
+
     /** How many times a written file was read back. */
     var verifyCount = 0
         private set
@@ -48,7 +51,7 @@ class FakeBackupFiles : BackupFiles {
         val bytes = sink.toByteArray()
         corruptWrittenByteAt?.let { bytes[it] = (bytes[it].toInt() xor 0x01).toByte() }
         verifyCount++
-        val checked = runCatching { verify(MemoryBackupSource(bytes)) }.getOrElse { Result.failure(BackupFileException()) }
+        val checked = runCatching { verify(MemoryBackupSource(readBackInstead ?: bytes)) }.getOrElse { Result.failure(BackupFileException()) }
         if (checked.isSuccess) exported = bytes
         return checked
     }

@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.part2.data
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +62,6 @@ class Part2BackupItemCountTest {
 
             assertEquals(2, targetService.part2ItemCount())
             assertEquals(1, target.part2.allPageRefs().size)
-            assertTrue(report.skipped == 0, "nothing in a clean archive is skipped")
+            assertTrue(report.skipped == SkippedRows.NONE, "nothing in a clean archive is skipped")
         }
 }

@@ -65,7 +65,7 @@ class PayslipBackupService(
 
     /**
      * A dry-run restore of a just-written file (every page opened once, nothing written or kept). A fresh backup must read back whole: a
-     * failure, or any row the restore would leave out (a damaged page is skipped, not fatal), is [BackupVerifyException].
+     * failure, or any row of any kind the restore would leave out (an unreadable row is skipped, not fatal), is [BackupVerifyException].
      */
     private suspend fun verify(
         source: BackupSource,
@@ -73,7 +73,7 @@ class PayslipBackupService(
         progress: BackupProgress,
     ): Result<Unit> =
         prepare(source, password) { _, done, total -> progress.update(BackupStage.VERIFYING, done, total) }
-            .mapCatching { prepared -> prepared.use { check(it.preview.skipped == 0) } }
+            .mapCatching { prepared -> prepared.use { check(it.preview.skipped == SkippedRows.NONE) } }
             .recoverCatching { throw BackupVerifyException() }
 
     /**

@@ -1,7 +1,9 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.database.*
+import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.repository.backup.PayslipBackupRow
+import com.payslipmax.pdfparser.repository.backup.PdfBackupRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -9,14 +11,16 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 /**
  * A REPLACE restore promises "this device becomes an exact copy of the backup". Anything the device
  * held before that is not in the backup (derived ledger/insights, letters, corrections, PDFs) must
- * therefore be gone afterwards, and a backup that cannot be fully read must change nothing at all —
- * payslips exist only on the device, so a half-applied restore is data loss.
+ * therefore be gone afterwards, and a backup that cannot be read must change nothing at all —
+ * payslips exist only on the device, so a half-applied restore is data loss. Since 14a P5 one unreadable
+ * payslip no longer makes the whole file unreadable: it is skipped and counted, and the rest restores
+ * (the officer is shown the count); only a file whose every row is unreadable is refused, untouched.
  */
 class PayslipBackupServiceReplaceTest {
     private lateinit var dao: FakePayslipDao
@@ -60,16 +64,16 @@ class PayslipBackupServiceReplaceTest {
         }
 
     @Test
-    fun aBackupWithAnUnreadablePayslipChangesNothingOnTheDevice() =
+    fun aBackupWhoseEveryPayslipIsUnreadableChangesNothingOnTheDevice() =
         runTest {
             dao.seedDeviceMonth("01/2023")
             dao.insertSettings(AppSettingsEntity(appTheme = "dark", isPremiumEnabled = true))
             val corrupt = PayslipBackupRow("09/2014", 2014, 9, "September", ciphertext = "deadbeef")
-            val backup = backupBytes(PortableBackup(2, listOf(goodRow("08/2024"), corrupt), emptyList(), null))
+            val backup = backupBytes(PortableBackup(2, listOf(corrupt), listOf(PdfBackupRow("09/2014", byteArrayOf(9))), null))
 
             val result = service.restore(backup, BACKUP_PASSWORD, RestoreMode.REPLACE)
 
-            assertTrue(result.isFailure)
+            assertIs<BackupDamagedException>(result.exceptionOrNull(), "a file with nothing readable is damaged, not a restore of nothing")
             assertEquals(listOf("01/2023"), dao.getAllPayslips().first().map { it.dateStr })
             assertEquals(listOf("01/2023"), dao.getAllPdfs().map { it.dateStr })
             assertEquals(1, dao.getAllLedgerRecords().first().size)
@@ -83,14 +87,18 @@ class PayslipBackupServiceReplaceTest {
         }
 
     @Test
-    fun aBackupWithAnUnreadablePayslipAddsNothingInMergeMode() =
+    fun anUnreadablePayslipInMergeModeIsSkippedAndCountedWhileTheReadableOneIsAdded() =
         runTest {
+            dao.seedDeviceMonth("01/2023")
             val corrupt = PayslipBackupRow("09/2014", 2014, 9, "September", ciphertext = "deadbeef")
             val backup = backupBytes(PortableBackup(2, listOf(goodRow("08/2024"), corrupt), emptyList(), null))
 
-            val result = service.restore(backup, BACKUP_PASSWORD, RestoreMode.MERGE)
+            // Wired as production is (Part2WiringTest): a MERGE re-runs Part II, and the payslip count must survive that.
+            val withPart2 = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2))
+            val result = withPart2.restore(backup, BACKUP_PASSWORD, RestoreMode.MERGE)
 
-            assertTrue(result.isFailure)
-            assertFalse(dao.getAllPayslips().first().any { it.dateStr == "08/2024" }, "good rows must not be half-applied")
+            assertTrue(result.isSuccess, "one unreadable payslip must not fail the restore")
+            assertEquals(SkippedRows(payslips = 1), result.getOrThrow().skipped, "the officer is told one payslip did not come back")
+            assertEquals(listOf("01/2023", "08/2024"), dao.getAllPayslips().first().map { it.dateStr }.sorted())
         }
 }

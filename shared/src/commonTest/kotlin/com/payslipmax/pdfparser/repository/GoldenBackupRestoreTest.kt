@@ -58,7 +58,7 @@ class GoldenBackupRestoreTest {
                         .restore(GoldenBackupCatalog.bytes(golden.file), golden.password, RestoreMode.REPLACE)
                         .getOrElse { fail("${golden.file} (${golden.origin}) no longer restores: ${it::class.simpleName}") }
                 assertEquals(golden.expected(), dao.restored(), golden.file)
-                assertEquals(0, report.skipped, "${golden.file} skipped rows")
+                assertEquals(SkippedRows.NONE, report.skipped, "${golden.file} skipped rows")
             }
         }
 

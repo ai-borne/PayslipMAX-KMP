@@ -7,6 +7,7 @@ import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.repository.goodRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -52,7 +53,7 @@ class Part2LegacyBackupTest {
 
             val report = service.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
 
-            assertEquals(3, report.skipped, "the three drafts are the only thing left out")
+            assertEquals(SkippedRows(part2Entries = 3), report.skipped, "the three drafts are the only thing left out, counted as the entries that replaced them")
             assertEquals(listOf("o1"), device.part2.allOrders().map { it.id })
             assertEquals(listOf("p1"), device.part2.allPageRefs().map { it.id })
             assertEquals(emptyList(), device.part2.allEntries().map { it.id }, "no draft is turned into an entry")
@@ -63,7 +64,7 @@ class Part2LegacyBackupTest {
         runTest {
             val report = service.restore(frozenBranchArchive(drafts = 2, pages = emptyList()), BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
 
-            assertEquals(2, report.skipped)
+            assertEquals(SkippedRows(part2Entries = 2), report.skipped)
             assertEquals(listOf("o1"), device.part2.allOrders().map { it.id })
         }
 }

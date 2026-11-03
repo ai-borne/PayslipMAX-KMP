@@ -8,6 +8,7 @@ import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.repository.pageArchiveMetaOfV6
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -98,7 +99,7 @@ class BackupStreamingTest {
 
             val report = targetService.restore(file, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
 
-            assertEquals(0, report.skipped)
+            assertEquals(SkippedRows.NONE, report.skipped)
             assertEquals(pages, target.part2.allPageRefs().size)
             repeat(pages) { assertContentEquals(SyntheticBank.jpeg(pageBytes, it + 1), target.part2.page("p$it")!!.openPage(deviceKey)) }
             assertEquals("e1", target.part2.allEntries().single().id)

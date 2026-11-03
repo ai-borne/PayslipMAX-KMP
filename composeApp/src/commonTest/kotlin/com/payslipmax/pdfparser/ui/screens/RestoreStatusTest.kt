@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens
 import com.payslipmax.pdfparser.crypto.DecryptionFailedException
 import com.payslipmax.pdfparser.repository.BackupDamagedException
 import com.payslipmax.pdfparser.repository.RestoreReport
+import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.repository.UnsupportedBackupVersionException
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.BackupRestoreStrings
@@ -20,14 +21,15 @@ import kotlin.test.assertTrue
 class RestoreStatusTest {
     @Test
     fun aCleanRestoreReadsAsItAlwaysDid() {
-        val status = restoreStatus(Result.success(RestoreReport(0)))
+        val status = restoreStatus(Result.success(RestoreReport(SkippedRows.NONE)))
         assertEquals(AppStrings.statusRestoreComplete, status.message)
         assertTrue(status.isSuccess)
     }
 
     @Test
     fun aRestoreThatLeftRowsOutSaysHowManyAndIsNotShownAsAPlainSuccess() {
-        val status = restoreStatus(Result.success(RestoreReport(3)))
+        // One line counts every kind: a payslip left out is as lost as a page.
+        val status = restoreStatus(Result.success(RestoreReport(SkippedRows(payslips = 1, part2Pages = 2))))
         assertEquals("${AppStrings.statusRestoreComplete} ${OrdersBankStrings.restoreSkipped(3)}", status.message)
         assertFalse(status.isSuccess, "lost rows must be noticed, so the line takes the warning colour")
         assertEquals("1 item could not be restored.", OrdersBankStrings.restoreSkipped(1))

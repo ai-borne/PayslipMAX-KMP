@@ -126,3 +126,27 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
   stays). Pages whose order does not travel are no longer exported (they could only be skipped). RED first: 6 prepare/commit tests (golden
   previews = manifest, nothing written; commit = preview; pages checked once and re-sealed lazily; `exportedAt`; MERGE; progress), 4 verify
   tests, 3 file read-back tests, a ViewModel no-share test. 11/11 mutations caught. Pending: 14a P10 "From P4".
+- 2026-11-03 — **P5 done**: skip, count, show (F6).
+  - Skip and count: a payslip, correction or note that will not open is skipped and counted, never fatal (the Part II rule). Only
+    opening a row is forgiven (`openedOrNull`); a failure to seal for this device stays fatal.
+  - `SkippedRows` (`RestorePreview.kt`) is the one per-kind count: payslips, corrections, notes, Bank entries, orders and pages, plus
+    a `total`. It is carried by `RestorePreview.skipped`, `RestoreReport.skipped` and `Part2Restore.skipped`. Part II's one number is
+    split by kind, and frozen-branch drafts count as entries, the kind that replaced them.
+  - A file whose every row that opens one at a time fails (at least one) is `BackupDamagedException`, with nothing written
+    (`requireARowThatOpened`).
+  - Verify-after-write requires `SkippedRows.NONE`.
+  - D16: `FieldSourceMapSerializer` drops a `FieldSource` value this app does not know, on restore and on the device. Writes are
+    byte-identical, and `FieldSourceWireTest` pinned them before `Model.kt` was touched.
+  - Decisions taken, owner to confirm: a skipped payslip's PDF and corrections still restore; the "every row" definition; drafts count
+    as entries.
+  - UI: `restoreStatus` shows the total only (P8 owns the per-kind copy).
+  - Rewritten, not deleted, because they pinned "one bad row fails the restore": `PayslipBackupServiceReplaceTest` (2 tests) and
+    `PayslipBackupServiceV3Test` (1 test).
+  - RED first: 18 new tests (characterization 4, tolerance 3, skip/count 6, Part II per kind 4, verify per kind 1), the 3 rewritten
+    ones, and 12 existing Part II assertions made per kind. 16/16 mutations caught; the first run missed one, which a production-wired
+    MERGE test then closed.
+  - Gate green: shared 1748 → 1766 (release 1766, 1 pre-existing skip), iOS shared 1600 → 1618, composeApp 1441/1415/857.
+  - R8 triggered and green with no new rule. 9 goldens and the owner's 4 local backups restore with 0 skips of every kind.
+  - Pixel: debug build installed over the existing one; launches with no FATAL.
+  - Security review: no findings.
+  - Pending: 14a P10 "From P5".

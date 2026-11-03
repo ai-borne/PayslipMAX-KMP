@@ -6,6 +6,7 @@ import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.repository.UnsupportedBackupVersionException
 import com.payslipmax.pdfparser.repository.backupBytes
 import com.payslipmax.pdfparser.repository.goodRow
@@ -172,7 +173,7 @@ class Part2BackupTest {
                 assertTrue(ids.none { it.startsWith("bad") || it == "moved" }, "no damaged, wrong-key or moved row is restored ($mode)")
             }
             val result = Part2Backup(FakePayslipDao().part2).restore(decodeArchive(bytes), bytes, PasswordKey(BACKUP_PASSWORD), RestoreMode.REPLACE)
-            assertEquals(4, result.skipped)
+            assertEquals(SkippedRows(part2Entries = 4), result.skipped)
             assertEquals(listOf("good"), result.entries.map { it.id })
         }
 
@@ -186,7 +187,7 @@ class Part2BackupTest {
 
             val report = targetService.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
 
-            assertEquals(4, report.skipped, "two unreadable entries, one unreadable order and one page whose order is nowhere")
+            assertEquals(SkippedRows(part2Entries = 2, part2Orders = 1, part2Pages = 1), report.skipped, "two unreadable entries, one unreadable order and one page whose order is nowhere")
         }
 
     @Test
@@ -194,7 +195,7 @@ class Part2BackupTest {
         runTest {
             val bytes = archive(entries = listOf(entryRow(entry("good", 1))), orders = listOf(orderRow(SyntheticBank.order("o1"))))
 
-            assertEquals(0, targetService.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow().skipped)
+            assertEquals(SkippedRows.NONE, targetService.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow().skipped)
         }
 
     @Test
@@ -202,7 +203,7 @@ class Part2BackupTest {
         runTest {
             val v4 = backupBytes(PortableBackup(4, listOf(goodRow("08/2024")), emptyList(), null))
 
-            assertEquals(0, targetService.restore(v4, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow().skipped)
+            assertEquals(SkippedRows.NONE, targetService.restore(v4, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow().skipped)
         }
 
     @Test

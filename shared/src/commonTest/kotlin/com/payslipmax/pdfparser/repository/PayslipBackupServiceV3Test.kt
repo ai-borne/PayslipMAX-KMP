@@ -211,20 +211,26 @@ class PayslipBackupServiceV3Test {
             assertEquals(2.0, target.getCorrectionByDate("02/2023")!!.toCorrectionList().single().amount)
         }
 
+    /**
+     * WHY (rewritten in 14a P5): this used to pin "one unreadable correction fails the whole restore", which cost the officer every payslip
+     * and letter in the file for one correction. A correction that will not open is now skipped and counted; everything else restores.
+     */
     @Test
-    fun anUnreadableCorrectionInTheBackupChangesNothingOnTheDevice() =
+    fun anUnreadableCorrectionInTheBackupIsSkippedAndCountedAndEverythingElseRestores() =
         runTest {
             target.seedDeviceMonth("01/2023")
             val corrupt = CorrectionBackupRow("03/2024", ciphertext = "deadbeef")
+            val readable = listOf(correction).toCorrectionEntity("08/2024", BACKUP_PASSWORD).toBackupRow()
             val backup =
-                backupBytes(PortableBackup(3, listOf(goodRow("08/2024")), emptyList(), null, listOf(editedLetter.toBackupRow()), emptyList(), listOf(corrupt)))
+                backupBytes(PortableBackup(3, listOf(goodRow("08/2024")), emptyList(), null, listOf(editedLetter.toBackupRow()), emptyList(), listOf(corrupt, readable)))
 
             val result = targetService.restore(backup, BACKUP_PASSWORD, RestoreMode.REPLACE)
 
-            assertTrue(result.isFailure)
-            assertEquals(listOf("01/2023"), target.getAllPayslips().first().map { it.dateStr })
-            assertEquals(listOf("d-01/2023"), target.getAllRepresentationDrafts().first().map { it.id })
-            assertEquals(1, target.getAllCorrections().first().size)
+            assertTrue(result.isSuccess, "one unreadable correction must not fail the restore")
+            assertEquals(SkippedRows(corrections = 1), result.getOrThrow().skipped)
+            assertEquals(listOf("08/2024"), target.getAllPayslips().first().map { it.dateStr })
+            assertEquals(listOf("d-edited"), target.getAllRepresentationDrafts().first().map { it.id })
+            assertEquals(listOf("08/2024"), target.getAllCorrections().first().map { it.dateStr })
         }
 
     @Test

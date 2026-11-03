@@ -14,6 +14,11 @@ import com.payslipmax.pdfparser.guide.domain.GuideNote
  * same card (a tie goes to the backup); notes are included for everyone, because the Premium gate on backup sits in the
  * Settings screen, not in the data layer. Nothing here logs, and no exception carries a note: the text is private.
  */
+internal class NoteRestore(
+    val rows: List<GuideNoteEntity>,
+    val skipped: Int,
+)
+
 internal object GuideNoteBackup {
     /** Device rows sealed with the backup's [backupKey]; a row this device cannot read is left out, like an unreadable payslip. */
     fun forExport(
@@ -23,8 +28,8 @@ internal object GuideNoteBackup {
     ): List<GuideNoteEntity> = readable(rows, PasswordKey(deviceKey)).map { it.toEntity(backupKey) }
 
     /**
-     * The rows to write for a restore, already re-encrypted under [deviceKey]. [existing] is what the device holds now and
-     * is consulted only for MERGE; REPLACE writes every readable backup note.
+     * The rows to write for a restore, already re-encrypted under [deviceKey], and how many backup notes could not be read (14a P5: counted,
+     * never fatal). [existing] is what the device holds now and is consulted only for MERGE; REPLACE writes every readable backup note.
      */
     fun forRestore(
         backupRows: List<GuideNoteEntity>,
@@ -32,12 +37,14 @@ internal object GuideNoteBackup {
         deviceKey: String,
         existing: List<GuideNoteEntity>,
         mode: RestoreMode,
-    ): List<GuideNoteEntity> {
+    ): NoteRestore {
         val incoming = readable(backupRows, backupKey)
         val onDevice = if (mode == RestoreMode.MERGE) readable(existing, PasswordKey(deviceKey)).associateBy { it.cardId } else emptyMap()
-        return incoming
-            .filter { backupNote -> onDevice[backupNote.cardId]?.let { it.updatedAt <= backupNote.updatedAt } ?: true }
-            .map { it.toEntity(deviceKey) }
+        val rows =
+            incoming
+                .filter { backupNote -> onDevice[backupNote.cardId]?.let { it.updatedAt <= backupNote.updatedAt } ?: true }
+                .map { it.toEntity(deviceKey) }
+        return NoteRestore(rows, skipped = backupRows.size - incoming.size)
     }
 
     private fun readable(

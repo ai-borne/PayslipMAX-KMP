@@ -16,6 +16,7 @@ import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.repository.seedDeviceMonth
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -59,7 +60,7 @@ class BackupV6RoundTripTest {
 
             val report = PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = part2).restore(file, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
 
-            assertEquals(0, report.skipped)
+            assertEquals(SkippedRows.NONE, report.skipped)
             val payslips = target.getAllPayslips().first().sortedBy { it.dateStr }
             assertEquals(source.getAllPayslips().first().sortedBy { it.dateStr }.map { it.toDomain() }, payslips.map { it.toDomain() })
             for (row in payslips) assertTrue(CryptoHelper.decrypt(row.ciphertext.hexToByteArray(), deviceKey).isSuccess, "device rows stay per-row")
