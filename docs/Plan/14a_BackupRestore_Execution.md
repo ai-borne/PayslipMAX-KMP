@@ -205,3 +205,22 @@ From P1 (2026-11-03):
    lock/PIN/telemetry keys in it. It then writes its defaults on that old device: lock off, no PIN, telemetry on. Shipped code can't be changed.
    Format v6 (P3) and its "update the app" answer reach older readers only through new releases, so release notes for the build that ships
    this should say: "restore backups on the latest version".
+
+From P2 (2026-11-03):
+1. **A `FieldSource` value added by a later version still fails a payslip.** `coerceInputValues` reaches enum fields, not enum values inside
+   a map, and `ParsedPayslip.fieldSource` is a `Map<String, FieldSource>`. A later app that adds a value (say `OCR`) makes that payslip
+   unreadable here: today the whole restore fails; after P5 that payslip is skipped and counted. Owner decision in P2: recorded here, not
+   fixed in P2. Options: a tolerant map serializer that drops unknown values (new code + tests), or a rule that a new `FieldSource` value
+   ships only with a `CURRENT_VERSION` bump. **Owner to decide; nearest phase P5.**
+2. **A payslip or correction decode error can quote its input.** kotlinx serialization puts part of the JSON (payslip values) in the
+   exception message, and that exception reaches `Result.failure` on restore. This was already true before P2 and is unchanged.
+   Notes and Part II rows already swallow it. **Owner: P6** (F7: one exception → `BackupFailure` mapper with fixed codes).
+3. **Package direction.** 14a puts `BackupJson` in `repository/backup/`, so `database/` (payslip, correction and note entities) and
+   `part2/data/` now import it, while `repository/backup/BackupRowMappers.kt` imports `database/`. It's one module, so it builds and runs,
+   but the two packages now depend on each other. **Owner to confirm**: keep it as 14a says, or move `BackupJson` to a neutral package
+   (a one-file move with no behaviour change).
+4. **Owner to confirm a test reading.** Plan 14 says "each DTO decodes from its oldest golden shape plus an unknown key"; 14a, which
+   supersedes it, says "with an unknown key added". Implemented as 14a: every backup row, the document and every payload decode today's
+   shape with an unknown key (`BackupJsonToleranceTest`, `Part2PayloadToleranceTest`). The oldest shapes are covered by the 7 goldens,
+   which still restore with exact counts. Neither a golden with an unknown key nor an old shape with one is tested, since goldens are
+   never regenerated.

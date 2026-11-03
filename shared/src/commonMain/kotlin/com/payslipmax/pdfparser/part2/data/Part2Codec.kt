@@ -4,20 +4,16 @@ import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.part2.domain.BankEntry
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
-import kotlinx.serialization.decodeFromString
+import com.payslipmax.pdfparser.repository.backup.BackupJson
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 /**
  * Turns entries, orders and pages into encrypted rows and back, the way `GuideNoteEntity` does for notes: one AES-GCM ciphertext per
  * row, the id repeated inside it, and every failure becoming the same fixed exception without a cause (serialization errors quote the
- * input, and the input is private). Nothing here logs.
+ * input, and the input is private). Nothing here logs. Rows are read with `BackupJson`, the one tolerant reader; this is the writer only.
  */
-private val payloadJson =
-    Json {
-        ignoreUnknownKeys = true
-        encodeDefaults = true
-    }
+private val payloadWriter = Json { encodeDefaults = true }
 
 /** Encrypts [json] under [key], or [Part2TooLargeException] when it passes `Part2Limits.PAYLOAD_MAX_BYTES`. The plaintext bytes are wiped. */
 internal fun sealPayload(
@@ -48,13 +44,13 @@ private inline fun <reified P> decodePayload(
 ): P {
     val plain = CryptoHelper.decrypt(sealed, key).getOrThrow()
     try {
-        return payloadJson.decodeFromString<P>(plain.decodeToString())
+        return BackupJson.decode<P>(plain.decodeToString())
     } finally {
         plain.fill(0)
     }
 }
 
-internal fun BankEntry.toEntity(key: String) = Part2EntryEntity(id, sealPayload(payloadJson.encodeToString(toPayload()), key))
+internal fun BankEntry.toEntity(key: String) = Part2EntryEntity(id, sealPayload(payloadWriter.encodeToString(toPayload()), key))
 
 /** The entry this row holds, or [Part2UnreadableException]. The bounds apply to stored data too, so a restored file cannot exceed them. */
 internal fun Part2EntryEntity.toEntry(key: String): BankEntry =
@@ -63,7 +59,7 @@ internal fun Part2EntryEntity.toEntry(key: String): BankEntry =
         if (payload.v != PAYLOAD_VERSION || payload.id != id) null else payload.toEntry().takeIf { Part2Bounds.check(it) == null }
     }
 
-internal fun VaultOrder.toEntity(key: String) = Part2OrderEntity(id, sealPayload(payloadJson.encodeToString(toPayload()), key))
+internal fun VaultOrder.toEntity(key: String) = Part2OrderEntity(id, sealPayload(payloadWriter.encodeToString(toPayload()), key))
 
 internal fun Part2OrderEntity.toOrder(key: String): VaultOrder =
     unreadable {

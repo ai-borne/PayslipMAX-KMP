@@ -30,15 +30,27 @@ internal suspend fun exportedDocument(
 ): JsonObject = decryptedDocument(PayslipBackupService(dao, Dispatchers.Unconfined).export(password).getOrThrow(), password)
 
 /** Every class reachable from [root] in the wire format, by serial name (nullability dropped), each with its decoded keys. */
+internal fun wireClasses(root: SerialDescriptor): Map<String, Set<String>> = classesIn(root) { it.keys { true } }
+
+/** Every class reachable from [root], each with the keys a reader cannot do without (those with no default value). */
 @OptIn(ExperimentalSerializationApi::class)
-internal fun wireClasses(root: SerialDescriptor): Map<String, Set<String>> {
-    val found = linkedMapOf<String, Set<String>>()
+internal fun requiredKeys(root: SerialDescriptor): Map<String, Set<String>> = classesIn(root) { d -> d.keys { !d.isElementOptional(it) } }
+
+private fun SerialDescriptor.keys(keep: (Int) -> Boolean): Set<String> = (0 until elementsCount).filter(keep).map { getElementName(it) }.toSet()
+
+/** Walks the serializer descriptors from [root] (no reflection) and describes every class it reaches once, by serial name. */
+@OptIn(ExperimentalSerializationApi::class)
+private fun <T> classesIn(
+    root: SerialDescriptor,
+    describe: (SerialDescriptor) -> T,
+): Map<String, T> {
+    val found = linkedMapOf<String, T>()
 
     fun visit(descriptor: SerialDescriptor) {
         val name = descriptor.serialName.removeSuffix("?")
         if (descriptor.kind == StructureKind.CLASS) {
             if (name in found) return
-            found[name] = (0 until descriptor.elementsCount).map { descriptor.getElementName(it) }.toSet()
+            found[name] = describe(descriptor)
         }
         (0 until descriptor.elementsCount).forEach { visit(descriptor.getElementDescriptor(it)) }
     }

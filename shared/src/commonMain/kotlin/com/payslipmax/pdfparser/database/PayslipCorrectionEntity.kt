@@ -8,7 +8,7 @@ import com.payslipmax.pdfparser.domain.CorrectionType
 import com.payslipmax.pdfparser.domain.EntryCategory
 import com.payslipmax.pdfparser.domain.SingleCorrection
 import com.payslipmax.pdfparser.parser.PayslipPatternConfig
-import kotlinx.serialization.decodeFromString
+import com.payslipmax.pdfparser.repository.backup.BackupJson
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -24,8 +24,6 @@ data class PayslipCorrectionEntity(
     // AES-256 encrypted JSON List<SingleCorrection> (Hex-encoded)
     val ciphertext: String,
 )
-
-private val jsonDecoder = Json { ignoreUnknownKeys = true }
 
 fun List<SingleCorrection>.toCorrectionEntity(
     dateStr: String,
@@ -46,9 +44,9 @@ fun PayslipCorrectionEntity.toCorrectionList(password: String = CryptoHelper.get
         }
     val jsonStr = decryptedBytes.decodeToString()
     return try {
-        jsonDecoder.decodeFromString<List<SingleCorrection>>(jsonStr)
+        BackupJson.decode<List<SingleCorrection>>(jsonStr)
     } catch (e: Exception) {
-        val legacyMap = jsonDecoder.decodeFromString<Map<String, Double>>(jsonStr)
+        val legacyMap = BackupJson.decode<Map<String, Double>>(jsonStr)
         legacyMap.map { (key, value) ->
             val isEarning = isEarningsField(key)
             SingleCorrection(

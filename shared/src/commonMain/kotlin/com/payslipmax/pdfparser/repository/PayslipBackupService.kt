@@ -9,6 +9,7 @@ import com.payslipmax.pdfparser.part2.data.LastBackupStorage
 import com.payslipmax.pdfparser.part2.data.PageArchive
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.rating.currentTimeMillis
+import com.payslipmax.pdfparser.repository.backup.BackupJson
 import com.payslipmax.pdfparser.repository.backup.CorrectionBackupRow
 import com.payslipmax.pdfparser.repository.backup.SettingsBackup
 import com.payslipmax.pdfparser.repository.backup.applyTo
@@ -146,7 +147,7 @@ class PayslipBackupService(
                 }
 
                 val jsonStr = decryptResult.getOrThrow().decodeToString()
-                val backup = lenientJson.decodeFromString(PortableBackup.serializer(), jsonStr)
+                val backup = BackupJson.decode(PortableBackup.serializer(), jsonStr)
                 if (backup.version > PortableBackup.CURRENT_VERSION) {
                     return@withContext Result.failure(UnsupportedBackupVersionException(backup.version))
                 }
@@ -239,6 +240,3 @@ class PayslipBackupService(
 
 /** The most a backup without scanned pages may be: payslips and their PDFs, a few megabytes in real use. */
 private const val BLOB_MAX_BYTES = 128L * 1024 * 1024
-
-/** Tolerates fields added by a later app version, so an older build still restores what it understands. */
-private val lenientJson = Json { ignoreUnknownKeys = true }

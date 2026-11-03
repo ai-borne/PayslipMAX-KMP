@@ -95,3 +95,12 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
   D5 at the type level: `SettingsBackup` has no Premium/lock/PIN/telemetry; REPLACE lays the backup's preferences over the device's own row
   (F8 closed). `Part2RowBackup`/`Part2LegacyDraft` keys pinned too. R8 gate walks `repository/backup` (7 models kept). Gate green: shared
   1703 → 1708, iOS shared 1553 → 1558, composeApp 1440/856; 7/7 mutations caught; local real backups restore; security review: no findings.
+- 2026-11-03 — **P2 done**: `BackupJson` (`repository/backup/`, `ignoreUnknownKeys` + `coerceInputValues` + `explicitNulls = false`) is the
+  one reader for the document, payslip payloads (backup and device `toDomain`), corrections, notes, Part II rows and the page trailer;
+  `lenientJson`, `jsonDecoder` and the notes `payloadJson` are deleted, and Part II keeps only its `encodeDefaults` writer. Owner decisions:
+  decode-only (writers unchanged, so 1.5.0's strict reader still reads new files: `BackupWriterCompatibilityTest`); no defaults added,
+  today's required fields frozen by `BackupDefaultsGuardTest` (descriptor walk, `isElementOptional`); device write keeps plain `Json`;
+  trailer in, `FieldSource` map values to P10. RED first: 7 tolerance tests (payslip unknown key, device read, null lists, unknown enum,
+  missing nullables, Part II `data: null`, trailer key). Gate green: shared 1708 → 1721, iOS shared 1558 → 1571, composeApp 1440/856;
+  8/8 mutations caught; 7 goldens and local real backups restore; Pixel launch clean; R8 not triggered; security review: no findings.
+  Pending: 14a P10 "From P2".

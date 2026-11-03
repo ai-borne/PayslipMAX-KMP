@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.guide.domain.GuideNote
+import com.payslipmax.pdfparser.repository.backup.BackupJson
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -31,14 +31,12 @@ class GuideNoteUnreadableException : Exception("A Guide note could not be read."
 // The card id is repeated inside the ciphertext: GCM authenticates the ciphertext but not the primary key beside it, so
 // without it a row could be moved to another card's key and still decrypt.
 @Serializable
-private class GuideNotePayload(
+internal class GuideNotePayload(
     val cardId: String,
     val text: String,
     val cardRev: String,
     val updatedAt: Long,
 )
-
-private val payloadJson = Json { ignoreUnknownKeys = true }
 
 fun GuideNote.toEntity(password: String = CryptoHelper.getDatabaseSecretKey()): GuideNoteEntity {
     val json = Json.encodeToString(GuideNotePayload(cardId, text, cardRev, updatedAt))
@@ -52,7 +50,7 @@ fun GuideNoteEntity.toNote(password: String = CryptoHelper.getDatabaseSecretKey(
     val note =
         try {
             val bytes = CryptoHelper.decrypt(ciphertext.hexToByteArray(), password).getOrThrow()
-            val payload = payloadJson.decodeFromString<GuideNotePayload>(bytes.decodeToString())
+            val payload = BackupJson.decode<GuideNotePayload>(bytes.decodeToString())
             if (payload.cardId != cardId) null else GuideNote.of(payload.cardId, payload.text, payload.cardRev, payload.updatedAt)
         } catch (e: Exception) {
             null

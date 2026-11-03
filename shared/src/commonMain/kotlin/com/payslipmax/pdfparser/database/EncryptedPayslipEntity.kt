@@ -6,6 +6,7 @@ import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.logging.Logger
+import com.payslipmax.pdfparser.repository.backup.BackupJson
 import kotlinx.serialization.json.Json
 
 @Entity(tableName = "encrypted_payslips")
@@ -77,5 +78,5 @@ fun EncryptedPayslipEntity.toDomain(password: String = CryptoHelper.getDatabaseS
             }
         }
     val jsonString = decryptedBytes.decodeToString()
-    return Json.decodeFromString(ParsedPayslip.serializer(), jsonString)
+    return BackupJson.decode(ParsedPayslip.serializer(), jsonString)
 }

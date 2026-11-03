@@ -3,8 +3,7 @@ package com.payslipmax.pdfparser.part2.data
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.BackupDamagedException
 import com.payslipmax.pdfparser.repository.BackupSource
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import com.payslipmax.pdfparser.repository.backup.BackupJson
 
 /** The pages a restore will write ([pages] is lazy) and how many records it left out. */
 internal class PageRestore(
@@ -101,7 +100,7 @@ private fun declaredCount(
     try {
         if (layout.trailerLength > TRAILER_MAX_BYTES) throw BackupDamagedException()
         val plain = com.payslipmax.pdfparser.crypto.CryptoHelper.decrypt(source.read(layout.trailerStart, layout.trailerLength), password).getOrThrow()
-        Json.decodeFromString<PageTrailer>(plain.decodeToString()).pages
+        BackupJson.decode<PageTrailer>(plain.decodeToString()).pages
     } catch (e: Exception) {
         throw BackupDamagedException()
     }
