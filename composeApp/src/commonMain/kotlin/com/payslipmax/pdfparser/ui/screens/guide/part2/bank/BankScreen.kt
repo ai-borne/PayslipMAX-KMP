@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.part2.domain.BankFilter
+import com.payslipmax.pdfparser.part2.domain.BankRow
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListPadding
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.OrdersLens
@@ -32,6 +33,8 @@ internal class BankActions(
     val onAdd: () -> Unit,
     val onUnlock: () -> Unit,
     val onOpenEntry: (String) -> Unit,
+    val onOpenOrder: (String) -> Unit,
+    val onAttachTo: (String) -> Unit,
     val onAttach: () -> Unit,
     val printing: Boolean,
     val onPrint: () -> Unit,
@@ -100,10 +103,21 @@ private fun LazyListScope.bankBody(
         item(key = "year-${year.year}") { Text(OrdersBankStrings.yearHeading(year.year), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold) }
         items(year.rows.size, key = { year.rows[it].entry.id }) { i ->
             val row = year.rows[i]
-            BankRowView(row, nameOf(row.entry.code)) { actions.onOpenEntry(row.entry.id) }
+            BankRowView(row, nameOf(row.entry.code), onClick = { actions.onOpenEntry(row.entry.id) }, onStatus = statusAction(row, actions))
         }
     }
 }
+
+/** The status line's own tap, from [BankStatusTap]; null leaves the tap to the card. */
+private fun statusAction(
+    row: BankRow,
+    actions: BankActions,
+): StatusAction? =
+    when (val tap = BankStatusTap.of(row, actions.canAdd)) {
+        is BankStatusTap.OpenOrder -> StatusAction(OrdersBankStrings.openOrderAction) { actions.onOpenOrder(tap.orderId) }
+        is BankStatusTap.AttachTo -> StatusAction(OrdersBankStrings.attachOrderAction) { actions.onAttachTo(tap.entryId) }
+        null -> null
+    }
 
 @Composable
 private fun EmptyBank() {

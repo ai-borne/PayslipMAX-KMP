@@ -107,11 +107,12 @@ internal fun GuidePart2Level(
     }
     val onBack: () -> Unit = { navState.pop() }
     val onOpenCode: (String) -> Unit = { navState.push(Part2Destination.Code(it)) }
+    val onPickCasualty: (String) -> Unit = { openCasualty(navState, host, it) }
     val bank = host.bank
     when (destination) {
         Part2Destination.Hub -> Part2HubLevel(navState, host, onBack)
-        Part2Destination.Home -> Part2HomeRoute(navState, model, listState)
-        is Part2Destination.Ribbon -> model.ribbon(destination.ribbonId)?.let { Part2RibbonScreen(it, onBack, onOpenCode, listState) } ?: GuideLoading()
+        Part2Destination.Home -> Part2HomeRoute(navState, model, host.access, listState, onPickCasualty)
+        is Part2Destination.Ribbon -> model.ribbon(destination.ribbonId)?.let { Part2RibbonScreen(it, onBack, onPickCasualty, listState) } ?: GuideLoading()
         is Part2Destination.Code -> model.code(destination.code)?.let { Part2CodeScreen(it, onBack, onOpenCode, { addToBank(navState, host, destination.code) }, listState) } ?: GuideLoading()
         Part2Destination.Bank -> if (bank == null) GuideLoading() else GuideBankLevel(navState, host, bank, listState)
         is Part2Destination.Entry -> if (bank == null) GuideLoading() else GuideEntryLevel(navState, bank, destination.entryId, host.access)
@@ -142,6 +143,19 @@ private fun Part2HubLevel(
     Part2HubScreen(onBack, { host.open(navState) }, { host.openBank(navState) }, status, hero)
 }
 
+/**
+ * A tap on a casualty in a search result or a ribbon. Opened from "Add a casualty" on the attach form, Learn is a picker for that order,
+ * so the tap goes straight to the Add form (the form names the casualty; the casualty page stays one Back away from everywhere else).
+ * An officer who may not add, or Learn opened any other way, still gets the casualty page.
+ */
+private fun openCasualty(
+    navState: GuideNavState,
+    host: Part2Host,
+    code: String,
+) {
+    if (navState.startedFromAttach && host.access.canAdd) addToBank(navState, host, code) else navState.push(Part2Destination.Code(code))
+}
+
 /** The casualty page's Add: a new entry for that code when the officer may add, the upgrade offer when not. */
 private fun addToBank(
     navState: GuideNavState,
@@ -156,7 +170,9 @@ private fun addToBank(
 private fun Part2HomeRoute(
     navState: GuideNavState,
     model: Part2LookupViewModel,
+    access: BankAccess,
     listState: LazyListState,
+    onOpenCode: (String) -> Unit,
 ) {
     val query by model.query.collectAsState()
     val ribbons = remember(model) { model.ribbons() }
@@ -167,8 +183,9 @@ private fun Part2HomeRoute(
         result = result,
         onQueryChange = model::onQueryChange,
         onOpenRibbon = { navState.push(Part2Destination.Ribbon(it)) },
-        onOpenCode = { navState.push(Part2Destination.Code(it)) },
+        onOpenCode = onOpenCode,
         onBack = { navState.pop() },
         listState = listState,
+        picking = navState.startedFromAttach && access.canAdd,
     )
 }

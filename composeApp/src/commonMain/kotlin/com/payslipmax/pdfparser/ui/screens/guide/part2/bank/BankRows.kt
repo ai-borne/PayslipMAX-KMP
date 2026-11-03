@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens.guide.part2.bank
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -8,9 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.part2.domain.BankFilter
@@ -50,12 +53,16 @@ internal fun BankChips(
     }
 }
 
-/** One entry in the list: the HRMS code, the manual's name, From (and To), the status label and, while waiting, the age. */
+/**
+ * One entry in the list: the HRMS code, the manual's name, From (and To), the status label and, while waiting, the age. The card opens
+ * the entry; the status line, when [onStatus] is given, does its order job instead (see [BankStatusTap]).
+ */
 @Composable
 internal fun BankRowView(
     row: BankRow,
     name: String?,
     onClick: () -> Unit,
+    onStatus: StatusAction? = null,
 ) {
     val entry = row.entry
     GuideTileFrame(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
@@ -63,11 +70,15 @@ internal fun BankRowView(
             Text(entry.code, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
             name?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
             Text(dateRange(entry.from, entry.to), style = MaterialTheme.typography.bodyMedium)
-            Text(OrdersBankStrings.status(row.status), style = MaterialTheme.typography.labelLarge, color = statusTint(row.status), fontWeight = FontWeight.SemiBold)
+            val tap = onStatus?.let { Modifier.clickable(onClickLabel = it.label, role = Role.Button, onClick = it.onTap).minimumInteractiveComponentSize() } ?: Modifier
+            Text(OrdersBankStrings.status(row.status), modifier = tap, style = MaterialTheme.typography.labelLarge, color = statusTint(row.status), fontWeight = FontWeight.SemiBold)
             row.age?.let { Text(OrdersBankStrings.waiting(it), style = MaterialTheme.typography.labelMedium, color = statusTint(row.status)) }
         }
     }
 }
+
+/** A tap of its own on a card's status line, and what a screen reader calls it. */
+internal class StatusAction(val label: String, val onTap: () -> Unit)
 
 internal fun dateRange(
     from: CalendarDate,

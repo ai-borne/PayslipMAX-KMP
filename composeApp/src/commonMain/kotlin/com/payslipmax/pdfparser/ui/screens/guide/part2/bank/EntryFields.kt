@@ -24,6 +24,7 @@ internal fun LazyListScope.entryFields(
     editor: EntryEditViewModel,
     state: EntryEditState,
     canEdit: Boolean,
+    suggestedFrom: CalendarDate? = null,
 ) {
     val form = editor.form
     form.fields.forEach { field ->
@@ -31,7 +32,7 @@ internal fun LazyListScope.entryFields(
             when (field.position) {
                 Part2ColumnPosition.FROM -> {
                     val label = if (form.fromPrinted) OrdersBankStrings.fromLabel else OrdersBankStrings.dateLabel
-                    DateField(dateShown(label, field.caption), state.input.from, state.problems[field.position], canEdit, editor::setFrom)
+                    DateField(dateShown(label, field.caption), state.input.from, state.problems[field.position], canEdit, editor::setFrom, suggestedFrom.takeIf { editor.isNew })
                 }
                 Part2ColumnPosition.TO -> DateField(dateShown(OrdersBankStrings.toLabel(field.required), field.caption), state.input.to, state.problems[field.position], canEdit, editor::setTo)
                 else -> {
@@ -39,7 +40,7 @@ internal fun LazyListScope.entryFields(
                     val label = OrdersBankStrings.columnLabel(field.caption, field.required, form.manualPage)
                     if (EntryDataRules.isDate(field.caption)) {
                         // A box the manual prints as dd/mm/yyyy (prefix, suffix, ...): the same picker as From and To, kept as text.
-                        DateField(label, EntryDataRules.parse(state.input.data[index]), state.problems[field.position], canEdit) { editor.setDataDate(index, it) }
+                        DateField(label, EntryDataRules.parse(state.input.data[index]), state.problems[field.position], canEdit, onDate = { editor.setDataDate(index, it) })
                     } else {
                         TextField(label, state.input.data[index], state.problems[field.position], canEdit, last = false) { editor.setData(index, it) }
                     }
@@ -63,8 +64,9 @@ private fun DateField(
     problem: EntryProblem?,
     canEdit: Boolean,
     onDate: (CalendarDate?) -> Unit,
+    suggested: CalendarDate? = null,
 ) {
-    if (canEdit) PreClaimDateBox(shown, date, onDate) else Text("$shown: ${PreClaimDates.format(date)}")
+    if (canEdit) PreClaimDateBox(shown, date, onDate, suggested) else Text("$shown: ${PreClaimDates.format(date)}")
     problem?.let { Text(OrdersBankStrings.problem(it), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
 }
 

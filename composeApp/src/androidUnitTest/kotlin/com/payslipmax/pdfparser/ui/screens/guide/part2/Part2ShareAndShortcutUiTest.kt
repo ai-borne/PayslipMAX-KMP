@@ -2,8 +2,6 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2
 
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
 import com.payslipmax.pdfparser.testing.FakePageShare
@@ -48,11 +46,6 @@ class Part2ShareAndShortcutUiTest : Part2UiBase() {
             data.repository.addPage("o1", pageOne)
             data.repository.saveEntry(SyntheticBank.entry("e1", code = "FIRSTCODE", orderId = "o1"))
         }
-
-    private fun tapExact(text: String) {
-        composeRule.onNodeWithText(text).performClick()
-        settle()
-    }
 
     @Test
     fun shareOrSaveHandsTheStoredPageToTheShareSheetAndNothingIsSharedBeforeTheTap() {

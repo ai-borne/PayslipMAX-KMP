@@ -42,6 +42,12 @@ data class AttachState(
     val lowSpace: Boolean = false,
     val busy: Boolean = false,
 ) {
+    /**
+     * The From date offered when a casualty is added next on this order: that of the ticked casualty created last, because casualties on
+     * one order usually share a date. Null while none is ticked.
+     */
+    val suggestedFrom: CalendarDate? get() = choices.filter { it.id in ticked }.maxByOrNull { it.createdAt }?.from
+
     /** Counts only: what was typed is the officer's private data. */
     override fun toString(): String = "AttachState(pages=$pages, choices=${choices.size}, ticked=${ticked.size}, problems=${problems.size})"
 }

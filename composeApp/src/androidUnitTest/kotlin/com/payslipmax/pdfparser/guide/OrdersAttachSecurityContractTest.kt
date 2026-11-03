@@ -16,7 +16,7 @@ class OrdersAttachSecurityContractTest {
     private val orders = File("src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/guide/part2/orders")
     private val ui = File("src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/guide")
 
-    private val screenFiles = listOf("AttachOrderScreen.kt", "OrderScreen.kt", "OrderPages.kt", "OrdersShelfScreen.kt", "OrdersLens.kt", "VaultSizeSettings.kt")
+    private val screenFiles = listOf("AttachLeaveGuard.kt", "AttachOrderScreen.kt", "OrderScreen.kt", "OrderPages.kt", "OrdersShelfScreen.kt", "OrdersLens.kt", "VaultSizeSettings.kt")
     private val logicFiles = listOf("AttachOrderViewModel.kt", "AttachState.kt", "OrderViewModel.kt", "OrderNotices.kt", "VaultSize.kt", "LocalPageScanner.kt")
 
     private fun withoutComments(file: File): String = file.readText().replace(Regex("""/\*.*?\*/""", RegexOption.DOT_MATCHES_ALL), "").lines().joinToString("\n") { it.substringBefore("//") }

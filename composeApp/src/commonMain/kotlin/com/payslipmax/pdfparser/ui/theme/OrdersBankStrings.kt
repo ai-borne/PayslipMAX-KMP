@@ -129,6 +129,12 @@ object OrdersBankStrings {
 
     fun noticeSaved(code: String) = "$code saved"
 
+    fun noticeAddedToOrder(code: String) = "$code added and ticked on this order"
+
+    /** What a screen reader says a tap on a card's status line does. */
+    const val openOrderAction = "Open the order"
+    const val attachOrderAction = "Attach an order"
+
     fun noticeDeleted(code: String) = "$code deleted"
 
     const val noticeAttach = "Attach order"

@@ -138,6 +138,30 @@ class GuideNavState(
     }
 
     /**
+     * After a saved Add. An Add started from "Attach an order" (its "Add a casualty") returns to that form, with the Learn trail dropped,
+     * so the officer goes on with the same order; the form keeps its scan and fields and ticks the new casualty. Any other Add lands on
+     * the Bank ([landOnBank]). @return true when it returned to the attach form.
+     */
+    fun landAfterAdd(): Boolean {
+        if (!startedFromAttach) {
+            landOnBank()
+            return false
+        }
+        replaceStack(belowLearnTrail())
+        return true
+    }
+
+    /**
+     * True while the Learn levels on top were opened by "Add a casualty" on the attach form. Learn is then a picker for that one order
+     * (a tap goes straight to the Add form, the date picker starts from the order's own date); anywhere else it teaches. Read from the
+     * stack alone, so nothing new is saved with it.
+     */
+    val startedFromAttach: Boolean get() = belowLearnTrail().lastOrNull() is Part2Destination.Attach
+
+    /** The stack without the Learn trail on top (search, ribbon, casualty pages and the new entry's form). */
+    private fun belowLearnTrail(): List<GuideDestination> = stack.take(stack.indexOfLast { !it.isLearnTrail() } + 1)
+
+    /**
      * The "Orders Bank" shortcut: pops straight to the Bank level when it is on the stack (Bank, entry, attach and order levels above it
      * are dropped); without one (the entry was opened from the Learn pages) the Learn trail is dropped and a Bank level is put on top.
      */

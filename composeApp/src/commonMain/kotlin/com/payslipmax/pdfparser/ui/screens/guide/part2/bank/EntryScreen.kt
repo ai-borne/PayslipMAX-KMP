@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.components.aboveKeyboard
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2ListPadding
@@ -37,6 +38,8 @@ internal class EntryActions(
     val onAttach: (() -> Unit)? = null,
     val onViewOrder: (() -> Unit)? = null,
     val onBank: (() -> Unit)? = null,
+    /** Where the From picker opens for a new entry (the date of the order's last casualty); null opens it as before. */
+    val suggestedFrom: CalendarDate? = null,
 )
 
 /**
@@ -61,7 +64,7 @@ internal fun EntryScreen(
         ScreenBackHeader(title = title, onBack = actions.onBack, trailing = bankShortcut(actions.onBank))
         LazyColumn(modifier = Modifier.fillMaxSize().aboveKeyboard(), contentPadding = Part2ListPadding, verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
             item(key = "casualty") { CasualtyHeading(editor.form.code, actions.name) }
-            entryFields(editor, state, actions.canEdit)
+            entryFields(editor, state, actions.canEdit, actions.suggestedFrom)
             actions.message?.let { message -> item(key = "message") { Text(message, color = MaterialTheme.colorScheme.error) } }
             item(key = "buttons") { EntryButtons(actions) }
         }

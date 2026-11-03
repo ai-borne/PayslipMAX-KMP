@@ -64,6 +64,8 @@ internal fun GuideBankLevel(
             onAdd = { host.open(navState) },
             onUnlock = host.access.onUnlock,
             onOpenEntry = { navState.push(Part2Destination.Entry(it)) },
+            onOpenOrder = { navState.push(Part2Destination.Order(it)) },
+            onAttachTo = { navState.push(Part2Destination.Attach(it)) },
             onAttach = { navState.push(Part2Destination.Attach()) },
             printing = printing,
             onPrint = { bank.indexPrint.print(printer) },
@@ -123,13 +125,7 @@ private fun EntryLevelContent(
                     message = saveMessage(outcome)
                     if (outcome == SaveOutcome.SAVED) {
                         bank.markSaved(editor.id)
-                        bank.announce(BankNotice(if (editor.isNew) BankNotice.Kind.ADDED else BankNotice.Kind.SAVED, editor.form.code, editor.id))
-                        if (editor.isNew) {
-                            bank.revealEntry(editor.id)
-                            navState.landOnBank()
-                        } else {
-                            navState.pop()
-                        }
+                        bank.announce(BankNotice(landAfterSave(navState, bank, editor), editor.form.code, editor.id))
                     }
                 }
             },
@@ -142,10 +138,29 @@ private fun EntryLevelContent(
             },
             onBack = { navState.pop() },
             onBank = { navState.backToBank() },
+            suggestedFrom = bank.attach.state.value.suggestedFrom.takeIf { navState.startedFromAttach },
             onAttach = if (access.canAdd && !editor.isNew && orderId == null) ({ navState.push(Part2Destination.Attach(editor.id)) }) else null,
             onViewOrder = orderId?.let { id -> { navState.push(Part2Destination.Order(id)) } },
         )
     EntryScreen(editor, state, actions)
+}
+
+/**
+ * Where a saved form goes, and so what the notice says: an edit pops back to where it was opened; a new entry made from "Attach an
+ * order" returns to that form; any other new entry lands on the Bank with its row scrolled into view.
+ */
+private fun landAfterSave(
+    navState: GuideNavState,
+    bank: BankViewModel,
+    editor: EntryEditViewModel,
+): BankNotice.Kind {
+    if (!editor.isNew) {
+        navState.pop()
+        return BankNotice.Kind.SAVED
+    }
+    if (navState.landAfterAdd()) return BankNotice.Kind.ADDED_TO_ORDER
+    bank.revealEntry(editor.id)
+    return BankNotice.Kind.ADDED
 }
 
 private fun saveMessage(outcome: SaveOutcome): String? =

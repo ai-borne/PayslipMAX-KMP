@@ -17,7 +17,7 @@ class OrdersBankSecurityContractTest {
     private val shared = File("../shared/src/commonMain/kotlin/com/payslipmax/pdfparser/part2")
 
     private val screenFiles = listOf("BankRows.kt", "BankScreen.kt", "BankShortcut.kt", "EntryFields.kt", "EntryScreen.kt")
-    private val logicFiles = listOf("BankViewModel.kt", "EntryEditViewModel.kt", "IndexDocumentBuilder.kt", "IndexPrinting.kt", "BankScrollTarget.kt", "BankNotice.kt")
+    private val logicFiles = listOf("BankViewModel.kt", "EntryEditViewModel.kt", "IndexDocumentBuilder.kt", "IndexPrinting.kt", "BankScrollTarget.kt", "BankNotice.kt", "BankStatusTap.kt")
 
     private fun withoutComments(file: File): String = file.readText().replace(Regex("""/\*.*?\*/""", RegexOption.DOT_MATCHES_ALL), "").lines().joinToString("\n") { it.substringBefore("//") }
 

@@ -28,9 +28,14 @@ internal fun Part2HomeScreen(
     onOpenCode: (String) -> Unit,
     onBack: () -> Unit,
     listState: LazyListState,
+    picking: Boolean = false,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        ScreenBackHeader(title = LearnStrings.entryTitle, subtitle = LearnStrings.homeSubtitle, onBack = onBack)
+        ScreenBackHeader(
+            title = if (picking) LearnStrings.pickTitle else LearnStrings.entryTitle,
+            subtitle = if (picking) LearnStrings.pickSubtitle else LearnStrings.homeSubtitle,
+            onBack = onBack,
+        )
         Part2SearchField(query, onQueryChange)
         LazyColumn(
             state = listState,

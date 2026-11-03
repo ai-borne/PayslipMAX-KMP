@@ -23,6 +23,10 @@ object LearnStrings {
     const val entrySubtitle = "What each ODP-2026 order needs, in plain words"
     const val homeSubtitle = "Army officers (ODP-2026)"
 
+    /** Learn opened from "Add a casualty" on the attach form: a picker for that order, so it says what a tap does. */
+    const val pickTitle = "Add a casualty"
+    const val pickSubtitle = "Tap a casualty to add it to this order"
+
     // Search.
     const val searchPlaceholder = "Code, name or serial no."
     const val searchClear = "Clear search"

@@ -12,15 +12,16 @@ import platform.darwin.dispatch_get_main_queue
 @OptIn(ExperimentalForeignApi::class)
 class IosPageShare(
     private val tempDir: String = NSTemporaryDirectory(),
+    // UIKit presents on the main queue only; the page was read on a background one.
+    private val share: (path: String, onDone: () -> Unit) -> Unit = { path, onDone ->
+        dispatch_async(dispatch_get_main_queue()) { presentIosShare(listOf(NSURL.fileURLWithPath(path)), onDone) }
+    },
 ) : FilePageShare() {
     override val path: String get() = "${tempDir.trimEnd('/')}/$PAGE_SHARE_FILE_NAME"
 
     override fun write(jpeg: ByteArray) = FileBackupSink(path).use { it.write(jpeg) }
 
-    // UIKit presents on the main queue only; the page was read on a background one.
-    override fun present(path: String) {
-        dispatch_async(dispatch_get_main_queue()) { presentIosShare(listOf(NSURL.fileURLWithPath(path))) { delete(path) } }
-    }
+    override fun present(path: String) = share(path) { delete(path) }
 
     override fun delete(path: String) {
         NSFileManager.defaultManager.removeItemAtPath(path, null)

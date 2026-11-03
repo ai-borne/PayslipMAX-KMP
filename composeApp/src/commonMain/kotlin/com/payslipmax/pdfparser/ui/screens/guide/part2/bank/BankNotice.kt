@@ -20,13 +20,15 @@ data class BankNotice(
     val code: String,
     val entryId: String,
 ) {
-    enum class Kind { ADDED, SAVED, DELETED }
+    /** [ADDED_TO_ORDER] is an Add made from "Attach an order": the officer is back on that form, so no Attach action is offered. */
+    enum class Kind { ADDED, ADDED_TO_ORDER, SAVED, DELETED }
 
     /** The message: fixed words around the casualty's code. */
     val message: String
         get() =
             when (kind) {
                 Kind.ADDED -> OrdersBankStrings.noticeAdded(code)
+                Kind.ADDED_TO_ORDER -> OrdersBankStrings.noticeAddedToOrder(code)
                 Kind.SAVED -> OrdersBankStrings.noticeSaved(code)
                 Kind.DELETED -> OrdersBankStrings.noticeDeleted(code)
             }

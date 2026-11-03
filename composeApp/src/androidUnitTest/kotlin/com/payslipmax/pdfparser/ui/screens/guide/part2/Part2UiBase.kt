@@ -106,6 +106,18 @@ abstract class Part2UiBase {
         settle()
     }
 
+    /** Taps the one node whose whole text is [text] (a button whose label is also a substring of other text, such as a title). */
+    protected fun tapExact(text: String) {
+        composeRule.onNodeWithText(text).performClick()
+        settle()
+    }
+
+    /** The phone's own back button, as the activity's dispatcher delivers it. */
+    protected fun systemBack() {
+        composeRule.runOnUiThread { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
+        settle()
+    }
+
     protected fun back() {
         composeRule.onNodeWithContentDescription(AppStrings.btnBack).performClick()
         settle()

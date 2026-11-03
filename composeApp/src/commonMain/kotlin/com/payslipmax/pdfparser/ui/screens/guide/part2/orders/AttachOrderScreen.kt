@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.text.KeyboardOptions
@@ -52,15 +53,18 @@ internal fun AttachOrderScreen(
     state: AttachState,
     actions: AttachActions,
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        ScreenBackHeader(title = OrderStrings.attachTitle, onBack = actions.onBack, trailing = bankShortcut(actions.onBank))
-        LazyColumn(modifier = Modifier.fillMaxSize().aboveKeyboard(), contentPadding = Part2ListPadding, verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
-            item(key = "scan") { ScanSection(state, actions) }
-            orderFields(vm, state)
-            choices(vm, state, actions)
-            item(key = "message") { Messages(state, actions.message) }
-            item(key = "save") {
-                Button(onClick = actions.onSave, enabled = !state.busy, modifier = Modifier.fillMaxWidth()) { Text(if (state.busy) OrderStrings.savingOrder else OrderStrings.saveOrder) }
+    AttachLeaveGuard(holdsScan = state.pages > 0, onSystemBack = actions.onBack) { leave ->
+        Column(modifier = Modifier.fillMaxSize().aboveKeyboard()) {
+            ScreenBackHeader(title = OrderStrings.attachTitle, onBack = { leave(actions.onBack) }, trailing = bankShortcut(actions.onBank?.let { toBank -> { leave(toBank) } }))
+            LazyColumn(modifier = Modifier.weight(1f), contentPadding = Part2ListPadding, verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
+                item(key = "scan") { ScanSection(state, actions) }
+                orderFields(vm, state)
+                choices(vm, state, actions)
+                item(key = "message") { Messages(state, actions.message) }
+            }
+            // Pinned under the list, as Add is on a casualty page: a scan is only kept by this button, so it never scrolls away.
+            Button(onClick = actions.onSave, enabled = !state.busy, modifier = Modifier.fillMaxWidth().padding(AppDimensions.PaddingMedium)) {
+                Text(if (state.busy) OrderStrings.savingOrder else OrderStrings.saveOrder)
             }
         }
     }
