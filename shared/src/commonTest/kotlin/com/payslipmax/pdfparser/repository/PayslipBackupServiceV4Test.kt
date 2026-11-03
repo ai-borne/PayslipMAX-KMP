@@ -12,7 +12,6 @@ import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.Json
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -47,10 +46,7 @@ class PayslipBackupServiceV4Test {
         at: Long = 10L,
     ) = assertNotNull(GuideNote.of(cardId, text, "rev00001", at))
 
-    private suspend fun decodeArchive(archive: ByteArray): PortableBackup {
-        val json = CryptoHelper.decrypt(archive, BACKUP_PASSWORD).getOrThrow().decodeToString()
-        return Json.decodeFromString(PortableBackup.serializer(), json)
-    }
+    private fun decodeArchive(archive: ByteArray): PortableBackup = openBackup(archive).backup
 
     private suspend fun storedNotes() = target.getAllGuideNotes().first().associate { it.cardId to it.toNote(deviceKey) }
 
@@ -64,14 +60,14 @@ class PayslipBackupServiceV4Test {
         }
 
     @Test
-    fun notesInTheArchiveAreEncryptedWithTheBackupPasswordNotTheDeviceKeyAndHoldNoPlaintext() =
+    fun notesInTheArchiveAreSealedWithTheBackupsKeyNotTheDeviceKeyAndHoldNoPlaintext() =
         runTest {
             source.insertGuideNote(note("RB-TD-001", "my secret doubt about DA").toEntity(deviceKey))
 
-            val backup = decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow())
+            val opened = openBackup(sourceService.export(BACKUP_PASSWORD).getOrThrow())
 
-            val stored = backup.guideNotes.single()
-            assertEquals("my secret doubt about DA", stored.toEntity().toNote(BACKUP_PASSWORD).text)
+            val stored = opened.backup.guideNotes.single()
+            assertEquals("my secret doubt about DA", stored.toEntity().toNote(opened.key).text)
             assertTrue(CryptoHelper.decrypt(stored.ciphertext.hexToByteArray(), deviceKey).isFailure, "an archive must not depend on one device's key")
             assertFalse(stored.ciphertext.contains("secret"))
         }

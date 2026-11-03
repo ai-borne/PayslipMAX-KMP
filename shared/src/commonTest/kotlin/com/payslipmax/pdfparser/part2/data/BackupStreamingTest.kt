@@ -8,6 +8,7 @@ import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.pageArchiveMetaOfV6
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlinx.coroutines.Dispatchers
@@ -113,13 +114,13 @@ class BackupStreamingTest {
             val whole = sourceService.export(BACKUP_PASSWORD).getOrThrow()
 
             assertEquals(streamed.size, whole.size, "same layout, same length (the salts differ, the sizes do not)")
-            assertTrue(PageArchive.metaOf(streamed) != null && PageArchive.metaOf(whole) != null)
+            assertTrue(pageArchiveMetaOfV6(streamed) != null && pageArchiveMetaOfV6(whole) != null)
             targetService.restore(streamed, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
             assertEquals(pages, target.part2.allPageRefs().size)
         }
 
     @Test
-    fun aVaultWithNoPagesWritesTheSingleEncryptedBlobAsBefore() =
+    fun aVaultWithNoPagesStillWritesAPageArchiveThatCountsNone() =
         runTest {
             source.putEntry(SyntheticBank.entry("e1", 10))
             val sink = MemoryBackupSink()
@@ -127,7 +128,7 @@ class BackupStreamingTest {
             sourceService.exportTo(sink, BACKUP_PASSWORD).getOrThrow()
 
             val bytes = sink.toByteArray()
-            assertEquals(null, PageArchive.metaOf(bytes), "no pages: not a page archive")
+            assertTrue(pageArchiveMetaOfV6(bytes) != null, "no pages: still a page archive, one shape for format 6")
             targetService.restore(MemoryBackupSource(bytes), BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
             assertEquals("e1", target.part2.allEntries().single().id)
         }

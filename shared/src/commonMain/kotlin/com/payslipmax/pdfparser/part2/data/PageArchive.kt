@@ -1,6 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
-import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.BackupSink
 import com.payslipmax.pdfparser.repository.BackupSource
@@ -19,11 +19,14 @@ import kotlinx.serialization.json.Json
  * encrypted trailer {"pages": n} | u32 trailer length
  * ```
  *
- * with every number big-endian. A sealed page is the same ciphertext the database holds, made for the backup password, so the archive is
+ * with every number big-endian. A sealed page is the same frame the database holds, sealed with the backup's key, so the archive is
  * the vault's size plus a few hundred bytes, is written to a [BackupSink] one record at a time, and is read from a [BackupSource] by
- * range, so an archive of any size passes through a few hundred kilobytes of memory. The page count lives in the authenticated trailer, so a record cut out or added is caught. A vault with no pages still writes the plain
- * encrypted document (nothing here is involved), and the magic cannot be the start of one of those: they begin with a random salt, and a
+ * range, so an archive of any size passes through a few hundred kilobytes of memory. The page count lives in the authenticated trailer, so a record cut out or added is caught. Up to format 5 a vault with no pages wrote
+ * the plain encrypted document instead (nothing here was involved), and the magic cannot be the start of one of those: they begin with a random salt, and a
  * file whose first four bytes happen to match still has to pass every length check below.
+ *
+ * From format 6 every new backup is a page archive, after the plaintext `BackupEnvelope` header and sealed with the archive's one key; the
+ * header's versions are checked before the archive is touched, so a later layout of this archive answers "update the app" (F10).
  */
 object PageArchive {
     private val MAGIC = "PCDB".encodeToByteArray()
@@ -72,9 +75,8 @@ object PageArchive {
 
     internal fun trailer(
         count: Int,
-        password: String,
-    ): ByteArray =
-        CryptoHelper.encrypt(Json.encodeToString(PageTrailer(count)).encodeToByteArray(), password).getOrThrow()
+        key: SealKey,
+    ): ByteArray = key.seal(Json.encodeToString(PageTrailer(count)).encodeToByteArray()).getOrThrow()
 
     /** The largest sealed page a record with these ids may carry; a record claiming more is refused before it is read. */
     internal fun sealedMax(
@@ -119,13 +121,13 @@ class PageArchiveWriter(
         sink.write(sealed)
     }
 
-    /** Writes the trailer, which says there are [count] pages. */
+    /** Writes the trailer, which says there are [count] pages, sealed with the archive's [key]. */
     fun finish(
         count: Int,
-        password: String,
+        key: SealKey,
     ) {
         check(begun) { "The archive document must be written first." }
-        val trailer = PageArchive.trailer(count, password)
+        val trailer = PageArchive.trailer(count, key)
         sink.write(trailer)
         sink.write(u32(trailer.size))
     }

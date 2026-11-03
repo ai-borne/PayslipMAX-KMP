@@ -65,10 +65,7 @@ class PayslipBackupServiceV3Test {
             1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
         )
 
-    private suspend fun decodeArchive(archive: ByteArray): PortableBackup {
-        val json = CryptoHelper.decrypt(archive, BACKUP_PASSWORD).getOrThrow().decodeToString()
-        return Json.decodeFromString(PortableBackup.serializer(), json)
-    }
+    private fun decodeArchive(archive: ByteArray): PortableBackup = openBackup(archive).backup
 
     @Test
     fun lettersDeletedLetterRecordsAndCorrectionsSurviveAnExportAndRestore() =
@@ -102,14 +99,14 @@ class PayslipBackupServiceV3Test {
         }
 
     @Test
-    fun correctionsInTheArchiveAreEncryptedWithTheBackupPasswordNotTheDeviceKey() =
+    fun correctionsInTheArchiveAreSealedWithTheBackupsKeyNotTheDeviceKey() =
         runTest {
             seedSourceWithCreatedData()
 
-            val backup = decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow())
+            val opened = openBackup(sourceService.export(BACKUP_PASSWORD).getOrThrow())
 
-            val stored = backup.corrections.single()
-            assertEquals(listOf(correction), stored.toEntity().toCorrectionList(BACKUP_PASSWORD))
+            val stored = opened.backup.corrections.single()
+            assertEquals(listOf(correction), stored.toEntity().toCorrectionList(opened.key))
             val underDeviceKey = CryptoHelper.decrypt(stored.ciphertext.hexToByteArray(), CryptoHelper.getDatabaseSecretKey())
             assertTrue(underDeviceKey.isFailure, "an archive must not depend on one device's key")
         }

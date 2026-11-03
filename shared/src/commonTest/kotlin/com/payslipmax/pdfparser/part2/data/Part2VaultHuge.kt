@@ -4,8 +4,11 @@ import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.BackupSink
 import com.payslipmax.pdfparser.repository.BackupSource
+import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.backup.BackupEnvelope
+import com.payslipmax.pdfparser.repository.backup.openArchive
 import com.payslipmax.pdfparser.testing.FakePart2Dao
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -24,25 +27,28 @@ internal class HugeRestore(
 )
 
 /**
- * Writes the archive of a full vault into [sink] one sealed page at a time, so the writer never holds more than a page (the vault cannot
- * be built in a fake database: it is larger than the test heap). The metadata document comes from a real export of the same orders, and
- * each page is sealed exactly as the real export seals it. Returns the pages written.
+ * Writes the v6 archive of a full vault into [sink] one sealed page at a time, so the writer never holds more than a page (the vault cannot
+ * be built in a fake database: it is larger than the test heap). The header and metadata document come from a real export of the same
+ * orders, and each page is sealed with that export's archive key exactly as the real export seals it. Returns the pages written.
  */
 internal suspend fun writeHugeArchive(sink: BackupSink): Int {
     val dao = FakePayslipDao()
     repeat(HUGE_ORDERS) { dao.putOrder(SyntheticBank.order("order-$it")) }
     dao.putPage("seed", "order-0", 0, SyntheticBank.jpeg(64, 0))
-    val meta = PageArchive.metaOf(PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2)).export(BACKUP_PASSWORD).getOrThrow())!!
-    val writer = PageArchiveWriter(sink)
-    writer.begin(meta)
-    var seed = 0
-    repeat(HUGE_ORDERS) { o ->
-        repeat(Part2Limits.PAGES_PER_ORDER_MAX) { p ->
-            val sealed = sealPage("page-$o-$p", "order-$o", p, SyntheticBank.jpeg(Part2Limits.PAGE_MAX_BYTES, seed++), BACKUP_PASSWORD)
-            writer.add(sealed.id, sealed.orderId, sealed.position, sealed.ciphertext)
+    val exported = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2)).export(BACKUP_PASSWORD).getOrThrow()
+    openArchive(MemoryBackupSource(exported), BACKUP_PASSWORD).use { opened ->
+        sink.write(exported.copyOfRange(0, BackupEnvelope.HEADER_BYTES))
+        val writer = PageArchiveWriter(sink)
+        writer.begin(PageArchive.metaOf(opened.pages)!!)
+        var seed = 0
+        repeat(HUGE_ORDERS) { o ->
+            repeat(Part2Limits.PAGES_PER_ORDER_MAX) { p ->
+                val sealed = sealPage("page-$o-$p", "order-$o", p, SyntheticBank.jpeg(Part2Limits.PAGE_MAX_BYTES, seed++), opened.key)
+                writer.add(sealed.id, sealed.orderId, sealed.position, sealed.ciphertext)
+            }
         }
+        writer.finish(HUGE_PAGES, opened.key)
     }
-    writer.finish(HUGE_PAGES, BACKUP_PASSWORD)
     return HUGE_PAGES
 }
 

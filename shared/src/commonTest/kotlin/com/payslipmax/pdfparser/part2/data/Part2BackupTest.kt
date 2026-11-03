@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.PasswordKey
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PortableBackup
@@ -8,6 +9,8 @@ import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.repository.UnsupportedBackupVersionException
 import com.payslipmax.pdfparser.repository.backupBytes
 import com.payslipmax.pdfparser.repository.goodRow
+import com.payslipmax.pdfparser.repository.openBackup
+import com.payslipmax.pdfparser.repository.pageArchiveMetaOfV6
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlinx.coroutines.Dispatchers
@@ -49,28 +52,29 @@ class Part2BackupTest {
     ) = SyntheticBank.entry(id, updatedAt)
 
     @Test
-    fun theCurrentVersionIsFiveAndAnExportWritesIt() =
+    fun theCurrentVersionIsSixAndAnExportWritesIt() =
         runTest {
-            assertEquals(5, PortableBackup.CURRENT_VERSION)
+            assertEquals(6, PortableBackup.CURRENT_VERSION)
 
-            assertEquals(5, decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow()).version)
+            assertEquals(6, decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow()).version)
         }
 
     @Test
-    fun rowsInTheArchiveAreUnderTheBackupPasswordNotTheDeviceKeyAndHoldNoPlaintext() =
+    fun rowsInTheArchiveAreUnderTheBackupsKeyNotTheDeviceKeyAndHoldNoPlaintext() =
         runTest {
             source.putEntry(entry("d1", 10))
             source.putOrder(SyntheticBank.order("o1"))
             source.putPage("p1", "o1", 0, SyntheticBank.jpeg(2000))
 
             val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
-            val backup = decodeArchive(archive)
-            assertTrue(PageArchive.metaOf(archive) != null, "an archive with pages is a page archive")
+            val opened = openBackup(archive)
+            val backup = opened.backup
+            assertTrue(pageArchiveMetaOfV6(archive) != null, "an archive with pages is a page archive")
 
             val d = Base64.decode(backup.part2Entries.single().data)
-            assertEquals(entry("d1", 10), Part2EntryEntity("d1", d).toEntry(BACKUP_PASSWORD))
+            assertEquals(entry("d1", 10), Part2EntryEntity("d1", d).toEntry(opened.key))
             assertTrue(CryptoHelper.decrypt(d, deviceKey).isFailure, "an archive must not depend on one device's key")
-            assertEquals("o1", Part2OrderEntity("o1", Base64.decode(backup.part2Orders.single().data)).toOrder(BACKUP_PASSWORD).id)
+            assertEquals("o1", Part2OrderEntity("o1", Base64.decode(backup.part2Orders.single().data)).toOrder(opened.key).id)
             assertFalse(backup.part2Entries.single().data.contains(SyntheticBank.MARKER_NOTE))
         }
 
@@ -167,7 +171,7 @@ class Part2BackupTest {
                 assertTrue("good" in ids, "the readable entry is restored ($mode)")
                 assertTrue(ids.none { it.startsWith("bad") || it == "moved" }, "no damaged, wrong-key or moved row is restored ($mode)")
             }
-            val result = Part2Backup(FakePayslipDao().part2).restore(decodeArchive(bytes), bytes, BACKUP_PASSWORD, RestoreMode.REPLACE)
+            val result = Part2Backup(FakePayslipDao().part2).restore(decodeArchive(bytes), bytes, PasswordKey(BACKUP_PASSWORD), RestoreMode.REPLACE)
             assertEquals(4, result.skipped)
             assertEquals(listOf("good"), result.entries.map { it.id })
         }

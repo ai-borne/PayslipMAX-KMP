@@ -49,5 +49,21 @@
     "password": "BackupPass#1",
     "payslips": 2, "pdfs": 2, "corrections": 2, "guideNotes": 2, "drafts": 2, "dismissedDrafts": 2, "theme": "dark",
     "part2Entries": 2, "part2Orders": 1, "part2Pages": 2
+  },
+  {
+    "file": "jvm-head-v6.pcda",
+    "origin": "feature/backup-hardening P3 export on the JVM: PCDX header (PBKDF2 600,000, one archive key) around a page archive with Orders Bank entries, an order and two pages",
+    "format": 6,
+    "password": "BackupPass#1",
+    "payslips": 2, "pdfs": 2, "corrections": 2, "guideNotes": 2, "drafts": 2, "dismissedDrafts": 2, "theme": "dark",
+    "part2Entries": 2, "part2Orders": 1, "part2Pages": 2
+  },
+  {
+    "file": "ios-head-v6.pcda",
+    "origin": "feature/backup-hardening P3 export on the iOS simulator: PCDX header (PBKDF2 600,000, one archive key) around a page archive with Orders Bank entries, an order and two pages",
+    "format": 6,
+    "password": "BackupPass#1",
+    "payslips": 2, "pdfs": 2, "corrections": 2, "guideNotes": 2, "drafts": 2, "dismissedDrafts": 2, "theme": "dark",
+    "part2Entries": 2, "part2Orders": 1, "part2Pages": 2
   }
 ]

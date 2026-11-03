@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
+import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.part2.domain.BankEntry
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
@@ -18,7 +19,7 @@ internal class RowKind<R, T, E>(
     val id: (R) -> String,
     val data: (R) -> String,
     val deviceId: (E) -> String,
-    val fromBackup: (String, ByteArray, String) -> T,
+    val fromBackup: (String, ByteArray, SealKey) -> T,
     val fromDevice: (E, String) -> T,
     val itemId: (T) -> String,
     val updatedAt: (T) -> Long,
@@ -35,7 +36,7 @@ internal val entryKind =
         { it.id },
         { it.data },
         { it.id },
-        { id, bytes, password -> Part2EntryEntity(id, bytes).toEntry(password) },
+        { id, bytes, backupKey -> Part2EntryEntity(id, bytes).toEntry(backupKey) },
         { row, key -> row.toEntry(key) },
         { it.id },
         { it.updatedAt },
@@ -48,7 +49,7 @@ internal val orderKind =
         { it.id },
         { it.data },
         { it.id },
-        { id, bytes, password -> Part2OrderEntity(id, bytes).toOrder(password) },
+        { id, bytes, backupKey -> Part2OrderEntity(id, bytes).toOrder(backupKey) },
         { row, key -> row.toOrder(key) },
         { it.id },
         { it.updatedAt },
@@ -64,7 +65,7 @@ internal fun <R, T, E> restoreRows(
     kind: RowKind<R, T, E>,
     rows: List<R>,
     device: List<E>,
-    password: String,
+    backupKey: SealKey,
     key: String,
     merge: Boolean,
     decodeText: (String) -> ByteArray,
@@ -82,7 +83,7 @@ internal fun <R, T, E> restoreRows(
             skipped++
             continue
         }
-        val item = runCatching { kind.fromBackup(id, decodeText(kind.data(row)), password) }.getOrNull()
+        val item = runCatching { kind.fromBackup(id, decodeText(kind.data(row)), backupKey) }.getOrNull()
         if (item == null) {
             skipped++
             continue

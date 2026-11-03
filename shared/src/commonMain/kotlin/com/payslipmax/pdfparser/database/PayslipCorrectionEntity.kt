@@ -3,6 +3,8 @@ package com.payslipmax.pdfparser.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.domain.CorrectionType
 import com.payslipmax.pdfparser.domain.EntryCategory
@@ -28,17 +30,26 @@ data class PayslipCorrectionEntity(
 fun List<SingleCorrection>.toCorrectionEntity(
     dateStr: String,
     password: String = CryptoHelper.getDatabaseSecretKey(),
+): PayslipCorrectionEntity = toCorrectionEntity(dateStr, PasswordKey(password))
+
+/** The same row sealed with [key]: a password per row (the device, older backups) or a v6 backup's archive key. */
+fun List<SingleCorrection>.toCorrectionEntity(
+    dateStr: String,
+    key: SealKey,
 ): PayslipCorrectionEntity {
     val jsonString = Json.encodeToString(this)
-    val encryptedBytes = CryptoHelper.encrypt(jsonString.encodeToByteArray(), password).getOrThrow()
+    val encryptedBytes = key.seal(jsonString.encodeToByteArray()).getOrThrow()
     return PayslipCorrectionEntity(dateStr = dateStr, ciphertext = encryptedBytes.toHex())
 }
 
-fun PayslipCorrectionEntity.toCorrectionList(password: String = CryptoHelper.getDatabaseSecretKey()): List<SingleCorrection> {
+fun PayslipCorrectionEntity.toCorrectionList(password: String = CryptoHelper.getDatabaseSecretKey()): List<SingleCorrection> =
+    toCorrectionList(PasswordKey(password))
+
+fun PayslipCorrectionEntity.toCorrectionList(key: SealKey): List<SingleCorrection> {
     val encryptedBytes = ciphertext.hexToByteArray()
     val decryptedBytes =
         try {
-            CryptoHelper.decrypt(encryptedBytes, password).getOrThrow()
+            key.open(encryptedBytes).getOrThrow()
         } catch (e: Exception) {
             CryptoHelper.decrypt(encryptedBytes, CryptoHelper.getLegacyFallbackKey()).getOrThrow()
         }

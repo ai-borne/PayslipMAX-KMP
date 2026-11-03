@@ -1,9 +1,14 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.guide.domain.GuideNote
+import com.payslipmax.pdfparser.part2.data.PageArchive
+import com.payslipmax.pdfparser.repository.backup.BackupEnvelope
+import com.payslipmax.pdfparser.repository.backup.BackupJson
 import com.payslipmax.pdfparser.repository.backup.PdfBackupRow
+import com.payslipmax.pdfparser.repository.backup.openArchive
 import com.payslipmax.pdfparser.repository.backup.toBackupRow
 
 const val BACKUP_PASSWORD = "BackupPass#1"
@@ -55,3 +60,21 @@ private fun ledgerRow(dateStr: String) =
         incomeTax = 1.0,
         netPay = 1.0,
     )
+
+/** An export as a restore opens it: its document, and the key its rows are sealed with (since format 6, the archive's one key). */
+internal class OpenedBackup(
+    val backup: PortableBackup,
+    val key: SealKey,
+)
+
+internal fun openBackup(
+    archive: ByteArray,
+    password: String = BACKUP_PASSWORD,
+): OpenedBackup {
+    val opened = openArchive(MemoryBackupSource(archive), password)
+    return OpenedBackup(BackupJson.decode(PortableBackup.serializer(), opened.document.decodeToString()), opened.key)
+}
+
+/** The page archive's document inside a v6 file (after its plaintext header), or null when [file] is not one. */
+internal fun pageArchiveMetaOfV6(file: ByteArray): ByteArray? =
+    BackupEnvelope.read(MemoryBackupSource(file))?.let { PageArchive.metaOf(MemoryBackupSource(file).from(BackupEnvelope.HEADER_BYTES.toLong())) }

@@ -3,6 +3,8 @@ package com.payslipmax.pdfparser.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.guide.domain.GuideNote
 import com.payslipmax.pdfparser.repository.backup.BackupJson
 import kotlinx.serialization.Serializable
@@ -38,18 +40,23 @@ internal class GuideNotePayload(
     val updatedAt: Long,
 )
 
-fun GuideNote.toEntity(password: String = CryptoHelper.getDatabaseSecretKey()): GuideNoteEntity {
+fun GuideNote.toEntity(password: String = CryptoHelper.getDatabaseSecretKey()): GuideNoteEntity = toEntity(PasswordKey(password))
+
+/** The same row sealed with [key]: a password per row (the device, older backups) or a v6 backup's archive key. */
+fun GuideNote.toEntity(key: SealKey): GuideNoteEntity {
     val json = Json.encodeToString(GuideNotePayload(cardId, text, cardRev, updatedAt))
-    val encrypted = CryptoHelper.encrypt(json.encodeToByteArray(), password).getOrThrow()
+    val encrypted = key.seal(json.encodeToByteArray()).getOrThrow()
     return GuideNoteEntity(cardId = cardId, ciphertext = encrypted.toHex())
 }
 
 /** The note this row holds, or [GuideNoteUnreadableException]. Goes through [GuideNote.of], so the cap and id rules apply to stored data too. */
-fun GuideNoteEntity.toNote(password: String = CryptoHelper.getDatabaseSecretKey()): GuideNote {
+fun GuideNoteEntity.toNote(password: String = CryptoHelper.getDatabaseSecretKey()): GuideNote = toNote(PasswordKey(password))
+
+fun GuideNoteEntity.toNote(key: SealKey): GuideNote {
     // Every failure below becomes the same fixed exception without a cause; see GuideNoteUnreadableException.
     val note =
         try {
-            val bytes = CryptoHelper.decrypt(ciphertext.hexToByteArray(), password).getOrThrow()
+            val bytes = key.open(ciphertext.hexToByteArray()).getOrThrow()
             val payload = BackupJson.decode<GuideNotePayload>(bytes.decodeToString())
             if (payload.cardId != cardId) null else GuideNote.of(payload.cardId, payload.text, payload.cardRev, payload.updatedAt)
         } catch (e: Exception) {

@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.part2.data
 
-import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.part2.domain.BankEntry
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
@@ -18,12 +19,12 @@ private val payloadWriter = Json { encodeDefaults = true }
 /** Encrypts [json] under [key], or [Part2TooLargeException] when it passes `Part2Limits.PAYLOAD_MAX_BYTES`. The plaintext bytes are wiped. */
 internal fun sealPayload(
     json: String,
-    key: String,
+    key: SealKey,
 ): ByteArray {
     val plain = json.encodeToByteArray()
     try {
         if (plain.size > Part2Limits.PAYLOAD_MAX_BYTES) throw Part2TooLargeException()
-        return CryptoHelper.encrypt(plain, key).getOrThrow()
+        return key.seal(plain).getOrThrow()
     } finally {
         plain.fill(0)
     }
@@ -40,9 +41,9 @@ private fun <T> unreadable(read: () -> T?): T =
 
 private inline fun <reified P> decodePayload(
     sealed: ByteArray,
-    key: String,
+    key: SealKey,
 ): P {
-    val plain = CryptoHelper.decrypt(sealed, key).getOrThrow()
+    val plain = key.open(sealed).getOrThrow()
     try {
         return BackupJson.decode<P>(plain.decodeToString())
     } finally {
@@ -50,18 +51,27 @@ private inline fun <reified P> decodePayload(
     }
 }
 
-internal fun BankEntry.toEntity(key: String) = Part2EntryEntity(id, sealPayload(payloadWriter.encodeToString(toPayload()), key))
+// The String forms are the device database's (and older backups'): a password sealing each row. A v6 backup passes its archive key.
+internal fun BankEntry.toEntity(key: String) = toEntity(PasswordKey(key))
+
+internal fun BankEntry.toEntity(key: SealKey) = Part2EntryEntity(id, sealPayload(payloadWriter.encodeToString(toPayload()), key))
+
+internal fun Part2EntryEntity.toEntry(key: String): BankEntry = toEntry(PasswordKey(key))
 
 /** The entry this row holds, or [Part2UnreadableException]. The bounds apply to stored data too, so a restored file cannot exceed them. */
-internal fun Part2EntryEntity.toEntry(key: String): BankEntry =
+internal fun Part2EntryEntity.toEntry(key: SealKey): BankEntry =
     unreadable {
         val payload = decodePayload<EntryPayload>(ciphertext, key)
         if (payload.v != PAYLOAD_VERSION || payload.id != id) null else payload.toEntry().takeIf { Part2Bounds.check(it) == null }
     }
 
-internal fun VaultOrder.toEntity(key: String) = Part2OrderEntity(id, sealPayload(payloadWriter.encodeToString(toPayload()), key))
+internal fun VaultOrder.toEntity(key: String) = toEntity(PasswordKey(key))
 
-internal fun Part2OrderEntity.toOrder(key: String): VaultOrder =
+internal fun VaultOrder.toEntity(key: SealKey) = Part2OrderEntity(id, sealPayload(payloadWriter.encodeToString(toPayload()), key))
+
+internal fun Part2OrderEntity.toOrder(key: String): VaultOrder = toOrder(PasswordKey(key))
+
+internal fun Part2OrderEntity.toOrder(key: SealKey): VaultOrder =
     unreadable {
         val payload = decodePayload<OrderPayload>(ciphertext, key)
         if (payload.v != PAYLOAD_VERSION || payload.id != id) null else payload.toOrder().takeIf { Part2Bounds.check(it) == null }
@@ -77,6 +87,14 @@ internal fun sealPage(
     position: Int,
     jpeg: ByteArray,
     key: String,
+): Part2PageEntity = sealPage(id, orderId, position, jpeg, PasswordKey(key))
+
+internal fun sealPage(
+    id: String,
+    orderId: String,
+    position: Int,
+    jpeg: ByteArray,
+    key: SealKey,
 ): Part2PageEntity {
     require(Part2Limits.isPlainId(id) && Part2Limits.isPlainId(orderId) && position >= 0) { "A Part II page needs plain ids and a position." }
     if (jpeg.isEmpty() || jpeg.size > Part2Limits.PAGE_MAX_BYTES) throw Part2TooLargeException()
@@ -90,17 +108,19 @@ internal fun sealPage(
     b.copyInto(frame, 3 + a.size)
     jpeg.copyInto(frame, 3 + a.size + b.size)
     try {
-        return Part2PageEntity(id, orderId, position, CryptoHelper.encrypt(frame, key).getOrThrow())
+        return Part2PageEntity(id, orderId, position, key.seal(frame).getOrThrow())
     } finally {
         frame.fill(0)
     }
 }
 
+internal fun Part2PageEntity.openPage(key: String): ByteArray = openPage(PasswordKey(key))
+
 /** The page's JPEG, which the caller must wipe when done, or [Part2UnreadableException]. */
-internal fun Part2PageEntity.openPage(key: String): ByteArray {
+internal fun Part2PageEntity.openPage(key: SealKey): ByteArray {
     val frame =
         try {
-            CryptoHelper.decrypt(ciphertext, key).getOrThrow()
+            key.open(ciphertext).getOrThrow()
         } catch (e: Exception) {
             throw Part2UnreadableException()
         }

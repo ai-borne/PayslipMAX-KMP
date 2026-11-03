@@ -1,9 +1,8 @@
 package com.payslipmax.pdfparser.repository.backup
 
-import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.database.AppSettingsEntity
 import com.payslipmax.pdfparser.database.PayslipDao
-import com.payslipmax.pdfparser.part2.data.PageArchive
+import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -18,8 +17,7 @@ internal fun decryptedDocument(
     archive: ByteArray,
     password: String,
 ): JsonObject {
-    val meta = PageArchive.metaOf(archive) ?: archive
-    val plain = CryptoHelper.decrypt(meta, password).getOrThrow().decodeToString()
+    val plain = openArchive(MemoryBackupSource(archive), password).use { it.document.decodeToString() }
     return Json.parseToJsonElement(plain).jsonObject
 }
 

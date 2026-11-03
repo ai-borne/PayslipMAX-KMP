@@ -102,10 +102,31 @@ actual object CryptoHelper {
         salt: ByteArray,
         iterations: Int,
     ): ByteArray {
-        val spec = javax.crypto.spec.PBEKeySpec(password.toCharArray(), salt, iterations, 256)
-        val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-        return factory.generateSecret(spec).encoded
+        val chars = password.toCharArray()
+        val spec = javax.crypto.spec.PBEKeySpec(chars, salt, iterations, 256)
+        try {
+            val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            return factory.generateSecret(spec).encoded
+        } finally {
+            // The copies of the password this call made; the String itself is immutable and cannot be wiped.
+            spec.clearPassword()
+            chars.fill('\u0000')
+        }
     }
+
+    actual fun randomBytes(size: Int): ByteArray = secureRandomBytes(size)
+
+    actual fun sealWithKey(
+        data: ByteArray,
+        key: ByteArray,
+        aad: ByteArray,
+    ): Result<ByteArray> = gcmSeal(data, key, aad)
+
+    actual fun openWithKey(
+        sealed: ByteArray,
+        key: ByteArray,
+        aad: ByteArray,
+    ): Result<ByteArray> = gcmOpen(sealed, key, aad)
 
     private const val KEYSTORE_ALIAS = "DatabaseSecretKeyAlias"
     private const val PREFS_NAME = "secure_prefs"

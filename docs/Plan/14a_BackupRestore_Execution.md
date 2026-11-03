@@ -224,3 +224,25 @@ From P2 (2026-11-03):
    shape with an unknown key (`BackupJsonToleranceTest`, `Part2PayloadToleranceTest`). The oldest shapes are covered by the 7 goldens,
    which still restore with exact counts. Neither a golden with an unknown key nor an old shape with one is tested, since goldens are
    never regenerated.
+
+From P3 (2026-11-03):
+1. **Golden names.** 14a asked for `android-head-v6`; the goldens are `jvm-head-v6.pcda` and `ios-head-v6.pcda`, because
+   `GoldenBackupRestoreTest`'s "current format on each platform" check (P0) keys on the `jvm-`/`ios-` prefix that every earlier golden uses.
+   The JVM writer is the same `commonMain` code Android runs. **Owner to confirm** (renaming means changing the P0 check, not the bytes).
+2. **Shipped apps given a v6 file.** 1.5.0 and earlier have no `PCDX` reader, so they still show a decrypt error for a v6 file (F10 can't be
+   fixed in shipped code). From this release on, a later envelope or format answers "update the app" before any decrypt. **Release notes
+   (P9)**: "restore backups on the latest version".
+3. **The password can't be wiped.** It reaches the crypto as a Kotlin `String`, which is immutable on both platforms: Android now clears the
+   `PBEKeySpec` and its char copy, the derived archive key is zeroed on close, but the `String` itself stays until it is collected, and iOS
+   hands it to `CCKeyDerivationPBKDF` as a C string. Closing this needs a `CharArray` password from the sheet down (P7/P8 own the password
+   field). **Owner: P7.**
+4. **Iterations above 5,000,000** (`BackupEnvelope.ITERATIONS_MAX`) need a new envelope version, since this release refuses them as damaged.
+   Recorded so a later increase is planned as a format change, not a constant edit.
+5. **A headerless file whose document says version 6** is read through the legacy path and accepted (the per-row password seals still
+   protect it). Only a hand-made file can be like this; refusing it would add a second version rule for no attacker gain. Recorded, not changed.
+6. **"The PCDB page archive gets the same check"** is met by the header: a v6 page archive is only ever read behind a `PCDX` header that
+   was checked first, and the document's own version is checked again (`requireKnownFormat`). An older headerless `PCDB` is v5 by
+   definition. No separate version byte was added to `PCDB` (that would change the v5 wire shape the goldens pin).
+7. **Pre-existing:** the iOS legacy `CryptoHelper.encrypt` (device DB and formats 1–5) ignores `SecRandomCopyBytes`'s status when it makes
+   a salt and IV. The new v6 path checks it. The device path was out of P3's scope ("device DB encryption untouched"). **Owner: a one-line
+   fix in a later phase (P6 is the nearest crypto-adjacent phase).**

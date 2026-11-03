@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.PasswordKey
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -27,7 +28,7 @@ class PageArchiveTest {
         val writer = PageArchiveWriter(sink)
         writer.begin(meta)
         pages.forEach { writer.add(it.id, it.orderId, it.position, it.sealed) }
-        writer.finish(pages.size, BACKUP_PASSWORD)
+        writer.finish(pages.size, PasswordKey(BACKUP_PASSWORD))
         return sink.toByteArray()
     }
 

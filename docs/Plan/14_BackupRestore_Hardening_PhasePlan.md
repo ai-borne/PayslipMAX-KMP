@@ -104,3 +104,14 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
   missing nullables, Part II `data: null`, trailer key). Gate green: shared 1708 → 1721, iOS shared 1558 → 1571, composeApp 1440/856;
   8/8 mutations caught; 7 goldens and local real backups restore; Pixel launch clean; R8 not triggered; security review: no findings.
   Pending: 14a P10 "From P2".
+- 2026-11-03 — **P3 done**: versioned crypto envelope, format v6 (F9, D6). A new file is a 29-byte plaintext header (`PCDX`, envelope 1,
+  KDF 1 = PBKDF2-HMAC-SHA256, 600,000 iterations, format 6, salt length 16, salt) then the `PCDB` page archive, always. One key is derived
+  per archive (`ArchiveKey`, AES-256-GCM, random IV per seal, the header as AAD, zeroed on close) and seals the document, every row and every
+  page; rows are no longer sealed per row with the password. `BackupEnvelope.read` is the one version check: an unknown envelope, KDF or
+  format → `UnsupportedBackupVersionException` before any decrypt (F10); iterations outside [10,000, 5,000,000], a salt that is not 16 bytes
+  or a cut header → `BackupDamagedException` before the KDF; no header → the legacy path unchanged. Owner decisions: same row keys under the
+  archive key, pages sealed with it, `PCDX` + `PCDB` body, 600,000 iterations. New goldens `jvm-head-v6`, `ios-head-v6`. RED first: 16 new
+  tests (envelope bytes, later versions, bounds, tampered header, v6 round trip, `ArchiveKey`, iOS KDF + seal timing). iOS: derive 88 ms;
+  250 MB v6 vault restore 2.97 s. Gate green: shared 1721 → 1735, iOS shared 1571 → 1587, composeApp 1440/1414/856; 13/13 mutations caught;
+  9 goldens and the owner's local backups restore; R8 triggered and green with no new rule; security review: no findings. Pending: 14a P10
+  "From P3".

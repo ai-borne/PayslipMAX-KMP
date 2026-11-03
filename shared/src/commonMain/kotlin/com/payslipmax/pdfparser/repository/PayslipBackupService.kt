@@ -2,17 +2,22 @@ package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.DecryptionFailedException
+import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.logging.Logger
 import com.payslipmax.pdfparser.part2.data.LastBackupStorage
-import com.payslipmax.pdfparser.part2.data.PageArchive
+import com.payslipmax.pdfparser.part2.data.PageArchiveWriter
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.rating.currentTimeMillis
+import com.payslipmax.pdfparser.repository.backup.BackupEnvelope
 import com.payslipmax.pdfparser.repository.backup.BackupJson
 import com.payslipmax.pdfparser.repository.backup.CorrectionBackupRow
+import com.payslipmax.pdfparser.repository.backup.OpenedArchive
 import com.payslipmax.pdfparser.repository.backup.SettingsBackup
 import com.payslipmax.pdfparser.repository.backup.applyTo
+import com.payslipmax.pdfparser.repository.backup.newArchive
+import com.payslipmax.pdfparser.repository.backup.openArchive
 import com.payslipmax.pdfparser.repository.backup.toBackupRow
 import com.payslipmax.pdfparser.repository.backup.toEntity
 import com.payslipmax.pdfparser.repository.backup.toSettingsBackup
@@ -57,26 +62,34 @@ class PayslipBackupService(
         password: String,
     ): Result<Unit> =
         withContext(dispatcher) {
+            // Format 6: one key for the whole archive, derived once here from a fresh salt; every row and page below is sealed with it.
+            val archive =
+                try {
+                    newArchive(password)
+                } catch (e: Exception) {
+                    return@withContext Result.failure(e)
+                }
             try {
                 val payslips = payslipDao.getAllPayslips().first()
                 val pdfs = payslipDao.getAllPdfs()
                 val settings = payslipDao.getSettings()
 
                 val deviceKey = CryptoHelper.getDatabaseSecretKey()
+                val backupKey = archive.key
                 // Skip any row that can't be decrypted (e.g. a stale/legacy-key or corrupt row) rather
                 // than failing the whole backup — matches the read path (getAllPayslips), so a backup
                 // contains exactly the payslips the user can actually see.
                 val exportedPayslips =
                     payslips.mapNotNull { entity ->
                         try {
-                            entity.toDomain(deviceKey).toEncryptedEntity(password).toBackupRow()
+                            entity.toDomain(deviceKey).toEncryptedEntity(backupKey).toBackupRow()
                         } catch (e: Exception) {
                             Logger.e("PayslipBackupService", "Skipping undecryptable payslip ${entity.dateStr} during backup", e)
                             null
                         }
                     }
 
-                val part2 = part2Backup?.export(password)
+                val part2 = part2Backup?.export(backupKey)
                 val backup =
                     PortableBackup(
                         version = PortableBackup.CURRENT_VERSION,
@@ -86,10 +99,10 @@ class PayslipBackupService(
                         settings = settings?.toSettingsBackup(),
                         drafts = payslipDao.getAllRepresentationDrafts().first().map { it.toBackupRow() },
                         dismissedDrafts = payslipDao.getAllDismissedDrafts().map { it.toBackupRow() },
-                        corrections = exportCorrections(deviceKey, password),
+                        corrections = exportCorrections(deviceKey, backupKey),
                         guideNotes =
                             GuideNoteBackup
-                                .forExport(payslipDao.getAllGuideNotes().first(), deviceKey, password)
+                                .forExport(payslipDao.getAllGuideNotes().first(), deviceKey, backupKey)
                                 .map { it.toBackupRow() },
                         part2Entries = part2?.entries.orEmpty(),
                         part2Orders = part2?.orders.orEmpty(),
@@ -98,24 +111,30 @@ class PayslipBackupService(
                 val jsonStr = Json.encodeToString(PortableBackup.serializer(), backup)
                 val jsonBytes = jsonStr.encodeToByteArray()
 
-                // With scanned pages the archive is this document followed by one binary record per page (PageArchive), streamed to the sink
-                // a page at a time, so a full vault is never copied through a JSON string or held in one array. Without pages it is the one blob.
-                CryptoHelper.encrypt(jsonBytes, password)
-                    .mapCatching { meta -> if (part2Backup?.writeArchive(sink, meta, password) != true) sink.write(meta) }
-                    .onSuccess { lastBackup?.save(now()) }
+                // The plaintext header, then a page archive (always, so a reader sees one shape): this document followed by one binary record
+                // per page, streamed to the sink a page at a time, so a full vault is never copied through a JSON string or held in one array.
+                val meta = backupKey.seal(jsonBytes).getOrThrow()
+                sink.write(archive.header)
+                val writer = PageArchiveWriter(sink)
+                writer.begin(meta)
+                writer.finish(part2Backup?.writePages(writer, backupKey) ?: 0, backupKey)
+                lastBackup?.save(now())
+                Result.success(Unit)
             } catch (e: Exception) {
                 Result.failure(e)
+            } finally {
+                archive.close()
             }
         }
 
-    /** Corrections move from the device key to the backup password so the archive is self-contained. */
+    /** Corrections move from the device key to the backup's key so the archive is self-contained. */
     private suspend fun exportCorrections(
         deviceKey: String,
-        password: String,
+        backupKey: SealKey,
     ): List<CorrectionBackupRow> =
         payslipDao.getAllCorrections().first().mapNotNull { entity ->
             try {
-                entity.toCorrectionList(deviceKey).toCorrectionEntity(entity.dateStr, password).toBackupRow()
+                entity.toCorrectionList(deviceKey).toCorrectionEntity(entity.dateStr, backupKey).toBackupRow()
             } catch (e: Exception) {
                 Logger.e("PayslipBackupService", "Skipping undecryptable corrections for ${entity.dateStr} during backup", e)
                 null
@@ -138,88 +157,86 @@ class PayslipBackupService(
         mode: RestoreMode = RestoreMode.REPLACE,
     ): Result<RestoreReport> =
         withContext(dispatcher) {
-            try {
-                val decryptResult = CryptoHelper.decrypt(PageArchive.metaOf(source) ?: wholeBlob(source), password)
-                if (decryptResult.isFailure) {
-                    return@withContext Result.failure(
-                        decryptResult.exceptionOrNull() ?: Exception("Decryption failed"),
-                    )
+            // A wrong password, a file that is not a backup or one from a later app fails here, as itself: nothing inside has been read.
+            val opened =
+                try {
+                    openArchive(source, password)
+                } catch (e: Exception) {
+                    return@withContext Result.failure(e)
                 }
-
-                val jsonStr = decryptResult.getOrThrow().decodeToString()
-                val backup = BackupJson.decode(PortableBackup.serializer(), jsonStr)
-                if (backup.version > PortableBackup.CURRENT_VERSION) {
-                    return@withContext Result.failure(UnsupportedBackupVersionException(backup.version))
-                }
-
-                // Decode and re-encrypt every payslip *before* touching the database: one unreadable row
-                // then fails the restore with the device's data untouched, instead of after a wipe.
-                val deviceKey = CryptoHelper.getDatabaseSecretKey()
-                val databasePayslips =
-                    backup.encryptedPayslips.map { row ->
-                        val entity = row.toEntity()
-                        val domainModel =
-                            try {
-                                entity.toDomain(password)
-                            } catch (e: Exception) {
-                                // Fallback: Version 1 backups are encrypted with the legacy key
-                                entity.toDomain(CryptoHelper.getLegacyFallbackKey())
-                            }
-                        domainModel.toEncryptedEntity(deviceKey)
-                    }
-                // Part II rows are size- and count-checked before any is decoded; what fails is skipped and counted, never fatal.
-                val part2 = part2Backup?.restore(backup, source, password, mode)
-                val rows =
-                    BackupRows(
-                        payslips = databasePayslips,
-                        pdfs = backup.pdfs.map { it.toEntity() },
-                        drafts = backup.drafts.map { it.toEntity() },
-                        dismissedDrafts = backup.dismissedDrafts.map { it.toEntity() },
-                        corrections =
-                            backup.corrections.map { it.toEntity().toCorrectionList(password).toCorrectionEntity(it.dateStr, deviceKey) },
-                        guideNotes = restoredNotes(backup, password, deviceKey, mode),
-                        part2Entries = part2?.entries.orEmpty(),
-                        part2Orders = part2?.orders.orEmpty(),
-                        part2Pages = part2?.pages ?: emptySequence(),
-                    )
-
-                // REPLACE makes the device an exact copy of the backup (every user and derived table is
-                // emptied first); MERGE keeps the device's existing data and its own settings and layers
-                // the backup on top, overwriting only same-date payslips. Either way it is one transaction.
-                if (mode == RestoreMode.REPLACE) {
-                    // The backup's preferences go on top of this device's own settings row, so the lock, PIN hash, telemetry consent
-                    // and entitlement stay the device's (D5); a file without settings resets the preferences to their defaults.
-                    val device = payslipDao.getSettings() ?: AppSettingsEntity()
-                    payslipDao.replaceWithBackup(rows, (backup.settings ?: SettingsBackup()).applyTo(device))
-                } else {
-                    payslipDao.mergeBackup(rows)
-                }
-
-                rebuildDerivedData()
-                Result.success(RestoreReport(part2?.skipped ?: 0))
-            } catch (e: DecryptionFailedException) {
-                // The outer layer opened (a wrong password was returned above), so a row inside that will not open is a damaged file.
-                Result.failure(BackupDamagedException())
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
+            opened.use { restoreOpened(it, mode) }
         }
 
-    /** A file that is not a page archive is the one encrypted blob (payslips and their PDFs), which is read whole; no real one is this large. */
-    private fun wholeBlob(source: BackupSource): ByteArray {
-        if (source.size > BLOB_MAX_BYTES) throw BackupDamagedException()
-        return source.read(0, source.size.toInt())
-    }
+    private suspend fun restoreOpened(
+        opened: OpenedArchive,
+        mode: RestoreMode,
+    ): Result<RestoreReport> =
+        try {
+            val backupKey = opened.key
+            val backup = BackupJson.decode(PortableBackup.serializer(), opened.document.decodeToString())
+            BackupEnvelope.requireKnownFormat(backup.version)
+
+            // Decode and re-encrypt every payslip *before* touching the database: one unreadable row
+            // then fails the restore with the device's data untouched, instead of after a wipe.
+            val deviceKey = CryptoHelper.getDatabaseSecretKey()
+            val databasePayslips =
+                backup.encryptedPayslips.map { row ->
+                    val entity = row.toEntity()
+                    val domainModel =
+                        try {
+                            entity.toDomain(backupKey)
+                        } catch (e: Exception) {
+                            // Fallback: Version 1 backups are encrypted with the legacy key
+                            entity.toDomain(CryptoHelper.getLegacyFallbackKey())
+                        }
+                    domainModel.toEncryptedEntity(deviceKey)
+                }
+            // Part II rows are size- and count-checked before any is decoded; what fails is skipped and counted, never fatal.
+            val part2 = part2Backup?.restore(backup, opened.pages, backupKey, mode)
+            val rows =
+                BackupRows(
+                    payslips = databasePayslips,
+                    pdfs = backup.pdfs.map { it.toEntity() },
+                    drafts = backup.drafts.map { it.toEntity() },
+                    dismissedDrafts = backup.dismissedDrafts.map { it.toEntity() },
+                    corrections =
+                        backup.corrections.map { it.toEntity().toCorrectionList(backupKey).toCorrectionEntity(it.dateStr, deviceKey) },
+                    guideNotes = restoredNotes(backup, backupKey, deviceKey, mode),
+                    part2Entries = part2?.entries.orEmpty(),
+                    part2Orders = part2?.orders.orEmpty(),
+                    part2Pages = part2?.pages ?: emptySequence(),
+                )
+
+            // REPLACE makes the device an exact copy of the backup (every user and derived table is
+            // emptied first); MERGE keeps the device's existing data and its own settings and layers
+            // the backup on top, overwriting only same-date payslips. Either way it is one transaction.
+            if (mode == RestoreMode.REPLACE) {
+                // The backup's preferences go on top of this device's own settings row, so the lock, PIN hash, telemetry consent
+                // and entitlement stay the device's (D5); a file without settings resets the preferences to their defaults.
+                val device = payslipDao.getSettings() ?: AppSettingsEntity()
+                payslipDao.replaceWithBackup(rows, (backup.settings ?: SettingsBackup()).applyTo(device))
+            } else {
+                payslipDao.mergeBackup(rows)
+            }
+
+            rebuildDerivedData()
+            Result.success(RestoreReport(part2?.skipped ?: 0))
+        } catch (e: DecryptionFailedException) {
+            // The outer layer opened (a wrong password was returned above), so a row inside that will not open is a damaged file.
+            Result.failure(BackupDamagedException())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
 
     /** An unreadable note is skipped (see [GuideNoteBackup]); only a MERGE needs the notes the device holds now. */
     private suspend fun restoredNotes(
         backup: PortableBackup,
-        password: String,
+        backupKey: SealKey,
         deviceKey: String,
         mode: RestoreMode,
     ): List<GuideNoteEntity> {
         val existing = if (mode == RestoreMode.MERGE) payslipDao.getAllGuideNotes().first() else emptyList()
-        return GuideNoteBackup.forRestore(backup.guideNotes.map { it.toEntity() }, password, deviceKey, existing, mode)
+        return GuideNoteBackup.forRestore(backup.guideNotes.map { it.toEntity() }, backupKey, deviceKey, existing, mode)
     }
 
     /**
@@ -237,6 +254,3 @@ class PayslipBackupService(
         }
     }
 }
-
-/** The most a backup without scanned pages may be: payslips and their PDFs, a few megabytes in real use. */
-private const val BLOB_MAX_BYTES = 128L * 1024 * 1024

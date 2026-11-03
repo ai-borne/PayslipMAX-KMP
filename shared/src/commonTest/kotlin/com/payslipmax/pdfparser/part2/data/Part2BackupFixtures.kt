@@ -1,11 +1,14 @@
 package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.PasswordKey
 import com.payslipmax.pdfparser.part2.domain.BankEntry
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.MemoryBackupSink
+import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import com.payslipmax.pdfparser.repository.PortableBackup
+import com.payslipmax.pdfparser.repository.backup.openArchive
 import com.payslipmax.pdfparser.repository.backupBytes
 import com.payslipmax.pdfparser.repository.goodRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
@@ -72,7 +75,7 @@ internal fun archive(
     val writer = PageArchiveWriter(sink)
     writer.begin(meta)
     pages.forEach { writer.add(it.id, it.orderId, it.position, it.sealed) }
-    writer.finish(declared, BACKUP_PASSWORD)
+    writer.finish(declared, PasswordKey(BACKUP_PASSWORD))
     return sink.toByteArray()
 }
 
@@ -80,7 +83,7 @@ internal fun archive(
 internal fun decodeArchive(archive: ByteArray): PortableBackup =
     Json.decodeFromString(
         PortableBackup.serializer(),
-        CryptoHelper.decrypt(PageArchive.metaOf(archive) ?: archive, BACKUP_PASSWORD).getOrThrow().decodeToString(),
+        openArchive(MemoryBackupSource(archive), BACKUP_PASSWORD).use { it.document.decodeToString() },
     )
 
 /** A row no one can read: it costs nothing to make, so a test can ask for thousands. */

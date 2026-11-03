@@ -38,6 +38,26 @@ expect object CryptoHelper {
         iterations: Int = 10000,
     ): ByteArray
 
+    /** [size] bytes from the platform's secure random generator. */
+    fun randomBytes(size: Int): ByteArray
+
+    /**
+     * AES-256-GCM under a raw 32-byte [key], with no key derivation: IV (12) | ciphertext | tag (16), the plaintext starting with the
+     * "PCDA" mark, and [aad] authenticated but not stored. A fresh random IV on every call. One key seals a whole backup (`ArchiveKey`).
+     */
+    fun sealWithKey(
+        data: ByteArray,
+        key: ByteArray,
+        aad: ByteArray,
+    ): Result<ByteArray>
+
+    /** What [sealWithKey] sealed, or [DecryptionFailedException] when the key, the [aad] or any byte differs. */
+    fun openWithKey(
+        sealed: ByteArray,
+        key: ByteArray,
+        aad: ByteArray,
+    ): Result<ByteArray>
+
     /**
      * Retrieves or generates a secure, device-persistent database encryption key.
      */

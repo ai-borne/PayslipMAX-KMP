@@ -3,6 +3,8 @@ package com.payslipmax.pdfparser.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.logging.Logger
@@ -50,10 +52,13 @@ private fun toCharDigit(ch: Char): Int {
     }
 }
 
-fun ParsedPayslip.toEncryptedEntity(password: String = CryptoHelper.getDatabaseSecretKey()): EncryptedPayslipEntity {
+fun ParsedPayslip.toEncryptedEntity(password: String = CryptoHelper.getDatabaseSecretKey()): EncryptedPayslipEntity = toEncryptedEntity(PasswordKey(password))
+
+/** The same row sealed with [key]: a password per row (the device, older backups) or a v6 backup's archive key. */
+fun ParsedPayslip.toEncryptedEntity(key: SealKey): EncryptedPayslipEntity {
     val jsonString = Json.encodeToString(ParsedPayslip.serializer(), this)
     val jsonBytes = jsonString.encodeToByteArray()
-    val encryptedBytes = CryptoHelper.encrypt(jsonBytes, password).getOrThrow()
+    val encryptedBytes = key.seal(jsonBytes).getOrThrow()
     val ciphertext = encryptedBytes.toHex()
     return EncryptedPayslipEntity(
         dateStr = dateStr,
@@ -64,11 +69,13 @@ fun ParsedPayslip.toEncryptedEntity(password: String = CryptoHelper.getDatabaseS
     )
 }
 
-fun EncryptedPayslipEntity.toDomain(password: String = CryptoHelper.getDatabaseSecretKey()): ParsedPayslip {
+fun EncryptedPayslipEntity.toDomain(password: String = CryptoHelper.getDatabaseSecretKey()): ParsedPayslip = toDomain(PasswordKey(password))
+
+fun EncryptedPayslipEntity.toDomain(key: SealKey): ParsedPayslip {
     val encryptedBytes = ciphertext.hexToByteArray()
     val decryptedBytes =
         try {
-            CryptoHelper.decrypt(encryptedBytes, password).getOrThrow()
+            key.open(encryptedBytes).getOrThrow()
         } catch (primaryEx: Exception) {
             try {
                 CryptoHelper.decrypt(encryptedBytes, CryptoHelper.getLegacyFallbackKey()).getOrThrow()

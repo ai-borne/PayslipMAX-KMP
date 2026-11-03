@@ -22,7 +22,9 @@ import kotlinx.serialization.Serializable
  *
  * Versions: 1 = payslips under the legacy key; 2 = payslips under the backup password; 3 = adds
  * [drafts], [dismissedDrafts] and [corrections]; 4 = adds [guideNotes]; 5 = adds the Orders Bank entries and orders (scanned pages travel
- * beside this document, see `PageArchive`). Added fields default to empty so older files still decode: a v4 file restores with an empty Bank.
+ * beside this document, see `PageArchive`); 6 = the same document and rows inside a versioned envelope (`BackupEnvelope`): one key derived
+ * per archive seals the document, every row's ciphertext and every page, in place of the password per row. Added fields default to empty so
+ * older files still decode: a v4 file restores with an empty Bank.
  */
 @Serializable
 data class PortableBackup(
@@ -32,12 +34,12 @@ data class PortableBackup(
     @SerialName("settings") val settings: SettingsBackup?,
     @SerialName("drafts") val drafts: List<DraftBackupRow> = emptyList(),
     @SerialName("dismissedDrafts") val dismissedDrafts: List<DismissedDraftBackupRow> = emptyList(),
-    /** Each row's ciphertext is encrypted with the backup password, not the device key. */
+    /** Each row's ciphertext is sealed with the backup's key (the password, per row, up to format 5; the archive key from format 6), never the device key. */
     @SerialName("corrections") val corrections: List<CorrectionBackupRow> = emptyList(),
-    /** Private Guide notes; like [corrections], each row's ciphertext is encrypted with the backup password, not the device key. */
+    /** Private Guide notes; like [corrections], each row's ciphertext is sealed with the backup's key, never the device key. */
     @SerialName("guideNotes") val guideNotes: List<GuideNoteBackupRow> = emptyList(),
     /**
-     * Orders Bank entries and vault orders (v5); each row's ciphertext is encrypted with the backup password, as Base64 text. Scanned pages
+     * Orders Bank entries and vault orders (v5); each row's ciphertext is sealed with the backup's key, as Base64 text. Scanned pages
      * are not here: they would be a copy of the vault inside one JSON string. When the vault has pages the archive is a `PageArchive`
      * (this document, then one binary record per page); see there.
      */
@@ -47,7 +49,7 @@ data class PortableBackup(
     @SerialName("part2Drafts") val part2Drafts: List<Part2LegacyDraft> = emptyList(),
 ) {
     companion object {
-        const val CURRENT_VERSION = 5
+        const val CURRENT_VERSION = 6
     }
 }
 
@@ -72,8 +74,9 @@ class RestoreReport(
 )
 
 /**
- * Thrown when a backup was written by a newer app than this one. Its message is shown to the user as the
- * restore error, so it says what to do.
+ * Thrown when a backup was written by a newer app than this one: a format, KDF or envelope this app does not know ([backupVersion] is the
+ * format version, or the envelope version when the envelope itself is newer). Decided before anything is decrypted when the file has a
+ * header (`BackupEnvelope`). Its message is shown to the user as the restore error, so it says what to do.
  */
 class UnsupportedBackupVersionException(
     val backupVersion: Int,

@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.BackupDamagedException
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.pageArchiveMetaOfV6
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlinx.coroutines.Dispatchers
@@ -41,18 +42,18 @@ class Part2PageArchiveBackupTest {
     ) = SyntheticBank.entry(id, updatedAt)
 
     @Test
-    fun anArchiveWithoutPagesIsTheOldSingleBlobAndOneWithPagesIsAPageArchiveAsLargeAsTheVault() =
+    fun everyNewArchiveIsAPageArchiveAndOneWithPagesIsAsLargeAsTheVault() =
         runTest {
             source.putEntry(entry("d1", 1))
             val withoutPages = sourceService.export(BACKUP_PASSWORD).getOrThrow()
-            assertTrue(PageArchive.metaOf(withoutPages) == null, "no pages: the same one encrypted document as v1-v4")
+            assertTrue(pageArchiveMetaOfV6(withoutPages) != null, "no pages: still a page archive (format 6 has one shape), counting none")
 
             source.putOrder(SyntheticBank.order("o1"))
             repeat(4) { source.putPage("p$it", "o1", it, SyntheticBank.jpeg(200_000, it)) }
             val withPages = sourceService.export(BACKUP_PASSWORD).getOrThrow()
 
             val vault = source.part2.vaultBytes()
-            assertTrue(PageArchive.metaOf(withPages) != null)
+            assertTrue(pageArchiveMetaOfV6(withPages) != null)
             assertTrue(withPages.size < vault + 60_000, "the archive is the vault plus the document, not a Base64 JSON copy: ${withPages.size} vs $vault")
             assertContentEquals(withoutPages.size.let { decodeArchive(withoutPages).part2Entries.map { it.id } }, decodeArchive(withPages).part2Entries.map { it.id })
         }

@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.PasswordKey
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.RestoreMode
@@ -28,7 +29,7 @@ class Part2BackupBoundsTest {
         using: Part2Backup = backup,
     ): Part2Restore {
         val bytes = archive(entries, orders, pages)
-        return using.restore(decodeArchive(bytes), bytes, BACKUP_PASSWORD, mode)
+        return using.restore(decodeArchive(bytes), bytes, PasswordKey(BACKUP_PASSWORD), mode)
     }
 
     private fun validJson(pad: Int) = """{"v":1,"id":"big","code":"SYNCODE1","from":{"y":2026,"m":3,"d":1},"createdAt":1,"updatedAt":2,"pad":"${"x".repeat(pad)}"}"""

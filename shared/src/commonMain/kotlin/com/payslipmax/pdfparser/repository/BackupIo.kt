@@ -21,6 +21,24 @@ interface BackupSource {
     ): ByteArray
 }
 
+/** This source from [offset] to its end, read by range like the whole: a v6 file's page archive after its header. */
+fun BackupSource.from(offset: Long): BackupSource {
+    require(offset in 0..size) { "A range outside the backup." }
+    val whole = this
+    val start = offset
+    return object : BackupSource {
+        override val size: Long get() = whole.size - start
+
+        override fun read(
+            offset: Long,
+            length: Int,
+        ): ByteArray {
+            require(offset >= 0 && length >= 0 && offset + length <= size) { "A range outside the backup." }
+            return whole.read(start + offset, length)
+        }
+    }
+}
+
 /** A sink that holds a file open: close it to flush and release the file before the file is shared or deleted. */
 interface ClosableBackupSink : BackupSink, AutoCloseable
 

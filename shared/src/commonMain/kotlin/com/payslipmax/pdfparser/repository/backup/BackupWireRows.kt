@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 // without changing a backup, and every key is pinned with @SerialName so a Kotlin rename cannot either (BackupWireKeysTest). Keys and
 // defaults are the ones the entities wrote before this split, so every file already in the wild still reads. Mappers: BackupRowMappers.kt.
 
-/** One payslip; [ciphertext] is its JSON encrypted with the backup password, hex-encoded. */
+/** One payslip; [ciphertext] is its JSON sealed with the backup's key (the password, per row, up to format 5; the archive key from format 6), hex-encoded. */
 @Serializable
 data class PayslipBackupRow(
     @SerialName("dateStr") val dateStr: String,
@@ -57,14 +57,14 @@ data class DismissedDraftBackupRow(
     @SerialName("disputeType") val disputeType: String,
 )
 
-/** One payslip's per-field corrections; [ciphertext] is encrypted with the backup password, hex-encoded. */
+/** One payslip's per-field corrections; [ciphertext] is sealed with the backup's key, hex-encoded. */
 @Serializable
 data class CorrectionBackupRow(
     @SerialName("dateStr") val dateStr: String,
     @SerialName("ciphertext") val ciphertext: String,
 )
 
-/** One private Claim Guide note; [ciphertext] is encrypted with the backup password, hex-encoded. */
+/** One private Claim Guide note; [ciphertext] is sealed with the backup's key, hex-encoded. */
 @Serializable
 data class GuideNoteBackupRow(
     @SerialName("cardId") val cardId: String,

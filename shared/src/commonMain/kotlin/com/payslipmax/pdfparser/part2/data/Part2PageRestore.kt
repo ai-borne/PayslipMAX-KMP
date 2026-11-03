@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
+import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.BackupDamagedException
 import com.payslipmax.pdfparser.repository.BackupSource
@@ -39,14 +40,14 @@ internal suspend fun restorePages(
     dao: Part2Dao,
     source: BackupSource,
     orderIds: Set<String>,
-    password: String,
+    backupKey: SealKey,
     key: String,
     merge: Boolean,
     vaultBytesMax: Long,
-    openPage: (Part2PageEntity, String) -> ByteArray,
+    openPage: (Part2PageEntity, SealKey) -> ByteArray,
 ): PageRestore {
     val layout = PageArchive.layout(source) ?: return PageRestore(emptySequence(), 0)
-    val declared = declaredCount(source, layout, password)
+    val declared = declaredCount(source, layout, backupKey)
     val examined = minOf(declared, Part2Limits.ORDERS_MAX * Part2Limits.PAGES_PER_ORDER_MAX)
     val held = if (merge) dao.allPageRefs() else emptyList()
     val heldIds = held.map { it.id }.toSet()
@@ -66,7 +67,7 @@ internal suspend fun restorePages(
             header.id in heldIds -> Unit // an immutable page the device already holds: left alone, not an error
             !fits || header.orderId !in orderIds || !seen.add(header.id) -> skipped++
             (perOrder[header.orderId] ?: 0) >= Part2Limits.PAGES_PER_ORDER_MAX || vault + header.length > vaultBytesMax -> skipped++
-            !verified(source, header, position, password, openPage) -> skipped++
+            !verified(source, header, position, backupKey, openPage) -> skipped++
             else -> {
                 accepted += Accepted(header.id, header.orderId, position, header.dataAt, header.length)
                 vault += header.length
@@ -79,7 +80,7 @@ internal suspend fun restorePages(
     val pages =
         accepted.asSequence().map { page ->
             val sealed = Part2PageEntity(page.id, page.orderId, page.position, source.read(page.offset, page.length))
-            val jpeg = openPage(sealed, password)
+            val jpeg = openPage(sealed, backupKey)
             try {
                 sealPage(page.id, page.orderId, page.position, jpeg, key)
             } finally {
@@ -95,11 +96,11 @@ private const val TRAILER_MAX_BYTES = 4096
 private fun declaredCount(
     source: BackupSource,
     layout: PageArchive.Layout,
-    password: String,
+    backupKey: SealKey,
 ): Int =
     try {
         if (layout.trailerLength > TRAILER_MAX_BYTES) throw BackupDamagedException()
-        val plain = com.payslipmax.pdfparser.crypto.CryptoHelper.decrypt(source.read(layout.trailerStart, layout.trailerLength), password).getOrThrow()
+        val plain = backupKey.open(source.read(layout.trailerStart, layout.trailerLength)).getOrThrow()
         BackupJson.decode<PageTrailer>(plain.decodeToString()).pages
     } catch (e: Exception) {
         throw BackupDamagedException()
@@ -132,12 +133,12 @@ private fun verified(
     source: BackupSource,
     header: Header,
     position: Int,
-    password: String,
-    openPage: (Part2PageEntity, String) -> ByteArray,
+    backupKey: SealKey,
+    openPage: (Part2PageEntity, SealKey) -> ByteArray,
 ): Boolean =
     try {
         val sealed = Part2PageEntity(header.id, header.orderId, position, source.read(header.dataAt, header.length))
-        openPage(sealed, password).fill(0)
+        openPage(sealed, backupKey).fill(0)
         true
     } catch (e: Part2UnreadableException) {
         false

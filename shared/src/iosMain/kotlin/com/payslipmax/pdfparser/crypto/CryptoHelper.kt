@@ -7,25 +7,9 @@ import platform.CoreCrypto.*
 import platform.CoreFoundation.*
 import platform.Foundation.*
 import platform.Security.*
-import platform.posix.dlsym
-
-private val RTLD_DEFAULT = 0xfffffffffffffffeUL.toLong().toCPointer<CPointed>()
-
-@OptIn(ExperimentalForeignApi::class)
-private val cccryptorGCMOneshotEncrypt =
-    dlsym(RTLD_DEFAULT, "CCCryptorGCMOneshotEncrypt")?.reinterpret<
-        CFunction<(alg: CCAlgorithm, key: COpaquePointer?, keyLength: ULong, iv: COpaquePointer?, ivLength: ULong, aData: COpaquePointer?, aDataLength: ULong, dataIn: COpaquePointer?, dataInLength: ULong, dataOut: COpaquePointer?, tagOut: COpaquePointer?, tagLength: ULong) -> CCCryptorStatus>,
-        >()
-
-@OptIn(ExperimentalForeignApi::class)
-private val cccryptorGCMOneshotDecrypt =
-    dlsym(RTLD_DEFAULT, "CCCryptorGCMOneshotDecrypt")?.reinterpret<
-        CFunction<(alg: CCAlgorithm, key: COpaquePointer?, keyLength: ULong, iv: COpaquePointer?, ivLength: ULong, aData: COpaquePointer?, aDataLength: ULong, dataIn: COpaquePointer?, dataInLength: ULong, dataOut: COpaquePointer?, tagIn: COpaquePointer?, tagLength: ULong) -> CCCryptorStatus>,
-        >()
 
 actual object CryptoHelper {
     private const val IV_SIZE = 12
-    private const val KEY_SIZE = 32
     private const val SALT_SIZE = 16
     private const val TAG_SIZE = 16
     private var memoryFallbackKey: String? = null
@@ -38,7 +22,6 @@ actual object CryptoHelper {
         password: String,
     ): Result<ByteArray> {
         return try {
-            val encryptFunc = cccryptorGCMOneshotEncrypt ?: return Result.failure(Exception("GCM Encrypt not found"))
             val salt =
                 ByteArray(SALT_SIZE).apply {
                     usePinned { SecRandomCopyBytes(kSecRandomDefault, SALT_SIZE.toULong(), it.addressOf(0).reinterpret<UByteVar>()) }
@@ -58,7 +41,7 @@ actual object CryptoHelper {
             val buffer = ByteArray(dataSize)
             val tag = ByteArray(TAG_SIZE)
 
-            val cryptStatus = executeGcmEncrypt(prefixedData, keyBytes, iv, buffer, tag)
+            val cryptStatus = gcmEncrypt(prefixedData, keyBytes, iv, null, buffer, tag)
             if (cryptStatus != kCCSuccess) return Result.failure(Exception("Encrypt status: $cryptStatus"))
             val result =
                 ByteArray(SALT_SIZE + IV_SIZE + dataSize + TAG_SIZE).apply {
@@ -70,33 +53,6 @@ actual object CryptoHelper {
             Result.success(result)
         } catch (e: Exception) {
             Result.failure(e)
-        }
-    }
-
-    private fun executeGcmEncrypt(
-        prefixedData: ByteArray,
-        keyBytes: ByteArray,
-        iv: ByteArray,
-        buffer: ByteArray,
-        tag: ByteArray,
-    ): Int {
-        val encryptFunc = cccryptorGCMOneshotEncrypt ?: return -1
-        val dataSize = prefixedData.size
-        return prefixedData.usePinned { dataPinned ->
-            buffer.usePinned { bufferPinned ->
-                keyBytes.usePinned { keyPinned ->
-                    iv.usePinned { ivPinned ->
-                        tag.usePinned { tagPinned ->
-                            encryptFunc(
-                                kCCAlgorithmAES, keyPinned.addressOf(0), KEY_SIZE.toULong(),
-                                ivPinned.addressOf(0), IV_SIZE.toULong(), null, 0UL,
-                                dataPinned.addressOf(0), dataSize.toULong(),
-                                bufferPinned.addressOf(0), tagPinned.addressOf(0), TAG_SIZE.toULong(),
-                            )
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -117,39 +73,12 @@ actual object CryptoHelper {
             val tag = ByteArray(TAG_SIZE).apply { encryptedData.copyInto(this, 0, prefixSize + cipherTextSize, encryptedData.size) }
             val buffer = ByteArray(cipherTextSize)
 
-            val cryptStatus = executeGcmDecrypt(cipherText, keyBytes, iv, buffer, tag)
+            val cryptStatus = gcmDecrypt(cipherText, keyBytes, iv, null, buffer, tag)
             if (cryptStatus != kCCSuccess) return Result.failure(decryptStatusFailure(cryptStatus) ?: Exception("Decrypt status: $cryptStatus"))
             // The plaintext must start with the MAGIC header "PCDA"; anything else was not sealed by this app.
             PcdaMark.open(buffer)
         } catch (e: Exception) {
             Result.failure(e)
-        }
-    }
-
-    private fun executeGcmDecrypt(
-        cipherText: ByteArray,
-        keyBytes: ByteArray,
-        iv: ByteArray,
-        buffer: ByteArray,
-        tag: ByteArray,
-    ): Int {
-        val decryptFunc = cccryptorGCMOneshotDecrypt ?: return -1
-        val cipherTextSize = cipherText.size
-        return cipherText.usePinned { cipherPinned ->
-            buffer.usePinned { bufferPinned ->
-                keyBytes.usePinned { keyPinned ->
-                    iv.usePinned { ivPinned ->
-                        tag.usePinned { tagPinned ->
-                            decryptFunc(
-                                kCCAlgorithmAES, keyPinned.addressOf(0), KEY_SIZE.toULong(),
-                                ivPinned.addressOf(0), IV_SIZE.toULong(), null, 0UL,
-                                cipherPinned.addressOf(0), cipherTextSize.toULong(),
-                                bufferPinned.addressOf(0), tagPinned.addressOf(0), TAG_SIZE.toULong(),
-                            )
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -188,6 +117,20 @@ actual object CryptoHelper {
         }
         return derivedKey
     }
+
+    actual fun randomBytes(size: Int): ByteArray = secureRandomBytes(size)
+
+    actual fun sealWithKey(
+        data: ByteArray,
+        key: ByteArray,
+        aad: ByteArray,
+    ): Result<ByteArray> = gcmSeal(data, key, aad)
+
+    actual fun openWithKey(
+        sealed: ByteArray,
+        key: ByteArray,
+        aad: ByteArray,
+    ): Result<ByteArray> = gcmOpen(sealed, key, aad)
 
     private const val KEYCHAIN_SERVICE = "com.payslipmax.pdfparser"
     private const val KEYCHAIN_ACCOUNT = "db_secret_key"

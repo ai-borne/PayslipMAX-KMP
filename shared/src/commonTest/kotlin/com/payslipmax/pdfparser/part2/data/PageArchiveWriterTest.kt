@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.PasswordKey
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.BackupSink
 import com.payslipmax.pdfparser.repository.MemoryBackupSink
@@ -31,7 +32,7 @@ class PageArchiveWriterTest {
         stream.begin(meta)
         stream.add("p1", "o1", 0, sealedOne)
         stream.add("p2", "o1", 1, sealedTwo)
-        stream.finish(2, BACKUP_PASSWORD)
+        stream.finish(2, PasswordKey(BACKUP_PASSWORD))
         val bytes = sink.toByteArray()
 
         assertEquals("PCDB", bytes.copyOf(4).decodeToString())
@@ -60,7 +61,7 @@ class PageArchiveWriterTest {
         val stream = PageArchiveWriter(sink)
         stream.begin(meta)
         repeat(50) { stream.add("p$it", "o1", it, ByteArray(100_000)) }
-        stream.finish(50, BACKUP_PASSWORD)
+        stream.finish(50, PasswordKey(BACKUP_PASSWORD))
 
         assertTrue(widest.max() <= 100_000 + 14 + 10, "largest single write ${widest.max()}")
         assertTrue(widest.size >= 50, "the pages arrive one at a time")
@@ -70,7 +71,7 @@ class PageArchiveWriterTest {
     fun theDocumentMustComeFirstAndOnlyOnce() {
         val (_, stream) = written()
         assertFailsWith<IllegalStateException> { stream.add("p1", "o1", 0, sealedOne) }
-        assertFailsWith<IllegalStateException> { stream.finish(0, BACKUP_PASSWORD) }
+        assertFailsWith<IllegalStateException> { stream.finish(0, PasswordKey(BACKUP_PASSWORD)) }
         stream.begin(meta)
         assertFailsWith<IllegalStateException> { stream.begin(meta) }
     }

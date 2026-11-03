@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.PasswordKey
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -114,7 +115,7 @@ class Part2CodecTest {
     fun aPayloadOverTheCeilingIsRefusedBeforeItIsEncrypted() {
         val huge = """{"pad":"${"x".repeat(Part2Limits.PAYLOAD_MAX_BYTES)}"}"""
 
-        assertNoLeak(assertFailsWith<Part2TooLargeException> { sealPayload(huge, key) })
+        assertNoLeak(assertFailsWith<Part2TooLargeException> { sealPayload(huge, PasswordKey(key)) })
     }
 
     @Test

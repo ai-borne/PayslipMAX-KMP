@@ -144,7 +144,8 @@ class GuideSecurityContractTest {
         val entity = withoutComments(guideSources.first { it.name == "GuideNoteEntity.kt" })
         val columns = entity.substringAfter("data class GuideNoteEntity(").substringBefore("\n)").lines().map { it.trim().removeSuffix(",") }.filter { it.isNotEmpty() }
         assertEquals(listOf("@PrimaryKey val cardId: String", "val ciphertext: String"), columns, "the stored row is the card id (key) and one ciphertext, nothing readable")
-        assertTrue(entity.contains("CryptoHelper.encrypt"))
+        // Sealed, never plain: the device path wraps its password in PasswordKey (CryptoHelper.encrypt), a v6 backup passes its archive key.
+        assertTrue(entity.contains("key.seal(") && entity.contains("PasswordKey(password)"), "a note row is always sealed, the device's with its password")
     }
 
     @Test

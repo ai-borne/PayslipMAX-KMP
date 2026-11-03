@@ -74,7 +74,10 @@ object Part2Limits {
     /** Pages a restore writes per insert: a handful, so the pages in memory at once stay a few megabytes whatever the vault holds. */
     const val PAGE_INSERT_BATCH = 4
 
-    /** What `CryptoHelper.encrypt` adds to the plaintext: salt, IV, GCM tag and the magic header. Pinned against the real helper by a test on both platforms. */
+    /**
+     * The most a seal adds to its plaintext: `CryptoHelper.encrypt` (salt, IV, GCM tag and the magic header; the device and backups before
+     * format 6) adds this much, an `ArchiveKey` seal (format 6, no salt) less. Pinned against the real helper by a test on both platforms.
+     */
     const val SEAL_OVERHEAD_BYTES = 48
 
     /** An id the app made (a UUID) or a code: letters, digits, `-` and `_` only, so it can never carry markup or a path. */

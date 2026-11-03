@@ -1,8 +1,8 @@
 package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
-import com.payslipmax.pdfparser.repository.BackupSink
 import com.payslipmax.pdfparser.repository.BackupSource
 import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import com.payslipmax.pdfparser.repository.PortableBackup
@@ -40,69 +40,63 @@ class Part2Backup(
     private val vaultBytesMax: Long = Part2Limits.VAULT_BYTES_MAX,
     // Seams so a test can prove an over-limit row is never decoded or decrypted.
     private val decodeText: (String) -> ByteArray = { Base64.decode(it) },
-    private val openPage: (Part2PageEntity, String) -> ByteArray = { page, key -> page.openPage(key) },
+    private val openPage: (Part2PageEntity, SealKey) -> ByteArray = { page, key -> page.openPage(key) },
 ) {
     /** How many entries and vault orders this device holds (pages belong to an order, so they add nothing). */
     suspend fun itemCount(): Int = dao.entryCount() + dao.orderCount()
 
-    /** Device entries and orders re-encrypted under [password]; a row this device cannot read is left out, like an unreadable payslip. */
-    suspend fun export(password: String): Part2Export {
+    /** Device entries and orders sealed with the backup's [backupKey]; a row this device cannot read is left out, like an unreadable payslip. */
+    suspend fun export(backupKey: SealKey): Part2Export {
         val key = deviceKey()
-        val entries = dao.allEntries().mapNotNull { row -> runCatching { Part2RowBackup(row.id, Base64.encode(row.toEntry(key).toEntity(password).ciphertext)) }.getOrNull() }
-        val orders = dao.allOrders().mapNotNull { row -> runCatching { Part2RowBackup(row.id, Base64.encode(row.toOrder(key).toEntity(password).ciphertext)) }.getOrNull() }
+        val entries = dao.allEntries().mapNotNull { row -> runCatching { Part2RowBackup(row.id, Base64.encode(row.toEntry(key).toEntity(backupKey).ciphertext)) }.getOrNull() }
+        val orders = dao.allOrders().mapNotNull { row -> runCatching { Part2RowBackup(row.id, Base64.encode(row.toOrder(key).toEntity(backupKey).ciphertext)) }.getOrNull() }
         return Part2Export(entries, orders)
     }
 
     /**
-     * Writes the archive to [sink] when the vault has pages ([meta] is the encrypted metadata document) and returns true, or writes nothing
-     * and returns false when it has none. One page at a time: a page's row, its plaintext and its new ciphertext are all that is ever held,
-     * so the vault can be any size the ceiling allows. A vault whose pages are all unreadable writes an archive that counts none.
+     * Writes every page this device can read into [writer], sealed with the backup's [backupKey], and returns how many it wrote (the
+     * trailer's count). One page at a time: a page's row, its plaintext and its new ciphertext are all that is ever held, so the vault can be
+     * any size the ceiling allows. A page this device cannot read is left out, like an unreadable payslip.
      */
-    suspend fun writeArchive(
-        sink: BackupSink,
-        meta: ByteArray,
-        password: String,
-    ): Boolean {
-        val refs = dao.allPageRefs()
-        if (refs.isEmpty()) return false
+    suspend fun writePages(
+        writer: PageArchiveWriter,
+        backupKey: SealKey,
+    ): Int {
         val key = deviceKey()
-        val writer = PageArchiveWriter(sink)
-        writer.begin(meta)
         var written = 0
-        for (ref in refs) {
+        for (ref in dao.allPageRefs()) {
             val row = dao.page(ref.id) ?: continue
             val jpeg = runCatching { row.openPage(key) }.getOrNull() ?: continue
             try {
-                writer.add(ref.id, ref.orderId, ref.position, sealPage(ref.id, ref.orderId, ref.position, jpeg, password).ciphertext)
+                writer.add(ref.id, ref.orderId, ref.position, sealPage(ref.id, ref.orderId, ref.position, jpeg, backupKey).ciphertext)
                 written++
             } finally {
                 jpeg.fill(0)
             }
         }
-        writer.finish(written, password)
-        return true
+        return written
     }
 
     /** [archive] is the whole file in memory (small files and tests); see the [BackupSource] form. */
     suspend fun restore(
         backup: PortableBackup,
         archive: ByteArray,
-        password: String,
+        backupKey: SealKey,
         mode: RestoreMode,
-    ): Part2Restore = restore(backup, MemoryBackupSource(archive), password, mode)
+    ): Part2Restore = restore(backup, MemoryBackupSource(archive), backupKey, mode)
 
     /** [source] is the whole file, read by range; [backup] is its decoded metadata document. A damaged page archive throws `BackupDamagedException`. */
     suspend fun restore(
         backup: PortableBackup,
         source: BackupSource,
-        password: String,
+        backupKey: SealKey,
         mode: RestoreMode,
     ): Part2Restore {
         val key = deviceKey()
         val merge = mode == RestoreMode.MERGE
-        val entries = restoreRows(entryKind, backup.part2Entries, if (merge) dao.allEntries() else emptyList(), password, key, merge, decodeText)
-        val orders = restoreRows(orderKind, backup.part2Orders, if (merge) dao.allOrders() else emptyList(), password, key, merge, decodeText)
-        val pages = restorePages(dao, source, orders.kept + orders.heldIds, password, key, merge, vaultBytesMax, openPage)
+        val entries = restoreRows(entryKind, backup.part2Entries, if (merge) dao.allEntries() else emptyList(), backupKey, key, merge, decodeText)
+        val orders = restoreRows(orderKind, backup.part2Orders, if (merge) dao.allOrders() else emptyList(), backupKey, key, merge, decodeText)
+        val pages = restorePages(dao, source, orders.kept + orders.heldIds, backupKey, key, merge, vaultBytesMax, openPage)
         return Part2Restore(entries.rows, orders.rows, pages.pages, entries.skipped + orders.skipped + pages.skipped + backup.part2Drafts.size)
     }
 }
