@@ -80,7 +80,8 @@ fun EncryptedPayslipEntity.toDomain(key: SealKey): ParsedPayslip {
             try {
                 CryptoHelper.decrypt(encryptedBytes, CryptoHelper.getLegacyFallbackKey()).getOrThrow()
             } catch (legacyEx: Exception) {
-                Logger.w("EncryptedPayslipEntity", "Cannot decrypt $dateStr with device key or legacy key - ${legacyEx.message}")
+                // A fixed line: the month is row metadata and the message is the crypto library's (docs/Plan/14a P6).
+                Logger.w("EncryptedPayslipEntity", "A payslip row did not open with the device key or the legacy key")
                 throw legacyEx
             }
         }

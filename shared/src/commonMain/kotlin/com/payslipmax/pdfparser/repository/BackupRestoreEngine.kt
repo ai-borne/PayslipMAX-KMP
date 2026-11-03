@@ -21,6 +21,7 @@ import com.payslipmax.pdfparser.repository.backup.applyTo
 import com.payslipmax.pdfparser.repository.backup.openArchive
 import com.payslipmax.pdfparser.repository.backup.toEntity
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.SerializationException
 
 /**
  * A backup opened, decoded, checked and re-sealed for this device, with nothing written yet (docs/Plan/14a P4). It holds the archive's key
@@ -65,7 +66,7 @@ internal class BackupRestoreEngine(
         progress: BackupProgress,
     ): PreparedRestore {
         val backupKey = opened.key
-        val backup = BackupJson.decode(PortableBackup.serializer(), opened.document.decodeToString())
+        val backup = decodeDocument(opened.document)
         BackupEnvelope.requireKnownFormat(backup.version)
         val deviceKey = CryptoHelper.getDatabaseSecretKey()
         val total = backup.encryptedPayslips.size + backup.corrections.size
@@ -210,6 +211,17 @@ internal class BackupRestoreEngine(
             open()
         } catch (e: Exception) {
             null
+        }
+
+    /**
+     * The document, which opened with the password: one that does not decode is a damaged file. kotlinx's message quotes the JSON (payslip
+     * values included), so it is dropped here and never reaches a `Result` (P6, P10 "From P2" item 2).
+     */
+    private fun decodeDocument(document: ByteArray): PortableBackup =
+        try {
+            BackupJson.decode(PortableBackup.serializer(), document.decodeToString())
+        } catch (e: SerializationException) {
+            throw BackupDamagedException()
         }
 
     /** The outer layer opened (a wrong password failed before this), so a row inside that will not open is a damaged file. */

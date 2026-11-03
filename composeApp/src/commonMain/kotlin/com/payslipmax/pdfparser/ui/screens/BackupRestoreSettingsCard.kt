@@ -218,13 +218,7 @@ private fun runBackup(
 ) {
     if (!canBackup) return onLockedBackup()
     backupRefusal(password, contents)?.let { return onStatus(it) }
-    onExportBackup(password) { result ->
-        if (result.isSuccess) {
-            onStatus(backupDoneStatus(contents))
-        } else {
-            onStatus(BackupStatus("${AppStrings.statusBackupFailed}${result.exceptionOrNull()?.message}", isSuccess = false))
-        }
-    }
+    onExportBackup(password) { result -> onStatus(backupStatus(result, contents)) }
 }
 
 /** The picked backup file waiting for the officer's Replace or Merge answer, and the question to ask. */

@@ -7,6 +7,8 @@ import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.part2.data.PageArchive
 import com.payslipmax.pdfparser.repository.BackupDamagedException
 import com.payslipmax.pdfparser.repository.BackupSource
+import com.payslipmax.pdfparser.repository.BackupTooLargeException
+import com.payslipmax.pdfparser.repository.NotABackupException
 import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.repository.from
 
@@ -26,7 +28,8 @@ internal class OpenedArchive(
  * Opens [source], dispatching on its header (docs/Plan/14a P3). A v6 file's header is checked first, so a later app's file is refused with
  * `UnsupportedBackupVersionException` and a header out of bounds with `BackupDamagedException`, both before the KDF runs. A file without a
  * header is formats 1 to 5, read exactly as before: rows sealed per row with the password. A wrong password, a header changed after writing,
- * or a file that is not a backup fails with `DecryptionFailedException`.
+ * or a file that is not a backup fails with `DecryptionFailedException`; one too short to hold a sealed row is [NotABackupException] and
+ * one too large to be a backup without pages is [BackupTooLargeException], both before any decrypt.
  */
 internal fun openArchive(
     source: BackupSource,
@@ -60,9 +63,13 @@ internal fun newArchive(password: String): NewArchive {
 
 /** A file that is not a page archive is the one encrypted blob (payslips and their PDFs), which is read whole; no real one is this large. */
 private fun wholeBlob(source: BackupSource): ByteArray {
-    if (source.size > BLOB_MAX_BYTES) throw BackupDamagedException()
+    if (source.size < SEALED_BLOB_MIN_BYTES) throw NotABackupException()
+    if (source.size > BLOB_MAX_BYTES) throw BackupTooLargeException()
     return source.read(0, source.size.toInt())
 }
+
+/** The smallest blob any password could open: a 16-byte salt, a 12-byte IV, the 4-byte "PCDA" mark and a 16-byte tag. */
+private const val SEALED_BLOB_MIN_BYTES = 16 + 12 + 4 + 16
 
 /** The most a backup without scanned pages may be: payslips and their PDFs, a few megabytes in real use. */
 private const val BLOB_MAX_BYTES = 128L * 1024 * 1024

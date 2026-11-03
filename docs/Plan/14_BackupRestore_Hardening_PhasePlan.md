@@ -150,3 +150,23 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
   - Pixel: debug build installed over the existing one; launches with no FATAL.
   - Security review: no findings.
   - Pending: 14a P10 "From P5".
+- 2026-11-03 — **P6 done**: classified failures and telemetry (F5, F7).
+  - `BackupFailure` (shared, `repository/BackupFailure.kt`): 9 values with a stable `code`; `BackupFailure.of` is the one mapper, by type
+    and by the type of a cause, never by text. One fixed line each in `BackupRestoreStrings`. `restoreFailedStatus` replaced; the backup
+    path no longer shows `exception.message` (F7).
+  - New typed refusals: `NotABackupException` (a headerless file under 48 bytes), `BackupTooLargeException` (no page archive, over 128 MB),
+    `BackupStorageFullException`. A document that opens but does not decode is a message-less `BackupDamagedException`, so kotlinx's
+    text (which quotes the JSON) never reaches a `Result`.
+  - STORAGE_FULL before anything is written: a backup needs the vault plus 100 MB, a restore twice the file plus 100 MB.
+  - `BackupTelemetry`: one non-fatal (`BackupFailureEvent`, fixed message) with `backup_failure_code`, `backup_format_version`, `backup_op`
+    (allow-listed by exact name in `TelemetrySanitizer`), fixed codes only; nothing when the officer turned telemetry off or the choice
+    cannot be read. Sent from the view model, where a backup or restore ends.
+  - Fixed log lines at 6 sites (export payslip and corrections, rebuild, device read, audit repair, `toDomain`): no month, no exception.
+  - iOS legacy `CryptoHelper.encrypt`: salt and IV from the checked generator (fails closed), layout unchanged.
+  - Rewritten, not deleted: `RestoreStatusTest` (damaged/newer showed their messages), `PayslipBackupWrongPasswordTest` (tiny file),
+    `DecryptFailureSourceTest` (scanned `restoreFailedStatus`).
+  - RED first: 29 new tests failed on assertions (shared 17, composeApp 10, iOS 2). 32/32 mutations caught.
+  - Gate green: shared 1766 → 1790 (release 1790, 1 pre-existing skip), iOS shared 1618 → 1645, composeApp 1441 → 1448 / 1415 → 1422,
+    iOS composeApp 857 → 864. R8 triggered and green with no new rule. The owner's 4 local backups restore with 0 skips.
+  - Pixel: debug build installed over the existing one; launches with no FATAL. Security review: no findings.
+  - Pending: 14a P10 "From P6".

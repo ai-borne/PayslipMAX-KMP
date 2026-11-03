@@ -7,6 +7,7 @@ import com.payslipmax.pdfparser.logging.Logger
 import com.payslipmax.pdfparser.part2.data.LastBackupStorage
 import com.payslipmax.pdfparser.part2.data.PageArchiveWriter
 import com.payslipmax.pdfparser.part2.data.Part2Backup
+import com.payslipmax.pdfparser.part2.space.FreeSpaceGate
 import com.payslipmax.pdfparser.rating.currentTimeMillis
 import com.payslipmax.pdfparser.repository.backup.CorrectionBackupRow
 import com.payslipmax.pdfparser.repository.backup.newArchive
@@ -31,6 +32,8 @@ class PayslipBackupService(
     // Where the time of the last successful export is kept (device-local, never in the archive); null where nobody shows it.
     private val lastBackup: LastBackupStorage? = null,
     private val now: () -> Long = { currentTimeMillis() },
+    // Free space on the device's volume, checked before a backup is written or a restore starts; unknown never blocks (FreeSpaceGate).
+    private val space: FreeSpaceGate = FreeSpaceGate.Unknown,
 ) {
     private val engine = BackupRestoreEngine(payslipDao, part2Backup)
 
@@ -50,13 +53,16 @@ class PayslipBackupService(
 
     /**
      * Writes the archive into [files]' export file, reads it back from there ([verify]) and only then records the backup time (F4). A
-     * failure leaves no file: [BackupFiles.write] deletes it, so the share sheet can never offer a backup that did not read back.
+     * failure leaves no file: [BackupFiles.write] deletes it, so the share sheet can never offer a backup that did not read back. A device
+     * without room for the file (about the vault's size) and the margin is refused first, with nothing written (P6).
      */
     suspend fun backUp(
         files: BackupFiles,
         password: String,
         progress: BackupProgress = BackupProgress.NONE,
     ): Result<Unit> {
+        val vault = runCatching { withContext(dispatcher) { part2Backup?.vaultBytes() ?: 0L } }.getOrElse { return Result.failure(it) }
+        if (!space.hasRoomFor(vault)) return Result.failure(BackupStorageFullException())
         val at = now()
         return files
             .write(verify = { source -> verify(source, password, progress) }) { sink -> exportTo(sink, password, at, progress) }
@@ -72,7 +78,7 @@ class PayslipBackupService(
         password: String,
         progress: BackupProgress,
     ): Result<Unit> =
-        prepare(source, password) { _, done, total -> progress.update(BackupStage.VERIFYING, done, total) }
+        open(source, password) { _, done, total -> progress.update(BackupStage.VERIFYING, done, total) }
             .mapCatching { prepared -> prepared.use { check(it.preview.skipped == SkippedRows.NONE) } }
             .recoverCatching { throw BackupVerifyException() }
 
@@ -110,7 +116,8 @@ class PayslipBackupService(
                         try {
                             entity.toDomain(deviceKey).toEncryptedEntity(backupKey).toBackupRow()
                         } catch (e: Exception) {
-                            Logger.e("PayslipBackupService", "Skipping undecryptable payslip ${entity.dateStr} during backup", e)
+                            // A fixed line: the month is row metadata and the exception can quote the payslip (P6).
+                            Logger.w(TAG, "A payslip that would not open was left out of the backup")
                             null
                         }
                     }
@@ -165,7 +172,7 @@ class PayslipBackupService(
             try {
                 entity.toCorrectionList(deviceKey).toCorrectionEntity(entity.dateStr, backupKey).toBackupRow()
             } catch (e: Exception) {
-                Logger.e("PayslipBackupService", "Skipping undecryptable corrections for ${entity.dateStr} during backup", e)
+                Logger.w(TAG, "Corrections that would not open were left out of the backup")
                 null
             }
         }
@@ -188,12 +195,24 @@ class PayslipBackupService(
 
     /**
      * Opens, decodes and checks the whole backup (every row and page) and re-seals it for this device, writing nothing (F4); the preview
-     * says what a [commit] will write. [source] must stay open until the result is closed.
+     * says what a [commit] will write. [source] must stay open until the result is closed. A device without room for what the commit
+     * writes is refused first ([BackupStorageFullException], P6): the rows go into the database's write-ahead log and then its file, so
+     * about [RESTORE_WRITES] times the file's size, plus the margin every write keeps free.
      */
     suspend fun prepare(
         source: BackupSource,
         password: String,
         progress: BackupProgress = BackupProgress.NONE,
+    ): Result<PreparedRestore> {
+        if (!space.hasRoomFor(RESTORE_WRITES * source.size)) return Result.failure(BackupStorageFullException())
+        return open(source, password, progress)
+    }
+
+    /** [prepare] without the space check: the read-back of a just-written backup writes nothing. */
+    private suspend fun open(
+        source: BackupSource,
+        password: String,
+        progress: BackupProgress,
     ): Result<PreparedRestore> =
         withContext(dispatcher) {
             try {
@@ -228,7 +247,14 @@ class PayslipBackupService(
         try {
             intelligence.rebuildAuditHistory(repository.getAllPayslips().first())
         } catch (e: Exception) {
-            Logger.e("PayslipBackupService", "Rebuilding ledger and insights after restore failed", e)
+            Logger.e(TAG, "Rebuilding ledger and insights after restore failed")
         }
+    }
+
+    private companion object {
+        const val TAG = "PayslipBackupService"
+
+        /** A restore writes its rows about twice before space is given back: the write-ahead log, then the database file. */
+        const val RESTORE_WRITES = 2
     }
 }

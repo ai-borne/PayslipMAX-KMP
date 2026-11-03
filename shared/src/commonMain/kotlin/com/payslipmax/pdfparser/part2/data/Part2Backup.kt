@@ -48,6 +48,9 @@ class Part2Backup(
     /** How many entries and vault orders this device holds (pages belong to an order, so they add nothing). */
     suspend fun itemCount(): Int = dao.entryCount() + dao.orderCount()
 
+    /** The bytes the vault's pages take on the device: a backup copies them, so this is most of the export file's size. */
+    suspend fun vaultBytes(): Long = dao.vaultBytes()
+
     /** Device entries and orders sealed with the backup's [backupKey]; a row this device cannot read is left out, like an unreadable payslip. */
     suspend fun export(backupKey: SealKey): Part2Export {
         val key = deviceKey()

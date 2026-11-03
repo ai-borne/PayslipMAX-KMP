@@ -206,7 +206,8 @@ From P1 (2026-11-03):
    so it would test test code.
 2. **Pre-existing log of a payslip month.** When a row can't be decrypted, `PayslipBackupService` calls `Logger.e(..., "... ${entity.dateStr} ...")`
    on export (payslips and corrections). That call writes a Crashlytics breadcrumb. It was not changed in P1. **Owner: P6** (classified failures
-   and telemetry); fixed-code messages only.
+   and telemetry); fixed-code messages only. **Closed in P6**: both are fixed lines with no month and no exception
+   (`BackupLogLeakTest.aBackupThatSkipsAnUnreadablePayslipAndCorrectionLogsFixedLinesOnly`).
 3. **Older apps reading a P1+ file.** A shipped app (1.5.0 or earlier) that does a REPLACE restore of a file written from P1 on finds no
    lock/PIN/telemetry keys in it. It then writes its defaults on that old device: lock off, no PIN, telemetry on. Shipped code can't be changed.
    Format v6 (P3) and its "update the app" answer reach older readers only through new releases, so release notes for the build that ships
@@ -220,7 +221,8 @@ From P2 (2026-11-03):
    ships only with a `CURRENT_VERSION` bump. **Owner to decide; nearest phase P5.**
 2. **A payslip or correction decode error can quote its input.** kotlinx serialization puts part of the JSON (payslip values) in the
    exception message, and that exception reaches `Result.failure` on restore. This was already true before P2 and is unchanged.
-   Notes and Part II rows already swallow it. **Owner: P6** (F7: one exception → `BackupFailure` mapper with fixed codes).
+   Notes and Part II rows already swallow it. **Owner: P6** (F7: one exception → `BackupFailure` mapper with fixed codes). **Closed in P6**
+   with item 7 of "From P5" (see there).
 3. **Package direction.** 14a puts `BackupJson` in `repository/backup/`, so `database/` (payslip, correction and note entities) and
    `part2/data/` now import it, while `repository/backup/BackupRowMappers.kt` imports `database/`. It's one module, so it builds and runs,
    but the two packages now depend on each other. **Owner to confirm**: keep it as 14a says, or move `BackupJson` to a neutral package
@@ -251,7 +253,8 @@ From P3 (2026-11-03):
    definition. No separate version byte was added to `PCDB` (that would change the v5 wire shape the goldens pin).
 7. **Pre-existing:** the iOS legacy `CryptoHelper.encrypt` (device DB and formats 1–5) ignores `SecRandomCopyBytes`'s status when it makes
    a salt and IV. The new v6 path checks it. The device path was out of P3's scope ("device DB encryption untouched"). **Owner: a one-line
-   fix in a later phase (P6 is the nearest crypto-adjacent phase).**
+   fix in a later phase (P6 is the nearest crypto-adjacent phase).** **Closed in P6**: salt and IV come from the checked generator,
+   layout unchanged (`IosLegacyEncryptRandomTest`, iOS). The device key generation has the same flaw: see "From P6" item 6.
 
 From P4 (2026-11-03):
 1. **A page whose order does not travel is no longer exported.** A fresh backup must read back with nothing skipped (verify-after-write),
@@ -289,10 +292,14 @@ From P5 (2026-11-03):
 6. **Pre-existing log, now reached once per skipped payslip.** When a payslip will not open, `EncryptedPayslipEntity.toDomain` calls
    `Logger.w` with the row's month and the crypto exception's message. That call is a Crashlytics breadcrumb. Before P5 the first such row
    ended the restore; now every skipped row reaches it. The month is plaintext row metadata (it travels in clear beside the ciphertext), not
-   decrypted content, and the message is the crypto library's. **Owner: P6**, with P1 item 2: fixed codes only.
+   decrypted content, and the message is the crypto library's. **Owner: P6**, with P1 item 2: fixed codes only. **Closed in P6**
+   (`BackupLogLeakTest.aDeviceRowThatWillNotOpenLogsNeitherItsMonthNorTheCryptoMessage`).
 7. **P10 "From P2" item 2 is partly closed.** A payslip or correction that fails to decode is now skipped, and its exception (which can
    quote the JSON) is dropped (`openedOrNull`): it no longer reaches `Result.failure`. The document's own decode can still put kotlinx text
-   in a failure. **Owner: P6** (one mapper to fixed codes).
+   in a failure. **Owner: P6** (one mapper to fixed codes). **Closed in P6**: the document's decode failure is thrown as a message-less
+   `BackupDamagedException` at the source (`BackupFailureSourceTest.aDocumentThatOpensButIsNotABackupsJsonIsDamagedAndCarriesNoneOfIt`), and
+   the mapper reads types only, so no text reaches the screen or telemetry (`RestoreStatusTest.noFailureShowsItsOwnTextWhateverItHolds`,
+   `BackupTelemetryTest.noExceptionTextReachesTheReportWhateverItHolds`).
 8. **P10 "From P2" item 1 is closed by D16.** `FieldSourceMapSerializer` drops a `FieldSource` value this app does not know (it reads
    the enum's serial names), and the write path is unchanged. A value that is not text (a number or an object) is still a damaged
    payslip, so it is skipped and counted. The goldens carry no `fieldSource` values (`createMockPayslip` sets none), so wire identity is
@@ -304,3 +311,37 @@ From P5 (2026-11-03):
    the read-back gets another complete backup that has one skip of each kind (payslip, correction, note, entry, order, page). Before P5 it
    was RED for the note, which was skipped silently. The payslip and correction cases failed verify because the whole prepare failed, and
    the Part II kinds were already counted. Mutation M9 (verify checks pages only) proves the per-kind check.
+
+From P6 (2026-11-03):
+1. **Decision taken (asked of P6): the mapper lives in `shared`** (`repository/BackupFailure.kt`, `BackupFailure.of`). Why: the
+   exceptions it reads are shared types, telemetry (`BackupTelemetry`, shared) needs the code, and P7's `BackupRestoreViewModel` reads the
+   same function, so a new failure type and its code are added in one module. The copy (code → line) stays in composeApp's
+   `BackupRestoreStrings`, the copy SSOT. `restoreFailedStatus` is gone; `failedStatus` and `backupStatus` only look the line up.
+2. **Decision taken, owner to confirm: the free-space margin.** A backup needs the vault's bytes plus 100 MB
+   (`Part2Limits.FREE_SPACE_REFUSE_BYTES`, the line below which no scan opens); a restore needs twice the file's size plus 100 MB
+   (rows go into the write-ahead log, then the database file). The read-back after a backup writes nothing and is not checked. A device
+   that cannot say how much is free is never blocked. WHY in `BackupStorageFullTest`.
+3. **Decision taken, owner to confirm: NOT_A_BACKUP vs WRONG_PASSWORD.** AES-GCM cannot tell a wrong password from a file that is not a
+   backup, so every decrypt failure keeps the owner-approved line ("Wrong password, or this isn't a PayslipMax backup", WRONG_PASSWORD).
+   NOT_A_BACKUP is only a file with no header or page archive shorter than the smallest sealed row (48 bytes). TOO_LARGE is a file with no
+   page archive over 128 MB (was "damaged"). `PayslipBackupWrongPasswordTest`'s tiny-file test was rewritten for this, not deleted.
+4. **Decisions taken, owner to confirm:** WRITE_FAILED covers any `BackupFileException`, a picked file that cannot be read included (its line
+   says "written or read"); a restore reports `backup_format_version` = "unknown" unless the file is newer ("newer"), because a failed
+   restore has no preview (P7 can pass the preview's version on a failed commit); every failure, a wrong password included, sends one non-fatal.
+5. **New copy for the D13 review (P8 walk):** `BackupRestoreStrings.notABackup`, `newerVersion`, `damaged`, `tooLarge`, `storageFull`,
+   `verifyFailed`, `writeFailed`, `failedGeneric` (the generic line now reads for both operations). `AppStrings.statusRestoreFailed` and
+   `statusBackupFailed` were deleted (nothing used them after F7).
+6. **Found, not changed (pre-existing, outside P6's scope): the iOS device-database key generation ignores `SecRandomCopyBytes`'s status**
+   (`iosMain/crypto/CryptoHelper.kt`, `resolveDatabaseSecretKey`). If it ever failed, an all-zero key would be stored in the Keychain
+   for good. Failing closed there means the app cannot open its database on that launch, a behaviour change for the owner to decide.
+   **Owner to decide** (one line, same `secureRandomBytes`).
+7. **Found, not changed: other `Logger.e(..., throwable)` callers outside repository/, database/, crypto/ and part2/data/** still send the
+   exception's message to a breadcrumb and a non-fatal (`Logger.e` prints `it.message` and calls `recordException`). P6 fixed every site in
+   its scope (6 sites). A sweep of the rest, or a `Logger.e` that drops the message, is a separate change. **Owner to decide.**
+8. **Found, not changed: `seedMockData` and `clearAllData` put `e.message` into `uiState.error`** (`PayslipViewModelExtensions.kt`,
+   not backup code; seeding is a developer tool). **Owner to decide**; nearest phase P7 (it moves the backup code out of that file).
+9. **Wiring change:** the `FreeSpaceReader` and `FreeSpaceGate` bindings moved from `part2Module` to `sharedModule` (one reader for the
+   Bank and the backup). Proved by `AppKoinModulesTest.theBackupChecksTheGraphsFreeSpaceAndReportsThroughTelemetryThatHonoursTheOptOut`;
+   `sharedModule` singles are shared across tests in a JVM, so that test class now binds the shared `GuideKoinTestDao` leaves.
+10. **Logger** now resolves its `CrashReporter` from Koin when Koin is started (the same platform reporter in the app), so a test can read
+    what a log site sends without a mutable seam (the tech-debt audit refuses a stateful singleton).

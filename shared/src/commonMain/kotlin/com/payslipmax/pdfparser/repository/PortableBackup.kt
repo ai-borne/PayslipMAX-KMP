@@ -78,7 +78,7 @@ class RestoreReport(
 /**
  * Thrown when a backup was written by a newer app than this one: a format, KDF or envelope this app does not know ([backupVersion] is the
  * format version, or the envelope version when the envelope itself is newer). Decided before anything is decrypted when the file has a
- * header (`BackupEnvelope`). Its message is shown to the user as the restore error, so it says what to do.
+ * header (`BackupEnvelope`). Fixed message; the screen shows the NEWER_VERSION line by type (`BackupFailure`), never this text.
  */
 class UnsupportedBackupVersionException(
     val backupVersion: Int,

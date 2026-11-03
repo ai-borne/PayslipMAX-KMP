@@ -1,19 +1,26 @@
 package com.payslipmax.pdfparser.di
 
 import androidx.lifecycle.viewModelScope
+import com.payslipmax.pdfparser.database.AppSettingsEntity
 import com.payslipmax.pdfparser.database.PayslipDao
 import com.payslipmax.pdfparser.guide.GuideRepository
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.parser.PdfParser
 import com.payslipmax.pdfparser.part2.data.Part2Dao
 import com.payslipmax.pdfparser.part2.data.Part2EntryEntity
+import com.payslipmax.pdfparser.part2.space.FreeSpaceReader
+import com.payslipmax.pdfparser.repository.BackupFailureEvent
+import com.payslipmax.pdfparser.repository.BackupOp
+import com.payslipmax.pdfparser.repository.BackupStorageFullException
+import com.payslipmax.pdfparser.repository.BackupTelemetry
 import com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.telemetry.CrashReporter
 import com.payslipmax.pdfparser.telemetry.InstallationIdManager
+import com.payslipmax.pdfparser.testing.FakeBackupFiles
+import com.payslipmax.pdfparser.testing.FakeFreeSpaceReader
 import com.payslipmax.pdfparser.testing.FakeOnboardingStorage
-import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import com.payslipmax.pdfparser.ui.screens.PayAuditViewModel
@@ -40,8 +47,10 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 /**
  * Both platforms start Koin from [appKoinModules], so this commonTest runs the real graph on the JVM and on
@@ -71,7 +80,10 @@ class AppKoinModulesTest {
 
     private val testLeaves =
         module {
-            single<PayslipDao> { FakePayslipDao() }
+            // The backup service and its telemetry are `sharedModule` singles, so every test that builds them shares these (see GuideKoinTestDao).
+            single<PayslipDao> { GuideKoinTestDao.dao }
+            single<FreeSpaceReader> { GuideKoinTestDao.space }
+            single<CrashReporter> { GuideKoinTestDao.reporter }
             // The backup service backs up the Part II rows too; this is the one DAO every test that builds it shares (see GuideKoinTestDao).
             single<Part2Dao> { GuideKoinTestDao.dao.part2 }
             single<PdfParser> { FakePdfParser() }
@@ -103,6 +115,42 @@ class AppKoinModulesTest {
         // nothing else in the graph would notice: the field is nullable so older call sites still compile.
         assertSame(koin.get<PayslipBackupService>(), koin.payslipViewModel().backupService)
     }
+
+    /**
+     * WHY (docs/Plan/14a P6): the backup checks free space through the one reader the graph binds, and the view model reports a failure
+     * through the graph's telemetry, which reads the officer's choice from the database. Unwired, a full disk fails half-way and the
+     * opt-out is ignored, and nothing else in the graph would notice.
+     */
+    @Test
+    fun theBackupChecksTheGraphsFreeSpaceAndReportsThroughTelemetryThatHonoursTheOptOut() =
+        runBlocking {
+            val koin = start()
+            val (dao, space, reporter) = Triple(GuideKoinTestDao.dao, GuideKoinTestDao.space, GuideKoinTestDao.reporter)
+            val settings = dao.getSettings()
+
+            // The graph's other screens share this reporter (the Guide records its own load failures), so only backup events count.
+            fun backupEvents() = reporter.exceptions.filter { it.first is BackupFailureEvent }
+            try {
+                space.free = 0L
+                val result = koin.get<PayslipBackupService>().backUp(FakeBackupFiles(), "Pass#12345")
+                assertIs<BackupStorageFullException>(result.exceptionOrNull())
+
+                val telemetry = koin.get<BackupTelemetry>()
+                dao.insertSettings(AppSettingsEntity(isTelemetryEnabled = false))
+                telemetry.report(BackupOp.BACKUP, result.exceptionOrNull())
+                assertTrue(backupEvents().isEmpty(), "the officer turned telemetry off")
+                dao.insertSettings(AppSettingsEntity(isTelemetryEnabled = true))
+                telemetry.report(BackupOp.BACKUP, result.exceptionOrNull())
+                assertEquals("storage_full", backupEvents().single().second?.get("backup_failure_code"))
+                // Last: a view model starts settings collectors on the shared DAO.
+                assertSame(telemetry, koin.payslipViewModel().backupTelemetry)
+            } finally {
+                space.free = FakeFreeSpaceReader().free
+                reporter.exceptions.removeAll { it.first is BackupFailureEvent }
+                dao.clearSettings()
+                settings?.let { dao.insertSettings(it) }
+            }
+        }
 
     @Test
     fun theBackupServiceIsWiredToTheOrdersBankRowsSoABuildCannotDropThem() =

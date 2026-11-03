@@ -1,6 +1,8 @@
 package com.payslipmax.pdfparser.ui
 
 import androidx.lifecycle.viewModelScope
+import com.payslipmax.pdfparser.repository.BackupOp
+import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.ui.screens.sanitizeProfileInputs
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -47,6 +49,7 @@ fun PayslipViewModel.exportBackup(
             } else {
                 service.backUp(files, password).mapCatching { files.share().getOrThrow() }
             }
+        result.onFailure { backupTelemetry?.report(BackupOp.BACKUP, it, PortableBackup.CURRENT_VERSION) }
         _uiState.update { it.copy(isLoading = false) }
         onComplete(result)
     }
@@ -73,6 +76,7 @@ fun PayslipViewModel.importBackup(
             } else {
                 files.read(pickedFile) { source -> service.restore(source, password, mode) }
             }
+        result.onFailure { backupTelemetry?.report(BackupOp.RESTORE, it) }
         _uiState.update { it.copy(isLoading = false) }
         onComplete(result)
     }

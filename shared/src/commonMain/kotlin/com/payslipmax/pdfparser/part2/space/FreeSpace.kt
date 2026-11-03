@@ -18,18 +18,29 @@ class FreeSpaceGate(
     private val reader: FreeSpaceReader,
 ) {
     fun verdict(): SpaceVerdict {
-        val free =
-            try {
-                reader.freeBytes()
-            } catch (e: Exception) {
-                null
-            } ?: return SpaceVerdict.ENOUGH
+        val free = freeOrNull() ?: return SpaceVerdict.ENOUGH
         return when {
             free < Part2Limits.FREE_SPACE_REFUSE_BYTES -> SpaceVerdict.REFUSED
             free < Part2Limits.FREE_SPACE_WARN_BYTES -> SpaceVerdict.LOW
             else -> SpaceVerdict.ENOUGH
         }
     }
+
+    /**
+     * Whether [bytes] can be written and still leave the refusal line free (docs/Plan/14a P6: a backup or restore checks this before it
+     * writes anything). Unknown is room, as for [verdict].
+     */
+    fun hasRoomFor(bytes: Long): Boolean {
+        val free = freeOrNull() ?: return true
+        return free - bytes >= Part2Limits.FREE_SPACE_REFUSE_BYTES
+    }
+
+    private fun freeOrNull(): Long? =
+        try {
+            reader.freeBytes()
+        } catch (e: Exception) {
+            null
+        }
 
     companion object {
         /** For tests and builds that do not read space: always enough. */

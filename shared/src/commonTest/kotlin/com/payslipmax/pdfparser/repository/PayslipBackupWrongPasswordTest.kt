@@ -66,11 +66,25 @@ class PayslipBackupWrongPasswordTest {
             for (mode in RestoreMode.entries) assertRefusedAndUntouched(aDocumentOfAnotherKind, BACKUP_PASSWORD, mode)
         }
 
+    /**
+     * WHY (rewritten in docs/Plan/14a P6, was "refused the same way" as a wrong password): a file shorter than the smallest sealed row
+     * (salt, IV, tag and the "PCDA" mark: 48 bytes) with no header or page archive cannot be a backup under any password, so it says so
+     * by its own type (NOT_A_BACKUP) instead of suggesting the password. It still changes nothing.
+     */
     @Test
-    fun anEmptyOrTinyFileIsRefusedTheSameWay() =
+    fun anEmptyOrTinyFileIsNotABackupAndChangesNothing() =
         runTest {
             dao.seedDeviceMonth("01/2023")
-            for (size in listOf(0, 1, 27, 44)) assertRefusedAndUntouched(ByteArray(size) { 7 }, BACKUP_PASSWORD, RestoreMode.REPLACE)
+            for (size in listOf(0, 1, 27, 44, 47)) {
+                val before = snapshot()
+
+                val error = service.restore(ByteArray(size) { 7 }, BACKUP_PASSWORD, RestoreMode.REPLACE).exceptionOrNull()
+
+                assertTrue(error is NotABackupException, "$size bytes: $error")
+                assertEquals(before, snapshot())
+            }
+            // One byte more is the size of a real sealed row: that is a question for the password, not "not a backup".
+            assertRefusedAndUntouched(ByteArray(48) { 7 }, BACKUP_PASSWORD, RestoreMode.REPLACE)
         }
 
     @Test

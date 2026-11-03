@@ -30,6 +30,7 @@ val appModule =
                 financialIntelligenceRepository = get(),
                 backupService = get(),
                 backupFiles = get(),
+                backupTelemetry = get(),
                 gemmaBaseModelInstaller = get(),
             )
         }

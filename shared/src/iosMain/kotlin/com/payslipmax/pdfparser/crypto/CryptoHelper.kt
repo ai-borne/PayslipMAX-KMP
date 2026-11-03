@@ -20,17 +20,19 @@ actual object CryptoHelper {
     actual fun encrypt(
         data: ByteArray,
         password: String,
+    ): Result<ByteArray> = encryptWith(data, password, ::secureRandomBytes)
+
+    /** [encrypt] with its salt and IV taken from [random]; a seam so a test can show a failed generator fails the seal. */
+    internal fun encryptWith(
+        data: ByteArray,
+        password: String,
+        random: (Int) -> ByteArray,
     ): Result<ByteArray> {
         return try {
-            val salt =
-                ByteArray(SALT_SIZE).apply {
-                    usePinned { SecRandomCopyBytes(kSecRandomDefault, SALT_SIZE.toULong(), it.addressOf(0).reinterpret<UByteVar>()) }
-                }
+            // From the checked generator: a failure throws (caught below) instead of sealing under a zero salt and IV.
+            val salt = random(SALT_SIZE)
             val keyBytes = pbkdf2(password, salt)
-            val iv =
-                ByteArray(IV_SIZE).apply {
-                    usePinned { SecRandomCopyBytes(kSecRandomDefault, IV_SIZE.toULong(), it.addressOf(0).reinterpret<UByteVar>()) }
-                }
+            val iv = random(IV_SIZE)
             val magic = PcdaMark.BYTES
             val prefixedData =
                 ByteArray(magic.size + data.size).apply {

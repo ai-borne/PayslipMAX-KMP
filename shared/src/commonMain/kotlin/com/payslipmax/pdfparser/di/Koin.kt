@@ -8,7 +8,11 @@ import com.payslipmax.pdfparser.part2.data.LastBackupStorage
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.part2.data.Part2Dao
 import com.payslipmax.pdfparser.part2.data.provideLastBackupStorage
+import com.payslipmax.pdfparser.part2.space.FreeSpaceGate
+import com.payslipmax.pdfparser.part2.space.FreeSpaceReader
+import com.payslipmax.pdfparser.part2.space.provideFreeSpaceReader
 import com.payslipmax.pdfparser.repository.BackupFiles
+import com.payslipmax.pdfparser.repository.BackupTelemetry
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.repository.provideBackupFiles
@@ -58,13 +62,26 @@ val sharedModule: Module =
 
         single<BackupFiles> { provideBackupFiles() }
         single<com.payslipmax.pdfparser.repository.PageShare> { com.payslipmax.pdfparser.repository.providePageShare() }
+        // One reader of free space, and one gate over it, for the Bank's scans and the backup's checks (docs/Plan/14a P6).
+        single<FreeSpaceReader> { provideFreeSpaceReader() }
+        single { FreeSpaceGate(get()) }
         single {
-            PayslipBackupService(get(), payslipRepository = get(), intelligence = get(), part2Backup = get(), lastBackup = get())
+            PayslipBackupService(
+                get(),
+                payslipRepository = get(),
+                intelligence = get(),
+                part2Backup = get(),
+                lastBackup = get(),
+                space = get(),
+            )
         }
 
         single<com.payslipmax.pdfparser.telemetry.CrashReporter> {
             com.payslipmax.pdfparser.telemetry.provideCrashReporter()
         }
+
+        // A failed backup or restore sends code-only keys, and only while the officer allows telemetry (read from the settings).
+        single { BackupTelemetry(get(), get()) }
 
         single {
             com.payslipmax.pdfparser.telemetry.InstallationIdManager()

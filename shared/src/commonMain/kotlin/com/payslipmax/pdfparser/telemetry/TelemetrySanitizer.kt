@@ -27,6 +27,10 @@ object TelemetrySanitizer {
             "database_",
         )
 
+    // Keys allowed by exact name only (no prefix), so a later key under the same word is still dropped: a failed backup or restore's
+    // three keys (docs/Plan/14a P6, `BackupTelemetry`).
+    private val ALLOWED_EXACT_KEYS = setOf("backup_failure_code", "backup_format_version", "backup_op")
+
     private val BLOCKED_KEY_KEYWORDS =
         listOf(
             "pan",
@@ -66,7 +70,7 @@ object TelemetrySanitizer {
     fun isKeyAllowed(key: String): Boolean {
         val lower = key.lowercase().trim()
         if (BLOCKED_KEY_KEYWORDS.any { lower.contains(it) }) return false
-        return ALLOWED_KEY_PREFIXES.any { lower.startsWith(it) || lower == it }
+        return lower in ALLOWED_EXACT_KEYS || ALLOWED_KEY_PREFIXES.any { lower.startsWith(it) || lower == it }
     }
 
     fun sanitizeFilename(filename: String): String {

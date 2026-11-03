@@ -5,8 +5,10 @@ import com.payslipmax.pdfparser.part2.data.InMemoryLastBackupStorage
 import com.payslipmax.pdfparser.part2.data.LastBackupStorage
 import com.payslipmax.pdfparser.part2.data.Part2Dao
 import com.payslipmax.pdfparser.part2.data.Part2Repository
+import com.payslipmax.pdfparser.part2.space.FreeSpaceGate
 import com.payslipmax.pdfparser.part2.space.FreeSpaceReader
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
+import com.payslipmax.pdfparser.testing.FakeFreeSpaceReader
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
 import com.payslipmax.pdfparser.testing.FakePart2Dao
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -42,6 +44,9 @@ class Part2BankWiringTest {
                             single { guide }
                             single<Part2Dao> { dao }
                             single<LastBackupStorage> { InMemoryLastBackupStorage() }
+                            // In the app the shared module binds both (AppKoinModulesTest); this test starts Part II's module on its own.
+                            single<FreeSpaceReader> { FakeFreeSpaceReader() }
+                            single { FreeSpaceGate(get()) }
                         },
                     )
                 }.koin

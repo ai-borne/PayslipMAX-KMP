@@ -12,6 +12,7 @@ import kotlin.test.assertTrue
 class DecryptFailureSourceTest {
     private val actuals = listOf("androidMain", "iosMain").map { File("src/$it/kotlin/com/payslipmax/pdfparser/crypto/CryptoHelper.kt") }
     private val status = File("../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/RestoreFailureStatus.kt")
+    private val mapper = File("src/commonMain/kotlin/com/payslipmax/pdfparser/repository/BackupFailure.kt")
     private val service = File("src/commonMain/kotlin/com/payslipmax/pdfparser/repository/PayslipBackupService.kt")
     private val exception = File("src/commonMain/kotlin/com/payslipmax/pdfparser/crypto/DecryptionFailedException.kt")
 
@@ -34,12 +35,17 @@ class DecryptFailureSourceTest {
         }
     }
 
+    /**
+     * Rewritten in docs/Plan/14a P6: `restoreFailedStatus` is replaced by the one mapper, `BackupFailure.of` (shared), and the screen's
+     * status only looks its fixed line up. Neither may read or match an exception's text, and the screen may not show it.
+     */
     @Test
     fun theStatusMappingAndTheServiceNeverMatchOnMessageText() {
-        val mapping = code(status).substringAfter("fun restoreFailedStatus")
-        assertTrue("is DecryptionFailedException" in mapping, "the status is chosen by type")
-        // The only `.message` allowed is the one that shows our own fixed text of two types we define.
-        assertEquals(emptyList(), listOf("contains(", "startsWith(", "endsWith(", "Regex", "equals(", "== \"").filter { it in mapping })
+        val mapping = code(mapper).substringAfter("fun of(")
+        assertTrue("is DecryptionFailedException" in mapping, "the failure is chosen by type")
+        val matchers = listOf("contains(", "startsWith(", "endsWith(", "Regex", "equals(", "== \"", ".message")
+        assertEquals(emptyList(), matchers.filter { it in mapping })
+        assertEquals(emptyList(), matchers.filter { it in code(status) }, "the screen shows fixed lines only")
         assertTrue("contains(" !in code(service) && ".message" !in code(service))
     }
 
