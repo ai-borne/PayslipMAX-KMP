@@ -115,3 +115,14 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
   250 MB v6 vault restore 2.97 s. Gate green: shared 1721 → 1735, iOS shared 1571 → 1587, composeApp 1440/1414/856; 13/13 mutations caught;
   9 goldens and the owner's local backups restore; R8 triggered and green with no new rule; security review: no findings. Pending: 14a P10
   "From P3".
+- 2026-11-03 — **P4 done**: prepare / commit split and verify-after-write (F4). `BackupRestoreEngine` holds the restore:
+  `prepare(source, password, progress)` opens, decodes and checks every row and page and re-seals them for this device, writing nothing,
+  and returns a `PreparedRestore` with its `RestorePreview` (format, `exportedAt`, counts per kind, Part II skips); `commit(prepared, mode,
+  progress)` is the one transaction (MERGE reconciles notes and Part II against the device then). `restore()` keeps its signature
+  (prepare + commit). Export: `BackupFiles.write(verify, block)` reads the closed file back through a dry-run `prepare`; a failure or any
+  skipped row → `BackupVerifyException`, file deleted, never shared, "last backup" not moved (`backUp()` is the one path the ViewModel uses; the in-memory `export()` that tests use neither reads back nor records, which keeps the
+  120-page JVM scale test's export peak at 159 MB instead of 206–224 MB against its 230 MB bound).
+  Owner decisions D15–D18 (v6 `exportedAt`; tolerant `FieldSource` map in P5; P8 walk may Back Up and Merge on the Pixel; `BackupJson`
+  stays). Pages whose order does not travel are no longer exported (they could only be skipped). RED first: 6 prepare/commit tests (golden
+  previews = manifest, nothing written; commit = preview; pages checked once and re-sealed lazily; `exportedAt`; MERGE; progress), 4 verify
+  tests, 3 file read-back tests, a ViewModel no-share test. 11/11 mutations caught. Pending: 14a P10 "From P4".

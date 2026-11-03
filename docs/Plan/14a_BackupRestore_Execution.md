@@ -179,6 +179,12 @@ Phase N — <name>                                       Commit: <sha after acce
 - **D12** No Cancel for backup or restore; progress only (the sheet stays non-dismissable while working).
 - **D13** New copy is reviewed by the owner in the P8 Pixel walk.
 - **D14** iOS in P8: simulator + iOS tests; the iPhone walk waits for the all-features walk.
+- **D15** (2026-11-03, P4) The restore preview shows the backup's date: v6 documents carry `exportedAt` (epoch millis, optional); older
+  files show none.
+- **D16** (P5, owner delegated the choice) A `FieldSource` value a later app adds is dropped from that payslip's map by a tolerant map
+  serializer, so the payslip still restores; characterization tests pin today's known values first.
+- **D17** The P8 Pixel walk may Back Up and Restore (Merge) on the owner's device.
+- **D18** `BackupJson` stays in `repository/backup/` (P10 "From P2" item 3 closed).
 
 P0 note (2026-11-03): the owner's earlier failure didn't reproduce. Both real files restore with this branch on the JVM and on the Pixel
 (empty-device Replace, then Merge). Play production = versionCode 22, built from `681c87bc` on `main`, which writes **v4** (no page
@@ -246,3 +252,15 @@ From P3 (2026-11-03):
 7. **Pre-existing:** the iOS legacy `CryptoHelper.encrypt` (device DB and formats 1–5) ignores `SecRandomCopyBytes`'s status when it makes
    a salt and IV. The new v6 path checks it. The device path was out of P3's scope ("device DB encryption untouched"). **Owner: a one-line
    fix in a later phase (P6 is the nearest crypto-adjacent phase).**
+
+From P4 (2026-11-03):
+1. **A page whose order does not travel is no longer exported.** A fresh backup must read back with nothing skipped (verify-after-write),
+   and a restore could only skip such a page (its order is missing or unreadable on the device). Nothing restorable is lost; the page stays
+   on the device. Recorded because it changes what an export contains.
+2. **The preview counts what the backup holds, not what a MERGE will change.** On MERGE a same-date payslip overwrites the device's copy
+   and a page the device already holds is left alone, so "adds N" would be wrong. **P8 copy** must say "This backup holds …" (D13 review).
+3. **Progress while a preview checks pages is one stage without a page count** (`OPENING` → `READING` rows; the page check inside
+   `Part2Backup.restore` reports nothing). Export (`PAGES`), verify (`VERIFYING`) and commit (`PAGES`) count pages. It is part of the
+   2.97 s a whole 250 MB restore takes on the iOS simulator (P3), so the P8 spinner covers it. **Owner: P8** decides if it needs a bar.
+4. **A `PreparedRestore` holds the archive key and the open file until it is closed.** P7's ViewModel keeps it while the preview is on
+   screen, so every exit (Cancel, sheet dismissed, `onCleared`, a failed commit) must close it; P7's tests must cover each one.

@@ -68,7 +68,7 @@ class FileBackupFilesTest {
             val files = MapBackupFiles()
 
             val result =
-                files.write {
+                files.write(readsBack) {
                     it.write(byteArrayOf(1, 2, 3))
                     Result.success(Unit)
                 }
@@ -84,7 +84,7 @@ class FileBackupFilesTest {
             val files = MapBackupFiles()
 
             val result =
-                files.write {
+                files.write(readsBack) {
                     it.write(byteArrayOf(1))
                     Result.failure(IllegalStateException("wrong password"))
                 }
@@ -100,11 +100,55 @@ class FileBackupFilesTest {
         runTest {
             val files = MapBackupFiles()
 
-            val result = files.write { throw IllegalStateException("secret/path/export.pcda") }
+            val result = files.write(readsBack) { throw IllegalStateException("secret/path/export.pcda") }
 
             assertIs<BackupFileException>(result.exceptionOrNull())
             assertFalse(result.exceptionOrNull()?.message.orEmpty().contains("secret"), "no path in a message")
             assertNull(files.disk["export.pcda"])
+        }
+
+    @Test
+    fun theClosedFileIsReadBackAndOneThatDoesNotReadBackIsDeleted() =
+        runTest {
+            val files = MapBackupFiles()
+            var openWhileChecked = true
+
+            val result =
+                files.write(verify = { source ->
+                    openWhileChecked = "export.pcda" in files.open && files.open.size == 1
+                    assertContentEquals(byteArrayOf(4, 5), source.read(0, 2), "the bytes on disk, not the ones in memory")
+                    Result.failure(BackupVerifyException())
+                }) {
+                    it.write(byteArrayOf(4, 5))
+                    Result.success(Unit)
+                }
+
+            assertIs<BackupVerifyException>(result.exceptionOrNull())
+            assertTrue(openWhileChecked, "the sink was closed and the file reopened for reading")
+            assertNull(files.disk["export.pcda"])
+            assertFalse(files.deleteWhileOpen, "closed before deleted")
+        }
+
+    @Test
+    fun aReadBackThatThrowsDeletesTheFileAndReportsOnlyAFixedMessage() =
+        runTest {
+            val files = MapBackupFiles()
+
+            val result = files.write(verify = { throw IllegalStateException("secret/path/export.pcda") }) { Result.success(Unit) }
+
+            assertIs<BackupFileException>(result.exceptionOrNull())
+            assertNull(files.disk["export.pcda"])
+        }
+
+    @Test
+    fun aFailedWriteIsNeverReadBack() =
+        runTest {
+            val files = MapBackupFiles()
+            var checked = false
+
+            files.write(verify = { Result.success(Unit).also { checked = true } }) { Result.failure(IllegalStateException("x")) }
+
+            assertFalse(checked)
         }
 
     @Test
@@ -113,7 +157,7 @@ class FileBackupFilesTest {
             val files = MapBackupFiles()
             files.disk["restore.pcda"] = byteArrayOf(9)
 
-            files.write { Result.success(Unit) }
+            files.write(readsBack) { Result.success(Unit) }
 
             assertNull(files.disk["restore.pcda"])
         }
@@ -122,7 +166,7 @@ class FileBackupFilesTest {
     fun aShareKeepsTheFileForTheTargetAndAFailedShareDeletesIt() =
         runTest {
             val files = MapBackupFiles()
-            files.write {
+            files.write(readsBack) {
                 it.write(byteArrayOf(1))
                 Result.success(Unit)
             }

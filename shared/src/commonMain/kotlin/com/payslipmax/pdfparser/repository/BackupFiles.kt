@@ -6,8 +6,14 @@ package com.payslipmax.pdfparser.repository
  * ([BackupFileException]). The ViewModel talks to this interface so tests swap in a fake.
  */
 interface BackupFiles {
-    /** Starts the export file afresh, lets [block] write the archive into it, and deletes the file if [block] fails or throws. */
-    suspend fun write(block: suspend (BackupSink) -> Result<Unit>): Result<Unit>
+    /**
+     * Starts the export file afresh, lets [block] write the archive into it, closes it, then reads it back by range through [verify]
+     * (docs/Plan/14a P4). The file is deleted if either fails or throws, so only a file that read back can reach [share].
+     */
+    suspend fun write(
+        verify: suspend (BackupSource) -> Result<Unit>,
+        block: suspend (BackupSink) -> Result<Unit>,
+    ): Result<Unit>
 
     /** Hands the written export file to the platform share sheet; deletes it if the sheet cannot be opened. */
     fun share(): Result<Unit>

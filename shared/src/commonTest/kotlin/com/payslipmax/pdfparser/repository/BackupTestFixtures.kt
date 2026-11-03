@@ -78,3 +78,6 @@ internal fun openBackup(
 /** The page archive's document inside a v6 file (after its plaintext header), or null when [file] is not one. */
 internal fun pageArchiveMetaOfV6(file: ByteArray): ByteArray? =
     BackupEnvelope.read(MemoryBackupSource(file))?.let { PageArchive.metaOf(MemoryBackupSource(file).from(BackupEnvelope.HEADER_BYTES.toLong())) }
+
+/** A read-back step that accepts any written file, for tests about the file itself rather than its contents. */
+internal val readsBack: suspend (BackupSource) -> Result<Unit> = { Result.success(Unit) }

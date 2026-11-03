@@ -30,12 +30,27 @@ class FakeBackupFiles : BackupFiles {
 
     fun stage(bytes: ByteArray): String = "picked-${next++}".also { picked[it] = bytes }
 
-    override suspend fun write(block: suspend (BackupSink) -> Result<Unit>): Result<Unit> {
+    /** When set, this byte of the written file is flipped before it is read back: a disk that did not keep what was written. */
+    var corruptWrittenByteAt: Int? = null
+
+    /** How many times a written file was read back. */
+    var verifyCount = 0
+        private set
+
+    override suspend fun write(
+        verify: suspend (BackupSource) -> Result<Unit>,
+        block: suspend (BackupSink) -> Result<Unit>,
+    ): Result<Unit> {
         exported = null
         val sink = MemoryBackupSink()
-        val result = runCatching { block(sink) }.getOrElse { Result.failure(BackupFileException()) }
-        if (result.isSuccess) exported = sink.toByteArray()
-        return result
+        val written = runCatching { block(sink) }.getOrElse { Result.failure(BackupFileException()) }
+        if (written.isFailure) return written
+        val bytes = sink.toByteArray()
+        corruptWrittenByteAt?.let { bytes[it] = (bytes[it].toInt() xor 0x01).toByte() }
+        verifyCount++
+        val checked = runCatching { verify(MemoryBackupSource(bytes)) }.getOrElse { Result.failure(BackupFileException()) }
+        if (checked.isSuccess) exported = bytes
+        return checked
     }
 
     override fun share(): Result<Unit> {

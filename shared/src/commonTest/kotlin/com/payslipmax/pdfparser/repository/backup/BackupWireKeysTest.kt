@@ -77,7 +77,7 @@ class BackupWireKeysTest {
         val WIRE_CLASSES =
             mapOf(
                 "com.payslipmax.pdfparser.repository.PortableBackup" to
-                    setOf("version", "settings", "part2Entries", "part2Orders", "part2Drafts") + ROW_KEYS.keys,
+                    setOf("version", "settings", "part2Entries", "part2Orders", "part2Drafts", "exportedAt") + ROW_KEYS.keys,
                 "$BACKUP.PayslipBackupRow" to PAYSLIP_KEYS,
                 "$BACKUP.PdfBackupRow" to PDF_KEYS,
                 "$BACKUP.SettingsBackup" to SETTINGS_KEYS,

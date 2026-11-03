@@ -32,7 +32,7 @@ fun PayslipViewModel.clearAllData() {
 
 private fun backupUnavailable() = IllegalStateException("Backup service is not available")
 
-/** Writes the encrypted archive to the private backup file and opens the share sheet on it; no bytes of it are held here. */
+/** Writes the encrypted archive to the private backup file, reads it back, and only then opens the share sheet on it; no bytes of it are held here. */
 fun PayslipViewModel.exportBackup(
     password: String,
     onComplete: (Result<Unit>) -> Unit,
@@ -45,7 +45,7 @@ fun PayslipViewModel.exportBackup(
             if (service == null || files == null) {
                 Result.failure(backupUnavailable())
             } else {
-                files.write { sink -> service.exportTo(sink, password) }.mapCatching { files.share().getOrThrow() }
+                service.backUp(files, password).mapCatching { files.share().getOrThrow() }
             }
         _uiState.update { it.copy(isLoading = false) }
         onComplete(result)

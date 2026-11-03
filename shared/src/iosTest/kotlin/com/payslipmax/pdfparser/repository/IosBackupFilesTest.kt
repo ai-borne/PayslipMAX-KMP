@@ -100,10 +100,12 @@ class IosBackupFilesTest {
                     done = onDone
                 })
 
-            files.write {
+            var readBack: List<Byte>? = null
+            files.write(verify = { source -> Result.success(Unit).also { readBack = source.read(0, source.size.toInt()).toList() } }) {
                 it.write(byteArrayOf(1, 2))
                 Result.success(Unit)
             }
+            assertEquals(listOf<Byte>(1, 2), readBack, "the closed file on disk is what is read back before it can be shared")
             assertTrue(files.share().isSuccess)
 
             assertEquals("$dir/PayslipMax-backup.pcda", sharedPath)
@@ -119,13 +121,13 @@ class IosBackupFilesTest {
             manager.createDirectoryAtPath(dir, true, null, null)
             val files = IosBackupFiles(dir, share = { _, _ -> error("no sheet") })
 
-            files.write {
+            files.write(readsBack) {
                 it.write(byteArrayOf(1))
                 Result.failure(IllegalStateException("x"))
             }
             assertEquals(emptyList(), names())
 
-            files.write {
+            files.write(readsBack) {
                 it.write(byteArrayOf(1))
                 Result.success(Unit)
             }

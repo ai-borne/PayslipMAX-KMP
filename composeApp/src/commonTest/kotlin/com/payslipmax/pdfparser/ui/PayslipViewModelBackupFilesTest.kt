@@ -76,6 +76,20 @@ class PayslipViewModelBackupFilesTest {
         }
 
     @Test
+    fun aBackupThatDoesNotReadBackIsNeverSharedAndLeavesNoFile() =
+        runTest {
+            files.corruptWrittenByteAt = 40
+            var result: Result<Unit>? = null
+            viewModel.exportBackup("Pass#12345") { result = it }
+            runCurrent()
+
+            assertTrue(assertNotNull(result).isFailure)
+            assertEquals(1, files.verifyCount, "the written file was read back")
+            assertEquals(0, files.shareCount, "the share sheet never opened")
+            assertNull(files.exportedBytes)
+        }
+
+    @Test
     fun aPickedFileIsGoneAfterARestoreThatFailsAndAfterOneThatWorks() =
         runTest {
             var result: Result<RestoreReport>? = null

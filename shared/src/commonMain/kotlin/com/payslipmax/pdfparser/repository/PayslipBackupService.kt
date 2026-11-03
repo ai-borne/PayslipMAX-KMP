@@ -1,25 +1,16 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
-import com.payslipmax.pdfparser.crypto.DecryptionFailedException
 import com.payslipmax.pdfparser.crypto.SealKey
-import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.logging.Logger
 import com.payslipmax.pdfparser.part2.data.LastBackupStorage
 import com.payslipmax.pdfparser.part2.data.PageArchiveWriter
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.rating.currentTimeMillis
-import com.payslipmax.pdfparser.repository.backup.BackupEnvelope
-import com.payslipmax.pdfparser.repository.backup.BackupJson
 import com.payslipmax.pdfparser.repository.backup.CorrectionBackupRow
-import com.payslipmax.pdfparser.repository.backup.OpenedArchive
-import com.payslipmax.pdfparser.repository.backup.SettingsBackup
-import com.payslipmax.pdfparser.repository.backup.applyTo
 import com.payslipmax.pdfparser.repository.backup.newArchive
-import com.payslipmax.pdfparser.repository.backup.openArchive
 import com.payslipmax.pdfparser.repository.backup.toBackupRow
-import com.payslipmax.pdfparser.repository.backup.toEntity
 import com.payslipmax.pdfparser.repository.backup.toSettingsBackup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -41,6 +32,8 @@ class PayslipBackupService(
     private val lastBackup: LastBackupStorage? = null,
     private val now: () -> Long = { currentTimeMillis() },
 ) {
+    private val engine = BackupRestoreEngine(payslipDao, part2Backup)
+
     /** How many Orders Bank entries and vault orders a backup would carry; 0 where Part II is not wired in. */
     suspend fun part2ItemCount(): Int = withContext(dispatcher) { part2Backup?.itemCount() ?: 0 }
 
@@ -49,17 +42,49 @@ class PayslipBackupService(
      * corrections, private Guide notes, Orders Bank entries, orders and pages) as an encrypted archive. Derived data (ledger, insights) is not exported.
      */
     suspend fun export(password: String): Result<ByteArray> {
+        // The archive's bytes only, for callers that hold a backup in memory (tests): no disk is involved, so there is nothing to read
+        // back, and nothing is recorded. A backup the officer keeps goes through [backUp].
         val sink = MemoryBackupSink()
         return exportTo(sink, password).map { sink.toByteArray() }
     }
 
     /**
+     * Writes the archive into [files]' export file, reads it back from there ([verify]) and only then records the backup time (F4). A
+     * failure leaves no file: [BackupFiles.write] deletes it, so the share sheet can never offer a backup that did not read back.
+     */
+    suspend fun backUp(
+        files: BackupFiles,
+        password: String,
+        progress: BackupProgress = BackupProgress.NONE,
+    ): Result<Unit> {
+        val at = now()
+        return files
+            .write(verify = { source -> verify(source, password, progress) }) { sink -> exportTo(sink, password, at, progress) }
+            .onSuccess { lastBackup?.save(at) }
+    }
+
+    /**
+     * A dry-run restore of a just-written file (every page opened once, nothing written or kept). A fresh backup must read back whole: a
+     * failure, or any row the restore would leave out (a damaged page is skipped, not fatal), is [BackupVerifyException].
+     */
+    private suspend fun verify(
+        source: BackupSource,
+        password: String,
+        progress: BackupProgress,
+    ): Result<Unit> =
+        prepare(source, password) { _, done, total -> progress.update(BackupStage.VERIFYING, done, total) }
+            .mapCatching { prepared -> prepared.use { check(it.preview.skipped == 0) } }
+            .recoverCatching { throw BackupVerifyException() }
+
+    /**
      * The same archive written to [sink] piece by piece, so a backup of any size never exists as one array. The file is written as it goes:
-     * when this returns a failure the sink holds a partial file, which the caller discards, and no backup time is recorded.
+     * when this returns a failure the sink holds a partial file, which the caller discards. Nothing is recorded or checked here: see [backUp].
      */
     suspend fun exportTo(
         sink: BackupSink,
         password: String,
+        exportedAt: Long = now(),
+        progress: BackupProgress = BackupProgress.NONE,
     ): Result<Unit> =
         withContext(dispatcher) {
             // Format 6: one key for the whole archive, derived once here from a fresh salt; every row and page below is sealed with it.
@@ -79,6 +104,7 @@ class PayslipBackupService(
                 // Skip any row that can't be decrypted (e.g. a stale/legacy-key or corrupt row) rather
                 // than failing the whole backup — matches the read path (getAllPayslips), so a backup
                 // contains exactly the payslips the user can actually see.
+                progress.update(BackupStage.READING, 0, payslips.size)
                 val exportedPayslips =
                     payslips.mapNotNull { entity ->
                         try {
@@ -106,7 +132,9 @@ class PayslipBackupService(
                                 .map { it.toBackupRow() },
                         part2Entries = part2?.entries.orEmpty(),
                         part2Orders = part2?.orders.orEmpty(),
+                        exportedAt = exportedAt,
                     )
+                progress.update(BackupStage.READING, payslips.size, payslips.size)
 
                 val jsonStr = Json.encodeToString(PortableBackup.serializer(), backup)
                 val jsonBytes = jsonStr.encodeToByteArray()
@@ -117,8 +145,9 @@ class PayslipBackupService(
                 sink.write(archive.header)
                 val writer = PageArchiveWriter(sink)
                 writer.begin(meta)
-                writer.finish(part2Backup?.writePages(writer, backupKey) ?: 0, backupKey)
-                lastBackup?.save(now())
+                val orderIds = part2?.orders.orEmpty().map { it.id }.toSet()
+                val pages = part2Backup?.writePages(writer, backupKey, orderIds) { done, total -> progress.update(BackupStage.PAGES, done, total) }
+                writer.finish(pages ?: 0, backupKey)
                 Result.success(Unit)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -155,89 +184,38 @@ class PayslipBackupService(
         source: BackupSource,
         password: String,
         mode: RestoreMode = RestoreMode.REPLACE,
+    ): Result<RestoreReport> = prepare(source, password).mapCatching { prepared -> prepared.use { commit(it, mode).getOrThrow() } }
+
+    /**
+     * Opens, decodes and checks the whole backup (every row and page) and re-seals it for this device, writing nothing (F4); the preview
+     * says what a [commit] will write. [source] must stay open until the result is closed.
+     */
+    suspend fun prepare(
+        source: BackupSource,
+        password: String,
+        progress: BackupProgress = BackupProgress.NONE,
+    ): Result<PreparedRestore> =
+        withContext(dispatcher) {
+            try {
+                Result.success(engine.prepare(source, password, progress))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
+    /** Writes what [prepare] checked, in one transaction, then rebuilds the ledger and insights. The caller closes [prepared]. */
+    suspend fun commit(
+        prepared: PreparedRestore,
+        mode: RestoreMode,
+        progress: BackupProgress = BackupProgress.NONE,
     ): Result<RestoreReport> =
         withContext(dispatcher) {
-            // A wrong password, a file that is not a backup or one from a later app fails here, as itself: nothing inside has been read.
-            val opened =
-                try {
-                    openArchive(source, password)
-                } catch (e: Exception) {
-                    return@withContext Result.failure(e)
-                }
-            opened.use { restoreOpened(it, mode) }
-        }
-
-    private suspend fun restoreOpened(
-        opened: OpenedArchive,
-        mode: RestoreMode,
-    ): Result<RestoreReport> =
-        try {
-            val backupKey = opened.key
-            val backup = BackupJson.decode(PortableBackup.serializer(), opened.document.decodeToString())
-            BackupEnvelope.requireKnownFormat(backup.version)
-
-            // Decode and re-encrypt every payslip *before* touching the database: one unreadable row
-            // then fails the restore with the device's data untouched, instead of after a wipe.
-            val deviceKey = CryptoHelper.getDatabaseSecretKey()
-            val databasePayslips =
-                backup.encryptedPayslips.map { row ->
-                    val entity = row.toEntity()
-                    val domainModel =
-                        try {
-                            entity.toDomain(backupKey)
-                        } catch (e: Exception) {
-                            // Fallback: Version 1 backups are encrypted with the legacy key
-                            entity.toDomain(CryptoHelper.getLegacyFallbackKey())
-                        }
-                    domainModel.toEncryptedEntity(deviceKey)
-                }
-            // Part II rows are size- and count-checked before any is decoded; what fails is skipped and counted, never fatal.
-            val part2 = part2Backup?.restore(backup, opened.pages, backupKey, mode)
-            val rows =
-                BackupRows(
-                    payslips = databasePayslips,
-                    pdfs = backup.pdfs.map { it.toEntity() },
-                    drafts = backup.drafts.map { it.toEntity() },
-                    dismissedDrafts = backup.dismissedDrafts.map { it.toEntity() },
-                    corrections =
-                        backup.corrections.map { it.toEntity().toCorrectionList(backupKey).toCorrectionEntity(it.dateStr, deviceKey) },
-                    guideNotes = restoredNotes(backup, backupKey, deviceKey, mode),
-                    part2Entries = part2?.entries.orEmpty(),
-                    part2Orders = part2?.orders.orEmpty(),
-                    part2Pages = part2?.pages ?: emptySequence(),
-                )
-
-            // REPLACE makes the device an exact copy of the backup (every user and derived table is
-            // emptied first); MERGE keeps the device's existing data and its own settings and layers
-            // the backup on top, overwriting only same-date payslips. Either way it is one transaction.
-            if (mode == RestoreMode.REPLACE) {
-                // The backup's preferences go on top of this device's own settings row, so the lock, PIN hash, telemetry consent
-                // and entitlement stay the device's (D5); a file without settings resets the preferences to their defaults.
-                val device = payslipDao.getSettings() ?: AppSettingsEntity()
-                payslipDao.replaceWithBackup(rows, (backup.settings ?: SettingsBackup()).applyTo(device))
-            } else {
-                payslipDao.mergeBackup(rows)
+            try {
+                engine.commit(prepared, mode, progress).also { rebuildDerivedData() }.let { Result.success(it) }
+            } catch (e: Exception) {
+                Result.failure(e)
             }
-
-            rebuildDerivedData()
-            Result.success(RestoreReport(part2?.skipped ?: 0))
-        } catch (e: DecryptionFailedException) {
-            // The outer layer opened (a wrong password was returned above), so a row inside that will not open is a damaged file.
-            Result.failure(BackupDamagedException())
-        } catch (e: Exception) {
-            Result.failure(e)
         }
-
-    /** An unreadable note is skipped (see [GuideNoteBackup]); only a MERGE needs the notes the device holds now. */
-    private suspend fun restoredNotes(
-        backup: PortableBackup,
-        backupKey: SealKey,
-        deviceKey: String,
-        mode: RestoreMode,
-    ): List<GuideNoteEntity> {
-        val existing = if (mode == RestoreMode.MERGE) payslipDao.getAllGuideNotes().first() else emptyList()
-        return GuideNoteBackup.forRestore(backup.guideNotes.map { it.toEntity() }, backupKey, deviceKey, existing, mode)
-    }
 
     /**
      * The ledger and insights are never stored in a backup, so they are rebuilt from the restored payslips

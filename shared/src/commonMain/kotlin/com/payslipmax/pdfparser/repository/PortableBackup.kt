@@ -47,6 +47,8 @@ data class PortableBackup(
     @SerialName("part2Orders") val part2Orders: List<Part2RowBackup> = emptyList(),
     /** Drafts written by the frozen feature/part2-orders branch's v5 files: counted as skipped on restore, never decoded and never written. */
     @SerialName("part2Drafts") val part2Drafts: List<Part2LegacyDraft> = emptyList(),
+    /** When the backup was made (epoch millis), shown in the restore preview; written from format 6, null in older files (D15). */
+    @SerialName("exportedAt") val exportedAt: Long? = null,
 ) {
     companion object {
         const val CURRENT_VERSION = 6

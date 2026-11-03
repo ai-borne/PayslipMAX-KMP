@@ -6,9 +6,10 @@ import com.payslipmax.pdfparser.repository.BackupDamagedException
 import com.payslipmax.pdfparser.repository.BackupSource
 import com.payslipmax.pdfparser.repository.backup.BackupJson
 
-/** The pages a restore will write ([pages] is lazy) and how many records it left out. */
+/** The pages a restore will write ([pages] is lazy, [count] of them) and how many records it left out. */
 internal class PageRestore(
     val pages: Sequence<Part2PageEntity>,
+    val count: Int,
     val skipped: Int,
 )
 
@@ -46,7 +47,7 @@ internal suspend fun restorePages(
     vaultBytesMax: Long,
     openPage: (Part2PageEntity, SealKey) -> ByteArray,
 ): PageRestore {
-    val layout = PageArchive.layout(source) ?: return PageRestore(emptySequence(), 0)
+    val layout = PageArchive.layout(source) ?: return PageRestore(emptySequence(), 0, 0)
     val declared = declaredCount(source, layout, backupKey)
     val examined = minOf(declared, Part2Limits.ORDERS_MAX * Part2Limits.PAGES_PER_ORDER_MAX)
     val held = if (merge) dao.allPageRefs() else emptyList()
@@ -87,7 +88,7 @@ internal suspend fun restorePages(
                 jpeg.fill(0)
             }
         }
-    return PageRestore(pages, skipped)
+    return PageRestore(pages, accepted.size, skipped)
 }
 
 /** An encrypted `{"pages": n}` is about a hundred bytes; a trailer claiming more is a lie and is refused before it is read. */

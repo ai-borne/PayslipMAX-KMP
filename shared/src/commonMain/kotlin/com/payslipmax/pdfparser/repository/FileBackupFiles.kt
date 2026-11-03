@@ -16,9 +16,16 @@ abstract class FileBackupFiles : BackupFiles {
 
     protected abstract fun present(path: String)
 
-    override suspend fun write(block: suspend (BackupSink) -> Result<Unit>): Result<Unit> {
+    override suspend fun write(
+        verify: suspend (BackupSource) -> Result<Unit>,
+        block: suspend (BackupSink) -> Result<Unit>,
+    ): Result<Unit> {
         sweep()
-        return guarded(onFailure = { delete(exportPath) }) { openSink(exportPath).use { block(it) } }
+        // A throw from either step reaches guarded (fixed message, file deleted); a reported failure is passed on as it is.
+        return guarded(onFailure = { delete(exportPath) }) {
+            val written = openSink(exportPath).use { block(it) }
+            if (written.isFailure) written else openSource(exportPath).use { verify(it) }
+        }
     }
 
     override fun share(): Result<Unit> = guarded(onFailure = { delete(exportPath) }) { Result.success(present(exportPath)) }
