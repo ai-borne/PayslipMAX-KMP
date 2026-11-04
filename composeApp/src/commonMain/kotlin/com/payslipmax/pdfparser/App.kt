@@ -25,6 +25,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.GuideCardRoute
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavStateSaver
 import com.payslipmax.pdfparser.ui.screens.guide.GuideTabRoute
+import com.payslipmax.pdfparser.ui.screens.guide.GuideWarmUp
 import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
@@ -103,6 +104,7 @@ fun App(
                 },
             )
         } else {
+            if (guideNavState != null) GuideWarmUp() // null = kill switch off: nothing is loaded
             MainContentWithOnboarding(
                 navState = navState,
                 guideNavState = guideNavState,
