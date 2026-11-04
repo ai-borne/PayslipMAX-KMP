@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.*
+import com.payslipmax.pdfparser.domain.FieldSource
 import com.payslipmax.pdfparser.guide.domain.GuideNote
 import com.payslipmax.pdfparser.part2.data.PageArchive
 import com.payslipmax.pdfparser.repository.backup.BackupEnvelope
@@ -32,8 +33,11 @@ fun backupBytes(backup: PortableBackup): ByteArray =
         ).getOrThrow()
 
 /** One month of everything a device holds: the payslip, its PDF, and all that is derived from or added to it (plus one private Guide note). */
-suspend fun PayslipDao.seedDeviceMonth(dateStr: String) {
-    insertPayslip(createMockPayslip(dateStr).toEncryptedEntity())
+suspend fun PayslipDao.seedDeviceMonth(
+    dateStr: String,
+    fieldSource: Map<String, FieldSource> = emptyMap(),
+) {
+    insertPayslip(createMockPayslip(dateStr).copy(fieldSource = fieldSource).toEncryptedEntity())
     insertPayslipPdf(PayslipPdfEntity(dateStr, byteArrayOf(1)))
     insertCorrection(mapOf("basicPay" to 1.0).toCorrectionEntity(dateStr))
     insertGuideNote(GuideNote.of("RB-DEVICE-$dateStr".replace('/', '-'), "device note", "rev00001", 1L)!!.toEntity())

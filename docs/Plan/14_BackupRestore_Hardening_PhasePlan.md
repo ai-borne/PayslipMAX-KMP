@@ -238,3 +238,20 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
   walked and passed. Mutations T1-T4 and L2-L3 caught. Gate green: shared 1829 (release 1829, 1 pre-existing skip), iOS shared 1681, composeApp 1537 / 1511,
   iOS composeApp 910; R8 green; the owner's 4 local backups restore. Remaining: the iPhone walk (D14).
 
+- 2026-11-04 — **P9 done (release gate)**: a golden that carries `fieldSource`, the backup in the R8 device smoke, and the release checklist.
+  - Goldens `jvm-fieldsource-v6` and `ios-fieldsource-v6` (owner chose these names, not a version): head format 6, one payslip with both known `fieldSource`
+    values, Orders Bank entries, an order and two pages. Exported from synthetic data by throwaway generators (deleted), the iOS one on the simulator.
+    The manifest gained `fieldSources`; `PayslipBackupGoldenTest` pins the map's bytes in both files. A golden pins the reader; a writer change is
+    caught by `FieldSourceWireTest` (mutations: a known value dropped on read caught by the golden, write order and a new enum value caught by the wire test).
+  - Minified device smoke (`scripts/run_guide_minified_smoke.sh`, now 4 tests): Restore preview of the v5 golden through the system picker (a wrong password
+    gives the fixed line, the right one the manifest counts, then Cancel) and a Back Up with the counts-only result. Owner chose preview only, so no
+    synthetic row reaches the device. Passed on the Pixel (Premium; Back Up is gated, so a locked device fails loudly). A wrong count makes it fail.
+  - Found by running it: the Guide smoke was already failing (Phase 8 renamed Guide Home tiles). It now reads the tile names from `GuideStrings`.
+    Shared helpers moved to `SmokeBase`.
+  - `docs/Launch/10_release_checklist.md` (golden per release on both platforms, never regenerate; release notes "restore backups on the latest version" and the
+    `Logger.e` change); `CLAUDE.md` has the one line. `docs/AI_INSIGHTS_PIPELINE.md` untouched.
+  - Gate green: shared 1830 (release 1830, 1 pre-existing skip), iOS shared 1682, composeApp 1537 / 1511, iOS composeApp 910; `assembleRelease`,
+    `check_r8_guide.py`, `minifyReleaseWithR8`, ktlint, tech-debt audit, iOS link all exit 0; local real backups restore. Security review: one finding
+    (a stray UI dump of the owner's screen in the repo root), deleted before commit; nothing else.
+  - Not run: the pre-push hook itself (nothing is pushed); its gate is the one above. Merge into `feature/orders-bank` is next, on the owner's word (D9).
+

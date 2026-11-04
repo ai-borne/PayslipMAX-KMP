@@ -31,6 +31,8 @@ internal data class GoldenBackup(
     val part2Entries: Int = 0,
     val part2Orders: Int = 0,
     val part2Pages: Int = 0,
+    // How many field-source entries (which parser tier read a field) the restored payslips carry in all; no golden before P9 carries any.
+    val fieldSources: Int = 0,
 )
 
 internal object GoldenBackupCatalog {

@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.Secret
+import com.payslipmax.pdfparser.database.toDomain
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.Dispatchers
@@ -29,10 +30,11 @@ class GoldenBackupRestoreTest {
         val part2Entries: Int,
         val part2Orders: Int,
         val part2Pages: Int,
+        val fieldSources: Int,
     )
 
     private fun GoldenBackup.expected() =
-        Restored(payslips, pdfs, corrections, guideNotes, drafts, dismissedDrafts, theme, part2Entries, part2Orders, part2Pages)
+        Restored(payslips, pdfs, corrections, guideNotes, drafts, dismissedDrafts, theme, part2Entries, part2Orders, part2Pages, fieldSources)
 
     private suspend fun FakePayslipDao.restored() =
         Restored(
@@ -46,6 +48,7 @@ class GoldenBackupRestoreTest {
             part2Entries = part2.allEntries().size,
             part2Orders = part2.allOrders().size,
             part2Pages = part2.allPageRefs().size,
+            fieldSources = getAllPayslips().first().sumOf { it.toDomain().fieldSource.size },
         )
 
     @Test
