@@ -45,6 +45,6 @@ object LaunchFlags {
 
     // Part II Orders Bank kill switch (docs/Plan/13_OrdersBank_PhasePlan.md), the only switch: every Part II surface (the Guide row, the
     // routes, the Koin module, the Premium catalog row) reads it through isPart2Enabled(). It also needs GUIDE_ENABLED: Part II lives in
-    // the Guide tab. Dark launch: false until the owner says to flip it, in its own commit together with Part2FlagExpectation.
-    const val PART2_ENABLED: Boolean = false
+    // the Guide tab. Flipped true on this branch at the owner's request (2026-11-04), together with Part2FlagExpectation.
+    const val PART2_ENABLED: Boolean = true
 }
