@@ -7,6 +7,7 @@ import com.payslipmax.pdfparser.repository.BackupStorageFullException
 import com.payslipmax.pdfparser.repository.BackupTooLargeException
 import com.payslipmax.pdfparser.repository.BackupVerifyException
 import com.payslipmax.pdfparser.repository.NotABackupException
+import com.payslipmax.pdfparser.repository.RestoredRows
 import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.repository.UnsupportedBackupVersionException
 import com.payslipmax.pdfparser.ui.backup.BackupUiState
@@ -38,8 +39,13 @@ class RestoreStatusTest {
         )
 
     @Test
-    fun aCleanRestoreReadsAsItAlwaysDid() {
-        assertEquals(listOf(AppStrings.statusRestoreComplete), restoreResultLines(SkippedRows.NONE))
+    fun aCleanRestoreReadsAsItAlwaysDidWithWhatCameBackAddedWhenThereWasSomething() {
+        assertEquals(listOf(AppStrings.statusRestoreComplete), restoreResultLines(RestoredRows(), SkippedRows.NONE), "a restore that wrote none of the counted kinds adds no line")
+        assertEquals(
+            listOf(AppStrings.statusRestoreComplete, "Restored 48 payslips, 12 orders, 120 pages."),
+            restoreResultLines(RestoredRows(payslips = 48, part2Orders = 12, part2Pages = 120), SkippedRows.NONE),
+            "14 U1: Restored 48 payslips, 12 orders, 120 pages",
+        )
     }
 
     /** Rewritten in P8: the per-kind wording moved from `OrdersBankStrings.restoreSkipped` (one number) into `BackupRestoreStrings`; same intent. */
@@ -47,8 +53,9 @@ class RestoreStatusTest {
     fun aRestoreThatLeftRowsOutSaysWhichAndIsNotShownAsAPlainSuccess() {
         // Every kind is named: a payslip left out is as lost as a page.
         val skipped = SkippedRows(payslips = 1, part2Pages = 2)
-        val lines = restoreResultLines(skipped)
-        assertEquals(listOf(AppStrings.statusRestoreComplete, BackupRestoreStrings.restoredSkipped(skipped)), lines)
+        val restored = RestoredRows(payslips = 3)
+        val lines = restoreResultLines(restored, skipped)
+        assertEquals(listOf(AppStrings.statusRestoreComplete, BackupRestoreStrings.restoredCounts(restored), BackupRestoreStrings.restoredSkipped(skipped)), lines)
         assertEquals("Not restored: 1 payslip, 2 pages.", lines.last())
     }
 

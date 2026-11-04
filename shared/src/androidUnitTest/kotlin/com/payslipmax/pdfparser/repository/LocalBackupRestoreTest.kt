@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,7 @@ class LocalBackupRestoreTest {
                 val service = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2))
                 val report =
                     service
-                        .restore(file.readBytes(), password, RestoreMode.REPLACE)
+                        .restore(file.readBytes(), Secret.of(password), RestoreMode.REPLACE)
                         .getOrElse { fail("local backup #$i did not restore: ${it::class.simpleName}") }
                 assertTrue(dao.getAllPayslips().first().isNotEmpty(), "local backup #$i restored no payslips")
                 assertEquals(SkippedRows.NONE, report.skipped, "local backup #$i skipped rows")

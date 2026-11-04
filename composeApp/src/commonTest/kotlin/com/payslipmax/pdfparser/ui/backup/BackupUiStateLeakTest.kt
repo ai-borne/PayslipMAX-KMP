@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.backup
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.AppSettingsEntity
 import com.payslipmax.pdfparser.repository.BackupFailure
 import com.payslipmax.pdfparser.repository.RestoreMode
@@ -45,14 +46,14 @@ class BackupUiStateLeakTest {
             val viewModel = harness.viewModel
             val contents = BackupContents(payslips = 1, part2Items = 0)
 
-            viewModel.backUp(PASSWORD, contents)
+            viewModel.backUp(Secret.of(PASSWORD), contents)
             viewModel.dismiss()
             harness.files.shareFails = true
-            viewModel.backUp(PASSWORD, contents)
-            viewModel.restore(harness.files.stage(ByteArray(300) { 7 }), PASSWORD)
-            viewModel.restore(harness.pickedBackupOfTheDevice(), PASSWORD)
+            viewModel.backUp(Secret.of(PASSWORD), contents)
+            viewModel.restore(harness.files.stage(ByteArray(300) { 7 }), Secret.of(PASSWORD))
+            viewModel.restore(harness.pickedBackupOfTheDevice(), Secret.of(PASSWORD))
             viewModel.cancel()
-            viewModel.restore(harness.pickedBackupOfTheDevice(), PASSWORD)
+            viewModel.restore(harness.pickedBackupOfTheDevice(), Secret.of(PASSWORD))
             harness.dao.failInsertSettingsWhen = { true }
             viewModel.commit(RestoreMode.REPLACE)
 

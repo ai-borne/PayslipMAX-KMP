@@ -40,8 +40,8 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             Logger.w("PlatformPdfParser", "Finished GrammarAwareParser.parse. Success: ${parseResult.isSuccess}")
             parseResult.getOrThrow()
         }.onFailure { err ->
-            val safeName = com.payslipmax.pdfparser.telemetry.TelemetrySanitizer.sanitizeFilename(filename)
-            Logger.e("PlatformPdfParser", "decryptAndParse failed for $safeName", err)
+            // The type only: the message can quote the file, and the import flow reports the failure itself.
+            Logger.e("PlatformPdfParser", "decryptAndParse failed: ${err::class.simpleName}")
         }
     }
 
@@ -51,7 +51,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             val config = com.payslipmax.pdfparser.insights.gemma.GemmaEngineConfig(modelPath = modelPath)
             GemmaEngine(config)
         } catch (e: Throwable) {
-            Logger.e("PlatformPdfParser", "Failed to build GemmaEngine", e)
+            Logger.e("PlatformPdfParser", "Failed to build GemmaEngine: ${e::class.simpleName}")
             null
         }
     }
@@ -70,8 +70,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     }
                 }
             } catch (e: Throwable) {
-                val safeName = com.payslipmax.pdfparser.telemetry.TelemetrySanitizer.sanitizeFilename(filename)
-                Logger.e("PlatformPdfParser", "extractTokens failed for $safeName", e)
+                Logger.e("PlatformPdfParser", "extractTokens failed: ${e::class.simpleName}")
                 Result.failure(e)
             }
         }

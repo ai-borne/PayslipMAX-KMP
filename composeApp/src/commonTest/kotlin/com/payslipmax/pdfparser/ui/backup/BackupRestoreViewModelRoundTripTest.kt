@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.backup
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.ui.screens.BackupContents
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +38,7 @@ class BackupRestoreViewModelRoundTripTest {
 
     /** Backs up through the view model and stages the file it shared, as the officer would pick it on the same phone. */
     private fun backUpAndPick(password: String): String {
-        viewModel.backUp(password, BackupContents(payslips = 1, part2Items = 0))
+        viewModel.backUp(Secret.of(password), BackupContents(payslips = 1, part2Items = 0))
         assertIs<BackupUiState.Done>(viewModel.state.value)
         return harness.files.stage(assertNotNull(harness.files.exportedBytes))
     }
@@ -47,7 +48,7 @@ class BackupRestoreViewModelRoundTripTest {
         password: String,
         mode: RestoreMode,
     ): BackupUiState {
-        viewModel.restore(picked, password)
+        viewModel.restore(picked, Secret.of(password))
         if (viewModel.state.value is BackupUiState.Preview) viewModel.commit(mode)
         return viewModel.state.value
     }

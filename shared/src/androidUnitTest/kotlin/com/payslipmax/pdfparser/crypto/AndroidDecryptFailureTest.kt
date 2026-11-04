@@ -44,15 +44,15 @@ class AndroidDecryptFailureTest {
         val salt = ByteArray(16) { it.toByte() }
         val iv = ByteArray(12) { (it + 40).toByte() }
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(CryptoHelper.pbkdf2("pw-1", salt), "AES"), GCMParameterSpec(128, iv))
+        cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(CryptoHelper.pbkdf2(Secret.of("pw-1"), salt), "AES"), GCMParameterSpec(128, iv))
         return salt + iv + cipher.doFinal(plain)
     }
 
     @Test
     fun dataThatAuthenticatesButWasNotSealedByThisAppIsTheTypedFailure() {
-        assertTrue(CryptoHelper.decrypt(sealed("PCDA-and-more".encodeToByteArray()), "pw-1").isSuccess, "control: the recipe is this app's layout")
+        assertTrue(CryptoHelper.decrypt(sealed("PCDA-and-more".encodeToByteArray()), Secret.of("pw-1")).isSuccess, "control: the recipe is this app's layout")
 
-        val error = CryptoHelper.decrypt(sealed("no mark first".encodeToByteArray()), "pw-1").exceptionOrNull()
+        val error = CryptoHelper.decrypt(sealed("no mark first".encodeToByteArray()), Secret.of("pw-1")).exceptionOrNull()
 
         assertTrue(error is DecryptionFailedException, "was $error")
     }

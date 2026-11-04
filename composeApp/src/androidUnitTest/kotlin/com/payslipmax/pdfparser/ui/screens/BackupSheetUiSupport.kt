@@ -1,6 +1,8 @@
 package com.payslipmax.pdfparser.ui.screens
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsNodeInteraction
@@ -31,7 +33,10 @@ internal fun SheetUnderTest(
     state: BackupUiState,
     contents: BackupContents? = heldOnDevice,
     calls: SheetCalls = SheetCalls(),
+    fields: BackupPasswordFields? = null,
 ) {
+    // A state holder, not remember { BackupPasswordFields() }: lint cannot resolve the internal class in this source set and calls that remember Unit.
+    val own = remember { mutableStateOf(BackupPasswordFields()) }.value
     BackupRestoreSheetBody(
         state = state,
         contents = contents,
@@ -39,16 +44,17 @@ internal fun SheetUnderTest(
         actions =
             BackupSheetActions(
                 onBackUp = {
-                    calls.backedUp = it
+                    calls.backedUp = it.take().reveal { chars -> chars.concatToString() }
                     null
                 },
                 onRestore = {
-                    calls.restored = it
+                    calls.restored = it.take().reveal { chars -> chars.concatToString() }
                     null
                 },
                 onCommit = { calls.commits += it },
                 onCancel = { calls.cancels++ },
             ),
+        fields = fields ?: own,
     )
 }
 

@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.backup
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BackupOp
 import com.payslipmax.pdfparser.repository.BackupStage
 import com.payslipmax.pdfparser.ui.backup.BackupViewModelHarness.Companion.PASSWORD
@@ -83,7 +84,7 @@ class ProgressThrottleTest {
             for (year in 2022..2024) for (month in 1..12) harness.seedPayslip("${month.toString().padStart(2, '0')}/$year")
             harness.record(this)
 
-            harness.viewModel.backUp(PASSWORD, BackupContents(payslips = 36, part2Items = 0))
+            harness.viewModel.backUp(Secret.of(PASSWORD), BackupContents(payslips = 36, part2Items = 0))
             advanceUntilIdle()
 
             assertIs<BackupUiState.Done>(harness.viewModel.state.value)
@@ -102,7 +103,7 @@ class ProgressThrottleTest {
             val picked = harness.pickedBackupOfTheDevice()
             harness.record(this)
 
-            harness.viewModel.restore(picked, PASSWORD)
+            harness.viewModel.restore(picked, Secret.of(PASSWORD))
             advanceUntilIdle()
 
             assertIs<BackupUiState.Preview>(harness.viewModel.state.value)

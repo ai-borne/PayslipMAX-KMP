@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import com.payslipmax.pdfparser.repository.PayslipBackupService
@@ -29,9 +30,9 @@ class BackupGoldenV5Test {
         val service = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2))
         val result =
             if (viaSource) {
-                service.restore(MemoryBackupSource(golden), BACKUP_PASSWORD, RestoreMode.REPLACE)
+                service.restore(MemoryBackupSource(golden), Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE)
             } else {
-                service.restore(golden, BACKUP_PASSWORD, RestoreMode.REPLACE)
+                service.restore(golden, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE)
             }
         result.getOrThrow()
     }

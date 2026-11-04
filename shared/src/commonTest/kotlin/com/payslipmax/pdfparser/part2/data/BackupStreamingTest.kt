@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.BackupDamagedException
 import com.payslipmax.pdfparser.repository.BackupSink
@@ -81,7 +82,7 @@ class BackupStreamingTest {
             fill()
             val sink = WatchedSink()
 
-            sourceService.exportTo(sink, BACKUP_PASSWORD).getOrThrow()
+            sourceService.exportTo(sink, Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             val total = sink.inner.toByteArray().size
             assertTrue(total > pages * pageBytes, "the archive carries every page: $total")
@@ -94,10 +95,10 @@ class BackupStreamingTest {
         runTest {
             fill()
             val sink = MemoryBackupSink()
-            sourceService.exportTo(sink, BACKUP_PASSWORD).getOrThrow()
+            sourceService.exportTo(sink, Secret.of(BACKUP_PASSWORD)).getOrThrow()
             val file = WatchedSource(MemoryBackupSource(sink.toByteArray()))
 
-            val report = targetService.restore(file, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            val report = targetService.restore(file, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(SkippedRows.NONE, report.skipped)
             assertEquals(pages, target.part2.allPageRefs().size)
@@ -111,12 +112,12 @@ class BackupStreamingTest {
     fun theByteArrayFormsAreTheSameArchiveAsTheStreamedOne() =
         runTest {
             fill()
-            val streamed = MemoryBackupSink().also { sourceService.exportTo(it, BACKUP_PASSWORD).getOrThrow() }.toByteArray()
-            val whole = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val streamed = MemoryBackupSink().also { sourceService.exportTo(it, Secret.of(BACKUP_PASSWORD)).getOrThrow() }.toByteArray()
+            val whole = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             assertEquals(streamed.size, whole.size, "same layout, same length (the salts differ, the sizes do not)")
             assertTrue(pageArchiveMetaOfV6(streamed) != null && pageArchiveMetaOfV6(whole) != null)
-            targetService.restore(streamed, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            targetService.restore(streamed, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
             assertEquals(pages, target.part2.allPageRefs().size)
         }
 
@@ -126,11 +127,11 @@ class BackupStreamingTest {
             source.putEntry(SyntheticBank.entry("e1", 10))
             val sink = MemoryBackupSink()
 
-            sourceService.exportTo(sink, BACKUP_PASSWORD).getOrThrow()
+            sourceService.exportTo(sink, Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             val bytes = sink.toByteArray()
             assertTrue(pageArchiveMetaOfV6(bytes) != null, "no pages: still a page archive, one shape for format 6")
-            targetService.restore(MemoryBackupSource(bytes), BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            targetService.restore(MemoryBackupSource(bytes), Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
             assertEquals("e1", target.part2.allEntries().single().id)
         }
 
@@ -138,11 +139,11 @@ class BackupStreamingTest {
     fun aSourceThatIsCutShortFailsTheWholeRestoreAndTheDeviceKeepsEverything() =
         runTest {
             fill()
-            val bytes = MemoryBackupSink().also { sourceService.exportTo(it, BACKUP_PASSWORD).getOrThrow() }.toByteArray()
+            val bytes = MemoryBackupSink().also { sourceService.exportTo(it, Secret.of(BACKUP_PASSWORD)).getOrThrow() }.toByteArray()
             target.putEntry(SyntheticBank.entry("keep", 5))
             val cut = MemoryBackupSource(bytes.copyOf(bytes.size - 60_000))
 
-            val error = targetService.restore(cut, BACKUP_PASSWORD, RestoreMode.REPLACE).exceptionOrNull()
+            val error = targetService.restore(cut, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).exceptionOrNull()
 
             assertTrue(error is BackupDamagedException || error != null, "a cut file fails")
             assertEquals(listOf("keep"), target.part2.allEntries().map { it.id }, "nothing was changed")
@@ -155,7 +156,7 @@ class BackupStreamingTest {
             var writes = 0
             val failing = BackupSink { if (++writes > 5) throw IllegalStateException("the disk is full") }
 
-            val result = sourceService.exportTo(failing, BACKUP_PASSWORD)
+            val result = sourceService.exportTo(failing, Secret.of(BACKUP_PASSWORD))
 
             assertTrue(result.isFailure)
         }
@@ -164,14 +165,14 @@ class BackupStreamingTest {
     fun aFileThatClaimsAHugeTrailerIsRefusedWithoutReadingItAndKeepsTheDevice() =
         runTest {
             fill()
-            val good = MemoryBackupSink().also { sourceService.exportTo(it, BACKUP_PASSWORD).getOrThrow() }.toByteArray()
+            val good = MemoryBackupSink().also { sourceService.exportTo(it, Secret.of(BACKUP_PASSWORD)).getOrThrow() }.toByteArray()
             val lying = good.copyOf()
             val claimed = 200_000
             for (i in 0 until 4) lying[lying.size - 4 + i] = (claimed ushr (24 - 8 * i)).toByte()
             val watched = WatchedSource(MemoryBackupSource(lying))
             target.putEntry(SyntheticBank.entry("keep", 5))
 
-            val error = targetService.restore(watched, BACKUP_PASSWORD, RestoreMode.REPLACE).exceptionOrNull()
+            val error = targetService.restore(watched, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).exceptionOrNull()
 
             assertTrue(error is BackupDamagedException, "a trailer of $claimed bytes is a lie: $error")
             assertTrue(watched.widest < claimed, "the claimed range was never read: widest ${watched.widest}")

@@ -14,7 +14,7 @@ actual object CryptoHelper {
 
     actual fun encrypt(
         data: ByteArray,
-        password: String,
+        password: Secret,
     ): Result<ByteArray> {
         return try {
             // Generate a random 16-byte Salt
@@ -55,7 +55,7 @@ actual object CryptoHelper {
 
     actual fun decrypt(
         encryptedData: ByteArray,
-        password: String,
+        password: Secret,
     ): Result<ByteArray> {
         return try {
             val prefixSize = SALT_SIZE + IV_SIZE
@@ -98,21 +98,28 @@ actual object CryptoHelper {
     }
 
     actual fun pbkdf2(
-        password: String,
+        password: Secret,
         salt: ByteArray,
         iterations: Int,
-    ): ByteArray {
-        val chars = password.toCharArray()
-        val spec = javax.crypto.spec.PBEKeySpec(chars, salt, iterations, 256)
-        try {
-            val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-            return factory.generateSecret(spec).encoded
-        } finally {
-            // The copies of the password this call made; the String itself is immutable and cannot be wiped.
-            spec.clearPassword()
-            chars.fill('\u0000')
+    ): ByteArray = pbkdf2Observed(password, salt, iterations) {}
+
+    /** [pbkdf2] that shows the key spec it made, so a test can check the spec's own copy of the password was wiped when it returned. */
+    internal fun pbkdf2Observed(
+        password: Secret,
+        salt: ByteArray,
+        iterations: Int,
+        observe: (javax.crypto.spec.PBEKeySpec) -> Unit,
+    ): ByteArray =
+        password.reveal { chars ->
+            // PBEKeySpec keeps its own copy of the characters; clearPassword wipes it, and the caller's secret is the caller's to close.
+            val spec = javax.crypto.spec.PBEKeySpec(chars, salt, iterations, 256)
+            observe(spec)
+            try {
+                javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec).encoded
+            } finally {
+                spec.clearPassword()
+            }
         }
-    }
 
     actual fun randomBytes(size: Int): ByteArray = secureRandomBytes(size)
 

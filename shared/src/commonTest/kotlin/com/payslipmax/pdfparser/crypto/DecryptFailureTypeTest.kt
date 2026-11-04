@@ -13,7 +13,7 @@ import kotlin.test.assertTrue
  */
 class DecryptFailureTypeTest {
     private val password = "RightPassword#1"
-    private val sealed = CryptoHelper.encrypt("synthetic payload".encodeToByteArray(), password).getOrThrow()
+    private val sealed = CryptoHelper.encrypt("synthetic payload".encodeToByteArray(), Secret.of(password)).getOrThrow()
 
     private fun assertNotOpened(
         result: Result<ByteArray>,
@@ -26,29 +26,29 @@ class DecryptFailureTypeTest {
     }
 
     @Test
-    fun aWrongPasswordIsTheTypedFailure() = assertNotOpened(CryptoHelper.decrypt(sealed, "WrongPassword#2"), "a wrong password")
+    fun aWrongPasswordIsTheTypedFailure() = assertNotOpened(CryptoHelper.decrypt(sealed, Secret.of("WrongPassword#2")), "a wrong password")
 
     @Test
     fun anAlteredTagIsTheTypedFailure() {
         val altered = sealed.copyOf().also { it[it.lastIndex] = (it[it.lastIndex].toInt() xor 1).toByte() }
-        assertNotOpened(CryptoHelper.decrypt(altered, password), "an altered archive")
+        assertNotOpened(CryptoHelper.decrypt(altered, Secret.of(password)), "an altered archive")
     }
 
     @Test
     fun aFileTooShortToHoldTheHeaderIsTheTypedFailure() {
-        assertNotOpened(CryptoHelper.decrypt(ByteArray(10) { it.toByte() }, password), "10 bytes")
-        assertNotOpened(CryptoHelper.decrypt(ByteArray(0), password), "an empty file")
+        assertNotOpened(CryptoHelper.decrypt(ByteArray(10) { it.toByte() }, Secret.of(password)), "10 bytes")
+        assertNotOpened(CryptoHelper.decrypt(ByteArray(0), Secret.of(password)), "an empty file")
     }
 
     @Test
     fun aFileOfAnotherKindIsTheTypedFailure() {
         val notABackup = ByteArray(4096) { (it * 31 + 7).toByte() }
-        assertNotOpened(CryptoHelper.decrypt(notABackup, password), "4 KB of other data")
+        assertNotOpened(CryptoHelper.decrypt(notABackup, Secret.of(password)), "4 KB of other data")
     }
 
     @Test
     fun aGoodArchiveStillOpensAndGivesBackItsBytes() {
-        assertContentEquals("synthetic payload".encodeToByteArray(), CryptoHelper.decrypt(sealed, password).getOrThrow())
+        assertContentEquals("synthetic payload".encodeToByteArray(), CryptoHelper.decrypt(sealed, Secret.of(password)).getOrThrow())
     }
 
     @Test

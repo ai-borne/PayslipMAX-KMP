@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.testing
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.toEncryptedEntity
 import com.payslipmax.pdfparser.domain.Deductions
 import com.payslipmax.pdfparser.domain.Earnings
@@ -33,7 +34,7 @@ object SyntheticPart2Backups {
                 part2Entries = (1..unreadableEntries).map { Part2RowBackup("junk-entry-$it", "!!") },
                 part2Orders = (1..unreadableOrders).map { Part2RowBackup("junk-order-$it", "!!") },
             )
-        return CryptoHelper.encrypt(Json.encodeToString(PortableBackup.serializer(), backup).encodeToByteArray(), password).getOrThrow()
+        return CryptoHelper.encrypt(Json.encodeToString(PortableBackup.serializer(), backup).encodeToByteArray(), Secret.of(password)).getOrThrow()
     }
 
     private fun readablePayslip(password: String): PayslipBackupRow {

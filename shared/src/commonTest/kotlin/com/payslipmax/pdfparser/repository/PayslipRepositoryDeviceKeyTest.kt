@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.database.EncryptedPayslipEntity
 import com.payslipmax.pdfparser.database.hexToByteArray
@@ -52,12 +53,12 @@ class PayslipRepositoryDeviceKeyTest {
 
             // 1. Verify decryption with the device key succeeds
             val deviceKey = CryptoHelper.getDatabaseSecretKey()
-            val decryptDeviceResult = CryptoHelper.decrypt(ciphertextBytes, deviceKey)
+            val decryptDeviceResult = CryptoHelper.decrypt(ciphertextBytes, Secret.of(deviceKey))
             assertTrue(decryptDeviceResult.isSuccess, "Decryption with device key should succeed")
 
             // 2. Verify decryption with the legacy fallback fails
             val legacyKey = CryptoHelper.getLegacyFallbackKey()
-            val decryptLegacyResult = CryptoHelper.decrypt(ciphertextBytes, legacyKey)
+            val decryptLegacyResult = CryptoHelper.decrypt(ciphertextBytes, Secret.of(legacyKey))
             assertTrue(decryptLegacyResult.isFailure, "Decryption with legacy fallback key must fail")
         }
 

@@ -5,6 +5,7 @@ import androidx.room.useWriterConnection
 import androidx.sqlite.driver.AndroidSQLiteDriver
 import androidx.test.core.app.ApplicationProvider
 import com.payslipmax.pdfparser.crypto.ContextHolder
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.PayslipDatabase
 import com.payslipmax.pdfparser.database.getDatabaseBuilder
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
@@ -140,11 +141,11 @@ class Part2RoomTest {
         runBlocking {
             val db = open()
             val pageId = fill(repository(db))
-            val archive = service(db).export(BACKUP_PASSWORD).getOrThrow()
+            val archive = service(db).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             db.payslipDao().clearAllUserData()
             assertTrue(db.part2Dao().allEntries().isEmpty() && db.part2Dao().allOrders().isEmpty() && db.part2Dao().allPageRefs().isEmpty())
 
-            service(db).restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            service(db).restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             val repo = repository(reopen())
             assertEquals(SyntheticBank.entry(), repo.entry("entry-1"))
@@ -157,11 +158,11 @@ class Part2RoomTest {
             val db = open()
             val repo = repository(db)
             fill(repo)
-            val archive = service(db).export(BACKUP_PASSWORD).getOrThrow()
+            val archive = service(db).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             repo.saveEntry(SyntheticBank.entry("device-only"))
             repo.saveEntry(SyntheticBank.entry(updatedAt = 1)) // older than the backup's copy
 
-            service(db).restore(archive, BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+            service(db).restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
 
             assertEquals(setOf("entry-1", "device-only"), repository(reopen()).observeEntries().first().items.map { it.id }.toSet())
             assertEquals(SyntheticBank.entry().updatedAt, repository(database!!).entry("entry-1")!!.updatedAt, "the newer backup copy won")
@@ -173,14 +174,14 @@ class Part2RoomTest {
             val db = open()
             val repo = repository(db)
             fill(repo)
-            val archive = service(db).export(BACKUP_PASSWORD).getOrThrow()
+            val archive = service(db).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             db.payslipDao().seedDeviceMonth("01/2023")
             repo.saveEntry(SyntheticBank.entry("device-only"))
             db.useWriterConnection {
                 it.usePrepared("CREATE TRIGGER fail_page BEFORE INSERT ON part2_pages BEGIN SELECT RAISE(ABORT, 'simulated failure'); END") { s -> s.step() }
             }
 
-            val result = service(db).restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE)
+            val result = service(db).restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE)
 
             assertTrue(result.isFailure)
             assertEquals(listOf("01/2023"), db.payslipDao().getAllPayslips().first().map { it.dateStr }, "the payslips were not wiped")

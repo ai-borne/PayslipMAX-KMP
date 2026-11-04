@@ -1,17 +1,21 @@
 package com.payslipmax.pdfparser.repository
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.toCorrectionEntity
 import com.payslipmax.pdfparser.database.toEntity
 import com.payslipmax.pdfparser.guide.domain.GuideNote
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.part2.data.Part2LegacyDraft
 import com.payslipmax.pdfparser.part2.data.Part2RowBackup
+import com.payslipmax.pdfparser.part2.data.entryRow
+import com.payslipmax.pdfparser.part2.data.junkEntry
 import com.payslipmax.pdfparser.repository.backup.CorrectionBackupRow
 import com.payslipmax.pdfparser.repository.backup.GuideNoteBackupRow
 import com.payslipmax.pdfparser.repository.backup.PayslipBackupRow
 import com.payslipmax.pdfparser.repository.backup.PdfBackupRow
 import com.payslipmax.pdfparser.repository.backup.toBackupRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
+import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -47,7 +51,7 @@ class BackupSkipCountTest {
     )
 
     private suspend fun restore(bytes: ByteArray): RestoreReport {
-        val result = service.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE)
+        val result = service.restore(bytes, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE)
         assertTrue(result.isSuccess, "one unreadable row must not fail the restore: ${result.exceptionOrNull()?.let { it::class.simpleName }}")
         return result.getOrThrow()
     }
@@ -59,6 +63,17 @@ class BackupSkipCountTest {
 
             assertEquals(SkippedRows(payslips = 1), report.skipped)
             assertEquals(listOf("08/2024", "10/2024"), dao.getAllPayslips().first().map { it.dateStr }.sorted())
+            assertEquals(2, report.restored.payslips, "the report counts what was written (P10 'From P8' item 3), not what the file held: 3 held, 1 skipped")
+        }
+
+    @Test
+    fun theReportCountsBankEntriesThatCameBackAndNotTheJunkOnesSkippedBesideThem() =
+        runTest {
+            val report = restore(file(payslips = emptyList(), entries = listOf(entryRow(SyntheticBank.entry("e1", 1)), junkEntry(1), entryRow(SyntheticBank.entry("e2", 2)), junkEntry(2))))
+
+            assertEquals(SkippedRows(part2Entries = 2), report.skipped)
+            assertEquals(2, report.restored.part2Entries)
+            assertEquals(RestoredRows(part2Entries = 2), report.restored)
         }
 
     @Test
@@ -122,7 +137,7 @@ class BackupSkipCountTest {
 
             for ((name, bytes) in listOf("every kind" to everyKindBad, "only Part II rows" to onlyPart2Bad)) {
                 for (mode in RestoreMode.entries) {
-                    val result = service.restore(bytes, BACKUP_PASSWORD, mode)
+                    val result = service.restore(bytes, Secret.of(BACKUP_PASSWORD), mode)
 
                     assertIs<BackupDamagedException>(result.exceptionOrNull(), "$name, $mode")
                     assertEquals(listOf("01/2023"), dao.getAllPayslips().first().map { it.dateStr }, "$name, $mode")

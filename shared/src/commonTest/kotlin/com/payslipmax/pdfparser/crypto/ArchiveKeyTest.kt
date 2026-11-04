@@ -22,7 +22,7 @@ class ArchiveKeyTest {
     private fun key(
         password: String = "BackupPass#1",
         aad: ByteArray = header,
-    ) = ArchiveKey.derive(password, salt, 10_000, aad)
+    ) = ArchiveKey.derive(Secret.of(password), salt, 10_000, aad)
 
     @Test
     fun whatOneKeySealsTheSameDerivationOpens() {
@@ -69,11 +69,11 @@ class ArchiveKeyTest {
 
     @Test
     fun aRowSealedPerRowWithThePasswordIsNotOpenedByTheArchiveKeyNorTheOtherWayRound() {
-        val perRow = CryptoHelper.encrypt("row".encodeToByteArray(), "BackupPass#1").getOrThrow()
+        val perRow = CryptoHelper.encrypt("row".encodeToByteArray(), Secret.of("BackupPass#1")).getOrThrow()
         val archived = key().seal("row".encodeToByteArray()).getOrThrow()
 
         assertTrue(key().open(perRow).isFailure)
-        assertTrue(CryptoHelper.decrypt(archived, "BackupPass#1").isFailure)
+        assertTrue(CryptoHelper.decrypt(archived, Secret.of("BackupPass#1")).isFailure)
     }
 
     @Test

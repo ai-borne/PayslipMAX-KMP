@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.crypto.ArchiveKey
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.PasswordKey
 import com.payslipmax.pdfparser.crypto.SealKey
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.data.PageArchive
 import com.payslipmax.pdfparser.repository.BackupDamagedException
 import com.payslipmax.pdfparser.repository.BackupSource
@@ -30,21 +31,31 @@ internal class OpenedArchive(
  * header is formats 1 to 5, read exactly as before: rows sealed per row with the password. A wrong password, a header changed after writing,
  * or a file that is not a backup fails with `DecryptionFailedException`; one too short to hold a sealed row is [NotABackupException] and
  * one too large to be a backup without pages is [BackupTooLargeException], both before any decrypt.
+ *
+ * Consumes [password] (P10): a format 6 file derives its key and wipes it at once; an older file's key keeps it until [OpenedArchive.close]
+ * (every row is sealed with it, so a MERGE after the preview still needs it); on any failure it is wiped before the failure is thrown.
  */
 internal fun openArchive(
     source: BackupSource,
-    password: String,
+    password: Secret,
 ): OpenedArchive {
-    val header = BackupEnvelope.read(source)
-    if (header == null) {
-        val meta = PageArchive.metaOf(source) ?: wholeBlob(source)
-        return OpenedArchive(CryptoHelper.decrypt(meta, password).getOrThrow(), PasswordKey(password), source)
+    var handedOn = false
+    try {
+        val header = BackupEnvelope.read(source)
+        if (header == null) {
+            val meta = PageArchive.metaOf(source) ?: wholeBlob(source)
+            val document = CryptoHelper.decrypt(meta, password).getOrThrow()
+            handedOn = true
+            return OpenedArchive(document, PasswordKey(password), source)
+        }
+        val body = source.from(BackupEnvelope.HEADER_BYTES.toLong())
+        val meta = PageArchive.metaOf(body) ?: throw BackupDamagedException()
+        val key = ArchiveKey.derive(password, header.salt, header.iterations, header.bytes)
+        val document = key.open(meta).onFailure { key.close() }.getOrThrow()
+        return OpenedArchive(document, key, body)
+    } finally {
+        if (!handedOn) password.close()
     }
-    val body = source.from(BackupEnvelope.HEADER_BYTES.toLong())
-    val meta = PageArchive.metaOf(body) ?: throw BackupDamagedException()
-    val key = ArchiveKey.derive(password, header.salt, header.iterations, header.bytes)
-    val document = key.open(meta).onFailure { key.close() }.getOrThrow()
-    return OpenedArchive(document, key, body)
 }
 
 /** A new v6 archive: its header (fresh salt, [BackupEnvelope.ITERATIONS]) and the one key it derives, which the caller closes. */
@@ -55,7 +66,8 @@ internal class NewArchive(
     override fun close() = key.close()
 }
 
-internal fun newArchive(password: String): NewArchive {
+/** Consumes [password]: [ArchiveKey.derive] wipes it, and the archive key replaces it. */
+internal fun newArchive(password: Secret): NewArchive {
     val salt = CryptoHelper.randomBytes(BackupEnvelope.SALT_BYTES)
     val header = BackupEnvelope.header(PortableBackup.CURRENT_VERSION, BackupEnvelope.ITERATIONS, salt)
     return NewArchive(header, ArchiveKey.derive(password, salt, BackupEnvelope.ITERATIONS, header))

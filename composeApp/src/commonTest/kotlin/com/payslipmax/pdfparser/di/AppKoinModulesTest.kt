@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.di
 
 import androidx.lifecycle.viewModelScope
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.AppSettingsEntity
 import com.payslipmax.pdfparser.database.PayslipDao
 import com.payslipmax.pdfparser.guide.GuideRepository
@@ -148,7 +149,7 @@ class AppKoinModulesTest {
             fun backupEvents() = reporter.exceptions.filter { it.first is BackupFailureEvent }
             try {
                 space.free = 0L
-                val result = koin.get<PayslipBackupService>().backUp(FakeBackupFiles(), "Pass#12345")
+                val result = koin.get<PayslipBackupService>().backUp(FakeBackupFiles(), Secret.of("Pass#12345"))
                 assertIs<BackupStorageFullException>(result.exceptionOrNull())
 
                 val telemetry = koin.get<BackupTelemetry>()

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.domain.Deductions
 import com.payslipmax.pdfparser.domain.DsopFund
 import com.payslipmax.pdfparser.domain.Earnings
@@ -87,7 +88,7 @@ internal class BackupViewModelHarness(
     suspend fun payslipDates(): List<String> = repository.getAllPayslips().first().map { it.dateStr }
 
     /** A whole backup of what the device holds now, staged as the picker would hand it over. */
-    suspend fun pickedBackupOfTheDevice(password: String = PASSWORD): String = files.stage(service.export(password).getOrThrow())
+    suspend fun pickedBackupOfTheDevice(password: String = PASSWORD): String = files.stage(service.export(Secret.of(password)).getOrThrow())
 
     companion object {
         const val PASSWORD = "Pass#Secret-4321"

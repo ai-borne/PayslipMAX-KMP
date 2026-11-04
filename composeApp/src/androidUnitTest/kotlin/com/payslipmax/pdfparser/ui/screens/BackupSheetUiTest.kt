@@ -20,6 +20,7 @@ import androidx.compose.ui.test.runComposeUiTest
 import com.payslipmax.pdfparser.repository.BackupFailure
 import com.payslipmax.pdfparser.repository.BackupOp
 import com.payslipmax.pdfparser.repository.BackupStage
+import com.payslipmax.pdfparser.repository.RestoredRows
 import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.ui.backup.BackupSummary
 import com.payslipmax.pdfparser.ui.backup.BackupUiState
@@ -124,19 +125,23 @@ class BackupSheetUiTest {
             var warning = Color.Unspecified
             setContent {
                 warning = BackupColors.skipped()
-                SheetUnderTest(BackupUiState.Done(BackupSummary.Restored(skippedExample)))
+                SheetUnderTest(BackupUiState.Done(BackupSummary.Restored(RestoredRows(payslips = 3), skippedExample)))
             }
             onNodeWithText(AppStrings.statusRestoreComplete).assertIsDisplayed()
+            val counts = BackupRestoreStrings.restoredCounts(RestoredRows(payslips = 3))!!
+            onNodeWithText(counts).assertIsDisplayed()
+            assertNotEquals(warning, onNodeWithText(counts).textColor(), "what came back is not shown as a warning")
             assertEquals(warning, onNodeWithText(BackupRestoreStrings.restoredSkipped(skippedExample)).textColor(), "the loss is in the warning colour")
             assertNotEquals(warning, onNodeWithText(AppStrings.statusRestoreComplete).textColor())
             onNodeWithText(BackupRestoreStrings.restoredSkipped(skippedExample)).assertIsDisplayed()
         }
 
     @Test
-    fun aCleanRestoreSaysCompleteAndNothingElse() =
+    fun aCleanRestoreSaysCompleteWhatCameBackAndNothingLost() =
         runComposeUiTest {
-            setContent { SheetUnderTest(BackupUiState.Done(BackupSummary.Restored(SkippedRows.NONE))) }
+            setContent { SheetUnderTest(BackupUiState.Done(BackupSummary.Restored(RestoredRows(payslips = 48, part2Orders = 12, part2Pages = 120), SkippedRows.NONE))) }
             onNodeWithText(AppStrings.statusRestoreComplete).assertIsDisplayed()
+            onNodeWithText("Restored 48 payslips, 12 orders, 120 pages.").assertIsDisplayed()
             assertEquals(0, onAllNodesWithText(BackupRestoreStrings.restoredSkipped(skippedExample)).fetchSemanticsNodes().size)
         }
 
@@ -152,17 +157,19 @@ class BackupSheetUiTest {
     // ---- Security ------------------------------------------------------------------------------------------------------
 
     /**
-     * The text the screen reader and the display read (`Text`, `EditableText`) is masked. Compose also puts the raw value in `InputText`
-     * on every text field; the Android accessibility delegate never reads that key, so it is left out here and recorded in 14a P10
-     * "From P8": closing it needs a different field (the secure-field phase), not a change to this sheet.
+     * Nothing a screen reader or the display reads carries the typed password: `Text`, `EditableText` and, since P10's secure field, also
+     * `InputText`, which Compose fills with the raw value on every text field (docs/Plan/14a P10 "From P8" item 2, closed). The line
+     * filter that used to exempt `InputText` is gone, so any node that holds the password fails this test.
      */
     @Test
-    fun noPasswordReachesTheTextTheScreenReaderReads() =
+    fun noPasswordReachesAnyTextTheScreenReaderOrTheDisplayReads() =
         runComposeUiTest {
             setContent { SheetUnderTest(BackupUiState.Idle(null)) }
             onNodeWithTag(BackupRestorePasswordFieldTestTag).performTextInput("Zq7!secretWord")
             onNodeWithTag(BackupConfirmFieldTag).performTextInput("Zq7!secretWord")
-            val leaks = onRoot(useUnmergedTree = true).printToString().lines().filter { "secretWord" in it && "InputText" !in it }
-            assertTrue(leaks.isEmpty(), "the typed password must never be in the text a screen reader reads: $leaks")
+            val leaks = onRoot(useUnmergedTree = true).printToString().lines().filter { "secretWord" in it }
+            assertTrue(leaks.isEmpty(), "the typed password must never be in any text a screen reader reads: $leaks")
+            val masked = onNodeWithTag(BackupRestorePasswordFieldTestTag).fetchSemanticsNode().config
+            assertEquals("Zq7!secretWord".length, masked[SemanticsProperties.InputText].text.length, "the mask keeps the length the field had, as the old one did")
         }
 }

@@ -3,11 +3,13 @@ package com.payslipmax.pdfparser.ui.theme
 import com.payslipmax.pdfparser.repository.BackupOp
 import com.payslipmax.pdfparser.repository.BackupStage
 import com.payslipmax.pdfparser.repository.RestorePreview
+import com.payslipmax.pdfparser.repository.RestoredRows
 import com.payslipmax.pdfparser.repository.SkippedRows
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -40,6 +42,15 @@ class BackupSheetStringsTest {
         )
         assertEquals("1 payslip", BackupRestoreStrings.skippedList(SkippedRows(payslips = 1)))
         assertEquals("", BackupRestoreStrings.skippedList(SkippedRows.NONE))
+    }
+
+    /** 14 U1 asked for "Restored 48 payslips, 12 orders, 120 pages": what came back, named like the preview names what the backup holds. */
+    @Test
+    fun whatCameBackIsNamedPerKindAndAnEmptyRestoreHasNoLine() {
+        assertEquals("Restored 48 payslips, 12 orders, 120 pages.", BackupRestoreStrings.restoredCounts(RestoredRows(48, 0, 12, 120)))
+        assertEquals("Restored 1 payslip, 2 Orders Bank entries, 1 order, 1 page.", BackupRestoreStrings.restoredCounts(RestoredRows(1, 2, 1, 1)))
+        assertNull(BackupRestoreStrings.restoredCounts(RestoredRows()), "a restore of only settings and PDFs names no count rather than 'Restored .'")
+        assertFalse("add" in BackupRestoreStrings.restoredCounts(RestoredRows(1))!!.lowercase())
     }
 
     @Test

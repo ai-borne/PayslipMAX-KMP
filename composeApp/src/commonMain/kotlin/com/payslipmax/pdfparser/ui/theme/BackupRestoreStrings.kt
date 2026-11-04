@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.repository.BackupFailure
 import com.payslipmax.pdfparser.repository.BackupOp
 import com.payslipmax.pdfparser.repository.BackupStage
 import com.payslipmax.pdfparser.repository.RestorePreview
+import com.payslipmax.pdfparser.repository.RestoredRows
 import com.payslipmax.pdfparser.repository.SkippedRows
 
 /**
@@ -36,6 +37,9 @@ object BackupRestoreStrings {
         }
 
     // ---- The sheet (docs/Plan/14a P8). New copy, reviewed by the owner in the P8 walk (D13).
+
+    /** What a screen reader reads in place of a typed password (P10): one bullet per character, never the characters. */
+    const val maskCharacter = '\u2022'
     const val confirmLabel = "Confirm Password"
     const val confirmHint = "Re-enter the password to Back Up. Not needed to Restore."
     const val passwordMismatch = "The passwords don't match."
@@ -103,6 +107,15 @@ object BackupRestoreStrings {
         "Replace deletes everything on this device and restores only what could be read. This will be lost: ${skippedList(skipped)}."
 
     fun restoredSkipped(skipped: SkippedRows): String = "Not restored: ${skippedList(skipped)}."
+
+    /** What a finished restore wrote, kinds with none left out ("Restored 34 payslips, 1 order, 1 page."), or null when it wrote none of them. */
+    fun restoredCounts(restored: RestoredRows): String? =
+        listOfNotNull(
+            count(restored.payslips, "payslip", "payslips"),
+            count(restored.part2Entries, "Orders Bank entry", "Orders Bank entries"),
+            count(restored.part2Orders, "order", "orders"),
+            count(restored.part2Pages, "page", "pages"),
+        ).takeIf { it.isNotEmpty() }?.let { "Restored ${it.joinToString(", ")}." }
 
     private fun count(
         n: Int,

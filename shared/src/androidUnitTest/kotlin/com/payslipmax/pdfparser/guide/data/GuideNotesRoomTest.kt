@@ -5,6 +5,7 @@ import androidx.room.useWriterConnection
 import androidx.sqlite.driver.AndroidSQLiteDriver
 import androidx.test.core.app.ApplicationProvider
 import com.payslipmax.pdfparser.crypto.ContextHolder
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.PayslipDatabase
 import com.payslipmax.pdfparser.database.getDatabaseBuilder
 import com.payslipmax.pdfparser.database.toEntity
@@ -133,7 +134,7 @@ class GuideNotesRoomTest {
                     ),
                 )
 
-            val result = PayslipBackupService(dao, Dispatchers.Unconfined).restore(backup, BACKUP_PASSWORD, RestoreMode.REPLACE)
+            val result = PayslipBackupService(dao, Dispatchers.Unconfined).restore(backup, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE)
 
             assertTrue(result.isFailure)
             assertEquals(listOf("01/2023"), dao.getAllPayslips().first().map { it.dateStr }, "the payslips were not wiped")
@@ -147,11 +148,11 @@ class GuideNotesRoomTest {
             val dao = db.payslipDao()
             val service = PayslipBackupService(dao, Dispatchers.Unconfined)
             repository(db).save("RB-TD-001", SECRET, "r1")
-            val archive = service.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = service.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             dao.clearAllUserData()
             assertTrue(dao.getAllGuideNotes().first().isEmpty())
 
-            service.restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            service.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(SECRET, repository(reopen()).observe().first().notes.single().text)
         }

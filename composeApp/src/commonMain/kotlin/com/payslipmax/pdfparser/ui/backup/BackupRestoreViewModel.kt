@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui.backup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.data.LastBackupStorage
 import com.payslipmax.pdfparser.repository.BackupFiles
 import com.payslipmax.pdfparser.repository.BackupOp
@@ -24,7 +25,8 @@ import kotlinx.coroutines.launch
  * The Backup & Restore sheet's view model (docs/Plan/14a P7): the sheet draws [state] and calls these, nothing more. It is one instance per
  * process (a Koin single), so a backup or restore runs on in [viewModelScope] when the sheet closes, Settings leaves the screen or the app
  * locks, and its result is there when the sheet opens again.
- * - The password is passed per call and kept nowhere: not in [state], not in a field.
+ * - The password is passed per call as a [Secret] and kept nowhere: not in [state], not in a field. This class closes it however the call
+ *   ends (an ignored tap, a failure, a cancellation, a scope that never started the work), and the service wipes it as soon as it can.
  * - A restore stops at [BackupUiState.Preview] with the picked file open and the archive's key held ([PreparedRestore]). Every way out (a
  *   commit that works or fails, [cancel], [dismiss], [onCleared]) closes it and deletes the file.
  * - One operation at a time: Back Up or Restore while one is working or previewed is ignored, and an ignored pick is deleted.
@@ -53,38 +55,44 @@ class BackupRestoreViewModel(
 
     /** Writes the backup, reads it back and only then opens the share sheet on it. [contents] is what the result line reports. */
     fun backUp(
-        password: String,
+        password: Secret,
         contents: BackupContents,
     ) {
-        val op = begin(BackupOp.BACKUP) ?: return
-        viewModelScope.launch {
-            val result = service.backUp(files, password, throttle.progress(BackupOp.BACKUP)).mapCatching { files.share().getOrThrow() }
-            end(op, BackupOp.BACKUP, result, PortableBackup.CURRENT_VERSION) {
-                BackupUiState.Done(BackupSummary.BackedUp(contents.payslips, contents.part2Items))
-            }
-        }
+        val op = begin(BackupOp.BACKUP) ?: return password.close()
+        viewModelScope
+            .launch {
+                val result = service.backUp(files, password, throttle.progress(BackupOp.BACKUP)).mapCatching { files.share().getOrThrow() }
+                end(op, BackupOp.BACKUP, result, PortableBackup.CURRENT_VERSION) {
+                    BackupUiState.Done(BackupSummary.BackedUp(contents.payslips, contents.part2Items))
+                }
+            }.invokeOnCompletion { password.close() }
     }
 
     /** Opens and checks the [picked] file, writing nothing, and waits at the preview for [commit] or [cancel]. The file is always deleted. */
     fun restore(
         picked: String,
-        password: String,
+        password: Secret,
     ) {
-        val op = begin(BackupOp.RESTORE) ?: return files.discard(picked)
-        viewModelScope.launch {
-            val progress = throttle.progress(BackupOp.RESTORE)
-            var format: Int? = null
-            val result =
-                files.read(picked) { source ->
-                    val prepared = service.prepare(source, password, progress).getOrElse { return@read Result.failure(it) }
-                    prepared.use { held ->
-                        val mode = awaitChoice(picked, held) ?: return@read Result.success(null)
-                        format = held.preview.formatVersion
-                        service.commit(held, mode, progress)
+        val op =
+            begin(BackupOp.RESTORE) ?: run {
+                password.close()
+                return files.discard(picked)
+            }
+        viewModelScope
+            .launch {
+                val progress = throttle.progress(BackupOp.RESTORE)
+                var format: Int? = null
+                val result =
+                    files.read(picked) { source ->
+                        val prepared = service.prepare(source, password, progress).getOrElse { return@read Result.failure(it) }
+                        prepared.use { held ->
+                            val mode = awaitChoice(picked, held) ?: return@read Result.success(null)
+                            format = held.preview.formatVersion
+                            service.commit(held, mode, progress)
+                        }
                     }
-                }
-            end(op, BackupOp.RESTORE, result, format) { report -> report?.let { BackupUiState.Done(BackupSummary.Restored(it.skipped)) } ?: idle() }
-        }
+                end(op, BackupOp.RESTORE, result, format) { report -> report?.let { BackupUiState.Done(BackupSummary.Restored(it.restored, it.skipped)) } ?: idle() }
+            }.invokeOnCompletion { password.close() }
     }
 
     /** Writes the previewed backup ([mode]: Replace or Merge). Ignored unless a preview is on screen. */

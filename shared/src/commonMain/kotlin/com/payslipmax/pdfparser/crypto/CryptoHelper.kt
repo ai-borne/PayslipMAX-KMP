@@ -5,23 +5,23 @@ expect object CryptoHelper {
      * Encrypts plain bytes using AES-256 symmetric encryption.
      * The encryption key is derived from the user-provided password.
      * @param data The raw bytes to encrypt.
-     * @param password The user password/passphrase.
+     * @param password The user password/passphrase, borrowed: the caller closes it (P10).
      * @return A Result containing the encrypted byte array.
      */
     fun encrypt(
         data: ByteArray,
-        password: String,
+        password: Secret,
     ): Result<ByteArray>
 
     /**
      * Decrypts AES-256 encrypted bytes.
      * @param encryptedData The encrypted byte array.
-     * @param password The user password/passphrase.
+     * @param password The user password/passphrase, borrowed: the caller closes it (P10).
      * @return A Result containing the decrypted byte array.
      */
     fun decrypt(
         encryptedData: ByteArray,
-        password: String,
+        password: Secret,
     ): Result<ByteArray>
 
     /**
@@ -30,10 +30,11 @@ expect object CryptoHelper {
     fun sha256(input: String): String
 
     /**
-     * Stretches a user-provided password using PBKDF2-HMAC-SHA256.
+     * Stretches a user-provided password using PBKDF2-HMAC-SHA256. The password is borrowed (the caller closes it); the copies this call
+     * makes of it (Android's key spec, iOS's UTF-8 bytes) are wiped before it returns.
      */
     fun pbkdf2(
-        password: String,
+        password: Secret,
         salt: ByteArray,
         iterations: Int = 10000,
     ): ByteArray

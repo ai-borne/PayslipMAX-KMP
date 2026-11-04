@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -20,7 +21,7 @@ import kotlin.test.assertTrue
  * old single-blob archive is never mistaken for it) and that a file that lies about its own lengths is refused before anything is read.
  */
 class PageArchiveTest {
-    private val meta = CryptoHelper.encrypt("{\"version\":5}".encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()
+    private val meta = CryptoHelper.encrypt("{\"version\":5}".encodeToByteArray(), Secret.of(BACKUP_PASSWORD)).getOrThrow()
     private val page = pageRow("p1", "o1", 0, SyntheticBank.jpeg(3000))
 
     private fun built(vararg pages: RawPage): ByteArray {
@@ -84,8 +85,8 @@ class PageArchiveTest {
         val trailerLength = (0..3).fold(0) { n, i -> (n shl 8) or (good[good.size - 4 + i].toInt() and 0xFF) }
         val trailer = good.copyOfRange(good.size - 4 - trailerLength, good.size - 4)
 
-        assertTrue(CryptoHelper.decrypt(trailer, "another password").isFailure)
-        assertEquals("""{"pages":1}""", CryptoHelper.decrypt(trailer, BACKUP_PASSWORD).getOrThrow().decodeToString())
+        assertTrue(CryptoHelper.decrypt(trailer, Secret.of("another password")).isFailure)
+        assertEquals("""{"pages":1}""", CryptoHelper.decrypt(trailer, Secret.of(BACKUP_PASSWORD)).getOrThrow().decodeToString())
     }
 
     @Test

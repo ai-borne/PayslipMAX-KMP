@@ -19,6 +19,7 @@ class BackupSheetNoLiteralsTest {
             "BackupRestoreSheet.kt",
             "BackupRestoreSettingsCard.kt",
             "BackupRestoreComponents.kt",
+            "BackupPasswordFields.kt",
             "BackupSheetRules.kt",
             "BackupStatusMessage.kt",
             "RestoreFailureStatus.kt",

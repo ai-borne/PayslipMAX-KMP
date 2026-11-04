@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -28,7 +29,7 @@ class Part2CodecTest {
     private fun entityFor(
         json: String,
         id: String = entry.id,
-    ) = Part2EntryEntity(id, CryptoHelper.encrypt(json.encodeToByteArray(), key).getOrThrow())
+    ) = Part2EntryEntity(id, CryptoHelper.encrypt(json.encodeToByteArray(), Secret.of(key)).getOrThrow())
 
     private val base = """"id":"entry-1","code":"SYNCODE1","from":{"y":2026,"m":3,"d":1},"createdAt":1,"updatedAt":2"""
 
@@ -156,7 +157,7 @@ class Part2CodecTest {
     fun anOrderRowFromTheFrozenBranchStillOpensItsDraftLinkIgnored() {
         // The frozen branch wrote an order's date as a slot payload and a draftId; a phone that ran it must keep its scanned orders.
         val old = """{"v":1,"id":"order-1","draftId":"d-9","orderNo":"N/1","date":{"k":"d","y":2026,"m":2,"d":3,"n":0,"t":"","no":""},"createdAt":1,"updatedAt":2}"""
-        val order = Part2OrderEntity("order-1", CryptoHelper.encrypt(old.encodeToByteArray(), key).getOrThrow()).toOrder(key)
+        val order = Part2OrderEntity("order-1", CryptoHelper.encrypt(old.encodeToByteArray(), Secret.of(key)).getOrThrow()).toOrder(key)
 
         assertEquals(Triple("N/1", CalendarDate(2026, 2, 3), 2L), Triple(order.orderNo, order.orderDate, order.updatedAt))
     }
@@ -173,8 +174,8 @@ class Part2CodecTest {
     @Test
     fun theSealOverheadTheCapsAssumeIsWhatTheRealCryptoHelperAdds() {
         // Restore compares a row's text length with this before decoding it; if the helper's format changes, the bound must change with it.
-        assertEquals(Part2Limits.SEAL_OVERHEAD_BYTES, CryptoHelper.encrypt(ByteArray(0), key).getOrThrow().size)
-        assertEquals(Part2Limits.SEAL_OVERHEAD_BYTES + 1000, CryptoHelper.encrypt(ByteArray(1000), key).getOrThrow().size)
+        assertEquals(Part2Limits.SEAL_OVERHEAD_BYTES, CryptoHelper.encrypt(ByteArray(0), Secret.of(key)).getOrThrow().size)
+        assertEquals(Part2Limits.SEAL_OVERHEAD_BYTES + 1000, CryptoHelper.encrypt(ByteArray(1000), Secret.of(key)).getOrThrow().size)
     }
 
     private fun assertNoLeak(error: Throwable) {

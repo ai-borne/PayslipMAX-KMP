@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.BackupSink
 import com.payslipmax.pdfparser.repository.MemoryBackupSink
@@ -51,7 +52,7 @@ class PageArchiveWriterTest {
         assertEquals(bytes.size - 4 - trailerLength, at, "the trailer follows the last record and nothing else is there")
         val layout = PageArchive.layout(bytes)!!
         assertEquals(at.toLong(), layout.trailerStart)
-        assertTrue(CryptoHelper.decrypt(bytes.copyOfRange(layout.trailerStart.toInt(), layout.trailerStart.toInt() + trailerLength), BACKUP_PASSWORD).isSuccess)
+        assertTrue(CryptoHelper.decrypt(bytes.copyOfRange(layout.trailerStart.toInt(), layout.trailerStart.toInt() + trailerLength), Secret.of(BACKUP_PASSWORD)).isSuccess)
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.repository.backup.PayslipBackupRow
@@ -37,7 +38,7 @@ class PayslipBackupServiceReplaceTest {
         runTest {
             dao.seedDeviceMonth("01/2023")
 
-            service.restore(backupOf("08/2024"), BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            service.restore(backupOf("08/2024"), Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(listOf("08/2024"), dao.getAllPayslips().first().map { it.dateStr })
             assertEquals(listOf("08/2024"), dao.getAllPdfs().map { it.dateStr })
@@ -53,7 +54,7 @@ class PayslipBackupServiceReplaceTest {
         runTest {
             dao.seedDeviceMonth("01/2023")
 
-            service.restore(backupOf("08/2024"), BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+            service.restore(backupOf("08/2024"), Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
 
             assertEquals(setOf("01/2023", "08/2024"), dao.getAllPayslips().first().map { it.dateStr }.toSet())
             assertEquals(1, dao.getAllLedgerRecords().first().size)
@@ -71,7 +72,7 @@ class PayslipBackupServiceReplaceTest {
             val corrupt = PayslipBackupRow("09/2014", 2014, 9, "September", ciphertext = "deadbeef")
             val backup = backupBytes(PortableBackup(2, listOf(corrupt), listOf(PdfBackupRow("09/2014", byteArrayOf(9))), null))
 
-            val result = service.restore(backup, BACKUP_PASSWORD, RestoreMode.REPLACE)
+            val result = service.restore(backup, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE)
 
             assertIs<BackupDamagedException>(result.exceptionOrNull(), "a file with nothing readable is damaged, not a restore of nothing")
             assertEquals(listOf("01/2023"), dao.getAllPayslips().first().map { it.dateStr })
@@ -95,7 +96,7 @@ class PayslipBackupServiceReplaceTest {
 
             // Wired as production is (Part2WiringTest): a MERGE re-runs Part II, and the payslip count must survive that.
             val withPart2 = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2))
-            val result = withPart2.restore(backup, BACKUP_PASSWORD, RestoreMode.MERGE)
+            val result = withPart2.restore(backup, Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE)
 
             assertTrue(result.isSuccess, "one unreadable payslip must not fail the restore")
             assertEquals(SkippedRows(payslips = 1), result.getOrThrow().skipped, "the officer is told one payslip did not come back")

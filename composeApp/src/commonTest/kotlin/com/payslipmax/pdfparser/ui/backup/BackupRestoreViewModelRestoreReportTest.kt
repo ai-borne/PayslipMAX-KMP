@@ -1,6 +1,8 @@
 package com.payslipmax.pdfparser.ui.backup
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.RestoredRows
 import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.testing.SyntheticPart2Backups
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +37,7 @@ class BackupRestoreViewModelRestoreReportTest {
 
     /** The rows the preview says it will leave out, then the rows the committed restore reports. */
     private fun restore(bytes: ByteArray): Pair<SkippedRows, SkippedRows> {
-        harness.viewModel.restore(harness.files.stage(bytes), PASSWORD)
+        harness.viewModel.restore(harness.files.stage(bytes), Secret.of(PASSWORD))
         val previewed = assertIs<BackupUiState.Preview>(harness.viewModel.state.value).preview.skipped
         harness.viewModel.commit(RestoreMode.REPLACE)
         val done = assertIs<BackupUiState.Done>(harness.viewModel.state.value).summary
@@ -49,6 +51,19 @@ class BackupRestoreViewModelRestoreReportTest {
 
             val expected = SkippedRows(part2Entries = 2, part2Orders = 1)
             assertEquals(expected to expected, restore(bytes))
+        }
+
+    /** 14 U1 / P10 "From P8" item 3: the result says what came back, so a restore that skipped a row is not mistaken for one that wrote all. */
+    @Test
+    fun theStateCarriesWhatTheRestoreWroteAndNotTheRowsItSkipped() =
+        runTest {
+            val bytes = SyntheticPart2Backups.withUnreadableRows(PASSWORD, unreadableEntries = 2, unreadableOrders = 1)
+            harness.viewModel.restore(harness.files.stage(bytes), Secret.of(PASSWORD))
+            harness.viewModel.commit(RestoreMode.REPLACE)
+
+            val done = assertIs<BackupUiState.Done>(harness.viewModel.state.value).summary
+
+            assertEquals(RestoredRows(payslips = 1), assertIs<BackupSummary.Restored>(done).restored, "the one readable payslip came back; the 3 unreadable Bank rows did not")
         }
 
     @Test

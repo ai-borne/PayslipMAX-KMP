@@ -13,11 +13,11 @@ class BackupContents(
 
 /** Why a backup cannot start (no password, or nothing to back up), or null when it can. */
 internal fun backupRefusal(
-    password: String,
+    password: TypedPassword,
     contents: BackupContents,
 ): BackupStatus? =
     when {
-        password.isBlank() -> BackupStatus(AppStrings.settingsBackupPasswordRequired, isSuccess = false)
+        password.isBlank -> BackupStatus(AppStrings.settingsBackupPasswordRequired, isSuccess = false)
         contents.isEmpty -> BackupStatus(AppStrings.statusNothingToBackup, isSuccess = false)
         else -> null
     }

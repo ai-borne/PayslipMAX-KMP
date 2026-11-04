@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.backup.PayslipBackupRow
 import com.payslipmax.pdfparser.repository.backup.PdfBackupRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
@@ -32,7 +33,7 @@ class PayslipBackupVersionGateTest {
                 put("pdfs", Json.encodeToJsonElement(ListSerializer(PdfBackupRow.serializer()), emptyList()))
                 put("settings", JsonNull)
             }
-        return CryptoHelper.encrypt(json.toString().encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()
+        return CryptoHelper.encrypt(json.toString().encodeToByteArray(), Secret.of(BACKUP_PASSWORD)).getOrThrow()
     }
 
     @Test
@@ -40,7 +41,7 @@ class PayslipBackupVersionGateTest {
         runTest {
             dao.seedDeviceMonth("01/2023")
 
-            val result = service.restore(backupWithVersion(PortableBackup.CURRENT_VERSION + 1), BACKUP_PASSWORD, RestoreMode.REPLACE)
+            val result = service.restore(backupWithVersion(PortableBackup.CURRENT_VERSION + 1), Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE)
 
             val error = result.exceptionOrNull()
             assertTrue(error is UnsupportedBackupVersionException, "expected a version refusal but was $error")
@@ -51,7 +52,7 @@ class PayslipBackupVersionGateTest {
     @Test
     fun theCurrentVersionIsStillAccepted() =
         runTest {
-            service.restore(backupWithVersion(PortableBackup.CURRENT_VERSION), BACKUP_PASSWORD).getOrThrow()
+            service.restore(backupWithVersion(PortableBackup.CURRENT_VERSION), Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             assertEquals(listOf("08/2024"), dao.getAllPayslips().first().map { it.dateStr })
         }

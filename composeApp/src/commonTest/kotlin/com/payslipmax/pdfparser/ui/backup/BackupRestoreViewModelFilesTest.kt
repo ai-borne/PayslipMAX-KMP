@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.backup
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.ui.backup.BackupViewModelHarness.Companion.PASSWORD
 import com.payslipmax.pdfparser.ui.screens.BackupContents
@@ -41,7 +42,7 @@ class BackupRestoreViewModelFilesTest {
     @Test
     fun aSuccessfulExportSharesTheFileExactlyOnce() =
         runTest {
-            harness.viewModel.backUp(PASSWORD, contents)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
 
             assertIs<BackupUiState.Done>(harness.viewModel.state.value)
             assertEquals(1, files.shareCount)
@@ -52,7 +53,7 @@ class BackupRestoreViewModelFilesTest {
     fun anExportThatCannotBeSharedFailsAndLeavesNoFile() =
         runTest {
             files.shareFails = true
-            harness.viewModel.backUp(PASSWORD, contents)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
 
             assertIs<BackupUiState.Failed>(harness.viewModel.state.value)
             assertEquals(0, files.shareCount)
@@ -63,7 +64,7 @@ class BackupRestoreViewModelFilesTest {
     fun aBackupThatDoesNotReadBackIsNeverSharedAndLeavesNoFile() =
         runTest {
             files.corruptWrittenByteAt = 40
-            harness.viewModel.backUp(PASSWORD, contents)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
 
             assertIs<BackupUiState.Failed>(harness.viewModel.state.value)
             assertEquals(1, files.verifyCount, "the written file was read back")
@@ -74,12 +75,12 @@ class BackupRestoreViewModelFilesTest {
     @Test
     fun aPickedFileIsGoneAfterARestoreThatFailsAndAfterOneThatWorks() =
         runTest {
-            harness.viewModel.restore(files.stage(byteArrayOf(1, 2, 3)), "AnyPassword")
+            harness.viewModel.restore(files.stage(byteArrayOf(1, 2, 3)), Secret.of("AnyPassword"))
 
             assertIs<BackupUiState.Failed>(harness.viewModel.state.value)
             assertTrue(files.pickedKeys.isEmpty(), "a failed restore still deletes the picked copy")
 
-            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), PASSWORD)
+            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), Secret.of(PASSWORD))
             harness.viewModel.commit(RestoreMode.REPLACE)
 
             assertIs<BackupUiState.Done>(harness.viewModel.state.value)
@@ -89,7 +90,7 @@ class BackupRestoreViewModelFilesTest {
     @Test
     fun sayingNoToReplaceOrMergeDeletesThePickedFile() =
         runTest {
-            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), PASSWORD)
+            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), Secret.of(PASSWORD))
 
             harness.viewModel.cancel()
 
@@ -101,10 +102,10 @@ class BackupRestoreViewModelFilesTest {
     @Test
     fun aPickTheViewModelRefusesKeepsNoPickedFile() =
         runTest {
-            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), PASSWORD)
+            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), Secret.of(PASSWORD))
             val refused = harness.pickedBackupOfTheDevice()
 
-            harness.viewModel.restore(refused, PASSWORD)
+            harness.viewModel.restore(refused, Secret.of(PASSWORD))
 
             assertTrue(refused !in files.pickedKeys)
         }

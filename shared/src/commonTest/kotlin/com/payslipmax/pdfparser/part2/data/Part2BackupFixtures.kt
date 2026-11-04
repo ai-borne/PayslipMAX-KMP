@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.domain.BankEntry
 import com.payslipmax.pdfparser.part2.domain.VaultOrder
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
@@ -70,7 +71,7 @@ internal fun archive(
 ): ByteArray {
     val backup = PortableBackup(version, listOf(goodRow("08/2024")), emptyList(), null, part2Entries = entries, part2Orders = orders)
     if (pages.isEmpty()) return backupBytes(backup)
-    val meta = CryptoHelper.encrypt(Json.encodeToString(PortableBackup.serializer(), backup).encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()
+    val meta = CryptoHelper.encrypt(Json.encodeToString(PortableBackup.serializer(), backup).encodeToByteArray(), Secret.of(BACKUP_PASSWORD)).getOrThrow()
     val sink = MemoryBackupSink()
     val writer = PageArchiveWriter(sink)
     writer.begin(meta)
@@ -83,7 +84,7 @@ internal fun archive(
 internal fun decodeArchive(archive: ByteArray): PortableBackup =
     Json.decodeFromString(
         PortableBackup.serializer(),
-        openArchive(MemoryBackupSource(archive), BACKUP_PASSWORD).use { it.document.decodeToString() },
+        openArchive(MemoryBackupSource(archive), Secret.of(BACKUP_PASSWORD)).use { it.document.decodeToString() },
     )
 
 /** A row no one can read: it costs nothing to make, so a test can ask for thousands. */

@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.testing.*
 import kotlinx.coroutines.flow.first
@@ -37,7 +38,7 @@ class PayslipBackupServiceTest {
             repository.saveSettings(settings)
 
             // 2. Export backup
-            val exportResult = service.export("backup-pwd")
+            val exportResult = service.export(Secret.of("backup-pwd"))
             assertTrue(exportResult.isSuccess)
             val backupBytes = exportResult.getOrThrow()
 
@@ -48,7 +49,7 @@ class PayslipBackupServiceTest {
             assertNull(repository.getSettings())
 
             // 4. Import backup
-            val importResult = service.restore(backupBytes, "backup-pwd")
+            val importResult = service.restore(backupBytes, Secret.of("backup-pwd"))
             assertTrue(importResult.isSuccess)
 
             // 5. Verify restored state
@@ -78,12 +79,12 @@ class PayslipBackupServiceTest {
             )
 
             // Export must succeed rather than abort on the bad row.
-            val backup = service.export("bpw")
+            val backup = service.export(Secret.of("bpw"))
             assertTrue(backup.isSuccess)
 
             // And it round-trips exactly the decryptable payslip — the corrupt row is dropped.
             repository.clearAll()
-            service.restore(backup.getOrThrow(), "bpw", RestoreMode.REPLACE)
+            service.restore(backup.getOrThrow(), Secret.of("bpw"), RestoreMode.REPLACE)
             assertEquals(listOf("08/2024"), repository.getAllPayslips().first().map { it.dateStr })
         }
 
@@ -93,14 +94,14 @@ class PayslipBackupServiceTest {
             // Backup captures only 08/2024.
             fakeParser.result = Result.success(createMockPayslip("08/2024"))
             repository.importPayslip(byteArrayOf(1), "pw", "a.pdf")
-            val backup = service.export("bpw").getOrThrow()
+            val backup = service.export(Secret.of("bpw")).getOrThrow()
 
             // Device now holds a *different* payslip that is absent from the backup.
             repository.clearAll()
             fakeParser.result = Result.success(createMockPayslip("01/2023"))
             repository.importPayslip(byteArrayOf(2), "pw", "b.pdf")
 
-            service.restore(backup, "bpw", RestoreMode.REPLACE)
+            service.restore(backup, Secret.of("bpw"), RestoreMode.REPLACE)
 
             // REPLACE makes the device an exact copy of the backup: 01/2023 is gone.
             val payslips = repository.getAllPayslips().first()
@@ -116,7 +117,7 @@ class PayslipBackupServiceTest {
             repository.importPayslip(byteArrayOf(1), "pw", "a.pdf")
             fakeParser.result = Result.success(createMockPayslip("01/2023"))
             repository.importPayslip(byteArrayOf(2), "pw", "b.pdf")
-            val backup = service.export("bpw").getOrThrow()
+            val backup = service.export(Secret.of("bpw")).getOrThrow()
 
             // Device is reset to hold a newer payslip (12/2024) plus its own copy of 01/2023.
             repository.clearAll()
@@ -125,7 +126,7 @@ class PayslipBackupServiceTest {
             fakeParser.result = Result.success(createMockPayslip("01/2023"))
             repository.importPayslip(byteArrayOf(4), "pw", "d.pdf")
 
-            service.restore(backup, "bpw", RestoreMode.MERGE)
+            service.restore(backup, Secret.of("bpw"), RestoreMode.MERGE)
 
             // MERGE keeps the device's 12/2024, adds the backup's 08/2024, and the shared 01/2023
             // collapses to a single row (overwritten by the backup) rather than duplicating.

@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.data.InMemoryLastBackupStorage
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.part2.data.Part2RowBackup
@@ -46,7 +47,7 @@ class BackupVerifyAfterWriteTest {
         runTest {
             seed()
 
-            service.backUp(files, BACKUP_PASSWORD).getOrThrow()
+            service.backUp(files, Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             assertEquals(1, files.verifyCount)
             assertNotNull(files.exportedBytes)
@@ -57,13 +58,13 @@ class BackupVerifyAfterWriteTest {
     fun aWrittenByteTheDiskDidNotKeepDeletesTheFileAndRecordsNothing() =
         runTest {
             seed()
-            val good = service.export(BACKUP_PASSWORD).getOrThrow()
+            val good = service.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             lastBackup.save(1L)
             // One byte in the document, one in the last page record, one in the trailer: wherever the damage is, it is found.
             for (at in listOf(BackupEnvelope.HEADER_BYTES + 12, good.size - 200, good.size - 10)) {
                 files.corruptWrittenByteAt = at
 
-                val result = service.backUp(files, BACKUP_PASSWORD)
+                val result = service.backUp(files, Secret.of(BACKUP_PASSWORD))
 
                 assertIs<BackupVerifyException>(result.exceptionOrNull(), "byte $at")
                 assertNull(files.exportedBytes, "byte $at: the damaged file is gone")
@@ -78,11 +79,11 @@ class BackupVerifyAfterWriteTest {
             // An orphan: no order "gone" exists, so a restore could only skip this page; a backup carrying it would never verify.
             dao.putPage("orphan", "gone", 0, SyntheticBank.jpeg(3_000, 9))
 
-            service.backUp(files, BACKUP_PASSWORD).getOrThrow()
+            service.backUp(files, Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             val target = FakePayslipDao()
             val restored = PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = Part2Backup(target.part2))
-            restored.restore(files.exportedBytes!!, BACKUP_PASSWORD).getOrThrow()
+            restored.restore(files.exportedBytes!!, Secret.of(BACKUP_PASSWORD)).getOrThrow()
             assertEquals(listOf("p0", "p1"), target.part2.allPageRefs().map { it.id }.sorted())
         }
 
@@ -105,7 +106,7 @@ class BackupVerifyAfterWriteTest {
             for ((kind, file) in oneSkipEach) {
                 files.readBackInstead = file
 
-                assertIs<BackupVerifyException>(service.backUp(files, BACKUP_PASSWORD).exceptionOrNull(), kind)
+                assertIs<BackupVerifyException>(service.backUp(files, Secret.of(BACKUP_PASSWORD)).exceptionOrNull(), kind)
                 assertNull(files.exportedBytes, kind)
             }
         }
@@ -116,7 +117,7 @@ class BackupVerifyAfterWriteTest {
             seed()
             files.corruptWrittenByteAt = BackupEnvelope.HEADER_BYTES + 12
 
-            val message = service.backUp(files, BACKUP_PASSWORD).exceptionOrNull()?.message.orEmpty()
+            val message = service.backUp(files, Secret.of(BACKUP_PASSWORD)).exceptionOrNull()?.message.orEmpty()
 
             assertTrue(message.isNotEmpty() && !message.contains("08/2024") && !message.contains("pcda") && !message.contains("/"), message)
         }

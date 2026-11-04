@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.DismissedDraftEntity
 import com.payslipmax.pdfparser.database.toCorrectionList
 import com.payslipmax.pdfparser.testing.FakePayslipDao
@@ -21,7 +22,7 @@ class PayslipBackupGoldenTest {
     private val dao = FakePayslipDao()
     private val service = PayslipBackupService(dao, Dispatchers.Unconfined)
 
-    private suspend fun restore(bytes: ByteArray) = service.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+    private suspend fun restore(bytes: ByteArray) = service.restore(bytes, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
     @Test
     fun theCommittedVersion1ArchiveStillRestores() =

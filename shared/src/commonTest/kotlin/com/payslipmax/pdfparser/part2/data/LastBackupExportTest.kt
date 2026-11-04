@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.testing.FakeBackupFiles
@@ -20,9 +21,9 @@ class LastBackupExportTest {
     @Test
     fun aSuccessfulExportRecordsTheTime() =
         runTest {
-            service.backUp(files, BACKUP_PASSWORD).getOrThrow()
+            service.backUp(files, Secret.of(BACKUP_PASSWORD)).getOrThrow()
             clock = 9_000L
-            service.backUp(files, BACKUP_PASSWORD).getOrThrow()
+            service.backUp(files, Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             assertEquals(9_000L, storage.load())
         }
@@ -34,7 +35,7 @@ class LastBackupExportTest {
             val failing =
                 PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2, deviceKey = { error("no key") }), lastBackup = storage, now = { 99L })
 
-            assertEquals(true, failing.backUp(files, BACKUP_PASSWORD).isFailure)
+            assertEquals(true, failing.backUp(files, Secret.of(BACKUP_PASSWORD)).isFailure)
             assertEquals(1L, storage.load())
         }
 }

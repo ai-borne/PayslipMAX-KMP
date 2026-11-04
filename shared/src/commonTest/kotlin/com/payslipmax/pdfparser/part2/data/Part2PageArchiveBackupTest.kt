@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.BackupDamagedException
 import com.payslipmax.pdfparser.repository.PayslipBackupService
@@ -45,12 +46,12 @@ class Part2PageArchiveBackupTest {
     fun everyNewArchiveIsAPageArchiveAndOneWithPagesIsAsLargeAsTheVault() =
         runTest {
             source.putEntry(entry("d1", 1))
-            val withoutPages = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val withoutPages = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             assertTrue(pageArchiveMetaOfV6(withoutPages) != null, "no pages: still a page archive (format 6 has one shape), counting none")
 
             source.putOrder(SyntheticBank.order("o1"))
             repeat(4) { source.putPage("p$it", "o1", it, SyntheticBank.jpeg(200_000, it)) }
-            val withPages = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val withPages = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             val vault = source.part2.vaultBytes()
             assertTrue(pageArchiveMetaOfV6(withPages) != null)
@@ -64,11 +65,11 @@ class Part2PageArchiveBackupTest {
             val jpeg = SyntheticBank.jpeg(30_000, 2)
             source.putOrder(SyntheticBank.order("o1"))
             source.putPage("p1", "o1", 0, jpeg)
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             RestoreMode.entries.forEach { mode ->
                 target.clearAllUserData()
-                targetService.restore(archive, BACKUP_PASSWORD, mode).getOrThrow()
+                targetService.restore(archive, Secret.of(BACKUP_PASSWORD), mode).getOrThrow()
                 assertContentEquals(jpeg, target.part2.page("p1")!!.openPage(deviceKey), "page restored ($mode)")
             }
         }
@@ -78,15 +79,15 @@ class Part2PageArchiveBackupTest {
         runTest {
             source.putOrder(SyntheticBank.order("o1"))
             repeat(3) { source.putPage("p$it", "o1", it, SyntheticBank.jpeg(2000, it)) }
-            val good = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val good = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             target.putEntry(entry("device", 1))
             val cut = good.copyOf(good.size - 40)
             val missingARecord = archive(orders = listOf(orderRow(SyntheticBank.order("o1"))), pages = listOf(pageRow("p1", "o1", 0, SyntheticBank.jpeg(100))), declared = 2)
             val extraRecord = archive(orders = listOf(orderRow(SyntheticBank.order("o1"))), pages = listOf(pageRow("p1", "o1", 0, SyntheticBank.jpeg(100)), pageRow("p2", "o1", 1, SyntheticBank.jpeg(100))), declared = 1)
 
-            assertTrue(targetService.restore(cut, BACKUP_PASSWORD, RestoreMode.REPLACE).isFailure, "a cut file fails like any damaged archive")
+            assertTrue(targetService.restore(cut, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).isFailure, "a cut file fails like any damaged archive")
             for ((name, bytes) in listOf("missing record" to missingARecord, "extra record" to extraRecord)) {
-                val error = targetService.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).exceptionOrNull()
+                val error = targetService.restore(bytes, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).exceptionOrNull()
 
                 assertTrue(error is BackupDamagedException, "$name must be refused as a damaged archive but was $error")
                 assertTrue(error.cause == null && error.message!!.none { it.isDigit() }, "$name: a fixed message with no content")
@@ -99,9 +100,9 @@ class Part2PageArchiveBackupTest {
         runTest {
             source.putOrder(SyntheticBank.order("o1"))
             source.putPage("p1", "o1", 0, SyntheticBank.jpeg(500))
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
-            assertTrue(targetService.restore(archive, "not the password", RestoreMode.REPLACE).isFailure)
+            assertTrue(targetService.restore(archive, Secret.of("not the password"), RestoreMode.REPLACE).isFailure)
         }
 
     @Test
@@ -112,7 +113,7 @@ class Part2PageArchiveBackupTest {
             val lying = good.copyOf().also { bytes -> listOf(0x00, 0x06, 0x1A, 0x80).forEachIndexed { i, b -> bytes[lengthAt + i] = b.toByte() } }
             target.putEntry(entry("device", 1))
 
-            val error = targetService.restore(lying, BACKUP_PASSWORD, RestoreMode.REPLACE).exceptionOrNull()
+            val error = targetService.restore(lying, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).exceptionOrNull()
 
             assertTrue(error is BackupDamagedException, "expected a damaged-archive refusal but was $error")
             assertEquals(setOf("device"), targetEntries().keys)
@@ -123,6 +124,6 @@ class Part2PageArchiveBackupTest {
         runTest {
             val forged = archive(orders = listOf(orderRow(SyntheticBank.order("o1"))), pages = listOf(pageRow("p1", "o1", 0, SyntheticBank.jpeg(100))), declared = -1)
 
-            assertTrue(targetService.restore(forged, BACKUP_PASSWORD, RestoreMode.REPLACE).exceptionOrNull() is BackupDamagedException)
+            assertTrue(targetService.restore(forged, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).exceptionOrNull() is BackupDamagedException)
         }
 }

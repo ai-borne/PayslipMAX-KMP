@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.BackupSink
@@ -35,8 +36,8 @@ internal suspend fun writeHugeArchive(sink: BackupSink): Int {
     val dao = FakePayslipDao()
     repeat(HUGE_ORDERS) { dao.putOrder(SyntheticBank.order("order-$it")) }
     dao.putPage("seed", "order-0", 0, SyntheticBank.jpeg(64, 0))
-    val exported = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2)).export(BACKUP_PASSWORD).getOrThrow()
-    openArchive(MemoryBackupSource(exported), BACKUP_PASSWORD).use { opened ->
+    val exported = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2)).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
+    openArchive(MemoryBackupSource(exported), Secret.of(BACKUP_PASSWORD)).use { opened ->
         sink.write(exported.copyOfRange(0, BackupEnvelope.HEADER_BYTES))
         val writer = PageArchiveWriter(sink)
         writer.begin(PageArchive.metaOf(opened.pages)!!)
@@ -58,6 +59,6 @@ internal suspend fun restoreHuge(source: BackupSource): HugeRestore {
     val target = FakePayslipDao(part2)
     val service = PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = Part2Backup(part2))
     val start = TimeSource.Monotonic.markNow()
-    val report = service.restore(source, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+    val report = service.restore(source, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
     return HugeRestore(part2.droppedPages, part2.droppedBytes, report.skipped.total, start.elapsedNow().inWholeMilliseconds)
 }

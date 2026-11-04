@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository.backup
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.AppSettingsEntity
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
@@ -47,7 +48,7 @@ class SettingsBackupDeviceOnlyTest {
                     dao.insertSettings(device)
 
                     PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2))
-                        .restore(bytes, golden.password, RestoreMode.REPLACE)
+                        .restore(bytes, Secret.of(golden.password), RestoreMode.REPLACE)
                         .getOrThrow()
 
                     val after = dao.getSettings()!!
@@ -70,11 +71,11 @@ class SettingsBackupDeviceOnlyTest {
                     useLocalAi = true,
                 )
             source.insertSettings(preferences.copy(isLockEnabled = true, appPinHash = "source-pin"))
-            val archive = PayslipBackupService(source, Dispatchers.Unconfined).export(BACKUP_PASSWORD).getOrThrow()
+            val archive = PayslipBackupService(source, Dispatchers.Unconfined).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             val target = FakePayslipDao()
             target.insertSettings(AppSettingsEntity(appTheme = "light", profileName = "Old", isPremiumEnabled = true))
 
-            PayslipBackupService(target, Dispatchers.Unconfined).restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            PayslipBackupService(target, Dispatchers.Unconfined).restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(preferences.copy(isPremiumEnabled = true), target.getSettings())
         }

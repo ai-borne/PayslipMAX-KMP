@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.Dispatchers
@@ -55,10 +56,15 @@ class GoldenBackupRestoreTest {
                 val service = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2))
                 val report =
                     service
-                        .restore(GoldenBackupCatalog.bytes(golden.file), golden.password, RestoreMode.REPLACE)
+                        .restore(GoldenBackupCatalog.bytes(golden.file), Secret.of(golden.password), RestoreMode.REPLACE)
                         .getOrElse { fail("${golden.file} (${golden.origin}) no longer restores: ${it::class.simpleName}") }
                 assertEquals(golden.expected(), dao.restored(), golden.file)
                 assertEquals(SkippedRows.NONE, report.skipped, "${golden.file} skipped rows")
+                assertEquals(
+                    RestoredRows(golden.payslips, golden.part2Entries, golden.part2Orders, golden.part2Pages),
+                    report.restored,
+                    "${golden.file}: the report says what the file carried (P10 'From P8' item 3)",
+                )
             }
         }
 

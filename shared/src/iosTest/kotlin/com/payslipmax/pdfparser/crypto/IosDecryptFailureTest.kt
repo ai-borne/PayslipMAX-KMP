@@ -37,10 +37,10 @@ class IosDecryptFailureTest {
 
     @Test
     fun aRealTamperedArchiveOnThisDeviceComesBackTypedAndPromptly() {
-        val sealed = CryptoHelper.encrypt("synthetic".encodeToByteArray(), "pw-1").getOrThrow()
+        val sealed = CryptoHelper.encrypt("synthetic".encodeToByteArray(), Secret.of("pw-1")).getOrThrow()
         val tampered = sealed.copyOf().also { it[it.lastIndex] = (it[it.lastIndex].toInt() xor 1).toByte() }
 
-        val timed = measureTimedValue { CryptoHelper.decrypt(tampered, "pw-1") }
+        val timed = measureTimedValue { CryptoHelper.decrypt(tampered, Secret.of("pw-1")) }
 
         assertTrue(timed.value.exceptionOrNull() is DecryptionFailedException, "was ${timed.value.exceptionOrNull()}")
         assertTrue(timed.duration < 1.seconds, "a refusal takes ${timed.duration}")

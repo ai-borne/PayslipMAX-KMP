@@ -16,8 +16,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * WHY (docs/Plan/14a P7, P10 "From P6" item 8): a failed delete or seed used to put the exception's own message into the state, and a
- * storage message can carry a path or a row. The state now holds one fixed line from the strings SSOT, whatever the failure said.
+ * WHY (docs/Plan/14a P7, P10 "From P6" item 8 and "From P7" item 3): a failed delete, seed or read used to put the exception's own message
+ * into the state, and a storage message can carry a path or a row. The state now holds one fixed line from the strings SSOT, whatever
+ * the failure said.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class PayslipViewModelDataErrorTest {
@@ -48,5 +49,15 @@ class PayslipViewModelDataErrorTest {
             viewModel.seedMockData()
 
             assertEquals(AppStrings.errorSeedDataFailed, viewModel.uiState.value.error)
+        }
+
+    @Test
+    fun aPayslipReadThatBreaksShowsTheFixedLineNotTheExceptionsMessage() =
+        runTest {
+            dao.failGetAllPayslipsWith = IllegalStateException("/data/user/0/in.aiborne.payslipmax/databases/payslips.db ABCDE1234F 98765.43")
+
+            viewModel.observePayslips()
+
+            assertEquals(AppStrings.errorLoadPayslipsFailed, viewModel.uiState.value.error)
         }
 }

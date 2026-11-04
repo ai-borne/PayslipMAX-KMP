@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository.backup
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.AppSettingsEntity
 import com.payslipmax.pdfparser.database.PayslipDao
 import com.payslipmax.pdfparser.repository.MemoryBackupSource
@@ -17,7 +18,7 @@ internal fun decryptedDocument(
     archive: ByteArray,
     password: String,
 ): JsonObject {
-    val plain = openArchive(MemoryBackupSource(archive), password).use { it.document.decodeToString() }
+    val plain = openArchive(MemoryBackupSource(archive), Secret.of(password)).use { it.document.decodeToString() }
     return Json.parseToJsonElement(plain).jsonObject
 }
 
@@ -25,7 +26,7 @@ internal fun decryptedDocument(
 internal suspend fun exportedDocument(
     dao: PayslipDao,
     password: String,
-): JsonObject = decryptedDocument(PayslipBackupService(dao, Dispatchers.Unconfined).export(password).getOrThrow(), password)
+): JsonObject = decryptedDocument(PayslipBackupService(dao, Dispatchers.Unconfined).export(Secret.of(password)).getOrThrow(), password)
 
 /** Every class reachable from [root] in the wire format, by serial name (nullability dropped), each with its decoded keys. */
 internal fun wireClasses(root: SerialDescriptor): Map<String, Set<String>> = classesIn(root) { it.keys { true } }

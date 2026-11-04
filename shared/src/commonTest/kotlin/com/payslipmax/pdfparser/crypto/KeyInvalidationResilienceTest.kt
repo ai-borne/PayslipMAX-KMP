@@ -15,7 +15,7 @@ class KeyInvalidationResilienceTest {
     fun testDecryptWithTamperedData_returnsFailure() {
         val password = "TestPassword123!"
         val invalidBytes = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28)
-        val result = CryptoHelper.decrypt(invalidBytes, password)
+        val result = CryptoHelper.decrypt(invalidBytes, Secret.of(password))
         assertTrue(result.isFailure)
     }
 }

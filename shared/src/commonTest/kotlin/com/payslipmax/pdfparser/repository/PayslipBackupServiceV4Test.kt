@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.GuideNoteEntity
 import com.payslipmax.pdfparser.database.hexToByteArray
 import com.payslipmax.pdfparser.database.toEntity
@@ -56,7 +57,7 @@ class PayslipBackupServiceV4Test {
             // v4 added the notes; the exact current number is pinned by Part2BackupTest, which owns the latest bump.
             assertTrue(PortableBackup.CURRENT_VERSION >= 4)
 
-            assertEquals(PortableBackup.CURRENT_VERSION, decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow()).version)
+            assertEquals(PortableBackup.CURRENT_VERSION, decodeArchive(sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()).version)
         }
 
     @Test
@@ -64,11 +65,11 @@ class PayslipBackupServiceV4Test {
         runTest {
             source.insertGuideNote(note("RB-TD-001", "my secret doubt about DA").toEntity(deviceKey))
 
-            val opened = openBackup(sourceService.export(BACKUP_PASSWORD).getOrThrow())
+            val opened = openBackup(sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow())
 
             val stored = opened.backup.guideNotes.single()
             assertEquals("my secret doubt about DA", stored.toEntity().toNote(opened.key).text)
-            assertTrue(CryptoHelper.decrypt(stored.ciphertext.hexToByteArray(), deviceKey).isFailure, "an archive must not depend on one device's key")
+            assertTrue(CryptoHelper.decrypt(stored.ciphertext.hexToByteArray(), Secret.of(deviceKey)).isFailure, "an archive must not depend on one device's key")
             assertFalse(stored.ciphertext.contains("secret"))
         }
 
@@ -77,15 +78,15 @@ class PayslipBackupServiceV4Test {
         runTest {
             source.insertGuideNote(note("RB-TD-001", at = 5L).toEntity(deviceKey))
             source.insertGuideNote(note("RB-TD-002", at = 6L).toEntity(deviceKey))
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             target.insertGuideNote(note("RB-ONLY-HERE").toEntity(deviceKey))
 
-            targetService.restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            targetService.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(setOf("RB-TD-001", "RB-TD-002"), storedNotes().keys, "REPLACE leaves an exact copy of the backup")
             assertEquals(note("RB-TD-001", at = 5L), storedNotes().getValue("RB-TD-001"))
             val bytes = target.getAllGuideNotes().first().first().ciphertext.hexToByteArray()
-            assertTrue(CryptoHelper.decrypt(bytes, BACKUP_PASSWORD).isFailure, "stored under the device key, not the backup password")
+            assertTrue(CryptoHelper.decrypt(bytes, Secret.of(BACKUP_PASSWORD)).isFailure, "stored under the device key, not the backup password")
         }
 
     @Test
@@ -95,13 +96,13 @@ class PayslipBackupServiceV4Test {
             source.insertGuideNote(note("RB-DEVICE-NEWER", "backup older", at = 10L).toEntity(deviceKey))
             source.insertGuideNote(note("RB-TIE", "backup on tie", at = 50L).toEntity(deviceKey))
             source.insertGuideNote(note("RB-BACKUP-ONLY", at = 1L).toEntity(deviceKey))
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             target.insertGuideNote(note("RB-BACKUP-NEWER", "device older", at = 20L).toEntity(deviceKey))
             target.insertGuideNote(note("RB-DEVICE-NEWER", "device newer", at = 80L).toEntity(deviceKey))
             target.insertGuideNote(note("RB-TIE", "device on tie", at = 50L).toEntity(deviceKey))
             target.insertGuideNote(note("RB-DEVICE-ONLY", at = 3L).toEntity(deviceKey))
 
-            targetService.restore(archive, BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+            targetService.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
 
             val texts = storedNotes().mapValues { it.value.text }
             assertEquals("backup newer", texts.getValue("RB-BACKUP-NEWER"))
@@ -115,10 +116,10 @@ class PayslipBackupServiceV4Test {
     fun mergeLetsTheBackupWinWhenTheDevicesRowForThatCardCannotBeRead() =
         runTest {
             source.insertGuideNote(note("RB-TD-001", "from backup").toEntity(deviceKey))
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             target.insertGuideNote(GuideNoteEntity("RB-TD-001", "deadbeef"))
 
-            targetService.restore(archive, BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+            targetService.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
 
             assertEquals("from backup", storedNotes().getValue("RB-TD-001").text)
         }
@@ -144,7 +145,7 @@ class PayslipBackupServiceV4Test {
             RestoreMode.entries.forEach { mode ->
                 target.seedDeviceMonth("01/2023")
 
-                targetService.restore(backup, BACKUP_PASSWORD, mode).getOrThrow()
+                targetService.restore(backup, Secret.of(BACKUP_PASSWORD), mode).getOrThrow()
 
                 assertTrue(target.getPayslipByDate("08/2024") != null, "the payslips must not be lost to a bad note ($mode)")
                 val keys = storedNotes().keys
@@ -160,7 +161,7 @@ class PayslipBackupServiceV4Test {
             source.insertGuideNote(GuideNoteEntity("RB-TD-002", "deadbeef"))
             source.insertGuideNote(note("RB-TD-003").toEntity("a key this device no longer has"))
 
-            val backup = decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow())
+            val backup = decodeArchive(sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow())
 
             assertEquals(listOf("RB-TD-001"), backup.guideNotes.map { it.cardId })
         }
@@ -169,10 +170,10 @@ class PayslipBackupServiceV4Test {
     fun aVersion3BackupStillRestoresAndNeedsNoNotesField() =
         runTest {
             val v3 = backupBytes(PortableBackup(3, listOf(goodRow("08/2024")), emptyList(), null))
-            val json = CryptoHelper.decrypt(v3, BACKUP_PASSWORD).getOrThrow().decodeToString()
+            val json = CryptoHelper.decrypt(v3, Secret.of(BACKUP_PASSWORD)).getOrThrow().decodeToString()
             assertFalse(json.contains("\"guideNotes\":[{"), "no notes in this archive")
 
-            targetService.restore(v3, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            targetService.restore(v3, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(listOf("08/2024"), target.getAllPayslips().first().map { it.dateStr })
             assertTrue(target.getAllGuideNotes().first().isEmpty())
@@ -184,7 +185,7 @@ class PayslipBackupServiceV4Test {
             target.insertGuideNote(note("RB-TD-001").toEntity(deviceKey))
             val v3 = backupBytes(PortableBackup(3, listOf(goodRow("08/2024")), emptyList(), null))
 
-            targetService.restore(v3, BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+            targetService.restore(v3, Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
 
             assertEquals(setOf("RB-TD-001"), storedNotes().keys)
         }
@@ -196,7 +197,7 @@ class PayslipBackupServiceV4Test {
             target.insertGuideNote(note("RB-TD-001").toEntity(deviceKey))
             val v3 = backupBytes(PortableBackup(3, listOf(goodRow("08/2024")), emptyList(), null))
 
-            targetService.restore(v3, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            targetService.restore(v3, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertTrue(target.getAllGuideNotes().first().isEmpty())
         }

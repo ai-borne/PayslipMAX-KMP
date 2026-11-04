@@ -72,7 +72,7 @@ private fun BackupRestoreSheetHost(
     val actions =
         BackupSheetActions(
             onBackUp = { password -> runBackup(canBackup, password, contents(), onLockedBackup, backup) },
-            onRestore = { password -> runRestorePick(password, onPickBackup) { picked -> backup.restore(picked, password) } },
+            onRestore = { password -> runRestorePick(password, onPickBackup) { picked -> backup.restore(picked, password.take()) } },
             onCommit = backup::commit,
             onCancel = backup::cancel,
         )
@@ -84,7 +84,7 @@ private fun BackupRestoreSheetHost(
 /** Starts the gated backup, or says why it cannot start (no password, nothing to back up); null once it has started. */
 private fun runBackup(
     canBackup: Boolean,
-    password: String,
+    password: TypedPassword,
     contents: BackupContents,
     onLockedBackup: () -> Unit,
     backup: BackupRestoreViewModel,
@@ -94,17 +94,20 @@ private fun runBackup(
         return null
     }
     backupRefusal(password, contents)?.let { return it }
-    backup.backUp(password, contents)
+    backup.backUp(password.take(), contents)
     return null
 }
 
-/** Restore is free but still password-gated: opens the file picker and hands the picked file on, or says why it cannot (no password). */
+/**
+ * Restore is free but still password-gated: opens the file picker and hands the picked file on, or says why it cannot (no password). The
+ * password is copied out of the field when the file arrives, not when the button is pressed, so no copy waits on the system picker.
+ */
 private fun runRestorePick(
-    password: String,
+    password: TypedPassword,
     onPickBackup: (onResult: (String) -> Unit) -> Unit,
     onPicked: (String) -> Unit,
 ): BackupStatus? {
-    if (password.isBlank()) return BackupStatus(AppStrings.settingsBackupPasswordRequired, isSuccess = false)
+    if (password.isBlank) return BackupStatus(AppStrings.settingsBackupPasswordRequired, isSuccess = false)
     onPickBackup(onPicked)
     return null
 }

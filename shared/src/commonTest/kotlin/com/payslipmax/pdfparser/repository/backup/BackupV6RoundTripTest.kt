@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.repository.backup
 
 import com.payslipmax.pdfparser.crypto.ArchiveKey
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.AppSettingsEntity
 import com.payslipmax.pdfparser.database.hexToByteArray
 import com.payslipmax.pdfparser.database.toDomain
@@ -47,7 +48,7 @@ class BackupV6RoundTripTest {
         source.putEntry(SyntheticBank.entry("e1", 10, orderId = "o1"))
         source.putEntry(SyntheticBank.entry("e2", 20))
         jpegs.forEachIndexed { i, jpeg -> source.putPage("p$i", "o1", i, jpeg) }
-        return PayslipBackupService(source, Dispatchers.Unconfined, part2Backup = Part2Backup(source.part2)).export(BACKUP_PASSWORD).getOrThrow()
+        return PayslipBackupService(source, Dispatchers.Unconfined, part2Backup = Part2Backup(source.part2)).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
     }
 
     @Test
@@ -58,12 +59,12 @@ class BackupV6RoundTripTest {
             val pageKeys = mutableListOf<String?>()
             val part2 = Part2Backup(target.part2, openPage = { page, key -> page.openPage(key).also { pageKeys += key::class.simpleName } })
 
-            val report = PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = part2).restore(file, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            val report = PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = part2).restore(file, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(SkippedRows.NONE, report.skipped)
             val payslips = target.getAllPayslips().first().sortedBy { it.dateStr }
             assertEquals(source.getAllPayslips().first().sortedBy { it.dateStr }.map { it.toDomain() }, payslips.map { it.toDomain() })
-            for (row in payslips) assertTrue(CryptoHelper.decrypt(row.ciphertext.hexToByteArray(), deviceKey).isSuccess, "device rows stay per-row")
+            for (row in payslips) assertTrue(CryptoHelper.decrypt(row.ciphertext.hexToByteArray(), Secret.of(deviceKey)).isSuccess, "device rows stay per-row")
             assertEquals(2, target.getAllCorrections().first().size)
             assertEquals(2, target.getAllGuideNotes().first().size)
             assertEquals("dark", target.getSettings()?.appTheme)
@@ -76,7 +77,7 @@ class BackupV6RoundTripTest {
     @Test
     fun everyRowIsSealedWithTheOneArchiveKeyAndNeverPerRowWithThePassword() =
         runTest {
-            val opened = openArchive(MemoryBackupSource(seeded()), BACKUP_PASSWORD)
+            val opened = openArchive(MemoryBackupSource(seeded()), Secret.of(BACKUP_PASSWORD))
             val document = BackupJson.decode(PortableBackup.serializer(), opened.document.decodeToString())
 
             assertTrue(opened.key is ArchiveKey, "a v6 file opens with its archive key")
@@ -89,7 +90,7 @@ class BackupV6RoundTripTest {
             assertEquals(2 + 2 + 2 + 3, rows.size)
             for (row in rows) {
                 assertEquals(row.size, opened.key.open(row).getOrThrow().size + ArchiveKey.OVERHEAD_BYTES, "no per-row salt")
-                assertTrue(CryptoHelper.decrypt(row, BACKUP_PASSWORD).isFailure, "no row is sealed per row with the password")
+                assertTrue(CryptoHelper.decrypt(row, Secret.of(BACKUP_PASSWORD)).isFailure, "no row is sealed per row with the password")
             }
         }
 }

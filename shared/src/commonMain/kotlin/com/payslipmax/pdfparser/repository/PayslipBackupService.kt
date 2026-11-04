@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.SealKey
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.logging.Logger
 import com.payslipmax.pdfparser.part2.data.LastBackupStorage
@@ -44,7 +45,7 @@ class PayslipBackupService(
      * Exports everything the user created (payslips, PDFs, settings, letters, deleted-letter records,
      * corrections, private Guide notes, Orders Bank entries, orders and pages) as an encrypted archive. Derived data (ledger, insights) is not exported.
      */
-    suspend fun export(password: String): Result<ByteArray> {
+    suspend fun export(password: Secret): Result<ByteArray> {
         // The archive's bytes only, for callers that hold a backup in memory (tests): no disk is involved, so there is nothing to read
         // back, and nothing is recorded. A backup the officer keeps goes through [backUp].
         val sink = MemoryBackupSink()
@@ -55,19 +56,22 @@ class PayslipBackupService(
      * Writes the archive into [files]' export file, reads it back from there ([verify]) and only then records the backup time (F4). A
      * failure leaves no file: [BackupFiles.write] deletes it, so the share sheet can never offer a backup that did not read back. A device
      * without room for the file (about the vault's size) and the margin is refused first, with nothing written (P6).
+     *
+     * Consumes [password] (P10), however this ends. The write derives a key from a copy it consumes, because the read-back derives another from the original.
      */
     suspend fun backUp(
         files: BackupFiles,
-        password: String,
+        password: Secret,
         progress: BackupProgress = BackupProgress.NONE,
-    ): Result<Unit> {
-        val vault = runCatching { withContext(dispatcher) { part2Backup?.vaultBytes() ?: 0L } }.getOrElse { return Result.failure(it) }
-        if (!space.hasRoomFor(vault)) return Result.failure(BackupStorageFullException())
-        val at = now()
-        return files
-            .write(verify = { source -> verify(source, password, progress) }) { sink -> exportTo(sink, password, at, progress) }
-            .onSuccess { lastBackup?.save(at) }
-    }
+    ): Result<Unit> =
+        password.use {
+            val vault = runCatching { withContext(dispatcher) { part2Backup?.vaultBytes() ?: 0L } }.getOrElse { return@use Result.failure(it) }
+            if (!space.hasRoomFor(vault)) return@use Result.failure(BackupStorageFullException())
+            val at = now()
+            files
+                .write(verify = { source -> verify(source, password, progress) }) { sink -> exportTo(sink, password.copy(), at, progress) }
+                .onSuccess { lastBackup?.save(at) }
+        }
 
     /**
      * A dry-run restore of a just-written file (every page opened once, nothing written or kept). A fresh backup must read back whole: a
@@ -75,7 +79,7 @@ class PayslipBackupService(
      */
     private suspend fun verify(
         source: BackupSource,
-        password: String,
+        password: Secret,
         progress: BackupProgress,
     ): Result<Unit> =
         open(source, password) { _, done, total -> progress.update(BackupStage.VERIFYING, done, total) }
@@ -85,12 +89,20 @@ class PayslipBackupService(
     /**
      * The same archive written to [sink] piece by piece, so a backup of any size never exists as one array. The file is written as it goes:
      * when this returns a failure the sink holds a partial file, which the caller discards. Nothing is recorded or checked here: see [backUp].
+     * Consumes [password] (P10). The `use` is outside `withContext`, so a cancelled call that never enters it still wipes the password.
      */
     suspend fun exportTo(
         sink: BackupSink,
-        password: String,
+        password: Secret,
         exportedAt: Long = now(),
         progress: BackupProgress = BackupProgress.NONE,
+    ): Result<Unit> = password.use { writeArchive(sink, password, exportedAt, progress) }
+
+    private suspend fun writeArchive(
+        sink: BackupSink,
+        password: Secret,
+        exportedAt: Long,
+        progress: BackupProgress,
     ): Result<Unit> =
         withContext(dispatcher) {
             // Format 6: one key for the whole archive, derived once here from a fresh salt; every row and page below is sealed with it.
@@ -182,14 +194,14 @@ class PayslipBackupService(
      */
     suspend fun restore(
         backupBytes: ByteArray,
-        password: String,
+        password: Secret,
         mode: RestoreMode = RestoreMode.REPLACE,
     ): Result<RestoreReport> = restore(MemoryBackupSource(backupBytes), password, mode)
 
     /** The same restore from a file read by range: only the document and one page at a time are ever in memory. The caller closes [source] afterwards. */
     suspend fun restore(
         source: BackupSource,
-        password: String,
+        password: Secret,
         mode: RestoreMode = RestoreMode.REPLACE,
     ): Result<RestoreReport> = prepare(source, password).mapCatching { prepared -> prepared.use { commit(it, mode).getOrThrow() } }
 
@@ -197,30 +209,43 @@ class PayslipBackupService(
      * Opens, decodes and checks the whole backup (every row and page) and re-seals it for this device, writing nothing (F4); the preview
      * says what a [commit] will write. [source] must stay open until the result is closed. A device without room for what the commit
      * writes is refused first ([BackupStorageFullException], P6): the rows go into the database's write-ahead log and then its file, so
-     * about [RESTORE_WRITES] times the file's size, plus the margin every write keeps free.
+     * about [RESTORE_WRITES] times the file's size, plus the margin every write keeps free. Consumes [password] (P10), see [open].
      */
     suspend fun prepare(
         source: BackupSource,
-        password: String,
+        password: Secret,
         progress: BackupProgress = BackupProgress.NONE,
     ): Result<PreparedRestore> {
-        if (!space.hasRoomFor(RESTORE_WRITES * source.size)) return Result.failure(BackupStorageFullException())
+        if (!space.hasRoomFor(RESTORE_WRITES * source.size)) {
+            password.close()
+            return Result.failure(BackupStorageFullException())
+        }
         return open(source, password, progress)
     }
 
-    /** [prepare] without the space check: the read-back of a just-written backup writes nothing. */
+    /**
+     * [prepare] without the space check: the read-back of a just-written backup writes nothing. Consumes [password] (P10): `openArchive`
+     * wipes it once a format 6 key exists or when it fails, an older file's key keeps it until the result is closed, and only a call
+     * cancelled before it enters [withContext], which never reaches `openArchive`, is wiped here.
+     */
     private suspend fun open(
         source: BackupSource,
-        password: String,
+        password: Secret,
         progress: BackupProgress,
-    ): Result<PreparedRestore> =
-        withContext(dispatcher) {
-            try {
-                Result.success(engine.prepare(source, password, progress))
-            } catch (e: Exception) {
-                Result.failure(e)
+    ): Result<PreparedRestore> {
+        try {
+            return withContext(dispatcher) {
+                try {
+                    Result.success(engine.prepare(source, password, progress))
+                } catch (e: Exception) {
+                    Result.failure(e)
+                }
             }
+        } catch (t: Throwable) {
+            password.close()
+            throw t
         }
+    }
 
     /** Writes what [prepare] checked, in one transaction, then rebuilds the ledger and insights. The caller closes [prepared]. */
     suspend fun commit(

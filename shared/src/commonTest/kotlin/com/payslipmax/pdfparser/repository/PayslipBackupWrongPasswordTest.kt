@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.DecryptionFailedException
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.toEncryptedEntity
 import com.payslipmax.pdfparser.repository.backup.toBackupRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
@@ -44,7 +45,7 @@ class PayslipBackupWrongPasswordTest {
     ) {
         val before = snapshot()
 
-        val error = service.restore(bytes, password, mode).exceptionOrNull()
+        val error = service.restore(bytes, Secret.of(password), mode).exceptionOrNull()
 
         assertTrue(error is DecryptionFailedException, "expected the typed refusal but was $error")
         assertNull(error.cause)
@@ -78,7 +79,7 @@ class PayslipBackupWrongPasswordTest {
             for (size in listOf(0, 1, 27, 44, 47)) {
                 val before = snapshot()
 
-                val error = service.restore(ByteArray(size) { 7 }, BACKUP_PASSWORD, RestoreMode.REPLACE).exceptionOrNull()
+                val error = service.restore(ByteArray(size) { 7 }, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).exceptionOrNull()
 
                 assertTrue(error is NotABackupException, "$size bytes: $error")
                 assertEquals(before, snapshot())
@@ -96,7 +97,7 @@ class PayslipBackupWrongPasswordTest {
             val foreignRow = createMockPayslip("08/2024").toEncryptedEntity("Another-Password#3").toBackupRow()
             val bytes = backupBytes(PortableBackup(PortableBackup.CURRENT_VERSION, listOf(foreignRow), emptyList(), null))
 
-            val error = service.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).exceptionOrNull()
+            val error = service.restore(bytes, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).exceptionOrNull()
 
             assertTrue(error is BackupDamagedException, "the password was right, so this is damage, but it was $error")
             assertEquals(before, snapshot())
@@ -105,7 +106,7 @@ class PayslipBackupWrongPasswordTest {
     @Test
     fun theRightPasswordStillRestores() =
         runTest {
-            service.restore(backupOf("08/2024"), BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            service.restore(backupOf("08/2024"), Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(listOf("08/2024"), dao.getAllPayslips().first().map { it.dateStr })
         }
@@ -115,8 +116,8 @@ class PayslipBackupWrongPasswordTest {
         runTest {
             val newer = PortableBackup(PortableBackup.CURRENT_VERSION + 1, emptyList(), emptyList(), null)
             val json = Json.encodeToString(PortableBackup.serializer(), newer)
-            val sealed = CryptoHelper.encrypt(json.encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()
+            val sealed = CryptoHelper.encrypt(json.encodeToByteArray(), Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
-            assertTrue(service.restore(sealed, BACKUP_PASSWORD).exceptionOrNull() is UnsupportedBackupVersionException)
+            assertTrue(service.restore(sealed, Secret.of(BACKUP_PASSWORD)).exceptionOrNull() is UnsupportedBackupVersionException)
         }
 }

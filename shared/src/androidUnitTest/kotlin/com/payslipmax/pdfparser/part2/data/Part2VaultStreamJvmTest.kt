@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.BackupSink
@@ -80,13 +81,13 @@ class Part2VaultStreamJvmTest {
             val watchedSink: Watched
             FileBackupSink(file).use { out ->
                 watchedSink = Watched(out)
-                runBlocking { sourceService.exportTo(watchedSink, BACKUP_PASSWORD).getOrThrow() }
+                runBlocking { sourceService.exportTo(watchedSink, Secret.of(BACKUP_PASSWORD)).getOrThrow() }
             }
             val archiveMb = file.length() / (1024 * 1024)
             val watchedSource: WatchedSource
             FileBackupSource(file).use { input ->
                 watchedSource = WatchedSource(input)
-                runBlocking { targetService.restore(watchedSource, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow() }
+                runBlocking { targetService.restore(watchedSource, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow() }
             }
             val retainedMb = watchedSink.peakLiveMb - baselineMb
 

@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.repository.BackupFailure
 import com.payslipmax.pdfparser.repository.BackupOp
 import com.payslipmax.pdfparser.repository.BackupStage
 import com.payslipmax.pdfparser.repository.RestorePreview
+import com.payslipmax.pdfparser.repository.RestoredRows
 import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.ui.backup.BackupSummary
 import com.payslipmax.pdfparser.ui.backup.BackupUiState
@@ -25,7 +26,7 @@ class BackupSheetArrivalTest {
         for (state in listOf(
             BackupUiState.Working(BackupOp.RESTORE, BackupStage.READING, 1, 2),
             BackupUiState.Preview(preview),
-            BackupUiState.Done(BackupSummary.Restored(SkippedRows.NONE)),
+            BackupUiState.Done(BackupSummary.Restored(RestoredRows(), SkippedRows.NONE)),
             BackupUiState.Failed(BackupFailure.DAMAGED),
         )) {
             assertTrue(state.opensTheSheet(), "$state")

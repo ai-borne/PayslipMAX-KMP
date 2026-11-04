@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.data.InMemoryLastBackupStorage
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.part2.data.putOrder
@@ -53,7 +54,7 @@ class BackupStorageFullTest {
             assertTrue(vault > 0)
             space.free = vault + margin - 1
 
-            val result = service(source).backUp(files, BACKUP_PASSWORD)
+            val result = service(source).backUp(files, Secret.of(BACKUP_PASSWORD))
 
             assertIs<BackupStorageFullException>(result.exceptionOrNull())
             assertEquals(0, files.verifyCount, "nothing was written, so nothing was read back")
@@ -68,7 +69,7 @@ class BackupStorageFullTest {
             // Enough for the backup, far from enough for a restore of the same file: the read-back writes nothing, so it is not checked.
             space.free = source.part2.vaultBytes() + margin
 
-            service(source).backUp(files, BACKUP_PASSWORD).getOrThrow()
+            service(source).backUp(files, Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             assertEquals(1, files.verifyCount)
         }
@@ -77,20 +78,20 @@ class BackupStorageFullTest {
     fun aRestoreWithoutRoomForTwiceTheFileAndTheMarginChangesNothing() =
         runTest {
             seed()
-            val file = service(source).export(BACKUP_PASSWORD).getOrThrow()
+            val file = service(source).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             val device = FakePayslipDao().apply { seedDeviceMonth("01/2023") }
             val before = device.getAllPayslips().first().map { it.dateStr } to device.part2.vaultBytes()
             space.free = 2L * file.size + margin - 1
 
             for (mode in RestoreMode.entries) {
-                val result = service(device).restore(file, BACKUP_PASSWORD, mode)
+                val result = service(device).restore(file, Secret.of(BACKUP_PASSWORD), mode)
                 assertIs<BackupStorageFullException>(result.exceptionOrNull(), "$mode")
                 assertEquals(before, device.getAllPayslips().first().map { it.dateStr } to device.part2.vaultBytes(), "$mode: untouched")
             }
-            assertIs<BackupStorageFullException>(service(device).prepare(MemoryBackupSource(file), BACKUP_PASSWORD).exceptionOrNull())
+            assertIs<BackupStorageFullException>(service(device).prepare(MemoryBackupSource(file), Secret.of(BACKUP_PASSWORD)).exceptionOrNull())
 
             space.free = 2L * file.size + margin
-            service(device).restore(file, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            service(device).restore(file, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
             assertEquals(listOf("08/2024"), device.getAllPayslips().first().map { it.dateStr })
         }
 
@@ -100,8 +101,8 @@ class BackupStorageFullTest {
             seed()
             for (reader in listOf(FakeFreeSpaceReader(free = null), FakeFreeSpaceReader(fails = true))) {
                 val unknown = PayslipBackupService(source, Dispatchers.Unconfined, part2Backup = Part2Backup(source.part2), space = FreeSpaceGate(reader))
-                unknown.backUp(files, BACKUP_PASSWORD).getOrThrow()
-                unknown.restore(unknown.export(BACKUP_PASSWORD).getOrThrow(), BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+                unknown.backUp(files, Secret.of(BACKUP_PASSWORD)).getOrThrow()
+                unknown.restore(unknown.export(Secret.of(BACKUP_PASSWORD)).getOrThrow(), Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
             }
         }
 }

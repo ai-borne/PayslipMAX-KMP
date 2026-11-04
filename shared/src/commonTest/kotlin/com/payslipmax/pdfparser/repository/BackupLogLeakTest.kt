@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.EncryptedPayslipEntity
 import com.payslipmax.pdfparser.database.PayslipCorrectionEntity
 import com.payslipmax.pdfparser.database.toDomain
@@ -70,7 +71,7 @@ class BackupLogLeakTest {
             val dao = FakePayslipDao().apply { seedUnreadableMonth() }
             dao.seedDeviceMonth("08/2024")
 
-            PayslipBackupService(dao, Dispatchers.Unconfined).export(BACKUP_PASSWORD).getOrThrow()
+            PayslipBackupService(dao, Dispatchers.Unconfined).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             assertNothingLeaked()
         }
@@ -89,11 +90,11 @@ class BackupLogLeakTest {
         runTest {
             val source = FakePayslipDao().apply { seedDeviceMonth("08/2024") }
             val target = FakePayslipDao()
-            val file = PayslipBackupService(source, Dispatchers.Unconfined).export(BACKUP_PASSWORD).getOrThrow()
+            val file = PayslipBackupService(source, Dispatchers.Unconfined).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             reporter.logs.clear()
 
             PayslipBackupService(target, Dispatchers.Unconfined, PayslipRepository(target, FakePdfParser(), Dispatchers.Unconfined), failingIntelligence(target))
-                .restore(file, BACKUP_PASSWORD)
+                .restore(file, Secret.of(BACKUP_PASSWORD))
                 .getOrThrow()
 
             assertNothingLeaked(leakyText)

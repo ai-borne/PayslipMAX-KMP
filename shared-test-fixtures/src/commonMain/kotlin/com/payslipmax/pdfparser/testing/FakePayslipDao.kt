@@ -23,7 +23,11 @@ class FakePayslipDao(
         database.value = database.value + payslips.associateBy { it.dateStr }
     }
 
+    /** When set, the payslip stream fails with it: a read that breaks, with whatever message the failure carries. */
+    var failGetAllPayslipsWith: Exception? = null
+
     override fun getAllPayslips(): Flow<List<EncryptedPayslipEntity>> {
+        failGetAllPayslipsWith?.let { failure -> return kotlinx.coroutines.flow.flow { throw failure } }
         return database.map {
             it.values.toList().sortedWith(
                 compareBy<EncryptedPayslipEntity> { it.year }.thenBy { it.monthNum },

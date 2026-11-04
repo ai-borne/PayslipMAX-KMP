@@ -5,6 +5,7 @@ import androidx.room.useWriterConnection
 import androidx.sqlite.driver.AndroidSQLiteDriver
 import androidx.test.core.app.ApplicationProvider
 import com.payslipmax.pdfparser.crypto.ContextHolder
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.DismissedDraftEntity
 import com.payslipmax.pdfparser.database.PayslipDatabase
 import com.payslipmax.pdfparser.database.getDatabaseBuilder
@@ -58,7 +59,7 @@ class PayslipBackupServiceRoomTest {
             val dao = database.payslipDao()
             dao.seedDeviceMonth("01/2023")
 
-            service.restore(backupOf("08/2024"), BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            service.restore(backupOf("08/2024"), Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(listOf("08/2024"), dao.getAllPayslips().first().map { it.dateStr })
             assertEquals(listOf("08/2024"), dao.getAllPdfs().map { it.dateStr })
@@ -96,7 +97,7 @@ class PayslipBackupServiceRoomTest {
                     ),
                 )
 
-            val result = service.restore(backup, BACKUP_PASSWORD, RestoreMode.REPLACE)
+            val result = service.restore(backup, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE)
 
             assertTrue(result.isFailure)
             assertEquals(listOf("01/2023"), dao.getAllPayslips().first().map { it.dateStr })
@@ -115,10 +116,10 @@ class PayslipBackupServiceRoomTest {
         runBlocking {
             val dao = database.payslipDao()
             dao.seedDeviceMonth("01/2023")
-            val archive = service.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = service.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             dao.insertDismissedDraft(DismissedDraftEntity("09/2024", "MISSING_TPTA"))
 
-            service.restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            service.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(listOf("d-01/2023"), dao.getAllRepresentationDrafts().first().map { it.id })
             assertEquals(listOf(DismissedDraftEntity("01/2023", "MISSING_HRA")), dao.getAllDismissedDrafts())

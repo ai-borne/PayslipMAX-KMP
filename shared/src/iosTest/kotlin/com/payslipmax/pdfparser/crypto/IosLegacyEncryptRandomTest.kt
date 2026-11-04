@@ -16,7 +16,7 @@ class IosLegacyEncryptRandomTest {
 
     @Test
     fun aGeneratorThatFailsFailsTheSealInsteadOfUsingZeros() {
-        val result = CryptoHelper.encryptWith(data, "pw-1") { error("No secure random bytes.") }
+        val result = CryptoHelper.encryptWith(data, Secret.of("pw-1")) { error("No secure random bytes.") }
 
         assertTrue(result.isFailure, "a failed generator must not produce a sealed row")
     }
@@ -27,7 +27,7 @@ class IosLegacyEncryptRandomTest {
         val salt = ByteArray(16) { (0x10 + it).toByte() }
         val iv = ByteArray(12) { (0x40 + it).toByte() }
         val sealed =
-            CryptoHelper.encryptWith(data, "pw-1") { size ->
+            CryptoHelper.encryptWith(data, Secret.of("pw-1")) { size ->
                 asked += size
                 if (asked.size == 1) salt.copyOf(size) else iv.copyOf(size)
             }.getOrThrow()
@@ -36,15 +36,15 @@ class IosLegacyEncryptRandomTest {
         assertContentEquals(salt, sealed.copyOfRange(0, 16), "the salt leads")
         assertContentEquals(iv, sealed.copyOfRange(16, 28), "the IV follows the salt")
         assertEquals(16 + 12 + 4 + data.size + 16, sealed.size, "salt, IV, the PCDA mark and the data, then the tag")
-        assertContentEquals(data, CryptoHelper.decrypt(sealed, "pw-1").getOrThrow(), "the device read opens it as before")
+        assertContentEquals(data, CryptoHelper.decrypt(sealed, Secret.of("pw-1")).getOrThrow(), "the device read opens it as before")
     }
 
     @Test
     fun theRealGeneratorStillSealsRowsTheDeviceReads() {
-        val first = CryptoHelper.encrypt(data, "pw-1").getOrThrow()
-        val second = CryptoHelper.encrypt(data, "pw-1").getOrThrow()
+        val first = CryptoHelper.encrypt(data, Secret.of("pw-1")).getOrThrow()
+        val second = CryptoHelper.encrypt(data, Secret.of("pw-1")).getOrThrow()
 
         assertTrue(!first.copyOfRange(0, 28).contentEquals(second.copyOfRange(0, 28)), "a fresh salt and IV each time")
-        assertContentEquals(data, CryptoHelper.decrypt(first, "pw-1").getOrThrow())
+        assertContentEquals(data, CryptoHelper.decrypt(first, Secret.of("pw-1")).getOrThrow())
     }
 }

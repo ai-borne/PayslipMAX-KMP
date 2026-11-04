@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.backup
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.AppSettingsEntity
 import com.payslipmax.pdfparser.repository.PreparedRestore
 import com.payslipmax.pdfparser.repository.RestoreMode
@@ -44,7 +45,7 @@ class BackupRestoreViewModelExitsTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         harness.dao.insertSettings(AppSettingsEntity())
         harness.seedPayslip("08/2024")
-        harness.viewModel.restore(harness.pickedBackupOfTheDevice(), PASSWORD)
+        harness.viewModel.restore(harness.pickedBackupOfTheDevice(), Secret.of(PASSWORD))
         advanceUntilIdle()
         assertIs<BackupUiState.Preview>(harness.viewModel.state.value)
         return assertNotNull(harness.viewModel.heldRestore, "the preview holds its prepared restore").also { assertFalse(it.isClosed) }

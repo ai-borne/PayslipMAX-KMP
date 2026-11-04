@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.domain.CorrectionType
@@ -72,8 +73,8 @@ class PayslipBackupServiceV3Test {
         runTest {
             seedSourceWithCreatedData()
 
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
-            targetService.restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
+            targetService.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(listOf(editedLetter), target.getAllRepresentationDrafts().first(), "the officer's edited text must survive")
             assertEquals(listOf(DismissedDraftEntity("01/2023", "SALARY_DROP")), target.getAllDismissedDrafts())
@@ -87,7 +88,7 @@ class PayslipBackupServiceV3Test {
             seedSourceWithCreatedData()
             source.insertFinancialInsight(FinancialInsightEntity("i1", "01/2023", "TAX", "t", "c", "INFO", 1L))
 
-            val backup = decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow())
+            val backup = decodeArchive(sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow())
 
             assertEquals(PortableBackup.CURRENT_VERSION, backup.version)
             assertEquals(listOf(editedLetter.toBackupRow()), backup.drafts)
@@ -103,11 +104,11 @@ class PayslipBackupServiceV3Test {
         runTest {
             seedSourceWithCreatedData()
 
-            val opened = openBackup(sourceService.export(BACKUP_PASSWORD).getOrThrow())
+            val opened = openBackup(sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow())
 
             val stored = opened.backup.corrections.single()
             assertEquals(listOf(correction), stored.toEntity().toCorrectionList(opened.key))
-            val underDeviceKey = CryptoHelper.decrypt(stored.ciphertext.hexToByteArray(), CryptoHelper.getDatabaseSecretKey())
+            val underDeviceKey = CryptoHelper.decrypt(stored.ciphertext.hexToByteArray(), Secret.of(CryptoHelper.getDatabaseSecretKey()))
             assertTrue(underDeviceKey.isFailure, "an archive must not depend on one device's key")
         }
 
@@ -115,13 +116,13 @@ class PayslipBackupServiceV3Test {
     fun restoredCorrectionsAreReEncryptedUnderTheRestoringDevicesKey() =
         runTest {
             seedSourceWithCreatedData()
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
-            targetService.restore(archive, BACKUP_PASSWORD).getOrThrow()
+            targetService.restore(archive, Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             val bytes = target.getCorrectionByDate("01/2023")!!.ciphertext.hexToByteArray()
-            assertTrue(CryptoHelper.decrypt(bytes, CryptoHelper.getDatabaseSecretKey()).isSuccess)
-            assertTrue(CryptoHelper.decrypt(bytes, BACKUP_PASSWORD).isFailure)
+            assertTrue(CryptoHelper.decrypt(bytes, Secret.of(CryptoHelper.getDatabaseSecretKey())).isSuccess)
+            assertTrue(CryptoHelper.decrypt(bytes, Secret.of(BACKUP_PASSWORD)).isFailure)
         }
 
     @Test
@@ -139,7 +140,7 @@ class PayslipBackupServiceV3Test {
                 }
             target.seedDeviceMonth("01/2023")
 
-            targetService.restore(encrypted(v2.toString()), BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            targetService.restore(encrypted(v2.toString()), Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(listOf("08/2024"), target.getAllPayslips().first().map { it.dateStr })
             assertTrue(target.getAllRepresentationDrafts().first().isEmpty())
@@ -159,7 +160,7 @@ class PayslipBackupServiceV3Test {
                     put("settings", JsonNull)
                 }
 
-            targetService.restore(encrypted(v1.toString()), BACKUP_PASSWORD).getOrThrow()
+            targetService.restore(encrypted(v1.toString()), Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             assertEquals(listOf("08/2024"), target.getAllPayslips().first().map { it.dateStr })
             assertTrue(target.getAllRepresentationDrafts().first().isEmpty())
@@ -181,7 +182,7 @@ class PayslipBackupServiceV3Test {
                     put("somethingFromTheFuture", "x")
                 }
 
-            val result = targetService.restore(encrypted(future.toString()), BACKUP_PASSWORD)
+            val result = targetService.restore(encrypted(future.toString()), Secret.of(BACKUP_PASSWORD))
 
             assertTrue(result.isSuccess, "unknown keys must be ignored, not fatal: ${result.exceptionOrNull()}")
             assertEquals(listOf("08/2024"), target.getAllPayslips().first().map { it.dateStr })
@@ -191,14 +192,14 @@ class PayslipBackupServiceV3Test {
     fun mergeLetsTheBackupWinOnTheSameKeyAndKeepsEverythingElse() =
         runTest {
             seedSourceWithCreatedData()
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             target.insertRepresentationDraft(editedLetter.copy(subject = "Device version", bodyText = "Device body"))
             target.insertRepresentationDraft(editedLetter.copy(id = "d-device-only"))
             target.insertDismissedDraft(DismissedDraftEntity("02/2023", "MISSING_TPTA"))
             target.insertCorrection(listOf(correction.copy(amount = 1.0)).toCorrectionEntity("01/2023"))
             target.insertCorrection(listOf(correction.copy(amount = 2.0)).toCorrectionEntity("02/2023"))
 
-            targetService.restore(archive, BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+            targetService.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
 
             val letters = target.getAllRepresentationDrafts().first().associateBy { it.id }
             assertEquals(setOf("d-edited", "d-device-only"), letters.keys)
@@ -224,7 +225,7 @@ class PayslipBackupServiceV3Test {
             val backup =
                 backupBytes(PortableBackup(3, listOf(goodRow("08/2024")), emptyList(), null, listOf(editedLetter.toBackupRow()), emptyList(), listOf(corrupt, readable)))
 
-            val result = targetService.restore(backup, BACKUP_PASSWORD, RestoreMode.REPLACE)
+            val result = targetService.restore(backup, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE)
 
             assertTrue(result.isSuccess, "one unreadable correction must not fail the restore")
             assertEquals(SkippedRows(corrections = 1), result.getOrThrow().skipped)
@@ -239,10 +240,10 @@ class PayslipBackupServiceV3Test {
             seedSourceWithCreatedData()
             source.insertCorrection(PayslipCorrectionEntity("05/2023", ciphertext = "deadbeef"))
 
-            val backup = decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow())
+            val backup = decodeArchive(sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow())
 
             assertEquals(listOf("01/2023"), backup.corrections.map { it.dateStr })
         }
 
-    private fun encrypted(json: String) = CryptoHelper.encrypt(json.encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()
+    private fun encrypted(json: String) = CryptoHelper.encrypt(json.encodeToByteArray(), Secret.of(BACKUP_PASSWORD)).getOrThrow()
 }

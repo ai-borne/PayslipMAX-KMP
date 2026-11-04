@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.screens
 
+import androidx.compose.foundation.text.input.TextFieldState
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 import kotlin.test.Test
@@ -15,16 +16,18 @@ import kotlin.test.assertTrue
  * screen cannot drift from it: a payslip, or a Part II draft or order.
  */
 class BackupGuardTest {
+    private fun typed(text: String) = TypedPassword(TextFieldState(text))
+
     @Test
     fun aBlankPasswordIsRefusedFirstWhateverTheDeviceHolds() {
-        val refusal = assertNotNull(backupRefusal(" ", BackupContents(payslips = 0, part2Items = 0)))
+        val refusal = assertNotNull(backupRefusal(typed(" "), BackupContents(payslips = 0, part2Items = 0)))
         assertEquals(AppStrings.settingsBackupPasswordRequired, refusal.message)
         assertFalse(refusal.isSuccess)
     }
 
     @Test
     fun nothingAtAllIsRefusedWithALineThatDoesNotNamePayslipsOnly() {
-        val refusal = assertNotNull(backupRefusal("pw", BackupContents(0, 0)))
+        val refusal = assertNotNull(backupRefusal(typed("pw"), BackupContents(0, 0)))
         assertEquals(AppStrings.statusNothingToBackup, refusal.message)
         assertEquals("Nothing to back up yet.", refusal.message)
         assertFalse("payslip" in refusal.message.lowercase(), "item 69(b): drafts, orders and scanned pages are backed up too")
@@ -33,9 +36,9 @@ class BackupGuardTest {
 
     @Test
     fun payslipsAloneOrPartTwoItemsAloneOrBothAreBackedUp() {
-        assertNull(backupRefusal("pw", BackupContents(2, 0)))
-        assertNull(backupRefusal("pw", BackupContents(0, 3)), "the case item 56 found: Part II data and no payslips")
-        assertNull(backupRefusal("pw", BackupContents(2, 3)))
+        assertNull(backupRefusal(typed("pw"), BackupContents(2, 0)))
+        assertNull(backupRefusal(typed("pw"), BackupContents(0, 3)), "the case item 56 found: Part II data and no payslips")
+        assertNull(backupRefusal(typed("pw"), BackupContents(2, 3)))
     }
 
     @Test

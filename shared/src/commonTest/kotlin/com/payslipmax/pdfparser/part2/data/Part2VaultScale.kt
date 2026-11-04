@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.PayslipBackupService
@@ -52,13 +53,13 @@ internal suspend fun runVaultScale(probe: ScaleProbe = ScaleProbe.None): VaultSc
 
     probe.begin("export")
     val exportStart = TimeSource.Monotonic.markNow()
-    val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+    val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
     val exportMs = exportStart.elapsedNow().inWholeMilliseconds
     probe.end("export")
 
     probe.begin("restore")
     val restoreStart = TimeSource.Monotonic.markNow()
-    targetService.restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+    targetService.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
     val restoreMs = restoreStart.elapsedNow().inWholeMilliseconds
     probe.end("restore")
 

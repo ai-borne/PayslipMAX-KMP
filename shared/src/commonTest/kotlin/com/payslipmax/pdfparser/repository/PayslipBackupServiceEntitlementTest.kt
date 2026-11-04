@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.AppSettingsEntity
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
@@ -31,13 +32,13 @@ class PayslipBackupServiceEntitlementTest {
         runTest {
             // Export a PREMIUM backup.
             repository.saveSettings(AppSettingsEntity(isPremiumEnabled = true))
-            val backup = service.export("pwd").getOrThrow()
+            val backup = service.export(Secret.of("pwd")).getOrThrow()
 
             // Device is FREE at import time.
             repository.clearSettings()
             repository.saveSettings(AppSettingsEntity(isPremiumEnabled = false))
 
-            service.restore(backup, "pwd").getOrThrow()
+            service.restore(backup, Secret.of("pwd")).getOrThrow()
 
             // Restoring a premium backup must NOT grant PRO to a free device.
             assertFalse(repository.getSettings()!!.isPremiumEnabled)
@@ -48,13 +49,13 @@ class PayslipBackupServiceEntitlementTest {
         runTest {
             // Export a FREE backup.
             repository.saveSettings(AppSettingsEntity(isPremiumEnabled = false))
-            val backup = service.export("pwd").getOrThrow()
+            val backup = service.export(Secret.of("pwd")).getOrThrow()
 
             // Device is PREMIUM at import time.
             repository.clearSettings()
             repository.saveSettings(AppSettingsEntity(isPremiumEnabled = true))
 
-            service.restore(backup, "pwd").getOrThrow()
+            service.restore(backup, Secret.of("pwd")).getOrThrow()
 
             // Restoring a free backup must NOT revoke PRO from a premium device.
             assertTrue(repository.getSettings()!!.isPremiumEnabled)

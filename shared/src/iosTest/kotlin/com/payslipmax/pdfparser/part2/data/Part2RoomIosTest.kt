@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.part2.data
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.PayslipDatabase
 import com.payslipmax.pdfparser.database.PayslipDatabaseConstructor
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
@@ -89,13 +90,13 @@ class Part2RoomIosTest {
         runTest {
             val pageId = fill()
             val service = PayslipBackupService(database.payslipDao(), Dispatchers.Unconfined, part2Backup = Part2Backup(database.part2Dao()))
-            val archive = service.export(BACKUP_PASSWORD).getOrThrow()
-            assertTrue(CryptoHelper.decrypt(archive, CryptoHelper.getDatabaseSecretKey()).isFailure, "the archive is under the password")
+            val archive = service.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
+            assertTrue(CryptoHelper.decrypt(archive, Secret.of(CryptoHelper.getDatabaseSecretKey())).isFailure, "the archive is under the password")
 
             val fresh = newDatabase()
             try {
                 PayslipBackupService(fresh.payslipDao(), Dispatchers.Unconfined, part2Backup = Part2Backup(fresh.part2Dao()))
-                    .restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE)
+                    .restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE)
                     .getOrThrow()
 
                 val restored = RoomPart2Repository(fresh.part2Dao(), dispatcher = Dispatchers.Unconfined)
@@ -110,6 +111,6 @@ class Part2RoomIosTest {
 
     @Test
     fun theSealOverheadIsWhatTheKeychainBackedHelperAdds() {
-        assertEquals(Part2Limits.SEAL_OVERHEAD_BYTES, CryptoHelper.encrypt(ByteArray(0), "k").getOrThrow().size)
+        assertEquals(Part2Limits.SEAL_OVERHEAD_BYTES, CryptoHelper.encrypt(ByteArray(0), Secret.of("k")).getOrThrow().size)
     }
 }

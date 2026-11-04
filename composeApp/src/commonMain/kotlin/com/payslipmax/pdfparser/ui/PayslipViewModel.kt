@@ -140,7 +140,7 @@ class PayslipViewModel(
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        error = "Failed to load payslips: ${e.message}",
+                        error = AppStrings.errorLoadPayslipsFailed,
                         isLoading = false,
                     )
                 }
@@ -202,12 +202,8 @@ class PayslipViewModel(
             } else {
                 val error = result.exceptionOrNull()
                 val rawMessage = error?.message ?: ""
-                val safeFilename = com.payslipmax.pdfparser.telemetry.TelemetrySanitizer.sanitizeFilename(filename)
-                com.payslipmax.pdfparser.logging.Logger.e(
-                    "PayslipViewModel",
-                    "importPayslip failed for $safeFilename: $rawMessage",
-                    error,
-                )
+                // The failure's type only (docs/Plan/14a P10): its message can quote the file, and the sanitized report just below carries the rest.
+                com.payslipmax.pdfparser.logging.Logger.e("PayslipViewModel", "importPayslip failed: ${error?.let { it::class.simpleName }}")
                 if (error != null && !rawMessage.contains("PASSWORD_PROTECTED") && !rawMessage.contains("InvalidPasswordException")) {
                     val crashReporter = com.payslipmax.pdfparser.telemetry.provideCrashReporter()
                     crashReporter.recordException(

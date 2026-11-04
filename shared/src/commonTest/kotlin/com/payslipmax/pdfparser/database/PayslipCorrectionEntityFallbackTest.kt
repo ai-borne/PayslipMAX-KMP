@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.database
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.domain.CorrectionType
 import com.payslipmax.pdfparser.domain.EntryCategory
 import com.payslipmax.pdfparser.domain.SingleCorrection
@@ -72,7 +73,7 @@ class PayslipCorrectionEntityFallbackTest {
         // Replicate legacy map serialization & encryption
         val legacyMapSerializer = MapSerializer(String.serializer(), Double.serializer())
         val jsonString = Json.encodeToString(legacyMapSerializer, legacyMap)
-        val encryptedBytes = CryptoHelper.encrypt(jsonString.encodeToByteArray(), password).getOrThrow()
+        val encryptedBytes = CryptoHelper.encrypt(jsonString.encodeToByteArray(), Secret.of(password)).getOrThrow()
 
         val entity = PayslipCorrectionEntity(dateStr = dateStr, ciphertext = encryptedBytes.toHex())
 

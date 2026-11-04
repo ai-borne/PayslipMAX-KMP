@@ -19,13 +19,13 @@ actual object CryptoHelper {
 
     actual fun encrypt(
         data: ByteArray,
-        password: String,
+        password: Secret,
     ): Result<ByteArray> = encryptWith(data, password, ::secureRandomBytes)
 
     /** [encrypt] with its salt and IV taken from [random]; a seam so a test can show a failed generator fails the seal. */
     internal fun encryptWith(
         data: ByteArray,
-        password: String,
+        password: Secret,
         random: (Int) -> ByteArray,
     ): Result<ByteArray> {
         return try {
@@ -60,7 +60,7 @@ actual object CryptoHelper {
 
     actual fun decrypt(
         encryptedData: ByteArray,
-        password: String,
+        password: Secret,
     ): Result<ByteArray> {
         return try {
             val prefixSize = SALT_SIZE + IV_SIZE
@@ -97,28 +97,20 @@ actual object CryptoHelper {
         return digest
     }
 
-    private const val CC_PRF_HMAC_ALG_SHA256: UInt = 3u
-
+    /** The UTF-8 bytes of [password] are made without a String and zeroed by `withUtf8` as soon as the derivation returns (see [pbkdf2Sha256]). */
     actual fun pbkdf2(
-        password: String,
+        password: Secret,
         salt: ByteArray,
         iterations: Int,
-    ): ByteArray {
-        val derivedKey = ByteArray(32)
-        val passBytes = password.encodeToByteArray()
-        memScoped {
-            derivedKey.usePinned { derivedPinned ->
-                salt.usePinned { saltPinned ->
-                    CCKeyDerivationPBKDF(
-                        kCCPBKDF2, password, passBytes.size.toULong(),
-                        saltPinned.addressOf(0).reinterpret(), salt.size.toULong(),
-                        CC_PRF_HMAC_ALG_SHA256, iterations.toUInt(), derivedPinned.addressOf(0).reinterpret(), 32.toULong(),
-                    )
-                }
-            }
-        }
-        return derivedKey
-    }
+    ): ByteArray = pbkdf2With(password, salt, iterations, ::pbkdf2Sha256)
+
+    /** [pbkdf2] with the derivation as a parameter: a seam so a test can see the UTF-8 bytes it is given and check they are zero afterwards. */
+    internal fun pbkdf2With(
+        password: Secret,
+        salt: ByteArray,
+        iterations: Int,
+        derive: (ByteArray, ByteArray, Int) -> ByteArray,
+    ): ByteArray = password.withUtf8 { bytes -> derive(bytes, salt, iterations) }
 
     actual fun randomBytes(size: Int): ByteArray = secureRandomBytes(size)
 
@@ -134,6 +126,10 @@ actual object CryptoHelper {
         aad: ByteArray,
     ): Result<ByteArray> = gcmOpen(sealed, key, aad)
 
+    /** The device database's key: 32 bytes from [random], which throws when the system cannot make secure ones (docs/Plan/14a P10). */
+    internal fun generateDatabaseKey(random: (Int) -> ByteArray = ::secureRandomBytes): ByteArray = random(DATABASE_KEY_BYTES)
+
+    private const val DATABASE_KEY_BYTES = 32
     private const val KEYCHAIN_SERVICE = "com.payslipmax.pdfparser"
     private const val KEYCHAIN_ACCOUNT = "db_secret_key"
 
@@ -170,10 +166,8 @@ actual object CryptoHelper {
             return existingFallback
         }
 
-        val newKey =
-            ByteArray(32).apply {
-                usePinned { SecRandomCopyBytes(kSecRandomDefault, 32.toULong(), it.addressOf(0).reinterpret<UByteVar>()) }
-            }
+        // Made before anything is stored: a generator that fails throws here, so no key (and never an all-zero one) is kept.
+        val newKey = generateDatabaseKey()
         val nsData = newKey.toNSData()
         val addQuery =
             CFDictionaryCreateMutable(null, 0, null, null).apply {

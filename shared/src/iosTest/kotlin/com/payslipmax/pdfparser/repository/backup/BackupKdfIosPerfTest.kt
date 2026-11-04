@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.repository.backup
 
 import com.payslipmax.pdfparser.crypto.ArchiveKey
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.MemoryBackupSource
 import kotlin.test.Test
@@ -28,7 +29,7 @@ class BackupKdfIosPerfTest {
         val header = BackupEnvelope.read(MemoryBackupSource(bytes))!!
         lateinit var key: ArchiveKey
 
-        val ms = elapsedMillis { key = ArchiveKey.derive("BackupPass#1", header.salt, header.iterations, header.bytes) }
+        val ms = elapsedMillis { key = ArchiveKey.derive(Secret.of("BackupPass#1"), header.salt, header.iterations, header.bytes) }
 
         println("BACKUP-KDF ios iterations=${BackupEnvelope.ITERATIONS} deriveMs=$ms")
         assertTrue(ms < KDF_BOUND_MS, "one derivation took $ms ms, expected < $KDF_BOUND_MS ms")
@@ -37,7 +38,7 @@ class BackupKdfIosPerfTest {
 
     @Test
     fun aLargestPageSealsAndOpensWithTheArchiveKeyInMilliseconds() {
-        val key = ArchiveKey.derive("BackupPass#1", ByteArray(16), BackupEnvelope.ITERATIONS_MIN, "header".encodeToByteArray())
+        val key = ArchiveKey.derive(Secret.of("BackupPass#1"), ByteArray(16), BackupEnvelope.ITERATIONS_MIN, "header".encodeToByteArray())
         val page = ByteArray(Part2Limits.PAGE_MAX_BYTES) { (it * 13).toByte() }
         lateinit var sealed: ByteArray
         lateinit var opened: ByteArray

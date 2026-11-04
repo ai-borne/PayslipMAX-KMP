@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.pages
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.part2.data.RoomPart2Repository
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
@@ -32,9 +33,9 @@ internal suspend fun roundTrip(
     val scanner = FakePageScanner(PageScan.Pages(rawPages.map { FakeScannedPage(it) }))
     val captured = PageCapture(scanner, encoder, sourceRepository, Dispatchers.Unconfined).capture("o1")
 
-    val archive = PayslipBackupService(source, Dispatchers.Unconfined, part2Backup = Part2Backup(source.part2)).export(BACKUP_PASSWORD).getOrThrow()
+    val archive = PayslipBackupService(source, Dispatchers.Unconfined, part2Backup = Part2Backup(source.part2)).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
     val target = FakePayslipDao()
-    PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = Part2Backup(target.part2)).restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+    PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = Part2Backup(target.part2)).restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
     return RoundTrip(captured, pagesOf(sourceRepository), pagesOf(RoomPart2Repository(dao = target.part2, dispatcher = Dispatchers.Unconfined)))
 }

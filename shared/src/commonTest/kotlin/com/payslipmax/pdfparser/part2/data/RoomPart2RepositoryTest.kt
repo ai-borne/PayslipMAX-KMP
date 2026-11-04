@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.testing.FakePart2Dao
 import com.payslipmax.pdfparser.testing.SyntheticBank
@@ -120,13 +121,13 @@ class RoomPart2RepositoryTest {
 
             val row = dao.page("page-x")!!
             assertEquals("order-1", row.orderId)
-            assertContentEquals(SyntheticBank.jpeg(100), CryptoHelper.decrypt(row.ciphertext, key).getOrThrow().copyOfRange(3 + "page-x".length + "order-1".length, 3 + "page-x".length + "order-1".length + 100))
+            assertContentEquals(SyntheticBank.jpeg(100), CryptoHelper.decrypt(row.ciphertext, Secret.of(key)).getOrThrow().copyOfRange(3 + "page-x".length + "order-1".length, 3 + "page-x".length + "order-1".length + 100))
         }
 
     @Test
     fun aRowFromANewerAppIsKeptUntouchedNeverShownAndNeverRewrittenByThisOne() =
         runTest {
-            val foreign = Part2EntryEntity("future", CryptoHelper.encrypt("""{"v":2,"id":"future","code":"SYNCODE1"}""".encodeToByteArray(), key).getOrThrow())
+            val foreign = Part2EntryEntity("future", CryptoHelper.encrypt("""{"v":2,"id":"future","code":"SYNCODE1"}""".encodeToByteArray(), Secret.of(key)).getOrThrow())
             dao.upsertEntry(foreign)
             val before = foreign.ciphertext.copyOf()
 

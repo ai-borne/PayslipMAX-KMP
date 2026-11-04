@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.SealKey
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.guide.domain.GuideNote
 import com.payslipmax.pdfparser.part2.data.PageArchive
@@ -27,7 +28,7 @@ fun backupBytes(backup: PortableBackup): ByteArray =
             kotlinx.serialization.json.Json
                 .encodeToString(PortableBackup.serializer(), backup)
                 .encodeToByteArray(),
-            BACKUP_PASSWORD,
+            Secret.of(BACKUP_PASSWORD),
         ).getOrThrow()
 
 /** One month of everything a device holds: the payslip, its PDF, and all that is derived from or added to it (plus one private Guide note). */
@@ -71,7 +72,7 @@ internal fun openBackup(
     archive: ByteArray,
     password: String = BACKUP_PASSWORD,
 ): OpenedBackup {
-    val opened = openArchive(MemoryBackupSource(archive), password)
+    val opened = openArchive(MemoryBackupSource(archive), Secret.of(password))
     return OpenedBackup(BackupJson.decode(PortableBackup.serializer(), opened.document.decodeToString()), opened.key)
 }
 

@@ -70,9 +70,21 @@ enum class RestoreMode {
     MERGE,
 }
 
-/** What a restore did besides succeed: the rows it left out, per kind (unreadable, oversized, surplus, orphaned or a draft), so the officer can be told. */
+/**
+ * What a restore wrote, per kind the preview counts (docs/Plan/14a P10, "From P8" item 3): the officer is told what came back as well as what
+ * did not. Counts only. A row that was skipped is in [SkippedRows], never here.
+ */
+data class RestoredRows(
+    val payslips: Int = 0,
+    val part2Entries: Int = 0,
+    val part2Orders: Int = 0,
+    val part2Pages: Int = 0,
+)
+
+/** What a restore did besides succeed: what it wrote ([restored]) and the rows it left out, per kind (unreadable, oversized, surplus, orphaned or a draft). */
 class RestoreReport(
     val skipped: SkippedRows,
+    val restored: RestoredRows,
 )
 
 /**

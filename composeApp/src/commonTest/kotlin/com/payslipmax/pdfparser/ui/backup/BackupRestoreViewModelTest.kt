@@ -1,9 +1,11 @@
 package com.payslipmax.pdfparser.ui.backup
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BackupFailure
 import com.payslipmax.pdfparser.repository.BackupOp
 import com.payslipmax.pdfparser.repository.BackupStage
 import com.payslipmax.pdfparser.repository.RestoreMode
+import com.payslipmax.pdfparser.repository.RestoredRows
 import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.ui.backup.BackupViewModelHarness.Companion.PASSWORD
 import com.payslipmax.pdfparser.ui.screens.BackupContents
@@ -47,7 +49,7 @@ class BackupRestoreViewModelTest {
             assertEquals(BackupUiState.Idle(1_700_000_000_000L), harness.viewModel.state.value)
 
             harness.seedPayslip("08/2024")
-            harness.viewModel.backUp(PASSWORD, contents)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
             harness.viewModel.dismiss()
 
             assertEquals(BackupUiState.Idle(harness.clock), harness.viewModel.state.value)
@@ -60,7 +62,7 @@ class BackupRestoreViewModelTest {
             harness.seedPayslip("08/2024")
             harness.record(this)
 
-            harness.viewModel.backUp(PASSWORD, contents)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
 
             assertIs<BackupUiState.Idle>(harness.states.first())
             assertEquals(BackupUiState.Working(BackupOp.BACKUP, BackupStage.OPENING, 0, 0), harness.states.getOrNull(1))
@@ -75,7 +77,7 @@ class BackupRestoreViewModelTest {
             harness.files.shareFails = true
             harness.record(this)
 
-            harness.viewModel.backUp(PASSWORD, contents)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
 
             assertIs<BackupUiState.Working>(harness.states.getOrNull(1))
             assertEquals(BackupUiState.Failed(BackupFailure.WRITE_FAILED), harness.states.last())
@@ -91,7 +93,7 @@ class BackupRestoreViewModelTest {
             harness.seedPayslip("01/2025")
             harness.record(this)
 
-            harness.viewModel.restore(picked, PASSWORD)
+            harness.viewModel.restore(picked, Secret.of(PASSWORD))
 
             val preview = assertIs<BackupUiState.Preview>(harness.viewModel.state.value).preview
             assertEquals(1, preview.payslips)
@@ -100,7 +102,7 @@ class BackupRestoreViewModelTest {
 
             harness.viewModel.commit(RestoreMode.MERGE)
 
-            assertEquals(BackupUiState.Done(BackupSummary.Restored(SkippedRows.NONE)), harness.viewModel.state.value)
+            assertEquals(BackupUiState.Done(BackupSummary.Restored(RestoredRows(payslips = 1), SkippedRows.NONE)), harness.viewModel.state.value)
             assertEquals(setOf("08/2024", "01/2025"), harness.payslipDates().toSet())
             val afterPreview = harness.states.dropWhile { it !is BackupUiState.Preview }.drop(1)
             assertIs<BackupUiState.Working>(afterPreview.firstOrNull(), "the commit shows its own progress")
@@ -114,7 +116,7 @@ class BackupRestoreViewModelTest {
             val picked = harness.pickedBackupOfTheDevice()
             harness.repository.clearAll()
 
-            harness.viewModel.restore(picked, PASSWORD)
+            harness.viewModel.restore(picked, Secret.of(PASSWORD))
             harness.viewModel.cancel()
 
             assertEquals(BackupUiState.Idle(null), harness.viewModel.state.value)
@@ -127,7 +129,7 @@ class BackupRestoreViewModelTest {
             unconfined()
             harness.record(this)
 
-            harness.viewModel.restore(harness.files.stage(ByteArray(300) { 7 }), PASSWORD)
+            harness.viewModel.restore(harness.files.stage(ByteArray(300) { 7 }), Secret.of(PASSWORD))
 
             assertTrue(harness.states.none { it is BackupUiState.Preview })
             assertEquals(BackupUiState.Failed(BackupFailure.WRONG_PASSWORD), harness.viewModel.state.value)
@@ -139,12 +141,12 @@ class BackupRestoreViewModelTest {
         runTest {
             Dispatchers.setMain(StandardTestDispatcher(testScheduler))
             harness.seedPayslip("08/2024")
-            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), PASSWORD)
+            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), Secret.of(PASSWORD))
             advanceUntilIdle()
             harness.record(this)
 
             harness.viewModel.cancel()
-            harness.viewModel.backUp(PASSWORD, contents)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
             advanceUntilIdle()
 
             val afterBackUp = harness.states.dropWhile { it !is BackupUiState.Working }
@@ -158,8 +160,8 @@ class BackupRestoreViewModelTest {
             Dispatchers.setMain(StandardTestDispatcher(testScheduler))
             harness.seedPayslip("08/2024")
 
-            harness.viewModel.backUp(PASSWORD, contents)
-            harness.viewModel.backUp(PASSWORD, contents)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
             advanceUntilIdle()
 
             assertEquals(1, harness.files.verifyCount, "one backup was written")
@@ -175,12 +177,12 @@ class BackupRestoreViewModelTest {
             val second = harness.pickedBackupOfTheDevice()
             val third = harness.pickedBackupOfTheDevice()
 
-            harness.viewModel.restore(first, PASSWORD)
-            harness.viewModel.restore(second, PASSWORD)
+            harness.viewModel.restore(first, Secret.of(PASSWORD))
+            harness.viewModel.restore(second, Secret.of(PASSWORD))
             advanceUntilIdle()
             assertIs<BackupUiState.Preview>(harness.viewModel.state.value)
-            harness.viewModel.restore(third, PASSWORD)
-            harness.viewModel.backUp(PASSWORD, contents)
+            harness.viewModel.restore(third, Secret.of(PASSWORD))
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
             advanceUntilIdle()
 
             assertEquals(1, harness.files.readCount, "one restore was opened")

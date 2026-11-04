@@ -216,3 +216,19 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
     The owner's 4 local backups restore with 0 skips. Security review: no findings.
   - Pending: 14a P10 "From P8".
 
+- 2026-11-04 — **P10 done**: the password as a `CharArray` end to end, plus the four candidates the owner chose (before the P9 release gate, by the owner's decision).
+  - `Secret` (shared) is a `CharArray` zeroed on close; whoever is handed one wipes it. `backUp/prepare/restore/export/exportTo`, `openArchive`, `newArchive`,
+    `ArchiveKey.derive`, the format 1-5 `PasswordKey`, `CryptoHelper` (Android key spec cleared; iOS UTF-8 bytes zeroed), the view model and the sheet
+    all take it. No wire change: all 9 goldens and the owner's 4 local backups restore unchanged.
+  - Field: an `OutlinedSecureTextField` on a `TextFieldState`. Spike: Compose copies each keystroke into a `String` (cannot be zeroed); delete plus
+    clearing the undo history leaves nothing reachable from the state holding the text. An outer `semantics` masks `EditableText` and `InputText`,
+    which closes "From P8" item 2. Wiped when the form leaves; a Restore reads the password when the file arrives.
+  - iOS: `CCKeyDerivationPBKDF` is called by address with the pinned bytes, since the Kotlin binding would have made a `String`; a failed status now throws.
+  - Candidates: restored counts on the result card ("Restored 48 payslips, 12 orders, 120 pages."), iOS device key fails closed, `Logger.e` takes no
+    exception (5 sites), `observePayslips` shows a fixed line. Owner answers: all four in; String APIs deleted on the backup path only; accept the field
+    limit; keep the text until the sheet leaves.
+  - RED first: 28 tests failed on assertions (the other new tests were written after their code and are proven by mutation). Mutations: 34 of 41, then
+    10 of 10 after fixing 2 invalid ones, removing 4 redundant guards and the overwrite step, and adding 3 tests; iOS 4 of 4.
+  - Gate green: shared 1791 -> 1825 (release 1825, 1 pre-existing skip), iOS shared 1646 -> 1677, composeApp 1509 -> 1532 / 1483 -> 1506, iOS composeApp
+    898 -> 909. R8 triggered (`CryptoHelper` expect/actual) and green with no new rule. Security review: no findings.
+  - Pixel walk passed for Back Up and Merge; iPhone not walked (simulator build launches). Pending: 14a P10 "From P10".

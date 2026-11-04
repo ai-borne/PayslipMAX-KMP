@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlin.test.Test
@@ -33,7 +34,7 @@ class Part2PageCodecTest {
         plain: ByteArray,
         id: String = "page-1",
         orderId: String = "order-1",
-    ) = Part2PageEntity(id, orderId, 0, CryptoHelper.encrypt(plain, key).getOrThrow())
+    ) = Part2PageEntity(id, orderId, 0, CryptoHelper.encrypt(plain, Secret.of(key)).getOrThrow())
 
     @Test
     fun aPageRoundTripsByteForByteAndKeepsItsLinkColumns() {

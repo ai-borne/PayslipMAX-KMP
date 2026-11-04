@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.repository.BackupFailure
 import com.payslipmax.pdfparser.repository.BackupOp
 import com.payslipmax.pdfparser.repository.BackupStage
 import com.payslipmax.pdfparser.repository.RestorePreview
+import com.payslipmax.pdfparser.repository.RestoredRows
 import com.payslipmax.pdfparser.repository.SkippedRows
 
 /**
@@ -51,8 +52,9 @@ sealed interface BackupSummary {
         val part2Items: Int,
     ) : BackupSummary
 
-    /** A restore that was committed, with the rows it left out per kind. */
+    /** A restore that was committed: what it wrote and the rows it left out, per kind. */
     data class Restored(
+        val restored: RestoredRows,
         val skipped: SkippedRows,
     ) : BackupSummary
 }

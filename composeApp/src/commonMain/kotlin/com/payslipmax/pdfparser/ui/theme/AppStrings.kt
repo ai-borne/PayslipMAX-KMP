@@ -68,6 +68,7 @@ object AppStrings {
     // Fixed lines: an exception's message can carry a path or row content, so it is never shown (docs/Plan/14a P7, P10 "From P6" item 8).
     const val errorSeedDataFailed = "Failed to seed data."
     const val errorClearDataFailed = "Failed to clear data."
+    const val errorLoadPayslipsFailed = "Failed to load payslips."
 
     // Dashboard - Officer Info Bar
     const val cdaInfoLabel = "CDA A/C"

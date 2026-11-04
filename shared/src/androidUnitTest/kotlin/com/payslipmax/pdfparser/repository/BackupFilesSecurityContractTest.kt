@@ -29,6 +29,7 @@ class BackupFilesSecurityContractTest {
             "../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/backup/BackupUiState.kt",
             "../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/backup/ProgressThrottle.kt",
             "../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/BackupRestoreSettingsCard.kt",
+            "../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/BackupPasswordFields.kt",
         ).associateWith { clean(File(it)) }
 
     @Test

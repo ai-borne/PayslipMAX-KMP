@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository.backup
 
 import com.payslipmax.pdfparser.crypto.DecryptionFailedException
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.BackupDamagedException
 import com.payslipmax.pdfparser.repository.PayslipBackupService
@@ -48,7 +49,7 @@ class BackupEnvelopeTest {
     private suspend fun exported(): ByteArray {
         val source = FakePayslipDao()
         source.seedDeviceMonth("08/2024")
-        val file = PayslipBackupService(source, Dispatchers.Unconfined).export(BACKUP_PASSWORD).getOrThrow()
+        val file = PayslipBackupService(source, Dispatchers.Unconfined).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
         assertContentEquals("PCDX".encodeToByteArray(), file.copyOf(4), "a new backup is a v6 file")
         return file
     }
@@ -63,7 +64,7 @@ class BackupEnvelopeTest {
     ) {
         val before = dao.getAllPayslips().first().map { it.dateStr }
 
-        val error = service.restore(file, password, RestoreMode.REPLACE).exceptionOrNull()
+        val error = service.restore(file, Secret.of(password), RestoreMode.REPLACE).exceptionOrNull()
 
         assertTrue(error != null && expected.isInstance(error), "expected ${expected.simpleName} but was $error")
         assertEquals(before, dao.getAllPayslips().first().map { it.dateStr }, "a refused restore must change nothing")
@@ -129,7 +130,7 @@ class BackupEnvelopeTest {
     @Test
     fun theRightPasswordStillRestoresAV6File() =
         runTest {
-            service.restore(exported(), BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            service.restore(exported(), Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(listOf("08/2024"), dao.getAllPayslips().first().map { it.dateStr })
         }

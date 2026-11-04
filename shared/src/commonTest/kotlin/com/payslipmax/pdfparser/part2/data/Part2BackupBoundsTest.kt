@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.RestoreMode
@@ -38,12 +39,12 @@ class Part2BackupBoundsTest {
     private fun sealedRow(
         id: String,
         json: String,
-    ) = Part2RowBackup(id, text(CryptoHelper.encrypt(json.encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()))
+    ) = Part2RowBackup(id, text(CryptoHelper.encrypt(json.encodeToByteArray(), Secret.of(BACKUP_PASSWORD)).getOrThrow()))
 
     private fun oversizedPage(): RawPage {
         // sealPage refuses to make an oversized page, so it is framed by hand, as a crafted file would be.
         val frame = byteArrayOf(1, 2) + "p2".encodeToByteArray() + byteArrayOf(2) + "o1".encodeToByteArray() + SyntheticBank.jpeg(Part2Limits.PAGE_MAX_BYTES + 1)
-        return RawPage("p2", "o1", 0, CryptoHelper.encrypt(frame, BACKUP_PASSWORD).getOrThrow())
+        return RawPage("p2", "o1", 0, CryptoHelper.encrypt(frame, Secret.of(BACKUP_PASSWORD)).getOrThrow())
     }
 
     @Test

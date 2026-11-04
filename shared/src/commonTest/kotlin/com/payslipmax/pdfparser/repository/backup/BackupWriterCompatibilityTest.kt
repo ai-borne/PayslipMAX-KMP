@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository.backup
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.hexToByteArray
 import com.payslipmax.pdfparser.database.toCorrectionEntity
 import com.payslipmax.pdfparser.database.toEncryptedEntity
@@ -30,7 +31,7 @@ import kotlin.test.assertEquals
 class BackupWriterCompatibilityTest {
     private val strict = Json
 
-    private fun plain(hex: String): String = CryptoHelper.decrypt(hex.hexToByteArray(), BACKUP_PASSWORD).getOrThrow().decodeToString()
+    private fun plain(hex: String): String = CryptoHelper.decrypt(hex.hexToByteArray(), Secret.of(BACKUP_PASSWORD)).getOrThrow().decodeToString()
 
     @Test
     fun aPayslipPayloadKeepsItsNullsSoAStrictShippedReaderStillDecodesIt() {

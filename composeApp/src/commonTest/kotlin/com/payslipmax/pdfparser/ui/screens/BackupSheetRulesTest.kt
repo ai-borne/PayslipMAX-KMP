@@ -5,6 +5,7 @@ import com.payslipmax.pdfparser.repository.BackupOp
 import com.payslipmax.pdfparser.repository.BackupStage
 import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.repository.RestorePreview
+import com.payslipmax.pdfparser.repository.RestoredRows
 import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.ui.backup.BackupSummary
 import com.payslipmax.pdfparser.ui.backup.BackupUiState
@@ -28,7 +29,7 @@ class BackupSheetRulesTest {
         for (state in listOf(
             BackupUiState.Idle(null),
             BackupUiState.Preview(preview(SkippedRows.NONE)),
-            BackupUiState.Done(BackupSummary.Restored(SkippedRows.NONE)),
+            BackupUiState.Done(BackupSummary.Restored(RestoredRows(), SkippedRows.NONE)),
             BackupUiState.Failed(BackupFailure.DAMAGED),
         )) {
             assertTrue(state.sheetMayHide(), "$state")

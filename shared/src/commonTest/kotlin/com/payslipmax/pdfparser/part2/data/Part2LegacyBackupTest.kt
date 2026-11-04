@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.repository.PayslipBackupService
@@ -35,7 +36,7 @@ class Part2LegacyBackupTest {
         val json = Json.encodeToString(PortableBackup.serializer(), current)
         val oldDrafts = (1..drafts).joinToString(",") { """{"id":"old-$it","data":"QUJD"}""" }
         val withDrafts = "{\"part2Drafts\":[$oldDrafts]," + json.removePrefix("{")
-        val meta = CryptoHelper.encrypt(withDrafts.encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()
+        val meta = CryptoHelper.encrypt(withDrafts.encodeToByteArray(), Secret.of(BACKUP_PASSWORD)).getOrThrow()
         if (pages.isEmpty()) return meta
         val sink = MemoryBackupSink()
         val writer = PageArchiveWriter(sink)
@@ -51,7 +52,7 @@ class Part2LegacyBackupTest {
             val jpeg = SyntheticBank.jpeg(2_000, 4)
             val bytes = frozenBranchArchive(drafts = 3, pages = listOf(pageRow("p1", "o1", 0, jpeg)))
 
-            val report = service.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            val report = service.restore(bytes, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(SkippedRows(part2Entries = 3), report.skipped, "the three drafts are the only thing left out, counted as the entries that replaced them")
             assertEquals(listOf("o1"), device.part2.allOrders().map { it.id })
@@ -62,7 +63,7 @@ class Part2LegacyBackupTest {
     @Test
     fun aFrozenBranchFileWithoutPagesIsTheSameOneBlobAndCountsItsDraftsToo() =
         runTest {
-            val report = service.restore(frozenBranchArchive(drafts = 2, pages = emptyList()), BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+            val report = service.restore(frozenBranchArchive(drafts = 2, pages = emptyList()), Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
 
             assertEquals(SkippedRows(part2Entries = 2), report.skipped)
             assertEquals(listOf("o1"), device.part2.allOrders().map { it.id })

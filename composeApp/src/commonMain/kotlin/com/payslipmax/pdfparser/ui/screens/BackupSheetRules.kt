@@ -14,9 +14,9 @@ internal fun BackupUiState.formIsLive(): Boolean = this !is BackupUiState.Workin
 
 /** Back Up needs the password typed twice the same: a typo would make a backup that can never be opened. */
 internal fun passwordsMatch(
-    password: String,
-    confirm: String,
-): Boolean = password == confirm
+    password: CharSequence,
+    confirm: CharSequence,
+): Boolean = password.length == confirm.length && password.indices.all { password[it] == confirm[it] }
 
 /** D11: Replace deletes what the device holds and restores less when rows were skipped, so it is asked a second time. Merge deletes nothing. */
 internal fun replaceNeedsSecondConfirm(

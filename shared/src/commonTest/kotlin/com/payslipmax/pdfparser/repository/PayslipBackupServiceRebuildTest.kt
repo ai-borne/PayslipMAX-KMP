@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.*
 import com.payslipmax.pdfparser.insights.payAuditPayslip
 import com.payslipmax.pdfparser.testing.FakePayslipDao
@@ -47,7 +48,7 @@ class PayslipBackupServiceRebuildTest {
         FinancialIntelligenceRepository(source, Dispatchers.Unconfined).rebuildAuditHistory(months)
     }
 
-    private suspend fun restoreFromSource(mode: RestoreMode = RestoreMode.REPLACE) = targetService.restore(sourceService.export(BACKUP_PASSWORD).getOrThrow(), BACKUP_PASSWORD, mode).getOrThrow()
+    private suspend fun restoreFromSource(mode: RestoreMode = RestoreMode.REPLACE) = targetService.restore(sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow(), Secret.of(BACKUP_PASSWORD), mode).getOrThrow()
 
     @Test
     fun replaceRestoreRebuildsOneLedgerRowPerPayslipAndTheirInsights() =
@@ -121,7 +122,7 @@ class PayslipBackupServiceRebuildTest {
             seedSource()
             val broken = serviceWithFailingRebuild()
 
-            val result = broken.restore(sourceService.export(BACKUP_PASSWORD).getOrThrow(), BACKUP_PASSWORD)
+            val result = broken.restore(sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow(), Secret.of(BACKUP_PASSWORD))
 
             assertTrue(result.isSuccess, "the user's data is already restored; a derived-data failure must not report a failed restore")
             assertEquals(months.size, target.getAllPayslips().first().size)

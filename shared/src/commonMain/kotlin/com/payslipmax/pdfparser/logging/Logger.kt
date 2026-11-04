@@ -31,16 +31,15 @@ object Logger {
         crashReporter.log("WARN [$tag] $message")
     }
 
+    /**
+     * A fixed line, nothing else. There is deliberately no exception parameter (docs/Plan/14a P10, "From P6" item 7): an exception's message
+     * can quote a path or a row and would go to the log and to Crashlytics, so a caller names the failure's type in [message] at most.
+     */
     fun e(
         tag: String,
         message: String,
-        throwable: Throwable? = null,
     ) {
-        val errorMsg = throwable?.let { " - ${it.message}" } ?: ""
-        println("[ERROR] [$tag] $message$errorMsg")
+        println("[ERROR] [$tag] $message")
         crashReporter.log("ERROR [$tag] $message")
-        if (throwable != null) {
-            crashReporter.recordException(throwable, mapOf("error_tag" to tag))
-        }
     }
 }

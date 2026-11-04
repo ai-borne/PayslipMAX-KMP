@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.ui.backup
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.AppSettingsEntity
 import com.payslipmax.pdfparser.repository.BackupFailureEvent
 import com.payslipmax.pdfparser.repository.BackupTelemetry
@@ -48,11 +49,11 @@ class BackupRestoreViewModelTelemetryTest {
     @Test
     fun aBackupThatCannotBeSharedSendsItsCodeAndTheCurrentFormatAndAWorkingOneSendsNothing() =
         runTest {
-            harness.viewModel.backUp(PASSWORD, contents)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
             assertTrue(harness.reporter.exceptions.isEmpty(), "a backup that worked sends nothing")
 
             harness.files.shareFails = true
-            harness.viewModel.backUp(PASSWORD, contents)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
 
             assertEquals(listOf("backup" to "write_failed"), sentCodes())
             assertEquals(PortableBackup.CURRENT_VERSION.toString(), sent().single().getValue(BackupTelemetry.KEY_FORMAT))
@@ -61,7 +62,7 @@ class BackupRestoreViewModelTelemetryTest {
     @Test
     fun aRestoreWithTheWrongFileSendsItsCodeWithAnUnknownFormat() =
         runTest {
-            harness.viewModel.restore(harness.files.stage(ByteArray(300) { 7 }), PASSWORD)
+            harness.viewModel.restore(harness.files.stage(ByteArray(300) { 7 }), Secret.of(PASSWORD))
 
             assertEquals(listOf("restore" to "wrong_password"), sentCodes())
             assertEquals("unknown", sent().single().getValue(BackupTelemetry.KEY_FORMAT))
@@ -71,11 +72,11 @@ class BackupRestoreViewModelTelemetryTest {
     fun aCommitThatFailsSendsThePreviewsFormatAndACancelledPreviewSendsNothing() =
         runTest {
             harness.dao.insertSettings(AppSettingsEntity())
-            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), PASSWORD)
+            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), Secret.of(PASSWORD))
             harness.viewModel.cancel()
             assertTrue(harness.reporter.exceptions.isEmpty(), "a cancel is not a failure")
 
-            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), PASSWORD)
+            harness.viewModel.restore(harness.pickedBackupOfTheDevice(), Secret.of(PASSWORD))
             val format = assertIs<BackupUiState.Preview>(harness.viewModel.state.value).preview.formatVersion
             harness.dao.failInsertSettingsWhen = { true }
             harness.viewModel.commit(RestoreMode.REPLACE)
@@ -88,8 +89,8 @@ class BackupRestoreViewModelTelemetryTest {
     fun everyKeySentIsAllowedAndEveryValueIsAFixedCode() =
         runTest {
             harness.files.shareFails = true
-            harness.viewModel.backUp(PASSWORD, contents)
-            harness.viewModel.restore(harness.files.stage(ByteArray(300) { 7 }), PASSWORD)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
+            harness.viewModel.restore(harness.files.stage(ByteArray(300) { 7 }), Secret.of(PASSWORD))
 
             val codes = setOf("backup", "restore", "write_failed", "wrong_password", "unknown", PortableBackup.CURRENT_VERSION.toString())
             for ((key, value) in sent().flatMap { it.entries }.map { it.toPair() }) {
@@ -104,8 +105,8 @@ class BackupRestoreViewModelTelemetryTest {
         runTest {
             harness.dao.insertSettings(AppSettingsEntity(isTelemetryEnabled = false))
             harness.files.shareFails = true
-            harness.viewModel.backUp(PASSWORD, contents)
-            harness.viewModel.restore(harness.files.stage(ByteArray(300) { 7 }), PASSWORD)
+            harness.viewModel.backUp(Secret.of(PASSWORD), contents)
+            harness.viewModel.restore(harness.files.stage(ByteArray(300) { 7 }), Secret.of(PASSWORD))
 
             // A failed commit is not driven here: the fake DAO is not transactional, so a REPLACE that fails has already cleared the
             // settings row holding the choice (Room rolls it back). Every path reports through the same BackupTelemetry, which reads it.

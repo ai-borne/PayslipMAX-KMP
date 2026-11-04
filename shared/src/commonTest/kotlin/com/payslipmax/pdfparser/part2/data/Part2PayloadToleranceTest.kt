@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.MemoryBackupSink
 import com.payslipmax.pdfparser.repository.PayslipBackupService
@@ -26,7 +27,7 @@ class Part2PayloadToleranceTest {
     private fun sealedJson(
         json: String,
         password: String,
-    ) = CryptoHelper.encrypt(json.encodeToByteArray(), password).getOrThrow()
+    ) = CryptoHelper.encrypt(json.encodeToByteArray(), Secret.of(password)).getOrThrow()
 
     @Test
     fun anEntryWithNullWhereADefaultExistsAndAKeyFromALaterVersionReadsWithItsDefaults() {
@@ -59,7 +60,7 @@ class Part2PayloadToleranceTest {
             sink.write(ByteArray(4) { (trailer.size ushr (24 - 8 * it)).toByte() })
             val dao = FakePayslipDao()
 
-            val report = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2)).restore(sink.toByteArray(), BACKUP_PASSWORD).getOrThrow()
+            val report = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2)).restore(sink.toByteArray(), Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
             assertEquals(SkippedRows.NONE, report.skipped)
             assertEquals(listOf("page-1"), dao.part2.allPageRefs().map { it.id })

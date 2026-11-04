@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.repository
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.part2.data.putEntry
 import com.payslipmax.pdfparser.part2.data.putOrder
@@ -28,8 +29,8 @@ class PreparedRestoreCloseTest {
                     putPage("p0", "o1", 0, SyntheticBank.jpeg(4_000, 0))
                 }
             val service = PayslipBackupService(dao, Dispatchers.Unconfined, part2Backup = Part2Backup(dao.part2))
-            val bytes = service.export(PASSWORD).getOrThrow()
-            val prepared = service.prepare(MemoryBackupSource(bytes), PASSWORD).getOrThrow()
+            val bytes = service.export(Secret.of(PASSWORD)).getOrThrow()
+            val prepared = service.prepare(MemoryBackupSource(bytes), Secret.of(PASSWORD)).getOrThrow()
 
             assertFalse(prepared.isClosed, "a restore just prepared is open")
             prepared.close()

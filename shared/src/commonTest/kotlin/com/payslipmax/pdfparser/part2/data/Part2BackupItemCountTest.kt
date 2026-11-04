@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.RestoreMode
@@ -57,8 +58,8 @@ class Part2BackupItemCountTest {
             val target = FakePayslipDao()
             val targetService = PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = Part2Backup(target.part2))
 
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
-            val report = targetService.restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
+            val report = targetService.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(2, targetService.part2ItemCount())
             assertEquals(1, target.part2.allPageRefs().size)

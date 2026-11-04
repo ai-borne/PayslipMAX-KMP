@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -37,7 +38,7 @@ class BackupFailureSourceTest {
         runTest {
             val huge = SizedSource(128L * 1024 * 1024 + 1)
 
-            val error = service.prepare(huge, BACKUP_PASSWORD).exceptionOrNull()
+            val error = service.prepare(huge, Secret.of(BACKUP_PASSWORD)).exceptionOrNull()
 
             assertIs<BackupTooLargeException>(error)
             assertTrue(huge.largestRead <= 64, "only the header and the archive marks were read, ${huge.largestRead} bytes")
@@ -49,9 +50,9 @@ class BackupFailureSourceTest {
             dao.seedDeviceMonth("01/2023")
             val before = dao.getAllPayslips().first().map { it.dateStr }
             val json = """{"version":2,"encryptedPayslips":[{"dateStr":"ABCDE1234F","year":"net 98765.43"""
-            val file = CryptoHelper.encrypt(json.encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()
+            val file = CryptoHelper.encrypt(json.encodeToByteArray(), Secret.of(BACKUP_PASSWORD)).getOrThrow()
 
-            val error = service.restore(file, BACKUP_PASSWORD).exceptionOrNull()
+            val error = service.restore(file, Secret.of(BACKUP_PASSWORD)).exceptionOrNull()
 
             assertIs<BackupDamagedException>(error)
             assertNull(error.cause)

@@ -51,7 +51,7 @@ fun PayslipCorrectionEntity.toCorrectionList(key: SealKey): List<SingleCorrectio
         try {
             key.open(encryptedBytes).getOrThrow()
         } catch (e: Exception) {
-            CryptoHelper.decrypt(encryptedBytes, CryptoHelper.getLegacyFallbackKey()).getOrThrow()
+            PasswordKey(CryptoHelper.getLegacyFallbackKey()).open(encryptedBytes).getOrThrow()
         }
     val jsonStr = decryptedBytes.decodeToString()
     return try {

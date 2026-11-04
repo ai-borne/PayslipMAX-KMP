@@ -1,5 +1,6 @@
 package com.payslipmax.pdfparser.part2.data
 
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.PayslipBackupService
@@ -20,7 +21,7 @@ class Part2SkipPerKindTest {
     private val device = FakePayslipDao()
     private val service = PayslipBackupService(device, Dispatchers.Unconfined, part2Backup = Part2Backup(device.part2))
 
-    private suspend fun restore(bytes: ByteArray) = service.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+    private suspend fun restore(bytes: ByteArray) = service.restore(bytes, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
     @Test
     fun oneUnreadableEntryAmongThreeIsCountedAsAnEntry() =
@@ -61,7 +62,7 @@ class Part2SkipPerKindTest {
             repeat(Part2Limits.ENTRIES_MAX - 1) { device.part2.upsertEntry(Part2EntryEntity("held-$it", byteArrayOf(1))) }
             val bytes = archive(entries = listOf(entryRow(SyntheticBank.entry("n1")), entryRow(SyntheticBank.entry("n2"))))
 
-            val report = service.restore(bytes, BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+            val report = service.restore(bytes, Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
 
             assertEquals(SkippedRows(part2Entries = 1), report.skipped)
         }

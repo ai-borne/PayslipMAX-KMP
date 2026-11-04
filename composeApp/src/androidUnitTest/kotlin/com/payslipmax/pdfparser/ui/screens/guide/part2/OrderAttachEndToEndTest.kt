@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens.guide.part2
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.part2.data.Part2Backup
 import com.payslipmax.pdfparser.part2.data.RoomPart2Repository
@@ -97,9 +98,9 @@ class OrderAttachEndToEndTest {
             assertEquals(2 to 0, assertIs<AttachOutcome.Saved>(outcome).let { it.saved to it.notSaved })
             assertEquals(emptyList(), cache.walkTopDown().filter { it.isFile }.toList(), "no plaintext page is left anywhere under the app cache")
 
-            val archive = PayslipBackupService(source, Dispatchers.Unconfined, part2Backup = Part2Backup(source.part2)).export("pw-for-test").getOrThrow()
+            val archive = PayslipBackupService(source, Dispatchers.Unconfined, part2Backup = Part2Backup(source.part2)).export(Secret.of("pw-for-test")).getOrThrow()
             val target = FakePayslipDao()
-            PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = Part2Backup(target.part2)).restore(archive, "pw-for-test", RestoreMode.REPLACE).getOrThrow()
+            PayslipBackupService(target, Dispatchers.Unconfined, part2Backup = Part2Backup(target.part2)).restore(archive, Secret.of("pw-for-test"), RestoreMode.REPLACE).getOrThrow()
             val second = RoomPart2Repository(dao = target.part2, dispatcher = Dispatchers.Unconfined)
 
             val order = assertNotNull(second.order("order-new"))

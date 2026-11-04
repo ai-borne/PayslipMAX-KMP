@@ -21,6 +21,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,8 +47,8 @@ const val BackupLastBackupTag = "backup_last_backup"
 
 /** What the sheet can ask for. Back Up and Restore answer with why they cannot start (no password, nothing to back up), or null. */
 internal class BackupSheetActions(
-    val onBackUp: suspend (password: String) -> BackupStatus?,
-    val onRestore: (password: String) -> BackupStatus?,
+    val onBackUp: suspend (password: TypedPassword) -> BackupStatus?,
+    val onRestore: (password: TypedPassword) -> BackupStatus?,
     val onCommit: (RestoreMode) -> Unit,
     val onCancel: () -> Unit,
 )
@@ -90,6 +91,7 @@ internal fun BackupRestoreSheetBody(
     contents: BackupContents?,
     canBackup: Boolean,
     actions: BackupSheetActions,
+    fields: BackupPasswordFields = remember { BackupPasswordFields() },
 ) {
     Column(
         modifier =
@@ -108,7 +110,7 @@ internal fun BackupRestoreSheetBody(
             RestoreChoice(state.preview, contents, actions.onCommit, actions.onCancel)
         } else {
             BackupStateNotice(state)
-            BackupForm(live = state.formIsLive(), canBackup = canBackup, actions = actions)
+            BackupForm(live = state.formIsLive(), canBackup = canBackup, actions = actions, fields = fields)
         }
     }
 }
@@ -128,27 +130,31 @@ private fun BackupStateNotice(state: BackupUiState) {
     }
 }
 
-/** Both passwords live here in `remember` state (never saved), are handed to each call and dropped with the sheet (14a section 4). */
+/**
+ * Both passwords live here in `remember` state (never saved). Each call gets its own copy, taken as it starts; the entries are wiped when the
+ * form leaves the screen, whether the sheet closes or a preview replaces it (14a section 4, P10).
+ */
 @Composable
 private fun BackupForm(
     live: Boolean,
     canBackup: Boolean,
     actions: BackupSheetActions,
+    fields: BackupPasswordFields,
 ) {
-    var password by remember { mutableStateOf("") }
-    var confirm by remember { mutableStateOf("") }
+    DisposableEffect(fields) { onDispose { fields.wipe() } }
     var refusal by remember { mutableStateOf<BackupStatus?>(null) }
     val scope = rememberCoroutineScope()
-    val mismatch = confirm.isNotEmpty() && !passwordsMatch(password, confirm)
-    BackupRestorePasswordField(password = password, onPasswordChange = { password = it }, enabled = live)
-    BackupConfirmPasswordField(confirm = confirm, mismatch = mismatch, onConfirmChange = { confirm = it }, enabled = live)
+    val matches = fields.password.sameAs(fields.confirm)
+    val mismatch = !fields.confirm.isEmpty && !matches
+    BackupRestorePasswordField(password = fields.password.field, enabled = live)
+    BackupConfirmPasswordField(confirm = fields.confirm.field, mismatch = mismatch, enabled = live)
     BackupCloudNote(visible = isPart2Enabled())
     BackupButtonsRow(
         canBackup = canBackup,
-        backUpEnabled = live && (!canBackup || passwordsMatch(password, confirm)),
+        backUpEnabled = live && (!canBackup || matches),
         restoreEnabled = live,
-        onBackUp = { scope.launch { refusal = actions.onBackUp(password) } },
-        onRestore = { refusal = actions.onRestore(password) },
+        onBackUp = { scope.launch { refusal = actions.onBackUp(fields.password) } },
+        onRestore = { refusal = actions.onRestore(fields.password) },
     )
     refusal?.let { StatusMessage(status = it) }
 }

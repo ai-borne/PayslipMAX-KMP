@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.domain
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.EncryptedPayslipEntity
 import com.payslipmax.pdfparser.database.toDomain
 import com.payslipmax.pdfparser.database.toHex
@@ -42,11 +43,11 @@ class FieldSourceToleranceTest {
     private fun sealedRow(
         payload: String,
         key: String,
-    ) = PayslipBackupRow("08/2024", 2024, 8, "August", CryptoHelper.encrypt(payload.encodeToByteArray(), key).getOrThrow().toHex())
+    ) = PayslipBackupRow("08/2024", 2024, 8, "August", CryptoHelper.encrypt(payload.encodeToByteArray(), Secret.of(key)).getOrThrow().toHex())
 
     private suspend fun restore(vararg rows: PayslipBackupRow): Pair<FakePayslipDao, SkippedRows> {
         val dao = FakePayslipDao()
-        val report = PayslipBackupService(dao, Dispatchers.Unconfined).restore(backupBytes(PortableBackup(2, rows.toList(), emptyList(), null)), BACKUP_PASSWORD, RestoreMode.REPLACE)
+        val report = PayslipBackupService(dao, Dispatchers.Unconfined).restore(backupBytes(PortableBackup(2, rows.toList(), emptyList(), null)), Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE)
         assertTrue(report.isSuccess, "${report.exceptionOrNull()?.let { it::class.simpleName }}")
         return dao to report.getOrThrow().skipped
     }

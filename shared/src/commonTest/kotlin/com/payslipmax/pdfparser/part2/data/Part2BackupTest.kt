@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.repository.BACKUP_PASSWORD
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PortableBackup
@@ -57,7 +58,7 @@ class Part2BackupTest {
         runTest {
             assertEquals(6, PortableBackup.CURRENT_VERSION)
 
-            assertEquals(6, decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow()).version)
+            assertEquals(6, decodeArchive(sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()).version)
         }
 
     @Test
@@ -67,14 +68,14 @@ class Part2BackupTest {
             source.putOrder(SyntheticBank.order("o1"))
             source.putPage("p1", "o1", 0, SyntheticBank.jpeg(2000))
 
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             val opened = openBackup(archive)
             val backup = opened.backup
             assertTrue(pageArchiveMetaOfV6(archive) != null, "an archive with pages is a page archive")
 
             val d = Base64.decode(backup.part2Entries.single().data)
             assertEquals(entry("d1", 10), Part2EntryEntity("d1", d).toEntry(opened.key))
-            assertTrue(CryptoHelper.decrypt(d, deviceKey).isFailure, "an archive must not depend on one device's key")
+            assertTrue(CryptoHelper.decrypt(d, Secret.of(deviceKey)).isFailure, "an archive must not depend on one device's key")
             assertEquals("o1", Part2OrderEntity("o1", Base64.decode(backup.part2Orders.single().data)).toOrder(opened.key).id)
             assertFalse(backup.part2Entries.single().data.contains(SyntheticBank.MARKER_NOTE))
         }
@@ -87,19 +88,19 @@ class Part2BackupTest {
             source.putOrder(SyntheticBank.order("o1", updatedAt = 20))
             source.putPage("p1", "o1", 0, jpeg)
             source.putPage("p2", "o1", 1, SyntheticBank.jpeg(300))
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             target.putEntry(entry("device-only", 99))
             target.putOrder(SyntheticBank.order("device-order"))
             target.putPage("device-page", "device-order", 0, SyntheticBank.jpeg(100))
 
-            targetService.restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            targetService.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(setOf("d1"), targetEntries().keys, "REPLACE leaves an exact copy of the backup")
             assertEquals(setOf("o1"), targetOrders().keys)
             assertEquals(listOf("p1", "p2"), target.part2.allPageRefs().map { it.id })
             val page = target.part2.page("p1")!!
             assertContentEquals(jpeg, page.openPage(deviceKey))
-            assertTrue(CryptoHelper.decrypt(page.ciphertext, BACKUP_PASSWORD).isFailure, "stored under the device key, not the backup password")
+            assertTrue(CryptoHelper.decrypt(page.ciphertext, Secret.of(BACKUP_PASSWORD)).isFailure, "stored under the device key, not the backup password")
         }
 
     @Test
@@ -111,7 +112,7 @@ class Part2BackupTest {
             source.putEntry(entry("backup-only", 1))
             source.putOrder(SyntheticBank.order("o-newer", orderNo = "FROM-BACKUP", updatedAt = 90))
             source.putOrder(SyntheticBank.order("o-device-newer", orderNo = "FROM-BACKUP", updatedAt = 10))
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             target.putEntry(entry("backup-newer", 20))
             target.putEntry(entry("device-newer", 80))
             target.putEntry(entry("tie", 50).copy(createdAt = 7))
@@ -119,7 +120,7 @@ class Part2BackupTest {
             target.putOrder(SyntheticBank.order("o-newer", orderNo = "ON-DEVICE", updatedAt = 20))
             target.putOrder(SyntheticBank.order("o-device-newer", orderNo = "ON-DEVICE", updatedAt = 80))
 
-            targetService.restore(archive, BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+            targetService.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
 
             val entries = targetEntries()
             assertEquals(90L, entries.getValue("backup-newer").updatedAt)
@@ -137,12 +138,12 @@ class Part2BackupTest {
             source.putEntry(entry("d1", 5))
             source.putOrder(SyntheticBank.order("o1"))
             source.putPage("p1", "o1", 0, SyntheticBank.jpeg(400))
-            val archive = sourceService.export(BACKUP_PASSWORD).getOrThrow()
+            val archive = sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
             target.part2.upsertEntry(Part2EntryEntity("d1", byteArrayOf(1, 2, 3)))
             target.putOrder(SyntheticBank.order("o1"))
             target.putPage("p1", "o1", 0, SyntheticBank.jpeg(400))
 
-            targetService.restore(archive, BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+            targetService.restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
 
             assertEquals(5L, targetEntries().getValue("d1").updatedAt)
             assertEquals(1, target.part2.allPageRefs().size, "a page is immutable: the same id is not stored twice")
@@ -165,7 +166,7 @@ class Part2BackupTest {
             RestoreMode.entries.forEach { mode ->
                 target.putEntry(entry("device-$mode", 1))
 
-                targetService.restore(bytes, BACKUP_PASSWORD, mode).getOrThrow()
+                targetService.restore(bytes, Secret.of(BACKUP_PASSWORD), mode).getOrThrow()
 
                 assertTrue(target.getPayslipByDate("08/2024") != null, "the payslips must not be lost to a bad row ($mode)")
                 val ids = targetEntries().keys
@@ -185,7 +186,7 @@ class Part2BackupTest {
             val orders = listOf(Part2RowBackup("junk-order", "!!"), orderRow(SyntheticBank.order("o1")))
             val bytes = archive(entries = rows, orders = orders, pages = listOf(pageRow("p1", "ghost", 0, SyntheticBank.jpeg(50))))
 
-            val report = targetService.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            val report = targetService.restore(bytes, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertEquals(SkippedRows(part2Entries = 2, part2Orders = 1, part2Pages = 1), report.skipped, "two unreadable entries, one unreadable order and one page whose order is nowhere")
         }
@@ -195,7 +196,7 @@ class Part2BackupTest {
         runTest {
             val bytes = archive(entries = listOf(entryRow(entry("good", 1))), orders = listOf(orderRow(SyntheticBank.order("o1"))))
 
-            assertEquals(SkippedRows.NONE, targetService.restore(bytes, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow().skipped)
+            assertEquals(SkippedRows.NONE, targetService.restore(bytes, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow().skipped)
         }
 
     @Test
@@ -203,7 +204,7 @@ class Part2BackupTest {
         runTest {
             val v4 = backupBytes(PortableBackup(4, listOf(goodRow("08/2024")), emptyList(), null))
 
-            assertEquals(SkippedRows.NONE, targetService.restore(v4, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow().skipped)
+            assertEquals(SkippedRows.NONE, targetService.restore(v4, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow().skipped)
         }
 
     @Test
@@ -213,7 +214,7 @@ class Part2BackupTest {
             source.part2.upsertEntry(Part2EntryEntity("junk", byteArrayOf(9)))
             source.part2.upsertEntry(entry("d3", 1).toEntity("a key this device no longer has"))
 
-            val backup = decodeArchive(sourceService.export(BACKUP_PASSWORD).getOrThrow())
+            val backup = decodeArchive(sourceService.export(Secret.of(BACKUP_PASSWORD)).getOrThrow())
 
             assertEquals(listOf("d1"), backup.part2Entries.map { it.id })
         }
@@ -223,10 +224,10 @@ class Part2BackupTest {
         runTest {
             val v4 = backupBytes(PortableBackup(4, listOf(goodRow("08/2024")), emptyList(), null))
             target.putEntry(entry("d1", 1))
-            targetService.restore(v4, BACKUP_PASSWORD, RestoreMode.MERGE).getOrThrow()
+            targetService.restore(v4, Secret.of(BACKUP_PASSWORD), RestoreMode.MERGE).getOrThrow()
             assertEquals(setOf("d1"), targetEntries().keys)
 
-            targetService.restore(v4, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+            targetService.restore(v4, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
             assertTrue(target.part2.allEntries().isEmpty(), "REPLACE means exactly this archive, as for Guide notes")
             assertEquals(listOf("08/2024"), target.getAllPayslipsOnce())
@@ -238,7 +239,7 @@ class Part2BackupTest {
             target.putEntry(entry("d1", 1))
             val v6 = archive(entries = listOf(entryRow(entry("from-v6", 1))), version = PortableBackup.CURRENT_VERSION + 1)
 
-            val error = targetService.restore(v6, BACKUP_PASSWORD, RestoreMode.REPLACE).exceptionOrNull()
+            val error = targetService.restore(v6, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).exceptionOrNull()
 
             assertTrue(error is UnsupportedBackupVersionException, "expected a version refusal but was $error")
             assertEquals(setOf("d1"), targetEntries().keys)

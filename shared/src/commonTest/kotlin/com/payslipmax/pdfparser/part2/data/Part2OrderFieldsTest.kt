@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.part2.data
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import com.payslipmax.pdfparser.testing.SyntheticBank
 import kotlin.test.Test
@@ -27,7 +28,7 @@ class Part2OrderFieldsTest {
     @Test
     fun anOrderRowSavedBeforeTheFieldsExistedStillOpensWithBothUnset() {
         val before = """{"v":1,"id":"order-1","orderNo":"N/1","date":{"y":2026,"m":2,"d":3},"createdAt":1,"updatedAt":2}"""
-        val read = Part2OrderEntity("order-1", CryptoHelper.encrypt(before.encodeToByteArray(), key).getOrThrow()).toOrder(key)
+        val read = Part2OrderEntity("order-1", CryptoHelper.encrypt(before.encodeToByteArray(), Secret.of(key)).getOrThrow()).toOrder(key)
 
         assertNull(read.expectedCount)
         assertNull(read.lastOrderNo)

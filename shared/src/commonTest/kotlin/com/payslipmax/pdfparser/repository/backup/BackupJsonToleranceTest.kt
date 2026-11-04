@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.repository.backup
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.EncryptedPayslipEntity
 import com.payslipmax.pdfparser.database.GuideNoteEntity
 import com.payslipmax.pdfparser.database.PayslipCorrectionEntity
@@ -57,7 +58,7 @@ class BackupJsonToleranceTest {
     private fun sealed(
         json: JsonElement,
         key: String,
-    ): String = CryptoHelper.encrypt(json.toString().encodeToByteArray(), key).getOrThrow().toHex()
+    ): String = CryptoHelper.encrypt(json.toString().encodeToByteArray(), Secret.of(key)).getOrThrow().toHex()
 
     /** A payslip payload as a later version might write it: a key this one does not know, at the top and inside a nested object. */
     private fun laterPayslip(dateStr: String): JsonObject {
@@ -67,8 +68,8 @@ class BackupJsonToleranceTest {
 
     private suspend fun restoreDocument(document: JsonObject): FakePayslipDao {
         val dao = FakePayslipDao()
-        val archive = CryptoHelper.encrypt(document.toString().encodeToByteArray(), BACKUP_PASSWORD).getOrThrow()
-        PayslipBackupService(dao, Dispatchers.Unconfined).restore(archive, BACKUP_PASSWORD).getOrThrow()
+        val archive = CryptoHelper.encrypt(document.toString().encodeToByteArray(), Secret.of(BACKUP_PASSWORD)).getOrThrow()
+        PayslipBackupService(dao, Dispatchers.Unconfined).restore(archive, Secret.of(BACKUP_PASSWORD)).getOrThrow()
         return dao
     }
 

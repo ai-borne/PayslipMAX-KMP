@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.repository
 import com.payslipmax.pdfparser.crypto.CryptoHelper
 import com.payslipmax.pdfparser.crypto.DecryptionFailedException
 import com.payslipmax.pdfparser.crypto.SealKey
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.database.AppSettingsEntity
 import com.payslipmax.pdfparser.database.BackupRows
@@ -54,7 +55,7 @@ internal class BackupRestoreEngine(
 ) {
     suspend fun prepare(
         source: BackupSource,
-        password: String,
+        password: Secret,
         progress: BackupProgress,
     ): PreparedRestore {
         progress.update(BackupStage.OPENING, 0, 0)
@@ -166,7 +167,11 @@ internal class BackupRestoreEngine(
                 payslipDao.replaceWithBackup(counted, (prepared.backup.settings ?: SettingsBackup()).applyTo(device))
             }
             // A MERGE re-runs Part II against the device (room left, newer rows), so its Part II counts replace the preview's.
-            RestoreReport(if (part2 != null) prepared.preview.skipped.withPart2(part2) else prepared.preview.skipped)
+            RestoreReport(
+                skipped = if (part2 != null) prepared.preview.skipped.withPart2(part2) else prepared.preview.skipped,
+                // What the transaction wrote: the pages are counted as it consumed them, the other kinds are the rows it was given.
+                restored = RestoredRows(counted.payslips.size, counted.part2Entries.size, counted.part2Orders.size, written),
+            )
         }
 
     /** An unreadable note is skipped and counted (see [GuideNoteBackup]); only a MERGE needs the notes the device holds now. */
