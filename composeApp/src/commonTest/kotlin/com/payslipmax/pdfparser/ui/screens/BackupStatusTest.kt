@@ -5,11 +5,13 @@ import com.payslipmax.pdfparser.repository.BackupStorageFullException
 import com.payslipmax.pdfparser.repository.BackupVerifyException
 import com.payslipmax.pdfparser.ui.backup.BackupSummary
 import com.payslipmax.pdfparser.ui.backup.BackupUiState
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.BackupRestoreStrings
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -22,10 +24,12 @@ class BackupStatusTest {
 
     private fun failed(error: Throwable) = assertNotNull(BackupUiState.Failed.of(error).status())
 
+    /** Rewritten in P8: a finished backup is drawn by `BackupResultCard` from `backupDoneStatus`; `status()` speaks for failures only. */
     @Test
     fun aBackupThatWorkedReadsAsItAlwaysDid() {
-        val status = assertNotNull(BackupUiState.Done(BackupSummary.BackedUp(contents.payslips, contents.part2Items)).status())
-        assertEquals(backupDoneStatus(contents), status)
+        assertNull(BackupUiState.Done(BackupSummary.BackedUp(contents.payslips, contents.part2Items)).status())
+        val status = backupDoneStatus(contents)
+        assertEquals("3 ${AppStrings.labelPayslipsBackedUp}", status.message)
         assertTrue(status.isSuccess)
     }
 

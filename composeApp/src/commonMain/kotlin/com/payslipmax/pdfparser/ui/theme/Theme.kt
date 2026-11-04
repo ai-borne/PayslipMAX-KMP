@@ -69,6 +69,18 @@ object GuideColors {
     private const val HALF_LUMINANCE = 0.5f
 }
 
+/** Backup & Restore sheet colours with no Material role: a light and a dark value, picked by the active scheme. */
+object BackupColors {
+    private val SkippedLight = Color(0xFFB45309)
+    private val SkippedDark = Color(0xFFFBBF24)
+
+    /** The rows a restore leaves out: the warning amber ([AppColors.Warning]'s family), dark enough to read on a light surface. */
+    @Composable
+    fun skipped(): Color = if (MaterialTheme.colorScheme.surface.luminance() < HALF_LUMINANCE) SkippedDark else SkippedLight
+
+    private const val HALF_LUMINANCE = 0.5f
+}
+
 object AppDimensions {
     val PaddingSmall = 8.dp
     val PaddingMedium = 16.dp

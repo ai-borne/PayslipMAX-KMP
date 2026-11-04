@@ -9,17 +9,14 @@ import com.payslipmax.pdfparser.repository.BackupVerifyException
 import com.payslipmax.pdfparser.repository.NotABackupException
 import com.payslipmax.pdfparser.repository.SkippedRows
 import com.payslipmax.pdfparser.repository.UnsupportedBackupVersionException
-import com.payslipmax.pdfparser.ui.backup.BackupSummary
 import com.payslipmax.pdfparser.ui.backup.BackupUiState
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.BackupRestoreStrings
-import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 import kotlinx.serialization.SerializationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 /**
  * WHY: a wrong password or a file that is not a backup is the commonest restore failure, and the officer used to read the crypto library's own
@@ -29,8 +26,6 @@ import kotlin.test.assertTrue
  * one step the view model takes) to the line the sheet shows; the intent is unchanged.
  */
 class RestoreStatusTest {
-    private fun restored(skipped: SkippedRows) = assertNotNull(BackupUiState.Done(BackupSummary.Restored(skipped)).status())
-
     private fun failed(error: Throwable?) = assertNotNull(BackupUiState.Failed.of(error).status())
 
     /** Messages a real failure can carry: a path, a PAN-like id, the crypto library's words, kotlinx quoting a payslip. */
@@ -44,18 +39,17 @@ class RestoreStatusTest {
 
     @Test
     fun aCleanRestoreReadsAsItAlwaysDid() {
-        val status = restored(SkippedRows.NONE)
-        assertEquals(AppStrings.statusRestoreComplete, status.message)
-        assertTrue(status.isSuccess)
+        assertEquals(listOf(AppStrings.statusRestoreComplete), restoreResultLines(SkippedRows.NONE))
     }
 
+    /** Rewritten in P8: the per-kind wording moved from `OrdersBankStrings.restoreSkipped` (one number) into `BackupRestoreStrings`; same intent. */
     @Test
-    fun aRestoreThatLeftRowsOutSaysHowManyAndIsNotShownAsAPlainSuccess() {
-        // One line counts every kind: a payslip left out is as lost as a page.
-        val status = restored(SkippedRows(payslips = 1, part2Pages = 2))
-        assertEquals("${AppStrings.statusRestoreComplete} ${OrdersBankStrings.restoreSkipped(3)}", status.message)
-        assertFalse(status.isSuccess, "lost rows must be noticed, so the line takes the warning colour")
-        assertEquals("1 item could not be restored.", OrdersBankStrings.restoreSkipped(1))
+    fun aRestoreThatLeftRowsOutSaysWhichAndIsNotShownAsAPlainSuccess() {
+        // Every kind is named: a payslip left out is as lost as a page.
+        val skipped = SkippedRows(payslips = 1, part2Pages = 2)
+        val lines = restoreResultLines(skipped)
+        assertEquals(listOf(AppStrings.statusRestoreComplete, BackupRestoreStrings.restoredSkipped(skipped)), lines)
+        assertEquals("Not restored: 1 payslip, 2 pages.", lines.last())
     }
 
     @Test

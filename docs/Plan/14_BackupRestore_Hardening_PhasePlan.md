@@ -197,3 +197,22 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
   - R8 triggered and green with no new rule. The owner's 4 local backups restore with 0 skips. Security review: no findings.
   - **Not finished: the password as a `CharArray`** (P3 item 3). It is still a `String` down to the KDF; see 14a P10 "From P7" item 1.
   - Pending: 14a P10 "From P7".
+- 2026-11-04 — **P8 done**: the Backup & Restore sheet (U1).
+  - Components, each at most 50 lines in its own file: `BackupProgressPanel` (a spinner while the total is 0, then a bar and the stage's fixed line),
+    `RestorePreviewCard` (what the backup holds, the date from v6 files only, format, skipped rows in the warning colour), `BackupResultCard`
+    (counts only), `RestoreChoice` (Replace, Merge or one Restore button, and Cancel), and the Back Up confirm-password field. The body scrolls.
+  - Rules in one place (`BackupSheetRules.kt`): no close while working (D12), a password mismatch stops Back Up, Replace with skipped rows asks a
+    second time and names the loss (D11).
+  - D10: the preview always shows. P7's empty-device auto-Replace is gone (`BackupSheetHostUiTest`, with the real view model).
+  - The per-kind skipped wording moved into `BackupRestoreStrings`; `OrdersBankStrings.restoreSkipped` is deleted. A `BackupColors.skipped()` token
+    in `Theme.kt` has a light and a dark value. All new copy is on the owner's D13 list (14a P10 "From P8" item 5).
+  - No ViewModel change and no new type, so R8 was not triggered.
+  - Password: owner chose its own `CharArray` phase after P8 and before P9 (14a P10 "From P8" item 1).
+  - RED first: 30 of 35 new tests failed on assertions (the other 5 were control cases and two source scans). 19 mutations; the first run
+    missed 3 (two dismiss guards covering each other, and the result card's colour), so one guard was dropped and a colour assertion added. Every
+    remaining mutation is now caught (the dropped guard's own mutation no longer exists).
+  - The Pixel walk found the sheet could sit lower than its content; the body now scrolls (RED first). Root cause not isolated.
+  - Gate green: shared 1791 (release 1791, 1 pre-existing skip), iOS shared 1646, composeApp 1473 -> 1509 / 1447 -> 1483, iOS composeApp 889 -> 898.
+    The owner's 4 local backups restore with 0 skips. Security review: no findings.
+  - Pending: 14a P10 "From P8".
+

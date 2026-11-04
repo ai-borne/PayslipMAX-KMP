@@ -14,9 +14,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
+import com.payslipmax.pdfparser.ui.theme.BackupRestoreStrings
 
 @Composable
-fun BackupRestoreHeader(onCloseClick: () -> Unit) {
+fun BackupRestoreHeader() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
@@ -44,27 +45,69 @@ fun BackupRestorePasswordField(
     password: String,
     onPasswordChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
-    var passwordVisible by remember { mutableStateOf(false) }
-    var fieldValue by remember(password) {
-        mutableStateOf(TextFieldValue(text = password, selection = TextRange(password.length)))
-    }
+    BackupSecretField(
+        value = password,
+        onValueChange = onPasswordChange,
+        label = AppStrings.settingsBackupPasswordLabel,
+        hint = AppStrings.settingsBackupPasswordHint,
+        placeholder = AppStrings.settingsBackupPasswordPlaceholder,
+        modifier = modifier.testTag(BackupRestorePasswordFieldTestTag),
+        enabled = enabled,
+    )
+}
+
+/** Back Up asks for the password twice (14a P8): a mismatch shows [BackupRestoreStrings.passwordMismatch] and the sheet disables Back Up. */
+@Composable
+internal fun BackupConfirmPasswordField(
+    confirm: String,
+    mismatch: Boolean,
+    onConfirmChange: (String) -> Unit,
+    enabled: Boolean,
+) {
+    BackupSecretField(
+        value = confirm,
+        onValueChange = onConfirmChange,
+        label = BackupRestoreStrings.confirmLabel,
+        hint = if (mismatch) BackupRestoreStrings.passwordMismatch else BackupRestoreStrings.confirmHint,
+        isError = mismatch,
+        modifier = Modifier.testTag(BackupConfirmFieldTag),
+        enabled = enabled,
+    )
+}
+
+/**
+ * One masked field for both password entries. The text is pinned to the end on every change (the iOS cursor race, see the test beside it).
+ * The value lives in the caller's `remember` state, never `rememberSaveable`, so the password is not saved with the screen's state.
+ */
+@Composable
+private fun BackupSecretField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    hint: String,
+    modifier: Modifier,
+    enabled: Boolean,
+    placeholder: String? = null,
+    isError: Boolean = false,
+) {
+    var visible by remember { mutableStateOf(false) }
+    var fieldValue by remember(value) { mutableStateOf(TextFieldValue(text = value, selection = TextRange(value.length))) }
     OutlinedTextField(
         value = fieldValue,
         onValueChange = {
             fieldValue = it.copy(selection = TextRange(it.text.length))
-            onPasswordChange(it.text)
+            onValueChange(it.text)
         },
-        label = { Text(AppStrings.settingsBackupPasswordLabel) },
-        placeholder = { Text(AppStrings.settingsBackupPasswordPlaceholder) },
-        supportingText = { Text(AppStrings.settingsBackupPasswordHint) },
-        modifier = modifier.fillMaxWidth().testTag(BackupRestorePasswordFieldTestTag),
+        label = { Text(label) },
+        placeholder = placeholder?.let { { Text(it) } },
+        supportingText = { Text(hint) },
+        isError = isError,
+        enabled = enabled,
+        modifier = modifier.fillMaxWidth(),
         singleLine = true,
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
-            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                Text(if (passwordVisible) "👁️" else "🙈")
-            }
-        },
+        visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = { IconButton(onClick = { visible = !visible }, enabled = enabled) { Text(if (visible) "👁️" else "🙈") } },
     )
 }

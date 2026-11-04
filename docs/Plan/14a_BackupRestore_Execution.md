@@ -262,10 +262,10 @@ From P4 (2026-11-03):
    and a restore could only skip such a page (its order is missing or unreadable on the device). Nothing restorable is lost; the page stays
    on the device. Recorded because it changes what an export contains.
 2. **The preview counts what the backup holds, not what a MERGE will change.** On MERGE a same-date payslip overwrites the device's copy
-   and a page the device already holds is left alone, so "adds N" would be wrong. **P8 copy** must say "This backup holds …" (D13 review).
+   and a page the device already holds is left alone, so "adds N" would be wrong. **P8 copy** must say "This backup holds …" (D13 review). **Closed in P8**: `BackupSheetStringsTest.thePreviewSaysWhatTheBackupHoldsAndNeverThatItAdds`; the copy is on the D13 list below.
 3. **Progress while a preview checks pages is one stage without a page count** (`OPENING` → `READING` rows; the page check inside
    `Part2Backup.restore` reports nothing). Export (`PAGES`), verify (`VERIFYING`) and commit (`PAGES`) count pages. It is part of the
-   2.97 s a whole 250 MB restore takes on the iOS simulator (P3), so the P8 spinner covers it. **Owner: P8** decides if it needs a bar.
+   2.97 s a whole 250 MB restore takes on the iOS simulator (P3), so the P8 spinner covers it. **Owner: P8** decides if it needs a bar. **Closed in P8**: the spinner covers it, no bar (decision taken, see "From P8" item 6).
 4. **A `PreparedRestore` holds the archive key and the open file until it is closed.** P7's ViewModel keeps it while the preview is on
    screen, so every exit (Cancel, sheet dismissed, `onCleared`, a failed commit) must close it; P7's tests must cover each one.
    **Closed in P7** (`BackupRestoreViewModelExitsTest`, 5 exits; `PreparedRestoreCloseTest`): see "From P7" item 2.
@@ -285,12 +285,12 @@ From P5 (2026-11-03):
    (`BackupSkipCountTest`'s WHY, `BackupRestoreEngine.requireARowThatOpened`). Frozen-branch drafts don't count: they are never restored.
    Consequence: a file in which every payslip fails but one note opens is **not** damaged. It restores the note and reports the
    payslips as skipped. On REPLACE that empties the device's payslips, so **P8 must show D11's second confirm**, which names what will
-   be lost, before such a commit.
+   be lost, before such a commit. **Closed in P8**: `BackupPreviewUiTest.replaceWithSkippedRowsAsksAgainAndNamesWhatWillBeLost` and `mergeWithSkippedRowsDoesNotAskAgain`.
 4. **Decision taken: frozen-branch drafts count as `part2Entries`**, the kind that replaced them (13b item 3: "`entries` in place of
    `drafts`").
 5. **The status line's copy.** `restoreStatus` shows `SkippedRows.total` through `OrdersBankStrings.restoreSkipped` ("N items could not be
    restored."), which now counts payslips, corrections and notes too, yet still lives in the Part II strings object. **Owner: P8** decides
-   the per-kind wording and moves it into `BackupRestoreStrings` (D13 copy review).
+   the per-kind wording and moves it into `BackupRestoreStrings` (D13 copy review). **Closed in P8**: `BackupRestoreStrings.skippedList` names every kind and `OrdersBankStrings.restoreSkipped` is deleted (`BackupSheetStringsTest.skippedRowsAreNamedPerKindAndZeroKindsAreLeftOut`, `RestoreStatusTest.aRestoreThatLeftRowsOutSaysWhichAndIsNotShownAsAPlainSuccess`).
 6. **Pre-existing log, now reached once per skipped payslip.** When a payslip will not open, `EncryptedPayslipEntity.toDomain` calls
    `Logger.w` with the row's month and the crypto exception's message. That call is a Crashlytics breadcrumb. Before P5 the first such row
    ended the restore; now every skipped row reaches it. The month is plaintext row metadata (it travels in clear beside the ciphertext), not
@@ -391,12 +391,13 @@ From P7 (2026-11-04):
      waiting unseen when the officer closed the sheet mid-restore.
    - A preview stays open across the app lock, until the officer answers it after unlocking. Test: `BackupSheetArrivalTest`.
    - P8 may keep or replace this when the sheet becomes non-dismissable while working.
+   - **Closed in P8**: kept unchanged (owner, 2026-11-04). The sheet cannot be closed while working, so it cannot be left unseen; on the Pixel a preview sheet reopened by itself after a dark-mode recreation.
 7. **For P8 (today's behaviour kept, as asked):**
    - A restore onto an empty device still commits Replace straight from the preview, with no question. D10 makes the preview always
-     show; that is P8's card.
+     show; that is P8's card. **Closed in P8**: `BackupSheetHostUiTest.aRestoreOnAnEmptyDeviceWaitsAtThePreviewForTheOfficersAnswer`.
    - A commit shows `Working(RESTORE, PAGES, 0, 0)` until the first page is written, because `BackupStage` has no stage for writing
-     rows.
-   - There is no progress panel yet, and the buttons stay enabled while working; the view model ignores the second tap.
+     rows. **Closed in P8**: while the total is 0 the line is the generic "Restoring…" (decision taken: no new stage, no ViewModel change).
+   - There is no progress panel yet, and the buttons stay enabled while working; the view model ignores the second tap. **Closed in P8**: `BackupSheetUiTest.workingDisablesBothButtonsAndTheFieldsSoNothingStartsTwice`.
 8. **Process death: no new code, both were already true.**
    - Mid-restore, nothing is applied: the commit is one Room transaction (`PayslipDao.replaceWithBackup`/`mergeBackup`), and pages are
      consumed inside it.
@@ -415,3 +416,24 @@ From P7 (2026-11-04):
 10. **Not driven end to end: the opt-out on a failed commit.** The fake DAO is not transactional, so a failed REPLACE has already
     cleared the settings row before telemetry reads it (Room rolls it back). Every path reports through the same `BackupTelemetry`,
     whose opt-out is tested on the backup and prepare paths.
+
+From P8 (2026-11-04):
+1. **SCHEDULED, NOT BUILT: the password as a `CharArray` (owner chose option B, 2026-11-04).** Its own phase, after P8 and before P9, so the release gate runs once on the final crypto API. It closes P7 item 1 and P3 item 3.
+   - Spike first: does Compose Multiplatform 1.10.3's `BasicSecureTextField` (`TextFieldState`) let the typed text be wiped, or does it copy into a `String`? The result decides how strong the field claim can be. The crypto path goes ahead either way.
+   - Then: one `Secret` wrapper in `shared` (a `CharArray` with `use { }` and zeroing); `PayslipBackupService.backUp/prepare`, `openArchive`, `ArchiveKey.derive`, `CryptoHelper` and `PasswordKey` take it and zero it in `finally`. Android's `PBEKeySpec` already takes `char[]`; iOS passes UTF-8 bytes it zeroes. No wire change, goldens untouched.
+   - Tests: a buffer is all zero after use (a mutation per call site), goldens still restore, R8 and the iOS timing test (`ParserUtilsIosPerfTest` pattern).
+   - P8 prepared for it: both password entries go through one private composable (`BackupSecretField`), so the field type changes in one place.
+2. **Owner to confirm: Compose puts the raw typed password in `SemanticsProperties.InputText` on every text field.** It is an `AccessibilityKey` documented as "e.g. a real password". Android's accessibility delegate never reads it (0 references in `ui-android-1.10.5`), and the old password field did the same, so P8 adds no exposure. `BackupSheetUiTest.noPasswordReachesTheTextTheScreenReaderReads` pins what the app controls (`Text` and `EditableText` masked; mutation 17). Closing `InputText` needs a different field: item 1's spike.
+3. **Owner to decide: the result card has no restored counts.** 14 U1 says "Restored 48 payslips, 12 orders, 120 pages". `RestoreReport` and `BackupSummary.Restored` carry only what was skipped, so the card says "Restore Complete!" and, only if rows were left out, which kinds. The preview just before it shows what the backup held, and a backup's card shows its counts. Adding restored counts needs `RestoreReport` (shared) and `BackupSummary.Restored` to carry them, tests first: a ViewModel change, so not done in a UI-only phase.
+4. **NOT WALKED on the Pixel (D17 scope, nothing hidden).**
+   - Walked on the owner's device with a debug build installed over the old one: Idle (with and without a last-backup line), confirm-password mismatch (Back Up disabled) and match, Back Up (spinner and the three stage lines, then the counts-only result), Restore through the system picker, the preview (date, format, counts), Merge (generic progress line, then "Restore Complete!"), Back and a swipe-down while working (the sheet stayed), a dark-mode recreation with a preview open (the sheet reopened), and the next-start sweep of a picked file.
+   - Not walked: the D11 second confirm (no skipped-row file exists synthetically; covered by compose tests), the determinate bar (this vault holds 1 page, so the stage with a total is too brief to catch; covered by `workingShowsASpinnerUntilTheTotalIsKnownThenABarAndTheStageLine`), a Failed state on the device, and a 250 MB vault (14a P8's walk asked for one; the owner's vault is 8.5 MB). Colour in both schemes is proven by `skippedRowsAreNamedInTheWarningColourInDarkAndLight`, not by eye: some screenshots came out black (the capture was blank during the picker transition), so only the layout was checked on the device, by element bounds.
+   - The iPhone walk waits for the all-features walk (D14).
+5. **D13: new copy for the owner's review** (all in `BackupRestoreStrings`, plain and factual): "Confirm Password" · "Re-enter the password to Back Up. Not needed to Restore." · "The passwords don't match." · "No backup has been made on this device yet." · "Last backup: DD/MM/YYYY" · "This backup holds 34 payslips, 5 Orders Bank entries, 1 order, 1 page." · "Made on DD/MM/YYYY" · "Backup format 6" · "Could not be read, so not restored: 2 payslips, 1 note." · "Restore" (empty device) · "Cancel" · "Replace and lose these rows?" · "Replace deletes everything on this device and restores only what could be read. This will be lost: …" · "Replace anyway" · "Go back" · "Not restored: …" · progress: "Securing your backup…", "Encrypting your data…", "Checking the backup file…", "Backing up…", "Backing up pages: 3 of 9", "Opening the backup…", "Checking the backup…", "Restoring…", "Restoring pages: 34 of 120". The existing Replace/Merge question and its two buttons are unchanged.
+6. **Decisions taken, owner to confirm.**
+   - The preview's page check shows the spinner, no bar (closes P4 item 3).
+   - D12 is one guard on `onDismissRequest` (Back and the scrim) plus `confirmValueChange` (swipe). No `BackHandler` (deprecated) and no `shouldDismissOnBackPress`: with both guards in, each hid a missing other (mutations 3 and 4 survived), so one was dropped and mutation 3 is now caught. The sheet state is what iOS swipe-down goes through too, but only Android was driven.
+   - An empty device shows one "Restore" button, which does Replace (nothing to merge with, and Replace brings the settings along as P7 did). A device with data asks Replace or Merge. Replace asks a second time whenever rows were skipped (D11), on an empty device too.
+   - The password and confirm entries live in the form, so they are dropped when a preview replaces it: after Cancel the officer types them again.
+7. **Found in the walk and fixed: the sheet could sit lower than its content.** After the activity was recreated in dark mode the sheet's top was lower than the content needed, and Cancel was below the screen (header at y 1569, buttons at 2347-2400 on a 2424 px screen). The body now scrolls (`BackupPreviewUiTest.aSheetWithLittleRoomStillReachesCancelByScrolling`, RED first), which also covers large fonts and small phones. **Not isolated:** why the sheet's anchors did not follow the content after the recreation. After the fix the same flow fit (buttons at 2115, Cancel at 2262). If it comes back, look at `rememberBackupSheetState` and the sheet's anchor update.
+8. **Tests rewritten, none deleted:** `RestoreStatusTest` (2 cases) now reads `restoreResultLines` and the per-kind wording; `BackupStatusTest.aBackupThatWorkedReadsAsItAlwaysDid` now pins `status()` as null for a finished backup, whose line comes from `backupDoneStatus` via `BackupResultCard`. `BackupGuardTest` and `BackupSheetArrivalTest` were not touched.

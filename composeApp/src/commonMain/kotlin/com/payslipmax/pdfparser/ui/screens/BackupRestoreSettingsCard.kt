@@ -2,23 +2,15 @@
 
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.payslipmax.pdfparser.repository.RestoreMode
 import com.payslipmax.pdfparser.ui.backup.BackupRestoreViewModel
 import com.payslipmax.pdfparser.ui.backup.BackupUiState
-import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
-import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.BackupCloudNote
-import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
-import kotlinx.coroutines.launch
 
 /**
- * The Backup & Restore row and its sheet. The sheet draws the [backup] view model's state (docs/Plan/14a P7); P8 replaces its body with the
- * progress panel, preview card and result card. A backup or restore runs on while Settings is off the screen (the app lock), so when the
+ * The Backup & Restore row and its sheet. The sheet draws the [backup] view model's state (docs/Plan/14a P7); The body is [BackupRestoreSheetBody] (progress panel, preview card, result card). A backup or restore runs on while Settings is off the screen (the app lock), so when the
  * view model has something the officer has not seen, the sheet opens again by itself ([opensTheSheet]).
  */
 @Composable
@@ -46,7 +38,7 @@ fun BackupRestoreSettingsCard(
     )
 
     if (showSheet) {
-        BackupRestoreBottomSheet(
+        BackupRestoreSheetHost(
             state = state,
             backup = backup,
             contents = contents,
@@ -64,8 +56,9 @@ fun BackupRestoreSettingsCard(
     }
 }
 
+/** Wires the sheet to the view model. The sheet cannot be dismissed while a backup or restore is working (D12). */
 @Composable
-private fun BackupRestoreBottomSheet(
+private fun BackupRestoreSheetHost(
     state: BackupUiState,
     backup: BackupRestoreViewModel,
     contents: suspend () -> BackupContents,
@@ -74,118 +67,18 @@ private fun BackupRestoreBottomSheet(
     onPickBackup: (onResult: (String) -> Unit) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        containerColor = MaterialTheme.colorScheme.surface,
-    ) {
-        BackupRestoreSheetContent(
-            state = state,
-            backup = backup,
-            contents = contents,
-            canBackup = canBackup,
-            onLockedBackup = onLockedBackup,
-            onPickBackup = onPickBackup,
-            onCloseClick = onDismissRequest,
+    val mayHide = state.sheetMayHide()
+    val onDevice by produceState<BackupContents?>(null, state is BackupUiState.Preview) { value = if (state is BackupUiState.Preview) contents() else null }
+    val actions =
+        BackupSheetActions(
+            onBackUp = { password -> runBackup(canBackup, password, contents(), onLockedBackup, backup) },
+            onRestore = { password -> runRestorePick(password, onPickBackup) { picked -> backup.restore(picked, password) } },
+            onCommit = backup::commit,
+            onCancel = backup::cancel,
         )
+    BackupRestoreSheet(sheetState = rememberBackupSheetState(mayHide), mayHide = mayHide, onDismiss = onDismissRequest) {
+        BackupRestoreSheetBody(state = state, contents = onDevice, canBackup = canBackup, actions = actions)
     }
-}
-
-/** The password lives only here, in the open sheet: it is handed to each call and never kept by the view model or saved (14a section 4). */
-@Composable
-private fun BackupRestoreSheetContent(
-    state: BackupUiState,
-    backup: BackupRestoreViewModel,
-    contents: suspend () -> BackupContents,
-    canBackup: Boolean,
-    onLockedBackup: () -> Unit,
-    onPickBackup: (onResult: (String) -> Unit) -> Unit,
-    onCloseClick: () -> Unit,
-) {
-    var password by remember { mutableStateOf("") }
-    var refusal by remember { mutableStateOf<BackupStatus?>(null) }
-    val scope = rememberCoroutineScope()
-
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(horizontal = AppDimensions.PaddingMedium)
-                .padding(bottom = AppDimensions.PaddingLarge),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-    ) {
-        BackupRestoreHeader(onCloseClick = onCloseClick)
-        BackupRestorePasswordField(password = password, onPasswordChange = { password = it })
-        BackupCloudNote(visible = isPart2Enabled())
-        BackupRestoreButtonsRow(
-            canBackup = canBackup,
-            onBackUp = { scope.launch { refusal = runBackup(canBackup, password, contents(), onLockedBackup, backup) } },
-            onRestore = { refusal = runRestorePick(password, onPickBackup) { picked -> backup.restore(picked, password) } },
-        )
-        (refusal ?: state.status())?.let { StatusMessage(status = it) }
-    }
-
-    RestorePreviewPrompt(state = state, contents = contents, backup = backup)
-}
-
-/**
- * Today's question over the preview, until P8's preview card (D10): a device that holds nothing restores at once (Replace); otherwise
- * Replace or Merge is asked, and saying neither cancels the preview (the picked file is deleted).
- */
-@Composable
-private fun RestorePreviewPrompt(
-    state: BackupUiState,
-    contents: suspend () -> BackupContents,
-    backup: BackupRestoreViewModel,
-) {
-    val preview = state as? BackupUiState.Preview ?: return
-    var title by remember(preview) { mutableStateOf<String?>(null) }
-    LaunchedEffect(preview) {
-        val here = contents()
-        if (restoreNeedsChoice(here)) title = restoreChoiceTitle(here) else backup.commit(RestoreMode.REPLACE)
-    }
-    RestoreCollisionDialog(
-        title = title ?: return,
-        onReplace = { backup.commit(RestoreMode.REPLACE) },
-        onMerge = { backup.commit(RestoreMode.MERGE) },
-        onDismiss = backup::cancel,
-    )
-}
-
-@Composable
-private fun BackupRestoreButtonsRow(
-    canBackup: Boolean,
-    onBackUp: () -> Unit,
-    onRestore: () -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-    ) {
-        Button(onClick = onBackUp, modifier = Modifier.weight(1f)) {
-            Text(if (canBackup) AppStrings.settingsBackupSaveBtn else "🔒 ${AppStrings.settingsBackupSaveBtn}")
-        }
-        OutlinedButton(onClick = onRestore, modifier = Modifier.weight(1f)) {
-            Text(AppStrings.settingsBackupRestoreBtn)
-        }
-    }
-}
-
-@Composable
-private fun RestoreCollisionDialog(
-    title: String,
-    onReplace: () -> Unit,
-    onMerge: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = { Text(AppStrings.settingsRestoreExistingMsg) },
-        confirmButton = { TextButton(onClick = onReplace) { Text(AppStrings.settingsRestoreReplaceBtn) } },
-        dismissButton = { TextButton(onClick = onMerge) { Text(AppStrings.settingsRestoreMergeBtn) } },
-    )
 }
 
 /** Starts the gated backup, or says why it cannot start (no password, nothing to back up); null once it has started. */

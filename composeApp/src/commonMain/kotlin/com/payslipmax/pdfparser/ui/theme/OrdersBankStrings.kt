@@ -103,8 +103,6 @@ object OrdersBankStrings {
 
     fun backedUpItems(count: Int): String = if (count == 1) "1 Orders Bank item backed up" else "$count Orders Bank items backed up"
 
-    fun restoreSkipped(count: Int): String = if (count == 1) "1 item could not be restored." else "$count items could not be restored."
-
     // The entry form.
     const val newTitle = "Add to the Orders Bank"
     const val editTitle = "Your entry"
