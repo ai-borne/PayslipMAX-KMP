@@ -243,7 +243,8 @@ From P3 (2026-11-03):
 3. **The password can't be wiped.** It reaches the crypto as a Kotlin `String`, which is immutable on both platforms: Android now clears the
    `PBEKeySpec` and its char copy, the derived archive key is zeroed on close, but the `String` itself stays until it is collected, and iOS
    hands it to `CCKeyDerivationPBKDF` as a C string. Closing this needs a `CharArray` password from the sheet down (P7/P8 own the password
-   field). **Owner: P7.**
+   field). **Owner: P7.** **Not finished in P7**: the password left the Settings screen's state for the sheet's and is held nowhere
+   else, but it is still a `String` down to the KDF; see "From P7" item 1.
 4. **Iterations above 5,000,000** (`BackupEnvelope.ITERATIONS_MAX`) need a new envelope version, since this release refuses them as damaged.
    Recorded so a later increase is planned as a format change, not a constant edit.
 5. **A headerless file whose document says version 6** is read through the legacy path and accepted (the per-row password seals still
@@ -267,6 +268,7 @@ From P4 (2026-11-03):
    2.97 s a whole 250 MB restore takes on the iOS simulator (P3), so the P8 spinner covers it. **Owner: P8** decides if it needs a bar.
 4. **A `PreparedRestore` holds the archive key and the open file until it is closed.** P7's ViewModel keeps it while the preview is on
    screen, so every exit (Cancel, sheet dismissed, `onCleared`, a failed commit) must close it; P7's tests must cover each one.
+   **Closed in P7** (`BackupRestoreViewModelExitsTest`, 5 exits; `PreparedRestoreCloseTest`): see "From P7" item 2.
 
 From P5 (2026-11-03):
 1. **Not built, as asked: PDFs, letters, deleted-letter records and settings can't be skipped one at a time.** They are plain JSON inside
@@ -328,6 +330,8 @@ From P6 (2026-11-03):
 4. **Decisions taken, owner to confirm:** WRITE_FAILED covers any `BackupFileException`, a picked file that cannot be read included (its line
    says "written or read"); a restore reports `backup_format_version` = "unknown" unless the file is newer ("newer"), because a failed
    restore has no preview (P7 can pass the preview's version on a failed commit); every failure, a wrong password included, sends one non-fatal.
+   **P7**: a failed commit now sends the preview's format
+   (`BackupRestoreViewModelTelemetryTest.aCommitThatFailsSendsThePreviewsFormatAndACancelledPreviewSendsNothing`).
 5. **New copy for the D13 review (P8 walk):** `BackupRestoreStrings.notABackup`, `newerVersion`, `damaged`, `tooLarge`, `storageFull`,
    `verifyFailed`, `writeFailed`, `failedGeneric` (the generic line now reads for both operations). `AppStrings.statusRestoreFailed` and
    `statusBackupFailed` were deleted (nothing used them after F7).
@@ -340,8 +344,74 @@ From P6 (2026-11-03):
    its scope (6 sites). A sweep of the rest, or a `Logger.e` that drops the message, is a separate change. **Owner to decide.**
 8. **Found, not changed: `seedMockData` and `clearAllData` put `e.message` into `uiState.error`** (`PayslipViewModelExtensions.kt`,
    not backup code; seeding is a developer tool). **Owner to decide**; nearest phase P7 (it moves the backup code out of that file).
+   **Closed in P7**: fixed lines from `AppStrings` (`PayslipViewModelDataErrorTest`); see "From P7" item 3 for the one left.
 9. **Wiring change:** the `FreeSpaceReader` and `FreeSpaceGate` bindings moved from `part2Module` to `sharedModule` (one reader for the
    Bank and the backup). Proved by `AppKoinModulesTest.theBackupChecksTheGraphsFreeSpaceAndReportsThroughTelemetryThatHonoursTheOptOut`;
    `sharedModule` singles are shared across tests in a JVM, so that test class now binds the shared `GuideKoinTestDao` leaves.
 10. **Logger** now resolves its `CrashReporter` from Koin when Koin is started (the same platform reporter in the app), so a test can read
     what a log site sends without a mutable seam (the tech-debt audit refuses a stateful singleton).
+
+From P7 (2026-11-04):
+1. **NOT FINISHED: P10 "From P3" item 3, the password as a `CharArray`.** Decision taken in P7: take it as far as it goes without
+   changing the crypto.
+   - Done: the password now lives only in the open sheet's `remember` state. It left the Settings screen's state, so closing the
+     sheet drops it. It is passed per call, and never held in a `BackupUiState`, a view-model field or saved state
+     (`BackupUiStateLeakTest`).
+   - Not done: it is still a `String` from the text field to the KDF, for three reasons.
+     (a) Compose's `OutlinedTextField` holds its text as a `String` (and in its own buffers), so a `CharArray` made from it would copy a
+     value that cannot be wiped.
+     (b) `PayslipBackupService.backUp`/`prepare`, `openArchive`, `ArchiveKey.derive` and `CryptoHelper` all take a `String`.
+     (c) A format 1–5 file keeps the password in `PasswordKey` while its preview is on screen. The key is closed afterwards but not wiped.
+   - Closing it needs a password field whose text sits in a buffer that can be cleared (the Compose version used has none), and a
+     `CharArray` path down through the crypto on both platforms. Android's `PBEKeySpec` takes a `CharArray`; iOS needs UTF-8 bytes it
+     can zero.
+   - **Owner to decide**: accept the `String`'s lifetime as a known limit (the KDF runs on the device, and the `String` is collected after
+     the sheet closes), or schedule it as its own phase (a crypto API change, with the goldens unchanged).
+2. **P10 "From P4" item 4 closed.** Every exit from a preview closes the `PreparedRestore` (the key is wiped) and deletes the picked
+   file: Cancel, the sheet dismissed, `onCleared`, a commit that works and one that fails (`BackupRestoreViewModelExitsTest`, 5 tests).
+   - Cancel, dismiss and `onCleared` release at once, on the main thread. The waiting restore then unwinds and closes its file
+     (`FakeBackupFiles.openReads`).
+   - New: `PreparedRestore.isClosed`, true only once the key is wiped (`PreparedRestoreCloseTest`: a closed restore opens no page).
+   - A restore cut short by `onCleared` is not reported as a failure.
+3. **P10 "From P6" item 8 closed.** `seedMockData` and `clearAllData` now put a fixed line (`AppStrings.errorSeedDataFailed` /
+   `errorClearDataFailed`) into `uiState.error` (`PayslipViewModelDataErrorTest`).
+   - Found, not changed (same kind, outside P7's scope): `PayslipViewModel.observePayslips` still writes
+     `"Failed to load payslips: ${e.message}"` into `uiState.error`. Nothing on screen reads `uiState.error` today (grep), so no
+     message reached the screen. **Owner to decide** (one line, same pattern).
+4. **P10 "From P6" item 4: a failed commit now reports the preview's format** (`BackupRestoreViewModelTelemetryTest`). A failed
+   prepare still reports "unknown", since no preview exists yet. A backup reports `PortableBackup.CURRENT_VERSION`.
+5. **Decision taken, owner to confirm: one view model per process (a Koin `single`)**, like `GuideViewModel` and the Bank.
+   - Why: it must outlive the sheet, Settings leaving the screen and the app lock (the lock takes Settings out of composition).
+   - Consequence: nothing in the app ever clears it, so `onCleared` runs only where an owner clears it (a `ViewModelStore`, as in the
+     tests). In the app the process ends instead, which takes the key with it, and the picked file is swept at the next start.
+   - Proof: `AppKoinModulesTest.theBackupViewModelIsOneInstanceSoWorkOutlivesTheSheetAndTheLock`.
+6. **Decision taken, owner to confirm: the sheet opens again by itself.** When Settings is shown and the view model holds anything but
+   Idle (work running, a preview or a result), the sheet reopens; it also reopens when the state changes while the officer has closed it.
+   - Why: this is how "the result shows after unlock" is met, and it stops a preview (which holds the picked file and the key) from
+     waiting unseen when the officer closed the sheet mid-restore.
+   - A preview stays open across the app lock, until the officer answers it after unlocking. Test: `BackupSheetArrivalTest`.
+   - P8 may keep or replace this when the sheet becomes non-dismissable while working.
+7. **For P8 (today's behaviour kept, as asked):**
+   - A restore onto an empty device still commits Replace straight from the preview, with no question. D10 makes the preview always
+     show; that is P8's card.
+   - A commit shows `Working(RESTORE, PAGES, 0, 0)` until the first page is written, because `BackupStage` has no stage for writing
+     rows.
+   - There is no progress panel yet, and the buttons stay enabled while working; the view model ignores the second tap.
+8. **Process death: no new code, both were already true.**
+   - Mid-restore, nothing is applied: the commit is one Room transaction (`PayslipDao.replaceWithBackup`/`mergeBackup`), and pages are
+     consumed inside it.
+   - Mid-backup, the partial file is deleted at the next start: `BackupFiles.sweep()` runs in `PayslipApplication.onCreate` (Android)
+     and in `ensureKoin` (iOS) (`BackupFilesSecurityContractTest.theSweepRunsAtLaunchOnBothPlatforms`).
+9. **Tests rewritten, none deleted.**
+   - Five PayslipViewModel test files moved to the new view model with their WHY (`git mv`): Files, RoundTrip, RestoreReport,
+     Part2ItemCount and Telemetry.
+   - Two cases whose path no longer exists (a view model built without backup wiring) now test their nearest intent: "a pick the view
+     model refuses keeps no file", and "a device without Bank items answers 0".
+   - Also rewritten:
+     - `RestoreStatusTest` and `BackupStatusTest`: the status is now read from the state.
+     - `BackupFilesSecurityContractTest`: it scans the new view model files.
+     - `AppKoinModulesTest`: two tests read the new view model.
+     - `SettingsDeveloperToolsUiTest`: its test Koin binds the backup view model.
+10. **Not driven end to end: the opt-out on a failed commit.** The fake DAO is not transactional, so a failed REPLACE has already
+    cleared the settings row before telemetry reads it (Room rolls it back). Every path reports through the same `BackupTelemetry`,
+    whose opt-out is tested on the backup and prepare paths.

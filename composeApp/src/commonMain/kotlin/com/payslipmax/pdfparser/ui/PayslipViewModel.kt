@@ -27,9 +27,6 @@ import kotlinx.coroutines.launch
 class PayslipViewModel(
     internal val repository: PayslipRepository,
     internal val financialIntelligenceRepository: com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository? = null,
-    internal val backupService: com.payslipmax.pdfparser.repository.PayslipBackupService? = null,
-    internal val backupFiles: com.payslipmax.pdfparser.repository.BackupFiles? = null,
-    internal val backupTelemetry: com.payslipmax.pdfparser.repository.BackupTelemetry? = null,
     internal val gemmaBaseModelInstaller: GemmaBaseModelInstaller = provideGemmaBaseModelInstaller(),
     internal val gemmaModelStorage: GemmaModelStorageManager = GemmaModelStorageManager(),
     internal val gemmaInstallTelemetry: GemmaInstallTelemetry = provideGemmaInstallTelemetry(),

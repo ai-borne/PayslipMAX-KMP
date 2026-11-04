@@ -8,27 +8,31 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.payslipmax.pdfparser.repository.RestoreMode
-import com.payslipmax.pdfparser.repository.RestoreReport
+import com.payslipmax.pdfparser.ui.backup.BackupRestoreViewModel
+import com.payslipmax.pdfparser.ui.backup.BackupUiState
 import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
 import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.BackupCloudNote
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.launch
 
+/**
+ * The Backup & Restore row and its sheet. The sheet draws the [backup] view model's state (docs/Plan/14a P7); P8 replaces its body with the
+ * progress panel, preview card and result card. A backup or restore runs on while Settings is off the screen (the app lock), so when the
+ * view model has something the officer has not seen, the sheet opens again by itself ([opensTheSheet]).
+ */
 @Composable
 fun BackupRestoreSettingsCard(
-    password: String,
-    onPasswordChange: (String) -> Unit,
+    backup: BackupRestoreViewModel,
     contents: suspend () -> BackupContents,
-    onExportBackup: (String, (Result<Unit>) -> Unit) -> Unit,
-    onRestore: (String, String, RestoreMode, (Result<RestoreReport>) -> Unit) -> Unit,
     onPickBackup: (onResult: (String) -> Unit) -> Unit,
-    onDiscardPicked: (String) -> Unit,
     canBackup: Boolean,
     onUpgradePrompt: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val state by backup.state.collectAsState()
     var showSheet by remember { mutableStateOf(false) }
+    LaunchedEffect(state::class) { if (state.opensTheSheet()) showSheet = true }
     // Restore is free (D3), so the sheet always opens; backup *creation* inside it is gated.
     val subtitleText = if (canBackup) AppStrings.settingsStatusConfigured else AppStrings.settingsStatusBackupPremium
 
@@ -43,34 +47,31 @@ fun BackupRestoreSettingsCard(
 
     if (showSheet) {
         BackupRestoreBottomSheet(
-            password = password,
-            onPasswordChange = onPasswordChange,
+            state = state,
+            backup = backup,
             contents = contents,
             canBackup = canBackup,
             onLockedBackup = {
                 showSheet = false
                 onUpgradePrompt()
             },
-            onExportBackup = onExportBackup,
-            onRestore = onRestore,
             onPickBackup = onPickBackup,
-            onDiscardPicked = onDiscardPicked,
-            onDismissRequest = { showSheet = false },
+            onDismissRequest = {
+                showSheet = false
+                backup.dismiss()
+            },
         )
     }
 }
 
 @Composable
 private fun BackupRestoreBottomSheet(
-    password: String,
-    onPasswordChange: (String) -> Unit,
+    state: BackupUiState,
+    backup: BackupRestoreViewModel,
     contents: suspend () -> BackupContents,
     canBackup: Boolean,
     onLockedBackup: () -> Unit,
-    onExportBackup: (String, (Result<Unit>) -> Unit) -> Unit,
-    onRestore: (String, String, RestoreMode, (Result<RestoreReport>) -> Unit) -> Unit,
     onPickBackup: (onResult: (String) -> Unit) -> Unit,
-    onDiscardPicked: (String) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     ModalBottomSheet(
@@ -78,35 +79,30 @@ private fun BackupRestoreBottomSheet(
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
         BackupRestoreSheetContent(
-            password = password,
-            onPasswordChange = onPasswordChange,
+            state = state,
+            backup = backup,
             contents = contents,
             canBackup = canBackup,
             onLockedBackup = onLockedBackup,
-            onExportBackup = onExportBackup,
-            onRestore = onRestore,
             onPickBackup = onPickBackup,
-            onDiscardPicked = onDiscardPicked,
             onCloseClick = onDismissRequest,
         )
     }
 }
 
+/** The password lives only here, in the open sheet: it is handed to each call and never kept by the view model or saved (14a section 4). */
 @Composable
 private fun BackupRestoreSheetContent(
-    password: String,
-    onPasswordChange: (String) -> Unit,
+    state: BackupUiState,
+    backup: BackupRestoreViewModel,
     contents: suspend () -> BackupContents,
     canBackup: Boolean,
     onLockedBackup: () -> Unit,
-    onExportBackup: (String, (Result<Unit>) -> Unit) -> Unit,
-    onRestore: (String, String, RestoreMode, (Result<RestoreReport>) -> Unit) -> Unit,
     onPickBackup: (onResult: (String) -> Unit) -> Unit,
-    onDiscardPicked: (String) -> Unit,
     onCloseClick: () -> Unit,
 ) {
-    var status by remember { mutableStateOf<BackupStatus?>(null) }
-    var pendingRestore by remember { mutableStateOf<PendingRestore?>(null) }
+    var password by remember { mutableStateOf("") }
+    var refusal by remember { mutableStateOf<BackupStatus?>(null) }
     val scope = rememberCoroutineScope()
 
     Column(
@@ -120,55 +116,40 @@ private fun BackupRestoreSheetContent(
         verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
     ) {
         BackupRestoreHeader(onCloseClick = onCloseClick)
-        BackupRestorePasswordField(password = password, onPasswordChange = onPasswordChange)
+        BackupRestorePasswordField(password = password, onPasswordChange = { password = it })
         BackupCloudNote(visible = isPart2Enabled())
         BackupRestoreButtonsRow(
             canBackup = canBackup,
-            onBackUp = { scope.launch { runBackup(canBackup, password, contents(), onLockedBackup, onExportBackup) { status = it } } },
-            onRestore = {
-                runRestorePick(password, onPickBackup, { status = it }) { picked ->
-                    scope.launch { restoreOrAsk(picked, password, contents(), onRestore, { status = it }) { pendingRestore = it } }
-                }
-            },
+            onBackUp = { scope.launch { refusal = runBackup(canBackup, password, contents(), onLockedBackup, backup) } },
+            onRestore = { refusal = runRestorePick(password, onPickBackup) { picked -> backup.restore(picked, password) } },
         )
-        status?.let { StatusMessage(status = it) }
+        (refusal ?: state.status())?.let { StatusMessage(status = it) }
     }
 
-    RestoreCollisionPrompt(
-        pendingRestore = pendingRestore,
-        password = password,
-        onRestore = onRestore,
-        onStatus = { status = it },
-        onDiscard = onDiscardPicked,
-        onClear = { pendingRestore = null },
-    )
+    RestorePreviewPrompt(state = state, contents = contents, backup = backup)
 }
 
+/**
+ * Today's question over the preview, until P8's preview card (D10): a device that holds nothing restores at once (Replace); otherwise
+ * Replace or Merge is asked, and saying neither cancels the preview (the picked file is deleted).
+ */
 @Composable
-private fun RestoreCollisionPrompt(
-    pendingRestore: PendingRestore?,
-    password: String,
-    onRestore: (String, String, RestoreMode, (Result<RestoreReport>) -> Unit) -> Unit,
-    onStatus: (BackupStatus) -> Unit,
-    onDiscard: (String) -> Unit,
-    onClear: () -> Unit,
+private fun RestorePreviewPrompt(
+    state: BackupUiState,
+    contents: suspend () -> BackupContents,
+    backup: BackupRestoreViewModel,
 ) {
-    val pending = pendingRestore ?: return
-    val picked = pending.picked
+    val preview = state as? BackupUiState.Preview ?: return
+    var title by remember(preview) { mutableStateOf<String?>(null) }
+    LaunchedEffect(preview) {
+        val here = contents()
+        if (restoreNeedsChoice(here)) title = restoreChoiceTitle(here) else backup.commit(RestoreMode.REPLACE)
+    }
     RestoreCollisionDialog(
-        title = pending.title,
-        onReplace = {
-            onRestore(picked, password, RestoreMode.REPLACE) { onStatus(restoreStatus(it)) }
-            onClear()
-        },
-        onMerge = {
-            onRestore(picked, password, RestoreMode.MERGE) { onStatus(restoreStatus(it)) }
-            onClear()
-        },
-        onDismiss = {
-            onDiscard(picked)
-            onClear()
-        },
+        title = title ?: return,
+        onReplace = { backup.commit(RestoreMode.REPLACE) },
+        onMerge = { backup.commit(RestoreMode.MERGE) },
+        onDismiss = backup::cancel,
     )
 }
 
@@ -207,55 +188,30 @@ private fun RestoreCollisionDialog(
     )
 }
 
-/** Runs the gated backup export; the view model writes the encrypted file and opens the OS share sheet on it. */
+/** Starts the gated backup, or says why it cannot start (no password, nothing to back up); null once it has started. */
 private fun runBackup(
     canBackup: Boolean,
     password: String,
     contents: BackupContents,
     onLockedBackup: () -> Unit,
-    onExportBackup: (String, (Result<Unit>) -> Unit) -> Unit,
-    onStatus: (BackupStatus) -> Unit,
-) {
-    if (!canBackup) return onLockedBackup()
-    backupRefusal(password, contents)?.let { return onStatus(it) }
-    onExportBackup(password) { result -> onStatus(backupStatus(result, contents)) }
-}
-
-/** The picked backup file waiting for the officer's Replace or Merge answer, and the question to ask. */
-private class PendingRestore(
-    val picked: String,
-    val title: String,
-)
-
-/** Restores straight away on a fresh device; when something is already there, hands the picked file on with the question to ask. */
-private fun restoreOrAsk(
-    picked: String,
-    password: String,
-    here: BackupContents,
-    onRestore: (String, String, RestoreMode, (Result<RestoreReport>) -> Unit) -> Unit,
-    onStatus: (BackupStatus) -> Unit,
-    onAsk: (PendingRestore) -> Unit,
-) {
-    if (restoreNeedsChoice(here)) {
-        onAsk(PendingRestore(picked, restoreChoiceTitle(here)))
-    } else {
-        onRestore(picked, password, RestoreMode.REPLACE) { onStatus(restoreStatus(it)) }
+    backup: BackupRestoreViewModel,
+): BackupStatus? {
+    if (!canBackup) {
+        onLockedBackup()
+        return null
     }
+    backupRefusal(password, contents)?.let { return it }
+    backup.backUp(password, contents)
+    return null
 }
 
-/**
- * Restore is free but still password-gated. Opens the file picker and hands the picked file on; the caller then restores straight
- * away (fresh device) or asks Replace or Merge when payslips or Part II items already exist ([restoreNeedsChoice]).
- */
+/** Restore is free but still password-gated: opens the file picker and hands the picked file on, or says why it cannot (no password). */
 private fun runRestorePick(
     password: String,
     onPickBackup: (onResult: (String) -> Unit) -> Unit,
-    onStatus: (BackupStatus) -> Unit,
     onPicked: (String) -> Unit,
-) {
-    if (password.isBlank()) {
-        onStatus(BackupStatus(AppStrings.settingsBackupPasswordRequired, isSuccess = false))
-        return
-    }
+): BackupStatus? {
+    if (password.isBlank()) return BackupStatus(AppStrings.settingsBackupPasswordRequired, isSuccess = false)
     onPickBackup(onPicked)
+    return null
 }

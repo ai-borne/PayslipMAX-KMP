@@ -170,3 +170,30 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
     iOS composeApp 857 → 864. R8 triggered and green with no new rule. The owner's 4 local backups restore with 0 skips.
   - Pixel: debug build installed over the existing one; launches with no FATAL. Security review: no findings.
   - Pending: 14a P10 "From P6".
+- 2026-11-04 — **P7 done**: `BackupRestoreViewModel` and state (MVVM).
+  - New `ui/backup/BackupRestoreViewModel` (Koin `single`, one per process), with `StateFlow<BackupUiState>`: `Idle(lastBackupAt)` ·
+    `Working(op, stage, done, total)` · `Preview(RestorePreview)` · `Done(BackupSummary)` · `Failed(BackupFailure)`. States hold counts,
+    enums and codes only.
+  - Progress goes through `ProgressThrottle`: about 10 updates a second, and the latest is always delivered.
+  - Restore runs pick → prepare → Preview → commit (Replace or Merge) or cancel. The `PreparedRestore` is held only while the preview is
+    up. Every exit closes it (the key is wiped) and deletes the picked file: Cancel, dismiss, `onCleared`, and a commit that works or
+    fails. New `PreparedRestore.isClosed` shows it.
+  - A tap while Working or Preview is ignored, and an ignored pick is deleted. A cancelled preview never overwrites the operation after it.
+  - The password is passed per call and kept in no state or field. It moved from Settings' state into the sheet's.
+  - Telemetry: one code-only report per failure. A failed commit carries the preview's format, a backup carries `CURRENT_VERSION`, and
+    nothing is sent with the opt-out on or for a cancel.
+  - The backup extensions on `PayslipViewModel` are deleted, along with its `backupService`/`backupFiles`/`backupTelemetry` (grep:
+    no user left). `seedMockData`/`clearAllData` show fixed lines (P10 "From P6" item 8).
+  - The sheet keeps today's look (P8 builds the new one) and reopens by itself on anything but Idle, so a result shows after unlock.
+  - RED first: 33 new or rewritten tests failed on assertions (3 Koin resolves). Five PayslipViewModel test files were moved with their
+    WHY, and none deleted.
+  - 28/28 mutations caught. The first run missed one (the view model bypassing the throttle); a test with the service on its own
+    dispatcher closed it.
+  - Gate green:
+    - shared 1790 → 1791 (release 1791, 1 pre-existing skip);
+    - iOS shared 1645 → 1646;
+    - composeApp 1448 → 1473 / 1422 → 1447;
+    - iOS composeApp 864 → 889.
+  - R8 triggered and green with no new rule. The owner's 4 local backups restore with 0 skips. Security review: no findings.
+  - **Not finished: the password as a `CharArray`** (P3 item 3). It is still a `String` down to the KDF; see 14a P10 "From P7" item 1.
+  - Pending: 14a P10 "From P7".

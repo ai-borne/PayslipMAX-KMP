@@ -1,9 +1,8 @@
 package com.payslipmax.pdfparser.ui
 
 import androidx.lifecycle.viewModelScope
-import com.payslipmax.pdfparser.repository.BackupOp
-import com.payslipmax.pdfparser.repository.PortableBackup
 import com.payslipmax.pdfparser.ui.screens.sanitizeProfileInputs
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -15,7 +14,7 @@ fun PayslipViewModel.seedMockData() {
             repository.seedMockData()
             _uiState.update { it.copy(isLoading = false) }
         } catch (e: Exception) {
-            _uiState.update { it.copy(isLoading = false, error = "Failed to seed data: ${e.message}") }
+            _uiState.update { it.copy(isLoading = false, error = AppStrings.errorSeedDataFailed) }
         }
     }
 }
@@ -27,64 +26,9 @@ fun PayslipViewModel.clearAllData() {
             repository.clearAll()
             _uiState.update { it.copy(isLoading = false, payslips = emptyList()) }
         } catch (e: Exception) {
-            _uiState.update { it.copy(isLoading = false, error = "Failed to clear data: ${e.message}") }
+            _uiState.update { it.copy(isLoading = false, error = AppStrings.errorClearDataFailed) }
         }
     }
-}
-
-private fun backupUnavailable() = IllegalStateException("Backup service is not available")
-
-/** Writes the encrypted archive to the private backup file, reads it back, and only then opens the share sheet on it; no bytes of it are held here. */
-fun PayslipViewModel.exportBackup(
-    password: String,
-    onComplete: (Result<Unit>) -> Unit,
-) {
-    viewModelScope.launch {
-        _uiState.update { it.copy(isLoading = true) }
-        val service = backupService
-        val files = backupFiles
-        val result =
-            if (service == null || files == null) {
-                Result.failure(backupUnavailable())
-            } else {
-                service.backUp(files, password).mapCatching { files.share().getOrThrow() }
-            }
-        result.onFailure { backupTelemetry?.report(BackupOp.BACKUP, it, PortableBackup.CURRENT_VERSION) }
-        _uiState.update { it.copy(isLoading = false) }
-        onComplete(result)
-    }
-}
-
-/** The Orders Bank entries and orders a backup would carry, read when Back Up or Restore is pressed; 0 where backup is not wired in. */
-suspend fun PayslipViewModel.part2ItemCount(): Int = backupService?.part2ItemCount() ?: 0
-
-/** Restores from the picked backup file, read by range, and deletes the file afterwards whatever the result. */
-fun PayslipViewModel.importBackup(
-    pickedFile: String,
-    password: String,
-    mode: com.payslipmax.pdfparser.repository.RestoreMode,
-    onComplete: (Result<com.payslipmax.pdfparser.repository.RestoreReport>) -> Unit,
-) {
-    viewModelScope.launch {
-        _uiState.update { it.copy(isLoading = true) }
-        val service = backupService
-        val files = backupFiles
-        val result =
-            if (service == null || files == null) {
-                files?.discard(pickedFile)
-                Result.failure(backupUnavailable())
-            } else {
-                files.read(pickedFile) { source -> service.restore(source, password, mode) }
-            }
-        result.onFailure { backupTelemetry?.report(BackupOp.RESTORE, it) }
-        _uiState.update { it.copy(isLoading = false) }
-        onComplete(result)
-    }
-}
-
-/** Throws a picked backup away unrestored (the officer dismissed the Replace or Merge question). */
-fun PayslipViewModel.discardPickedBackup(pickedFile: String) {
-    backupFiles?.discard(pickedFile)
 }
 
 fun PayslipViewModel.setPremiumEnabled(enabled: Boolean) {

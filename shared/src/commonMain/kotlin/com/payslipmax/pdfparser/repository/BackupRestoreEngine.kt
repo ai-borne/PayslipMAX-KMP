@@ -33,7 +33,14 @@ class PreparedRestore internal constructor(
     internal val backup: PortableBackup,
     internal val rows: BackupRows,
 ) : AutoCloseable {
-    override fun close() = opened.close()
+    /** True once [close] has run (the key is wiped); the view model's tests check every exit from a preview reaches it. */
+    var isClosed: Boolean = false
+        private set
+
+    override fun close() {
+        opened.close()
+        isClosed = true
+    }
 }
 
 /**

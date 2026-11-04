@@ -20,7 +20,6 @@ fun SettingsScreen(
     onPickBackup: (onResult: (String) -> Unit) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var password by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
     var showUpgradeSheet by remember { mutableStateOf(false) }
     var devClicks by remember { mutableStateOf(0) }
@@ -29,8 +28,6 @@ fun SettingsScreen(
     SettingsContent(
         viewModel = viewModel,
         uiState = uiState,
-        password = password,
-        onPasswordChange = { password = it },
         onUpgradePrompt = { showUpgradeSheet = true },
         devModeEnabled = devModeEnabled,
         onHeaderClick = {
@@ -61,8 +58,6 @@ fun SettingsScreen(
 private fun SettingsContent(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,
-    password: String,
-    onPasswordChange: (String) -> Unit,
     onUpgradePrompt: () -> Unit,
     devModeEnabled: Boolean,
     onHeaderClick: () -> Unit,
@@ -90,8 +85,6 @@ private fun SettingsContent(
         SecondarySettingsGroup(
             viewModel = viewModel,
             uiState = uiState,
-            password = password,
-            onPasswordChange = onPasswordChange,
             onUpgradePrompt = onUpgradePrompt,
             onNavigateTo = onNavigateTo,
             devModeEnabled = devModeEnabled,
@@ -127,8 +120,6 @@ private fun PrimarySettingsGroup(
 private fun SecondarySettingsGroup(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,
-    password: String,
-    onPasswordChange: (String) -> Unit,
     onUpgradePrompt: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
     devModeEnabled: Boolean,
@@ -138,8 +129,6 @@ private fun SecondarySettingsGroup(
     DataManagementSection(
         viewModel = viewModel,
         uiState = uiState,
-        password = password,
-        onPasswordChange = onPasswordChange,
         onUpgradePrompt = onUpgradePrompt,
         onPickBackup = onPickBackup,
     )

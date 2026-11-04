@@ -23,6 +23,7 @@ import com.payslipmax.pdfparser.testing.FakeFreeSpaceReader
 import com.payslipmax.pdfparser.testing.FakeOnboardingStorage
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.backup.BackupRestoreViewModel
 import com.payslipmax.pdfparser.ui.screens.PayAuditViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuidePinsModel
 import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
@@ -48,6 +49,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -102,18 +104,32 @@ class AppKoinModulesTest {
         koin.get<InstallationIdManager>()
         koin.get<PayslipBackupService>()
         koin.payslipViewModel()
+        koin.get<BackupRestoreViewModel>()
         koin.get<PayAuditViewModel>()
         // Resolved by every screen that gates onboarding; unbound it throws on the first composition.
         koin.get<OnboardingManager>()
     }
 
+    /** Rewritten in P7: the backup view model (not PayslipViewModel) now owns backup and restore, so it is the one wired to the service. */
     @Test
     fun theViewModelBacksUpThroughTheSharedBackupService() {
         val koin = start()
 
-        // A ViewModel built without it reports "backup unavailable" on every export and restore, and
-        // nothing else in the graph would notice: the field is nullable so older call sites still compile.
-        assertSame(koin.get<PayslipBackupService>(), koin.payslipViewModel().backupService)
+        // Built with a service of its own, a backup would skip the graph's Orders Bank rows, free-space gate and last-backup time.
+        assertSame(koin.get<PayslipBackupService>(), koin.get<BackupRestoreViewModel>().service)
+    }
+
+    /**
+     * WHY (docs/Plan/14a P7): a backup or restore must outlive the sheet closing, Settings leaving the screen and the app lock, and its
+     * result must be there when Settings comes back. One instance per process is what keeps it: a per-request one would start each
+     * sheet on a fresh Idle and orphan a running restore with its picked file and archive key.
+     */
+    @Test
+    fun theBackupViewModelIsOneInstanceSoWorkOutlivesTheSheetAndTheLock() {
+        val koin = start()
+
+        val first = assertNotNull(koin.getOrNull<BackupRestoreViewModel>(), "the app graph binds the backup view model")
+        assertSame(first, koin.get<BackupRestoreViewModel>())
     }
 
     /**
@@ -142,8 +158,7 @@ class AppKoinModulesTest {
                 dao.insertSettings(AppSettingsEntity(isTelemetryEnabled = true))
                 telemetry.report(BackupOp.BACKUP, result.exceptionOrNull())
                 assertEquals("storage_full", backupEvents().single().second?.get("backup_failure_code"))
-                // Last: a view model starts settings collectors on the shared DAO.
-                assertSame(telemetry, koin.payslipViewModel().backupTelemetry)
+                assertSame(telemetry, koin.get<BackupRestoreViewModel>().telemetry)
             } finally {
                 space.free = FakeFreeSpaceReader().free
                 reporter.exceptions.removeAll { it.first is BackupFailureEvent }

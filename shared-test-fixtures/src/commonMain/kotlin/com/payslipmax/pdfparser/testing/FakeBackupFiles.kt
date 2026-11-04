@@ -40,6 +40,14 @@ class FakeBackupFiles : BackupFiles {
     var verifyCount = 0
         private set
 
+    /** How many times a picked file was opened for a restore. */
+    var readCount = 0
+        private set
+
+    /** Picked files open for a restore right now: a restore that never finishes keeps its file open. */
+    var openReads = 0
+        private set
+
     override suspend fun write(
         verify: suspend (BackupSource) -> Result<Unit>,
         block: suspend (BackupSink) -> Result<Unit>,
@@ -70,7 +78,13 @@ class FakeBackupFiles : BackupFiles {
         block: suspend (BackupSource) -> Result<R>,
     ): Result<R> {
         val bytes = this.picked.remove(picked) ?: return Result.failure(BackupFileException())
-        return runCatching { block(MemoryBackupSource(bytes)) }.getOrElse { Result.failure(BackupFileException()) }
+        readCount++
+        openReads++
+        return try {
+            runCatching { block(MemoryBackupSource(bytes)) }.getOrElse { Result.failure(BackupFileException()) }
+        } finally {
+            openReads--
+        }
     }
 
     override fun discard(picked: String) {

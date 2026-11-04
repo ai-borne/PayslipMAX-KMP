@@ -24,7 +24,10 @@ class BackupFilesSecurityContractTest {
             "src/androidMain/kotlin/com/payslipmax/pdfparser/repository/FileBackupIo.kt",
             "src/iosMain/kotlin/com/payslipmax/pdfparser/repository/IosBackupFiles.kt",
             "src/iosMain/kotlin/com/payslipmax/pdfparser/repository/FileBackupIo.kt",
-            "../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/PayslipViewModelExtensions.kt",
+            // Since docs/Plan/14a P7 the backup view model owns backup and restore (they left PayslipViewModelExtensions.kt).
+            "../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/backup/BackupRestoreViewModel.kt",
+            "../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/backup/BackupUiState.kt",
+            "../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/backup/ProgressThrottle.kt",
             "../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/BackupRestoreSettingsCard.kt",
         ).associateWith { clean(File(it)) }
 
@@ -61,11 +64,11 @@ class BackupFilesSecurityContractTest {
 
     @Test
     fun theViewModelAndCardNeverHoldBackupBytes() {
-        val vm = backupCode.getValue("../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/PayslipViewModelExtensions.kt")
+        val vm = backupCode.getValue("../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/backup/BackupRestoreViewModel.kt")
         val card = backupCode.getValue("../composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/screens/BackupRestoreSettingsCard.kt")
         assertTrue(!card.contains("ByteArray") && !card.contains("shareBytes"), "the card passes a picked file's name, never its bytes")
-        val backupFns = vm.substringAfter("fun PayslipViewModel.exportBackup(").substringBefore("fun PayslipViewModel.setPremiumEnabled")
-        assertTrue(!backupFns.contains("ByteArray") && !backupFns.contains(".export("), "the view model uses the file forms only")
+        assertTrue(vm.contains("fun backUp(") && vm.contains("fun restore("), "the scan reads the view model that backs up and restores")
+        assertTrue(!vm.contains("ByteArray") && !vm.contains(".export("), "the view model uses the file forms only")
     }
 
     @Test

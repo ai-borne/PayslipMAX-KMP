@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.insights.gemma.GemmaBaseModelInstaller
 import com.payslipmax.pdfparser.insights.gemma.provideGemmaBaseModelInstaller
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.backup.BackupRestoreViewModel
 import com.payslipmax.pdfparser.ui.screens.PayAuditViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
 import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
@@ -28,13 +29,12 @@ val appModule =
             PayslipViewModel(
                 repository = get(),
                 financialIntelligenceRepository = get(),
-                backupService = get(),
-                backupFiles = get(),
-                backupTelemetry = get(),
                 gemmaBaseModelInstaller = get(),
             )
         }
         factory { PayAuditViewModel() }
+        // One per process (docs/Plan/14a P7): a backup or restore outlives the sheet, Settings and the app lock, and its result waits there.
+        single { BackupRestoreViewModel(get(), get(), get(), get()) }
     }
 
 /**

@@ -39,8 +39,12 @@ class FakePayslipDao(
         database.value = database.value - dateStr
     }
 
+    /** When set, [clearAll] throws it: a delete that fails, with whatever message the failure carries. */
+    var failClearAllWith: Exception? = null
+
     // Like the Room query it stands in for, this empties the payslip table only (PDFs have clearAllPdfs).
     override suspend fun clearAll() {
+        failClearAllWith?.let { throw it }
         database.value = emptyMap()
     }
 
