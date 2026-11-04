@@ -41,11 +41,7 @@ class AndroidGemmaInstallTelemetry : BaseGemmaInstallTelemetry() {
             }
         targetAnalytics.logEvent(name, bundle)
         if (name == "gemma_install_failed") {
-            val errorMsg = params?.get("error") ?: "Gemma install failed"
-            provideCrashReporter().recordException(
-                IllegalStateException("Gemma Model Asset Delivery Error: $errorMsg"),
-                params,
-            )
+            provideCrashReporter().recordGemmaInstallFailure()
         }
     }
 }

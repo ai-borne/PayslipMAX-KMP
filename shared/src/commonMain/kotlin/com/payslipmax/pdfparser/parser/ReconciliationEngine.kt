@@ -146,7 +146,7 @@ internal fun reconcileTotals(
         netResidual = kotlin.math.abs(expectedNet - finalNet)
         if (netResidual >= 2.0) {
             // Phase 4: no longer a hard fail. The parse is kept; the solver surfaces it via confidence.
-            Logger.w("ReconciliationEngine", "Net reconciliation residual ${netResidual.toInt()} for $filename (expected $expectedNet, got $finalNet)")
+            Logger.w("ReconciliationEngine", "Net reconciliation residual above tolerance")
         }
     }
 
@@ -155,7 +155,7 @@ internal fun reconcileTotals(
             trueGross - sumEarnings
         } else {
             if (sumEarnings > trueGross && trueGross > 0.0) {
-                Logger.w("ReconciliationEngine", "Parsed sum of earnings ($sumEarnings) exceeds true gross pay ($trueGross) in $filename")
+                Logger.w("ReconciliationEngine", "Parsed sum of earnings exceeds true gross pay")
             }
             0.0
         }
@@ -165,7 +165,7 @@ internal fun reconcileTotals(
             trueDeductions - sumDeductions
         } else {
             if (sumDeductions > trueDeductions && trueDeductions > 0.0) {
-                Logger.w("ReconciliationEngine", "Parsed sum of deductions ($sumDeductions) exceeds true total deductions ($trueDeductions) in $filename")
+                Logger.w("ReconciliationEngine", "Parsed sum of deductions exceeds true total deductions")
             }
             0.0
         }

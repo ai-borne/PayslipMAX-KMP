@@ -232,3 +232,9 @@ Execution detail (phases P0–P9, gates, R8, security): `14a_BackupRestore_Execu
   - Gate green: shared 1791 -> 1825 (release 1825, 1 pre-existing skip), iOS shared 1646 -> 1677, composeApp 1509 -> 1532 / 1483 -> 1506, iOS composeApp
     898 -> 909. R8 triggered (`CryptoHelper` expect/actual) and green with no new rule. Security review: no findings.
   - Pixel walk passed for Back Up and Merge; iPhone not walked (simulator build launches). Pending: 14a P10 "From P10".
+- 2026-11-04 — **P10 follow-up** (same day, owner answers in 14a "From P10"): every `recordException` now passes an event of our own with a fixed message
+  (`PdfImportFailureEvent`, `GemmaInstallFailureEvent`; locked by `RecordedExceptionLeakTest`); the reconciliation engine's warnings and `PdfParser` no longer
+  log payslip amounts, column text or file names (`LoggerExceptionLeakTest`). Owner confirmed all P10 decisions. Pixel: dark mode, a Failed state and Replace
+  walked and passed. Mutations T1-T4 and L2-L3 caught. Gate green: shared 1829 (release 1829, 1 pre-existing skip), iOS shared 1681, composeApp 1537 / 1511,
+  iOS composeApp 910; R8 green; the owner's 4 local backups restore. Remaining: the iPhone walk (D14).
+

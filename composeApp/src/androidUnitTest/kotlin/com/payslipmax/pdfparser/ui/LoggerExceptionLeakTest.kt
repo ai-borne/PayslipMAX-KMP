@@ -71,4 +71,31 @@ class LoggerExceptionLeakTest {
         assertTrue("Throwable" !in declaration, "Logger.e must not accept an exception")
         assertTrue("recordException" !in logger, "Logger sends no exception to Crashlytics")
     }
+
+    /**
+     * A payslip's extracted text (the row columns, the page text) and a file's name must not be written to a log line at any level: the
+     * debug build on a phone with real data would print the rows to logcat. Found in P10 ("From P10" item 5) in `PdfParser`, where the
+     * column texts were dumped at debug level and the sanitised file name at warning level.
+     */
+    @Test
+    fun noLogLineInterpolatesExtractedPayslipTextOrAFileName() {
+        val text = Regex("""Logger\.[dwe]\((?:[^)\n]|\n(?!\s*Logger))*\$\{?(left|middle|full|tax|dsop)\w*Text\b(?!\.length)|Logger\.[dwe]\([^\n]*\$\{?(safeName|filename|fileName)\b""")
+        val offenders = sources.filter { text.containsMatchIn(it.readText()) }.map { it.relativeTo(root).path }
+
+        assertEquals(emptyList(), offenders, "log a count or a fixed line, never the text or the name")
+    }
+
+    /**
+     * The reconciliation engine's warnings used to print the residual, the expected and parsed net, the sums and the file's name: payslip
+     * amounts in a log line and a Crashlytics breadcrumb (the breadcrumb's redaction only knows currency symbols). Found in P10. Its log
+     * lines are fixed text now, and stay that way.
+     */
+    @Test
+    fun theReconciliationEnginesLogLinesCarryNoValues() {
+        val engine = File(root, "shared/src/commonMain/kotlin/com/payslipmax/pdfparser/parser/ReconciliationEngine.kt").readLines()
+        val logLines = engine.filter { it.contains("Logger.") }
+
+        assertTrue(logLines.size >= 3, "the scan found the engine's warnings")
+        assertEquals(emptyList(), logLines.filter { it.contains("$") }, "a payslip amount or a file name in a log line")
+    }
 }

@@ -25,8 +25,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         password: String,
         filename: String,
     ): Result<ParsedPayslip> {
-        val safeName = com.payslipmax.pdfparser.telemetry.TelemetrySanitizer.sanitizeFilename(filename)
-        Logger.w("PlatformPdfParser", "Starting decryptAndParse for $safeName (bytes: ${pdfBytes.size})")
+        Logger.w("PlatformPdfParser", "Starting decryptAndParse (bytes: ${pdfBytes.size})")
         return extractTokens(pdfBytes, password, filename).mapCatching { tokenized ->
             Logger.w("PlatformPdfParser", "Extracted ${tokenized.tableTokens.size} tokens. Starting GrammarAwareParser.parse...")
             val gemmaEngine = buildGemmaEngine()
@@ -228,8 +227,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         Logger.d("PlatformPdfParser", "Starting table grid row extraction...")
         gridExtractor.getText(document)
         val (leftText, middleText) = gridExtractor.extractColumnTexts()
-        Logger.d("PlatformPdfParser", "Finished left column row extraction:\n$leftText")
-        Logger.d("PlatformPdfParser", "Finished middle column row extraction:\n$middleText")
+        Logger.d("PlatformPdfParser", "Finished column row extraction (left ${leftText.length}, middle ${middleText.length} characters)")
 
         val (taxText, dsopText) = extractTaxAndDsopTexts(document)
 
