@@ -87,8 +87,9 @@ class ModelFoldersTest(unittest.TestCase):
             self._tree(tmp)
             self.assertEqual(gate.absent_folders(tmp, ("guide/model", "part2", "part2/data")), ["part2/data"])
 
-    def test_the_part_ii_folder_is_registered_next_to_the_guide_models(self):
-        self.assertEqual(gate.MODEL_FOLDERS, ("guide/model", "part2"))
+    def test_the_part_ii_and_backup_wire_folders_are_registered_next_to_the_guide_models(self):
+        # repository/backup holds every backup DTO (docs/Plan/14a section 5): R8 must prove each one and its serializer survive.
+        self.assertEqual(gate.MODEL_FOLDERS, ("guide/model", "part2", "repository/backup"))
 
     def test_the_real_tree_yields_the_guide_models_including_the_part_ii_lookup(self):
         found = gate.qualified_models(gate.KOTLIN_ROOT, gate.MODEL_FOLDERS)
