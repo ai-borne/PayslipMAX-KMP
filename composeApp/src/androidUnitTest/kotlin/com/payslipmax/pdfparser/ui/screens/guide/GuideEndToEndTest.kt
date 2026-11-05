@@ -190,9 +190,9 @@ class GuideEndToEndTest {
         assertTrue(card.rev.isNotBlank() && bundle.generated.isNotBlank(), "the shipped bundle carries both, so the check below is not vacuous")
         val (to, subject, body) = mails.single()
         assertEquals(AppStringsSupport.supportEmail, to)
-        assertEquals("[Guide] $MSP_ID", subject)
+        assertEquals("[Rules] $MSP_ID", subject)
         assertEquals(
-            "Guide correction suggestion\n\nCard: $MSP_ID\nTitle: $MSP_TITLE\nGuide data: ${bundle.generated}\n" +
+            "Rule Guide correction suggestion\n\nCard: $MSP_ID\nTitle: $MSP_TITLE\nRule Guide data: ${bundle.generated}\n" +
                 "Card revision: ${card.rev}\nApp version: 1.3.0\n\nSuggestion:\nThe rate is now Rs 1,500 & the order is amended.",
             body,
         )

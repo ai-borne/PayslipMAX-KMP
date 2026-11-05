@@ -9,19 +9,19 @@ import com.payslipmax.pdfparser.part2.domain.Part2ColumnPosition
  */
 object LearnStrings {
     // Guide Home: the section the entry row sits in, below the handbook areas (a different manual).
-    const val sectionHeading = "Part II orders (ODP 2026)"
-    const val sectionSubtext = "Learn what each order needs, then keep its copy"
+    const val sectionHeading = "Part II Orders"
+    const val sectionSubtext = "Learn the process. Store each order so you never lose it."
 
     // Guide Home's one Part II tile, and the hub screen it opens (Learn and the Orders Bank).
     const val hubEmoji = "📜"
-    const val hubTitle = "Part II Orders"
+    const val hubTitle = "My Part II Orders"
     const val hubTileSubtitle = "Manage your Part II Orders"
 
     // Guide Home entry and the Learn home.
     const val entryEmoji = "📖"
     const val entryTitle = "Learn about Part II"
-    const val entrySubtitle = "What each ODP-2026 order needs, in plain words"
-    const val homeSubtitle = "Army officers (ODP-2026)"
+    const val entrySubtitle = "What the documentation requires for each order, in plain words"
+    const val homeSubtitle = "Army officers, as per documentation requirements"
 
     /** Learn opened from "Add a casualty" on the attach form: a picker for that order, so it says what a tap does. */
     const val pickTitle = "Add a casualty"
@@ -35,7 +35,7 @@ object LearnStrings {
     const val searchNone = "No casualty matches. Try fewer words, or the serial number."
 
     // Lists.
-    const val groupNotPrinted = "Group not printed in ODP-2026"
+    const val groupNotPrinted = "Group not given in the documentation"
 
     fun groupLabel(letter: String): String = "Group $letter"
 
@@ -63,7 +63,7 @@ object LearnStrings {
     fun chapterAndPage(
         chapter: Int,
         page: Int,
-    ): String = "Chapter $chapter, page $page of ODP-2026"
+    ): String = "Chapter $chapter, page $page"
 
     /** The word for one of an order's six columns: From, To, then Data 1 to 4. */
     fun columnLabel(position: Int): String =
@@ -74,7 +74,7 @@ object LearnStrings {
         }
 
     /** What a required column says when the manual prints no caption for it. */
-    fun requiredNoCaption(page: Int): String = "required (see ODP page $page)"
+    fun requiredNoCaption(page: Int): String = "required (see manual, page $page)"
 
     fun relatedBasis(page: Int?): String = if (page == null) relatedPractice else "In the manual, page $page"
 }

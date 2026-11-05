@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -60,7 +59,7 @@ fun AppBottomBar(
                 selected = currentScreen == Screen.Guide,
                 onClick = { if (currentScreen == Screen.Guide) onGuideReselected() else onNavigate(Screen.Guide) },
                 label = { TabLabel(GuideStrings.tabLabel) },
-                icon = { Icon(Icons.Default.Place, contentDescription = null) },
+                icon = { Icon(RulesTabIcon, contentDescription = null) },
                 colors = itemColors,
             )
         }

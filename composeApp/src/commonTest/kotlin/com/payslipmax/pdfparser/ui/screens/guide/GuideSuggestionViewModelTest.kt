@@ -60,9 +60,9 @@ class GuideSuggestionViewModelTest {
         test { guide ->
             val mail = assertNotNull(guide.suggestionMail("RB-T5", "  The rate is wrong.  "))
 
-            assertEquals("[Guide] RB-T5", mail.subject)
+            assertEquals("[Rules] RB-T5", mail.subject)
             assertEquals(
-                "Guide correction suggestion\n\nCard: RB-T5\nTitle: Synthetic card RB-T5?\nGuide data: 2026-10-07\n" +
+                "Rule Guide correction suggestion\n\nCard: RB-T5\nTitle: Synthetic card RB-T5?\nRule Guide data: 2026-10-07\n" +
                     "Card revision: ab12cd34\nApp version: 9.9.9\n\nSuggestion:\nThe rate is wrong.",
                 mail.body,
             )
@@ -75,7 +75,7 @@ class GuideSuggestionViewModelTest {
 
             assertEquals(1, sent.size)
             assertEquals(AppStringsSupport.supportEmail, sent.single().first)
-            assertEquals("[Guide] RB-T5", sent.single().second)
+            assertEquals("[Rules] RB-T5", sent.single().second)
         }
 
     @Test
@@ -92,7 +92,7 @@ class GuideSuggestionViewModelTest {
         test(model(SyntheticGuideRuleChange.bundle())) { guide ->
             guide.suggest(SyntheticGuideRuleChange.OLD_CARD, "This old rule is still cited.", platform)
 
-            assertEquals("[Guide] ${SyntheticGuideRuleChange.OLD_CARD}", sent.single().second)
+            assertEquals("[Rules] ${SyntheticGuideRuleChange.OLD_CARD}", sent.single().second)
             assertTrue(sent.single().third.contains("Card: ${SyntheticGuideRuleChange.OLD_CARD}\n"))
         }
 

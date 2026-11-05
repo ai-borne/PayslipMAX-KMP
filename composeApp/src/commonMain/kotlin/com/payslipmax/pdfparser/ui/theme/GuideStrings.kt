@@ -7,12 +7,12 @@ import com.payslipmax.pdfparser.guide.model.GuideBasis
  * text is content from the bundle, never copy here (owner decision 2026-10-07).
  */
 object GuideStrings {
-    const val tabLabel = "Guide"
-    const val homeTitle = "Guide"
-    const val homeSection = "What do you need help with?"
-    const val homeOverview = "Handbook rules, limits and claim steps, by topic"
-    const val loading = "Opening the Claim Guide…"
-    const val loadFailedTitle = "The Claim Guide could not open"
+    const val tabLabel = "Rules"
+    const val homeTitle = "Rule Guide"
+    const val homeSection = "Know your rules, authorities and claim steps"
+    const val homeOverview = "Browse by topic"
+    const val loading = "Opening Rules…"
+    const val loadFailedTitle = "Rules could not open"
     const val loadFailedBody = "Your payslips are not affected. Try again. If it keeps failing, update the app."
     const val retry = "Try again"
 
@@ -52,7 +52,7 @@ object GuideStrings {
 
     // Search.
     const val searchTitle = "Search"
-    const val searchOpen = "Search the Claim Guide"
+    const val searchOpen = "Search the Rules"
     const val searchPlaceholder = "Topic or rule number"
     const val searchClear = "Clear search"
     const val searchHint = "Search by topic, or by a rule number such as 177B or Rule 114."
@@ -60,7 +60,7 @@ object GuideStrings {
     const val searchNone = "No cards match. Try fewer words, or a rule number."
 
     // Feed and breadcrumb.
-    const val breadcrumbHome = "Guide"
+    const val breadcrumbHome = "Rules"
     const val breadcrumbSeparator = "›"
     const val facetAllLabel = "All"
 
@@ -129,7 +129,7 @@ object GuideStrings {
 
     // Premium Features catalog row.
     const val catalogIcon = "📖"
-    const val catalogTitle = "Claim Guide"
+    const val catalogTitle = "Rule Guide"
     const val catalogDescription = "Key points, the authority to cite and details for every pay and travel rule card"
 
     private val monthNames = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")

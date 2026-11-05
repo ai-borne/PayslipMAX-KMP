@@ -9,12 +9,12 @@ import com.payslipmax.pdfparser.guide.preclaim.PreClaimIssue
 object PreClaimIssueStrings {
     fun of(issue: PreClaimIssue): String =
         when (issue) {
-            PreClaimIssue.FIGURE_MISSING -> "The rate for this is not in the Guide this version of the app carries."
-            PreClaimIssue.CASE_NOT_IN_FIGURE -> "The Guide has no rate for this case."
+            PreClaimIssue.FIGURE_MISSING -> "The rate for this is not in the Rule Guide this version of the app carries."
+            PreClaimIssue.CASE_NOT_IN_FIGURE -> "The Rule Guide has no rate for this case."
             PreClaimIssue.BASIC_MISSING -> "Enter your basic pay."
             PreClaimIssue.BASIC_OUT_OF_RANGE -> "Check your basic pay: it looks too high or too low."
             PreClaimIssue.LEVEL_MISSING -> "Choose your pay level."
-            PreClaimIssue.LEVEL_NOT_COVERED -> "The Guide has no rate for this pay level."
+            PreClaimIssue.LEVEL_NOT_COVERED -> "The Rule Guide has no rate for this pay level."
             PreClaimIssue.DA_MISSING -> "Enter the dearness allowance percentage."
             PreClaimIssue.DA_OUT_OF_RANGE -> "Check the dearness allowance percentage: it looks too high."
             PreClaimIssue.KM_MISSING -> "Enter the road distance in kilometres."

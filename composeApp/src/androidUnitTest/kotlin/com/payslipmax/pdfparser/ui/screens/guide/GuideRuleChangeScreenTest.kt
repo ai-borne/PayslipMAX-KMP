@@ -77,8 +77,8 @@ class GuideRuleChangeScreenTest {
     fun homeShowsTheWhatsNewRowNamedForTheNewestMonthAndOpensTheList() {
         val nav = show()
 
-        composeRule.onNodeWithText("What's new in the Guide (Nov 2026)").assertIsDisplayed()
-        tap("What's new in the Guide (Nov 2026)")
+        composeRule.onNodeWithText("What's new in Rule Guide (Nov 2026)").assertIsDisplayed()
+        tap("What's new in Rule Guide (Nov 2026)")
 
         assertEquals(GuideDestination.Changes, nav.current)
         composeRule.onNodeWithText(effectiveLabel).assertIsDisplayed()
@@ -99,7 +99,7 @@ class GuideRuleChangeScreenTest {
     @Test
     fun aCardLinkOpensTheCardAndBackReturnsToTheList() {
         val nav = show()
-        tap("What's new in the Guide (Nov 2026)")
+        tap("What's new in Rule Guide (Nov 2026)")
 
         composeRule.onAllNodesWithText(newTitle)[0].performClick()
         settle()
@@ -115,13 +115,13 @@ class GuideRuleChangeScreenTest {
     @Test
     fun aTabReTapFromTheListGoesBackToGuideHome() {
         val nav = show()
-        tap("What's new in the Guide (Nov 2026)")
+        tap("What's new in Rule Guide (Nov 2026)")
 
         composeRule.runOnUiThread { nav.popToHome() }
         settle()
 
         assertEquals(GuideDestination.Home, nav.current)
-        composeRule.onNodeWithText("What's new in the Guide (Nov 2026)").assertIsDisplayed()
+        composeRule.onNodeWithText("What's new in Rule Guide (Nov 2026)").assertIsDisplayed()
     }
 
     @Test
@@ -177,7 +177,7 @@ class GuideRuleChangeScreenTest {
     @Test
     fun aLockedUserGetsTheLinksButNoPaidHalfOfEitherRule() {
         show(unlocked = false)
-        tap("What's new in the Guide (Nov 2026)")
+        tap("What's new in Rule Guide (Nov 2026)")
         composeRule.onAllNodesWithText(oldTitle)[0].performClick()
         settle()
 

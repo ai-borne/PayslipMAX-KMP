@@ -55,7 +55,7 @@ class GuideMaintenanceEndToEndTest {
     private val newTitle = "Synthetic card $NEW?"
     private val clarifiedTitle = "Synthetic card $CLARIFIED?"
     private val unchangedTitle = "Synthetic card $UNCHANGED?"
-    private val whatsNew = "What's new in the Guide (Nov 2026)"
+    private val whatsNew = "What's new in Rule Guide (Nov 2026)"
 
     /** Each card gets a revision of its own, so a note written against an older one can be told from one written against this. */
     private fun withRevisions(bundle: GuideBundle) = bundle.copy(cards = bundle.cards.map { it.copy(rev = "now-${it.id}") })
