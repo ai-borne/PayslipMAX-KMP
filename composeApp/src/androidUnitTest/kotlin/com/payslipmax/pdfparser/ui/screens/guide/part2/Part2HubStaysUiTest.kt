@@ -114,6 +114,30 @@ class Part2HubStaysUiTest : Part2UiBase() {
         see(OrdersBankStrings.chipWithCount(BankFilter.ALL, 1)).assertIsDisplayed()
     }
 
+    @Test
+    fun theStaysChipStaysWhileSelectedAfterTheLastStayIsRegularisedAndTheListSaysItIsEmpty() {
+        seedStay(2026)
+        open(Part2Destination.Bank)
+        see(OrdersBankStrings.chipWithCount(BankFilter.UNREGULARISED, 1)).performClickAndSettle()
+        assertEquals(BankFilter.UNREGULARISED, bank.state.value.filter)
+
+        runBlocking { data.repository.saveEntry(SyntheticBank.entry("slc", code = "SLC", from = CalendarDate(2026, 3, 1))) }
+        settle()
+
+        see(OrdersBankStrings.chipWithCount(BankFilter.UNREGULARISED, 0)).assertIsDisplayed()
+        see(OrdersBankStrings.emptyFilter).assertIsDisplayed()
+    }
+
+    @Test
+    fun theHubChipStaysReadableAndTappableAtTwiceTheFontSize() {
+        seedStay(2026)
+        fontScale = 2f
+        val nav = open(Part2Destination.Hub)
+
+        see(OrdersBankStrings.hubStays(1, 0)).assertIsDisplayed().assertIsEnabled().performClickAndSettle()
+        assertEquals(Part2Destination.Bank, nav.current)
+    }
+
     private fun androidx.compose.ui.test.SemanticsNodeInteraction.performClickAndSettle() {
         performClick()
         settle()

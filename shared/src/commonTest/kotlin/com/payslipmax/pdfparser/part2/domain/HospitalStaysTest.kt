@@ -53,8 +53,11 @@ class HospitalStaysTest {
             Case(plain("2025-01-01", "2025-08-09", "2025-08-10"), listOf("REGAL 2025-01-01 2025-08-09", "HOSFURPY 2025-06-30 2025-08-09")),
             Case(plain("2024-10-25", "2025-06-07", "2025-06-08"), listOf("REGAL 2024-10-25 2025-06-07")),
             Case(sick("2025-01-01", "2025-01-01", "2025-01-02", "2025-07-08", "2025-07-09", "2025-07-10"), listOf("REGAL 2025-01-01 2025-07-09")),
-            // Type 16 was not re-read from the source (see plan Pending); this is a synthetic spill-over case with sick leave.
-            Case(sick("2024-10-25", "2024-10-26", "2024-10-27", "2025-06-01", "2025-06-02", "2025-06-03"), listOf("REGAL 2024-10-25 2025-06-02")),
+            // Type 16 (absence over 6 months that spills into a second year, sick leave granted): the dates are the letter's own, date-only.
+            Case(
+                sick("2024-10-20", "2024-10-25", "2024-10-26", "2025-07-02", "2025-07-06", "2025-07-07"),
+                listOf("REGAL 2024-10-20 2025-07-06"),
+            ),
         )
 
     private fun plain(
