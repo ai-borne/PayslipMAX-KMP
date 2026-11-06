@@ -1,30 +1,23 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -150,31 +143,12 @@ private fun GuideHomeHeader(onOpenSearch: () -> Unit) {
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.weight(1f).semantics { heading() },
             )
-            GuideSearchButton(onOpenSearch)
+            IconButton(onClick = onOpenSearch) { Icon(Icons.Default.Search, contentDescription = GuideStrings.searchOpen) }
         }
         Text(
             GuideStrings.homeSection,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-    }
-}
-
-/** A labelled search pill: the icon alone did not say the guide can be searched. Read by screen readers as one button named [GuideStrings.searchOpen]. */
-@Composable
-private fun GuideSearchButton(onClick: () -> Unit) {
-    Row(
-        modifier =
-            Modifier
-                .clip(RoundedCornerShape(percent = 50))
-                .border(AppDimensions.BorderThin, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(percent = 50))
-                .clickable(role = Role.Button, onClick = onClick)
-                .clearAndSetSemantics { contentDescription = GuideStrings.searchOpen }
-                .padding(horizontal = AppDimensions.SpacingMedium, vertical = AppDimensions.SpacingSmall),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-    ) {
-        Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(AppDimensions.IconSizeSmall))
-        Text(GuideStrings.homeSearchLabel, style = MaterialTheme.typography.labelLarge, maxLines = 1, softWrap = false)
     }
 }

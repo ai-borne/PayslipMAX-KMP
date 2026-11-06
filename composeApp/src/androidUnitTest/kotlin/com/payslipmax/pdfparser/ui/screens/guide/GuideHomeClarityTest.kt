@@ -49,10 +49,9 @@ class GuideHomeClarityTest {
         part2Status: HubStatus = HubStatus.Unknown,
         isNew: Boolean = false,
         onDismiss: () -> Unit = {},
-        onSearch: () -> Unit = {},
     ) = composeRule.setContent {
         GuideHomeScreen(
-            areas, onOpenArea = {}, onOpenSearch = onSearch, whatsNewDate = "2026-10-30", whatsNewIsNew = isNew, whatsNewCount = 3, onDismissWhatsNew = onDismiss,
+            areas, onOpenArea = {}, onOpenSearch = {}, whatsNewDate = "2026-10-30", whatsNewIsNew = isNew, whatsNewCount = 3, onDismissWhatsNew = onDismiss,
             preClaim = preClaim, part2 = part2, part2Status = part2Status,
         )
     }
@@ -98,24 +97,12 @@ class GuideHomeClarityTest {
 
     @Test
     fun withTheFlagsOnHomeIsNoTallerThanBeforeTheClarityChangeSoItStillFitsAPhoneScreen() {
-        // WHY: before this change Home (change-log row, 9 topics + TA/DA, Part II tile) ended at 1022 dp in this harness (1024 since the search pill, see the constant), which on the
+        // WHY: before this change Home (change-log row, 9 topics + TA/DA, Part II tile) ended at 1022 dp in this harness, which on the
         // owner's tall Pixel fitted above the tab bar with about 39 dp to spare. Labels and a clearer Part II tile must not push the
         // user's own tile below the fold. This harness draws text taller than a device, so the number is a baseline, not a screen size.
         showHome()
         val bottom = composeRule.onAllNodesWithText(LearnStrings.hubTitle)[0].fetchSemanticsNode().boundsInRoot.bottom / composeRule.density.density
         assertTrue(bottom <= BASELINE_PART2_TILE_BOTTOM_DP, "Part II tile now ends at $bottom dp, below the $BASELINE_PART2_TILE_BOTTOM_DP dp it ended at before")
-    }
-
-    @Test
-    fun searchIsAVisibleLabelledButtonNotABareIconAndOpensSearch() {
-        // WHY: an icon alone does not tell a new user the guide can be searched; the label does, and it must not cost a row of height.
-        var opened = 0
-        showHome(onSearch = { opened++ })
-
-        composeRule.onNodeWithText(GuideStrings.homeSearchLabel, useUnmergedTree = true).assertIsDisplayed()
-        composeRule.onNodeWithContentDescription(GuideStrings.searchOpen).assertHasClickAction().performClick()
-        assertEquals(1, opened)
-        assertTrue(composeRule.onNodeWithContentDescription(GuideStrings.searchOpen).fetchSemanticsNode().boundsInRoot.top < top(GuideStrings.homeSection), "the search sits in the title row, above the subtitle")
     }
 
     @Test
@@ -155,8 +142,6 @@ class GuideHomeClarityTest {
     }
 
     private companion object {
-        // Measured after the labelled search pill replaced the 48 dp icon button (2026-11-06). This harness draws every text line 36 dp tall, so the
-        // pill (36 + 16 padding) is 4 dp taller here than the icon was; on the Pixel the header became about 12 dp SHORTER. It was 1022 before.
-        const val BASELINE_PART2_TILE_BOTTOM_DP = 1024f
+        const val BASELINE_PART2_TILE_BOTTOM_DP = 1022f
     }
 }
