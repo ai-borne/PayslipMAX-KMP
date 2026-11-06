@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.theme
 import com.payslipmax.pdfparser.part2.domain.BankFilter
 import com.payslipmax.pdfparser.part2.domain.BankStatus
 import com.payslipmax.pdfparser.part2.domain.EntryProblem
+import com.payslipmax.pdfparser.part2.domain.HubStatus
 import com.payslipmax.pdfparser.part2.domain.WaitingAge
 
 /**
@@ -33,6 +34,21 @@ object OrdersBankStrings {
     ): String = if (attached == total) "Every order copy is attached" else "$attached of $total have their order copy attached"
 
     fun hubNotAttached(count: Int): String = if (count == 1) "1 order copy not attached" else "$count order copies not attached"
+
+    const val hubTileAllAttached = "all attached"
+
+    /** The one line under "My Part II Orders" on Guide Home once there is a file: the hub's own counts, short enough for one line on a phone. */
+    fun hubTileLine(
+        total: Int,
+        notAttached: Int,
+    ): String = "${hubNoted(total)} · ${if (notAttached == 0) hubTileAllAttached else "$notAttached not attached"}"
+
+    /** That line, or the plain line that says what is inside while the file is empty or not yet read (nothing is claimed before it is known). */
+    fun homeTileSubtitle(status: HubStatus): String =
+        when (status) {
+            is HubStatus.Filing -> hubTileLine(status.total, status.notAttached)
+            HubStatus.Empty, HubStatus.Unknown -> LearnStrings.hubTileSubtitle
+        }
 
     /** The three steps of "How it works", numbered from 1. */
     fun hubStep(number: Int): String =

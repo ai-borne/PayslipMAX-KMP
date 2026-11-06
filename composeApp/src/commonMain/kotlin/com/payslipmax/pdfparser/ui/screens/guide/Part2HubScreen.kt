@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.part2.domain.HubStatus
@@ -52,15 +53,17 @@ internal fun Part2HubScreen(
     }
 }
 
+/** One accent-striped row, shared by the hub's Learn and Bank rows and Guide Home's Part II tile ([accent] follows the file's state there). */
 @Composable
-private fun Part2HubRow(
+internal fun Part2HubRow(
     emoji: String,
     title: String,
     subtitle: String,
     onClick: () -> Unit,
+    accent: Color = MaterialTheme.colorScheme.primary,
 ) {
     AccentStripeCard(
-        accent = MaterialTheme.colorScheme.primary,
+        accent = accent,
         modifier = Modifier.clip(AccentStripeCardShape).clickable(role = Role.Button, onClick = onClick),
     ) {
         Row(

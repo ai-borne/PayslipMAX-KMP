@@ -21,11 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.part2.domain.HubStatus
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2Entry
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import com.payslipmax.pdfparser.ui.theme.LearnStrings
+import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 import com.payslipmax.pdfparser.ui.theme.PreClaimStrings
 
 /**
@@ -47,6 +49,7 @@ internal fun GuideHomeScreen(
     preClaim: PreClaimEntry = PreClaimEntry.HIDDEN,
     onOpenPreClaim: () -> Unit = {},
     part2: Part2Entry = Part2Entry.HIDDEN,
+    part2Status: HubStatus = HubStatus.Unknown,
     onOpenPart2Hub: () -> Unit = {},
 ) {
     LazyColumn(
@@ -73,7 +76,7 @@ internal fun GuideHomeScreen(
         }
         guideSectionLabel("guide", GuideStrings.homeOverview)
         guideTileGrid(guideAreaItems(areas, onOpenArea, preClaim, onOpenPreClaim))
-        guidePart2Section(part2, onOpenPart2Hub)
+        guidePart2Section(part2, part2Status, onOpenPart2Hub)
         if (notes.removedCount > 0) {
             item(key = "removed-notes") { GuideRemovedNotesRow(notes.removedCount, notes.onOpenRemoved) }
         }
@@ -106,15 +109,19 @@ private fun guideAreaItems(
 
 /**
  * The Part II group below the handbook areas, labelled as the user's own private records (it is not part of the PCDA handbook): one
- * full-width Part II Orders tile that opens the hub with Learn and the Orders Bank. Absent while its flag is off.
+ * full-width Part II Orders tile that opens the hub with Learn and the Orders Bank. Its line and stripe follow [status] (the plain line and the
+ * brand stripe until the file is known to hold casualties). Absent while its flag is off.
  */
 private fun LazyListScope.guidePart2Section(
     part2: Part2Entry,
+    status: HubStatus,
     onOpenPart2Hub: () -> Unit,
 ) {
     if (part2 == Part2Entry.HIDDEN) return
     guideSectionLabel("part2", LearnStrings.sectionHeading, note = LearnStrings.sectionSubtext)
-    guideTileGrid(listOf(GuideGridItem("part2", LearnStrings.hubEmoji, LearnStrings.hubTitle, LearnStrings.hubTileSubtitle, onOpenPart2Hub)), fullRow = true)
+    item(key = "part2") {
+        Part2HubRow(LearnStrings.hubEmoji, LearnStrings.hubTitle, OrdersBankStrings.homeTileSubtitle(status), onOpenPart2Hub, accent = part2StatusAccent(status))
+    }
 }
 
 @Composable

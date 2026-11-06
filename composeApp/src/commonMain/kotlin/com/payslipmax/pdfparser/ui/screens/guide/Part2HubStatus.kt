@@ -40,10 +40,19 @@ internal fun Part2HubHero(
 ) {
     when (status) {
         HubStatus.Unknown -> Unit
-        HubStatus.Empty -> HeroCard(MaterialTheme.colorScheme.primary) { EmptyHero(actions) }
-        is HubStatus.Filing -> HeroCard(if (status.notAttached > 0) BankColors.waiting() else BankColors.attached()) { FilingHero(status, actions.onOpenMissing) }
+        HubStatus.Empty -> HeroCard(part2StatusAccent(status)) { EmptyHero(actions) }
+        is HubStatus.Filing -> HeroCard(part2StatusAccent(status)) { FilingHero(status, actions.onOpenMissing) }
     }
 }
+
+/** The stripe colour for where the file stands: the Bank's "waiting" colour while copies are missing, its "attached" colour when none are, the brand blue otherwise. */
+@Composable
+internal fun part2StatusAccent(status: HubStatus): Color =
+    when {
+        status is HubStatus.Filing && status.notAttached > 0 -> BankColors.waiting()
+        status is HubStatus.Filing -> BankColors.attached()
+        else -> MaterialTheme.colorScheme.primary
+    }
 
 @Composable
 private fun HeroCard(

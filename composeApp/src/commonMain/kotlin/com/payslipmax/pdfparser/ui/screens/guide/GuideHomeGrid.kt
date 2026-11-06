@@ -56,19 +56,16 @@ internal fun LazyListScope.guideSectionLabel(
     }
 }
 
-/** [items] as rows of two equal-height tiles (an odd last row leaves its right half empty), or one full-width tile per row when [fullRow]. */
-internal fun LazyListScope.guideTileGrid(
-    items: List<GuideGridItem>,
-    fullRow: Boolean = false,
-) {
-    items.chunked(if (fullRow) 1 else GRID_COLUMNS).forEach { pair ->
+/** [items] as rows of two equal-height tiles (an odd last row leaves its right half empty). */
+internal fun LazyListScope.guideTileGrid(items: List<GuideGridItem>) {
+    items.chunked(GRID_COLUMNS).forEach { pair ->
         item(key = "grid-${pair.first().key}") {
             Row(
                 modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
                 horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
             ) {
                 pair.forEach { GuideGridTileView(it, Modifier.weight(1f).fillMaxHeight()) }
-                if (!fullRow) repeat(GRID_COLUMNS - pair.size) { Spacer(Modifier.weight(1f)) }
+                repeat(GRID_COLUMNS - pair.size) { Spacer(Modifier.weight(1f)) }
             }
         }
     }

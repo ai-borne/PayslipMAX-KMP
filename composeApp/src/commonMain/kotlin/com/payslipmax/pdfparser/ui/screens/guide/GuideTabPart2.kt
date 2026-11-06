@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -122,6 +123,10 @@ internal fun GuidePart2Level(
     }
 }
 
+/** Where the Part II file stands, shared by the hub and Guide Home's tile: [HubStatus.Unknown] (so nothing is claimed) while there is no Bank or it has not been read. */
+@Composable
+internal fun rememberHubStatus(bank: BankViewModel?): State<HubStatus> = (bank?.hub ?: remember { MutableStateFlow(HubStatus.Unknown) }).collectAsState()
+
 /** The hub: with the Bank present it shows where the file stands; without it (flag off) it is the two rows alone. */
 @Composable
 private fun Part2HubLevel(
@@ -130,7 +135,7 @@ private fun Part2HubLevel(
     onBack: () -> Unit,
 ) {
     val bank = host.bank
-    val status by (bank?.hub ?: remember { MutableStateFlow(HubStatus.Unknown) }).collectAsState()
+    val status by rememberHubStatus(bank)
     val hero =
         bank?.let {
             HubHeroActions(

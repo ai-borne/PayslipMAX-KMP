@@ -104,6 +104,7 @@ private fun GuideHomeRoute(
 ) {
     val pins by viewModel.pins.pins.collectAsState()
     val noteState = rememberGuideNotesState(notes)
+    val part2Status by rememberHubStatus(part2.bank)
     GuideHomeScreen(
         ready.areas,
         // Pins are a paid feature: a locked user sees no section, and the stored pins wait for an unlock.
@@ -118,6 +119,7 @@ private fun GuideHomeRoute(
         preClaim = preClaimEntry,
         onOpenPreClaim = { navState.push(GuideDestination.PreClaim()) },
         part2 = part2.entry,
+        part2Status = part2Status,
         onOpenPart2Hub = { part2.openHub(navState) },
         // Each visit to search starts empty; coming back from a card (a pop) does not pass through here.
         onOpenSearch = {

@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import com.payslipmax.pdfparser.guide.GuideBundleContract
+import com.payslipmax.pdfparser.part2.domain.HubStatus
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2Entry
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.theme.GuideMaintenanceStrings
@@ -41,8 +42,9 @@ class GuideHomeClarityTest {
     private fun showHome(
         preClaim: PreClaimEntry = PreClaimEntry.LOCKED,
         part2: Part2Entry = Part2Entry.OPEN,
+        part2Status: HubStatus = HubStatus.Unknown,
     ) = composeRule.setContent {
-        GuideHomeScreen(areas, onOpenArea = {}, onOpenSearch = {}, whatsNewDate = "2026-10-30", preClaim = preClaim, part2 = part2)
+        GuideHomeScreen(areas, onOpenArea = {}, onOpenSearch = {}, whatsNewDate = "2026-10-30", preClaim = preClaim, part2 = part2, part2Status = part2Status)
     }
 
     private fun top(text: String) = composeRule.onAllNodesWithText(text)[0].fetchSemanticsNode().boundsInRoot.top
@@ -92,6 +94,14 @@ class GuideHomeClarityTest {
         showHome()
         val bottom = composeRule.onAllNodesWithText(LearnStrings.hubTitle)[0].fetchSemanticsNode().boundsInRoot.bottom / composeRule.density.density
         assertTrue(bottom <= BASELINE_PART2_TILE_BOTTOM_DP, "Part II tile now ends at $bottom dp, below the $BASELINE_PART2_TILE_BOTTOM_DP dp it ended at before")
+    }
+
+    @Test
+    fun aFilingStatusLineOnThePartTwoTileDoesNotPushItBelowTheSameBaseline() {
+        // WHY: the status line is longer than the plain one and may wrap on a narrow phone; it must still fit the budget above.
+        showHome(part2Status = HubStatus.Filing(total = 12, attached = 8, notAttached = 4))
+        val bottom = composeRule.onAllNodesWithText(LearnStrings.hubTitle)[0].fetchSemanticsNode().boundsInRoot.bottom / composeRule.density.density
+        assertTrue(bottom <= BASELINE_PART2_TILE_BOTTOM_DP, "Part II tile with a status line ends at $bottom dp, below the $BASELINE_PART2_TILE_BOTTOM_DP dp baseline")
     }
 
     private companion object {
