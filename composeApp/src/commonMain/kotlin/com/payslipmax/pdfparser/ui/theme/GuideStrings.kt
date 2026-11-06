@@ -53,6 +53,9 @@ object GuideStrings {
     // Search.
     const val searchTitle = "Search"
     const val searchOpen = "Search the Rules"
+
+    /** The visible label on Guide Home's search button (the accessibility label stays [searchOpen]). */
+    const val homeSearchLabel = "Search rules"
     const val searchPlaceholder = "Topic or rule number"
     const val searchClear = "Clear search"
     const val searchHint = "Search by topic, or by a rule number such as 177B or Rule 114."
