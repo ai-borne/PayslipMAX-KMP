@@ -18,6 +18,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimEntry
 import com.payslipmax.pdfparser.ui.theme.GuideMaintenanceStrings
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import com.payslipmax.pdfparser.ui.theme.LearnStrings
+import com.payslipmax.pdfparser.ui.theme.PreClaimStrings
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -106,6 +107,15 @@ class GuideHomeClarityTest {
     }
 
     @Test
+    fun theWorksheetTileIsMarkedAsACalculatorSoItIsNotTakenForARuleTopic() {
+        // WHY: every other tile says "N topics" and opens rule cards; this one opens a calculator, and looked like one more topic.
+        showHome(preClaim = PreClaimEntry.OPEN)
+
+        composeRule.onNodeWithText(PreClaimStrings.tileTitle).assertIsDisplayed()
+        composeRule.onNodeWithText(PreClaimStrings.entryChip).assertIsDisplayed()
+    }
+
+    @Test
     fun aNewEntryIsABannerWithAChipACountAndADismissButton() {
         var dismissed = 0
         showHome(isNew = true, onDismiss = { dismissed++ })
@@ -142,6 +152,8 @@ class GuideHomeClarityTest {
     }
 
     private companion object {
-        const val BASELINE_PART2_TILE_BOTTOM_DP = 1022f
+        // 1022 before the Calculator chip. This harness draws every text line 36 dp tall, so a pill (36 + 4 padding) is 4 dp taller here than the one-line
+        // subtitle it replaced; on a phone the TA/DA tile got SHORTER, because "Advance calculator" used to wrap to two lines and the chip is one.
+        const val BASELINE_PART2_TILE_BOTTOM_DP = 1024f
     }
 }

@@ -107,9 +107,10 @@ private fun guideAreaItems(
             "preclaim",
             PreClaimStrings.entryEmoji,
             PreClaimStrings.tileTitle,
-            PreClaimStrings.entrySubtitle,
+            PreClaimStrings.entryChip,
             onOpenPreClaim,
             badge = PreClaimStrings.entryPremium.takeIf { preClaim == PreClaimEntry.LOCKED },
+            chip = PreClaimStrings.entryChip,
         )
     return tiles + worksheet
 }

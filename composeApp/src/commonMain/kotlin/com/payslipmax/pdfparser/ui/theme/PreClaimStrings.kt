@@ -15,7 +15,7 @@ object PreClaimStrings {
     const val entryEmoji = "🧮"
     const val entryTitle = "TA/DA claim worksheet"
     const val tileTitle = "TA/DA Claim"
-    const val entrySubtitle = "Advance calculator"
+    const val entryChip = "Calculator"
     const val entryPremium = "Premium"
     const val screenTitle = "TA/DA claim worksheet"
     const val screenSubtitle = "You still file on the portal. This gets the form ready."

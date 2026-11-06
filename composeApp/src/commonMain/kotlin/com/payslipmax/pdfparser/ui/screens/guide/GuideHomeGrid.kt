@@ -20,7 +20,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 
-/** One tile of the Guide Home grid: an emoji, a title and one line under it. [badge] is the small "Premium" mark, null when there is none. */
+/**
+ * One tile of the Guide Home grid: an emoji, a title and one line under it. [badge] is the small "Premium" mark, null when there is none.
+ * [chip] marks a tile that is not a rule topic (the calculator): it is drawn in place of the [subtitle] line, as a pill, so it adds no height.
+ */
 internal class GuideGridItem(
     val key: String,
     val emoji: String,
@@ -28,6 +31,7 @@ internal class GuideGridItem(
     val subtitle: String,
     val onClick: () -> Unit,
     val badge: String? = null,
+    val chip: String? = null,
 )
 
 /**
@@ -89,7 +93,11 @@ private fun GuideGridTileView(
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
                 item.badge?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary) }
-                Text(item.subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (item.chip != null) {
+                    GuideLabelPill(item.chip)
+                } else {
+                    Text(item.subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
         }
     }
