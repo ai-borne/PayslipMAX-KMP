@@ -2708,24 +2708,25 @@ Cite: Rule 20, Leave Rules for the Services Vol I (Army); ODP 2026 Chapter 6
 - Over 30 days: REGALMS if due to military service, else REGAL
 - *Watch out:* With sick leave, also SLDISCH, GTDSL and SLHOSADM
 - *Watch out:* Transfer to another hospital: MEDTRAN as applicable
+- *Watch out:* Admitted during annual leave: use the sick leave set too
 
-Cite: Chapter 6 (serials 6.1 to 6.14), Documentation Procedure for Officers (ODP) 2026
+Cite: ODP 2026 Chapter 6 (serials 6.1 to 6.14), Documentation Procedure for Officers
 
-<sub>Details: Over 30 days the regularising order is backed by GTDALHOS for the annual leave debited and GTDSLHOS for the sick leave debited. Any part at furlough rates is shown by HOSFURPY. The discharge, the report for duty and the regularising order go in the same Part II order.</sub>
+<sub>Details: Over 30 days the regularising order is backed by GTDALHOS for the annual leave debited and GTDSLHOS for the sick leave debited. Any part at furlough rates is shown by HOSFURPY. The discharge, the report for duty and the regularising order go in the same Part II order. Each regularising entry runs from the first day of admission to the final discharge date.</sub>
 
 #### RB-HS-03 Long hospital stay: how is the absence split?
 
-**Annual leave for the year first, then sick leave. Together they give 180 days at full pay; any balance is regularised at furlough rates.**
+**Annual leave for the year first, then sick leave: up to 180 days at full pay in all. Any balance is regularised at furlough rates.**
 
-- Up to 60 days annual leave for the year
+- Annual leave first, only as much as your balance allows
 - Up to 120 days sick leave
-- Balance beyond 180 days: furlough rates, code HOSFURPY
-- *Watch out:* The 180 day split is for stays not due to military service
+- Balance beyond the full pay days: furlough rates, HOSFURPY
+- *Watch out:* The 180 day cap is for stays not due to military service
 - *Watch out:* A stay across two years uses last year's balance annual leave first
 
 Cite: Leave Rules for the Services Vol I (Army); ODP 2026 Chapter 6
 
-<sub>Details: Example: a stay of 190 days not due to military service is regularised as 60 days annual leave, 120 days sick leave and 10 days at furlough rates. Each part is published with its own code and dates, and the order number of the first admission is quoted.</sub>
+<sub>Details: Example: a stay of 190 days not due to military service is regularised as 60 days annual leave, 120 days sick leave and 10 days at furlough rates. With only 30 days of annual leave balance, a 175 day stay is 30 annual leave, 120 sick leave and 25 at furlough rates. Across two years the 180 days are counted over the whole stay. Each part is published with its own code and dates, and the order number of the first admission is quoted.</sub>
 
 ##### Sick List Concession (1)
 
