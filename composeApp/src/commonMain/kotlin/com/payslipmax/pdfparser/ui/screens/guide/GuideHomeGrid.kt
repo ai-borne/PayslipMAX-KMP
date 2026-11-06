@@ -35,27 +35,22 @@ internal class GuideGridItem(
 )
 
 /**
- * A group's label on Guide Home: its name as a heading, and an optional [note] beside it (the user's own group says it is private).
- * No divider: the label alone separates the groups, which keeps Home within one phone screen.
+ * A group's label on Guide Home: its name as a heading and an optional [subtitle] line under it saying what the group is for. No divider: the label alone separates the groups.
  */
 internal fun LazyListScope.guideSectionLabel(
     key: String,
     label: String,
-    note: String? = null,
+    subtitle: String? = null,
 ) {
     item(key = "$key-label") {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingSmall),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-        ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingSmall)) {
             Text(
                 label,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(1f, fill = false).semantics { heading() },
+                modifier = Modifier.semantics { heading() },
             )
-            note?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+            subtitle?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     }
 }

@@ -11,7 +11,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * WHY: the hub's top card must follow the encrypted store, not a copy of it. A first entry turns "Start your Part II file" into the
+ * WHY: the hub's top card must follow the encrypted store, not a copy of it. A first entry turns "Start your Part II Orders file" into the
  * file's counts at once, and an attached order copy lowers the "not attached" count, so the officer sees the effect of what he just did
  * when he comes back. The list's chip never changes these counts.
  */

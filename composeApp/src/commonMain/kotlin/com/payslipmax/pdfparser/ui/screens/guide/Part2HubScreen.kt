@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +29,7 @@ import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 
 /**
  * The Part II Orders hub (Guide Home's one Part II tile opens it): where the officer's file stands (the hero, only when the Bank is there),
- * then Learn about Part II and the Orders Bank, one row each, then how it works while the file is empty. Learn is free for everyone and
+ * then Learn about Part II and the Orders Bank, one row each, then how it works, always. Learn is free for everyone and
  * the Bank opens for everyone (adding is Premium). The back header is the only way up on iOS; on Android system back does the same.
  */
 @Composable
@@ -48,7 +49,8 @@ internal fun Part2HubScreen(
             if (hero != null) item(key = "hero") { Part2HubHero(status, hero) }
             item(key = "learn") { Part2HubRow(LearnStrings.entryEmoji, LearnStrings.entryTitle, LearnStrings.entrySubtitle, onOpenLearn) }
             item(key = "bank") { Part2HubRow(OrdersBankStrings.entryEmoji, OrdersBankStrings.entryTitle, OrdersBankStrings.entrySubtitle, onOpenBank) }
-            if (hero != null && status == HubStatus.Empty) item(key = "how") { Part2HubHowItWorks() }
+            item(key = "divider") { HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)) }
+            item(key = "how") { Part2HubHowItWorks() }
         }
     }
 }

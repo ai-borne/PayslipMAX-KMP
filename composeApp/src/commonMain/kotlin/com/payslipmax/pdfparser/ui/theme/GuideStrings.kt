@@ -11,6 +11,7 @@ object GuideStrings {
     const val homeTitle = "Rule Guide"
     const val homeSection = "Look up your rules, entitlements and claim steps"
     const val homeOverview = "Rules & entitlements"
+    const val homeOverviewSubtitle = "Rules that shape your payments"
     const val loading = "Opening Rules…"
     const val loadFailedTitle = "Rules could not open"
     const val loadFailedBody = "Your payslips are not affected. Try again. If it keeps failing, update the app."

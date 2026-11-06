@@ -78,10 +78,10 @@ class GuideHomeClarityTest {
     }
 
     @Test
-    fun thePartTwoGroupIsLabelledAsTheUsersOwnPrivateFileAndItsTileSaysWhatIsInside() {
+    fun thePartTwoGroupIsLabelledAsTheUsersOwnRecordsAndItsTileSaysWhatIsInside() {
         showHome()
         composeRule.onNodeWithText(LearnStrings.sectionHeading).assert(isHeading).assertIsDisplayed()
-        composeRule.onNodeWithText(LearnStrings.sectionSubtext).assertIsDisplayed()
+        composeRule.onNodeWithText(LearnStrings.sectionSubtitle).assertIsDisplayed()
         composeRule.onNodeWithText(LearnStrings.hubTileSubtitle).assertIsDisplayed()
         // The old subtitle only repeated the title; the new one must say what is inside the hub: Learn, and the Orders Bank.
         assertTrue(LearnStrings.hubTileSubtitle.contains("Learn", ignoreCase = true), "the tile subtitle says there is something to learn")
@@ -154,6 +154,8 @@ class GuideHomeClarityTest {
     private companion object {
         // 1022 before the Calculator chip. This harness draws every text line 36 dp tall, so a pill (36 + 4 padding) is 4 dp taller here than the one-line
         // subtitle it replaced; on a phone the TA/DA tile got SHORTER, because "Advance calculator" used to wrap to two lines and the chip is one.
-        const val BASELINE_PART2_TILE_BOTTOM_DP = 1024f
+        // + 72 for the two group subtitles ("Rules that shape your payments", "Part II orders that impact your payments"): two lines at the harness's
+        // 36 dp, about 36-40 dp on a phone, which the owner's Pixel had spare (about 60 dp above the tab bar) when they were asked for.
+        const val BASELINE_PART2_TILE_BOTTOM_DP = 1096f
     }
 }

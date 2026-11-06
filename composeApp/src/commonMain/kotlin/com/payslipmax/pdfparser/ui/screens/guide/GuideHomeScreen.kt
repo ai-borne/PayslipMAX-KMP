@@ -66,7 +66,7 @@ internal fun GuideHomeScreen(
             item(key = "whats-new") { GuideWhatsNewRow(date, onOpenWhatsNew, whatsNewIsNew, whatsNewCount, onDismissWhatsNew) }
         }
         guidePinnedSection(pinned, notedCards, onOpenPinned)
-        guideSectionLabel("guide", GuideStrings.homeOverview)
+        guideSectionLabel("guide", GuideStrings.homeOverview, subtitle = GuideStrings.homeOverviewSubtitle)
         guideTileGrid(guideAreaItems(areas, onOpenArea, preClaim, onOpenPreClaim))
         guidePart2Section(part2, part2Status, onOpenPart2Hub)
         if (notes.removedCount > 0) {
@@ -126,7 +126,7 @@ private fun LazyListScope.guidePart2Section(
     onOpenPart2Hub: () -> Unit,
 ) {
     if (part2 == Part2Entry.HIDDEN) return
-    guideSectionLabel("part2", LearnStrings.sectionHeading, note = LearnStrings.sectionSubtext)
+    guideSectionLabel("part2", LearnStrings.sectionHeading, subtitle = LearnStrings.sectionSubtitle)
     item(key = "part2") {
         Part2HubRow(LearnStrings.hubEmoji, LearnStrings.hubTitle, OrdersBankStrings.homeTileSubtitle(status), onOpenPart2Hub, accent = part2StatusAccent(status))
     }

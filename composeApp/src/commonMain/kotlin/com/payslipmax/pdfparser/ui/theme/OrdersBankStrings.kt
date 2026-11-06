@@ -18,7 +18,7 @@ object OrdersBankStrings {
     const val entrySubtitle = "Note each casualty and keep its order copy"
 
     // The Part II hub's top card (docs/Plan/13_OrdersBank_PhasePlan.md, Phase 8 item 2). Drafts for the owner to read on the phone.
-    const val hubEmptyTitle = "Start your Part II file"
+    const val hubEmptyTitle = "Start your Part II Orders file"
     const val hubEmptyBody = "Nothing stored yet. Learn what each order needs, then note your first casualty."
     const val hubAddFirst = "Add first casualty"
     const val hubLockEmoji = "🔒"
@@ -68,7 +68,7 @@ object OrdersBankStrings {
         when (number) {
             1 -> "1. Note the casualty: pick its code and add the dates"
             2 -> "2. Attach its order: scan the paper order beside the entry"
-            else -> "3. Retire with a full file: in date order, ready to print"
+            else -> "3. When due to retire, have all your Part II orders ready to share or print"
         }
 
     // Premium catalog.

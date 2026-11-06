@@ -100,9 +100,9 @@ class Part2HubStatusUiTest : Part2UiBase() {
         see(OrdersBankStrings.hubAttachedLine(attached = 1, total = 2)).assertIsDisplayed()
         see(OrdersBankStrings.hubNotAttached(1)).assertIsDisplayed().assertIsEnabled()
         assertEquals(0, count(OrdersBankStrings.hubEmptyTitle).fetchSemanticsNodes().size)
-        assertEquals(0, count(OrdersBankStrings.hubHowTitle).fetchSemanticsNodes().size, "how it works is for the empty file only")
-        val order = listOf(OrdersBankStrings.hubFileTitle, LearnStrings.entryTitle, OrdersBankStrings.entryTitle).map { bounds(it).top }
-        assertEquals(order.sorted(), order, "hero, Learn, Bank")
+        see(OrdersBankStrings.hubHowTitle).assertIsDisplayed()
+        val order = listOf(OrdersBankStrings.hubFileTitle, LearnStrings.entryTitle, OrdersBankStrings.entryTitle, OrdersBankStrings.hubHowTitle).map { bounds(it).top }
+        assertEquals(order.sorted(), order, "hero, Learn, Bank, How it works: the steps stay once a casualty is saved")
     }
 
     @Test
@@ -151,7 +151,7 @@ class Part2HubStatusUiTest : Part2UiBase() {
         see(LearnStrings.entryTitle).assertIsDisplayed()
         see(OrdersBankStrings.entryTitle).assertIsDisplayed()
         assertEquals(0, count(OrdersBankStrings.hubEmptyTitle).fetchSemanticsNodes().size)
-        assertEquals(0, count(OrdersBankStrings.hubHowTitle).fetchSemanticsNodes().size)
+        see(OrdersBankStrings.hubHowTitle).assertIsDisplayed()
         assertEquals(Part2Destination.Hub, nav.current)
     }
 

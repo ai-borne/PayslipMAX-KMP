@@ -113,7 +113,7 @@ private fun PrivacyLine() {
     }
 }
 
-/** The three steps, shown under the rows while the file is empty and gone once the first casualty is saved. */
+/** The three steps, always shown under the rows (owner decision 2026-11-06: they stay once a casualty is saved). */
 @Composable
 internal fun Part2HubHowItWorks() {
     Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {

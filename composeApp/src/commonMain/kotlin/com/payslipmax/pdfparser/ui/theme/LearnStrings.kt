@@ -8,9 +8,9 @@ import com.payslipmax.pdfparser.part2.domain.Part2ColumnPosition
  * strings go in their own object when that screen exists.
  */
 object LearnStrings {
-    // Guide Home: the label of the user's own group, below the handbook areas (a different manual), and the note beside it that says it is private.
+    // Guide Home: the label of the user's own group, below the handbook areas (a different manual), and the line under it that says what it holds.
     const val sectionHeading = "My records"
-    const val sectionSubtext = "Stored only on this phone"
+    const val sectionSubtitle = "Part II orders that impact your payments"
 
     // Guide Home's one Part II tile, and the hub screen it opens (Learn and the Orders Bank).
     const val hubEmoji = "📜"

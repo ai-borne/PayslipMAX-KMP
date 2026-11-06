@@ -48,7 +48,7 @@ class Part2LookupUiTest : Part2UiBase() {
         show()
         val heading = SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading)
         composeRule.onNodeWithText(LearnStrings.sectionHeading).assert(heading).assertIsDisplayed()
-        see(LearnStrings.sectionSubtext).assertIsDisplayed()
+        see(LearnStrings.sectionSubtitle).assertIsDisplayed()
 
         fun top(text: String) = composeRule.onAllNodesWithText(text)[0].fetchSemanticsNode().boundsInRoot.top
         val lastArea = (guide.uiState.value as GuideUiState.Ready).areas.map { GuideStrings.areaTileLabel(it.id) ?: it.title }.maxOf { top(it) }
