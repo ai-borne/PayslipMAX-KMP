@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,19 +30,28 @@ internal class GuideGridItem(
     val badge: String? = null,
 )
 
-/** A grey divider, then a section's one-line overview ([heading] only when it has a title of its own, then [overview]). */
-internal fun LazyListScope.guideSectionIntro(
+/**
+ * A group's label on Guide Home: its name as a heading, and an optional [note] beside it (the user's own group says it is private).
+ * No divider: the label alone separates the groups, which keeps Home within one phone screen.
+ */
+internal fun LazyListScope.guideSectionLabel(
     key: String,
-    overview: String,
-    heading: String? = null,
+    label: String,
+    note: String? = null,
 ) {
-    item(key = "$key-divider") { HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant) }
-    item(key = "$key-intro") {
-        Column {
-            heading?.let { Text(it, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() }) }
-            val style = if (heading == null) MaterialTheme.typography.titleMedium else MaterialTheme.typography.bodyMedium
-            val color = if (heading == null) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant
-            Text(overview, style = style, color = color, modifier = if (heading == null) Modifier.semantics { heading() } else Modifier)
+    item(key = "$key-label") {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = AppDimensions.SpacingSmall),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
+        ) {
+            Text(
+                label,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f, fill = false).semantics { heading() },
+            )
+            note?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     }
 }

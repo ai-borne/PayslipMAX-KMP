@@ -71,7 +71,7 @@ internal fun GuideHomeScreen(
                 GuideCardRowView(row, onClick = { onOpenPinned(row.cardId) }, noteMark = if (row.cardId in notedCards) GuideNoteMark.HAS_NOTE else GuideNoteMark.NONE)
             }
         }
-        guideSectionIntro("guide", GuideStrings.homeOverview)
+        guideSectionLabel("guide", GuideStrings.homeOverview)
         guideTileGrid(guideAreaItems(areas, onOpenArea, preClaim, onOpenPreClaim))
         guidePart2Section(part2, onOpenPart2Hub)
         if (notes.removedCount > 0) {
@@ -105,15 +105,15 @@ private fun guideAreaItems(
 }
 
 /**
- * The Part II section below the handbook areas: a grey divider, its heading with a one-line overview (it comes from ODP 2026, not the PCDA
- * handbook), then one full-width Part II Orders tile that opens the hub with Learn and the Orders Bank. Absent while its flag is off.
+ * The Part II group below the handbook areas, labelled as the user's own private records (it is not part of the PCDA handbook): one
+ * full-width Part II Orders tile that opens the hub with Learn and the Orders Bank. Absent while its flag is off.
  */
 private fun LazyListScope.guidePart2Section(
     part2: Part2Entry,
     onOpenPart2Hub: () -> Unit,
 ) {
     if (part2 == Part2Entry.HIDDEN) return
-    guideSectionIntro("part2", LearnStrings.sectionSubtext, heading = LearnStrings.sectionHeading)
+    guideSectionLabel("part2", LearnStrings.sectionHeading, note = LearnStrings.sectionSubtext)
     guideTileGrid(listOf(GuideGridItem("part2", LearnStrings.hubEmoji, LearnStrings.hubTitle, LearnStrings.hubTileSubtitle, onOpenPart2Hub)), fullRow = true)
 }
 

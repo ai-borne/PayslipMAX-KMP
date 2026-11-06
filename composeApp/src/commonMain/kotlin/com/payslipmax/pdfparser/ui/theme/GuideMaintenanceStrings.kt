@@ -68,6 +68,9 @@ object GuideMaintenanceStrings {
 
     fun notesUnreadable(count: Int): String = if (count == 1) "1 note could not be read" else "$count notes could not be read"
 
+    /** The sparkle at the start of the Guide Home row: decoration, never read aloud. */
+    const val whatsNewEmoji = "✨"
+
     /** The Guide Home row, named for the month of the newest entry. */
     fun whatsNewRow(latestDate: String): String = "What's new in Rule Guide (${GuideStrings.yearMonth(latestDate.take(YEAR_MONTH_LENGTH))})"
 

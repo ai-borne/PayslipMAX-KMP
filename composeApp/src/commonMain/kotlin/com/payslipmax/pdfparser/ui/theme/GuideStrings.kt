@@ -9,8 +9,8 @@ import com.payslipmax.pdfparser.guide.model.GuideBasis
 object GuideStrings {
     const val tabLabel = "Rules"
     const val homeTitle = "Rule Guide"
-    const val homeSection = "Know your rules, authorities and claim steps"
-    const val homeOverview = "Browse by topic"
+    const val homeSection = "Look up your rules, entitlements and claim steps"
+    const val homeOverview = "Rules & entitlements"
     const val loading = "Opening Rules…"
     const val loadFailedTitle = "Rules could not open"
     const val loadFailedBody = "Your payslips are not affected. Try again. If it keeps failing, update the app."
