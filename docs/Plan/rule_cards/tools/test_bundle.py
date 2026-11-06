@@ -68,10 +68,10 @@ class BundleContents(unittest.TestCase):
 
     def test_matches_the_compiled_dataset(self):
         cards = BUILT['cards']
-        self.assertEqual(len(cards), 400)
+        self.assertEqual(len(cards), 403)
         # The domain split is pinned on the source rulebook, because the shipped cards no longer carry `domain`.
         self.assertEqual(sum(c['domain'] == 'travel' for c in RULEBOOK['cards']), 220)
-        self.assertEqual(sum(c['domain'] == 'pay' for c in RULEBOOK['cards']), 180)
+        self.assertEqual(sum(c['domain'] == 'pay' for c in RULEBOOK['cards']), 183)
         self.assertEqual(len(BUILT['nav']), 9)
         self.assertEqual(sum(len(a['cases']) for a in BUILT['nav']), 44)
         self.assertEqual(BUILT['facets'], RULEBOOK['facets'])

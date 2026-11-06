@@ -1,13 +1,13 @@
 # PayslipMax rulebook: reference (generated)
 
-Generated from [rulebook.json](rulebook.json) on 2026-10-20. **Do not edit by hand.** 400 cards (220 travel, 180 pay). Source entries covered: 529 of 474 (skipped with a reason: 17; uncovered: 0).
+Generated from [rulebook.json](rulebook.json) on 2026-11-06. **Do not edit by hand.** 403 cards (220 travel, 183 pay). Source entries covered: 529 of 474 (skipped with a reason: 17; uncovered: 0).
 
 Each card: one-line answer in bold, short bullets, the authority to cite, optional collapsed details. "Open point" lines are for reviewers and are never shown to users. Card text is written in our own words.
 
 ## Contents
 
 - **Travel**: 220 cards
-- **Pay and allowances**: 180 cards
+- **Pay and allowances**: 183 cards
 
 ## Travel
 
@@ -2660,7 +2660,7 @@ Cite: Rules 19 and 47, Leave Rules for the Services Vol I (Army)
 
 <sub>Details: Furlough can be taken in spells at any time after the three-year cycle begins. Furlough running into the next cycle is debited to the cycle it started in.</sub>
 
-##### Sick Leave (2)
+##### Sick Leave (5)
 
 #### RB-RP-016 Sick leave: how long and who extends it?
 
@@ -2685,6 +2685,47 @@ Cite: Rule 20, Leave Rules for the Services Vol I (Army); AO 148/77
 Cite: Rule 22, Leave Rules for the Services Vol I (Army); MoD letter 22679/DGAFMS/DG-3A/2721/D(Med) dt 18-07-1974
 
 <sub>Details: For TB or non-lepromatous leprosy, treatment runs up to 12 months on full emoluments from the definite diagnosis, which must be made within 60 days. See Appendix A to AO 150/75.</sub>
+
+#### RB-HS-01 Hospital stay: do I need Part II orders?
+
+**Yes. Every day from admission to resuming duty needs Part II orders. Without them the days can count as irregular absence and pay be recovered.**
+
+- Absence counts from the first day of admission
+- Sick leave granted after discharge is part of the same absence
+- *Watch out:* Orders published over two years late need a time-barred sanction first
+- *Watch out:* Check that orders came out after every hospital stay
+
+Cite: Rule 20, Leave Rules for the Services Vol I (Army); ODP 2026 Chapter 6
+
+<sub>Details: Ask the unit Part II cell to confirm that the admission, the discharge and the regularising order were all published. If PCDA(O) treats the days as irregular absence, pay for those days is recovered, so check early rather than after a recovery notice.</sub>
+
+#### RB-HS-02 Which Part II orders cover a hospital stay?
+
+**Admission, discharge and reporting for duty, plus the regularising order for the length of the stay, all published together.**
+
+- Admission HOSADM, discharge HOSDISCH, reported for duty RPDUHSP
+- Up to 30 days: sick list concession SLC
+- Over 30 days: REGALMS if due to military service, else REGAL
+- *Watch out:* With sick leave, also SLDISCH, GTDSL and SLHOSADM
+- *Watch out:* Transfer to another hospital: MEDTRAN as applicable
+
+Cite: Chapter 6 (serials 6.1 to 6.14), Documentation Procedure for Officers (ODP) 2026
+
+<sub>Details: Over 30 days the regularising order is backed by GTDALHOS for the annual leave debited and GTDSLHOS for the sick leave debited. Any part at furlough rates is shown by HOSFURPY. The discharge, the report for duty and the regularising order go in the same Part II order.</sub>
+
+#### RB-HS-03 Long hospital stay: how is the absence split?
+
+**Annual leave for the year first, then sick leave. Together they give 180 days at full pay; any balance is regularised at furlough rates.**
+
+- Up to 60 days annual leave for the year
+- Up to 120 days sick leave
+- Balance beyond 180 days: furlough rates, code HOSFURPY
+- *Watch out:* The 180 day split is for stays not due to military service
+- *Watch out:* A stay across two years uses last year's balance annual leave first
+
+Cite: Leave Rules for the Services Vol I (Army); ODP 2026 Chapter 6
+
+<sub>Details: Example: a stay of 190 days not due to military service is regularised as 60 days annual leave, 120 days sick leave and 10 days at furlough rates. Each part is published with its own code and dates, and the order number of the first admission is quoted.</sub>
 
 ##### Sick List Concession (1)
 
