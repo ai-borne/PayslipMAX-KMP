@@ -8,8 +8,8 @@ committed. Plan: `docs/Plan/13_OrdersBank_PhasePlan.md`, Phase 1 in `13a_OrdersB
 | `codes.json` | 303 serials, 321 codes, chapter, group, the manual's name, detail page | `tools/part2_codes.py` (local sources) | shape check |
 | `nav.json` | the 10 ribbons over those serials | hand-authored, `tools/part2_nav.py` checks | yes |
 | `columns.json` | Annexure III: what From, To and Data 1-4 need for each of the 303 serials, with the manual's own captions | `tools/part2_columns_extract.py` (local PDF), rules in `tools/part2_columns.py`, hand readings in `tools/part2_columns_hand.py` | `tools/part2_columns_check.py` |
-| `about.json` | the 30 plain-English pages (48 serials): what it is, when you see it, what to keep ready, one thing to watch | written by hand from the ODP and PCDA handbooks; sources only in a local sheet | `tools/part2_about_check.py` |
-| `related.json` | "usually published with" links for 15 casualties, each `manual` (with page) or `practice` | exported once from the old templates | `tools/part2_related_check.py` |
+| `about.json` | the 40 plain-English pages (62 serials: the owner's 30 plus 10 on hospital stays, Chapter 6): what it is, when you see it, what to keep ready, one thing to watch | written by hand from the ODP and PCDA handbooks; sources only in a local sheet | `tools/part2_about_check.py` |
+| `related.json` | "usually published with" links for 21 casualties (15 leave, 6 hospital stay), each `manual` (with page) or `practice` | exported once from the old templates | `tools/part2_related_check.py` |
 
 `columns.json` has one row per line on purpose (a review diff reads row by row), so it is over 300 lines; `test_part2_file_sizes.py` lists it in
 `ONE_ROW_PER_LINE` and still limits it to three times the limit. A column is `required`, `optional` or `none`; a `none` column has no caption.

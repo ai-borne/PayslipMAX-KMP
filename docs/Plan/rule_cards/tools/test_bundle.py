@@ -205,7 +205,7 @@ class BundlePart2(unittest.TestCase):
     def test_the_section_ships_the_codes_the_layout_and_the_casualty_slice(self):
         section = BUILT['part2']
         self.assertEqual((len(section['serials']), len(section['ribbons'])), (303, 10))
-        self.assertEqual((len(section['columns']), len(section['about']), len(section['related'])), (303, 30, 15))
+        self.assertEqual((len(section['columns']), len(section['about']), len(section['related'])), (303, 40, 21))
         codes = part2_codes_check.load()
         casualty = part2_casualty.for_bundle(part2_columns_check.load(), part2_about_check.load(), part2_related_check.load(), codes)
         base = part2_nav.for_bundle(part2_nav.load(), codes)

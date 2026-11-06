@@ -78,8 +78,9 @@ class CommittedFileTest(unittest.TestCase):
 
     def test_only_casualties_that_have_data_are_listed(self):
         # why: the plan says "Usually published with" only where data exists (the casualties the old work gave links to), never guessed.
-        # Only the 15 leave casualties had links, not the "about 60" the plan estimated; the test pins what is true.
-        self.assertEqual(len(self.data['related']), 15)
+        # 15 leave casualties had links, not the "about 60" the plan estimated; the 6 hospital-stay casualties were added with the
+        # hospital-regularisation work (HOSADM, HOSDISCH, RPDUHSP, SLC, REGAL, REGALMS). The test pins what is true.
+        self.assertEqual(len(self.data['related']), 21)
 
     def test_the_file_is_exactly_what_render_writes(self):
         with open(PATH, encoding='utf-8') as fh:

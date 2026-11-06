@@ -17,6 +17,10 @@ ABOUT_PATH = os.path.join(CARDS_DIR, 'part2', 'about.json')
 VERSION = 1
 PARTS = ('what', 'when', 'ready', 'watch')
 KEYS = {'id', 'serials'} | set(PARTS)
+# The hospital-stay pages (Chapter 6, serials 6.1 to 6.14), added with the hospital-regularisation work. Page id = its first serial;
+# 6.7 shares the sick-leave page, 6.11 the regularisation page, 6.13 and 6.14 the long-stay page.
+HOSPITAL_PAGES = frozenset({'6.1', '6.2', '6.3', '6.4', '6.5', '6.6', '6.8', '6.9', '6.10', '6.12'})
+HOSPITAL_SERIALS = frozenset(f'6.{n}' for n in range(1, 15))
 PART_MAX = 400
 WORDS_MAX = 130
 CONTROL = re.compile(r'[\x00-\x08\x0b-\x1f\x7f]')
@@ -30,7 +34,7 @@ def load():
 
 
 def problems(data, codes, whole=True):
-    """`whole` also demands exactly the owner's 30 pages and their 48 serials; the unit tests turn it off for one invented page."""
+    """`whole` also demands exactly the owner's 30 pages (48 serials) plus the 10 hospital pages (14 serials); the unit tests turn it off for one invented page."""
     errs = []
     if data.get('version') != VERSION:
         errs.append(f'about: version must be {VERSION}')
@@ -40,10 +44,10 @@ def problems(data, codes, whole=True):
         errs += _page(page, known, seen)
     if whole:
         ids = {p.get('id') for p in data.get('pages') or []}
-        if ids != set(OWNER_PAGES):
-            errs.append('about: pages must be exactly the owner\'s 30')
-        if seen != set(OWNER_PAGES) | set(SIBLINGS):
-            errs.append('about: pages must cover exactly the 48 serials of those 30 pages')
+        if ids != set(OWNER_PAGES) | HOSPITAL_PAGES:
+            errs.append('about: pages must be exactly the owner\'s 30 and the 10 hospital pages')
+        if seen != set(OWNER_PAGES) | set(SIBLINGS) | HOSPITAL_SERIALS:
+            errs.append('about: pages must cover exactly the 62 serials of those 40 pages')
     return errs
 
 

@@ -1,4 +1,4 @@
-"""Tests for part2/about.json and part2_about_check.py: the 30 plain-English casualty pages (Part II Orders Bank, phase 1).
+"""Tests for part2/about.json and part2_about_check.py: the 40 plain-English casualty pages (30 + 10 hospital) (Part II Orders Bank, phase 1).
 
 Why they matter: these 30 pages are the only text the app writes itself about an order; every other word is the manual's. A page that
 quotes a rate, carries markup, runs long, or covers the wrong serials would be shipped to every officer. Each rule is broken on
@@ -87,12 +87,29 @@ class CommittedFileTest(unittest.TestCase):
     def test_the_file_passes_every_check(self):
         self.assertEqual(chk.problems(self.data, CODES), [])
 
-    def test_exactly_the_owners_30_pages_covering_48_serials(self):
-        self.assertEqual({p['id'] for p in self.data['pages']}, set(OWNER_PAGES))
-        self.assertEqual(len(self.data['pages']), 30)
+    def test_exactly_the_owners_30_pages_and_the_10_hospital_pages_covering_62_serials(self):
+        self.assertEqual({p['id'] for p in self.data['pages']}, set(OWNER_PAGES) | chk.HOSPITAL_PAGES)
+        self.assertEqual(len(self.data['pages']), 40)
         covered = {s for p in self.data['pages'] for s in p['serials']}
-        self.assertEqual(covered, set(OWNER_PAGES) | set(SIBLINGS))
-        self.assertEqual(len(covered), 48)
+        self.assertEqual(covered, set(OWNER_PAGES) | set(SIBLINGS) | chk.HOSPITAL_SERIALS)
+        self.assertEqual(len(covered), 62)
+
+    def test_the_hospital_pages_cover_chapter_6_serials_6_1_to_6_14_once_each(self):
+        # why: the hospital-stay cards name these codes; an officer who taps one must land on a page, and no serial may sit on two.
+        hospital = [s for p in self.data['pages'] if p['id'].startswith('6.') for s in p['serials']]
+        self.assertEqual(sorted(hospital, key=lambda s: int(s.split('.')[1])), [f'6.{n}' for n in range(1, 15)])
+
+    def test_the_hospital_pages_warn_that_unregularised_days_can_cost_pay(self):
+        # why: this is the reason the pages exist; every hospital page says it where the officer looks.
+        by_id = {p['id']: p for p in self.data['pages']}
+        for pid in sorted(chk.HOSPITAL_PAGES):
+            self.assertIn('recover', by_id[pid]['watch'].lower(), pid)
+
+    def test_the_hospital_pages_name_no_source_letter(self):
+        # why: owner decision 2026-11-06 - cite ODP 2026 only; the app never names the source letter.
+        for p in self.data['pages']:
+            if p['id'].startswith('6.'):
+                self.assertNotRegex(json.dumps(p), r'B/25451|ADG PS|AG.s Branch|Nov 2025|letter', p['id'])
 
     def test_the_shared_pages_cover_their_siblings(self):
         by_id = {p['id']: p['serials'] for p in self.data['pages']}

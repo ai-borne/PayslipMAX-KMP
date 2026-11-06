@@ -24,7 +24,7 @@ class ForBundleTest(unittest.TestCase):
         self.section = part2_casualty.for_bundle(COLUMNS, ABOUT, RELATED, CODES)
 
     def test_303_rows_30_pages_15_related_casualties(self):
-        self.assertEqual((len(self.section['columns']), len(self.section['about']), len(self.section['related'])), (303, 30, 15))
+        self.assertEqual((len(self.section['columns']), len(self.section['about']), len(self.section['related'])), (303, 40, 21))
 
     def test_a_column_row_ships_only_what_the_app_reads(self):
         # why: codes and page already ship once, in the serial list; a second copy could drift from it.
