@@ -35,6 +35,19 @@ object OrdersBankStrings {
 
     fun hubNotAttached(count: Int): String = if (count == 1) "1 order copy not attached" else "$count order copies not attached"
 
+    /** The hub's quiet note on hospital stays that ended with no regularising entry; "noted", never "missing". [timeBarred] stays over two years old need a sanction first. */
+    fun hubStays(
+        count: Int,
+        timeBarred: Int,
+    ): String {
+        val base = if (count == 1) "1 hospital stay noted with no regularising order" else "$count hospital stays noted with no regularising order"
+        return when (timeBarred) {
+            0 -> base
+            1 -> "$base. 1 is over two years old, so a sanction comes first"
+            else -> "$base. $timeBarred are over two years old, so a sanction comes first"
+        }
+    }
+
     const val hubTileAllAttached = "all attached"
 
     /** The one line under "My Part II Orders" on Guide Home once there is a file: the hub's own counts, short enough for one line on a phone. */
@@ -85,6 +98,7 @@ object OrdersBankStrings {
             BankFilter.ALL -> "All"
             BankFilter.NOT_ATTACHED -> "Not attached"
             BankFilter.ATTACHED -> "Attached"
+            BankFilter.UNREGULARISED -> "Stays to check"
         }
 
     fun chipWithCount(

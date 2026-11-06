@@ -3,8 +3,8 @@ package com.payslipmax.pdfparser.part2.domain
 import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
 import com.payslipmax.pdfparser.guide.preclaim.DutyDays
 
-/** The chips on the Bank list. */
-enum class BankFilter { ALL, NOT_ATTACHED, ATTACHED }
+/** The chips on the Bank list. [UNREGULARISED] lists the hospital admissions whose stay ended with no regularising entry (see [HospitalStays]). */
+enum class BankFilter { ALL, NOT_ATTACHED, ATTACHED, UNREGULARISED }
 
 /** How long an entry has waited, as numbers; the words are UI copy. */
 sealed interface WaitingAge {
@@ -19,8 +19,15 @@ data class BankRow(val entry: BankEntry, val status: BankStatus, val age: Waitin
 
 data class BankYear(val year: Int, val rows: List<BankRow>)
 
-/** The list for one chip, plus the count behind each chip (always over the whole Bank). */
-data class BankView(val years: List<BankYear>, val all: Int, val notAttached: Int, val attached: Int)
+/** The list for one chip, plus the count behind each chip (always over the whole Bank). The stay counts default to 0 for older callers. */
+data class BankView(
+    val years: List<BankYear>,
+    val all: Int,
+    val notAttached: Int,
+    val attached: Int,
+    val unregularised: Int = 0,
+    val timeBarred: Int = 0,
+)
 
 /**
  * The Bank list: newest From date first, grouped by the year of From, with a waiting age for rows that have no order. Pure, with the day
@@ -38,13 +45,21 @@ object BankIndex {
     ): BankView {
         val rows = entries.map { BankRow(it, BankStatus.of(it, orderIds), null) }
         val waiting = rows.count { it.status == BankStatus.NOT_ATTACHED }
+        val stays = HospitalStays.check(entries, today)
         val shown =
             rows
-                .filter { filter == BankFilter.ALL || (it.status == BankStatus.NOT_ATTACHED) == (filter == BankFilter.NOT_ATTACHED) }
+                .filter {
+                    when (filter) {
+                        BankFilter.ALL -> true
+                        BankFilter.NOT_ATTACHED -> it.status == BankStatus.NOT_ATTACHED
+                        BankFilter.ATTACHED -> it.status == BankStatus.ATTACHED
+                        BankFilter.UNREGULARISED -> it.entry.id in stays.unregularised
+                    }
+                }
                 .sortedWith(compareByDescending<BankRow> { DutyDays.dayNumber(it.entry.from) }.thenByDescending { it.entry.createdAt }.thenBy { it.entry.id })
                 .map { if (it.status == BankStatus.NOT_ATTACHED) it.copy(age = ageOf(it.entry.from, today)) else it }
         val years = shown.groupBy { it.entry.from.year }.map { (year, group) -> BankYear(year, group) }
-        return BankView(years, rows.size, waiting, rows.size - waiting)
+        return BankView(years, rows.size, waiting, rows.size - waiting, stays.unregularised.size, stays.timeBarred.size)
     }
 
     /** Days under 30, then whole calendar months, then years and months; null while the From date is still ahead. */

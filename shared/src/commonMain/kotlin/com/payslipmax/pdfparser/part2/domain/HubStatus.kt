@@ -10,7 +10,14 @@ sealed interface HubStatus {
 
     data object Empty : HubStatus
 
-    data class Filing(val total: Int, val attached: Int, val notAttached: Int) : HubStatus
+    /** [unregularised] and [timeBarred] count hospital stays (see [HospitalStays]); they default to 0 so callers that predate them are unchanged. */
+    data class Filing(
+        val total: Int,
+        val attached: Int,
+        val notAttached: Int,
+        val unregularised: Int = 0,
+        val timeBarred: Int = 0,
+    ) : HubStatus
 
     companion object {
         fun of(
@@ -20,7 +27,7 @@ sealed interface HubStatus {
             when {
                 !loaded -> Unknown
                 view.all == 0 -> Empty
-                else -> Filing(view.all, view.attached, view.notAttached)
+                else -> Filing(view.all, view.attached, view.notAttached, view.unregularised, view.timeBarred)
             }
     }
 }

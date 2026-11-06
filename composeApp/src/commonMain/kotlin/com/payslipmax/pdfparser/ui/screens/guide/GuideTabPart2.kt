@@ -143,6 +143,7 @@ private fun Part2HubLevel(
                 onAdd = { host.open(navState) },
                 onUnlock = host.access.onUnlock,
                 onOpenMissing = { host.openBank(navState, BankFilter.NOT_ATTACHED) },
+                onOpenStays = { host.openBank(navState, BankFilter.UNREGULARISED) },
             )
         }
     Part2HubScreen(onBack, { host.open(navState) }, { host.openBank(navState) }, status, hero)

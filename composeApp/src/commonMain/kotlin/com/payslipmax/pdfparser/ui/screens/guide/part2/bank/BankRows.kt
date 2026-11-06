@@ -34,16 +34,22 @@ internal fun statusTint(status: BankStatus): Color = if (status == BankStatus.NO
 @Composable
 internal fun chainTint(): Color = BankColors.waiting()
 
-/** The three chips, each with the count behind it (always over the whole Bank). */
+/** The chips, each with the count behind it (always over the whole Bank). The stays chip shows only while it holds something, or is the one selected. */
 @Composable
 internal fun BankChips(
     view: BankView,
     selected: BankFilter,
     onSelect: (BankFilter) -> Unit,
 ) {
-    val counts = mapOf(BankFilter.ALL to view.all, BankFilter.NOT_ATTACHED to view.notAttached, BankFilter.ATTACHED to view.attached)
+    val counts =
+        mapOf(
+            BankFilter.ALL to view.all,
+            BankFilter.NOT_ATTACHED to view.notAttached,
+            BankFilter.ATTACHED to view.attached,
+            BankFilter.UNREGULARISED to view.unregularised,
+        )
     FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall), verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
-        BankFilter.entries.forEach { filter ->
+        BankFilter.entries.filter { it != BankFilter.UNREGULARISED || counts.getValue(it) > 0 || it == selected }.forEach { filter ->
             FilterChip(
                 selected = filter == selected,
                 onClick = { onSelect(filter) },

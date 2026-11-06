@@ -30,6 +30,7 @@ internal class HubHeroActions(
     val onAdd: () -> Unit,
     val onUnlock: () -> Unit,
     val onOpenMissing: () -> Unit,
+    val onOpenStays: () -> Unit = {},
 )
 
 /** The hub's top card: where the officer's file stands. Nothing at all until the first read finishes, so "empty" is never said too early. */
@@ -41,7 +42,7 @@ internal fun Part2HubHero(
     when (status) {
         HubStatus.Unknown -> Unit
         HubStatus.Empty -> HeroCard(part2StatusAccent(status)) { EmptyHero(actions) }
-        is HubStatus.Filing -> HeroCard(part2StatusAccent(status)) { FilingHero(status, actions.onOpenMissing) }
+        is HubStatus.Filing -> HeroCard(part2StatusAccent(status)) { FilingHero(status, actions) }
     }
 }
 
@@ -79,18 +80,19 @@ private fun EmptyHero(actions: HubHeroActions) {
 @Composable
 private fun FilingHero(
     status: HubStatus.Filing,
-    onOpenMissing: () -> Unit,
+    actions: HubHeroActions,
 ) {
     Text(OrdersBankStrings.hubFileTitle, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Text(OrdersBankStrings.hubNoted(status.total), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     Text(OrdersBankStrings.hubAttachedLine(status.attached, status.total), style = MaterialTheme.typography.bodyMedium)
-    if (status.notAttached > 0) MissingChip(status.notAttached, onOpenMissing)
+    if (status.notAttached > 0) HubChip(OrdersBankStrings.hubNotAttached(status.notAttached), actions.onOpenMissing)
+    if (status.unregularised > 0) HubChip(OrdersBankStrings.hubStays(status.unregularised, status.timeBarred), actions.onOpenStays)
 }
 
-/** The one thing still to do, in the Bank's own "waiting" colour; it opens the Bank on exactly those entries. */
+/** A thing still to look at, in the Bank's own "waiting" colour; it opens the Bank on exactly those entries. */
 @Composable
-private fun MissingChip(
-    count: Int,
+private fun HubChip(
+    text: String,
     onClick: () -> Unit,
 ) {
     Row(
@@ -98,7 +100,7 @@ private fun MissingChip(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
     ) {
-        Text(OrdersBankStrings.hubNotAttached(count), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold, color = BankColors.waiting(), modifier = Modifier.weight(1f))
+        Text(text, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold, color = BankColors.waiting(), modifier = Modifier.weight(1f))
         Decoration(AppStrings.rowArrow, AppDimensions.TextSizeLarge, BankColors.waiting())
     }
 }
