@@ -1,13 +1,13 @@
 # PayslipMax rulebook: reference (generated)
 
-Generated from [rulebook.json](rulebook.json) on 2026-11-06. **Do not edit by hand.** 406 cards (220 travel, 186 pay). Source entries covered: 529 of 474 (skipped with a reason: 17; uncovered: 0).
+Generated from [rulebook.json](rulebook.json) on 2026-11-06. **Do not edit by hand.** 403 cards (220 travel, 183 pay). Source entries covered: 529 of 474 (skipped with a reason: 17; uncovered: 0).
 
 Each card: one-line answer in bold, short bullets, the authority to cite, optional collapsed details. "Open point" lines are for reviewers and are never shown to users. Card text is written in our own words.
 
 ## Contents
 
 - **Travel**: 220 cards
-- **Pay and allowances**: 186 cards
+- **Pay and allowances**: 183 cards
 
 ## Travel
 
@@ -2660,7 +2660,7 @@ Cite: Rules 19 and 47, Leave Rules for the Services Vol I (Army)
 
 <sub>Details: Furlough can be taken in spells at any time after the three-year cycle begins. Furlough running into the next cycle is debited to the cycle it started in.</sub>
 
-##### Sick Leave (8)
+##### Sick Leave (5)
 
 #### RB-RP-016 Sick leave: how long and who extends it?
 
@@ -2727,48 +2727,6 @@ Cite: ODP 2026 Chapter 6 (serials 6.1 to 6.14), Documentation Procedure for Offi
 Cite: Leave Rules for the Services Vol I (Army); ODP 2026 Chapter 6
 
 <sub>Details: Example: a stay of 190 days not due to military service is regularised as 60 days annual leave, 120 days sick leave and 10 days at furlough rates. With only 30 days of annual leave balance, a 175 day stay is 30 annual leave, 120 sick leave and 25 at furlough rates. Across two years the 180 days are counted over the whole stay. Each part is published with its own code and dates, and the order number of the first admission is quoted.</sub>
-
-#### RB-HS-04 Example: 175 day stay, sick leave, not due to service
-
-**30 days annual leave balance, then 120 days sick leave, then 25 days at furlough rates.**
-
-- Admitted mid-May, final discharge early November
-- Publish HOSADM, SLDISCH, GTDSL, SLHOSADM, HOSDISCH, RPDUHSP
-- Then REGAL with GTDALHOS 30, GTDSLHOS 120, HOSFURPY 25
-- *Watch out:* Furlough starts early: the annual leave balance was only 30
-- *Watch out:* Not for stays due to military service
-
-Cite: ODP 2026 Chapter 6; Leave Rules for the Services Vol I (Army)
-
-<sub>Details: REGAL covers the whole absence from admission to final discharge. Each part is published with its own code and dates: annual leave first, then sick leave, then the furlough part. Quote the order number of the first admission in every part.</sub>
-
-#### RB-HS-05 Examples: a stay up to 30 days, and one due to military service
-
-**Up to 30 days: one SLC. Over 30 days due to military service: REGALMS at full pay, no furlough.**
-
-- 29 days, 1 to 29 January: HOSADM, HOSDISCH, RPDUHSP, then SLC
-- 150 days, 1 January to 30 May: same three, then REGALMS
-- REGALMS parts: GTDALHOS 60 and GTDSLHOS 90
-- *Watch out:* Over 30 days, sick leave included, SLC is not enough
-- *Watch out:* Add the certificate that the sickness is due to military service
-
-Cite: ODP 2026 Chapter 6; Leave Rules for the Services Vol I (Army)
-
-<sub>Details: SLC covers an absence of up to 30 days, sick leave included, from the admission date to the final discharge date, even across two years. REGALMS covers the whole absence at full pay and allowances; the sick leave under GTDSLHOS must not exceed 24 months. Quote the order number of the first admission in each part.</sub>
-
-#### RB-HS-06 Example: 260 day stay across two years, not due to service
-
-**180 days at full pay over the whole stay: 75 days annual leave, 105 days sick leave. Then 80 days at furlough rates.**
-
-- Admitted in October, final discharge in July the next year
-- Publish HOSADM, SLDISCH, GTDSL, SLHOSADM, HOSDISCH, RPDUHSP
-- Then REGAL: GTDALHOS 15, GTDSLHOS 58, GTDALHOS 60, GTDSLHOS 47, HOSFURPY 80
-- *Watch out:* Last year's balance annual leave is used first, 15 days here
-- *Watch out:* Not for stays due to military service
-
-Cite: ODP 2026 Chapter 6; Leave Rules for the Services Vol I (Army)
-
-<sub>Details: The parts run in date order: last year's balance annual leave, last year's sick leave to the year end, this year's annual leave, this year's sick leave, then furlough rates. Each part is published with its own code and dates and quotes the order number of the first admission. The 180 full pay days are counted over the whole stay, not year by year.</sub>
 
 ##### Sick List Concession (1)
 

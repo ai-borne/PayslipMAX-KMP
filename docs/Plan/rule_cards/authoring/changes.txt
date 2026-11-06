@@ -7,7 +7,6 @@
 
 == 2026-11-06
 - Three new cards on hospital stays: why Part II orders are needed, which ones to publish, and how a long stay is split between annual leave, sick leave and furlough rates [RB-HS-01, RB-HS-02, RB-HS-03]
-- Three worked examples of hospital stays: a 175 day stay with sick leave, a stay up to 30 days and one due to military service, and a stay across two years [RB-HS-04, RB-HS-05, RB-HS-06]
 
 == 2026-10-20
 - Tough Location Allowance now cites the correct MoD letter number [RB-RP-078]

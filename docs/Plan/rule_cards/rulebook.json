@@ -1341,10 +1341,7 @@
       "RB-RP-018",
       "RB-HS-01",
       "RB-HS-02",
-      "RB-HS-03",
-      "RB-HS-04",
-      "RB-HS-05",
-      "RB-HS-06"
+      "RB-HS-03"
      ],
      "also": []
     },
@@ -11516,93 +11513,6 @@
    "nav": "leave-types"
   },
   {
-   "id": "RB-HS-04",
-   "domain": "pay",
-   "topic": "RP-016",
-   "title": "Example: 175 day stay, sick leave, not due to service",
-   "answer": "30 days annual leave balance, then 120 days sick leave, then 25 days at furlough rates.",
-   "key": [
-    "Admitted mid-May, final discharge early November",
-    "Publish HOSADM, SLDISCH, GTDSL, SLHOSADM, HOSDISCH, RPDUHSP",
-    "Then REGAL with GTDALHOS 30, GTDSLHOS 120, HOSFURPY 25"
-   ],
-   "attach": [],
-   "watch": [
-    "Furlough starts early: the annual leave balance was only 30",
-    "Not for stays due to military service"
-   ],
-   "cite": "ODP 2026 Chapter 6; Leave Rules for the Services Vol I (Army)",
-   "details": "REGAL covers the whole absence from admission to final discharge. Each part is published with its own code and dates: annual leave first, then sick leave, then the furlough part. Quote the order number of the first admission in every part.",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "RP-016"
-   ],
-   "open": [],
-   "basis": "",
-   "status": "draft",
-   "facet": "C",
-   "nav": "leave-types"
-  },
-  {
-   "id": "RB-HS-05",
-   "domain": "pay",
-   "topic": "RP-016",
-   "title": "Examples: a stay up to 30 days, and one due to military service",
-   "answer": "Up to 30 days: one SLC. Over 30 days due to military service: REGALMS at full pay, no furlough.",
-   "key": [
-    "29 days, 1 to 29 January: HOSADM, HOSDISCH, RPDUHSP, then SLC",
-    "150 days, 1 January to 30 May: same three, then REGALMS",
-    "REGALMS parts: GTDALHOS 60 and GTDSLHOS 90"
-   ],
-   "attach": [],
-   "watch": [
-    "Over 30 days, sick leave included, SLC is not enough",
-    "Add the certificate that the sickness is due to military service"
-   ],
-   "cite": "ODP 2026 Chapter 6; Leave Rules for the Services Vol I (Army)",
-   "details": "SLC covers an absence of up to 30 days, sick leave included, from the admission date to the final discharge date, even across two years. REGALMS covers the whole absence at full pay and allowances; the sick leave under GTDSLHOS must not exceed 24 months. Quote the order number of the first admission in each part.",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "RP-016"
-   ],
-   "open": [],
-   "basis": "",
-   "status": "draft",
-   "facet": "C",
-   "nav": "leave-types"
-  },
-  {
-   "id": "RB-HS-06",
-   "domain": "pay",
-   "topic": "RP-016",
-   "title": "Example: 260 day stay across two years, not due to service",
-   "answer": "180 days at full pay over the whole stay: 75 days annual leave, 105 days sick leave. Then 80 days at furlough rates.",
-   "key": [
-    "Admitted in October, final discharge in July the next year",
-    "Publish HOSADM, SLDISCH, GTDSL, SLHOSADM, HOSDISCH, RPDUHSP",
-    "Then REGAL: GTDALHOS 15, GTDSLHOS 58, GTDALHOS 60, GTDSLHOS 47, HOSFURPY 80"
-   ],
-   "attach": [],
-   "watch": [
-    "Last year's balance annual leave is used first, 15 days here",
-    "Not for stays due to military service"
-   ],
-   "cite": "ODP 2026 Chapter 6; Leave Rules for the Services Vol I (Army)",
-   "details": "The parts run in date order: last year's balance annual leave, last year's sick leave to the year end, this year's annual leave, this year's sick leave, then furlough rates. Each part is published with its own code and dates and quotes the order number of the first admission. The 180 full pay days are counted over the whole stay, not year by year.",
-   "chips": [],
-   "personal": "",
-   "from": [
-    "RP-016"
-   ],
-   "open": [],
-   "basis": "",
-   "status": "draft",
-   "facet": "C",
-   "nav": "leave-types"
-  },
-  {
    "id": "RB-RP-030",
    "domain": "pay",
    "topic": "RP-030",
@@ -12787,14 +12697,6 @@
       "RB-HS-02",
       "RB-HS-03"
      ]
-    },
-    {
-     "text": "Three worked examples of hospital stays: a 175 day stay with sick leave, a stay up to 30 days and one due to military service, and a stay across two years",
-     "cards": [
-      "RB-HS-04",
-      "RB-HS-05",
-      "RB-HS-06"
-     ]
     }
    ]
   },
@@ -12910,10 +12812,10 @@
   "covered": 529,
   "skipped": 17,
   "uncovered": 0,
-  "cards": 406,
+  "cards": 403,
   "cards_by_domain": {
    "travel": 220,
-   "pay": 186
+   "pay": 183
   },
   "pay_topics_total": 95,
   "pay_topics_with_cards": 90
