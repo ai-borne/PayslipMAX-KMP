@@ -6,8 +6,11 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import com.payslipmax.pdfparser.guide.GuideBundleContract
 import com.payslipmax.pdfparser.part2.domain.HubStatus
 import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2Entry
@@ -21,6 +24,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -43,8 +47,13 @@ class GuideHomeClarityTest {
         preClaim: PreClaimEntry = PreClaimEntry.LOCKED,
         part2: Part2Entry = Part2Entry.OPEN,
         part2Status: HubStatus = HubStatus.Unknown,
+        isNew: Boolean = false,
+        onDismiss: () -> Unit = {},
     ) = composeRule.setContent {
-        GuideHomeScreen(areas, onOpenArea = {}, onOpenSearch = {}, whatsNewDate = "2026-10-30", preClaim = preClaim, part2 = part2, part2Status = part2Status)
+        GuideHomeScreen(
+            areas, onOpenArea = {}, onOpenSearch = {}, whatsNewDate = "2026-10-30", whatsNewIsNew = isNew, whatsNewCount = 3, onDismissWhatsNew = onDismiss,
+            preClaim = preClaim, part2 = part2, part2Status = part2Status,
+        )
     }
 
     private fun top(text: String) = composeRule.onAllNodesWithText(text)[0].fetchSemanticsNode().boundsInRoot.top
@@ -94,6 +103,34 @@ class GuideHomeClarityTest {
         showHome()
         val bottom = composeRule.onAllNodesWithText(LearnStrings.hubTitle)[0].fetchSemanticsNode().boundsInRoot.bottom / composeRule.density.density
         assertTrue(bottom <= BASELINE_PART2_TILE_BOTTOM_DP, "Part II tile now ends at $bottom dp, below the $BASELINE_PART2_TILE_BOTTOM_DP dp it ended at before")
+    }
+
+    @Test
+    fun aNewEntryIsABannerWithAChipACountAndADismissButton() {
+        var dismissed = 0
+        showHome(isNew = true, onDismiss = { dismissed++ })
+
+        composeRule.onNodeWithText(GuideMaintenanceStrings.whatsNewChip).assertIsDisplayed()
+        composeRule.onNodeWithText(GuideMaintenanceStrings.whatsNewSummary(3)).assertIsDisplayed()
+        composeRule.onNodeWithContentDescription(GuideMaintenanceStrings.whatsNewDismiss).performClick()
+        assertEquals(1, dismissed)
+    }
+
+    @Test
+    fun aSeenEntryIsTheQuietRowWithNoChipNoCountAndNoDismissButButStillOpensTheChangeLog() {
+        showHome(isNew = false)
+
+        composeRule.onNodeWithText(whatsNewRow).assertHasClickAction().assertIsDisplayed()
+        assertEquals(0, composeRule.onAllNodesWithText(GuideMaintenanceStrings.whatsNewChip).fetchSemanticsNodes().size)
+        assertEquals(0, composeRule.onAllNodesWithText(GuideMaintenanceStrings.whatsNewSummary(3)).fetchSemanticsNodes().size)
+        assertEquals(0, composeRule.onAllNodesWithContentDescription(GuideMaintenanceStrings.whatsNewDismiss).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun theNewBannerAlsoStaysWithinTheHeightBaseline() {
+        showHome(isNew = true, part2Status = HubStatus.Filing(total = 12, attached = 8, notAttached = 4))
+        val bottom = composeRule.onAllNodesWithText(LearnStrings.hubTitle)[0].fetchSemanticsNode().boundsInRoot.bottom / composeRule.density.density
+        assertTrue(bottom <= BASELINE_PART2_TILE_BOTTOM_DP, "with the banner the Part II tile ends at $bottom dp, below the $BASELINE_PART2_TILE_BOTTOM_DP dp baseline")
     }
 
     @Test

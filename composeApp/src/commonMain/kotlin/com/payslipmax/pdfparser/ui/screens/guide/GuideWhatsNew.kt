@@ -1,15 +1,22 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -20,30 +27,51 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
+import com.payslipmax.pdfparser.ui.screens.CardTint
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.GuideMaintenanceStrings
 
-/** The Guide Home row that opens the change log, named for the month of its newest entry. */
+/**
+ * The Guide Home row that opens the change log, named for the month of its newest entry. While the entry is [isNew] it is a banner:
+ * a NEW chip, how many changes the entry lists ([changeCount]) and a dismiss button. Once seen it is the quiet one-line row, so the
+ * change log stays one tap away without asking for attention.
+ */
 @Composable
 internal fun GuideWhatsNewRow(
     latestDate: String,
     onClick: () -> Unit,
+    isNew: Boolean = false,
+    changeCount: Int = 0,
+    onDismiss: () -> Unit = {},
 ) {
-    GuideTileFrame(onClick = onClick) {
+    GuideTileFrame(onClick = onClick, tint = if (isNew) CardTint.Accent else CardTint.Neutral) {
         Row(
             modifier = Modifier.padding(AppDimensions.SpacingMedium),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
         ) {
             Decoration(GuideMaintenanceStrings.whatsNewEmoji, AppDimensions.TextSizeLarge)
-            Text(
-                GuideMaintenanceStrings.whatsNewRow(latestDate),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.weight(1f),
-            )
-            Decoration(AppStrings.rowArrow, AppDimensions.TextSizeLarge, MaterialTheme.colorScheme.onSurfaceVariant)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(GuideMaintenanceStrings.whatsNewRow(latestDate), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                if (isNew && changeCount > 0) {
+                    Text(GuideMaintenanceStrings.whatsNewSummary(changeCount), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            if (isNew) {
+                Text(
+                    GuideMaintenanceStrings.whatsNewChip,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(percent = 50)).padding(horizontal = AppDimensions.SpacingSmall, vertical = AppDimensions.SpacingTwo),
+                )
+                IconButton(onClick = onDismiss, modifier = Modifier.size(AppDimensions.IconSizeMedium)) {
+                    Icon(Icons.Default.Close, contentDescription = GuideMaintenanceStrings.whatsNewDismiss, modifier = Modifier.size(AppDimensions.IconSizeSmall))
+                }
+            } else {
+                Decoration(AppStrings.rowArrow, AppDimensions.TextSizeLarge, MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
     }
 }

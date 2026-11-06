@@ -44,6 +44,9 @@ internal fun GuideHomeScreen(
     onOpenPinned: (cardId: String) -> Unit = {},
     whatsNewDate: String? = null,
     onOpenWhatsNew: () -> Unit = {},
+    whatsNewIsNew: Boolean = false,
+    whatsNewCount: Int = 0,
+    onDismissWhatsNew: () -> Unit = {},
     notes: GuideHomeNotes = GuideHomeNotes.None,
     notedCards: Set<String> = emptySet(),
     preClaim: PreClaimEntry = PreClaimEntry.HIDDEN,
@@ -60,20 +63,9 @@ internal fun GuideHomeScreen(
         item { GuideHomeHeader(onOpenSearch) }
         // Only a bundle that carries a change entry has this row; today's real bundle has none, so Home is unchanged.
         whatsNewDate?.let { date ->
-            item(key = "whats-new") { GuideWhatsNewRow(date, onOpenWhatsNew) }
+            item(key = "whats-new") { GuideWhatsNewRow(date, onOpenWhatsNew, whatsNewIsNew, whatsNewCount, onDismissWhatsNew) }
         }
-        if (pinned.isNotEmpty()) {
-            item(key = "pinned-heading") {
-                Text(
-                    GuideStrings.pinnedSection,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.semantics { heading() },
-                )
-            }
-            items(pinned, key = { "pinned-${it.cardId}" }) { row ->
-                GuideCardRowView(row, onClick = { onOpenPinned(row.cardId) }, noteMark = if (row.cardId in notedCards) GuideNoteMark.HAS_NOTE else GuideNoteMark.NONE)
-            }
-        }
+        guidePinnedSection(pinned, notedCards, onOpenPinned)
         guideSectionLabel("guide", GuideStrings.homeOverview)
         guideTileGrid(guideAreaItems(areas, onOpenArea, preClaim, onOpenPreClaim))
         guidePart2Section(part2, part2Status, onOpenPart2Hub)
@@ -83,6 +75,21 @@ internal fun GuideHomeScreen(
         if (notes.unreadable > 0) {
             item(key = "unreadable-notes") { GuideUnreadableNotesLine(notes.unreadable) }
         }
+    }
+}
+
+/** The user's pinned cards under their own heading, newest first; nothing at all when [pinned] is empty (the caller passes none to a locked user). */
+private fun LazyListScope.guidePinnedSection(
+    pinned: List<GuideFeedRow>,
+    notedCards: Set<String>,
+    onOpenPinned: (cardId: String) -> Unit,
+) {
+    if (pinned.isEmpty()) return
+    item(key = "pinned-heading") {
+        Text(GuideStrings.pinnedSection, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+    }
+    items(pinned, key = { "pinned-${it.cardId}" }) { row ->
+        GuideCardRowView(row, onClick = { onOpenPinned(row.cardId) }, noteMark = if (row.cardId in notedCards) GuideNoteMark.HAS_NOTE else GuideNoteMark.NONE)
     }
 }
 

@@ -105,14 +105,23 @@ private fun GuideHomeRoute(
     val pins by viewModel.pins.pins.collectAsState()
     val noteState = rememberGuideNotesState(notes)
     val part2Status by rememberHubStatus(part2.bank)
+    val whatsNewSeen by viewModel.whatsNewSeen.seen.collectAsState()
+    val whatsNewDate = viewModel.whatsNewDate()
     GuideHomeScreen(
         ready.areas,
         // Pins are a paid feature: a locked user sees no section, and the stored pins wait for an unlock.
         pinned = if (access.isUnlocked) viewModel.pinnedRows(pins.newestFirst) else emptyList(),
         onOpenPinned = { navState.push(GuideDestination.Card(it)) },
         onOpenArea = { navState.push(GuideDestination.Area(it)) },
-        whatsNewDate = viewModel.whatsNewDate(),
-        onOpenWhatsNew = { navState.push(GuideDestination.Changes) },
+        whatsNewDate = whatsNewDate,
+        // Opening the change log counts as seeing it, as does dismissing the banner; a newer entry shows the banner again.
+        onOpenWhatsNew = {
+            whatsNewDate?.let(viewModel.whatsNewSeen::markSeen)
+            navState.push(GuideDestination.Changes)
+        },
+        whatsNewIsNew = whatsNewDate != null && GuideWhatsNewSeenModel.isNewerThan(whatsNewDate, whatsNewSeen),
+        whatsNewCount = viewModel.whatsNewCount(),
+        onDismissWhatsNew = { whatsNewDate?.let(viewModel.whatsNewSeen::markSeen) },
         // Notes are the user's own and free for everyone, so these two lines show whatever the entitlement.
         notes = GuideHomeNotes(noteState.unreadable, noteState.removed.size, onOpenRemoved = { navState.push(GuideDestination.RemovedNotes) }),
         notedCards = if (access.isUnlocked) noteState.notedCards else emptySet(),

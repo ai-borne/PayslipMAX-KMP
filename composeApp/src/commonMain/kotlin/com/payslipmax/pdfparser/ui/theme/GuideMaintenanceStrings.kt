@@ -71,6 +71,12 @@ object GuideMaintenanceStrings {
     /** The sparkle at the start of the Guide Home row: decoration, never read aloud. */
     const val whatsNewEmoji = "✨"
 
+    const val whatsNewChip = "NEW"
+    const val whatsNewDismiss = "Dismiss"
+
+    /** The banner's second line: how many changes the newest entry lists. */
+    fun whatsNewSummary(count: Int): String = if (count == 1) "1 change to the rule cards" else "$count changes to the rule cards"
+
     /** The Guide Home row, named for the month of the newest entry. */
     fun whatsNewRow(latestDate: String): String = "What's new in Rule Guide (${GuideStrings.yearMonth(latestDate.take(YEAR_MONTH_LENGTH))})"
 

@@ -4,6 +4,7 @@ import com.payslipmax.pdfparser.guide.GuideLoadError
 import com.payslipmax.pdfparser.guide.GuideLoadResult
 import com.payslipmax.pdfparser.guide.GuideRepository
 import com.payslipmax.pdfparser.guide.data.InMemoryGuidePinsStorage
+import com.payslipmax.pdfparser.guide.data.InMemoryGuideWhatsNewStorage
 import com.payslipmax.pdfparser.guide.domain.GuideProfile
 import com.payslipmax.pdfparser.guide.domain.GuideProfileProvider
 import com.payslipmax.pdfparser.platform.platformAppVersion
@@ -35,6 +36,8 @@ class GuideViewModel(
     private val profiles: GuideProfileProvider = GuideProfileProvider.None,
     /** The user's pins (E8). Memory-only by default, so a screen test needs no storage. */
     val pins: GuidePinsModel = GuidePinsModel(InMemoryGuidePinsStorage()),
+    /** The newest change-log entry the user has seen, for the "new" banner. Memory-only by default. */
+    val whatsNewSeen: GuideWhatsNewSeenModel = GuideWhatsNewSeenModel(InMemoryGuideWhatsNewStorage()),
     private val appVersion: () -> String = ::platformAppVersion,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
@@ -107,6 +110,9 @@ class GuideViewModel(
 
     /** The date (YYYY-MM-DD) of the newest change-log entry, or null when the bundle has none (Home then shows no row). */
     fun whatsNewDate(): String? = index()?.changeLog?.latest?.date
+
+    /** How many changes the newest change-log entry lists (0 when the bundle has none), for the banner's summary line. */
+    fun whatsNewCount(): Int = index()?.changeLog?.latest?.items?.size ?: 0
 
     /** The change-log entries with links to their cards, or null when the bundle has none. */
     fun whatsNew(): GuideWhatsNewContent? = index()?.whatsNewContent()
