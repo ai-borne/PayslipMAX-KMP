@@ -1,4 +1,4 @@
-"""Pins for the three hospital-stay cards (RB-HS-01..03).
+"""Pins for the hospital-stay cards (RB-HS-01..03 rules, RB-HS-04..06 worked examples).
 
 Why they matter: these cards tell an officer that a hospital stay without Part II orders can cost pay. A card
 that drifts from its home (Leave > annual, casual and sick leave), cites the wrong authority, or names the source
@@ -16,13 +16,14 @@ from config import CARDS_DIR
 
 RULEBOOK = json.load(open(os.path.join(CARDS_DIR, 'rulebook.json'), encoding='utf-8'))
 BY_ID = {c['id']: c for c in RULEBOOK['cards']}
-IDS = ['RB-HS-01', 'RB-HS-02', 'RB-HS-03']
+IDS = ['RB-HS-01', 'RB-HS-02', 'RB-HS-03', 'RB-HS-04', 'RB-HS-05', 'RB-HS-06']
+EXAMPLES = ['RB-HS-04', 'RB-HS-05', 'RB-HS-06']
 BUILT = {c['id']: c for c in bundle.build(RULEBOOK)['cards']}
 LETTER_MARKERS = re.compile(r'B/25451|PS-6\(D\)|ADG PS|AG.s Branch|17 ?Nov|Nov 2025', re.I)
 
 
 class HospitalCards(unittest.TestCase):
-    def test_the_three_cards_exist_and_ship(self):
+    def test_all_the_cards_exist_and_ship(self):
         for i in IDS:
             self.assertIn(i, BY_ID, i)
             self.assertIn(i, BUILT, i)
@@ -73,6 +74,39 @@ class HospitalCards(unittest.TestCase):
         text = json.dumps(BY_ID['RB-HS-01']).lower()
         self.assertIn('two years', text)
         self.assertIn('recover', text)
+
+    @staticmethod
+    def _parts(card_id):
+        """The 'CODE days' pairs a worked example lists in its key points, in order."""
+        text = ' '.join(BY_ID[card_id]['key'])
+        return [(code, int(n)) for code, n in re.findall(r'\b(GTDALHOS|GTDSLHOS|HOSFURPY|SLC)\b,? (\d+)', text)]
+
+    def test_the_175_day_example_adds_up(self):
+        # why: an example whose parts do not sum to the stay teaches the wrong split; 30 + 120 + 25 = 175.
+        parts = dict(self._parts('RB-HS-04'))
+        self.assertEqual(parts['GTDALHOS'] + parts['GTDSLHOS'] + parts['HOSFURPY'], 175)
+        self.assertEqual(parts['GTDALHOS'] + parts['GTDSLHOS'], 150, 'full pay stops at the annual leave balance, not at 180')
+
+    def test_the_two_year_example_adds_up_and_caps_full_pay_at_180(self):
+        parts = self._parts('RB-HS-06')
+        furlough = sum(n for c, n in parts if c == 'HOSFURPY')
+        full = sum(n for c, n in parts if c != 'HOSFURPY')
+        self.assertEqual(full, 180)
+        self.assertEqual(full + furlough, 260)
+
+    def test_the_shorter_stays_card_keeps_service_stays_free_of_furlough(self):
+        # why: a stay due to military service stays at full pay throughout; a furlough part here would be wrong.
+        text = ' '.join(BY_ID['RB-HS-05']['key'])
+        self.assertIn('SLC', text)
+        self.assertIn('REGALMS', text)
+        self.assertNotIn('HOSFURPY', text)
+        parts = dict(self._parts('RB-HS-05'))
+        self.assertEqual(parts['GTDALHOS'] + parts['GTDSLHOS'], 150)
+
+    def test_each_example_names_its_orders_and_a_home_title(self):
+        for i in EXAMPLES:
+            self.assertTrue(BY_ID[i]['title'].startswith('Example'), i)
+            self.assertIn('HOSADM', ' '.join(BY_ID[i]['key']), i)
 
 
 if __name__ == '__main__':

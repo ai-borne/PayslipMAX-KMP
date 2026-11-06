@@ -176,3 +176,36 @@ W: The 180 day cap is for stays not due to military service
 W: A stay across two years uses last year's balance annual leave first
 C: Leave Rules for the Services Vol I (Army); ODP 2026 Chapter 6
 D: Example: a stay of 190 days not due to military service is regularised as 60 days annual leave, 120 days sick leave and 10 days at furlough rates. With only 30 days of annual leave balance, a 175 day stay is 30 annual leave, 120 sick leave and 25 at furlough rates. Across two years the 180 days are counted over the whole stay. Each part is published with its own code and dates, and the order number of the first admission is quoted.
+
+=== topic=RP-016 id=RB-HS-04 from=RP-016
+T: Example: 175 day stay, sick leave, not due to service
+A: 30 days annual leave balance, then 120 days sick leave, then 25 days at furlough rates.
+K: Admitted mid-May, final discharge early November
+K: Publish HOSADM, SLDISCH, GTDSL, SLHOSADM, HOSDISCH, RPDUHSP
+K: Then REGAL with GTDALHOS 30, GTDSLHOS 120, HOSFURPY 25
+W: Furlough starts early: the annual leave balance was only 30
+W: Not for stays due to military service
+C: ODP 2026 Chapter 6; Leave Rules for the Services Vol I (Army)
+D: REGAL covers the whole absence from admission to final discharge. Each part is published with its own code and dates: annual leave first, then sick leave, then the furlough part. Quote the order number of the first admission in every part.
+
+=== topic=RP-016 id=RB-HS-05 from=RP-016
+T: Examples: a stay up to 30 days, and one due to military service
+A: Up to 30 days: one SLC. Over 30 days due to military service: REGALMS at full pay, no furlough.
+K: 29 days, 1 to 29 January: HOSADM, HOSDISCH, RPDUHSP, then SLC
+K: 150 days, 1 January to 30 May: same three, then REGALMS
+K: REGALMS parts: GTDALHOS 60 and GTDSLHOS 90
+W: Over 30 days, sick leave included, SLC is not enough
+W: Add the certificate that the sickness is due to military service
+C: ODP 2026 Chapter 6; Leave Rules for the Services Vol I (Army)
+D: SLC covers an absence of up to 30 days, sick leave included, from the admission date to the final discharge date, even across two years. REGALMS covers the whole absence at full pay and allowances; the sick leave under GTDSLHOS must not exceed 24 months. Quote the order number of the first admission in each part.
+
+=== topic=RP-016 id=RB-HS-06 from=RP-016
+T: Example: 260 day stay across two years, not due to service
+A: 180 days at full pay over the whole stay: 75 days annual leave, 105 days sick leave. Then 80 days at furlough rates.
+K: Admitted in October, final discharge in July the next year
+K: Publish HOSADM, SLDISCH, GTDSL, SLHOSADM, HOSDISCH, RPDUHSP
+K: Then REGAL: GTDALHOS 15, GTDSLHOS 58, GTDALHOS 60, GTDSLHOS 47, HOSFURPY 80
+W: Last year's balance annual leave is used first, 15 days here
+W: Not for stays due to military service
+C: ODP 2026 Chapter 6; Leave Rules for the Services Vol I (Army)
+D: The parts run in date order: last year's balance annual leave, last year's sick leave to the year end, this year's annual leave, this year's sick leave, then furlough rates. Each part is published with its own code and dates and quotes the order number of the first admission. The 180 full pay days are counted over the whole stay, not year by year.
