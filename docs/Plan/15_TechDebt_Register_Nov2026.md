@@ -99,8 +99,8 @@ Steps: (a) a JVM test builds a PDF in-test with PDFBox, runs `extractTokenized`,
 | # | Item | Severity | Risk | Evidence |
 |---|---|---|---|---|
 | 27 | `DaArrearsWindow.minimumMonths`/`closestMonths` document "null if none", but `candidateMonths` is never empty for a month 1-12 (the smallest candidate is `(m-1)%6`+6 or more). The null branch is unreachable, and `candidateMonths(0)` returns `[5, 11]` instead of rejecting a non-month. Decide: tighten the contract (non-null return, `require(monthNum in 1..12)`) or keep it and fix the KDoc; callers in Pay Audit must be read first. | Low | Low–medium (Pay Audit) | `insights/DaArrearsWindow.kt:19-34`; pinned by `DaArrearsWindowTest` |
-
 | 28 | `BackHandler` is deprecated ("Use NavigationEventHandler instead"). Five call sites warn or are suppressed per statement: `App.kt`, `GuideTab.kt`, `PayslipReplicaDetailScreen.kt`, `RepresentationScreen.kt`, and `AttachLeaveGuard.kt` (never suppressed, so it warns every build). Migrate together, with Android back and iOS native-back behaviour checked. | Low | Medium (navigation, back on both platforms) | found in Phase 3 item 19 |
+
 
 - [ ] 27 · - [ ] 28
 
