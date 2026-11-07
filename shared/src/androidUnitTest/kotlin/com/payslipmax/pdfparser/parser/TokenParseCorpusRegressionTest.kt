@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
  * and diffs the full [com.payslipmax.pdfparser.domain.ParsedPayslip] against human-verified ground truth.
  *
  * [GrammarAwareParser] is the engine wired into both Android and iOS (RC3), so this suite tests exactly
- * what ships. It passes every fixture listed in `corpus/index.json` (139) with an empty quarantine and
+ * what ships. It passes every fixture listed in `corpus/index.json` (139) except the two documented [quarantine] ids (137 pass) and
  * is fully offline — no device, no PDFs, no PII.
  *
  * ### Ground-truth correction (Phase 4)
@@ -18,11 +18,11 @@ import kotlin.test.assertTrue
  * DynamicSpatialParser.applyHistoricalOverrides micro-fudge (removed in Phase 4), which sprinkled a small
  * unattributed residual (₹14–₹79) onto a named earning to force a balance. Those fixtures were corrected
  * to the real on-page values; the engine now reconciles each to its printed gross with `miscEarnings == 0`.
- * The [quarantine] mechanism is retained (empty) so any future known-bad month can be parked with a
- * documented reason without breaking the build.
+ * The [quarantine] mechanism parks a known-bad month with a documented reason without breaking the
+ * build; it currently holds two ids (10_oct_2019, 05_may_2017), each with its reason below.
  */
 class TokenParseCorpusRegressionTest {
-    /** Fixture ids the token engine is known to get wrong, each with a documented reason. Empty at cut-over. */
+    /** Fixture ids the token engine is known to get wrong, each with a documented reason. */
     private val quarantine: Set<String> =
         setOf(
             // Real arrears-recap-table credit (e.g. "Cr.NPA26107") that the main transaction-table

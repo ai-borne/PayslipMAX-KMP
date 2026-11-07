@@ -81,7 +81,7 @@ Steps: (a) a JVM test builds a PDF in-test with PDFBox, runs `extractTokenized`,
 | 22 | Orphaned `pcdao_ai_prototype.html` (1,705 lines, outside the size audit). **Keep `public/index.html`** — it is the Firebase Hosting root. `__pycache__/`, `dist/` are gitignored (local only). | Low | None | owner approved deletion 2026-11-07 |
 | 21 | Merged branches: local `feature/backup-hardening`, `feature/guide-hospital-regularisation`, `feature/orders-bank`; remote `origin/feature/orders-bank`. Keep `origin/feature/part2-orders` (frozen archive, not merged). | Low | None | owner approved local + remote deletion 2026-11-07 |
 
-- [ ] 24 · - [x] 22 (2026-11-07, deleted) · - [x] 21 (2026-11-07, deleted)
+- [x] 24 (2026-11-07: every current-state claim fixed — corpus counts, removed `PayslipCorpusRegressionTest` row, store enrollment, 2015–2021 coverage; the 52-fixture mentions left in the changelog are historical and now say "at the time". Also fixed a stale "empty quarantine" code comment: it holds 2 ids.) · - [x] 22 (2026-11-07, deleted) · - [x] 21 (2026-11-07, deleted)
 
 ## Phase 5+ — High-risk items, each its own planned sprint
 
