@@ -181,6 +181,10 @@ room {
 // developer-only CorpusCaptureTest / PlatformPdfParserTest can locate real PDFs. These are
 // absent in CI, so the gated tests skip cleanly and no machine-specific paths are committed.
 tasks.withType<Test>().configureEach {
+    // A phone-sized heap for every shared unit test (Gradle's default is 512 MB): a full 120-page Part II vault backs up and restores
+    // inside it (Part2VaultScaleJvmTest), so a change that copies the vault again fails here as OutOfMemoryError, not on a user's phone.
+    // It also keeps that test's sampled "extra heap" honest: in a larger heap uncollected garbage made it swing 130-283 MB between runs.
+    maxHeapSize = "256m"
     listOf(
         "payslip.localCorpus",
         "payslip.localCorpus.json",
