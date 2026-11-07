@@ -11,4 +11,10 @@ internal object FigureModes {
 
     /** The `use` of a figure that feeds the pre-claim worksheet and belongs to no card. */
     const val USE_PRECLAIM = "preclaim"
+
+    /** The `use` of a figure that feeds the TD summary card and belongs to no card's "your figure" line. */
+    const val USE_SUMMARY = "summary"
+
+    /** Every `use` that names a figure's home when it has no card. A figure with a card has no `use`. */
+    val CARDLESS_USES = setOf(USE_PRECLAIM, USE_SUMMARY)
 }

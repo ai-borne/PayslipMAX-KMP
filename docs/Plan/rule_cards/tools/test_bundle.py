@@ -175,7 +175,7 @@ class BundleFigures(unittest.TestCase):
 
     def test_approved_figures_ship_for_the_four_personal_cards(self):
         shipped = BUILT['figures']['figures']
-        self.assertEqual(set(shipped), {'food_rate', 'ctg', 'transport_allowance', 'hra', 'rma', 'baggage_road', 'td_hotel', 'td_taxi', 'td_food_hours'})
+        self.assertEqual(set(shipped), {'food_rate', 'ctg', 'transport_allowance', 'hra', 'rma', 'baggage_road', 'td_hotel', 'td_taxi', 'td_food_hours', 'cea', 'hostel_subsidy'})
         personal = {c['id'] for c in BUILT['cards'] if c['personal']}
         self.assertEqual({f['card'] for f in shipped.values() if 'card' in f}, personal)
 

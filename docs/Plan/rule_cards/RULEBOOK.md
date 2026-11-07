@@ -1,6 +1,6 @@
 # PayslipMax rulebook: reference (generated)
 
-Generated from [rulebook.json](rulebook.json) on 2026-11-06. **Do not edit by hand.** 403 cards (220 travel, 183 pay). Source entries covered: 529 of 474 (skipped with a reason: 17; uncovered: 0).
+Generated from [rulebook.json](rulebook.json) on 2026-11-07. **Do not edit by hand.** 403 cards (220 travel, 183 pay). Source entries covered: 529 of 474 (skipped with a reason: 17; uncovered: 0).
 
 Each card: one-line answer in bold, short bullets, the authority to cite, optional collapsed details. "Open point" lines are for reviewers and are never shown to users. Card text is written in our own words.
 

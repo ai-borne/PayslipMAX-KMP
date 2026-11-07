@@ -136,6 +136,7 @@ class GuideLoaderIosPerfTest {
             // The correctness workload, untimed: Native resolves the same amounts as the JVM.
             GuideFiguresContract.assertShippedFiguresMatchTheApprovedLetters(bundle)
             GuideFiguresContract.assertPreClaimFiguresMatchTheApprovedRegister(bundle)
+            GuideFiguresContract.assertSummaryFiguresMatchTheApprovedRegister(bundle)
             GuideFiguresContract.assertPermanentDutyEstimatesMatchTheApprovedRules(bundle)
             GuideFiguresContract.assertTemporaryDutyEstimatesMatchTheApprovedRules(bundle)
             GuideFiguresContract.assertOnlyPersonalCardsResolveAFigure(bundle)

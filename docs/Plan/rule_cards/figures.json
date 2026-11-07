@@ -328,6 +328,44 @@
       ],
       "approved": "2026-10-11"
     },
+    "cea": {
+      "use": "summary",
+      "mode": "da_step",
+      "unit": "rupees per academic year per child",
+      "assumption": "Children Education Allowance reimbursed for each of the two eldest surviving children, per academic year, at one rate for every pay level",
+      "effective_from": "2017-07-01",
+      "authority": "MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018 (P&A Handbook 2023, ch. 19(b) prints the rate and para (e) the automatic 25% rise); DoPT OM A-27012/02/2017-Estt(AL) dt 16-07-2018",
+      "evidence": "HANDBOOK_ONLY",
+      "evidence_detail": "P&A Handbook 2023, ch. 19(b): CEA Rs 2,250 a month per child, so 27,000 a year at base; para (e): the rates rise 25% automatically each time DA rises 50%. The PCDA(O) FAQ (Dec 2025) prints Rs 33,750 a year per child from 01-04-2024, which is base x 1.25. The FAQ's date is the academic-year start after DA reached 50% on 01-01-2024, so it is not the TD step date. The MoD letter text itself was not read. Owner approved 2026-11-07.",
+      "bands": [
+        {
+          "levels": [
+            "All"
+          ],
+          "base": 27000
+        }
+      ],
+      "approved": "2026-11-07"
+    },
+    "hostel_subsidy": {
+      "use": "summary",
+      "mode": "da_step",
+      "unit": "rupees per academic year per child, a ceiling",
+      "assumption": "Hostel subsidy for a child in a residential school: the actual lodging and boarding cost, never more than this ceiling, per academic year, at one rate for every pay level",
+      "effective_from": "2017-07-01",
+      "authority": "MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018 (P&A Handbook 2023, ch. 19(c) prints the ceiling and para (e) the automatic 25% rise); DoPT OM A-27012/02/2017-Estt(AL) dt 16-07-2018",
+      "evidence": "HANDBOOK_ONLY",
+      "evidence_detail": "P&A Handbook 2023, ch. 19(c): hostel subsidy ceiling Rs 6,750 a month, so 81,000 a year at base; para (e): the ceiling rises 25% automatically each time DA rises 50%. The PCDA(O) FAQ (Dec 2025) prints Rs 1,01,250 a year per child from 01-04-2024, which is base x 1.25. The MoD letter text itself was not read. Owner approved 2026-11-07.",
+      "bands": [
+        {
+          "levels": [
+            "All"
+          ],
+          "base": 81000
+        }
+      ],
+      "approved": "2026-11-07"
+    },
     "baggage_road": {
       "use": "preclaim",
       "mode": "da_step",

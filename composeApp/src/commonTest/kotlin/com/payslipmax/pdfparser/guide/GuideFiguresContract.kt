@@ -45,6 +45,7 @@ import kotlin.test.assertTrue
 object GuideFiguresContract {
     private val personalCards = setOf("RB-SS-T181", "RB-SS-T254", "RB-SS-P051-rates", "RB-SS-P116-rates")
     private val preClaimKeys = setOf("rma", "baggage_road", "td_hotel", "td_taxi", "td_food_hours")
+    private val summaryKeys = setOf("cea", "hostel_subsidy")
 
     private fun profile(
         level: String? = "14",
@@ -61,7 +62,7 @@ object GuideFiguresContract {
 
     fun assertShippedFiguresMatchTheApprovedLetters(bundle: GuideBundle) {
         val figures = assertNotNull(bundle.figures, "the bundle ships figures")
-        assertEquals(setOf("food_rate", "ctg", "transport_allowance", "hra") + preClaimKeys, figures.figures.keys)
+        assertEquals(setOf("food_rate", "ctg", "transport_allowance", "hra") + preClaimKeys + summaryKeys, figures.figures.keys)
         assertEquals(SyntheticGuideFigures.figures, figures, "the unit-test copy of the figures must equal what ships, or its oracle proves nothing")
         assertEquals(personalCards, figures.figures.values.map { it.card }.filter { it.isNotEmpty() }.toSet())
         assertEquals(personalCards, bundle.cards.filter { it.personal.isNotEmpty() }.map { it.id }.toSet(), "every personal card has a figure")
@@ -79,6 +80,32 @@ object GuideFiguresContract {
         // HRA: class X at DA 60% is 30%.
         val hra = assertIs<PersonalFigure.Hra>(bundle.figureFor("RB-SS-P116-rates", profile(basic = 100000.0, hra = 30000.0)))
         assertEquals("X" to 30, hra.hraClass to hra.percent)
+    }
+
+    /**
+     * The TD summary card's CEA and hostel-subsidy figures (plan 24, P1) as the owner approved them on 2026-11-07: the handbook's monthly
+     * rates for a year, before the DA step. The step is the app's one rule, so at DA 50 to 99% the amounts are what the PCDA(O) FAQ
+     * (Dec 2025) prints, and they move on at each further 50 points of DA.
+     */
+    fun assertSummaryFiguresMatchTheApprovedRegister(bundle: GuideBundle) {
+        val figures = assertNotNull(bundle.figures)
+        for (key in summaryKeys) {
+            val figure = figures.figures.getValue(key)
+            assertEquals("" to "summary", figure.card to figure.use, key)
+            assertEquals(1, figure.bands.size, "$key is one rate for every pay level")
+        }
+
+        fun atDa(
+            key: String,
+            da: Int,
+        ): Long {
+            val base = figures.figures.getValue(key).bands.single().base.toLong()
+            return base * (100 + assertNotNull(PersonalFigureResolver.stepPercent(figures, da))) / 100
+        }
+        assertEquals(33750L, atDa("cea", 60), "CEA a year per child at DA 50 to 99%")
+        assertEquals(101250L, atDa("hostel_subsidy", 60), "hostel subsidy ceiling a year per child at DA 50 to 99%")
+        assertEquals(27000L, atDa("cea", 49), "no step has been passed below DA 50%")
+        assertEquals(40500L, atDa("cea", 100), "two steps at DA 100%")
     }
 
     /**
