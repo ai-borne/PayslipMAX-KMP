@@ -66,15 +66,16 @@ class GuideTdSummaryUiTest {
     }
 
     @Test
-    fun foodIsShownByTimeAwayAndCeaAndHostelHaveTheirOwnSection() {
+    fun foodIsShownByTimeAwayAndCeaIsNotRelayedHere() {
         open(unlocked = true)
 
         shown("Under 6 hours: ₹337.50")
         shown("6 to 12 hours: ₹787.50")
         shown("Over 12 hours: ₹1,125")
-        shown(TdSummaryStrings.ceaHeading)
-        shown("₹33,750 a year per child")
-        shown("Up to ₹1,01,250 a year per child")
+        // Owner decision 2026-11-07: CEA lives on its own card, so the TD card never repeats it.
+        composeRule.onNodeWithText("Children education", substring = true).assertDoesNotExist()
+        composeRule.onNodeWithText("CEA", substring = true).assertDoesNotExist()
+        composeRule.onNodeWithText("Hostel", substring = true).assertDoesNotExist()
     }
 
     @Test

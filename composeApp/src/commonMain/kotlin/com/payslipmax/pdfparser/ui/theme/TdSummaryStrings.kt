@@ -10,10 +10,6 @@ object TdSummaryStrings {
     const val hotelLabel = "Hotel or guest house"
     const val taxiLabel = "Taxi in the city"
     const val foodLabel = "Food"
-    const val ceaHeading = "Children education"
-    const val ceaLabel = "CEA"
-    const val hostelLabel = "Hostel subsidy"
-    const val divyaangNote = "A divyaang child gets double CEA."
     const val anyTimeAway = "Any time away"
 
     fun band(
@@ -47,10 +43,6 @@ object TdSummaryStrings {
         label: String,
         amount: String,
     ) = "$label: $amount"
-
-    fun cea(amount: String) = "$amount a year per child"
-
-    fun hostel(amount: String) = "Up to $amount a year per child"
 
     fun labelled(
         label: String,

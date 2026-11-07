@@ -18,7 +18,6 @@ CARDS = [{'id': c['id'], 'personal': c['personal']} for c in RULEBOOK['cards']]
 
 
 PRECLAIM = {'rma', 'baggage_road', 'td_hotel', 'td_taxi', 'td_food_hours'}
-SUMMARY = {'cea', 'hostel_subsidy'}  # feed the TD summary card (plan 24), not a card's "your figure" line
 
 
 def problems(data, cards=CARDS):
@@ -38,9 +37,9 @@ class RealFigures(unittest.TestCase):
         self.assertEqual({f['card'] for f in REAL['figures'].values() if 'card' in f},
                          {'RB-SS-T181', 'RB-SS-T254', 'RB-SS-P051-rates', 'RB-SS-P116-rates'})
 
-    def test_the_pre_claim_and_summary_figures_have_no_card(self):
-        # They feed the pre-claim worksheet (plan 22) or the TD summary card (plan 24), not a "your figure" line on a card.
-        self.assertEqual({k for k, f in REAL['figures'].items() if 'card' not in f}, PRECLAIM | SUMMARY)
+    def test_the_pre_claim_figures_have_no_card(self):
+        # They feed the pre-claim worksheet (plan 22), not a "your figure" line on a card.
+        self.assertEqual({k for k, f in REAL['figures'].items() if 'card' not in f}, PRECLAIM)
 
 
 class SourceRule(unittest.TestCase):

@@ -1,4 +1,4 @@
-# TD entitlements summary card: plan (Phase 0, 2026-11-07)
+# TD entitlements summary card: plan (Phase 0, 2026-11-07; CEA removed the same day)
 
 One card at the top of the Temporary duty area (`td-da` case) that answers "what is my TD entitlement": hotel, taxi, food with its
 timings, and CEA / hostel subsidy, for every officer level, at the current DA step. The owner's phone image of a rates sheet
@@ -7,7 +7,7 @@ timings, and CEA / hostel subsidy, for every officer level, at the current DA st
 ## Owner decisions (2026-11-07)
 | # | Decision |
 |---|---|
-| D1 | Scope: hotel, taxi, food (with timings), CEA and hostel subsidy only. Tele claim, briefcase, JCO/OR rows and every other block of the sheet stay out until an Army letter is read. |
+| D1 | Scope: hotel, taxi and food (with timings) only. CEA and hostel subsidy were in the first build and **removed on 2026-11-07** (owner: they already show correctly on their own card, and the TD card must not relay CEA). Tele claim, briefcase, JCO/OR rows and every other block of the sheet stay out until an Army letter is read. |
 | D2 | The +25% per +50% DA rule is applied by the one existing rule, `PersonalFigureResolver.stepPercent`; the card never types a stepped number. |
 | D3 | The whole card is **free**, including the highlighted own-level row. `GUIDE_PAYWALL_ENABLED` is off today, so every user already reads the full Guide. |
 | D4 | The free table is labelled with a DA **band** ("DA 50 to 99%"), never a DA number; the step is the same at 60% and 63%, and the Army has not implemented 63% yet. |
@@ -59,3 +59,5 @@ Conflict surfaced, not blended: `RP-085` and `RR-ORD-03` print stepped rupees as
 Open for the owner: (1) the card carries the RATES chip, so it shows "Rates as of Jan 2026" and the may-have-changed notice until `RATES_AS_OF` in
 `tools/config.py` is bumped at the next rates review (runbook step 6); (2) the iPhone walk waits until all features are ready (owner rule); (3) tele claim,
 briefcase, JCO/OR rows and the other blocks of the sheet wait for the Army letters (IHQ tele-policy letter dt 26-09-2018, the MoD (Finance) briefcase letter).
+
+**CEA removal (2026-11-07, owner):** the Children education block, the `cea` and `hostel_subsidy` figures, their register rows and the `use: summary` figure kind were removed; no CEA text remains on the card. `da_step.table_da_percent` stays.

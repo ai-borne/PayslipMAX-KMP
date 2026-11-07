@@ -71,18 +71,10 @@ class TdSummaryBuilderTest {
     }
 
     @Test
-    fun theStepAppliesToFoodTaxiCeaAndHostelAlike() {
+    fun theStepAppliesToFoodAndTaxiAlike() {
         val s = at(100)
         assertEquals(135000L, s.group("11").foodPaise)
         assertEquals(TdTaxi.Amount(50700L), s.group("11").taxi)
-        assertEquals(4050000L, s.ceaPaise)
-        assertEquals(12150000L, s.hostelSubsidyPaise)
-    }
-
-    @Test
-    fun ceaAndHostelAtDa60AreWhatPcdaoPrintsAYearPerChild() {
-        assertEquals(3375000L, at(60).ceaPaise)
-        assertEquals(10125000L, at(60).hostelSubsidyPaise)
     }
 
     @Test
@@ -109,11 +101,11 @@ class TdSummaryBuilderTest {
     }
 
     @Test
-    fun aMissingFigureHidesOnlyItsOwnSection() {
-        val withoutCea = figures.copy(figures = figures.figures - "cea")
-        val summary = assertNotNull(TdSummaryBuilder.build(withoutCea, 60))
-        assertNull(summary.ceaPaise)
-        assertEquals(10125000L, summary.hostelSubsidyPaise)
+    fun aMissingFigureHidesOnlyItsOwnCell() {
+        val withoutFood = figures.copy(figures = figures.figures - "food_rate")
+        val summary = assertNotNull(TdSummaryBuilder.build(withoutFood, 60))
+        assertNull(summary.group("11").foodPaise)
+        assertEquals(emptyList(), summary.group("11").foodByTimingPaise)
         assertEquals(281250L, summary.group("11").hotelPaise)
 
         val withoutHotel = figures.copy(figures = figures.figures - "td_hotel")

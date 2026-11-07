@@ -13,8 +13,6 @@ data class TdSummary(
     val daBandTo: Int,
     val levelGroups: List<TdLevelGroup>,
     val foodTimings: List<TdFoodTiming>,
-    val ceaPaise: Long?,
-    val hostelSubsidyPaise: Long?,
 ) {
     /** The group whose pay levels include [level] (as printed on the payslip, for example "12A"), or null: a row is never guessed. */
     fun groupFor(level: String): TdLevelGroup? = levelGroups.firstOrNull { level in it.levels }

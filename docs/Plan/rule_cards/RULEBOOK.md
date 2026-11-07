@@ -1871,17 +1871,17 @@ Cite: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017; Rule 114 TR · perso
 
 <sub>Details: Base daily amount by level before the DA-linked 25% rise: Level 14+ Rs 1,200; 12 to 13B Rs 1,000; 9 to 11 Rs 900. From 01-01-2024 (DA at 50%) it is base x 1.25 plus taxes: up to Level 11 Rs 1,125; Level 12 to 13B Rs 1,250; Level 14 and above Rs 1,500.</sub>
 
-#### RB-TD-SUMMARY Hotel, taxi and food on TD, and CEA: all rates at a glance  `RATES`
+#### RB-TD-SUMMARY Hotel, taxi and food on TD: all rates at a glance  `RATES`
 
 **Rates for officer levels 9 to 18, worked out from the approved rates, so they move with DA.**
 
 - Hotel is a ceiling a night, and GST is paid on top
 - Food is a fixed daily amount, cut by hours away
-- CEA and hostel subsidy are per child, per academic year
+- Taxi: a rupee cap to level 11, a limit above it
 
-Cite: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017 (civil parent: DoE OM 19030/1/2017-E.IV dt 13-07-2017); MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018 for CEA
+Cite: MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017 (civil parent: DoE OM 19030/1/2017-E.IV dt 13-07-2017)
 
-<sub>Details: Every rate rises 25% each time DA rises 50%. Above level 11 taxi has no rupee cap: AC taxi up to 50 km a day for levels 12 to 13B, and at actual cost for level 14 and above. CEA covers your two eldest surviving children, and a divyaang child gets double. Hostel subsidy is the actual lodging and boarding cost or the ceiling, whichever is lower.</sub>
+<sub>Details: Every rate rises 25% each time DA rises 50%. Above level 11 taxi has no rupee cap: AC taxi up to 50 km a day for levels 12 to 13B, and at actual cost for level 14 and above.</sub>
 
 ##### Hotel / guest-room on TD: ceilings, GST, non-availability certificate (2)
 

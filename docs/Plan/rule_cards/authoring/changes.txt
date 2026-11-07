@@ -6,7 +6,7 @@
 # Add an entry when a card's meaning changes (a new dated rule, a corrected rate), not for typo fixes.
 
 == 2026-11-07
-- A new first card in Temporary duty puts hotel, taxi and food by pay level, and CEA and hostel subsidy, in one table that follows DA [RB-TD-SUMMARY]
+- A new first card in Temporary duty puts hotel, taxi and food by pay level in one table that follows DA [RB-TD-SUMMARY]
 
 == 2026-11-06
 - Three new cards on hospital stays: why Part II orders are needed, which ones to publish, and how a long stay is split between annual leave, sick leave and furlough rates [RB-HS-01, RB-HS-02, RB-HS-03]

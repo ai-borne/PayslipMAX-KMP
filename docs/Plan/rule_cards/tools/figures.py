@@ -5,9 +5,9 @@ an effective date, a primary letter, an evidence level and the owner's approval 
 records a fact the owner stated without a document; it is the weakest label and is named as such. No rupee figure is written in
 Kotlin: the app reads these from the bundle. compile.py calls validate(); bundle.py calls for_bundle().
 
-A figure either belongs to a rule card (`card`, shown as that card's "your figure" line), feeds the TA/DA pre-claim worksheet
-(`use: "preclaim"`, no card) or feeds the TD summary card (`use: "summary"`, no card). Never two of these, so a worksheet or summary
-rate can never be drawn on the wrong card. (A pre-claim figure may also be read by key for the summary card; `use` names its home.)
+A figure either belongs to a rule card (`card`, shown as that card's "your figure" line) or feeds the TA/DA pre-claim worksheet
+(`use: "preclaim"`, no card). Never both, so a worksheet rate can never be drawn on the wrong card. (A pre-claim figure may also be
+read by key for the TD summary card, plan 24; `use` names its home.)
 """
 import datetime
 import json
@@ -22,8 +22,6 @@ SUPPORTED_VERSION = 1
 EVIDENCE = {'LETTER_TEXT', 'HANDBOOK_ONLY', 'WEB_SECONDARY', 'OWNER_CONFIRMED'}
 MODES = {'da_step', 'percent_of_basic', 'plus_da', 'rate_table', 'rate_by_state', 'time_share'}
 USE_PRECLAIM = 'preclaim'
-USE_SUMMARY = 'summary'
-CARDLESS_USES = (USE_PRECLAIM, USE_SUMMARY)
 # The states and territories of PCDA(O) Pune Wing Circular no. 10 (2024-09-03), spelt as the circular spells them. Lakshadweep and
 # Dadra and Nagar Haveli and Daman and Diu are absent because the Army has no presence there (owner, 2026-10-11).
 RMA_STATES = (
@@ -100,9 +98,9 @@ def _first_step_problems(first):
 
 def _card_problems(key, fig, by_id):
     if 'card' not in fig:
-        return [] if fig.get('use') in CARDLESS_USES else [f'{key}: a figure with no card must have use "{USE_PRECLAIM}" or "{USE_SUMMARY}"']
-    if fig.get('use') in CARDLESS_USES:
-        return [f'{key}: a {fig["use"]} figure may not name a card']
+        return [] if fig.get('use') == USE_PRECLAIM else [f'{key}: a figure with no card must have use "{USE_PRECLAIM}"']
+    if fig.get('use') == USE_PRECLAIM:
+        return [f'{key}: a {USE_PRECLAIM} figure may not name a card']
     card = by_id.get(fig['card'])
     if card is None:
         return [f'{key}: unknown card {fig["card"]}']

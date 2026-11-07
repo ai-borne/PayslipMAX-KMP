@@ -52,10 +52,8 @@ class TdSummaryWordingTest {
     }
 
     @Test
-    fun theBandAndTheYearlyAmountsReadAsPlainWords() {
+    fun theBandReadsAsPlainWords() {
         assertEquals("Rates at DA 50 to 99%", TdSummaryWording.band(50, 99))
-        assertEquals("₹33,750 a year per child", TdSummaryWording.cea(3375000L))
-        assertEquals("Up to ₹1,01,250 a year per child", TdSummaryWording.hostel(10125000L))
     }
 
     @Test

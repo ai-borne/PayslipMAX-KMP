@@ -42,7 +42,7 @@ class TheCard(unittest.TestCase):
     def test_it_names_the_mod_letters_and_the_doe_om_only_as_the_civil_parent(self):
         cite = self.card['cite']
         self.assertIn('12630/Mov C/242/D(Mov)/2017', cite)
-        self.assertIn('1(23)/2017/D(Pay/Services)', cite)
+        self.assertNotIn('1(23)/2017/D(Pay/Services)', cite)  # the CEA letter: CEA is not on this card
         self.assertIn('civil parent: DoE OM 19030/1/2017-E.IV', cite)
         # Every mention of the DoE OM is the civil-parent one: it never stands alone as the Army entitlement.
         self.assertEqual(cite.count('DoE OM'), cite.count('civil parent: DoE OM'))
@@ -51,6 +51,12 @@ class TheCard(unittest.TestCase):
         words = [self.card['title'], self.card['answer'], self.card['details'], *self.card['key'], *self.card['attach'], *self.card['watch']]
         for text in words:
             self.assertIsNone(RUPEES.search(text), text)
+
+    def test_the_card_does_not_relay_cea(self):
+        # Owner decision 2026-11-07: CEA and hostel subsidy live on their own card (RB-SS-P092); the TD card must not repeat them.
+        text = ' '.join([self.card['title'], self.card['answer'], self.card['details'], self.card['cite'], *self.card['key'], *self.card['attach'], *self.card['watch']])
+        for word in ('cea', 'hostel', 'children education'):
+            self.assertNotIn(word, text.lower())
 
     def test_the_table_is_for_officers_so_the_card_says_so(self):
         # JCO and OR rates are not approved figures (register 23, S7), so the card must not read as if it covered them.
@@ -61,6 +67,9 @@ class TheBundle(unittest.TestCase):
     def test_only_the_summary_card_ships_a_summary_field(self):
         shipped = [c for c in BUILT['cards'] if 'summary' in c]
         self.assertEqual([(c['id'], c['summary']) for c in shipped], [(CARD_ID, 'td')])
+
+    def test_no_cea_or_hostel_figure_ships(self):
+        self.assertFalse({'cea', 'hostel_subsidy'} & set(BUILT['figures']['figures']))
 
     def test_the_free_table_is_drawn_at_the_step_in_force_so_it_ships_the_da_tier(self):
         tier = BUILT['figures']['da_step']['table_da_percent']

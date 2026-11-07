@@ -24,8 +24,8 @@ import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.TdSummaryStrings as S
 
 /**
- * The TD entitlements table (plan 24): one block per pay-level group with its hotel, taxi and food amounts and the food by time away,
- * then CEA and hostel subsidy. Every amount is already worked out in the [TdSummary]; this only lays it out. Free for every user (owner
+ * The TD entitlements table (plan 24): one block per pay-level group with its hotel, taxi and food amounts and the food by time away.
+ * Every amount is already worked out in the [TdSummary]; this only lays it out. Free for every user (owner
  * decision D3), so it is drawn outside the paid half. Nothing is drawn for a card with no table.
  */
 internal fun LazyListScope.guideTdSummary(card: GuideCardContent) {
@@ -47,7 +47,6 @@ private fun TdSummaryBlock(
             modifier = Modifier.semantics { heading() },
         )
         summary.levelGroups.forEach { TdLevelGroupCard(it, summary, isOwn = it == own) }
-        if (summary.ceaPaise != null || summary.hostelSubsidyPaise != null) TdChildrenEducationCard(summary)
     }
 }
 
@@ -76,23 +75,6 @@ private fun TdLevelGroupCard(
             group.foodPaise?.let { TdLine(S.foodLabel, TdSummaryWording.food(it)) }
             TdSummaryWording.timingLines(summary.foodTimings, group.foodByTimingPaise).forEach {
                 Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
-    }
-}
-
-@Composable
-private fun TdChildrenEducationCard(summary: TdSummary) {
-    FlatBorderedCardShape {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(AppDimensions.SpacingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny),
-        ) {
-            Text(S.ceaHeading, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.semantics { heading() })
-            summary.ceaPaise?.let { TdLine(S.ceaLabel, TdSummaryWording.cea(it)) }
-            summary.hostelSubsidyPaise?.let { TdLine(S.hostelLabel, TdSummaryWording.hostel(it)) }
-            if (summary.ceaPaise != null) {
-                Text(S.divyaangNote, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }

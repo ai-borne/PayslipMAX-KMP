@@ -30,10 +30,6 @@ internal object TdSummaryWording {
         to: Int,
     ): String = S.band(from, to)
 
-    fun cea(paise: Long): String = S.cea(PreClaimWording.rate(paise))
-
-    fun hostel(paise: Long): String = S.hostel(PreClaimWording.rate(paise))
-
     /** One line per share of the day's food, named in hours. Empty unless there is an amount for every share. */
     fun timingLines(
         timings: List<TdFoodTiming>,

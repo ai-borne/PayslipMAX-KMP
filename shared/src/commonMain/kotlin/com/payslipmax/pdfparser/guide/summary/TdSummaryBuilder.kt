@@ -11,7 +11,7 @@ import com.payslipmax.pdfparser.guide.model.GuideFigures
  * `figures.json` and this follows. Integer arithmetic only, so it is exact on both platforms and needs no iOS timing test.
  *
  * Returns null, so the card shows nothing rather than a guess, when there are no figures, DA is negative, or the hotel figure (whose
- * bands give the rows) is missing. A missing food, taxi, CEA or hostel figure leaves out only its own cell or section.
+ * bands give the rows) is missing. A missing food or taxi figure leaves out only its own cell.
  */
 object TdSummaryBuilder {
     /** The `summary` of the one card the table is drawn on (`summary=td` in the authoring file). Any other kind is an ordinary card. */
@@ -22,8 +22,6 @@ object TdSummaryBuilder {
     private const val TAXI = "td_taxi"
     private const val FOOD = "food_rate"
     private const val FOOD_HOURS = "td_food_hours"
-    private const val CEA = "cea"
-    private const val HOSTEL = "hostel_subsidy"
 
     /**
      * The summary at the officer's payslip DA when they have one, otherwise at the bundle's own tier (`table_da_percent`). Null when
@@ -53,8 +51,6 @@ object TdSummaryBuilder {
             daBandTo = bandFrom + per - 1,
             levelGroups = hotel.bands.sortedBy { lowestLevel(it) }.map { group(it, hotel, figures, step, timings) },
             foodTimings = timings,
-            ceaPaise = figures.figures[CEA]?.bands?.firstOrNull()?.let { paise(it, step) },
-            hostelSubsidyPaise = figures.figures[HOSTEL]?.bands?.firstOrNull()?.let { paise(it, step) },
         )
     }
 

@@ -173,25 +173,8 @@ class GuideBundleValidatorTest {
         assertEquals(emptyList(), problems(withPreClaim))
 
         // A card-less figure that does not say "preclaim" is a data slip, not a worksheet rate: it must not load silently.
-        assertProblem(withPreClaim.withFigure("rma") { it.copy(use = "") }, "figure rma: no card and not a preclaim or summary figure")
+        assertProblem(withPreClaim.withFigure("rma") { it.copy(use = "") }, "figure rma: no card and not a preclaim figure")
         assertProblem(withPreClaim.withFigure("rma") { it.copy(card = SyntheticGuideBundle.PERSONAL_CARD) }, "figure rma: a preclaim figure names a card")
-    }
-
-    /** The valid bundle carrying only the card-less TD summary figures (plan 24). */
-    private val withSummary: GuideBundle =
-        valid.copy(
-            figures = SyntheticGuideFigures.figures.let { all -> all.copy(figures = all.figures.filterValues { it.use == "summary" }) },
-        )
-
-    @Test
-    fun aSummaryFigureNeedsNoCardButMustSayWhatItIsFor() {
-        val cea = SyntheticGuideFigures.figures.figures.getValue("cea")
-        assertEquals("" to "summary", cea.card to cea.use)
-        assertEquals(emptyList(), problems(withSummary))
-
-        // Before this the loader rejected the whole bundle, which would have taken the Guide down on a device.
-        assertProblem(withSummary.withFigure("cea") { it.copy(use = "") }, "figure cea: no card and not a preclaim or summary figure")
-        assertProblem(withSummary.withFigure("cea") { it.copy(card = SyntheticGuideBundle.PERSONAL_CARD) }, "figure cea: a summary figure names a card")
     }
 
     @Test

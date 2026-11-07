@@ -64,7 +64,7 @@ Card text lives only in `authoring/*.txt`; rupee figures only in `figures.json`.
   a new Wing Circular on road mileage means new `rma` rates (the validator insists on all 34 states, spelt as the circular spells them), a new
   Army DA-step letter means the `da_step.first_step` date. Give the change its owner `approved` date and record it in `23_ta_da_preclaim_rate_register.md`.
 - The TD summary card (`RB-TD-SUMMARY`, `summary=td`, plan 24) has **no rupee amount in its text**: the app draws its table from `figures.json` (`td_hotel`,
-  `td_taxi`, `food_rate`, `td_food_hours`, and the summary figures `cea` and `hostel_subsidy`, `use: summary`), so a base change is a `figures.json` edit only.
+  `td_taxi`, `food_rate`, `td_food_hours`), so a base change is a `figures.json` edit only. CEA and hostel subsidy are deliberately not on it (they live on `RB-SS-P092`).
   `da_step.table_da_percent` is the DA the free table is drawn at when the officer has no payslip DA (50 today); **raise it to 100 when DA reaches 100%**, in the
   same release as the DA-step review. The card cites the MoD letters and names the DoE OM only as the civil parent order (register 23, S7); keep that wording.
 - The TA/DA pre-claim worksheet (field order, documents, dropdowns, the LTC rule picker) lives only in `preclaim.json`. When the portal changes a form,

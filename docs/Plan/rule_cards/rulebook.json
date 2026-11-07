@@ -13093,17 +13093,17 @@
    "id": "RB-TD-SUMMARY",
    "domain": "travel",
    "topic": "RR-ORD-03",
-   "title": "Hotel, taxi and food on TD, and CEA: all rates at a glance",
+   "title": "Hotel, taxi and food on TD: all rates at a glance",
    "answer": "Rates for officer levels 9 to 18, worked out from the approved rates, so they move with DA.",
    "key": [
     "Hotel is a ceiling a night, and GST is paid on top",
     "Food is a fixed daily amount, cut by hours away",
-    "CEA and hostel subsidy are per child, per academic year"
+    "Taxi: a rupee cap to level 11, a limit above it"
    ],
    "attach": [],
    "watch": [],
-   "cite": "MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017 (civil parent: DoE OM 19030/1/2017-E.IV dt 13-07-2017); MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018 for CEA",
-   "details": "Every rate rises 25% each time DA rises 50%. Above level 11 taxi has no rupee cap: AC taxi up to 50 km a day for levels 12 to 13B, and at actual cost for level 14 and above. CEA covers your two eldest surviving children, and a divyaang child gets double. Hostel subsidy is the actual lodging and boarding cost or the ceiling, whichever is lower.",
+   "cite": "MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017 (civil parent: DoE OM 19030/1/2017-E.IV dt 13-07-2017)",
+   "details": "Every rate rises 25% each time DA rises 50%. Above level 11 taxi has no rupee cap: AC taxi up to 50 km a day for levels 12 to 13B, and at actual cost for level 14 and above.",
    "chips": [
     "RATES"
    ],
@@ -13111,8 +13111,7 @@
    "summary": "td",
    "from": [
     "SS-T181",
-    "SS-T183",
-    "SS-P092"
+    "SS-T183"
    ],
    "open": [],
    "basis": "",
@@ -13126,7 +13125,7 @@
    "date": "2026-11-07",
    "items": [
     {
-     "text": "A new first card in Temporary duty puts hotel, taxi and food by pay level, and CEA and hostel subsidy, in one table that follows DA",
+     "text": "A new first card in Temporary duty puts hotel, taxi and food by pay level in one table that follows DA",
      "cards": [
       "RB-TD-SUMMARY"
      ]

@@ -27,7 +27,8 @@ object GuideTdSummaryContract {
         // Hotel ceiling a night and food a day at DA 50 to 99%, in paise: 2812.50 / 5625 / 9375 and 1125 / 1250 / 1500 (PCDA(O) FAQ for food).
         assertEquals(listOf(281250L, 562500L, 937500L), summary.levelGroups.map { it.hotelPaise })
         assertEquals(listOf(112500L, 125000L, 150000L), summary.levelGroups.map { it.foodPaise })
-        assertEquals(3375000L to 10125000L, summary.ceaPaise to summary.hostelSubsidyPaise)
+        // CEA and hostel subsidy are not on the TD card (owner, 2026-11-07), so the bundle ships no figure for them.
+        assertEquals(emptySet(), figures.figures.keys.intersect(setOf("cea", "hostel_subsidy")))
         for (level in PayLevel.entries) {
             // No level Pay Audit knows may lack a row, or that officer's own row would silently never highlight.
             assertNotNull(summary.groupFor(level.label), "a table row for level ${level.label}")

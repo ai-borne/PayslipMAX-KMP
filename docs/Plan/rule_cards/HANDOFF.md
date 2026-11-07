@@ -77,7 +77,7 @@ Card id defaults to `RB-<first from id>`; add `id=` when two cards start from th
 - Pay so far (46 cards): Risk & Hardship (all 21 FAQs), House Rent Allowance and SPR (all 18 FAQs, plus handbook rules), leave encashment with LTC (7), CEA and hostel subsidy (9), medical OPD (9), transport allowance (8).
 - Prototype cards reviewed and approved by the user; compiler, validator and reference generator built.
 
-- **TD summary card (2026-11-07):** one table card first in the TD area (hotel, taxi, food with timings, CEA and hostel), computed from `figures.json`, free for all. Plan, decisions and status: `24_td_summary_card_plan.md`.
+- **TD summary card (2026-11-07):** one table card first in the TD area (hotel, taxi and food with timings; no CEA, which has its own card), computed from `figures.json`, free for all. Plan, decisions and status: `24_td_summary_card_plan.md`.
 
 ## DONE this session (authoring batches 33-48)
 Pay FAQs (55 left earlier) all written (33-35). Pay handbook-only topics written for chapters 4-9 (41-44), 13 (40), 14 (45), 15 (46), 17-20 (47) and 21 DSOP (48). Chapters 10-11 (gallantry, AFL cell) were out of scope. TLA district lists, bed-linen rate, HAFA/other rate tables beyond those on cards are not reproduced.
