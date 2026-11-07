@@ -80,6 +80,11 @@ data class GuideCard(
      * on the PCDA(O) FAQ or handbook) or `dopt_om` (on a DoPT Office Memorandum). Empty on every other card; see [GuideBasis].
      */
     val basis: String = "",
+    /**
+     * The one card the app draws a computed table on (`td` is the TD entitlements summary, plan 24); empty on every other card. A kind this
+     * app version does not know is simply an ordinary card.
+     */
+    val summary: String = "",
     /** First 8 hex characters of the SHA-256 of the card's shipped text; changes when the words a user reads change. */
     val rev: String = "",
     /** Date (YYYY-MM-DD) the rule applies from; empty when the card is undated. */
@@ -143,6 +148,8 @@ data class GuideDaStep(
     @SerialName("per_da_percent") val perDaPercent: Int,
     @SerialName("increase_percent") val increasePercent: Int,
     @SerialName("first_step_effective_from") val firstStepEffectiveFrom: String = "",
+    /** The DA the free TD summary table is drawn at when the officer has no payslip DA (plan 24); 0 if not shipped, so no table is guessed. */
+    @SerialName("table_da_percent") val tableDaPercent: Int = 0,
 )
 
 /**

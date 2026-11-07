@@ -7,6 +7,7 @@ import com.payslipmax.pdfparser.guide.data.InMemoryGuidePinsStorage
 import com.payslipmax.pdfparser.guide.data.InMemoryGuideWhatsNewStorage
 import com.payslipmax.pdfparser.guide.domain.GuideProfile
 import com.payslipmax.pdfparser.guide.domain.GuideProfileProvider
+import com.payslipmax.pdfparser.guide.summary.TdSummaryBuilder
 import com.payslipmax.pdfparser.platform.platformAppVersion
 import com.payslipmax.pdfparser.rating.currentTimeMillis
 import com.payslipmax.pdfparser.telemetry.CrashReporter
@@ -101,6 +102,9 @@ class GuideViewModel(
 
     /** True when the card has a "your figure" line, so a screen reads the payslips for that card and no other. */
     fun hasFigure(cardId: String): Boolean = index()?.bundle?.figures?.figures?.values?.any { it.card == cardId } == true
+
+    /** True for the one card that carries the free TD table, which reads the officer's level and DA even while the paid half is locked. */
+    fun hasSummary(cardId: String): Boolean = index()?.card(cardId)?.summary == TdSummaryBuilder.CARD_KIND
 
     /** The officer's profile, read from the stored payslips only while a screen collects it. */
     fun profileFlow(): Flow<GuideProfile?> = profiles.profile()

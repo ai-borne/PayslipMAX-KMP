@@ -6,7 +6,8 @@ records a fact the owner stated without a document; it is the weakest label and 
 Kotlin: the app reads these from the bundle. compile.py calls validate(); bundle.py calls for_bundle().
 
 A figure either belongs to a rule card (`card`, shown as that card's "your figure" line) or feeds the TA/DA pre-claim worksheet
-(`use: "preclaim"`, no card). Never both, so a worksheet rate can never be drawn on the wrong card.
+(`use: "preclaim"`, no card). Never both, so a worksheet rate can never be drawn on the wrong card. (A pre-claim figure may also be
+read by key for the TD summary card, plan 24; `use` names its home.)
 """
 import datetime
 import json
@@ -69,6 +70,8 @@ def validate(data, cards):
         errs.append('figures: da_step needs positive per_da_percent and increase_percent')
     if not step.get('authority'):
         errs.append('figures: da_step has no authority')
+    if not _positive_int(step.get('table_da_percent')):
+        errs.append('figures: da_step needs table_da_percent, the DA the free TD summary table is drawn at (a positive whole number)')
     errs += _first_step_problems(step.get('first_step') or {})
     by_id = {c['id']: c for c in cards}
     figs = data.get('figures') or {}
@@ -265,5 +268,5 @@ def for_bundle(data):
             shipped['classes'] = {n: [{k: s[k] for k in SHIPPED_STEP_KEYS} for s in steps] for n, steps in fig['classes'].items()}
         out[key] = shipped
     shipped_step = {'per_da_percent': step['per_da_percent'], 'increase_percent': step['increase_percent'],
-                    'first_step_effective_from': step['first_step']['effective_from']}
+                    'first_step_effective_from': step['first_step']['effective_from'], 'table_da_percent': step['table_da_percent']}
     return {'da_step': shipped_step, 'figures': out}

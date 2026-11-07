@@ -68,9 +68,9 @@ class BundleContents(unittest.TestCase):
 
     def test_matches_the_compiled_dataset(self):
         cards = BUILT['cards']
-        self.assertEqual(len(cards), 403)
+        self.assertEqual(len(cards), 404)
         # The domain split is pinned on the source rulebook, because the shipped cards no longer carry `domain`.
-        self.assertEqual(sum(c['domain'] == 'travel' for c in RULEBOOK['cards']), 220)
+        self.assertEqual(sum(c['domain'] == 'travel' for c in RULEBOOK['cards']), 221)
         self.assertEqual(sum(c['domain'] == 'pay' for c in RULEBOOK['cards']), 183)
         self.assertEqual(len(BUILT['nav']), 9)
         self.assertEqual(sum(len(a['cases']) for a in BUILT['nav']), 44)
@@ -269,7 +269,7 @@ class BundleFile(unittest.TestCase):
         # An authoring-only field (authority, evidence, owner notes, the rma circular remarks) must never reach the APK.
         with open(BUNDLE_PATH, encoding='utf-8') as fh:
             shipped = json.load(fh)['figures']
-        self.assertEqual(set(shipped['da_step']), {'per_da_percent', 'increase_percent', 'first_step_effective_from'})
+        self.assertEqual(set(shipped['da_step']), {'per_da_percent', 'increase_percent', 'first_step_effective_from', 'table_da_percent'})
         for key, fig in shipped['figures'].items():
             self.assertLessEqual(set(fig), set(figures.SHIPPED_FIGURE_KEYS), key)
             for band in fig.get('bands', []):

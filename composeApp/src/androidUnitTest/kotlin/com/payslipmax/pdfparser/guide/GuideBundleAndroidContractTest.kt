@@ -30,6 +30,7 @@ class GuideBundleAndroidContractTest {
             GuideBundleContract.assertPinsAndShareNotesMatchDataset(bundle)
             GuideFiguresContract.assertShippedFiguresMatchTheApprovedLetters(bundle)
             GuideFiguresContract.assertPreClaimFiguresMatchTheApprovedRegister(bundle)
+            GuideTdSummaryContract.assertTheSummaryCardAndItsTableMatchTheApprovedData(bundle)
             GuideFiguresContract.assertPermanentDutyEstimatesMatchTheApprovedRules(bundle)
             GuideFiguresContract.assertTemporaryDutyEstimatesMatchTheApprovedRules(bundle)
             GuideFiguresContract.assertOnlyPersonalCardsResolveAFigure(bundle)

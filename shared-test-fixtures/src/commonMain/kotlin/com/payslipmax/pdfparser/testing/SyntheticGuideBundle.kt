@@ -20,6 +20,7 @@ object SyntheticGuideBundle {
     const val OPEN_SOURCE_CARD = "RB-T6"
     const val DOPT_OM_CARD = "RB-T8"
     const val BIG_CASE = "td-da"
+    const val TD_SUMMARY_CARD = "RB-TSUM"
 
     val JSON: String =
         """
@@ -57,6 +58,13 @@ object SyntheticGuideBundle {
         val bundle = (GuideBundleParser.parse(JSON) as GuideLoadResult.Loaded).bundle
         val food = SyntheticGuideFigures.figures.figures.getValue("food_rate").copy(card = PERSONAL_CARD)
         return bundle.copy(figures = GuideFigures(SyntheticGuideFigures.figures.daStep, mapOf("food_rate" to food)))
+    }
+
+    /** The synthetic bundle with the real TD figures ([SyntheticGuideFigures]) and one card marked `summary=td`, which has no "your figure". */
+    fun withTdSummary(): GuideBundle {
+        val bundle = (GuideBundleParser.parse(JSON) as GuideLoadResult.Loaded).bundle
+        val card = bundle.cards.first().copy(id = TD_SUMMARY_CARD, title = "TD rates at a glance", personal = "", summary = "td")
+        return bundle.copy(cards = bundle.cards + card, figures = SyntheticGuideFigures.figures)
     }
 
     /** The same bundle with the synthetic pre-claim worksheet, whose rule picker links to [SyntheticGuidePreClaim.PICKER_CARD]. */

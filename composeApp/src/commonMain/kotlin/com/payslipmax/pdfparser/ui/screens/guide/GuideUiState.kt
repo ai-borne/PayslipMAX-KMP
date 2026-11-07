@@ -12,6 +12,8 @@ import com.payslipmax.pdfparser.guide.domain.PersonalFigureResolver
 import com.payslipmax.pdfparser.guide.model.GuideArea
 import com.payslipmax.pdfparser.guide.model.GuideBundle
 import com.payslipmax.pdfparser.guide.model.GuideCase
+import com.payslipmax.pdfparser.guide.summary.TdSummary
+import com.payslipmax.pdfparser.guide.summary.TdSummaryBuilder
 
 /** The Guide tab's load state. Every screen below Home derives its content from [Ready.bundle]. */
 sealed interface GuideUiState {
@@ -80,6 +82,10 @@ data class GuideCardContent(
     val full: GuideCardFull?,
     /** Links to the rule in force or the rule before; ids and dates only, so a locked card may hold them. */
     val history: GuideCardHistory = GuideCardHistory.None,
+    /** The TD entitlements table, only on the card marked `summary=td`; free, so it sits outside [full] (owner decision D3, plan 24). */
+    val summary: TdSummary? = null,
+    /** The officer's own pay level, when a payslip gave one, so the table can mark their row; null otherwise and on every other card. */
+    val ownLevel: String? = null,
 )
 
 /**
@@ -141,13 +147,19 @@ internal fun GuideIndex.cardContent(
 ): GuideCardContent? {
     val card = card(cardId) ?: return null
     val trust = trust(card)
+    // The one card the TD table is drawn on is free (owner decision D3): its whole text and authority show even when the paid half is locked.
+    val isTdSummary = card.summary == TdSummaryBuilder.CARD_KIND
+    val table = if (isTdSummary) TdSummaryBuilder.buildFor(bundle.figures, profile?.daPercent) else null
     val full =
-        if (unlocked) {
+        if (unlocked || isTdSummary) {
             GuideCardFull(card.key, card.attach, card.watch, card.cite, card.details, PersonalFigureResolver.resolve(card.id, bundle.figures, profile))
         } else {
             null
         }
     // A replaced rule's own notice already says it no longer applies, so it gets no "rates may have changed" nudge on top.
     val stale = !card.isReplaced && trust.ratesAsOf?.let { GuideStaleness.isStale(it, nowMillis) } == true
-    return GuideCardContent(card.id, card.title, card.answer, bundle.facets[card.facet].orEmpty(), trust, stale, full, cardHistory(card.id))
+    return GuideCardContent(
+        card.id, card.title, card.answer, bundle.facets[card.facet].orEmpty(), trust, stale, full, cardHistory(card.id),
+        summary = table, ownLevel = if (table != null) profile?.level else null,
+    )
 }

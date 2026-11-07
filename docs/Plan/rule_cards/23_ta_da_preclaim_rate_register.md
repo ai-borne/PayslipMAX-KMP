@@ -16,6 +16,7 @@ invented to make a row look stronger; where a civil order backs an Army figure, 
 | S4 | Finance Department, UT Ladakh, Order 231-F of 2024 dated 03-05-2024 ("Revision of rates of various allowances with increase in the DA rate by 50%"), 5 scanned pages | read page by page. **Civil**, not MoD. It lists the DoE OM 19030/1/2017-E.IV and DoE OM 1/1/2024-EII(B) dt 12-03-2024 as its authority, and applies the 25% step **w.e.f. 01-01-2024** |
 | S5 | Wing Circular no. 10 dt 03-09-2024 (RMA table) | `figures.json` figure `rma` (moved there in P2; the standalone file is deleted), `LETTER_TEXT` |
 | S6 | The owner's phone-image rates sheet | `td_rates_sheet.json`, `WEB_SECONDARY`; now only a cross-check |
+| S7 | DoE OM No. 19030/1/2017-E.IV dt 13-07-2017, "Travelling Allowance Rules - Implementation of the Seventh CPC" (public PDF at doe.gov.in, `files/cenetral-pay_document/TA_English.pdf`, 6 scanned pages with an OCR text layer), read directly on 2026-11-07: Table E(i), notes (ii) to (iv) with the 25%-per-50% DA rule, timing table (v) | read in full. **Civil**, w.e.f. 01-07-2017. **Para 8 leaves Armed Forces personnel to separate MoD orders**, so S7 is the civil parent of S1, cited as that (owner decision 2026-11-07: cite it as an authority because the Army's own letters are not public), never as the Army entitlement itself. OCR digits are noisy (the L14+ hotel figure misreads), so a figure is taken from S7 only where it agrees with S2. This is the order S4 names as its authority, now read first-hand |
 
 S4 is a public government order (cdnbbsr.s3waas.gov.in, `.../2024/05/202405061031185669.pdf`). Only its number, date and figures are recorded here; the
 text is not copied into the repo.
@@ -36,6 +37,7 @@ Step columns are DA 50 to 99%. Base figures are the S2 handbook rates (7th CPC, 
 | `ctg` (existing) | 80% of basic | | `LETTER_TEXT` | S1 para 3(ii)(a) | | owner voucher 149000 gives 119200 | approved 2026-10-08 |
 
 Notes on the rows:
+- **S7 (2026-11-07):** the DoE OM prints the same bases as S2 (hotel L12-13 4500, L9-11 2250; taxi 338; food 1200/1000/900; timing 30/70/100%) and the same 25%-per-50%-DA rule in notes (ii), (iii) and (iv). It adds a second written source for hotel, taxi and food, still **civil**, so the label stays `HANDBOOK_ONLY` for hotel and taxi. A card may cite it beside S1, worded as "civil parent order"; it must not stand alone as the Army authority. Its JCO/OR rows (levels 6-8 and 5 and below) are not approved figures here; the sheet's 5A-8 food rate of 800 equals S7's **unstepped** base, while the sheet's other JCO/OR rows are stepped (750 to 937.50, 225 to 281.25, 500 to 625), so that sheet line is suspect.
 - **Why the label stays `HANDBOOK_ONLY` for hotel, taxi and baggage:** the Army letter text itself was not read. The civil order S4 reproduces the same base
   numbers and the same step, which makes the figures very likely right, but it is not the MoD's own text.
 - **F6 answer (the date):** every civil source we could read puts the step at **2024-01-01** (the day DA reached 50%), and DoE said in March 2024 that no separate

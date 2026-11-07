@@ -44,7 +44,7 @@ object GuideBundleContract {
 
     fun assertMatchesCompiledDataset(bundle: GuideBundle) {
         assertEquals(GuideBundleParser.SUPPORTED_MAJOR, bundle.version)
-        assertEquals(403, bundle.cards.size)
+        assertEquals(404, bundle.cards.size)
         assertEquals(9, bundle.nav.size)
         assertEquals(44, bundle.nav.sumOf { it.cases.size })
         assertEquals(setOf("Q", "H", "C", "L"), bundle.facets.keys)
@@ -151,7 +151,12 @@ object GuideBundleContract {
     fun assertTrustAndPreviewMatchDataset(bundle: GuideBundle) {
         val index = bundle.toReady().index
         val locked = bundle.cards.map { assertNotNull(index.cardContent(it.id, unlocked = false, nowMillis = 0L)) }
-        assertTrue(locked.all { it.full == null }, "a locked card holds no key points, cite or details")
+        // Owner decision D3 (plan 24): the TD summary card is the one free card, so its table and authority show even when locked.
+        // Every other locked card holds only the free half, and no second card may ever slip into the free set unnoticed.
+        val (free, paid) = locked.partition { it.summary != null }
+        assertEquals(listOf("RB-TD-SUMMARY"), free.map { it.id }, "exactly one card is free")
+        assertTrue(free.all { it.full != null }, "the free card shows its text and authority")
+        assertTrue(paid.all { it.full == null }, "a locked card holds no key points, cite or details")
         assertEquals(0, locked.count { it.trust.unverified })
         assertEquals(14, locked.count { it.trust.basis != null })
         assertEquals(30, locked.count { it.trust.noOfficialSource })
