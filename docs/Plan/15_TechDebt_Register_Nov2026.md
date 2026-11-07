@@ -99,10 +99,10 @@ Steps: (a) a JVM test builds a PDF in-test with PDFBox, runs `extractTokenized`,
 | # | Item | Severity | Risk | Evidence |
 |---|---|---|---|---|
 | 27 | `DaArrearsWindow.minimumMonths`/`closestMonths` document "null if none", but `candidateMonths` is never empty for a month 1-12 (the smallest candidate is `(m-1)%6`+6 or more). The null branch is unreachable, and `candidateMonths(0)` returns `[5, 11]` instead of rejecting a non-month. Decide: tighten the contract (non-null return, `require(monthNum in 1..12)`) or keep it and fix the KDoc; callers in Pay Audit must be read first. | Low | Low–medium (Pay Audit) | `insights/DaArrearsWindow.kt:19-34`; pinned by `DaArrearsWindowTest` |
-| 28 | `BackHandler` is deprecated ("Use NavigationEventHandler instead"). Five call sites warn or are suppressed per statement: `App.kt`, `GuideTab.kt`, `PayslipReplicaDetailScreen.kt`, `RepresentationScreen.kt`, and `AttachLeaveGuard.kt` (never suppressed, so it warns every build). Migrate together, with Android back and iOS native-back behaviour checked. | Low | Medium (navigation, back on both platforms) | found in Phase 3 item 19 |
+| 28 | `BackHandler` is deprecated ("Use NavigationEventHandler instead"). Five call sites: `App.kt`, `GuideTab.kt`, `PayslipReplicaDetailScreen.kt`, `RepresentationScreen.kt` (suppressed per statement) and `AttachLeaveGuard.kt` (left warning on purpose: `OrdersAttachSecurityContractTest` treats any string literal in an orders screen, including `"DEPRECATION"`, as user-facing copy, so it cannot be suppressed there without weakening that test). **Not done, by design:** `NavigationEventHandler` is in `androidx.navigationevent:navigationevent-compose`, which is not on the classpath (only the core 1.0.2 arrives transitively), so it is a new dependency. Needs: version aligned with CMP 1.10.3, `minifyReleaseWithR8` + `check_r8_guide.py`, iOS link, and Android/iOS back-gesture checks on a device (`AppBackNavigationTest` is JVM-only). Do it with Phase 5 item 17 (dependencies), not as a cleanup. | Low | Medium (navigation, back on both platforms) | found in Phase 3 item 19 |
 
 
-- [ ] 27 · - [ ] 28
+- [x] 27 (2026-11-07: decided to keep the nullable contract and make it true: a month outside 1..12 now yields no candidates, so the callers' existing null/skip paths apply instead of the invented `[5, 11]`. No `require`, so bad data cannot crash Pay Audit. Tests added.) · - [ ] 28 (open — deferred into Phase 5 item 17, reason above)
 
 ## Closed / accepted — no work
 

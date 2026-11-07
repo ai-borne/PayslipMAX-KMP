@@ -2,6 +2,8 @@ package com.payslipmax.pdfparser.insights
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 /**
  * WHY (907b42ac): a DA rise is effective on 1 Jan or 1 Jul but is paid on whichever payslip follows the order, so arrears can cover
@@ -50,5 +52,21 @@ class DaArrearsWindowTest {
     @Test
     fun noArrearsPaidReadsAsTheFewestMonths() {
         assertEquals(1, DaArrearsWindow.closestMonths(2, actual = 0.0, perMonth = 1_000.0))
+    }
+
+    @Test
+    fun aNumberThatIsNotAMonthHasNoWindowSoNoArrearsAreInventedForIt() {
+        // A payslip whose month failed to parse must not be audited against made-up months; callers read null as "skip".
+        for (bad in listOf(0, 13, -1)) {
+            assertEquals(emptyList(), DaArrearsWindow.candidateMonths(bad), "month $bad")
+            assertNull(DaArrearsWindow.minimumMonths(bad), "month $bad")
+            assertNull(DaArrearsWindow.closestMonths(bad, actual = 1_000.0, perMonth = 1_000.0), "month $bad")
+        }
+    }
+
+    @Test
+    fun everyRealMonthHasAtLeastOneCandidate() {
+        // Pins why the callers' null branch exists only for a non-month: for 1..12 it is never taken.
+        for (m in 1..12) assertNotNull(DaArrearsWindow.minimumMonths(m), "month $m")
     }
 }
