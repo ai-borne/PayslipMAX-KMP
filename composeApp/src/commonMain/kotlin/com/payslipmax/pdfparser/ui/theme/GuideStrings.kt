@@ -139,7 +139,8 @@ object GuideStrings {
     fun yearMonth(value: String): String {
         val month = value.substringAfter('-', "").toIntOrNull()
         val year = value.substringBefore('-')
-        return if (month in 1..12 && year.length == 4) "${monthNames[month!! - 1]} $year" else value
+        val name = month?.let { monthNames.getOrNull(it - 1) }
+        return if (name != null && year.length == 4) "$name $year" else value
     }
 
     fun chipRatesAsOf(value: String): String = "Rates as of ${yearMonth(value)}"

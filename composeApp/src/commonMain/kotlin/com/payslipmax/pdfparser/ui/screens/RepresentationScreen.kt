@@ -25,7 +25,6 @@ import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.utils.shareText
 
 @OptIn(ExperimentalComposeUiApi::class)
-@Suppress("DEPRECATION")
 @Composable
 fun RepresentationScreen(
     viewModel: PayslipViewModel,
@@ -42,6 +41,7 @@ fun RepresentationScreen(
 
     // Nested handler: while a draft is open, back closes it and returns to the list (mirrors the
     // editor's Cancel button). Disabled at the list level, so App.kt's handler pops the screen.
+    @Suppress("DEPRECATION")
     BackHandler(enabled = selectedDraft != null) { selectedDraft = null }
     LaunchedEffect(selectedDraft) { onUnsavedStateChanged(selectedDraft != null) }
 

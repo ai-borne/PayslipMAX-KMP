@@ -206,7 +206,7 @@ class BankViewModel
         private fun attachments(
             entries: List<BankEntry>,
             orderIds: Set<String>,
-        ): Map<String, String> = entries.filter { BankStatus.of(it, orderIds) == BankStatus.ATTACHED }.associate { it.id to it.orderId!! }
+        ): Map<String, String> = entries.mapNotNull { entry -> entry.orderId?.takeIf { BankStatus.of(entry, orderIds) == BankStatus.ATTACHED }?.let { entry.id to it } }.toMap()
 
         private fun localDate(epochMillis: Long): CalendarDate = PreClaimDates.fromUtcMillis(epochMillis + localUtcOffsetMillis(epochMillis))
     }

@@ -11,20 +11,23 @@ import kotlin.math.abs
 internal object DaArrearsWindow {
     private const val HALF_YEARS = 3
     private const val MONTHS_PER_HALF_YEAR = 6
+    private const val MONTHS_PER_YEAR = 12
 
     /**
      * Months of arrears if the rise took effect on each of the last [HALF_YEARS] 1 Jan / 1 Jul dates, fewest first. A count is
      * the months from the effective month up to the month before this payslip; a date with none yet owed is left out.
+     * Empty for a [monthNum] outside 1..12 (a payslip whose month did not parse): no month, no window, nothing to audit.
      */
     fun candidateMonths(monthNum: Int): List<Int> {
+        if (monthNum !in 1..MONTHS_PER_YEAR) return emptyList()
         val sinceHalfYearStart = (monthNum - 1) % MONTHS_PER_HALF_YEAR
         return (0 until HALF_YEARS).map { sinceHalfYearStart + it * MONTHS_PER_HALF_YEAR }.filter { it >= 1 }
     }
 
-    /** The fewest months the payslip's arrears can cover; the most a shortfall may be measured against. Null if none. */
+    /** The fewest months the payslip's arrears can cover; the most a shortfall may be measured against. Null only when [monthNum] is not a month 1..12. */
     fun minimumMonths(monthNum: Int): Int? = candidateMonths(monthNum).firstOrNull()
 
-    /** The candidate whose [perMonth] x months is nearest the [actual] arrears paid; null when there is no candidate. */
+    /** The candidate whose [perMonth] x months is nearest the [actual] arrears paid; null only when [monthNum] is not a month 1..12. */
     fun closestMonths(
         monthNum: Int,
         actual: Double,

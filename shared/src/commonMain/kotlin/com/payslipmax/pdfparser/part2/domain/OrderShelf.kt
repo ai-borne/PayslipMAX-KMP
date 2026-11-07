@@ -18,7 +18,7 @@ object OrderShelf {
             orders
                 .sortedWith(compareByDescending<VaultOrder> { it.orderDate?.let(DutyDays::dayNumber) ?: Long.MIN_VALUE }.thenByDescending { it.createdAt }.thenBy { it.id })
                 .map { ShelfRow(it, OrderCompleteness.of(it, entries), ChainCheck.of(it, orders)) }
-        val dated = rows.filter { it.order.orderDate != null }.groupBy { it.order.orderDate!!.year }.map { (year, group) -> ShelfYear(year, group) }
+        val dated = rows.mapNotNull { row -> row.order.orderDate?.let { it.year to row } }.groupBy({ it.first }, { it.second }).map { (year, group) -> ShelfYear(year, group) }
         val undated = rows.filter { it.order.orderDate == null }
         return dated + if (undated.isEmpty()) emptyList() else listOf(ShelfYear(null, undated))
     }

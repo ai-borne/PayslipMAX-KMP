@@ -22,7 +22,6 @@ import org.koin.compose.koinInject
  * paid half and the full-text search are open.
  */
 @OptIn(ExperimentalComposeUiApi::class)
-@Suppress("DEPRECATION")
 @Composable
 fun GuideTab(
     navState: GuideNavState,
@@ -53,6 +52,7 @@ fun GuideTab(
                 viewModel.pins.retainKnown { current.index.card(it) != null }
             }
             // Android back pops the Guide stack before it leaves the tab; at Guide Home it stays disabled.
+            @Suppress("DEPRECATION")
             BackHandler(enabled = navState.canPop) { navState.pop() }
             GuideDestinationContent(navState, current, access, viewModel, searchViewModel, platform, notesViewModel, rememberPreClaimHost(preClaim, access, navState), rememberPart2Host(part2, part2Bank, bankAccess, current.bundle, navState))
         }

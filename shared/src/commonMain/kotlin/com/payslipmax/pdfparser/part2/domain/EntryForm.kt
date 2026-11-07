@@ -105,9 +105,10 @@ class EntryForm(
         updatedAt: Long,
     ): BankEntry? {
         if (check(input).isNotEmpty()) return null
+        val from = input.from ?: return null
         val used = fields.map { it.position }.toSet()
         val data = List(Part2Limits.DATA_COLUMNS) { i -> if (Part2ColumnPosition.DATA_FIRST + i in used) input.data.getOrNull(i).orEmpty().trim() else "" }
-        return BankEntry(id, code, input.from!!, input.to.takeIf { Part2ColumnPosition.TO in used }, data, input.note.trim(), orderId, createdAt, updatedAt)
+        return BankEntry(id, code, from, input.to.takeIf { Part2ColumnPosition.TO in used }, data, input.note.trim(), orderId, createdAt, updatedAt)
     }
 
     companion object {

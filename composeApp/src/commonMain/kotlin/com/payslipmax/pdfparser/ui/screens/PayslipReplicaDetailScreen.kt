@@ -27,7 +27,6 @@ import com.payslipmax.pdfparser.ui.updateDraftCorrection
  * [onOpenPdf] receives the original's bytes, fetched once here; [onNavigateTo] pushes a detail on top (the Leave bank teaser).
  */
 @OptIn(ExperimentalComposeUiApi::class)
-@Suppress("DEPRECATION")
 @Composable
 fun PayslipReplicaDetailScreen(
     viewModel: PayslipViewModel,
@@ -45,6 +44,7 @@ fun PayslipReplicaDetailScreen(
     }
 
     val handleBack = { if (uiState.isEditModeActive) viewModel.cancelEditingSession() else onBack() }
+    @Suppress("DEPRECATION")
     BackHandler(enabled = true) { handleBack() }
     DisposableEffect(Unit) {
         onDispose { if (viewModel.uiState.value.isEditModeActive) viewModel.cancelEditingSession() }

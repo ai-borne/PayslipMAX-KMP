@@ -121,7 +121,6 @@ fun App(
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
-@Suppress("DEPRECATION")
 @Composable
 internal fun MainScaffold(
     navState: AppNavState,
@@ -145,6 +144,7 @@ internal fun MainScaffold(
     ) { paddingValues ->
         // System back pops a pushed detail; at a tab root it stays disabled so back exits.
         // Never enabled on iOS — the native UINavigationController handles back there.
+        @Suppress("DEPRECATION")
         BackHandler(enabled = !hostDetailsNatively && navState.activeDetail != null) { navState.pop() }
         // Scaffold already applies the safe-area inset via paddingValues here; consume it so a
         // screen's own detailScreenSafeArea() resolves to ~0 on this path (no double padding) while

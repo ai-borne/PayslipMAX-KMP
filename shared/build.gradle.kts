@@ -145,6 +145,11 @@ kotlin {
         iosMain.dependencies {
             // iOS native frameworks like PDFKit are imported automatically via platform libraries
         }
+
+        // IosPayslipDatabaseUpgradeTest: Room's MigrationTestHelper on the native sqlite driver.
+        iosTest.dependencies {
+            implementation(libs.androidx.room.testing)
+        }
     }
 }
 
@@ -207,6 +212,11 @@ tasks.withType<Test>().configureEach {
 //   export SIMCTL_CHILD_PAYSLIP_LOCAL_CORPUS_TOKENS_OUT="/tmp/ios_corpus_tokens"   # IosTokenCaptureTest
 // The test reads PAYSLIP_LOCAL_CORPUS / PAYSLIP_LOCAL_CORPUS_JSON (without prefix) at runtime
 // because simctl strips the SIMCTL_CHILD_ prefix before setting the child's env.
+
+// IosPayslipDatabaseUpgradeTest reads the exported Room schemas from here; simctl only forwards SIMCTL_CHILD_-prefixed variables.
+tasks.withType<org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest>().configureEach {
+    environment("SIMCTL_CHILD_PAYSLIP_SCHEMA_DIR", "$projectDir/schemas")
+}
 
 // KSP: generate Room _Impl for every KMP target
 // Firebase BOM: pins firebase-analytics/crashlytics versions (must be in legacy block, not KMP sourceSet)
