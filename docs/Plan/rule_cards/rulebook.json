@@ -13123,6 +13123,17 @@
  ],
  "changes": [
   {
+   "date": "2026-11-07",
+   "items": [
+    {
+     "text": "A new first card in Temporary duty puts hotel, taxi and food by pay level, and CEA and hostel subsidy, in one table that follows DA",
+     "cards": [
+      "RB-TD-SUMMARY"
+     ]
+    }
+   ]
+  },
+  {
    "date": "2026-11-06",
    "items": [
     {

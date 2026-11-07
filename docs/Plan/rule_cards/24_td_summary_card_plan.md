@@ -45,3 +45,17 @@ Conflict surfaced, not blended: `RP-085` and `RR-ORD-03` print stepped rupees as
 - **Navigation and state:** opens through the existing card route; back, tab re-tap, lock screen and process death are inherited. No new arguments, no storage, no Room change.
 - **Stale rates:** at DA 100% the step moves; the builder follows `da_step`, and the bundle's `ratesAsOf` and the staleness nudge already cover a release gap.
 - **Not claimed:** the free table states "DA 50 to 99%"; below 50% or above 99% the builder shows the matching step, and shows nothing for a level it has no band for.
+
+## Status (2026-11-07)
+| Phase | Result |
+|---|---|
+| 0 | Plan written; step maths already pinned (`PersonalFigureResolverTest`). Commit 299d81b4 with P1-P2. |
+| 1 | `cea` and `hostel_subsidy` (`use: summary`), owner-approved 2026-11-07; Python and Kotlin validators accept the new `use` (without the Kotlin side the loader rejects the whole bundle). |
+| 2 | `TdSummaryBuilder` (12 tests, mutation-checked). |
+| 3 | Card `RB-TD-SUMMARY` first in `td-da`; `summary=` attribute, `table_da_percent`, `GuideCard.summary`; R8 `minifyReleaseWithR8` OK. Commit 217ac164. |
+| 4 | Table UI, free card (D3), own level marked; Pixel 9 walk done (all three bands, CEA and hostel, authority). Commit f5215389. |
+| 5 | "What's new" entry, runbook note, this status. `check_r8_guide.py` runs in the pre-push gate (it needs `assembleRelease`). |
+
+Open for the owner: (1) the card carries the RATES chip, so it shows "Rates as of Jan 2026" and the may-have-changed notice until `RATES_AS_OF` in
+`tools/config.py` is bumped at the next rates review (runbook step 6); (2) the iPhone walk waits until all features are ready (owner rule); (3) tele claim,
+briefcase, JCO/OR rows and the other blocks of the sheet wait for the Army letters (IHQ tele-policy letter dt 26-09-2018, the MoD (Finance) briefcase letter).
