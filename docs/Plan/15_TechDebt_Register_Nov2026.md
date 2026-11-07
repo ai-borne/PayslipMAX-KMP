@@ -21,8 +21,11 @@ below, which put low-risk work first; the high-risk items come last, each as its
 
 ## Phase 0 — Baseline
 
-- [ ] Record: `./gradlew check -x iosX64Test -x iosSimulatorArm64Test`, `iosSimulatorArm64Test`,
-      `minifyReleaseWithR8`, corpus 139/139, `check_tech_debt_limits.py` (622 files, 0 violations on 2026-11-07).
+- [x] 2026-11-07, commit 40e600c3 (no code changed). Recorded green: `./gradlew check -x iosX64Test -x iosSimulatorArm64Test`
+      (exit 0; includes `TokenParseCorpusRegressionTest` 0 failures / 0 skipped, `PhantomFreeCorpusInvariantTest` 0 failures),
+      `iosSimulatorArm64Test` (exit 0), `:composeApp:minifyReleaseWithR8 -PallowPlaceholderGemmaModel=true` (exit 0),
+      `check_tech_debt_limits.py --strict` over all tracked `.kt` (1434 files, 0 violations; the earlier "622" counted a
+      narrower set).
 
 ## Phase 1 — Tests only (no production code changes; zero regression risk)
 
@@ -32,7 +35,11 @@ below, which put low-risk work first; the high-risk items come last, each as its
 | 10 | Direct unit tests for code covered only indirectly: `DaArrearsWindow` (changed in 907b42ac), `WholeWordScanner`, `TokenGridAssigner`, `Part2RowPass`/`PageRestore`, `PreClaimChecks` | Medium | None | symbol-level grep of `*Test` source sets, 2026-11-07 |
 | 11 | iOS-native Room migration test (iOS relies on shared migrations only) | Medium | None | `docs/AI_INSIGHTS_PIPELINE.md` §12, Room destructive-fallback entry |
 
-- [ ] 7 · - [ ] 10 · - [ ] 11
+- [x] 7 (2026-11-07) · - [x] 10 (2026-11-07) · - [x] 11 (2026-11-07) — tests only, no production file changed.
+  Added: `ColumnBoundaryDetectorTest`, `RawLabelNoiseFilterTest` (item 7); `DaArrearsWindowTest`, `WholeWordScannerTest`,
+  `TokenGridAssignerTest`, `Part2RestoreRowsTest` (Part2RowPass), `Part2PageRestoreTest` (PageRestore), `PreClaimChecksTest`
+  (item 10); `IosPayslipDatabaseUpgradeTest` + simulator env var in `shared/build.gradle.kts` (item 11). Each threshold/edge test was
+  mutation-checked (changed the constant or comparison in production, saw the test fail, reverted).
 
 ## Phase 2 — PII in logs (highest severity, very low risk)
 
@@ -78,6 +85,14 @@ Steps: (a) a JVM test builds a PDF in-test with PDFBox, runs `extractTokenized`,
 | 2 | Page-2 earnings spill-over: both extractors scan one table page (`AndroidTokenExtractor.kt:28`, `IosTokenExtractor.kt:31`); doc estimates ~10% of months | High (silent missing pay) | **High** (changes token input for every document; phantom filters tuned to one page) | **Owner decision 2026-11-07: kept last.** A previous attempt failed and parsing works today. Start only when explicitly reopened, with spill fixtures measured from the local corpus first. |
 
 - [ ] 17 · - [ ] 4 · - [ ] 18 · - [ ] 2
+
+## Phase 6 — Carry-over from Phase 1 (found while writing the tests; production changes, so not done in a tests-only phase)
+
+| # | Item | Severity | Risk | Evidence |
+|---|---|---|---|---|
+| 27 | `DaArrearsWindow.minimumMonths`/`closestMonths` document "null if none", but `candidateMonths` is never empty for a month 1-12 (the smallest candidate is `(m-1)%6`+6 or more). The null branch is unreachable, and `candidateMonths(0)` returns `[5, 11]` instead of rejecting a non-month. Decide: tighten the contract (non-null return, `require(monthNum in 1..12)`) or keep it and fix the KDoc; callers in Pay Audit must be read first. | Low | Low–medium (Pay Audit) | `insights/DaArrearsWindow.kt:19-34`; pinned by `DaArrearsWindowTest` |
+
+- [ ] 27
 
 ## Closed / accepted — no work
 
