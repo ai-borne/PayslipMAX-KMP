@@ -40,7 +40,7 @@ import com.payslipmax.pdfparser.ui.theme.GuideColors
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 
 /**
- * A card's body in the template order: (Your figure,) Key points, Attach, Watch out, Authority, then Details collapsed. An empty
+ * A card's body in the template order: (the TD table on its one card, free,) (Your figure,) Key points, Attach, Watch out, Authority, then Details collapsed. An empty
  * section is left out. Cards carry no placeholders (the validator rejects them), so none is drawn raw. A
  * card with no [GuideCardContent.full] (the free preview) gets the unlock panel in place of the body.
  */
@@ -49,6 +49,7 @@ internal fun LazyListScope.guideCardSections(
     onUnlock: () -> Unit,
     onCopyCite: (() -> Unit)? = null,
 ) {
+    guideTdSummary(card)
     val full = card.full
     if (full == null) {
         item(key = "locked") { GuideLockedPanel(onUnlock) }

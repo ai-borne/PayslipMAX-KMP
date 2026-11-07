@@ -14,6 +14,9 @@ import com.payslipmax.pdfparser.guide.model.GuideFigures
  * bands give the rows) is missing. A missing food, taxi, CEA or hostel figure leaves out only its own cell or section.
  */
 object TdSummaryBuilder {
+    /** The `summary` of the one card the table is drawn on (`summary=td` in the authoring file). Any other kind is an ordinary card. */
+    const val CARD_KIND = "td"
+
     private const val PERCENT = 100L
     private const val HOTEL = "td_hotel"
     private const val TAXI = "td_taxi"
