@@ -7,11 +7,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.payslipmax.pdfparser.insights.gemma.AndroidGemmaBaseModelInstaller
+import com.payslipmax.pdfparser.logging.Logger
 import com.payslipmax.pdfparser.rating.ReviewActivityBridge
 import com.payslipmax.pdfparser.repository.copyPickedBackup
 import com.payslipmax.pdfparser.subscription.isDebugBuild
 import com.payslipmax.pdfparser.ui.PayslipUiState
 import com.payslipmax.pdfparser.ui.PayslipViewModel
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 import org.koin.core.context.GlobalContext
 
 // isLoading is a general busy flag, but at cold start it doubles as "first frame not ready yet".
@@ -132,9 +134,9 @@ class MainActivity : ComponentActivity() {
                         android.content.Intent.FLAG_ACTIVITY_NO_HISTORY or
                         android.content.Intent.FLAG_ACTIVITY_NEW_TASK
                 }
-            startActivity(android.content.Intent.createChooser(intent, "Open PDF"))
+            startActivity(android.content.Intent.createChooser(intent, AppStrings.openPdfChooserTitle))
         } catch (e: Exception) {
-            e.printStackTrace()
+            Logger.e("MainActivity", "Opening the PDF viewer failed: ${e::class.simpleName}")
         }
     }
 

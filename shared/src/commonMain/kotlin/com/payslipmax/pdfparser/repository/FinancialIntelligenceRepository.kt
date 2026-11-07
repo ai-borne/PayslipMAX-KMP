@@ -217,15 +217,19 @@ open class FinancialIntelligenceRepository(
         engineResult.anomalies.forEach { anomaly ->
             val alreadyDrafted = keptDrafts.any { it.disputeMonth == dateStr && it.disputeType == anomaly.type }
             if (anomaly.type in REPRESENTATION_DRAFT_TYPES && anomaly.isProven() && !alreadyDrafted && anomaly.type !in dismissedTypes) {
+                // isProven() above guarantees all three; the elvis exits keep the compiler's proof instead of a `!!`.
+                val expected = anomaly.expected ?: return@forEach
+                val actual = anomaly.actual ?: return@forEach
+                val authority = anomaly.authority ?: return@forEach
                 val draft =
                     RepresentationDraftGenerator.generateRepresentationDraft(
                         disputeMonth = dateStr,
                         disputeType = anomaly.type,
                         amount = anomaly.amount,
                         officer = officer,
-                        expected = anomaly.expected!!,
-                        actual = anomaly.actual!!,
-                        authority = anomaly.authority!!,
+                        expected = expected,
+                        actual = actual,
+                        authority = authority,
                     )
                 payslipDao.insertRepresentationDraft(draft)
             }

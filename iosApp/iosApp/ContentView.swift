@@ -73,7 +73,7 @@ struct ComposeView: UIViewControllerRepresentable {
                         previewVC.modalPresentationStyle = .overFullScreen
                         topViewController()?.present(previewVC, animated: true)
                     } catch {
-                        print("Error opening PDF: \(error)")
+                        print("Error opening PDF")
                     }
                 }
             },
@@ -221,7 +221,7 @@ class DocumentPickerDelegate: NSObject, UIDocumentPickerDelegate {
             let filename = url.lastPathComponent
             onResult(data.toKotlinByteArray(), filename)
         } catch {
-            print("Error reading PDF file: \(error)")
+            print("Error reading PDF file")
         }
     }
 

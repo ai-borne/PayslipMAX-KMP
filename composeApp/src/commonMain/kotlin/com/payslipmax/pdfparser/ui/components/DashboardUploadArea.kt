@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 
 /**
  * The Dashboard's upload FAB plus its one-time coachmark, as a single unit anchored to the
@@ -38,7 +39,7 @@ fun BoxScope.DashboardUploadArea(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
     ) {
-        Icon(Icons.Default.Add, contentDescription = "Import Payslip")
+        Icon(Icons.Default.Add, contentDescription = AppStrings.importPayslipDesc)
     }
     if (coachmarkEnabled && !coachmarkDismissed) {
         UploadCoachmark(

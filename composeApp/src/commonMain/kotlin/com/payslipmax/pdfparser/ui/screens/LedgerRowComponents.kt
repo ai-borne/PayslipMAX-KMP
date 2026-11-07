@@ -92,7 +92,7 @@ private fun RowItemStart(
             }
         }
         if (isEditModeActive && !line.isDeleted) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), modifier = Modifier.padding(start = AppDimensions.SpacingTiny).size(AppDimensions.IconSizeSmall))
+            Icon(imageVector = Icons.Default.Edit, contentDescription = AppStrings.replicaEditLabel, tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), modifier = Modifier.padding(start = AppDimensions.SpacingTiny).size(AppDimensions.IconSizeSmall))
         }
     }
 }

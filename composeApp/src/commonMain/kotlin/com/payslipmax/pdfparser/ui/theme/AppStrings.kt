@@ -54,6 +54,8 @@ object AppStrings {
 
     // Upload & Decrypt
     const val labelSelectPdf = "Select PDF Payslip"
+    const val openPdfChooserTitle = "Open PDF"
+    const val importPayslipDesc = "Import Payslip"
     const val labelPassword = "Decryption Password"
     const val showPasswordToggle = "Show"
     const val hidePasswordToggle = "Hide"

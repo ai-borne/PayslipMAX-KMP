@@ -67,7 +67,11 @@ Steps: (a) a JVM test builds a PDF in-test with PDFBox, runs `extractTokenized`,
 | 14 | `PayslipMaxTests` target has `IPHONEOS_DEPLOYMENT_TARGET = 27.0` (app is 18.6) — XCTests cannot run below iOS 27 | Low | Low; verify with an Xcode build | `iosApp/*.xcodeproj/project.pbxproj:321,348` |
 | 9 | 7 `!!` in production, all guarded by an immediately preceding check — replace with `mapNotNull`/`filterNotNull`. Do after Phase 1 tests exist. | Low | Low–medium (Pay Audit, Part II) | `FinancialIntelligenceRepository.kt:226-228`, `EntryForm.kt:110`, `OrderShelf.kt:21`, `BankViewModel.kt:209`, `GuideStrings.kt:142` |
 
-- [ ] 26 · - [ ] 3 · - [ ] 19 · - [ ] 14 · - [ ] 9
+- [x] 26 (2026-11-07: `AppStrings.openPdfChooserTitle`/`importPayslipDesc`; "Edit" reuses `replicaEditLabel`; text unchanged)
+- [x] 3 (2026-11-07: `printStackTrace` -> `Logger.e` with the exception's type name only; both Swift `print`s now fixed strings, no `\(error)`. `Logger.w/e` `println` kept on purpose: fixed strings only, exempt in `stdout_guard.py`. Swift `print` is still not mechanically guarded.)
+- [x] 19 (2026-11-07: suppress moved from the 4 functions onto the single `BackHandler` call in each)
+- [x] 14 (2026-11-07: both `PayslipMaxTests` configs 27.0 -> 18.6; `xcodebuild test -only-testing:PayslipMaxTests` passed. Caveat: the only simulator here runs iOS 27, so this proves the build, not a run on 18.x.)
+- [x] 9 (2026-11-07: all 5 sites, 7 `!!`, replaced; new `GuideStringsYearMonthTest`; existing tests cover the other four)
 
 ## Phase 4 — Docs and repo hygiene (no code risk)
 
@@ -96,7 +100,9 @@ Steps: (a) a JVM test builds a PDF in-test with PDFBox, runs `extractTokenized`,
 |---|---|---|---|---|
 | 27 | `DaArrearsWindow.minimumMonths`/`closestMonths` document "null if none", but `candidateMonths` is never empty for a month 1-12 (the smallest candidate is `(m-1)%6`+6 or more). The null branch is unreachable, and `candidateMonths(0)` returns `[5, 11]` instead of rejecting a non-month. Decide: tighten the contract (non-null return, `require(monthNum in 1..12)`) or keep it and fix the KDoc; callers in Pay Audit must be read first. | Low | Low–medium (Pay Audit) | `insights/DaArrearsWindow.kt:19-34`; pinned by `DaArrearsWindowTest` |
 
-- [ ] 27
+| 28 | `BackHandler` is deprecated ("Use NavigationEventHandler instead"). Five call sites warn or are suppressed per statement: `App.kt`, `GuideTab.kt`, `PayslipReplicaDetailScreen.kt`, `RepresentationScreen.kt`, and `AttachLeaveGuard.kt` (never suppressed, so it warns every build). Migrate together, with Android back and iOS native-back behaviour checked. | Low | Medium (navigation, back on both platforms) | found in Phase 3 item 19 |
+
+- [ ] 27 · - [ ] 28
 
 ## Closed / accepted — no work
 
