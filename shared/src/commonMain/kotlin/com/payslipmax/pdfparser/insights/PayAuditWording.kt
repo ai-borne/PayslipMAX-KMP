@@ -36,4 +36,17 @@ object PayAuditWording {
         } else {
             "${PayslipPatternConfig.monthNames[first]} to ${PayslipPatternConfig.monthNames[last]} $year"
         }
+
+    /** A span that may cross a year end: "July 2026 to January 2027", or "July to December 2026" when both ends share the year. */
+    fun monthSpan(
+        firstMonth: Int,
+        firstYear: Int,
+        lastMonth: Int,
+        lastYear: Int,
+    ): String =
+        if (firstYear == lastYear) {
+            monthSpan(firstMonth, lastMonth, firstYear)
+        } else {
+            "${monthYear(firstMonth, firstYear)} to ${monthYear(lastMonth, lastYear)}"
+        }
 }

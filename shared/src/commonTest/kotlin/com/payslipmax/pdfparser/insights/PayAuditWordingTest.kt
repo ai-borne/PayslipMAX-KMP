@@ -32,4 +32,10 @@ class PayAuditWordingTest {
         assertEquals("July 2018", PayAuditWording.monthSpan(7, 7, 2018))
         assertEquals("January to March 2026", PayAuditWording.monthSpan(1, 3, 2026))
     }
+
+    @Test
+    fun aSpanAcrossTwoYearsNamesTheYearOnEachEnd() {
+        assertEquals("July 2026 to January 2027", PayAuditWording.monthSpan(7, 2026, 1, 2027))
+        assertEquals("July to December 2026", PayAuditWording.monthSpan(7, 2026, 12, 2026))
+    }
 }

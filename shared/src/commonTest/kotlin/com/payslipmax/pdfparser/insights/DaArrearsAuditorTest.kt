@@ -180,6 +180,79 @@ class DaArrearsAuditorTest {
         assertTrue(DaArrearsAuditor().audit(current, previous, emptyList()).none { it.type == "SALARY_LOSS" })
     }
 
+    // DoE OM 1/2(i)/2026-E.II(B) dt 29-10-2026: DA 60% -> 63% effective 1 Jul 2026, assumed to apply to Army officers.
+    // The first payslip showing 63% in September covers Jul + Aug, so a correct payment must read as Verified.
+    private fun da2026(
+        month: Int,
+        percent: Int,
+        arrearsDa: Double = 0.0,
+        year: Int = 2026,
+    ) = createMockPayslip(
+        "${month.toString().padStart(2, '0')}/$year",
+        basicPay = 140500.0,
+        da = 156000.0 * percent / 100.0,
+        tpta = 0.0,
+        tptada = 0.0,
+        arrearsDa = arrearsDa,
+        monthNum = month,
+        year = year,
+    )
+
+    @Test
+    fun da60To63FromJulyPaidInSeptemberIsVerified() {
+        // (140500 + 15500) * 3% * 2 months (Jul, Aug) = 9360
+        val result = DaArrearsAuditor().audit(da2026(9, 63, 9360.0), da2026(8, 60), emptyList())
+
+        assertTrue(result.none { it.type == "SALARY_LOSS" }, "correct Jul-Aug arrears must not be flagged: $result")
+        assertTrue(result.any { it.type == "ARREARS_AUDIT" })
+    }
+
+    // The loss is the point of Pay Audit: arrears that omit a month must be caught, not waved through.
+    @Test
+    fun da60To63ArrearsMissingAMonthIsSalaryLoss() {
+        val result = DaArrearsAuditor().audit(da2026(9, 63, 4680.0), da2026(8, 60), emptyList())
+
+        val loss = result.single { it.type == "SALARY_LOSS" }
+        assertEquals(4680.0, loss.amount)
+    }
+
+    // OM para 4 rounds DA to the rupee each month, so a few rupees of drift over the months is not a shortfall.
+    @Test
+    fun da60To63ArrearsRoundedPerMonthStillVerified() {
+        val result = DaArrearsAuditor().audit(da2026(10, 63, 14037.0), da2026(9, 60), emptyList())
+
+        assertTrue(result.none { it.type == "SALARY_LOSS" }, "rupee rounding must not be flagged: $result")
+        assertTrue(result.any { it.type == "ARREARS_AUDIT" })
+    }
+
+    // Arrears land whenever the order is implemented, not only inside the half-year of the rise. A rise effective
+    // 1 Jul 2026 and first paid in January 2027 covers Jul-Dec (6 months); the audit must not skip it.
+    @Test
+    fun da60To63FromJulyPaidInJanuaryNextYearIsVerified() {
+        // 156000 * 3% * 6 months (Jul-Dec) = 28080
+        val result = DaArrearsAuditor().audit(da2026(1, 63, 28080.0, year = 2027), da2026(12, 60), emptyList())
+
+        assertTrue(result.none { it.type == "SALARY_LOSS" }, "correct Jul-Dec arrears must not be flagged: $result")
+        assertTrue(result.any { it.type == "ARREARS_AUDIT" })
+    }
+
+    @Test
+    fun da60To63FromJulyPaidInFebruaryNextYearIsVerified() {
+        // 156000 * 3% * 7 months (Jul-Jan) = 32760
+        val result = DaArrearsAuditor().audit(da2026(2, 63, 32760.0, year = 2027), da2026(1, 60, year = 2027), emptyList())
+
+        assertTrue(result.none { it.type == "SALARY_LOSS" }, "correct Jul-Jan arrears must not be flagged: $result")
+        assertTrue(result.any { it.type == "ARREARS_AUDIT" })
+    }
+
+    @Test
+    fun da60To63PaidInJanuaryNextYearButShortIsSalaryLoss() {
+        // Owed at least Jul-Dec = 28080; paid two months' worth = 9360, so 18720 is missing.
+        val result = DaArrearsAuditor().audit(da2026(1, 63, 9360.0, year = 2027), da2026(12, 60), emptyList())
+
+        assertEquals(18720.0, result.single { it.type == "SALARY_LOSS" }.amount)
+    }
+
     // 6th CPC-era DA (100%+ on a different pay base) does not follow 7th CPC arrears math.
     @Test
     fun sixthCpcEraPayslipIsNotAudited() {
