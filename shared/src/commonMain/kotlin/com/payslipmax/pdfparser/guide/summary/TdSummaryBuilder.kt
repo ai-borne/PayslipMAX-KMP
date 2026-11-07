@@ -22,6 +22,18 @@ object TdSummaryBuilder {
     private const val CEA = "cea"
     private const val HOSTEL = "hostel_subsidy"
 
+    /**
+     * The summary at the officer's payslip DA when they have one, otherwise at the bundle's own tier (`table_da_percent`). Null when
+     * neither is known, so a table is never drawn at a guessed step.
+     */
+    fun buildFor(
+        figures: GuideFigures?,
+        payslipDaPercent: Int?,
+    ): TdSummary? {
+        val da = payslipDaPercent ?: figures?.daStep?.tableDaPercent?.takeIf { it > 0 } ?: return null
+        return build(figures, da)
+    }
+
     fun build(
         figures: GuideFigures?,
         daPercent: Int,

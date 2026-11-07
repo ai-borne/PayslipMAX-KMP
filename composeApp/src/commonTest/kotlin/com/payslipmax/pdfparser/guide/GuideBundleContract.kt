@@ -44,7 +44,7 @@ object GuideBundleContract {
 
     fun assertMatchesCompiledDataset(bundle: GuideBundle) {
         assertEquals(GuideBundleParser.SUPPORTED_MAJOR, bundle.version)
-        assertEquals(403, bundle.cards.size)
+        assertEquals(404, bundle.cards.size)
         assertEquals(9, bundle.nav.size)
         assertEquals(44, bundle.nav.sumOf { it.cases.size })
         assertEquals(setOf("Q", "H", "C", "L"), bundle.facets.keys)

@@ -6,6 +6,8 @@
     "increase_percent": 25,
     "rule": "multiplier = 1 + 0.25 x floor(DA / 50)",
     "decided_by": "owner 2026-10-07 (additive, not compounding; no difference below DA 100%)",
+    "table_da_percent": 50,
+    "table_da_note": "The DA the TD summary card's free table is drawn at when the officer has no payslip DA (plan 24, owner 2026-11-07: shown as the band 'DA 50 to 99%'). Only the step it reaches matters (50 to 99 all give +25%). Raise it to 100 when DA reaches 100%.",
     "authority": "MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017, para 2(iv) ('lump sum amount will increase by 25 percent whenever DA increases by 50 percent')",
     "evidence": "LETTER_TEXT",
     "first_step": {

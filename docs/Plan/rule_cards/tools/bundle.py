@@ -33,7 +33,7 @@ from config import BUNDLE_PATH, BUNDLE_VERSION, CARDS_DIR, RATES_AS_OF
 
 CARD_KEYS = ('id', 'title', 'answer', 'key', 'attach', 'watch', 'cite', 'details', 'chips', 'personal', 'facet', 'nav')
 # Dated-rule fields ship only on the cards that have them, which keeps the bundle small for the 400 that do not.
-OPTIONAL_CARD_KEYS = ('effective', 'replaced_by', 'until', 'basis')
+OPTIONAL_CARD_KEYS = ('effective', 'replaced_by', 'until', 'basis', 'summary')
 # The words a user reads. A change to any of them changes `rev`; reviewer notes, source ids and dates do not.
 REV_TEXT_FIELDS = ('title', 'answer', 'key', 'attach', 'watch', 'cite', 'details')
 

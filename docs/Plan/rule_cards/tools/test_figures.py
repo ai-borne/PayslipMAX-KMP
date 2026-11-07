@@ -152,7 +152,7 @@ class Shipping(unittest.TestCase):
     def test_bundle_copy_keeps_only_what_the_app_needs(self):
         shipped = figures.for_bundle(REAL)
         self.assertEqual(set(shipped), {'da_step', 'figures'})
-        self.assertEqual(shipped['da_step'], {'per_da_percent': 50, 'increase_percent': 25, 'first_step_effective_from': '2024-01-01'})
+        self.assertEqual(shipped['da_step'], {'per_da_percent': 50, 'increase_percent': 25, 'first_step_effective_from': '2024-01-01', 'table_da_percent': 50})
         for key, f in shipped['figures'].items():
             for private in ('authority', 'evidence', 'evidence_detail', 'approved', 'note', 'decided_by'):
                 self.assertNotIn(private, f, key)
@@ -176,7 +176,7 @@ class Shipping(unittest.TestCase):
     def test_the_pre_claim_figures_ship_with_what_the_app_needs_and_nothing_private(self):
         shipped = figures.for_bundle(REAL)
         self.assertEqual(shipped['da_step']['first_step_effective_from'], '2024-01-01')
-        self.assertEqual(shipped['da_step'].keys(), {'per_da_percent', 'increase_percent', 'first_step_effective_from'})
+        self.assertEqual(shipped['da_step'].keys(), {'per_da_percent', 'increase_percent', 'first_step_effective_from', 'table_da_percent'})
         for key in PRECLAIM:
             f = shipped['figures'][key]
             self.assertNotIn('card', f, key)

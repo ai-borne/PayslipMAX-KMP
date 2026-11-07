@@ -128,4 +128,28 @@ class TdSummaryBuilderTest {
         assertEquals(listOf(50, 100), summary.foodTimings.map { it.percent })
         assertEquals(listOf(62500L, 125000L), summary.group("12A").foodByTimingPaise)
     }
+
+    @Test
+    fun withoutAPayslipDaTheTableIsDrawnAtTheBundlesTier() {
+        val summary = assertNotNull(TdSummaryBuilder.buildFor(figures, null))
+        assertEquals(50 to 99, summary.daBandFrom to summary.daBandTo)
+        assertEquals(281250L, summary.group("10").hotelPaise)
+    }
+
+    @Test
+    fun aPayslipDaDecidesTheStepWhenTheOfficerHasOne() {
+        // An officer already past DA 100% must not be shown the DA 50 to 99% table.
+        val summary = assertNotNull(TdSummaryBuilder.buildFor(figures, 100))
+        assertEquals(100 to 149, summary.daBandFrom to summary.daBandTo)
+        assertEquals(337500L, summary.group("10").hotelPaise)
+        assertEquals(50 to 99, assertNotNull(TdSummaryBuilder.buildFor(figures, 63)).let { it.daBandFrom to it.daBandTo })
+    }
+
+    @Test
+    fun noPayslipDaAndNoShippedTierShowsNothingRatherThanTheWrongStep() {
+        val noTier = figures.copy(daStep = figures.daStep.copy(tableDaPercent = 0))
+        assertNull(TdSummaryBuilder.buildFor(noTier, null))
+        assertNotNull(TdSummaryBuilder.buildFor(noTier, 60), "a payslip DA is enough on its own")
+        assertNull(TdSummaryBuilder.buildFor(null, 60))
+    }
 }

@@ -1410,6 +1410,7 @@
      "title": "Daily allowance, food and hotel",
      "sub": "",
      "cards": [
+      "RB-TD-SUMMARY",
       "RB-SS-T181",
       "RB-SS-T184",
       "RB-SS-T304",
@@ -2036,6 +2037,7 @@
     "AMENDED"
    ],
    "personal": "level:food_rate",
+   "summary": "",
    "from": [
     "SS-T181",
     "SS-T182",
@@ -2069,6 +2071,7 @@
    "details": "Audit asks one question: did travelling by own car serve a public interest, for places connected by rail?",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T047",
     "SS-T048",
@@ -2099,6 +2102,7 @@
    "details": "Field and CI postings have extra entitlements under Rule 177C; see the field-area LTC card.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T068",
     "SS-T060",
@@ -2134,6 +2138,7 @@
     "AMENDED"
    ],
    "personal": "payslip_basic:ctg_estimate",
+   "summary": "",
    "from": [
     "SS-T254",
     "SS-T260",
@@ -2165,6 +2170,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T291",
     "SS-T021",
@@ -2197,6 +2203,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T088"
    ],
@@ -2222,6 +2229,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T063",
     "SS-T089"
@@ -2253,6 +2261,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T075",
     "SS-T078",
@@ -2284,6 +2293,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T073",
     "SS-T087",
@@ -2313,6 +2323,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T076",
     "SS-T110"
@@ -2341,6 +2352,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T064"
    ],
@@ -2366,6 +2378,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T079"
    ],
@@ -2391,6 +2404,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T085"
    ],
@@ -2417,6 +2431,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T077"
    ],
@@ -2444,6 +2459,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T065"
    ],
@@ -2470,6 +2486,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T092"
    ],
@@ -2496,6 +2513,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T094",
     "SS-T139",
@@ -2525,6 +2543,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T074",
     "SS-T105",
@@ -2554,6 +2573,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T059",
     "SS-T066",
@@ -2587,6 +2607,7 @@
    "details": "The unit commander may allow a warrant to another station where your family lives, at no extra cost to the state.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T070",
     "SS-T071",
@@ -2621,6 +2642,7 @@
    "details": "Free sea passage once a year to Kolkata or Chennai is also allowed to officers posted in the islands (older MoD letter, not seen online).",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T058",
     "SS-T293"
@@ -2650,6 +2672,7 @@
    "details": "One Home Town LTC in a four-year block may be converted. DoPT extended the scheme from 26-09-2024 to 25-09-2026, then to 25-09-2028.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T062",
     "SS-T080",
@@ -2679,6 +2702,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T081"
    ],
@@ -2705,6 +2729,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T084"
    ],
@@ -2731,6 +2756,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T090",
     "SS-T116"
@@ -2758,6 +2784,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T095",
     "SS-T097"
@@ -2784,6 +2811,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T098"
    ],
@@ -2809,6 +2837,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T099"
    ],
@@ -2834,6 +2863,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T100"
    ],
@@ -2862,6 +2892,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T101",
     "SS-T106",
@@ -2893,6 +2924,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T124",
     "SS-T126"
@@ -2919,6 +2951,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T103"
    ],
@@ -2945,6 +2978,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T104",
     "SS-T123"
@@ -2971,6 +3005,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T107"
    ],
@@ -2999,6 +3034,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T109",
     "SS-T118"
@@ -3025,6 +3061,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T120"
    ],
@@ -3050,6 +3087,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T111",
     "SS-T122"
@@ -3079,6 +3117,7 @@
    "details": "The 60-day career cap applies to each spouse from 01-09-2008.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T112"
    ],
@@ -3104,6 +3143,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T113"
    ],
@@ -3128,6 +3168,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T114"
    ],
@@ -3153,6 +3194,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T115",
     "SS-T125"
@@ -3180,6 +3222,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T117"
    ],
@@ -3204,6 +3247,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T119"
    ],
@@ -3229,6 +3273,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T127"
    ],
@@ -3255,6 +3300,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T128"
    ],
@@ -3279,6 +3325,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T129"
    ],
@@ -3305,6 +3352,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T130",
     "SS-T131",
@@ -3334,6 +3382,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T135"
    ],
@@ -3360,6 +3409,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T137"
    ],
@@ -3384,6 +3434,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T138"
    ],
@@ -3410,6 +3461,7 @@
    "details": "Examples: Nainital, Mussoorie, Shillong, Gulmarg, Mahabaleshwar, Pachmarhi.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T141"
    ],
@@ -3436,6 +3488,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T142"
    ],
@@ -3466,6 +3519,7 @@
    "details": "Two of the six forms may also cover dependent parents, sisters and minor brothers living with you. Forms issued with LTC are extra to the six.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T143",
     "SS-T144",
@@ -3495,6 +3549,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T147",
     "SS-T148",
@@ -3523,6 +3578,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T253",
     "SS-T268"
@@ -3550,6 +3606,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T255"
    ],
@@ -3577,6 +3634,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T256"
    ],
@@ -3602,6 +3660,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T257"
    ],
@@ -3627,6 +3686,7 @@
    "details": "Posting via a leave station: you get TA by the direct route old to new, plus LTC for the two legs through the leave station. Family gets LTC only.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T258",
     "SS-T263"
@@ -3654,6 +3714,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T259",
     "SS-T262"
@@ -3683,6 +3744,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T260"
    ],
@@ -3711,6 +3773,7 @@
     "AMENDED"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T261"
    ],
@@ -3737,6 +3800,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T264",
     "SS-T267"
@@ -3762,6 +3826,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T265"
    ],
@@ -3787,6 +3852,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T266"
    ],
@@ -3814,6 +3880,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T270"
    ],
@@ -3840,6 +3907,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T271",
     "SS-T269"
@@ -3866,6 +3934,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T272"
    ],
@@ -3892,6 +3961,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T191",
     "SS-T279"
@@ -3917,6 +3987,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T196"
    ],
@@ -3945,6 +4016,7 @@
     "AMENDED"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T192"
    ],
@@ -3975,6 +4047,7 @@
     "AMENDED"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T194",
     "SS-T278"
@@ -4002,6 +4075,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T273",
     "SS-T274",
@@ -4030,6 +4104,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T275",
     "SS-T277"
@@ -4056,6 +4131,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T276"
    ],
@@ -4081,6 +4157,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T278"
    ],
@@ -4107,6 +4184,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T280"
    ],
@@ -4132,6 +4210,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T281"
    ],
@@ -4158,6 +4237,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T282"
    ],
@@ -4183,6 +4263,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T283"
    ],
@@ -4208,6 +4289,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T284"
    ],
@@ -4233,6 +4315,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T285"
    ],
@@ -4259,6 +4342,7 @@
    "details": "Family members of MNS officers may use Form 'D', but Form 'D' and Form G together are capped at six a calendar year.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T286",
     "SS-T287",
@@ -4288,6 +4372,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T184"
    ],
@@ -4313,6 +4398,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T304",
     "SS-T049"
@@ -4340,6 +4426,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T306"
    ],
@@ -4364,6 +4451,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T307"
    ],
@@ -4393,6 +4481,7 @@
     "AMENDED"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T313"
    ],
@@ -4420,6 +4509,7 @@
     "AMENDED"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T314"
    ],
@@ -4446,6 +4536,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T315"
    ],
@@ -4471,6 +4562,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T316",
     "SS-T012"
@@ -4496,6 +4588,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T308"
    ],
@@ -4522,6 +4615,7 @@
    "details": "Class is what the winner was entitled to in service, or lower if actually used. Road mileage is paid where there is no rail. Ex-servicemen officers get DA for up to three days at the investiture; next of kin of posthumous awardees get free board and lodging for three days. The 1987 letter allowed incidentals of Rs 37 a day for up to 4 days instead of DA (historic figure). The unit or nearest formation pays the advance.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T309"
    ],
@@ -4548,6 +4642,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T310",
     "SS-T157"
@@ -4575,6 +4670,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T311"
    ],
@@ -4601,6 +4697,7 @@
    "details": "A higher class or another mode cannot be claimed on a notional basis against the Rajdhani fare. Taxi or auto must run regular licensed routes. Local taxi from home to the station is not reimbursable. If several State bus services run, the lowest fare is paid.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T312"
    ],
@@ -4628,6 +4725,7 @@
     "AMENDED"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T317"
    ],
@@ -4654,6 +4752,7 @@
    "details": "Applies equally to the joint training cycle with the Royal Bhutan Army. The move sanction must state the nature of duty and the status of boarding and lodging, including any improvised accommodation.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T318"
    ],
@@ -4679,6 +4778,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T320"
    ],
@@ -4705,6 +4805,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T321",
     "SS-T323"
@@ -4732,6 +4833,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T324",
     "SS-T006"
@@ -4757,6 +4859,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T325"
    ],
@@ -4782,6 +4885,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T326",
     "SS-T328"
@@ -4809,6 +4913,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T329"
    ],
@@ -4834,6 +4939,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T327"
    ],
@@ -4858,6 +4964,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T155"
    ],
@@ -4883,6 +4990,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T156"
    ],
@@ -4907,6 +5015,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T158"
    ],
@@ -4932,6 +5041,7 @@
    "details": "The first clarification that GST is outside the ceiling was dated 10-10-2017.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T185"
    ],
@@ -4961,6 +5071,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T186",
     "SS-T202"
@@ -4990,6 +5101,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T187",
     "SS-T190"
@@ -5017,6 +5129,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T189"
    ],
@@ -5044,6 +5157,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T231"
    ],
@@ -5069,6 +5183,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T330"
    ],
@@ -5094,6 +5209,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T331"
    ],
@@ -5120,6 +5236,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T332",
     "SS-T333"
@@ -5147,6 +5264,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T334"
    ],
@@ -5172,6 +5290,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T335",
     "SS-T336"
@@ -5200,6 +5319,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T337",
     "SS-T338"
@@ -5226,6 +5346,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T339"
    ],
@@ -5252,6 +5373,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T340"
    ],
@@ -5278,6 +5400,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T341"
    ],
@@ -5303,6 +5426,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T342"
    ],
@@ -5327,6 +5451,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T343"
    ],
@@ -5353,6 +5478,7 @@
    "details": "A higher rail class needs prior MoD sanction. Road and air travel with the dignitary is allowed where necessary.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T344"
    ],
@@ -5379,6 +5505,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T345"
    ],
@@ -5406,6 +5533,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T346"
    ],
@@ -5432,6 +5560,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T001"
    ],
@@ -5460,6 +5589,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T002"
    ],
@@ -5485,6 +5615,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T003"
    ],
@@ -5510,6 +5641,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T005"
    ],
@@ -5536,6 +5668,7 @@
    "details": "Local journeys over 8 km between TD points more than 50 km apart in one city are made as civilians do; a taxi or scooter needs prior permission. Free board and lodging no longer gives 25% DA, but food bills still fall by the ration cost under Rule 114(xii).",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T010",
     "SS-T200"
@@ -5563,6 +5696,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T013",
     "SS-T009"
@@ -5589,6 +5723,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T008"
    ],
@@ -5615,6 +5750,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T011"
    ],
@@ -5641,6 +5777,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T015"
    ],
@@ -5667,6 +5804,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T016"
    ],
@@ -5695,6 +5833,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T017",
     "SS-T018"
@@ -5720,6 +5859,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T019"
    ],
@@ -5745,6 +5885,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T020"
    ],
@@ -5772,6 +5913,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T021"
    ],
@@ -5797,6 +5939,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T022"
    ],
@@ -5823,6 +5966,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T023",
     "SS-T028",
@@ -5851,6 +5995,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T030",
     "SS-T031"
@@ -5878,6 +6023,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T024",
     "SS-T026"
@@ -5904,6 +6050,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T032"
    ],
@@ -5928,6 +6075,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T027"
    ],
@@ -5952,6 +6100,7 @@
    "details": "Check the current PCDA(O) MRO code on the PCDA(O) Pune website before paying.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T033"
    ],
@@ -5980,6 +6129,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T034",
     "SS-T040"
@@ -6005,6 +6155,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T035"
    ],
@@ -6031,6 +6182,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T036"
    ],
@@ -6056,6 +6208,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T037"
    ],
@@ -6080,6 +6233,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T038"
    ],
@@ -6105,6 +6259,7 @@
    "details": "TR 2014 originally said 95 days. The 2016 MoD letter raised it to 125 days from 01-04-2015, to suit rail booking. DoPT keeps 65 days for other modes of travel.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T039"
    ],
@@ -6132,6 +6287,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T041"
    ],
@@ -6156,6 +6312,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T043"
    ],
@@ -6180,6 +6337,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T044"
    ],
@@ -6205,6 +6363,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T045"
    ],
@@ -6232,6 +6391,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T050",
     "SS-T051",
@@ -6262,6 +6422,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T052"
    ],
@@ -6288,6 +6449,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T053",
     "SS-T055",
@@ -6314,6 +6476,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T054"
    ],
@@ -6339,6 +6502,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T057"
    ],
@@ -6363,6 +6527,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T154",
     "SS-T225"
@@ -6390,6 +6555,7 @@
    "details": "Where State or neighbouring States have no rates: base Rs 24 a km for own car or taxi and Rs 12 a km for auto-rickshaw or own scooter, from 01-07-2017. The rates rise 25% each time DA rises by 50%; DA passed 50% on 01-01-2024.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T159"
    ],
@@ -6414,6 +6580,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T160"
    ],
@@ -6440,6 +6607,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T161"
    ],
@@ -6466,6 +6634,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T292",
     "SS-T295"
@@ -6493,6 +6662,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T292"
    ],
@@ -6518,6 +6688,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T294"
    ],
@@ -6542,6 +6713,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T296"
    ],
@@ -6567,6 +6739,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T297"
    ],
@@ -6591,6 +6764,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T289"
    ],
@@ -6616,6 +6790,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T299"
    ],
@@ -6643,6 +6818,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T300"
    ],
@@ -6669,6 +6845,7 @@
    "details": "The vehicle's transport to the home town or SPR at government expense is also admissible on an officer's death in service.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T302",
     "SS-T239"
@@ -6694,6 +6871,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T301"
    ],
@@ -6719,6 +6897,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T303"
    ],
@@ -6743,6 +6922,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T195"
    ],
@@ -6770,6 +6950,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T347"
    ],
@@ -6795,6 +6976,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T347"
    ],
@@ -6822,6 +7004,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T168",
     "SS-T169",
@@ -6850,6 +7033,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T163",
     "SS-T175"
@@ -6875,6 +7059,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T164",
     "SS-T165"
@@ -6902,6 +7087,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T171",
     "SS-T166",
@@ -6929,6 +7115,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T170"
    ],
@@ -6954,6 +7141,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T172"
    ],
@@ -6980,6 +7168,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T174"
    ],
@@ -7005,6 +7194,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T177"
    ],
@@ -7031,6 +7221,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T178",
     "SS-T179"
@@ -7060,6 +7251,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T180"
    ],
@@ -7084,6 +7276,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T149"
    ],
@@ -7109,6 +7302,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T150"
    ],
@@ -7137,6 +7331,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T152",
     "SS-T153"
@@ -7165,6 +7360,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T197"
    ],
@@ -7194,6 +7390,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T198"
    ],
@@ -7222,6 +7419,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T199"
    ],
@@ -7249,6 +7447,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T201"
    ],
@@ -7277,6 +7476,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T203",
     "SS-T204",
@@ -7306,6 +7506,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T206"
    ],
@@ -7332,6 +7533,7 @@
    "details": "SPORTS must certify the fare components and that you and your family actually travelled. Applies from 11-10-2018.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T207",
     "SS-T224"
@@ -7358,6 +7560,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T208"
    ],
@@ -7385,6 +7588,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T211"
    ],
@@ -7410,6 +7614,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T214"
    ],
@@ -7436,6 +7641,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T215",
     "SS-T216",
@@ -7463,6 +7669,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T213"
    ],
@@ -7491,6 +7698,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T218"
    ],
@@ -7519,6 +7727,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T219",
     "SS-T222"
@@ -7547,6 +7756,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T220"
    ],
@@ -7574,6 +7784,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T221"
    ],
@@ -7600,6 +7811,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T222"
    ],
@@ -7625,6 +7837,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T223"
    ],
@@ -7651,6 +7864,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T232"
    ],
@@ -7675,6 +7889,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T233"
    ],
@@ -7699,6 +7914,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T234"
    ],
@@ -7723,6 +7939,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T235"
    ],
@@ -7750,6 +7967,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T238",
     "SS-T140",
@@ -7779,6 +7997,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T242",
     "SS-T243",
@@ -7808,6 +8027,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T248"
    ],
@@ -7832,6 +8052,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-T250"
    ],
@@ -7860,6 +8081,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P060",
     "SS-P062",
@@ -7891,6 +8113,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P062",
     "SS-P063"
@@ -7922,6 +8145,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P067",
     "SS-P072",
@@ -7950,6 +8174,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P068",
     "SS-P069"
@@ -7977,6 +8202,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P058",
     "SS-P059",
@@ -8005,6 +8231,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P057"
    ],
@@ -8029,6 +8256,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P076"
    ],
@@ -8055,6 +8283,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P061",
     "SS-P065",
@@ -8082,6 +8311,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P075"
    ],
@@ -8108,6 +8338,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P114",
     "SS-P110",
@@ -8139,6 +8370,7 @@
     "RATES"
    ],
    "personal": "basic:hra_estimate",
+   "summary": "",
    "from": [
     "SS-P116"
    ],
@@ -8165,6 +8397,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P113"
    ],
@@ -8191,6 +8424,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P105",
     "SS-P118",
@@ -8220,6 +8454,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P101"
    ],
@@ -8245,6 +8480,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P102"
    ],
@@ -8271,6 +8507,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P106"
    ],
@@ -8295,6 +8532,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P107"
    ],
@@ -8320,6 +8558,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P108"
    ],
@@ -8347,6 +8586,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P109"
    ],
@@ -8373,6 +8613,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P117"
    ],
@@ -8398,6 +8639,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P114"
    ],
@@ -8423,6 +8665,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P114"
    ],
@@ -8449,6 +8692,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P114"
    ],
@@ -8475,6 +8719,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P113"
    ],
@@ -8501,6 +8746,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P114",
     "SS-P110"
@@ -8528,6 +8774,7 @@
    "details": "Both spouses serving: each can encash up to 60 days. Re-employed officers can encash with LTC up to the same 60-day total.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P019",
     "SS-P023",
@@ -8557,6 +8804,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P020",
     "SS-P021"
@@ -8586,6 +8834,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P022"
    ],
@@ -8612,6 +8861,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P025"
    ],
@@ -8640,6 +8890,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P092",
     "SS-P093"
@@ -8667,6 +8918,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P086",
     "SS-P088",
@@ -8698,6 +8950,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P090",
     "SS-P087",
@@ -8727,6 +8980,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P091"
    ],
@@ -8752,6 +9006,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P094"
    ],
@@ -8778,6 +9033,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P094"
    ],
@@ -8807,6 +9063,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P119",
     "SS-P123"
@@ -8834,6 +9091,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P120"
    ],
@@ -8860,6 +9118,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P121"
    ],
@@ -8886,6 +9145,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P122"
    ],
@@ -8913,6 +9173,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P124",
     "SS-P125"
@@ -8939,6 +9200,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P126",
     "SS-P127"
@@ -8968,6 +9230,7 @@
     "RATES"
    ],
    "personal": "level,city:ta_rate",
+   "summary": "",
    "from": [
     "SS-P051"
    ],
@@ -8995,6 +9258,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P051"
    ],
@@ -9020,6 +9284,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P047",
     "SS-P049",
@@ -9049,6 +9314,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P048"
    ],
@@ -9073,6 +9339,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P050",
     "SS-P053"
@@ -9099,6 +9366,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P052"
    ],
@@ -9126,6 +9394,7 @@
     "GUIDANCE"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P001",
     "SS-P004"
@@ -9157,6 +9426,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P002"
    ],
@@ -9189,6 +9459,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P003"
    ],
@@ -9219,6 +9490,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P005",
     "SS-P006"
@@ -9251,6 +9523,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P012",
     "SS-P007",
@@ -9278,6 +9551,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P008",
     "SS-P009"
@@ -9307,6 +9581,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P010"
    ],
@@ -9332,6 +9607,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P014"
    ],
@@ -9356,6 +9632,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P011"
    ],
@@ -9384,6 +9661,7 @@
    "details": "Referees and umpires accepted by an international federation can get two increments per event, within the same five-increment cap.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P018",
     "SS-P016"
@@ -9410,6 +9688,7 @@
    "details": "Personal pay per month: Level 10: 1,240; 11: 1,470; 12: 1,690; 13: 1,800; 13A: 2,030; 14 and 15: 2,250.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P015"
    ],
@@ -9434,6 +9713,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P017"
    ],
@@ -9460,6 +9740,7 @@
    "details": "Both limbs apply. Tier II needs substantive Captain rank and a prescribed Tier II course, with Service HQ detailment. Not for AMC, ADC, AEC, MNS or non-technical officers.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P030",
     "SS-P031"
@@ -9486,6 +9767,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P029"
    ],
@@ -9510,6 +9792,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P026"
    ],
@@ -9538,6 +9821,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P027"
    ],
@@ -9566,6 +9850,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P028"
    ],
@@ -9592,6 +9877,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P035",
     "SS-P032",
@@ -9619,6 +9905,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P034"
    ],
@@ -9647,6 +9934,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P036"
    ],
@@ -9673,6 +9961,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P041"
    ],
@@ -9697,6 +9986,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P037"
    ],
@@ -9721,6 +10011,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P038"
    ],
@@ -9746,6 +10037,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P039"
    ],
@@ -9770,6 +10062,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P040"
    ],
@@ -9796,6 +10089,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P044",
     "SS-P042"
@@ -9821,6 +10115,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P043"
    ],
@@ -9847,6 +10142,7 @@
    "details": "Reservists must attend a refresher course with at least two jumps each training year. When called up for para service or annual training they draw full Parachute Allowance. Not paid together with Special Force Allowance. Rate rises 25% each time DA rises by 50%.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P046",
     "SS-P045"
@@ -9875,6 +10171,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P055"
    ],
@@ -9900,6 +10197,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P056"
    ],
@@ -9926,6 +10224,7 @@
    "details": "Base rates from 01-07-2017: HAFAA Rs 16,900, CFAA Rs 10,500, CMFAA Rs 6,300 a month. Each rises 25% when DA rises by 50%.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P078"
    ],
@@ -9953,6 +10252,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P079"
    ],
@@ -9977,6 +10277,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P080"
    ],
@@ -10005,6 +10306,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P081",
     "SS-P083"
@@ -10032,6 +10334,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P082",
     "SS-P084",
@@ -10060,6 +10363,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P099",
     "SS-P096",
@@ -10090,6 +10394,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P097"
    ],
@@ -10117,6 +10422,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P098"
    ],
@@ -10143,6 +10449,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "SS-P095",
     "SS-P100"
@@ -10172,6 +10479,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10197,6 +10505,7 @@
    "details": "NCC whole-time officers follow MoD letter 4/43/2017-D(GS-VI)/2018 dt 16-10-2018. MSP is not admissible to NCC officers.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10223,6 +10532,7 @@
    "details": "Basic pay means pay band pay plus grade pay. Example: Major with Rs 32,720 gets 84,090 and is fixed at Rs 85,300 in Level 11. Personal pay is absorbed in future increases.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10248,6 +10558,7 @@
    "details": "Original window was 180 days from notification. Those out of India, suspended, deceased or released had relaxed rules. The 2019 relaxation let officers revise an earlier option up to 01-02-2020.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10276,6 +10587,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10302,6 +10614,7 @@
    "details": "Applies at IMA, OTA Chennai and Gaya, and Cadets Training Wings at CME. For those from the ranks, on commissioning the difference between stipend plus DA and what was drawn is paid as a lump sum.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10329,6 +10642,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10355,6 +10669,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10381,6 +10696,7 @@
    "details": "Example: a Lt Colonel drawing Rs 1,53,500 gets one increment to Rs 1,58,100; Level 13 has no such cell, so the next higher figure, Rs 1,60,600, applies. The Level 17 non-functional pay counts for financial benefits only, not privileges of the Army Commander appointment.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10407,6 +10723,7 @@
    "details": "Those promoted 01-01-2016 to 26-02-2019 had 6 months from 26-02-2019 to opt; promotions after that have 3 months. Example: Captain at Rs 69,000 promoted 10-12-2022 to Major, DNI 01-01-2023: Rs 69,400 until DNI, Rs 73,600 on DNI, Rs 75,800 on 01-07-2023.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10432,6 +10749,7 @@
    "details": "Example: commissioned 02-03-2016 with two years antedate from 02-03-2014. Notional pay Rs 15,600 rises to 56,100 in 7th CPC; the 01-07-2016 increment takes pay to Rs 57,800.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10458,6 +10776,7 @@
    "details": "At promotion the senior must have drawn at least what the junior drew. Next increment falls due after the usual qualifying service from the date of re-fixation. A second limb covers seniors promoted on or after 01-01-2016.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10484,6 +10803,7 @@
    "details": "Compare pays in the old structure, not the new matrix. Example: Rs 37,400 and Rs 38,770 (3% apart) with Rs 8,000 grade pay both fix at Rs 1,21,200; the second moves to Rs 1,24,800.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10512,6 +10832,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-034"
    ],
@@ -10536,6 +10857,7 @@
    "details": "Newly commissioned officers who report to a transit camp after 21 days of joining leave are treated as reported for duty. Late reporting after the fixed date must be regularised. Send Form A (AO 03/03) within 7 days of reporting, signed by you and countersigned by the CO or OC.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-001"
    ],
@@ -10560,6 +10882,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-001"
    ],
@@ -10586,6 +10909,7 @@
    "details": "Covers IMA, OTA and the cadet wings at CME, MCEME and MCTE. PBOR trainees get the difference between stipend plus DA and what they were paid in one sum.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-002"
    ],
@@ -10610,6 +10934,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-003"
    ],
@@ -10636,6 +10961,7 @@
    "details": "Increments fall on 1 January or 1 July. Incentive for small family norms was abolished from 01-07-2017 under MoF DoE OM 12(4)/2016-EIII.A dt 07-07-2017.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-004"
    ],
@@ -10662,6 +10988,7 @@
    "details": "Effective 16-12-2004 after the AVS Committee. Special List officers use the same 2, 6 and 13 years.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-007",
     "RP-008"
@@ -10689,6 +11016,7 @@
    "details": "AMC (NT) follows the general cadre years (2, 6, 13, 26) under MoD letter 10(3)(1)/05-D(Med) dt 28-10-2005.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-008"
    ],
@@ -10714,6 +11042,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-008"
    ],
@@ -10740,6 +11069,7 @@
    "details": "Following the Supreme Court order of 29-01-2018. Not applicable to SSC and women officers already given PC. SSC women are considered for PC from 25-02-2019 and opt after 3 years (MoD letter 14(01)/2020-D(AG) dt 16-07-2020).",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-008"
    ],
@@ -10766,6 +11096,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-010"
    ],
@@ -10792,6 +11123,7 @@
    "details": "AMC (NT): Colonel (Selection) 57, Brigadier (Records) 58, Major General 60, per MoD letters of 10-11-2006, 24-03-2009 and 26-12-2017.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-010"
    ],
@@ -10818,6 +11150,7 @@
    "details": "RC officers: AI 5/93 and 32/89. NCC officers retire at noon on the month-end following the 57th birthday; a 1st-of-month birthday retires them at the previous month-end.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-010"
    ],
@@ -10844,6 +11177,7 @@
    "details": "The tacking-on concession does not apply where another special commencement or termination concession is sanctioned. No extra expense may fall on the State.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-011"
    ],
@@ -10870,6 +11204,7 @@
    "details": "Abroad on deputation or course, casual leave is at the Head of Mission's discretion and must not extend the deputation (Rule 71(1)).",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-012"
    ],
@@ -10896,6 +11231,7 @@
    "details": "Sports leave may combine with casual leave or regular leave, not both at once. Trekking expeditions approved by the Indian Mountaineering Foundation also qualify. No TA/DA for IIPA moves. Scientific meeting leave is sanctioned by the casual leave authority, not below Brigadier or Sub Area Commander.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-013"
    ],
@@ -10922,6 +11258,7 @@
    "details": "Effective 04-04-2011. Retiring on 31 Jan: 30 days, in February 58 or 59 days, in March or later 60 days (AG's Br letters of 15-06-2012 and 27-07-2015). SSC officers cannot accumulate leave in the year of release. Accumulation for encashment in the retirement year: 15 days if retiring 31 Jan, 30 days otherwise.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-014"
    ],
@@ -10948,6 +11285,7 @@
    "details": "Leave taken in continuation of an overseas course for personal reasons gets no transit time for return unless it is within 14 days or 50% of the duty period, or on medical grounds.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-014"
    ],
@@ -10974,6 +11312,7 @@
    "details": "Furlough can be taken in spells at any time after the three-year cycle begins. Furlough running into the next cycle is debited to the cycle it started in.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-015"
    ],
@@ -11000,6 +11339,7 @@
    "details": "Furlough rates beyond six months need a Part II order notifying the extension. If invaliding is under way, the Adjutant General may extend by 3 months beyond the first six. If sick leave spills into the next year, the next year's annual leave is debited against the hospital stay.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-016"
    ],
@@ -11026,6 +11366,7 @@
    "details": "For TB or non-lepromatous leprosy, treatment runs up to 12 months on full emoluments from the definite diagnosis, which must be made within 60 days. See Appendix A to AO 150/75.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-016"
    ],
@@ -11052,6 +11393,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-017"
    ],
@@ -11078,6 +11420,7 @@
    "details": "Strike off strength is the day after the leave ends. The year of release's annual leave cannot be accumulated for encashment.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-018"
    ],
@@ -11104,6 +11447,7 @@
    "details": "Effective 01-09-2008. Nursing officers taking maternity leave in the first year give an undertaking to serve a further year after rejoining.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-019"
    ],
@@ -11130,6 +11474,7 @@
    "details": "Single male means unmarried, widower or divorcee. A spell is 5 to 30 days, at most 2 spells and 60 days a year (minimum and the disability waiver from 14-08-2019). SSC officers later given PC receive the difference up to 360 days.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-020"
    ],
@@ -11156,6 +11501,7 @@
    "details": "A spell running into the next year counts against the starting year. Holidays within the leave count. Foreign travel needs the same security clearance as ex-India leave. CCL is never a right.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-020"
    ],
@@ -11182,6 +11528,7 @@
    "details": "Child under 9 months: up to four months of annual plus furlough; 9 to 12 months: up to three. Leave salary is the pay drawn just before leave. Effective 15-01-2016.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-021"
    ],
@@ -11208,6 +11555,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-022",
     "RP-023"
@@ -11235,6 +11583,7 @@
    "details": "Leaving early or not finishing means refunding leave salary, fees and expenses with interest, unless relieved on health or compassion. Journey time counts as study leave but without allowances. Apply to GS/MT Dte at IHQ of MoD (Army).",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-024"
    ],
@@ -11261,6 +11610,7 @@
    "details": "Resigning after 5 years but before 12 years of service may mean refunding study allowance. RVC courses are approved by DRVS or DMF.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-024"
    ],
@@ -11287,6 +11637,7 @@
    "details": "If found culpable the study leave may be terminated at your cost. Travel between leave station and duty counts as TD. Recalled officers get no annual leave for that year on that basis.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-024"
    ],
@@ -11312,6 +11663,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-025"
    ],
@@ -11338,6 +11690,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-026",
     "RP-027"
@@ -11365,6 +11718,7 @@
    "details": "Effective 01-01-2006. SSC officers can claim at the end of each tenure within the same 300-day limit. TA officers are covered by the same rules.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-028"
    ],
@@ -11391,6 +11745,7 @@
    "details": "Fractions are rounded to the nearest day. February deaths are worked out the same way.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-028"
    ],
@@ -11416,6 +11771,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-028"
    ],
@@ -11444,6 +11800,7 @@
    "details": "Ask the unit Part II cell to confirm that the admission, the discharge and the regularising order were all published. If PCDA(O) treats the days as irregular absence, pay for those days is recovered, so check early rather than after a recovery notice.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-016"
    ],
@@ -11474,6 +11831,7 @@
    "details": "Over 30 days the regularising order is backed by GTDALHOS for the annual leave debited and GTDSLHOS for the sick leave debited. Any part at furlough rates is shown by HOSFURPY. The discharge, the report for duty and the regularising order go in the same Part II order. Each regularising entry runs from the first day of admission to the final discharge date.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-016"
    ],
@@ -11503,6 +11861,7 @@
    "details": "Example: a stay of 190 days not due to military service is regularised as 60 days annual leave, 120 days sick leave and 10 days at furlough rates. With only 30 days of annual leave balance, a 175 day stay is 30 annual leave, 120 sick leave and 25 at furlough rates. Across two years the 180 days are counted over the whole stay. Each part is published with its own code and dates, and the order number of the first admission is quoted.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-016"
    ],
@@ -11529,6 +11888,7 @@
    "details": "Journey by river is 150 km a day and by other means 25 km. The competent authority may extend joining time up to 30 days. Casual leave may be granted in place of joining time but the two cannot be combined. Joining time is intended for winding up and re-establishing the household.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-030"
    ],
@@ -11555,6 +11915,7 @@
    "details": "If posted on permanent duty while on TD or a course, joining time counts from that station. Combined with annual leave and furlough: annual leave first, furlough next, then joining time.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-030"
    ],
@@ -11581,6 +11942,7 @@
    "details": "Falling sick in joining time and recovering within sick-list concession lets you take the balance. With annual leave on transfer, joining time runs from the old station, or the leave station if that gives less.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-030"
    ],
@@ -11607,6 +11969,7 @@
    "details": "A low medical category officer attached pending posting after the unit moves to an operational area draws pay and allowances of the rank and appointment held.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-031"
    ],
@@ -11633,6 +11996,7 @@
    "details": "If all pay is withheld and mess bills cannot be met, they are claimed from PCDA(O) under Para 1289 of the Regulations and Rules 538-539 of the Pay and Allowances Regulations.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-031"
    ],
@@ -11657,6 +12021,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-032"
    ],
@@ -11683,6 +12048,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-033"
    ],
@@ -11709,6 +12075,7 @@
    "details": "A Part II order with the prescribed certificates is published every year.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-035",
     "RP-036"
@@ -11736,6 +12103,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-037"
    ],
@@ -11762,6 +12130,7 @@
    "details": "Test pilots are paid from 17-04-1993 while carrying out test pilot duties. Flight test engineers qualify on FTE or FTIE courses at ASTE Bengaluru or equivalent. Claims go with a Part II order citing the IHQ letter.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-042",
     "RP-043"
@@ -11789,6 +12158,7 @@
    "details": "If the gap between probation and the course exceeds three months, the allowance is paid retrospectively for no more than three months before the course. The Para Jump Instructor Allowance is Rs 10,500 a month from 01-07-2017 for those in authorised instructor appointments (MoD letter 1(16)/2017/D(Pay/Services) dt 18-09-2017).",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-044",
     "RP-046"
@@ -11816,6 +12186,7 @@
    "details": "Applies to ten Para (SF) units: numbers one to four, nine to thirteen, and twenty-one.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-047"
    ],
@@ -11840,6 +12211,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-048"
    ],
@@ -11864,6 +12236,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-050"
    ],
@@ -11892,6 +12265,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-052",
     "RP-053"
@@ -11917,6 +12291,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-054"
    ],
@@ -11943,6 +12318,7 @@
    "details": "Operations named in the handbook: Rakshak, Rhino, Orchid and Hifazat I. No other area-based allowance is paid, but High Altitude Allowance is. Army officers in BRO units in J&K and the North East are not involved in CI operations and do not get it (MoD DO letter 16(1)/2006/D(Pay/Services) dt 02-07-2008).",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-057"
    ],
@@ -11969,6 +12345,7 @@
    "details": "Paid on permanent posting, on detachment or attachment over 14 days without DA, and in transit between qualifying areas. Not paid on annual or sick leave, or on duty elsewhere for over 14 days. Absence up to 14 days on sick list, casual leave or TD keeps it. Also paid with SCCIA and field area allowances, not with Siachen Allowance. MNS officers get the same.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-059"
    ],
@@ -11995,6 +12372,7 @@
    "details": "Lists as in the 2019 letter. 24%: NDC, DSSC, NDA, CDM, IMA, OTA Chennai, Army War College, CAATS, DIQA and ITM. 12%: AFMC, corps centres and schools, and all regimental training centres, as per Appendix B of the 2019 letter. Allowance continues during study or training tours and counts for leave salary.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-060",
     "RP-061"
@@ -12022,6 +12400,7 @@
    "details": "Percent is of basic pay; ceilings rise 25% per 50% DA, from 01-07-2017. Special pays like parachute or flying are not allowed with it unless the sanction says so; Technical, Specialist, NPA and Qualification Pay continue. Also payable to officers in civil employ, Estt 22 (SFF), Coast Guard and Assam Rifles. Not with Training Allowance or Special Security Allowance.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-062"
    ],
@@ -12048,6 +12427,7 @@
    "details": "Special Security Allowance began 05-06-2006 for SFF deputation under HQ 22 Establishment and 22-08-2005 for NTRO.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-065",
     "RP-067"
@@ -12075,6 +12455,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-066"
    ],
@@ -12101,6 +12482,7 @@
    "details": "Applies from 01-07-2017. Not paid with Special Security Allowance.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-068"
    ],
@@ -12127,6 +12509,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-069"
    ],
@@ -12153,6 +12536,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-070"
    ],
@@ -12179,6 +12563,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-071"
    ],
@@ -12203,6 +12588,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-072"
    ],
@@ -12231,6 +12617,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-052",
     "RP-053"
@@ -12262,6 +12649,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-074"
    ],
@@ -12287,6 +12675,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-075"
    ],
@@ -12312,6 +12701,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-076",
     "RP-077"
@@ -12339,6 +12729,7 @@
    "details": "Whole states: Assam, Meghalaya Part D; Manipur Part C; Nagaland Part B; Sikkim and Lakshadweep Part A. Others are listed by district in the annexure. Rates rise 25% each time DA rises by 50%.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-078"
    ],
@@ -12365,6 +12756,7 @@
    "details": "Eligibility follows the place of duty and normally needs permanent posting. TD officers get it if they draw no daily allowance. The family certificate says you or your family stayed at the same station (or nearby area). Family excludes members with independent income above a pension of Rs 9,000.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-078"
    ],
@@ -12391,6 +12783,7 @@
    "details": "10%: Port Blair, Kavaratti, Agatti. 16%: North, Middle and South Andaman (not Port Blair), Lakshadweep except Kavaratti, Agatti, Minicoy. 20%: Little Andaman, Nicobar, Narcondam, East Island, Minicoy. Applies from 01-07-2017.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-079"
    ],
@@ -12417,6 +12810,7 @@
    "details": "Representational grant: Rs 8,600 for Colonel, Lt Col, Major, Captain and Lieutenant equivalents (12-person set), Rs 13,000 for Brigadier and Major General equivalents (18-person set). Head of Mission countersigns a certificate. From 31-12-2008.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-080"
    ],
@@ -12443,6 +12837,7 @@
    "details": "Income tax on salary is reimbursed as Additional Foreign Allowance each February, pro rata for part years. Two full-time servants are paid Rs 5,456 each a month. Difficult Area Allowance is paid in specified IMTRAT areas. The 6% depression on BCA was dropped from 11-02-2019. No crockery grant. Transport allowance is for India only.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-082"
    ],
@@ -12467,6 +12862,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-083"
    ],
@@ -12491,6 +12887,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-084"
    ],
@@ -12516,6 +12913,7 @@
    "details": "",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-086",
     "RP-087"
@@ -12543,6 +12941,7 @@
    "details": "Cost cap is at most Rs 60 lakh, relaxable by up to 25% by the head of department. Principal is repaid in up to 180 instalments, then interest in up to 60. The advance is the least of the pay-based limit, cost, or repaying capacity.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-088",
     "RP-089"
@@ -12572,6 +12971,7 @@
     "RATES"
    ],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-090"
    ],
@@ -12598,6 +12998,7 @@
    "details": "Effective 07-03-2017. A new advance absorbs any balance of the old. Recovery starts from the pay for the month after drawal. An advance can later be converted into a final withdrawal if conditions are met. Sanctioning authority follows AI 22/96 as amended by AI 09/98.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-090"
    ],
@@ -12624,6 +13025,7 @@
    "details": "Housing covers building, buying, repaying a house loan and renovating an ancestral house, with proof of share. No repayment on sale of the house. Housing withdrawal is no longer tied to HBA limits. One withdrawal per purpose. VCOAS or GOC-in-C sanctions up to 90%; others up to 75%.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-090"
    ],
@@ -12650,6 +13052,7 @@
    "details": "Also family: deceased son's widow and children, and a paternal grandparent if no parent lives. A judicially separated wife stops being family unless you say in writing she continues. Child includes an adopted child and a ward living with you under a special will.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-090"
    ],
@@ -12676,6 +13079,7 @@
    "details": "Government dues are not recovered from the final payment unless you consent. Up to Rs 10,000 can go to a guardian of minors without a guardianship certificate. A missing officer's family needs a police report and an indemnity bond. Rate change forms go to PCDA(O) a month ahead.",
    "chips": [],
    "personal": "",
+   "summary": "",
    "from": [
     "RP-090"
    ],
@@ -12684,6 +13088,37 @@
    "status": "draft",
    "facet": "H",
    "nav": "pay-dsop"
+  },
+  {
+   "id": "RB-TD-SUMMARY",
+   "domain": "travel",
+   "topic": "RR-ORD-03",
+   "title": "Hotel, taxi and food on TD, and CEA: all rates at a glance",
+   "answer": "Rates for officer levels 9 to 18, worked out from the approved rates, so they move with DA.",
+   "key": [
+    "Hotel is a ceiling a night, and GST is paid on top",
+    "Food is a fixed daily amount, cut by hours away",
+    "CEA and hostel subsidy are per child, per academic year"
+   ],
+   "attach": [],
+   "watch": [],
+   "cite": "MoD letter 12630/Mov C/242/D(Mov)/2017 dt 15-09-2017 (civil parent: DoE OM 19030/1/2017-E.IV dt 13-07-2017); MoD letter 1(23)/2017/D(Pay/Services) dt 02-08-2018 for CEA",
+   "details": "Every rate rises 25% each time DA rises 50%. Above level 11 taxi has no rupee cap: AC taxi up to 50 km a day for levels 12 to 13B, and at actual cost for level 14 and above. CEA covers your two eldest surviving children, and a divyaang child gets double. Hostel subsidy is the actual lodging and boarding cost or the ceiling, whichever is lower.",
+   "chips": [
+    "RATES"
+   ],
+   "personal": "",
+   "summary": "td",
+   "from": [
+    "SS-T181",
+    "SS-T183",
+    "SS-P092"
+   ],
+   "open": [],
+   "basis": "",
+   "status": "draft",
+   "facet": "H",
+   "nav": "td-da"
   }
  ],
  "changes": [
@@ -12812,9 +13247,9 @@
   "covered": 529,
   "skipped": 17,
   "uncovered": 0,
-  "cards": 403,
+  "cards": 404,
   "cards_by_domain": {
-   "travel": 220,
+   "travel": 221,
    "pay": 183
   },
   "pay_topics_total": 95,

@@ -10,6 +10,7 @@ Authoring format (one block per card; '#' lines are comments):
   === topic=RR-TD-02 from=SS-T020,SS-T021 [id=RB-x] [chips=RATES,AMENDED] [personal=level:food_rate] [status=draft]
       [effective=YYYY-MM-DD] [replaces=RB-x]   (a dated rule; the replaced card leaves the tiles, see changes.py)
       [basis=open_source|dopt_om]   (why a card with an O: point ships without the "Unverified point" chip; needs an O: line)
+      [summary=td]   (the one card the app draws the TD entitlements table on; computed from figures.json, so the card text holds no rupee amount)
   T: question-style title
   A: one-line answer
   K: key point            (up to 3)
@@ -46,6 +47,7 @@ LIMITS = {'answer': 25, 'bullets': 3, 'bullet_words': 12, 'visible': 90, 'detail
 CHANGE_LOG = 'changes.txt'
 CHIPS = {'RATES', 'AMENDED', 'GUIDANCE'}
 BASES = {'open_source', 'dopt_om'}
+SUMMARIES = {'td'}  # `summary=td` marks the card that carries the app's TD entitlements table (plan 24); one card per kind
 CITE_OK = re.compile(r'(MHA|Rule|Para|TR|AO|SAO|SAI|MoD|MoF|DoE|DoPT|IHQ|CGDA|OM|SRO|Pay Rules|Army|Handbook|Regulation|Section|Sec|FR|CCS|GFR|DFPDS|Note|Appx|Order|Advisory)', re.I)
 WORD = re.compile(r"[A-Za-z0-9₹%.,/'()&+-]+")
 
@@ -146,6 +148,22 @@ def validate(card, topics, ssot_ids, errors, warns):
     return frm, chips, vis
 
 
+def summary_problems(cards):
+    """Every card's `summary` is a known kind, and no two cards claim one kind, so the app knows which card gets the table."""
+    errs, owners = [], {}
+    for c in cards:
+        kind = c.get('summary')
+        if not kind:
+            continue
+        if kind not in SUMMARIES:
+            errs.append(f"card {c['id']}: summary {kind!r} is not one of {', '.join(sorted(SUMMARIES))}")
+        elif kind in owners:
+            errs.append(f"summary {kind!r} is claimed by both {owners[kind]} and {c['id']}")
+        else:
+            owners[kind] = c['id']
+    return errs
+
+
 def same_content(a, b):
     """Compare two rulebooks, ignoring the generation date (it changes daily)."""
     return {k: v for k, v in a.items() if k != 'generated'} == {k: v for k, v in b.items() if k != 'generated'}
@@ -178,7 +196,7 @@ def main():
         out_cards.append({**dated, 'id': cid, 'domain': 'travel' if card['attrs'].get('topic', '').startswith('RR-') else 'pay',
                           'topic': card['attrs'].get('topic'), 'title': card['T'], 'answer': card['A'], 'key': card['key'],
                           'attach': card['attach'], 'watch': card['watch'], 'cite': card['C'], 'details': card['D'], 'chips': chips,
-                          'personal': card['attrs'].get('personal', ''), 'from': frm, 'open': card['open'], 'basis': card['attrs'].get('basis', ''),
+                          'personal': card['attrs'].get('personal', ''), 'summary': card['attrs'].get('summary', ''), 'from': frm, 'open': card['open'], 'basis': card['attrs'].get('basis', ''),
                           'status': card['attrs'].get('status', 'draft')})
     chgmod.apply_replacements(out_cards, errors)
     log = chgmod.load_log(os.path.join(AUTH_DIR, CHANGE_LOG), seen, errors)
@@ -186,6 +204,7 @@ def main():
     facet_labels = navmod.apply_facets(out_cards, CARDS_DIR, errors)
     for c in out_cards:
         c['nav'] = nav_homes.get(c['id'], '')
+    errors += summary_problems(out_cards)
     errors += idsmod.check(seen, idsmod.load_lock(), retires)
     errors += figmod.validate(figmod.load(), out_cards)
     errors += preclaimmod.validate(preclaimmod.load(), out_cards)
