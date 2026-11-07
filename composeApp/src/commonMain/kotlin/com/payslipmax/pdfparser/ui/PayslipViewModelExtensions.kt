@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui
 
 import androidx.lifecycle.viewModelScope
 import com.payslipmax.pdfparser.ui.screens.sanitizeProfileInputs
+import com.payslipmax.pdfparser.ui.theme.AppStrings
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -13,7 +14,7 @@ fun PayslipViewModel.seedMockData() {
             repository.seedMockData()
             _uiState.update { it.copy(isLoading = false) }
         } catch (e: Exception) {
-            _uiState.update { it.copy(isLoading = false, error = "Failed to seed data: ${e.message}") }
+            _uiState.update { it.copy(isLoading = false, error = AppStrings.errorSeedDataFailed) }
         }
     }
 }
@@ -25,36 +26,8 @@ fun PayslipViewModel.clearAllData() {
             repository.clearAll()
             _uiState.update { it.copy(isLoading = false, payslips = emptyList()) }
         } catch (e: Exception) {
-            _uiState.update { it.copy(isLoading = false, error = "Failed to clear data: ${e.message}") }
+            _uiState.update { it.copy(isLoading = false, error = AppStrings.errorClearDataFailed) }
         }
-    }
-}
-
-private fun backupUnavailable() = IllegalStateException("Backup service is not available")
-
-fun PayslipViewModel.exportBackup(
-    password: String,
-    onComplete: (Result<ByteArray>) -> Unit,
-) {
-    viewModelScope.launch {
-        _uiState.update { it.copy(isLoading = true) }
-        val result = backupService?.export(password) ?: Result.failure(backupUnavailable())
-        _uiState.update { it.copy(isLoading = false) }
-        onComplete(result)
-    }
-}
-
-fun PayslipViewModel.importBackup(
-    backupBytes: ByteArray,
-    password: String,
-    mode: com.payslipmax.pdfparser.repository.RestoreMode,
-    onComplete: (Result<Unit>) -> Unit,
-) {
-    viewModelScope.launch {
-        _uiState.update { it.copy(isLoading = true) }
-        val result = backupService?.restore(backupBytes, password, mode) ?: Result.failure(backupUnavailable())
-        _uiState.update { it.copy(isLoading = false) }
-        onComplete(result)
     }
 }
 

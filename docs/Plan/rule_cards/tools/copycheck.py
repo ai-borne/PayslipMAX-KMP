@@ -6,7 +6,7 @@ def words(s): return re.findall(r"[a-z0-9]+", s.lower())
 def grams(ws, n=N): return {tuple(ws[i:i+n]) for i in range(len(ws) - n + 1)}
 def corpus():
     texts = []
-    for f in ['Handbook_Pay_and_Allowances_2023.txt', 'Handbook_Travelling_Allowances_2023.txt', 'tr2014_ocr2.txt', 'prim/p_06bd09.txt', 'prim/cwc_air.txt', 'prim/bag2018.txt', 'prim/sports2018.txt', 'prim/fee2014.txt']:
+    for f in ['Handbook_Pay_and_Allowances_2023.txt', 'Handbook_Travelling_Allowances_2023.txt', 'tr2014_ocr2.txt', 'prim/p_06bd09.txt', 'prim/cwc_air.txt', 'prim/bag2018.txt', 'prim/sports2018.txt', 'prim/fee2014.txt', 'prim/hosp_regularisation.txt']:
         try: texts.append(open(src(f), errors='ignore').read())
         except FileNotFoundError: pass
     from sources import faq, txt

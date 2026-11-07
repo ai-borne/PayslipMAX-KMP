@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generated": "2026-10-20",
+ "generated": "2026-11-06",
  "limits": {
   "answer": 25,
   "bullets": 3,
@@ -1338,7 +1338,10 @@
       "RB-RP-016",
       "RB-C8-11",
       "RB-RP-017",
-      "RB-RP-018"
+      "RB-RP-018",
+      "RB-HS-01",
+      "RB-HS-02",
+      "RB-HS-03"
      ],
      "also": []
     },
@@ -11423,6 +11426,93 @@
    "nav": "leave-encash"
   },
   {
+   "id": "RB-HS-01",
+   "domain": "pay",
+   "topic": "RP-016",
+   "title": "Hospital stay: do I need Part II orders?",
+   "answer": "Yes. Every day from admission to resuming duty needs Part II orders. Without them the days can count as irregular absence and pay be recovered.",
+   "key": [
+    "Absence counts from the first day of admission",
+    "Sick leave granted after discharge is part of the same absence"
+   ],
+   "attach": [],
+   "watch": [
+    "Orders published over two years late need a time-barred sanction first",
+    "Check that orders came out after every hospital stay"
+   ],
+   "cite": "Rule 20, Leave Rules for the Services Vol I (Army); ODP 2026 Chapter 6",
+   "details": "Ask the unit Part II cell to confirm that the admission, the discharge and the regularising order were all published. If PCDA(O) treats the days as irregular absence, pay for those days is recovered, so check early rather than after a recovery notice.",
+   "chips": [],
+   "personal": "",
+   "from": [
+    "RP-016"
+   ],
+   "open": [],
+   "basis": "",
+   "status": "draft",
+   "facet": "L",
+   "nav": "leave-types"
+  },
+  {
+   "id": "RB-HS-02",
+   "domain": "pay",
+   "topic": "RP-016",
+   "title": "Which Part II orders cover a hospital stay?",
+   "answer": "Admission, discharge and reporting for duty, plus the regularising order for the length of the stay, all published together.",
+   "key": [
+    "Admission HOSADM, discharge HOSDISCH, reported for duty RPDUHSP",
+    "Up to 30 days: sick list concession SLC",
+    "Over 30 days: REGALMS if due to military service, else REGAL"
+   ],
+   "attach": [],
+   "watch": [
+    "With sick leave, also SLDISCH, GTDSL and SLHOSADM",
+    "Transfer to another hospital: MEDTRAN as applicable",
+    "Admitted during annual leave: use the sick leave set too"
+   ],
+   "cite": "ODP 2026 Chapter 6 (serials 6.1 to 6.14), Documentation Procedure for Officers",
+   "details": "Over 30 days the regularising order is backed by GTDALHOS for the annual leave debited and GTDSLHOS for the sick leave debited. Any part at furlough rates is shown by HOSFURPY. The discharge, the report for duty and the regularising order go in the same Part II order. Each regularising entry runs from the first day of admission to the final discharge date.",
+   "chips": [],
+   "personal": "",
+   "from": [
+    "RP-016"
+   ],
+   "open": [],
+   "basis": "",
+   "status": "draft",
+   "facet": "C",
+   "nav": "leave-types"
+  },
+  {
+   "id": "RB-HS-03",
+   "domain": "pay",
+   "topic": "RP-016",
+   "title": "Long hospital stay: how is the absence split?",
+   "answer": "Annual leave for the year first, then sick leave: up to 180 days at full pay in all. Any balance is regularised at furlough rates.",
+   "key": [
+    "Annual leave first, only as much as your balance allows",
+    "Up to 120 days sick leave",
+    "Balance beyond the full pay days: furlough rates, HOSFURPY"
+   ],
+   "attach": [],
+   "watch": [
+    "The 180 day cap is for stays not due to military service",
+    "A stay across two years uses last year's balance annual leave first"
+   ],
+   "cite": "Leave Rules for the Services Vol I (Army); ODP 2026 Chapter 6",
+   "details": "Example: a stay of 190 days not due to military service is regularised as 60 days annual leave, 120 days sick leave and 10 days at furlough rates. With only 30 days of annual leave balance, a 175 day stay is 30 annual leave, 120 sick leave and 25 at furlough rates. Across two years the 180 days are counted over the whole stay. Each part is published with its own code and dates, and the order number of the first admission is quoted.",
+   "chips": [],
+   "personal": "",
+   "from": [
+    "RP-016"
+   ],
+   "open": [],
+   "basis": "",
+   "status": "draft",
+   "facet": "H",
+   "nav": "leave-types"
+  },
+  {
    "id": "RB-RP-030",
    "domain": "pay",
    "topic": "RP-030",
@@ -12598,6 +12688,19 @@
  ],
  "changes": [
   {
+   "date": "2026-11-06",
+   "items": [
+    {
+     "text": "Three new cards on hospital stays: why Part II orders are needed, which ones to publish, and how a long stay is split between annual leave, sick leave and furlough rates",
+     "cards": [
+      "RB-HS-01",
+      "RB-HS-02",
+      "RB-HS-03"
+     ]
+    }
+   ]
+  },
+  {
    "date": "2026-10-20",
    "items": [
     {
@@ -12709,10 +12812,10 @@
   "covered": 529,
   "skipped": 17,
   "uncovered": 0,
-  "cards": 400,
+  "cards": 403,
   "cards_by_domain": {
    "travel": 220,
-   "pay": 180
+   "pay": 183
   },
   "pay_topics_total": 95,
   "pay_topics_with_cards": 90

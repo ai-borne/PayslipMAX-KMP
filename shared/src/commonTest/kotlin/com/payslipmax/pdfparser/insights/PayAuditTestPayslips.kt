@@ -20,6 +20,7 @@ internal fun payAuditPayslip(
     riskHardship: Double = 0.0,
     licenseFee: Double = 0.0,
     arrearsTpta: Double = 0.0,
+    arrearsDa: Double = 0.0,
 ) = ParsedPayslip(
     file = "t.pdf",
     year = year,
@@ -36,6 +37,7 @@ internal fun payAuditPayslip(
             houseRentAllowance = hra,
             riskHardshipAllowance = riskHardship,
             arrearsTpta = arrearsTpta,
+            arrearsDa = arrearsDa,
         ),
     deductions = Deductions(licenseFee = licenseFee),
     ledgerBalances = LedgerBalances(),

@@ -1,0 +1,92 @@
+package com.payslipmax.pdfparser.ui.screens.guide.part2.bank
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import com.payslipmax.pdfparser.guide.preclaim.CalendarDate
+import com.payslipmax.pdfparser.part2.domain.BankFilter
+import com.payslipmax.pdfparser.part2.domain.BankRow
+import com.payslipmax.pdfparser.part2.domain.BankStatus
+import com.payslipmax.pdfparser.part2.domain.BankView
+import com.payslipmax.pdfparser.ui.screens.guide.GuideTileFrame
+import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimDates
+import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.theme.BankColors
+import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
+
+/** The status colour, from the theme tokens only. */
+@Composable
+internal fun statusTint(status: BankStatus): Color = if (status == BankStatus.NOT_ATTACHED) BankColors.waiting() else BankColors.attached()
+
+/** The chain flag's colour: the waiting tone, because a missing order in the chain is a thing still to do. */
+@Composable
+internal fun chainTint(): Color = BankColors.waiting()
+
+/** The chips, each with the count behind it (always over the whole Bank). The stays chip shows only while it holds something, or is the one selected. */
+@Composable
+internal fun BankChips(
+    view: BankView,
+    selected: BankFilter,
+    onSelect: (BankFilter) -> Unit,
+) {
+    val counts =
+        mapOf(
+            BankFilter.ALL to view.all,
+            BankFilter.NOT_ATTACHED to view.notAttached,
+            BankFilter.ATTACHED to view.attached,
+            BankFilter.UNREGULARISED to view.unregularised,
+        )
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall), verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
+        BankFilter.entries.filter { it != BankFilter.UNREGULARISED || counts.getValue(it) > 0 || it == selected }.forEach { filter ->
+            FilterChip(
+                selected = filter == selected,
+                onClick = { onSelect(filter) },
+                label = { Text(OrdersBankStrings.chipWithCount(filter, counts.getValue(filter))) },
+            )
+        }
+    }
+}
+
+/**
+ * One entry in the list: the HRMS code, the manual's name, From (and To), the status label and, while waiting, the age. The card opens
+ * the entry; the status line, when [onStatus] is given, does its order job instead (see [BankStatusTap]).
+ */
+@Composable
+internal fun BankRowView(
+    row: BankRow,
+    name: String?,
+    onClick: () -> Unit,
+    onStatus: StatusAction? = null,
+) {
+    val entry = row.entry
+    GuideTileFrame(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(AppDimensions.PaddingMedium), verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingTiny)) {
+            Text(entry.code, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+            name?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+            Text(dateRange(entry.from, entry.to), style = MaterialTheme.typography.bodyMedium)
+            val tap = onStatus?.let { Modifier.clickable(onClickLabel = it.label, role = Role.Button, onClick = it.onTap).minimumInteractiveComponentSize() } ?: Modifier
+            Text(OrdersBankStrings.status(row.status), modifier = tap, style = MaterialTheme.typography.labelLarge, color = statusTint(row.status), fontWeight = FontWeight.SemiBold)
+            row.age?.let { Text(OrdersBankStrings.waiting(it), style = MaterialTheme.typography.labelMedium, color = statusTint(row.status)) }
+        }
+    }
+}
+
+/** A tap of its own on a card's status line, and what a screen reader calls it. */
+internal class StatusAction(val label: String, val onTap: () -> Unit)
+
+internal fun dateRange(
+    from: CalendarDate,
+    to: CalendarDate?,
+): String = PreClaimDates.format(from) + (to?.let { " – ${PreClaimDates.format(it)}" } ?: "")

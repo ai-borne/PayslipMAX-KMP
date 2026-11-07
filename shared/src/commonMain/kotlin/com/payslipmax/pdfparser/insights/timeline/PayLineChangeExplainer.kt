@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.insights.timeline
 
 import com.payslipmax.pdfparser.domain.ParsedPayslip
+import com.payslipmax.pdfparser.insights.DaArrearsWindow
 import com.payslipmax.pdfparser.insights.PayAuditWording
 import kotlin.math.abs
 
@@ -16,6 +17,8 @@ import kotlin.math.abs
  */
 object PayLineChangeExplainer {
     private const val AMOUNT_TOLERANCE = 0.5
+    private const val PERCENT = 100.0
+    private const val MONTHS_PER_YEAR = 12
     private const val DA_RATE_CHANGED = "Dearness Allowance (DA) rate changed from"
     private const val ARREARS_DROPPED = "Arrears were paid last month and do not repeat"
 
@@ -139,18 +142,24 @@ object PayLineChangeExplainer {
         val currDa = currMonth.daPercent
         if (prevDa == null || currDa == null || currDa <= prevDa) return null
         if (tptaDaSeparate && current.earnings.transportAllowanceDa <= 0.0) return null
-        val (rangeFrom, rangeTo) = arrearsRange(current.monthNum) ?: return null
+        val earnings = current.earnings
+        val payBase = if (tptaDaSeparate) earnings.transportAllowance else earnings.basicPay + earnings.militaryServicePay
+        val months = DaArrearsWindow.closestMonths(current.monthNum, to, payBase * (currDa - prevDa) / PERCENT) ?: return null
         val arrearsPhrase = if (tptaDaSeparate) "the arrears of DA on Transport Allowance" else "the arrears"
-        return "$DA_RATE_CHANGED ${PayAuditWording.percentChange(prevDa, currDa)}; these are $arrearsPhrase for ${PayAuditWording.monthSpan(rangeFrom, rangeTo, current.year)}"
+        return "$DA_RATE_CHANGED ${PayAuditWording.percentChange(prevDa, currDa)}; these are $arrearsPhrase for ${arrearsSpan(current, months)}"
     }
 
     private fun TimelineEventType.cause(): String = if (this == TimelineEventType.PROMOTION) "promotion" else "annual increment"
 
-    /** Months from the rise's effective date (1 Jan or 1 Jul) up to the month before this payslip; mirrors DaArrearsAuditor. */
-    private fun arrearsRange(monthNum: Int): Pair<Int, Int>? {
-        val effectiveMonth = if (monthNum <= 6) 1 else 7
-        val lastMonth = monthNum - 1
-        return if (lastMonth >= effectiveMonth) effectiveMonth to lastMonth else null
+    /** The [months] of arrears ending with the month before this payslip: the effective date is that many months back. */
+    private fun arrearsSpan(
+        current: ParsedPayslip,
+        months: Int,
+    ): String {
+        val payslipIndex = current.year * MONTHS_PER_YEAR + current.monthNum - 1
+        val first = payslipIndex - months
+        val last = payslipIndex - 1
+        return PayAuditWording.monthSpan(first % MONTHS_PER_YEAR + 1, first / MONTHS_PER_YEAR, last % MONTHS_PER_YEAR + 1, last / MONTHS_PER_YEAR)
     }
 
     /**

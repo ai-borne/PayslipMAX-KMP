@@ -51,11 +51,12 @@ class GuideHomeRowsTest {
         composeRule.setContent { GuideHomeScreen(areas, onOpenArea = { opened += it }, onOpenSearch = {}) }
 
         areas.forEach { tile ->
-            composeRule.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(tile.title))
-            val row = composeRule.onNodeWithText(tile.title)
+            val label = GuideStrings.areaTileLabel(tile.id) ?: tile.title
+            composeRule.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(label))
+            val row = composeRule.onNodeWithText(label)
             row.assertHasClickAction()
             val text = row.fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.Text].joinToString(" ")
-            assertEquals("${tile.title} ${GuideStrings.topicCount(tile.caseCount)}", text)
+            assertEquals("$label ${GuideStrings.topicCount(tile.caseCount)}", text)
             row.performClick()
         }
         assertEquals(areas.map { it.id }, opened)

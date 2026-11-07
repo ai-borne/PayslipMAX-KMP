@@ -2,6 +2,7 @@ package com.payslipmax.pdfparser.ui.screens
 
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.subscription.FeatureGate
+import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -19,7 +20,7 @@ class PremiumFeaturesCatalogTest {
         val catalog = premiumFeatureCatalog()
         val advertised = FeatureGate.values().filter { isAdvertised(it) }
         assertEquals(advertised, catalog.map { it.gate }, "catalog order follows FeatureGate order, one row per advertised gate")
-        assertEquals(FeatureGate.values().size, catalog.size, "the paywall is on (2026-10-18), so every gate incl. the Claim Guide is advertised")
+        assertEquals(FeatureGate.values().size - if (isPart2Enabled()) 0 else 1, catalog.size, "the paywall is on (2026-10-18), so every gate incl. the Claim Guide is advertised; Part II is dark-launched, so its gate is not")
     }
 
     @Test
@@ -28,9 +29,17 @@ class PremiumFeaturesCatalogTest {
         assertFalse(isAdvertised(FeatureGate.CLAIM_GUIDE, guideEnabled = false, guidePaywallEnabled = true))
         assertFalse(isAdvertised(FeatureGate.CLAIM_GUIDE, guideEnabled = true, guidePaywallEnabled = false))
         assertTrue(isAdvertised(FeatureGate.CLAIM_GUIDE, guideEnabled = true, guidePaywallEnabled = true))
-        for (gate in FeatureGate.values().filter { it != FeatureGate.CLAIM_GUIDE }) {
+        for (gate in FeatureGate.values().filter { it != FeatureGate.CLAIM_GUIDE && it != FeatureGate.PART2_ORDERS }) {
             assertTrue(isAdvertised(gate, guideEnabled = false, guidePaywallEnabled = false), "$gate is unaffected by the Guide flags")
         }
+    }
+
+    @Test
+    fun theOrdersBankIsAdvertisedOnlyWhilePartTwoIsEnabledSoADarkLaunchNeverReachesThePaywall() {
+        assertFalse(isAdvertised(FeatureGate.PART2_ORDERS, part2Enabled = false))
+        assertTrue(isAdvertised(FeatureGate.PART2_ORDERS, part2Enabled = true))
+        assertFalse(isAdvertised(FeatureGate.PART2_ORDERS, guideEnabled = true, guidePaywallEnabled = true, part2Enabled = false), "the Guide flags do not decide it")
+        assertEquals(isPart2Enabled(), premiumFeatureCatalog().any { it.gate == FeatureGate.PART2_ORDERS }, "the catalog follows the build's flag")
     }
 
     @Test

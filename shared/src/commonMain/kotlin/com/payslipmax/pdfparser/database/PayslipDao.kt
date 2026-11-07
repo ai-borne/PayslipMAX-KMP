@@ -5,6 +5,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.payslipmax.pdfparser.part2.data.Part2EntryEntity
+import com.payslipmax.pdfparser.part2.data.Part2OrderEntity
+import com.payslipmax.pdfparser.part2.data.Part2PageEntity
+import com.payslipmax.pdfparser.part2.domain.Part2Limits
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -58,6 +62,26 @@ interface PayslipDao {
 
     @Query("DELETE FROM guide_notes")
     suspend fun clearAllGuideNotes()
+
+    // Part II rows (Part2Dao reads and edits them one at a time); only the bulk restore writes and "delete all" are here, so they share
+    // the one transaction with everything else the user created.
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPart2Entries(rows: List<Part2EntryEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPart2Orders(rows: List<Part2OrderEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPart2Pages(rows: List<Part2PageEntity>)
+
+    @Query("DELETE FROM part2_entries")
+    suspend fun clearAllPart2Entries()
+
+    @Query("DELETE FROM part2_orders")
+    suspend fun clearAllPart2Orders()
+
+    @Query("DELETE FROM part2_pages")
+    suspend fun clearAllPart2Pages()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPayslipPdf(pdf: PayslipPdfEntity)
@@ -169,6 +193,9 @@ interface PayslipDao {
         clearAll()
         clearAllCorrections()
         clearAllGuideNotes()
+        clearAllPart2Entries()
+        clearAllPart2Orders()
+        clearAllPart2Pages()
         clearAllLedgerRecords()
         clearAllFinancialInsights()
         clearAllRepresentationDrafts()
@@ -200,5 +227,8 @@ interface PayslipDao {
         rows.dismissedDrafts.forEach { insertDismissedDraft(it) }
         rows.corrections.forEach { insertCorrection(it) }
         insertGuideNotes(rows.guideNotes)
+        insertPart2Entries(rows.part2Entries)
+        insertPart2Orders(rows.part2Orders)
+        rows.part2Pages.chunked(Part2Limits.PAGE_INSERT_BATCH).forEach { insertPart2Pages(it) }
     }
 }

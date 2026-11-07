@@ -36,14 +36,14 @@ internal object DutyDays {
 
     private fun isLeap(year: Int) = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
 
-    private fun exists(date: CalendarDate): Boolean {
+    internal fun exists(date: CalendarDate): Boolean {
         if (date.year !in FIRST_YEAR..LAST_YEAR || date.month !in 1..MONTHS) return false
         val length = monthLengths[date.month - 1] + if (date.month == 2 && isLeap(date.year)) 1 else 0
         return date.day in 1..length
     }
 
     /** Days since 2000-01-01 (the first allowed year), so only differences matter. */
-    private fun dayNumber(date: CalendarDate): Long {
+    internal fun dayNumber(date: CalendarDate): Long {
         var days = 0L
         for (year in FIRST_YEAR until date.year) days += if (isLeap(year)) 366 else 365
         for (month in 1 until date.month) days += monthLengths[month - 1] + if (month == 2 && isLeap(date.year)) 1 else 0

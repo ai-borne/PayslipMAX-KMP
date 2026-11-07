@@ -34,27 +34,28 @@ class DaArrearsAuditor : RuleAuditor {
 
         val currentRatePercent = wholePercent(current.earnings.dearnessAllowance / payBase)
         val prevRatePercent = wholePercent(previous.earnings.dearnessAllowance / prevPayBase)
-        val months = monthsSinceEffectiveDate(current.monthNum)
-        if (currentRatePercent <= prevRatePercent || months <= 0) {
+        if (currentRatePercent <= prevRatePercent || DaArrearsWindow.minimumMonths(current.monthNum) == null) {
             return anomalies
         }
 
         val rateDiff = (currentRatePercent - prevRatePercent) / 100.0
-        val expectedDa = payBase * rateDiff * months
+        val daPerMonth = payBase * rateDiff
         val tpta = current.earnings.transportAllowance
         val tptaDaIsSeparate = current.earnings.transportAllowanceDa > 0.0 || arrearsTptaDa > 0.0
 
         if (tptaDaIsSeparate) {
+            val expectedDa = expectedArrears(current.monthNum, arrearsDa, daPerMonth)
             checkArrears(anomalies, arrearsDa, expectedDa, current.dateStr, "Dearness Allowance (DA)", ARREARS_DA_FIELD)
             if (tpta > 0.0 && arrearsTptaDa > 0.0) {
-                val expectedTptaDa = tpta * rateDiff * months
+                val expectedTptaDa = expectedArrears(current.monthNum, arrearsTptaDa, tpta * rateDiff)
                 checkArrears(anomalies, arrearsTptaDa, expectedTptaDa, current.dateStr, "Dearness Allowance on your Transport Allowance", ARREARS_TPTA_DA_FIELD)
             }
         } else {
             // Older payslips print TPTA inclusive of its DA and fold TPTA-DA arrears into the DA arrears line.
             val tptaBase = tpta / (1.0 + currentRatePercent / 100.0)
-            val expectedWithTptaDa = expectedDa + tptaBase * rateDiff * months
-            val bestMatch = if (abs(arrearsDa - expectedWithTptaDa) < abs(arrearsDa - expectedDa)) expectedWithTptaDa else expectedDa
+            val withoutTptaDa = expectedArrears(current.monthNum, arrearsDa, daPerMonth)
+            val withTptaDa = expectedArrears(current.monthNum, arrearsDa, daPerMonth + tptaBase * rateDiff)
+            val bestMatch = if (abs(arrearsDa - withTptaDa) < abs(arrearsDa - withoutTptaDa)) withTptaDa else withoutTptaDa
             checkArrears(anomalies, arrearsDa, bestMatch, current.dateStr, "Dearness Allowance (DA)", ARREARS_DA_FIELD)
         }
 
@@ -63,8 +64,20 @@ class DaArrearsAuditor : RuleAuditor {
 
     private fun wholePercent(rate: Double): Int = (rate * 100.0).roundToInt()
 
-    /** Months from the rise's effective date (1 Jan for Jan-Jun payslips, 1 Jul for Jul-Dec) up to the month before this payslip. */
-    private fun monthsSinceEffectiveDate(monthNum: Int): Int = if (monthNum <= 6) monthNum - 1 else monthNum - 7
+    /**
+     * The arrears owed for [perMonth]: the amount of whichever candidate month count ([DaArrearsWindow]) the payment matches, so
+     * arrears paid in any later half-year are verified. A payment matching none is measured against the fewest months it can
+     * cover, so a shortfall never claims more than the minimum owed.
+     */
+    private fun expectedArrears(
+        monthNum: Int,
+        actual: Double,
+        perMonth: Double,
+    ): Double {
+        val minimum = perMonth * (DaArrearsWindow.minimumMonths(monthNum) ?: return 0.0)
+        val closest = perMonth * (DaArrearsWindow.closestMonths(monthNum, actual, perMonth) ?: return minimum)
+        return if (abs(actual - closest) < TOLERANCE_RUPEES) closest else minimum
+    }
 
     /** 6th CPC-era DA (100%+ on a different pay base) does not follow this arrears math. */
     private fun isBeforeSeventhCpcPay(payslip: ParsedPayslip): Boolean =
@@ -80,7 +93,7 @@ class DaArrearsAuditor : RuleAuditor {
     ) {
         if (actual <= 0.0) return
         val diff = abs(actual - expected)
-        if (diff < 100.0) {
+        if (diff < TOLERANCE_RUPEES) {
             anomalies.add(
                 Anomaly(
                     type = "ARREARS_AUDIT",
@@ -110,6 +123,7 @@ class DaArrearsAuditor : RuleAuditor {
     }
 
     private companion object {
+        const val TOLERANCE_RUPEES = 100.0
         const val ARREARS_DA_FIELD = "arrearsDa"
         const val ARREARS_TPTA_DA_FIELD = "arrearsTptaDa"
 

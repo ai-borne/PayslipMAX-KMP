@@ -79,7 +79,9 @@ class GemmaInstallTelemetryTest {
         telemetry.trackInstallState(BaseModelInstallState.Failed("Disk full"))
         assertEquals(1, telemetry.loggedEvents.size)
         assertEquals("gemma_install_failed", telemetry.loggedEvents[0].first)
-        assertEquals("Disk full", telemetry.loggedEvents[0].second?.get("error"))
+        // Rewritten in the P10 follow-up: the installer's own text ("Disk full", a path) no longer leaves the device; one fixed code does.
+        assertEquals(mapOf("error" to GEMMA_INSTALL_FAILED_CODE), telemetry.loggedEvents[0].second)
+        assertTrue("Disk full" !in telemetry.loggedEvents[0].second.toString())
     }
 
     @Test

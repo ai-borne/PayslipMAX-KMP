@@ -64,8 +64,8 @@ class GuideSmallScreenTest {
         composeRule.setContent { GuideHomeScreen(areas, onOpenArea = {}, onOpenSearch = {}) }
 
         areas.forEach { tile ->
-            composeRule.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(tile.title))
-            composeRule.onNodeWithText(tile.title).assertNotClipped(tile.title)
+            composeRule.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(GuideStrings.areaTileLabel(tile.id) ?: tile.title))
+            composeRule.onNodeWithText(GuideStrings.areaTileLabel(tile.id) ?: tile.title).assertNotClipped(GuideStrings.areaTileLabel(tile.id) ?: tile.title)
         }
     }
 
@@ -77,8 +77,8 @@ class GuideSmallScreenTest {
             area = next.toContent()
             composeRule.waitForIdle()
             area.cases.forEach { tile ->
-                composeRule.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(tile.title))
-                composeRule.onNodeWithText(tile.title).assertNotClipped(tile.title)
+                composeRule.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(GuideStrings.areaTileLabel(tile.id) ?: tile.title))
+                composeRule.onNodeWithText(GuideStrings.areaTileLabel(tile.id) ?: tile.title).assertNotClipped(GuideStrings.areaTileLabel(tile.id) ?: tile.title)
             }
         }
     }

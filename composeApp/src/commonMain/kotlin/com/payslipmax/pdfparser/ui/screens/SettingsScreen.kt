@@ -17,10 +17,9 @@ import com.payslipmax.pdfparser.ui.theme.AppStrings
 fun SettingsScreen(
     viewModel: PayslipViewModel,
     onNavigateTo: (Screen) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
+    onPickBackup: (onResult: (String) -> Unit) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var password by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
     var showUpgradeSheet by remember { mutableStateOf(false) }
     var devClicks by remember { mutableStateOf(0) }
@@ -29,8 +28,6 @@ fun SettingsScreen(
     SettingsContent(
         viewModel = viewModel,
         uiState = uiState,
-        password = password,
-        onPasswordChange = { password = it },
         onUpgradePrompt = { showUpgradeSheet = true },
         devModeEnabled = devModeEnabled,
         onHeaderClick = {
@@ -61,13 +58,11 @@ fun SettingsScreen(
 private fun SettingsContent(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,
-    password: String,
-    onPasswordChange: (String) -> Unit,
     onUpgradePrompt: () -> Unit,
     devModeEnabled: Boolean,
     onHeaderClick: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState(uiState.settingsScrollValue)
@@ -90,8 +85,6 @@ private fun SettingsContent(
         SecondarySettingsGroup(
             viewModel = viewModel,
             uiState = uiState,
-            password = password,
-            onPasswordChange = onPasswordChange,
             onUpgradePrompt = onUpgradePrompt,
             onNavigateTo = onNavigateTo,
             devModeEnabled = devModeEnabled,
@@ -127,19 +120,15 @@ private fun PrimarySettingsGroup(
 private fun SecondarySettingsGroup(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,
-    password: String,
-    onPasswordChange: (String) -> Unit,
     onUpgradePrompt: () -> Unit,
     onNavigateTo: (Screen) -> Unit,
     devModeEnabled: Boolean,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
 ) {
     // 5. Data Management
     DataManagementSection(
         viewModel = viewModel,
         uiState = uiState,
-        password = password,
-        onPasswordChange = onPasswordChange,
         onUpgradePrompt = onUpgradePrompt,
         onPickBackup = onPickBackup,
     )

@@ -2,9 +2,7 @@ package com.payslipmax.pdfparser.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.serialization.Serializable
 
-@Serializable
 @Entity(tableName = "representation_drafts")
 data class RepresentationDraftEntity(
     @PrimaryKey val id: String,

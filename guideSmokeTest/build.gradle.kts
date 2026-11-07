@@ -53,17 +53,23 @@ abstract class GenerateSmokeStrings : DefaultTask() {
                         ?: throw GradleException("guideSmokeTest: no `const val $name` in ${sources.files.map { it.name }}")
                 "    static final String $name = $value;"
             }
+        // The short Guide Home tile names (GuideStrings.areaTileLabel), read from the same file so a rename cannot leave this test stale.
+        val tileBlock =
+            Regex("""fun areaTileLabel\(.*?\n        }""", RegexOption.DOT_MATCHES_ALL).find(text)?.value
+                ?: throw GradleException("guideSmokeTest: no `fun areaTileLabel` in the string files")
+        val tiles =
+            Regex(""""(\w+)" -> (".*")""").findAll(tileBlock).joinToString("\n") { "            case \"${it.groupValues[1]}\": return ${it.groupValues[2]};" }
         val dir = outputDir.get().dir("com/payslipmax/pdfparser/smoke").asFile.apply { mkdirs() }
         dir.resolve("SmokeStrings.java").writeText(
-            "package com.payslipmax.pdfparser.smoke;\n\n/** Generated from the app's string files. */\nfinal class SmokeStrings {\n$fields\n}\n",
+            "package com.payslipmax.pdfparser.smoke;\n\n/** Generated from the app's string files. */\nfinal class SmokeStrings {\n$fields\n\n    /** The Guide Home tile name for a bundle area id (the bundle's own title when the app names none). */\n    static String areaTile(String id, String bundleTitle) {\n        switch (id) {\n$tiles\n            default: return bundleTitle;\n        }\n    }\n}\n",
         )
     }
 }
 
 val generateSmokeStrings by tasks.registering(GenerateSmokeStrings::class) {
     val theme = rootProject.file("composeApp/src/commonMain/kotlin/com/payslipmax/pdfparser/ui/theme")
-    sources.from(theme.resolve("GuideStrings.kt"), theme.resolve("AppStringsOnboarding.kt"), theme.resolve("PreClaimStrings.kt"))
-    names.set(listOf("tabLabel", "homeSection", "loadFailedTitle", "sectionKeyPoints", "searchOpen", "onboardingSkip", "onboardingCoachmarkDismiss", "entryTitle", "chooseMove", "trRule", "trRuleChoose", "nightlyRate"))
+    sources.from(theme.resolve("GuideStrings.kt"), theme.resolve("AppStringsOnboarding.kt"), theme.resolve("PreClaimStrings.kt"), theme.resolve("AppStrings.kt"), theme.resolve("BackupRestoreStrings.kt"))
+    names.set(listOf("tabLabel", "homeSection", "loadFailedTitle", "sectionKeyPoints", "searchOpen", "onboardingSkip", "onboardingCoachmarkDismiss", "entryTitle", "tileTitle", "chooseMove", "trRule", "trRuleChoose", "nightlyRate", "navigationSettings", "settingsRowBackupLabel", "settingsBackupSaveBtn", "labelPayslipsBackedUp", "wrongPasswordOrNotABackup", "restoreBtn", "cancelBtn"))
     outputDir.set(layout.buildDirectory.dir("generated/smokeStrings"))
 }
 

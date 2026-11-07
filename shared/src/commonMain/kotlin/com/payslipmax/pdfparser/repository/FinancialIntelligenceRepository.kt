@@ -126,7 +126,8 @@ open class FinancialIntelligenceRepository(
                 true
             }
         } catch (e: Exception) {
-            Logger.e("FinancialIntelligenceRepository", "Audit history repair failed", e)
+            // No exception: its message can quote a payslip (docs/Plan/14a P6).
+            Logger.e("FinancialIntelligenceRepository", "Audit history repair failed")
             false
         }
 

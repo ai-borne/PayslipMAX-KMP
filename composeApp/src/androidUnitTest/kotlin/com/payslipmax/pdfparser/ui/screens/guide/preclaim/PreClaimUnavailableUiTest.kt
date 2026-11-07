@@ -27,7 +27,7 @@ class PreClaimUnavailableUiTest : PreClaimUiBase() {
     @Test
     fun aBundleWithoutAWorksheetShowsOneMessageAndARetryThatKeepsTheScreenStable() {
         show()
-        tap(PreClaimStrings.entryTitle)
+        tap(PreClaimStrings.tileTitle)
         composeRule.onNodeWithText(PreClaimStrings.unavailableTitle).assertIsDisplayed()
         composeRule.onNodeWithText(PreClaimStrings.unavailableBody).assertIsDisplayed()
         composeRule.onAllNodesWithText(PreClaimStrings.chooseMove).assertCountEquals(0)

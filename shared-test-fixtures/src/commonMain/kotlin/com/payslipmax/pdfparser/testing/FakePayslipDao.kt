@@ -1,11 +1,17 @@
 package com.payslipmax.pdfparser.testing
 
 import com.payslipmax.pdfparser.database.*
+import com.payslipmax.pdfparser.part2.data.Part2EntryEntity
+import com.payslipmax.pdfparser.part2.data.Part2OrderEntity
+import com.payslipmax.pdfparser.part2.data.Part2PageEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
-class FakePayslipDao : PayslipDao {
+class FakePayslipDao(
+    /** The Part II rows; pass the one a [com.payslipmax.pdfparser.part2.data.Part2Backup] reads so both see the same tables, as in Room. */
+    val part2: FakePart2Dao = FakePart2Dao(),
+) : PayslipDao {
     private val database = MutableStateFlow<Map<String, EncryptedPayslipEntity>>(emptyMap())
     private val pdfDatabase = MutableStateFlow<Map<String, PayslipPdfEntity>>(emptyMap())
 
@@ -17,7 +23,11 @@ class FakePayslipDao : PayslipDao {
         database.value = database.value + payslips.associateBy { it.dateStr }
     }
 
+    /** When set, the payslip stream fails with it: a read that breaks, with whatever message the failure carries. */
+    var failGetAllPayslipsWith: Exception? = null
+
     override fun getAllPayslips(): Flow<List<EncryptedPayslipEntity>> {
+        failGetAllPayslipsWith?.let { failure -> return kotlinx.coroutines.flow.flow { throw failure } }
         return database.map {
             it.values.toList().sortedWith(
                 compareBy<EncryptedPayslipEntity> { it.year }.thenBy { it.monthNum },
@@ -33,8 +43,12 @@ class FakePayslipDao : PayslipDao {
         database.value = database.value - dateStr
     }
 
+    /** When set, [clearAll] throws it: a delete that fails, with whatever message the failure carries. */
+    var failClearAllWith: Exception? = null
+
     // Like the Room query it stands in for, this empties the payslip table only (PDFs have clearAllPdfs).
     override suspend fun clearAll() {
+        failClearAllWith?.let { throw it }
         database.value = emptyMap()
     }
 
@@ -79,6 +93,19 @@ class FakePayslipDao : PayslipDao {
     override suspend fun clearAllGuideNotes() {
         guideNotesDatabase.value = emptyMap()
     }
+
+    // Part II bulk writes: PayslipDao's in Room, because a restore is one transaction; the rows themselves live in [part2].
+    override suspend fun insertPart2Entries(rows: List<Part2EntryEntity>) = part2.putAll(rows, emptyList(), emptyList())
+
+    override suspend fun insertPart2Orders(rows: List<Part2OrderEntity>) = part2.putAll(emptyList(), rows, emptyList())
+
+    override suspend fun insertPart2Pages(rows: List<Part2PageEntity>) = part2.putAll(emptyList(), emptyList(), rows)
+
+    override suspend fun clearAllPart2Entries() = part2.clearEntries()
+
+    override suspend fun clearAllPart2Orders() = part2.clearOrders()
+
+    override suspend fun clearAllPart2Pages() = part2.clearPages()
 
     override suspend fun insertPayslipPdf(pdf: PayslipPdfEntity) {
         pdfDatabase.value = pdfDatabase.value + (pdf.dateStr to pdf)

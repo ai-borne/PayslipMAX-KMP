@@ -1,0 +1,85 @@
+[
+  {
+    "file": "jvm-legacy-v1.pcda",
+    "origin": "v1 export from synthetic data (formerly GoldenBackups.v1LegacyKey): no version key, payslip under the legacy key",
+    "format": 1,
+    "password": "BackupPass#1",
+    "payslips": 1, "pdfs": 0, "corrections": 0, "guideNotes": 0, "drafts": 0, "dismissedDrafts": 0, "theme": "system"
+  },
+  {
+    "file": "jvm-legacy-v2.pcda",
+    "origin": "v2 export from synthetic data (formerly GoldenBackups.v2): payslip under the backup password, one PDF",
+    "format": 2,
+    "password": "BackupPass#1",
+    "payslips": 1, "pdfs": 1, "corrections": 0, "guideNotes": 0, "drafts": 0, "dismissedDrafts": 0, "theme": "system"
+  },
+  {
+    "file": "jvm-legacy-v3.pcda",
+    "origin": "v3 export from synthetic data (formerly GoldenBackups.v3): adds a draft, a dismissed draft and a correction",
+    "format": 3,
+    "password": "BackupPass#1",
+    "payslips": 1, "pdfs": 1, "corrections": 1, "guideNotes": 0, "drafts": 1, "dismissedDrafts": 1, "theme": "system"
+  },
+  {
+    "file": "jvm-1.5.0-v4.pcda",
+    "origin": "1.5.0 export (9841fc4a = v1.5.0 tag; backup code identical to Play production vc22 681c87bc) on the JVM with Android's crypto",
+    "format": 4,
+    "password": "BackupPass#1",
+    "payslips": 2, "pdfs": 2, "corrections": 2, "guideNotes": 2, "drafts": 2, "dismissedDrafts": 2, "theme": "dark"
+  },
+  {
+    "file": "ios-1.5.0-v4.pcda",
+    "origin": "1.5.0 export (9841fc4a = iOS App Store build 6) on the iOS simulator with iOS crypto",
+    "format": 4,
+    "password": "BackupPass#1",
+    "payslips": 2, "pdfs": 2, "corrections": 2, "guideNotes": 2, "drafts": 2, "dismissedDrafts": 2, "theme": "dark"
+  },
+  {
+    "file": "jvm-orders-bank-v5.pcda",
+    "origin": "feature/orders-bank export (6a5c14d0) on the JVM: a page archive with Orders Bank entries, an order and two pages",
+    "format": 5,
+    "password": "BackupPass#1",
+    "payslips": 2, "pdfs": 2, "corrections": 2, "guideNotes": 2, "drafts": 2, "dismissedDrafts": 2, "theme": "dark",
+    "part2Entries": 2, "part2Orders": 1, "part2Pages": 2
+  },
+  {
+    "file": "ios-orders-bank-v5.pcda",
+    "origin": "feature/orders-bank export (6a5c14d0) on the iOS simulator: a page archive with Orders Bank entries, an order and two pages",
+    "format": 5,
+    "password": "BackupPass#1",
+    "payslips": 2, "pdfs": 2, "corrections": 2, "guideNotes": 2, "drafts": 2, "dismissedDrafts": 2, "theme": "dark",
+    "part2Entries": 2, "part2Orders": 1, "part2Pages": 2
+  },
+  {
+    "file": "jvm-head-v6.pcda",
+    "origin": "feature/backup-hardening P3 export on the JVM: PCDX header (PBKDF2 600,000, one archive key) around a page archive with Orders Bank entries, an order and two pages",
+    "format": 6,
+    "password": "BackupPass#1",
+    "payslips": 2, "pdfs": 2, "corrections": 2, "guideNotes": 2, "drafts": 2, "dismissedDrafts": 2, "theme": "dark",
+    "part2Entries": 2, "part2Orders": 1, "part2Pages": 2
+  },
+  {
+    "file": "ios-head-v6.pcda",
+    "origin": "feature/backup-hardening P3 export on the iOS simulator: PCDX header (PBKDF2 600,000, one archive key) around a page archive with Orders Bank entries, an order and two pages",
+    "format": 6,
+    "password": "BackupPass#1",
+    "payslips": 2, "pdfs": 2, "corrections": 2, "guideNotes": 2, "drafts": 2, "dismissedDrafts": 2, "theme": "dark",
+    "part2Entries": 2, "part2Orders": 1, "part2Pages": 2
+  },
+  {
+    "file": "jvm-fieldsource-v6.pcda",
+    "origin": "feature/backup-hardening P9 export on the JVM (Android code): head format 6 with one payslip carrying a fieldSource map of both known values (GEOMETRY, GEMMA_FALLBACK), plus Orders Bank entries, an order and two pages",
+    "format": 6,
+    "password": "BackupPass#1",
+    "payslips": 2, "pdfs": 2, "corrections": 2, "guideNotes": 2, "drafts": 2, "dismissedDrafts": 2, "theme": "dark",
+    "part2Entries": 2, "part2Orders": 1, "part2Pages": 2, "fieldSources": 2
+  },
+  {
+    "file": "ios-fieldsource-v6.pcda",
+    "origin": "feature/backup-hardening P9 export on the iOS simulator: head format 6 with one payslip carrying a fieldSource map of both known values (GEOMETRY, GEMMA_FALLBACK), plus Orders Bank entries, an order and two pages",
+    "format": 6,
+    "password": "BackupPass#1",
+    "payslips": 2, "pdfs": 2, "corrections": 2, "guideNotes": 2, "drafts": 2, "dismissedDrafts": 2, "theme": "dark",
+    "part2Entries": 2, "part2Orders": 1, "part2Pages": 2, "fieldSources": 2
+  }
+]

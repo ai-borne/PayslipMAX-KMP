@@ -25,13 +25,13 @@ object GuideMaintenanceStrings {
     const val suggestOpenEmail = "Open email"
     const val suggestNotice =
         "Your email app opens with this message ready, and nothing is sent until you press Send there. " +
-            "It names this card and the Guide and app versions. " +
+            "It names this card and the Rule Guide and app versions. " +
             "Please don't include your name, PAN, service number, or bank or account numbers."
-    const val suggestSubjectTag = "[Guide]"
-    const val suggestMailHeader = "Guide correction suggestion"
+    const val suggestSubjectTag = "[Rules]"
+    const val suggestMailHeader = "Rule Guide correction suggestion"
     const val suggestMailCard = "Card:"
     const val suggestMailTitle = "Title:"
-    const val suggestMailBundle = "Guide data:"
+    const val suggestMailBundle = "Rule Guide data:"
     const val suggestMailRevision = "Card revision:"
     const val suggestMailApp = "App version:"
     const val suggestMailSuggestion = "Suggestion:"
@@ -59,7 +59,7 @@ object GuideMaintenanceStrings {
     const val noteMarker = "Note"
     const val noteMarkerInNote = "In your note"
     const val notesRemovedTitle = "Notes on removed cards"
-    const val notesRemovedSubtitle = "Your notes on cards no longer in the Guide"
+    const val notesRemovedSubtitle = "Your notes on cards no longer in Rule Guide"
     const val notesRemovedNone = "You have no notes on removed cards."
 
     fun noteCounter(length: Int): String = "$length / $GUIDE_NOTE_MAX_CHARS"
@@ -68,8 +68,20 @@ object GuideMaintenanceStrings {
 
     fun notesUnreadable(count: Int): String = if (count == 1) "1 note could not be read" else "$count notes could not be read"
 
+    /** The sparkle at the start of the Guide Home row: decoration, never read aloud. */
+    const val whatsNewEmoji = "✨"
+
+    const val whatsNewChip = "NEW"
+
+    /** The dot before each change in the change log: decoration, never read aloud. */
+    const val changeBullet = "•"
+    const val whatsNewDismiss = "Dismiss"
+
+    /** The banner's second line: how many changes the newest entry lists. */
+    fun whatsNewSummary(count: Int): String = if (count == 1) "1 change to the rule cards" else "$count changes to the rule cards"
+
     /** The Guide Home row, named for the month of the newest entry. */
-    fun whatsNewRow(latestDate: String): String = "What's new in the Guide (${GuideStrings.yearMonth(latestDate.take(YEAR_MONTH_LENGTH))})"
+    fun whatsNewRow(latestDate: String): String = "What's new in Rule Guide (${GuideStrings.yearMonth(latestDate.take(YEAR_MONTH_LENGTH))})"
 
     fun chipReplacedOn(date: String): String = "Replaced on ${day(date)}"
 

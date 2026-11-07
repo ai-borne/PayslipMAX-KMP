@@ -28,6 +28,18 @@ class TelemetrySanitizerTest {
         assertFalse(TelemetrySanitizer.isKeyAllowed("app_pin"))
     }
 
+    /**
+     * WHY (docs/Plan/14a P6): a failed backup or restore sends exactly these three keys. They are allowed by name, not by a `backup_`
+     * prefix, so a later `backup_month` or `backup_password` key is still dropped by the platform reporter.
+     */
+    @Test
+    fun isKeyAllowed_allowsTheThreeBackupKeysByNameOnly() {
+        for (key in listOf("backup_failure_code", "backup_format_version", "backup_op")) assertTrue(TelemetrySanitizer.isKeyAllowed(key), key)
+        for (key in listOf("backup_month", "backup_password", "backup_file_name", "backup_", "backup_op_detail", "backup_pan")) {
+            assertFalse(TelemetrySanitizer.isKeyAllowed(key), key)
+        }
+    }
+
     @Test
     fun sanitizeMessage_redactsPanCardNumbers() {
         val input = "Processing file for user ABCDE1234F completed"

@@ -4,11 +4,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import android.content.Context;
-import android.content.Intent;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
-import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 import java.io.InputStream;
@@ -29,25 +26,15 @@ import org.junit.runner.RunWith;
  * an app class against R8. The UI strings come from the app's string files through the generated {@code SmokeStrings}.
  */
 @RunWith(AndroidJUnit4.class)
-public class GuideMinifiedSmokeTest {
-    private static final String APP_ID = "in.aiborne.payslipmax";
+public class GuideMinifiedSmokeTest extends SmokeBase {
     private static final String BUNDLE_ASSET =
             "composeResources/pdfparser.composeapp.generated.resources/files/guide/guide_bundle.json";
-    private static final long LONG_MS = 15_000L;
-    private static final long SHORT_MS = 3_000L;
-    private static final long POLL_MS = 500L;
-    // Google Play's own sheet, not app copy: installing with Play as installer can make Play offer the Gemma asset
-    // pack ("Download additional files?") over the app. Dismissing it downloads nothing.
-    private static final String PLAY_ASSET_PACK_DISMISS = "Dismiss update dialogue";
-
-    private final UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    private final Context context = InstrumentationRegistry.getInstrumentation().getContext();
 
     @Test
     public void theMinifiedAppOpensGuideHomeAnAreaACaseAndACard() throws Exception {
         JSONObject bundle = new JSONObject(readBundle());
         JSONObject firstArea = bundle.getJSONArray("nav").getJSONObject(0);
-        String areaTitle = firstArea.getString("title");
+        String areaTitle = SmokeStrings.areaTile(firstArea.getString("id"), firstArea.getString("title")); // Guide Home tiles use short names
         JSONObject firstCase = firstArea.getJSONArray("cases").getJSONObject(0);
         String caseTitle = firstCase.getString("title");
         String cardTitle = cardTitle(bundle, firstCase.getJSONArray("cards").getString(0));
@@ -100,7 +87,7 @@ public class GuideMinifiedSmokeTest {
 
         await(SmokeStrings.tabLabel, "the Guide tab (is the app locked, or blocked by the install guard?)").click();
         await(SmokeStrings.homeSection, "Guide Home");
-        await(SmokeStrings.entryTitle, "the pre-claim worksheet row (is PRECLAIM_ENABLED off, or the Guide locked?)").click();
+        await(SmokeStrings.tileTitle, "the pre-claim worksheet tile (is PRECLAIM_ENABLED off, or the Guide locked?)").click();
         await(SmokeStrings.chooseMove, "the move chooser");
         await(moveTitle, "the Temporary duty move").click();
         scrollTo(SmokeStrings.trRuleChoose, "the TR rule picker").click();
@@ -127,48 +114,5 @@ public class GuideMinifiedSmokeTest {
         try (InputStream in = app.getAssets().open(BUNDLE_ASSET)) {
             return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
-    }
-
-    private void launchApp() {
-        Intent intent = context.getPackageManager().getLaunchIntentForPackage(APP_ID);
-        assertNotNull("the minifiedTest app is not installed", intent);
-        context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-        device.wait(Until.hasObject(By.pkg(APP_ID).depth(0)), LONG_MS);
-    }
-
-    private void dismissIfShown(String text) {
-        UiObject2 button = device.wait(Until.findObject(By.text(text)), SHORT_MS);
-        if (button != null) button.click();
-        device.waitForIdle();
-    }
-
-    /** Swipes the worksheet up until a node whose text contains [text] is on screen (the list only composes what is visible). */
-    private UiObject2 scrollTo(String text, String what) {
-        int w = device.getDisplayWidth();
-        int h = device.getDisplayHeight();
-        for (int i = 0; i < 12; i++) {
-            UiObject2 found = device.wait(Until.findObject(By.textContains(text)), POLL_MS);
-            if (found != null) {
-                device.waitForIdle();
-                return found;
-            }
-            device.swipe(w / 2, h * 7 / 10, w / 2, h * 3 / 10, 20);
-            device.waitForIdle();
-        }
-        assertNotNull("not shown after scrolling: " + what, null);
-        return null;
-    }
-
-    /** Waits for [text], dismissing the Play asset-pack sheet whenever it appears on top (it can come late). */
-    private UiObject2 await(String text, String what) {
-        long deadline = System.currentTimeMillis() + LONG_MS;
-        while (System.currentTimeMillis() < deadline) {
-            UiObject2 playSheet = device.findObject(By.desc(PLAY_ASSET_PACK_DISMISS));
-            if (playSheet != null) playSheet.click();
-            UiObject2 found = device.wait(Until.findObject(By.text(text)), POLL_MS);
-            if (found != null) return found;
-        }
-        assertNotNull("not shown: " + what, null);
-        return null;
     }
 }

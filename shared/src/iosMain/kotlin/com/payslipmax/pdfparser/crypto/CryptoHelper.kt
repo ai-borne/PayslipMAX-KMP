@@ -7,25 +7,9 @@ import platform.CoreCrypto.*
 import platform.CoreFoundation.*
 import platform.Foundation.*
 import platform.Security.*
-import platform.posix.dlsym
-
-private val RTLD_DEFAULT = 0xfffffffffffffffeUL.toLong().toCPointer<CPointed>()
-
-@OptIn(ExperimentalForeignApi::class)
-private val cccryptorGCMOneshotEncrypt =
-    dlsym(RTLD_DEFAULT, "CCCryptorGCMOneshotEncrypt")?.reinterpret<
-        CFunction<(alg: CCAlgorithm, key: COpaquePointer?, keyLength: ULong, iv: COpaquePointer?, ivLength: ULong, aData: COpaquePointer?, aDataLength: ULong, dataIn: COpaquePointer?, dataInLength: ULong, dataOut: COpaquePointer?, tagOut: COpaquePointer?, tagLength: ULong) -> CCCryptorStatus>,
-        >()
-
-@OptIn(ExperimentalForeignApi::class)
-private val cccryptorGCMOneshotDecrypt =
-    dlsym(RTLD_DEFAULT, "CCCryptorGCMOneshotDecrypt")?.reinterpret<
-        CFunction<(alg: CCAlgorithm, key: COpaquePointer?, keyLength: ULong, iv: COpaquePointer?, ivLength: ULong, aData: COpaquePointer?, aDataLength: ULong, dataIn: COpaquePointer?, dataInLength: ULong, dataOut: COpaquePointer?, tagIn: COpaquePointer?, tagLength: ULong) -> CCCryptorStatus>,
-        >()
 
 actual object CryptoHelper {
     private const val IV_SIZE = 12
-    private const val KEY_SIZE = 32
     private const val SALT_SIZE = 16
     private const val TAG_SIZE = 16
     private var memoryFallbackKey: String? = null
@@ -35,20 +19,21 @@ actual object CryptoHelper {
 
     actual fun encrypt(
         data: ByteArray,
-        password: String,
+        password: Secret,
+    ): Result<ByteArray> = encryptWith(data, password, ::secureRandomBytes)
+
+    /** [encrypt] with its salt and IV taken from [random]; a seam so a test can show a failed generator fails the seal. */
+    internal fun encryptWith(
+        data: ByteArray,
+        password: Secret,
+        random: (Int) -> ByteArray,
     ): Result<ByteArray> {
         return try {
-            val encryptFunc = cccryptorGCMOneshotEncrypt ?: return Result.failure(Exception("GCM Encrypt not found"))
-            val salt =
-                ByteArray(SALT_SIZE).apply {
-                    usePinned { SecRandomCopyBytes(kSecRandomDefault, SALT_SIZE.toULong(), it.addressOf(0).reinterpret<UByteVar>()) }
-                }
+            // From the checked generator: a failure throws (caught below) instead of sealing under a zero salt and IV.
+            val salt = random(SALT_SIZE)
             val keyBytes = pbkdf2(password, salt)
-            val iv =
-                ByteArray(IV_SIZE).apply {
-                    usePinned { SecRandomCopyBytes(kSecRandomDefault, IV_SIZE.toULong(), it.addressOf(0).reinterpret<UByteVar>()) }
-                }
-            val magic = "PCDA".encodeToByteArray()
+            val iv = random(IV_SIZE)
+            val magic = PcdaMark.BYTES
             val prefixedData =
                 ByteArray(magic.size + data.size).apply {
                     magic.copyInto(this, 0)
@@ -58,7 +43,7 @@ actual object CryptoHelper {
             val buffer = ByteArray(dataSize)
             val tag = ByteArray(TAG_SIZE)
 
-            val cryptStatus = executeGcmEncrypt(prefixedData, keyBytes, iv, buffer, tag)
+            val cryptStatus = gcmEncrypt(prefixedData, keyBytes, iv, null, buffer, tag)
             if (cryptStatus != kCCSuccess) return Result.failure(Exception("Encrypt status: $cryptStatus"))
             val result =
                 ByteArray(SALT_SIZE + IV_SIZE + dataSize + TAG_SIZE).apply {
@@ -73,40 +58,14 @@ actual object CryptoHelper {
         }
     }
 
-    private fun executeGcmEncrypt(
-        prefixedData: ByteArray,
-        keyBytes: ByteArray,
-        iv: ByteArray,
-        buffer: ByteArray,
-        tag: ByteArray,
-    ): Int {
-        val encryptFunc = cccryptorGCMOneshotEncrypt ?: return -1
-        val dataSize = prefixedData.size
-        return prefixedData.usePinned { dataPinned ->
-            buffer.usePinned { bufferPinned ->
-                keyBytes.usePinned { keyPinned ->
-                    iv.usePinned { ivPinned ->
-                        tag.usePinned { tagPinned ->
-                            encryptFunc(
-                                kCCAlgorithmAES, keyPinned.addressOf(0), KEY_SIZE.toULong(),
-                                ivPinned.addressOf(0), IV_SIZE.toULong(), null, 0UL,
-                                dataPinned.addressOf(0), dataSize.toULong(),
-                                bufferPinned.addressOf(0), tagPinned.addressOf(0), TAG_SIZE.toULong(),
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     actual fun decrypt(
         encryptedData: ByteArray,
-        password: String,
+        password: Secret,
     ): Result<ByteArray> {
         return try {
             val prefixSize = SALT_SIZE + IV_SIZE
-            if (encryptedData.size < prefixSize + TAG_SIZE) return Result.failure(IllegalArgumentException("Invalid size"))
+            // Salt, IV and tag around at least the "PCDA" mark: a shorter file cannot be ours (and has no ciphertext to pin).
+            if (encryptedData.size < prefixSize + TAG_SIZE + PcdaMark.BYTES.size) return Result.failure(DecryptionFailedException())
 
             val salt = ByteArray(SALT_SIZE).apply { encryptedData.copyInto(this, 0, 0, SALT_SIZE) }
             val keyBytes = pbkdf2(password, salt)
@@ -116,43 +75,12 @@ actual object CryptoHelper {
             val tag = ByteArray(TAG_SIZE).apply { encryptedData.copyInto(this, 0, prefixSize + cipherTextSize, encryptedData.size) }
             val buffer = ByteArray(cipherTextSize)
 
-            val cryptStatus = executeGcmDecrypt(cipherText, keyBytes, iv, buffer, tag)
-            if (cryptStatus != kCCSuccess) return Result.failure(Exception("Decrypt status: $cryptStatus"))
-            val magic = "PCDA".encodeToByteArray()
-            if (buffer.size < magic.size || !buffer.take(magic.size).toByteArray().contentEquals(magic)) {
-                return Result.failure(IllegalArgumentException("Decrypt failed: bad magic/password"))
-            }
-            val finalData = ByteArray(buffer.size - magic.size).apply { buffer.copyInto(this, 0, magic.size, buffer.size) }
-            Result.success(finalData)
+            val cryptStatus = gcmDecrypt(cipherText, keyBytes, iv, null, buffer, tag)
+            if (cryptStatus != kCCSuccess) return Result.failure(decryptStatusFailure(cryptStatus) ?: Exception("Decrypt status: $cryptStatus"))
+            // The plaintext must start with the MAGIC header "PCDA"; anything else was not sealed by this app.
+            PcdaMark.open(buffer)
         } catch (e: Exception) {
             Result.failure(e)
-        }
-    }
-
-    private fun executeGcmDecrypt(
-        cipherText: ByteArray,
-        keyBytes: ByteArray,
-        iv: ByteArray,
-        buffer: ByteArray,
-        tag: ByteArray,
-    ): Int {
-        val decryptFunc = cccryptorGCMOneshotDecrypt ?: return -1
-        val cipherTextSize = cipherText.size
-        return cipherText.usePinned { cipherPinned ->
-            buffer.usePinned { bufferPinned ->
-                keyBytes.usePinned { keyPinned ->
-                    iv.usePinned { ivPinned ->
-                        tag.usePinned { tagPinned ->
-                            decryptFunc(
-                                kCCAlgorithmAES, keyPinned.addressOf(0), KEY_SIZE.toULong(),
-                                ivPinned.addressOf(0), IV_SIZE.toULong(), null, 0UL,
-                                cipherPinned.addressOf(0), cipherTextSize.toULong(),
-                                bufferPinned.addressOf(0), tagPinned.addressOf(0), TAG_SIZE.toULong(),
-                            )
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -169,29 +97,39 @@ actual object CryptoHelper {
         return digest
     }
 
-    private const val CC_PRF_HMAC_ALG_SHA256: UInt = 3u
-
+    /** The UTF-8 bytes of [password] are made without a String and zeroed by `withUtf8` as soon as the derivation returns (see [pbkdf2Sha256]). */
     actual fun pbkdf2(
-        password: String,
+        password: Secret,
         salt: ByteArray,
         iterations: Int,
-    ): ByteArray {
-        val derivedKey = ByteArray(32)
-        val passBytes = password.encodeToByteArray()
-        memScoped {
-            derivedKey.usePinned { derivedPinned ->
-                salt.usePinned { saltPinned ->
-                    CCKeyDerivationPBKDF(
-                        kCCPBKDF2, password, passBytes.size.toULong(),
-                        saltPinned.addressOf(0).reinterpret(), salt.size.toULong(),
-                        CC_PRF_HMAC_ALG_SHA256, iterations.toUInt(), derivedPinned.addressOf(0).reinterpret(), 32.toULong(),
-                    )
-                }
-            }
-        }
-        return derivedKey
-    }
+    ): ByteArray = pbkdf2With(password, salt, iterations, ::pbkdf2Sha256)
 
+    /** [pbkdf2] with the derivation as a parameter: a seam so a test can see the UTF-8 bytes it is given and check they are zero afterwards. */
+    internal fun pbkdf2With(
+        password: Secret,
+        salt: ByteArray,
+        iterations: Int,
+        derive: (ByteArray, ByteArray, Int) -> ByteArray,
+    ): ByteArray = password.withUtf8 { bytes -> derive(bytes, salt, iterations) }
+
+    actual fun randomBytes(size: Int): ByteArray = secureRandomBytes(size)
+
+    actual fun sealWithKey(
+        data: ByteArray,
+        key: ByteArray,
+        aad: ByteArray,
+    ): Result<ByteArray> = gcmSeal(data, key, aad)
+
+    actual fun openWithKey(
+        sealed: ByteArray,
+        key: ByteArray,
+        aad: ByteArray,
+    ): Result<ByteArray> = gcmOpen(sealed, key, aad)
+
+    /** The device database's key: 32 bytes from [random], which throws when the system cannot make secure ones (docs/Plan/14a P10). */
+    internal fun generateDatabaseKey(random: (Int) -> ByteArray = ::secureRandomBytes): ByteArray = random(DATABASE_KEY_BYTES)
+
+    private const val DATABASE_KEY_BYTES = 32
     private const val KEYCHAIN_SERVICE = "com.payslipmax.pdfparser"
     private const val KEYCHAIN_ACCOUNT = "db_secret_key"
 
@@ -228,10 +166,8 @@ actual object CryptoHelper {
             return existingFallback
         }
 
-        val newKey =
-            ByteArray(32).apply {
-                usePinned { SecRandomCopyBytes(kSecRandomDefault, 32.toULong(), it.addressOf(0).reinterpret<UByteVar>()) }
-            }
+        // Made before anything is stored: a generator that fails throws here, so no key (and never an all-zero one) is kept.
+        val newKey = generateDatabaseKey()
         val nsData = newKey.toNSData()
         val addQuery =
             CFDictionaryCreateMutable(null, 0, null, null).apply {

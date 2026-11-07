@@ -44,14 +44,17 @@ actual fun shareText(
     context.startActivity(chooser)
 }
 
-actual fun shareBytes(
-    bytes: ByteArray,
-    fileName: String,
+/** Offers [file] (in the app's cache) to the share sheet by a FileProvider URI; the app never uploads it itself. */
+fun shareBackupFile(file: File) = shareCacheFile(file, "application/octet-stream")
+
+/** Offers one scanned order page ([file], a JPEG in the app's cache) to the share sheet; the officer picks the gallery, Files or any app. */
+fun shareImageFile(file: File) = shareCacheFile(file, "image/jpeg")
+
+private fun shareCacheFile(
+    file: File,
     mimeType: String,
 ) {
-    val context = ContextHolder.context ?: return
-    val file = File(context.cacheDir, fileName)
-    file.writeBytes(bytes)
+    val context = ContextHolder.context ?: throw IllegalStateException("No context")
     val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     val send =
         Intent(Intent.ACTION_SEND).apply {
@@ -60,7 +63,7 @@ actual fun shareBytes(
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
     val chooser =
-        Intent.createChooser(send, fileName).apply {
+        Intent.createChooser(send, file.name).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }

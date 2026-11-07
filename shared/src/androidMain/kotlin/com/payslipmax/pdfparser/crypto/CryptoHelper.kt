@@ -14,7 +14,7 @@ actual object CryptoHelper {
 
     actual fun encrypt(
         data: ByteArray,
-        password: String,
+        password: Secret,
     ): Result<ByteArray> {
         return try {
             // Generate a random 16-byte Salt
@@ -34,7 +34,7 @@ actual object CryptoHelper {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmSpec)
 
             // Prepend MAGIC header "PCDA" for integrity check
-            val magic = "PCDA".toByteArray(Charsets.UTF_8)
+            val magic = PcdaMark.BYTES
             val prefixedData = ByteArray(magic.size + data.size)
             System.arraycopy(magic, 0, prefixedData, 0, magic.size)
             System.arraycopy(data, 0, prefixedData, magic.size, data.size)
@@ -55,12 +55,12 @@ actual object CryptoHelper {
 
     actual fun decrypt(
         encryptedData: ByteArray,
-        password: String,
+        password: Secret,
     ): Result<ByteArray> {
         return try {
             val prefixSize = SALT_SIZE + IV_SIZE
             if (encryptedData.size < prefixSize + 16) {
-                return Result.failure(IllegalArgumentException("Invalid encrypted data size"))
+                return Result.failure(DecryptionFailedException())
             }
 
             // Extract Salt
@@ -85,22 +85,10 @@ actual object CryptoHelper {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmSpec)
             val plainText = cipher.doFinal(cipherTextWithTag)
 
-            // Verify MAGIC header "PCDA"
-            val magic = "PCDA".toByteArray(Charsets.UTF_8)
-            if (plainText.size < magic.size) {
-                return Result.failure(IllegalArgumentException("Decryption failed: incorrect password or tampered data"))
-            }
-            for (i in magic.indices) {
-                if (plainText[i] != magic[i]) {
-                    return Result.failure(IllegalArgumentException("Decryption failed: incorrect password or tampered data"))
-                }
-            }
-
-            val result = ByteArray(plainText.size - magic.size)
-            System.arraycopy(plainText, magic.size, result, 0, result.size)
-            Result.success(result)
+            // The plaintext must start with the MAGIC header "PCDA"; anything else was not sealed by this app.
+            PcdaMark.open(plainText)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(decryptFailure(e))
         }
     }
 
@@ -110,14 +98,42 @@ actual object CryptoHelper {
     }
 
     actual fun pbkdf2(
-        password: String,
+        password: Secret,
         salt: ByteArray,
         iterations: Int,
-    ): ByteArray {
-        val spec = javax.crypto.spec.PBEKeySpec(password.toCharArray(), salt, iterations, 256)
-        val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-        return factory.generateSecret(spec).encoded
-    }
+    ): ByteArray = pbkdf2Observed(password, salt, iterations) {}
+
+    /** [pbkdf2] that shows the key spec it made, so a test can check the spec's own copy of the password was wiped when it returned. */
+    internal fun pbkdf2Observed(
+        password: Secret,
+        salt: ByteArray,
+        iterations: Int,
+        observe: (javax.crypto.spec.PBEKeySpec) -> Unit,
+    ): ByteArray =
+        password.reveal { chars ->
+            // PBEKeySpec keeps its own copy of the characters; clearPassword wipes it, and the caller's secret is the caller's to close.
+            val spec = javax.crypto.spec.PBEKeySpec(chars, salt, iterations, 256)
+            observe(spec)
+            try {
+                javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec).encoded
+            } finally {
+                spec.clearPassword()
+            }
+        }
+
+    actual fun randomBytes(size: Int): ByteArray = secureRandomBytes(size)
+
+    actual fun sealWithKey(
+        data: ByteArray,
+        key: ByteArray,
+        aad: ByteArray,
+    ): Result<ByteArray> = gcmSeal(data, key, aad)
+
+    actual fun openWithKey(
+        sealed: ByteArray,
+        key: ByteArray,
+        aad: ByteArray,
+    ): Result<ByteArray> = gcmOpen(sealed, key, aad)
 
     private const val KEYSTORE_ALIAS = "DatabaseSecretKeyAlias"
     private const val PREFS_NAME = "secure_prefs"

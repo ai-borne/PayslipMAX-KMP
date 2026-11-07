@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.ui.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -61,8 +62,9 @@ fun BaseModelDownloadBanner(
         border = BorderStroke(AppDimensions.BorderThin, contentColor.copy(alpha = 0.12f)),
     ) {
         Column(modifier = Modifier.padding(horizontal = AppDimensions.PaddingMedium, vertical = AppDimensions.SpacingSmall)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            // A flow, not a row: on a narrow screen or at a large font the buttons drop under the title instead of squeezing it a letter a line.
+            FlowRow(
+                itemVerticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
                 modifier = Modifier.fillMaxWidth(),
             ) {

@@ -53,7 +53,7 @@ abstract class BaseGemmaInstallTelemetry : GemmaInstallTelemetry {
                 lastReportedBoundary = null
                 logEvent(
                     "gemma_install_failed",
-                    mapOf("error" to state.message),
+                    mapOf("error" to GEMMA_INSTALL_FAILED_CODE),
                 )
             }
             else -> {
@@ -64,3 +64,6 @@ abstract class BaseGemmaInstallTelemetry : GemmaInstallTelemetry {
 }
 
 expect fun provideGemmaInstallTelemetry(): GemmaInstallTelemetry
+
+/** The one value a failed install sends as its `error` parameter: the installer's own text stays on the device (docs/Plan/14a P10 follow-up). */
+const val GEMMA_INSTALL_FAILED_CODE = "install_failed"

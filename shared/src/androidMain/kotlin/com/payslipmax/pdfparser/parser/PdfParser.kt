@@ -25,8 +25,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         password: String,
         filename: String,
     ): Result<ParsedPayslip> {
-        val safeName = com.payslipmax.pdfparser.telemetry.TelemetrySanitizer.sanitizeFilename(filename)
-        Logger.w("PlatformPdfParser", "Starting decryptAndParse for $safeName (bytes: ${pdfBytes.size})")
+        Logger.w("PlatformPdfParser", "Starting decryptAndParse (bytes: ${pdfBytes.size})")
         return extractTokens(pdfBytes, password, filename).mapCatching { tokenized ->
             Logger.w("PlatformPdfParser", "Extracted ${tokenized.tableTokens.size} tokens. Starting GrammarAwareParser.parse...")
             val gemmaEngine = buildGemmaEngine()
@@ -40,8 +39,8 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             Logger.w("PlatformPdfParser", "Finished GrammarAwareParser.parse. Success: ${parseResult.isSuccess}")
             parseResult.getOrThrow()
         }.onFailure { err ->
-            val safeName = com.payslipmax.pdfparser.telemetry.TelemetrySanitizer.sanitizeFilename(filename)
-            Logger.e("PlatformPdfParser", "decryptAndParse failed for $safeName", err)
+            // The type only: the message can quote the file, and the import flow reports the failure itself.
+            Logger.e("PlatformPdfParser", "decryptAndParse failed: ${err::class.simpleName}")
         }
     }
 
@@ -51,7 +50,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
             val config = com.payslipmax.pdfparser.insights.gemma.GemmaEngineConfig(modelPath = modelPath)
             GemmaEngine(config)
         } catch (e: Throwable) {
-            Logger.e("PlatformPdfParser", "Failed to build GemmaEngine", e)
+            Logger.e("PlatformPdfParser", "Failed to build GemmaEngine: ${e::class.simpleName}")
             null
         }
     }
@@ -70,8 +69,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
                     }
                 }
             } catch (e: Throwable) {
-                val safeName = com.payslipmax.pdfparser.telemetry.TelemetrySanitizer.sanitizeFilename(filename)
-                Logger.e("PlatformPdfParser", "extractTokens failed for $safeName", e)
+                Logger.e("PlatformPdfParser", "extractTokens failed: ${e::class.simpleName}")
                 Result.failure(e)
             }
         }
@@ -229,8 +227,7 @@ actual class PlatformPdfParser actual constructor() : PdfParser {
         Logger.d("PlatformPdfParser", "Starting table grid row extraction...")
         gridExtractor.getText(document)
         val (leftText, middleText) = gridExtractor.extractColumnTexts()
-        Logger.d("PlatformPdfParser", "Finished left column row extraction:\n$leftText")
-        Logger.d("PlatformPdfParser", "Finished middle column row extraction:\n$middleText")
+        Logger.d("PlatformPdfParser", "Finished column row extraction (left ${leftText.length}, middle ${middleText.length} characters)")
 
         val (taxText, dsopText) = extractTaxAndDsopTexts(document)
 

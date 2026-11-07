@@ -2,34 +2,29 @@
 
 package com.payslipmax.pdfparser.ui.screens
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.payslipmax.pdfparser.repository.RestoreMode
-import com.payslipmax.pdfparser.ui.theme.AppDimensions
+import com.payslipmax.pdfparser.ui.backup.BackupRestoreViewModel
+import com.payslipmax.pdfparser.ui.backup.BackupUiState
 import com.payslipmax.pdfparser.ui.theme.AppStrings
-import com.payslipmax.pdfparser.utils.shareBytes
 
-// A backup is an opaque encrypted archive; octet-stream lets the OS share sheet offer every
-// destination (Files, Drive, iCloud, email) rather than filtering by a document type.
-private const val BACKUP_MIME = "application/octet-stream"
-private const val BACKUP_FILE_NAME = "PayslipMax-backup.pcda"
-
+/**
+ * The Backup & Restore row and its sheet. The sheet draws the [backup] view model's state (docs/Plan/14a P7); The body is [BackupRestoreSheetBody] (progress panel, preview card, result card). A backup or restore runs on while Settings is off the screen (the app lock), so when the
+ * view model has something the officer has not seen, the sheet opens again by itself ([opensTheSheet]).
+ */
 @Composable
 fun BackupRestoreSettingsCard(
-    password: String,
-    onPasswordChange: (String) -> Unit,
-    payslipCount: Int,
-    onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
-    onRestore: (ByteArray, String, RestoreMode, (Result<Unit>) -> Unit) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    backup: BackupRestoreViewModel,
+    contents: suspend () -> BackupContents,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
     canBackup: Boolean,
     onUpgradePrompt: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val state by backup.state.collectAsState()
     var showSheet by remember { mutableStateOf(false) }
+    LaunchedEffect(state::class) { if (state.opensTheSheet()) showSheet = true }
     // Restore is free (D3), so the sheet always opens; backup *creation* inside it is gated.
     val subtitleText = if (canBackup) AppStrings.settingsStatusConfigured else AppStrings.settingsStatusBackupPremium
 
@@ -43,209 +38,76 @@ fun BackupRestoreSettingsCard(
     )
 
     if (showSheet) {
-        BackupRestoreBottomSheet(
-            password = password,
-            onPasswordChange = onPasswordChange,
-            payslipCount = payslipCount,
+        BackupRestoreSheetHost(
+            state = state,
+            backup = backup,
+            contents = contents,
             canBackup = canBackup,
             onLockedBackup = {
                 showSheet = false
                 onUpgradePrompt()
             },
-            onExportBackup = onExportBackup,
-            onRestore = onRestore,
             onPickBackup = onPickBackup,
-            onDismissRequest = { showSheet = false },
-        )
-    }
-}
-
-@Composable
-private fun BackupRestoreBottomSheet(
-    password: String,
-    onPasswordChange: (String) -> Unit,
-    payslipCount: Int,
-    canBackup: Boolean,
-    onLockedBackup: () -> Unit,
-    onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
-    onRestore: (ByteArray, String, RestoreMode, (Result<Unit>) -> Unit) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
-    onDismissRequest: () -> Unit,
-) {
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        containerColor = MaterialTheme.colorScheme.surface,
-    ) {
-        BackupRestoreSheetContent(
-            password = password,
-            onPasswordChange = onPasswordChange,
-            payslipCount = payslipCount,
-            canBackup = canBackup,
-            onLockedBackup = onLockedBackup,
-            onExportBackup = onExportBackup,
-            onRestore = onRestore,
-            onPickBackup = onPickBackup,
-            onCloseClick = onDismissRequest,
-        )
-    }
-}
-
-@Composable
-private fun BackupRestoreSheetContent(
-    password: String,
-    onPasswordChange: (String) -> Unit,
-    payslipCount: Int,
-    canBackup: Boolean,
-    onLockedBackup: () -> Unit,
-    onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
-    onRestore: (ByteArray, String, RestoreMode, (Result<Unit>) -> Unit) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
-    onCloseClick: () -> Unit,
-) {
-    var status by remember { mutableStateOf<BackupStatus?>(null) }
-    // Holds the picked backup bytes while the Replace/Merge dialog is up (device already has data).
-    var pendingRestore by remember { mutableStateOf<ByteArray?>(null) }
-
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(horizontal = AppDimensions.PaddingMedium)
-                .padding(bottom = AppDimensions.PaddingLarge),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
-    ) {
-        BackupRestoreHeader(onCloseClick = onCloseClick)
-        BackupRestorePasswordField(password = password, onPasswordChange = onPasswordChange)
-        BackupRestoreButtonsRow(
-            canBackup = canBackup,
-            onBackUp = { runBackup(canBackup, password, payslipCount, onLockedBackup, onExportBackup) { status = it } },
-            onRestore = {
-                runRestorePick(password, payslipCount, onPickBackup, onRestore, { status = it }) { pendingRestore = it }
+            onDismissRequest = {
+                showSheet = false
+                backup.dismiss()
             },
         )
-        status?.let { StatusMessage(status = it) }
     }
-
-    RestoreCollisionPrompt(
-        pendingRestore = pendingRestore,
-        password = password,
-        onRestore = onRestore,
-        onStatus = { status = it },
-        onClear = { pendingRestore = null },
-    )
 }
 
+/** Wires the sheet to the view model. The sheet cannot be dismissed while a backup or restore is working (D12). */
 @Composable
-private fun RestoreCollisionPrompt(
-    pendingRestore: ByteArray?,
-    password: String,
-    onRestore: (ByteArray, String, RestoreMode, (Result<Unit>) -> Unit) -> Unit,
-    onStatus: (BackupStatus) -> Unit,
-    onClear: () -> Unit,
-) {
-    val bytes = pendingRestore ?: return
-    RestoreCollisionDialog(
-        onReplace = {
-            onRestore(bytes, password, RestoreMode.REPLACE) { onStatus(restoreStatus(it)) }
-            onClear()
-        },
-        onMerge = {
-            onRestore(bytes, password, RestoreMode.MERGE) { onStatus(restoreStatus(it)) }
-            onClear()
-        },
-        onDismiss = onClear,
-    )
-}
-
-@Composable
-private fun BackupRestoreButtonsRow(
+private fun BackupRestoreSheetHost(
+    state: BackupUiState,
+    backup: BackupRestoreViewModel,
+    contents: suspend () -> BackupContents,
     canBackup: Boolean,
-    onBackUp: () -> Unit,
-    onRestore: () -> Unit,
+    onLockedBackup: () -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
+    onDismissRequest: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall),
-    ) {
-        Button(onClick = onBackUp, modifier = Modifier.weight(1f)) {
-            Text(if (canBackup) AppStrings.settingsBackupSaveBtn else "🔒 ${AppStrings.settingsBackupSaveBtn}")
-        }
-        OutlinedButton(onClick = onRestore, modifier = Modifier.weight(1f)) {
-            Text(AppStrings.settingsBackupRestoreBtn)
-        }
+    val mayHide = state.sheetMayHide()
+    val onDevice by produceState<BackupContents?>(null, state is BackupUiState.Preview) { value = if (state is BackupUiState.Preview) contents() else null }
+    val actions =
+        BackupSheetActions(
+            onBackUp = { password -> runBackup(canBackup, password, contents(), onLockedBackup, backup) },
+            onRestore = { password -> runRestorePick(password, onPickBackup) { picked -> backup.restore(picked, password.take()) } },
+            onCommit = backup::commit,
+            onCancel = backup::cancel,
+        )
+    BackupRestoreSheet(sheetState = rememberBackupSheetState(mayHide), mayHide = mayHide, onDismiss = onDismissRequest) {
+        BackupRestoreSheetBody(state = state, contents = onDevice, canBackup = canBackup, actions = actions)
     }
 }
 
-@Composable
-private fun RestoreCollisionDialog(
-    onReplace: () -> Unit,
-    onMerge: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(AppStrings.settingsRestoreExistingTitle) },
-        text = { Text(AppStrings.settingsRestoreExistingMsg) },
-        confirmButton = { TextButton(onClick = onReplace) { Text(AppStrings.settingsRestoreReplaceBtn) } },
-        dismissButton = { TextButton(onClick = onMerge) { Text(AppStrings.settingsRestoreMergeBtn) } },
-    )
-}
-
-/** Runs the gated backup export, then hands the encrypted bytes to the OS share sheet. */
+/** Starts the gated backup, or says why it cannot start (no password, nothing to back up); null once it has started. */
 private fun runBackup(
     canBackup: Boolean,
-    password: String,
-    payslipCount: Int,
+    password: TypedPassword,
+    contents: BackupContents,
     onLockedBackup: () -> Unit,
-    onExportBackup: (String, (Result<ByteArray>) -> Unit) -> Unit,
-    onStatus: (BackupStatus) -> Unit,
-) {
-    when {
-        !canBackup -> onLockedBackup()
-        password.isBlank() -> onStatus(BackupStatus(AppStrings.settingsBackupPasswordRequired, isSuccess = false))
-        payslipCount == 0 -> onStatus(BackupStatus(AppStrings.statusNoPayslipsToBackup, isSuccess = false))
-        else ->
-            onExportBackup(password) { result ->
-                if (result.isSuccess) {
-                    shareBytes(result.getOrThrow(), BACKUP_FILE_NAME, BACKUP_MIME)
-                    onStatus(BackupStatus("$payslipCount ${AppStrings.labelPayslipsBackedUp}", isSuccess = true))
-                } else {
-                    onStatus(BackupStatus("${AppStrings.statusBackupFailed}${result.exceptionOrNull()?.message}", isSuccess = false))
-                }
-            }
+    backup: BackupRestoreViewModel,
+): BackupStatus? {
+    if (!canBackup) {
+        onLockedBackup()
+        return null
     }
+    backupRefusal(password, contents)?.let { return it }
+    backup.backUp(password.take(), contents)
+    return null
 }
 
 /**
- * Restore is free but still password-gated. Opens the file picker, then either restores straight
- * away (fresh device) or defers to the Replace/Merge dialog when payslips already exist.
+ * Restore is free but still password-gated: opens the file picker and hands the picked file on, or says why it cannot (no password). The
+ * password is copied out of the field when the file arrives, not when the button is pressed, so no copy waits on the system picker.
  */
 private fun runRestorePick(
-    password: String,
-    payslipCount: Int,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
-    onRestore: (ByteArray, String, RestoreMode, (Result<Unit>) -> Unit) -> Unit,
-    onStatus: (BackupStatus) -> Unit,
-    onNeedsChoice: (ByteArray) -> Unit,
-) {
-    if (password.isBlank()) {
-        onStatus(BackupStatus(AppStrings.settingsBackupPasswordRequired, isSuccess = false))
-        return
-    }
-    onPickBackup { bytes ->
-        if (payslipCount > 0) {
-            onNeedsChoice(bytes)
-        } else {
-            onRestore(bytes, password, RestoreMode.REPLACE) { onStatus(restoreStatus(it)) }
-        }
-    }
+    password: TypedPassword,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
+    onPicked: (String) -> Unit,
+): BackupStatus? {
+    if (password.isBlank) return BackupStatus(AppStrings.settingsBackupPasswordRequired, isSuccess = false)
+    onPickBackup(onPicked)
+    return null
 }
-
-private fun restoreStatus(result: Result<Unit>): BackupStatus =
-    if (result.isSuccess) {
-        BackupStatus(AppStrings.statusRestoreComplete, isSuccess = true)
-    } else {
-        BackupStatus("${AppStrings.statusRestoreFailed}${result.exceptionOrNull()?.message}", isSuccess = false)
-    }

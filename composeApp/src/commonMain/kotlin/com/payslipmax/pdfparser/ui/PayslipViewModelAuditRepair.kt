@@ -41,6 +41,6 @@ internal suspend fun PayslipViewModel.refreshAuditHistory() {
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
-        Logger.e("PayslipViewModel", "Audit history refresh failed", e)
+        Logger.e("PayslipViewModel", "Audit history refresh failed: ${e::class.simpleName}")
     }
 }

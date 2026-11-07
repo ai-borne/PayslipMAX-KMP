@@ -12,6 +12,7 @@ import com.payslipmax.pdfparser.rating.requestReview
 import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.telemetry.GemmaInstallTelemetry
 import com.payslipmax.pdfparser.telemetry.provideGemmaInstallTelemetry
+import com.payslipmax.pdfparser.telemetry.recordPdfImportFailure
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.utils.shareTextViaEmail
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,6 @@ import kotlinx.coroutines.launch
 class PayslipViewModel(
     internal val repository: PayslipRepository,
     internal val financialIntelligenceRepository: com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository? = null,
-    internal val backupService: com.payslipmax.pdfparser.repository.PayslipBackupService? = null,
     internal val gemmaBaseModelInstaller: GemmaBaseModelInstaller = provideGemmaBaseModelInstaller(),
     internal val gemmaModelStorage: GemmaModelStorageManager = GemmaModelStorageManager(),
     internal val gemmaInstallTelemetry: GemmaInstallTelemetry = provideGemmaInstallTelemetry(),
@@ -37,6 +37,7 @@ class PayslipViewModel(
     internal val ratingPromptManager: RatingPromptManager = RatingPromptManager(),
     internal var reviewRequester: () -> Unit = ::requestReview,
     internal var issueReportSender: (to: String, subject: String, body: String) -> Unit = ::shareTextViaEmail,
+    internal val crashReporter: com.payslipmax.pdfparser.telemetry.CrashReporter = com.payslipmax.pdfparser.telemetry.provideCrashReporter(),
 ) : ViewModel() {
     internal val _uiState = MutableStateFlow(PayslipUiState())
     val uiState: StateFlow<PayslipUiState> = _uiState.asStateFlow()
@@ -141,7 +142,7 @@ class PayslipViewModel(
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
-                        error = "Failed to load payslips: ${e.message}",
+                        error = AppStrings.errorLoadPayslipsFailed,
                         isLoading = false,
                     )
                 }
@@ -203,23 +204,11 @@ class PayslipViewModel(
             } else {
                 val error = result.exceptionOrNull()
                 val rawMessage = error?.message ?: ""
-                val safeFilename = com.payslipmax.pdfparser.telemetry.TelemetrySanitizer.sanitizeFilename(filename)
-                com.payslipmax.pdfparser.logging.Logger.e(
-                    "PayslipViewModel",
-                    "importPayslip failed for $safeFilename: $rawMessage",
-                    error,
-                )
+                // The failure's type only (docs/Plan/14a P10): its message can quote the file, and the sanitized report just below carries the rest.
+                com.payslipmax.pdfparser.logging.Logger.e("PayslipViewModel", "importPayslip failed: ${error?.let { it::class.simpleName }}")
                 if (error != null && !rawMessage.contains("PASSWORD_PROTECTED") && !rawMessage.contains("InvalidPasswordException")) {
-                    val crashReporter = com.payslipmax.pdfparser.telemetry.provideCrashReporter()
-                    crashReporter.recordException(
-                        error,
-                        mapOf(
-                            "operation" to "pdf_import",
-                            "parser_stage" to if (rawMessage.contains("UNRECOGNIZED_GRAMMAR")) "preflight" else "grammar",
-                            "file_size_bytes" to pdfBytes.size.toString(),
-                            "error_reason" to rawMessage.take(100),
-                        ),
-                    )
+                    // The type, one of the parser's fixed codes and the file's size only: the message can quote the file (docs/Plan/14a P10).
+                    crashReporter.recordPdfImportFailure(error, pdfBytes.size)
                 }
                 val friendlyError =
                     when {

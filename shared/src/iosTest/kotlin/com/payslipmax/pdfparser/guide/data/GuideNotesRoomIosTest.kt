@@ -3,6 +3,7 @@ package com.payslipmax.pdfparser.guide.data
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.GuideNoteEntity
 import com.payslipmax.pdfparser.database.GuideNoteUnreadableException
 import com.payslipmax.pdfparser.database.PayslipDatabase
@@ -102,12 +103,12 @@ class GuideNotesRoomIosTest {
     fun aBackupCarriesTheNoteToAFreshDatabaseAndTheBackupPasswordIsNotTheDeviceKey() =
         runTest {
             repository.save("RB-TD-001", SECRET, "r1")
-            val archive = PayslipBackupService(database.payslipDao(), Dispatchers.Unconfined).export(BACKUP_PASSWORD).getOrThrow()
-            assertTrue(CryptoHelper.decrypt(archive, CryptoHelper.getDatabaseSecretKey()).isFailure, "the archive is under the password")
+            val archive = PayslipBackupService(database.payslipDao(), Dispatchers.Unconfined).export(Secret.of(BACKUP_PASSWORD)).getOrThrow()
+            assertTrue(CryptoHelper.decrypt(archive, Secret.of(CryptoHelper.getDatabaseSecretKey())).isFailure, "the archive is under the password")
 
             val fresh = newDatabase()
             try {
-                PayslipBackupService(fresh.payslipDao(), Dispatchers.Unconfined).restore(archive, BACKUP_PASSWORD, RestoreMode.REPLACE).getOrThrow()
+                PayslipBackupService(fresh.payslipDao(), Dispatchers.Unconfined).restore(archive, Secret.of(BACKUP_PASSWORD), RestoreMode.REPLACE).getOrThrow()
 
                 val restored = RoomGuideNotesRepository(fresh.payslipDao(), dispatcher = Dispatchers.Unconfined).observe().first()
                 assertEquals(SECRET, restored.notes.single().text)

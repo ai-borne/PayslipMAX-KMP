@@ -38,6 +38,25 @@ fun severityColor(severity: InsightSeverity): Color =
         InsightSeverity.OPPORTUNITY -> MaterialTheme.colorScheme.secondary
     }
 
+/**
+ * The Orders Bank's two status colours, each with a light and a dark value so the label reads on either surface: orange while a casualty
+ * waits for its order copy, blue once the copy is attached. Plain values by theme, so a test can check them against both schemes.
+ */
+object BankColors {
+    val WaitingLight = Color(0xFFC2410C)
+    val WaitingDark = Color(0xFFFDBA74)
+    val AttachedLight = Color(0xFF1D4ED8)
+    val AttachedDark = Color(0xFF93C5FD)
+
+    @Composable
+    fun waiting(): Color = if (MaterialTheme.colorScheme.surface.luminance() < HALF_LUMINANCE) WaitingDark else WaitingLight
+
+    @Composable
+    fun attached(): Color = if (MaterialTheme.colorScheme.surface.luminance() < HALF_LUMINANCE) AttachedDark else AttachedLight
+
+    private const val HALF_LUMINANCE = 0.5f
+}
+
 /** Claim Guide colours with no Material role: a light and a dark value, picked by the active scheme. */
 object GuideColors {
     private val WatchOutLight = Color(0xFFB45309)
@@ -46,6 +65,18 @@ object GuideColors {
     /** The card's "Watch out" heading: the [AppColors.Warning] amber, dark enough to read as text on a light surface. */
     @Composable
     fun watchOut(): Color = if (MaterialTheme.colorScheme.surface.luminance() < HALF_LUMINANCE) WatchOutDark else WatchOutLight
+
+    private const val HALF_LUMINANCE = 0.5f
+}
+
+/** Backup & Restore sheet colours with no Material role: a light and a dark value, picked by the active scheme. */
+object BackupColors {
+    private val SkippedLight = Color(0xFFB45309)
+    private val SkippedDark = Color(0xFFFBBF24)
+
+    /** The rows a restore leaves out: the warning amber ([AppColors.Warning]'s family), dark enough to read on a light surface. */
+    @Composable
+    fun skipped(): Color = if (MaterialTheme.colorScheme.surface.luminance() < HALF_LUMINANCE) SkippedDark else SkippedLight
 
     private const val HALF_LUMINANCE = 0.5f
 }

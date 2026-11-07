@@ -25,6 +25,7 @@ import com.payslipmax.pdfparser.ui.screens.guide.GuideCardRoute
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavState
 import com.payslipmax.pdfparser.ui.screens.guide.GuideNavStateSaver
 import com.payslipmax.pdfparser.ui.screens.guide.GuideTabRoute
+import com.payslipmax.pdfparser.ui.screens.guide.GuideWarmUp
 import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
 import com.payslipmax.pdfparser.ui.theme.PDFParserTheme
 import com.payslipmax.pdfparser.ui.theme.resolveDarkTheme
@@ -75,7 +76,7 @@ fun App(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit = {},
+    onPickBackup: (onResult: (String) -> Unit) -> Unit = {},
     navState: AppNavState = rememberSaveable(saver = AppNavStateSaver) { AppNavState() },
     // Hoisted here, above the lock screen, so locking and switching tabs keep the user's place in the Guide. Null
     // while the kill switch is off: no Guide tab or route, and R8 drops all Guide code.
@@ -94,7 +95,7 @@ fun App(
         } else if (uiState.isLockEnabled && uiState.isAppLocked) {
             // No BackHandler is composed here, so system back falls through to the OS default
             // (backgrounding the app) — locked content can never be revealed via back (decision 5).
-            LaunchedEffect(Unit) { guideNavState?.discardPreClaim() } // a lock drops a half-filled TA/DA worksheet, which the Guide's stack outlives
+            LaunchedEffect(Unit) { guideNavState?.discardTransientForms() } // a lock drops a half-filled TA/DA worksheet and any Learn search text, which the Guide's stack outlives
             LockScreen(
                 onUnlock = { pin -> viewModel.verifyPin(pin) },
                 onPickPdf = onPickPdf,
@@ -103,6 +104,7 @@ fun App(
                 },
             )
         } else {
+            if (guideNavState != null) GuideWarmUp() // null = kill switch off: nothing is loaded
             MainContentWithOnboarding(
                 navState = navState,
                 guideNavState = guideNavState,
@@ -128,7 +130,7 @@ internal fun MainScaffold(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
     nativeDetailNavigator: ((Screen) -> Unit)?,
     suppressUploadCoachmark: Boolean = false,
 ) {
@@ -189,7 +191,7 @@ private fun ScreenContent(
     viewModel: PayslipViewModel,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
     nativeDetailNavigator: ((Screen) -> Unit)?,
     suppressUploadCoachmark: Boolean,
 ) {
@@ -226,7 +228,7 @@ private fun TabRootContent(
     onNavigate: (Screen) -> Unit,
     onPickPdf: (onResult: (ByteArray, String) -> Unit) -> Unit,
     onOpenPdf: (pdfBytes: ByteArray, filename: String) -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
     suppressUploadCoachmark: Boolean,
 ) {
     when (tab) {

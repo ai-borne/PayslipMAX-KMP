@@ -13,6 +13,7 @@ import com.payslipmax.pdfparser.repository.PayslipRepository
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import com.payslipmax.pdfparser.testing.WithTestKoin
+import com.payslipmax.pdfparser.testing.backupViewModelTestModule
 import com.payslipmax.pdfparser.ui.PayslipViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -59,6 +60,9 @@ class SettingsDeveloperToolsUiTest {
         testDispatcher.scheduler.runCurrent()
     }
 
+    // Settings' Data Management section takes the app's one backup view model from Koin (docs/Plan/14a P7).
+    private val backup = backupViewModelTestModule(testDispatcher)
+
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
@@ -73,7 +77,7 @@ class SettingsDeveloperToolsUiTest {
                     factory { FirstSection() } bind DeveloperToolsSection::class
                     factory { SecondSection() } bind DeveloperToolsSection::class
                 }
-            setContent { WithTestKoin(sections) { SettingsScreen(viewModel = viewModel, onNavigateTo = {}) } }
+            setContent { WithTestKoin(sections, backup) { SettingsScreen(viewModel = viewModel, onNavigateTo = {}) } }
             testDispatcher.scheduler.runCurrent()
 
             onNodeWithText(FIRST_LABEL).performScrollTo().assertIsDisplayed()
@@ -83,7 +87,7 @@ class SettingsDeveloperToolsUiTest {
     @Test
     fun settingsRendersNoDeveloperSectionWhenKoinProvidesNone() =
         runComposeUiTest {
-            setContent { WithTestKoin(module { }) { SettingsScreen(viewModel = viewModel, onNavigateTo = {}) } }
+            setContent { WithTestKoin(backup) { SettingsScreen(viewModel = viewModel, onNavigateTo = {}) } }
             testDispatcher.scheduler.runCurrent()
 
             assertEquals(0, onAllNodesWithText("developer section", substring = true).fetchSemanticsNodes().size)

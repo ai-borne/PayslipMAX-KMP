@@ -32,16 +32,16 @@ class CryptoHelperTest {
         val password = "StrongPassword123!"
         val salt = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8)
 
-        val key1 = CryptoHelper.pbkdf2(password, salt)
-        val key2 = CryptoHelper.pbkdf2(password, salt)
+        val key1 = CryptoHelper.pbkdf2(Secret.of(password), salt)
+        val key2 = CryptoHelper.pbkdf2(Secret.of(password), salt)
 
         assertEquals(32, key1.size, "PBKDF2 key size should be 32 bytes (256 bits)")
         assertTrue(key1.contentEquals(key2), "PBKDF2 key should be consistent for same inputs")
 
-        val keyDiffPass = CryptoHelper.pbkdf2("DifferentPass!", salt)
+        val keyDiffPass = CryptoHelper.pbkdf2(Secret.of("DifferentPass!"), salt)
         assertTrue(!key1.contentEquals(keyDiffPass), "Different passwords should yield different keys")
 
-        val keyDiffSalt = CryptoHelper.pbkdf2(password, byteArrayOf(8, 7, 6, 5, 4, 3, 2, 1))
+        val keyDiffSalt = CryptoHelper.pbkdf2(Secret.of(password), byteArrayOf(8, 7, 6, 5, 4, 3, 2, 1))
         assertTrue(!key1.contentEquals(keyDiffSalt), "Different salts should yield different keys")
     }
 
@@ -60,13 +60,13 @@ class CryptoHelperTest {
     fun testEncryptDecryptConsistencyWithCachedKey() {
         val keyBefore = CryptoHelper.getDatabaseSecretKey()
         val sensitiveData = "Confidential Army Salary Record: ₹1,50,000"
-        val encrypted = CryptoHelper.encrypt(sensitiveData.encodeToByteArray(), keyBefore).getOrThrow()
+        val encrypted = CryptoHelper.encrypt(sensitiveData.encodeToByteArray(), Secret.of(keyBefore)).getOrThrow()
 
         // Simulate subsequent call retrieving from cache
         val keyAfter = CryptoHelper.getDatabaseSecretKey()
         assertEquals(keyBefore, keyAfter)
 
-        val decrypted = CryptoHelper.decrypt(encrypted, keyAfter).getOrThrow()
+        val decrypted = CryptoHelper.decrypt(encrypted, Secret.of(keyAfter)).getOrThrow()
         assertEquals(sensitiveData, decrypted.decodeToString(), "Decrypted data must match using cached key across lookups")
     }
 
@@ -76,16 +76,16 @@ class CryptoHelperTest {
         assertEquals("PCDAPayslipOfflineSecret2026!", fallbackKey, "Legacy fallback key must de-obfuscate correctly")
 
         val data = "Legacy Military Payslip".encodeToByteArray()
-        val encryptedWithFallback = CryptoHelper.encrypt(data, fallbackKey).getOrThrow()
+        val encryptedWithFallback = CryptoHelper.encrypt(data, Secret.of(fallbackKey)).getOrThrow()
 
         // Can decrypt with fallback key
-        val decrypted = CryptoHelper.decrypt(encryptedWithFallback, fallbackKey)
+        val decrypted = CryptoHelper.decrypt(encryptedWithFallback, Secret.of(fallbackKey))
         assertTrue(decrypted.isSuccess)
         assertEquals("Legacy Military Payslip", decrypted.getOrThrow().decodeToString())
 
         // Cannot decrypt with hardware-cached database key
         val dbKey = CryptoHelper.getDatabaseSecretKey()
-        val decryptedWithDbKey = CryptoHelper.decrypt(encryptedWithFallback, dbKey)
+        val decryptedWithDbKey = CryptoHelper.decrypt(encryptedWithFallback, Secret.of(dbKey))
         assertTrue(decryptedWithDbKey.isFailure, "Decryption of legacy payload with database key must fail")
     }
 
@@ -109,11 +109,11 @@ class CryptoHelperTest {
         val originalBytes = originalText.encodeToByteArray()
         val password = "SuperSecretPassword123"
 
-        val encryptResult = CryptoHelper.encrypt(originalBytes, password)
+        val encryptResult = CryptoHelper.encrypt(originalBytes, Secret.of(password))
         assertTrue(encryptResult.isSuccess, "Encryption should be successful")
         val cipherBytes = encryptResult.getOrThrow()
 
-        val decryptResult = CryptoHelper.decrypt(cipherBytes, password)
+        val decryptResult = CryptoHelper.decrypt(cipherBytes, Secret.of(password))
         assertTrue(decryptResult.isSuccess, "Decryption should be successful")
         val decryptedBytes = decryptResult.getOrThrow()
 
@@ -125,9 +125,9 @@ class CryptoHelperTest {
         val originalBytes = "Top Secret Document".encodeToByteArray()
         val password = "CorrectPassword"
 
-        val cipherBytes = CryptoHelper.encrypt(originalBytes, password).getOrThrow()
+        val cipherBytes = CryptoHelper.encrypt(originalBytes, Secret.of(password)).getOrThrow()
 
-        val wrongDecryptResult = CryptoHelper.decrypt(cipherBytes, "WrongPassword")
+        val wrongDecryptResult = CryptoHelper.decrypt(cipherBytes, Secret.of("WrongPassword"))
         assertTrue(wrongDecryptResult.isFailure, "Decryption with wrong password must fail")
     }
 
@@ -136,8 +136,8 @@ class CryptoHelperTest {
         val originalBytes = "Repeatable text".encodeToByteArray()
         val password = "SamePassword"
 
-        val cipher1 = CryptoHelper.encrypt(originalBytes, password).getOrThrow()
-        val cipher2 = CryptoHelper.encrypt(originalBytes, password).getOrThrow()
+        val cipher1 = CryptoHelper.encrypt(originalBytes, Secret.of(password)).getOrThrow()
+        val cipher2 = CryptoHelper.encrypt(originalBytes, Secret.of(password)).getOrThrow()
 
         assertFalse(cipher1.contentEquals(cipher2), "Encrypted outputs should differ due to randomized salt and IV")
     }

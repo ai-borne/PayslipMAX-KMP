@@ -5,6 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.payslipmax.pdfparser.guide.model.GuideBundle
+import com.payslipmax.pdfparser.ui.screens.guide.part2.Part2LookupViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.bank.BankViewModel
 import com.payslipmax.pdfparser.ui.screens.guide.preclaim.PreClaimViewModel
 
 /** A level of the Claim Guide's own stack. Ids stay strings (never enums), so new areas are data-only changes. */
@@ -74,6 +76,25 @@ class GuideNavState(
         preClaimModel = null
     }
 
+    /** The Learn model whose search text a lock must drop (see [discardTransientForms]); set by the Guide tab while Part II is on. */
+    internal var part2Lookup: Part2LookupViewModel? = null
+
+    /** The Orders Bank model, whose open entry form a lock must drop; set by the Guide tab while Part II is on. Also asked which entry ids are not saved yet. */
+    internal var part2Bank: BankViewModel? = null
+
+    /** What the app lock drops: the open TA/DA worksheet, any Learn search text and any open Orders Bank entry form. The stack stays, so the officer returns to the same level. */
+    fun discardTransientForms() {
+        discardPreClaim()
+        part2Lookup?.clear()
+        part2Bank?.discardForms()
+    }
+
+    /** Cuts the stack at the first Orders Bank entry [exists] denies, and everything above it: the entry was deleted, or a restore did not bring it back. */
+    fun retainKnownEntries(exists: (String) -> Boolean) {
+        val kept = stack.takeWhile { it !is Part2Destination.Entry || exists(it.entryId) }
+        if (kept.size != stack.size) replaceStack(kept.ifEmpty { listOf(GuideDestination.Home) })
+    }
+
     val current: GuideDestination get() = stack.last()
 
     /** True when back has a Guide level to return to; false at Home, so Android back leaves the tab. */
@@ -104,6 +125,53 @@ class GuideNavState(
         replaceStack(stack.dropLast(1))
         return true
     }
+
+    /**
+     * After a saved Add: drops the Learn trail on top (search, ribbon, casualty pages and the new entry's form) and leaves the Orders Bank
+     * on top, so Back is whatever led to the Bank. Entered from the Bank, that Bank level is kept as it was; entered from the hub, a Bank
+     * level goes on the hub. Not for an edit: that form was opened from the Bank or an order and simply pops.
+     */
+    fun landOnBank() {
+        val trailStart = stack.indexOfLast { !it.isLearnTrail() } + 1
+        val base = stack.take(trailStart)
+        replaceStack(if (base.lastOrNull() == Part2Destination.Bank) base else base + Part2Destination.Bank)
+    }
+
+    /**
+     * After a saved Add. An Add started from "Attach an order" (its "Add a casualty") returns to that form, with the Learn trail dropped,
+     * so the officer goes on with the same order; the form keeps its scan and fields and ticks the new casualty. Any other Add lands on
+     * the Bank ([landOnBank]). @return true when it returned to the attach form.
+     */
+    fun landAfterAdd(): Boolean {
+        if (!startedFromAttach) {
+            landOnBank()
+            return false
+        }
+        replaceStack(belowLearnTrail())
+        return true
+    }
+
+    /**
+     * True while the Learn levels on top were opened by "Add a casualty" on the attach form. Learn is then a picker for that one order
+     * (a tap goes straight to the Add form, the date picker starts from the order's own date); anywhere else it teaches. Read from the
+     * stack alone, so nothing new is saved with it.
+     */
+    val startedFromAttach: Boolean get() = belowLearnTrail().lastOrNull() is Part2Destination.Attach
+
+    /** The stack without the Learn trail on top (search, ribbon, casualty pages and the new entry's form). */
+    private fun belowLearnTrail(): List<GuideDestination> = stack.take(stack.indexOfLast { !it.isLearnTrail() } + 1)
+
+    /**
+     * The "Orders Bank" shortcut: pops straight to the Bank level when it is on the stack (Bank, entry, attach and order levels above it
+     * are dropped); without one (the entry was opened from the Learn pages) the Learn trail is dropped and a Bank level is put on top.
+     */
+    fun backToBank() {
+        val at = stack.lastIndexOf(Part2Destination.Bank)
+        if (at >= 0) replaceStack(stack.take(at + 1)) else landOnBank()
+    }
+
+    private fun GuideDestination.isLearnTrail(): Boolean =
+        this == Part2Destination.Home || this is Part2Destination.Ribbon || this is Part2Destination.Code || this is Part2Destination.Entry
 
     fun popToHome() {
         replaceStack(listOf(GuideDestination.Home))
@@ -166,4 +234,5 @@ fun GuideBundle.knows(destination: GuideDestination): Boolean =
                 (destination.facet == null || destination.facet in facets)
         is GuideDestination.Card -> cards.any { it.id == destination.cardId }
         is GuideDestination.PreClaim -> preclaim?.let { destination.move == null || destination.move in it.moves } == true
+        is Part2Destination -> part2?.knows(destination) == true
     }

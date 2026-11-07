@@ -11,6 +11,7 @@ private const val SEARCH = "search"
 private const val CHANGES = "changes"
 private const val REMOVED_NOTES = "removednotes"
 private const val PRECLAIM = "preclaim"
+private const val PART2 = "part2"
 private const val SCROLL = "scroll"
 
 /**
@@ -23,7 +24,7 @@ private const val SCROLL = "scroll"
 val GuideNavStateSaver: Saver<GuideNavState, Any> =
     listSaver<GuideNavState, Any>(
         save = { state ->
-            state.stack.mapNotNull(::encode) +
+            state.stack.mapNotNull { encode(it, state) } +
                 state.savedScrolls.map { (level, scroll) -> listOf(SCROLL, level, scroll.index, scroll.offset).joinToString(SEPARATOR.toString()) }
         },
         restore = { saved ->
@@ -41,7 +42,10 @@ private fun decodeScroll(entry: String): Pair<Int, GuideScroll>? {
 }
 
 /** Home is implicit at the bottom of every stack, so it is never written. */
-private fun encode(destination: GuideDestination): String? =
+private fun encode(
+    destination: GuideDestination,
+    state: GuideNavState,
+): String? =
     when (destination) {
         GuideDestination.Home -> null
         GuideDestination.Search -> SEARCH
@@ -51,7 +55,14 @@ private fun encode(destination: GuideDestination): String? =
         is GuideDestination.Case -> listOfNotNull(CASE, destination.caseId, destination.facet).joinToString(SEPARATOR.toString())
         is GuideDestination.Card -> "$CARD$SEPARATOR${destination.cardId}"
         is GuideDestination.PreClaim -> listOfNotNull(PRECLAIM, destination.move).joinToString(SEPARATOR.toString())
+        // A new entry's id exists only in memory until Add: after process death the stack ends at the casualty page it was opened from.
+        is Part2Destination.Entry -> if (state.part2Bank?.isPending(destination.entryId) == true) null else part2Entry(destination)
+        // The attach flow holds a scan that does not survive the process, so it is left out and the stack ends at the level under it.
+        is Part2Destination.Attach -> null
+        is Part2Destination -> part2Entry(destination)
     }
+
+private fun part2Entry(destination: Part2Destination): String = (listOf(PART2) + encodePart2(destination)).joinToString(SEPARATOR.toString())
 
 private fun decode(entry: String): GuideDestination? {
     val parts = entry.split(SEPARATOR)
@@ -64,6 +75,7 @@ private fun decode(entry: String): GuideDestination? {
         CASE -> id?.takeIf { parts.size <= 3 }?.let { GuideDestination.Case(it, parts.getOrNull(2)?.takeIf(String::isNotEmpty)) }
         CARD -> id?.takeIf { parts.size == 2 }?.let(GuideDestination::Card)
         PRECLAIM -> if (parts.size == 1) GuideDestination.PreClaim() else id?.takeIf { parts.size == 2 }?.let { GuideDestination.PreClaim(it) }
+        PART2 -> decodePart2(parts.drop(1))
         else -> null
     }
 }

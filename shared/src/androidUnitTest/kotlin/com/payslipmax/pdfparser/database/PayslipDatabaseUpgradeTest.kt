@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.File
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
@@ -25,6 +26,9 @@ private const val SCHEMA_DIR = "schemas/com.payslipmax.pdfparser.database.Paysli
 private const val FUTURE_VERSION = 99
 private const val V12 = 12
 private const val V13 = 13
+private const val V14 = 14
+private const val V15 = 15
+private const val V16 = 16
 
 /**
  * WHY: user payslips exist only in this database (there is no server copy), so the database must
@@ -134,6 +138,57 @@ class PayslipDatabaseUpgradeTest {
             db.query("SELECT cardId, ciphertext FROM guide_notes").use { assertEquals(0, it.count, "the new table starts empty") }
             db.execSQL("INSERT INTO guide_notes (cardId, ciphertext) VALUES ('RB-TD-001', 'cafe')")
             db.query("SELECT cardId FROM guide_notes").use { assertEquals(1, it.count) }
+        }
+    }
+
+    // WHY: the owner's phone holds real payslips at schema 15 plus Part II orders and scanned pages from the frozen feature/part2-orders
+    // branch. Schema 16 replaces the drafts table with the Orders Bank entries table; the scanned orders are the officer's photo library, so
+    // they and their pages must come through byte for byte, and nothing else may be touched.
+    @Test
+    fun `the old v15 database becomes v16 keeping orders and pages byte for byte, dropping drafts and gaining entries`() {
+        val orderBytes = byteArrayOf(0x0A, 0x1B, 0x2C, 0x3D)
+        val pageBytes = ByteArray(2048) { (it * 7).toByte() }
+        helper.createDatabase(PRODUCTION_DB, V15).use { db ->
+            db.insertPayslip("2026-01")
+            db.execSQL("INSERT INTO part2_drafts (id, ciphertext) VALUES ('d1', x'0102')")
+            db.execSQL("INSERT INTO part2_orders (id, ciphertext) VALUES ('o1', ?)", arrayOf<Any>(orderBytes))
+            db.execSQL("INSERT INTO part2_pages (id, orderId, position, ciphertext) VALUES ('p1', 'o1', 0, ?)", arrayOf<Any>(pageBytes))
+        }
+
+        helper.runMigrationsAndValidate(PRODUCTION_DB, V16, true).use { db ->
+            db.query("SELECT ciphertext FROM encrypted_payslips").use { assertEquals(1, it.count, "the payslip survives") }
+            db.query("SELECT ciphertext FROM part2_orders WHERE id = 'o1'").use {
+                assertTrue(it.moveToFirst(), "the order survives")
+                assertContentEquals(orderBytes, it.getBlob(0))
+            }
+            db.query("SELECT orderId, position, ciphertext FROM part2_pages WHERE id = 'p1'").use {
+                assertTrue(it.moveToFirst(), "the page survives")
+                assertEquals("o1", it.getString(0))
+                assertEquals(0, it.getInt(1))
+                assertContentEquals(pageBytes, it.getBlob(2))
+            }
+            db.query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'part2_drafts'").use { assertEquals(0, it.count, "drafts are dropped") }
+            db.query("SELECT id FROM part2_entries").use { assertEquals(0, it.count, "the entries table starts empty") }
+            db.execSQL("INSERT INTO part2_entries (id, ciphertext) VALUES ('e1', x'CAFE')")
+            db.query("SELECT id FROM part2_entries").use { assertEquals(1, it.count) }
+        }
+    }
+
+    // WHY: a phone that never ran the frozen branch is still at schema 14. It must reach 16 through 15 with its payslips intact and the
+    // three Part II tables present and empty, so a first install of the Orders Bank needs no special case.
+    @Test
+    fun `the v14 database reaches v16 with its payslips and empty Part II tables`() {
+        helper.createDatabase(PRODUCTION_DB, V14).use { it.insertPayslip("2026-01") }
+
+        helper.runMigrationsAndValidate(PRODUCTION_DB, V16, true).use { db ->
+            db.query("SELECT ciphertext FROM encrypted_payslips").use { assertEquals(1, it.count, "the payslip survives") }
+            for (table in listOf("part2_entries", "part2_orders", "part2_pages")) {
+                db.query("SELECT COUNT(*) FROM $table").use {
+                    assertTrue(it.moveToFirst())
+                    assertEquals(0, it.getInt(0), "$table starts empty")
+                }
+            }
+            db.query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'part2_drafts'").use { assertEquals(0, it.count) }
         }
     }
 

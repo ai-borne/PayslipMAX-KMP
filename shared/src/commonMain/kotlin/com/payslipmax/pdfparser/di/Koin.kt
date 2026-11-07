@@ -4,8 +4,18 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.payslipmax.pdfparser.database.PayslipDatabase
 import com.payslipmax.pdfparser.database.getDatabaseBuilder
 import com.payslipmax.pdfparser.parser.PdfParser
+import com.payslipmax.pdfparser.part2.data.LastBackupStorage
+import com.payslipmax.pdfparser.part2.data.Part2Backup
+import com.payslipmax.pdfparser.part2.data.Part2Dao
+import com.payslipmax.pdfparser.part2.data.provideLastBackupStorage
+import com.payslipmax.pdfparser.part2.space.FreeSpaceGate
+import com.payslipmax.pdfparser.part2.space.FreeSpaceReader
+import com.payslipmax.pdfparser.part2.space.provideFreeSpaceReader
+import com.payslipmax.pdfparser.repository.BackupFiles
+import com.payslipmax.pdfparser.repository.BackupTelemetry
 import com.payslipmax.pdfparser.repository.PayslipBackupService
 import com.payslipmax.pdfparser.repository.PayslipRepository
+import com.payslipmax.pdfparser.repository.provideBackupFiles
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.core.module.Module
@@ -24,6 +34,20 @@ val sharedModule: Module =
             get<PayslipDatabase>().payslipDao()
         }
 
+        // The Part II tables always exist (schema 16), so the DAO and the backup of its rows are bound whatever the flag says;
+        // only the repository the screens use is loaded with the feature (see part2Module).
+        single<Part2Dao> {
+            get<PayslipDatabase>().part2Dao()
+        }
+
+        single {
+            Part2Backup(get())
+        }
+
+        single<LastBackupStorage> {
+            provideLastBackupStorage()
+        }
+
         single<PdfParser> {
             com.payslipmax.pdfparser.parser.PlatformPdfParser()
         }
@@ -36,13 +60,28 @@ val sharedModule: Module =
             com.payslipmax.pdfparser.repository.FinancialIntelligenceRepository(get())
         }
 
+        single<BackupFiles> { provideBackupFiles() }
+        single<com.payslipmax.pdfparser.repository.PageShare> { com.payslipmax.pdfparser.repository.providePageShare() }
+        // One reader of free space, and one gate over it, for the Bank's scans and the backup's checks (docs/Plan/14a P6).
+        single<FreeSpaceReader> { provideFreeSpaceReader() }
+        single { FreeSpaceGate(get()) }
         single {
-            PayslipBackupService(get(), payslipRepository = get(), intelligence = get())
+            PayslipBackupService(
+                get(),
+                payslipRepository = get(),
+                intelligence = get(),
+                part2Backup = get(),
+                lastBackup = get(),
+                space = get(),
+            )
         }
 
         single<com.payslipmax.pdfparser.telemetry.CrashReporter> {
             com.payslipmax.pdfparser.telemetry.provideCrashReporter()
         }
+
+        // A failed backup or restore sends code-only keys, and only while the officer allows telemetry (read from the settings).
+        single { BackupTelemetry(get(), get()) }
 
         single {
             com.payslipmax.pdfparser.telemetry.InstallationIdManager()

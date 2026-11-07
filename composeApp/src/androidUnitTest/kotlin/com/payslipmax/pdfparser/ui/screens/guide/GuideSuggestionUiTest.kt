@@ -146,9 +146,9 @@ class GuideSuggestionUiTest {
 
         val (to, subject, body) = mails.single()
         assertEquals(AppStringsSupport.supportEmail, to)
-        assertEquals("[Guide] RB-T5", subject)
+        assertEquals("[Rules] RB-T5", subject)
         assertEquals(
-            "Guide correction suggestion\n\nCard: RB-T5\nTitle: Synthetic card RB-T5?\nGuide data: 2026-10-07\n" +
+            "Rule Guide correction suggestion\n\nCard: RB-T5\nTitle: Synthetic card RB-T5?\nRule Guide data: 2026-10-07\n" +
                 "App version: 9.9.9\n\nSuggestion:\nThe rate is wrong.",
             body,
         )
@@ -217,7 +217,7 @@ class GuideSuggestionUiTest {
         type("This is still cited.")
         tap(open)
 
-        assertEquals("[Guide] ${SyntheticGuideRuleChange.OLD_CARD}", mails.single().second)
+        assertEquals("[Rules] ${SyntheticGuideRuleChange.OLD_CARD}", mails.single().second)
     }
 
     @Test
@@ -238,6 +238,6 @@ class GuideSuggestionUiTest {
         type("From the tab.")
         tap(open)
 
-        assertEquals("[Guide] RB-T5", mails.single().second)
+        assertEquals("[Rules] RB-T5", mails.single().second)
     }
 }

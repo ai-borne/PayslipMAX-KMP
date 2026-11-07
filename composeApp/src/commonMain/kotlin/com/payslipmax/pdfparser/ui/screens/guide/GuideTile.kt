@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import com.payslipmax.pdfparser.ui.components.AccentStripeCard
 import com.payslipmax.pdfparser.ui.components.AccentStripeCardShape
+import com.payslipmax.pdfparser.ui.screens.CardTint
 import com.payslipmax.pdfparser.ui.screens.FlatBorderedCardShape
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
@@ -34,9 +35,10 @@ private val PillShape = RoundedCornerShape(percent = 50)
 internal fun GuideTileFrame(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    tint: CardTint = CardTint.Neutral,
     content: @Composable () -> Unit,
 ) {
-    FlatBorderedCardShape(modifier = modifier.clip(TileShape).clickable(role = Role.Button, onClick = onClick)) {
+    FlatBorderedCardShape(modifier = modifier.clip(TileShape).clickable(role = Role.Button, onClick = onClick), tint = tint) {
         content()
     }
 }

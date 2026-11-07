@@ -1,8 +1,10 @@
 package com.payslipmax.pdfparser.repository
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.database.hexToByteArray
 import com.payslipmax.pdfparser.database.toEncryptedEntity
+import com.payslipmax.pdfparser.repository.backup.toBackupRow
 import com.payslipmax.pdfparser.testing.FakePayslipDao
 import com.payslipmax.pdfparser.testing.FakePdfParser
 import kotlinx.coroutines.flow.first
@@ -29,7 +31,7 @@ class PayslipBackupServiceDeviceKeyTest {
 
             // Export backup using a backup password
             val backupPwd = "MyBackupPassword123!"
-            val exportResult = service.export(backupPwd)
+            val exportResult = service.export(Secret.of(backupPwd))
             assertTrue(exportResult.isSuccess)
             val backupBytes = exportResult.getOrThrow()
 
@@ -38,7 +40,7 @@ class PayslipBackupServiceDeviceKeyTest {
             assertTrue(repository.getAllPayslips().first().isEmpty())
 
             // Restore backup using the backup password
-            val importResult = service.restore(backupBytes, backupPwd)
+            val importResult = service.restore(backupBytes, Secret.of(backupPwd))
             assertTrue(importResult.isSuccess)
 
             // Verify that the restored payslip in the DB is encrypted with the device key
@@ -50,11 +52,11 @@ class PayslipBackupServiceDeviceKeyTest {
 
             // Should be decryptable by the device key
             val deviceKey = CryptoHelper.getDatabaseSecretKey()
-            val decryptDeviceResult = CryptoHelper.decrypt(restoredCiphertextBytes, deviceKey)
+            val decryptDeviceResult = CryptoHelper.decrypt(restoredCiphertextBytes, Secret.of(deviceKey))
             assertTrue(decryptDeviceResult.isSuccess, "Restored entity should be encrypted with the device key")
 
             // Should NOT be decryptable by the backup password directly (since the DB entity uses device key)
-            val decryptBackupPwdResult = CryptoHelper.decrypt(restoredCiphertextBytes, backupPwd)
+            val decryptBackupPwdResult = CryptoHelper.decrypt(restoredCiphertextBytes, Secret.of(backupPwd))
             assertTrue(decryptBackupPwdResult.isFailure, "Restored entity in DB must not be decryptable using backup password directly")
         }
 
@@ -77,17 +79,17 @@ class PayslipBackupServiceDeviceKeyTest {
             val backup =
                 PortableBackup(
                     version = 2,
-                    encryptedPayslips = listOf(encryptedEntity),
+                    encryptedPayslips = listOf(encryptedEntity.toBackupRow()),
                     pdfs = emptyList(),
                     settings = null,
                 )
             val jsonStr = kotlinx.serialization.json.Json.encodeToString(PortableBackup.serializer(), backup)
-            val encryptedBackupBytes = CryptoHelper.encrypt(jsonStr.encodeToByteArray(), backupPwd).getOrThrow()
+            val encryptedBackupBytes = CryptoHelper.encrypt(jsonStr.encodeToByteArray(), Secret.of(backupPwd)).getOrThrow()
 
             // Now, we are on Device B. Device B uses its own unique key.
             // We restore the backup.
             // This MUST succeed, and the database record on Device B MUST be decryptable by Device B's key!
-            val restoreResult = service.restore(encryptedBackupBytes, backupPwd)
+            val restoreResult = service.restore(encryptedBackupBytes, Secret.of(backupPwd))
             assertTrue(restoreResult.isSuccess, "Restore should be successful even for backups from other devices")
 
             // Verify that the restored entity in the database is encrypted with Device B's key (which is the current getDatabaseSecretKey())
@@ -97,12 +99,12 @@ class PayslipBackupServiceDeviceKeyTest {
 
             // Verify it decrypts successfully with current device key (Device B's key)
             val currentDeviceKey = CryptoHelper.getDatabaseSecretKey()
-            val decryptedWithDeviceKey = CryptoHelper.decrypt(restoredEntity.ciphertext.hexToByteArray(), currentDeviceKey)
+            val decryptedWithDeviceKey = CryptoHelper.decrypt(restoredEntity.ciphertext.hexToByteArray(), Secret.of(currentDeviceKey))
             assertTrue(decryptedWithDeviceKey.isSuccess, "Restored entity should be decryptable by the current device key")
 
             // And it should NOT decrypt with Device A's key anymore
             val deviceAKey = "SomeOtherDeviceKeyString12345678"
-            val decryptedWithDeviceA = CryptoHelper.decrypt(restoredEntity.ciphertext.hexToByteArray(), deviceAKey)
+            val decryptedWithDeviceA = CryptoHelper.decrypt(restoredEntity.ciphertext.hexToByteArray(), Secret.of(deviceAKey))
             assertTrue(decryptedWithDeviceA.isFailure, "Restored entity should not be decryptable by Device A's key anymore")
         }
 }

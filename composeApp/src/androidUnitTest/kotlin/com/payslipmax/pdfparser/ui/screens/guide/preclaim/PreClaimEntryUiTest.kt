@@ -34,7 +34,7 @@ class PreClaimEntryUiTest : PreClaimUiBase() {
     @Test
     fun withTheFlagOffGuideHomeShowsNoEntryAndNoWorksheetIsEverMade() {
         show(preClaim = null)
-        composeRule.onAllNodesWithText(PreClaimStrings.entryTitle).assertCountEquals(0)
+        composeRule.onAllNodesWithText(PreClaimStrings.tileTitle).assertCountEquals(0)
         assertTrue(worksheets.isEmpty())
     }
 
@@ -48,7 +48,7 @@ class PreClaimEntryUiTest : PreClaimUiBase() {
     @Test
     fun anUnlockedUserOpensTheMoveChooserFromGuideHome() {
         show()
-        tap(PreClaimStrings.entryTitle)
+        tap(PreClaimStrings.tileTitle)
         composeRule.onNodeWithText(PreClaimStrings.chooseMove).assertIsDisplayed()
         listOf("Permanent duty", "Temporary duty", "Leave travel").forEach { composeRule.onNodeWithText(it).assertIsDisplayed() }
         assertEquals(1, worksheets.size)
@@ -58,7 +58,7 @@ class PreClaimEntryUiTest : PreClaimUiBase() {
     fun aFreeUserSeesThePremiumRowThenTheUpgradePanelAndNoWorksheetOrPayslipRead() {
         show(unlocked = false)
         composeRule.onNodeWithText(PreClaimStrings.entryPremium).assertIsDisplayed()
-        tap(PreClaimStrings.entryTitle)
+        tap(PreClaimStrings.tileTitle)
         composeRule.onNodeWithText(PreClaimStrings.lockedTitle).assertIsDisplayed()
         composeRule.onAllNodesWithText(PreClaimStrings.chooseMove).assertCountEquals(0)
         tap(GuideStrings.unlock)
@@ -70,10 +70,10 @@ class PreClaimEntryUiTest : PreClaimUiBase() {
     @Test
     fun theBackArrowReturnsToGuideHome() {
         val nav = show()
-        tap(PreClaimStrings.entryTitle)
+        tap(PreClaimStrings.tileTitle)
         tapDescribed(AppStrings.btnBack)
         assertEquals(GuideDestination.Home, nav.current)
-        composeRule.onNodeWithText(PreClaimStrings.entryTitle).assertIsDisplayed()
+        composeRule.onNodeWithText(PreClaimStrings.tileTitle).assertIsDisplayed()
     }
 
     @Test
@@ -85,7 +85,7 @@ class PreClaimEntryUiTest : PreClaimUiBase() {
         assertEquals("2881", worksheet.typed.value.roadKm)
         nav.popToHome()
         settle()
-        composeRule.onNodeWithText(PreClaimStrings.entryTitle).assertIsDisplayed()
+        composeRule.onNodeWithText(PreClaimStrings.tileTitle).assertIsDisplayed()
         assertEquals(PreClaimFormState(), worksheet.typed.value, "leaving the worksheet empties its form")
     }
 

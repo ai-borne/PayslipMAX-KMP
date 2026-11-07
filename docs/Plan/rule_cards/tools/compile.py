@@ -36,6 +36,8 @@ import changes as chgmod
 import figures as figmod
 import ids as idsmod
 import nav as navmod
+import part2_casualty
+import part2_nav as part2mod
 import preclaim as preclaimmod
 
 CARDS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -187,6 +189,8 @@ def main():
     errors += idsmod.check(seen, idsmod.load_lock(), retires)
     errors += figmod.validate(figmod.load(), out_cards)
     errors += preclaimmod.validate(preclaimmod.load(), out_cards)
+    errors += part2mod.check()
+    errors += part2_casualty.check()
     skipped = {s['from'] for s in skips}
     for s in skips:
         if s['from'] not in ssot_ids: errors.append(f'skip of unknown entry {s["from"]}')

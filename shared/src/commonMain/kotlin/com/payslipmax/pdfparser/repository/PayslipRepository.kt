@@ -41,7 +41,8 @@ class PayslipRepository(
                         ?.let { parsed.applyCorrections(it.toCorrectionList(deviceKey)) }
                         ?: parsed
                 } catch (e: Exception) {
-                    Logger.e("PayslipRepository", "Skipping undecryptable payslip ${entity.dateStr}", e)
+                    // A fixed line, no exception: the month is row metadata and kotlinx can quote the payslip (docs/Plan/14a P6).
+                    Logger.e("PayslipRepository", "Skipping a payslip that would not open")
                     null
                 }
             }

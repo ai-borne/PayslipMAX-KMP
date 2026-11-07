@@ -44,11 +44,11 @@ fi
 echo "   ✅ done in $(($(date +%s) - stage_start))s"
 
 echo ""
-echo "3/7 🧩 Release build + Claim Guide R8 gate (assembleRelease, scripts/check_r8_guide.py)..."
+echo "3/7 🧩 Release build + Claim Guide R8 gate + release manifest (assembleRelease, check_r8_guide.py, check_merged_manifest.py)..."
 stage_start=$(date +%s)
-./gradlew :composeApp:assembleRelease -PallowPlaceholderGemmaModel=true -q 2>&1 && python3 scripts/check_r8_guide.py
+./gradlew :composeApp:assembleRelease -PallowPlaceholderGemmaModel=true -q 2>&1 && python3 scripts/check_r8_guide.py && python3 scripts/check_merged_manifest.py
 if [ $? -ne 0 ]; then
-    echo "❌ Push rejected: release build failed, or R8 removed a Guide model or changed the bundle."
+    echo "❌ Push rejected: release build failed, R8 removed a Guide model or changed the bundle, or the release manifest differs from scripts/merged_manifest_baseline.json."
     exit 1
 fi
 # R8 Check 2 needs a device (owner decision 2026-10-07: no CI emulator). Runs only when one is attached.

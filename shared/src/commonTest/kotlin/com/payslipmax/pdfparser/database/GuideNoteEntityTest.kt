@@ -1,6 +1,7 @@
 package com.payslipmax.pdfparser.database
 
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.Secret
 import com.payslipmax.pdfparser.guide.domain.GuideNote
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -80,7 +81,7 @@ class GuideNoteEntityTest {
     fun decryptableJsonThatIsNotANoteIsUnreadableAndNeverEchoesItsContent() {
         // kotlinx.serialization quotes the input in its error text; it must not reach ours.
         val bad = """{"cardId":"RB-TD-001","text":"$secret""" // truncated JSON that still holds the secret
-        val row = GuideNoteEntity("RB-TD-001", CryptoHelper.encrypt(bad.encodeToByteArray(), key).getOrThrow().toHex())
+        val row = GuideNoteEntity("RB-TD-001", CryptoHelper.encrypt(bad.encodeToByteArray(), Secret.of(key)).getOrThrow().toHex())
 
         val error = assertFailsWith<GuideNoteUnreadableException> { row.toNote(key) }
 
@@ -90,7 +91,7 @@ class GuideNoteEntityTest {
     @Test
     fun aStoredNoteWithBlankTextIsUnreadableNotShownAsAnEmptyNote() {
         val blank = """{"cardId":"RB-TD-001","text":"   ","cardRev":"","updatedAt":1}"""
-        val row = GuideNoteEntity("RB-TD-001", CryptoHelper.encrypt(blank.encodeToByteArray(), key).getOrThrow().toHex())
+        val row = GuideNoteEntity("RB-TD-001", CryptoHelper.encrypt(blank.encodeToByteArray(), Secret.of(key)).getOrThrow().toHex())
 
         assertFailsWith<GuideNoteUnreadableException> { row.toNote(key) }
     }
@@ -98,7 +99,7 @@ class GuideNoteEntityTest {
     @Test
     fun aStoredNoteOverTheCapIsCutOnReadSoARestoredFileCannotExceedIt() {
         val long = """{"cardId":"RB-TD-001","text":"${"a".repeat(5000)}","cardRev":"","updatedAt":1}"""
-        val row = GuideNoteEntity("RB-TD-001", CryptoHelper.encrypt(long.encodeToByteArray(), key).getOrThrow().toHex())
+        val row = GuideNoteEntity("RB-TD-001", CryptoHelper.encrypt(long.encodeToByteArray(), Secret.of(key)).getOrThrow().toHex())
 
         assertEquals(2000, row.toNote(key).text.length)
     }
@@ -106,7 +107,7 @@ class GuideNoteEntityTest {
     @Test
     fun aFieldAddedByALaterAppIsIgnoredNotFatal() {
         val future = """{"cardId":"RB-TD-001","text":"hello","cardRev":"abc","updatedAt":7,"color":"red"}"""
-        val row = GuideNoteEntity("RB-TD-001", CryptoHelper.encrypt(future.encodeToByteArray(), key).getOrThrow().toHex())
+        val row = GuideNoteEntity("RB-TD-001", CryptoHelper.encrypt(future.encodeToByteArray(), Secret.of(key)).getOrThrow().toHex())
 
         assertEquals("hello", row.toNote(key).text)
     }

@@ -16,9 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.subscription.isFreeLaunchModePlatform
 import com.payslipmax.pdfparser.ui.*
+import com.payslipmax.pdfparser.ui.backup.BackupRestoreViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.part2.orders.VaultSizeSettings
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
+import org.koin.compose.koinInject
 
 @Composable
 fun AccountSubscriptionSection(
@@ -104,23 +107,21 @@ fun PreferencesSection(
 fun DataManagementSection(
     viewModel: PayslipViewModel,
     uiState: PayslipUiState,
-    password: String,
-    onPasswordChange: (String) -> Unit,
     onUpgradePrompt: () -> Unit,
-    onPickBackup: (onResult: (ByteArray) -> Unit) -> Unit,
+    onPickBackup: (onResult: (String) -> Unit) -> Unit,
+    // One per process (docs/Plan/14a P7), so a backup or restore outlives this screen and the app lock.
+    backup: BackupRestoreViewModel = koinInject(),
 ) {
     SettingsCategoryHeader(title = AppStrings.settingsDataManagementHeader)
     SettingsCategoryCard {
         BackupRestoreSettingsCard(
-            password = password,
-            onPasswordChange = onPasswordChange,
-            payslipCount = uiState.payslips.size,
-            onExportBackup = { pw, onComplete -> viewModel.exportBackup(pw, onComplete) },
-            onRestore = { bytes, pw, mode, onComplete -> viewModel.importBackup(bytes, pw, mode, onComplete) },
+            backup = backup,
+            contents = { BackupContents(payslips = uiState.payslips.size, part2Items = backup.part2ItemCount()) },
             onPickBackup = onPickBackup,
             canBackup = viewModel.rememberHasAccess(com.payslipmax.pdfparser.subscription.FeatureGate.BACKUP_RESTORE),
             onUpgradePrompt = onUpgradePrompt,
         )
+        VaultSizeSettings()
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         ReparseAllCard(
             onReparseClick = { pw, onComplete -> viewModel.reparseAllPayslips(pw, onComplete) },

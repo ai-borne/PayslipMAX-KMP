@@ -21,19 +21,21 @@ import com.payslipmax.pdfparser.ui.theme.PreClaimStrings
 /**
  * A date chosen on a calendar. The button shows the chosen date as DD/MM/YYYY (or asks to choose one) and opens the picker; "Set date"
  * hands back the picked day, "Clear date" hands back null, and nothing reaches the ViewModel until one of them is tapped. Whether the
- * date makes sense with the other one (reversed, too long) is the calculator's answer, shown in the estimates.
+ * date makes sense with the other one (reversed, too long) is the calculator's answer, shown in the estimates. With no [date] yet, the
+ * picker opens on [suggested] when there is one; the box keeps saying "choose a date" until "Set date" is tapped.
  */
 @Composable
 internal fun PreClaimDateBox(
     label: String,
     date: CalendarDate?,
     onDate: (CalendarDate?) -> Unit,
+    suggested: CalendarDate? = null,
 ) {
     var open by remember { mutableStateOf(false) }
     OutlinedButton(onClick = { open = true }, modifier = Modifier.fillMaxWidth()) {
         Text("$label: ${if (date == null) PreClaimStrings.dateChoose else PreClaimDates.format(date)}", modifier = Modifier.weight(1f))
     }
-    if (open) PreClaimDateDialog(date, onDate) { open = false }
+    if (open) PreClaimDateDialog(date ?: suggested, onDate) { open = false }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

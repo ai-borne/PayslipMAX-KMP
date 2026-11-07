@@ -5,8 +5,14 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import com.payslipmax.pdfparser.onboarding.OnboardingManager
 import com.payslipmax.pdfparser.onboarding.OnboardingStorage
+import com.payslipmax.pdfparser.part2.data.InMemoryLastBackupStorage
+import com.payslipmax.pdfparser.repository.BackupTelemetry
+import com.payslipmax.pdfparser.repository.PayslipBackupService
+import com.payslipmax.pdfparser.ui.backup.BackupRestoreViewModel
 import com.payslipmax.pdfparser.ui.screens.PayAuditEngine
 import com.payslipmax.pdfparser.ui.screens.PayAuditViewModel
+import com.payslipmax.pdfparser.ui.screens.guide.GuideViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.koin.compose.KoinIsolatedContext
@@ -25,12 +31,26 @@ fun testAppModule(
 ): Module =
     module {
         single { OnboardingManager(storage) }
+        // App() warms the Guide up after launch (GuideWarmUp), so any test that renders App resolves it, over a fake bundle.
+        single { GuideViewModel(FakeGuideRepository(), FakeCrashReporter(), UnconfinedTestDispatcher()) }
         factory {
             if (payAuditEngine != null) {
                 PayAuditViewModel(engine = payAuditEngine, dispatcher = UnconfinedTestDispatcher())
             } else {
                 PayAuditViewModel(dispatcher = UnconfinedTestDispatcher())
             }
+        }
+    }
+
+/**
+ * The app's one backup view model (docs/Plan/14a P7), which Settings' Data Management section takes from Koin, over fakes: a screen
+ * test that renders Settings binds this, or the section cannot resolve it.
+ */
+fun backupViewModelTestModule(dispatcher: CoroutineDispatcher): Module =
+    module {
+        single {
+            val dao = FakePayslipDao()
+            BackupRestoreViewModel(PayslipBackupService(dao, dispatcher), FakeBackupFiles(), BackupTelemetry(FakeCrashReporter(), dao), InMemoryLastBackupStorage())
         }
     }
 

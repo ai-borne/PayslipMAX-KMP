@@ -4,9 +4,11 @@ import com.payslipmax.pdfparser.Screen
 import com.payslipmax.pdfparser.subscription.FeatureGate
 import com.payslipmax.pdfparser.subscription.LaunchFlags
 import com.payslipmax.pdfparser.ui.screens.guide.isGuideEnabled
+import com.payslipmax.pdfparser.ui.screens.guide.part2.isPart2Enabled
 import com.payslipmax.pdfparser.ui.theme.AppStringsPremium
 import com.payslipmax.pdfparser.ui.theme.GuideStrings
 import com.payslipmax.pdfparser.ui.theme.InsightsStrings
+import com.payslipmax.pdfparser.ui.theme.OrdersBankStrings
 
 /**
  * Whether a catalogued Premium feature is shippable today ([AVAILABLE]) or a roadmap placeholder
@@ -120,18 +122,33 @@ fun featureMeta(gate: FeatureGate): PremiumFeatureMeta =
                 target = null,
                 availability = PremiumFeatureAvailability.AVAILABLE,
             )
+        FeatureGate.PART2_ORDERS ->
+            PremiumFeatureMeta(
+                gate = gate,
+                icon = OrdersBankStrings.catalogIcon,
+                title = OrdersBankStrings.catalogTitle,
+                description = OrdersBankStrings.catalogDescription,
+                target = null,
+                availability = PremiumFeatureAvailability.AVAILABLE,
+            )
     }
 
 /**
  * Whether a gate is offered as a Premium feature today. [FeatureGate.CLAIM_GUIDE] is only once the Guide exists in
  * this build and its paywall is on: before that the kill switch has the Guide off, or it is free for everyone, and listing it as
- * Premium would promise something that is not for sale. Every other gate is always offered.
+ * Premium would promise something that is not for sale. [FeatureGate.PART2_ORDERS] is only while Part II is enabled, so a dark launch never reaches the paywall. Every other gate is always offered.
  */
 internal fun isAdvertised(
     gate: FeatureGate,
     guideEnabled: Boolean = isGuideEnabled(),
     guidePaywallEnabled: Boolean = LaunchFlags.GUIDE_PAYWALL_ENABLED,
-): Boolean = gate != FeatureGate.CLAIM_GUIDE || (guideEnabled && guidePaywallEnabled)
+    part2Enabled: Boolean = isPart2Enabled(),
+): Boolean =
+    when (gate) {
+        FeatureGate.CLAIM_GUIDE -> guideEnabled && guidePaywallEnabled
+        FeatureGate.PART2_ORDERS -> part2Enabled
+        else -> true
+    }
 
 /** The catalog in [FeatureGate] declaration order — one row per advertised gate; [featureMeta] covers every gate. */
 fun premiumFeatureCatalog(): List<PremiumFeatureMeta> = FeatureGate.values().filter { isAdvertised(it) }.map(::featureMeta)

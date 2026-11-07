@@ -3,13 +3,14 @@ package com.payslipmax.pdfparser.database
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.payslipmax.pdfparser.crypto.CryptoHelper
+import com.payslipmax.pdfparser.crypto.PasswordKey
+import com.payslipmax.pdfparser.crypto.SealKey
 import com.payslipmax.pdfparser.crypto.getLegacyFallbackKey
 import com.payslipmax.pdfparser.domain.ParsedPayslip
 import com.payslipmax.pdfparser.logging.Logger
-import kotlinx.serialization.Serializable
+import com.payslipmax.pdfparser.repository.backup.BackupJson
 import kotlinx.serialization.json.Json
 
-@Serializable
 @Entity(tableName = "encrypted_payslips")
 data class EncryptedPayslipEntity(
     @PrimaryKey val dateStr: String,
@@ -51,10 +52,13 @@ private fun toCharDigit(ch: Char): Int {
     }
 }
 
-fun ParsedPayslip.toEncryptedEntity(password: String = CryptoHelper.getDatabaseSecretKey()): EncryptedPayslipEntity {
+fun ParsedPayslip.toEncryptedEntity(password: String = CryptoHelper.getDatabaseSecretKey()): EncryptedPayslipEntity = toEncryptedEntity(PasswordKey(password))
+
+/** The same row sealed with [key]: a password per row (the device, older backups) or a v6 backup's archive key. */
+fun ParsedPayslip.toEncryptedEntity(key: SealKey): EncryptedPayslipEntity {
     val jsonString = Json.encodeToString(ParsedPayslip.serializer(), this)
     val jsonBytes = jsonString.encodeToByteArray()
-    val encryptedBytes = CryptoHelper.encrypt(jsonBytes, password).getOrThrow()
+    val encryptedBytes = key.seal(jsonBytes).getOrThrow()
     val ciphertext = encryptedBytes.toHex()
     return EncryptedPayslipEntity(
         dateStr = dateStr,
@@ -65,19 +69,22 @@ fun ParsedPayslip.toEncryptedEntity(password: String = CryptoHelper.getDatabaseS
     )
 }
 
-fun EncryptedPayslipEntity.toDomain(password: String = CryptoHelper.getDatabaseSecretKey()): ParsedPayslip {
+fun EncryptedPayslipEntity.toDomain(password: String = CryptoHelper.getDatabaseSecretKey()): ParsedPayslip = toDomain(PasswordKey(password))
+
+fun EncryptedPayslipEntity.toDomain(key: SealKey): ParsedPayslip {
     val encryptedBytes = ciphertext.hexToByteArray()
     val decryptedBytes =
         try {
-            CryptoHelper.decrypt(encryptedBytes, password).getOrThrow()
+            key.open(encryptedBytes).getOrThrow()
         } catch (primaryEx: Exception) {
             try {
-                CryptoHelper.decrypt(encryptedBytes, CryptoHelper.getLegacyFallbackKey()).getOrThrow()
+                PasswordKey(CryptoHelper.getLegacyFallbackKey()).open(encryptedBytes).getOrThrow()
             } catch (legacyEx: Exception) {
-                Logger.w("EncryptedPayslipEntity", "Cannot decrypt $dateStr with device key or legacy key - ${legacyEx.message}")
+                // A fixed line: the month is row metadata and the message is the crypto library's (docs/Plan/14a P6).
+                Logger.w("EncryptedPayslipEntity", "A payslip row did not open with the device key or the legacy key")
                 throw legacyEx
             }
         }
     val jsonString = decryptedBytes.decodeToString()
-    return Json.decodeFromString(ParsedPayslip.serializer(), jsonString)
+    return BackupJson.decode(ParsedPayslip.serializer(), jsonString)
 }
