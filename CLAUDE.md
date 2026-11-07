@@ -45,7 +45,7 @@ Opt-in, developer-machine-only integration tests (never run in CI, never touch c
 
 Pre-commit hook (`scripts/git-pre-commit.sh`, installed via `scripts/install-hooks.sh`) runs, in order: a
 gitleaks staged-diff secret scan → the tech-debt/file-size audit on staged `.kt` files (now also flagging
-risky lookaround/backreference regex in `commonMain`) → `ktlintCheck` → module-scoped debug unit tests for
+risky lookaround/backreference regex in `commonMain`, and `println`/`System.out` in any production source set outside `logging/Logger.kt`) → `ktlintCheck` → module-scoped debug unit tests for
 whichever of `shared`/`composeApp` were touched → (if `commonMain`/`iosMain` files are staged) an iOS
 framework link check. All must pass for a commit to go through. `scripts/git-pre-push.sh` (installed by the
 same script) is the exhaustive counterpart run on every push: the full Android + common gate (both build

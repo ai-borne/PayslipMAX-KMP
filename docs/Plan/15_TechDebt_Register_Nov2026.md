@@ -51,7 +51,11 @@ Steps: (a) a JVM test builds a PDF in-test with PDFBox, runs `extractTokenized`,
 (fails on current code); (b) delete the dump; (c) add a guard to `check_tech_debt_limits.py` banning `println` in
 `*Main` source sets outside `logging/Logger.kt`.
 
-- [ ] 1
+- [x] 1 (2026-11-07). (a) `AndroidTokenExtractorOutputTest` (Robolectric + a PDF built in-test) failed on the old code with the token text in
+  stdout; (b) the dump is deleted from `AndroidTokenExtractor.kt` (production change: output only, the returned `TokenizedPayslip` is
+  built exactly as before); (c) `scripts/stdout_guard.py` is wired into `check_tech_debt_limits.py` (staged-file audit and full scan,
+  so pre-commit and CI both enforce it) with `scripts/tests/test_stdout_guard.py`. Mutation-checked: re-adding a `println` fails the
+  strict audit. Full scan found no other production `println` outside `Logger`.
 
 ## Phase 3 — Low-risk cleanups (one commit each)
 
