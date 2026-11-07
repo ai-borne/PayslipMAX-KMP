@@ -13,6 +13,9 @@ class GuideWhatsNewSeenModel(private val storage: GuideWhatsNewStorage) {
     private val state = MutableStateFlow(storage.load())
     val seen: StateFlow<String?> = state
 
+    /** The newest entry seen before this session began; the change log marks entries newer than it, since opening it marks everything seen. */
+    val seenBeforeSession: String? = state.value
+
     /** True when [latestDate] is newer than anything seen; false when the bundle has no entry. */
     fun isNew(latestDate: String?): Boolean = latestDate != null && isNewerThan(latestDate, state.value)
 

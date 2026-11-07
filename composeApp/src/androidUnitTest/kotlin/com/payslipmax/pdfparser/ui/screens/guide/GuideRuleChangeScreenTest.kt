@@ -14,6 +14,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import com.payslipmax.pdfparser.guide.GuideLoadResult
+import com.payslipmax.pdfparser.guide.data.InMemoryGuideWhatsNewStorage
 import com.payslipmax.pdfparser.testing.FakeCrashReporter
 import com.payslipmax.pdfparser.testing.FakeGuidePinsStorage
 import com.payslipmax.pdfparser.testing.FakeGuideRepository
@@ -49,14 +50,17 @@ class GuideRuleChangeScreenTest {
         unlocked: Boolean = true,
         plain: Boolean = false,
         nav: GuideNavState = GuideNavState(),
+        seenBefore: String? = null,
     ): GuideNavState {
         val repository = if (plain) FakeGuideRepository() else FakeGuideRepository(GuideLoadResult.Loaded(SyntheticGuideRuleChange.bundle()))
-        val guide = GuideViewModel(repository, FakeCrashReporter(), dispatcher, pins = GuidePinsModel(storage))
+        val guide = GuideViewModel(repository, FakeCrashReporter(), dispatcher, pins = GuidePinsModel(storage), whatsNewSeen = seenModel(seenBefore))
         val search = GuideSearchViewModel(guide, dispatcher)
         composeRule.setContent { GuideTab(navState = nav, access = GuideAccess(unlocked, onUnlock = {}), viewModel = guide, searchViewModel = search) }
         settle()
         return nav
     }
+
+    private fun seenModel(date: String?) = GuideWhatsNewSeenModel(InMemoryGuideWhatsNewStorage().also { storage -> date?.let(storage::save) })
 
     private fun settle() {
         dispatcher.scheduler.advanceUntilIdle()
@@ -94,6 +98,21 @@ class GuideRuleChangeScreenTest {
 
         composeRule.onNodeWithText(GuideStrings.homeTitle).assertIsDisplayed()
         composeRule.onAllNodesWithText("What's new", substring = true).assertCountEquals(0)
+    }
+
+    @Test
+    fun onlyEntriesNewerThanTheLastSeenOneCarryTheNewChipInTheList() {
+        show(seenBefore = SyntheticGuideRuleChange.OLDER_ENTRY.replace("06-01", "07-01"))
+        tap("What's new in Rule Guide (Nov 2026)")
+
+        composeRule.onAllNodesWithText(GuideMaintenanceStrings.whatsNewChip).assertCountEquals(1)
+    }
+
+    @Test
+    fun noEntryIsMarkedNewOnAFirstEverVisitOrOnceEverythingWasSeen() {
+        show()
+        tap("What's new in Rule Guide (Nov 2026)")
+        composeRule.onAllNodesWithText(GuideMaintenanceStrings.whatsNewChip).assertCountEquals(0)
     }
 
     @Test

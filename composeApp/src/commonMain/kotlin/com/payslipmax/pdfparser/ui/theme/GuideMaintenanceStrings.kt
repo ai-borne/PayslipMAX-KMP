@@ -72,6 +72,9 @@ object GuideMaintenanceStrings {
     const val whatsNewEmoji = "✨"
 
     const val whatsNewChip = "NEW"
+
+    /** The dot before each change in the change log: decoration, never read aloud. */
+    const val changeBullet = "•"
     const val whatsNewDismiss = "Dismiss"
 
     /** The banner's second line: how many changes the newest entry lists. */

@@ -86,7 +86,7 @@ private fun GuideDestinationContent(
         GuideDestination.RemovedNotes -> GuideRemovedNotesRoute(navState, notes, onBack)
         GuideDestination.Changes ->
             viewModel.whatsNew()?.let { content ->
-                GuideWhatsNewScreen(content, onBack, onOpenCard = { navState.push(GuideDestination.Card(it)) }, rememberGuideListState(navState))
+                GuideWhatsNewScreen(content, onBack, onOpenCard = { navState.push(GuideDestination.Card(it)) }, rememberGuideListState(navState), viewModel.whatsNewSeen.seenBeforeSession)
             } ?: GuideLoading()
     }
 }

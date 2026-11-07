@@ -1,11 +1,13 @@
 package com.payslipmax.pdfparser.ui.screens.guide
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,19 +17,23 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import com.payslipmax.pdfparser.ui.components.ScreenBackHeader
 import com.payslipmax.pdfparser.ui.screens.CardTint
+import com.payslipmax.pdfparser.ui.screens.FlatBorderedCardShape
+import com.payslipmax.pdfparser.ui.screens.flatBorderedCardBorderColor
 import com.payslipmax.pdfparser.ui.theme.AppDimensions
 import com.payslipmax.pdfparser.ui.theme.AppStrings
 import com.payslipmax.pdfparser.ui.theme.GuideMaintenanceStrings
@@ -77,8 +83,9 @@ internal fun GuideWhatsNewRow(
 }
 
 /**
- * "What's new in the Guide": each dated entry's lines, newest first, with a link to every card a line names. The text is
- * the maintainer's own words from the bundle; the links open cards through the Guide stack, so Back returns to this list.
+ * "What's new in the Guide": one card per dated entry, newest first. Each change is a bullet; the cards it names sit under it as tappable
+ * rows. The text is the maintainer's own words from the bundle; the links open cards through the Guide stack, so Back returns here.
+ * Entries dated after [newerThan] (the newest one seen before this session) carry a NEW chip.
  */
 @Composable
 internal fun GuideWhatsNewScreen(
@@ -86,6 +93,7 @@ internal fun GuideWhatsNewScreen(
     onBack: () -> Unit,
     onOpenCard: (cardId: String) -> Unit,
     listState: LazyListState = rememberLazyListState(),
+    newerThan: String? = null,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         ScreenBackHeader(title = GuideMaintenanceStrings.whatsNewTitle, subtitle = GuideMaintenanceStrings.whatsNewSubtitle, onBack = onBack)
@@ -93,9 +101,11 @@ internal fun GuideWhatsNewScreen(
             state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(AppDimensions.PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
+            verticalArrangement = Arrangement.spacedBy(AppDimensions.PaddingMedium),
         ) {
-            items(content.entries, key = { it.date }) { entry -> GuideChangeEntryView(entry, onOpenCard) }
+            items(content.entries, key = { it.date }) { entry ->
+                GuideChangeEntryView(entry, onOpenCard, isNew = GuideWhatsNewSeenModel.isNewerThan(entry.date, newerThan) && newerThan != null)
+            }
         }
     }
 }
@@ -104,17 +114,68 @@ internal fun GuideWhatsNewScreen(
 private fun GuideChangeEntryView(
     entry: GuideChangeEntryContent,
     onOpenCard: (cardId: String) -> Unit,
+    isNew: Boolean,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
-        Text(
-            GuideMaintenanceStrings.day(entry.date),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.semantics { heading() },
-        )
-        entry.lines.forEach { line ->
-            Text(line.text, style = MaterialTheme.typography.bodyMedium)
-            line.cards.forEach { link -> TextButton(onClick = { onOpenCard(link.cardId) }) { Text(link.title) } }
+    FlatBorderedCardShape(tint = if (isNew) CardTint.Accent else CardTint.Neutral) {
+        Column(modifier = Modifier.padding(AppDimensions.PaddingMedium), verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
+                Text(
+                    GuideMaintenanceStrings.day(entry.date),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isNew) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.weight(1f).semantics { heading() },
+                )
+                if (isNew) NewChip()
+            }
+            HorizontalDivider(color = flatBorderedCardBorderColor(CardTint.Neutral))
+            entry.lines.forEach { line -> GuideChangeBullet(line, onOpenCard) }
         }
     }
 }
+
+@Composable
+private fun NewChip() {
+    Text(
+        GuideMaintenanceStrings.whatsNewChip,
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onPrimaryContainer,
+        modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(percent = 50)).padding(horizontal = AppDimensions.SpacingSmall, vertical = AppDimensions.SpacingTwo),
+    )
+}
+
+@Composable
+private fun GuideChangeBullet(
+    line: GuideChangeLine,
+    onOpenCard: (cardId: String) -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium)) {
+        Decoration(GuideMaintenanceStrings.changeBullet, AppDimensions.TextSizeExtraLarge, MaterialTheme.colorScheme.primary)
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(AppDimensions.SpacingSmall)) {
+            Text(line.text, style = MaterialTheme.typography.bodyMedium)
+            line.cards.forEach { link -> GuideChangeLinkRow(link.title) { onOpenCard(link.cardId) } }
+        }
+    }
+}
+
+/** A card a change names: a bordered row with the full title (it wraps, never truncates) and an arrow, read as one button. */
+@Composable
+private fun GuideChangeLinkRow(
+    title: String,
+    onClick: () -> Unit,
+) {
+    val shape = RoundedCornerShape(AppDimensions.CornerRadiusMedium)
+    Row(
+        modifier =
+            Modifier.fillMaxWidth().clip(shape).background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = LINK_ROW_ALPHA), shape)
+                .clickable(role = Role.Button, onClick = onClick).padding(AppDimensions.SpacingMedium),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppDimensions.SpacingMedium),
+    ) {
+        Text(title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.primary, modifier = Modifier.weight(1f))
+        Decoration(AppStrings.rowArrow, AppDimensions.TextSizeLarge, MaterialTheme.colorScheme.primary)
+    }
+}
+
+private const val LINK_ROW_ALPHA = 0.35f
